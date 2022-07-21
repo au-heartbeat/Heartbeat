@@ -194,4 +194,43 @@ describe("get story points and cycle times of done cards during period", () => {
     sinon.restore();
   });
 
+  it("should return blocked percentage given iteration hashmap", async () => {
+    const emptyJiraCard: JiraCard = { fields: emptyJiraCardField, key: "" };
+
+    const cycleTimeArray: CycleTimeInfo[] = [
+      { column: "DOING", day: 1 },
+      { column: "WAIT", day: 2 },
+      { column: "TEST", day: 3 },
+      { column: "BLOCKED", day: 4 },
+      { column: "REVIEW", day: 5 },
+    ];
+    const cycleTimeArray2: CycleTimeInfo[] = [
+      { column: "DOING", day: 2 },
+      { column: "WAIT", day: 3 },
+      { column: "TEST", day: 4 },
+      { column: "BLOCKED", day: 5 },
+      { column: "REVIEW", day: 6 },
+    ];
+
+    const mapIterationCards = new Map<string, JiraCardResponse[]>([
+      ["test Sprint 1", [new JiraCardResponse(emptyJiraCard, cycleTimeArray)]],
+      ["test Sprint 2", [new JiraCardResponse(emptyJiraCard, cycleTimeArray2)]],
+    ]);
+    const boardColumns: RequestKanbanColumnSetting[] = [
+      { name: "DOING", value: "In Dev" },
+      { name: "WAIT", value: "Waiting for testing" },
+      { name: "TEST", value: "Testing" },
+      { name: "BLOCKED", value: "Block" },
+      { name: "REVIEW", value: "Review" },
+    ];
+
+    const map = jira.calculateIterationBlockedPercentage(mapIterationCards, boardColumns);
+    expect(map).deep.equal(new Map<string, number>([
+      ["test Sprint 1", 0.26],
+      ["test Sprint 2", 0.25],
+    ]));
+
+    sinon.restore();
+  });
+
 });
