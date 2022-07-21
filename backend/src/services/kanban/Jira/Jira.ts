@@ -540,4 +540,21 @@ export class Jira implements Kanban {
     return blockedPercentage;
   }
 
+  calculateIterationBlockedPercentage(
+    mapIterationCards: Map<string, JiraCardResponse[]>,
+    boardColumns: RequestKanbanColumnSetting[] = []
+  ) {
+    const map = new Map<string, number>();
+
+    mapIterationCards.forEach((value: JiraCardResponse[], key: string) => {
+      const blockedPercentage = this.calculateCardsBlockedPercentage(
+        value,
+        boardColumns
+      );
+      map.set(key, blockedPercentage);
+    });
+
+    return map;
+  }
+
 }
