@@ -227,15 +227,38 @@ describe("get story points and cycle times of done cards during period", () => {
       { name: "REVIEW", value: "Review" },
     ];
 
-    const map = jira.calculateIterationBlockedPercentage(mapIterationCards, boardColumns);
-    expect(map).deep.equal(new Map<string, number>([
-      ["test Sprint 1", 0.26],
-      ["test Sprint 2", 0.25],
-    ]));
+    const map = jira.calculateIterationBlockedPercentage(
+      mapIterationCards,
+      boardColumns
+    );
+    expect(map).deep.equal(
+      new Map<string, number>([
+        ["test Sprint 1", 0.26],
+        ["test Sprint 2", 0.25],
+      ])
+    );
 
     sinon.restore();
   });
 
+  it("should return developing percentage given iteration hashmap", async () => {
+    const mapIterationBlockedPercentage = new Map<string, number>([
+      ["test Sprint 1", 0.26],
+      ["test Sprint 2", 0.25],
+    ]);
+
+    const map = jira.calculateIterationDevelopingPercentage(
+      mapIterationBlockedPercentage
+    );
+    expect(map).deep.equal(
+      new Map<string, number>([
+        ["test Sprint 1", 0.74],
+        ["test Sprint 2", 0.75],
+      ])
+    );
+
+    sinon.restore();
+  });
 });
 
 describe("get sprints data by domain name and boardId", () => {
