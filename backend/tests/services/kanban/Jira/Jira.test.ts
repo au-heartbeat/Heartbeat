@@ -9,8 +9,10 @@ import EmptySprints from "../../../fixture/EmptySprints.json";
 import JiraCardCycleTime from "../../../fixture/JiraCardCycleTime.json";
 import { StoryPointsAndCycleTimeRequest } from "../../../../src/contract/kanban/KanbanStoryPointParameterVerify";
 import { Sprint } from "../../../../src/models/kanban/Sprint";
-import { CycleTimeInfo } from "../../../../src/contract/kanban/KanbanStoryPointResponse";
-import { Sprint } from "../../../../src/models/kanban/Sprint";
+import {
+  CycleTimeInfo,
+  JiraCardResponse,
+} from "../../../../src/contract/kanban/KanbanStoryPointResponse";
 
 const jira = new Jira("testToken", "domain");
 
@@ -116,6 +118,43 @@ describe("get story points and cycle times of done cards during period", () => {
     );
 
     expect(response.cycleTimeInfos).deep.equal(cycleTime);
+    sinon.restore();
+  });
+
+  it("should map cards by iteration", async () => {
+    sinon.stub(Jira, "getCycleTimeAndAssigneeSet").returns(
+      Promise.resolve({
+        cycleTimeInfos: Array.of<CycleTimeInfo>(),
+        assigneeSet: new Set<string>(["Test User"]),
+        originCycleTimeInfos: Array.of<CycleTimeInfo>(),
+      })
+    );
+
+    mock
+      .onGet(
+        `https://${
+          storyPointsAndCycleTimeRequest.site
+        }.atlassian.net/rest/agile/1.0/board/2/issue?maxResults=100&jql=status in ('${storyPointsAndCycleTimeRequest.status.join(
+          "','"
+        )}')`
+      )
+      .reply(200, JiraCards);
+
+    const response = await jira.getStoryPointsAndCycleTime(
+      storyPointsAndCycleTimeRequest,
+      [],
+      ["Test User"]
+    );
+
+    const cards = response.matchedCards;
+    const map = jira.mapCardsByIteration(cards);
+    expect(map).deep.equal(
+      new Map<string, JiraCardResponse[]>([
+        ["test Sprint 1", [cards[0]]],
+        ["test Sprint 2", [cards[1]]],
+      ])
+    );
+
     sinon.restore();
   });
 });

@@ -504,4 +504,19 @@ export class Jira implements Kanban {
         });
     return statusChangedArray;
   }
+
+  mapCardsByIteration(cards: JiraCardResponse[]) {
+    let map = new Map<string, JiraCardResponse[]>();
+    for (const card of cards) {
+      const sprint = card.baseInfo.fields.sprint;
+      if (sprint) {
+        if (!map.has(sprint)) {
+          map.set(sprint, []);
+        }
+
+        map.get(sprint)!.push(card);
+      }
+    }
+    return map;
+  }
 }
