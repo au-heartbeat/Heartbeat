@@ -484,18 +484,20 @@ export class Jira implements Kanban {
   }
 
   mapCardsByIteration(cards: JiraCardResponse[]) {
-    const map = new Map<string, JiraCardResponse[]>();
+    const mapIterationCards = new Map<string, JiraCardResponse[]>();
+
     for (const card of cards) {
       const sprint = card.baseInfo.fields.sprint;
       if (sprint) {
-        if (!map.has(sprint)) {
-          map.set(sprint, []);
+        if (!mapIterationCards.has(sprint)) {
+          mapIterationCards.set(sprint, []);
         }
 
-        map.get(sprint)!.push(card);
+        mapIterationCards.get(sprint)!.push(card);
       }
     }
-    return map;
+
+    return mapIterationCards;
   }
 
   calculateCardsBlockedPercentage(
@@ -511,39 +513,43 @@ export class Jira implements Kanban {
       totalBlockedTime += cardCycleTime.steps.blocked;
     }
 
-    const value = totalBlockedTime / totalCycleTime;
-    const blockedPercentage = parseFloat(
-      (Math.floor(value * 100) / 100).toFixed(2)
+    const blockedPercentage = totalBlockedTime / totalCycleTime;
+    const blockedPercentageWith2Decimal = parseFloat(
+      (Math.floor(blockedPercentage * 100) / 100).toFixed(2)
     );
-    return blockedPercentage;
+    return blockedPercentageWith2Decimal;
   }
 
   calculateIterationBlockedPercentage(
     mapIterationCards: Map<string, JiraCardResponse[]>,
     boardColumns: RequestKanbanColumnSetting[] = []
   ) {
-    const map = new Map<string, number>();
+    const mapIterationBlockedPercentage = new Map<string, number>();
 
-    mapIterationCards.forEach((value: JiraCardResponse[], key: string) => {
-      const blockedPercentage = this.calculateCardsBlockedPercentage(
-        value,
-        boardColumns
-      );
-      map.set(key, blockedPercentage);
-    });
+    mapIterationCards.forEach(
+      (cards: JiraCardResponse[], iteration: string) => {
+        const blockedPercentage = this.calculateCardsBlockedPercentage(
+          cards,
+          boardColumns
+        );
+        mapIterationBlockedPercentage.set(iteration, blockedPercentage);
+      }
+    );
 
-    return map;
+    return mapIterationBlockedPercentage;
   }
 
   calculateIterationDevelopingPercentage(
     mapIterationBlockedPercentage: Map<string, number>
   ) {
-    const map = new Map<string, number>();
+    const mapIterationDevelopingPercentage = new Map<string, number>();
 
-    mapIterationBlockedPercentage.forEach((value: number, key: string) => {
-      map.set(key, 1 - value);
-    });
+    mapIterationBlockedPercentage.forEach(
+      (blockedPercentage: number, iteration: string) => {
+        mapIterationDevelopingPercentage.set(iteration, 1 - blockedPercentage);
+      }
+    );
 
-    return map;
+    return mapIterationDevelopingPercentage;
   }
 }
