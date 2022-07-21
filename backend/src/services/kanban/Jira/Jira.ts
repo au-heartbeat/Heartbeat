@@ -497,4 +497,25 @@ export class Jira implements Kanban {
     }
     return map;
   }
+
+  calculateCardsBlockedPercentage(
+    cards: JiraCardResponse[],
+    boardColumns: RequestKanbanColumnSetting[] = []
+  ) {
+    let totalCycleTime = 0;
+    let totalBlockedTime = 0;
+
+    for (const card of cards) {
+      let cardCycleTime = CalculateCardCycleTime(card, boardColumns);
+      totalCycleTime += cardCycleTime.total;
+      totalBlockedTime += cardCycleTime.steps.blocked;
+    }
+
+    const value = totalBlockedTime / totalCycleTime;
+    const blockedPercentage = parseFloat(
+      (Math.floor(value * 100) / 100).toFixed(2)
+    );
+    return blockedPercentage;
+  }
+
 }
