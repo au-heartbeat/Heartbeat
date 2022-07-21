@@ -535,4 +535,15 @@ export class Jira implements Kanban {
     return map;
   }
 
+  calculateIterationDevelopingPercentage(
+    mapIterationBlockedPercentage: Map<string, number>
+  ) {
+    const map = new Map<string, number>();
+
+    mapIterationBlockedPercentage.forEach((value: number, key: string) => {
+      map.set(key, 1 - value);
+    });
+
+    return map;
+  }
 }
