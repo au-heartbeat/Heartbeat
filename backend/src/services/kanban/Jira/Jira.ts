@@ -484,7 +484,7 @@ export class Jira implements Kanban {
   }
 
   mapCardsByIteration(cards: JiraCardResponse[]) {
-    let map = new Map<string, JiraCardResponse[]>();
+    const map = new Map<string, JiraCardResponse[]>();
     for (const card of cards) {
       const sprint = card.baseInfo.fields.sprint;
       if (sprint) {
@@ -506,7 +506,7 @@ export class Jira implements Kanban {
     let totalBlockedTime = 0;
 
     for (const card of cards) {
-      let cardCycleTime = CalculateCardCycleTime(card, boardColumns);
+      const cardCycleTime = CalculateCardCycleTime(card, boardColumns);
       totalCycleTime += cardCycleTime.total;
       totalBlockedTime += cardCycleTime.steps.blocked;
     }

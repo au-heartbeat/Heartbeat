@@ -11,10 +11,13 @@ import {
   JiraCardResponse,
 } from "../../../../src/contract/kanban/KanbanStoryPointResponse";
 import { RequestKanbanColumnSetting } from "../../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
-import { JiraCard, JiraCardField } from "../../../../src/models/kanban/JiraCard";
+import {
+  JiraCard,
+  JiraCardField,
+} from "../../../../src/models/kanban/JiraCard";
 
 const jira = new Jira("testToken", "domain");
-let emptyJiraCardField: JiraCardField = new JiraCardField();
+const emptyJiraCardField: JiraCardField = new JiraCardField();
 
 describe("get story points and cycle times of done cards during period", () => {
   const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
@@ -188,7 +191,10 @@ describe("get story points and cycle times of done cards during period", () => {
       { name: "REVIEW", value: "Review" },
     ];
 
-    const blockedPercentage = jira.calculateCardsBlockedPercentage(cards, boardColumns);
+    const blockedPercentage = jira.calculateCardsBlockedPercentage(
+      cards,
+      boardColumns
+    );
     expect(blockedPercentage).equal(0.25);
 
     sinon.restore();
