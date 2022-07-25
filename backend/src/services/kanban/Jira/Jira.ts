@@ -29,6 +29,7 @@ import {
   reformTimeLineForFlaggedCards,
   StatusChangedArrayItem,
 } from "../util";
+import { Sprint } from "../../../models/kanban/Sprint";
 
 export class Jira implements Kanban {
   private readonly queryCount: number = 100;
@@ -39,6 +40,30 @@ export class Jira implements Kanban {
       baseURL: `https://${site}.atlassian.net/rest/agile/1.0/board`,
     });
     this.httpClient.defaults.headers.common["Authorization"] = token;
+  }
+
+  async getAllSprintsByBoardId(
+    model: StoryPointsAndCycleTimeRequest
+  ): Promise<Sprint[]> {
+    const sprintResponse = await axios.get(
+      `https://${model.site}.atlassian.net/rest/agile/1.0/board/${model.boardId}/sprint`,
+      {
+        headers: { Authorization: `${model.token}` },
+      }
+    );
+    const sprintArray = sprintResponse.data.values;
+    const sprints = sprintArray.map(
+      (sprint: any) =>
+        new Sprint(
+          sprint.id,
+          sprint.state,
+          sprint.name,
+          sprint.startDate,
+          sprint.endDate,
+          sprint.completeDate
+        )
+    );
+    return sprints;
   }
 
   async getColumns(
@@ -481,75 +506,5 @@ export class Jira implements Kanban {
           }
         });
     return statusChangedArray;
-  }
-
-  mapCardsByIteration(cards: JiraCardResponse[]) {
-    const mapIterationCards = new Map<string, JiraCardResponse[]>();
-
-    for (const card of cards) {
-      const sprint = card.baseInfo.fields.sprint;
-      if (sprint) {
-        if (!mapIterationCards.has(sprint)) {
-          mapIterationCards.set(sprint, []);
-        }
-
-        mapIterationCards.get(sprint)!.push(card);
-      }
-    }
-
-    return mapIterationCards;
-  }
-
-  calculateCardsBlockedPercentage(
-    cards: JiraCardResponse[],
-    boardColumns: RequestKanbanColumnSetting[] = []
-  ) {
-    let totalCycleTime = 0;
-    let totalBlockedTime = 0;
-
-    for (const card of cards) {
-      const cardCycleTime = CalculateCardCycleTime(card, boardColumns);
-      totalCycleTime += cardCycleTime.total;
-      totalBlockedTime += cardCycleTime.steps.blocked;
-    }
-
-    const blockedPercentage = totalBlockedTime / totalCycleTime;
-    const blockedPercentageWith2Decimal = parseFloat(
-      (Math.floor(blockedPercentage * 100) / 100).toFixed(2)
-    );
-    return blockedPercentageWith2Decimal;
-  }
-
-  calculateIterationBlockedPercentage(
-    mapIterationCards: Map<string, JiraCardResponse[]>,
-    boardColumns: RequestKanbanColumnSetting[] = []
-  ) {
-    const mapIterationBlockedPercentage = new Map<string, number>();
-
-    mapIterationCards.forEach(
-      (cards: JiraCardResponse[], iteration: string) => {
-        const blockedPercentage = this.calculateCardsBlockedPercentage(
-          cards,
-          boardColumns
-        );
-        mapIterationBlockedPercentage.set(iteration, blockedPercentage);
-      }
-    );
-
-    return mapIterationBlockedPercentage;
-  }
-
-  calculateIterationDevelopingPercentage(
-    mapIterationBlockedPercentage: Map<string, number>
-  ) {
-    const mapIterationDevelopingPercentage = new Map<string, number>();
-
-    mapIterationBlockedPercentage.forEach(
-      (blockedPercentage: number, iteration: string) => {
-        mapIterationDevelopingPercentage.set(iteration, 1 - blockedPercentage);
-      }
-    );
-
-    return mapIterationDevelopingPercentage;
   }
 }

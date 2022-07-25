@@ -4,20 +4,13 @@ import sinon from "sinon";
 import { Jira } from "../../../../src/services/kanban/Jira/Jira";
 import { mock } from "../../../TestTools";
 import JiraCards from "../../../fixture/JiraCards.json";
+import Sprints from "../../../fixture/Sprints.json";
 import JiraCardCycleTime from "../../../fixture/JiraCardCycleTime.json";
 import { StoryPointsAndCycleTimeRequest } from "../../../../src/contract/kanban/KanbanStoryPointParameterVerify";
-import {
-  CycleTimeInfo,
-  JiraCardResponse,
-} from "../../../../src/contract/kanban/KanbanStoryPointResponse";
-import { RequestKanbanColumnSetting } from "../../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
-import {
-  JiraCard,
-  JiraCardField,
-} from "../../../../src/models/kanban/JiraCard";
+import { CycleTimeInfo } from "../../../../src/contract/kanban/KanbanStoryPointResponse";
+import { Sprint } from "../../../../src/models/kanban/Sprint";
 
 const jira = new Jira("testToken", "domain");
-const emptyJiraCardField: JiraCardField = new JiraCardField();
 
 describe("get story points and cycle times of done cards during period", () => {
   const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
@@ -38,6 +31,36 @@ describe("get story points and cycle times of done cards during period", () => {
     ],
     false
   );
+
+  it("should return all the sprints by domain name and borad id", async () => {
+    const expected = [
+      new Sprint(
+        1,
+        "closed",
+        "ADM Sprint 1",
+        "2020-05-26T03:20:43.632Z",
+        "2020-06-09T03:20:37.000Z",
+        "2020-07-22T01:46:20.917Z"
+      ),
+      new Sprint(
+        4,
+        "closed",
+        "ADM Sprint 2",
+        "2020-07-22T01:48:39.455Z",
+        "2020-08-05T01:48:37.000Z",
+        "2020-07-22T01:49:26.508Z"
+      ),
+      new Sprint(9, "future", "ADM Sprint 5"),
+    ];
+    mock
+      .onGet(
+        `https://${storyPointsAndCycleTimeRequest.site}.atlassian.net/rest/agile/1.0/board/${storyPointsAndCycleTimeRequest.boardId}/sprint`
+      )
+      .reply(200, Sprints);
+    expect(
+      await jira.getAllSprintsByBoardId(storyPointsAndCycleTimeRequest)
+    ).deep.equal(expected);
+  });
 
   it("should return story points when having matched cards", async () => {
     sinon.stub(Jira, "getCycleTimeAndAssigneeSet").returns(
@@ -121,145 +144,6 @@ describe("get story points and cycle times of done cards during period", () => {
     );
 
     expect(response.cycleTimeInfos).deep.equal(cycleTime);
-    sinon.restore();
-  });
-
-  it("should map cards by iteration", async () => {
-    sinon.stub(Jira, "getCycleTimeAndAssigneeSet").returns(
-      Promise.resolve({
-        cycleTimeInfos: Array.of<CycleTimeInfo>(),
-        assigneeSet: new Set<string>(["Test User"]),
-        originCycleTimeInfos: Array.of<CycleTimeInfo>(),
-      })
-    );
-
-    mock
-      .onGet(
-        `https://${
-          storyPointsAndCycleTimeRequest.site
-        }.atlassian.net/rest/agile/1.0/board/2/issue?maxResults=100&jql=status in ('${storyPointsAndCycleTimeRequest.status.join(
-          "','"
-        )}')`
-      )
-      .reply(200, JiraCards);
-
-    const response = await jira.getStoryPointsAndCycleTime(
-      storyPointsAndCycleTimeRequest,
-      [],
-      ["Test User"]
-    );
-
-    const cards = response.matchedCards;
-    const map = jira.mapCardsByIteration(cards);
-    expect(map).deep.equal(
-      new Map<string, JiraCardResponse[]>([
-        ["test Sprint 1", [cards[0]]],
-        ["test Sprint 2", [cards[1]]],
-      ])
-    );
-
-    sinon.restore();
-  });
-
-  it("should return blocked percentage given cards", async () => {
-    const emptyJiraCard: JiraCard = { fields: emptyJiraCardField, key: "" };
-
-    const cycleTimeArray: CycleTimeInfo[] = [
-      { column: "DOING", day: 1 },
-      { column: "WAIT", day: 2 },
-      { column: "TEST", day: 3 },
-      { column: "BLOCKED", day: 4 },
-      { column: "REVIEW", day: 5 },
-    ];
-    const cycleTimeArray2: CycleTimeInfo[] = [
-      { column: "DOING", day: 2 },
-      { column: "WAIT", day: 3 },
-      { column: "TEST", day: 4 },
-      { column: "BLOCKED", day: 5 },
-      { column: "REVIEW", day: 6 },
-    ];
-
-    const cards = [
-      new JiraCardResponse(emptyJiraCard, cycleTimeArray),
-      new JiraCardResponse(emptyJiraCard, cycleTimeArray2),
-    ];
-    const boardColumns: RequestKanbanColumnSetting[] = [
-      { name: "DOING", value: "In Dev" },
-      { name: "WAIT", value: "Waiting for testing" },
-      { name: "TEST", value: "Testing" },
-      { name: "BLOCKED", value: "Block" },
-      { name: "REVIEW", value: "Review" },
-    ];
-
-    const blockedPercentage = jira.calculateCardsBlockedPercentage(
-      cards,
-      boardColumns
-    );
-    expect(blockedPercentage).equal(0.25);
-
-    sinon.restore();
-  });
-
-  it("should return blocked percentage given iteration hashmap", async () => {
-    const emptyJiraCard: JiraCard = { fields: emptyJiraCardField, key: "" };
-
-    const cycleTimeArray: CycleTimeInfo[] = [
-      { column: "DOING", day: 1 },
-      { column: "WAIT", day: 2 },
-      { column: "TEST", day: 3 },
-      { column: "BLOCKED", day: 4 },
-      { column: "REVIEW", day: 5 },
-    ];
-    const cycleTimeArray2: CycleTimeInfo[] = [
-      { column: "DOING", day: 2 },
-      { column: "WAIT", day: 3 },
-      { column: "TEST", day: 4 },
-      { column: "BLOCKED", day: 5 },
-      { column: "REVIEW", day: 6 },
-    ];
-
-    const mapIterationCards = new Map<string, JiraCardResponse[]>([
-      ["test Sprint 1", [new JiraCardResponse(emptyJiraCard, cycleTimeArray)]],
-      ["test Sprint 2", [new JiraCardResponse(emptyJiraCard, cycleTimeArray2)]],
-    ]);
-    const boardColumns: RequestKanbanColumnSetting[] = [
-      { name: "DOING", value: "In Dev" },
-      { name: "WAIT", value: "Waiting for testing" },
-      { name: "TEST", value: "Testing" },
-      { name: "BLOCKED", value: "Block" },
-      { name: "REVIEW", value: "Review" },
-    ];
-
-    const map = jira.calculateIterationBlockedPercentage(
-      mapIterationCards,
-      boardColumns
-    );
-    expect(map).deep.equal(
-      new Map<string, number>([
-        ["test Sprint 1", 0.26],
-        ["test Sprint 2", 0.25],
-      ])
-    );
-
-    sinon.restore();
-  });
-
-  it("should return developing percentage given iteration hashmap", async () => {
-    const mapIterationBlockedPercentage = new Map<string, number>([
-      ["test Sprint 1", 0.26],
-      ["test Sprint 2", 0.25],
-    ]);
-
-    const map = jira.calculateIterationDevelopingPercentage(
-      mapIterationBlockedPercentage
-    );
-    expect(map).deep.equal(
-      new Map<string, number>([
-        ["test Sprint 1", 0.74],
-        ["test Sprint 2", 0.75],
-      ])
-    );
-
     sinon.restore();
   });
 });
