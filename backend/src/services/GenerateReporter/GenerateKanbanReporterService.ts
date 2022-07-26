@@ -54,7 +54,7 @@ export class GenerateKanbanReporterService {
           kanbanSetting.boardColumns
         );
       let sprints: Sprint[] = await kanban.getAllSprintsByBoardId(model);
-      this.blockPercentage = this.sortBySprintCompletedDate(
+      this.blockPercentage = this.sortBySprintStartDate(
         sprintPercentageMap,
         sprints
       );
@@ -121,7 +121,7 @@ export class GenerateKanbanReporterService {
     return mapIterationBlockedPercentage;
   }
 
-  sortBySprintCompletedDate(
+  sortBySprintStartDate(
     percentageMap: Map<string, any>,
     sprints: Sprint[]
   ): Array<any> {

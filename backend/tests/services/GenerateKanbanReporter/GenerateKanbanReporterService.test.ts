@@ -203,7 +203,7 @@ describe("generate Kanban reporter service", () => {
       new Sprint(5, "future", "test Sprint 5"),
     ];
 
-    const sortedPercentage = service.sortBySprintCompletedDate(map, sprints);
+    const sortedPercentage = service.sortBySprintStartDate(map, sprints);
     expect(sortedPercentage).deep.equal([
       {
         sprint: "test Sprint 2",
