@@ -115,6 +115,7 @@ export class GenerateSprintReporterService {
       string,
       number
     >();
+
     initBlockTimeForEveryReasonMap.forEach((value, key) => {
       const blockedReasonPercentage = parseFloat(
         (Math.floor((value / totalBlockTime) * 100) / 100).toFixed(2)
