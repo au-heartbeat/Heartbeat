@@ -204,20 +204,22 @@ describe("generate Kanban reporter service", () => {
     ];
 
     const sortedPercentage = service.sortBySprintStartDate(map, sprints);
-    expect(sortedPercentage).deep.equal([
-      {
-        sprint: "test Sprint 2",
-        percentages: { blockedPercentage: 0.25, developingPercentage: 0.75 },
-      },
-      {
-        sprint: "test Sprint 1",
-        percentages: { blockedPercentage: 0.26, developingPercentage: 0.74 },
-      },
-      {
-        sprint: "test Sprint 4",
-        percentages: { blockedPercentage: 0.7, developingPercentage: 0.3 },
-      },
-    ]);
+    expect(sortedPercentage).deep.equal(
+      new Map<string, any>([
+        [
+          "test Sprint 2",
+          { blockedPercentage: 0.25, developingPercentage: 0.75 },
+        ],
+        [
+          "test Sprint 1",
+          { blockedPercentage: 0.26, developingPercentage: 0.74 },
+        ],
+        [
+          "test Sprint 4",
+          { blockedPercentage: 0.7, developingPercentage: 0.3 },
+        ],
+      ])
+    );
 
     sinon.restore();
   });

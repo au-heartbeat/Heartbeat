@@ -19,7 +19,7 @@ const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
 
 export class GenerateSprintReporterService {
   private cards?: Cards;
-  private blockPercentage?: Array<any>;
+  private blockPercentage?: Map<string, any>;
   async fetchIterationInfoFromKanban(
     request: GenerateReportRequest
   ): Promise<void> {
@@ -122,21 +122,20 @@ export class GenerateSprintReporterService {
   }
 
   sortBySprintStartDate(
-    percentageMap: Map<string, any>,
+    unorderedMap: Map<string, any>,
     sprints: Sprint[]
-  ): Array<any> {
-    let sortedPercentage: Array<any> = [];
-    let sortedSprints = sprints
-      .filter((sprint) => sprint.startDate)
-      .sort((a, b) => Date.parse(a.startDate) - Date.parse(b.startDate));
-    sortedSprints.forEach((sprint) => {
-      let percentages = percentageMap.get(sprint.name);
-      if (percentages)
-        sortedPercentage.push({
-          sprint: sprint.name,
-          percentages,
-        });
+  ): Map<string, any> {
+    let sprintMap: Map<string, number> = new Map<string, number>();
+    sprints.forEach((sprint) => {
+      if (sprint.startDate)
+        sprintMap.set(sprint.name, Date.parse(sprint.startDate));
     });
-    return sortedPercentage;
+    return new Map(
+      [...unorderedMap].sort((a, b) => {
+        let dateA = sprintMap.get(a[0]);
+        let dateB = sprintMap.get(b[0]);
+        return dateA && dateB ? dateA - dateB : 1;
+      })
+    );
   }
 }
