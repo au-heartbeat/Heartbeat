@@ -19,6 +19,7 @@ const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
 
 export class GenerateKanbanReporterService {
   private cards?: Cards;
+  private blockPercentage?: Array<any>;
   async fetchIterationInfoFromKanban(
     request: GenerateReportRequest
   ): Promise<void> {
@@ -47,15 +48,13 @@ export class GenerateKanbanReporterService {
       kanbanSetting.users
     );
     if (kanban instanceof Jira) {
-      let sprintCardMap: Map<string, JiraCardResponse[]> =
-        this.mapCardsByIteration(this.cards.matchedCards);
       let sprintPercentageMap: Map<string, any> =
         this.calculateIterationBlockedAndDevelopingPercentage(
-          sprintCardMap,
+          this.mapCardsByIteration(this.cards.matchedCards),
           kanbanSetting.boardColumns
         );
       let sprints: Sprint[] = await kanban.getAllSprintsByBoardId(model);
-      let sortedPercentageList = this.sortBySprintCompletedDate(
+      this.blockPercentage = this.sortBySprintCompletedDate(
         sprintPercentageMap,
         sprints
       );
