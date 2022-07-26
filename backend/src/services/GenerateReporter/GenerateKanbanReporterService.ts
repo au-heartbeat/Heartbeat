@@ -128,12 +128,8 @@ export class GenerateKanbanReporterService {
   ): Array<any> {
     let sortedPercentage: Array<any> = [];
     let sortedSprints = sprints
-      .filter((sprint) => sprint.completeDate || sprint.state === "active")
-      .sort((a, b) =>
-        a.state === "active"
-          ? 1
-          : Date.parse(a.completeDate) - Date.parse(b.completeDate)
-      );
+      .filter((sprint) => sprint.startDate)
+      .sort((a, b) => Date.parse(a.startDate) - Date.parse(b.startDate));
     sortedSprints.forEach((sprint) => {
       let percentages = percentageMap.get(sprint.name);
       if (percentages)

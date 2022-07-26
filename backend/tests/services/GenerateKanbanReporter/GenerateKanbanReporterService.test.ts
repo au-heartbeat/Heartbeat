@@ -179,7 +179,7 @@ describe("generate Kanban reporter service", () => {
         1,
         "closed",
         "test Sprint 1",
-        "2020-05-26T03:20:43.632Z",
+        "2020-07-26T03:20:43.632Z",
         "2020-06-09T03:20:37.000Z",
         "2020-07-23T01:50:20.917Z"
       ),
@@ -199,7 +199,7 @@ describe("generate Kanban reporter service", () => {
         "2020-08-05T01:48:37.000Z",
         "2020-07-22T01:49:26.508Z"
       ),
-      new Sprint(4, "active", "test Sprint 4", "2020-05-26T03:20:43.632Z"),
+      new Sprint(4, "active", "test Sprint 4", "2020-08-26T03:20:43.632Z"),
       new Sprint(5, "future", "test Sprint 5"),
     ];
 
