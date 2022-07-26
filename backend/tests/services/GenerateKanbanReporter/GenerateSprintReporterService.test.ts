@@ -10,11 +10,11 @@ import {
 import { JiraCard, JiraCardField } from "../../../src/models/kanban/JiraCard";
 import { Jira } from "../../../src/services/kanban/Jira/Jira";
 import "mocha";
-import { GenerateKanbanReporterService } from "../../../src/services/GenerateReporter/GenerateKanbanReporterService";
+import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateSprintReporterService";
 import JiraCards from "../../fixture/JiraCards.json";
 import { Sprint } from "../../../src/models/kanban/Sprint";
 
-const service = new GenerateKanbanReporterService();
+const service = new GenerateSprintReporterService();
 const jira = new Jira("testToken", "domain");
 const emptyJiraCardField: JiraCardField = new JiraCardField();
 

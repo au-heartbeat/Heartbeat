@@ -17,7 +17,7 @@ const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
   [KanbanEnum.LINEAR]: "teamName",
 };
 
-export class GenerateKanbanReporterService {
+export class GenerateSprintReporterService {
   private cards?: Cards;
   private blockPercentage?: Array<any>;
   async fetchIterationInfoFromKanban(
