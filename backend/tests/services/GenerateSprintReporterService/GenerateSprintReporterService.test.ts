@@ -5,7 +5,11 @@ import {
 } from "../../../src/contract/kanban/KanbanStoryPointResponse";
 import "mocha";
 import { expect } from "chai";
+<<<<<<< HEAD
 import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateSprintReporterService";
+=======
+import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateKanbanReporterService";
+>>>>>>> 7593444 (feat: calculate block reason percentage for the latest sprint)
 import { JiraCard, JiraCardField } from "../../../src/models/kanban/JiraCard";
 import { Sprint } from "../../../src/models/kanban/Sprint";
 import { RequestKanbanColumnSetting } from "../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
