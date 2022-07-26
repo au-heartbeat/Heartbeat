@@ -62,9 +62,12 @@
         "sprint": "test Sprint 1",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 7593444 (feat: calculate block reason percentage for the latest sprint)
+=======
+>>>>>>> e288273 (refactor: delete unused import)
         "timespent": null,
         "project": {
           "self": "https://dorametrics.atlassian.net/rest/api/2/project/10001",
@@ -271,11 +274,14 @@
         },
         "sprint": "test Sprint 2",
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e168c14 ([ADM-209] Calculate blocked percentage and development percentage (#2))
 =======
 =======
 >>>>>>> 8056481 (feat: calculate block reason percentage for the latest sprint)
 >>>>>>> 7593444 (feat: calculate block reason percentage for the latest sprint)
+=======
+>>>>>>> e288273 (refactor: delete unused import)
         "timespent": null,
         "project": {
           "self": "https://dorametrics.atlassian.net/rest/api/2/project/10001",
