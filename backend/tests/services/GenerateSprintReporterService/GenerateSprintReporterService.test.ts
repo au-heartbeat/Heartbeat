@@ -5,7 +5,7 @@ import {
 } from "../../../src/contract/kanban/KanbanStoryPointResponse";
 import "mocha";
 import { expect } from "chai";
-import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateKanbanReporterService";
+import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateSprintReporterService";
 import { JiraCard, JiraCardField } from "../../../src/models/kanban/JiraCard";
 import { Sprint } from "../../../src/models/kanban/Sprint";
 import { RequestKanbanColumnSetting } from "../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
