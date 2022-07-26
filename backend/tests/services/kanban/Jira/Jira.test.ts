@@ -45,36 +45,6 @@ describe("get story points and cycle times of done cards during period", () => {
     false
   );
 
-  it("should return all the sprints by domain name and borad id", async () => {
-    const expected = [
-      new Sprint(
-        1,
-        "closed",
-        "ADM Sprint 1",
-        "2020-05-26T03:20:43.632Z",
-        "2020-06-09T03:20:37.000Z",
-        "2020-07-22T01:46:20.917Z"
-      ),
-      new Sprint(
-        4,
-        "closed",
-        "ADM Sprint 2",
-        "2020-07-22T01:48:39.455Z",
-        "2020-08-05T01:48:37.000Z",
-        "2020-07-22T01:49:26.508Z"
-      ),
-      new Sprint(9, "future", "ADM Sprint 5"),
-    ];
-    mock
-      .onGet(
-        `https://${storyPointsAndCycleTimeRequest.site}.atlassian.net/rest/agile/1.0/board/${storyPointsAndCycleTimeRequest.boardId}/sprint`
-      )
-      .reply(200, Sprints);
-    expect(
-      await jira.getAllSprintsByBoardId(storyPointsAndCycleTimeRequest)
-    ).deep.equal(expected);
-  });
-
   it("should return story points when having matched cards", async () => {
     sinon.stub(Jira, "getCycleTimeAndAssigneeSet").returns(
       Promise.resolve({
