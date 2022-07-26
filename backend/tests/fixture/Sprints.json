@@ -17,11 +17,10 @@
     {
       "id": 4,
       "self": "https://domain.atlassian.net/rest/agile/1.0/sprint/4",
-      "state": "closed",
+      "state": "active",
       "name": "ADM Sprint 2",
       "startDate": "2020-07-22T01:48:39.455Z",
       "endDate": "2020-08-05T01:48:37.000Z",
-      "completeDate": "2020-07-22T01:49:26.508Z",
       "originBoardId": 2,
       "goal": ""
     },

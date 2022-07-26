@@ -45,11 +45,8 @@ export class Jira implements Kanban {
   async getAllSprintsByBoardId(
     model: StoryPointsAndCycleTimeRequest
   ): Promise<Sprint[]> {
-    const sprintResponse = await axios.get(
-      `https://${model.site}.atlassian.net/rest/agile/1.0/board/${model.boardId}/sprint`,
-      {
-        headers: { Authorization: `${model.token}` },
-      }
+    const sprintResponse = await this.httpClient.get(
+      `/${model.boardId}/sprint`
     );
     const sprintArray = sprintResponse.data.values;
     const sprints = sprintArray.map(
