@@ -9,21 +9,18 @@ import EmptySprints from "../../../fixture/EmptySprints.json";
 import JiraCardCycleTime from "../../../fixture/JiraCardCycleTime.json";
 import { StoryPointsAndCycleTimeRequest } from "../../../../src/contract/kanban/KanbanStoryPointParameterVerify";
 import { Sprint } from "../../../../src/models/kanban/Sprint";
-<<<<<<< HEAD
 import {
   CycleTimeInfo,
   JiraCardResponse,
 } from "../../../../src/contract/kanban/KanbanStoryPointResponse";
 import { RequestKanbanColumnSetting } from "../../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
-import { JiraCard, JiraCardField } from "../../../../src/models/kanban/JiraCard";
+import {
+  JiraCard,
+  JiraCardField,
+} from "../../../../src/models/kanban/JiraCard";
 
 const jira = new Jira("testToken", "domain");
 let emptyJiraCardField: JiraCardField = new JiraCardField();
-=======
-import { CycleTimeInfo } from "../../../../src/contract/kanban/KanbanStoryPointResponse";
-
-const jira = new Jira("testToken", "domain");
->>>>>>> 3770c2c (feat: sort the results by complete date)
 
 describe("get story points and cycle times of done cards during period", () => {
   const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
@@ -129,7 +126,6 @@ describe("get story points and cycle times of done cards during period", () => {
     expect(response.cycleTimeInfos).deep.equal(cycleTime);
     sinon.restore();
   });
-<<<<<<< HEAD
 
   it("should map cards by iteration", async () => {
     sinon.stub(Jira, "getCycleTimeAndAssigneeSet").returns(
@@ -198,7 +194,10 @@ describe("get story points and cycle times of done cards during period", () => {
       { name: "REVIEW", value: "Review" },
     ];
 
-    const blockedPercentage = jira.calculateCardsBlockedPercentage(cards, boardColumns);
+    const blockedPercentage = jira.calculateCardsBlockedPercentage(
+      cards,
+      boardColumns
+    );
     expect(blockedPercentage).equal(0.25);
 
     sinon.restore();
@@ -266,8 +265,6 @@ describe("get story points and cycle times of done cards during period", () => {
 
     sinon.restore();
   });
-=======
->>>>>>> 3770c2c (feat: sort the results by complete date)
 });
 
 describe("get sprints data by domain name and boardId", () => {
