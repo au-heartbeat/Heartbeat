@@ -10,6 +10,7 @@ import JiraCardCycleTime from "../../../fixture/JiraCardCycleTime.json";
 import { StoryPointsAndCycleTimeRequest } from "../../../../src/contract/kanban/KanbanStoryPointParameterVerify";
 import { Sprint } from "../../../../src/models/kanban/Sprint";
 import { CycleTimeInfo } from "../../../../src/contract/kanban/KanbanStoryPointResponse";
+import { Sprint } from "../../../../src/models/kanban/Sprint";
 
 const jira = new Jira("testToken", "domain");
 
