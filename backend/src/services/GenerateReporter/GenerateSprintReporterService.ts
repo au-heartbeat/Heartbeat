@@ -17,12 +17,11 @@ const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
   [KanbanEnum.JIRA]: "projectKey",
   [KanbanEnum.LINEAR]: "teamName",
 };
-
 export class GenerateSprintReporterService {
   private cards?: Cards;
   private sprints?: Sprint[];
   private blockPercentage?: Map<string, any>;
- 
+
   async fetchIterationInfoFromKanban(
     request: GenerateReportRequest
   ): Promise<void> {
@@ -32,30 +31,31 @@ export class GenerateSprintReporterService {
       kanbanSetting.token,
       kanbanSetting.site
     );
-    let model: StoryPointsAndCycleTimeRequest =
-      new StoryPointsAndCycleTimeRequest(
-        kanbanSetting.token,
-        kanbanSetting.type,
-        kanbanSetting.site,
-        kanbanSetting[KanbanKeyIdentifierMap[kanbanSetting.type]],
-        kanbanSetting.boardId,
-        kanbanSetting.doneColumn,
-        request.startTime,
-        request.endTime,
-        kanbanSetting.targetFields,
-        kanbanSetting.treatFlagCardAsBlock
-      );
+    let model: StoryPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
+      kanbanSetting.token,
+      kanbanSetting.type,
+      kanbanSetting.site,
+      kanbanSetting[KanbanKeyIdentifierMap[kanbanSetting.type]],
+      kanbanSetting.boardId,
+      kanbanSetting.doneColumn,
+      request.startTime,
+      request.endTime,
+      kanbanSetting.targetFields,
+      kanbanSetting.treatFlagCardAsBlock
+    );
     this.cards = await kanban.getStoryPointsAndCycleTime(
       model,
       kanbanSetting.boardColumns,
       kanbanSetting.users
     );
     if (kanban instanceof Jira) {
-        let sprintPercentageMap: Map<string, any> =
-        this.calculateIterationBlockedAndDevelopingPercentage(
-          this.mapCardsByIteration(this.cards.matchedCards),
-          kanbanSetting.boardColumns
-        );
+      let sprintPercentageMap: Map<
+        string,
+        any
+      > = this.calculateIterationBlockedAndDevelopingPercentage(
+        this.mapCardsByIteration(this.cards.matchedCards),
+        kanbanSetting.boardColumns
+      );
       let sprints: Sprint[] = await kanban.getAllSprintsByBoardId(model);
       this.blockPercentage = this.sortBySprintStartDate(
         sprintPercentageMap,
@@ -93,8 +93,10 @@ export class GenerateSprintReporterService {
   ): Map<string, number> {
     let totalBlockTime = 0;
 
-    const initBlockTimeForEveryReasonMap: Map<string, number> =
-      this.initTotalBlockTimeForEveryReasonMap();
+    const initBlockTimeForEveryReasonMap: Map<
+      string,
+      number
+    > = this.initTotalBlockTimeForEveryReasonMap();
     const sprintName = this.getLatestIterationSprintName(sprints);
     const matchedCards = this.getAllCardsByLatestSprintName(cards, sprintName);
     if (matchedCards.length === 0) {
@@ -142,6 +144,7 @@ export class GenerateSprintReporterService {
     }
     return totalBlockTimeForEveryReasonMap;
   }
+
   mapCardsByIteration(
     cards: JiraCardResponse[]
   ): Map<string, JiraCardResponse[]> {
@@ -186,7 +189,6 @@ export class GenerateSprintReporterService {
     boardColumns: RequestKanbanColumnSetting[] = []
   ): Map<string, any> {
     const mapIterationBlockedPercentage = new Map<string, any>();
-
     mapIterationCards.forEach(
       (cards: JiraCardResponse[], iteration: string) => {
         const blockedPercentage = this.calculateCardsBlockedPercentage(
@@ -199,7 +201,6 @@ export class GenerateSprintReporterService {
         });
       }
     );
-
     return mapIterationBlockedPercentage;
   }
 
