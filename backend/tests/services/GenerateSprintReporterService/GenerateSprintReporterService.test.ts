@@ -5,24 +5,16 @@ import {
 } from "../../../src/contract/kanban/KanbanStoryPointResponse";
 import "mocha";
 import { expect } from "chai";
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateSprintReporterService";
-=======
-import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateKanbanReporterService";
->>>>>>> 7593444 (feat: calculate block reason percentage for the latest sprint)
-=======
-import { GenerateSprintReporterService } from "../../../src/services/GenerateReporter/GenerateSprintReporterService";
->>>>>>> 2ecf0b9 (refactor: rename file)
 import { JiraCard, JiraCardField } from "../../../src/models/kanban/JiraCard";
 import { Sprint } from "../../../src/models/kanban/Sprint";
 import { RequestKanbanColumnSetting } from "../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
 
-const service = new GenerateSprintReporterService();
-const sprint1JiraCardField: JiraCardField = new JiraCardField();
-const sprint2JiraCardField: JiraCardField = new JiraCardField();
-
 describe("calculate percentage of different block reasons in the latest iteration", () => {
+  const service = new GenerateSprintReporterService();
+  const sprint1JiraCardField: JiraCardField = new JiraCardField();
+  const sprint2JiraCardField: JiraCardField = new JiraCardField();
   const sprint1 = new Sprint(
     1,
     "closed",
