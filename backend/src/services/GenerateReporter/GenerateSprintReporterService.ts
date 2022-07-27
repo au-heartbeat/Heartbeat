@@ -110,8 +110,8 @@ export class GenerateSprintReporterService {
 
       if (!initBlockTimeForEveryReasonMap.has(blockReason)) {
         initBlockTimeForEveryReasonMap.set(
-          JiraBlockReasonEnum.UNKNOWN,
-          initBlockTimeForEveryReasonMap.get(JiraBlockReasonEnum.UNKNOWN) ||
+          JiraBlockReasonEnum.OTHERS,
+          initBlockTimeForEveryReasonMap.get(JiraBlockReasonEnum.OTHERS) ||
             0 + cardCycleTime.steps.blocked
         );
       } else {

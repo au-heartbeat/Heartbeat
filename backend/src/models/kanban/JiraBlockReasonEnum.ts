@@ -6,5 +6,5 @@ export enum JiraBlockReasonEnum {
   PR_REVIEW = "pr_review",
   QUESTION_TO_BE_ANSWERED = "question_to_be_answered",
   TAKE_LEAVE = "take_leave",
-  UNKNOWN = "unknown",
+  OTHERS = "others",
 }
