@@ -49,18 +49,18 @@ const futureSprint = new Sprint(9, "future", sprint3Name);
 const sprints: Sprint[] = [activeSprint, closedSprint, futureSprint];
 const activeAndClosedSprints = [activeSprint, closedSprint];
 
-const todoStatus: Status = { name: CardStepsEnum.TODO };
-const doneStatus: Status = { name: CardStepsEnum.DONE };
+// const todoStatus: Status = { name: CardStepsEnum.TODO };
+// const doneStatus: Status = { name: CardStepsEnum.DONE };
 
 jiraCardField1.sprint = sprint1Name;
 jiraCardField1.label = JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK;
-jiraCardField1.status = todoStatus;
+//jiraCardField1.status = todoStatus;
 
 jiraCardField2.sprint = sprint2Name;
 jiraCardField2.label = JiraBlockReasonEnum.TAKE_LEAVE;
-jiraCardField2.status = doneStatus;
+//jiraCardField2.status = doneStatus;
 
-jiraCardField3.status = doneStatus;
+//jiraCardField3.status = doneStatus;
 
 const jiraCard1: JiraCard = { fields: jiraCardField1, key: "" };
 const jiraCard2: JiraCard = { fields: jiraCardField2, key: "" };
@@ -220,9 +220,9 @@ describe("calculate percentage of different block reasons in the latest sprint",
 describe("calculate standard deviation", () => {
   it("should return correct standard deviation and avgerage when there are matched cards in sprint", () => {
     const expected: Map<string, any> = new Map<string, any>();
-    expected.set(sprint1Name, { standardDeviation: 1.91, avgerage: 4.53 });
-    expected.set(sprint2Name, { standardDeviation: 1.5, avgerage: 3.5 });
-    expected.set(sprint3Name, { standardDeviation: 0, avgerage: 2 });
+    expected.set(sprint1Name, { standardDeviation: 1.91, average: 4.53 });
+    expected.set(sprint2Name, { standardDeviation: 1.5, average: 3.5 });
+    expected.set(sprint3Name, { standardDeviation: 0, average: 2 });
 
     const mapSprintStandardDeviation =
       service.calculateStandardDeviation(mapSprintCards);
@@ -232,7 +232,7 @@ describe("calculate standard deviation", () => {
 
   it("should return 0 when there is not any matched card in sprint", () => {
     const expected: Map<string, any> = new Map<string, any>();
-    expected.set(sprint1Name, { standardDeviation: 0, avgerage: 0 });
+    expected.set(sprint1Name, { standardDeviation: 0, average: 0 });
 
     const mapSprintStandardDeviation =
       service.calculateStandardDeviation(mapSprintEmptyCards);
@@ -288,22 +288,8 @@ describe("calculate the number of completed cards in every sprint", () => {
       service.calculateCompletedCardsNumber(mapSprintCards);
 
     const expected: Map<string, number> = new Map<string, number>();
-    expected.set(sprint1Name, 2);
-    expected.set(sprint2Name, 1);
-
-    expect(mapSprintCompletedCardsNumber).deep.equal(expected);
-  });
-
-  it("should return 0 when the cardlist does not have any done card", () => {
-    const mapSprintCards = new Map<string, JiraCardResponse[]>([
-      [sprint1Name, cardList3],
-    ]);
-
-    const mapSprintCompletedCardsNumber =
-      service.calculateCompletedCardsNumber(mapSprintCards);
-
-    const expected: Map<string, number> = new Map<string, number>();
-    expected.set(sprint1Name, 0);
+    expected.set(sprint1Name, 3);
+    expected.set(sprint2Name, 2);
 
     expect(mapSprintCompletedCardsNumber).deep.equal(expected);
   });

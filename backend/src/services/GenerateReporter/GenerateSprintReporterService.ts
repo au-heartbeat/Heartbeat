@@ -8,6 +8,7 @@ import { CardStepsEnum } from "../../models/kanban/CardStepsEnum";
 import { JiraBlockReasonEnum } from "../../models/kanban/JiraBlockReasonEnum";
 import { Cards } from "../../models/kanban/RequestKanbanResults";
 import { Sprint } from "../../models/kanban/Sprint";
+import { SprintStatistics } from "../../models/kanban/SprintStatistics";
 import { Jira } from "../kanban/Jira/Jira";
 import { Kanban, KanbanEnum, KanbanFactory } from "../kanban/Kanban";
 
@@ -19,13 +20,18 @@ const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
 export class GenerateSprintReporterService {
   private cards?: Cards;
   private sprints?: Sprint[];
-  private mapSprintBlockPercentage?: Map<string, number>;
-  private mapSprintStandardDeviation?: Map<string, number>;
-  private mapSprintBlockReasonPercentage?: Map<string, number>;
+  private sprintBlockPercentageMap?: Map<string, any>;
+  private sprintStandardDeviationMap?: Map<string, any>;
+  private sprintCompletedCardsNumberMap?: Map<string, number>;
+  private sprintBlockReasonPercentageMap?: Map<string, number>;
+
+  constructor(cards?: Cards) {
+    this.cards = cards;
+  }
 
   async fetchSprintInfoFromKanban(
     request: GenerateReportRequest
-  ): Promise<void> {
+  ): Promise<SprintStatistics> {
     const kanbanSetting: RequestKanbanSetting = request.kanbanSetting;
     const kanban: Kanban = KanbanFactory.getKanbanInstantiateObject(
       kanbanSetting.type,
@@ -45,14 +51,9 @@ export class GenerateSprintReporterService {
         kanbanSetting.targetFields,
         kanbanSetting.treatFlagCardAsBlock
       );
-    this.cards = await kanban.getStoryPointsAndCycleTime(
-      model,
-      kanbanSetting.boardColumns,
-      kanbanSetting.users
-    );
 
-    const matchedCards = this.cards.matchedCards;
-    const mapSprintCards = this.mapCardsBySprintName(matchedCards);
+    const matchedCards = this.cards?.matchedCards;
+    const mapSprintCards = this.mapCardsBySprintName(matchedCards!);
 
     if (kanban instanceof Jira) {
       this.sprints = await kanban.getAllSprintsByBoardId(model);
@@ -60,25 +61,34 @@ export class GenerateSprintReporterService {
         this.sprints
       );
 
-      const unorderedMapSprintBlockPercentage: Map<string, number> =
+      const unorderedMapSprintBlockPercentage: Map<string, any> =
         this.calculateBlockedAndDevelopingPercentage(mapSprintCards);
-      this.mapSprintBlockPercentage = this.sortBySprintStartDate(
+      this.sprintBlockPercentageMap = this.sortBySprintStartDate(
         unorderedMapSprintBlockPercentage,
         activeAndClosedSprints
       );
 
-      const unorderedMapSprintStandardDeviation: Map<string, number> =
+      const unorderedMapSprintStandardDeviation: Map<string, any> =
         this.calculateStandardDeviation(mapSprintCards);
-      this.mapSprintStandardDeviation = this.sortBySprintStartDate(
+      this.sprintStandardDeviationMap = this.sortBySprintStartDate(
         unorderedMapSprintStandardDeviation,
         activeAndClosedSprints
       );
 
-      this.mapSprintBlockReasonPercentage = this.calculateBlockReasonPercentage(
+      const unorderSprintCompletedCardsNumberMap: Map<string, number> =
+        this.calculateCompletedCardsNumber(mapSprintCards);
+      this.sprintCompletedCardsNumberMap = this.sortBySprintStartDate(
+        unorderSprintCompletedCardsNumberMap,
+        activeAndClosedSprints
+      );
+
+      this.sprintBlockReasonPercentageMap = this.calculateBlockReasonPercentage(
         activeAndClosedSprints,
         mapSprintCards
       );
+      return this.generateJiraSprintStatistics();
     }
+    return new SprintStatistics();
   }
 
   private initTotalBlockTimeForEveryReasonMap(): Map<string, number> {
@@ -111,7 +121,7 @@ export class GenerateSprintReporterService {
     const latestSprintName = this.getLatestSprintName(sprints);
     const latestSprintCards = mapSprintCards.get(latestSprintName)!;
 
-    if (latestSprintCards.length === 0) {
+    if (!latestSprintCards) {
       return blockTimeForEveryReasonMap;
     }
     for (const card of latestSprintCards) {
@@ -252,18 +262,18 @@ export class GenerateSprintReporterService {
       this.getCardsCycleTimesBySprintName(mapSprintCards);
 
     mapSprintObj.forEach((sprintObj, sprintName) => {
-      let avgerage = 0;
+      let average = 0;
       let standardDeviation = 0;
 
       if (sprintObj.count != 0) {
-        avgerage = parseFloat(
+        average = parseFloat(
           (sprintObj.totalCycleTime / sprintObj.count).toFixed(2)
         );
         standardDeviation = parseFloat(
           Math.sqrt(
             sprintObj.cycleTimes.reduce(
               (accu: number, curr: number) =>
-                Math.pow(curr - avgerage, 2) + accu,
+                Math.pow(curr - average, 2) + accu,
               0
             ) / sprintObj.count
           ).toFixed(2)
@@ -272,7 +282,7 @@ export class GenerateSprintReporterService {
 
       mapSprintStandardDeviation.set(sprintName, {
         standardDeviation,
-        avgerage,
+        average,
       });
     });
 
@@ -285,12 +295,65 @@ export class GenerateSprintReporterService {
     const mapSprintCompletedCardsNumber = new Map<string, number>();
 
     mapSprintCards.forEach((cards, sprint) => {
-      const completedCardsNumber = cards.filter(
-        (card) => card.getStatus()! === CardStepsEnum.DONE
-      ).length;
-      mapSprintCompletedCardsNumber.set(sprint, completedCardsNumber);
+      mapSprintCompletedCardsNumber.set(sprint, cards.length);
     });
 
     return mapSprintCompletedCardsNumber;
+  }
+
+  generateJiraSprintStatistics(): SprintStatistics {
+    const completedCardsNumber: Array<{ sprintName: string; value: number }> =
+      [];
+    const blockedAndDevelopingPercentage: Array<{
+      sprintName: string;
+      value: { blockedPercentage: number; developingPercentage: number };
+    }> = [];
+    const standardDeviation: Array<{
+      sprintName: string;
+      value: { standardDeviation: number; average: number };
+    }> = [];
+    this.sprintCompletedCardsNumberMap?.forEach((value, key) => {
+      completedCardsNumber.push({ sprintName: key, value });
+    });
+    this.sprintBlockPercentageMap?.forEach((value, key) => {
+      blockedAndDevelopingPercentage.push({
+        sprintName: key,
+        value: {
+          blockedPercentage: value.blockedPercentage,
+          developingPercentage: value.developingPercentage,
+        },
+      });
+    });
+    this.sprintStandardDeviationMap?.forEach((value, key) => {
+      standardDeviation.push({
+        sprintName: key,
+        value: {
+          standardDeviation: value.standardDeviation,
+          average: value.average,
+        },
+      });
+    });
+    const latestSprintBlockReason: {
+      totalBlockedPercentage: number;
+      blockReasonPercentage: Array<{ reasonName: string; percentage: number }>;
+    } = {
+      totalBlockedPercentage:
+        blockedAndDevelopingPercentage[
+          blockedAndDevelopingPercentage.length - 1
+        ].value.blockedPercentage,
+      blockReasonPercentage: [],
+    };
+    this.sprintBlockReasonPercentageMap?.forEach((value, key) => {
+      latestSprintBlockReason.blockReasonPercentage.push({
+        reasonName: key,
+        percentage: value,
+      });
+    });
+    return new SprintStatistics(
+      completedCardsNumber,
+      standardDeviation,
+      blockedAndDevelopingPercentage,
+      latestSprintBlockReason
+    );
   }
 }
