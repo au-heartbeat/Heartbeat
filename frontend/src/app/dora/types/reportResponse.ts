@@ -104,6 +104,37 @@ export interface Classification {
   pairs: Array<Pair>;
 }
 
+export interface CompletedCardsNumber {
+  sprintName: string;
+  value: number
+}
+
+export interface StandardDeviation {
+  sprintName: string,
+  value: {
+    standardDeviation: number,
+    average: number,
+  };
+}
+
+export interface BlockedAndDevelopingPercentage {
+  sprintName: string,
+  value: {
+    blockedPercentage: number,
+    developingPercentage: number,
+  }
+}
+
+export interface LatestSprintBlockReason {
+  totalBlockedPercentage: number,
+  blockReasonPercentage: Array<BlockReasonPercentage>
+}
+
+export interface BlockReasonPercentage {
+  reasonName: string,
+  percentage: number,
+}
+
 export interface ReportResponse {
   velocity?: Velocity;
   cycleTime?: CycleTime;
@@ -113,4 +144,8 @@ export interface ReportResponse {
   classification?: Array<Classification>;
   hasExportCsvData?: string;
   meanTimeToRecovery?: MeanTimeToRecovery;
+  completedCardsNumber?: Array<CompletedCardsNumber>;
+  standardDeviation?: Array<StandardDeviation>;
+  blockedAndDevelopingPercentage?: Array<BlockedAndDevelopingPercentage>;
+  latestSprintBlockReason?: LatestSprintBlockReason;
 }
