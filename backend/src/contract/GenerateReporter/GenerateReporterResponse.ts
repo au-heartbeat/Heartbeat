@@ -507,7 +507,7 @@ export class CompleteCardsNumber {
 }
 
 @swaggerClass()
-export class SDAveragePair {
+export class StandardDeviationAveragePair {
   @swaggerProperty({
     type: "number",
     required: true,
@@ -530,9 +530,9 @@ export class StandardDeviation {
   @swaggerProperty({
     type: "object",
     required: true,
-    properties: (SDAveragePair as any).swaggerDocument,
+    properties: (StandardDeviationAveragePair as any).swaggerDocument,
   })
-  value?: SDAveragePair;
+  value?: StandardDeviationAveragePair;
 }
 
 @swaggerClass()

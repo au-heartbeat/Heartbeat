@@ -17,7 +17,7 @@ import {
 } from "../../../src/models/kanban/CardCycleTime";
 import { JiraBlockReasonEnum } from "../../../src/models/kanban/JiraBlockReasonEnum";
 import { CardStepsEnum } from "../../../src/models/kanban/CardStepsEnum";
-
+import { SprintStatistics } from "../../../src/models/kanban/SprintStatistics";
 const service = new GenerateSprintReporterService();
 
 const sprint1Name = "test Sprint 1";
@@ -246,7 +246,7 @@ describe("calculate blocked and developing percentage", () => {
     const mapIterationBlockedPercentage =
       service.calculateBlockedAndDevelopingPercentage(mapSprintCards);
 
-    const expected: Map<string, any> = new Map<string, number>();
+    const expected: Map<string, any> = new Map<string, any>();
     expected.set(sprint1Name, {
       blockedPercentage: 0.22,
       developingPercentage: 0.78,
@@ -305,5 +305,125 @@ describe("calculate the number of completed cards in every sprint", () => {
     expected.set(sprint1Name, 0);
 
     expect(mapSprintCompletedCardsNumber).deep.equal(expected);
+  });
+});
+describe("generate Jira sprint statistics", () => {
+  it("should return the Jira sprint statistics when statistic data are not empty", () => {
+    const sprintBlockReasonPercentageMap = new Map<string, number>([
+      [JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK, 0.07],
+      [JiraBlockReasonEnum.TAKE_LEAVE, 0.07],
+      [JiraBlockReasonEnum.OTHERS, 0.07],
+    ]);
+    const sprintBlockPercentageMap = new Map<string, any>([
+      [sprint1Name, { blockedPercentage: 0.22, developingPercentage: 0.78 }],
+      [
+        sprint2Name,
+        {
+          blockedPercentage: 0.29,
+          developingPercentage: 0.71,
+        },
+      ],
+      [
+        sprint3Name,
+        {
+          blockedPercentage: 0.5,
+          developingPercentage: 0.5,
+        },
+      ],
+    ]);
+    const sprintStandardDeviationMap = new Map<string, any>([
+      [sprint1Name, { standardDeviation: 1.91, average: 4.53 }],
+      [sprint2Name, { standardDeviation: 1.5, average: 3.5 }],
+      [sprint3Name, { standardDeviation: 0, average: 2 }],
+    ]);
+    const sprintCompletedCardsNumberMap = new Map<string, number>([
+      [sprint1Name, 3],
+      [sprint2Name, 2],
+    ]);
+
+    const sprintStartistics = service.generateJiraSprintStatistics(
+      sprintCompletedCardsNumberMap,
+      sprintBlockPercentageMap,
+      sprintStandardDeviationMap,
+      sprintBlockReasonPercentageMap
+    );
+
+    const expected = new SprintStatistics(
+      [
+        { sprintName: sprint1Name, value: 3 },
+        { sprintName: sprint2Name, value: 2 },
+      ],
+      [
+        {
+          sprintName: sprint1Name,
+          value: { standardDeviation: 1.91, average: 4.53 },
+        },
+        {
+          sprintName: sprint2Name,
+          value: { standardDeviation: 1.5, average: 3.5 },
+        },
+        {
+          sprintName: sprint3Name,
+          value: { standardDeviation: 0, average: 2 },
+        },
+      ],
+      [
+        {
+          sprintName: sprint1Name,
+          value: { blockedPercentage: 0.22, developingPercentage: 0.78 },
+        },
+        {
+          sprintName: sprint2Name,
+          value: {
+            blockedPercentage: 0.29,
+            developingPercentage: 0.71,
+          },
+        },
+        {
+          sprintName: sprint3Name,
+          value: {
+            blockedPercentage: 0.5,
+            developingPercentage: 0.5,
+          },
+        },
+      ],
+      {
+        totalBlockedPercentage: 0.5,
+        blockReasonPercentage: [
+          {
+            reasonName: JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK,
+            percentage: 0.07,
+          },
+          {
+            reasonName: JiraBlockReasonEnum.TAKE_LEAVE,
+            percentage: 0.07,
+          },
+          {
+            reasonName: JiraBlockReasonEnum.OTHERS,
+            percentage: 0.07,
+          },
+        ],
+      }
+    );
+
+    expect(sprintStartistics).deep.equal(expected);
+  });
+  it("should return the empty Jira sprint statistics when statistic data are empty", () => {
+    const sprintBlockReasonPercentageMap = new Map<string, number>();
+    const sprintBlockPercentageMap = new Map<string, any>();
+    const sprintStandardDeviationMap = new Map<string, any>();
+    const sprintCompletedCardsNumberMap = new Map<string, number>();
+
+    const sprintStartistics = service.generateJiraSprintStatistics(
+      sprintCompletedCardsNumberMap,
+      sprintBlockPercentageMap,
+      sprintStandardDeviationMap,
+      sprintBlockReasonPercentageMap
+    );
+    const expected = new SprintStatistics([], [], [], {
+      totalBlockedPercentage: 0,
+      blockReasonPercentage: [],
+    });
+    expect(sprintStartistics).deep.equal(expected);
   });
 });

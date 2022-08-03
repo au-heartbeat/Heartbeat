@@ -4,7 +4,6 @@ import {
 } from "../../contract/GenerateReporter/GenerateReporterRequestBody";
 import { StoryPointsAndCycleTimeRequest } from "../../contract/kanban/KanbanStoryPointParameterVerify";
 import { JiraCardResponse } from "../../contract/kanban/KanbanStoryPointResponse";
-import { CardStepsEnum } from "../../models/kanban/CardStepsEnum";
 import { JiraBlockReasonEnum } from "../../models/kanban/JiraBlockReasonEnum";
 import { Cards } from "../../models/kanban/RequestKanbanResults";
 import { Sprint } from "../../models/kanban/Sprint";
@@ -86,7 +85,12 @@ export class GenerateSprintReporterService {
         activeAndClosedSprints,
         mapSprintCards
       );
-      return this.generateJiraSprintStatistics();
+      return this.generateJiraSprintStatistics(
+        this.sprintCompletedCardsNumberMap,
+        this.sprintBlockPercentageMap,
+        this.sprintStandardDeviationMap,
+        this.sprintBlockReasonPercentageMap
+      );
     }
     return new SprintStatistics();
   }
@@ -301,7 +305,12 @@ export class GenerateSprintReporterService {
     return mapSprintCompletedCardsNumber;
   }
 
-  generateJiraSprintStatistics(): SprintStatistics {
+  generateJiraSprintStatistics(
+    sprintCompletedCardsNumberMap: Map<string, number>,
+    sprintBlockPercentageMap: Map<string, any>,
+    sprintStandardDeviationMap: Map<string, any>,
+    sprintBlockReasonPercentageMap: Map<string, number>
+  ): SprintStatistics {
     const completedCardsNumber: Array<{ sprintName: string; value: number }> =
       [];
     const blockedAndDevelopingPercentage: Array<{
@@ -312,10 +321,10 @@ export class GenerateSprintReporterService {
       sprintName: string;
       value: { standardDeviation: number; average: number };
     }> = [];
-    this.sprintCompletedCardsNumberMap?.forEach((value, key) => {
+    sprintCompletedCardsNumberMap?.forEach((value, key) => {
       completedCardsNumber.push({ sprintName: key, value });
     });
-    this.sprintBlockPercentageMap?.forEach((value, key) => {
+    sprintBlockPercentageMap?.forEach((value, key) => {
       blockedAndDevelopingPercentage.push({
         sprintName: key,
         value: {
@@ -324,7 +333,7 @@ export class GenerateSprintReporterService {
         },
       });
     });
-    this.sprintStandardDeviationMap?.forEach((value, key) => {
+    sprintStandardDeviationMap?.forEach((value, key) => {
       standardDeviation.push({
         sprintName: key,
         value: {
@@ -337,13 +346,12 @@ export class GenerateSprintReporterService {
       totalBlockedPercentage: number;
       blockReasonPercentage: Array<{ reasonName: string; percentage: number }>;
     } = {
-      totalBlockedPercentage:
-        blockedAndDevelopingPercentage[
-          blockedAndDevelopingPercentage.length - 1
-        ].value.blockedPercentage,
+      totalBlockedPercentage: blockedAndDevelopingPercentage.length
+        ? blockedAndDevelopingPercentage.slice(-1)[0].value.blockedPercentage
+        : 0,
       blockReasonPercentage: [],
     };
-    this.sprintBlockReasonPercentageMap?.forEach((value, key) => {
+    sprintBlockReasonPercentageMap?.forEach((value, key) => {
       latestSprintBlockReason.blockReasonPercentage.push({
         reasonName: key,
         percentage: value,
