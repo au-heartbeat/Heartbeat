@@ -16,7 +16,6 @@ import {
   StepsDay,
 } from "../../../src/models/kanban/CardCycleTime";
 import { JiraBlockReasonEnum } from "../../../src/models/kanban/JiraBlockReasonEnum";
-import { CardStepsEnum } from "../../../src/models/kanban/CardStepsEnum";
 import { SprintStatistics } from "../../../src/models/kanban/SprintStatistics";
 const service = new GenerateSprintReporterService();
 
@@ -49,18 +48,11 @@ const futureSprint = new Sprint(9, "future", sprint3Name);
 const sprints: Sprint[] = [activeSprint, closedSprint, futureSprint];
 const activeAndClosedSprints = [activeSprint, closedSprint];
 
-// const todoStatus: Status = { name: CardStepsEnum.TODO };
-// const doneStatus: Status = { name: CardStepsEnum.DONE };
-
 jiraCardField1.sprint = sprint1Name;
 jiraCardField1.label = JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK;
-//jiraCardField1.status = todoStatus;
 
 jiraCardField2.sprint = sprint2Name;
 jiraCardField2.label = JiraBlockReasonEnum.TAKE_LEAVE;
-//jiraCardField2.status = doneStatus;
-
-//jiraCardField3.status = doneStatus;
 
 const jiraCard1: JiraCard = { fields: jiraCardField1, key: "" };
 const jiraCard2: JiraCard = { fields: jiraCardField2, key: "" };
@@ -408,7 +400,7 @@ describe("generate Jira sprint statistics", () => {
 
     expect(sprintStartistics).deep.equal(expected);
   });
-  it("should return the empty Jira sprint statistics when statistic data are empty", () => {
+  it("should return the empty Jira sprint statistics when statistic data is empty", () => {
     const sprintBlockReasonPercentageMap = new Map<string, number>();
     const sprintBlockPercentageMap = new Map<string, any>();
     const sprintStandardDeviationMap = new Map<string, any>();
