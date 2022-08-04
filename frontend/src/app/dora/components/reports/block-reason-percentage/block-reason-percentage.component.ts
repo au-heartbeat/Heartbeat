@@ -53,7 +53,7 @@ export class BlockReasonPercentageReportComponent implements OnInit {
       color: "#FFF",
       formatter:  (params) => {
         if (params.value > 0) {
-          return params.value * 10 + '%';
+          return params.value * 100 + '%';
         } else {
           return '';
         }
@@ -189,7 +189,7 @@ export class BlockReasonPercentageReportComponent implements OnInit {
           emphasis: {
             focus: "series",
           },
-          data: [blockReasonPercentage[7].percentage * 100 + '%'],
+          data: [blockReasonPercentage[7].percentage],
           label: seriesLabel,
         },
         {
