@@ -110,15 +110,17 @@ export class GenerateSprintReporterService {
     mapSprintCards: Map<string, JiraCardResponse[]>,
     sprints: Sprint[]
   ): string {
+    let latestSprintName: string = '';
     const sortedSprints = sprints.sort(
       (a, b) => Date.parse(a.startDate) - Date.parse(b.startDate)
     );
     for (let i: number = sortedSprints.length - 1; i >= 0; i--) {
       if (mapSprintCards.has(sortedSprints[i].name)) {
-        return sortedSprints[i].name;
+        latestSprintName = sortedSprints[i].name;
+        break;
       }
     }
-    return "";
+    return latestSprintName;
   }
 
   calculateBlockReasonPercentage(
@@ -131,7 +133,7 @@ export class GenerateSprintReporterService {
     const latestSprintName = this.getLatestSprintName(mapSprintCards, sprints);
     const latestSprintCards = mapSprintCards.get(latestSprintName)!;
 
-    if (!latestSprintCards) {
+    if (latestSprintCards.length == 0) {
       return blockTimeForEveryReasonMap;
     }
 
