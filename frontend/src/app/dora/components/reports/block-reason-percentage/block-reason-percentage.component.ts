@@ -22,12 +22,12 @@ export class BlockReasonPercentageReportComponent implements OnInit {
   }
 
   getDevelopingAndBlockPercentage() {
-    // const latestSprintDevelopingPercentage: number = (1 - this.latestSprintBlockReason.totalBlockedPercentage) * 100;
-    // const latestSprintBlockPercentage: number = (this.latestSprintBlockReason.totalBlockedPercentage) * 100;
+    const latestSprintDevelopingPercentage: number = (1 - this.latestSprintBlockReason.totalBlockedPercentage) * 100;
+    const latestSprintBlockPercentage: number = (this.latestSprintBlockReason.totalBlockedPercentage) * 100;
 
 
-    const latestSprintDevelopingPercentage: number = (1 - 0.2) * 100;
-    const latestSprintBlockPercentage: number = (0.2) * 100;
+    // const latestSprintDevelopingPercentage: number = (1 - 0.2) * 100;
+    // const latestSprintBlockPercentage: number = (0.2) * 100;
 
     const developingAndBlockPercentage = [{
       value: latestSprintDevelopingPercentage, name: String(latestSprintDevelopingPercentage) + '% \n developing percentage'
@@ -35,25 +35,13 @@ export class BlockReasonPercentageReportComponent implements OnInit {
       value: latestSprintBlockPercentage, name: String(latestSprintBlockPercentage) + '% \n block percentage'
     }];
     return developingAndBlockPercentage;
-    // const developingAndBlockPercentage = [{value: 10, name: '10'}, {value: 90, name: '90'}];
-    // return developingAndBlockPercentage
   }
 
 
   getOption() {
-    // const blockReasonPercentage = this.latestSprintBlockReason.blockReasonPercentage;
-
-    const blockReasonPercentage = [{reasonName: "dependencies_not_work", percentage: 0.1}, {
-      reasonName: "sit_env_down",
-      percentage: 0.1
-    }, {reasonName: "priority_change", percentage: 0.2}, {
-      reasonName: "solution_review",
-      percentage: 0.1
-    }, {reasonName: "pr_review", percentage: 0.1}, {
-      reasonName: "question_to_be_answered",
-      percentage: 0.1
-    }, {reasonName: "take_leave", percentage: 0.1},
-      {reasonName: "others", percentage: 0.1}];
+    console.log(this.latestSprintBlockReason);
+    const blockReasonPercentage = this.latestSprintBlockReason.blockReasonPercentage;
+    console.log(this.latestSprintBlockReason.blockReasonPercentage);
 
     const allBlockReason = [];
     blockReasonPercentage.forEach((curBlockReasonPercentage) => {
