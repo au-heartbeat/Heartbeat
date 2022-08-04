@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import * as echarts from 'echarts';
 import {EChartsOption} from "echarts";
+import {BlockedAndDevelopingPercentage} from "../../../types/reportResponse";
 
 @Component({
   selector: 'app-average-cycle-time-report',
