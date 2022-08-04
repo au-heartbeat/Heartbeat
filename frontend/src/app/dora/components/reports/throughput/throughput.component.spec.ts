@@ -16,7 +16,6 @@ describe('ThroughputReportComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ThroughputReportComponent);
     throughputReportComponent = fixture.componentInstance;
-<<<<<<< HEAD
     throughputReportComponent.completedCardsNumber = [
       { sprintName: 'Iteration30', value: 13 },
       { sprintName: 'Iteration31', value: 8 },
@@ -33,12 +32,6 @@ describe('ThroughputReportComponent', () => {
   });
 
   it('should create throughput component success', () => {
-=======
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
->>>>>>> 85ba217 (feat: draw graph of completedCardsNumber)
     expect(throughputReportComponent).toBeTruthy();
   });
 });
