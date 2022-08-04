@@ -30,7 +30,7 @@ export class ThroughputReportComponent implements OnInit {
 
     const model = ss.linearRegression(arrayRegression);
     const myCharts = echarts.init(document.getElementById('throughput'));
-    let lastRegressionValue = model.m * sprintNumber + model.b ? 0 : model.m * sprintNumber + model.b;
+    const lastRegressionValue = model.m * sprintNumber + model.b ? 0 : model.m * sprintNumber + model.b;
     const myOption: EChartsOption = {
       title: {
         text: 'Throughput - Completed Cards By Sprint',
