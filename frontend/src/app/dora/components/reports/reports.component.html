@@ -1,7 +1,11 @@
 <div class="reports-container">
   <mat-spinner class="spinner" *ngIf="loading"></mat-spinner>
 
-  <app-throughput-report> </app-throughput-report>
+  <app-throughput-report
+    *ngIf="reportResponse?.completedCardsNumber && reportResponse?.completedCardsNumber?.length !== 0"
+    [completedCardsNumber]="reportResponse.completedCardsNumber"
+  >
+  </app-throughput-report>
 
   <app-time-allocation-report> </app-time-allocation-report>
 
@@ -11,14 +15,11 @@
   >
   </app-average-cycle-time-report>
 
-<<<<<<< HEAD
-  <app-block-reason-percentage-report *ngIf="reportResponse?.latestSprintBlockReason" [latestSprintBlockReason]="reportResponse.latestSprintBlockReason">
-
-
+  <app-block-reason-percentage-report
+    *ngIf="reportResponse?.latestSprintBlockReason"
+    [latestSprintBlockReason]="reportResponse.latestSprintBlockReason"
+  >
   </app-block-reason-percentage-report>
-=======
-  <app-block-reason-percentage-report> </app-block-reason-percentage-report>
->>>>>>> ce99738 (feat: display Average Cycle TimeReport Component)
 
   <app-velocity-report *ngIf="reportResponse?.velocity" [velocity]="reportResponse.velocity"></app-velocity-report>
 
