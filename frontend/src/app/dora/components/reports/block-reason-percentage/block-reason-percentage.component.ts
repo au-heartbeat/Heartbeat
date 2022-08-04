@@ -2,8 +2,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import * as echarts from "echarts";
 import {EChartsOption} from "echarts";
 import {
-  BlockedAndDevelopingPercentage,
-  BlockReasonPercentage,
   LatestSprintBlockReason
 } from "../../../types/reportResponse";
 
@@ -25,12 +23,9 @@ export class BlockReasonPercentageReportComponent implements OnInit {
     const latestSprintDevelopingPercentage: number = (1 - this.latestSprintBlockReason.totalBlockedPercentage) * 100;
     const latestSprintBlockPercentage: number = (this.latestSprintBlockReason.totalBlockedPercentage) * 100;
 
-
-    // const latestSprintDevelopingPercentage: number = (1 - 0.2) * 100;
-    // const latestSprintBlockPercentage: number = (0.2) * 100;
-
     const developingAndBlockPercentage = [{
-      value: latestSprintDevelopingPercentage, name: String(latestSprintDevelopingPercentage) + '% \n developing percentage'
+      value: latestSprintDevelopingPercentage,
+      name: String(latestSprintDevelopingPercentage) + '% \n developing percentage'
     }, {
       value: latestSprintBlockPercentage, name: String(latestSprintBlockPercentage) + '% \n block percentage'
     }];
@@ -39,9 +34,7 @@ export class BlockReasonPercentageReportComponent implements OnInit {
 
 
   getOption() {
-    console.log(this.latestSprintBlockReason);
     const blockReasonPercentage = this.latestSprintBlockReason.blockReasonPercentage;
-    console.log(this.latestSprintBlockReason.blockReasonPercentage);
 
     const allBlockReason = [];
     blockReasonPercentage.forEach((curBlockReasonPercentage) => {
@@ -51,7 +44,7 @@ export class BlockReasonPercentageReportComponent implements OnInit {
     const seriesLabel = {
       show: true,
       color: "#FFF",
-      formatter:  (params) => {
+      formatter: (params) => {
         if (params.value > 0) {
           return params.value * 100 + '%';
         } else {
