@@ -45,7 +45,7 @@ import { CommitInfo } from "../../models/codebase/CommitInfo";
 import { ColumnResponse } from "../../contract/kanban/KanbanTokenVerifyResponse";
 import fs from "fs";
 import { SprintStatistics } from "../../models/kanban/SprintStatistics";
-import { map } from "lodash";
+import { Context } from "koa-swagger-decorator";
 
 const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
   [KanbanEnum.CLASSIC_JIRA]: "projectKey",
@@ -301,6 +301,7 @@ export class GenerateReportService {
       storyPointAndCycleTimeRequest,
       this.cards
     );
+    this.generateExcelFile(request.csvTimeStamp);
     this.nonDonecards = await kanban.getStoryPointsAndCycleTimeForNonDoneCards(
       storyPointAndCycleTimeRequest,
       kanbanSetting.boardColumns,
@@ -508,12 +509,11 @@ export class GenerateReportService {
     return map;
   }
 
-  private fetchExcelSprintData() {
+  private generateExcelFile(timeStamp: number): void {
     const workbook = new this.excelJs.Workbook();
     const map = this.getSprintStatisticsMap(this.kanabanSprintStatistics!);
     const sheet1 = workbook.addWorksheet("My Sheet1");
     const sheet2 = workbook.addWorksheet("My Sheet2");
-    const timeStamp = Date.now();
     const fileName = "exportSprintExcel-" + timeStamp;
 
     sheet1.columns = [
@@ -549,5 +549,17 @@ export class GenerateReportService {
     sheet2.addRow([3, "Sam", new Date()]);
     sheet2.addRow([3, "Sam", new Date()]);
     workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx", "utf-8");
+  }
+
+  public fetchExcelFileStream(ctx: Context, timeStamp: number): fs.ReadStream {
+    ctx.response.set(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    ctx.response.set(
+      "Content-Disposition",
+      `attachment; filename=exportSprintExcel-${timeStamp}.xlsx`
+    );
+    return fs.createReadStream(`xlsx/exportSprintExcel-${timeStamp}.xlsx`);
   }
 }
