@@ -2,7 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ApiService } from 'src/app/dora/service/api.service';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
-import {formatDate} from "@angular/common";
 
 @Component({
   selector: 'app-export-excel',
@@ -16,16 +15,15 @@ export class ExportExcelComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {}
-
   parseTimeStampToHumanDate(): string {
     return moment(this.csvTimeStamp).format('YYYY-MM-DD-kk-mm-ss');
   }
 
   downloadBoardExcel() {
-    this.apiService.fetchExportSprintData().subscribe((res) => {
-      const exportedFilename = `board-data-${this.parseTimeStampToHumanDate()}.xls`;
+    this.apiService.fetchExportSprintData(this.csvTimeStamp).subscribe((res) => {
+      const exportedFilename = `board-data-${this.parseTimeStampToHumanDate()}.xlsx`;
       console.log(res);
-      const blob = new Blob([res], {type: "application/vnd.ms-excel"});
+      const blob = new Blob([res], {type: "application/vnd.ms.excel"});
       saveAs(blob, exportedFilename);
     })
 }}
