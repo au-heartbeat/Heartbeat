@@ -46,7 +46,8 @@ import { ColumnResponse } from "../../contract/kanban/KanbanTokenVerifyResponse"
 import fs from "fs";
 import { GenerateSprintReporterService } from "./GenerateSprintReporterService";
 import { SprintStatistics } from "../../models/kanban/SprintStatistics";
-import {map} from "lodash";
+import { map } from "lodash";
+import { Context } from "koa-swagger-decorator";
 
 const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
   [KanbanEnum.CLASSIC_JIRA]: "projectKey",
@@ -299,7 +300,7 @@ export class GenerateReportService {
     this.kanabanSprintStatistics = await new GenerateSprintReporterService(
       this.cards
     ).fetchSprintInfoFromKanban(request);
-    this.fetchExcelSprintData();
+    this.generateExcelFile(request.csvTimeStamp);
     this.nonDonecards = await kanban.getStoryPointsAndCycleTimeForNonDoneCards(
       new StoryPointsAndCycleTimeRequest(
         kanbanSetting.token,
@@ -338,8 +339,6 @@ export class GenerateReportService {
       request.csvTimeStamp
     );
   }
-
-
 
   private async generateCsvForPipeline(
     request: GenerateReportRequest
@@ -507,14 +506,16 @@ export class GenerateReportService {
       this.kanabanSprintStatistics?.latestSprintBlockReason;
   }
 
-  private getSprintStatisticsMap(kanbanSprintStatistics: SprintStatistics): Map<string,[]>{
+  private getSprintStatisticsMap(
+    kanbanSprintStatistics: SprintStatistics
+  ): Map<string, []> {
     const map = new Map();
     //StandardDev
-    kanbanSprintStatistics.standardDeviation?.forEach((obj)=>{
-      map.set(obj.sprintName,[obj.sprintName]);
+    kanbanSprintStatistics.standardDeviation?.forEach((obj) => {
+      map.set(obj.sprintName, [obj.sprintName]);
       const listTmp = map.get(obj.sprintName);
       listTmp.push(obj.value.standardDeviation);
-      map.set(obj.sprintName,listTmp);
+      map.set(obj.sprintName, listTmp);
     });
 
     //Total cycle time
@@ -522,31 +523,41 @@ export class GenerateReportService {
     //Total block time
 
     // Blocked percentage Developing Percentage
-    kanbanSprintStatistics.blockedAndDevelopingPercentage?.forEach((obj)=>{
+    kanbanSprintStatistics.blockedAndDevelopingPercentage?.forEach((obj) => {
       const listTmp = map.get(obj.sprintName);
       listTmp.push(obj.value.blockedPercentage);
       listTmp.push(obj.value.developingPercentage);
-      map.set(obj.sprintName,listTmp);
+      map.set(obj.sprintName, listTmp);
     });
     return map;
   }
 
-
-    private fetchExcelSprintData() {
+  private generateExcelFile(timeStamp: number): void {
     const workbook = new this.excelJs.Workbook();
     const map = this.getSprintStatisticsMap(this.kanabanSprintStatistics!);
     const sheet1 = workbook.addWorksheet("My Sheet1");
     const sheet2 = workbook.addWorksheet("My Sheet2");
-    const timeStamp = Date.now();
-    const fileName = "exportSprintExcel-"+timeStamp;
+    const fileName = "exportSprintExcel-" + timeStamp;
 
     sheet1.columns = [
       { header: "sprintName", key: "sprintName:", width: 32 },
-      { header: "Standard deviations(population) of cycle time", key: "Standard deviations(population) of cycle time", width: 32 },
-      { header: "Percentage of blocked time", key: "Percentage of blocked time", width: 32 },
-      { header: "Percentage of developing time", key: "Percentage of developing time", width: 32 },
+      {
+        header: "Standard deviations(population) of cycle time",
+        key: "Standard deviations(population) of cycle time",
+        width: 32,
+      },
+      {
+        header: "Percentage of blocked time",
+        key: "Percentage of blocked time",
+        width: 32,
+      },
+      {
+        header: "Percentage of developing time",
+        key: "Percentage of developing time",
+        width: 32,
+      },
     ];
-    map.forEach((value)=>{
+    map.forEach((value) => {
       sheet1.addRow(value);
     });
 
@@ -554,12 +565,24 @@ export class GenerateReportService {
     sheet2.columns = [
       { header: "Id", key: "id", width: 10 },
       { header: "Name", key: "name", width: 32 },
-      { header: "D.O.B.", key: "DOB", width: 10, outlineLevel: 1 }
+      { header: "D.O.B.", key: "DOB", width: 10, outlineLevel: 1 },
     ];
     sheet2.addRow([3, "Sam", new Date()]);
     sheet2.addRow([3, "Sam", new Date()]);
     sheet2.addRow([3, "Sam", new Date()]);
     sheet2.addRow([3, "Sam", new Date()]);
-    workbook.xlsx.writeFile("xlsx/"+fileName+".xlsx","utf-8");
+    workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx", "utf-8");
+  }
+
+  public fetchExcelFileStream(ctx: Context, timeStamp: number): fs.ReadStream {
+    ctx.response.set(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    ctx.response.set(
+      "Content-Disposition",
+      `attachment; filename=exportSprintExcel-${timeStamp}.xlsx`
+    );
+    return fs.createReadStream(`xlsx/exportSprintExcel-${timeStamp}.xlsx`);
   }
 }

@@ -1,10 +1,10 @@
 import { description, request, summary, tagsAll } from "koa-swagger-decorator";
-import {body, Context, responses} from "koa-swagger-decorator/dist";
+import { body, Context, responses } from "koa-swagger-decorator/dist";
 import { GenerateReportRequest } from "../contract/GenerateReporter/GenerateReporterRequestBody";
 import { GenerateReporterResponse } from "../contract/GenerateReporter/GenerateReporterResponse";
 import { GenerateReportService } from "../services/GenerateReporter/GenerateReportService";
 import { DataSourceType } from "../models/kanban/CsvDataSourceType";
-
+import fs from "fs";
 
 @tagsAll(["GenerateReporter"])
 export default class GenerateReportController {
@@ -31,10 +31,13 @@ export default class GenerateReportController {
     );
   }
 
-
   @request("get", "/exportExcel")
   @summary("exportExcel")
   @description("exportExcel")
   public static async exportExcel(ctx: Context): Promise<void> {
+    ctx.body = new GenerateReportService().fetchExcelFileStream(
+      ctx,
+      ctx.validatedQuery.timeStamp
+    );
   }
 }
