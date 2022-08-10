@@ -27,3 +27,13 @@ describe("GenerateReporter", () => {
     expect(response.status).equal(400);
   });
 });
+
+describe("ExportExcel", () => {
+  it("should return 200  when post timeStamp", async () => {
+    const response = await chai
+        .request(app)
+        .get("/exportExcel?timeStamp=11");
+    expect(response.status).equal(200);
+    expect(response.header["content-type"]).equal("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  });
+});

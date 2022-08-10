@@ -48,6 +48,7 @@ import { GenerateSprintReporterService } from "./GenerateSprintReporterService";
 import { SprintStatistics } from "../../models/kanban/SprintStatistics";
 import xlsxForBoardConfig from "../../fixture/xlsxForBoardConfig.json";
 import { Context } from "koa-swagger-decorator";
+import excelJs from "exceljs";
 
 const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
   [KanbanEnum.CLASSIC_JIRA]: "projectKey",
@@ -56,7 +57,6 @@ const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
 };
 
 export class GenerateReportService {
-  excelJs = require("exceljs");
   private readonly kanbanMetrics = [
     RequireDataEnum.VELOCITY,
     RequireDataEnum.CYCLE_TIME,
@@ -300,7 +300,7 @@ export class GenerateReportService {
     this.kanabanSprintStatistics = await new GenerateSprintReporterService(
       this.cards
     ).fetchSprintInfoFromKanban(request);
-    this.generateExcelFile(request.csvTimeStamp);
+    await this.generateExcelFile(request.csvTimeStamp);
     this.nonDonecards = await kanban.getStoryPointsAndCycleTimeForNonDoneCards(
       new StoryPointsAndCycleTimeRequest(
         kanbanSetting.token,
@@ -532,8 +532,8 @@ export class GenerateReportService {
     return iterationDataMap;
   }
 
-  private generateExcelFile(timeStamp: number): void {
-    const workbook = new this.excelJs.Workbook();
+  private async generateExcelFile(timeStamp: number): Promise<void> {
+    const workbook = new excelJs.Workbook();
     const sheetDataMap = this.getSprintStatisticsMap(
       this.kanabanSprintStatistics!
     );
@@ -544,7 +544,7 @@ export class GenerateReportService {
     sheetDataMap.forEach((value) => {
       iterationSheet.addRow(value);
     });
-    workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx", "utf-8");
+    await workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx");
   }
 
   public fetchExcelFileStream(ctx: Context, timeStamp: number): fs.ReadStream {
