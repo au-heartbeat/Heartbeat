@@ -1,0 +1,18 @@
+[
+  { "header": "sprintName", "key": "sprintName:", "width": 32 },
+  {
+    "header": "Standard deviations(population) of cycle time",
+    "key": "Standard deviations(population) of cycle time",
+    "width": 32
+  },
+  {
+    "header": "Percentage of blocked time",
+    "key": "Percentage of blocked time",
+    "width": 32
+  },
+  {
+    "header": "Percentage of developing time",
+    "key": "Percentage of developing time",
+    "width": 32
+  }
+]

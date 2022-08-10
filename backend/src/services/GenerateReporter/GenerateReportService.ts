@@ -46,7 +46,7 @@ import { ColumnResponse } from "../../contract/kanban/KanbanTokenVerifyResponse"
 import fs from "fs";
 import { GenerateSprintReporterService } from "./GenerateSprintReporterService";
 import { SprintStatistics } from "../../models/kanban/SprintStatistics";
-import { map } from "lodash";
+import xlsxForBoardConfig from "../../fixture/xlsxForBoardConfig.json";
 import { Context } from "koa-swagger-decorator";
 
 const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
@@ -509,68 +509,41 @@ export class GenerateReportService {
   private getSprintStatisticsMap(
     kanbanSprintStatistics: SprintStatistics
   ): Map<string, []> {
-    const map = new Map();
+    const iterationDataMap = new Map();
     //StandardDev
     kanbanSprintStatistics.standardDeviation?.forEach((obj) => {
-      map.set(obj.sprintName, [obj.sprintName]);
-      const listTmp = map.get(obj.sprintName);
-      listTmp.push(obj.value.standardDeviation);
-      map.set(obj.sprintName, listTmp);
+      iterationDataMap.set(obj.sprintName, [obj.sprintName]);
+      const rowData = iterationDataMap.get(obj.sprintName);
+      rowData.push(obj.value.standardDeviation);
+      iterationDataMap.set(obj.sprintName, rowData);
     });
 
-    //Total cycle time
+    //TODO: Total cycle time
 
-    //Total block time
+    //TODO: Total block time
 
-    // Blocked percentage Developing Percentage
+    //TODO: Blocked percentage Developing Percentage
     kanbanSprintStatistics.blockedAndDevelopingPercentage?.forEach((obj) => {
-      const listTmp = map.get(obj.sprintName);
-      listTmp.push(obj.value.blockedPercentage);
-      listTmp.push(obj.value.developingPercentage);
-      map.set(obj.sprintName, listTmp);
+      const rowData = iterationDataMap.get(obj.sprintName);
+      rowData.push(obj.value.blockedPercentage);
+      rowData.push(obj.value.developingPercentage);
+      iterationDataMap.set(obj.sprintName, rowData);
     });
-    return map;
+    return iterationDataMap;
   }
 
   private generateExcelFile(timeStamp: number): void {
     const workbook = new this.excelJs.Workbook();
-    const map = this.getSprintStatisticsMap(this.kanabanSprintStatistics!);
-    const sheet1 = workbook.addWorksheet("My Sheet1");
-    const sheet2 = workbook.addWorksheet("My Sheet2");
+    const sheetDataMap = this.getSprintStatisticsMap(
+      this.kanabanSprintStatistics!
+    );
+    const iterationSheet = workbook.addWorksheet("Iteration Statistics");
     const fileName = "exportSprintExcel-" + timeStamp;
 
-    sheet1.columns = [
-      { header: "sprintName", key: "sprintName:", width: 32 },
-      {
-        header: "Standard deviations(population) of cycle time",
-        key: "Standard deviations(population) of cycle time",
-        width: 32,
-      },
-      {
-        header: "Percentage of blocked time",
-        key: "Percentage of blocked time",
-        width: 32,
-      },
-      {
-        header: "Percentage of developing time",
-        key: "Percentage of developing time",
-        width: 32,
-      },
-    ];
-    map.forEach((value) => {
-      sheet1.addRow(value);
+    iterationSheet.columns = xlsxForBoardConfig;
+    sheetDataMap.forEach((value) => {
+      iterationSheet.addRow(value);
     });
-
-    //Test sheet2
-    sheet2.columns = [
-      { header: "Id", key: "id", width: 10 },
-      { header: "Name", key: "name", width: 32 },
-      { header: "D.O.B.", key: "DOB", width: 10, outlineLevel: 1 },
-    ];
-    sheet2.addRow([3, "Sam", new Date()]);
-    sheet2.addRow([3, "Sam", new Date()]);
-    sheet2.addRow([3, "Sam", new Date()]);
-    sheet2.addRow([3, "Sam", new Date()]);
     workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx", "utf-8");
   }
 
