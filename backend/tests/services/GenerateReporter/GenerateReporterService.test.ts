@@ -88,8 +88,9 @@ describe("generate excel file", () => {
 
   it("should generate the file when given time stamp", async () => {
     reportServiceProto.kanabanSprintStatistics = sprintStatistics;
-    await reportServiceProto.generateExcelFile(11);
+    const testTimeStamp = 11;
+    await reportServiceProto.generateExcelFile(testTimeStamp);
     fs.stat("xlsx/exportSprintExcel-11.xlsx",(err,stats)=>{expect(stats!==undefined).equal(true);});
-    fs.stat("xlsx/exportSprintExcel-2.xlsx",(err,stats)=>{expect(stats!==undefined).equal(false);});
+    fs.stat("xlsx/exportSprintExcel-a.xlsx",(err,stats)=>{expect(stats!==undefined).equal(false);});
   });
 });
