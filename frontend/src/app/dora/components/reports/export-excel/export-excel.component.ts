@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ApiService } from 'src/app/dora/service/api.service';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
@@ -22,8 +22,8 @@ export class ExportExcelComponent implements OnInit {
   downloadBoardExcel() {
     this.apiService.fetchExportSprintData(this.csvTimeStamp).subscribe((res) => {
       const exportedFilename = `board-data-${this.parseTimeStampToHumanDate()}.xlsx`;
-      console.log(res);
-      const blob = new Blob([res], {type: "application/vnd.ms.excel"});
+      const blob = new Blob([res], { type: 'application/vnd.ms.excel' });
       saveAs(blob, exportedFilename);
-    })
-}}
+    });
+  }
+}
