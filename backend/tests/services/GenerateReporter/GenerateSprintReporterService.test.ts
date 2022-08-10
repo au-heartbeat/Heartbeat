@@ -303,6 +303,7 @@ describe("calculate the number of completed cards in every sprint", () => {
     expect(mapSprintCompletedCardsNumber).deep.equal(expected);
   });
 });
+
 describe("generate Jira sprint statistics", () => {
   it("should return the Jira sprint statistics when statistic data are not empty", () => {
     const sprintBlockReasonPercentageMap = new Map<string, number>([
