@@ -92,5 +92,6 @@ describe("generate excel file", () => {
     await reportServiceProto.generateExcelFile(testTimeStamp);
     fs.stat("xlsx/exportSprintExcel-11.xlsx",(err,stats)=>{expect(stats!==undefined).equal(true);});
     fs.stat("xlsx/exportSprintExcel-a.xlsx",(err,stats)=>{expect(stats!==undefined).equal(false);});
+    fs.rm("xlsx/exportSprintExcel-11.xlsx",()=>{return;});
   });
 });
