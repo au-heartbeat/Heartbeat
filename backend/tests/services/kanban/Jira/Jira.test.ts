@@ -10,11 +10,13 @@ import ColumnResponse from "../../../fixture/ColumnResponse.json";
 import EmptySprints from "../../../fixture/EmptySprints.json";
 import JiraCardCycleTime from "../../../fixture/JiraCardCycleTime.json";
 import NonDoneJiraCardCycleTime from "../../../fixture/NonDoneJiraCardCycleTime.json";
+import StatusData from "../../../fixture/StatusData.json";
 import { StoryPointsAndCycleTimeRequest } from "../../../../src/contract/kanban/KanbanStoryPointParameterVerify";
 import { Sprint } from "../../../../src/models/kanban/Sprint";
 import { CycleTimeInfo } from "../../../../src/contract/kanban/KanbanStoryPointResponse";
 import { StatusSelf } from "../../../../src/models/kanban/JiraBoard/StatusSelf";
 import { StatusCategory } from "../../../../src/models/kanban/JiraBoard/StatusSelf";
+
 import axios from "axios";
 import {
   HistoryDetail,
@@ -172,50 +174,21 @@ describe("get Columns data by domain name and boardId", () => {
   });
 });
 
-// describe("get query status", () => {
-//   const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
-//     "testToken",
-//     "jira",
-//     "dorametrics",
-//     "project",
-//     "2",
-//     ["Done"],
-//     1589080044000,
-//     1589944044000,
-//     [
-//       {
-//         key: "customfield_10016",
-//         name: "Story point estimate",
-//         flag: true,
-//       },
-//     ],
-//     false
-//   );
-
-//   it("should return query status data", async () => {
-//     let jiraTest = new Jira(storyPointsAndCycleTimeRequest.token,storyPointsAndCycleTimeRequest.site);
-//     const example = Object.getPrototypeOf(jiraTest);
-//     const expected = {
-//       self: 'https://dorametrics.atlassian.net/rest/api/2/status/10006',
-
-//       name: 'TODO',
-//       untranslatedName: 'TODO',
-
-//       statusCategory: {
-
-//         key: 'indeterminate',
-
-//         name: 'In Progress'
-//       },
-
-//     };
-
-//     const result: StatusSelf =  await example.constructor.queryStatus('https://dorametrics.atlassian.net/rest/api/2/status/10006',storyPointsAndCycleTimeRequest.token);
-//     console.log(result);
-//     expect(result).equal(expected);
-//   });
-
-// });
+describe("get query status", () => {
+  afterEach(() => sinon.restore());
+  it("should return query status data", async () => {
+    mock
+      .onGet(`https://domain.atlassian.net/rest/api/2/status/10006`, {
+        headers: { Authorization: `testToken` },
+      })
+      .reply(200, StatusData);
+    const result: StatusSelf = await example.constructor.queryStatus(
+      "https://domain.atlassian.net/rest/api/2/status/10006",
+      `testToken`
+    );
+    expect(result.statusCategory.key).equal("indeterminate");
+  });
+});
 
 describe("get story points and cycle times of done cards during period", () => {
   afterEach(() => sinon.restore());
@@ -755,5 +728,51 @@ describe("get match time", () => {
     );
 
     expect(response).equal(false);
+  });
+});
+
+describe("make page query", () => {
+  const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
+    "testToken",
+    "jira",
+    "domain",
+    "project",
+    "2",
+    ["Done"],
+    1589080044000,
+    1589944044000,
+    [
+      {
+        key: "customfield_10016",
+        name: "Story point estimate",
+        flag: true,
+      },
+    ],
+    false
+  );
+
+  it("should return cards issues ", async () => {
+    const total = 123;
+    const jql = `status in ('${storyPointsAndCycleTimeRequest.status.join(
+      "','"
+    )}')`;
+
+    const cards: any = [];
+    example.queryCount = 100;
+    example.httpClient = axios.create({
+      baseURL: `https://domain.atlassian.net/rest/agile/1.0/board`,
+    });
+    example.httpClient.defaults.headers.common["Authorization"] = "testToken";
+    mock
+      .onGet(
+        `https://${
+          storyPointsAndCycleTimeRequest.site
+        }.atlassian.net/rest/agile/1.0/board/2/issue/?maxResults=100&startAt=100&jql=status in ('${storyPointsAndCycleTimeRequest.status.join(
+          "','"
+        )}')`
+      )
+      .reply(200, JiraCards);
+    await example.pageQuerying(total, jql, cards, 2);
+    expect(cards.length).equal(2);
   });
 });
