@@ -44,7 +44,6 @@ import { PipelineCsvInfo } from "../../models/pipeline/PipelineCsvInfo";
 import { CommitInfo } from "../../models/codebase/CommitInfo";
 import { ColumnResponse } from "../../contract/kanban/KanbanTokenVerifyResponse";
 import fs from "fs";
-import { GenerateSprintReporterService } from "./GenerateSprintReporterService";
 import { SprintStatistics } from "../../models/kanban/SprintStatistics";
 
 const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
@@ -472,7 +471,7 @@ export class GenerateReportService {
 
   addKanbanSprintStatisticsToResponse(response: GenerateReporterResponse) {
     response.completedCardsNumber =
-      this.kanabanSprintStatistics?.completedCardsNumber;
+      this.kanabanSprintStatistics?.completedCardNumber;
     response.standardDeviation =
       this.kanabanSprintStatistics?.standardDeviation;
     response.blockedAndDevelopingPercentage =

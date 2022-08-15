@@ -513,17 +513,6 @@ export class Jira implements Kanban {
     return statusChangedArray;
   }
 
-  private initBlockedTimeMap(): Map<string, number> {
-    const blockedTimeMap = new Map<string, number>();
-    for (let reason in JiraBlockReasonEnum) {
-      reason = Object.entries(JiraBlockReasonEnum).find(
-        ([key, val]) => key === reason
-      )?.[1]!;
-      blockedTimeMap.set(reason, 0);
-    }
-    return blockedTimeMap;
-  }
-
   public async getSprintStatistics(
     model: StoryPointsAndCycleTimeRequest,
     cards: Cards
@@ -568,6 +557,17 @@ export class Jira implements Kanban {
       sprintStandardDeviationMap,
       sprintBlockReasonPercentageMap
     );
+  }
+
+  private initBlockedTimeMap(): Map<string, number> {
+    const blockedTimeMap = new Map<string, number>();
+    for (let reason in JiraBlockReasonEnum) {
+      reason = Object.entries(JiraBlockReasonEnum).find(
+        ([key, val]) => key === reason
+      )?.[1]!;
+      blockedTimeMap.set(reason, 0);
+    }
+    return blockedTimeMap;
   }
 
   private getLatestSprintName(

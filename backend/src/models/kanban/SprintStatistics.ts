@@ -1,5 +1,5 @@
 export class SprintStatistics {
-  public completedCardsNumber?: Array<CompletedCardNumber>;
+  public completedCardNumber?: Array<CompletedCardNumber>;
   public standardDeviation?: Array<StandardDeviation>;
   public blockedAndDevelopingPercentage?: Array<BlockedAndDevelopingPercentage>;
   public latestSprintBlockReason?: BlockedReason;
@@ -9,7 +9,7 @@ export class SprintStatistics {
     blockedAndDevelopingPercentage?: Array<BlockedAndDevelopingPercentage>,
     latestSprintBlockReason?: BlockedReason
   ) {
-    this.completedCardsNumber = completedCardsNumber;
+    this.completedCardNumber = completedCardsNumber;
     this.standardDeviation = standardDeviation;
     this.blockedAndDevelopingPercentage = blockedAndDevelopingPercentage;
     this.latestSprintBlockReason = latestSprintBlockReason;
