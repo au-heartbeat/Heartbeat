@@ -30,7 +30,7 @@ export class ThroughputReportComponent implements OnInit {
 
     const model = ss.linearRegression(arrayRegression);
     const myCharts = echarts.init(document.getElementById('throughput'));
-    const lastRegressionValue = model.m * sprintNumber + model.b ? 0 : model.m * sprintNumber + model.b;
+    const lastRegressionValue = this.calculateEndPoint(model, sprintNumber);
     const myOption: EChartsOption = {
       title: {
         text: 'Throughput - Completed Cards By Sprint',
@@ -91,7 +91,7 @@ export class ThroughputReportComponent implements OnInit {
                   coord: [this.completedCardsNumber[0].sprintName, model.m + model.b],
                 },
                 {
-                  coord: [this.completedCardsNumber[sprintNumber - 1].sprintName, lastRegressionValue],
+                  coord: [this.completedCardsNumber[lastRegressionValue.x].sprintName, lastRegressionValue.y],
                 },
               ],
             ],
@@ -105,5 +105,19 @@ export class ThroughputReportComponent implements OnInit {
       },
     };
     myCharts.setOption(myOption);
+  }
+  calculateEndPoint(model: { m: number; b: number }, sprintNumber: number): { x: number; y: number } {
+    const yTemp = model.m * sprintNumber + model.b;
+    if (yTemp >= 0 || model.m === 0) {
+      return {
+        x: sprintNumber,
+        y: yTemp,
+      };
+    }
+    const x = parseInt(((0 - model.b) / model.m).toFixed(0)) - 1;
+    return {
+      x,
+      y: x * model.m + model.b,
+    };
   }
 }
