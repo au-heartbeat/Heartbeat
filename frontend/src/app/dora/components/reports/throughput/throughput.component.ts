@@ -110,7 +110,7 @@ export class ThroughputReportComponent implements OnInit {
     const yTemp = model.m * sprintNumber + model.b;
     if (yTemp >= 0 || model.m === 0) {
       return {
-        x: sprintNumber,
+        x: sprintNumber - 1,
         y: yTemp,
       };
     }
