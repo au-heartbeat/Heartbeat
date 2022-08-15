@@ -25,7 +25,7 @@ import {
 } from "../../../../src/models/kanban/JiraCardHistory";
 
 const jira = new Jira("testToken", "domain");
-const example = Object.getPrototypeOf(jira);
+const jiraTest = Object.getPrototypeOf(jira);
 describe("get sprints data by domain name and boardId", () => {
   const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
     "testToken",
@@ -182,7 +182,7 @@ describe("get query status", () => {
         headers: { Authorization: `testToken` },
       })
       .reply(200, StatusData);
-    const result: StatusSelf = await example.constructor.queryStatus(
+    const result: StatusSelf = await jiraTest.constructor.queryStatus(
       "https://domain.atlassian.net/rest/api/2/status/10006",
       `testToken`
     );
@@ -408,12 +408,12 @@ describe("get all done cards", () => {
       )
       .reply(200, JiraCards);
 
-    example.httpClient = axios.create({
+    jiraTest.httpClient = axios.create({
       baseURL: `https://domain.atlassian.net/rest/agile/1.0/board`,
     });
-    example.httpClient.defaults.headers.common["Authorization"] = "testToken";
-    example.queryCount = 100;
-    const response = await example.getAllDoneCards(
+    jiraTest.httpClient.defaults.headers.common["Authorization"] = "testToken";
+    jiraTest.queryCount = 100;
+    const response = await jiraTest.getAllDoneCards(
       storyPointsAndCycleTimeRequest
     );
 
@@ -456,12 +456,12 @@ describe("get all non done cards for active sprint", () => {
       )
       .reply(200, NonDoneJiraCard);
 
-    example.httpClient = axios.create({
+    jiraTest.httpClient = axios.create({
       baseURL: `https://domain.atlassian.net/rest/agile/1.0/board`,
     });
-    example.httpClient.defaults.headers.common["Authorization"] = "testToken";
-    example.queryCount = 100;
-    const response = await example.getAllNonDoneCardsForActiveSprint(
+    jiraTest.httpClient.defaults.headers.common["Authorization"] = "testToken";
+    jiraTest.queryCount = 100;
+    const response = await jiraTest.getAllNonDoneCardsForActiveSprint(
       storyPointsAndCycleTimeRequest
     );
 
@@ -503,12 +503,12 @@ describe("get all non done cards for kanban", () => {
       )
       .reply(200, JiraCards);
 
-    example.httpClient = axios.create({
+    jiraTest.httpClient = axios.create({
       baseURL: `https://domain.atlassian.net/rest/agile/1.0/board`,
     });
-    example.httpClient.defaults.headers.common["Authorization"] = "testToken";
-    example.queryCount = 100;
-    const response = await example.getAllNonDoneCardsForKanBan(
+    jiraTest.httpClient.defaults.headers.common["Authorization"] = "testToken";
+    jiraTest.queryCount = 100;
+    const response = await jiraTest.getAllNonDoneCardsForKanBan(
       storyPointsAndCycleTimeRequest
     );
 
@@ -551,7 +551,7 @@ describe("process costumed fields for card", () => {
       )
       .reply(200, JiraCards);
 
-    const response = await example.constructor.processCustomFieldsForCard(
+    const response = await jiraTest.constructor.processCustomFieldsForCard(
       JiraCards
     );
 
@@ -618,14 +618,14 @@ describe("generate sprint name", () => {
   it("should return sprint name when given a correct sprintField", () => {
     const expected = "ADM Sprint 3";
 
-    const response = example.constructor.generateSprintName(sprintField);
+    const response = jiraTest.constructor.generateSprintName(sprintField);
 
     expect(response).deep.equal(expected);
   });
   it("should return sprint name when given an empty sprintField", () => {
     const expected = "";
     const empty: any = [];
-    const response = example.constructor.generateSprintName(empty);
+    const response = jiraTest.constructor.generateSprintName(empty);
 
     expect(response).deep.equal(expected);
   });
@@ -693,7 +693,7 @@ describe("put status change events into an array", () => {
       historyDetail1,
       historyDetail2,
     ]);
-    const response = example.constructor.putStatusChangeEventsIntoAnArray(
+    const response = jiraTest.constructor.putStatusChangeEventsIntoAnArray(
       jiraCardHistory,
       true
     );
@@ -708,7 +708,7 @@ describe("get match time", () => {
     const startTime = 1689080044000;
     const endTime = 1789944044000;
 
-    const response = example.constructor.matchTime(
+    const response = jiraTest.constructor.matchTime(
       cardTime,
       startTime,
       endTime
@@ -721,7 +721,7 @@ describe("get match time", () => {
     const startTime = 1689080044000;
     const endTime = 1789944044000;
 
-    const response = example.constructor.matchTime(
+    const response = jiraTest.constructor.matchTime(
       cardTime,
       startTime,
       endTime
@@ -758,11 +758,11 @@ describe("make page query", () => {
     )}')`;
 
     const cards: any = [];
-    example.queryCount = 100;
-    example.httpClient = axios.create({
+    jiraTest.queryCount = 100;
+    jiraTest.httpClient = axios.create({
       baseURL: `https://domain.atlassian.net/rest/agile/1.0/board`,
     });
-    example.httpClient.defaults.headers.common["Authorization"] = "testToken";
+    jiraTest.httpClient.defaults.headers.common["Authorization"] = "testToken";
     mock
       .onGet(
         `https://${
@@ -772,7 +772,7 @@ describe("make page query", () => {
         )}')`
       )
       .reply(200, JiraCards);
-    await example.pageQuerying(total, jql, cards, 2);
+    await jiraTest.pageQuerying(total, jql, cards, 2);
     expect(cards.length).equal(2);
   });
 });
