@@ -1217,10 +1217,7 @@ describe("get active and closed Sprints", () => {
 
 describe("get sprint statistics", () => {
   it("get sprint statistics", async () => {
-    //sinon.stub(Jira, <any>"mapCardsBySprintName").returns(mapSprintCards);
     sinon.stub(Jira.prototype, <any>"getAllSprintsByBoardId").returns(sprints);
-    //sinon.stub(Jira,<any>"getActiveAndClosedSprints").returns(sprints);
-    //sinon.stub(Jira,<any>"calculateBlockedAndDevelopingPercentage").returns
     const cards = { storyPointSum: 0, cardsNumber: 3, matchedCards: cardList1 };
     const expected = new SprintStatistics(
       [
