@@ -471,7 +471,7 @@ export class GenerateReportService {
 
   addKanbanSprintStatisticsToResponse(response: GenerateReporterResponse) {
     response.completedCardsNumber =
-      this.kanabanSprintStatistics?.completedCardNumber;
+      this.kanabanSprintStatistics?.sprintCompletedCardsCount;
     response.standardDeviation =
       this.kanabanSprintStatistics?.standardDeviation;
     response.blockedAndDevelopingPercentage =
