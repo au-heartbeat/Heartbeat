@@ -1,22 +1,22 @@
 export class SprintStatistics {
-  public sprintCompletedCardsCount?: Array<sprintComletedCardCount>;
+  public sprintCompletedCardsCounts?: Array<SprintCompletedCardsCount>;
   public standardDeviation?: Array<StandardDeviation>;
   public blockedAndDevelopingPercentage?: Array<BlockedAndDevelopingPercentage>;
   public latestSprintBlockReason?: BlockedReason;
   constructor(
-    sprintComletedCardCount?: Array<sprintComletedCardCount>,
+    sprintComletedCardsCounts?: Array<SprintCompletedCardsCount>,
     standardDeviation?: Array<StandardDeviation>,
     blockedAndDevelopingPercentage?: Array<BlockedAndDevelopingPercentage>,
     latestSprintBlockReason?: BlockedReason
   ) {
-    this.sprintCompletedCardsCount = sprintComletedCardCount;
+    this.sprintCompletedCardsCounts = sprintComletedCardsCounts;
     this.standardDeviation = standardDeviation;
     this.blockedAndDevelopingPercentage = blockedAndDevelopingPercentage;
     this.latestSprintBlockReason = latestSprintBlockReason;
   }
 }
 
-export type sprintComletedCardCount = {
+export type SprintCompletedCardsCount = {
   sprintName: string;
   value: number;
 };

@@ -277,7 +277,7 @@ export class GenerateReportService {
       kanbanSetting.token,
       kanbanSetting.site
     );
-    const model: StoryPointsAndCycleTimeRequest =
+    const storyPointAndCycleTimeRequest: StoryPointsAndCycleTimeRequest =
       new StoryPointsAndCycleTimeRequest(
         kanbanSetting.token,
         kanbanSetting.type,
@@ -291,20 +291,20 @@ export class GenerateReportService {
         kanbanSetting.treatFlagCardAsBlock
       );
     this.cards = await kanban.getStoryPointsAndCycleTime(
-      model,
+      storyPointAndCycleTimeRequest,
       kanbanSetting.boardColumns,
       kanbanSetting.users
     );
     this.kanabanSprintStatistics = await kanban.getSprintStatistics(
-      model,
+      storyPointAndCycleTimeRequest,
       this.cards
     );
     this.nonDonecards = await kanban.getStoryPointsAndCycleTimeForNonDoneCards(
-      model,
+      storyPointAndCycleTimeRequest,
       kanbanSetting.boardColumns,
       kanbanSetting.users
     );
-    this.columns = await kanban.getColumns(model);
+    this.columns = await kanban.getColumns(storyPointAndCycleTimeRequest);
     await ConvertBoardDataToCsv(
       this.cards.matchedCards,
       this.nonDonecards.matchedCards,
@@ -471,7 +471,7 @@ export class GenerateReportService {
 
   addKanbanSprintStatisticsToResponse(response: GenerateReporterResponse) {
     response.completedCardsNumber =
-      this.kanabanSprintStatistics?.sprintCompletedCardsCount;
+      this.kanabanSprintStatistics?.sprintCompletedCardsCounts;
     response.standardDeviation =
       this.kanabanSprintStatistics?.standardDeviation;
     response.blockedAndDevelopingPercentage =

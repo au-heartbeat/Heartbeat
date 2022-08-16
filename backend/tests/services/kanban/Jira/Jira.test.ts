@@ -909,23 +909,42 @@ describe("make page query", () => {
 });
 
 describe("map cards by sprint name", () => {
-  const jiraCardField: JiraCardField = new JiraCardField();
-  const jiraCard: JiraCard = { fields: jiraCardField, key: "" };
-  const card = new JiraCardResponse(jiraCard, cycleTimeArray1);
-  const cardList = [card];
+  const jiraCardField1: JiraCardField = new JiraCardField();
+  const jiraCardField2: JiraCardField = new JiraCardField();
+  const jiraCard1: JiraCard = { fields: jiraCardField1, key: "" };
+  const jiraCard2: JiraCard = { fields: jiraCardField2, key: "" };
+  const card1 = new JiraCardResponse(jiraCard1, cycleTimeArray1);
+  const card2 = new JiraCardResponse(jiraCard2, cycleTimeArray2);
+  const cardList = [card1, card2];
 
-  it("should return a map when all cards have sprint name", () => {
-    jiraCardField.sprint = sprint1Name;
+  it("should return a map when all cards have sprint names", () => {
+    jiraCardField1.sprint = sprint1Name;
+    jiraCardField2.sprint = sprint2Name;
 
     const mapSprintCards = jiraTest.mapCardsBySprintName(cardList);
 
     expect(mapSprintCards).deep.equal(
-      new Map<string, JiraCardResponse[]>([[sprint1Name, cardList]])
+      new Map<string, JiraCardResponse[]>([
+        [sprint1Name, [card1]],
+        [sprint2Name, [card2]],
+      ])
+    );
+  });
+
+  it("should return a map with one entry when a part of the cards have sprint names", () => {
+    jiraCardField1.sprint = sprint1Name;
+    jiraCardField2.sprint = "";
+
+    const mapSprintCards = jiraTest.mapCardsBySprintName(cardList);
+
+    expect(mapSprintCards).deep.equal(
+      new Map<string, JiraCardResponse[]>([[sprint1Name, [card1]]])
     );
   });
 
   it("should return empty map when all cards do not have any sprint name", () => {
-    jiraCardField.sprint = "";
+    jiraCardField1.sprint = "";
+    jiraCardField2.sprint = "";
 
     const mapSprintCards = jiraTest.mapCardsBySprintName(cardList);
 
@@ -1178,7 +1197,7 @@ describe("generate Jira sprint statistics", () => {
     const sprintStandardDeviationMap = new Map<string, any>();
     const sprintCompletedCardsNumberMap = new Map<string, number>();
 
-    const sprintStartistics = jiraTest.generateJiraSprintStatistics(
+    const sprintStatistics = jiraTest.generateJiraSprintStatistics(
       sprintCompletedCardsNumberMap,
       sprintBlockPercentageMap,
       sprintStandardDeviationMap,
@@ -1188,7 +1207,7 @@ describe("generate Jira sprint statistics", () => {
       totalBlockedPercentage: 0,
       blockReasonPercentage: [],
     });
-    expect(sprintStartistics).deep.equal(expected);
+    expect(sprintStatistics).deep.equal(expected);
   });
 });
 

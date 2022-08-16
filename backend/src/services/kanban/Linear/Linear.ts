@@ -196,6 +196,6 @@ export class Linear implements Kanban {
     model: StoryPointsAndCycleTimeRequest,
     cards: Cards
   ): Promise<SprintStatistics> {
-    return new SprintStatistics();
+    throw new Error("Spring statistics for Linear is not available.");
   }
 }
