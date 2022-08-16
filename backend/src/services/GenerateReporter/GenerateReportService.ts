@@ -510,7 +510,7 @@ export class GenerateReportService {
     return iterationDataMap;
   }
 
-  private async generateExcelFile(timeStamp: number): Promise<void> {
+  private generateExcelFile(timeStamp: number): void {
     const workbook = new excelJs.Workbook();
     const sheetDataMap = this.getSprintStatisticsMap(
       this.kanabanSprintStatistics!
@@ -522,7 +522,7 @@ export class GenerateReportService {
     sheetDataMap.forEach((value) => {
       iterationSheet.addRow(value);
     });
-    await workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx");
+    workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx");
   }
 
   public fetchExcelFileStream(ctx: Context, timeStamp: number): fs.ReadStream {
