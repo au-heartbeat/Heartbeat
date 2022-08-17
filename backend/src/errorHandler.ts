@@ -1,7 +1,8 @@
 import Application from "koa";
 import { PlatformTypeError } from "./types/PlatformTypeError";
 import { SettingMissingError } from "./types/SettingMissingError";
-import { ThereIsNoCardsInDoneColumn } from "./types/ThereIsNoCardsInDoneColumn";
+import { SpringStatisticsError } from "./types/SpringStatisticsError";
+import { NoCardsInDoneColumnError } from "./types/NoCardsInDoneColumnError";
 
 export default () => async (
   ctx: Application.ExtendableContext & {
@@ -18,8 +19,10 @@ export default () => async (
       ctx.status = 400;
     } else if (error instanceof SettingMissingError) {
       ctx.status = 400;
-    } else if (error instanceof ThereIsNoCardsInDoneColumn) {
+    } else if (error instanceof NoCardsInDoneColumnError) {
       ctx.status = 444;
+    } else if (error instanceof SpringStatisticsError) {
+      ctx.status = 400;
     } else if (error.status == 400) {
       ctx.status = 400;
     } else {
