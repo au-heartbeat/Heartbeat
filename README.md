@@ -1,4 +1,4 @@
-# HeartBeat User Guide（2020/06，Version 1）
+# HeartBeat User Guide（2022/08，Version 2）
 
 # 1 About HeartBeat
 

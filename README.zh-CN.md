@@ -1,4 +1,4 @@
-# HeartBeat 用户手册（2022/08，第一版）
+# HeartBeat 用户手册（2022/08，第二版）
 
 # 1 什么是 HeartBeat
 
