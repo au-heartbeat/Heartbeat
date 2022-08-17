@@ -177,7 +177,7 @@ _Image 3-14，Lead time for changes Report_
 
 ### 3.3.6 变更失败率 / Change Failure Rate
 
-![Image 3-15](https://user-images.githubusercontent.com/995849/89784288-00c28680-db4b-11ea-9756-878176148d63.png)\
+![Image 3-15](https://user-images.githubusercontent.com/109513161/185026178-1a9f2b6d-b6fe-4f0a-9b39-7824f2189c5d.png)\
 _Image 3-15，Change Failure Rate Report_
 
 ### 3.3.7 迭代完成卡数图 / Completed Cards by Sprint Graph
@@ -309,11 +309,15 @@ _Image 3-20，Exported Board Data_
 |Original Cycle Time: {Column Name}|The data for Jira board original data |
 
 **Iteration Statistics:** 在所选时间段内所有迭代的数据分析。(Image 3-22)
+
+![Image 3-22](https://user-images.githubusercontent.com/109513161/185026165-1d16d436-14e5-4531-a266-544fa9ad29fa.png)\
+_Image 3-22，Exported Sprint Data_
+
 **_Iteration 的所有列：_**
 |列名 |描述|
 |---|---|
 |Standard deviations(population) of cycle time|每个迭代周期时间的标准差|
-|Total cycle time|每个迭代的总周期时间|
+|Total cycle time|每个 Sprint 的总周期时间|
 |Total blocked time|每个迭代的总受阻时间|
 |Percentage of developing time|每个迭代的开发时间占总周期时间的百分比|
 |Percentage of blocked time|每个迭代的受阻时间占总周期时间的百分比|

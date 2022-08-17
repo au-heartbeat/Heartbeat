@@ -175,20 +175,32 @@ _Image 3-14，Lead time for changes Report_
 
 ### 3.3.6 Change Failure Rate
 
-![Image 3-15](https://user-images.githubusercontent.com/995849/89784288-00c28680-db4b-11ea-9756-878176148d63.png)\
+![Image 3-15](https://user-images.githubusercontent.com/109513161/185026178-1a9f2b6d-b6fe-4f0a-9b39-7824f2189c5d.png)\
 _Image 3-15，Change Failure Rate Report_
 
 ### 3.3.7 Completed Cards by Sprint Graph
 
+![Image 3-16](https://user-images.githubusercontent.com/109513161/185023348-d7320a75-aacb-472f-9483-46177723481a.png)\
+_Image 3-16，Throughput - Completed Cards by Sprint_
+
 ### 3.3.8 Average cycle time Graph
+
+![Image 3-17](https://user-images.githubusercontent.com/109513161/185023202-9c791105-d559-42de-9736-d44378c25651.png)\
+_Image 3-17，Average Cycle Time - Day_
 
 ### 3.3.9 Time Allocation Graph
 
 The graph shows percentage of blocked time and developing time for every sprint which selected by user.
 
+![Image 3-18](https://user-images.githubusercontent.com/109513161/185022817-1d987b4a-dbaf-4514-96b1-e76e7e6770c6.png)\
+_Image 3-18，Time Allocation_
+
 ### 3.3.10 Block Reason Graph
 
 The graph shows block reason for the latest sprint which selected by user.
+
+![Image 3-19](https://user-images.githubusercontent.com/109513161/185023327-e04311d6-5000-4c8f-b460-044799ce2fea.png)\
+_Image 3-19，Block Reason - Latest Iteration_
 
 ## 3.4 Export original data
 
@@ -198,10 +210,10 @@ After generating the report, you can export the original data for your board and
 
 It will export a csv file for board data. It contains two parts:
 **Part 1:** Export the all done tickets during the time period
-**Part 2:** Export the all non-done tickets in your current active board. And it will order by ticket status (Image 3-16)
+**Part 2:** Export the all non-done tickets in your current active board. And it will order by ticket status (Image 3-20)
 
-![Image 3-16](https://user-images.githubusercontent.com/995849/89784291-01f3b380-db4b-11ea-8f5a-d475e80014fb.png)\
-_Image 3-16，Exported Board Data_
+![Image 3-20](https://user-images.githubusercontent.com/995849/89784291-01f3b380-db4b-11ea-8f5a-d475e80014fb.png)\
+_Image 3-20，Exported Board Data_
 
 **All columns for Jira board:**
 |Column name |Description|
@@ -231,10 +243,10 @@ _Image 3-16，Exported Board Data_
 
 ### 3.4.2 Export pipeline data
 
-It will export a csv file for pipeline data (image 3-17).
+It will export a csv file for pipeline data (image 3-21).
 
-![Image 3-17](https://user-images.githubusercontent.com/995849/89784293-0324e080-db4b-11ea-975d-6609024aac49.png)\
-_Image 3-17，Exported Pipeline Data_
+![Image 3-21](https://user-images.githubusercontent.com/995849/89784293-0324e080-db4b-11ea-975d-6609024aac49.png)\
+_Image 3-21，Exported Pipeline Data_
 
 **All columns for pipeline data:**
 |Column name |Description|
@@ -261,10 +273,10 @@ The sheet contains two parts:
 
 **_Part 1:_** Export the all done tickets during the time period
 
-**_Part 2:_** Export the all non-done tickets in your current active board. And it will order by ticket status (Image 3-16)
+**_Part 2:_** Export the all non-done tickets in your current active board. And it will order by ticket status (Image 3-20)
 
-![Image 3-16](https://user-images.githubusercontent.com/995849/89784291-01f3b380-db4b-11ea-8f5a-d475e80014fb.png)\
-_Image 3-16，Exported Board Data_
+![Image 3-20](https://user-images.githubusercontent.com/995849/89784291-01f3b380-db4b-11ea-8f5a-d475e80014fb.png)\
+_Image 3-20，Exported Board Data_
 
 **_All columns for Jira board:_**
 |Column name |Description|
@@ -292,7 +304,10 @@ _Image 3-16，Exported Board Data_
 |Review Days|--|
 |Original Cycle Time: {Column Name}|The data for Jira board original data |
 
-**Iteration Statistics:** Statistics data for all sprints which selected by user.
+**Iteration Statistics:** Statistics data for all sprints which selected by user(Image 3-22)
+
+![Image 3-22](https://user-images.githubusercontent.com/109513161/185026165-1d16d436-14e5-4531-a266-544fa9ad29fa.png)\
+_Image 3-22，Exported Sprint Data_
 
 **_All columns for Iteration：_**
 |Column name |Description|
