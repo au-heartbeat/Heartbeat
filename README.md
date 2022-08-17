@@ -178,6 +178,18 @@ _Image 3-14，Lead time for changes Report_
 ![Image 3-15](https://user-images.githubusercontent.com/995849/89784288-00c28680-db4b-11ea-9756-878176148d63.png)\
 _Image 3-15，Change Failure Rate Report_
 
+### 3.3.7 Completed Cards by Sprint Graph
+
+### 3.3.8 Average cycle time Graph
+
+### 3.3.9 Time Allocation Graph
+
+The graph shows percentage of blocked time and developing time for every sprint which selected by user.
+
+### 3.3.10 Block Reason Graph
+
+The graph shows block reason for the latest sprint which selected by user.
+
 ## 3.4 Export original data
 
 After generating the report, you can export the original data for your board and pipeline (Image 3-15). Users can click the “Export board data” or “Export pipeline data” button to export the original data.
@@ -239,6 +251,60 @@ _Image 3-17，Exported Pipeline Data_
 |Time from PR Merged to Deployment Completed (mins)|--|
 |Status|Status for pipeline (Pass or Failed)|
 
+### 3.4.3 Export sprint data
+
+It will export a excel file for sprint data. It contains two sheets:
+
+**Card Statistics:**
+
+The sheet contains two parts:
+
+**_Part 1:_** Export the all done tickets during the time period
+
+**_Part 2:_** Export the all non-done tickets in your current active board. And it will order by ticket status (Image 3-16)
+
+![Image 3-16](https://user-images.githubusercontent.com/995849/89784291-01f3b380-db4b-11ea-8f5a-d475e80014fb.png)\
+_Image 3-16，Exported Board Data_
+
+**_All columns for Jira board:_**
+|Column name |Description|
+|---|---|
+|Issue key|Ticket ID|
+|Summary|--|
+|Issue Type|-- |
+|Status|--|
+|Story Point|--|
+|Assignee|--|
+|Reporter|--|
+|Project Key|--|
+|Project Name|--|
+|Priority|--|
+|Parent Summary|The epic for ticket|
+|Sprint|Which sprint this ticket in |
+|Labels|--|
+|Cycle Time|total Cycle Time|
+|Cycle Time / Story Points|Cycle Time for each point|
+|Analysis Days|Analysis days for each ticket|
+|In Dev Days|Development days for each ticket |
+|Waiting Days|After development, how long will take before testing|
+|Testing Days|Testing days for each ticket |
+|Block Days|Blocked days for each ticket|
+|Review Days|--|
+|Original Cycle Time: {Column Name}|The data for Jira board original data |
+
+**Iteration Statistics:** Statistics data for all sprints which selected by user.
+
+**_All columns for Iteration：_**
+|Column name |Description|
+|---|---|
+|Standard deviations(population) of cycle time|---|
+|Total cycle time|---|
+|Total blocked time|---|
+|Percentage of developing time|---|
+|Percentage of blocked time|---|
+|Total blocked time for each block reason|The data for the latest sprint|
+|Percentage of blocked time for each reason|The data for the latest sprint|
+
 # 4 Known issues
 
 ## 4.1 Add/Delete columns in Jira board
@@ -286,47 +352,59 @@ For now, we just can download the code in our local machine, please follow below
 $ docker-compose up
 ```
 
-## 6.1 How to run backend
-
-Install node modules:
+## 6.1 How to install and run HeartBeat
 
 ```shell script
-cd HearBeat/backend
-yarn install
+$ cd HearBeat/frontend
+$ yarn install #Install node modules for frontend
+$ yarn start #Run frontend
 ```
-
-Run backend:
 
 ```shell script
-yarn start
+$ cd HearBeat/backend
+$ yarn install #Install node modules for backend
+$ yarn start #Run backend
+$ yarn watch-server #If you can't use yarn start to run backend, please use this script
 ```
+
+access to `http://localhost:4200` use HeartBeat
 
 swagger address: `http://localhost:3001/swagger-html`
 
-## 6.1.1 How to package it (optional)
+## 6.2 How to run test
 
 ```shell script
-yarn package
+$ cd HearBeat/frontend
+$ yarn test #Run test for frontend and generate test report
 ```
 
-you can build server to binary file, it will output 3 files:
+You can check frontend test report in `HearBeat/frontend/coverage/index.html`, and use browser to check it.
+
+```shell script
+$ cd HearBeat/backend
+$ yarn test #Run test for backend
+$ yarn test-with-coverage #Run test for backend and generate test report
+```
+
+You can check backend test report in `HearBeat/backend/coverage/index.html` , and use browser to check it.
+
+## 6.3 How to build it
+
+```
+$ yarn build
+```
+
+## 6.4 How to package it (optional)
+
+```shell script
+$ cd HearBeat/backend
+$ yarn package
+```
+
+you can build server to binary file, it will output `Unix Executable File` according to your OS in `HearBeat/backend`：
 
 - heartbeat-backend-linux
 - heartbeat-backend-macos
 - heartbeat-backend-win.exe
 
-these files can run on different system, you do not need to install node environment
-
-## 6.2 How to run frontend
-
-```
-cd HearBeat/frontend
-yarn install --pure-lockfile
-yarn start
-```
-
-## 6.2.1 How to build it
-
-```
-yarn build
-```
+and you can use HeartBeat when open `Unix Executable File`
