@@ -21,7 +21,7 @@ import {
 } from "@linear/sdk/dist/_generated_sdk";
 import { sortBy } from "lodash";
 import { SprintStatistics } from "../../../models/kanban/SprintStatistics";
-import { SpringStatisticsError } from "../../../types/SpringStatisticsError";
+import { SprintStatisticsError } from "../../../types/SprintStatisticsError";
 
 export enum LinearColumnType {
   BACKLOG = "backlog",
@@ -137,9 +137,8 @@ export class Linear implements Kanban {
       const cardHistory = await card.history();
       const assigneeSet = await Linear.getAssigneeSet(cardHistory.nodes);
       if (confirmThisCardHasAssignedBySelectedUser(users, assigneeSet)) {
-        const statusChangedArray: StatusChangedArrayItem[] = await Linear.putStatusChangeEventsIntoAnArray(
-          cardHistory.nodes
-        );
+        const statusChangedArray: StatusChangedArrayItem[] =
+          await Linear.putStatusChangeEventsIntoAnArray(cardHistory.nodes);
         const cycleTimeInfo = getCardTimeForEachStep(
           sortStatusChangedArray(statusChangedArray)
         );
@@ -198,8 +197,8 @@ export class Linear implements Kanban {
     model: StoryPointsAndCycleTimeRequest,
     cards: Cards
   ): Promise<SprintStatistics> {
-    throw new SpringStatisticsError(
-      "Spring statistics for Linear is not available."
+    throw new SprintStatisticsError(
+      "Sprint statistics for Linear is not available."
     );
   }
 }
