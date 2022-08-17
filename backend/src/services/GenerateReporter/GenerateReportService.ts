@@ -48,6 +48,7 @@ import { SprintStatistics } from "../../models/kanban/SprintStatistics";
 import xlsxForBoardConfig from "../../fixture/xlsxForBoardConfig.json";
 import { Context } from "koa-swagger-decorator";
 import excelJs from "exceljs";
+import { JiraBlockReasonEnum } from "../../models/kanban/JiraBlockReasonEnum";
 
 const KanbanKeyIdentifierMap: { [key: string]: "projectKey" | "teamName" } = {
   [KanbanEnum.CLASSIC_JIRA]: "projectKey",
@@ -480,31 +481,56 @@ export class GenerateReportService {
       this.kanabanSprintStatistics?.standardDeviation;
     response.blockedAndDevelopingPercentage =
       this.kanabanSprintStatistics?.blockedAndDevelopingPercentage;
-    response.latestSprintBlockReason =
-      this.kanabanSprintStatistics?.latestSprintBlockReason;
+    const latestSprintName: string =
+      this.kanabanSprintStatistics?.sprintCompletedCardsCounts[
+        this.kanabanSprintStatistics.sprintCompletedCardsCounts.length - 1
+      ].sprintName || "";
+    const latestSprintBlockReason =
+      this.kanabanSprintStatistics?.sprintBlockReason.filter(
+        (reason) => reason.sprintName === latestSprintName
+      )[0];
+    response.latestSprintBlockReason = {
+      totalBlockedPercentage: latestSprintBlockReason?.totalBlockedPercentage,
+      blockReasonPercentage: latestSprintBlockReason?.blockDetails,
+    };
   }
 
   private getSprintStatisticsMap(
     kanbanSprintStatistics: SprintStatistics
-  ): Map<string, []> {
-    const iterationDataMap = new Map();
-    //StandardDev
+  ): Map<string, Array<any>> {
+    const iterationDataMap: Map<string, Array<any>> = new Map();
     kanbanSprintStatistics.standardDeviation?.forEach((obj) => {
-      iterationDataMap.set(obj.sprintName, [obj.sprintName]);
-      const rowData = iterationDataMap.get(obj.sprintName);
-      rowData.push(obj.value.standardDeviation);
+      iterationDataMap.set(obj.sprintName, [
+        obj.sprintName,
+        obj.value.standardDeviation,
+      ]);
+    });
+    kanbanSprintStatistics.cycleTimeAndBlockedTime.forEach((obj) => {
+      const rowData = iterationDataMap.get(obj.sprintName) || [];
+      rowData.push(obj.cycleTime);
+      rowData.push(obj.blockedTime);
       iterationDataMap.set(obj.sprintName, rowData);
     });
-
-    //TODO: Total cycle time
-
-    //TODO: Total block time
-
-    //TODO: Blocked percentage Developing Percentage
-    kanbanSprintStatistics.blockedAndDevelopingPercentage?.forEach((obj) => {
-      const rowData = iterationDataMap.get(obj.sprintName);
-      rowData.push(obj.value.blockedPercentage);
+    kanbanSprintStatistics.blockedAndDevelopingPercentage.forEach((obj) => {
+      const rowData = iterationDataMap.get(obj.sprintName) || [];
       rowData.push(obj.value.developingPercentage);
+      rowData.push(obj.value.blockedPercentage);
+      iterationDataMap.set(obj.sprintName, rowData);
+    });
+    kanbanSprintStatistics.sprintBlockReason.forEach((obj) => {
+      const rowData = iterationDataMap.get(obj.sprintName) || [];
+      for (const reason in JiraBlockReasonEnum) {
+        const matchedReason = obj.blockDetails.filter((detail) => {
+          return detail.reasonName === reason.toLowerCase();
+        });
+        rowData.push(matchedReason[0] ? matchedReason[0].time : 0);
+      }
+      for (const reason in JiraBlockReasonEnum) {
+        const matchedReason = obj.blockDetails.filter((detail) => {
+          return detail.reasonName === reason.toLowerCase();
+        });
+        rowData.push(matchedReason[0] ? matchedReason[0].percentage : 0);
+      }
       iterationDataMap.set(obj.sprintName, rowData);
     });
     return iterationDataMap;
@@ -526,14 +552,6 @@ export class GenerateReportService {
   }
 
   public fetchExcelFileStream(ctx: Context, timeStamp: number): fs.ReadStream {
-    ctx.response.set(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
-    ctx.response.set(
-      "Content-Disposition",
-      `attachment; filename=exportSprintExcel-${timeStamp}.xlsx`
-    );
     return fs.createReadStream(`xlsx/exportSprintExcel-${timeStamp}.xlsx`);
   }
 }

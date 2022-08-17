@@ -11,6 +11,7 @@ const sprintStatistics = new SprintStatistics(
   [
     { sprintName: sprint1Name, value: 3 },
     { sprintName: sprint2Name, value: 2 },
+    { sprintName: sprint3Name, value: 2 },
   ],
   [
     {
@@ -46,23 +47,88 @@ const sprintStatistics = new SprintStatistics(
       },
     },
   ],
-  {
-    totalBlockedPercentage: 0.5,
-    blockReasonPercentage: [
-      {
-        reasonName: JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK,
-        percentage: 0.07,
-      },
-      {
-        reasonName: JiraBlockReasonEnum.TAKE_LEAVE,
-        percentage: 0.07,
-      },
-      {
-        reasonName: JiraBlockReasonEnum.OTHERS,
-        percentage: 0.07,
-      },
-    ],
-  }
+  [
+    {
+      sprintName: sprint1Name,
+      totalBlockedPercentage: 0.22,
+      blockDetails: [
+        {
+          reasonName: JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK,
+          percentage: 0.05,
+          time: 0,
+        },
+        {
+          reasonName: JiraBlockReasonEnum.TAKE_LEAVE,
+          percentage: 0.15,
+          time: 0,
+        },
+        {
+          reasonName: JiraBlockReasonEnum.OTHERS,
+          percentage: 0.02,
+          time: 0,
+        },
+      ],
+    },
+    {
+      sprintName: sprint2Name,
+      totalBlockedPercentage: 0.29,
+      blockDetails: [
+        {
+          reasonName: JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK,
+          percentage: 0.09,
+          time: 0,
+        },
+        {
+          reasonName: JiraBlockReasonEnum.TAKE_LEAVE,
+          percentage: 0.15,
+          time: 0,
+        },
+        {
+          reasonName: JiraBlockReasonEnum.OTHERS,
+          percentage: 0.05,
+          time: 0,
+        },
+      ],
+    },
+    {
+      sprintName: sprint3Name,
+      totalBlockedPercentage: 0.5,
+      blockDetails: [
+        {
+          reasonName: JiraBlockReasonEnum.DEPENDENCIES_NOT_WORK,
+          percentage: 0.35,
+          time: 0,
+        },
+        {
+          reasonName: JiraBlockReasonEnum.TAKE_LEAVE,
+          percentage: 0.1,
+          time: 0,
+        },
+        {
+          reasonName: JiraBlockReasonEnum.OTHERS,
+          percentage: 0.05,
+          time: 0,
+        },
+      ],
+    },
+  ],
+  [
+    {
+      sprintName: sprint1Name,
+      cycleTime: 1,
+      blockedTime: 1,
+    },
+    {
+      sprintName: sprint2Name,
+      cycleTime: 2,
+      blockedTime: 2,
+    },
+    {
+      sprintName: sprint3Name,
+      cycleTime: 3,
+      blockedTime: 3,
+    },
+  ]
 );
 describe("generate excel file", () => {
   const reportService = new GenerateReportService();
@@ -71,17 +137,83 @@ describe("generate excel file", () => {
     const iterationDataMap =
       reportServiceProto.getSprintStatisticsMap(sprintStatistics);
     const expected = new Map();
-    expected.set("test Sprint 1", ["test Sprint 1", 1.91, 0.22, 0.78]);
-    expected.set("test Sprint 2", ["test Sprint 2", 1.5, 0.29, 0.71]);
-    expected.set("test Sprint 3", ["test Sprint 3", 0, 0.5, 0.5]);
+    expected.set("test Sprint 1", [
+      "test Sprint 1",
+      1.91,
+      1,
+      1,
+      0.78,
+      0.22,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.05,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.15,
+      0.02,
+    ]);
+    expected.set("test Sprint 2", [
+      "test Sprint 2",
+      1.5,
+      2,
+      2,
+      0.71,
+      0.29,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.09,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.15,
+      0.05,
+    ]);
+    expected.set("test Sprint 3", [
+      "test Sprint 3",
+      0,
+      3,
+      3,
+      0.5,
+      0.5,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.35,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.1,
+      0.05,
+    ]);
     expect(iterationDataMap).deep.equal(expected);
   });
 
   it("should return the empty sprint statistics map when given empty sprint statistics", () => {
-    const emptySprintStatistics = new SprintStatistics([], [], [], {
-      totalBlockedPercentage: 0,
-      blockReasonPercentage: [],
-    });
+    const emptySprintStatistics = new SprintStatistics([], [], [], [], []);
     const emptyIterationDataMap = reportServiceProto.getSprintStatisticsMap(
       emptySprintStatistics
     );
