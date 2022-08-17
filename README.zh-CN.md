@@ -177,7 +177,7 @@ _Image 3-14，Lead time for changes Report_
 
 ### 3.3.6 变更失败率 / Change Failure Rate
 
-![Image 3-15](https://user-images.githubusercontent.com/109513161/185026178-1a9f2b6d-b6fe-4f0a-9b39-7824f2189c5d.png)\
+![Image 3-15](https://user-images.githubusercontent.com/995849/89784288-00c28680-db4b-11ea-9756-878176148d63.png)\
 _Image 3-15，Change Failure Rate Report_
 
 ### 3.3.7 迭代完成卡数图 / Completed Cards by Sprint Graph
@@ -271,9 +271,7 @@ _Image 3-21，Exported Pipeline Data_
 
 本功能会导出看板数据到 excel 文件，该文件包含两个 sheet：
 
-**Card Statistics:** 在所选择时间段内所有的 Jira Ticket
-
-该 sheet 包含两个部分：
+**Sheet1 - Card Statistics:** 包含两个部分：
 
 **_Part 1:_** 在所选择时间段内所有的 Jira Ticket
 
@@ -308,7 +306,7 @@ _Image 3-20，Exported Board Data_
 |Review Days|--|
 |Original Cycle Time: {Column Name}|The data for Jira board original data |
 
-**Iteration Statistics:** 在所选时间段内所有迭代的数据分析。(Image 3-22)
+**Sheet2 - Iteration Statistics:** 在所选时间段内所有迭代的数据分析(Image 3-22)
 
 ![Image 3-22](https://user-images.githubusercontent.com/109513161/185026165-1d16d436-14e5-4531-a266-544fa9ad29fa.png)\
 _Image 3-22，Exported Sprint Data_
@@ -379,7 +377,7 @@ $ yarn start #运行项目
 $ yarn watch-server #如果不能运行，请使用本命令
 ```
 
-访问 `http://localhost:4200`开始使用
+在成功启动前后端后，访问 `http://localhost:4200` 即可使用 HeartBeat。
 
 swagger 地址: `http://localhost:3001/swagger-html`
 
@@ -413,7 +411,7 @@ $ cd HearBeat/backend
 $ yarn package
 ```
 
-你可以将 server 构建到二进制文件，它将会在`HearBeat/backend`输出操作系统对应的`Unix Executable File`：
+你可以将 server 构建到二进制文件，它将会在 `HearBeat/backend` 输出操作系统对应的 `Unix Executable File` ：
 
 - heartbeat-backend-linux
 - heartbeat-backend-macos

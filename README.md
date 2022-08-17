@@ -175,7 +175,7 @@ _Image 3-14，Lead time for changes Report_
 
 ### 3.3.6 Change Failure Rate
 
-![Image 3-15](https://user-images.githubusercontent.com/109513161/185026178-1a9f2b6d-b6fe-4f0a-9b39-7824f2189c5d.png)\
+![Image 3-15](https://user-images.githubusercontent.com/995849/89784288-00c28680-db4b-11ea-9756-878176148d63.png)\
 _Image 3-15，Change Failure Rate Report_
 
 ### 3.3.7 Completed Cards by Sprint Graph
@@ -267,9 +267,7 @@ _Image 3-21，Exported Pipeline Data_
 
 It will export a excel file for sprint data. It contains two sheets:
 
-**Card Statistics:**
-
-The sheet contains two parts:
+**Sheet1 - Card Statistics:** contains two parts:
 
 **_Part 1:_** Export the all done tickets during the time period
 
@@ -304,7 +302,7 @@ _Image 3-20，Exported Board Data_
 |Review Days|--|
 |Original Cycle Time: {Column Name}|The data for Jira board original data |
 
-**Iteration Statistics:** Statistics data for all sprints which selected by user(Image 3-22)
+**Sheet2 - Iteration Statistics:** Statistics data for all sprints which selected by user(Image 3-22)
 
 ![Image 3-22](https://user-images.githubusercontent.com/109513161/185026165-1d16d436-14e5-4531-a266-544fa9ad29fa.png)\
 _Image 3-22，Exported Sprint Data_
@@ -382,7 +380,7 @@ $ yarn start #Run backend
 $ yarn watch-server #If you can't use yarn start to run backend, please use this script
 ```
 
-access to `http://localhost:4200` use HeartBeat
+After starting frontend and backend successfully, you can access to `http://localhost:4200` use HeartBeat.
 
 swagger address: `http://localhost:3001/swagger-html`
 
@@ -416,7 +414,7 @@ $ cd HearBeat/backend
 $ yarn package
 ```
 
-you can build server to binary file, it will output `Unix Executable File` according to your OS in `HearBeat/backend`：
+You can build server to binary file, it will output `Unix Executable File` according to your OS in `HearBeat/backend`：
 
 - heartbeat-backend-linux
 - heartbeat-backend-macos
