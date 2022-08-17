@@ -33,16 +33,16 @@ describe("GenerateReporter", () => {
 
 describe("ExportExcel", () => {
   after(() => {
-    fs.unlink("xlsx/test.txt", (err) => {
-      if (err) {
-        console.error(err);
+    fs.unlink("xlsx/test.txt", (error) => {
+      if (error) {
+        console.error(error);
         return;
       }
     });
   });
   it("should return 200  when post timeStamp", async () => {
-    fs.writeFile("xlsx/test.txt", "Hello", (err) => {
-      if (err) throw err;
+    fs.writeFile("xlsx/test.txt", "Hello", (error) => {
+      if (error) throw error;
     });
     sinon
       .stub(GenerateReportService.prototype, "fetchExcelFileStream")

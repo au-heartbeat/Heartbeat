@@ -498,27 +498,27 @@ export class GenerateReportService {
   private getSprintStatisticsMap(
     kanbanSprintStatistics: SprintStatistics
   ): Map<string, Array<any>> {
-    const iterationDataMap: Map<string, Array<any>> = new Map();
+    const sprintDataMap: Map<string, Array<any>> = new Map();
     kanbanSprintStatistics.standardDeviation?.forEach((obj) => {
-      iterationDataMap.set(obj.sprintName, [
+      sprintDataMap.set(obj.sprintName, [
         obj.sprintName,
         obj.value.standardDeviation,
       ]);
     });
     kanbanSprintStatistics.cycleTimeAndBlockedTime.forEach((obj) => {
-      const rowData = iterationDataMap.get(obj.sprintName) || [];
+      const rowData = sprintDataMap.get(obj.sprintName) || [];
       rowData.push(obj.cycleTime);
       rowData.push(obj.blockedTime);
-      iterationDataMap.set(obj.sprintName, rowData);
+      sprintDataMap.set(obj.sprintName, rowData);
     });
     kanbanSprintStatistics.blockedAndDevelopingPercentage.forEach((obj) => {
-      const rowData = iterationDataMap.get(obj.sprintName) || [];
+      const rowData = sprintDataMap.get(obj.sprintName) || [];
       rowData.push(obj.value.developingPercentage);
       rowData.push(obj.value.blockedPercentage);
-      iterationDataMap.set(obj.sprintName, rowData);
+      sprintDataMap.set(obj.sprintName, rowData);
     });
     kanbanSprintStatistics.sprintBlockReason.forEach((obj) => {
-      const rowData = iterationDataMap.get(obj.sprintName) || [];
+      const rowData = sprintDataMap.get(obj.sprintName) || [];
       for (const reason in JiraBlockReasonEnum) {
         const matchedReason = obj.blockDetails.filter((detail) => {
           return detail.reasonName === reason.toLowerCase();
@@ -531,9 +531,9 @@ export class GenerateReportService {
         });
         rowData.push(matchedReason[0] ? matchedReason[0].percentage : 0);
       }
-      iterationDataMap.set(obj.sprintName, rowData);
+      sprintDataMap.set(obj.sprintName, rowData);
     });
-    return iterationDataMap;
+    return sprintDataMap;
   }
 
   private generateExcelFile(timeStamp: number): void {

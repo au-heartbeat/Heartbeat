@@ -961,7 +961,7 @@ describe("map cards by sprint name", () => {
     expect(mapSprintCards).deep.equal(new Map<string, JiraCardResponse[]>());
   });
 });
-describe("caculate cycleTime and blockedTime", () => {
+describe("calculate cycleTime and blockedTime", () => {
   it("should return correct cycleTime and blockedTime when there are matched cards in sprint", () => {
     const cycleTimeAndBlockedTime =
       jiraTest.calculateTotalCycleTimeAndBlockedTime(mapSprintCards);
