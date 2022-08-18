@@ -24,12 +24,12 @@ import {
   HistoryDetail,
   JiraCardHistory,
   Status,
-} from "../../../../src/models/kanban/JiraCardHistory";
+} from "../../../../src/models/kanban/JiraBoard/JiraCardHistory";
 import {
   JiraCard,
   JiraCardField,
-} from "../../../../src/models/kanban/JiraCard";
-import { JiraBlockReasonEnum } from "../../../../src/models/kanban/JiraBlockReasonEnum";
+} from "../../../../src/models/kanban/JiraBoard/JiraCard";
+import { JiraBlockReasonEnum } from "../../../../src/models/kanban/JiraBoard/JiraBlockReasonEnum";
 import {
   CardCycleTime,
   StepsDay,

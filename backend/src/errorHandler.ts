@@ -1,8 +1,8 @@
 import Application from "koa";
-import { PlatformTypeError } from "./types/PlatformTypeError";
-import { SettingMissingError } from "./types/SettingMissingError";
-import { SprintStatisticsError } from "./types/SprintStatisticsError";
-import { NoCardsInDoneColumnError } from "./types/NoCardsInDoneColumnError";
+import { PlatformTypeError } from "./errors/PlatformTypeError";
+import { SettingMissingError } from "./errors/SettingMissingError";
+import { SprintStatisticsError } from "./errors/SprintStatisticsError";
+import { NoCardsInDoneColumnError } from "./errors/NoCardsInDoneColumnError";
 
 export default () =>
   async (
@@ -13,7 +13,7 @@ export default () =>
   ): Promise<void> => {
     try {
       await next();
-    } catch (error) {
+    } catch (error: any) {
       if (error.isAxiosError && error.response != undefined) {
         ctx.response.status = error.response.status;
       } else if (error instanceof PlatformTypeError) {
