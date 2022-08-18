@@ -479,6 +479,7 @@ describe("get story points and cycle times of non done cards during period", () 
   });
 
   it("should return cycle time when having matched  non done cards", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const WorkDayCalculate = require("../../../../src/services/common/WorkDayCalculate");
     sinon.stub(WorkDayCalculate, "calculateWorkDaysBy24Hours").returns(0.5);
 

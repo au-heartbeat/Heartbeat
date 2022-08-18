@@ -13,7 +13,7 @@ export default () =>
   ): Promise<void> => {
     try {
       await next();
-    } catch (error: any) {
+    } catch (error) {
       if (error.isAxiosError && error.response != undefined) {
         ctx.response.status = error.response.status;
       } else if (error instanceof PlatformTypeError) {
