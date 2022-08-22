@@ -58,27 +58,3 @@ export const components: any[] = [
   TimeAllocationReportComponent,
   ExportExcelComponent,
 ];
-
-export * from './home/home.component';
-export * from './config-stepper/configuration/configuration.component';
-export * from './config-stepper/metrics/metrics.component';
-export * from './config-stepper/config-stepper.component';
-export * from './config-stepper/configuration/metric-source/metric-source.component';
-export * from './config-stepper/metrics/metric-pipeline/pipeline-item/pipeline-item.component';
-export * from './config-stepper/reports/reports.component';
-export * from './config-stepper/metrics/metrics-board/cycle-time/cycle-item/cycle-item.component';
-export * from './config-stepper/metrics/metrics-board/crews/crews.component';
-export * from './config-stepper/configuration/collection/collection.component';
-export * from './config-stepper/metrics/metric-pipeline/metric-pipeline.component';
-export * from './config-stepper/metrics/metrics-board/cycle-time/cycle-time.component';
-export * from './config-stepper/reports/velocity/velocity.component';
-export * from './config-stepper/reports/cycle-time/cycle-time.component';
-export * from './config-stepper/reports/deployment-frequency/deployment-frequency.component';
-export * from './config-stepper/reports/lead-time/lead-time.component';
-export * from './config-stepper/reports/failure-rate/failure-rate.component';
-export * from './config-stepper/reports/mean-time-to-recovery/mean-time-to-recovery.component';
-export * from './config-stepper/metrics/metric-pipeline/metric-pipeline.component';
-export * from './config-stepper/reports/classification/classification.component';
-export * from './config-stepper/reports/export-csv/export-csv.component';
-export * from './config-stepper/metrics/metrics-board/done-columns/done-columns.component';
-export * from './config-stepper/metrics/warning-message/warning-message.component';
