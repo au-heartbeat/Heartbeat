@@ -6,6 +6,8 @@ import BKPipelineInfo from "../../fixture/BKPipelineInfo.json";
 import BKBuildInfoList from "../../fixture/BKBuildInfoList.json";
 import { Buildkite } from "../../../src/services/pipeline/Buildkite/Buildkite";
 import { PipelineInfo } from "../../../src/contract/pipeline/PipelineInfo";
+import { PipelineError } from "../../../src/errors/PipelineError";
+import sinon from "sinon";
 
 const buildkite = new Buildkite("testToken");
 
@@ -69,6 +71,23 @@ describe("fetch pipeline ", () => {
     ];
 
     expect(pipelineInfo).deep.equal(expectPipelineInfo);
+  });
+  it("should return error when token failed", async () => {
+    mock.onGet("/access-token").reply(200, {
+      scopes: ["read_builds", "read_organizations"],
+    });
+    try {
+      await buildkite.fetchPipelineInfo(
+        new Date().getTime() - 10000000,
+        new Date().getTime()
+      );
+    } catch (error) {
+      if (error instanceof PipelineError) {
+        expect(error.message).equals(
+          new PipelineError("permission deny!").message
+        );
+      }
+    }
   });
 });
 
