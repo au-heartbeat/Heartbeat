@@ -8,6 +8,9 @@ import { Buildkite } from "../../../src/services/pipeline/Buildkite/Buildkite";
 import { PipelineInfo } from "../../../src/contract/pipeline/PipelineInfo";
 import { PipelineError } from "../../../src/errors/PipelineError";
 import sinon from "sinon";
+import { DeploymentEnvironment } from "../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
+import { BuildInfo, JobInfo } from "../../../src/models/pipeline/BuildInfo";
+import { BKBuildInfo } from "../../../src/models/pipeline/Buildkite/BKBuildInfo";
 
 const buildkite = new Buildkite("testToken");
 
@@ -115,5 +118,38 @@ describe("fetch pipeline repository", () => {
     );
 
     expect(repositories).deep.equal(expectRepositories);
+  });
+});
+
+describe("count deploy times", () => {
+  it("should return error", async () => {
+    const deployments: DeploymentEnvironment = {
+      orgId: "",
+      orgName: "MYOB",
+      id: "sme-web",
+      name: "sme-web",
+      step: ":rocket: :eagle: Deploy Integration App",
+    };
+    const BKJobInfo1: JobInfo = {
+      name: ":rainbow-flag: uploading pipeline",
+      state: "passed",
+      startedAt: "2021-12-16T22:10:29.122Z",
+      finishedAt: "2021-12-16T22:10:58.849Z",
+    };
+    const bkBuildInfo: BKBuildInfo = {
+      jobs: [BKJobInfo1],
+      commit: "18f8f5f2b89d255bb3f156e3fa13ae31fb66fb1f",
+      pipelineCreateTime: "2021-12-17T02:11:55.965Z",
+      number: 9400,
+    };
+    const buildInfo1 = new BuildInfo(bkBuildInfo);
+    const buildInfos: BuildInfo[] = [buildInfo1];
+    try {
+      await buildkite.countDeployTimes(deployments, buildInfos);
+    } catch (error) {
+      if (error instanceof Error) {
+        expect(error.message).equals("miss orgId argument");
+      }
+    }
   });
 });
