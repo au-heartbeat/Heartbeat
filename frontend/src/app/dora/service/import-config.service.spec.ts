@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ImportConfigService } from './import-config.service';
 
 describe('ImportConfigService', () => {
@@ -22,8 +21,9 @@ describe('ImportConfigService', () => {
 
   it('should get the corresponding object when set json string', () => {
     const importConfig = '{"key": "value"}';
-    const jsonImportConfig = { key: 'value' };
+    const expected = { key: 'value' };
+
     importConfigService.set(importConfig);
-    expect(importConfigService.get()).toEqual(jsonImportConfig);
+    expect(importConfigService.get()).toEqual(expected);
   });
 });

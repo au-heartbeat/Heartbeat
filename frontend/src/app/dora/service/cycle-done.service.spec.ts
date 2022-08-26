@@ -1,6 +1,4 @@
 import { async, TestBed } from '@angular/core/testing';
-import { Observable } from 'rxjs';
-
 import { CycleDoneService } from './cycle-done.service';
 
 describe('CycleDoneService', () => {
@@ -19,6 +17,7 @@ describe('CycleDoneService', () => {
     const testValue: string[] = ['ADM-212'];
 
     cycleDoneService.setValue(testValue);
+
     cycleDoneService.getValue().subscribe((res) => {
       expect(res).toEqual(testValue);
     });
