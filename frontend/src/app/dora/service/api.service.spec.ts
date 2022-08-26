@@ -119,6 +119,11 @@ describe('ApiService', () => {
         params,
       });
     });
+
+    it('should throw an error when data source type is invalid', () => {
+      const type = 'error';
+      expect(() => apiService.verify({ type, params: null })).toThrow(new Error('Invalid data source type'));
+    });
   });
 
   it('should call httpClient.get when fetchPipelineInfo is called', () => {
