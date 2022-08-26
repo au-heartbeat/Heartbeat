@@ -122,7 +122,7 @@ describe('ApiService', () => {
 
     it('should throw an error when data source type is invalid', () => {
       const type = 'error';
-      expect(() => apiService.verify({ type, params: null })).toThrow(new Error('Invalid data source type'));
+      expect(() => apiService.verify({ type, params: null })).toThrowError('Invalid data source type');
     });
   });
 
