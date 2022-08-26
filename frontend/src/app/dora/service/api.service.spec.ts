@@ -129,6 +129,7 @@ describe('ApiService', () => {
   it('should call httpClient.get when fetchPipelineInfo is called', () => {
     apiService.fetchPipelineInfo();
     expect(httpClientSpy.get.calls.count()).toBe(1);
+    expect(httpClientSpy.get.calls.argsFor(0)).toContain('../../../assets/metrics.json');
   });
 
   it('should call httpClient.post when generateReporter is called', () => {
@@ -139,7 +140,7 @@ describe('ApiService', () => {
   });
 
   it('should call httpClient.get when fetchExportData is called', () => {
-    const type = 'type';
+    const type = 'board';
     const csvTimeStamp = 1660201532188;
 
     apiService.fetchExportData(type, csvTimeStamp);
