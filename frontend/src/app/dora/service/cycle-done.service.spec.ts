@@ -15,7 +15,7 @@ describe('CycleDoneService', () => {
     expect(cycleDoneService).toBeTruthy();
   });
 
-  it('should set a new value and then can get the same value', async(() => {
+  it('should get the same array when set a new array', async(() => {
     const testValue: string[] = ['ADM-212'];
 
     cycleDoneService.setValue(testValue);
