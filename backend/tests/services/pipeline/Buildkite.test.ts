@@ -7,12 +7,19 @@ import BKBuildInfoList from "../../fixture/BKBuildInfoList.json";
 import { Buildkite } from "../../../src/services/pipeline/Buildkite/Buildkite";
 import { PipelineInfo } from "../../../src/contract/pipeline/PipelineInfo";
 import { PipelineError } from "../../../src/errors/PipelineError";
-import sinon from "sinon";
 import { DeploymentEnvironment } from "../../../src/contract/GenerateReporter/GenerateReporterRequestBody";
 import { BuildInfo, JobInfo } from "../../../src/models/pipeline/BuildInfo";
 import { BKBuildInfo } from "../../../src/models/pipeline/Buildkite/BKBuildInfo";
+import { FetchParams } from "../../../src/types/FetchParams";
+import axios from "axios";
+import sinon from "sinon";
+import PipelineResponse from "../../fixture/PipelineResponse.json";
+import Links from "../../fixture/Links.json";
+
+import parseLinkHeader from "parse-link-header";
 
 const buildkite = new Buildkite("testToken");
+const buildkiteProto = Object.getPrototypeOf(buildkite);
 
 describe("verify token", () => {
   it("should return true when token has required permissions", async () => {
@@ -151,5 +158,74 @@ describe("count deploy times", () => {
         expect(error.message).equals("miss orgId argument");
       }
     }
+  });
+});
+
+describe("get builds by state", () => {
+  it("get builds by state", () => {
+    const deployments: DeploymentEnvironment = {
+      orgId: "",
+      orgName: "MYOB",
+      id: "sme-web",
+      name: "sme-web",
+      step: ":rocket: :eagle: Deploy Integration App",
+    };
+    const BKJobInfo1: JobInfo = {
+      name: ":rainbow-flag: uploading pipeline",
+      state: "passed",
+      startedAt: "2021-12-16T22:10:29.122Z",
+      finishedAt: "2021-12-16T22:10:58.849Z",
+    };
+    const bkBuildInfo: BKBuildInfo = {
+      jobs: [BKJobInfo1],
+      commit: "18f8f5f2b89d255bb3f156e3fa13ae31fb66fb1f",
+      pipelineCreateTime: "2021-12-17T02:11:55.965Z",
+      number: 9400,
+    };
+    const buildInfo1 = new BuildInfo(bkBuildInfo);
+    const buildInfos: BuildInfo[] = [buildInfo1];
+    const state: string[] = ["passed", "passed"];
+    const actual = buildkiteProto.getBuildsByState(
+      buildInfos,
+      deployments,
+      state
+    );
+    expect(actual.length).to.equal(0);
+  });
+});
+
+describe("fetch pipeline builds", async () => {
+  it("should return a new jsonConvert", async () => {
+    const deployments: DeploymentEnvironment = {
+      orgId: "",
+      orgName: "MYOB",
+      id: "sme-web",
+      name: "sme-web",
+      step: ":rocket: :eagle: Deploy Integration App",
+    };
+    const startTime: Date = new Date(1590080044000);
+    const endTime: Date = new Date(1590080094000);
+    const BKJobInfo1: JobInfo = {
+      name: ":rainbow-flag: uploading pipeline",
+      state: "passed",
+      startedAt: "2021-12-16T22:10:29.122Z",
+      finishedAt: "2021-12-16T22:10:58.849Z",
+    };
+    const buildInfo = new BuildInfo({
+      jobs: [BKJobInfo1],
+      commit: "18f8f5f2b89d255bb3f156e3fa13ae31fb66fb1f",
+      pipelineCreateTime: "2021-12-17T02:11:55.965Z",
+      number: 9400,
+    });
+    sinon
+      .stub(buildkite, "fetchPipelineBuilds")
+      .returns(Promise.resolve([buildInfo]));
+    sinon.stub(buildkiteProto, "fetchDataPageByPage");
+    const actural = buildkite.fetchPipelineBuilds(
+      deployments,
+      startTime,
+      endTime
+    );
+    expect((await actural).length).to.equal(1);
   });
 });
