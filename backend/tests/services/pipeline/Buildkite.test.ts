@@ -11,12 +11,12 @@ import { DeploymentEnvironment } from "../../../src/contract/GenerateReporter/Ge
 import { BuildInfo, JobInfo } from "../../../src/models/pipeline/BuildInfo";
 import { BKBuildInfo } from "../../../src/models/pipeline/Buildkite/BKBuildInfo";
 import { FetchParams } from "../../../src/types/FetchParams";
+import {
+  DeployInfo,
+  DeployTimes,
+} from "../../../src/models/pipeline/DeployTimes";
 import axios from "axios";
 import sinon from "sinon";
-import PipelineResponse from "../../fixture/PipelineResponse.json";
-import Links from "../../fixture/Links.json";
-
-import parseLinkHeader from "parse-link-header";
 
 const buildkite = new Buildkite("testToken");
 const buildkiteProto = Object.getPrototypeOf(buildkite);
@@ -65,23 +65,34 @@ describe("fetch pipeline ", () => {
       scopes: ["read_builds", "read_organizations", "read_pipelines"],
     });
 
-    const pipelineInfo: PipelineInfo[] = await buildkite.fetchPipelineInfo(
+    const actual: PipelineInfo[] = await buildkite.fetchPipelineInfo(
       new Date().getTime() - 10000000,
       new Date().getTime()
     );
-    const expectPipelineInfo: PipelineInfo[] = [
-      new PipelineInfo(
-        "buildkite-test-slug",
-        "buildkite-test-name",
-        [],
-        "https://github.com/expample/example.git",
-        "buildkite-test-slug",
-        "buildkite-test-name"
-      ),
+
+    // console.log(pipelineInfo);
+    const expected: PipelineInfo[] = [
+      {
+        id: "buildkite-test-slug",
+        name: "buildkite-test1-name",
+        steps: [],
+        repository: "https://github.com/expample/example.git",
+        orgId: "buildkite-test-slug",
+        orgName: "buildkite-test-name",
+      },
+      {
+        id: "buildkite-test-slug",
+        name: "buildkite-test2-name",
+        steps: [],
+        repository: "https://github.com/expample/example.git",
+        orgId: "buildkite-test-slug",
+        orgName: "buildkite-test-name",
+      },
     ];
 
-    expect(pipelineInfo).deep.equal(expectPipelineInfo);
+    expect(actual).deep.equal(expected);
   });
+
   it("should return error when token failed", async () => {
     mock.onGet("/access-token").reply(200, {
       scopes: ["read_builds", "read_organizations"],
@@ -128,14 +139,81 @@ describe("fetch pipeline repository", () => {
   });
 });
 
+describe("fetch data page by page", async () => {
+  it("should return data collector", async () => {
+    const fetchUrl = "/organizations/mytest/pipelines";
+    const fetchParams: FetchParams = new FetchParams(
+      "1",
+      "100",
+      new Date(1590080044000),
+      new Date(1590080094000)
+    );
+    buildkiteProto.httpClient = axios.create({
+      baseURL: "https://api.buildkite.com/v2",
+    });
+    mock.onGet(`/organizations/mytest/pipelines`).reply(
+      200,
+      [
+        {
+          id: "01829062-7ad1-4040-ab92-4cdff307b6f3",
+          graphql_id:
+            "UGlwZWxpbmUtLS0wMTgyMGZhNC1iMGNjLTRhMmYtOTk4ZC0yMTk4MzNjODI4NDU=",
+          url: "https://api.buildkite.com/v2/organizations/myob/pipelines/account-details-self-portal-web-performance-test",
+          web_url:
+            "https://buildkite.com/myob/account-details-self-portal-web-performance-test",
+          name: "account-details-self-portal-web-performance-test",
+          description: "",
+        },
+        {
+          id: "01820fa4-b0cc-4a2f-998d-219833c82845",
+          graphql_id:
+            "UGlwZWxpbmUtLS0wMTgyMGZhNC1iMGNjLTRhMmYtOTk4ZC0yMTk4MzNjODI4NDU=",
+          url: "https://api.buildkite.com/v2/organizations/myob/pipelines/account-details-self-portal-web-performance-test",
+          web_url:
+            "https://buildkite.com/myob/account-details-self-portal-web-performance-test",
+          name: "account-details-self-portal-web-performance-test",
+          description: "",
+        },
+      ],
+      {
+        link: '<https://api.buildkite.com/v2/organizations/mytest/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="next", <https://api.buildkite.com/v2/organizations/myob/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="last"',
+      }
+    );
+    const dataCollector = await buildkiteProto.fetchDataPageByPage(
+      fetchUrl,
+      fetchParams
+    );
+    expect(dataCollector.length).to.equal(4);
+  });
+});
+
 describe("count deploy times", () => {
+  afterEach(() => sinon.restore());
   it("should return error", async () => {
     const deployments: DeploymentEnvironment = {
+      orgId: null!,
+      orgName: "test",
+      id: "sme-test",
+      name: "sme-test",
+      step: ":test: :test: Deploy Integration App",
+    };
+    const buildInfos: BuildInfo[] = [];
+    try {
+      await buildkite.countDeployTimes(deployments, buildInfos);
+    } catch (error) {
+      if (error instanceof Error) {
+        expect(error.message).equals("miss orgId argument");
+      }
+    }
+  });
+
+  it("should return deploy times", async () => {
+    const deployments: DeploymentEnvironment = {
       orgId: "",
-      orgName: "MYOB",
-      id: "sme-web",
-      name: "sme-web",
-      step: ":rocket: :eagle: Deploy Integration App",
+      orgName: "test",
+      id: "sme-test",
+      name: "sme-test",
+      step: ":test: :test: Deploy Integration App",
     };
     const BKJobInfo1: JobInfo = {
       name: ":rainbow-flag: uploading pipeline",
@@ -151,13 +229,18 @@ describe("count deploy times", () => {
     };
     const buildInfo1 = new BuildInfo(bkBuildInfo);
     const buildInfos: BuildInfo[] = [buildInfo1];
-    try {
-      await buildkite.countDeployTimes(deployments, buildInfos);
-    } catch (error) {
-      if (error instanceof Error) {
-        expect(error.message).equals("miss orgId argument");
-      }
-    }
+    const passed: DeployInfo = {
+      pipelineCreateTime: "2021-12-17T02:11:55.965Z",
+      jobStartTime: "2021-12-16T22:10:29.122Z",
+      jobFinishTime: "2021-12-16T22:10:58.849Z",
+      commitId: "test",
+      state: "passed",
+    };
+    sinon.stub(buildkiteProto, "getBuildsByState").returns(passed);
+
+    const actual = buildkite.countDeployTimes(deployments, buildInfos);
+
+    expect((await actual).passed).to.equal(passed);
   });
 });
 
@@ -165,10 +248,10 @@ describe("get builds by state", () => {
   it("get builds by state", () => {
     const deployments: DeploymentEnvironment = {
       orgId: "",
-      orgName: "MYOB",
-      id: "sme-web",
-      name: "sme-web",
-      step: ":rocket: :eagle: Deploy Integration App",
+      orgName: "test",
+      id: "sme-test",
+      name: "sme-test",
+      step: ":test: :test: Deploy Integration App",
     };
     const BKJobInfo1: JobInfo = {
       name: ":rainbow-flag: uploading pipeline",
@@ -198,34 +281,45 @@ describe("fetch pipeline builds", async () => {
   it("should return a new jsonConvert", async () => {
     const deployments: DeploymentEnvironment = {
       orgId: "",
-      orgName: "MYOB",
-      id: "sme-web",
-      name: "sme-web",
-      step: ":rocket: :eagle: Deploy Integration App",
+      orgName: "test",
+      id: "sme-test",
+      name: "sme-test",
+      step: ":test: :eagle: Deploy Integration App",
     };
     const startTime: Date = new Date(1590080044000);
     const endTime: Date = new Date(1590080094000);
-    const BKJobInfo1: JobInfo = {
-      name: ":rainbow-flag: uploading pipeline",
-      state: "passed",
-      startedAt: "2021-12-16T22:10:29.122Z",
-      finishedAt: "2021-12-16T22:10:58.849Z",
-    };
-    const buildInfo = new BuildInfo({
-      jobs: [BKJobInfo1],
-      commit: "18f8f5f2b89d255bb3f156e3fa13ae31fb66fb1f",
-      pipelineCreateTime: "2021-12-17T02:11:55.965Z",
-      number: 9400,
-    });
-    sinon
-      .stub(buildkite, "fetchPipelineBuilds")
-      .returns(Promise.resolve([buildInfo]));
-    sinon.stub(buildkiteProto, "fetchDataPageByPage");
-    const actural = buildkite.fetchPipelineBuilds(
+    sinon.stub(buildkiteProto, "fetchDataPageByPage").returns([
+      {
+        id: "f7c42703-4925-4c8c-aa0f-dbc105696055",
+        created_at: "2021-12-11T02:19:01.748Z",
+        scheduled_at: "2021-12-11T02:19:01.701Z",
+        started_at: "2021-12-11T02:19:11.509Z",
+        finished_at: "2021-12-11T02:24:05.276Z",
+        jobs: [
+          {
+            name: "test01",
+          },
+        ],
+      },
+      {
+        id: "f7c42703-4925-4c8c-aa0f-dbc105696056",
+        created_at: "2021-12-11T02:19:01.748Z",
+        scheduled_at: "2021-12-11T02:19:01.701Z",
+        started_at: "2021-12-11T02:19:11.509Z",
+        finished_at: "2021-12-11T02:24:05.276Z",
+        jobs: [
+          {
+            name: "test02",
+          },
+        ],
+      },
+    ]);
+    const actual = buildkite.fetchPipelineBuilds(
       deployments,
       startTime,
       endTime
     );
-    expect((await actural).length).to.equal(1);
+    console.log(actual);
+    expect((await actual).length).to.equal(2);
   });
 });
