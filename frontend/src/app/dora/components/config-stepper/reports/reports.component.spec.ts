@@ -5,25 +5,18 @@ import { SimpleChange } from '@angular/core';
 import { ApiService } from 'src/app/dora/service/api.service';
 import { ReportParams } from '../../../models/reportParams';
 import { BoardParams } from 'src/app/dora/models/boardParams';
-import { metrics } from 'src/app/dora/utils/config';
 import { of } from 'rxjs';
 import { ReportResponse } from '../../../types/reportResponse';
 
 describe('ExportComponent', () => {
   let exportComponent: ExportComponent;
   let fixture: ComponentFixture<ExportComponent>;
-  let element: any;
   let apiService: ApiService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [ExportComponent],
-      providers: [
-        {
-          useValue: { metrics: metrics },
-        },
-      ],
     }).compileComponents();
   }));
 
@@ -31,7 +24,6 @@ describe('ExportComponent', () => {
     fixture = TestBed.createComponent(ExportComponent);
     apiService = TestBed.inject(ApiService);
     exportComponent = fixture.componentInstance;
-    element = fixture.nativeElement;
     fixture.detectChanges();
   });
 
@@ -52,8 +44,8 @@ describe('ExportComponent', () => {
     });
     const commonReportParams = new ReportParams({
       metrics: ['Velocity', 'Cycle time'],
-      startDate: new Date(1660924799000),
-      endDate: new Date(1660924799000),
+      startDate: new Date('2020-11-1'),
+      endDate: new Date('2020-11-30'),
       considerHoliday: true,
     });
     const reportParams = {
