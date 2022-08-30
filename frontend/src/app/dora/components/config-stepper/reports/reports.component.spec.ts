@@ -64,8 +64,8 @@ describe('ExportComponent', () => {
   });
 
   describe('should fetch report', () => {
-    const response: ReportResponse = {};
     it('should set loading and reportResponse when getting response ', () => {
+      const response: ReportResponse = {};
       spyOn(apiService, 'generateReporter').and.returnValue(of(response));
       exportComponent.fetchReports();
       fixture.detectChanges();
