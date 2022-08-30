@@ -11,10 +11,7 @@ import { DeploymentEnvironment } from "../../../src/contract/GenerateReporter/Ge
 import { BuildInfo, JobInfo } from "../../../src/models/pipeline/BuildInfo";
 import { BKBuildInfo } from "../../../src/models/pipeline/Buildkite/BKBuildInfo";
 import { FetchParams } from "../../../src/types/FetchParams";
-import {
-  DeployInfo,
-  DeployTimes,
-} from "../../../src/models/pipeline/DeployTimes";
+import { DeployInfo } from "../../../src/models/pipeline/DeployTimes";
 import axios from "axios";
 import sinon from "sinon";
 
@@ -151,7 +148,7 @@ describe("fetch data page by page", async () => {
     buildkiteProto.httpClient = axios.create({
       baseURL: "https://api.buildkite.com/v2",
     });
-    mock.onGet(`/organizations/mytest/pipelines`).reply(
+    mock.onGet("/organizations/mytest/pipelines").reply(
       200,
       [
         {
@@ -319,7 +316,6 @@ describe("fetch pipeline builds", async () => {
       startTime,
       endTime
     );
-    console.log(actual);
     expect((await actual).length).to.equal(2);
   });
 });
