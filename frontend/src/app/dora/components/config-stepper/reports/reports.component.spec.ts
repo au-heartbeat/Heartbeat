@@ -31,7 +31,7 @@ describe('ExportComponent', () => {
     expect(exportComponent).toBeTruthy();
   });
 
-  it('should call ngOnChanges', () => {
+  it('should change includeBoardData and includePipelineData status when call ngOnChanges', () => {
     const kanbanSetting = new BoardParams({
       type: 'jira',
       token: 'test-token',
