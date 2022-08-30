@@ -35,7 +35,7 @@ describe('ExportComponent', () => {
     const kanbanSetting = new BoardParams({
       type: 'jira',
       token: 'test-token',
-      site: 'dorametrics',
+      site: 'site',
       projectKey: 'ADM',
       boardId: '2',
       teamName: '',
