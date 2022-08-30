@@ -1,45 +1,37 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ExportComponent } from './reports.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NgModule, SimpleChange, SimpleChanges } from '@angular/core';
-import { ReportParams } from 'src/app/dora/models/reportParams';
-import { element } from 'protractor';
-import { metrics } from '../../../utils/config';
-import { Metric } from 'src/app/dora/types/metric';
-import { MetricsSource } from 'src/app/dora/types/metricsSource';
+import { SimpleChange } from '@angular/core';
+import { ApiService } from 'src/app/dora/service/api.service';
+import { ReportParams } from '../../../models/reportParams';
+import { BoardParams } from 'src/app/dora/models/boardParams';
+import { metrics } from 'src/app/dora/utils/config';
+import { of } from 'rxjs';
+import { ReportResponse } from '../../../types/reportResponse';
 
 describe('ExportComponent', () => {
   let exportComponent: ExportComponent;
   let fixture: ComponentFixture<ExportComponent>;
   let element: any;
+  let apiService: ApiService;
 
-  const metrics: Metric[] = [
-    {
-      name: 'Classification',
-      roles: ['board'],
-    },
-    {
-      name: 'Lead time for changes',
-      roles: ['sourceControl', 'pipelineTool'],
-    },
-    {
-      name: 'Mean time to recovery',
-      roles: ['pipelineTool'],
-    },
-  ];
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [ExportComponent],
+      providers: [
+        {
+          useValue: { metrics: metrics },
+        },
+      ],
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ExportComponent);
+    apiService = TestBed.inject(ApiService);
     exportComponent = fixture.componentInstance;
     element = fixture.nativeElement;
-    exportComponent.params;
     fixture.detectChanges();
   });
 
@@ -48,32 +40,52 @@ describe('ExportComponent', () => {
   });
 
   it('should call ngOnChanges', () => {
-    const date = new Date();
-    const params = {
-      metrics: ['metrics'],
-      startDate: '00:00:00',
-      endDate: '23:59:59',
+    const kanbanSetting = new BoardParams({
+      type: 'jira',
+      token: 'test-token',
+      site: 'dorametrics',
+      projectKey: 'ADM',
+      boardId: '2',
+      teamName: '',
+      teamId: '',
+      email: '',
+    });
+    const commonReportParams = new ReportParams({
+      metrics: ['Velocity', 'Cycle time'],
+      startDate: new Date(1660924799000),
+      endDate: new Date(1660924799000),
       considerHoliday: true,
+    });
+    const reportParams = {
+      kanbanSetting: kanbanSetting,
+      ...commonReportParams,
     };
-
-    const simpleChange = new SimpleChange('pre', 'cur', true);
-
-    const simpleChanges: SimpleChanges = { simpleChange };
+    exportComponent.csvTimeStamp = 1467302400000;
+    exportComponent.params = commonReportParams;
 
     exportComponent.ngOnChanges({
-      params: new SimpleChange(null, 'test', true),
+      params: new SimpleChange(null, reportParams, true),
     });
-
-    spyOn(exportComponent, 'ngOnChanges').and.callThrough();
-    exportComponent.ngOnChanges(simpleChanges);
     fixture.detectChanges();
     expect(exportComponent.includeBoardData).toBeTrue;
     expect(exportComponent.includePipelineData).toBeTrue;
+  });
 
-    // expect(
-    //   exportComponent.ngOnChanges({
-    //     params: new SimpleChange(null, 'test', true),
-    //   })
-    // ).toHaveBeenCalled;
+  describe('should fetch report', () => {
+    const response: ReportResponse = {};
+    it('should set loading and reportResponse when getting response ', () => {
+      spyOn(apiService, 'generateReporter').and.returnValue(of(response));
+      exportComponent.fetchReports();
+      fixture.detectChanges();
+      expect(exportComponent.loading).toBeFalse;
+      expect(exportComponent.reportResponse).toBe(response);
+    });
+
+    it('should only set loading when response is null', () => {
+      spyOn(apiService, 'generateReporter').and.returnValue(of(null));
+      exportComponent.fetchReports();
+      fixture.detectChanges();
+      expect(exportComponent.loading).toBeFalse;
+    });
   });
 });
