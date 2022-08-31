@@ -10,6 +10,33 @@ import { mock } from "../../TestTools";
 const buildkitegetsteps = new BuildkiteGetSteps("testToken");
 const buildkitegetstepsProto = Object.getPrototypeOf(buildkitegetsteps);
 
+const buildkitedata = [
+  {
+    id: "f7c42703-4925-4c8c-aa0f-dbc105696055",
+    created_at: "2021-12-11T02:19:01.748Z",
+    scheduled_at: "2021-12-11T02:19:01.701Z",
+    started_at: "2021-12-11T02:19:11.509Z",
+    finished_at: "2021-12-11T02:24:05.276Z",
+    jobs: [
+      {
+        name: "test01",
+      },
+    ],
+  },
+  {
+    id: "f7c42703-4925-4c8c-aa0f-dbc105696056",
+    created_at: "2021-12-11T02:19:01.748Z",
+    scheduled_at: "2021-12-11T02:19:01.701Z",
+    started_at: "2021-12-11T02:19:11.509Z",
+    finished_at: "2021-12-11T02:24:05.276Z",
+    jobs: [
+      {
+        name: "test02",
+      },
+    ],
+  },
+];
+
 describe("fetch pipeline info", () => {
   afterEach(() => sinon.restore());
   it("fetch pipeline info", async () => {
@@ -24,32 +51,9 @@ describe("fetch pipeline info", () => {
       startTime: 1590080044000,
       endTime: 1590080094000,
     };
-    sinon.stub(buildkitegetstepsProto, "fetchDataPageByPage").returns([
-      {
-        id: "f7c42703-4925-4c8c-aa0f-dbc105696055",
-        created_at: "2021-12-11T02:19:01.748Z",
-        scheduled_at: "2021-12-11T02:19:01.701Z",
-        started_at: "2021-12-11T02:19:11.509Z",
-        finished_at: "2021-12-11T02:24:05.276Z",
-        jobs: [
-          {
-            name: "test01",
-          },
-        ],
-      },
-      {
-        id: "f7c42703-4925-4c8c-aa0f-dbc105696056",
-        created_at: "2021-12-11T02:19:01.748Z",
-        scheduled_at: "2021-12-11T02:19:01.701Z",
-        started_at: "2021-12-11T02:19:11.509Z",
-        finished_at: "2021-12-11T02:24:05.276Z",
-        jobs: [
-          {
-            name: "test02",
-          },
-        ],
-      },
-    ]);
+    sinon
+      .stub(buildkitegetstepsProto, "fetchDataPageByPage")
+      .returns(buildkitedata);
     const result = await buildkitegetsteps.fetchPipelineInfo(
       pipelineGetStepsRequest
     );
@@ -71,38 +75,11 @@ describe("fetch data page by page", async () => {
     buildkitegetstepsProto.httpClient = axios.create({
       baseURL: "https://api.buildkite.com/v2",
     });
-    mock.onGet("/organizations/mytest/pipelines/mytest/builds").reply(
-      200,
-      [
-        {
-          id: "f7c42703-4925-4c8c-aa0f-dbc105696055",
-          created_at: "2021-12-11T02:19:01.748Z",
-          scheduled_at: "2021-12-11T02:19:01.701Z",
-          started_at: "2021-12-11T02:19:11.509Z",
-          finished_at: "2021-12-11T02:24:05.276Z",
-          jobs: [
-            {
-              name: "test01",
-            },
-          ],
-        },
-        {
-          id: "f7c42703-4925-4c8c-aa0f-dbc105696056",
-          created_at: "2021-12-11T02:19:01.748Z",
-          scheduled_at: "2021-12-11T02:19:01.701Z",
-          started_at: "2021-12-11T02:19:11.509Z",
-          finished_at: "2021-12-11T02:24:05.276Z",
-          jobs: [
-            {
-              name: "test02",
-            },
-          ],
-        },
-      ],
-      {
+    mock
+      .onGet("/organizations/mytest/pipelines/mytest/builds")
+      .reply(200, buildkitedata, {
         link: '<https://api.buildkite.com/v2/organizations/mytest/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="next", <https://api.buildkite.com/v2/organizations/mytest/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="last"',
-      }
-    );
+      });
     const dataCollector = await buildkitegetstepsProto.fetchDataPageByPage(
       fetchUrl,
       fetchParams

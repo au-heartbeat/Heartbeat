@@ -18,6 +18,28 @@ import sinon from "sinon";
 const buildkite = new Buildkite("testToken");
 const buildkiteProto = Object.getPrototypeOf(buildkite);
 
+const deployments: DeploymentEnvironment = {
+  orgId: "",
+  orgName: "test",
+  id: "sme-test",
+  name: "sme-test",
+  step: ":test: :test: Deploy Integration App",
+};
+const BKJobInfo1: JobInfo = {
+  name: ":rainbow-flag: uploading pipeline",
+  state: "passed",
+  startedAt: "2021-12-16T22:10:29.122Z",
+  finishedAt: "2021-12-16T22:10:58.849Z",
+};
+const bkBuildInfo: BKBuildInfo = {
+  jobs: [BKJobInfo1],
+  commit: "18f8f5f2b89d255bb3f156e3fa13ae31fb66fb1f",
+  pipelineCreateTime: "2021-12-17T02:11:55.965Z",
+  number: 9400,
+};
+const buildInfo1 = new BuildInfo(bkBuildInfo);
+const buildInfos: BuildInfo[] = [buildInfo1];
+
 describe("verify token", () => {
   it("should return true when token has required permissions", async () => {
     mock.onGet("/access-token").reply(200, {
@@ -149,28 +171,28 @@ describe("fetch data page by page", async () => {
       200,
       [
         {
-          id: "01829062-7ad1-4040-ab92-4cdff307b6f3",
+          id: "01829062-7ad1-5673-ab92-4cdff307b6f3",
           graphql_id:
-            "UGlwZWxpbmUtLS0wMTgyMGZhNC1iMGNjLTRhMmYtOTk4ZC0yMTk4MzNjODI4NDU=",
-          url: "https://api.buildkite.com/v2/organizations/myob/pipelines/account-details-self-portal-web-performance-test",
+            "UGlwZWxpbmUtLS0wMcekfjvicrjNC1iMGNjLTRhMmYtOTk4ZC0yMTk4MzNjODI4NDU=",
+          url: "https://api.buildkite.com/v2/organizations/mytest/pipelines/account-details-self-portal-web-performance-test",
           web_url:
-            "https://buildkite.com/myob/account-details-self-portal-web-performance-test",
+            "https://buildkite.com/mytest/account-details-self-portal-web-performance-test",
           name: "account-details-self-portal-web-performance-test",
           description: "",
         },
         {
-          id: "01820fa4-b0cc-4a2f-998d-219833c82845",
+          id: "01820fa4-b0cc-4a2f-463d-219833c82845",
           graphql_id:
-            "UGlwZWxpbmUtLS0wMTgyMGZhNC1iMGNjLTRhMmYtOTk4ZC0yMTk4MzNjODI4NDU=",
-          url: "https://api.buildkite.com/v2/organizations/myob/pipelines/account-details-self-portal-web-performance-test",
+            "UGlwZWxpbmUtLS0wMTgycfnjvcrjvLTRhMmYtOTk4ZC0yMTk4MzNjODI4NDU=",
+          url: "https://api.buildkite.com/v2/organizations/mytest/pipelines/account-details-self-portal-web-performance-test",
           web_url:
-            "https://buildkite.com/myob/account-details-self-portal-web-performance-test",
+            "https://buildkite.com/mytest/account-details-self-portal-web-performance-test",
           name: "account-details-self-portal-web-performance-test",
           description: "",
         },
       ],
       {
-        link: '<https://api.buildkite.com/v2/organizations/mytest/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="next", <https://api.buildkite.com/v2/organizations/myob/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="last"',
+        link: '<https://api.buildkite.com/v2/organizations/mytest/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="next", <https://api.buildkite.com/v2/organizations/mytest/pipelines?created_to=2021-12-17T15%3A59%3A59.000Z&finished_from=2021-12-05T16%3A00%3A00.000Z&page=2&per_page=100>; rel="last"',
       }
     );
     const dataCollector = await buildkiteProto.fetchDataPageByPage(
@@ -202,27 +224,6 @@ describe("count deploy times", () => {
   });
 
   it("should return deploy times", async () => {
-    const deployments: DeploymentEnvironment = {
-      orgId: "",
-      orgName: "test",
-      id: "sme-test",
-      name: "sme-test",
-      step: ":test: :test: Deploy Integration App",
-    };
-    const BKJobInfo1: JobInfo = {
-      name: ":rainbow-flag: uploading pipeline",
-      state: "passed",
-      startedAt: "2021-12-16T22:10:29.122Z",
-      finishedAt: "2021-12-16T22:10:58.849Z",
-    };
-    const bkBuildInfo: BKBuildInfo = {
-      jobs: [BKJobInfo1],
-      commit: "18f8f5f2b89d255bb3f156e3fa13ae31fb66fb1f",
-      pipelineCreateTime: "2021-12-17T02:11:55.965Z",
-      number: 9400,
-    };
-    const buildInfo1 = new BuildInfo(bkBuildInfo);
-    const buildInfos: BuildInfo[] = [buildInfo1];
     const passed: DeployInfo = {
       pipelineCreateTime: "2021-12-17T02:11:55.965Z",
       jobStartTime: "2021-12-16T22:10:29.122Z",
@@ -240,27 +241,6 @@ describe("count deploy times", () => {
 
 describe("get builds by state", () => {
   it("get builds by state", () => {
-    const deployments: DeploymentEnvironment = {
-      orgId: "",
-      orgName: "test",
-      id: "sme-test",
-      name: "sme-test",
-      step: ":test: :test: Deploy Integration App",
-    };
-    const BKJobInfo1: JobInfo = {
-      name: ":rainbow-flag: uploading pipeline",
-      state: "passed",
-      startedAt: "2021-12-16T22:10:29.122Z",
-      finishedAt: "2021-12-16T22:10:58.849Z",
-    };
-    const bkBuildInfo: BKBuildInfo = {
-      jobs: [BKJobInfo1],
-      commit: "18f8f5f2b89d255bb3f156e3fa13ae31fb66fb1f",
-      pipelineCreateTime: "2021-12-17T02:11:55.965Z",
-      number: 9400,
-    };
-    const buildInfo1 = new BuildInfo(bkBuildInfo);
-    const buildInfos: BuildInfo[] = [buildInfo1];
     const state: string[] = ["passed", "passed"];
     const actual = buildkiteProto.getBuildsByState(
       buildInfos,
@@ -273,13 +253,6 @@ describe("get builds by state", () => {
 
 describe("fetch pipeline builds", async () => {
   it("should return a new jsonConvert", async () => {
-    const deployments: DeploymentEnvironment = {
-      orgId: "",
-      orgName: "test",
-      id: "sme-test",
-      name: "sme-test",
-      step: ":test: :eagle: Deploy Integration App",
-    };
     const startTime: Date = new Date(1590080044000);
     const endTime: Date = new Date(1590080094000);
     sinon.stub(buildkiteProto, "fetchDataPageByPage").returns([
