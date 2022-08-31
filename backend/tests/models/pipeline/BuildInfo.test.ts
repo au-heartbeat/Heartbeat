@@ -59,8 +59,7 @@ describe("BuildInfo", () => {
         "passed",
         "failed"
       );
-      const expected = new DeployInfo("", "", "", "", "");
-      expect(result).deep.equal(expected);
+      expect(result).deep.equal(expectedWithblank);
     });
     it("should return a blank deployInfo when having job matching step but without states", () => {
       const pipielineStepNotMatched = "deploy production App";
