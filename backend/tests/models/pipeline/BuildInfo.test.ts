@@ -23,6 +23,7 @@ describe("BuildInfo", () => {
   };
   const buildInfo = new BuildInfo(bkBuildInfo);
   describe("mapToDeployInfo", () => {
+    const expectedWithblank = new DeployInfo("", "", "", "", "");
     it("should return a corresponding deployInfo when having a job matching step and states", () => {
       const result = buildInfo.mapToDeployInfo(
         pipielineStep,
@@ -49,8 +50,7 @@ describe("BuildInfo", () => {
         "passed",
         "failed"
       );
-      const expected = new DeployInfo("", "", "", "", "");
-      expect(result).deep.equal(expected);
+      expect(result).deep.equal(expectedWithblank);
     });
     it("should return a blank deployInfo when having no job matching step", () => {
       const pipielineStepNotMatched = "deploy production App";
@@ -69,8 +69,7 @@ describe("BuildInfo", () => {
         "running",
         "failed"
       );
-      const expected = new DeployInfo("", "", "", "", "");
-      expect(result).deep.equal(expected);
+      expect(result).deep.equal(expectedWithblank);
     });
     it("should return a blank deployInfo when matched job without start time", () => {
       const bkJobInfoWithoutStartTime: BKJobInfo = {
@@ -91,8 +90,7 @@ describe("BuildInfo", () => {
         "passed",
         "failed"
       );
-      const expected = new DeployInfo("", "", "", "", "");
-      expect(result).deep.equal(expected);
+      expect(result).deep.equal(expectedWithblank);
     });
     it("should return a blank deployInfo when matched job without finish time", () => {
       const bkJobInfoWithoutFinishTime: BKJobInfo = {
@@ -113,8 +111,8 @@ describe("BuildInfo", () => {
         "passed",
         "failed"
       );
-      const expected = new DeployInfo("", "", "", "", "");
-      expect(result).deep.equal(expected);
+
+      expect(result).deep.equal(expectedWithblank);
     });
   });
   describe("JobInfo", () => {
