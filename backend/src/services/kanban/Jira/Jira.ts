@@ -20,6 +20,7 @@ import { Cards } from "../../../models/kanban/RequestKanbanResults";
 import {
   CardCustomFieldKey,
   FixVersion,
+  Status,
 } from "../../../models/kanban/JiraBoard/JiraCard";
 import { CardFieldsEnum } from "../../../models/kanban/CardFieldsEnum";
 import { CardStepsEnum } from "../../../models/kanban/CardStepsEnum";
@@ -101,19 +102,42 @@ export class Jira implements Kanban {
 
       const columnValue: ColumnValue = new ColumnValue();
       columnValue.name = column.name;
-
       const jiraColumnResponse = new ColumnResponse();
-      for (const status of column.statuses) {
-        const statusSelf = await Jira.queryStatus(status.self, model.token);
-        jiraColumnResponse.key = statusSelf.statusCategory.key;
 
-        columnValue.statuses.push(statusSelf.untranslatedName.toUpperCase());
-      }
+      console.log(new Date());
+      console.log("------------before-------");
 
-      jiraColumnResponse.value = columnValue;
-      jiraColumnNames.push(jiraColumnResponse);
+      Promise.all(
+        column.statuses.map(async (status: { self: string }) => {
+          return Jira.queryStatus(status.self, model.token);
+        })
+      )
+        .then((responses) => {
+          responses.map((response) => {
+            jiraColumnResponse.key = (
+              response as StatusSelf
+            ).statusCategory.key;
+            console.log("jiraColumnResponse.key");
+            console.log(jiraColumnResponse.key);
+            columnValue.statuses.push(
+              (response as StatusSelf).untranslatedName.toUpperCase()
+            );
+            console.log("columnValue.statuses");
+            console.log(columnValue.statuses);
+          });
+          console.log("----------response-----------");
+          console.log("before return");
+          console.log(new Date());
+          console.log(jiraColumnNames);
+        })
+        .then(() => {
+          jiraColumnResponse.value = columnValue;
+          jiraColumnNames.push(jiraColumnResponse);
+          console.log("========");
+          console.log(jiraColumnResponse);
+          console.log(jiraColumnNames);
+        });
     }
-
     return jiraColumnNames;
   }
 
