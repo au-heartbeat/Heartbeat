@@ -121,17 +121,19 @@ export class Buildkite implements Pipeline {
       links != null && links["last"] != null ? links["last"].page : "1";
     if (totalPage != "1") {
       await Promise.all(
-        [...Array(Number(totalPage)).keys()].map(async (index) => {
+        [...Array(Number(totalPage)).keys()].map((index) => {
           if (index == 0) return;
-          const response = await this.httpClient.get(fetchURL, {
-            params: { ...fetchParams, page: String(index + 1) },
-          });
-          const dataFromOnePage: [] = response.data;
-          dataCollector.push(...dataFromOnePage);
+          return this.httpClient
+            .get(fetchURL, {
+              params: { ...fetchParams, page: String(index + 1) },
+            })
+            .then((response) => {
+              const dataFromOnePage: [] = response.data;
+              dataCollector.push(...dataFromOnePage);
+            });
         })
       );
     }
-
     return dataCollector;
   }
 
