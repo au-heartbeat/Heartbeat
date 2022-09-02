@@ -117,25 +117,17 @@ export class Jira implements Kanban {
             jiraColumnResponse.key = (
               response as StatusSelf
             ).statusCategory.key;
-            console.log("jiraColumnResponse.key");
-            console.log(jiraColumnResponse.key);
             columnValue.statuses.push(
               (response as StatusSelf).untranslatedName.toUpperCase()
             );
-            console.log("columnValue.statuses");
-            console.log(columnValue.statuses);
           });
-          console.log("----------response-----------");
-          console.log("before return");
-          console.log(new Date());
-          console.log(jiraColumnNames);
         })
         .then(() => {
           jiraColumnResponse.value = columnValue;
           jiraColumnNames.push(jiraColumnResponse);
           console.log("========");
-          console.log(jiraColumnResponse);
-          console.log(jiraColumnNames);
+          console.log("before return");
+          console.log(new Date());
         });
     }
     return jiraColumnNames;
@@ -274,9 +266,8 @@ export class Jira implements Kanban {
           for (let index = 0; index < model.status.length - 1; index++) {
             subJql += `status changed to '${model.status[index]}' during (${model.startTime}, ${model.endTime}) or `;
           }
-          subJql += `status changed to '${
-            model.status[model.status.length - 1]
-          }' during (${model.startTime}, ${model.endTime})`;
+          subJql += `status changed to '${model.status[model.status.length - 1]
+            }' during (${model.startTime}, ${model.endTime})`;
           jql = `status in ('${model.status.join("','")}') AND (${subJql})`;
           break;
         }
