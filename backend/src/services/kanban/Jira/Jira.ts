@@ -104,9 +104,6 @@ export class Jira implements Kanban {
       columnValue.name = column.name;
       const jiraColumnResponse = new ColumnResponse();
 
-      console.log(new Date());
-      console.log("------------before-------");
-
       Promise.all(
         column.statuses.map(async (status: { self: string }) => {
           return Jira.queryStatus(status.self, model.token);
@@ -125,9 +122,6 @@ export class Jira implements Kanban {
         .then(() => {
           jiraColumnResponse.value = columnValue;
           jiraColumnNames.push(jiraColumnResponse);
-          console.log("========");
-          console.log("before return");
-          console.log(new Date());
         });
     }
     return jiraColumnNames;
