@@ -253,7 +253,11 @@ export class Jira implements Kanban {
     if (model.status.length > 0) {
       switch (model.type.toLowerCase()) {
         case KanbanEnum.JIRA:
-          jql = `status in ('${model.status.join("','")}')`;
+          jql = `status in ('${model.status.join(
+            "','"
+          )}') AND statusCategoryChangedDate >= ${
+            model.startTime
+          } AND statusCategoryChangedDate <= ${model.endTime}`;
           break;
         case KanbanEnum.CLASSIC_JIRA: {
           let subJql = "";
@@ -282,18 +286,6 @@ export class Jira implements Kanban {
         allDoneCards,
         model.boardId
       );
-    }
-
-    if (model.type.toLowerCase() == KanbanEnum.JIRA) {
-      const allDoneCardsResult = allDoneCards.filter(
-        (DoneCard: { fields: { statuscategorychangedate: string } }) =>
-          Jira.matchTime(
-            DoneCard.fields.statuscategorychangedate,
-            model.startTime,
-            model.endTime
-          )
-      );
-      return allDoneCardsResult;
     }
     return allDoneCards;
   }
