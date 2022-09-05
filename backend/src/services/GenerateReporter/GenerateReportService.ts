@@ -83,12 +83,6 @@ export class GenerateReportService {
   private BuildInfosOfLeadtimes: Pair<string, BuildInfo[]>[] = [];
   private kanabanSprintStatistics?: SprintStatistics;
   private boardStatisticsXlsx: Array<Array<any>> = new Array<Array<any>>();
-  // {
-  //   colkeys: [],
-  //   rowData: []
-  // }
-
-  // Array<Array<string>> = new Array<Array<string>>()
 
   async generateReporter(
     request: GenerateReportRequest
