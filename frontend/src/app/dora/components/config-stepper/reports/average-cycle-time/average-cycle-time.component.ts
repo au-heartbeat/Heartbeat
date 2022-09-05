@@ -29,19 +29,19 @@ export class AverageCycleTimeReportComponent implements OnInit {
         left: '50%',
         textAlign: 'center',
         textStyle: {
-          fontSize: 30,
+          fontSize: 15,
         },
         top: '3%',
       },
       legend: {
         data: ['Standard Deviation for Population', 'Avg Cycle Time'],
         top: '10%',
-        textStyle: { fontSize: 14 },
+        textStyle: { fontSize: 13 },
       },
       grid: {
         bottom: '3%',
         top: '20%',
-        left: '14.5%',
+        left: '14%',
         right: '14%',
         containLabel: true,
       },
@@ -57,6 +57,7 @@ export class AverageCycleTimeReportComponent implements OnInit {
         type: 'category',
         boundaryGap: true,
         data: iterationNameArray,
+        axisLabel: { interval: 0, rotate: 30 },
       },
       yAxis: {
         axisLine: {
@@ -76,7 +77,7 @@ export class AverageCycleTimeReportComponent implements OnInit {
           color: '#d67b2a',
           symbolSize: 10,
           symbol: 'circle',
-          label: { show: true, fontSize: 14 },
+          label: { show: true, fontSize: 13 },
           lineStyle: { width: 5 },
         },
 
@@ -88,7 +89,7 @@ export class AverageCycleTimeReportComponent implements OnInit {
           color: '#f0434d',
           symbolSize: 10,
           symbol: 'circle',
-          label: { show: true, fontSize: 14 },
+          label: { show: true, fontSize: 13 },
           lineStyle: { width: 5 },
         },
       ],
