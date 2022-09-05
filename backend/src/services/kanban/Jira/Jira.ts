@@ -104,8 +104,8 @@ export class Jira implements Kanban {
       columnValue.name = column.name;
       const jiraColumnResponse = new ColumnResponse();
 
-      Promise.all(
-        column.statuses.map(async (status: { self: string }) => {
+      await Promise.all(
+        column.statuses.map((status: { self: string }) => {
           return Jira.queryStatus(status.self, model.token);
         })
       )
@@ -260,8 +260,9 @@ export class Jira implements Kanban {
           for (let index = 0; index < model.status.length - 1; index++) {
             subJql += `status changed to '${model.status[index]}' during (${model.startTime}, ${model.endTime}) or `;
           }
-          subJql += `status changed to '${model.status[model.status.length - 1]
-            }' during (${model.startTime}, ${model.endTime})`;
+          subJql += `status changed to '${
+            model.status[model.status.length - 1]
+          }' during (${model.startTime}, ${model.endTime})`;
           jql = `status in ('${model.status.join("','")}') AND (${subJql})`;
           break;
         }
