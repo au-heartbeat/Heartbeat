@@ -562,15 +562,15 @@ export class GenerateReportService {
     const sprintSheetDataMap = this.getSprintStatisticsMap(
       this.kanabanSprintStatistics!
     );
-    const iterationSheet = workbook.addWorksheet("Iteration Statistics");
+    const sprintSheet = workbook.addWorksheet("Sprint Statistics");
     const boardSheet = workbook.addWorksheet("Board Data");
 
     const fileName = "exportSprintExcel-" + request.csvTimeStamp;
 
-    iterationSheet.columns = xlsxForBoardConfig;
+    sprintSheet.columns = xlsxForBoardConfig;
 
     sprintSheetDataMap.forEach((value) => {
-      iterationSheet.addRow(value);
+      sprintSheet.addRow(value);
     });
     boardSheet.columns = this.boardStatisticsXlsx[0];
 
