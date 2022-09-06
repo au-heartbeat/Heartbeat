@@ -838,35 +838,6 @@ describe("put status change events into an array", () => {
   });
 });
 
-describe("get match time", () => {
-  it("should return true when given time in the time period", () => {
-    const cardTime = "11 Jul 2023 20:54:04 GMT";
-    const startTime = 1689080044000;
-    const endTime = 1789944044000;
-
-    const response = jiraTest.constructor.matchTime(
-      cardTime,
-      startTime,
-      endTime
-    );
-
-    expect(response).equal(true);
-  });
-  it("should return false when given time not  in the time period", () => {
-    const cardTime = "11 Jul 2010 20:54:04 GMT";
-    const startTime = 1689080044000;
-    const endTime = 1789944044000;
-
-    const response = jiraTest.constructor.matchTime(
-      cardTime,
-      startTime,
-      endTime
-    );
-
-    expect(response).equal(false);
-  });
-});
-
 describe("make page query", () => {
   const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
     "testToken",
