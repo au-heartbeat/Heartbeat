@@ -64,9 +64,6 @@ export class Buildkite implements Pipeline {
     const pipelines: PipelineInfo[] = [];
     const orgResponse = await this.httpClient.get("/organizations");
     const organizations: BKOrganizationInfo[] = orgResponse.data;
-    if (!(await this.verifyToken())) {
-      throw new PipelineError("permission deny!");
-    }
 
     await Promise.all(
       organizations.map((organization) => {
