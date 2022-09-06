@@ -475,14 +475,6 @@ export class Jira implements Kanban {
     };
   }
 
-  private static matchTime(
-    cardTime: string,
-    startTime: number,
-    endTime: number
-  ): boolean {
-    return startTime <= Date.parse(cardTime) && Date.parse(cardTime) <= endTime;
-  }
-
   private static putStatusChangeEventsIntoAnArray(
     jiraCardHistory: JiraCardHistory,
     treatFlagCardAsBlock: boolean
