@@ -45,21 +45,20 @@ export class BuildkiteGetSteps implements PipelineGetSteps {
       pipelineBuilds,
       BKBuildInfo
     );
-    const bkJobInfoSet = new Set<BKJobInfo>();
+    const bkJobInfoSet = new Set<string>();
     bkBuildInfoList.forEach((buildInfo) => {
-      buildInfo.jobs.forEach((job) => {
-        bkJobInfoSet.add(job);
-      });
+      buildInfo.jobs
+        .filter(
+          (job) => job != undefined && job.name != undefined && job.name != ""
+        )
+        .forEach((job) => {
+          bkJobInfoSet.add(job.name!);
+        });
     });
     const bkJobInfoList = [...bkJobInfoSet];
-    const bkEffectiveSteps = bkJobInfoList
-      .filter(
-        (job) => job != undefined && job.name != undefined && job.name != ""
-      )
-      .map((job) => job.name!)
-      .sort((a: string, b: string) => {
-        return a.localeCompare(b);
-      });
+    const bkEffectiveSteps = bkJobInfoList.sort((a: string, b: string) => {
+      return a.localeCompare(b);
+    });
 
     return new PipelineInfo(
       pipelineGetStepsRequest.pipelineId,
