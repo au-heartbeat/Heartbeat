@@ -45,22 +45,21 @@ export class BuildkiteGetSteps implements PipelineGetSteps {
       pipelineBuilds,
       BKBuildInfo
     );
-    const bkJobInfoList: BKJobInfo[] = [];
+    const bkJobInfoList = new Set<BKJobInfo>();
     bkBuildInfoList.forEach((buildInfo) => {
-      bkJobInfoList.push(...buildInfo.jobs);
+      buildInfo.jobs.forEach((job) => {
+        bkJobInfoList.add(job);
+      });
     });
-    const jobs = bkJobInfoList
+    const jobs = [...bkJobInfoList];
+    const bkEffectiveSteps = jobs
       .filter(
         (job) => job != undefined && job.name != undefined && job.name != ""
       )
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .sort((a: BKJobInfo, b: BKJobInfo) => {
-        return a.name!.localeCompare(b.name!);
-      })
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .map((job) => job.name!);
-
-    const bkEffectiveSteps = [...new Set(jobs)];
+      .map((job) => job.name!)
+      .sort((a: string, b: string) => {
+        return a!.localeCompare(b!);
+      });
 
     return new PipelineInfo(
       pipelineGetStepsRequest.pipelineId,
@@ -88,11 +87,14 @@ export class BuildkiteGetSteps implements PipelineGetSteps {
       await Promise.all(
         [...Array(Number(totalPage)).keys()].map(async (index) => {
           if (index == 0) return;
-          const response = await this.httpClient.get(fetchURL, {
-            params: { ...fetchParams, page: String(index + 1) },
-          });
-          const dataFromOnePage: [] = response.data;
-          dataCollector.push(...dataFromOnePage);
+          return this.httpClient
+            .get(fetchURL, {
+              params: { ...fetchParams, page: String(index + 1) },
+            })
+            .then((response) => {
+              const dataFromOnePage: [] = response.data;
+              dataCollector.push(...dataFromOnePage);
+            });
         })
       );
     }
