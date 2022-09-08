@@ -1,21 +1,13 @@
 import axios from "axios";
-import { PipelineGetSteps } from "../PipelineGetSteps";
+import { JsonConvert } from "json2typescript";
+import parseLinkHeader from "parse-link-header";
 import { PipelineGetStepsRequest } from "../../../contract/pipeline/PipelineGetStepsRequest";
 import { PipelineInfo } from "../../../contract/pipeline/PipelineInfo";
-import { JsonConvert } from "json2typescript";
+import { BKBuildInfo } from "../../../models/pipeline/Buildkite/BKBuildInfo";
 import { FetchParams } from "../../../types/FetchParams";
-import {
-  BKBuildInfo,
-  BKJobInfo,
-} from "../../../models/pipeline/Buildkite/BKBuildInfo";
-import parseLinkHeader from "parse-link-header";
+import { PipelineGetSteps } from "../PipelineGetSteps";
 
 export class BuildkiteGetSteps implements PipelineGetSteps {
-  private static permissions = [
-    "read_builds",
-    "read_organizations",
-    "read_pipelines",
-  ];
   private httpClient = axios.create({
     baseURL: "https://api.buildkite.com/v2",
   });
