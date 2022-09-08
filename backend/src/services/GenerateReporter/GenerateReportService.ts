@@ -47,7 +47,7 @@ import { CommitInfo } from "../../models/codebase/CommitInfo";
 import { ColumnResponse } from "../../contract/kanban/KanbanTokenVerifyResponse";
 import fs from "fs";
 import { SprintStatistics } from "../../models/kanban/SprintStatistics";
-import xlsxForBoardConfig from "../../fixture/xlsxForBoardConfig.json";
+import xlsxRowTitleConfig from "../../fixture/xlsxRowTitleConfig.json";
 import { Context } from "koa-swagger-decorator";
 import excelJs from "exceljs";
 import { JiraBlockReasonEnum } from "../../models/kanban/JiraBoard/JiraBlockReasonEnum";
@@ -518,6 +518,7 @@ export class GenerateReportService {
     kanbanSprintStatistics: SprintStatistics
   ): Map<string, Array<any>> {
     const sprintDataMap: Map<string, Array<any>> = new Map();
+
     kanbanSprintStatistics.standardDeviation?.forEach((obj) => {
       sprintDataMap.set(obj.sprintName, [
         obj.sprintName,
@@ -525,32 +526,32 @@ export class GenerateReportService {
       ]);
     });
     kanbanSprintStatistics.cycleTimeAndBlockedTime.forEach((obj) => {
-      const rowData = sprintDataMap.get(obj.sprintName) || [];
-      rowData.push(obj.cycleTime);
-      rowData.push(obj.blockedTime);
-      sprintDataMap.set(obj.sprintName, rowData);
+      const columnData = sprintDataMap.get(obj.sprintName) || [];
+      columnData.push(obj.cycleTime);
+      columnData.push(obj.blockedTime);
+      sprintDataMap.set(obj.sprintName, columnData);
     });
     kanbanSprintStatistics.blockedAndDevelopingPercentage.forEach((obj) => {
-      const rowData = sprintDataMap.get(obj.sprintName) || [];
-      rowData.push(obj.value.developingPercentage);
-      rowData.push(obj.value.blockedPercentage);
-      sprintDataMap.set(obj.sprintName, rowData);
+      const columnData = sprintDataMap.get(obj.sprintName) || [];
+      columnData.push(obj.value.developingPercentage);
+      columnData.push(obj.value.blockedPercentage);
+      sprintDataMap.set(obj.sprintName, columnData);
     });
     kanbanSprintStatistics.sprintBlockReason.forEach((obj) => {
-      const rowData = sprintDataMap.get(obj.sprintName) || [];
+      const columnData = sprintDataMap.get(obj.sprintName) || [];
       for (const reason in JiraBlockReasonEnum) {
         const matchedReason = obj.blockDetails.filter((detail) => {
           return detail.reasonName === reason.toLowerCase();
         });
-        rowData.push(matchedReason[0] ? matchedReason[0].time : 0);
+        columnData.push(matchedReason[0] ? matchedReason[0].time : 0);
       }
       for (const reason in JiraBlockReasonEnum) {
         const matchedReason = obj.blockDetails.filter((detail) => {
           return detail.reasonName === reason.toLowerCase();
         });
-        rowData.push(matchedReason[0] ? matchedReason[0].percentage : 0);
+        columnData.push(matchedReason[0] ? matchedReason[0].percentage : 0);
       }
-      sprintDataMap.set(obj.sprintName, rowData);
+      sprintDataMap.set(obj.sprintName, columnData);
     });
     return sprintDataMap;
   }
@@ -564,21 +565,29 @@ export class GenerateReportService {
     );
     const sprintSheet = workbook.addWorksheet("Sprint Statistics");
     const boardSheet = workbook.addWorksheet("Board Data");
-
     const fileName = "exportSprintExcel-" + request.csvTimeStamp;
 
-    sprintSheet.columns = xlsxForBoardConfig;
-
-    sprintSheetDataMap.forEach((value) => {
-      sprintSheet.addRow(value);
+    sprintSheet.getColumn(1).values = xlsxRowTitleConfig;
+    sprintSheet.getColumn(1).width = 36;
+    sprintSheet.getColumn(1).alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+    let columnlist = 2;
+    sprintSheetDataMap.forEach((sprintData) => {
+      sprintSheet.getColumn(columnlist).values = sprintData;
+      sprintSheet.getColumn(columnlist).width = 12;
+      sprintSheet.getColumn(columnlist).alignment = {
+        vertical: "middle",
+        horizontal: "center",
+      };
+      columnlist++;
     });
+
     boardSheet.columns = this.boardStatisticsXlsx[0];
-
     boardSheet.addRows(this.boardStatisticsXlsx[1]);
-
     workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx");
   }
-
   public fetchExcelFileStream(ctx: Context, timeStamp: number): fs.ReadStream {
     return fs.createReadStream(`xlsx/exportSprintExcel-${timeStamp}.xlsx`);
   }
