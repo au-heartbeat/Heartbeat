@@ -4,5 +4,5 @@ export interface FetchParams {
   finished_from?: Date;
   created_to?: Date;
   state?: string;
-  branch?: string;
+  branch?: string[];
 }
