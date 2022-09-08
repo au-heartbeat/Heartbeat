@@ -159,12 +159,13 @@ describe("fetch pipeline repository", () => {
 describe("fetch data page by page", async () => {
   it("should return data collector", async () => {
     const fetchUrl = "/organizations/mytest/pipelines";
-    const fetchParams: FetchParams = new FetchParams(
-      "1",
-      "100",
-      new Date(1590080044000),
-      new Date(1590080094000)
-    );
+    const fetchParams: FetchParams = {
+      page: "1",
+      per_page: "100",
+      finished_from: new Date(1590080044000),
+      created_to: new Date(1590080094000),
+    };
+
     buildkiteProto.httpClient = axios.create({
       baseURL: "https://api.buildkite.com/v2",
     });

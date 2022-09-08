@@ -23,12 +23,13 @@ export class BuildkiteGetSteps implements PipelineGetSteps {
   ): Promise<PipelineInfo> {
     const jsonConvert = new JsonConvert();
     const fetchURL = `/organizations/${pipelineGetStepsRequest.orgId}/pipelines/${pipelineGetStepsRequest.pipelineId}/builds`;
-    const fetchParams: FetchParams = new FetchParams(
-      "1",
-      "100",
-      new Date(pipelineGetStepsRequest.startTime),
-      new Date(pipelineGetStepsRequest.endTime)
-    );
+    const fetchParams: FetchParams = {
+      page: "1",
+      per_page: "100",
+      finished_from: new Date(pipelineGetStepsRequest.startTime),
+      created_to: new Date(pipelineGetStepsRequest.endTime),
+    };
+
     const pipelineBuilds: Array<any> = await this.fetchDataPageByPage(
       fetchURL,
       fetchParams

@@ -195,12 +195,12 @@ export class Buildkite implements Pipeline {
     endTime: Date
   ): Promise<BuildInfo[]> {
     const fetchURL = `/organizations/${deploymentEnvironment.orgId}/pipelines/${deploymentEnvironment.id}/builds`;
-    const fetchParams: FetchParams = new FetchParams(
-      "1",
-      "100",
-      startTime,
-      endTime
-    );
+    const fetchParams: FetchParams = {
+      page: "1",
+      per_page: "100",
+      finished_from: startTime,
+      created_to: endTime,
+    };
 
     const pipelineBuilds: [] = await this.fetchDataPageByPage(
       fetchURL,
