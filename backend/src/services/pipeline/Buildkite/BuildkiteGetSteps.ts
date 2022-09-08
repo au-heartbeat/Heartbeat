@@ -29,7 +29,7 @@ export class BuildkiteGetSteps implements PipelineGetSteps {
       new Date(pipelineGetStepsRequest.startTime),
       new Date(pipelineGetStepsRequest.endTime)
     );
-    const pipelineBuilds: [] = await this.fetchDataPageByPage(
+    const pipelineBuilds: Array<any> = await this.fetchDataPageByPage(
       fetchURL,
       fetchParams
     );
@@ -64,12 +64,12 @@ export class BuildkiteGetSteps implements PipelineGetSteps {
   private async fetchDataPageByPage(
     fetchURL: string,
     fetchParams: FetchParams
-  ): Promise<[]> {
-    const dataCollector: [] = [];
+  ): Promise<Array<any>> {
+    const dataCollector: Array<any> = [];
     const response = await this.httpClient.get(fetchURL, {
       params: fetchParams,
     });
-    const dataFromTheFirstPage: [] = response.data;
+    const dataFromTheFirstPage: Array<any> = response.data;
     dataCollector.push(...dataFromTheFirstPage);
     const links = parseLinkHeader(response.headers["link"]);
     const totalPage: string =
@@ -83,7 +83,7 @@ export class BuildkiteGetSteps implements PipelineGetSteps {
               params: { ...fetchParams, page: String(index + 1) },
             })
             .then((response) => {
-              const dataFromOnePage: [] = response.data;
+              const dataFromOnePage: Array<any> = response.data;
               dataCollector.push(...dataFromOnePage);
             });
         })
