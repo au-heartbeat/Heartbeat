@@ -35,7 +35,7 @@ export default class PipelineController {
       pipelineGetStepsRequest.type,
       pipelineGetStepsRequest.token
     );
-    ctx.response.body = await pipelineGetStep.fetchPipelineInfo(
+    ctx.response.body = await pipelineGetStep.fetchPipelineSteps(
       pipelineGetStepsRequest
     );
   }

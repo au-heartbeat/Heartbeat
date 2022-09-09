@@ -11,7 +11,6 @@ import { JsonConvert } from "json2typescript";
 import parseLinkHeader from "parse-link-header";
 import { DeploymentEnvironment } from "../../../contract/GenerateReporter/GenerateReporterRequestBody";
 import { FetchParams } from "../../../types/FetchParams";
-import { PipelineError } from "../../../errors/PipelineError";
 
 export class Buildkite implements Pipeline {
   private static permissions = [
@@ -67,7 +66,7 @@ export class Buildkite implements Pipeline {
 
     await Promise.all(
       organizations.map((organization) => {
-        return this.fetchPipelineInfoInOrgnazation(
+        return this.fetchPipelineInfoInOrganization(
           pipelines,
           organization,
           startTime,
@@ -79,7 +78,7 @@ export class Buildkite implements Pipeline {
     return pipelines;
   }
 
-  private async fetchPipelineInfoInOrgnazation(
+  private async fetchPipelineInfoInOrganization(
     pipelines: PipelineInfo[],
     organization: BKOrganizationInfo,
     startTime: number,
@@ -87,12 +86,13 @@ export class Buildkite implements Pipeline {
   ) {
     const organizationId = organization.slug;
     const pipelineInfoFetchUrl = `/organizations/${organizationId}/pipelines`;
-    const pipelineInfoFetchParams: FetchParams = new FetchParams(
-      "1",
-      "100",
-      new Date(startTime),
-      new Date(endTime)
-    );
+    const pipelineInfoFetchParams: FetchParams = {
+      page: "1",
+      per_page: "100",
+      finished_from: new Date(startTime),
+      created_to: new Date(endTime),
+    };
+
     const pipelineInfoList = await this.fetchDataPageByPage(
       pipelineInfoFetchUrl,
       pipelineInfoFetchParams
@@ -103,7 +103,7 @@ export class Buildkite implements Pipeline {
       BKPipelineInfo
     );
 
-    const pipelinesOfOrgnazation = bkPipelineInfos
+    const pipelinesOfOrganization = bkPipelineInfos
       .sort((a: BKPipelineInfo, b: BKPipelineInfo) => {
         return a.name.localeCompare(b.name);
       })
@@ -115,7 +115,7 @@ export class Buildkite implements Pipeline {
           bkEffectiveSteps
         );
       });
-    pipelines.push(...pipelinesOfOrgnazation);
+    pipelines.push(...pipelinesOfOrganization);
   }
 
   private async fetchDataPageByPage(
@@ -195,12 +195,12 @@ export class Buildkite implements Pipeline {
     endTime: Date
   ): Promise<BuildInfo[]> {
     const fetchURL = `/organizations/${deploymentEnvironment.orgId}/pipelines/${deploymentEnvironment.id}/builds`;
-    const fetchParams: FetchParams = new FetchParams(
-      "1",
-      "100",
-      startTime,
-      endTime
-    );
+    const fetchParams: FetchParams = {
+      page: "1",
+      per_page: "100",
+      finished_from: startTime,
+      created_to: endTime,
+    };
 
     const pipelineBuilds: [] = await this.fetchDataPageByPage(
       fetchURL,

@@ -9,8 +9,8 @@ describe("get instance", () => {
       "BUILDKITE",
       "test"
     );
-    expect(buildkiteGetSteps.fetchPipelineInfo).to.equal(
-      new BuildkiteGetSteps("test").fetchPipelineInfo
+    expect(buildkiteGetSteps.fetchPipelineSteps).to.equal(
+      new BuildkiteGetSteps("test").fetchPipelineSteps
     );
   });
 
