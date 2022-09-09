@@ -123,6 +123,7 @@ export class GenerateReportRequest {
       RequireDataEnum.VELOCITY,
       RequireDataEnum.CYCLE_TIME,
       RequireDataEnum.CLASSIFICATION,
+      RequireDataEnum.SECONDARY_METRICS,
     ],
     items: { type: "string" },
   })

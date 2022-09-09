@@ -114,6 +114,30 @@ export class GenerateReportService {
             kanbanSetting.boardColumns
           );
           break;
+        case RequireDataEnum.SECONDARY_METRICS:
+          const latestSprintName: string =
+            this.kanabanSprintStatistics?.sprintCompletedCardsCounts[
+              this.kanabanSprintStatistics.sprintCompletedCardsCounts.length - 1
+            ].sprintName || "";
+          const latestSprintBlockReason =
+            this.kanabanSprintStatistics?.sprintBlockReason.filter(
+              (reason) => reason.sprintName === latestSprintName
+            )[0];
+
+          const latestSprintBlockReasonObj = {
+            totalBlockedPercentage:
+              latestSprintBlockReason?.totalBlockedPercentage,
+            blockReasonPercentage: latestSprintBlockReason?.blockDetails,
+          };
+          reporterResponse.secondaryMetrics = {
+            completedCardsNumber:
+              this.kanabanSprintStatistics?.sprintCompletedCardsCounts,
+            blockedAndDevelopingPercentage:
+              this.kanabanSprintStatistics?.blockedAndDevelopingPercentage,
+            standardDeviation: this.kanabanSprintStatistics?.standardDeviation,
+            latestSprintBlockReason: latestSprintBlockReasonObj,
+          };
+          break;
         case RequireDataEnum.DEPLOYMENT_FREQUENCY:
           const deploymentFrequency = calculateDeploymentFrequency(
             this.deployTimesListFromDeploySetting!,
@@ -159,7 +183,6 @@ export class GenerateReportService {
           throw new Error(`can not match this metric: ${metric}`);
       }
     });
-    this.addKanbanSprintStatisticsToResponse(reporterResponse);
     return reporterResponse;
   }
 
@@ -491,27 +514,6 @@ export class GenerateReportService {
         }
       }
     });
-  }
-
-  addKanbanSprintStatisticsToResponse(response: GenerateReporterResponse) {
-    response.completedCardsNumber =
-      this.kanabanSprintStatistics?.sprintCompletedCardsCounts;
-    response.standardDeviation =
-      this.kanabanSprintStatistics?.standardDeviation;
-    response.blockedAndDevelopingPercentage =
-      this.kanabanSprintStatistics?.blockedAndDevelopingPercentage;
-    const latestSprintName: string =
-      this.kanabanSprintStatistics?.sprintCompletedCardsCounts[
-        this.kanabanSprintStatistics.sprintCompletedCardsCounts.length - 1
-      ].sprintName || "";
-    const latestSprintBlockReason =
-      this.kanabanSprintStatistics?.sprintBlockReason.filter(
-        (reason) => reason.sprintName === latestSprintName
-      )[0];
-    response.latestSprintBlockReason = {
-      totalBlockedPercentage: latestSprintBlockReason?.totalBlockedPercentage,
-      blockReasonPercentage: latestSprintBlockReason?.blockDetails,
-    };
   }
 
   private getSprintStatisticsMap(
