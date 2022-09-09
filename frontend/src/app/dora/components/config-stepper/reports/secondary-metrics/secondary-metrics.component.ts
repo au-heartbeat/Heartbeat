@@ -2,46 +2,40 @@ import { Component, Input, OnInit } from '@angular/core';
 import * as echarts from 'echarts';
 import * as simpleStatistics from 'simple-statistics';
 import { EChartsOption } from 'echarts';
-import { LatestSprintBlockReason } from '../../../../types/reportResponse';
-import { StandardDeviation } from 'src/app/dora/types/reportResponse';
-import { CompletedCardsNumber } from 'src/app/dora/types/reportResponse';
-import { BlockedAndDevelopingPercentage } from '../../../../types/reportResponse';
+import { SecondaryMetrics } from '../../../../types/reportResponse';
+
 @Component({
   selector: 'app-secondary-metrics-report',
   templateUrl: './secondary-metrics.component.html',
   styleUrls: ['./secondary-metrics.component.scss'],
 })
 export class SecondaryMetricsReportComponent implements OnInit {
-  @Input() completedCardsNumber: CompletedCardsNumber[];
-  @Input() standardDeviation: StandardDeviation[];
-  @Input() latestSprintBlockReason: LatestSprintBlockReason;
-  @Input() blockedAndDevelopingPercentage: BlockedAndDevelopingPercentage[];
-
+  @Input() secondaryMetrics: SecondaryMetrics;
   ngOnInit(): void {
     const cardsNumber: number[] = [];
     const sprintName: string[] = [];
-    this.completedCardsNumber.forEach((curSprint) => {
+    this.secondaryMetrics.completedCardsNumber.forEach((curSprint) => {
       cardsNumber.push(curSprint.value);
       sprintName.push(curSprint.sprintName);
     });
 
     const standardDeviationArray: number[] = [];
     const averageCycleTimeArray: number[] = [];
-    this.standardDeviation.forEach((sprint) => {
-      standardDeviationArray.push(sprint.value.standardDeviation);
-      averageCycleTimeArray.push(sprint.value.average);
+    this.secondaryMetrics.standardDeviation.forEach((curSprint) => {
+      standardDeviationArray.push(curSprint.value.standardDeviation);
+      averageCycleTimeArray.push(curSprint.value.average);
     });
 
     const blockedPercentage: number[] = [];
     const developingPercentage: number[] = [];
 
-    this.blockedAndDevelopingPercentage.forEach((curData) => {
-      blockedPercentage.push(parseFloat((curData.value.blockedPercentage * 100).toFixed(0)));
-      developingPercentage.push(parseFloat((curData.value.developingPercentage * 100).toFixed(0)));
+    this.secondaryMetrics.blockedAndDevelopingPercentage.forEach((curSprint) => {
+      blockedPercentage.push(parseFloat((curSprint.value.blockedPercentage * 100).toFixed(0)));
+      developingPercentage.push(parseFloat((curSprint.value.developingPercentage * 100).toFixed(0)));
     });
 
     const allBlockReason = [];
-    const blockReasonPercentage = this.latestSprintBlockReason.blockReasonPercentage;
+    const blockReasonPercentage = this.secondaryMetrics.latestSprintBlockReason.blockReasonPercentage;
     blockReasonPercentage.forEach((curBlockReasonPercentage) => {
       allBlockReason.push(curBlockReasonPercentage.reasonName);
     });
@@ -248,10 +242,16 @@ export class SecondaryMetricsReportComponent implements OnInit {
             data: [
               [
                 {
-                  coord: [this.completedCardsNumber[firstRegressionValue.x - 1].sprintName, firstRegressionValue.y],
+                  coord: [
+                    this.secondaryMetrics.completedCardsNumber[firstRegressionValue.x - 1].sprintName,
+                    firstRegressionValue.y,
+                  ],
                 },
                 {
-                  coord: [this.completedCardsNumber[lastRegressionValue.x - 1].sprintName, lastRegressionValue.y],
+                  coord: [
+                    this.secondaryMetrics.completedCardsNumber[lastRegressionValue.x - 1].sprintName,
+                    lastRegressionValue.y,
+                  ],
                 },
               ],
             ],
@@ -444,10 +444,10 @@ export class SecondaryMetricsReportComponent implements OnInit {
   }
   getDevelopingAndBlockPercentage() {
     const latestSprintDevelopingPercentage: number = parseFloat(
-      ((1 - this.latestSprintBlockReason.totalBlockedPercentage) * 100).toFixed(0)
+      ((1 - this.secondaryMetrics.latestSprintBlockReason.totalBlockedPercentage) * 100).toFixed(0)
     );
     const latestSprintBlockPercentage: number = parseFloat(
-      (this.latestSprintBlockReason.totalBlockedPercentage * 100).toFixed(0)
+      (this.secondaryMetrics.latestSprintBlockReason.totalBlockedPercentage * 100).toFixed(0)
     );
 
     const developingAndBlockPercentage = [

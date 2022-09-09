@@ -7,4 +7,5 @@ export enum RequireDataEnum {
   CHANGE_FAILURE_RATE = "change failure rate",
   MEAN_TIME_TO_RECOVERY = "mean time to recovery",
   CLASSIFICATION = "classification",
+  SECONDARY_METRICS = "secondary metrics",
 }

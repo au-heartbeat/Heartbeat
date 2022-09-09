@@ -2,11 +2,8 @@
   <mat-spinner class="spinner" *ngIf="loading"></mat-spinner>
 
   <app-secondary-metrics-report
-    *ngIf="reportResponse"
-    [blockedAndDevelopingPercentage]="reportResponse.blockedAndDevelopingPercentage"
-    [latestSprintBlockReason]="reportResponse.latestSprintBlockReason"
-    [standardDeviation]="reportResponse.standardDeviation"
-    [completedCardsNumber]="reportResponse.completedCardsNumber"
+    *ngIf="reportResponse?.secondaryMetrics"
+    [secondaryMetrics]="reportResponse.secondaryMetrics"
   ></app-secondary-metrics-report>
 
   <app-velocity-report *ngIf="reportResponse?.velocity" [velocity]="reportResponse.velocity"></app-velocity-report>

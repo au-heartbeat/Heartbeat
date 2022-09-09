@@ -315,7 +315,7 @@ const cards: Cards = {
   matchedCards: matchedCards,
 };
 const request: GenerateReportRequest = {
-  metrics: ["Velocity", "Cycle time", "Classification"],
+  metrics: ["Velocity", "Cycle time", "Classification", "Secondary Metrics"],
   startTime: 1640966400000,
   endTime: 1659369599000,
   considerHoliday: false,
@@ -450,15 +450,17 @@ const response: GenerateReporterResponse = {
   },
   changeFailureRate: undefined,
   classification: [],
-  completedCardsNumber: completedCardsNumber,
-  standardDeviation: standardDeviation,
-  blockedAndDevelopingPercentage: blockedAndDevelopingPercentage,
   deploymentFrequency: undefined,
   leadTimeForChanges: undefined,
   meanTimeToRecovery: undefined,
-  latestSprintBlockReason: {
-    totalBlockedPercentage: sprintBlockReason[0].totalBlockedPercentage,
-    blockReasonPercentage: sprintBlockReason[0].blockDetails,
+  secondaryMetrics: {
+    completedCardsNumber: completedCardsNumber,
+    standardDeviation: standardDeviation,
+    blockedAndDevelopingPercentage: blockedAndDevelopingPercentage,
+    latestSprintBlockReason: {
+      totalBlockedPercentage: sprintBlockReason[0].totalBlockedPercentage,
+      blockReasonPercentage: sprintBlockReason[0].blockDetails,
+    },
   },
 };
 const statistics = new SprintStatistics(
@@ -612,7 +614,7 @@ serviceProto.codebaseMetrics = codebaseMetrics;
 
 describe("Generate report", () => {
   afterEach(() => sinon.restore());
-  it("should generate report with velocity & cycle time & classification", async () => {
+  it("should generate report with velocity & cycle time & classification &secondary metrics", async () => {
     sinon.stub(changeConsiderHolidayMode);
     sinon.stub(GenerateReportService.prototype, <any>"fetchOriginalData");
     sinon.stub(GenerateReportService.prototype, <any>"generateCsvForPipeline");

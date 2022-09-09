@@ -17,6 +17,10 @@ export const metrics: Metric[] = [
     roles: ['board'],
   },
   {
+    name: 'Secondary Metrics',
+    roles: ['board'],
+  },
+  {
     name: 'Lead time for changes',
     roles: ['sourceControl', 'pipelineTool'],
   },
@@ -231,6 +235,10 @@ export const metricFormConfig = [
   {
     name: 'Classification',
     displayItems: ['classification', 'crews'],
+  },
+  {
+    name: 'Secondary Metrics',
+    displayItems: ['secondaryMetrics'],
   },
   {
     name: 'Lead time for changes',

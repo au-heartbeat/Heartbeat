@@ -599,6 +599,35 @@ export class LatestSprintBlockReason {
 }
 
 @swaggerClass()
+export class SecondaryMetrics {
+  @swaggerProperty({
+    type: "object",
+    description: "completed cards number",
+    properties: (CompleteCardsNumber as any).swaggerDocument,
+  })
+  completedCardsNumber?: CompleteCardsNumber[];
+  @swaggerProperty({
+    type: "object",
+    description: "standard deviation and average",
+    properties: (StandardDeviation as any).swaggerDocument,
+  })
+  standardDeviation?: StandardDeviation[];
+
+  @swaggerProperty({
+    type: "object",
+    required: true,
+  })
+  blockedAndDevelopingPercentage?: BlockedAndDevelopingPercentage[];
+
+  @swaggerProperty({
+    type: "object",
+    description: "latest sprint block reason",
+    properties: (LatestSprintBlockReason as any).swaggerDocument,
+  })
+  latestSprintBlockReason?: LatestSprintBlockReason;
+}
+
+@swaggerClass()
 export class GenerateReporterResponse {
   @swaggerProperty({
     type: "object",
@@ -698,4 +727,11 @@ export class GenerateReporterResponse {
     properties: (LatestSprintBlockReason as any).swaggerDocument,
   })
   latestSprintBlockReason?: LatestSprintBlockReason;
+
+  @swaggerProperty({
+    type: "object",
+    description: "secondary metrics",
+    properties: (SecondaryMetrics as any).swaggerDocument,
+  })
+  secondaryMetrics?: SecondaryMetrics;
 }
