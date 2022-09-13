@@ -1,4 +1,4 @@
-import { Kanban, KanbanEnum } from "../Kanban";
+import { Kanban } from "../Kanban";
 import axios, { AxiosInstance } from "axios";
 import { StoryPointsAndCycleTimeRequest } from "../../../contract/kanban/KanbanStoryPointParameterVerify";
 import {
@@ -6,10 +6,8 @@ import {
   JiraCardResponse,
 } from "../../../contract/kanban/KanbanStoryPointResponse";
 import {
-  ColumnValue,
   ColumnResponse,
 } from "../../../contract/kanban/KanbanTokenVerifyResponse";
-import { StatusSelf } from "../../../models/kanban/JiraBoard/StatusSelf";
 import {
   HistoryDetail,
   JiraCardHistory,
@@ -20,7 +18,6 @@ import { Cards } from "../../../models/kanban/RequestKanbanResults";
 import {
   CardCustomFieldKey,
   FixVersion,
-  Status,
 } from "../../../models/kanban/JiraBoard/JiraCard";
 import { CardFieldsEnum } from "../../../models/kanban/CardFieldsEnum";
 import { CardStepsEnum } from "../../../models/kanban/CardStepsEnum";
@@ -84,16 +81,6 @@ export class Jira implements Kanban {
   ): Promise<ColumnResponse[]> {
     const jiraColumnNames = this.storage.getItem("jiraColumnNames")
     return jiraColumnNames;
-  }
-
-  private static async queryStatus(
-    url: string,
-    token: string
-  ): Promise<StatusSelf> {
-    const http = axios.create();
-    http.defaults.headers.common["Authorization"] = token;
-    const result = await http.get(url);
-    return result.data;
   }
 
   async getStoryPointsAndCycleTime(
@@ -213,7 +200,6 @@ export class Jira implements Kanban {
       .filter((DoneCard: { fields: { status: { name: string } } }) => {
         return model.status.includes(DoneCard.fields.status.name.toUpperCase());
       });
-    console.log(allDoneCards.length);
     return allDoneCards;
   }
 
