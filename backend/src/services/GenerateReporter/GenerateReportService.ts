@@ -5,6 +5,7 @@ import {
   CodebaseSetting,
   PipelineSetting,
   LeadTimeEnvironment,
+  DeploymentEnvironment,
 } from "../../contract/GenerateReporter/GenerateReporterRequestBody";
 import {
   AvgDeploymentFrequency,
@@ -251,21 +252,22 @@ export class GenerateReportService {
       codebaseSetting.token
     );
 
-    for (const deploymentEnvironment of codebaseSetting.leadTime) {
-      const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
-        deploymentEnvironment,
-        startTime,
-        endTime
-      );
-      const deployTimes: DeployTimes = pipeline.countDeployTimes(
-        deploymentEnvironment,
-        buildInfos
-      );
-      this.deployTimesListFromLeadTimeSetting.push(deployTimes);
-      this.BuildInfosOfLeadtimes.push(
-        new Pair(deploymentEnvironment.id, buildInfos)
-      );
-    }
+    await Promise.all(
+      codebaseSetting.leadTime.map((deploymentEnvironment) =>
+        this.getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+          pipeline,
+          deploymentEnvironment,
+          startTime,
+          endTime
+        ).then(({ deployTimes, buildInfos }) => {
+          this.deployTimesListFromLeadTimeSetting.push(deployTimes);
+          this.BuildInfosOfLeadtimes.push(
+            new Pair(deploymentEnvironment.id, buildInfos)
+          );
+        })
+      )
+    );
+
     const repoMap = GenerateReportService.getRepoMap(codebaseSetting);
     this.leadTimes = await codebase.fetchPipelinesLeadTime(
       this.deployTimesListFromLeadTimeSetting,
@@ -293,19 +295,38 @@ export class GenerateReportService {
       request.pipeline.type,
       request.pipeline.token
     );
-    for (const deploymentEnvironment of request.pipeline.deployment) {
-      const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
-        deploymentEnvironment,
-        startTime,
-        endTime
-      );
-      const deployTimes: DeployTimes = pipeline.countDeployTimes(
-        deploymentEnvironment,
-        buildInfos
-      );
-      this.deployTimesListFromDeploySetting.push(deployTimes);
-      this.BuildInfos.push(new Pair(deploymentEnvironment.id, buildInfos));
-    }
+
+    await Promise.all(
+      request.pipeline.deployment.map((deploymentEnvironment) =>
+        this.getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+          pipeline,
+          deploymentEnvironment,
+          startTime,
+          endTime
+        ).then(({ deployTimes, buildInfos }) => {
+          this.deployTimesListFromDeploySetting.push(deployTimes);
+          this.BuildInfos.push(new Pair(deploymentEnvironment.id, buildInfos));
+        })
+      )
+    );
+  }
+
+  private async getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+    pipeline: Pipeline,
+    deploymentEnvironment: DeploymentEnvironment,
+    startTime: Date,
+    endTime: Date
+  ) {
+    const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
+      deploymentEnvironment,
+      startTime,
+      endTime
+    );
+    const deployTimes: DeployTimes = pipeline.countDeployTimes(
+      deploymentEnvironment,
+      buildInfos
+    );
+    return { deployTimes, buildInfos };
   }
 
   private async fetchDataFromKanban(
