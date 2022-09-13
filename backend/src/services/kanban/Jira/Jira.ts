@@ -208,44 +208,12 @@ export class Jira implements Kanban {
   private async getAllDoneCards(
     model: StoryPointsAndCycleTimeRequest
   ): Promise<any> {
-    let jql = "";
-    if (model.status.length > 0) {
-      switch (model.type.toLowerCase()) {
-        case KanbanEnum.JIRA:
-          jql = `status in ('${model.status.join(
-            "','"
-          )}') AND statusCategoryChangedDate >= ${
-            model.startTime
-          } AND statusCategoryChangedDate <= ${model.endTime}`;
-          break;
-        case KanbanEnum.CLASSIC_JIRA: {
-          let subJql = "";
-          for (let index = 0; index < model.status.length - 1; index++) {
-            subJql += `status changed to '${model.status[index]}' during (${model.startTime}, ${model.endTime}) or `;
-          }
-          subJql += `status changed to '${
-            model.status[model.status.length - 1]
-          }' during (${model.startTime}, ${model.endTime})`;
-          jql = `status in ('${model.status.join("','")}') AND (${subJql})`;
-          break;
-        }
-      }
-    }
-
-    const response = await this.httpClient.get(
-      `/${model.boardId}/issue?maxResults=${this.queryCount}&jql=${jql}`
-    );
-
-    const allDoneCardsResponse = response.data;
-    const allDoneCards = allDoneCardsResponse.issues;
-    if (allDoneCardsResponse.total > this.queryCount) {
-      await this.pageQuerying(
-        allDoneCardsResponse.total,
-        jql,
-        allDoneCards,
-        model.boardId
-      );
-    }
+    const allDoneCards = this.storage
+      .getItem("allDoneCards")
+      .filter((DoneCard: { fields: { status: { name: string } } }) => {
+        return model.status.includes(DoneCard.fields.status.name.toUpperCase());
+      });
+    console.log(allDoneCards.length);
     return allDoneCards;
   }
 
