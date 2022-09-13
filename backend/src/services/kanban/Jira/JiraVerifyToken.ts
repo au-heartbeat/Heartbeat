@@ -265,12 +265,4 @@ export class JiraVerifyToken implements KanbanVerifyToken {
 
     return new Set<string>(assigneeList);
   }
-
-  private static matchTime(
-    cardTime: string,
-    startTime: number,
-    endTime: number
-  ): boolean {
-    return startTime <= Date.parse(cardTime) && Date.parse(cardTime) <= endTime;
-  }
 }

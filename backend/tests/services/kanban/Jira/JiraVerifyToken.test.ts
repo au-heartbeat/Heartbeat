@@ -46,6 +46,7 @@ const tokenVerifyModel = new KanbanTokenVerifyModel(
 );
 const doneColumn = ["DONE", "CANCELLED"];
 describe("verify token and return columns and users", async () => {
+  afterEach(() => sinon.restore());
   it("should throw exception when token is invalid", async () => {
     mock.onGet(`/project/${tokenVerifyModel.projectKey}`).reply(401);
     expect(async () => {
@@ -209,24 +210,23 @@ describe("verify token and return columns and users", async () => {
   });
 });
 
-describe("should return query status data", () => {
-  afterEach(() => sinon.restore());
+describe("get query status", () => {
   it("should return query status data", async () => {
     mock
-      .onGet("https://test.atlassian.net/rest/api/2/status/10006", {
+      .onGet("https://domain.atlassian.net/rest/api/2/status/10006", {
         headers: { Authorization: "testToken" },
       })
       .reply(200, StatusData);
-    const result = await jiraVerifyTokenProto.constructor.queryStatus(
-      "https://test.atlassian.net/rest/api/2/status/10006",
-      "testToken"
-    );
-    expect(result.name).equal("TODO");
+    const result: StatusSelf =
+      await jiraVerifyTokenProto.constructor.queryStatus(
+        "https://domain.atlassian.net/rest/api/2/status/10006",
+        "testToken"
+      );
+    expect(result.statusCategory.key).equal("indeterminate");
   });
 });
 
 describe("get all done cards", () => {
-  afterEach(() => sinon.restore());
   const storyPointsAndCycleTimeRequest = new StoryPointsAndCycleTimeRequest(
     "testToken",
     "jira",
@@ -362,96 +362,6 @@ describe("query users by cards", () => {
         id: "10238",
         self: "https://dorametrics.atlassian.net/rest/agile/1.0/issue/10238",
         key: "ADM-222",
-        fields: {
-          statuscategorychangedate: "2022-08-02T11:18:31.067+0800",
-          issuetype: [Object],
-          timespent: null,
-          sprint: null,
-          customfield_10030: null,
-          customfield_10031: null,
-          project: [Object],
-          customfield_10032: null,
-          customfield_10033: null,
-          fixVersions: [],
-          customfield_10034: null,
-          aggregatetimespent: null,
-          resolution: [Object],
-          customfield_10035: null,
-          customfield_10036: [],
-          customfield_10037: [Array],
-          customfield_10027: null,
-          resolutiondate: "2022-08-02T11:18:31.062+0800",
-          workratio: -1,
-          watches: [Object],
-          issuerestriction: [Object],
-          lastViewed: null,
-          created: "2022-07-29T15:14:12.244+0800",
-          customfield_10020: [Array],
-          customfield_10021: null,
-          epic: null,
-          customfield_10022: null,
-          customfield_10023:
-            "10008_*:*_1_*:*_86250921_*|*_10007_*:*_1_*:*_244055039_*|*_10009_*:*_1_*:*_0_*|*_10006_*:*_1_*:*_1152881",
-          priority: [Object],
-          labels: [],
-          customfield_10016: 2,
-          customfield_10017: null,
-          customfield_10018: [Object],
-          customfield_10019: "0|i000t3:d",
-          aggregatetimeoriginalestimate: null,
-          timeestimate: null,
-          versions: [],
-          issuelinks: [],
-          assignee: [Object],
-          updated: "2022-08-02T11:19:30.286+0800",
-          status: [Object],
-          components: [],
-          timeoriginalestimate: null,
-          description:
-            "As a user\n" +
-            "\n" +
-            "I want to know the number of completed cards in every sprint\n" +
-            "\n" +
-            "So that I can know the number of completed cards in every sprint\n" +
-            "\n" +
-            "*Acceptance Criteria*\n" +
-            "\n" +
-            "*AC: Get a map with key is sprintName and value is the number of completed cards in that sprint.*\n" +
-            "\n" +
-            "Call {{mapCardsByIteration}} to get the map with key is sprintName and value is the list of cards in that sprint.\n" +
-            "\n" +
-            "Filter the value by complete state, and get the length of the rest list.",
-          customfield_10010: null,
-          customfield_10014: null,
-          customfield_10015: null,
-          timetracking: {},
-          customfield_10005: null,
-          customfield_10006: null,
-          customfield_10007: null,
-          security: null,
-          customfield_10008: null,
-          aggregatetimeestimate: null,
-          attachment: [],
-          customfield_10009: null,
-          flagged: false,
-          summary: "Calculate the completed cards by sprint name",
-          creator: [Object],
-          subtasks: [],
-          reporter: [Object],
-          aggregateprogress: [Object],
-          customfield_10001: null,
-          customfield_10002: null,
-          customfield_10003: null,
-          customfield_10004: null,
-          customfield_10038: null,
-          environment: null,
-          duedate: null,
-          closedSprints: [Array],
-          progress: [Object],
-          comment: [Object],
-          votes: [Object],
-          worklog: [Object],
-        },
       },
     ];
 
