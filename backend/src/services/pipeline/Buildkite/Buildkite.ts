@@ -149,10 +149,10 @@ export class Buildkite implements Pipeline {
     return dataCollector;
   }
 
-  async countDeployTimes(
+  public countDeployTimes(
     deploymentEnvironment: DeploymentEnvironment,
     buildInfos: BuildInfo[]
-  ): Promise<DeployTimes> {
+  ): DeployTimes {
     if (deploymentEnvironment.orgId == null) {
       throw Error("miss orgId argument");
     }

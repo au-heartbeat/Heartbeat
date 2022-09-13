@@ -16,7 +16,7 @@ export interface Pipeline {
   countDeployTimes(
     deploymentEnvironment: DeploymentEnvironment,
     buildInfos: BuildInfo[]
-  ): Promise<DeployTimes>;
+  ): DeployTimes;
 
   fetchPipelineBuilds(
     deploymentEnvironment: DeploymentEnvironment,

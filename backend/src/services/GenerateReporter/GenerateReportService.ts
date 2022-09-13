@@ -257,7 +257,7 @@ export class GenerateReportService {
         startTime,
         endTime
       );
-      const deployTimes: DeployTimes = await pipeline.countDeployTimes(
+      const deployTimes: DeployTimes = pipeline.countDeployTimes(
         deploymentEnvironment,
         buildInfos
       );
@@ -299,7 +299,7 @@ export class GenerateReportService {
         startTime,
         endTime
       );
-      const deployTimes: DeployTimes = await pipeline.countDeployTimes(
+      const deployTimes: DeployTimes = pipeline.countDeployTimes(
         deploymentEnvironment,
         buildInfos
       );
