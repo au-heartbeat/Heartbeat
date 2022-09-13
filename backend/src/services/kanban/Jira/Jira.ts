@@ -49,6 +49,7 @@ import {
 export class Jira implements Kanban {
   private readonly queryCount: number = 100;
   private readonly httpClient: AxiosInstance;
+  private readonly storage = require('node-sessionstorage');
 
   constructor(token: string, site: string) {
     this.httpClient = axios.create({
@@ -81,54 +82,9 @@ export class Jira implements Kanban {
   async getColumns(
     model: StoryPointsAndCycleTimeRequest
   ): Promise<ColumnResponse[]> {
-    const jiraColumnNames = Array.of<ColumnResponse>();
-
-    //column
-    const configurationResponse = await axios.get(
-      `https://${model.site}.atlassian.net/rest/agile/1.0/board/${model.boardId}/configuration`,
-      {
-        headers: { Authorization: `${model.token}` },
-      }
-    );
-
-    const configuration = configurationResponse.data;
-
-    const columns = configuration.columnConfig.columns;
-
-    await columns.map(async (column: any) => {
-      console.log("---------colums map-------------------");
-
-      if (column.statuses.length != 0) {
-        console.log("---------if-------------------");
-
-        const columnValue: ColumnValue = new ColumnValue();
-        columnValue.name = column.name;
-        const jiraColumnResponse = new ColumnResponse();
-
-        await Promise.all(
-          column.statuses.map((status: { self: string }) =>
-            Jira.queryStatus(status.self, model.token)
-          )
-        )
-          .then((responses) => {
-            responses.map((response) => {
-              jiraColumnResponse.key = (
-                response as StatusSelf
-              ).statusCategory.key;
-              columnValue.statuses.push(
-                (response as StatusSelf).untranslatedName.toUpperCase()
-              );
-            });
-            jiraColumnResponse.value = columnValue;
-            jiraColumnNames.push(jiraColumnResponse);
-            console.log("----------jiraColumnNames.push----------");
-          });
-      }
-    });
-    console.log(new Date());
-    console.log("======getColumns end===========");
+    const jiraColumnNames = this.storage.getItem("jiraColumnNames")
     return jiraColumnNames;
-  }  
+  }
 
   private static async queryStatus(
     url: string,
