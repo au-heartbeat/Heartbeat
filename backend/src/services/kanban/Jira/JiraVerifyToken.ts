@@ -16,6 +16,7 @@ import { NoCardsInDoneColumnError } from "../../../errors/NoCardsInDoneColumnErr
 export class JiraVerifyToken implements KanbanVerifyToken {
   private readonly queryCount: number = 100;
   private readonly httpClient: AxiosInstance;
+  private storage = require('node-sessionstorage');
 
   constructor(token: string, site: string) {
     this.httpClient = axios.create({
@@ -75,6 +76,7 @@ export class JiraVerifyToken implements KanbanVerifyToken {
       jiraColumnNames.push(jiraColumnResponse);
     }
 
+    this.storage.setItem("jiraColumnNames", jiraColumnNames);
     //user
     const userNames = await this.queryUsersByCards(model, doneColumn);
 
@@ -209,9 +211,11 @@ export class JiraVerifyToken implements KanbanVerifyToken {
             model.endTime
           )
       );
+      this.storage.setItem("allDoneCards", allDoneCardsResult);
       return allDoneCardsResult;
     }
 
+    this.storage.setItem("allDoneCards", allDoneCards);
     return allDoneCards;
   }
 
