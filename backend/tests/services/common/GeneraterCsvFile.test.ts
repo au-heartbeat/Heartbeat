@@ -76,7 +76,7 @@ const jiraCardResponse1 = new JiraCardResponse(
   cardCycleTime
 );
 const jiraCardResponses: JiraCardResponse[] = [jiraCardResponse1];
-describe("getExtraFields", () => {
+describe("get extra fields", () => {
   it("should get extra fields when we get csv string data ", () => {
     const result = getExtraFields(targetFields, currentFields);
     const expectedExtrafields = [
@@ -96,41 +96,41 @@ describe("getExtraFields", () => {
 });
 
 describe("get field display value", () => {
-  it("should get field display name when obj is a Object", () => {
+  it("should get field display name when obj is an Object", () => {
     const obj = {
       displayName: "testDisplayName",
     };
     const result = getFieldDisplayValue(obj);
     expect(result).deep.equal(".displayName");
   });
-  it("should get field name when obj is a Object ", () => {
+  it("should get field name when obj is an Object ", () => {
     const obj = {
       name: "testName",
     };
     const result = getFieldDisplayValue(obj);
     expect(result).deep.equal(".name");
   });
-  it("should get field key when update obj is a Object ", () => {
+  it("should get field key when update obj is an Object ", () => {
     const obj = {
       key: "testKey",
     };
     const result = getFieldDisplayValue(obj);
     expect(result).deep.equal(".key");
   });
-  it("should get field display value when obj is a Object ", () => {
+  it("should get field display value when obj is an Object ", () => {
     const obj = {
       value: "testValue",
     };
     const result = getFieldDisplayValue(obj);
     expect(result).deep.equal(".value");
   });
-  it("should get field display value when obj is a Object ", () => {
+  it("should get field display value when obj is an Object ", () => {
     const obj = "";
     const result = getFieldDisplayValue(obj);
     expect(result).deep.equal(false);
   });
 
-  it("should get field display value when obj is a Array ", () => {
+  it("should get field display value when obj is an Array ", () => {
     const obj = [{ displayName: "testDisplayName", name: "testName" }];
     const result = getFieldDisplayValue(obj);
     expect(result).deep.equal("[0].displayName");
@@ -322,7 +322,7 @@ describe("convert board data to xlsx", () => {
   });
 });
 
-describe("getDataFromCsv", () => {
+describe("get data from csv", () => {
   const csvTimeStamp = 1663121974529;
   it("should get data from csv when fetch board csv data", async () => {
     const dataType = "board";
@@ -330,7 +330,7 @@ describe("getDataFromCsv", () => {
     expect(result).to.be.not.empty;
   });
 
-  it("should get data from csv when fetch board csv data", async () => {
+  it("should get data from csv when dataType is null", async () => {
     const dataType = "";
     const result = await GetDataFromCsv(dataType, csvTimeStamp);
     expect(result).to.be.empty;
@@ -348,7 +348,7 @@ describe("getDataFromCsv", () => {
   });
 });
 
-describe("updateExtraFields", () => {
+describe("update extra fields", () => {
   it("should get data from csv when fetch board csv data", async () => {
     const extraFields = [
       {
