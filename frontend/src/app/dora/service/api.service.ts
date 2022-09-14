@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { LinearBoardParam } from '../types/LinearBoardParam';
 import { JiraBoardParam } from '../types/JiraBoardParam';
+import CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +39,10 @@ export class ApiService {
 
   verifyJiraBoard({ type, site, email, token, projectKey, startTime, endTime, boardId }: JiraBoardParam) {
     const msg = `${email}:${token}`;
-    const newToken = `Basic ${btoa(msg)}`;
+    const tokentest = `Basic ${btoa(msg)}`;
+
+    var newToken = btoa(CryptoJS.AES.encrypt(tokentest, 'secret key 123').toString());
+
     return this.httpClient.get(`${this.baseUrl}/kanban/verify`, {
       params: { token: newToken, type: type.toLowerCase(), site, projectKey, startTime, endTime, boardId },
     });

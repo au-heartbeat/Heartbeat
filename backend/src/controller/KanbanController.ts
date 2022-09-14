@@ -8,7 +8,7 @@ import { KanbanEnum } from "../services/kanban/Kanban";
 import { KanbanTokenVerifyResponse } from "../contract/kanban/KanbanTokenVerifyResponse";
 import { JiraVerifyToken } from "../services/kanban/Jira/JiraVerifyToken";
 import { LinearVerifyToken } from "../services/kanban/Linear/LinearVerifyToken";
-
+import CryptoJS from "crypto-js";
 @tagsAll(["KanbanController"])
 export default class KanbanController {
   @request("get", "/kanban/verify")
@@ -21,6 +21,11 @@ export default class KanbanController {
     switch (kanbanTokenVerifyModel.type.toLowerCase()) {
       case KanbanEnum.JIRA:
       case KanbanEnum.CLASSIC_JIRA:
+        kanbanTokenVerifyModel.token = CryptoJS.AES.decrypt(
+          atob(kanbanTokenVerifyModel.token),
+          "secret key 123"
+        ).toString(CryptoJS.enc.Utf8);
+
         ctx.response.body = await new JiraVerifyToken(
           kanbanTokenVerifyModel.token,
           kanbanTokenVerifyModel.site
