@@ -1,5 +1,7 @@
 import { expect } from "chai";
 import "mocha";
+import sinon from "sinon";
+import fs from "fs";
 import {
   CycleTimeInfo,
   JiraCardResponse,
@@ -153,7 +155,16 @@ describe("get active extra fields", () => {
 });
 
 describe("get data from csv", () => {
+  afterEach(() => {
+    sinon.restore();
+  });
   const timeStamp = 123456789;
+  it("should get data from csv when fetch board csv data", async () => {
+    const dataType = "board";
+    sinon.stub(fs, "readFileSync").returns("test");
+    const result = await GetDataFromCsv(dataType, timeStamp);
+    expect(result).to.equal("test");
+  });
   it("should return empty when dataType is null", async () => {
     const dataType = "";
     const result = await GetDataFromCsv(dataType, timeStamp);
