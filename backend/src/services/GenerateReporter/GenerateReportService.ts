@@ -206,22 +206,25 @@ export class GenerateReportService {
     const startTime = new Date(request.startTime);
     const endTime = new Date(request.endTime);
 
+    const dataSourceFlags = { kanban: false, pipeline: false, codebase: false };
     if (lowMetrics.some((metric) => this.kanbanMetrics.includes(metric))) {
       if (
         JSON.stringify(request.kanbanSetting) ===
         JSON.stringify(new RequestKanbanSetting())
-      )
+      ) {
         throw new SettingMissingError("kanban setting");
-      await this.fetchDataFromKanban(request);
+      }
+      dataSourceFlags.kanban = true;
     }
 
     if (lowMetrics.some((metric) => this.pipeLineMetrics.includes(metric))) {
       if (
         JSON.stringify(request.pipeline) ===
         JSON.stringify(new PipelineSetting())
-      )
+      ) {
         throw new SettingMissingError("pipeline setting");
-      await this.fetchDataFromPipeline(request, startTime, endTime);
+      }
+      dataSourceFlags.pipeline = true;
     }
 
     if (lowMetrics.some((metric) => this.codebaseMetrics.includes(metric))) {
@@ -230,10 +233,26 @@ export class GenerateReportService {
           JSON.stringify(new CodebaseSetting()) ||
         JSON.stringify(request.pipeline) ===
           JSON.stringify(new PipelineSetting())
-      )
+      ) {
         throw new SettingMissingError("codebase setting or pipeline setting");
-      await this.fetchDataFromCodebase(request, startTime, endTime);
+      }
+      dataSourceFlags.codebase = true;
     }
+
+    await Promise.all(
+      Object.entries(dataSourceFlags).map(([key, value]) => {
+        if (key === "kanban" && value === true) {
+          return this.fetchDataFromKanban(request);
+        }
+        if (key === "pipeline" && value === true) {
+          return this.fetchDataFromPipeline(request, startTime, endTime);
+        }
+        if (key === "codebase" && value === true) {
+          return this.fetchDataFromCodebase(request, startTime, endTime);
+        }
+        return;
+      })
+    );
   }
 
   private async fetchDataFromCodebase(
