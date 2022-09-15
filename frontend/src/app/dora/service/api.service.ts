@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { LinearBoardParam } from '../types/LinearBoardParam';
 import { JiraBoardParam } from '../types/JiraBoardParam';
+import privateKey from '../../../../../privateKey.json';
 import CryptoJS from 'crypto-js';
 
 @Injectable({
@@ -39,9 +40,9 @@ export class ApiService {
 
   verifyJiraBoard({ type, site, email, token, projectKey, startTime, endTime, boardId }: JiraBoardParam) {
     const msg = `${email}:${token}`;
-    const tokentest = `Basic ${btoa(msg)}`;
-
-    var newToken = btoa(CryptoJS.AES.encrypt(tokentest, 'secret key 123').toString());
+    const basicToken = `Basic ${btoa(msg)}`;
+    const tokenkey = privateKey.tokenKey;
+    const newToken = btoa(CryptoJS.AES.encrypt(basicToken, tokenkey).toString());
 
     return this.httpClient.get(`${this.baseUrl}/kanban/verify`, {
       params: { token: newToken, type: type.toLowerCase(), site, projectKey, startTime, endTime, boardId },
@@ -49,8 +50,13 @@ export class ApiService {
   }
 
   verifyLinearBoard({ type, teamName, teamId, startTime, endTime, token }: LinearBoardParam) {
+    const msg = `${token}`;
+    const basicToken = `Basic ${btoa(msg)}`;
+    const tokenkey = privateKey.tokenKey;
+    const newToken = btoa(CryptoJS.AES.encrypt(basicToken, tokenkey).toString());
+
     return this.httpClient.get(`${this.baseUrl}/kanban/verify`, {
-      params: { token, type: type.toLowerCase(), teamName, teamId, startTime, endTime },
+      params: { newToken, type: type.toLowerCase(), teamName, teamId, startTime, endTime },
     });
   }
 
@@ -65,11 +71,21 @@ export class ApiService {
     startTime: string;
     endTime: string;
   }) {
-    return this.httpClient.post(`${this.baseUrl}/pipeline/fetch`, { token, type, startTime, endTime });
+    const msg = `${token}`;
+    const basicToken = `Basic ${btoa(msg)}`;
+    const tokenkey = privateKey.tokenKey;
+    const newToken = btoa(CryptoJS.AES.encrypt(basicToken, tokenkey).toString());
+
+    return this.httpClient.post(`${this.baseUrl}/pipeline/fetch`, { newToken, type, startTime, endTime });
   }
 
   fetchCodeBaseRepos({ type, token }: { type: string; token: string }) {
-    return this.httpClient.get(`${this.baseUrl}/codebase/fetch/repos`, { params: { token, type } });
+    const msg = `${token}`;
+    const basicToken = `Basic ${btoa(msg)}`;
+    const tokenkey = privateKey.tokenKey;
+    const newToken = btoa(CryptoJS.AES.encrypt(basicToken, tokenkey).toString());
+
+    return this.httpClient.get(`${this.baseUrl}/codebase/fetch/repos`, { params: { newToken, type } });
   }
 
   fetchPipelineInfo() {

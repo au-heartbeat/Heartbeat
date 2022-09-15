@@ -4,7 +4,8 @@ import { ApiService } from '../../../service/api.service';
 import { MetricsSource } from '../../../types/metricsSource';
 import { ReportResponse } from '../../../types/reportResponse';
 import { metrics } from '../../../utils/config';
-
+import privateKey from '../../../../../../../privateKey.json';
+import CryptoJS from 'crypto-js';
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -39,6 +40,8 @@ export class ExportComponent implements OnInit, OnChanges {
 
   fetchReports() {
     this.loading = true;
+    const tokenkey = privateKey.tokenKey;
+    this.params.kanbanSetting.token = btoa(CryptoJS.AES.encrypt(this.params.kanbanSetting.token, tokenkey).toString());
     this.apiService.generateReporter({ ...this.params, csvTimeStamp: this.csvTimeStamp }).subscribe((res) => {
       if (res) {
         this.loading = false;

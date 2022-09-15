@@ -5,6 +5,8 @@ import { PipelineFactory } from "../services/pipeline/Pipeline";
 import { PipelineGetStepsRequest } from "../contract/pipeline/PipelineGetStepsRequest";
 import { PipelineGetStepsFactory } from "../services/pipeline/PipelineGetSteps";
 import { PipelineInfo } from "../contract/pipeline/PipelineInfo";
+import privateKey from "../../../privateKey.json";
+import CryptoJS from "crypto-js";
 
 @tagsAll(["PipelineController"])
 export default class PipelineController {
@@ -14,6 +16,13 @@ export default class PipelineController {
   @body((TokenVerifyModel as any).swaggerDocument)
   public static async fetchPipeline(ctx: Context): Promise<void> {
     const tokenVerifyModel: TokenVerifyModel = ctx.validatedBody;
+
+    const pipelineTokenKey = privateKey.tokenKey;
+    tokenVerifyModel.token = CryptoJS.AES.decrypt(
+      atob(tokenVerifyModel.token),
+      pipelineTokenKey
+    ).toString(CryptoJS.enc.Utf8);
+
     const pipeline = PipelineFactory.getInstance(
       tokenVerifyModel.type,
       tokenVerifyModel.token
@@ -31,6 +40,7 @@ export default class PipelineController {
   @responses((PipelineInfo as any).swaggerDocument)
   public static async pipelineGetSteps(ctx: Context): Promise<void> {
     const pipelineGetStepsRequest: PipelineGetStepsRequest = ctx.validatedBody;
+
     const pipelineGetStep = PipelineGetStepsFactory.getInstance(
       pipelineGetStepsRequest.type,
       pipelineGetStepsRequest.token

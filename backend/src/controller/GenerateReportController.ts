@@ -4,6 +4,8 @@ import { GenerateReportRequest } from "../contract/GenerateReporter/GenerateRepo
 import { GenerateReporterResponse } from "../contract/GenerateReporter/GenerateReporterResponse";
 import { GenerateReportService } from "../services/GenerateReporter/GenerateReportService";
 import { DataSourceType } from "../models/kanban/CsvDataSourceType";
+import privateKey from "../../../privateKey.json";
+import CryptoJS from "crypto-js";
 
 @tagsAll(["GenerateReporter"])
 export default class GenerateReportController {
@@ -14,6 +16,20 @@ export default class GenerateReportController {
   @responses((GenerateReporterResponse as any).swaggerDocument)
   public static async generateReporter(ctx: Context): Promise<void> {
     const request: GenerateReportRequest = ctx.validatedBody;
+    const reportTokenKey = privateKey.tokenKey;
+
+    request.kanbanSetting.token = CryptoJS.AES.decrypt(
+      atob(request.kanbanSetting.token),
+      reportTokenKey
+    ).toString(CryptoJS.enc.Utf8);
+    request.pipeline.token = CryptoJS.AES.decrypt(
+      atob(request.kanbanSetting.token),
+      reportTokenKey
+    ).toString(CryptoJS.enc.Utf8);
+    request.codebaseSetting.token = CryptoJS.AES.decrypt(
+      atob(request.kanbanSetting.token),
+      reportTokenKey
+    ).toString(CryptoJS.enc.Utf8);
     ctx.response.body = await new GenerateReportService().generateReporter(
       request
     );
