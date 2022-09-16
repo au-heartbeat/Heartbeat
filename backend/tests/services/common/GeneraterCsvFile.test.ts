@@ -79,6 +79,48 @@ const jiraCardResponse = new JiraCardResponse(
   cardCycleTime
 );
 const jiraCardResponses: JiraCardResponse[] = [jiraCardResponse];
+const timeStamp = 123456789;
+const nonDonebaseInfo = {
+  key: "ADM-250",
+  fields: {
+    statuscategorychangedate: "2020-06-28T10:14:15.630+0800",
+    sprint: "ADM Sprint 3",
+    fixVersions: [],
+    summary: "Test card in dev",
+    label: "",
+    status: { name: "blocked" },
+  },
+};
+const nonDonecycleTime: CycleTimeInfo[] = [];
+const nonDoneoriginCycleTime: CycleTimeInfo[] = [];
+const nonDonecardCycleTime = {
+  name: "ADM-148",
+  steps: {
+    analyse: 0,
+    development: 0,
+    waiting: 0,
+    testing: 0,
+    blocked: 0,
+    review: 0,
+  },
+  total: 0,
+};
+const jiraNonDoneCardResponse = new JiraCardResponse(
+  nonDonebaseInfo,
+  nonDonecycleTime,
+  nonDoneoriginCycleTime,
+  nonDonecardCycleTime
+);
+const jiraColumns: ColumnResponse[] = [
+  {
+    key: "indeterminate",
+    value: { name: "TODO", statuses: ["TODO"] },
+  },
+  {
+    key: "indeterminate",
+    value: { name: "Testing", statuses: ["TESTING"] },
+  },
+];
 describe("get extra fields", () => {
   it("should get extra fields when we get csv string data ", () => {
     const result = getExtraFields(targetFields, currentFields);
@@ -158,7 +200,6 @@ describe("get data from csv", () => {
   afterEach(() => {
     sinon.restore();
   });
-  const timeStamp = 123456789;
   it("should get data from csv when fetch board csv data", async () => {
     const dataType = "board";
     sinon.stub(fs, "readFileSync").returns("test");
@@ -203,49 +244,8 @@ describe("update extra fields", () => {
 });
 
 describe("convert board data to xlsx", () => {
-  const nonDonebaseInfo1 = {
-    key: "ADM-250",
-    fields: {
-      statuscategorychangedate: "2020-06-28T10:14:15.630+0800",
-      sprint: "ADM Sprint 3",
-      fixVersions: [],
-      summary: "Test card in dev",
-      label: "",
-      status: { name: "blocked" },
-    },
-  };
-  const nonDonecycleTime1: CycleTimeInfo[] = [];
-  const nonDoneoriginCycleTime1: CycleTimeInfo[] = [];
-  const nonDonecardCycleTime1 = {
-    name: "ADM-148",
-    steps: {
-      analyse: 0,
-      development: 0,
-      waiting: 0,
-      testing: 0,
-      blocked: 0,
-      review: 0,
-    },
-    total: 0,
-  };
-  const jiraNonDoneCardResponse1 = new JiraCardResponse(
-    nonDonebaseInfo1,
-    nonDonecycleTime1,
-    nonDoneoriginCycleTime1,
-    nonDonecardCycleTime1
-  );
-  const jiraColumns: ColumnResponse[] = [
-    {
-      key: "indeterminate",
-      value: { name: "TODO", statuses: ["TODO"] },
-    },
-    {
-      key: "indeterminate",
-      value: { name: "Testing", statuses: ["TESTING"] },
-    },
-  ];
   it("should convert board data to xlsx when get data from board", async () => {
-    const nonDonebaseInfo2 = {
+    const nonDonebaseInfo1 = {
       key: "ADM-148",
       fields: {
         statuscategorychangedate: "2020-06-28T10:14:15.630+0800",
@@ -257,15 +257,15 @@ describe("convert board data to xlsx", () => {
       },
     };
 
-    const nonDonecycleTime2 = [
+    const nonDonecycleTime1 = [
       { column: "BACKLOG", day: 0 },
       { column: "TESTING", day: 0 },
     ];
-    const nonDoneoriginCycleTime2 = [
+    const nonDoneoriginCycleTime1 = [
       { column: "BACKLOG", day: 0 },
       { column: "TESTING", day: 0 },
     ];
-    const nonDonecardCycleTime2 = {
+    const nonDonecardCycleTime1 = {
       name: "ADM-148",
       steps: {
         analyse: 0,
@@ -277,15 +277,15 @@ describe("convert board data to xlsx", () => {
       },
       total: 0,
     };
-    const jiraNonDoneCardResponse2 = new JiraCardResponse(
-      nonDonebaseInfo2,
-      nonDonecycleTime2,
-      nonDoneoriginCycleTime2,
-      nonDonecardCycleTime2
+    const jiraNonDoneCardResponse1 = new JiraCardResponse(
+      nonDonebaseInfo1,
+      nonDonecycleTime1,
+      nonDoneoriginCycleTime1,
+      nonDonecardCycleTime1
     );
     const jiraNonDoneCardResponses1: JiraCardResponse[] = [
+      jiraNonDoneCardResponse,
       jiraNonDoneCardResponse1,
-      jiraNonDoneCardResponse2,
     ];
 
     const expected = [
@@ -437,7 +437,7 @@ describe("convert board data to xlsx", () => {
     expect(result).deep.equal(expected);
   });
   it("should crease jiraColumns when jiraNonDoneCardResponses baseInfo fields status equal undefined ", async () => {
-    const nonDonebaseInfo3 = {
+    const nonDonebaseInfo2 = {
       key: "ADM-165",
       fields: {
         statuscategorychangedate: "2020-06-28T10:14:15.630+0800",
@@ -448,15 +448,15 @@ describe("convert board data to xlsx", () => {
       },
     };
 
-    const nonDonecycleTime3 = [
+    const nonDonecycleTime2 = [
       { column: "BACKLOG", day: 0 },
       { column: "TESTING", day: 0 },
     ];
-    const nonDoneoriginCycleTime3 = [
+    const nonDoneoriginCycleTime2 = [
       { column: "BACKLOG", day: 0 },
       { column: "TESTING", day: 0 },
     ];
-    const nonDonecardCycleTime3 = {
+    const nonDonecardCycleTime2 = {
       name: "ADM-165",
       steps: {
         analyse: 0,
@@ -468,15 +468,15 @@ describe("convert board data to xlsx", () => {
       },
       total: 0,
     };
-    const jiraNonDoneCardResponse3 = new JiraCardResponse(
-      nonDonebaseInfo3,
-      nonDonecycleTime3,
-      nonDoneoriginCycleTime3,
-      nonDonecardCycleTime3
+    const jiraNonDoneCardResponse2 = new JiraCardResponse(
+      nonDonebaseInfo2,
+      nonDonecycleTime2,
+      nonDoneoriginCycleTime2,
+      nonDonecardCycleTime2
     );
-    const jiraNonDoneCardResponses1: JiraCardResponse[] = [
-      jiraNonDoneCardResponse1,
-      jiraNonDoneCardResponse3,
+    const jiraNonDoneCardResponses2: JiraCardResponse[] = [
+      jiraNonDoneCardResponse,
+      jiraNonDoneCardResponse2,
     ];
 
     const expected = [
@@ -619,7 +619,7 @@ describe("convert board data to xlsx", () => {
     ];
     const result = await ConvertBoardDataToXlsx(
       jiraCardResponses,
-      jiraNonDoneCardResponses1,
+      jiraNonDoneCardResponses2,
       jiraColumns,
       targetFields
     );
