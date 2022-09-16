@@ -361,7 +361,11 @@ describe("get story points and cycle times of done cards during period", () => {
           storyPointsAndCycleTimeRequest.site
         }.atlassian.net/rest/agile/1.0/board/2/issue?maxResults=100&jql=status in ('${storyPointsAndCycleTimeRequest.status.join(
           "','"
-        )}')`
+        )}') AND statusCategoryChangedDate >= ${
+          storyPointsAndCycleTimeRequest.startTime
+        } AND statusCategoryChangedDate <= ${
+          storyPointsAndCycleTimeRequest.endTime
+        }`
       )
       .reply(200, JiraCards);
 
@@ -831,35 +835,6 @@ describe("put status change events into an array", () => {
     );
 
     expect(response.length).equal(3);
-  });
-});
-
-describe("get match time", () => {
-  it("should return true when given time in the time period", () => {
-    const cardTime = "11 Jul 2023 20:54:04 GMT";
-    const startTime = 1689080044000;
-    const endTime = 1789944044000;
-
-    const response = jiraTest.constructor.matchTime(
-      cardTime,
-      startTime,
-      endTime
-    );
-
-    expect(response).equal(true);
-  });
-  it("should return false when given time not  in the time period", () => {
-    const cardTime = "11 Jul 2010 20:54:04 GMT";
-    const startTime = 1689080044000;
-    const endTime = 1789944044000;
-
-    const response = jiraTest.constructor.matchTime(
-      cardTime,
-      startTime,
-      endTime
-    );
-
-    expect(response).equal(false);
   });
 });
 

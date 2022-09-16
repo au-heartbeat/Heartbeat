@@ -20,6 +20,7 @@ import { Cards } from "../../../models/kanban/RequestKanbanResults";
 import {
   CardCustomFieldKey,
   FixVersion,
+  Status,
 } from "../../../models/kanban/JiraBoard/JiraCard";
 import { CardFieldsEnum } from "../../../models/kanban/CardFieldsEnum";
 import { CardStepsEnum } from "../../../models/kanban/CardStepsEnum";
@@ -94,26 +95,30 @@ export class Jira implements Kanban {
 
     const columns = configuration.columnConfig.columns;
 
-    for (const column of columns) {
-      if (column.statuses.length == 0) {
-        continue;
+    await columns.map(async (column: any) => {
+      if (column.statuses.length != 0) {
+        const columnValue: ColumnValue = new ColumnValue();
+        columnValue.name = column.name;
+        const jiraColumnResponse = new ColumnResponse();
+
+        await Promise.all(
+          column.statuses.map((status: { self: string }) =>
+            Jira.queryStatus(status.self, model.token)
+          )
+        ).then((responses) => {
+          responses.map((response) => {
+            jiraColumnResponse.key = (
+              response as StatusSelf
+            ).statusCategory.key;
+            columnValue.statuses.push(
+              (response as StatusSelf).untranslatedName.toUpperCase()
+            );
+          });
+          jiraColumnResponse.value = columnValue;
+          jiraColumnNames.push(jiraColumnResponse);
+        });
       }
-
-      const columnValue: ColumnValue = new ColumnValue();
-      columnValue.name = column.name;
-
-      const jiraColumnResponse = new ColumnResponse();
-      for (const status of column.statuses) {
-        const statusSelf = await Jira.queryStatus(status.self, model.token);
-        jiraColumnResponse.key = statusSelf.statusCategory.key;
-
-        columnValue.statuses.push(statusSelf.untranslatedName.toUpperCase());
-      }
-
-      jiraColumnResponse.value = columnValue;
-      jiraColumnNames.push(jiraColumnResponse);
-    }
-
+    });
     return jiraColumnNames;
   }
 
@@ -243,7 +248,11 @@ export class Jira implements Kanban {
     if (model.status.length > 0) {
       switch (model.type.toLowerCase()) {
         case KanbanEnum.JIRA:
-          jql = `status in ('${model.status.join("','")}')`;
+          jql = `status in ('${model.status.join(
+            "','"
+          )}') AND statusCategoryChangedDate >= ${
+            model.startTime
+          } AND statusCategoryChangedDate <= ${model.endTime}`;
           break;
         case KanbanEnum.CLASSIC_JIRA: {
           let subJql = "";
@@ -272,18 +281,6 @@ export class Jira implements Kanban {
         allDoneCards,
         model.boardId
       );
-    }
-
-    if (model.type.toLowerCase() == KanbanEnum.JIRA) {
-      const allDoneCardsResult = allDoneCards.filter(
-        (DoneCard: { fields: { statuscategorychangedate: string } }) =>
-          Jira.matchTime(
-            DoneCard.fields.statuscategorychangedate,
-            model.startTime,
-            model.endTime
-          )
-      );
-      return allDoneCardsResult;
     }
     return allDoneCards;
   }
@@ -468,14 +465,6 @@ export class Jira implements Kanban {
       assigneeSet: new Set<string>(assigneeList),
       originCycleTimeInfos,
     };
-  }
-
-  private static matchTime(
-    cardTime: string,
-    startTime: number,
-    endTime: number
-  ): boolean {
-    return startTime <= Date.parse(cardTime) && Date.parse(cardTime) <= endTime;
   }
 
   private static putStatusChangeEventsIntoAnArray(
