@@ -96,11 +96,7 @@ export class Jira implements Kanban {
     const columns = configuration.columnConfig.columns;
 
     await columns.map(async (column: any) => {
-      console.log("---------colums map-------------------");
-
       if (column.statuses.length != 0) {
-        console.log("---------if-------------------");
-
         const columnValue: ColumnValue = new ColumnValue();
         columnValue.name = column.name;
         const jiraColumnResponse = new ColumnResponse();
@@ -109,26 +105,22 @@ export class Jira implements Kanban {
           column.statuses.map((status: { self: string }) =>
             Jira.queryStatus(status.self, model.token)
           )
-        )
-          .then((responses) => {
-            responses.map((response) => {
-              jiraColumnResponse.key = (
-                response as StatusSelf
-              ).statusCategory.key;
-              columnValue.statuses.push(
-                (response as StatusSelf).untranslatedName.toUpperCase()
-              );
-            });
-            jiraColumnResponse.value = columnValue;
-            jiraColumnNames.push(jiraColumnResponse);
-            console.log("----------jiraColumnNames.push----------");
+        ).then((responses) => {
+          responses.map((response) => {
+            jiraColumnResponse.key = (
+              response as StatusSelf
+            ).statusCategory.key;
+            columnValue.statuses.push(
+              (response as StatusSelf).untranslatedName.toUpperCase()
+            );
           });
+          jiraColumnResponse.value = columnValue;
+          jiraColumnNames.push(jiraColumnResponse);
+        });
       }
     });
-    console.log(new Date());
-    console.log("======getColumns end===========");
     return jiraColumnNames;
-  }  
+  }
 
   private static async queryStatus(
     url: string,
