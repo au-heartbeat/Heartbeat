@@ -4,6 +4,8 @@ import {
   RequestKanbanSetting,
   CodebaseSetting,
   PipelineSetting,
+  LeadTimeEnvironment,
+  DeploymentEnvironment,
 } from "../../contract/GenerateReporter/GenerateReporterRequestBody";
 import {
   AvgDeploymentFrequency,
@@ -204,22 +206,25 @@ export class GenerateReportService {
     const startTime = new Date(request.startTime);
     const endTime = new Date(request.endTime);
 
+    const dataSourceFlags = { kanban: false, pipeline: false, codebase: false };
     if (lowMetrics.some((metric) => this.kanbanMetrics.includes(metric))) {
       if (
         JSON.stringify(request.kanbanSetting) ===
         JSON.stringify(new RequestKanbanSetting())
-      )
+      ) {
         throw new SettingMissingError("kanban setting");
-      await this.fetchDataFromKanban(request);
+      }
+      dataSourceFlags.kanban = true;
     }
 
     if (lowMetrics.some((metric) => this.pipeLineMetrics.includes(metric))) {
       if (
         JSON.stringify(request.pipeline) ===
         JSON.stringify(new PipelineSetting())
-      )
+      ) {
         throw new SettingMissingError("pipeline setting");
-      await this.fetchDataFromPipeline(request, startTime, endTime);
+      }
+      dataSourceFlags.pipeline = true;
     }
 
     if (lowMetrics.some((metric) => this.codebaseMetrics.includes(metric))) {
@@ -228,10 +233,26 @@ export class GenerateReportService {
           JSON.stringify(new CodebaseSetting()) ||
         JSON.stringify(request.pipeline) ===
           JSON.stringify(new PipelineSetting())
-      )
+      ) {
         throw new SettingMissingError("codebase setting or pipeline setting");
-      await this.fetchDataFromCodebase(request, startTime, endTime);
+      }
+      dataSourceFlags.codebase = true;
     }
+
+    await Promise.all(
+      Object.entries(dataSourceFlags).map(([key, value]) => {
+        if (key === "kanban" && value === true) {
+          return this.fetchDataFromKanban(request);
+        }
+        if (key === "pipeline" && value === true) {
+          return this.fetchDataFromPipeline(request, startTime, endTime);
+        }
+        if (key === "codebase" && value === true) {
+          return this.fetchDataFromCodebase(request, startTime, endTime);
+        }
+        return;
+      })
+    );
   }
 
   private async fetchDataFromCodebase(
@@ -250,21 +271,22 @@ export class GenerateReportService {
       codebaseSetting.token
     );
 
-    for (const deploymentEnvironment of codebaseSetting.leadTime) {
-      const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
-        deploymentEnvironment,
-        startTime,
-        endTime
-      );
-      const deployTimes: DeployTimes = await pipeline.countDeployTimes(
-        deploymentEnvironment,
-        buildInfos
-      );
-      this.deployTimesListFromLeadTimeSetting.push(deployTimes);
-      this.BuildInfosOfLeadtimes.push(
-        new Pair(deploymentEnvironment.id, buildInfos)
-      );
-    }
+    await Promise.all(
+      codebaseSetting.leadTime.map((deploymentEnvironment) =>
+        this.getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+          pipeline,
+          deploymentEnvironment,
+          startTime,
+          endTime
+        ).then(({ deployTimes, buildInfos }) => {
+          this.deployTimesListFromLeadTimeSetting.push(deployTimes);
+          this.BuildInfosOfLeadtimes.push(
+            new Pair(deploymentEnvironment.id, buildInfos)
+          );
+        })
+      )
+    );
+
     const repoMap = GenerateReportService.getRepoMap(codebaseSetting);
     this.leadTimes = await codebase.fetchPipelinesLeadTime(
       this.deployTimesListFromLeadTimeSetting,
@@ -292,19 +314,38 @@ export class GenerateReportService {
       request.pipeline.type,
       request.pipeline.token
     );
-    for (const deploymentEnvironment of request.pipeline.deployment) {
-      const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
-        deploymentEnvironment,
-        startTime,
-        endTime
-      );
-      const deployTimes: DeployTimes = await pipeline.countDeployTimes(
-        deploymentEnvironment,
-        buildInfos
-      );
-      this.deployTimesListFromDeploySetting.push(deployTimes);
-      this.BuildInfos.push(new Pair(deploymentEnvironment.id, buildInfos));
-    }
+
+    await Promise.all(
+      request.pipeline.deployment.map((deploymentEnvironment) =>
+        this.getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+          pipeline,
+          deploymentEnvironment,
+          startTime,
+          endTime
+        ).then(({ deployTimes, buildInfos }) => {
+          this.deployTimesListFromDeploySetting.push(deployTimes);
+          this.BuildInfos.push(new Pair(deploymentEnvironment.id, buildInfos));
+        })
+      )
+    );
+  }
+
+  private async getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+    pipeline: Pipeline,
+    deploymentEnvironment: DeploymentEnvironment,
+    startTime: Date,
+    endTime: Date
+  ) {
+    const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
+      deploymentEnvironment,
+      startTime,
+      endTime
+    );
+    const deployTimes: DeployTimes = pipeline.countDeployTimes(
+      deploymentEnvironment,
+      buildInfos
+    );
+    return { deployTimes, buildInfos };
   }
 
   private async fetchDataFromKanban(
@@ -384,7 +425,6 @@ export class GenerateReportService {
     codebaseSetting: CodebaseSetting
   ): Promise<PipelineCsvInfo[]> {
     const csvData: PipelineCsvInfo[] = [];
-
     if (codebaseSetting == undefined) return csvData;
 
     const codebase = CodebaseFactory.getInstance(
@@ -392,59 +432,75 @@ export class GenerateReportService {
       codebaseSetting.token
     );
 
-    for (const deploymentEnvironment of codebaseSetting.leadTime) {
-      const repoId = GenerateReportService.getRepoMap(codebaseSetting).get(
-        deploymentEnvironment.id
-      )!;
-
-      const builds = this.BuildInfosOfLeadtimes.find(
-        (b) => b.key == deploymentEnvironment.id
-      )?.value!;
-      const dataInfos: PipelineCsvInfo[] = await Promise.all(
-        builds
-          .filter((buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
-            return deployInfo.commitId != "";
-          })
-          .map(async (buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
-
-            const commitInfo: CommitInfo = await codebase.fetchCommitInfo(
-              deployInfo.commitId,
-              repoId
-            );
-            const leadTimeInfo: LeadTime = this.leadTimes
-              .find(
-                (leadTime) =>
-                  leadTime.pipelineName == deploymentEnvironment.name
-              )
-              ?.leadTimes.find(
-                (leadTime) => leadTime.commitId == deployInfo.commitId
-              )!;
-
-            return new PipelineCsvInfo(
-              deploymentEnvironment.name,
-              deploymentEnvironment.step,
-              buildInfo,
-              deployInfo,
-              commitInfo,
-              new LeadTimeInfo(leadTimeInfo)
-            );
-          })
-      );
-
-      csvData.push(...dataInfos);
-    }
-
+    const pipelineCsvInfosForCodebase = await Promise.all(
+      codebaseSetting.leadTime.map((deploymentEnvironment) =>
+        this.getPipelineCsvInfosForDeploymentEnv(
+          codebaseSetting,
+          deploymentEnvironment,
+          codebase
+        )
+      )
+    );
+    csvData.concat(...pipelineCsvInfosForCodebase);
     return csvData;
+  }
+
+  private async getPipelineCsvInfosForDeploymentEnv(
+    codebaseSetting: CodebaseSetting,
+    deploymentEnvironment: LeadTimeEnvironment,
+    codebase: Codebase
+  ) {
+    const repoId = GenerateReportService.getRepoMap(codebaseSetting).get(
+      deploymentEnvironment.id
+    )!;
+
+    const builds = this.BuildInfosOfLeadtimes.find(
+      (b) => b.key == deploymentEnvironment.id
+    )?.value!;
+
+    const dataInfos: PipelineCsvInfo[] = await Promise.all(
+      builds
+        .filter((buildInfo) => buildInfo.commit != "")
+        .map((buildInfo) =>
+          this.generatePipelineCsvInfo(
+            buildInfo,
+            deploymentEnvironment,
+            codebase,
+            repoId
+          )
+        )
+    );
+    return dataInfos;
+  }
+
+  private async generatePipelineCsvInfo(
+    buildInfo: BuildInfo,
+    deploymentEnvironment: LeadTimeEnvironment,
+    codebase: Codebase,
+    repoId: string
+  ) {
+    const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
+      deploymentEnvironment.step,
+      "passed",
+      "failed"
+    );
+    const leadTimeInfo: LeadTime = this.leadTimes
+      .find((leadTime) => leadTime.pipelineName == deploymentEnvironment.name)
+      ?.leadTimes.find((leadTime) => leadTime.commitId == deployInfo.commitId)!;
+
+    const commitInfo: CommitInfo = await codebase.fetchCommitInfo(
+      deployInfo.commitId,
+      repoId
+    );
+
+    return new PipelineCsvInfo(
+      deploymentEnvironment.name,
+      deploymentEnvironment.step,
+      buildInfo,
+      deployInfo,
+      commitInfo,
+      new LeadTimeInfo(leadTimeInfo)
+    );
   }
 
   private async generateCsvForPipelineWithoutCodebase(
@@ -455,44 +511,35 @@ export class GenerateReportService {
       const builds = this.BuildInfos.find(
         (b) => b.key == deploymentEnvironment.id
       )?.value!;
-      const dataInfos: PipelineCsvInfo[] = await Promise.all(
-        builds
-          .filter((buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
-            return deployInfo.commitId != "";
-          })
-          .map(async (buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
+      const dataInfos: PipelineCsvInfo[] = builds
+        .filter((buildInfo) => buildInfo.commit != "")
+        .map((buildInfo) => {
+          const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
+            deploymentEnvironment.step,
+            "passed",
+            "failed"
+          );
 
-            const jobFinishTime = new Date(deployInfo.jobFinishTime).getTime();
-            const pipelineStartTime: number = new Date(
-              deployInfo.pipelineCreateTime
-            ).getTime();
+          const jobFinishTime = new Date(deployInfo.jobFinishTime).getTime();
+          const pipelineStartTime: number = new Date(
+            deployInfo.pipelineCreateTime
+          ).getTime();
 
-            const noMergeDelayTime = new LeadTime(
-              deployInfo.commitId,
-              pipelineStartTime,
-              jobFinishTime
-            );
+          const noMergeDelayTime = new LeadTime(
+            deployInfo.commitId,
+            pipelineStartTime,
+            jobFinishTime
+          );
 
-            return new PipelineCsvInfo(
-              deploymentEnvironment.name,
-              deploymentEnvironment.step,
-              buildInfo,
-              deployInfo,
-              new CommitInfo(),
-              new LeadTimeInfo(noMergeDelayTime)
-            );
-          })
-      );
+          return new PipelineCsvInfo(
+            deploymentEnvironment.name,
+            deploymentEnvironment.step,
+            buildInfo,
+            deployInfo,
+            new CommitInfo(),
+            new LeadTimeInfo(noMergeDelayTime)
+          );
+        });
       csvData.push(...dataInfos);
     }
 
