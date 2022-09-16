@@ -4,6 +4,8 @@ import {
   RequestKanbanSetting,
   CodebaseSetting,
   PipelineSetting,
+  LeadTimeEnvironment,
+  DeploymentEnvironment,
 } from "../../contract/GenerateReporter/GenerateReporterRequestBody";
 import {
   AvgDeploymentFrequency,
@@ -26,6 +28,7 @@ import {
   ConvertBoardDataToCsv,
   GetDataFromCsv,
   ConvertPipelineDataToCsv,
+  ConvertBoardDataToXlsx,
 } from "../common/GeneraterCsvFile";
 import { Cards } from "../../models/kanban/RequestKanbanResults";
 import { Pair } from "../../types/Pair";
@@ -46,7 +49,7 @@ import { CommitInfo } from "../../models/codebase/CommitInfo";
 import { ColumnResponse } from "../../contract/kanban/KanbanTokenVerifyResponse";
 import fs from "fs";
 import { SprintStatistics } from "../../models/kanban/SprintStatistics";
-import xlsxForBoardConfig from "../../fixture/xlsxForBoardConfig.json";
+import xlsxRowTitleConfig from "../../fixture/xlsxRowTitleConfig.json";
 import { Context } from "koa-swagger-decorator";
 import excelJs from "exceljs";
 import { JiraBlockReasonEnum } from "../../models/kanban/JiraBoard/JiraBlockReasonEnum";
@@ -81,6 +84,7 @@ export class GenerateReportService {
   private BuildInfos: Pair<string, BuildInfo[]>[] = [];
   private BuildInfosOfLeadtimes: Pair<string, BuildInfo[]>[] = [];
   private kanabanSprintStatistics?: SprintStatistics;
+  private boardStatisticsXlsx: Array<Array<any>> = new Array<Array<any>>();
 
   async generateReporter(
     request: GenerateReportRequest
@@ -111,6 +115,30 @@ export class GenerateReportService {
             this.cards!,
             kanbanSetting.boardColumns
           );
+          break;
+        case RequireDataEnum.SECONDARY_METRICS:
+          const latestSprintName: string =
+            this.kanabanSprintStatistics?.sprintCompletedCardsCounts[
+              this.kanabanSprintStatistics.sprintCompletedCardsCounts.length - 1
+            ].sprintName || "";
+          const latestSprintBlockReason =
+            this.kanabanSprintStatistics?.sprintBlockReason.filter(
+              (reason) => reason.sprintName === latestSprintName
+            )[0];
+
+          const latestSprintBlockReasonObj = {
+            totalBlockedPercentage:
+              latestSprintBlockReason?.totalBlockedPercentage,
+            blockReasonPercentage: latestSprintBlockReason?.blockDetails,
+          };
+          reporterResponse.secondaryMetrics = {
+            completedCardsNumber:
+              this.kanabanSprintStatistics?.sprintCompletedCardsCounts,
+            blockedAndDevelopingPercentage:
+              this.kanabanSprintStatistics?.blockedAndDevelopingPercentage,
+            standardDeviation: this.kanabanSprintStatistics?.standardDeviation,
+            latestSprintBlockReason: latestSprintBlockReasonObj,
+          };
           break;
         case RequireDataEnum.DEPLOYMENT_FREQUENCY:
           const deploymentFrequency = calculateDeploymentFrequency(
@@ -157,7 +185,6 @@ export class GenerateReportService {
           throw new Error(`can not match this metric: ${metric}`);
       }
     });
-    this.addKanbanSprintStatisticsToResponse(reporterResponse);
     return reporterResponse;
   }
 
@@ -179,22 +206,25 @@ export class GenerateReportService {
     const startTime = new Date(request.startTime);
     const endTime = new Date(request.endTime);
 
+    const dataSourceFlags = { kanban: false, pipeline: false, codebase: false };
     if (lowMetrics.some((metric) => this.kanbanMetrics.includes(metric))) {
       if (
         JSON.stringify(request.kanbanSetting) ===
         JSON.stringify(new RequestKanbanSetting())
-      )
+      ) {
         throw new SettingMissingError("kanban setting");
-      await this.fetchDataFromKanban(request);
+      }
+      dataSourceFlags.kanban = true;
     }
 
     if (lowMetrics.some((metric) => this.pipeLineMetrics.includes(metric))) {
       if (
         JSON.stringify(request.pipeline) ===
         JSON.stringify(new PipelineSetting())
-      )
+      ) {
         throw new SettingMissingError("pipeline setting");
-      await this.fetchDataFromPipeline(request, startTime, endTime);
+      }
+      dataSourceFlags.pipeline = true;
     }
 
     if (lowMetrics.some((metric) => this.codebaseMetrics.includes(metric))) {
@@ -203,10 +233,26 @@ export class GenerateReportService {
           JSON.stringify(new CodebaseSetting()) ||
         JSON.stringify(request.pipeline) ===
           JSON.stringify(new PipelineSetting())
-      )
+      ) {
         throw new SettingMissingError("codebase setting or pipeline setting");
-      await this.fetchDataFromCodebase(request, startTime, endTime);
+      }
+      dataSourceFlags.codebase = true;
     }
+
+    await Promise.all(
+      Object.entries(dataSourceFlags).map(([key, value]) => {
+        if (key === "kanban" && value === true) {
+          return this.fetchDataFromKanban(request);
+        }
+        if (key === "pipeline" && value === true) {
+          return this.fetchDataFromPipeline(request, startTime, endTime);
+        }
+        if (key === "codebase" && value === true) {
+          return this.fetchDataFromCodebase(request, startTime, endTime);
+        }
+        return;
+      })
+    );
   }
 
   private async fetchDataFromCodebase(
@@ -225,21 +271,22 @@ export class GenerateReportService {
       codebaseSetting.token
     );
 
-    for (const deploymentEnvironment of codebaseSetting.leadTime) {
-      const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
-        deploymentEnvironment,
-        startTime,
-        endTime
-      );
-      const deployTimes: DeployTimes = await pipeline.countDeployTimes(
-        deploymentEnvironment,
-        buildInfos
-      );
-      this.deployTimesListFromLeadTimeSetting.push(deployTimes);
-      this.BuildInfosOfLeadtimes.push(
-        new Pair(deploymentEnvironment.id, buildInfos)
-      );
-    }
+    await Promise.all(
+      codebaseSetting.leadTime.map((deploymentEnvironment) =>
+        this.getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+          pipeline,
+          deploymentEnvironment,
+          startTime,
+          endTime
+        ).then(({ deployTimes, buildInfos }) => {
+          this.deployTimesListFromLeadTimeSetting.push(deployTimes);
+          this.BuildInfosOfLeadtimes.push(
+            new Pair(deploymentEnvironment.id, buildInfos)
+          );
+        })
+      )
+    );
+
     const repoMap = GenerateReportService.getRepoMap(codebaseSetting);
     this.leadTimes = await codebase.fetchPipelinesLeadTime(
       this.deployTimesListFromLeadTimeSetting,
@@ -267,19 +314,38 @@ export class GenerateReportService {
       request.pipeline.type,
       request.pipeline.token
     );
-    for (const deploymentEnvironment of request.pipeline.deployment) {
-      const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
-        deploymentEnvironment,
-        startTime,
-        endTime
-      );
-      const deployTimes: DeployTimes = await pipeline.countDeployTimes(
-        deploymentEnvironment,
-        buildInfos
-      );
-      this.deployTimesListFromDeploySetting.push(deployTimes);
-      this.BuildInfos.push(new Pair(deploymentEnvironment.id, buildInfos));
-    }
+
+    await Promise.all(
+      request.pipeline.deployment.map((deploymentEnvironment) =>
+        this.getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+          pipeline,
+          deploymentEnvironment,
+          startTime,
+          endTime
+        ).then(({ deployTimes, buildInfos }) => {
+          this.deployTimesListFromDeploySetting.push(deployTimes);
+          this.BuildInfos.push(new Pair(deploymentEnvironment.id, buildInfos));
+        })
+      )
+    );
+  }
+
+  private async getBuildInfosAndDeployTimesForSingleDeploymentEnv(
+    pipeline: Pipeline,
+    deploymentEnvironment: DeploymentEnvironment,
+    startTime: Date,
+    endTime: Date
+  ) {
+    const buildInfos: BuildInfo[] = await pipeline.fetchPipelineBuilds(
+      deploymentEnvironment,
+      startTime,
+      endTime
+    );
+    const deployTimes: DeployTimes = pipeline.countDeployTimes(
+      deploymentEnvironment,
+      buildInfos
+    );
+    return { deployTimes, buildInfos };
   }
 
   private async fetchDataFromKanban(
@@ -313,13 +379,20 @@ export class GenerateReportService {
       storyPointAndCycleTimeRequest,
       this.cards
     );
-    this.generateExcelFile(request.csvTimeStamp);
+
     this.nonDonecards = await kanban.getStoryPointsAndCycleTimeForNonDoneCards(
       storyPointAndCycleTimeRequest,
       kanbanSetting.boardColumns,
       kanbanSetting.users
     );
     this.columns = await kanban.getColumns(storyPointAndCycleTimeRequest);
+    this.boardStatisticsXlsx = await ConvertBoardDataToXlsx(
+      this.cards.matchedCards,
+      this.nonDonecards.matchedCards,
+      this.columns,
+      kanbanSetting.targetFields
+    );
+    this.generateExcelFile(request);
     await ConvertBoardDataToCsv(
       this.cards.matchedCards,
       this.nonDonecards.matchedCards,
@@ -352,7 +425,6 @@ export class GenerateReportService {
     codebaseSetting: CodebaseSetting
   ): Promise<PipelineCsvInfo[]> {
     const csvData: PipelineCsvInfo[] = [];
-
     if (codebaseSetting == undefined) return csvData;
 
     const codebase = CodebaseFactory.getInstance(
@@ -360,59 +432,75 @@ export class GenerateReportService {
       codebaseSetting.token
     );
 
-    for (const deploymentEnvironment of codebaseSetting.leadTime) {
-      const repoId = GenerateReportService.getRepoMap(codebaseSetting).get(
-        deploymentEnvironment.id
-      )!;
-
-      const builds = this.BuildInfosOfLeadtimes.find(
-        (b) => b.key == deploymentEnvironment.id
-      )?.value!;
-      const dataInfos: PipelineCsvInfo[] = await Promise.all(
-        builds
-          .filter((buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
-            return deployInfo.commitId != "";
-          })
-          .map(async (buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
-
-            const commitInfo: CommitInfo = await codebase.fetchCommitInfo(
-              deployInfo.commitId,
-              repoId
-            );
-            const leadTimeInfo: LeadTime = this.leadTimes
-              .find(
-                (leadTime) =>
-                  leadTime.pipelineName == deploymentEnvironment.name
-              )
-              ?.leadTimes.find(
-                (leadTime) => leadTime.commitId == deployInfo.commitId
-              )!;
-
-            return new PipelineCsvInfo(
-              deploymentEnvironment.name,
-              deploymentEnvironment.step,
-              buildInfo,
-              deployInfo,
-              commitInfo,
-              new LeadTimeInfo(leadTimeInfo)
-            );
-          })
-      );
-
-      csvData.push(...dataInfos);
-    }
-
+    const pipelineCsvInfosForCodebase = await Promise.all(
+      codebaseSetting.leadTime.map((deploymentEnvironment) =>
+        this.getPipelineCsvInfosForDeploymentEnv(
+          codebaseSetting,
+          deploymentEnvironment,
+          codebase
+        )
+      )
+    );
+    csvData.concat(...pipelineCsvInfosForCodebase);
     return csvData;
+  }
+
+  private async getPipelineCsvInfosForDeploymentEnv(
+    codebaseSetting: CodebaseSetting,
+    deploymentEnvironment: LeadTimeEnvironment,
+    codebase: Codebase
+  ) {
+    const repoId = GenerateReportService.getRepoMap(codebaseSetting).get(
+      deploymentEnvironment.id
+    )!;
+
+    const builds = this.BuildInfosOfLeadtimes.find(
+      (b) => b.key == deploymentEnvironment.id
+    )?.value!;
+
+    const dataInfos: PipelineCsvInfo[] = await Promise.all(
+      builds
+        .filter((buildInfo) => buildInfo.commit != "")
+        .map((buildInfo) =>
+          this.generatePipelineCsvInfo(
+            buildInfo,
+            deploymentEnvironment,
+            codebase,
+            repoId
+          )
+        )
+    );
+    return dataInfos;
+  }
+
+  private async generatePipelineCsvInfo(
+    buildInfo: BuildInfo,
+    deploymentEnvironment: LeadTimeEnvironment,
+    codebase: Codebase,
+    repoId: string
+  ) {
+    const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
+      deploymentEnvironment.step,
+      "passed",
+      "failed"
+    );
+    const leadTimeInfo: LeadTime = this.leadTimes
+      .find((leadTime) => leadTime.pipelineName == deploymentEnvironment.name)
+      ?.leadTimes.find((leadTime) => leadTime.commitId == deployInfo.commitId)!;
+
+    const commitInfo: CommitInfo = await codebase.fetchCommitInfo(
+      deployInfo.commitId,
+      repoId
+    );
+
+    return new PipelineCsvInfo(
+      deploymentEnvironment.name,
+      deploymentEnvironment.step,
+      buildInfo,
+      deployInfo,
+      commitInfo,
+      new LeadTimeInfo(leadTimeInfo)
+    );
   }
 
   private async generateCsvForPipelineWithoutCodebase(
@@ -423,44 +511,35 @@ export class GenerateReportService {
       const builds = this.BuildInfos.find(
         (b) => b.key == deploymentEnvironment.id
       )?.value!;
-      const dataInfos: PipelineCsvInfo[] = await Promise.all(
-        builds
-          .filter((buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
-            return deployInfo.commitId != "";
-          })
-          .map(async (buildInfo) => {
-            const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
-              deploymentEnvironment.step,
-              "passed",
-              "failed"
-            );
+      const dataInfos: PipelineCsvInfo[] = builds
+        .filter((buildInfo) => buildInfo.commit != "")
+        .map((buildInfo) => {
+          const deployInfo: DeployInfo = buildInfo.mapToDeployInfo(
+            deploymentEnvironment.step,
+            "passed",
+            "failed"
+          );
 
-            const jobFinishTime = new Date(deployInfo.jobFinishTime).getTime();
-            const pipelineStartTime: number = new Date(
-              deployInfo.pipelineCreateTime
-            ).getTime();
+          const jobFinishTime = new Date(deployInfo.jobFinishTime).getTime();
+          const pipelineStartTime: number = new Date(
+            deployInfo.pipelineCreateTime
+          ).getTime();
 
-            const noMergeDelayTime = new LeadTime(
-              deployInfo.commitId,
-              pipelineStartTime,
-              jobFinishTime
-            );
+          const noMergeDelayTime = new LeadTime(
+            deployInfo.commitId,
+            pipelineStartTime,
+            jobFinishTime
+          );
 
-            return new PipelineCsvInfo(
-              deploymentEnvironment.name,
-              deploymentEnvironment.step,
-              buildInfo,
-              deployInfo,
-              new CommitInfo(),
-              new LeadTimeInfo(noMergeDelayTime)
-            );
-          })
-      );
+          return new PipelineCsvInfo(
+            deploymentEnvironment.name,
+            deploymentEnvironment.step,
+            buildInfo,
+            deployInfo,
+            new CommitInfo(),
+            new LeadTimeInfo(noMergeDelayTime)
+          );
+        });
       csvData.push(...dataInfos);
     }
 
@@ -484,31 +563,11 @@ export class GenerateReportService {
     });
   }
 
-  addKanbanSprintStatisticsToResponse(response: GenerateReporterResponse) {
-    response.completedCardsNumber =
-      this.kanabanSprintStatistics?.sprintCompletedCardsCounts;
-    response.standardDeviation =
-      this.kanabanSprintStatistics?.standardDeviation;
-    response.blockedAndDevelopingPercentage =
-      this.kanabanSprintStatistics?.blockedAndDevelopingPercentage;
-    const latestSprintName: string =
-      this.kanabanSprintStatistics?.sprintCompletedCardsCounts[
-        this.kanabanSprintStatistics.sprintCompletedCardsCounts.length - 1
-      ].sprintName || "";
-    const latestSprintBlockReason =
-      this.kanabanSprintStatistics?.sprintBlockReason.filter(
-        (reason) => reason.sprintName === latestSprintName
-      )[0];
-    response.latestSprintBlockReason = {
-      totalBlockedPercentage: latestSprintBlockReason?.totalBlockedPercentage,
-      blockReasonPercentage: latestSprintBlockReason?.blockDetails,
-    };
-  }
-
   private getSprintStatisticsMap(
     kanbanSprintStatistics: SprintStatistics
   ): Map<string, Array<any>> {
     const sprintDataMap: Map<string, Array<any>> = new Map();
+
     kanbanSprintStatistics.standardDeviation?.forEach((obj) => {
       sprintDataMap.set(obj.sprintName, [
         obj.sprintName,
@@ -516,51 +575,68 @@ export class GenerateReportService {
       ]);
     });
     kanbanSprintStatistics.cycleTimeAndBlockedTime.forEach((obj) => {
-      const rowData = sprintDataMap.get(obj.sprintName) || [];
-      rowData.push(obj.cycleTime);
-      rowData.push(obj.blockedTime);
-      sprintDataMap.set(obj.sprintName, rowData);
+      const columnData = sprintDataMap.get(obj.sprintName) || [];
+      columnData.push(obj.cycleTime);
+      columnData.push(obj.blockedTime);
+      sprintDataMap.set(obj.sprintName, columnData);
     });
     kanbanSprintStatistics.blockedAndDevelopingPercentage.forEach((obj) => {
-      const rowData = sprintDataMap.get(obj.sprintName) || [];
-      rowData.push(obj.value.developingPercentage);
-      rowData.push(obj.value.blockedPercentage);
-      sprintDataMap.set(obj.sprintName, rowData);
+      const columnData = sprintDataMap.get(obj.sprintName) || [];
+      columnData.push(obj.value.developingPercentage);
+      columnData.push(obj.value.blockedPercentage);
+      sprintDataMap.set(obj.sprintName, columnData);
     });
     kanbanSprintStatistics.sprintBlockReason.forEach((obj) => {
-      const rowData = sprintDataMap.get(obj.sprintName) || [];
+      const columnData = sprintDataMap.get(obj.sprintName) || [];
       for (const reason in JiraBlockReasonEnum) {
         const matchedReason = obj.blockDetails.filter((detail) => {
           return detail.reasonName === reason.toLowerCase();
         });
-        rowData.push(matchedReason[0] ? matchedReason[0].time : 0);
+        columnData.push(matchedReason[0] ? matchedReason[0].time : 0);
       }
       for (const reason in JiraBlockReasonEnum) {
         const matchedReason = obj.blockDetails.filter((detail) => {
           return detail.reasonName === reason.toLowerCase();
         });
-        rowData.push(matchedReason[0] ? matchedReason[0].percentage : 0);
+        columnData.push(matchedReason[0] ? matchedReason[0].percentage : 0);
       }
-      sprintDataMap.set(obj.sprintName, rowData);
+      sprintDataMap.set(obj.sprintName, columnData);
     });
     return sprintDataMap;
   }
 
-  private generateExcelFile(timeStamp: number): void {
+  private async generateExcelFile(
+    request: GenerateReportRequest
+  ): Promise<void> {
     const workbook = new excelJs.Workbook();
-    const sheetDataMap = this.getSprintStatisticsMap(
+    const sprintSheetDataMap = this.getSprintStatisticsMap(
       this.kanabanSprintStatistics!
     );
-    const iterationSheet = workbook.addWorksheet("Iteration Statistics");
-    const fileName = "exportSprintExcel-" + timeStamp;
+    const sprintSheet = workbook.addWorksheet("Sprint Statistics");
+    const boardSheet = workbook.addWorksheet("Board Data");
+    const fileName = "exportSprintExcel-" + request.csvTimeStamp;
 
-    iterationSheet.columns = xlsxForBoardConfig;
-    sheetDataMap.forEach((value) => {
-      iterationSheet.addRow(value);
+    sprintSheet.getColumn(1).values = xlsxRowTitleConfig;
+    sprintSheet.getColumn(1).width = 36;
+    sprintSheet.getColumn(1).alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+    let columnlist = 2;
+    sprintSheetDataMap.forEach((sprintData) => {
+      sprintSheet.getColumn(columnlist).values = sprintData;
+      sprintSheet.getColumn(columnlist).width = 12;
+      sprintSheet.getColumn(columnlist).alignment = {
+        vertical: "middle",
+        horizontal: "center",
+      };
+      columnlist++;
     });
+
+    boardSheet.columns = this.boardStatisticsXlsx[0];
+    boardSheet.addRows(this.boardStatisticsXlsx[1]);
     workbook.xlsx.writeFile("xlsx/" + fileName + ".xlsx");
   }
-
   public fetchExcelFileStream(ctx: Context, timeStamp: number): fs.ReadStream {
     return fs.createReadStream(`xlsx/exportSprintExcel-${timeStamp}.xlsx`);
   }

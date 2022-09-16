@@ -5,7 +5,7 @@ import { PipelineGetStepsRequest } from "../../contract/pipeline/PipelineGetStep
 import { BuildkiteGetSteps } from "./Buildkite/BuildkiteGetSteps";
 
 export interface PipelineGetSteps {
-  fetchPipelineInfo(
+  fetchPipelineSteps(
     pipelineGetStepsRequest: PipelineGetStepsRequest
   ): Promise<PipelineInfo>;
 }

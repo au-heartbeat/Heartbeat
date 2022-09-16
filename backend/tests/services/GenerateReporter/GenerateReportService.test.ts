@@ -315,7 +315,7 @@ const cards: Cards = {
   matchedCards: matchedCards,
 };
 const request: GenerateReportRequest = {
-  metrics: ["Velocity", "Cycle time", "Classification"],
+  metrics: ["Velocity", "Cycle time", "Classification", "Secondary Metrics"],
   startTime: 1640966400000,
   endTime: 1659369599000,
   considerHoliday: false,
@@ -450,15 +450,17 @@ const response: GenerateReporterResponse = {
   },
   changeFailureRate: undefined,
   classification: [],
-  completedCardsNumber: completedCardsNumber,
-  standardDeviation: standardDeviation,
-  blockedAndDevelopingPercentage: blockedAndDevelopingPercentage,
   deploymentFrequency: undefined,
   leadTimeForChanges: undefined,
   meanTimeToRecovery: undefined,
-  latestSprintBlockReason: {
-    totalBlockedPercentage: sprintBlockReason[0].totalBlockedPercentage,
-    blockReasonPercentage: sprintBlockReason[0].blockDetails,
+  secondaryMetrics: {
+    completedCardsNumber: completedCardsNumber,
+    standardDeviation: standardDeviation,
+    blockedAndDevelopingPercentage: blockedAndDevelopingPercentage,
+    latestSprintBlockReason: {
+      totalBlockedPercentage: sprintBlockReason[0].totalBlockedPercentage,
+      blockReasonPercentage: sprintBlockReason[0].blockDetails,
+    },
   },
 };
 const statistics = new SprintStatistics(
@@ -612,7 +614,7 @@ serviceProto.codebaseMetrics = codebaseMetrics;
 
 describe("Generate report", () => {
   afterEach(() => sinon.restore());
-  it("should generate report with velocity & cycle time & classification", async () => {
+  it("should generate report with velocity & cycle time & classification &secondary metrics", async () => {
     sinon.stub(changeConsiderHolidayMode);
     sinon.stub(GenerateReportService.prototype, <any>"fetchOriginalData");
     sinon.stub(GenerateReportService.prototype, <any>"generateCsvForPipeline");
@@ -762,6 +764,11 @@ describe("fetch data from different sources", () => {
       .stub(Jira.prototype, "getStoryPointsAndCycleTimeForNonDoneCards")
       .returns(Promise.resolve(cards));
     sinon.stub(Jira.prototype, "getColumns");
+    sinon.stub(GeneraterCsvFile, "ConvertBoardDataToXlsx");
+
+    sinon
+      .stub(GenerateReportService.prototype, <any>"generateExcelFile")
+      .resolves();
     sinon.stub(GeneraterCsvFile, "ConvertBoardDataToCsv");
 
     await serviceProto.fetchDataFromKanban(request);
@@ -1042,10 +1049,31 @@ describe("generate excel file", () => {
 
   it("should generate the file when given time stamp", () => {
     reportServiceProto.kanabanSprintStatistics = sprintStatistics;
-    const testTimeStamp = 11;
-    reportServiceProto.generateExcelFile(testTimeStamp);
+    reportServiceProto.boardStatisticsXlsx = [
+      [
+        { header: "Issue key", key: "Issue key" },
+        { header: "Summary", key: "Summary" },
+      ],
+      [
+        {
+          "Issue key": "ADM-91",
+          Summary: "Export the result on report page",
+          "Issue Type": "故事",
+          Status: "已完成",
+          "Story Points": "1",
+        },
+        {
+          "Issue key": "ADM-105",
+          Summary: "Fetch pipeline steps after user choose the pipeline(BE+FE)",
+          "Issue Type": "故事",
+          Status: "已完成",
+          "Story Points": "2",
+        },
+      ],
+    ];
+    reportServiceProto.generateExcelFile(request);
     setTimeout(() => {
-      fs.stat("xlsx/exportSprintExcel-11.xlsx", (error, stats) => {
+      fs.stat("xlsx/exportSprintExcel-1660201532188.xlsx", (error, stats) => {
         expect(stats !== undefined).equal(true);
       });
       fs.stat("xlsx/exportSprintExcel-a.xlsx", (error, stats) => {

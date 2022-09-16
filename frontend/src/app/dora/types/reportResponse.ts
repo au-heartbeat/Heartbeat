@@ -106,33 +106,40 @@ export interface Classification {
 
 export interface CompletedCardsNumber {
   sprintName: string;
-  value: number
+  value: number;
 }
 
 export interface StandardDeviation {
-  sprintName: string,
+  sprintName: string;
   value: {
-    standardDeviation: number,
-    average: number,
+    standardDeviation: number;
+    average: number;
   };
 }
 
 export interface BlockedAndDevelopingPercentage {
-  sprintName: string,
+  sprintName: string;
   value: {
-    blockedPercentage: number,
-    developingPercentage: number,
-  }
+    blockedPercentage: number;
+    developingPercentage: number;
+  };
 }
 
 export interface LatestSprintBlockReason {
-  totalBlockedPercentage: number,
-  blockReasonPercentage: Array<BlockReasonPercentage>
+  totalBlockedPercentage: number;
+  blockReasonPercentage: Array<BlockReasonPercentage>;
 }
 
 export interface BlockReasonPercentage {
-  reasonName: string,
-  percentage: number,
+  reasonName: string;
+  percentage: number;
+}
+
+export interface SecondaryMetrics {
+  completedCardsNumber?: Array<CompletedCardsNumber>;
+  blockedAndDevelopingPercentage?: Array<BlockedAndDevelopingPercentage>;
+  standardDeviation?: Array<StandardDeviation>;
+  latestSprintBlockReason?: LatestSprintBlockReason;
 }
 
 export interface ReportResponse {
@@ -148,4 +155,5 @@ export interface ReportResponse {
   standardDeviation?: Array<StandardDeviation>;
   blockedAndDevelopingPercentage?: Array<BlockedAndDevelopingPercentage>;
   latestSprintBlockReason?: LatestSprintBlockReason;
+  secondaryMetrics?: SecondaryMetrics;
 }
