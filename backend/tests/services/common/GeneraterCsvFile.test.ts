@@ -124,7 +124,7 @@ const jiraColumns: ColumnResponse[] = [
 describe("get extra fields", () => {
   it("should get extra fields when we get csv string data ", () => {
     const result = getExtraFields(targetFields, currentFields);
-    const expectedExtrafields = [
+    const expectedExtraFields = [
       {
         label: "priority",
         value: "baseInfo.fields.priority",
@@ -136,7 +136,7 @@ describe("get extra fields", () => {
         originKey: "test",
       },
     ];
-    expect(result).deep.equal(expectedExtrafields);
+    expect(result).deep.equal(expectedExtraFields);
   });
 });
 
