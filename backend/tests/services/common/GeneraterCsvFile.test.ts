@@ -256,176 +256,15 @@ describe("convert board data to xlsx", () => {
         status: { name: "todo" },
       },
     };
-
-    const nonDonecycleTime1 = [
-      { column: "BACKLOG", day: 0 },
-      { column: "TESTING", day: 0 },
-    ];
-    const nonDoneoriginCycleTime1 = [
-      { column: "BACKLOG", day: 0 },
-      { column: "TESTING", day: 0 },
-    ];
-    const nonDonecardCycleTime1 = {
-      name: "ADM-148",
-      steps: {
-        analyse: 0,
-        development: 0,
-        waiting: 0,
-        testing: 0,
-        blocked: 0,
-        review: 0,
-      },
-      total: 0,
-    };
     const jiraNonDoneCardResponse1 = new JiraCardResponse(
       nonDonebaseInfo1,
-      nonDonecycleTime1,
-      nonDoneoriginCycleTime1,
-      nonDonecardCycleTime1
+      nonDonecycleTime,
+      nonDoneoriginCycleTime,
+      nonDonecardCycleTime
     );
     const jiraNonDoneCardResponses1: JiraCardResponse[] = [
       jiraNonDoneCardResponse,
       jiraNonDoneCardResponse1,
-    ];
-
-    const expected = [
-      [
-        { header: "Issue key", key: "Issue key" },
-        { header: "Summary", key: "Summary" },
-        { header: "Issue Type", key: "Issue Type" },
-        { header: "Status", key: "Status" },
-        { header: "Story Points", key: "Story Points" },
-        { header: "assignee", key: "assignee" },
-        { header: "Reporter", key: "Reporter" },
-        { header: "Project Key", key: "Project Key" },
-        { header: "Project Name", key: "Project Name" },
-        { header: "Priority", key: "Priority" },
-        { header: "Parent Summary", key: "Parent Summary" },
-        { header: "Sprint", key: "Sprint" },
-        { header: "Labels", key: "Labels" },
-        { header: "Cycle Time", key: "Cycle Time" },
-        {
-          header: "Cycle Time / Story Points",
-          key: "Cycle Time / Story Points",
-        },
-        { header: "Analysis Days", key: "Analysis Days" },
-        { header: "In Dev Days", key: "In Dev Days" },
-        { header: "Waiting Days", key: "Waiting Days" },
-        { header: "Testing Days", key: "Testing Days" },
-        { header: "Block Days", key: "Block Days" },
-        { header: "Review Days", key: "Review Days" },
-        {
-          header: "OriginCycleTime: BACKLOG",
-          key: "OriginCycleTime: BACKLOG",
-        },
-
-        {
-          header: "OriginCycleTime: TESTING",
-          key: "OriginCycleTime: TESTING",
-        },
-      ],
-      [
-        {
-          "Issue key": "ADM-148",
-          Summary: "Test card in READY FOR QA",
-          "Issue Type": "",
-          Status: "todo",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "ADM Sprint 3",
-          Labels: "",
-          "Cycle Time": "0",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "0",
-          "In Dev Days": "0",
-          "Waiting Days": "0",
-          "Testing Days": "0",
-          "Block Days": "0",
-          "Review Days": "0",
-          "OriginCycleTime: BACKLOG": "0",
-          "OriginCycleTime: TESTING": "0",
-        },
-        {
-          "Issue key": "",
-          Summary: "",
-          "Issue Type": "",
-          Status: "",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "",
-          Labels: "",
-          "Cycle Time": "",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "",
-          "In Dev Days": "",
-          "Waiting Days": "",
-          "Testing Days": "",
-          "Block Days": "",
-          "Review Days": "",
-          "OriginCycleTime: BACKLOG": "",
-          "OriginCycleTime: TESTING": "",
-        },
-        {
-          "Issue key": "ADM-250",
-          Summary: "Test card in dev",
-          "Issue Type": "",
-          Status: "blocked",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "ADM Sprint 3",
-          Labels: "",
-          "Cycle Time": "0",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "0",
-          "In Dev Days": "0",
-          "Waiting Days": "0",
-          "Testing Days": "0",
-          "Block Days": "0",
-          "Review Days": "0",
-          "OriginCycleTime: BACKLOG": "",
-          "OriginCycleTime: TESTING": "",
-        },
-        {
-          "Issue key": "ADM-148",
-          Summary: "Test card in READY FOR QA",
-          "Issue Type": "",
-          Status: "todo",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "ADM Sprint 3",
-          Labels: "",
-          "Cycle Time": "0",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "0",
-          "In Dev Days": "0",
-          "Waiting Days": "0",
-          "Testing Days": "0",
-          "Block Days": "0",
-          "Review Days": "0",
-          "OriginCycleTime: BACKLOG": "0",
-          "OriginCycleTime: TESTING": "0",
-        },
-      ],
     ];
     const result = await ConvertBoardDataToXlsx(
       jiraCardResponses,
@@ -434,7 +273,8 @@ describe("convert board data to xlsx", () => {
       targetFields
     );
 
-    expect(result).deep.equal(expected);
+    expect(result[0][2].header).deep.equal("Issue Type");
+    expect(result[1][1].Status).deep.equal("");
   });
   it("should crease jiraColumns when jiraNonDoneCardResponses baseInfo fields status equal undefined ", async () => {
     const nonDonebaseInfo2 = {
@@ -447,175 +287,15 @@ describe("convert board data to xlsx", () => {
         label: "",
       },
     };
-
-    const nonDonecycleTime2 = [
-      { column: "BACKLOG", day: 0 },
-      { column: "TESTING", day: 0 },
-    ];
-    const nonDoneoriginCycleTime2 = [
-      { column: "BACKLOG", day: 0 },
-      { column: "TESTING", day: 0 },
-    ];
-    const nonDonecardCycleTime2 = {
-      name: "ADM-165",
-      steps: {
-        analyse: 0,
-        development: 0,
-        waiting: 0,
-        testing: 0,
-        blocked: 0,
-        review: 0,
-      },
-      total: 0,
-    };
     const jiraNonDoneCardResponse2 = new JiraCardResponse(
       nonDonebaseInfo2,
-      nonDonecycleTime2,
-      nonDoneoriginCycleTime2,
-      nonDonecardCycleTime2
+      nonDonecycleTime,
+      nonDoneoriginCycleTime,
+      nonDonecardCycleTime
     );
     const jiraNonDoneCardResponses2: JiraCardResponse[] = [
       jiraNonDoneCardResponse,
       jiraNonDoneCardResponse2,
-    ];
-
-    const expected = [
-      [
-        { header: "Issue key", key: "Issue key" },
-        { header: "Summary", key: "Summary" },
-        { header: "Issue Type", key: "Issue Type" },
-        { header: "Status", key: "Status" },
-        { header: "Story Points", key: "Story Points" },
-        { header: "assignee", key: "assignee" },
-        { header: "Reporter", key: "Reporter" },
-        { header: "Project Key", key: "Project Key" },
-        { header: "Project Name", key: "Project Name" },
-        { header: "Priority", key: "Priority" },
-        { header: "Parent Summary", key: "Parent Summary" },
-        { header: "Sprint", key: "Sprint" },
-        { header: "Labels", key: "Labels" },
-        { header: "Cycle Time", key: "Cycle Time" },
-        {
-          header: "Cycle Time / Story Points",
-          key: "Cycle Time / Story Points",
-        },
-        { header: "Analysis Days", key: "Analysis Days" },
-        { header: "In Dev Days", key: "In Dev Days" },
-        { header: "Waiting Days", key: "Waiting Days" },
-        { header: "Testing Days", key: "Testing Days" },
-        { header: "Block Days", key: "Block Days" },
-        { header: "Review Days", key: "Review Days" },
-        {
-          header: "OriginCycleTime: BACKLOG",
-          key: "OriginCycleTime: BACKLOG",
-        },
-        {
-          header: "OriginCycleTime: TESTING",
-          key: "OriginCycleTime: TESTING",
-        },
-      ],
-      [
-        {
-          "Issue key": "ADM-148",
-          Summary: "Test card in READY FOR QA",
-          "Issue Type": "",
-          Status: "todo",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "ADM Sprint 3",
-          Labels: "",
-          "Cycle Time": "0",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "0",
-          "In Dev Days": "0",
-          "Waiting Days": "0",
-          "Testing Days": "0",
-          "Block Days": "0",
-          "Review Days": "0",
-          "OriginCycleTime: BACKLOG": "0",
-          "OriginCycleTime: TESTING": "0",
-        },
-        {
-          "Issue key": "",
-          Summary: "",
-          "Issue Type": "",
-          Status: "",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "",
-          Labels: "",
-          "Cycle Time": "",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "",
-          "In Dev Days": "",
-          "Waiting Days": "",
-          "Testing Days": "",
-          "Block Days": "",
-          "Review Days": "",
-          "OriginCycleTime: BACKLOG": "",
-          "OriginCycleTime: TESTING": "",
-        },
-        {
-          "Issue key": "ADM-250",
-          Summary: "Test card in dev",
-          "Issue Type": "",
-          Status: "blocked",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "ADM Sprint 3",
-          Labels: "",
-          "Cycle Time": "0",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "0",
-          "In Dev Days": "0",
-          "Waiting Days": "0",
-          "Testing Days": "0",
-          "Block Days": "0",
-          "Review Days": "0",
-          "OriginCycleTime: BACKLOG": "",
-          "OriginCycleTime: TESTING": "",
-        },
-        {
-          "Issue key": "ADM-165",
-          Summary: "Test card in READY FOR QA",
-          "Issue Type": "",
-          Status: "",
-          "Story Points": "",
-          assignee: "",
-          Reporter: "",
-          "Project Key": "",
-          "Project Name": "",
-          Priority: "",
-          "Parent Summary": "",
-          Sprint: "ADM Sprint 3",
-          Labels: "",
-          "Cycle Time": "0",
-          "Cycle Time / Story Points": "",
-          "Analysis Days": "0",
-          "In Dev Days": "0",
-          "Waiting Days": "0",
-          "Testing Days": "0",
-          "Block Days": "0",
-          "Review Days": "0",
-          "OriginCycleTime: BACKLOG": "0",
-          "OriginCycleTime: TESTING": "0",
-        },
-      ],
     ];
     const result = await ConvertBoardDataToXlsx(
       jiraCardResponses,
@@ -623,6 +303,7 @@ describe("convert board data to xlsx", () => {
       jiraColumns,
       targetFields
     );
-    expect(result).deep.equal(expected);
+    expect(result[0][0].header).deep.equal("Issue key");
+    expect(result[1][0].Status).deep.equal("todo");
   });
 });
