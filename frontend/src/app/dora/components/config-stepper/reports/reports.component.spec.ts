@@ -27,6 +27,10 @@ describe('ExportComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(async () => {
+    fixture.destroy();
+  });
+
   it('should create', () => {
     expect(exportComponent).toBeTruthy();
   });
@@ -59,8 +63,8 @@ describe('ExportComponent', () => {
       params: new SimpleChange(null, reportParams, true),
     });
     fixture.detectChanges();
-    expect(exportComponent.includeBoardData).toBeTrue;
-    expect(exportComponent.includePipelineData).toBeTrue;
+    expect(exportComponent.includeBoardData).toBeTrue();
+    expect(exportComponent.includePipelineData).toBeFalse();
   });
 
   describe('should fetch report', () => {
@@ -144,7 +148,7 @@ describe('ExportComponent', () => {
       spyOn(apiService, 'generateReporter').and.returnValue(of(response));
       exportComponent.fetchReports();
       fixture.detectChanges();
-      expect(exportComponent.loading).toBeFalse;
+      expect(exportComponent.loading).toBeFalse();
       expect(exportComponent.reportResponse).toEqual(response);
     });
 
@@ -152,7 +156,7 @@ describe('ExportComponent', () => {
       spyOn(apiService, 'generateReporter').and.returnValue(of(null));
       exportComponent.fetchReports();
       fixture.detectChanges();
-      expect(exportComponent.loading).toBeFalse;
+      expect(exportComponent.loading).toBeFalse();
     });
   });
 });
