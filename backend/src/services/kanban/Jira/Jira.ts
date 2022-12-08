@@ -53,7 +53,7 @@ export class Jira implements Kanban {
     });
     console.log(
       `Successfully queried configuration_data:${JSON.stringify(
-        configurationResponse
+        configurationResponse.data
       )}`
     );
 
@@ -96,7 +96,7 @@ export class Jira implements Kanban {
     http.defaults.headers.common["Authorization"] = token;
     const result = await http.get(url);
     console.log(
-      `Successfully queried card status_data:${JSON.stringify(result)}`
+      `Successfully queried card status_data:${JSON.stringify(result.data)}`
     );
     return result.data;
   }
