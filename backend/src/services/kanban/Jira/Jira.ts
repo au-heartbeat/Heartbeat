@@ -20,7 +20,6 @@ import { Cards } from "../../../models/kanban/RequestKanbanResults";
 import {
   CardCustomFieldKey,
   FixVersion,
-  Status,
 } from "../../../models/kanban/JiraCard";
 import { CardFieldsEnum } from "../../../models/kanban/CardFieldsEnum";
 import { CardStepsEnum } from "../../../models/kanban/CardStepsEnum";
@@ -46,38 +45,40 @@ export class Jira implements Kanban {
     model: StoryPointsAndCycleTimeRequest
   ): Promise<ColumnResponse[]> {
     const jiraColumnNames = Array.of<ColumnResponse>();
-
     //column
-    const configurationResponse = await axios.get(
-      `https://${model.site}.atlassian.net/rest/agile/1.0/board/${model.boardId}/configuration`,
-      {
-        headers: { Authorization: `${model.token}` },
-      }
+    const configurationUrl = `https://${model.site}.atlassian.net/rest/agile/1.0/board/${model.boardId}/configuration`;
+    console.log(`Start to query configuration_url:${configurationUrl}`);
+    const configurationResponse = await axios.get(configurationUrl, {
+      headers: { Authorization: `${model.token}` },
+    });
+    console.log(
+      `Successfully queried configuration_data:${JSON.stringify(
+        configurationResponse
+      )}`
     );
 
     const configuration = configurationResponse.data;
-
     const columns = configuration.columnConfig.columns;
 
-    await columns.map(async (column: any) => {
+    columns.map(async (column: any) => {
       if (column.statuses.length != 0) {
         const columnValue: ColumnValue = new ColumnValue();
         columnValue.name = column.name;
-        const jiraColumnResponse = new ColumnResponse();
 
+        const jiraColumnResponse = new ColumnResponse();
         await Promise.all(
-          column.statuses.map((status: { self: string }) =>
-            Jira.queryStatus(status.self, model.token)
-          )
-        ).then((responses) => {
-          responses.map((response) => {
-            jiraColumnResponse.key = (
-              response as StatusSelf
-            ).statusCategory.key;
-            columnValue.statuses.push(
-              (response as StatusSelf).untranslatedName.toUpperCase()
+          column.statuses.map(async (status: { self: string }) => {
+            const queryStatusUri = status.self;
+            const statusResponse = await Jira.queryStatus(
+              queryStatusUri,
+              model.token
             );
-          });
+            const cardStatusName = (
+              statusResponse as StatusSelf
+            ).untranslatedName.toUpperCase();
+            columnValue.statuses.push(cardStatusName);
+          })
+        ).then(() => {
           jiraColumnResponse.value = columnValue;
           jiraColumnNames.push(jiraColumnResponse);
         });
@@ -90,9 +91,13 @@ export class Jira implements Kanban {
     url: string,
     token: string
   ): Promise<StatusSelf> {
+    console.log(`Start to query card status_url:${url}`);
     const http = axios.create();
     http.defaults.headers.common["Authorization"] = token;
     const result = await http.get(url);
+    console.log(
+      `Successfully queried card status_data:${JSON.stringify(result)}`
+    );
     return result.data;
   }
 
