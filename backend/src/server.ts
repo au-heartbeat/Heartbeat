@@ -1,7 +1,7 @@
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import cors from "@koa/cors";
-import "reflect-metadata";
+
 
 import { config } from "./config";
 import { swaggerRouter } from "./router";
