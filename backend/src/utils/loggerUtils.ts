@@ -9,7 +9,7 @@ export const loggerFactory = () => {
         type: "stdout",
         layout: {
           type: "pattern",
-          pattern: "%[%d [%p] %M (%C:%l)-%m%]",
+          pattern: "%[%d [%p] %M(%C:%l)-%m%]",
         },
       },
     },
