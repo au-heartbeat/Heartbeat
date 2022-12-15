@@ -12,6 +12,7 @@
     "start": "yarn build && node ./dist/src/server.js",
     "host": "node ./dist/src/server.js",
     "test": "mocha -r ts-node/register **/tests/**/*.test.ts",
+    "test-coverage": "nyc --reporter=html mocha -r ts-node/register **/tests/**/*.test.ts",
     "watch-server": "nodemon --watch src -e ts,tsx --exec ts-node src/server.ts",
     "package": "yarn build && pkg package.json",
     "format:fix": "pretty-quick --staged"
@@ -77,6 +78,7 @@
     "inversify": "^5.0.1",
     "mocha": "^7.2.0",
     "nodemon": "^2.0.3",
+    "nyc": "^15.1.0",
     "pkg": "^4.4.8",
     "pretty-quick": "^3.1.3",
     "rimraf": "^3.0.2",
