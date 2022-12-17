@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - doc-as-code
   workflow_dispatch:
 
 defaults:
