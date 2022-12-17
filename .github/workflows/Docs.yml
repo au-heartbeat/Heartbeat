@@ -3,7 +3,8 @@ on:
   push:
     branches:
       - main
-      - doc-as-code
+  workflow_dispatch:
+
 defaults:
   run:
     working-directory: ./docs

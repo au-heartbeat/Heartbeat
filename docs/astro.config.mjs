@@ -10,5 +10,7 @@ export default defineConfig({
     // Enable React for the Algolia search component.
     react(),
   ],
-  site: `https://astro.build`,
+  site: `https://au-heartbeat.github.io/HeartBeat`,
+  base: "/HeartBeat",
+  publicDir: "/HeartBeat",
 });
