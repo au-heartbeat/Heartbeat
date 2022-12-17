@@ -9,7 +9,6 @@ npm create astro@latest -- --template docs
 
 ![docs](https://user-images.githubusercontent.com/4677417/186189283-0831b9ab-d6b9-485d-8955-3057e532ab31.png)
 
-
 ## Features
 
 - ✅ **Full Markdown support**
