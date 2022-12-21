@@ -3,6 +3,7 @@ WORKDIR /app
 COPY ./ ./
 RUN yarn install
 RUN yarn package
+RUN chmod +x ./heartbeat-backend
 
 FROM ubuntu:latest 
 WORKDIR /app
