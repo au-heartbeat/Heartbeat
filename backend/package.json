@@ -7,13 +7,13 @@
   "author": "tw-heartbeat-team",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "yarn install & rimraf dist && tsc",
+    "build": "rimraf dist && tsc",
     "eslint": "eslint . --fix --ext .ts",
-    "start": "yarn build && node ./dist/src/server.js",
+    "start": "node ./dist/src/server.js",
     "host": "node ./dist/src/server.js",
     "test": "mocha -r ts-node/register **/tests/**/*.test.ts",
     "watch-server": "nodemon --watch src -e ts,tsx --exec ts-node src/server.ts",
-    "package": "yarn build && pkg package.json",
+    "package": "pkg package.json",
     "format:fix": "pretty-quick --staged"
   },
   "husky": {
