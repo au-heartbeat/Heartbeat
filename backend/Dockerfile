@@ -4,7 +4,7 @@ COPY ./ ./
 RUN yarn install
 RUN yarn package
 
-FROM alpine:latest 
+FROM ubuntu:latest 
 WORKDIR /app
 COPY --from=builder /app/heartbeat-backend ./
 CMD [ "./heartbeat-backend" ]
