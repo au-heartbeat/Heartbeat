@@ -1,6 +1,8 @@
 name: Create and publish a image
 
 on:
+  push:
+    branches: ["*"]
   workflow_run:
     workflows: 
       - Backend
@@ -31,7 +33,6 @@ jobs:
           REPOSITORY: heartbeat_backend
           IMAGE_TAG: latest
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./ -f ./infra/Dockerfile.backend
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
