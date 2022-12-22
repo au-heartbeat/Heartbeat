@@ -29,7 +29,6 @@ Resources:
             Condition:
               StringLike:
                 token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:*
-
   GithubOidc:
     Type: AWS::IAM::OIDCProvider
     Condition: CreateOIDCProvider
