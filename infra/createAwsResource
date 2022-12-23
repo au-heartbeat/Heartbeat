@@ -1,3 +1,5 @@
 #!/bin/bash 
 
-aws --region cn-north-1 cloudformation create-stack --stack-name heartbeat --template-body file://infra/cloudformation.yml --parameters ParameterKey=GitHubOrg,ParameterValue=au-heartbeat ParameterKey=RepositoryName,ParameterValue=HeartBeat --capabilities CAPABILITY_NAMED_IAM
+AwsHost=${AWSHost}
+
+aws --region cn-north-1 cloudformation create-stack --stack-name heartbeat --template-body file://infra/cloudformation.yml --parameters ParameterKey=GitHubOrg,ParameterValue=au-heartbeat ParameterKey=RepositoryName,ParameterValue=HeartBeat ParameterKey=AwsHost,ParameterValue=${AwsHost} --capabilities CAPABILITY_NAMED_IAM

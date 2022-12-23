@@ -4,7 +4,7 @@ on:
   push:
     branches: ["*"]
   workflow_run:
-    workflows: 
+    workflows:
       - Backend
     types:
       - completed
@@ -30,15 +30,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push for Backend
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: heartbeat_backend
-          IMAGE_TAG: latest
-        run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./ -f ./infra/Dockerfile.backend
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
       - name: Build, tag, and push for Frontend
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -46,4 +37,13 @@ jobs:
           IMAGE_TAG: latest
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./ -f ./infra/Dockerfile.frontend
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: Build, tag, and push for Backend
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: heartbeat_backend
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./ -f ./infra/Dockerfile.backend
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
