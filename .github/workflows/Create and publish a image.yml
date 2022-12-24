@@ -2,7 +2,8 @@ name: Create and publish a image
 
 on:
   push:
-    branches: ["*"]
+    branches: 
+      - master
   workflow_run:
     workflows:
       - Backend
