@@ -3,7 +3,7 @@ name: Deploy
 on:
   workflow_run:
     workflows: 
-      - Create and publish a image
+      - "Create and publish a image"
     types:
       - completed
   workflow_dispatch:
@@ -41,7 +41,7 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-         IMAGE_TAG: latest
+         IMAGE_TAG: ${{ github.run_number }}
         with:
           host: ${{ secrets.AWS_HOST }}
           username: ${{ secrets.AWS_USERNAME }}
