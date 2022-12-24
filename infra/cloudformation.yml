@@ -148,7 +148,7 @@ Resources:
       Path: /
       Roles:
         - !Ref EC2Role
-  Ec2Instance:
+  EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !Sub ${EC2ImageId}
@@ -198,10 +198,17 @@ Resources:
       GroupDescription: Enable access application
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
+        FromPort: 3000
+        ToPort: 3000
         CidrIp: 0.0.0.0/0
-  
+
+  WebPortAddress:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref EC2Instance
+      Domain: vpc
 Outputs:
   Role:
     Value: !GetAtt AWSGitHubActionRole.Arn
+  EIP:
+    Value: !GetAtt WebPortAddress.PublicIp

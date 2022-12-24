@@ -48,6 +48,7 @@ jobs:
           key: ${{ secrets.AWS_PRIVATE_KEY }}
           port: ${{ secrets.AWS_SSH_PORT }}
           script: |
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}
             docker-compose stop
             docker rmi -f $(docker image ls --filter label=app=HeartBeat -q)
             docker pull $REGISTRY/heartbeat_backend:$IMAGE_TAG
