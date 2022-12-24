@@ -14,11 +14,10 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTION_ROLE }}
-          aws-region: cn-north-1
+          aws-region: ${{ secrets.AWS_REGION}}
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: HeartBeat
           template: ./infra/cloudformation.yml
-          parameter-overrides: "GitHubOrg=${{ github.repository }},RepositoryName=${{ github.event.repository.name }},AwsHost=${{ secrets.AWS_HOST }},SSHPublicKey=${{ secrets.AWS_EC2_SSH_PUBLIC_KEY }}"
-          
+          parameter-overrides: "GitHubOrg=${{ github.repository }},RepositoryName=${{ github.event.repository.name }},AwsHost=${{ secrets.AWS_HOST }},AwsRegion=${{ secrets.AWS_REGION}},SSHPublicKey=${{ secrets.AWS_EC2_SSH_PUBLIC_KEY }}"

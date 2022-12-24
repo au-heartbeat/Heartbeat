@@ -15,6 +15,10 @@ Parameters:
     Description: "Host of AWS resource, like: cn-north-1.amazonaws.com.cn"
     Default: ""
     Type: String
+  AwsRegion:
+    Description: AWS region
+    Default: "cn-north-1"
+    Type: String
   EC2ImageId:
     Description: AMI ID
     Default: "ami-0bf2183ba2c3b50f9"
@@ -176,7 +180,7 @@ Resources:
             - sudo curl -SL https://github.com/docker/compose/releases/download/v2.14.2/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
             - sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
             - sudo chmod +x /usr/local/bin/docker-compose
-            - sudo `aws ecr get-login-password --region cn-north-1 | docker login --username AWS --password-stdin ${AwsAccountId}.dkr.ecr.${AwsHost}`
+            - sudo `aws ecr get-login-password --region ${AwsRegion} | docker login --username AWS --password-stdin ${AwsAccountId}.dkr.ecr.${AwsHost}`
 
   EC2KeyPair:
     Type: AWS::EC2::KeyPair
