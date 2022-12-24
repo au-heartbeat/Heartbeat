@@ -6,11 +6,12 @@ RUN yarn package
 RUN chmod +x ./heartbeat-backend
 
 FROM ubuntu:latest
-LABEL app=HeartBeat
+LABEL app=HeartBeat,arch=Backend
 RUN groupadd -r nonroot && useradd --no-log-init -r -g nonroot nonroot
+RUN mkdir -p ./csv
+RUN chown nonroot ./csv
 USER nonroot
 WORKDIR /app
 COPY --from=builder /app/heartbeat-backend ./
-RUN mkdir ./csv/
 EXPOSE 3001
 CMD [ "./heartbeat-backend" ]
