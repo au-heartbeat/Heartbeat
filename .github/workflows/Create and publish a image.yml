@@ -37,7 +37,9 @@ jobs:
           IMAGE_TAG: latest
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./ -f ./infra/Dockerfile.frontend
+          docker build -t $REGISTRY/$REPOSITORY:${{ github.run_number }} ./ -f ./infra/Dockerfile.frontend
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:${{ github.run_number }}
 
       - name: Build, tag, and push for Backend
         env:
@@ -46,4 +48,6 @@ jobs:
           IMAGE_TAG: latest
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./ -f ./infra/Dockerfile.backend
+          docker build -t $REGISTRY/$REPOSITORY:${{ github.run_number }} ./ -f ./infra/Dockerfile.backend
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:${{ github.run_number }}
