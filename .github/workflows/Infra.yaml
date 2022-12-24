@@ -20,5 +20,5 @@ jobs:
         with:
           name: HeartBeat
           template: ./infra/cloudformation.yml
-          parameter-overrides: "GitHubOrg=au-heartbeat,RepositoryName=HeartBeat,AwsHost=${{ secrets.AWS_HOST }}"
+          parameter-overrides: "GitHubOrg=${{ github.repository }},RepositoryName=${{ github.event.repository.name }},AwsHost=${{ secrets.AWS_HOST }},SSHPublicKey=${{ secrets.AWS_EC2_SSH_PUBLIC_KEY }}"
           
