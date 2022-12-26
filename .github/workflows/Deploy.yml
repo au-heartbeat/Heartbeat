@@ -19,8 +19,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Update docker-compose.yaml
         run: |
-          sed -i -e 's/heartbeat_backend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_backend:88/g' infra/docker-compose.yml
-          sed -i -e 's/heartbeat_frontend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_frontend:89/g' infra/docker-compose.yml
+          sed -i -e 's/heartbeat_backend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_backend:${{ github.run_number }}/g' infra/docker-compose.yml
+          sed -i -e 's/heartbeat_frontend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_frontend:${{ github.run_number }}/g' infra/docker-compose.yml
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
