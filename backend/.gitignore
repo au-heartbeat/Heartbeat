@@ -10,3 +10,5 @@ dora-backend-macos
 dora-backend-win.exe
 *.csv
 heartbeat-backend
+.nyc_output/
+coverage
