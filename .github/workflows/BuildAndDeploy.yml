@@ -1,9 +1,6 @@
 name: Build and Deploy
 
 on:
-  push:
-    branches:
-      - "*"
   workflow_run:
     workflows:
       - Backend
