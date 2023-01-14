@@ -1,4 +1,4 @@
-import{r as f}from"./index.e2aebba4.js";const i={English:"en"};Object.values(i);const v={indexName:"XXXXXXXXXX",appId:"XXXXXXXXXX",apiKey:"XXXXXXXXXX"};var a={exports:{}},X={};/**
+import{r as f}from"./index.192a1f73.js";const i={English:"en"};Object.values(i);const v={indexName:"XXXXXXXXXX",appId:"XXXXXXXXXX",apiKey:"XXXXXXXXXX"};var a={exports:{}},X={};/**
  * @license React
  * react-jsx-runtime.production.min.js
  *
