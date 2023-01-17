@@ -33,7 +33,7 @@ class HealthControllerTest {
     }
 
     @Test
-    void should_test_for_codacy() {
+    void shouldTestForCodacy() {
         assertThat(Boolean.TRUE).isTrue();
     }
 }
