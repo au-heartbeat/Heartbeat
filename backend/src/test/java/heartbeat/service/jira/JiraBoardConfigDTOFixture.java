@@ -18,10 +18,13 @@ public class JiraBoardConfigDTOFixture {
 	public static JiraBoardConfigDTO.JiraBoardConfigDTOBuilder JIRA_BOARD_CONFIG_RESPONSE_BUILDER() {
 
 		return JiraBoardConfigDTO.builder().id(BOARD_ID).name(BOARD_NAME).columnConfig(
-				JiraColumnConfig.builder().columns(List.of(JiraColumn.builder()
-					.name("TODO")
-					.statuses(List.of(new JiraColumnStatus("1", SELF)))
-					.build())).build());
+			JiraColumnConfig.builder().columns(
+					List.of(JiraColumn.builder()
+						.name("TODO")
+						.statuses(List.of(new JiraColumnStatus("1", SELF)))
+						.build())
+				)
+				.build());
 	}
 
 }
