@@ -14,6 +14,5 @@ public interface JiraFeignClient {
 	@GetMapping(path = "/rest/agile/1.0/board/{boardId}/configuration")
 	JiraBoardConfigDTO getJiraBoardConfiguration(URI baseUrl, @PathVariable String boardId,
 			@RequestHeader String authorization);
-// 			test back end codacy
 
 }
