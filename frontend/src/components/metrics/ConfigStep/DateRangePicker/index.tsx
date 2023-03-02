@@ -31,6 +31,7 @@ export const DateRangePicker = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <p>Date Range Picker</p>
       <DateRangeBox>
         <DatePicker
           PaperProps={datePickerPropsStyles}
