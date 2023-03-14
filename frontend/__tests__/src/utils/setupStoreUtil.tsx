@@ -6,6 +6,7 @@ import { pipelineToolSlice } from '@src/context/pipelineTool/pipelineToolSlice'
 import { jiraVerifyResponseSlice } from '@src/context/board/jiraVerifyResponse/jiraVerifyResponseSlice'
 import { sourceControlSlice } from '@src/context/sourceControl/sourceControlSlice'
 import { metricsSlice } from '@src/context/Metrics/metricsSlice'
+import { pipelineMetricsSettingsSlice } from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
 
 export const setupStore = () => {
   return configureStore({
@@ -17,6 +18,7 @@ export const setupStore = () => {
       [jiraVerifyResponseSlice.name]: jiraVerifyResponseSlice.reducer,
       [sourceControlSlice.name]: sourceControlSlice.reducer,
       [metricsSlice.name]: metricsSlice.reducer,
+      [pipelineMetricsSettingsSlice.name]: pipelineMetricsSettingsSlice.reducer,
     },
   })
 }
