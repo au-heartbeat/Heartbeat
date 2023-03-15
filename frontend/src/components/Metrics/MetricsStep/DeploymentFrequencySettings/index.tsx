@@ -6,6 +6,7 @@ import {
   addADeploymentFrequencySetting,
   selectDeploymentFrequencySettings,
 } from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
+import { v4 as uuidV4 } from 'uuid'
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch()
@@ -22,7 +23,7 @@ export const DeploymentFrequencySettings = () => {
       </Divider>
       {deploymentFrequencySettings.map((deploymentFrequencySetting, index) => (
         <PipelineMetricSelection
-          key={(Math.random() + 1).toString(36)}
+          key={uuidV4()}
           deploymentFrequencySetting={deploymentFrequencySetting}
           index={index}
           isShowRemoveButton={deploymentFrequencySettings.length > 1}
