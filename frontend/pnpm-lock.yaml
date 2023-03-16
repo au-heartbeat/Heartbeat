@@ -61,7 +61,6 @@ dependencies:
   '@mui/material': 5.11.4_lskpmcsdi7ipu6qpuapyu56ihm
   '@mui/x-date-pickers': 6.0.0_m7cc2smtbmdzig2omnko2hxfke
   '@reduxjs/toolkit': 1.9.1_k4ae6lp43ej6mezo3ztvx6pykq
-  '@types/uuid': 9.0.1
   axios: 1.3.3
   dayjs: 1.11.7
   lodash.camelcase: 4.3.0
@@ -82,6 +81,7 @@ devDependencies:
   '@types/react-dom': 18.0.10
   '@types/react-redux': 7.1.25
   '@types/testing-library__jest-dom': 5.14.5
+  '@types/uuid': 9.0.1
   '@typescript-eslint/eslint-plugin': 5.48.1_3jon24igvnqaqexgwtxk6nkpse
   '@typescript-eslint/parser': 5.48.1_iukboom6ndih5an6iafl45j2fe
   '@vitejs/plugin-react-swc': 3.0.1_vite@4.0.4
@@ -1952,7 +1952,7 @@ packages:
 
   /@types/uuid/9.0.1:
     resolution: {integrity: sha512-rFT3ak0/2trgvp4yYZo5iKFEPsET7vKydKF+VRCxlQ9bpheehyAJH89dAkaLEq/j/RZXJIqcgsmPJKUP1Z28HA==}
-    dev: false
+    dev: true
 
   /@types/yargs-parser/21.0.0:
     resolution: {integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==}

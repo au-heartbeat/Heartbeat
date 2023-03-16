@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '@src/store'
-import camelCase from 'lodash.camelCase'
+import camelCase from 'lodash.camelcase'
 
 export interface pipelineMetricsSettingsState {
   deploymentFrequencySettings: { organization: string; pipelineName: string; steps: string }[]
