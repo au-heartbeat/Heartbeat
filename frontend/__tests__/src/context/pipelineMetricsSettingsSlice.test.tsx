@@ -2,7 +2,9 @@ import pipelineMetricsSettingsReducer, {
   updateDeploymentFrequencySettings,
   addADeploymentFrequencySetting,
   deleteADeploymentFrequencySetting,
+  selectDeploymentFrequencySettings,
 } from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
+import { store } from '@src/store'
 
 describe('pipelineMetricsSettings reducer', () => {
   const mockDeploymentFrequencySettings = {
@@ -64,5 +66,11 @@ describe('pipelineMetricsSettings reducer', () => {
         steps: 'step 2',
       },
     ])
+  })
+
+  it('should return deploymentFrequencySettings when call selectDeploymentFrequencySettings functions', () => {
+    expect(selectDeploymentFrequencySettings(store.getState())).toEqual(
+      initPipelineMetricsSettings.deploymentFrequencySettings
+    )
   })
 })
