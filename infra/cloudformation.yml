@@ -229,6 +229,36 @@ Resources:
             - sudo systemctl start docker.service
             - sudo chmod 666 /var/run/docker.sock
             - sudo `aws ecr get-login-password --region ${AwsRegion} | docker login --username AWS --password-stdin ${AwsAccountId}.dkr.ecr.${AwsHost}`
+  SITEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Sub ${EC2ImageId}
+      InstanceType: "t2.micro"
+      Tags:
+        - Key: "Name"
+          Value: "HeartBeatSITEC2"
+        - Key: "app"
+          Value: "HeartBeatSIT"
+      SecurityGroups:
+        - !Ref EC2SSHSecurityGroup
+        - !Ref EC2AppSecurityGroup
+        - !Ref EC2OldAppSecurityGroup
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      KeyName: !Ref EC2KeyPair
+      UserData:
+        "Fn::Base64": !Sub |
+          #cloud-config
+          cloud_final_modules:
+          - [scripts-user, always]
+          runcmd:
+            - sudo yum -y install docker
+            - sudo systemctl enable docker.service
+            - sudo systemctl start docker.service
+            - sudo chmod 666 /var/run/docker.sock
+            - sudo curl -SL https://github.com/docker/compose/releases/download/v2.14.2/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+            - sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+            - sudo chmod +x /usr/local/bin/docker-compose
+            - sudo `aws ecr get-login-password --region ${AwsRegion} | docker login --username AWS --password-stdin ${AwsAccountId}.dkr.ecr.${AwsHost}`
 
   EC2KeyPair:
     Type: AWS::EC2::KeyPair
@@ -282,6 +312,11 @@ Resources:
     Properties:
       InstanceId: !Ref MockServerEC2Instance
       Domain: vpc
+  SITWebPortAddress:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref SITEC2Instance
+      Domain: vpc
 Outputs:
   Role:
     Value: !GetAtt AWSGitHubActionRole.Arn
@@ -289,4 +324,6 @@ Outputs:
     Value: !GetAtt WebPortAddress.PublicIp
   MockServerEIP:
     Value: !GetAtt MockServerPortAddress.PublicIp
+  SITEIP:
+    Value: !GetAtt SITWebPortAddress.PublicIp
 
