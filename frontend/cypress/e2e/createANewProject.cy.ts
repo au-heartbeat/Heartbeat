@@ -10,15 +10,12 @@ describe('Create a new project', () => {
 
     metricsPage.typeProjectName('E2E Project')
 
-    const today = new Date()
-    const day = today.getDate()
-    metricsPage.selectDateRange(`${day}`, `${day + 1}`)
+    metricsPage.selectDateRange()
 
     metricsPage.selectVelocityAndCycleTime()
 
     cy.get('button:contains("Verify")').should('be.disabled')
-    metricsPage.fillBoardFieldsInfo('2', 'mockEmail@qq.com', 'mockKey', '1', 'mockToken')
-    cy.get('button:contains("Verify")').should('be.enabled')
+    metricsPage.fillBoardFieldsInfo('2', 'mockEmail@qq.com', 'mockProjectKey', 'mockSite', 'mockToken')
 
     metricsPage.selectLeadTimeForChangesAndDeploymentFrequency()
 
@@ -31,5 +28,8 @@ describe('Create a new project', () => {
 
     metricsPage.goMetricsStep()
     cy.contains('Crews Setting').should('exist')
+
+    metricsPage.checkClassification()
+    cy.contains('Classification Setting').should('exist')
   })
 })
