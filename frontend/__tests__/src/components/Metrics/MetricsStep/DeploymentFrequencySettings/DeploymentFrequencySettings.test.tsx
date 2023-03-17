@@ -5,8 +5,11 @@ import userEvent from '@testing-library/user-event'
 import { addADeploymentFrequencySetting } from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
 import { DeploymentFrequencySettings } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings'
 
+const ADD_BUTTON = 'Add another pipeline'
+const MOCK_COMPONENT = 'mock PipelineMetricSelection'
+
 jest.mock('@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection', () => ({
-  PipelineMetricSelection: () => <div>mock PipelineMetricSelection</div>,
+  PipelineMetricSelection: () => <div>{MOCK_COMPONENT}</div>,
 }))
 
 jest.mock('@src/hooks', () => ({
@@ -18,7 +21,7 @@ jest.mock('@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice', (
   addADeploymentFrequencySetting: jest.fn(),
 }))
 
-const setUp = () => {
+const setup = () => {
   return render(
     <Provider store={store}>
       <DeploymentFrequencySettings />
@@ -32,17 +35,17 @@ describe('DeploymentFrequencySettings', () => {
   })
 
   it('should render DeploymentFrequencySettings component', () => {
-    const { getByText, getByRole } = setUp()
+    const { getByText, getByRole } = setup()
 
     expect(getByText('Deployment frequency settings')).toBeInTheDocument()
-    expect(getByText('mock PipelineMetricSelection')).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Add another pipeline' })).toBeInTheDocument()
+    expect(getByText(MOCK_COMPONENT)).toBeInTheDocument()
+    expect(getByRole('button', { name: ADD_BUTTON })).toBeInTheDocument()
   })
 
   it('should call addADeploymentFrequencySetting function when click add another pipeline button', async () => {
-    const { getByRole } = await setUp()
+    const { getByRole } = await setup()
 
-    await userEvent.click(getByRole('button', { name: 'Add another pipeline' }))
+    await userEvent.click(getByRole('button', { name: ADD_BUTTON }))
 
     expect(addADeploymentFrequencySetting).toHaveBeenCalledTimes(1)
   })

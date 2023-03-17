@@ -4,10 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { store } from '@src/store'
 
+const mockOptions = ['mockOptions 1', 'mockOptions 2', 'mockOptions 3']
+const mockLabel = 'mockLabel'
+const mockValue = 'mockOptions 1'
+
 describe('SingleSelection', () => {
-  const mockOptions = ['mockOptions 1', 'mockOptions 2', 'mockOptions 3']
-  const mockLabel = 'mockLabel'
-  const mockValue = 'mockOptions 1'
   const setUp = () =>
     render(
       <Provider store={store}>

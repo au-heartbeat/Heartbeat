@@ -40,8 +40,7 @@ describe('pipelineMetricsSettings reducer', () => {
 
   it('should add a deploymentFrequencySetting when handle addADeploymentFrequencySettings given initial state', () => {
     const addedDeploymentFrequencySettings = [
-      { organization: 'mock organization 1', pipelineName: 'mock pipeline name 1', steps: 'step 1' },
-      { organization: 'mock organization 2', pipelineName: 'mock pipeline name 2', steps: 'step 2' },
+      ...mockDeploymentFrequencySettings.deploymentFrequencySettings,
       { organization: '', pipelineName: '', steps: '' },
     ]
 
@@ -60,11 +59,7 @@ describe('pipelineMetricsSettings reducer', () => {
     )
 
     expect(pipelineMetricsSettings.deploymentFrequencySettings).toEqual([
-      {
-        organization: 'mock organization 2',
-        pipelineName: 'mock pipeline name 2',
-        steps: 'step 2',
-      },
+      mockDeploymentFrequencySettings.deploymentFrequencySettings[1],
     ])
   })
 

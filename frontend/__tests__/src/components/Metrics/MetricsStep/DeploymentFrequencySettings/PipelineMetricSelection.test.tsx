@@ -44,12 +44,14 @@ describe('PipelineMetricSelection', () => {
 
   it('should render PipelineMetricSelection when isShowRemoveButton is true', async () => {
     const { getAllByText, getByText } = await setUp(mockIndex, true)
+
     expect(getByText('Remove this pipeline')).toBeInTheDocument()
     expect(getAllByText('mock SingleSelection').length).toEqual(3)
   })
 
   it('should render PipelineMetricSelection when isShowRemoveButton is false', async () => {
     const { getAllByText, queryByText } = await setUp(mockIndex, false)
+
     expect(queryByText('Remove this pipeline')).not.toBeInTheDocument()
     expect(getAllByText('mock SingleSelection').length).toEqual(3)
   })
