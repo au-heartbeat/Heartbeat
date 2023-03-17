@@ -2,12 +2,9 @@ import React from 'react'
 import { AddButton } from './style'
 import { PipelineMetricSelection } from './PipelineMetricSelection'
 import { useAppDispatch, useAppSelector } from '@src/hooks'
-import {
-  addADeploymentFrequencySetting,
-  selectDeploymentFrequencySettings,
-} from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
 import { v4 as uuidV4 } from 'uuid'
 import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
+import { addADeploymentFrequencySetting, selectDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice'
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch()

@@ -2,8 +2,8 @@ import { render } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { store } from '@src/store'
 import userEvent from '@testing-library/user-event'
-import { addADeploymentFrequencySetting } from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
 import { DeploymentFrequencySettings } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings'
+import { addADeploymentFrequencySetting } from '@src/context/Metrics/metricsSlice'
 
 const ADD_BUTTON = 'Add another pipeline'
 const MOCK_COMPONENT = 'mock PipelineMetricSelection'
@@ -17,7 +17,7 @@ jest.mock('@src/hooks', () => ({
   useAppSelector: jest.fn().mockReturnValue([{ organization: '', pipelineName: '', steps: '' }]),
 }))
 
-jest.mock('@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice', () => ({
+jest.mock('@src/context/Metrics/metricsSlice', () => ({
   addADeploymentFrequencySetting: jest.fn(),
 }))
 

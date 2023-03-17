@@ -2,7 +2,7 @@ import { InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent } from '@
 import React, { useState } from 'react'
 import { FormControlWrapper } from './style'
 import { useAppDispatch } from '@src/hooks'
-import { updateDeploymentFrequencySettings } from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
+import { updateDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice'
 
 interface Props {
   options: string[]
