@@ -16,7 +16,7 @@ const initState = {
   users: [],
   doneColumn: [],
   boardColumns: [],
-  deploymentFrequencySettings: [{ organization: '', pipelineName: '', steps: '' }],
+  deploymentFrequencySettings: [{ id: 0, organization: '', pipelineName: '', steps: '' }],
 }
 
 describe('saveMetricsSetting reducer', () => {
@@ -28,7 +28,9 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.jiraColumns).toEqual([])
     expect(savedMetricsSetting.doneColumn).toEqual([])
     expect(savedMetricsSetting.boardColumns).toEqual([])
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([{ organization: '', pipelineName: '', steps: '' }])
+    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([
+      { id: 0, organization: '', pipelineName: '', steps: '' },
+    ])
   })
 
   it('should store updated targetFields when its value changed', () => {
@@ -96,11 +98,11 @@ describe('saveMetricsSetting reducer', () => {
   it('should update deploymentFrequencySettings when handle updateDeploymentFrequencySettings given initial state', () => {
     const savedMetricsSetting = saveMetricsSettingReducer(
       initState,
-      updateDeploymentFrequencySettings({ updateIndex: 0, label: 'organization', value: 'mock new organization' })
+      updateDeploymentFrequencySettings({ updateId: 0, label: 'organization', value: 'mock new organization' })
     )
 
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([
-      { organization: 'mock new organization', pipelineName: '', steps: '' },
+      { id: 0, organization: 'mock new organization', pipelineName: '', steps: '' },
     ])
   })
 
@@ -108,17 +110,17 @@ describe('saveMetricsSetting reducer', () => {
     const multipleDeploymentFrequencySettingsInitState = {
       ...initState,
       deploymentFrequencySettings: [
-        { organization: '', pipelineName: '', steps: '' },
-        { organization: '', pipelineName: '', steps: '' },
+        { id: 0, organization: '', pipelineName: '', steps: '' },
+        { id: 1, organization: '', pipelineName: '', steps: '' },
       ],
     }
     const updatedDeploymentFrequencySettings = [
-      { organization: 'mock new organization', pipelineName: '', steps: '' },
-      { organization: '', pipelineName: '', steps: '' },
+      { id: 0, organization: 'mock new organization', pipelineName: '', steps: '' },
+      { id: 1, organization: '', pipelineName: '', steps: '' },
     ]
     const savedMetricsSetting = saveMetricsSettingReducer(
       multipleDeploymentFrequencySettingsInitState,
-      updateDeploymentFrequencySettings({ updateIndex: 0, label: 'organization', value: 'mock new organization' })
+      updateDeploymentFrequencySettings({ updateId: 0, label: 'organization', value: 'mock new organization' })
     )
 
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(updatedDeploymentFrequencySettings)
@@ -126,8 +128,8 @@ describe('saveMetricsSetting reducer', () => {
 
   it('should add a deploymentFrequencySetting when handle addADeploymentFrequencySettings given initial state', () => {
     const addedDeploymentFrequencySettings = [
-      { organization: '', pipelineName: '', steps: '' },
-      { organization: '', pipelineName: '', steps: '' },
+      { id: 0, organization: '', pipelineName: '', steps: '' },
+      { id: 1, organization: '', pipelineName: '', steps: '' },
     ]
 
     const savedMetricsSetting = saveMetricsSettingReducer(initState, addADeploymentFrequencySetting())

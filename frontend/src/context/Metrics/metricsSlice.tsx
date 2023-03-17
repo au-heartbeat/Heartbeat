@@ -8,7 +8,7 @@ export interface savedMetricsSettingState {
   users: string[]
   doneColumn: string[]
   boardColumns: { name: string; value: string }[]
-  deploymentFrequencySettings: { organization: string; pipelineName: string; steps: string }[]
+  deploymentFrequencySettings: { id: number; organization: string; pipelineName: string; steps: string }[]
 }
 
 const initialState: savedMetricsSettingState = {
@@ -17,7 +17,7 @@ const initialState: savedMetricsSettingState = {
   users: [],
   doneColumn: [],
   boardColumns: [],
-  deploymentFrequencySettings: [{ organization: '', pipelineName: '', steps: '' }],
+  deploymentFrequencySettings: [{ id: 0, organization: '', pipelineName: '', steps: '' }],
 }
 
 export const metricsSlice = createSlice({
@@ -40,17 +40,18 @@ export const metricsSlice = createSlice({
     },
 
     addADeploymentFrequencySetting: (state) => {
+      const newId = state.deploymentFrequencySettings[state.deploymentFrequencySettings.length - 1].id + 1
       state.deploymentFrequencySettings = [
         ...state.deploymentFrequencySettings,
-        { organization: '', pipelineName: '', steps: '' },
+        { id: newId, organization: '', pipelineName: '', steps: '' },
       ]
     },
 
     updateDeploymentFrequencySettings: (state, action) => {
-      const { updateIndex, label, value } = action.payload
+      const { updateId, label, value } = action.payload
 
-      state.deploymentFrequencySettings = state.deploymentFrequencySettings.map((deploymentFrequencySetting, index) => {
-        return index === updateIndex
+      state.deploymentFrequencySettings = state.deploymentFrequencySettings.map((deploymentFrequencySetting) => {
+        return deploymentFrequencySetting.id === updateId
           ? {
               ...deploymentFrequencySetting,
               [camelCase(label)]: value,

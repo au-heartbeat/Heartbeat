@@ -8,17 +8,17 @@ interface Props {
   options: string[]
   label: string
   value: string
-  index: number
+  id: number
 }
 
-export const SingleSelection = ({ options, label, value, index }: Props) => {
+export const SingleSelection = ({ options, label, value, id }: Props) => {
   const dispatch = useAppDispatch()
   const [selectedValue, setSelectedValue] = useState(value)
 
   const handleChange = (event: SelectChangeEvent) => {
     const value = event.target.value
     setSelectedValue(value)
-    dispatch(updateDeploymentFrequencySettings({ updateIndex: index, label, value }))
+    dispatch(updateDeploymentFrequencySettings({ updateId: id, label, value }))
   }
 
   return (
