@@ -1,5 +1,5 @@
 import React from 'react'
-import { AddButton, Divider, Title } from './style'
+import { AddButton } from './style'
 import { PipelineMetricSelection } from './PipelineMetricSelection'
 import { useAppDispatch, useAppSelector } from '@src/hooks'
 import {
@@ -7,6 +7,7 @@ import {
   selectDeploymentFrequencySettings,
 } from '@src/context/pipelineMetricsSettings/pipelineMetricsSettingsSlice'
 import { v4 as uuidV4 } from 'uuid'
+import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch()
@@ -18,9 +19,7 @@ export const DeploymentFrequencySettings = () => {
 
   return (
     <>
-      <Divider>
-        <Title>Deployment frequency settings</Title>
-      </Divider>
+      <MetricsSettingTitle title={'Deployment frequency settings'} />
       {deploymentFrequencySettings.map((deploymentFrequencySetting, index) => (
         <PipelineMetricSelection
           key={uuidV4()}
