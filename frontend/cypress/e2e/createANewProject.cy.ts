@@ -1,5 +1,7 @@
+import { BOARD_PROJECT_KEY, BOARD_TOKEN, MOCK_EMAIL, WEB_SITE } from '../fixtures/fixtures'
 import homePage from '../pages/home'
-import metricsPage from '../pages/metrics'
+import configPage from '../pages/metrics/config'
+import metricsPage from '../pages/metrics/metrics'
 
 describe('Create a new project', () => {
   it('Should create a new project manually', () => {
@@ -8,28 +10,35 @@ describe('Create a new project', () => {
     homePage.createANewProject()
     cy.url().should('include', '/metrics')
 
-    metricsPage.typeProjectName('E2E Project')
+    configPage.typeProjectName('E2E Project')
 
-    const today = new Date()
-    const day = today.getDate()
-    metricsPage.selectDateRange(`${day}`, `${day + 1}`)
+    configPage.selectDateRange()
 
-    metricsPage.selectVelocityAndCycleTime()
+    configPage.selectVelocityAndCycleTime()
 
-    cy.get('button:contains("Verify")').should('be.disabled')
-    metricsPage.fillBoardFieldsInfo('2', 'mockEmail@qq.com', 'mockKey', '1', 'mockToken')
-    cy.get('button:contains("Verify")').should('be.enabled')
+    const verifyButton = () => cy.get('button:contains("Verify")')
+    verifyButton().should('be.disabled')
+    configPage.fillBoardFieldsInfo('2', MOCK_EMAIL, BOARD_PROJECT_KEY, WEB_SITE, BOARD_TOKEN)
 
-    metricsPage.selectLeadTimeForChangesAndDeploymentFrequency()
+    configPage.selectLeadTimeForChangesAndDeploymentFrequency()
 
-    cy.get('button:contains("Verify")').should('be.disabled')
-    metricsPage.fillPipelineToolFieldsInfo('mockTokenMockTokenMockTokenMockToken1234')
-    cy.get('button:contains("Verify")').should('be.enabled')
+    verifyButton().should('be.disabled')
+    configPage.fillPipelineToolFieldsInfo('mock1234'.repeat(5))
+    verifyButton().should('be.enabled')
 
-    cy.get('button:contains("Verify")').should('be.enabled')
-    metricsPage.fillSourceControlFieldsInfo('ghp_TSCfmn4H187rDN7JGgp5RAe7mM6YPp0xz987')
+    verifyButton().should('be.enabled')
+    configPage.fillSourceControlFieldsInfo(`ghp_${'Abc123'.repeat(6)}`)
 
-    metricsPage.goMetricsStep()
+    configPage.selectClassificationAndCycleTime()
+
+    configPage.goMetricsStep()
     cy.contains('Crews Setting').should('exist')
+    cy.contains('Real Done').should('exist')
+
+    cy.contains('Cycle Time Settings').should('exist')
+    cy.contains('Consider the "Flag" as "Block"').should('exist')
+
+    metricsPage.checkClassification()
+    cy.contains('Classification Setting').should('exist')
   })
 })

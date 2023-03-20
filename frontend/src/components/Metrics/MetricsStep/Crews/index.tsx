@@ -8,16 +8,20 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material'
-import { SELECTED_VALUE_SEPARATOR } from '@src/constants'
+import { DEFAULT_HELPER_TEXT, SELECTED_VALUE_SEPARATOR } from '@src/constants'
 import React, { useEffect, useState } from 'react'
-import { Divider, Title } from './style'
+import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
+import { useAppDispatch } from '@src/hooks/useAppDispatch'
+import { saveUsers } from '@src/context/Metrics/metricsSlice'
 
 interface crewsProps {
   options: string[]
   title: string
   label: string
 }
+
 export const Crews = ({ options, title, label }: crewsProps) => {
+  const dispatch = useAppDispatch()
   const [isEmptyCrewData, setIsEmptyCrewData] = useState<boolean>(false)
   const [selectedCrews, setSelectedCrews] = useState(options)
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length
@@ -34,11 +38,14 @@ export const Crews = ({ options, title, label }: crewsProps) => {
     }
     setSelectedCrews([...value])
   }
+
+  useEffect(() => {
+    dispatch(saveUsers(selectedCrews))
+  }, [selectedCrews, dispatch])
+
   return (
     <>
-      <Divider>
-        <Title>{title}</Title>
-      </Divider>
+      <MetricsSettingTitle title={title} />
       <FormControl variant='standard' required error={isEmptyCrewData}>
         <InputLabel id='crew-data-multiple-checkbox-label'>{label}</InputLabel>
         <Select
@@ -59,10 +66,12 @@ export const Crews = ({ options, title, label }: crewsProps) => {
             </MenuItem>
           ))}
         </Select>
-        {isEmptyCrewData && (
+        {isEmptyCrewData ? (
           <FormHelperText>
             {label} is <strong>required</strong>
           </FormHelperText>
+        ) : (
+          DEFAULT_HELPER_TEXT
         )}
       </FormControl>
     </>
