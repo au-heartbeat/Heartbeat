@@ -49,9 +49,9 @@ class JiraServiceTest {
 
 	public static final String JIRA_JQL = "status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s";
 
-	private final BoardType boardTypeJira = BoardType.JIRA;
+	private final BoardType boardTypeJira = BoardType.fromValue("jira");
 
-	private final BoardType boardTypeClassicJira = BoardType.CLASSIC_JIRA;
+	private final BoardType boardTypeClassicJira = BoardType.fromValue("classic-jira");
 
 	@Mock
 
