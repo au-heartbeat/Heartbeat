@@ -10,4 +10,12 @@ public enum BoardType {
 		this.boardType = boardType;
 	}
 
+	public static BoardType fromValue(String type) {
+		return switch (type) {
+			case "jira" -> JIRA;
+			case "classic-jira" -> CLASSIC_JIRA;
+			default -> throw new IllegalArgumentException("Board type does not find!");
+		};
+	}
+
 }
