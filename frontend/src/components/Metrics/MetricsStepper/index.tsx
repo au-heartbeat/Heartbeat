@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import Box from '@mui/material/Box'
+import Stepper from '@mui/material/Stepper'
+import Step from '@mui/material/Step'
 import {
   MetricsStepperContent,
+  MetricsStepLabel,
   ButtonGroup,
   NextButton,
   ExportButton,
@@ -8,16 +12,19 @@ import {
   StyledStepper,
   StyledStep,
   StyledStepLabel,
+  SaveButton,
+  ButtonContainer,
 } from './style'
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch'
 import { backStep, nextStep, selectStepNumber } from '@src/context/stepper/StepperSlice'
 import { ConfigStep } from '@src/components/Metrics/ConfigStep'
-import { STEPS } from '@src/constants'
+import { SAVE_CONFIG_TIPS, STEPS } from '@src/constants'
 import { MetricsStep } from '@src/components/Metrics/MetricsStep'
 import { ConfirmDialog } from '@src/components/Metrics/MetricsStepper/ConfirmDialog'
 import { useNavigate } from 'react-router-dom'
 import { selectConfig } from '@src/context/config/configSlice'
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext'
+import { Tooltip } from '@mui/material'
 
 const MetricsStepper = () => {
   const navigate = useNavigate()
@@ -98,16 +105,21 @@ const MetricsStepper = () => {
         {activeStep === 0 && <ConfigStep />}
         {activeStep === 1 && <MetricsStep />}
       </MetricsStepperContent>
-      <ButtonGroup>
-        <BackButton onClick={handleBack}>Back</BackButton>
-        {activeStep === STEPS.length - 1 ? (
-          <ExportButton>Export board data</ExportButton>
-        ) : (
-          <NextButton onClick={handleNext} disabled={isDisableNextButton}>
-            Next
-          </NextButton>
-        )}
-      </ButtonGroup>
+      <ButtonContainer>
+        <Tooltip title={SAVE_CONFIG_TIPS} placement={'right'}>
+          <SaveButton>Save</SaveButton>
+        </Tooltip>
+        <ButtonGroup>
+          <BackButton onClick={handleBack}>Back</BackButton>
+          {activeStep === STEPS.length - 1 ? (
+            <ExportButton>Export board data</ExportButton>
+          ) : (
+            <NextButton onClick={handleNext} disabled={isDisableNextButton}>
+              Next
+            </NextButton>
+          )}
+        </ButtonGroup>
+      </ButtonContainer>
       {isDialogShowing && (
         <ConfirmDialog isDialogShowing={isDialogShowing} onConfirm={backToHomePage} onClose={CancelDialog} />
       )}
