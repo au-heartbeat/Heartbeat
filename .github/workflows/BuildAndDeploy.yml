@@ -332,7 +332,7 @@ jobs:
           pnpm install
       - name: Run E2E
         env:
-          APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_PORT }}
+          APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
         run: pnpm run e2e
       - uses: actions/upload-artifact@v3
         if: always()
@@ -377,9 +377,9 @@ jobs:
           script: |
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}
             cp "./infra/docker-compose.yml" ./
-            # docker-compose down
+            docker-compose down
             if [[ -n $(docker images -f label=app=Heartbeat -q) ]]; then docker rmi -f $(docker images -f label=app=Heartbeat -q); fi
-            docker pull $REGISTRY/heartbeat_backend:$IMAGE_TAG
-            docker pull $REGISTRY/heartbeat_frontend:$IMAGE_TAG
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}/heartbeat_backend:$IMAGE_TAG
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}/heartbeat_frontend:$IMAGE_TAG
             docker-compose up -d frontend
 
