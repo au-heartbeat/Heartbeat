@@ -15,8 +15,7 @@ class Config {
   }
 
   selectDateRange() {
-    cy.get("[data-testid='CalendarIcon']").first().click()
-    cy.contains('16').click()
+    cy.contains('From').parent().type('03162023')
   }
 
   selectMetricsData() {
