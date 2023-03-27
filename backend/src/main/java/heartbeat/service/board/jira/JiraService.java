@@ -55,12 +55,12 @@ public class JiraService {
 
 	private final JiraFeignClient jiraFeignClient;
 
+	private final UrlGenerator urlGenerator;
+
 	@PreDestroy
 	public void shutdownExecutor() {
 		taskExecutor.shutdown();
 	}
-
-	private final UrlGenerator urlGenerator;
 
 	private static final String DONE_CARD_TAG = "done";
 
