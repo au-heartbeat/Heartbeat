@@ -20,8 +20,8 @@ export const DateRangePicker = () => {
             newValue &&
               dispatch(
                 updateDateRange({
-                  startDate: newValue.valueOf(),
-                  endDate: newValue.add(14, 'day').valueOf(),
+                  startDate: newValue?.startOf('date').valueOf(),
+                  endDate: newValue.add(14, 'day').startOf('date').valueOf(),
                 })
               )
             dispatch(updateBoardVerifyState(false))
@@ -32,7 +32,7 @@ export const DateRangePicker = () => {
           value={dayjs(endDate)}
           minDate={dayjs(startDate)}
           onChange={(newValue) => {
-            newValue && dispatch(updateDateRange({ startDate: startDate, endDate: newValue.valueOf() }))
+            newValue && dispatch(updateDateRange({ startDate: startDate, endDate: newValue.startOf('date').valueOf() }))
             dispatch(updateBoardVerifyState(false))
           }}
         />
