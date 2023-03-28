@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom'
 import { selectConfig } from '@src/context/config/configSlice'
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext'
 import { Tooltip } from '@mui/material'
+import Util from '@src/utils/util'
 
 const MetricsStepper = () => {
   const navigate = useNavigate()
@@ -69,6 +70,16 @@ const MetricsStepper = () => {
   ])
   const { isPipelineValid } = useMetricsStepValidationCheckContext()
 
+  const handleSave = () => {
+    const configData = {
+      ...config.basic,
+      board: isShowBoard ? config.boardConfig : undefined,
+      pipelineTool: isShowPipeline ? config.pipelineToolConfig : undefined,
+      sourceControl: isShowSourceControl ? config.sourceControlConfig : undefined,
+    }
+    Util.exportToJsonFile('config', configData)
+  }
+
   const handleNext = () => {
     if (activeStep === 0) dispatch(nextStep())
 
@@ -107,7 +118,7 @@ const MetricsStepper = () => {
       </MetricsStepperContent>
       <ButtonContainer>
         <Tooltip title={SAVE_CONFIG_TIPS} placement={'right'}>
-          <SaveButton>Save</SaveButton>
+          <SaveButton onClick={handleSave}>Save</SaveButton>
         </Tooltip>
         <ButtonGroup>
           <BackButton onClick={handleBack}>Back</BackButton>
