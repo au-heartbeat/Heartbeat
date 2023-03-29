@@ -14,7 +14,7 @@ class E2EUrlGeneratorTest {
 	public void testGetUri() {
 		e2EUrlGenerator.setUrl("mockTest");
 		URI uri = e2EUrlGenerator.getUri("test");
-		assertEquals("mockTest", uri.toString());
+		assertEquals("http://mockTest", uri.toString());
 	}
 
 }

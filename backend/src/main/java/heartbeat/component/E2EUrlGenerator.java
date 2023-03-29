@@ -17,7 +17,7 @@ public class E2EUrlGenerator implements UrlGenerator {
 
 	@Override
 	public URI getUri(String site) {
-		return URI.create(url);
+		return URI.create("http://" + url);
 	}
 
 }
