@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom'
 import { selectConfig } from '@src/context/config/configSlice'
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext'
 import { Tooltip } from '@mui/material'
-import Util from '@src/utils/util'
+import { exportToJsonFile } from '@src/utils/util'
 
 const MetricsStepper = () => {
   const navigate = useNavigate()
@@ -83,7 +83,7 @@ const MetricsStepper = () => {
       pipelineTool: isShowPipeline ? config.pipelineToolConfig : undefined,
       sourceControl: isShowSourceControl ? config.sourceControlConfig : undefined,
     }
-    Util.exportToJsonFile('config', configData)
+    exportToJsonFile('config', configData)
   }
 
   const handleNext = () => {
