@@ -1,4 +1,6 @@
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import tz from 'dayjs/plugin/timezone'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers'
@@ -11,6 +13,9 @@ import {
   updateSourceControlVerifyState,
 } from '@src/context/config/configSlice'
 import { StyledDateRangePicker } from './style'
+
+dayjs.extend(utc)
+dayjs.extend(tz)
 
 export const DateRangePicker = () => {
   const dispatch = useAppDispatch()
@@ -31,8 +36,8 @@ export const DateRangePicker = () => {
     } else {
       dispatch(
         updateDateRange({
-          startDate: value.startOf('date').valueOf(),
-          endDate: value.add(14, 'day').startOf('date').valueOf(),
+          startDate: value.tz('PRC').startOf('date').valueOf(),
+          endDate: value.add(14, 'day').tz('PRC').startOf('date').valueOf(),
         })
       )
     }
@@ -48,7 +53,7 @@ export const DateRangePicker = () => {
         })
       )
     } else {
-      dispatch(updateDateRange({ startDate: startDate, endDate: value.startOf('date').valueOf() }))
+      dispatch(updateDateRange({ startDate: startDate, endDate: value.tz('PRC').startOf('date').valueOf() }))
     }
     updateVerifyStates()
   }
