@@ -68,8 +68,8 @@ const MetricsStepper = () => {
   const basicConfig = {
     ...config.basic,
     dateRange: {
-      startDate: dateRange.startDate,
-      endDate: dateRange.endDate,
+      startDate: dateRange.startDate ? new Date(dateRange.startDate) : null,
+      endDate: dateRange.endDate ? new Date(dateRange.endDate) : null,
     },
   }
   const handleSave = () => {
