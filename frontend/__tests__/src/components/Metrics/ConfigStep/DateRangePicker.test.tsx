@@ -7,7 +7,7 @@ import { setupStore } from '../../../utils/setupStoreUtil'
 
 const START_DATE_LABEL = 'From *'
 const END_DATE_LABEL = 'To *'
-const TODAY = dayjs()
+const TODAY = dayjs().tz('PRC')
 const INPUT_DATE_VALUE = TODAY.format('MM/DD/YYYY')
 let store = setupStore()
 
