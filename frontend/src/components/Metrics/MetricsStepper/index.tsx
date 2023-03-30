@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Box from '@mui/material/Box'
-import Stepper from '@mui/material/Stepper'
-import Step from '@mui/material/Step'
 import {
   MetricsStepperContent,
-  MetricsStepLabel,
   ButtonGroup,
   NextButton,
   ExportButton,
@@ -72,8 +68,8 @@ const MetricsStepper = () => {
   const basicConfig = {
     ...config.basic,
     dateRange: {
-      startDate: new Date(dateRange.startDate),
-      endDate: new Date(dateRange.endDate),
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
     },
   }
   const handleSave = () => {
