@@ -1,11 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface sourceControlVerifyResponseState {
-  sourceControl: []
+  sourceControl: {
+    github: { githubRepos: string[] }
+  }
 }
 
 export const initialState: sourceControlVerifyResponseState = {
-  sourceControl: [],
+  sourceControl: {
+    github: {
+      githubRepos: [],
+    },
+  },
 }
 
 export const sourceControlVerifyResponseSlice = createSlice({
@@ -13,8 +19,8 @@ export const sourceControlVerifyResponseSlice = createSlice({
   initialState,
   reducers: {
     updateSourceControlVerifyResponse: (state, action) => {
-      const { sourceControl } = action.payload
-      state.sourceControl = sourceControl
+      const { githubRepos } = action.payload
+      state.sourceControl.github.githubRepos = githubRepos
     },
   },
 })

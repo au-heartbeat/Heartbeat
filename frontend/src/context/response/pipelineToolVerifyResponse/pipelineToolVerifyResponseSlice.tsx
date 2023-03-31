@@ -1,11 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface pipelineToolVerifyResponseState {
-  pipelineTool: []
+  pipelineTool: {
+    buildKite: {
+      pipelineList: {
+        id: string
+        name: string
+        orgId: string
+        orgName: string
+        repository: string
+        steps: string[]
+      }[]
+    }
+  }
 }
 
 export const initialState: pipelineToolVerifyResponseState = {
-  pipelineTool: [],
+  pipelineTool: {
+    buildKite: {
+      pipelineList: [],
+    },
+  },
 }
 
 export const pipelineToolVerifyResponseSlice = createSlice({
@@ -13,8 +28,8 @@ export const pipelineToolVerifyResponseSlice = createSlice({
   initialState,
   reducers: {
     updatePipelineToolVerifyResponse: (state, action) => {
-      const { pipelineTool } = action.payload
-      state.pipelineTool = pipelineTool
+      const { pipelineList } = action.payload
+      state.pipelineTool.buildKite.pipelineList = pipelineList
     },
   },
 })

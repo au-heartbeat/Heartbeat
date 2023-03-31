@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 import {
-  initialState as jiraVerifyResponseInitialState,
-  jiraVerifyResponseSlice,
-} from '@src/context/response/jiraVerifyResponse/jiraVerifyResponseSlice'
+  initialState as boardVerifyResponseInitialState,
+  boardVerifyResponseSlice,
+} from '@src/context/response/boardVerifyResponse/boardVerifyResponseSlice'
 import {
   initialState as pipelineToolVerifyResponseInitialState,
   pipelineToolVerifyResponseSlice,
@@ -16,12 +16,12 @@ import { RootState } from '@src/store'
 export const responseSlice = createSlice({
   name: 'response',
   initialState: {
-    ...jiraVerifyResponseInitialState,
+    ...boardVerifyResponseInitialState,
     ...pipelineToolVerifyResponseInitialState,
     ...sourceControlVerifyResponseInitialState,
   },
   reducers: {
-    ...jiraVerifyResponseSlice.caseReducers,
+    ...boardVerifyResponseSlice.caseReducers,
     ...pipelineToolVerifyResponseSlice.caseReducers,
     ...sourceControlVerifyResponseSlice.caseReducers,
   },
@@ -30,8 +30,8 @@ export const responseSlice = createSlice({
 export const { updateJiraVerifyResponse, updatePipelineToolVerifyResponse, updateSourceControlVerifyResponse } =
   responseSlice.actions
 
-export const selectUsers = (state: RootState) => state.response.users
-export const selectJiraColumns = (state: RootState) => state.response.jiraColumns
-export const selectTargetFields = (state: RootState) => state.response.targetFields
+export const selectUsers = (state: RootState) => state.response.board.jira.users
+export const selectJiraColumns = (state: RootState) => state.response.board.jira.jiraColumns
+export const selectTargetFields = (state: RootState) => state.response.board.jira.targetFields
 
 export default responseSlice.reducer
