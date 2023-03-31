@@ -4,7 +4,7 @@ export interface pipelineToolVerifyResponseState {
   pipelineTool: []
 }
 
-const initialState: pipelineToolVerifyResponseState = {
+export const initialState: pipelineToolVerifyResponseState = {
   pipelineTool: [],
 }
 
@@ -18,7 +18,5 @@ export const pipelineToolVerifyResponseSlice = createSlice({
     },
   },
 })
-
-export const { updatePipelineToolVerifyResponse } = pipelineToolVerifyResponseSlice.actions
 
 export default pipelineToolVerifyResponseSlice.reducer

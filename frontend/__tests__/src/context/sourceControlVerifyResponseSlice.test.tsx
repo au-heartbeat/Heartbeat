@@ -1,6 +1,7 @@
 import sourceControlVerifyResponseReducer, {
   updateSourceControlVerifyResponse,
-} from '@src/context/config/sourceControl/sourceControlVerifyResponse/sourceControlVerifyResponseSlice'
+} from '@src/context/response/responseSlice'
+import { MOCK_RESPONSE_SLICE_INIT_STATE } from '../fixtures'
 
 describe('sourceControlVerifyResponse reducer', () => {
   it('should show empty array when handle initial state', () => {
@@ -15,7 +16,7 @@ describe('sourceControlVerifyResponse reducer', () => {
     }
 
     const sourceControlResponse = sourceControlVerifyResponseReducer(
-      { sourceControl: [] },
+      MOCK_RESPONSE_SLICE_INIT_STATE,
       updateSourceControlVerifyResponse({ sourceControl: mockSourceControlVerifyResponse.sourceControl })
     )
 

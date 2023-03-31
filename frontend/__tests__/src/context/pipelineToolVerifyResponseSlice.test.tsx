@@ -1,6 +1,5 @@
-import pipelineVerifyResponseReducer, {
-  updatePipelineToolVerifyResponse,
-} from '@src/context/config/pipelineTool/pipelineToolVerifyResponse/pipelineToolVerifyResponseSlice'
+import pipelineVerifyResponseReducer, { updatePipelineToolVerifyResponse } from '@src/context/response/responseSlice'
+import { MOCK_RESPONSE_SLICE_INIT_STATE } from '../fixtures'
 
 describe('pipelineToolVerifyResponse reducer', () => {
   it('should show empty array when handle initial state', () => {
@@ -15,7 +14,7 @@ describe('pipelineToolVerifyResponse reducer', () => {
     }
 
     const jiraVerifyResponse = pipelineVerifyResponseReducer(
-      { pipelineTool: [] },
+      MOCK_RESPONSE_SLICE_INIT_STATE,
       updatePipelineToolVerifyResponse({
         pipelineTool: mockPipelineToolVerifyResponse.pipelineTool,
       })

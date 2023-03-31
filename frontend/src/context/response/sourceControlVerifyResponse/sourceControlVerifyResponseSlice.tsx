@@ -4,7 +4,7 @@ export interface sourceControlVerifyResponseState {
   sourceControl: []
 }
 
-const initialState: sourceControlVerifyResponseState = {
+export const initialState: sourceControlVerifyResponseState = {
   sourceControl: [],
 }
 
@@ -18,7 +18,5 @@ export const sourceControlVerifyResponseSlice = createSlice({
     },
   },
 })
-
-export const { updateSourceControlVerifyResponse } = sourceControlVerifyResponseSlice.actions
 
 export default sourceControlVerifyResponseSlice.reducer
