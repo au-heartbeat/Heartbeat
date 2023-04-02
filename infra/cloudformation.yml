@@ -17,11 +17,11 @@ Parameters:
     Type: String
   AwsRegion:
     Description: AWS region
-    Default: "cn-north-1"
+    Default: "ap-southeast-1"
     Type: String
   EC2ImageId:
     Description: AMI ID
-    Default: "ami-0bf2183ba2c3b50f9"
+    Default: "ami-0bf97847fcd5c9f57"
     Type: String
   SSHPublicKey:
     Description: Public key to connect EC2
@@ -262,9 +262,9 @@ Resources:
       InstanceType: "t2.micro"
       Tags:
         - Key: "Name"
-          Value: "HeartBeatEC2"
+          Value: "HeartbeatEC2"
         - Key: "app"
-          Value: "HeartBeat"
+          Value: "Heartbeat"
         - Key: "env"
           Value: "SIT"
       SecurityGroups:
@@ -326,9 +326,9 @@ Resources:
       InstanceType: "t2.micro"
       Tags:
         - Key: "Name"
-          Value: "HeartBeatE2EEC2"
+          Value: "HeartbeatE2EEC2"
         - Key: "app"
-          Value: "HeartBeatE2E"
+          Value: "HeartbeatE2E"
         - Key: "env"
           Value: "E2E"
       SecurityGroups:
@@ -354,7 +354,7 @@ Resources:
   EC2KeyPair:
     Type: AWS::EC2::KeyPair
     Properties:
-      KeyName: HeartBeatKeyPair
+      KeyName: HeartbeatKeyPair
       PublicKeyMaterial: !Ref SSHPublicKey
   EC2SSHSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -408,6 +408,7 @@ Resources:
     Properties:
       InstanceId: !Ref E2EEC2Instance
       Domain: vpc
+
 Outputs:
   Role:
     Value: !GetAtt AWSGitHubActionRole.Arn
