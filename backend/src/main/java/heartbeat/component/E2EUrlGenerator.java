@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 
 @Component
-@Profile(value = "e2e")
+@Profile(value = "!default")
 public class E2EUrlGenerator implements UrlGenerator {
 
 	@Value("${jira.url}")
