@@ -39,4 +39,15 @@ describe('Create a new project', () => {
     cy.contains('Crews Setting').should('exist')
     cy.contains('Real Done').should('exist')
   })
+
+  it('Should import a project manually', () => {
+    homePage.navigate()
+
+    homePage.importProjectFromFile()
+    cy.url().should('include', '/metrics')
+
+    configPage.verifyAndClickNextToMetrics()
+
+    configPage.goMetricsStep()
+  })
 })
