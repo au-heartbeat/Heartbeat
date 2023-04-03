@@ -11,14 +11,15 @@ import {
   initialSourceControlState,
 } from '@src/context/config/sourceControl/sourceControlSlice'
 import { REQUIRED_DATA } from '@src/constants'
+import dayjs from 'dayjs'
 export interface BasicConfigState {
   isProjectCreated: boolean
   basic: {
     projectName: string
     calendarType: string
     dateRange: {
-      startDate: string | null
-      endDate: string | null
+      startDate: number | null
+      endDate: number | null
     }
     metrics: string[]
   }
@@ -80,6 +81,11 @@ export const configSlice = createSlice({
     },
     updateBasicConfigState: (state, action) => {
       state.basic = action.payload
+      state.basic.dateRange = {
+        ...state.basic.dateRange,
+        startDate: dayjs(state.basic.dateRange.startDate).startOf('date').valueOf(),
+        endDate: dayjs(state.basic.dateRange.endDate).startOf('date').valueOf(),
+      }
       state.boardConfig = action.payload.boardConfig || state.boardConfig
       state.pipelineToolConfig = action.payload.pipelineToolConfig || state.pipelineToolConfig
       state.sourceControlConfig = action.payload.sourceControlConfig || state.sourceControlConfig
