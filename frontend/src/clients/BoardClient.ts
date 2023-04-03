@@ -1,8 +1,6 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { BadRequestException } from '../exceptions/BadRequestException'
-import { InternalServerException } from '@src/exceptions/InternalServerException'
 import { AxiosError, HttpStatusCode } from 'axios'
-import { NotFoundException } from '@src/exceptions/NotFoundException'
+import { verifyException } from '@src/exceptions/VerifyException'
 
 export interface getVerifyBoardParams {
   token: string
@@ -13,6 +11,7 @@ export interface getVerifyBoardParams {
   endTime: string | null
   boardId: string
 }
+
 export class BoardClient extends HttpClient {
   isBoardVerify = false
   isNoDoneCard = false
@@ -27,16 +26,7 @@ export class BoardClient extends HttpClient {
         : this.handleBoardVerifySucceed(result.data)
     } catch (e) {
       this.isBoardVerify = false
-      const code = (e as AxiosError).response?.status
-      if (code === HttpStatusCode.BadRequest) {
-        throw new BadRequestException(params.type, 'Please reconfirm the input')
-      }
-      if (code === HttpStatusCode.Unauthorized) {
-        throw new NotFoundException(params.type, 'Token is incorrect')
-      }
-      if (code === HttpStatusCode.InternalServerError) {
-        throw new InternalServerException(params.type, 'Internal server error')
-      }
+      verifyException((e as AxiosError).response?.status, params)
     }
     return {
       response: this.response,

@@ -3,6 +3,7 @@ import { rest } from 'msw'
 import { MOCK_REPORT_URL } from '../fixtures'
 import { HttpStatusCode } from 'axios'
 import { reportClient } from '@src/clients/ReportClient'
+import { INTERNAL_SERVER_ERROR_MESSAGE } from '@src/constants'
 
 const server = setupServer(rest.post(MOCK_REPORT_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.Ok))))
 
@@ -21,6 +22,6 @@ describe('report client', () => {
 
     await expect(async () => {
       await reportClient.reporting()
-    }).rejects.toThrow('report verify failed: Internal server error')
+    }).rejects.toThrow(`report: ${INTERNAL_SERVER_ERROR_MESSAGE}`)
   })
 })

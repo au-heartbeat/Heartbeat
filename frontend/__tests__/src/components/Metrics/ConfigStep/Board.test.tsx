@@ -8,7 +8,7 @@ import {
   MOCK_BOARD_URL_FOR_JIRA,
   RESET,
   VERIFY,
-  JIRA_VERIFY_ERROR_MESSAGE,
+  VERIFY_ERROR_MESSAGE,
 } from '../../../fixtures'
 import { Provider } from 'react-redux'
 import { setupStore } from '../../../utils/setupStoreUtil'
@@ -28,20 +28,27 @@ export const fillBoardFieldsInformation = () => {
   })
 }
 
-let store = setupStore()
-const setup = () => {
-  store = setupStore()
-  return render(
-    <Provider store={store}>
-      <Board />
-    </Provider>
-  )
-}
+let store = null
+
 const server = setupServer(rest.get(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) => res(ctx.status(200))))
 
 describe('Board', () => {
   beforeAll(() => server.listen())
   afterAll(() => server.close())
+
+  store = setupStore()
+  const setup = () => {
+    store = setupStore()
+    return render(
+      <Provider store={store}>
+        <Board />
+      </Provider>
+    )
+  }
+
+  afterEach(() => {
+    store = null
+  })
 
   it('should show board title and fields when render board component ', () => {
     const { getByRole, getByLabelText } = setup()
@@ -211,7 +218,7 @@ describe('Board', () => {
     fireEvent.click(getByRole('button', { name: VERIFY }))
 
     await waitFor(() => {
-      expect(getByText(JIRA_VERIFY_ERROR_MESSAGE.UNAUTHORIZED)).toBeInTheDocument()
+      expect(getByText(`${BOARD_TYPES.JIRA} ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)).toBeInTheDocument()
     })
   })
 })

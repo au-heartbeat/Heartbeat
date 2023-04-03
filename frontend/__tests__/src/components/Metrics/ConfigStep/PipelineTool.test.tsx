@@ -6,7 +6,7 @@ import {
   PIPELINE_TOOL_TYPES,
   ERROR_MESSAGE_COLOR,
   MOCK_PIPELINE_URL,
-  PIPELINE_TOOL_VERIFY_ERROR_MESSAGE,
+  VERIFY_ERROR_MESSAGE,
   VERIFY,
   RESET,
   TOKEN_ERROR_MESSAGE,
@@ -26,21 +26,25 @@ export const fillPipelineToolFieldsInformation = async () => {
   expect(tokenInput.value).toEqual(mockInfo)
 }
 
-let store = setupStore()
-const setup = () => {
-  store = setupStore()
-  return render(
-    <Provider store={store}>
-      <PipelineTool />
-    </Provider>
-  )
-}
+let store = null
 
 const server = setupServer(rest.get(MOCK_PIPELINE_URL, (req, res, ctx) => res(ctx.status(200))))
 
 describe('PipelineTool', () => {
   beforeAll(() => server.listen())
   afterAll(() => server.close())
+  store = setupStore()
+  const setup = () => {
+    store = setupStore()
+    return render(
+      <Provider store={store}>
+        <PipelineTool />
+      </Provider>
+    )
+  }
+  afterEach(() => {
+    store = null
+  })
 
   it('should show pipelineTool title and fields when render pipelineTool component ', () => {
     const { getByRole, getByLabelText } = setup()
@@ -164,7 +168,7 @@ describe('PipelineTool', () => {
     await fillPipelineToolFieldsInformation()
 
     await userEvent.click(getByRole('button', { name: VERIFY }))
-    expect(getByText(PIPELINE_TOOL_VERIFY_ERROR_MESSAGE.UNAUTHORIZED)).toBeInTheDocument()
+    expect(getByText(`${PIPELINE_TOOL_TYPES.BUILD_KITE} ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)).toBeInTheDocument()
   })
 
   it('should check error notification disappear when pipelineTool verify response status is 401', async () => {
@@ -173,10 +177,12 @@ describe('PipelineTool', () => {
     const { getByRole } = setup()
     await fillPipelineToolFieldsInformation()
 
-    userEvent.click(getByRole('button', { name: VERIFY }))
+    await userEvent.click(getByRole('button', { name: VERIFY }))
 
     await waitFor(() => {
-      expect(screen.queryByText(PIPELINE_TOOL_VERIFY_ERROR_MESSAGE.UNAUTHORIZED)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(`${PIPELINE_TOOL_TYPES.BUILD_KITE}${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)
+      ).not.toBeInTheDocument()
     })
   })
 })

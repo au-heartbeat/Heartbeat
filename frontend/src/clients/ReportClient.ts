@@ -21,6 +21,7 @@ export class ReportClient extends HttpClient {
       if (code === HttpStatusCode.InternalServerError) {
         throw new InternalServerException('report', 'Internal server error')
       }
+      throw new Error('Can not match this metric')
     }
     return {
       response: this.reportResponse,
