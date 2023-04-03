@@ -17,3 +17,8 @@ export const ErrorDone = styled('div')({
   color: '#ff0000',
   paddingBottom: '1rem',
 })
+
+export const WaringDone = styled('div')({
+  paddingBottom: '1rem',
+  color: '#cd5e32',
+})
