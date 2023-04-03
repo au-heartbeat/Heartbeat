@@ -1,6 +1,6 @@
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
-import { MOCK_GENERATE_REPORT_REQUEST_PARAMS, MOCK_REPORT_URL } from '../fixtures'
+import { MOCK_GENERATE_REPORT_REQUEST_PARAMS, MOCK_REPORT_URL, UNKNOWN_ERROR_MESSAGE } from '../fixtures'
 import { HttpStatusCode } from 'axios'
 import { reportClient } from '@src/clients/ReportClient'
 import { INTERNAL_SERVER_ERROR_MESSAGE } from '@src/constants'
@@ -23,5 +23,13 @@ describe('report client', () => {
     await expect(async () => {
       await reportClient.reporting(MOCK_GENERATE_REPORT_REQUEST_PARAMS)
     }).rejects.toThrow(`report: ${INTERNAL_SERVER_ERROR_MESSAGE}`)
+  })
+
+  it('should throw error when generate report response status 400', async () => {
+    server.use(rest.post(MOCK_REPORT_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.BadRequest))))
+
+    await expect(async () => {
+      await reportClient.reporting(MOCK_GENERATE_REPORT_REQUEST_PARAMS)
+    }).rejects.toThrow(UNKNOWN_ERROR_MESSAGE)
   })
 })

@@ -85,6 +85,7 @@ export enum VERIFY_ERROR_MESSAGE {
   UNAUTHORIZED = 'verify failed: Token is incorrect',
   INTERNAL_SERVER_ERROR = 'verify failed: Internal server error',
 }
+export const UNKNOWN_ERROR_MESSAGE = 'Unknown'
 
 export const MOCK_BOARD_VERIFY_REQUEST_PARAMS = {
   token: 'mockToken',

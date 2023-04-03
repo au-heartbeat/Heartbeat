@@ -2,6 +2,7 @@ import { HttpClient } from '@src/clients/Httpclient'
 import { AxiosError, HttpStatusCode } from 'axios'
 import { InternalServerException } from '@src/exceptions/InternalServerException'
 import { reportResponseProps } from '@src/types/reportResponse'
+import { UnknownException } from '@src/exceptions/UnkonwException'
 
 export interface generateReportParams {
   metrics: string[]
@@ -54,8 +55,9 @@ export class ReportClient extends HttpClient {
       const code = (e as AxiosError).response?.status
       if (code === HttpStatusCode.InternalServerError) {
         throw new InternalServerException('report', 'Internal server error')
+      } else {
+        throw new UnknownException()
       }
-      throw new Error('Can not match this metric')
     }
     return {
       response: this.reportResponse,

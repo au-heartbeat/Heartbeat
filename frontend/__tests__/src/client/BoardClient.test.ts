@@ -5,6 +5,7 @@ import {
   MOCK_BOARD_URL_FOR_JIRA,
   MOCK_BOARD_VERIFY_REQUEST_PARAMS,
   MOCK_CLASSIC_JIRA_BOARD_VERIFY_REQUEST_PARAMS,
+  UNKNOWN_ERROR_MESSAGE,
   VERIFY_ERROR_MESSAGE,
 } from '../fixtures'
 import { boardClient } from '@src/clients/BoardClient'
@@ -67,5 +68,13 @@ describe('verify board request', () => {
     await expect(async () => {
       await boardClient.getVerifyBoard(MOCK_BOARD_VERIFY_REQUEST_PARAMS)
     }).rejects.toThrow(`${MOCK_BOARD_VERIFY_REQUEST_PARAMS.type} ${VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR}`)
+  })
+
+  it('should throw error when board verify response status 300', async () => {
+    server.use(rest.get(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) => res(ctx.status(HttpStatusCode.MultipleChoices))))
+
+    await expect(async () => {
+      await boardClient.getVerifyBoard(MOCK_BOARD_VERIFY_REQUEST_PARAMS)
+    }).rejects.toThrow(UNKNOWN_ERROR_MESSAGE)
   })
 })

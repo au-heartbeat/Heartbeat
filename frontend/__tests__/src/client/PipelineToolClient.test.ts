@@ -1,6 +1,11 @@
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
-import { MOCK_PIPELINE_URL, MOCK_PIPELINE_VERIFY_REQUEST_PARAMS, VERIFY_ERROR_MESSAGE } from '../fixtures'
+import {
+  MOCK_PIPELINE_URL,
+  MOCK_PIPELINE_VERIFY_REQUEST_PARAMS,
+  UNKNOWN_ERROR_MESSAGE,
+  VERIFY_ERROR_MESSAGE,
+} from '../fixtures'
 import { pipelineToolClient } from '@src/clients/PipelineToolClient'
 import { HttpStatusCode } from 'axios'
 
@@ -38,6 +43,14 @@ describe('verify pipelineTool request', () => {
     server.use(rest.get(MOCK_PIPELINE_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.InternalServerError))))
     await expect(() => pipelineToolClient.verifyPipelineTool(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS)).rejects.toThrow(
       `${MOCK_PIPELINE_VERIFY_REQUEST_PARAMS.type} ${VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR}`
+    )
+  })
+
+  it('should throw error when board verify response status 300', async () => {
+    server.use(rest.get(MOCK_PIPELINE_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.MultipleChoices))))
+
+    await expect(() => pipelineToolClient.verifyPipelineTool(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS)).rejects.toThrow(
+      UNKNOWN_ERROR_MESSAGE
     )
   })
 })
