@@ -187,12 +187,14 @@ describe('Board', () => {
     })
   })
 
-  it('should check loading animation when click verify button', () => {
+  it('should check loading animation when click verify button', async () => {
     const { getByRole, container } = setup()
     fillBoardFieldsInformation()
     fireEvent.click(getByRole('button', { name: VERIFY }))
 
-    expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar')
+    await waitFor(() => {
+      expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar')
+    })
   })
 
   it('should check noDoneCardPop show and disappear when board verify response status is 204', async () => {

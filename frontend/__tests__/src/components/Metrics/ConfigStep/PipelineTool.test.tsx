@@ -63,6 +63,7 @@ describe('PipelineTool', () => {
     expect(pipelineToolType).toBeInTheDocument()
 
     const option = queryByText(PIPELINE_TOOL_TYPES.GO_CD)
+
     expect(option).not.toBeInTheDocument()
   })
 
@@ -159,7 +160,9 @@ describe('PipelineTool', () => {
     await fillPipelineToolFieldsInformation()
     fireEvent.click(getByRole('button', { name: VERIFY }))
 
-    expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar')
+    await waitFor(() => {
+      expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar')
+    })
   })
 
   it('should check error notification show when pipelineTool verify response status is 401', async () => {

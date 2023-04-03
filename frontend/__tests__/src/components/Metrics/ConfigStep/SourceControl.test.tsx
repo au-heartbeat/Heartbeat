@@ -93,7 +93,7 @@ describe('SourceControl', () => {
     expect(verifyButton).toBeEnabled()
   })
 
-  it('should show reset button  and verified button when verify successfully', async () => {
+  it('should show reset button and verified button when verify successfully', async () => {
     const { getByText } = setup()
     fillSourceControlFieldsInformation()
 
