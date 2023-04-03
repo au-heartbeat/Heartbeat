@@ -36,9 +36,20 @@ export class ReportClient extends HttpClient {
 
   reporting = async (params: generateReportParams) => {
     try {
-      await this.axiosInstance.post(`/report`, { params }).then((res) => {
-        this.reportResponse = res.data
-      })
+      await this.axiosInstance
+        .post(
+          `/report`,
+          {},
+          {
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded',
+            },
+            params: params,
+          }
+        )
+        .then((res) => {
+          this.reportResponse = res.data
+        })
     } catch (e) {
       const code = (e as AxiosError).response?.status
       if (code === HttpStatusCode.InternalServerError) {
