@@ -18,8 +18,8 @@ export interface BasicConfigState {
     projectName: string
     calendarType: string
     dateRange: {
-      startDate: string | null
-      endDate: string | null
+      startDate: string | number | null
+      endDate: string | number | null
     }
     metrics: string[]
   }
@@ -82,8 +82,8 @@ export const configSlice = createSlice({
     updateBasicConfigState: (state, action) => {
       state.basic = action.payload
       state.basic.dateRange = {
-        startDate: dayjs(state.basic.dateRange.startDate).startOf('date').valueOf().toString(),
-        endDate: dayjs(state.basic.dateRange.endDate).startOf('date').valueOf().toString(),
+        startDate: dayjs(state.basic.dateRange.startDate).startOf('date').valueOf(),
+        endDate: dayjs(state.basic.dateRange.endDate).startOf('date').valueOf(),
       }
       state.boardConfig = action.payload.boardConfig || state.boardConfig
       state.pipelineToolConfig = action.payload.pipelineToolConfig || state.pipelineToolConfig
