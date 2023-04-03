@@ -120,6 +120,29 @@ export const MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS = {
   endTime: '1614873600000',
 }
 
+export const MOCK_GENERATE_REPORT_REQUEST_PARAMS = {
+  metrics: [],
+  pipeline: {
+    token: 'mockToken',
+    type: PIPELINE_TOOL_TYPES.BUILD_KITE,
+  },
+  board: {
+    token: 'mockToken',
+    type: BOARD_TYPES.CLASSIC_JIRA,
+    site: '2',
+    email: '1@qq.com',
+    projectKey: '2',
+    boardId: '2',
+  },
+  sourceControl: {
+    token: 'mockToken',
+    type: SOURCE_CONTROL_TYPES.GITHUB,
+  },
+  calendarType: REGULAR_CALENDAR,
+  startTime: '1613664000000',
+  endTime: '1614873600000',
+}
+
 export const MOCK_IMPORT_FILE = {
   projectName: 'Mock Project Name',
   calendarType: CHINA_CALENDAR,

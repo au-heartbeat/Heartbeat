@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react'
 import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { reportClient } from '@src/clients/ReportClient'
+import { MOCK_GENERATE_REPORT_REQUEST_PARAMS } from '../fixtures'
 
 describe('use generate report effect', () => {
   it('should init data state when render hook', async () => {
@@ -19,7 +20,7 @@ describe('use generate report effect', () => {
     expect(result.current.isLoading).toEqual(false)
 
     act(() => {
-      result.current.generateReport()
+      result.current.generateReport(MOCK_GENERATE_REPORT_REQUEST_PARAMS)
       jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION)
     })
 
