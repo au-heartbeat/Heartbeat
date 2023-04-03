@@ -23,6 +23,7 @@ import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepV
 import { ReportStep } from '@src/components/Metrics/ReportStep'
 import { Tooltip } from '@mui/material'
 import { exportToJsonFile } from '@src/utils/util'
+import { updateMetricsState } from '@src/context/Metrics/metricsSlice'
 
 const MetricsStepper = () => {
   const navigate = useNavigate()
@@ -84,7 +85,10 @@ const MetricsStepper = () => {
   }
 
   const handleNext = () => {
-    if (activeStep === 0) dispatch(nextStep())
+    if (activeStep === 0) {
+      dispatch(updateMetricsState(config))
+      dispatch(nextStep())
+    }
 
     if (activeStep === 1) {
       isPipelineValid() && dispatch(nextStep())
