@@ -7,8 +7,8 @@ const updatedConfigState = {
     projectName: 'Mock Project Name',
     calendarType: CHINA_CALENDAR,
     dateRange: {
-      startDate: '1678896000000',
-      endDate: '1680105600000',
+      startDate: 1678896000000,
+      endDate: 1680105600000,
     },
     metrics: [],
   },

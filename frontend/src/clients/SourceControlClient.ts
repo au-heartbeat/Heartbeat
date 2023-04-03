@@ -7,8 +7,8 @@ import { UnauthorizedException } from '@src/exceptions/UnauthorizedException'
 export interface getVerifySourceControlParams {
   type: string
   token: string
-  startTime: string | null
-  endTime: string | null
+  startTime: string | number | null
+  endTime: string | number | null
 }
 
 export class SourceControlClient extends HttpClient {
