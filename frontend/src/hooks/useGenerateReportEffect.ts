@@ -23,7 +23,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const generateReport = async () => {
     setIsLoading(true)
     try {
-      return await reportClient.generateReporter()
+      return await reportClient.reporting()
     } catch (e) {
       const err = e as Error
       setErrorMessage(err.message)

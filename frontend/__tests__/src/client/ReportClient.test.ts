@@ -11,7 +11,7 @@ describe('report client', () => {
   afterAll(() => server.close())
 
   it('should get response when generate report request status 200', async () => {
-    const result = await reportClient.generateReporter()
+    const result = await reportClient.reporting()
 
     expect(result.response).not.toBeNull()
   })
@@ -20,7 +20,7 @@ describe('report client', () => {
     server.use(rest.post(MOCK_REPORT_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.InternalServerError))))
 
     await expect(async () => {
-      await reportClient.generateReporter()
+      await reportClient.reporting()
     }).rejects.toThrow('report verify failed: Internal server error')
   })
 })

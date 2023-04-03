@@ -11,7 +11,7 @@ export class ReportClient extends HttpClient {
     },
   }
 
-  generateReporter = async () => {
+  reporting = async () => {
     try {
       await this.axiosInstance.post(`/report`).then((res) => {
         this.reportResponse = res.data

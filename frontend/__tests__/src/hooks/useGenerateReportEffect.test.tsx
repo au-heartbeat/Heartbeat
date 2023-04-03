@@ -4,14 +4,14 @@ import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { reportClient } from '@src/clients/ReportClient'
 
 describe('use generate report effect', () => {
-  it('should initial data state when render hook', async () => {
+  it('should init data state when render hook', async () => {
     const { result } = renderHook(() => useGenerateReportEffect())
 
     expect(result.current.isLoading).toEqual(false)
   })
   it('should set error message when generate report throw error', async () => {
     jest.useFakeTimers()
-    reportClient.generateReporter = jest.fn().mockImplementation(() => {
+    reportClient.reporting = jest.fn().mockImplementation(() => {
       throw new Error('error')
     })
     const { result } = renderHook(() => useGenerateReportEffect())
