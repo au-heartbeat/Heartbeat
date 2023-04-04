@@ -6,7 +6,7 @@ import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
 import { SELECTED_VALUE_SEPARATOR } from '@src/constants'
 import { useAppSelector } from '@src/hooks'
 import { WaringDone } from '@src/components/Metrics/MetricsStep/CycleTime/style'
-import { arrayIntersection } from '@src/utils/utils'
+import { getArrayIntersection } from '@src/utils/util'
 
 interface classificationProps {
   title: string
@@ -20,7 +20,7 @@ export const Classification = ({ options, title, label }: classificationProps) =
   const isProjectCreated = useAppSelector(selectMetricsContent).isProjectCreated
   const optionsName = options.map((e) => e.name)
 
-  const defaultInput = arrayIntersection(optionsName, importClassification)
+  const defaultInput = getArrayIntersection(optionsName, importClassification)
   const [selectedTargetField, setSelectedTargetField] = useState(isProjectCreated ? [] : defaultInput)
   const isAllSelected = selectedTargetField.length > 0 && selectedTargetField.length === options.length
 

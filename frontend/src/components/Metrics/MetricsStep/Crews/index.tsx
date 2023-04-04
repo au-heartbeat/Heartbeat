@@ -14,7 +14,7 @@ import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
 import { saveUsers, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
 import { useAppSelector } from '@src/hooks'
-import { arrayIntersection } from '@src/utils/utils'
+import { getArrayIntersection } from '@src/utils/util'
 
 interface crewsProps {
   options: string[]
@@ -28,7 +28,7 @@ export const Crews = ({ options, title, label }: crewsProps) => {
   const importCrews = useAppSelector(selectMetricsContent).users
   const isProjectCreated = useAppSelector(selectMetricsContent).isProjectCreated
   const [selectedCrews, setSelectedCrews] = useState(
-    isProjectCreated ? options : arrayIntersection(importCrews, options)
+    isProjectCreated ? options : getArrayIntersection(importCrews, options)
   )
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length
 
