@@ -26,7 +26,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       return await reportClient.reporting(params)
     } catch (e) {
       const err = e as Error
-      setErrorMessage(err.message)
+      setErrorMessage(`generate report: ${err.message}`)
       setTimeout(() => {
         setErrorMessage('')
       }, ERROR_MESSAGE_TIME_DURATION)

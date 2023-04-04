@@ -81,11 +81,13 @@ export const MOCK_SOURCE_CONTROL_URL = `${BASE_URL}/source-control`
 export const MOCK_REPORT_URL = `${BASE_URL}/report`
 
 export enum VERIFY_ERROR_MESSAGE {
-  BAD_REQUEST = 'verify failed: Please reconfirm the input',
-  UNAUTHORIZED = 'verify failed: Token is incorrect',
-  INTERNAL_SERVER_ERROR = 'verify failed: Internal server error',
+  BAD_REQUEST = 'Please reconfirm the input',
+  UNAUTHORIZED = 'Token is incorrect',
+  INTERNAL_SERVER_ERROR = 'Internal server error',
+  NOT_FOUND = '404 Not Found',
+  UNKNOWN = 'Unknown',
 }
-export const UNKNOWN_ERROR_MESSAGE = 'Unknown'
+export const VERIFY_FAILED = 'verify failed'
 
 export const MOCK_BOARD_VERIFY_REQUEST_PARAMS = {
   token: 'mockToken',

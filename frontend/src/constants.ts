@@ -63,6 +63,8 @@ export const VERIFY_FAILED_ERROR_MESSAGE = 'verify failed'
 export const INTERNAL_SERVER_ERROR_MESSAGE = 'Internal server error'
 export const INVALID_TOKEN_ERROR_MESSAGE = 'Token is incorrect'
 export const BAD_REQUEST_ERROR_MESSAGE = 'Please reconfirm the input'
+export const NOT_FOUND_ERROR_MESSAGE = '404 Not Found'
+export const UNKNOWN_ERROR_MESSAGE = 'Unknown'
 
 export const METRICS_CONSTANTS = {
   cycleTimeEmptyStr: '----',

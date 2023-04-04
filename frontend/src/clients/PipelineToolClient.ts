@@ -1,6 +1,4 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { AxiosError } from 'axios'
-import { verifyException } from '@src/exceptions/VerifyException'
 
 export interface getVerifyPipelineToolParams {
   type: string
@@ -19,7 +17,7 @@ export class PipelineToolClient extends HttpClient {
       this.handlePipelineToolVerifySucceed(result.data)
     } catch (e) {
       this.isPipelineToolVerified = false
-      verifyException((e as AxiosError).response?.status, params)
+      throw e
     }
     return {
       response: this.response,

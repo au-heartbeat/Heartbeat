@@ -1,6 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { AxiosError, HttpStatusCode } from 'axios'
-import { verifyException } from '@src/exceptions/VerifyException'
+import { HttpStatusCode } from 'axios'
 
 export interface getVerifyBoardParams {
   token: string
@@ -20,13 +19,13 @@ export class BoardClient extends HttpClient {
   getVerifyBoard = async (params: getVerifyBoardParams) => {
     try {
       const boardType = params.type === 'Classic Jira' ? 'classic-jira' : params.type.toLowerCase()
-      const result = await this.axiosInstance.get(`/boards/${boardType}`, { params }).then((res) => res)
+      const result = await this.axiosInstance.get(`/boards/${boardType}`, { params })
       result.status === HttpStatusCode.NoContent
         ? this.handleBoardNoDoneCard()
         : this.handleBoardVerifySucceed(result.data)
     } catch (e) {
       this.isBoardVerify = false
-      verifyException((e as AxiosError).response?.status, params)
+      throw e
     }
     return {
       response: this.response,

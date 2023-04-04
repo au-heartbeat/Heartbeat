@@ -1,8 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { AxiosError, HttpStatusCode } from 'axios'
-import { InternalServerException } from '@src/exceptions/InternalServerException'
 import { reportResponseProps } from '@src/types/reportResponse'
-import { UnknownException } from '@src/exceptions/UnkonwException'
 
 export interface generateReportParams {
   metrics: string[]
@@ -36,6 +33,7 @@ export class ReportClient extends HttpClient {
   }
 
   reporting = async (params: generateReportParams) => {
+    // eslint-disable-next-line no-useless-catch
     try {
       await this.axiosInstance
         .post(
@@ -52,12 +50,7 @@ export class ReportClient extends HttpClient {
           this.reportResponse = res.data
         })
     } catch (e) {
-      const code = (e as AxiosError).response?.status
-      if (code === HttpStatusCode.InternalServerError) {
-        throw new InternalServerException('report', 'Internal server error')
-      } else {
-        throw new UnknownException()
-      }
+      throw e
     }
     return {
       response: this.reportResponse,

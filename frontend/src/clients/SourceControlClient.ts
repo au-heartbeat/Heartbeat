@@ -1,6 +1,4 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { AxiosError } from 'axios'
-import { verifyException } from '@src/exceptions/VerifyException'
 
 export interface getVerifySourceControlParams {
   type: string
@@ -15,11 +13,11 @@ export class SourceControlClient extends HttpClient {
 
   getVerifySourceControl = async (params: getVerifySourceControlParams) => {
     try {
-      const result = await this.axiosInstance.get('/source-control', { params: { ...params } }).then((res) => res)
+      const result = await this.axiosInstance.get('/source-control', { params: { ...params } })
       this.handleSourceControlVerifySucceed(result.data)
     } catch (e) {
       this.isSourceControlVerify = false
-      verifyException((e as AxiosError).response?.status, params)
+      throw e
     }
     return {
       response: this.response,
