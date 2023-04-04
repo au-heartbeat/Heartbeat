@@ -9,6 +9,7 @@ import {
   RESET,
   VERIFY,
   VERIFY_ERROR_MESSAGE,
+  VERIFY_FAILED,
 } from '../../../fixtures'
 import { Provider } from 'react-redux'
 import { setupStore } from '../../../utils/setupStoreUtil'
@@ -220,7 +221,9 @@ describe('Board', () => {
     fireEvent.click(getByRole('button', { name: VERIFY }))
 
     await waitFor(() => {
-      expect(getByText(`${BOARD_TYPES.JIRA} ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)).toBeInTheDocument()
+      expect(
+        getByText(`${BOARD_TYPES.JIRA} ${VERIFY_FAILED}: ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)
+      ).toBeInTheDocument()
     })
   })
 })

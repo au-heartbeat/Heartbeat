@@ -1,11 +1,6 @@
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
-import {
-  MOCK_PIPELINE_URL,
-  MOCK_PIPELINE_VERIFY_REQUEST_PARAMS,
-  UNKNOWN_ERROR_MESSAGE,
-  VERIFY_ERROR_MESSAGE,
-} from '../fixtures'
+import { MOCK_PIPELINE_URL, MOCK_PIPELINE_VERIFY_REQUEST_PARAMS, VERIFY_ERROR_MESSAGE } from '../fixtures'
 import { pipelineToolClient } from '@src/clients/PipelineToolClient'
 import { HttpStatusCode } from 'axios'
 
@@ -28,21 +23,21 @@ describe('verify pipelineTool request', () => {
   it('should throw error when pipelineTool verify response status 400', async () => {
     server.use(rest.get(MOCK_PIPELINE_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.BadRequest))))
     await expect(() => pipelineToolClient.verifyPipelineTool(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS)).rejects.toThrow(
-      `${MOCK_PIPELINE_VERIFY_REQUEST_PARAMS.type} ${VERIFY_ERROR_MESSAGE.BAD_REQUEST}`
+      VERIFY_ERROR_MESSAGE.BAD_REQUEST
     )
   })
 
   it('should throw error when pipelineTool verify response status is 401', async () => {
     server.use(rest.get(MOCK_PIPELINE_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.Unauthorized))))
     await expect(() => pipelineToolClient.verifyPipelineTool(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS)).rejects.toThrow(
-      `${MOCK_PIPELINE_VERIFY_REQUEST_PARAMS.type} ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`
+      VERIFY_ERROR_MESSAGE.UNAUTHORIZED
     )
   })
 
   it('should throw error when pipelineTool verify response status 500', async () => {
     server.use(rest.get(MOCK_PIPELINE_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.InternalServerError))))
     await expect(() => pipelineToolClient.verifyPipelineTool(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS)).rejects.toThrow(
-      `${MOCK_PIPELINE_VERIFY_REQUEST_PARAMS.type} ${VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR}`
+      VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR
     )
   })
 
@@ -50,7 +45,7 @@ describe('verify pipelineTool request', () => {
     server.use(rest.get(MOCK_PIPELINE_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.MultipleChoices))))
 
     await expect(() => pipelineToolClient.verifyPipelineTool(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS)).rejects.toThrow(
-      UNKNOWN_ERROR_MESSAGE
+      VERIFY_ERROR_MESSAGE.UNKNOWN
     )
   })
 })

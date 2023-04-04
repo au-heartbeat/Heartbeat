@@ -13,6 +13,7 @@ import {
   VERIFIED,
   VERIFY,
   VERIFY_ERROR_MESSAGE,
+  VERIFY_FAILED,
 } from '../../../fixtures'
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
@@ -142,7 +143,9 @@ describe('SourceControl', () => {
     fireEvent.click(getByRole('button', { name: VERIFY }))
 
     await waitFor(() => {
-      expect(getByText(`${SOURCE_CONTROL_TYPES.GITHUB} ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)).toBeInTheDocument()
+      expect(
+        getByText(`${SOURCE_CONTROL_TYPES.GITHUB} ${VERIFY_FAILED}: ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)
+      ).toBeInTheDocument()
     })
   })
 })

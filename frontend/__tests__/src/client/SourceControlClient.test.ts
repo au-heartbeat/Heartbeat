@@ -1,11 +1,6 @@
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
-import {
-  MOCK_SOURCE_CONTROL_URL,
-  MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS,
-  UNKNOWN_ERROR_MESSAGE,
-  VERIFY_ERROR_MESSAGE,
-} from '../fixtures'
+import { MOCK_SOURCE_CONTROL_URL, MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS, VERIFY_ERROR_MESSAGE } from '../fixtures'
 import { sourceControlClient } from '@src/clients/SourceControlClient'
 import { HttpStatusCode } from 'axios'
 
@@ -26,9 +21,7 @@ describe('verify sourceControl request', () => {
 
     sourceControlClient.getVerifySourceControl(MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS).catch((e) => {
       expect(e).toBeInstanceOf(Error)
-      expect((e as Error).message).toMatch(
-        `${MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS.type} ${VERIFY_ERROR_MESSAGE.BAD_REQUEST}`
-      )
+      expect((e as Error).message).toMatch(VERIFY_ERROR_MESSAGE.BAD_REQUEST)
     })
   })
 
@@ -37,7 +30,7 @@ describe('verify sourceControl request', () => {
 
     sourceControlClient.getVerifySourceControl(MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS).catch((e) => {
       expect(e).toBeInstanceOf(Error)
-      expect((e as Error).message).toMatch(UNKNOWN_ERROR_MESSAGE)
+      expect((e as Error).message).toMatch(VERIFY_ERROR_MESSAGE.NOT_FOUND)
     })
   })
 
@@ -48,9 +41,7 @@ describe('verify sourceControl request', () => {
 
     sourceControlClient.getVerifySourceControl(MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS).catch((e) => {
       expect(e).toBeInstanceOf(Error)
-      expect((e as Error).message).toMatch(
-        `${MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS.type} ${VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR}`
-      )
+      expect((e as Error).message).toMatch(VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR)
     })
   })
 
@@ -59,6 +50,6 @@ describe('verify sourceControl request', () => {
 
     await expect(async () => {
       await sourceControlClient.getVerifySourceControl(MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS)
-    }).rejects.toThrow(UNKNOWN_ERROR_MESSAGE)
+    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.UNKNOWN)
   })
 })
