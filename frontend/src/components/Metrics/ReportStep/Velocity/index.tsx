@@ -9,10 +9,15 @@ interface VelocityProps {
 }
 
 export const Velocity = ({ title, velocityData }: VelocityProps) => {
-  const velocities = Object.entries(velocityData).map(([name, value]) => ({
+  const velocityReport = {
+    'Velocity(SP)': velocityData['velocityForSP'],
+    'ThoughtPut(Cards Count)': velocityData['velocityForCards'],
+  }
+  const velocities = Object.entries(velocityReport).map(([name, value]) => ({
     name,
     value,
   }))
+
   return (
     <>
       <MetricsSettingTitle title={title} />
