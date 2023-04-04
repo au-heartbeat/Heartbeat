@@ -14,6 +14,7 @@ import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
 import { saveUsers, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
 import { useAppSelector } from '@src/hooks'
+import { arrayIntersection } from '@src/utils/utils'
 
 interface crewsProps {
   options: string[]
@@ -26,10 +27,8 @@ export const Crews = ({ options, title, label }: crewsProps) => {
   const [isEmptyCrewData, setIsEmptyCrewData] = useState<boolean>(false)
   const importCrews = useAppSelector(selectMetricsContent).users
   const isProjectCreated = useAppSelector(selectMetricsContent).isProjectCreated
-  const findCommonElements = (arr1: string[], arr2: string[]) => arr1.filter((item) => arr2.includes(item))
-
   const [selectedCrews, setSelectedCrews] = useState(
-    isProjectCreated ? options : findCommonElements(importCrews, options)
+    isProjectCreated ? options : arrayIntersection(importCrews, options)
   )
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length
 
