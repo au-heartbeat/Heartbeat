@@ -46,7 +46,7 @@ export const PIPELINE_TOOL_TYPES = {
 }
 
 export const SOURCE_CONTROL_TYPES = {
-  GITHUB: 'Github',
+  GITHUB: 'GitHub',
 }
 
 export const EMAIL_REG_EXP = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/

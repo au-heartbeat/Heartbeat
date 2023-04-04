@@ -60,7 +60,7 @@ export const PIPELINE_TOOL_TYPES = {
 }
 
 export const SOURCE_CONTROL_TYPES = {
-  GITHUB: 'Github',
+  GITHUB: 'GitHub',
 }
 
 export enum CONFIG_TITLE {
