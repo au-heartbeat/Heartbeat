@@ -67,16 +67,13 @@ const MetricsStepper = () => {
     dateRange,
   ])
   const { isPipelineValid } = useMetricsStepValidationCheckContext()
-  const basicConfig = {
-    ...config.basic,
-    dateRange: {
-      startDate: dateRange.startDate ? new Date(dateRange.startDate) : null,
-      endDate: dateRange.endDate ? new Date(dateRange.endDate) : null,
-    },
-  }
   const handleSave = () => {
+    const { projectName, dateRange, calendarType, metrics } = config.basic
     const configData = {
-      ...basicConfig,
+      projectName: projectName,
+      dateRange: dateRange,
+      calendarType: calendarType,
+      metrics: metrics,
       board: isShowBoard ? config.boardConfig : undefined,
       pipelineTool: isShowPipeline ? config.pipelineToolConfig : undefined,
       sourceControl: isShowSourceControl ? config.sourceControlConfig : undefined,
