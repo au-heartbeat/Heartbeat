@@ -111,3 +111,9 @@ export enum VelocityMetric {
   VELOCITY_SP = 'Velocity(SP)',
   THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
 }
+
+export enum CycleTimeMetrics {
+  AVERAGE_CIRCLE_TIME_PER_CARD = 'averageCircleTimePerCard',
+  AVERAGE_CYCLE_TIME_PER_SP = 'averageCycleTimePerSP',
+  TOTAL_TIME_FOR_CARDS = 'totalTimeForCards',
+}

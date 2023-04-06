@@ -4,12 +4,14 @@ import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { Loading } from '@src/components/Loading'
 import { useAppSelector } from '@src/hooks'
 import { selectConfig } from '@src/context/config/configSlice'
+import { VelocityMetric } from '@src/constants'
+import { reportResponseMapper } from '@src/mapper/ReportMapping'
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
   const [velocityData, setVelocityData] = useState({
-    velocityForSP: '2',
-    velocityForCards: '2',
+    [VelocityMetric.VELOCITY_SP]: '2',
+    [VelocityMetric.THROUGHPUT_CARDS_COUNT]: '2',
   })
   const configData = useAppSelector(selectConfig)
   const { metrics, calendarType, dateRange } = configData.basic
@@ -26,7 +28,8 @@ export const ReportStep = () => {
   useEffect(() => {
     generateReport(params).then((res) => {
       if (res) {
-        setVelocityData(res.response?.velocity)
+        const reportData = reportResponseMapper(res.response)
+        setVelocityData(reportData.velocityValues)
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

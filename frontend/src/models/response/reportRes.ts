@@ -25,7 +25,7 @@ export interface CycleTime {
   totalTimeForCards: number
   averageCircleTimePerCard: string
   averageCycleTimePerSP: string
-  swimlaneList: Array<Swimlane>
+  // swimlaneList: Array<Swimlane>
 }
 
 export interface AVGDeploymentFrequency {
