@@ -9,11 +9,17 @@ export class ReportClient extends HttpClient {
       velocityForSP: '',
       velocityForCards: '',
     },
+    cycleTime: {
+      averageCircleTimePerCard: '',
+      averageCycleTimePerSP: '',
+      totalTimeForCards: 0,
+      swimlaneList: [],
+    },
   }
 
   generateReporter = async () => {
     try {
-      await this.axiosInstance.post(`/report`).then((res) => {
+      await this.axiosInstance.post(`http://54.255.156.189:4323/api/v1/report`).then((res) => {
         this.reportResponse = res.data
       })
     } catch (e) {

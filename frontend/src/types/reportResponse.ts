@@ -1,5 +1,6 @@
 export interface reportResponseProps {
   velocity: VelocityInterface
+  cycleTime: CycleTime
 }
 export interface VelocityInterface {
   velocityForSP: string
