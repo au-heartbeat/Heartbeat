@@ -2,6 +2,7 @@ import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
 import { TableBody, TableCell, TableHead, TableRow, Table } from '@mui/material'
 import { Container, Row } from '@src/components/Metrics/ReportStep/style'
 import { CycleTime } from '@src/types/reportResponse'
+import { TIME_UNIT } from '@src/constants'
 
 interface CycleTimeProps {
   title: string
@@ -46,10 +47,10 @@ export const CycleTimeReport = ({ title, cycleTimeData }: CycleTimeProps) => {
           <TableBody>
             <TableRow>
               <TableCell rowSpan={2}>Average Cycle Time</TableCell>
-              <TableCell align='inherit'>{cycleTimeData.averageCycleTimePerSP}(days/SP)</TableCell>
+              <TableCell align='inherit'>{cycleTimeData.averageCycleTimePerSP + TIME_UNIT.Velocity}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell align='inherit'>{cycleTimeData.averageCircleTimePerCard}(days/card)</TableCell>
+              <TableCell align='inherit'>{cycleTimeData.averageCircleTimePerCard + TIME_UNIT.Throughput} </TableCell>
             </TableRow>
             {averageTimeProportion.map(({ name, value }) => (
               <Row key={name}>
@@ -61,10 +62,10 @@ export const CycleTimeReport = ({ title, cycleTimeData }: CycleTimeProps) => {
               <>
                 <TableRow>
                   <TableCell rowSpan={2}>Average {name} Time</TableCell>
-                  <TableCell align='inherit'>{averageTimeForSp}(days/SP)</TableCell>
+                  <TableCell align='inherit'>{averageTimeForSp + TIME_UNIT.Velocity}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell align='inherit'>{averageTimeForCards}(days/card)</TableCell>
+                  <TableCell align='inherit'>{averageTimeForCards + TIME_UNIT.Throughput}</TableCell>
                 </TableRow>
               </>
             ))}
