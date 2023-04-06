@@ -228,3 +228,8 @@ export const CLASSIFICATION_SETTING = 'Classification Setting'
 export const REAL_DONE = 'Real Done'
 export const DEPLOYMENT_FREQUENCY_SETTINGS = 'Deployment Frequency Settings'
 export const CONFIRM_DIALOG_DESCRIPTION = 'All the filled data will be cleared. Continue to Home page?'
+
+export enum VelocityMetric {
+  VELOCITY_SP = 'Velocity(SP)',
+  THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
+}
