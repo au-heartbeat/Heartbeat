@@ -67,12 +67,13 @@ export const metricsSlice = createSlice({
     },
 
     updateMetricsState: (state, action) => {
-      state.isProjectCreated = action.payload.isProjectCreated
-      state.importFile = action.payload.basic
-      state.users = action.payload.basic.crews || state.users
-      state.boardColumns = action.payload.basic.cycleTime || state.boardColumns
-      state.doneColumn = action.payload.basic.realDone || state.doneColumn
-      state.classification = action.payload.basic.classification || state.classification
+      const { isProjectCreated, basic } = action.payload
+      state.isProjectCreated = isProjectCreated
+      state.importFile = basic
+      state.users = basic.crews || state.users
+      state.boardColumns = basic.cycleTime || state.boardColumns
+      state.doneColumn = basic.realDone || state.doneColumn
+      state.classification = basic.classification || state.classification
     },
 
     deleteADeploymentFrequencySetting: (state, action) => {
