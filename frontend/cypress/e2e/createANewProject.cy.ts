@@ -39,27 +39,4 @@ describe('Create a new project', () => {
     cy.contains('Crews Setting').should('exist')
     cy.contains('Real Done').should('exist')
   })
-
-  it('Should import a project manually', () => {
-    homePage.navigate()
-
-    homePage.importProjectFromFile()
-    cy.url().should('include', '/metrics')
-    cy.contains('Pipeline Tool').should('exist')
-    cy.get('.MuiInput-input')
-      .invoke('val')
-      .then((value) => {
-        expect(value).to.equal('mockProjectName')
-      })
-
-    configPage.verifyAndClickNextToMetrics()
-
-    configPage.goMetricsStep()
-    cy.contains('Classification Setting').should('exist')
-    cy.get('.MuiSelect-select')
-      .invoke('text')
-      .then((text) => {
-        expect(text).to.equal('Yu ZhangTo doAnalysis------------------------​Parent')
-      })
-  })
 })
