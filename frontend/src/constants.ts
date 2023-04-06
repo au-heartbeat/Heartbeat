@@ -106,3 +106,8 @@ export const SELECTED_VALUE_SEPARATOR = ', '
 
 export const SAVE_CONFIG_TIPS =
   'Note: When you save the settings, some tokens might be saved, please save it safely (e.g. by 1 password, vault), Rotate the tokens regularly. (e.g. every 3 months)'
+
+export enum VelocityMetric {
+  VELOCITY_SP = 'Velocity(SP)',
+  THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
+}

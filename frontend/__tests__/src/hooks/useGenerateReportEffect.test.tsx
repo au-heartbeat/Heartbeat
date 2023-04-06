@@ -13,7 +13,7 @@ describe('use generate report effect', () => {
   })
   it('should set error message when generate report throw error', async () => {
     jest.useFakeTimers()
-    reportClient.reporting = jest.fn().mockImplementation(() => {
+    reportClient.report = jest.fn().mockImplementation(() => {
       throw new Error('error')
     })
     const { result } = renderHook(() => useGenerateReportEffect())
@@ -29,7 +29,7 @@ describe('use generate report effect', () => {
   })
 
   it('should set error message when generate report response status 500', async () => {
-    reportClient.reporting = jest.fn().mockImplementation(() => {
+    reportClient.report = jest.fn().mockImplementation(() => {
       throw new InternalServerException('error message')
     })
     const { result } = renderHook(() => useGenerateReportEffect())

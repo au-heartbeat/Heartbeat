@@ -1,7 +1,7 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { reportResponseProps } from '@src/types/reportResponse'
+import { ReportRes } from '@src/types/reportRes'
 
-export interface generateReportParams {
+export interface ReportReq {
   metrics: string[]
   pipeline?: {
     type: string
@@ -25,14 +25,14 @@ export interface generateReportParams {
 }
 
 export class ReportClient extends HttpClient {
-  reportResponse: reportResponseProps = {
+  reportResponse: ReportRes = {
     velocity: {
       velocityForSP: '',
       velocityForCards: '',
     },
   }
 
-  reporting = async (params: generateReportParams) => {
+  report = async (params: ReportReq) => {
     // eslint-disable-next-line no-useless-catch
     try {
       await this.axiosInstance
