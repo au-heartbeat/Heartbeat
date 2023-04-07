@@ -1,8 +1,7 @@
-export interface reportResponseProps {
-  velocity: VelocityInterface
-  cycleTime: CycleTime
+export interface ReportRes {
+  velocity: VelocityRes
 }
-export interface VelocityInterface {
+export interface VelocityRes {
   velocityForSP: string
   velocityForCards: string
 }
@@ -109,7 +108,7 @@ export interface Classification {
 }
 
 export interface ReportResponse {
-  velocity?: VelocityInterface
+  velocity?: VelocityRes
   cycleTime?: CycleTime
   deploymentFrequency?: DeploymentFrequency
   leadTimeForChanges?: LeadTime

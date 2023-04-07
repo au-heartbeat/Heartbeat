@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { Loading } from '@src/components/Loading'
 import { CycleTimeReport } from '@src/components/Metrics/ReportStep/CycleTime'
+import { useAppSelector } from '@src/hooks'
+import { selectConfig } from '@src/context/config/configSlice'
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
@@ -60,8 +62,20 @@ export const ReportStep = () => {
     ],
   })
 
+  const configData = useAppSelector(selectConfig)
+  const { metrics, calendarType, dateRange } = configData.basic
+  const { boardConfig, pipelineToolConfig, sourceControlConfig } = configData
+  const params = {
+    metrics: metrics,
+    pipeline: pipelineToolConfig,
+    board: boardConfig,
+    sourceControl: sourceControlConfig,
+    calendarType: calendarType,
+    startTime: dateRange.startDate,
+    endTime: dateRange.endDate,
+  }
   useEffect(() => {
-    generateReport().then((res) => {
+    generateReport(params).then((res) => {
       if (res) {
         setVelocityData(res.response?.velocity)
         setCycleTimeData(res.response?.cycleTime)

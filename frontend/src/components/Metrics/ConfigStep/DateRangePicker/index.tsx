@@ -31,8 +31,8 @@ export const DateRangePicker = () => {
     } else {
       dispatch(
         updateDateRange({
-          startDate: value.startOf('date').valueOf(),
-          endDate: value.add(14, 'day').startOf('date').valueOf(),
+          startDate: value.format(),
+          endDate: value.add(14, 'day').format(),
         })
       )
     }
@@ -48,7 +48,7 @@ export const DateRangePicker = () => {
         })
       )
     } else {
-      dispatch(updateDateRange({ startDate: startDate, endDate: value.startOf('date').valueOf() }))
+      dispatch(updateDateRange({ startDate: startDate, endDate: value.format() }))
     }
     updateVerifyStates()
   }
@@ -56,7 +56,11 @@ export const DateRangePicker = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <StyledDateRangePicker>
-        <DatePicker label='From *' value={dayjs(startDate)} onChange={(newValue) => changeStartDate(newValue)} />
+        <DatePicker
+          label='From *'
+          value={startDate ? dayjs(startDate) : null}
+          onChange={(newValue) => changeStartDate(newValue)}
+        />
         <DatePicker
           label='To *'
           value={endDate ? dayjs(endDate) : null}
