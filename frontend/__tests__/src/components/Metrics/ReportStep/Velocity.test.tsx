@@ -4,7 +4,7 @@ import { VelocityMetric } from '../../../fixtures'
 
 describe('Velocity component', () => {
   const mockTitle = 'Test Velocity'
-  const mockVelocityData = { velocityForSP: '4', velocityForCards: '2' }
+  const mockVelocityData = { [VelocityMetric.VELOCITY_SP]: '4', [VelocityMetric.THROUGHPUT_CARDS_COUNT]: '2' }
 
   const setup = () => render(<Velocity title={mockTitle} velocityData={mockVelocityData} />)
 
