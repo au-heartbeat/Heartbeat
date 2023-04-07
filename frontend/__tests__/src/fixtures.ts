@@ -233,3 +233,17 @@ export enum VelocityMetric {
   VELOCITY_SP = 'Velocity(SP)',
   THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
 }
+
+export enum CycleTimeMetrics {
+  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
+  DEVELOPMENT_PROPORTION = 'Total Development Time / Total Cycle Time',
+  WAITING_PROPORTION = 'Total Waiting Time / Total Cycle Time',
+  BLOCK_PROPORTION = 'Total Block Time / Total Cycle Time',
+  REVIEW_PROPORTION = 'Total Review Time / Total Cycle Time',
+  TESTING_PROPORTION = 'Total Testing Time / Total Cycle Time',
+  AVERAGE_DEVELOPMENT_TIME = 'Average Development Time',
+  AVERAGE_WAITING_TIME = 'Average Waiting Time',
+  AVERAGE_BLOCK_TIME = 'Average Block Time',
+  AVERAGE_REVIEW_TIME = 'Average Review Time',
+  AVERAGE_TESTING_TIME = 'Average Testing Time',
+}
