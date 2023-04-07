@@ -1,6 +1,6 @@
 export interface ReportRes {
   velocity: VelocityRes
-  cycleTime?: CycleTime
+  cycleTime?: CycleTimeRes
   deploymentFrequency?: DeploymentFrequency
   leadTimeForChanges?: LeadTime
   changeFailureRate?: FailureRate
@@ -21,7 +21,7 @@ export interface Swimlane {
   totalTime: string
 }
 
-export interface CycleTime {
+export interface CycleTimeRes {
   totalTimeForCards: number
   averageCycleTimePerCard: string
   averageCycleTimePerSP: string
