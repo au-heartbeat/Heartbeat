@@ -1,5 +1,6 @@
 export interface ReportRes {
   velocity: VelocityRes
+  cycleTime: CycleTime
 }
 export interface VelocityRes {
   velocityForSP: string
