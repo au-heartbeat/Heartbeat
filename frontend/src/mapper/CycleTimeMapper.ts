@@ -1,19 +1,19 @@
-import { Swimlane } from '@src/models/response/reportRes'
+import { CycleTimeRes } from '@src/models/response/reportRes'
 import { CycleTimeMetrics, METRICS_CONSTANTS, Unit } from '@src/constants'
 
-export const cycleTimeMapper = (
-  swimlaneList: Array<Swimlane>,
-  totalTimeForCards: number,
-  averageCycleTimePerSP: string,
-  averageCycleTimePerCard: string
-) => {
+export const cycleTimeMapper = ({
+  swimlaneList,
+  totalTimeForCards,
+  averageCycleTimePerSP,
+  averageCycleTimePerCard,
+}: CycleTimeRes) => {
   const getSwimlaneByItemName = (itemName: string) => {
     return swimlaneList.find((item) => item.optionalItemName === itemName)
   }
 
   const calPerColumnTotalTimeDivTotalTime = (itemName: string) => {
     const swimlane = getSwimlaneByItemName(itemName)
-    return swimlane ? (parseFloat(swimlane.totalTime) / totalTimeForCards).toFixed(2) : 0
+    return swimlane ? (parseFloat(swimlane.totalTime) / totalTimeForCards).toFixed(2) : ''
   }
 
   const getAverageTimeForPerColumn = (itemName: string) => {
@@ -23,7 +23,7 @@ export const cycleTimeMapper = (
       : []
   }
 
-  const cycleValues = {
+  return {
     [CycleTimeMetrics.AVERAGE_CYCLE_TIME]: [
       `${averageCycleTimePerSP}${Unit.PER_SP}`,
       `${averageCycleTimePerCard}${Unit.PER_CARD}`,
@@ -49,6 +49,4 @@ export const cycleTimeMapper = (
     [CycleTimeMetrics.AVERAGE_REVIEW_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.reviewValue),
     [CycleTimeMetrics.AVERAGE_TESTING_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
   }
-
-  return cycleValues
 }
