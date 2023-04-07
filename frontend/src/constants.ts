@@ -72,7 +72,7 @@ export const METRICS_CONSTANTS = {
   doneKeyFromBackend: 'done',
   todoValue: 'To do',
   analysisValue: 'Analysis',
-  inDevValue: 'In dev',
+  inDevValue: 'In Dev',
   blockValue: 'Block',
   waitingValue: 'Waiting for testing',
   testingValue: 'Testing',
@@ -113,7 +113,38 @@ export enum VelocityMetric {
 }
 
 export enum CycleTimeMetrics {
-  AVERAGE_CIRCLE_TIME_PER_CARD = 'averageCircleTimePerCard',
-  AVERAGE_CYCLE_TIME_PER_SP = 'averageCycleTimePerSP',
-  TOTAL_TIME_FOR_CARDS = 'totalTimeForCards',
+  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
+  TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Development Time/Total Cycle Time',
+  TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Waiting Time/Total Cycle Time',
+  TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Block Time/Total Cycle Time',
+  TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Review Time/Total Cycle Time',
+  TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Testing Time/Total Cycle Time',
+  AVERAGE_DEVELOPMENT_TIME = 'Average Development Time',
+  AVERAGE_WAITING_TIME = 'Average Waiting Time',
+  AVERAGE_BLOCK_TIME = 'Average Block Time',
+  AVERAGE_REVIEW_TIME = 'Average Review Time',
+  AVERAGE_TESTING_TIME = 'Average Testing Time',
+}
+
+export enum Unit {
+  PER_SP = '(days/SP)',
+  PER_CARD = '(days/card)',
+}
+
+export const INIT_VELOCITY = {
+  [VelocityMetric.VELOCITY_SP]: '2',
+  [VelocityMetric.THROUGHPUT_CARDS_COUNT]: '2',
+}
+export const INIT_CYCLE_TIME = {
+  [CycleTimeMetrics.AVERAGE_CYCLE_TIME]: '',
+  [CycleTimeMetrics.TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME]: '',
+  [CycleTimeMetrics.TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME]: '',
+  [CycleTimeMetrics.TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME]: '',
+  [CycleTimeMetrics.TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME]: '',
+  [CycleTimeMetrics.TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME]: '',
+  [CycleTimeMetrics.AVERAGE_DEVELOPMENT_TIME]: '',
+  [CycleTimeMetrics.AVERAGE_WAITING_TIME]: '',
+  [CycleTimeMetrics.AVERAGE_BLOCK_TIME]: '',
+  [CycleTimeMetrics.AVERAGE_REVIEW_TIME]: '',
+  [CycleTimeMetrics.AVERAGE_TESTING_TIME]: '',
 }
