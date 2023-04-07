@@ -1,8 +1,9 @@
 import MetricsSettingTitle from '@src/components/Common/MetricsSettingTitle'
 import { TableBody, TableCell, TableHead, TableRow, Table } from '@mui/material'
 import { Container, Row } from '@src/components/Metrics/ReportStep/style'
-import { CycleTime } from '@src/types/reportResponse'
+import { CycleTime } from '@src/types/reportRes'
 import { TIME_UNIT } from '@src/constants'
+import React from 'react'
 
 interface CycleTimeProps {
   title: string
@@ -45,11 +46,11 @@ export const CycleTimeReport = ({ title, cycleTimeData }: CycleTimeProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
+            <TableRow key={cycleTimeData.averageCycleTimePerSP}>
               <TableCell rowSpan={2}>Average Cycle Time</TableCell>
               <TableCell align='inherit'>{cycleTimeData.averageCycleTimePerSP + TIME_UNIT.Velocity}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow key={cycleTimeData.averageCircleTimePerCard}>
               <TableCell align='inherit'>{cycleTimeData.averageCircleTimePerCard + TIME_UNIT.Throughput} </TableCell>
             </TableRow>
             {averageTimeProportion.map(({ name, value }) => (
@@ -59,7 +60,7 @@ export const CycleTimeReport = ({ title, cycleTimeData }: CycleTimeProps) => {
               </Row>
             ))}
             {averageTime.map(({ name, averageTimeForCards, averageTimeForSp }) => (
-              <>
+              <React.Fragment key={name}>
                 <TableRow>
                   <TableCell rowSpan={2}>Average {name} Time</TableCell>
                   <TableCell align='inherit'>{averageTimeForSp + TIME_UNIT.Velocity}</TableCell>
@@ -67,7 +68,7 @@ export const CycleTimeReport = ({ title, cycleTimeData }: CycleTimeProps) => {
                 <TableRow>
                   <TableCell align='inherit'>{averageTimeForCards + TIME_UNIT.Throughput}</TableCell>
                 </TableRow>
-              </>
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>
