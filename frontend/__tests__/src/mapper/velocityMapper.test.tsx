@@ -1,4 +1,3 @@
-import { VelocityMetric } from '../fixtures'
 import { velocityMapper } from '@src/mapper/VelocityMapper'
 
 describe('velocity data mapper', () => {
@@ -7,10 +6,10 @@ describe('velocity data mapper', () => {
       velocityForSP: '20',
       velocityForCards: '15',
     }
-    const expectedVelocityValues = {
-      [VelocityMetric.VELOCITY_SP]: '20',
-      [VelocityMetric.THROUGHPUT_CARDS_COUNT]: '15',
-    }
+    const expectedVelocityValues = [
+      { id: 1, name: 'Velocity(SP)', value: '20' },
+      { id: 2, name: 'ThroughPut(Cards Count)', value: '15' },
+    ]
 
     const mappedVelocityValues = velocityMapper(mockVelocityRes)
 

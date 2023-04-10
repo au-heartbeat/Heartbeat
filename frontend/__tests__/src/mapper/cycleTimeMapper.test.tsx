@@ -1,11 +1,10 @@
 import { cycleTimeMapper } from '@src/mapper/CycleTimeMapper'
-import { CycleTimeMetrics } from '@src/constants'
 
 describe('cycleTime data mapper', () => {
   const mockCycleTimeRes = {
     totalTimeForCards: 423.59,
     averageCycleTimePerSP: '21.18',
-    averageCycleTimePerCard: '30.26',
+    averageCircleTimePerCard: '30.26',
     swimlaneList: [
       {
         optionalItemName: 'In Dev',
@@ -22,19 +21,19 @@ describe('cycleTime data mapper', () => {
     ],
   }
   it('maps response cycleTime values to ui display value', () => {
-    const expectedCycleValues = {
-      [CycleTimeMetrics.AVERAGE_CYCLE_TIME]: ['21.18(days/SP)', '30.26(days/card)'],
-      [CycleTimeMetrics.TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME]: '0.57',
-      [CycleTimeMetrics.TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME]: '0.01',
-      [CycleTimeMetrics.TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-      [CycleTimeMetrics.TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-      [CycleTimeMetrics.TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-      [CycleTimeMetrics.AVERAGE_DEVELOPMENT_TIME]: ['12.13(days/SP)', '17.32(days/card)'],
-      [CycleTimeMetrics.AVERAGE_WAITING_TIME]: ['0.16(days/SP)', '0.23(days/card)'],
-      [CycleTimeMetrics.AVERAGE_BLOCK_TIME]: [],
-      [CycleTimeMetrics.AVERAGE_REVIEW_TIME]: [],
-      [CycleTimeMetrics.AVERAGE_TESTING_TIME]: [],
-    }
+    const expectedCycleValues = [
+      { id: 1, name: 'Average Cycle Time', value: '21.18(days/SP)' },
+      { id: 2, name: 'Average Cycle Time', value: '30.26(days/card)' },
+      { id: 3, name: 'Total Development Time/Total Cycle Time', value: '0.57' },
+      { id: 4, name: 'Total Waiting Time/Total Cycle Time', value: '0.01' },
+      { id: 5, name: 'Total Block Time/Total Cycle Time', value: '' },
+      { id: 6, name: 'Total Review Time/Total Cycle Time', value: '' },
+      { id: 7, name: 'Total Testing Time/Total Cycle Time', value: '' },
+      { id: 8, name: 'Average Development Time', value: '12.13(days/SP)' },
+      { id: 9, name: 'Average Development Time', value: '17.32(days/card)' },
+      { id: 10, name: 'Average Waiting Time', value: '0.16(days/SP)' },
+      { id: 11, name: 'Average Waiting Time', value: '0.23(days/card)' },
+    ]
     const mappedCycleValues = cycleTimeMapper(mockCycleTimeRes)
 
     expect(mappedCycleValues).toEqual(expectedCycleValues)

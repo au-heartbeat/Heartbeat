@@ -11,7 +11,7 @@ jest.mock('@src/hooks/useGenerateReportEffect', () => ({
         response: {
           velocity: { velocityForSP: '3', velocityForCards: '4' },
           cycleTime: {
-            averageCycleTimePerCard: '',
+            averageCircleTimePerCard: '',
             averageCycleTimePerSP: '',
             totalTimeForCards: 0,
             swimlaneList: [
