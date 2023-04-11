@@ -1,9 +1,9 @@
 import { VelocityMetricsName } from '@src/constants'
-import { ReportMetrics } from '@src/models/reportUiState'
+import { ReportDataWithTwoColumns } from '@src/models/reportUIDataStructure'
 import { VelocityResp } from '@src/models/response/reportResp'
 
 export const velocityMapper = ({ velocityForSP, velocityForCards }: VelocityResp) => {
-  const velocityMetrics: ReportMetrics[] = []
+  const mappedVelocityValue: ReportDataWithTwoColumns[] = []
 
   const velocityValue: { [key: string]: string } = {
     VELOCITY_SP: velocityForSP,
@@ -11,12 +11,12 @@ export const velocityMapper = ({ velocityForSP, velocityForCards }: VelocityResp
   }
 
   Object.entries(VelocityMetricsName).map(([key, velocityName]) => {
-    velocityMetrics.push({
-      id: velocityMetrics.length + 1,
+    mappedVelocityValue.push({
+      id: mappedVelocityValue.length + 1,
       name: velocityName,
-      value: velocityValue[key],
+      value: [velocityValue[key]],
     })
   })
 
-  return velocityMetrics
+  return mappedVelocityValue
 }

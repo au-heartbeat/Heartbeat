@@ -1,11 +1,11 @@
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
-import { TableBody, TableCell, TableHead, TableRow, Table } from '@mui/material'
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import { Container, Row } from '@src/components/Metrics/ReportStep/Velocity/style'
-import { ReportMetrics } from '@src/models/reportUiState'
+import { ReportDataWithTwoColumns } from '@src/models/reportUIDataStructure'
 
 interface VelocityProps {
   title: string
-  velocityData: ReportMetrics[]
+  velocityData: ReportDataWithTwoColumns[]
 }
 
 export const Velocity = ({ title, velocityData }: VelocityProps) => {
