@@ -23,6 +23,12 @@ jest.mock('@src/hooks/useGenerateReportEffect', () => ({
               },
             ],
           },
+          classification: [
+            {
+              fieldName: '',
+              pairs: [],
+            },
+          ],
         },
       })
     ),
