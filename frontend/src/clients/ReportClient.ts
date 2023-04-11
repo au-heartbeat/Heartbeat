@@ -20,6 +20,12 @@ export class ReportClient extends HttpClient {
         },
       ],
     },
+    classification: [
+      {
+        fieldName: '',
+        pairs: [],
+      },
+    ],
   }
 
   report = async (params: ReportReq) => {
@@ -27,7 +33,6 @@ export class ReportClient extends HttpClient {
     try {
       await this.axiosInstance
         .post(
-          // `http://localhost:4323/api/v1/report`,
           `/report`,
           {},
           {

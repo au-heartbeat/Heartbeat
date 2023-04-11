@@ -4,7 +4,7 @@ export interface ReportResp {
   deploymentFrequency?: DeploymentFrequency
   leadTimeForChanges?: LeadTime
   changeFailureRate?: FailureRate
-  classification?: Array<Classification>
+  classification?: Array<ClassificationResp>
   hasExportCsvData?: string
   meanTimeToRecovery?: MeanTimeToRecovery
 }
@@ -111,7 +111,7 @@ export interface Pair {
   value: string
 }
 
-export interface Classification {
+export interface ClassificationResp {
   fieldName: string
   pairs: Array<Pair>
 }

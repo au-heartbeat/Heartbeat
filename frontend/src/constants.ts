@@ -116,11 +116,11 @@ export enum VelocityMetricsName {
 
 export enum CycleTimeMetricsName {
   AVERAGE_CYCLE_TIME = 'Average Cycle Time',
-  TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Development Time/Total Cycle Time',
-  TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Waiting Time/Total Cycle Time',
-  TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Block Time/Total Cycle Time',
-  TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Review Time/Total Cycle Time',
-  TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Testing Time/Total Cycle Time',
+  DEVELOPMENT_PROPORTION = 'Total Development Time/Total Cycle Time',
+  WAITING_PROPORTION = 'Total Waiting Time/Total Cycle Time',
+  BLOCK_PROPORTION = 'Total Block Time/Total Cycle Time',
+  REVIEW_PROPORTION = 'Total Review Time/Total Cycle Time',
+  TESTING_PROPORTION = 'Total Testing Time/Total Cycle Time',
   AVERAGE_DEVELOPMENT_TIME = 'Average Development Time',
   AVERAGE_WAITING_TIME = 'Average Waiting Time',
   AVERAGE_BLOCK_TIME = 'Average Block Time',
@@ -133,10 +133,10 @@ export enum Unit {
   PER_CARD = '(days/card)',
 }
 
-export const INIT_VELOCITY_METRICS = [
+export const INIT_VELOCITY_METRICS: { name: string; id: number; value: string[] }[] = [
   {
     id: 1,
     name: '2',
-    value: '2',
+    value: ['dhjejh'],
   },
 ]

@@ -4,8 +4,8 @@ import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { Loading } from '@src/components/Loading'
 import { useAppSelector } from '@src/hooks'
 import { selectConfig } from '@src/context/config/configSlice'
-import { INIT_VELOCITY_METRICS } from '@src/constants'
 import { reportResponseMapper } from '@src/mapper/ReportMapper'
+import { INIT_VELOCITY_METRICS } from '@src/constants'
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
@@ -25,6 +25,7 @@ export const ReportStep = () => {
   useEffect(() => {
     generateReport(params).then((res) => {
       if (res) {
+        console.log(res.response.classification)
         const reportData = reportResponseMapper(res.response)
         setVelocityData(reportData.velocityValues)
       }
