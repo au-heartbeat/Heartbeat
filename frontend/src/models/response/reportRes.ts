@@ -1,6 +1,14 @@
 export interface ReportRes {
   velocity: VelocityRes
+  cycleTime?: CycleTime
+  deploymentFrequency?: DeploymentFrequency
+  leadTimeForChanges?: LeadTime
+  changeFailureRate?: FailureRate
+  classification?: Array<Classification>
+  hasExportCsvData?: string
+  meanTimeToRecovery?: MeanTimeToRecovery
 }
+
 export interface VelocityRes {
   velocityForSP: string
   velocityForCards: string
@@ -102,18 +110,8 @@ export interface Pair {
   name: string
   value: string
 }
+
 export interface Classification {
   fieldName: string
   pairs: Array<Pair>
-}
-
-export interface ReportResponse {
-  velocity?: VelocityRes
-  cycleTime?: CycleTime
-  deploymentFrequency?: DeploymentFrequency
-  leadTimeForChanges?: LeadTime
-  changeFailureRate?: FailureRate
-  classification?: Array<Classification>
-  hasExportCsvData?: string
-  meanTimeToRecovery?: MeanTimeToRecovery
 }

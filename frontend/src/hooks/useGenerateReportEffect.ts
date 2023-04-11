@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
-import { ReportReq, reportClient } from '@src/clients/ReportClient'
-import { VelocityRes } from '@src/types/reportRes'
+import { reportClient } from '@src/clients/ReportClient'
+import { VelocityRes } from '@src/models/response/reportRes'
+import { ReportReq } from '@src/models/request/reportReq'
 
 export interface useGenerateReportEffectInterface {
   generateReport: (params: ReportReq) => Promise<

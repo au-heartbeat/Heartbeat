@@ -1,13 +1,14 @@
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
 import { TableBody, TableCell, TableHead, TableRow, Table } from '@mui/material'
 import { Container, Row } from '@src/components/Metrics/ReportStep/Velocity/style'
-import { VelocityRes } from '@src/types/reportRes'
+import { VelocityRes } from '@src/models/response/reportRes'
 import { VelocityMetric } from '@src/constants'
 
 interface VelocityProps {
   title: string
   velocityData: VelocityRes
 }
+
 interface VelocityMetricRow {
   name: VelocityMetric
   value: string
