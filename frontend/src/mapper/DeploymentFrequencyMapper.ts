@@ -9,14 +9,14 @@ export const deploymentFrequencyMapper = ({
 
   deploymentFrequencyOfPipelines.map((item, index) => {
     const deploymentFrequencyValue: ReportDataWithThreeColumns = {
-      id: index + 1,
+      id: index,
       name: `${item.name}/${item.step}`,
       values: [{ name: 'Deployment Frequency(deployments/day)', value: item.deploymentFrequency }],
     }
     mappedDeploymentFrequencyValue.push(deploymentFrequencyValue)
   })
   mappedDeploymentFrequencyValue.push({
-    id: mappedDeploymentFrequencyValue.length + 1,
+    id: mappedDeploymentFrequencyValue.length,
     name: `${avgDeploymentFrequency.name}/`,
     values: [{ name: 'Deployment Frequency(deployments/day)', value: avgDeploymentFrequency.deploymentFrequency }],
   })

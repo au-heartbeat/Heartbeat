@@ -10,9 +10,9 @@ export const velocityMapper = ({ velocityForSP, velocityForCards }: VelocityResp
     THROUGHPUT_CARDS_COUNT: velocityForCards,
   }
 
-  Object.entries(VelocityMetricsName).map(([key, velocityName]) => {
+  Object.entries(VelocityMetricsName).map(([key, velocityName], index) => {
     mappedVelocityValue.push({
-      id: mappedVelocityValue.length + 1,
+      id: index,
       name: velocityName,
       value: [velocityValue[key]],
     })

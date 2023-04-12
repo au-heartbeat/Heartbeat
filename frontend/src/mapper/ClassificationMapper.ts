@@ -4,7 +4,7 @@ import { ReportDataWithThreeColumns } from '@src/models/reportUIDataStructure'
 export const classificationMapper = (classification: ClassificationResp[]) => {
   const mappedClassificationValue: ReportDataWithThreeColumns[] = []
 
-  classification.map((item) => {
+  classification.map((item, index) => {
     const pairsValues: { name: string; value: string }[] = []
 
     item.pairs.map((pairItem) => {
@@ -12,7 +12,7 @@ export const classificationMapper = (classification: ClassificationResp[]) => {
     })
 
     const classificationValue: ReportDataWithThreeColumns = {
-      id: mappedClassificationValue.length + 1,
+      id: index,
       name: item.fieldName,
       values: pairsValues,
     }
