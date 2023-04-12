@@ -2,7 +2,7 @@ export interface ReportResp {
   velocity?: VelocityResp
   cycleTime?: CycleTimeResp
   deploymentFrequency?: DeploymentFrequencyResp
-  leadTimeForChanges?: LeadTime
+  leadTimeForChanges?: LeadTimeForChangesResp
   changeFailureRate?: FailureRate
   classification?: Array<ClassificationResp>
   hasExportCsvData?: string
@@ -61,13 +61,13 @@ export interface LeadTimeOfPipeline {
 
 export interface AvgLeadTime {
   name: string
-  step: string
+  step?: string
   mergeDelayTime: number
   pipelineDelayTime: number
   totalDelayTime: number
 }
 
-export interface LeadTime {
+export interface LeadTimeForChangesResp {
   leadTimeForChangesOfPipelines: Array<LeadTimeOfPipeline>
   avgLeadTimeForChanges: AvgLeadTime
 }

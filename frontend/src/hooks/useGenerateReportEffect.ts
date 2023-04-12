@@ -5,6 +5,7 @@ import {
   ClassificationResp,
   CycleTimeResp,
   DeploymentFrequencyResp,
+  LeadTimeForChangesResp,
   VelocityResp,
 } from '@src/models/response/reportResp'
 import { ReportReq } from '@src/models/request/reportReq'
@@ -17,6 +18,7 @@ export interface useGenerateReportEffectInterface {
           cycleTime: CycleTimeResp
           classification: Array<ClassificationResp>
           deploymentFrequency: DeploymentFrequencyResp
+          leadTimeForChanges: LeadTimeForChangesResp
         }
       }
     | undefined
