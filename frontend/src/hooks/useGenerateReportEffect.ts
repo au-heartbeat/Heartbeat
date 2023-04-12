@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
 import { reportClient } from '@src/clients/ReportClient'
-import { CycleTimeRes, VelocityRes } from '@src/models/response/reportRes'
+import { CycleTimeResp, VelocityResp } from '@src/models/response/reportResp'
 import { ReportReq } from '@src/models/request/reportReq'
 
 export interface useGenerateReportEffectInterface {
   generateReport: (params: ReportReq) => Promise<
     | {
         response: {
-          velocity: VelocityRes
-          cycleTime: CycleTimeRes
+          velocity: VelocityResp
+          cycleTime: CycleTimeResp
         }
       }
     | undefined

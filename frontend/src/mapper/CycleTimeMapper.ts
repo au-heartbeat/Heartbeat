@@ -1,14 +1,15 @@
-import { CycleTimeRes } from '@src/models/response/reportRes'
-import { CycleTimeMetrics, METRICS_CONSTANTS, Unit } from '@src/constants'
+import { CycleTimeResp, Swimlane } from '../models/response/reportResp'
+import { CycleTimeMetricsName, METRICS_CONSTANTS, Unit } from '@src/constants'
+import { ReportMetrics } from '@src/models/reportUiState'
 
 export const cycleTimeMapper = ({
   swimlaneList,
   totalTimeForCards,
   averageCycleTimePerSP,
-  averageCycleTimePerCard,
-}: CycleTimeRes) => {
+  averageCircleTimePerCard,
+}: CycleTimeResp) => {
   const getSwimlaneByItemName = (itemName: string) => {
-    return swimlaneList.find((item) => item.optionalItemName === itemName)
+    return swimlaneList.find((item: Swimlane) => item.optionalItemName === itemName)
   }
 
   const calPerColumnTotalTimeDivTotalTime = (itemName: string) => {
@@ -23,30 +24,27 @@ export const cycleTimeMapper = ({
       : []
   }
 
-  return {
-    [CycleTimeMetrics.AVERAGE_CYCLE_TIME]: [
-      `${averageCycleTimePerSP}${Unit.PER_SP}`,
-      `${averageCycleTimePerCard}${Unit.PER_CARD}`,
-    ],
-    [CycleTimeMetrics.TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME]: calPerColumnTotalTimeDivTotalTime(
-      METRICS_CONSTANTS.inDevValue
-    ),
-    [CycleTimeMetrics.TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME]: calPerColumnTotalTimeDivTotalTime(
-      METRICS_CONSTANTS.waitingValue
-    ),
-    [CycleTimeMetrics.TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME]: calPerColumnTotalTimeDivTotalTime(
-      METRICS_CONSTANTS.blockValue
-    ),
-    [CycleTimeMetrics.TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME]: calPerColumnTotalTimeDivTotalTime(
-      METRICS_CONSTANTS.reviewValue
-    ),
-    [CycleTimeMetrics.TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME]: calPerColumnTotalTimeDivTotalTime(
-      METRICS_CONSTANTS.testingValue
-    ),
-    [CycleTimeMetrics.AVERAGE_DEVELOPMENT_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.inDevValue),
-    [CycleTimeMetrics.AVERAGE_WAITING_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.waitingValue),
-    [CycleTimeMetrics.AVERAGE_BLOCK_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.blockValue),
-    [CycleTimeMetrics.AVERAGE_REVIEW_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.reviewValue),
-    [CycleTimeMetrics.AVERAGE_TESTING_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
+  const cycleTimeValue: { [key: string]: string[] } = {
+    AVERAGE_CYCLE_TIME: [`${averageCycleTimePerSP}${Unit.PER_SP}`, `${averageCircleTimePerCard}${Unit.PER_CARD}`],
+    TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME: [calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.inDevValue)],
+    TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME: [calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.waitingValue)],
+    TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME: [calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.blockValue)],
+    TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME: [calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.reviewValue)],
+    TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME: [calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.testingValue)],
+    AVERAGE_DEVELOPMENT_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.inDevValue),
+    AVERAGE_WAITING_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.waitingValue),
+    AVERAGE_BLOCK_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.blockValue),
+    AVERAGE_REVIEW_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.reviewValue),
+    AVERAGE_TESTING_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
   }
+
+  const cycleTimeMetrics: ReportMetrics[] = []
+
+  Object.entries(CycleTimeMetricsName).map(([key, cycleName]) => {
+    cycleTimeValue[key].map((item) => {
+      cycleTimeMetrics.push({ id: cycleTimeMetrics.length + 1, name: cycleName, value: item })
+    })
+  })
+
+  return cycleTimeMetrics
 }

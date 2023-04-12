@@ -94,6 +94,7 @@ export enum VERIFY_ERROR_MESSAGE {
   PERMISSION_DENIED = 'Permission denied',
   UNKNOWN = 'Unknown',
 }
+
 export const VERIFY_FAILED = 'verify failed'
 
 export const MOCK_BOARD_VERIFY_REQUEST_PARAMS = {
@@ -234,7 +235,7 @@ export const REAL_DONE = 'Real Done'
 export const DEPLOYMENT_FREQUENCY_SETTINGS = 'Deployment Frequency Settings'
 export const CONFIRM_DIALOG_DESCRIPTION = 'All the filled data will be cleared. Continue to Home page?'
 
-export enum VelocityMetric {
+export enum VelocityMetricName {
   VELOCITY_SP = 'Velocity(SP)',
   THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
 }
@@ -251,4 +252,18 @@ export const MOCK_GET_STEPS_PARAMS = {
   organizationId: 'mockOrganizationId',
   pipelineType: 'BuildKite',
   token: 'mockToken',
+}
+
+export enum CycleTimeMetricsName {
+  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
+  TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Development Time/Total Cycle Time',
+  TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Waiting Time/Total Cycle Time',
+  TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Block Time/Total Cycle Time',
+  TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Review Time/Total Cycle Time',
+  TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Testing Time/Total Cycle Time',
+  AVERAGE_DEVELOPMENT_TIME = 'Average Development Time',
+  AVERAGE_WAITING_TIME = 'Average Waiting Time',
+  AVERAGE_BLOCK_TIME = 'Average Block Time',
+  AVERAGE_REVIEW_TIME = 'Average Review Time',
+  AVERAGE_TESTING_TIME = 'Average Testing Time',
 }

@@ -109,14 +109,12 @@ export const SELECTED_VALUE_SEPARATOR = ', '
 export const SAVE_CONFIG_TIPS =
   'Note: When you save the settings, some tokens might be saved, please save it safely (e.g. by 1 password, vault), Rotate the tokens regularly. (e.g. every 3 months)'
 
-export enum VelocityMetric {
+export enum VelocityMetricsName {
   VELOCITY_SP = 'Velocity(SP)',
   THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
 }
 
-export const GET_STEPS_FAILED = 'get steps failed'
-
-export enum CycleTimeMetrics {
+export enum CycleTimeMetricsName {
   AVERAGE_CYCLE_TIME = 'Average Cycle Time',
   TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Development Time/Total Cycle Time',
   TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Waiting Time/Total Cycle Time',
@@ -129,26 +127,16 @@ export enum CycleTimeMetrics {
   AVERAGE_REVIEW_TIME = 'Average Review Time',
   AVERAGE_TESTING_TIME = 'Average Testing Time',
 }
-
+export const GET_STEPS_FAILED = 'get steps failed'
 export enum Unit {
   PER_SP = '(days/SP)',
   PER_CARD = '(days/card)',
 }
 
-export const INIT_VELOCITY = {
-  [VelocityMetric.VELOCITY_SP]: '2',
-  [VelocityMetric.THROUGHPUT_CARDS_COUNT]: '2',
-}
-export const INIT_CYCLE_TIME = {
-  [CycleTimeMetrics.AVERAGE_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_DEVELOPMENT_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_WAITING_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_BLOCK_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_REVIEW_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_TESTING_TIME]: '',
-}
+export const INIT_VELOCITY_METRICS = [
+  {
+    id: 1,
+    name: '2',
+    value: '2',
+  },
+]

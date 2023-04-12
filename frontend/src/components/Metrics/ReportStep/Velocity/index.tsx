@@ -1,24 +1,14 @@
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
 import { TableBody, TableCell, TableHead, TableRow, Table } from '@mui/material'
 import { Container, Row } from '@src/components/Metrics/ReportStep/Velocity/style'
-import { UIVelocityMetric } from '@src/models/reportUiState'
+import { ReportMetrics } from '@src/models/reportUiState'
 
 interface VelocityProps {
   title: string
-  velocityData: UIVelocityMetric
-}
-
-interface VelocityMetricRow {
-  name: string
-  value: string
+  velocityData: ReportMetrics[]
 }
 
 export const Velocity = ({ title, velocityData }: VelocityProps) => {
-  const velocityRows: VelocityMetricRow[] = Object.entries(velocityData).map(([name, value]) => ({
-    name,
-    value,
-  }))
-
   return (
     <>
       <MetricsSettingTitle title={title} />
@@ -31,8 +21,8 @@ export const Velocity = ({ title, velocityData }: VelocityProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {velocityRows.map(({ name, value }) => (
-              <Row key={name}>
+            {velocityData.map(({ id, name, value }) => (
+              <Row key={id}>
                 <TableCell align='left'>{name}</TableCell>
                 <TableCell align='center'>{value}</TableCell>
               </Row>

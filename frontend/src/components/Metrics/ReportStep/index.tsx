@@ -4,12 +4,12 @@ import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { Loading } from '@src/components/Loading'
 import { useAppSelector } from '@src/hooks'
 import { selectConfig } from '@src/context/config/configSlice'
-import { INIT_VELOCITY } from '@src/constants'
+import { INIT_VELOCITY_METRICS } from '@src/constants'
 import { reportResponseMapper } from '@src/mapper/ReportMapper'
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
-  const [velocityData, setVelocityData] = useState(INIT_VELOCITY)
+  const [velocityData, setVelocityData] = useState(INIT_VELOCITY_METRICS)
   const configData = useAppSelector(selectConfig)
   const { metrics, calendarType, dateRange } = configData.basic
   const { board, pipelineTool, sourceControl } = configData
