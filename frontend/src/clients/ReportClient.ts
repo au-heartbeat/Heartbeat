@@ -26,6 +26,13 @@ export class ReportClient extends HttpClient {
         pairs: [],
       },
     ],
+    deploymentFrequency: {
+      avgDeploymentFrequency: {
+        name: '',
+        deploymentFrequency: '',
+      },
+      deploymentFrequencyOfPipelines: [],
+    },
   }
 
   report = async (params: ReportReq) => {
@@ -33,7 +40,8 @@ export class ReportClient extends HttpClient {
     try {
       await this.axiosInstance
         .post(
-          `/report`,
+          `http://localhost:4323/api/v1/report`,
+          // `/report`,
           {},
           {
             headers: {

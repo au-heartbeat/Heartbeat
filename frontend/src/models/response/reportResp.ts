@@ -1,7 +1,7 @@
 export interface ReportResp {
   velocity?: VelocityResp
   cycleTime?: CycleTimeResp
-  deploymentFrequency?: DeploymentFrequency
+  deploymentFrequency?: DeploymentFrequencyResp
   leadTimeForChanges?: LeadTime
   changeFailureRate?: FailureRate
   classification?: Array<ClassificationResp>
@@ -30,7 +30,7 @@ export interface CycleTimeResp {
 
 export interface AVGDeploymentFrequency {
   name: string
-  step: string
+  step?: string
   deploymentFrequency: string
 }
 
@@ -46,7 +46,7 @@ export interface DeploymentFrequencyOfPipeline {
   items: DeploymentDateCount[]
 }
 
-export interface DeploymentFrequency {
+export interface DeploymentFrequencyResp {
   avgDeploymentFrequency: AVGDeploymentFrequency
   deploymentFrequencyOfPipelines: DeploymentFrequencyOfPipeline[]
 }
