@@ -1,12 +1,16 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { ReportRes } from '@src/models/response/reportRes'
 import { ReportReq } from '@src/models/request/reportReq'
 
 export class ReportClient extends HttpClient {
-  reportResponse: ReportRes = {
+  reportResponse = {
     velocity: {
       velocityForSP: '',
       velocityForCards: '',
+    },
+    cycleTime: {
+      averageCircleTimePerCard: '',
+      averageCycleTimePerSP: '',
+      totalTimeForCards: 0,
     },
   }
 
@@ -15,7 +19,7 @@ export class ReportClient extends HttpClient {
     try {
       await this.axiosInstance
         .post(
-          `/report`,
+          `http://localhost:4323/api/v1/report`,
           {},
           {
             headers: {

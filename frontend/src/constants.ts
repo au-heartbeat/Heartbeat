@@ -115,3 +115,9 @@ export enum VelocityMetric {
 }
 
 export const GET_STEPS_FAILED = 'get steps failed'
+
+export enum CycleTimeMetrics {
+  AVERAGE_CIRCLE_TIME_PER_CARD = 'averageCircleTimePerCard',
+  AVERAGE_CYCLE_TIME_PER_SP = 'averageCycleTimePerSP',
+  TOTAL_TIME_FOR_CARDS = 'totalTimeForCards',
+}
