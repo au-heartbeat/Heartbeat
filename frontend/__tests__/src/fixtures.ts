@@ -253,17 +253,3 @@ export const MOCK_GET_STEPS_PARAMS = {
   pipelineType: 'BuildKite',
   token: 'mockToken',
 }
-
-export enum CycleTimeMetricsName {
-  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
-  TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Development Time/Total Cycle Time',
-  TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Waiting Time/Total Cycle Time',
-  TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Block Time/Total Cycle Time',
-  TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Review Time/Total Cycle Time',
-  TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Testing Time/Total Cycle Time',
-  AVERAGE_DEVELOPMENT_TIME = 'Average Development Time',
-  AVERAGE_WAITING_TIME = 'Average Waiting Time',
-  AVERAGE_BLOCK_TIME = 'Average Block Time',
-  AVERAGE_REVIEW_TIME = 'Average Review Time',
-  AVERAGE_TESTING_TIME = 'Average Testing Time',
-}
