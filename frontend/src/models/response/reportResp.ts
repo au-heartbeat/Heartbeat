@@ -3,7 +3,7 @@ export interface ReportResp {
   cycleTime?: CycleTimeResp
   deploymentFrequency?: DeploymentFrequencyResp
   leadTimeForChanges?: LeadTimeForChangesResp
-  changeFailureRate?: FailureRate
+  changeFailureRate?: ChangeFailureRateResp
   classification?: Array<ClassificationResp>
   hasExportCsvData?: string
   meanTimeToRecovery?: MeanTimeToRecovery
@@ -80,11 +80,11 @@ export interface FailureRateOfPipeline {
 
 export interface AvgFailureRate {
   name: string
-  step: string
+  step?: string
   failureRate: string
 }
 
-export interface FailureRate {
+export interface ChangeFailureRateResp {
   avgChangeFailureRate: AvgFailureRate
   changeFailureRateOfPipelines: FailureRateOfPipeline[]
 }

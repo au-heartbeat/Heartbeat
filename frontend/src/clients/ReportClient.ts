@@ -50,6 +50,19 @@ export class ReportClient extends HttpClient {
         totalDelayTime: 1,
       },
     },
+    changeFailureRate: {
+      avgChangeFailureRate: {
+        name: '',
+        failureRate: '',
+      },
+      changeFailureRateOfPipelines: [
+        {
+          name: '',
+          step: '',
+          failureRate: '',
+        },
+      ],
+    },
   }
 
   report = async (params: ReportReq) => {

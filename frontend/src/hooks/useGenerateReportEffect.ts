@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
 import { reportClient } from '@src/clients/ReportClient'
 import {
+  ChangeFailureRateResp,
   ClassificationResp,
   CycleTimeResp,
   DeploymentFrequencyResp,
@@ -19,6 +20,7 @@ export interface useGenerateReportEffectInterface {
           classification: Array<ClassificationResp>
           deploymentFrequency: DeploymentFrequencyResp
           leadTimeForChanges: LeadTimeForChangesResp
+          changeFailureRate: ChangeFailureRateResp
         }
       }
     | undefined

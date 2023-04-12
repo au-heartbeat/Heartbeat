@@ -1,4 +1,5 @@
 import {
+  ChangeFailureRateResp,
   ClassificationResp,
   CycleTimeResp,
   DeploymentFrequencyResp,
@@ -10,6 +11,7 @@ import { cycleTimeMapper } from '@src/mapper/CycleTimeMapper'
 import { classificationMapper } from '@src/mapper/ClassificationMapper'
 import { deploymentFrequencyMapper } from '@src/mapper/DeploymentFrequencyMapper'
 import { leadTimeForChangesMapper } from '@src/mapper/LeadTimeForChangesMapper'
+import { changeFailureRateMapper } from '@src/mapper/ChangeFailureRateMapper'
 
 export const reportResponseMapper = (response: {
   velocity: VelocityResp
@@ -17,8 +19,9 @@ export const reportResponseMapper = (response: {
   classification: Array<ClassificationResp>
   deploymentFrequency: DeploymentFrequencyResp
   leadTimeForChanges: LeadTimeForChangesResp
+  changeFailureRate: ChangeFailureRateResp
 }) => {
-  const { velocity, cycleTime, classification, deploymentFrequency, leadTimeForChanges } = response
+  const { velocity, cycleTime, classification, deploymentFrequency, leadTimeForChanges, changeFailureRate } = response
 
   const velocityValues = velocityMapper(velocity)
 
@@ -30,5 +33,14 @@ export const reportResponseMapper = (response: {
 
   const leadTimeForChangesValues = leadTimeForChangesMapper(leadTimeForChanges)
 
-  return { velocityValues, cycleValues, classificationValues, deploymentFrequencyValues, leadTimeForChangesValues }
+  const changeFailureRateValues = changeFailureRateMapper(changeFailureRate)
+
+  return {
+    velocityValues,
+    cycleValues,
+    classificationValues,
+    deploymentFrequencyValues,
+    leadTimeForChangesValues,
+    changeFailureRateValues,
+  }
 }
