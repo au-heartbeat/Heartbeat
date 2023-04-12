@@ -51,4 +51,14 @@ describe('Report Step', () => {
       expect(getByText('21.18(days/SP)')).toBeInTheDocument()
     })
   })
+
+  it('should renders the classification component with correct props', async () => {
+    const { getByText } = setup()
+
+    await waitFor(() => {
+      expect(getByText('57.14%')).toBeInTheDocument()
+      expect(getByText('35.71%')).toBeInTheDocument()
+      expect(getByText('7.14%')).toBeInTheDocument()
+    })
+  })
 })

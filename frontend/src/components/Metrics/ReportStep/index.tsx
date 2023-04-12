@@ -11,6 +11,7 @@ export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
   const [velocityData, setVelocityData] = useState(INIT_REPORT_DATA_WITH_TWO_COLUMNS)
   const [cycleTimeData, setCycleTimeData] = useState(INIT_REPORT_DATA_WITH_TWO_COLUMNS)
+  const [classificationData, setClassificationData] = useState(INIT_REPORT_DATA_WITH_THREE_COLUMNS)
   const configData = useAppSelector(selectConfig)
   const { metrics, calendarType, dateRange } = configData.basic
   const { board, pipelineTool, sourceControl } = configData
@@ -28,6 +29,7 @@ export const ReportStep = () => {
       if (res) {
         setVelocityData(res.velocityList)
         setCycleTimeData(res.cycleTimeList)
+        setClassificationData(res.classificationList)
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,6 +42,7 @@ export const ReportStep = () => {
         <>
           <Velocity title={'Velocity'} velocityData={velocityData} />
           <CycleTimeReport title={'Cycle time'} cycleTimeData={cycleTimeData} />
+          <Classification title={'Classification'} classificationData={classificationData} />
         </>
       )}
     </>
