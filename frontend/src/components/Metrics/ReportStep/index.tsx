@@ -4,7 +4,6 @@ import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { Loading } from '@src/components/Loading'
 import { useAppSelector } from '@src/hooks'
 import { selectConfig } from '@src/context/config/configSlice'
-import { reportResponseMapper } from '@src/mapper/ReportMapper'
 import { INIT_CYCLETIME_METRICS, INIT_VELOCITY_METRICS } from '@src/constants'
 import { CycleTimeReport } from '@src/components/Metrics/ReportStep/CycleTime'
 
@@ -27,9 +26,8 @@ export const ReportStep = () => {
   useEffect(() => {
     generateReport(params).then((res) => {
       if (res) {
-        const reportData = reportResponseMapper(res.response)
-        setVelocityData(reportData.velocityValues)
-        setCycleTimeData(reportData.cycleValues)
+        setVelocityData(res.velocityValues)
+        setCycleTimeData(res.cycleValues)
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

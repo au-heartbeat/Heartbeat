@@ -37,8 +37,6 @@ export const reportMapper = ({
   leadTimeForChangesValues: ReportDataWithThreeColumns[]
   changeFailureRateValues: ReportDataWithThreeColumns[]
 } => {
-  // const { velocity, cycleTime, classification, deploymentFrequency, leadTimeForChanges, changeFailureRate } = response
-
   const velocityValues = velocityMapper(velocity)
 
   const cycleValues = cycleTimeMapper(cycleTime)

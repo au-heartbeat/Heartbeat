@@ -7,8 +7,8 @@ describe('velocity data mapper', () => {
       velocityForCards: '15',
     }
     const expectedVelocityValues = [
-      { id: 1, name: 'Velocity(Story Point)', value: ['20'] },
-      { id: 2, name: 'ThroughPut(Cards Count)', value: ['15'] },
+      { id: 0, name: 'Velocity(Story Point)', value: ['20'] },
+      { id: 1, name: 'ThroughPut(Cards Count)', value: ['15'] },
     ]
 
     const mappedVelocityValues = velocityMapper(mockVelocityRes)

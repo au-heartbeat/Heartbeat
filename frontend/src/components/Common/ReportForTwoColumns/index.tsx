@@ -1,9 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
-import { Row } from '@src/components/Common/ReportForTwoColumns/style'
-import { Container } from '@src/components/Common/ReportForTwoColumns/style'
-import { ReportDataWithTwoColumns } from '@src/models/reportUIDataStructure'
+import { Container, Row } from '@src/components/Common/ReportForTwoColumns/style'
 import { Fragment } from 'react'
+import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 
 interface ReportForTwoColumnsProps {
   title: string
