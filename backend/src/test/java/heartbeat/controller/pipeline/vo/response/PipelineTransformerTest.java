@@ -1,7 +1,7 @@
 package heartbeat.controller.pipeline.vo.response;
 
-import heartbeat.client.dto.pipeline.buildKite.BuildKitePipelineDTO;
-import heartbeat.client.dto.pipeline.buildKite.StepsDTO;
+import heartbeat.client.dto.pipeline.buildkite.BuildKitePipelineDTO;
+import heartbeat.client.dto.pipeline.buildkite.StepsDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,24 +1,30 @@
-package heartbeat.client.dto.pipeline.buildKite;
+package heartbeat.client.dto.pipeline.buildkite;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProviderDTO {
+public class CreatedByDTO {
 
 	private String id;
 
-	private ProviderSettingsDTO settings;
+	private String graphql_id;
 
-	@JsonProperty("webhook_url")
-	private String webhookUrl;
+	private String name;
+
+	private String email;
+
+	private String avatar_url;
+
+	private Date created_at;
 
 }

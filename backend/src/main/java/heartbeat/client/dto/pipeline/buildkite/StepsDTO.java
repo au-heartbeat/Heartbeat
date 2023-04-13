@@ -1,8 +1,7 @@
-package heartbeat.client.dto.pipeline.buildKite;
+package heartbeat.client.dto.pipeline.buildkite;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import heartbeat.client.dto.pipeline.buildKite.EnvDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
