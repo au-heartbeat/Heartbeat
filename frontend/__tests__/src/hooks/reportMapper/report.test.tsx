@@ -83,21 +83,21 @@ describe('report response data mapper', () => {
     }
     const expectedVelocityValues = {
       velocityValues: [
-        { id: 0, name: 'Velocity(SP)', value: ['20'] },
+        { id: 0, name: 'Velocity(Story Point)', value: ['20'] },
         { id: 1, name: 'ThroughPut(Cards Count)', value: ['14'] },
       ],
       cycleValues: [
-        { id: 0, name: 'Average Cycle Time', value: ['21.18(days/SP)', '30.26(days/card)'] },
-        { id: 1, name: 'Total Development Time / Total Cycle Time', value: [] },
-        { id: 2, name: 'Total Waiting Time / Total Cycle Time', value: [] },
-        { id: 3, name: 'Total Block Time / Total Cycle Time', value: [] },
-        { id: 4, name: 'Total Review Time / Total Cycle Time', value: [] },
-        { id: 5, name: 'Total Testing Time / Total Cycle Time', value: [] },
-        { id: 6, name: 'Average Development Time', value: [] },
-        { id: 7, name: 'Average Waiting Time', value: [] },
-        { id: 8, name: 'Average Block Time', value: [] },
-        { id: 9, name: 'Average Review Time', value: [] },
-        { id: 10, name: 'Average Testing Time', value: [] },
+        { id: 0, name: 'Average cycle time', value: ['21.18(days/SP)', '30.26(days/card)'] },
+        { id: 1, name: 'Total development time / Total cycle time', value: [] },
+        { id: 2, name: 'Total waiting time / Total cycle time', value: [] },
+        { id: 3, name: 'Total block time / Total cycle time', value: [] },
+        { id: 4, name: 'Total review time / Total cycle time', value: [] },
+        { id: 5, name: 'Total testing time / Total cycle time', value: [] },
+        { id: 6, name: 'Average development time', value: [] },
+        { id: 7, name: 'Average waiting time', value: [] },
+        { id: 8, name: 'Average block time', value: [] },
+        { id: 9, name: 'Average review time', value: [] },
+        { id: 10, name: 'Average testing time', value: [] },
       ],
       classificationValues: [
         {

@@ -115,17 +115,17 @@ export enum VelocityMetricsName {
 }
 
 export enum CycleTimeMetricsName {
-  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
-  DEVELOPMENT_PROPORTION = 'Total Development Time / Total Cycle Time',
-  WAITING_PROPORTION = 'Total Waiting Time / Total Cycle Time',
-  BLOCK_PROPORTION = 'Total Block Time / Total Cycle Time',
-  REVIEW_PROPORTION = 'Total Review Time / Total Cycle Time',
-  TESTING_PROPORTION = 'Total Testing Time / Total Cycle Time',
-  AVERAGE_DEVELOPMENT_TIME = 'Average Development Time',
-  AVERAGE_WAITING_TIME = 'Average Waiting Time',
-  AVERAGE_BLOCK_TIME = 'Average Block Time',
-  AVERAGE_REVIEW_TIME = 'Average Review Time',
-  AVERAGE_TESTING_TIME = 'Average Testing Time',
+  AVERAGE_CYCLE_TIME = 'Average cycle time',
+  DEVELOPMENT_PROPORTION = 'Total development time / Total cycle time',
+  WAITING_PROPORTION = 'Total waiting time / Total cycle time',
+  BLOCK_PROPORTION = 'Total block time / Total cycle time',
+  REVIEW_PROPORTION = 'Total review time / Total cycle time',
+  TESTING_PROPORTION = 'Total testing time / Total cycle time',
+  AVERAGE_DEVELOPMENT_TIME = 'Average development time',
+  AVERAGE_WAITING_TIME = 'Average waiting time',
+  AVERAGE_BLOCK_TIME = 'Average block time',
+  AVERAGE_REVIEW_TIME = 'Average review time',
+  AVERAGE_TESTING_TIME = 'Average testing time',
 }
 export const GET_STEPS_FAILED = 'get steps failed'
 
