@@ -39,7 +39,7 @@ export const cycleTimeMapper = ({
   }
 
   Object.entries(CycleTimeMetricsName).map(([key, cycleName], index) => {
-    mappedCycleTimeValue.push({ id: index + 1, name: cycleName, value: cycleTimeValue[key] })
+    mappedCycleTimeValue.push({ id: index, name: cycleName, value: cycleTimeValue[key] })
   })
 
   return mappedCycleTimeValue

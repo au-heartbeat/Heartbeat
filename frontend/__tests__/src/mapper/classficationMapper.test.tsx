@@ -23,7 +23,7 @@ describe('classification data mapper', () => {
   it('maps response Classification values to ui display value', () => {
     const expectedClassificationValues = [
       {
-        id: 1,
+        id: 0,
         name: 'FS Work Type',
         values: [
           { name: 'Feature Work - Planned', value: '57.14%' },
