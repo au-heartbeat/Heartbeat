@@ -1,5 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { ReportReq } from '@src/models/request/reportReq'
+import { ReportReq } from '@src/clients/report/dto/requestDTO'
 
 export class ReportClient extends HttpClient {
   reportResponse = {
@@ -34,15 +34,7 @@ export class ReportClient extends HttpClient {
       deploymentFrequencyOfPipelines: [],
     },
     leadTimeForChanges: {
-      leadTimeForChangesOfPipelines: [
-        {
-          name: '',
-          step: '',
-          mergeDelayTime: 1,
-          pipelineDelayTime: 1,
-          totalDelayTime: 1,
-        },
-      ],
+      leadTimeForChangesOfPipelines: [],
       avgLeadTimeForChanges: {
         name: '',
         mergeDelayTime: 1,
@@ -55,13 +47,7 @@ export class ReportClient extends HttpClient {
         name: '',
         failureRate: '',
       },
-      changeFailureRateOfPipelines: [
-        {
-          name: '',
-          step: '',
-          failureRate: '',
-        },
-      ],
+      changeFailureRateOfPipelines: [],
     },
   }
 
@@ -70,6 +56,7 @@ export class ReportClient extends HttpClient {
     try {
       await this.axiosInstance
         .post(
+          // `http://localhost:4323/api/v1/report`,
           `/report`,
           {},
           {

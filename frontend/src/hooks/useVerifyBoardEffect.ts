@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { boardClient } from '@src/clients/BoardClient'
+import { boardClient } from '@src/clients/board/BoardClient'
 import { ERROR_MESSAGE_TIME_DURATION, VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
-import { VerifyBoardReq } from '@src/models/request/boardReq'
+import { VerifyBoardReq } from '@src/clients/board/dto/requestDTO'
 
 export interface useVerifyBoardStateInterface {
   verifyJira: (params: VerifyBoardReq) => Promise<

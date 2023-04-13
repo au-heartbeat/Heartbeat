@@ -1,5 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { VerifyPipelineReq } from '@src/models/request/pipelineReq'
+import { VerifyPipelineReq } from '@src/clients/pipeline/dto/requestDTO'
 
 export class PipelineToolClient extends HttpClient {
   isPipelineToolVerified = false

@@ -1,5 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { VerifySourceControlReq } from '@src/models/request/sourceControlReq'
+import { VerifySourceControlReq } from '@src/clients/sourceControl/dto/requestDTO'
 
 export class SourceControlClient extends HttpClient {
   isSourceControlVerify = false

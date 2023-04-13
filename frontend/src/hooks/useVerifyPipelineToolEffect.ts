@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { pipelineToolClient } from '@src/clients/PipelineToolClient'
+import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient'
 import { ERROR_MESSAGE_TIME_DURATION, VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
-import { VerifyPipelineReq } from '@src/models/request/pipelineReq'
+import { VerifyPipelineReq } from '@src/clients/pipeline/dto/requestDTO'
 
 export interface useVerifyPipeLineToolStateInterface {
   verifyPipelineTool: (params: VerifyPipelineReq) => Promise<

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { sourceControlClient } from '@src/clients/SourceControlClient'
+import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient'
 import { ERROR_MESSAGE_TIME_DURATION, VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
-import { VerifySourceControlReq } from '@src/models/request/sourceControlReq'
+import { VerifySourceControlReq } from '@src/clients/sourceControl/dto/requestDTO'
 
 export interface useVerifySourceControlStateInterface {
   verifyGithub: (params: VerifySourceControlReq) => Promise<

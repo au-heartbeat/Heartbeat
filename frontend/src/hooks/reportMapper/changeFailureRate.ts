@@ -1,5 +1,5 @@
-import { ReportDataWithThreeColumns } from '@src/models/reportUIDataStructure'
-import { ChangeFailureRateResp } from '@src/models/response/reportResp'
+import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
+import { ChangeFailureRateResp } from '@src/clients/report/dto/responseDTO'
 
 export const changeFailureRateMapper = ({
   avgChangeFailureRate,

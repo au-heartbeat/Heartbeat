@@ -1,27 +1,19 @@
 import { useState } from 'react'
 import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
-import { reportClient } from '@src/clients/ReportClient'
-import {
-  ChangeFailureRateResp,
-  ClassificationResp,
-  CycleTimeResp,
-  DeploymentFrequencyResp,
-  LeadTimeForChangesResp,
-  VelocityResp,
-} from '@src/models/response/reportResp'
-import { ReportReq } from '@src/models/request/reportReq'
+import { reportClient } from '@src/clients/report/ReportClient'
+import { ReportReq } from '@src/clients/report/dto/requestDTO'
+import { reportMapper } from '@src/hooks/reportMapper/report'
+import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 
 export interface useGenerateReportEffectInterface {
   generateReport: (params: ReportReq) => Promise<
     | {
-        response: {
-          velocity: VelocityResp
-          cycleTime: CycleTimeResp
-          classification: Array<ClassificationResp>
-          deploymentFrequency: DeploymentFrequencyResp
-          leadTimeForChanges: LeadTimeForChangesResp
-          changeFailureRate: ChangeFailureRateResp
-        }
+        velocityValues: ReportDataWithTwoColumns[]
+        cycleValues: ReportDataWithTwoColumns[]
+        classificationValues: ReportDataWithThreeColumns[]
+        deploymentFrequencyValues: ReportDataWithThreeColumns[]
+        leadTimeForChangesValues: ReportDataWithThreeColumns[]
+        changeFailureRateValues: ReportDataWithThreeColumns[]
       }
     | undefined
   >
@@ -36,7 +28,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const generateReport = async (params: ReportReq) => {
     setIsLoading(true)
     try {
-      return await reportClient.report(params)
+      const res = await reportClient.report(params)
+      return reportMapper(res.response)
     } catch (e) {
       const err = e as Error
       setErrorMessage(`generate report: ${err.message}`)

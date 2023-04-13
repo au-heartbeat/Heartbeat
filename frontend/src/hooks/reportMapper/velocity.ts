@@ -1,6 +1,6 @@
 import { VelocityMetricsName } from '@src/constants'
-import { ReportDataWithTwoColumns } from '@src/models/reportUIDataStructure'
-import { VelocityResp } from '@src/models/response/reportResp'
+import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
+import { VelocityResp } from '@src/clients/report/dto/responseDTO'
 
 export const velocityMapper = ({ velocityForSP, velocityForCards }: VelocityResp) => {
   const mappedVelocityValue: ReportDataWithTwoColumns[] = []

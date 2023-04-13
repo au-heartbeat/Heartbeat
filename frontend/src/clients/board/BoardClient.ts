@@ -1,6 +1,6 @@
 import { HttpClient } from '@src/clients/Httpclient'
 import { HttpStatusCode } from 'axios'
-import { VerifyBoardReq } from '@src/models/request/boardReq'
+import { VerifyBoardReq } from '@src/clients/board/dto/requestDTO'
 
 export class BoardClient extends HttpClient {
   isBoardVerify = false

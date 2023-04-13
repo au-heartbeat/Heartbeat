@@ -1,5 +1,5 @@
-import { LeadTimeForChangesResp } from '@src/models/response/reportResp'
-import { ReportDataWithThreeColumns } from '@src/models/reportUIDataStructure'
+import { LeadTimeForChangesResp } from '@src/clients/report/dto/responseDTO'
+import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 
 export const leadTimeForChangesMapper = ({
   leadTimeForChangesOfPipelines,

@@ -1,5 +1,5 @@
-import { ClassificationResp } from '../models/response/reportResp'
-import { ReportDataWithThreeColumns } from '@src/models/reportUIDataStructure'
+import { ClassificationResp } from '../../clients/report/dto/responseDTO'
+import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 
 export const classificationMapper = (classification: ClassificationResp[]) => {
   const mappedClassificationValue: ReportDataWithThreeColumns[] = []
