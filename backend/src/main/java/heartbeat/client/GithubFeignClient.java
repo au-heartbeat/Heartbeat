@@ -1,9 +1,9 @@
 package heartbeat.client;
 
-import heartbeat.client.dto.CommitInfo;
-import heartbeat.client.dto.GithubOrganizationsInfo;
-import heartbeat.client.dto.GithubRepos;
-import heartbeat.client.dto.PullRequestInfo;
+import heartbeat.client.dto.codebase.github.CommitInfo;
+import heartbeat.client.dto.codebase.github.GithubOrganizationsInfo;
+import heartbeat.client.dto.codebase.github.GithubRepos;
+import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

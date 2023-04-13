@@ -1,8 +1,8 @@
 package heartbeat.service.source.github;
 
 import heartbeat.client.GithubFeignClient;
-import heartbeat.client.dto.GithubOrganizationsInfo;
-import heartbeat.client.dto.GithubRepos;
+import heartbeat.client.dto.codebase.github.GithubOrganizationsInfo;
+import heartbeat.client.dto.codebase.github.GithubRepos;
 import heartbeat.exception.CustomFeignClientException;
 import heartbeat.exception.RequestFailedException;
 import org.junit.jupiter.api.Assertions;

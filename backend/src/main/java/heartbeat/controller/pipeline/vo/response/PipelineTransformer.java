@@ -1,7 +1,7 @@
 package heartbeat.controller.pipeline.vo.response;
 
-import heartbeat.client.dto.BuildKitePipelineDTO;
-import heartbeat.client.dto.StepsDTO;
+import heartbeat.client.dto.pipeline.buildKite.BuildKitePipelineDTO;
+import heartbeat.client.dto.pipeline.buildKite.StepsDTO;
 
 import java.util.stream.Collectors;
 

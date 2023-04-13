@@ -2,8 +2,8 @@ package heartbeat.service.source.github;
 
 import feign.FeignException;
 import heartbeat.client.GithubFeignClient;
-import heartbeat.client.dto.GithubOrganizationsInfo;
-import heartbeat.client.dto.GithubRepos;
+import heartbeat.client.dto.codebase.github.GithubOrganizationsInfo;
+import heartbeat.client.dto.codebase.github.GithubRepos;
 import heartbeat.controller.source.vo.GithubResponse;
 import heartbeat.exception.RequestFailedException;
 import lombok.RequiredArgsConstructor;

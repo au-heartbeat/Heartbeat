@@ -2,10 +2,10 @@ package heartbeat.service.pipeline.buildkite;
 
 import feign.FeignException;
 import heartbeat.client.BuildKiteFeignClient;
-import heartbeat.client.dto.BuildKiteBuildInfo;
-import heartbeat.client.dto.BuildKiteJob;
-import heartbeat.client.dto.BuildKiteOrganizationsInfo;
-import heartbeat.client.dto.BuildKiteTokenInfo;
+import heartbeat.client.dto.pipeline.buildKite.BuildKiteBuildInfo;
+import heartbeat.client.dto.pipeline.buildKite.BuildKiteJob;
+import heartbeat.client.dto.pipeline.buildKite.BuildKiteOrganizationsInfo;
+import heartbeat.client.dto.pipeline.buildKite.BuildKiteTokenInfo;
 import heartbeat.controller.pipeline.vo.request.PipelineParam;
 import heartbeat.controller.pipeline.vo.request.PipelineStepsParam;
 import heartbeat.controller.pipeline.vo.response.BuildKiteResponse;

@@ -3,16 +3,15 @@ package heartbeat.service.jira;
 import feign.FeignException;
 import heartbeat.client.JiraFeignClient;
 import heartbeat.client.component.JiraUriGenerator;
-import heartbeat.client.dto.AllDoneCardsResponseDTO;
-import heartbeat.client.dto.Assignee;
-import heartbeat.client.dto.CardHistoryResponseDTO;
-import heartbeat.client.dto.DoneCard;
-import heartbeat.client.dto.DoneCardFields;
-import heartbeat.client.dto.FieldResponseDTO;
-import heartbeat.client.dto.Item;
-import heartbeat.client.dto.JiraBoardConfigDTO;
-import heartbeat.client.dto.StatusSelfDTO;
-import heartbeat.client.dto.To;
+import heartbeat.client.dto.board.jira.Assignee;
+import heartbeat.client.dto.board.jira.CardHistoryResponseDTO;
+import heartbeat.client.dto.board.jira.DoneCard;
+import heartbeat.client.dto.board.jira.DoneCardFields;
+import heartbeat.client.dto.board.jira.FieldResponseDTO;
+import heartbeat.client.dto.board.jira.Item;
+import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
+import heartbeat.client.dto.board.jira.StatusSelfDTO;
+import heartbeat.client.dto.board.jira.To;
 import heartbeat.controller.board.vo.request.BoardRequestParam;
 import heartbeat.controller.board.vo.request.BoardType;
 import heartbeat.controller.board.vo.response.BoardConfigResponse;
@@ -351,7 +350,8 @@ class JiraServiceTest {
 		List<Item> items = Collections.singletonList(new Item("", new To("")));
 		CardHistoryResponseDTO cardHistoryResponse = CardHistoryResponseDTO.builder().items(items).build();
 
-		AllDoneCardsResponseDTO allDoneCardsResponse = AllDoneCardsResponseDTO.builder()
+		JiraBoardConfigDTO.AllDoneCardsResponseDTO allDoneCardsResponse = JiraBoardConfigDTO.AllDoneCardsResponseDTO
+			.builder()
 			.total("2")
 			.issues(List.of(new DoneCard("1", new DoneCardFields(null))))
 			.build();
@@ -385,7 +385,8 @@ class JiraServiceTest {
 		List<Item> items = Collections.singletonList(new Item("assignee", new To(null)));
 		CardHistoryResponseDTO cardHistoryResponse = CardHistoryResponseDTO.builder().items(items).build();
 
-		AllDoneCardsResponseDTO allDoneCardsResponse = AllDoneCardsResponseDTO.builder()
+		JiraBoardConfigDTO.AllDoneCardsResponseDTO allDoneCardsResponse = JiraBoardConfigDTO.AllDoneCardsResponseDTO
+			.builder()
 			.total("2")
 			.issues(List.of(new DoneCard("1", new DoneCardFields(new Assignee(null)))))
 			.build();

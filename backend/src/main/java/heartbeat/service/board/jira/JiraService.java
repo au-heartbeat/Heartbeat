@@ -3,15 +3,14 @@ package heartbeat.service.board.jira;
 import feign.FeignException;
 import heartbeat.client.JiraFeignClient;
 import heartbeat.client.component.JiraUriGenerator;
-import heartbeat.client.dto.AllDoneCardsResponseDTO;
-import heartbeat.client.dto.CardHistoryResponseDTO;
-import heartbeat.client.dto.DoneCard;
-import heartbeat.client.dto.FieldResponseDTO;
-import heartbeat.client.dto.IssueField;
-import heartbeat.client.dto.Issuetype;
-import heartbeat.client.dto.JiraBoardConfigDTO;
-import heartbeat.client.dto.JiraColumn;
-import heartbeat.client.dto.StatusSelfDTO;
+import heartbeat.client.dto.board.jira.CardHistoryResponseDTO;
+import heartbeat.client.dto.board.jira.DoneCard;
+import heartbeat.client.dto.board.jira.FieldResponseDTO;
+import heartbeat.client.dto.board.jira.IssueField;
+import heartbeat.client.dto.board.jira.Issuetype;
+import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
+import heartbeat.client.dto.board.jira.JiraColumn;
+import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.controller.board.vo.request.BoardRequestParam;
 import heartbeat.controller.board.vo.request.BoardType;
 import heartbeat.controller.board.vo.response.BoardConfigResponse;
@@ -225,7 +224,7 @@ public class JiraService {
 		String jql = parseJiraJql(boardType, doneColumns, boardRequestParam);
 
 		log.info("[Jira] Start to get first-page done card information");
-		AllDoneCardsResponseDTO allDoneCardsResponseDTO = jiraFeignClient.getAllDoneCards(baseUrl,
+		JiraBoardConfigDTO.AllDoneCardsResponseDTO allDoneCardsResponseDTO = jiraFeignClient.getAllDoneCards(baseUrl,
 				boardRequestParam.getBoardId(), QUERY_COUNT, 0, jql, boardRequestParam.getToken());
 		log.info("[Jira] Successfully get first-page done card information");
 
@@ -238,14 +237,16 @@ public class JiraService {
 
 		log.info("[Jira] Start to get more done card information");
 		List<Integer> range = IntStream.rangeClosed(1, pages - 1).boxed().toList();
-		List<CompletableFuture<AllDoneCardsResponseDTO>> futures = range.stream()
+		List<CompletableFuture<JiraBoardConfigDTO.AllDoneCardsResponseDTO>> futures = range.stream()
 			.map(startFrom -> CompletableFuture
 				.supplyAsync(() -> (jiraFeignClient.getAllDoneCards(baseUrl, boardRequestParam.getBoardId(),
 						QUERY_COUNT, startFrom * QUERY_COUNT, jql, boardRequestParam.getToken())), taskExecutor))
 			.toList();
 		log.info("[Jira] Successfully get more done card information");
 
-		List<AllDoneCardsResponseDTO> doneCardsResponses = futures.stream().map(CompletableFuture::join).toList();
+		List<JiraBoardConfigDTO.AllDoneCardsResponseDTO> doneCardsResponses = futures.stream()
+			.map(CompletableFuture::join)
+			.toList();
 		List<DoneCard> moreDoneCards = doneCardsResponses.stream()
 			.flatMap(moreDoneCardsResponses -> moreDoneCardsResponses.getIssues().stream())
 			.toList();
