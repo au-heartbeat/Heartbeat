@@ -1,4 +1,4 @@
-import { VelocityMetricsName } from '@src/constants'
+import { VELOCITY_METRICS_NAME } from '@src/constants'
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 import { VelocityResp } from '@src/clients/report/dto/responseDTO'
 
@@ -10,7 +10,7 @@ export const velocityMapper = ({ velocityForSP, velocityForCards }: VelocityResp
     THROUGHPUT_CARDS_COUNT: velocityForCards,
   }
 
-  Object.entries(VelocityMetricsName).map(([key, velocityName], index) => {
+  Object.entries(VELOCITY_METRICS_NAME).map(([key, velocityName], index) => {
     mappedVelocityValue.push({
       id: index,
       name: velocityName,

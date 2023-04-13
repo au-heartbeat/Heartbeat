@@ -237,18 +237,18 @@ export const CONFIRM_DIALOG_DESCRIPTION = 'All the filled data will be cleared. 
 
 export enum VelocityMetricName {
   VELOCITY_SP = 'Velocity(Story Point)',
-  THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
+  THROUGHPUT_CARDS_COUNT = 'Throughput(Cards Count)',
 }
 
 export enum CycleTimeMetricsName {
   AVERAGE_CYCLE_TIME = 'Average cycle time',
   DEVELOPMENT_PROPORTION = 'Total development time/Total cycle time',
-  WAITING_PROPORTION = 'Total waiting time/Total cycle time',
+  WAITING_PROPORTION = 'Total waiting for testing time/Total cycle time',
   BLOCK_PROPORTION = 'Total block time/Total cycle time',
   REVIEW_PROPORTION = 'Total review time/Total cycle time',
   TESTING_PROPORTION = 'Total testing time/Total cycle time',
   AVERAGE_DEVELOPMENT_TIME = 'Average development time',
-  AVERAGE_WAITING_TIME = 'Average waiting time',
+  AVERAGE_WAITING_TIME = 'Average waiting for testing time',
   AVERAGE_BLOCK_TIME = 'Average block time',
   AVERAGE_REVIEW_TIME = 'Average review time',
   AVERAGE_TESTING_TIME = 'Average testing time',
@@ -349,17 +349,17 @@ export const MOCK_REPORT_RESPONSE = {
 export const EXPECTED_REPORT_VALUES = {
   velocityValues: [
     { id: 0, name: 'Velocity(Story Point)', value: ['20'] },
-    { id: 1, name: 'ThroughPut(Cards Count)', value: ['14'] },
+    { id: 1, name: 'Throughput(Cards Count)', value: ['14'] },
   ],
   cycleValues: [
     { id: 0, name: 'Average cycle time', value: ['21.18(days/SP)', '30.26(days/card)'] },
     { id: 1, name: 'Total development time / Total cycle time', value: [] },
-    { id: 2, name: 'Total waiting time / Total cycle time', value: [] },
+    { id: 2, name: 'Total waiting for testing time / Total cycle time', value: [] },
     { id: 3, name: 'Total block time / Total cycle time', value: [] },
     { id: 4, name: 'Total review time / Total cycle time', value: [] },
     { id: 5, name: 'Total testing time / Total cycle time', value: [] },
     { id: 6, name: 'Average development time', value: [] },
-    { id: 7, name: 'Average waiting time', value: [] },
+    { id: 7, name: 'Average waiting for testing time', value: [] },
     { id: 8, name: 'Average block time', value: [] },
     { id: 9, name: 'Average review time', value: [] },
     { id: 10, name: 'Average testing time', value: [] },
@@ -377,7 +377,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
       values: [
         {
-          name: 'Deployment Frequency(deployments/day)',
+          name: 'Deployment frequency(deployments/day)',
           value: '0.30',
         },
       ],
@@ -387,7 +387,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'Average/',
       values: [
         {
-          name: 'Deployment Frequency(deployments/day)',
+          name: 'Deployment frequency(deployments/day)',
           value: '0.40',
         },
       ],
@@ -419,7 +419,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
       values: [
         {
-          name: 'Failure Rate',
+          name: 'Failure rate',
           value: '0.00% (0/3)',
         },
       ],
@@ -429,7 +429,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'Average/',
       values: [
         {
-          name: 'Failure Rate',
+          name: 'Failure rate',
           value: '0.00% (0/12)',
         },
       ],

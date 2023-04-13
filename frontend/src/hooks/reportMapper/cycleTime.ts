@@ -1,4 +1,4 @@
-import { CycleTimeMetricsName, METRICS_CONSTANTS, Unit } from '@src/constants'
+import { CYCLE_TIME_METRICS_NAME, METRICS_CONSTANTS, Unit } from '@src/constants'
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 import { CycleTimeResp, Swimlane } from '@src/clients/report/dto/responseDTO'
 
@@ -38,7 +38,7 @@ export const cycleTimeMapper = ({
     AVERAGE_TESTING_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
   }
 
-  Object.entries(CycleTimeMetricsName).map(([key, cycleName], index) => {
+  Object.entries(CYCLE_TIME_METRICS_NAME).map(([key, cycleName], index) => {
     mappedCycleTimeValue.push({ id: index, name: cycleName, value: cycleTimeValue[key] })
   })
 

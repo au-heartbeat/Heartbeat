@@ -109,25 +109,28 @@ export const SELECTED_VALUE_SEPARATOR = ', '
 export const SAVE_CONFIG_TIPS =
   'Note: When you save the settings, some tokens might be saved, please save it safely (e.g. by 1 password, vault), Rotate the tokens regularly. (e.g. every 3 months)'
 
-export enum VelocityMetricsName {
+export enum VELOCITY_METRICS_NAME {
   VELOCITY_SP = 'Velocity(Story Point)',
-  THROUGHPUT_CARDS_COUNT = 'ThroughPut(Cards Count)',
+  THROUGHPUT_CARDS_COUNT = 'Throughput(Cards Count)',
 }
 
-export enum CycleTimeMetricsName {
+export enum CYCLE_TIME_METRICS_NAME {
   AVERAGE_CYCLE_TIME = 'Average cycle time',
   DEVELOPMENT_PROPORTION = 'Total development time / Total cycle time',
-  WAITING_PROPORTION = 'Total waiting time / Total cycle time',
+  WAITING_PROPORTION = 'Total waiting for testing time / Total cycle time',
   BLOCK_PROPORTION = 'Total block time / Total cycle time',
   REVIEW_PROPORTION = 'Total review time / Total cycle time',
   TESTING_PROPORTION = 'Total testing time / Total cycle time',
   AVERAGE_DEVELOPMENT_TIME = 'Average development time',
-  AVERAGE_WAITING_TIME = 'Average waiting time',
+  AVERAGE_WAITING_TIME = 'Average waiting for testing time',
   AVERAGE_BLOCK_TIME = 'Average block time',
   AVERAGE_REVIEW_TIME = 'Average review time',
   AVERAGE_TESTING_TIME = 'Average testing time',
 }
-export const GET_STEPS_FAILED = 'get steps failed'
+
+export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment frequency(deployments/day)'
+
+export const FAILURE_RATE_NAME = 'Failure rate'
 
 export enum Unit {
   PER_SP = '(days/SP)',
@@ -137,12 +140,12 @@ export enum Unit {
 export const INIT_VELOCITY_METRICS: { id: number; name: string; value: string[] }[] = [
   {
     id: 1,
-    name: '2',
+    name: 'velocity',
     value: ['2'],
   },
 ]
 
-export const INIT_CYCLETIME_METRICS: { id: number; name: string; value: string[] }[] = [
+export const INIT_CYCLE_TIME_METRICS: { id: number; name: string; value: string[] }[] = [
   {
     id: 1,
     name: 'Cycle time',
@@ -150,34 +153,4 @@ export const INIT_CYCLETIME_METRICS: { id: number; name: string; value: string[]
   },
 ]
 
-export enum CycleTimeMetrics {
-  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
-  TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Development Time/Total Cycle Time',
-  TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Waiting Time/Total Cycle Time',
-  TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Block Time/Total Cycle Time',
-  TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Review Time/Total Cycle Time',
-  TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME = 'Total Testing Time/Total Cycle Time',
-  AVERAGE_DEVELOPMENT_TIME = 'Average Development Time',
-  AVERAGE_WAITING_TIME = 'Average Waiting Time',
-  AVERAGE_BLOCK_TIME = 'Average Block Time',
-  AVERAGE_REVIEW_TIME = 'Average Review Time',
-  AVERAGE_TESTING_TIME = 'Average Testing Time',
-}
-
-export const INIT_VELOCITY = {
-  [VelocityMetricsName.VELOCITY_SP]: '2',
-  [VelocityMetricsName.THROUGHPUT_CARDS_COUNT]: '2',
-}
-export const INIT_CYCLE_TIME = {
-  [CycleTimeMetrics.AVERAGE_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_DEVELOPMENT_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_WAITING_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_BLOCK_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_REVIEW_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.TOTAL_TESTING_TIME_DIV_TOTAL_CYCLE_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_DEVELOPMENT_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_WAITING_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_BLOCK_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_REVIEW_TIME]: '',
-  [CycleTimeMetrics.AVERAGE_TESTING_TIME]: '',
-}
+export const GET_STEPS_FAILED = 'get steps failed'

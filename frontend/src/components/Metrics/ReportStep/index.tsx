@@ -4,13 +4,13 @@ import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { Loading } from '@src/components/Loading'
 import { useAppSelector } from '@src/hooks'
 import { selectConfig } from '@src/context/config/configSlice'
-import { INIT_CYCLETIME_METRICS, INIT_VELOCITY_METRICS } from '@src/constants'
+import { INIT_CYCLE_TIME_METRICS, INIT_VELOCITY_METRICS } from '@src/constants'
 import { CycleTimeReport } from '@src/components/Metrics/ReportStep/CycleTime'
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
   const [velocityData, setVelocityData] = useState(INIT_VELOCITY_METRICS)
-  const [cycleTimeData, setCycleTimeData] = useState(INIT_CYCLETIME_METRICS)
+  const [cycleTimeData, setCycleTimeData] = useState(INIT_CYCLE_TIME_METRICS)
   const configData = useAppSelector(selectConfig)
   const { metrics, calendarType, dateRange } = configData.basic
   const { board, pipelineTool, sourceControl } = configData

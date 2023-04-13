@@ -1,5 +1,6 @@
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 import { DeploymentFrequencyResp } from '@src/clients/report/dto/responseDTO'
+import { DEPLOYMENT_FREQUENCY_NAME } from '@src/constants'
 
 export const deploymentFrequencyMapper = ({
   avgDeploymentFrequency,
@@ -11,14 +12,14 @@ export const deploymentFrequencyMapper = ({
     const deploymentFrequencyValue: ReportDataWithThreeColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
-      values: [{ name: 'Deployment Frequency(deployments/day)', value: item.deploymentFrequency }],
+      values: [{ name: DEPLOYMENT_FREQUENCY_NAME, value: item.deploymentFrequency }],
     }
     mappedDeploymentFrequencyValue.push(deploymentFrequencyValue)
   })
   mappedDeploymentFrequencyValue.push({
     id: mappedDeploymentFrequencyValue.length,
     name: `${avgDeploymentFrequency.name}/`,
-    values: [{ name: 'Deployment Frequency(deployments/day)', value: avgDeploymentFrequency.deploymentFrequency }],
+    values: [{ name: DEPLOYMENT_FREQUENCY_NAME, value: avgDeploymentFrequency.deploymentFrequency }],
   })
 
   return mappedDeploymentFrequencyValue
