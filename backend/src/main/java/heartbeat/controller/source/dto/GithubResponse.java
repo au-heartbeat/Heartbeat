@@ -1,4 +1,4 @@
-package heartbeat.controller.source.vo;
+package heartbeat.controller.source.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,23 +1,21 @@
-package heartbeat.controller.pipeline.vo.request;
+package heartbeat.controller.pipeline.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PipelineStepsParam {
+public class PipelineParam {
 
-	@NotBlank(message = "PipelineName is required")
-	private String pipelineName;
-
-	@NotBlank(message = "Repository is required")
-	private String repository;
-
-	@NotBlank(message = "OrgName is required")
-	private String orgName;
+	@Valid
+	@NotBlank(message = "Token cannot be empty.")
+	private String token;
 
 	@NotBlank(message = "StartTime is required")
 	private String startTime;

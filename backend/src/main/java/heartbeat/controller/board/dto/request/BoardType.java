@@ -1,4 +1,4 @@
-package heartbeat.controller.board.vo.request;
+package heartbeat.controller.board.dto.request;
 
 public enum BoardType {
 

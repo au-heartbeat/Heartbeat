@@ -1,6 +1,6 @@
 package heartbeat.controller.source;
 
-import heartbeat.controller.source.vo.GithubResponse;
+import heartbeat.controller.source.dto.GithubResponse;
 import heartbeat.service.source.github.GithubService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

@@ -4,7 +4,7 @@ import feign.FeignException;
 import heartbeat.client.GithubFeignClient;
 import heartbeat.client.dto.codebase.github.GithubOrganizationsInfo;
 import heartbeat.client.dto.codebase.github.GithubRepos;
-import heartbeat.controller.source.vo.GithubResponse;
+import heartbeat.controller.source.dto.GithubResponse;
 import heartbeat.exception.RequestFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

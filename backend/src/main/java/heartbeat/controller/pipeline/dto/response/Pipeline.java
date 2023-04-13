@@ -1,4 +1,4 @@
-package heartbeat.controller.pipeline.vo.response;
+package heartbeat.controller.pipeline.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package heartbeat.controller.source;
 
 import com.jayway.jsonpath.JsonPath;
-import heartbeat.controller.source.vo.GithubResponse;
+import heartbeat.controller.source.dto.GithubResponse;
 import heartbeat.service.source.github.GithubService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

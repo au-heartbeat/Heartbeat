@@ -1,4 +1,4 @@
-package heartbeat.controller.board.vo.response;
+package heartbeat.controller.board.dto.response;
 
 import java.util.List;
 import lombok.Builder;

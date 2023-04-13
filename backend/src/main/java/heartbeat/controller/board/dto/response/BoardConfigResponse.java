@@ -1,4 +1,4 @@
-package heartbeat.controller.board.vo.response;
+package heartbeat.controller.board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
