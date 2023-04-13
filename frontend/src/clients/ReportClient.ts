@@ -8,7 +8,7 @@ export class ReportClient extends HttpClient {
       velocityForCards: '',
     },
     cycleTime: {
-      averageCircleTimePerCard: '',
+      averageCycleTimePerCard: '',
       averageCycleTimePerSP: '',
       totalTimeForCards: 0,
       swimlaneList: [
