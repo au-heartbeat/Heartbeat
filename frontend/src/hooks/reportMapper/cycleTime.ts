@@ -1,6 +1,6 @@
-import { CycleTimeResp, Swimlane } from '../../clients/report/dto/responseDTO'
 import { CycleTimeMetricsName, METRICS_CONSTANTS, Unit } from '@src/constants'
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
+import { CycleTimeResp, Swimlane } from '@src/clients/report/dto/responseDTO'
 
 export const cycleTimeMapper = ({
   swimlaneList,

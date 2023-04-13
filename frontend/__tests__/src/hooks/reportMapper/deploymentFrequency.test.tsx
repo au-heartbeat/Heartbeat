@@ -1,4 +1,4 @@
-import { deploymentFrequencyMapper } from '@src/mapper/DeploymentFrequencyMapper'
+import { deploymentFrequencyMapper } from '@src/hooks/reportMapper/deploymentFrequency'
 
 describe('deployment frequency data mapper', () => {
   const mockDeploymentFrequencyRes = {

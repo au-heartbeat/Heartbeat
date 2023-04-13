@@ -1,4 +1,4 @@
-import { cycleTimeMapper } from '@src/mapper/CycleTimeMapper'
+import { cycleTimeMapper } from '@src/hooks/reportMapper/cycleTime'
 
 describe('cycleTime data mapper', () => {
   const mockCycleTimeRes = {
@@ -23,11 +23,11 @@ describe('cycleTime data mapper', () => {
   it('maps response cycleTime values to ui display value', () => {
     const expectedCycleValues = [
       { id: 0, name: 'Average Cycle Time', value: ['21.18(days/SP)', '30.26(days/card)'] },
-      { id: 1, name: 'Total Development Time/Total Cycle Time', value: ['0.57'] },
-      { id: 2, name: 'Total Waiting Time/Total Cycle Time', value: ['0.01'] },
-      { id: 3, name: 'Total Block Time/Total Cycle Time', value: [] },
-      { id: 4, name: 'Total Review Time/Total Cycle Time', value: [] },
-      { id: 5, name: 'Total Testing Time/Total Cycle Time', value: [] },
+      { id: 1, name: 'Total Development Time / Total Cycle Time', value: ['0.57'] },
+      { id: 2, name: 'Total Waiting Time / Total Cycle Time', value: ['0.01'] },
+      { id: 3, name: 'Total Block Time / Total Cycle Time', value: [] },
+      { id: 4, name: 'Total Review Time / Total Cycle Time', value: [] },
+      { id: 5, name: 'Total Testing Time / Total Cycle Time', value: [] },
       { id: 6, name: 'Average Development Time', value: ['12.13(days/SP)', '17.32(days/card)'] },
       { id: 7, name: 'Average Waiting Time', value: ['0.16(days/SP)', '0.23(days/card)'] },
       { id: 8, name: 'Average Block Time', value: [] },

@@ -1,4 +1,4 @@
-import { velocityMapper } from '@src/mapper/VelocityMapper'
+import { velocityMapper } from '@src/hooks/reportMapper/velocity'
 
 describe('velocity data mapper', () => {
   it('maps response velocity values to ui display value', () => {

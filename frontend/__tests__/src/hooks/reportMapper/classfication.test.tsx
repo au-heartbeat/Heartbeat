@@ -1,4 +1,4 @@
-import { classificationMapper } from '@src/mapper/ClassificationMapper'
+import { classificationMapper } from '@src/hooks/reportMapper/classification'
 
 describe('classification data mapper', () => {
   const mockClassificationRes = [

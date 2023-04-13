@@ -1,4 +1,4 @@
-import { leadTimeForChangesMapper } from '@src/mapper/LeadTimeForChangesMapper'
+import { leadTimeForChangesMapper } from '@src/hooks/reportMapper/leadTimeForChanges'
 
 describe('lead time for changes data mapper', () => {
   const mockLeadTimeForChangesRes = {

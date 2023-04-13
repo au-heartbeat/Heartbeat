@@ -1,4 +1,4 @@
-import { changeFailureRateMapper } from '@src/mapper/ChangeFailureRateMapper'
+import { changeFailureRateMapper } from '@src/hooks/reportMapper/changeFailureRate'
 
 describe('change failure rate data mapper', () => {
   const mockChangeFailureRateRes = {
