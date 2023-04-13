@@ -128,6 +128,7 @@ export enum CycleTimeMetricsName {
   AVERAGE_TESTING_TIME = 'Average Testing Time',
 }
 export const GET_STEPS_FAILED = 'get steps failed'
+
 export enum Unit {
   PER_SP = '(days/SP)',
   PER_CARD = '(days/card)',
@@ -137,7 +138,7 @@ export const INIT_VELOCITY_METRICS: { id: number; name: string; value: string[] 
   {
     id: 1,
     name: '2',
-    value: ['dhjejh'],
+    value: ['2'],
   },
 ]
 
@@ -163,14 +164,9 @@ export enum CycleTimeMetrics {
   AVERAGE_TESTING_TIME = 'Average Testing Time',
 }
 
-export enum Unit {
-  PER_SP = '(days/SP)',
-  PER_CARD = '(days/card)',
-}
-
 export const INIT_VELOCITY = {
-  [VelocityMetric.VELOCITY_SP]: '2',
-  [VelocityMetric.THROUGHPUT_CARDS_COUNT]: '2',
+  [VelocityMetricsName.VELOCITY_SP]: '2',
+  [VelocityMetricsName.THROUGHPUT_CARDS_COUNT]: '2',
 }
 export const INIT_CYCLE_TIME = {
   [CycleTimeMetrics.AVERAGE_CYCLE_TIME]: '',

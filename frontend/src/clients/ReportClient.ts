@@ -8,7 +8,7 @@ export class ReportClient extends HttpClient {
       velocityForCards: '',
     },
     cycleTime: {
-      averageCycleTimePerCard: '',
+      averageCircleTimePerCard: '',
       averageCycleTimePerSP: '',
       totalTimeForCards: 0,
       swimlaneList: [
@@ -33,6 +33,7 @@ export class ReportClient extends HttpClient {
     try {
       await this.axiosInstance
         .post(
+          // `http://localhost:4323/api/v1/report`,
           `/report`,
           {},
           {
