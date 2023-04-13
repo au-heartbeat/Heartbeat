@@ -20,18 +20,6 @@ const mockReportResponse = {
   },
 }
 
-const expectedReportValues = {
-  velocityValues: [
-    { id: 0, name: 'Velocity(SP)', value: ['20'] },
-    { id: 1, name: 'ThroughPut(Cards Count)', value: ['14'] },
-  ],
-  cycleValues: [],
-  classificationValues: [],
-  deploymentFrequencyValues: [],
-  leadTimeForChangesValues: [],
-  changeFailureRateValues: [],
-}
-
 jest.mock('@src/hooks/reportMapper/report', () => ({
   reportMapper: jest.fn(() => 'mock'),
 }))
