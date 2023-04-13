@@ -148,3 +148,9 @@ export const INIT_CYCLETIME_METRICS: { id: number; name: string; value: string[]
     value: ['40'],
   },
 ]
+
+export enum CycleTimeMetrics {
+  AVERAGE_CIRCLE_TIME_PER_CARD = 'averageCircleTimePerCard',
+  AVERAGE_CYCLE_TIME_PER_SP = 'averageCycleTimePerSP',
+  TOTAL_TIME_FOR_CARDS = 'totalTimeForCards',
+}
