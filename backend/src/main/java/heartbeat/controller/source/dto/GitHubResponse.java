@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 
 @Data
 @Builder
-public class GithubResponse {
+public class GitHubResponse {
 
 	private LinkedHashSet<String> githubRepos;
 

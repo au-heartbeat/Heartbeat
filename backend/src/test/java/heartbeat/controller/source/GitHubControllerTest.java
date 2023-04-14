@@ -1,8 +1,8 @@
 package heartbeat.controller.source;
 
 import com.jayway.jsonpath.JsonPath;
-import heartbeat.controller.source.dto.GithubResponse;
-import heartbeat.service.source.github.GithubService;
+import heartbeat.controller.source.dto.GitHubResponse;
+import heartbeat.service.source.github.GitHubService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(GithubController.class)
+@WebMvcTest(GitHubController.class)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureJsonTesters
-class GithubControllerTest {
+class GitHubControllerTest {
 
 	@MockBean
-	private GithubService githubVerifyService;
+	private GitHubService githubVerifyService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -40,7 +40,7 @@ class GithubControllerTest {
 		LinkedHashSet<String> repos = new LinkedHashSet<>(
 				List.of("https://github.com/xxxx1/repo1", "https://github.com/xxxx2/repo2"));
 
-		GithubResponse githubReposResponse = GithubResponse.builder().githubRepos(repos).build();
+		GitHubResponse githubReposResponse = GitHubResponse.builder().githubRepos(repos).build();
 
 		when(githubVerifyService.verifyToken(any())).thenReturn(githubReposResponse);
 

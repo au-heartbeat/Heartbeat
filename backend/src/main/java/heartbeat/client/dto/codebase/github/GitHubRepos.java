@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GithubRepos {
+public class GitHubRepos {
 
 	private String html_url;
 

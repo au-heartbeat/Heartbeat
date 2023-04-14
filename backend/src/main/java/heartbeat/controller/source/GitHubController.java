@@ -1,7 +1,7 @@
 package heartbeat.controller.source;
 
-import heartbeat.controller.source.dto.GithubResponse;
-import heartbeat.service.source.github.GithubService;
+import heartbeat.controller.source.dto.GitHubResponse;
+import heartbeat.service.source.github.GitHubService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @RequiredArgsConstructor
 @RequestMapping("/source-control")
 @Validated
-public class GithubController {
+public class GitHubController {
 
-	private final GithubService githubService;
+	private final GitHubService githubService;
 
 	@GetMapping
 	@CrossOrigin
 	@ResponseStatus(HttpStatus.OK)
-	public GithubResponse getRepos(@RequestParam @NotBlank(message = "token must not be blank") @Pattern(
+	public GitHubResponse getRepos(@RequestParam @NotBlank(message = "token must not be blank") @Pattern(
 			regexp = "^(ghp|gho|ghu|ghs|ghr)_([a-zA-Z0-9]{36})$",
 			message = "token's pattern is incorrect") String token) {
 		return githubService.verifyToken(token);
