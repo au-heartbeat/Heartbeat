@@ -1,30 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
 import { Loading } from '@src/components/Loading'
 import { useAppSelector } from '@src/hooks'
 import { selectConfig } from '@src/context/config/configSlice'
-import { reportResponseMapper } from '@src/mapper/ReportMapper'
 import {
-  INIT_CYCLETIME_METRICS,
-  INIT_VELOCITY_METRICS,
-  INIT_CLASSIFICATION_METRICS,
+  INIT_REPORT_DATA_WITH_THREE_COLUMNS,
+  INIT_REPORT_DATA_WITH_TWO_COLUMNS,
   NAME,
   PIPELINE_STEP,
-  INIT_DEPLOYMENT_METRICS,
-  INIT_LEAD_TIME_FOR_CHANGES_METRICS,
-  CHANGE_FAILURE_RATE_METRICS,
 } from '@src/constants'
-import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns'
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns'
+import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns'
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
-  const [velocityData, setVelocityData] = useState(INIT_VELOCITY_METRICS)
-  const [cycleTimeData, setCycleTimeData] = useState(INIT_CYCLETIME_METRICS)
-  const [classificationData, setClassificationData] = useState(INIT_CLASSIFICATION_METRICS)
-  const [deploymentFrequencyData, setDeploymentFrequencyData] = useState(INIT_DEPLOYMENT_METRICS)
-  const [leadTimeForChangesData, setLeadTimeForChangesData] = useState(INIT_LEAD_TIME_FOR_CHANGES_METRICS)
-  const [changeFailureRateData, setChangeFailureRateData] = useState(CHANGE_FAILURE_RATE_METRICS)
+  const [velocityData, setVelocityData] = useState(INIT_REPORT_DATA_WITH_TWO_COLUMNS)
+  const [cycleTimeData, setCycleTimeData] = useState(INIT_REPORT_DATA_WITH_TWO_COLUMNS)
+  const [classificationData, setClassificationData] = useState(INIT_REPORT_DATA_WITH_THREE_COLUMNS)
+  const [deploymentFrequencyData, setDeploymentFrequencyData] = useState(INIT_REPORT_DATA_WITH_THREE_COLUMNS)
+  const [leadTimeForChangesData, setLeadTimeForChangesData] = useState(INIT_REPORT_DATA_WITH_THREE_COLUMNS)
+  const [changeFailureRateData, setChangeFailureRateData] = useState(INIT_REPORT_DATA_WITH_THREE_COLUMNS)
   const configData = useAppSelector(selectConfig)
   const { metrics, calendarType, dateRange } = configData.basic
   const { board, pipelineTool, sourceControl } = configData
@@ -37,17 +32,21 @@ export const ReportStep = () => {
     startTime: dateRange.startDate,
     endTime: dateRange.endDate,
   }
+
   useEffect(() => {
     generateReport(params).then((res) => {
       if (res) {
-        const reportData = reportResponseMapper(res.response)
-        setVelocityData(reportData.velocityValues)
-        setCycleTimeData(reportData.cycleValues)
-        setClassificationData(reportData.classificationValues)
+        setVelocityData(res.velocityList)
+        setCycleTimeData(res.cycleTimeList)
+        setClassificationData(res.classificationList)
+        setDeploymentFrequencyData(res.deploymentFrequencyList)
+        setChangeFailureRateData(res.changeFailureRateList)
+        setLeadTimeForChangesData(res.leadTimeForChangesList)
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
   return (
     <>
       {isLoading ? (

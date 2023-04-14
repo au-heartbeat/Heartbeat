@@ -134,6 +134,10 @@ export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment frequency(deployments/day)'
 
 export const FAILURE_RATE_NAME = 'Failure rate'
 
+export const PIPELINE_STEP = 'Pipeline/step'
+
+export const NAME = 'Name'
+
 export enum Unit {
   PER_SP = '(days/SP)',
   PER_CARD = '(days/card)',
