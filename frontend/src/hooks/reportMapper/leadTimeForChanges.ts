@@ -15,7 +15,7 @@ export const leadTimeForChangesMapper = ({
         .slice(-3)
         .map(([name, value]) => ({
           name: name,
-          value: value.toString(),
+          value: value,
         })),
     }
     mappedLeadTimeForChangesValue.push(deploymentFrequencyValue)
@@ -27,7 +27,7 @@ export const leadTimeForChangesMapper = ({
       .slice(-3)
       .map(([name, value]) => ({
         name: name,
-        value: value.toString(),
+        value: value,
       })),
   })
 

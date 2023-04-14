@@ -271,32 +271,32 @@ export const MOCK_GET_STEPS_PARAMS = {
 }
 export const MOCK_REPORT_RESPONSE = {
   velocity: {
-    velocityForSP: '20',
-    velocityForCards: '14',
+    velocityForSP: 20,
+    velocityForCards: 14,
   },
   cycleTime: {
-    averageCircleTimePerCard: '30.26',
-    averageCycleTimePerSP: '21.18',
+    averageCycleTimePerCard: 30.26,
+    averageCycleTimePerSP: 21.18,
     totalTimeForCards: 423.59,
     swimlaneList: [
       {
         optionalItemName: 'Analysis',
-        averageTimeForSP: '8.36',
-        averageTimeForCards: '11.95',
-        totalTime: '167.27',
+        averageTimeForSP: 8.36,
+        averageTimeForCards: 11.95,
+        totalTime: 167.27,
       },
     ],
   },
   deploymentFrequency: {
     avgDeploymentFrequency: {
       name: 'Average',
-      deploymentFrequency: '0.40',
+      deploymentFrequency: 0.4,
     },
     deploymentFrequencyOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
-        deploymentFrequency: '0.30',
+        deploymentFrequency: 0.3,
         items: [
           {
             date: '9/9/2022',
@@ -350,8 +350,8 @@ export const MOCK_REPORT_RESPONSE = {
 }
 export const EXPECTED_REPORT_VALUES = {
   velocityList: [
-    { id: 0, name: 'Velocity(Story Point)', valueList: ['20'] },
-    { id: 1, name: 'Throughput(Cards Count)', valueList: ['14'] },
+    { id: 0, name: 'Velocity(Story Point)', valueList: [20] },
+    { id: 1, name: 'Throughput(Cards Count)', valueList: [14] },
   ],
   cycleTimeList: [
     { id: 0, name: 'Average cycle time', valueList: ['21.18(days/SP)', '30.26(days/card)'] },
@@ -380,7 +380,7 @@ export const EXPECTED_REPORT_VALUES = {
       valuesList: [
         {
           name: 'Deployment frequency(deployments/day)',
-          value: '0.30',
+          value: 0.3,
         },
       ],
     },
@@ -390,7 +390,7 @@ export const EXPECTED_REPORT_VALUES = {
       valuesList: [
         {
           name: 'Deployment frequency(deployments/day)',
-          value: '0.40',
+          value: 0.4,
         },
       ],
     },
@@ -400,18 +400,18 @@ export const EXPECTED_REPORT_VALUES = {
       id: 0,
       name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
       valuesList: [
-        { name: 'mergeDelayTime', value: '2702.53' },
-        { name: 'pipelineDelayTime', value: '2587.42' },
-        { name: 'totalDelayTime', value: '5289.95' },
+        { name: 'mergeDelayTime', value: 2702.53 },
+        { name: 'pipelineDelayTime', value: 2587.42 },
+        { name: 'totalDelayTime', value: 5289.95 },
       ],
     },
     {
       id: 1,
       name: 'Average/',
       valuesList: [
-        { name: 'mergeDelayTime', value: '3647.51' },
-        { name: 'pipelineDelayTime', value: '2341.72' },
-        { name: 'totalDelayTime', value: '5989.22' },
+        { name: 'mergeDelayTime', value: 3647.51 },
+        { name: 'pipelineDelayTime', value: 2341.72 },
+        { name: 'totalDelayTime', value: 5989.22 },
       ],
     },
   ],
