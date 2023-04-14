@@ -7,7 +7,7 @@ import { reportClient } from '@src/clients/report/ReportClient'
 import { reportMapper } from '@src/hooks/reportMapper/report'
 
 jest.mock('@src/hooks/reportMapper/report', () => ({
-  reportMapper: jest.fn(() => 'mock'),
+  reportMapper: jest.fn(),
 }))
 
 describe('use generate report effect', () => {

@@ -19,7 +19,7 @@ describe('change failure rate data mapper', () => {
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
-        values: [
+        valuesList: [
           {
             name: 'Failure rate',
             value: '0.00% (0/3)',
@@ -29,7 +29,7 @@ describe('change failure rate data mapper', () => {
       {
         id: 1,
         name: 'Average/',
-        values: [
+        valuesList: [
           {
             name: 'Failure rate',
             value: '0.00% (0/12)',

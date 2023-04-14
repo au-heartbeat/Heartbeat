@@ -102,8 +102,8 @@ export const MOCK_BOARD_VERIFY_REQUEST_PARAMS = {
   type: BOARD_TYPES.JIRA,
   site: '1',
   projectKey: '1',
-  startTime: '1613664000000',
-  endTime: '1614873600000',
+  startTime: 1613664000000,
+  endTime: 1614873600000,
   boardId: '1',
 }
 
@@ -112,23 +112,23 @@ export const MOCK_CLASSIC_JIRA_BOARD_VERIFY_REQUEST_PARAMS = {
   type: BOARD_TYPES.CLASSIC_JIRA,
   site: '2',
   projectKey: '2',
-  startTime: '1613664000000',
-  endTime: '1614873600000',
+  startTime: 1613664000000,
+  endTime: 1614873600000,
   boardId: '2',
 }
 
 export const MOCK_PIPELINE_VERIFY_REQUEST_PARAMS = {
   token: 'mockToken',
   type: PIPELINE_TOOL_TYPES.BUILD_KITE,
-  startTime: '1613664000000',
-  endTime: '1614873600000',
+  startTime: 1613664000000,
+  endTime: 1614873600000,
 }
 
 export const MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS = {
   token: 'mockToken',
   type: SOURCE_CONTROL_TYPES.GITHUB,
-  startTime: '1613664000000',
-  endTime: '1614873600000',
+  startTime: 1613664000000,
+  endTime: 1614873600000,
 }
 
 export const MOCK_GENERATE_REPORT_REQUEST_PARAMS = {
@@ -347,35 +347,35 @@ export const MOCK_REPORT_RESPONSE = {
   ],
 }
 export const EXPECTED_REPORT_VALUES = {
-  velocityValues: [
-    { id: 0, name: 'Velocity(Story Point)', value: ['20'] },
-    { id: 1, name: 'Throughput(Cards Count)', value: ['14'] },
+  velocityList: [
+    { id: 0, name: 'Velocity(Story Point)', valueList: ['20'] },
+    { id: 1, name: 'Throughput(Cards Count)', valueList: ['14'] },
   ],
-  cycleValues: [
-    { id: 0, name: 'Average cycle time', value: ['21.18(days/SP)', '30.26(days/card)'] },
-    { id: 1, name: 'Total development time / Total cycle time', value: [] },
-    { id: 2, name: 'Total waiting for testing time / Total cycle time', value: [] },
-    { id: 3, name: 'Total block time / Total cycle time', value: [] },
-    { id: 4, name: 'Total review time / Total cycle time', value: [] },
-    { id: 5, name: 'Total testing time / Total cycle time', value: [] },
-    { id: 6, name: 'Average development time', value: [] },
-    { id: 7, name: 'Average waiting for testing time', value: [] },
-    { id: 8, name: 'Average block time', value: [] },
-    { id: 9, name: 'Average review time', value: [] },
-    { id: 10, name: 'Average testing time', value: [] },
+  cycleTimeList: [
+    { id: 0, name: 'Average cycle time', valueList: ['21.18(days/SP)', '30.26(days/card)'] },
+    { id: 1, name: 'Total development time / Total cycle time', valueList: [] },
+    { id: 2, name: 'Total waiting for testing time / Total cycle time', valueList: [] },
+    { id: 3, name: 'Total block time / Total cycle time', valueList: [] },
+    { id: 4, name: 'Total review time / Total cycle time', valueList: [] },
+    { id: 5, name: 'Total testing time / Total cycle time', valueList: [] },
+    { id: 6, name: 'Average development time', valueList: [] },
+    { id: 7, name: 'Average waiting for testing time', valueList: [] },
+    { id: 8, name: 'Average block time', valueList: [] },
+    { id: 9, name: 'Average review time', valueList: [] },
+    { id: 10, name: 'Average testing time', valueList: [] },
   ],
-  classificationValues: [
+  classificationList: [
     {
       id: 0,
       name: 'FS Work Type',
-      values: [{ name: 'Feature Work - Planned', value: '57.14%' }],
+      valuesList: [{ name: 'Feature Work - Planned', value: '57.14%' }],
     },
   ],
-  deploymentFrequencyValues: [
+  deploymentFrequencyList: [
     {
       id: 0,
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
-      values: [
+      valuesList: [
         {
           name: 'Deployment frequency(deployments/day)',
           value: '0.30',
@@ -385,7 +385,7 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 1,
       name: 'Average/',
-      values: [
+      valuesList: [
         {
           name: 'Deployment frequency(deployments/day)',
           value: '0.40',
@@ -393,11 +393,11 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
   ],
-  leadTimeForChangesValues: [
+  leadTimeForChangesList: [
     {
       id: 0,
       name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
-      values: [
+      valuesList: [
         { name: 'mergeDelayTime', value: '2702.53' },
         { name: 'pipelineDelayTime', value: '2587.42' },
         { name: 'totalDelayTime', value: '5289.95' },
@@ -406,18 +406,18 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 1,
       name: 'Average/',
-      values: [
+      valuesList: [
         { name: 'mergeDelayTime', value: '3647.51' },
         { name: 'pipelineDelayTime', value: '2341.72' },
         { name: 'totalDelayTime', value: '5989.22' },
       ],
     },
   ],
-  changeFailureRateValues: [
+  changeFailureRateList: [
     {
       id: 0,
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
-      values: [
+      valuesList: [
         {
           name: 'Failure rate',
           value: '0.00% (0/3)',
@@ -427,7 +427,7 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 1,
       name: 'Average/',
-      values: [
+      valuesList: [
         {
           name: 'Failure rate',
           value: '0.00% (0/12)',

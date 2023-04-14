@@ -1,12 +1,4 @@
-import {
-  ChangeFailureRateResp,
-  ClassificationResp,
-  CycleTimeResp,
-  DeploymentFrequencyResp,
-  LeadTimeForChangesResp,
-  VelocityResp,
-} from '@src/clients/report/dto/responseDTO'
-
+import { ReportResponseDTO } from '@src/clients/report/dto/response'
 import { changeFailureRateMapper } from '@src/hooks/reportMapper/changeFailureRate'
 import { velocityMapper } from '@src/hooks/reportMapper/velocity'
 import { cycleTimeMapper } from '@src/hooks/reportMapper/cycleTime'
@@ -22,39 +14,32 @@ export const reportMapper = ({
   deploymentFrequency,
   leadTimeForChanges,
   changeFailureRate,
-}: {
-  velocity: VelocityResp
-  cycleTime: CycleTimeResp
-  classification: Array<ClassificationResp>
-  deploymentFrequency: DeploymentFrequencyResp
-  leadTimeForChanges: LeadTimeForChangesResp
-  changeFailureRate: ChangeFailureRateResp
-}): {
-  velocityValues: ReportDataWithTwoColumns[]
-  cycleValues: ReportDataWithTwoColumns[]
-  classificationValues: ReportDataWithThreeColumns[]
-  deploymentFrequencyValues: ReportDataWithThreeColumns[]
-  leadTimeForChangesValues: ReportDataWithThreeColumns[]
-  changeFailureRateValues: ReportDataWithThreeColumns[]
+}: ReportResponseDTO): {
+  velocityList: ReportDataWithTwoColumns[]
+  cycleTimeList: ReportDataWithTwoColumns[]
+  classificationList: ReportDataWithThreeColumns[]
+  deploymentFrequencyList: ReportDataWithThreeColumns[]
+  leadTimeForChangesList: ReportDataWithThreeColumns[]
+  changeFailureRateList: ReportDataWithThreeColumns[]
 } => {
-  const velocityValues = velocityMapper(velocity)
+  const velocityList = velocityMapper(velocity)
 
-  const cycleValues = cycleTimeMapper(cycleTime)
+  const cycleTimeList = cycleTimeMapper(cycleTime)
 
-  const classificationValues = classificationMapper(classification)
+  const classificationList = classificationMapper(classification)
 
-  const deploymentFrequencyValues = deploymentFrequencyMapper(deploymentFrequency)
+  const deploymentFrequencyList = deploymentFrequencyMapper(deploymentFrequency)
 
-  const leadTimeForChangesValues = leadTimeForChangesMapper(leadTimeForChanges)
+  const leadTimeForChangesList = leadTimeForChangesMapper(leadTimeForChanges)
 
-  const changeFailureRateValues = changeFailureRateMapper(changeFailureRate)
+  const changeFailureRateList = changeFailureRateMapper(changeFailureRate)
 
   return {
-    velocityValues,
-    cycleValues,
-    classificationValues,
-    deploymentFrequencyValues,
-    leadTimeForChangesValues,
-    changeFailureRateValues,
+    velocityList,
+    cycleTimeList,
+    classificationList,
+    deploymentFrequencyList,
+    leadTimeForChangesList,
+    changeFailureRateList,
   }
 }

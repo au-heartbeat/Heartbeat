@@ -23,7 +23,7 @@ describe('lead time for changes data mapper', () => {
       {
         id: 0,
         name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
-        values: [
+        valuesList: [
           { name: 'mergeDelayTime', value: '2702.53' },
           { name: 'pipelineDelayTime', value: '2587.42' },
           { name: 'totalDelayTime', value: '5289.95' },
@@ -32,7 +32,7 @@ describe('lead time for changes data mapper', () => {
       {
         id: 1,
         name: 'Average/',
-        values: [
+        valuesList: [
           { name: 'mergeDelayTime', value: '3647.51' },
           { name: 'pipelineDelayTime', value: '2341.72' },
           { name: 'totalDelayTime', value: '5989.22' },

@@ -1,7 +1,7 @@
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
-import { ClassificationResp } from '@src/clients/report/dto/responseDTO'
+import { ClassificationResponse } from '@src/clients/report/dto/response'
 
-export const classificationMapper = (classification: ClassificationResp[]) => {
+export const classificationMapper = (classification: ClassificationResponse[]) => {
   const mappedClassificationValue: ReportDataWithThreeColumns[] = []
 
   classification.map((item, index) => {
@@ -14,7 +14,7 @@ export const classificationMapper = (classification: ClassificationResp[]) => {
     const classificationValue: ReportDataWithThreeColumns = {
       id: index,
       name: item.fieldName,
-      values: pairsValues,
+      valuesList: pairsValues,
     }
     mappedClassificationValue.push(classificationValue)
   })

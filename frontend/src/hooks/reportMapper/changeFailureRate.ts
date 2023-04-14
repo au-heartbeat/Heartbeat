@@ -1,25 +1,25 @@
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
-import { ChangeFailureRateResp } from '@src/clients/report/dto/responseDTO'
+import { ChangeFailureRateResponse } from '@src/clients/report/dto/response'
 import { FAILURE_RATE_NAME } from '@src/constants'
 
 export const changeFailureRateMapper = ({
   avgChangeFailureRate,
   changeFailureRateOfPipelines,
-}: ChangeFailureRateResp) => {
+}: ChangeFailureRateResponse) => {
   const mappedChangeFailureRateValue: ReportDataWithThreeColumns[] = []
 
   changeFailureRateOfPipelines.map((item, index) => {
     const deploymentFrequencyValue: ReportDataWithThreeColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
-      values: [{ name: FAILURE_RATE_NAME, value: item.failureRate }],
+      valuesList: [{ name: FAILURE_RATE_NAME, value: item.failureRate }],
     }
     mappedChangeFailureRateValue.push(deploymentFrequencyValue)
   })
   mappedChangeFailureRateValue.push({
     id: mappedChangeFailureRateValue.length,
     name: `${avgChangeFailureRate.name}/`,
-    values: [{ name: FAILURE_RATE_NAME, value: avgChangeFailureRate.failureRate }],
+    valuesList: [{ name: FAILURE_RATE_NAME, value: avgChangeFailureRate.failureRate }],
   })
 
   return mappedChangeFailureRateValue

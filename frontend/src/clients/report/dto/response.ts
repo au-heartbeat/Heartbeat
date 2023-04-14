@@ -1,17 +1,42 @@
-export interface ReportResp {
-  velocity?: VelocityResp
-  cycleTime?: CycleTimeResp
-  deploymentFrequency?: DeploymentFrequencyResp
-  leadTimeForChanges?: LeadTimeForChangesResp
-  changeFailureRate?: ChangeFailureRateResp
-  classification?: Array<ClassificationResp>
-  hasExportCsvData?: string
-  meanTimeToRecovery?: MeanTimeToRecovery
+export interface ReportResponseDTO {
+  velocity: VelocityResponse
+  cycleTime: CycleTimeResponse
+  deploymentFrequency: DeploymentFrequencyResponse
+  leadTimeForChanges: LeadTimeForChangesResponse
+  changeFailureRate: ChangeFailureRateResponse
+  classification: Array<ClassificationResponse>
 }
 
-export interface VelocityResp {
+export interface VelocityResponse {
   velocityForSP: string
   velocityForCards: string
+}
+
+export interface CycleTimeResponse {
+  totalTimeForCards: number
+  averageCircleTimePerCard: string
+  averageCycleTimePerSP: string
+  swimlaneList: Array<Swimlane>
+}
+
+export interface ClassificationResponse {
+  fieldName: string
+  pairs: Array<Pair>
+}
+
+export interface DeploymentFrequencyResponse {
+  avgDeploymentFrequency: AVGDeploymentFrequency
+  deploymentFrequencyOfPipelines: DeploymentFrequencyOfPipeline[]
+}
+
+export interface LeadTimeForChangesResponse {
+  leadTimeForChangesOfPipelines: Array<LeadTimeOfPipeline>
+  avgLeadTimeForChanges: AvgLeadTime
+}
+
+export interface ChangeFailureRateResponse {
+  avgChangeFailureRate: AvgFailureRate
+  changeFailureRateOfPipelines: FailureRateOfPipeline[]
 }
 
 export interface Swimlane {
@@ -19,13 +44,6 @@ export interface Swimlane {
   averageTimeForSP: string
   averageTimeForCards: string
   totalTime: string
-}
-
-export interface CycleTimeResp {
-  totalTimeForCards: number
-  averageCircleTimePerCard: string
-  averageCycleTimePerSP: string
-  swimlaneList: Array<Swimlane>
 }
 
 export interface AVGDeploymentFrequency {
@@ -46,11 +64,6 @@ export interface DeploymentFrequencyOfPipeline {
   items: DeploymentDateCount[]
 }
 
-export interface DeploymentFrequencyResp {
-  avgDeploymentFrequency: AVGDeploymentFrequency
-  deploymentFrequencyOfPipelines: DeploymentFrequencyOfPipeline[]
-}
-
 export interface LeadTimeOfPipeline {
   name: string
   step: string
@@ -67,11 +80,6 @@ export interface AvgLeadTime {
   totalDelayTime: number
 }
 
-export interface LeadTimeForChangesResp {
-  leadTimeForChangesOfPipelines: Array<LeadTimeOfPipeline>
-  avgLeadTimeForChanges: AvgLeadTime
-}
-
 export interface FailureRateOfPipeline {
   name: string
   step: string
@@ -82,11 +90,6 @@ export interface AvgFailureRate {
   name: string
   step?: string
   failureRate: string
-}
-
-export interface ChangeFailureRateResp {
-  avgChangeFailureRate: AvgFailureRate
-  changeFailureRateOfPipelines: FailureRateOfPipeline[]
 }
 
 export interface MeanTimeToRecoveryOfPipeline {
@@ -109,9 +112,4 @@ export interface MeanTimeToRecovery {
 export interface Pair {
   name: string
   value: string
-}
-
-export interface ClassificationResp {
-  fieldName: string
-  pairs: Array<Pair>
 }

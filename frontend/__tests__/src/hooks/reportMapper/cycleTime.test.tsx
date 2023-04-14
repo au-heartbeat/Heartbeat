@@ -22,17 +22,17 @@ describe('cycleTime data mapper', () => {
   }
   it('maps response cycleTime values to ui display value', () => {
     const expectedCycleValues = [
-      { id: 0, name: 'Average cycle time', value: ['21.18(days/SP)', '30.26(days/card)'] },
-      { id: 1, name: 'Total development time / Total cycle time', value: ['0.57'] },
-      { id: 2, name: 'Total waiting for testing time / Total cycle time', value: ['0.01'] },
-      { id: 3, name: 'Total block time / Total cycle time', value: [] },
-      { id: 4, name: 'Total review time / Total cycle time', value: [] },
-      { id: 5, name: 'Total testing time / Total cycle time', value: [] },
-      { id: 6, name: 'Average development time', value: ['12.13(days/SP)', '17.32(days/card)'] },
-      { id: 7, name: 'Average waiting for testing time', value: ['0.16(days/SP)', '0.23(days/card)'] },
-      { id: 8, name: 'Average block time', value: [] },
-      { id: 9, name: 'Average review time', value: [] },
-      { id: 10, name: 'Average testing time', value: [] },
+      { id: 0, name: 'Average cycle time', valueList: ['21.18(days/SP)', '30.26(days/card)'] },
+      { id: 1, name: 'Total development time / Total cycle time', valueList: ['0.57'] },
+      { id: 2, name: 'Total waiting for testing time / Total cycle time', valueList: ['0.01'] },
+      { id: 3, name: 'Total block time / Total cycle time', valueList: [] },
+      { id: 4, name: 'Total review time / Total cycle time', valueList: [] },
+      { id: 5, name: 'Total testing time / Total cycle time', valueList: [] },
+      { id: 6, name: 'Average development time', valueList: ['12.13(days/SP)', '17.32(days/card)'] },
+      { id: 7, name: 'Average waiting for testing time', valueList: ['0.16(days/SP)', '0.23(days/card)'] },
+      { id: 8, name: 'Average block time', valueList: [] },
+      { id: 9, name: 'Average review time', valueList: [] },
+      { id: 10, name: 'Average testing time', valueList: [] },
     ]
     const mappedCycleValues = cycleTimeMapper(mockCycleTimeRes)
 

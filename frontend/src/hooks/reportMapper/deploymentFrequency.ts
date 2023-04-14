@@ -1,25 +1,25 @@
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
-import { DeploymentFrequencyResp } from '@src/clients/report/dto/responseDTO'
+import { DeploymentFrequencyResponse } from '@src/clients/report/dto/response'
 import { DEPLOYMENT_FREQUENCY_NAME } from '@src/constants'
 
 export const deploymentFrequencyMapper = ({
   avgDeploymentFrequency,
   deploymentFrequencyOfPipelines,
-}: DeploymentFrequencyResp) => {
+}: DeploymentFrequencyResponse) => {
   const mappedDeploymentFrequencyValue: ReportDataWithThreeColumns[] = []
 
   deploymentFrequencyOfPipelines.map((item, index) => {
     const deploymentFrequencyValue: ReportDataWithThreeColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
-      values: [{ name: DEPLOYMENT_FREQUENCY_NAME, value: item.deploymentFrequency }],
+      valuesList: [{ name: DEPLOYMENT_FREQUENCY_NAME, value: item.deploymentFrequency }],
     }
     mappedDeploymentFrequencyValue.push(deploymentFrequencyValue)
   })
   mappedDeploymentFrequencyValue.push({
     id: mappedDeploymentFrequencyValue.length,
     name: `${avgDeploymentFrequency.name}/`,
-    values: [{ name: DEPLOYMENT_FREQUENCY_NAME, value: avgDeploymentFrequency.deploymentFrequency }],
+    valuesList: [{ name: DEPLOYMENT_FREQUENCY_NAME, value: avgDeploymentFrequency.deploymentFrequency }],
   })
 
   return mappedDeploymentFrequencyValue

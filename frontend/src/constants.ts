@@ -1,3 +1,5 @@
+import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
+
 export const PROJECT_NAME = 'Heartbeat'
 export const DEFAULT_HELPER_TEXT = ' '
 
@@ -137,20 +139,12 @@ export enum Unit {
   PER_CARD = '(days/card)',
 }
 
-export const INIT_VELOCITY_METRICS: { id: number; name: string; value: string[] }[] = [
+export const INIT_REPORT_DATA_WITH_TWO_COLUMNS: ReportDataWithTwoColumns[] = [
   {
     id: 1,
-    name: 'velocity',
-    value: ['2'],
+    name: '',
+    valueList: [],
   },
 ]
 
-export const INIT_CYCLE_TIME_METRICS: { id: number; name: string; value: string[] }[] = [
-  {
-    id: 1,
-    name: 'Cycle time',
-    value: ['40'],
-  },
-]
-
-export const GET_STEPS_FAILED = 'get steps failed'
+export const GET_STEPS_FAILED_MESSAGE = 'get steps failed'

@@ -1,5 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient'
-import { ReportReq } from '@src/clients/report/dto/requestDTO'
+import { ReportRequestDTO } from '@src/clients/report/dto/request'
 
 export class ReportClient extends HttpClient {
   reportResponse = {
@@ -51,7 +51,7 @@ export class ReportClient extends HttpClient {
     },
   }
 
-  report = async (params: ReportReq) => {
+  report = async (params: ReportRequestDTO) => {
     // eslint-disable-next-line no-useless-catch
     try {
       await this.axiosInstance

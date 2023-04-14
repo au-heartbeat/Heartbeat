@@ -1,17 +1,17 @@
-import { LeadTimeForChangesResp } from '@src/clients/report/dto/responseDTO'
+import { LeadTimeForChangesResponse } from '@src/clients/report/dto/response'
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 
 export const leadTimeForChangesMapper = ({
   leadTimeForChangesOfPipelines,
   avgLeadTimeForChanges,
-}: LeadTimeForChangesResp) => {
+}: LeadTimeForChangesResponse) => {
   const mappedLeadTimeForChangesValue: ReportDataWithThreeColumns[] = []
 
   leadTimeForChangesOfPipelines.map((item, index) => {
     const deploymentFrequencyValue: ReportDataWithThreeColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
-      values: Object.entries(item)
+      valuesList: Object.entries(item)
         .slice(-3)
         .map(([name, value]) => ({
           name: name,
@@ -23,7 +23,7 @@ export const leadTimeForChangesMapper = ({
   mappedLeadTimeForChangesValue.push({
     id: mappedLeadTimeForChangesValue.length,
     name: `${avgLeadTimeForChanges.name}/`,
-    values: Object.entries(avgLeadTimeForChanges)
+    valuesList: Object.entries(avgLeadTimeForChanges)
       .slice(-3)
       .map(([name, value]) => ({
         name: name,
