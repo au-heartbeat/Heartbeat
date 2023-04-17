@@ -14,8 +14,8 @@ export interface VelocityResponse {
 
 export interface CycleTimeResponse {
   totalTimeForCards: number
-  averageCircleTimePerCard: string
-  averageCycleTimePerSP: string
+  averageCycleTimePerCard: number
+  averageCycleTimePerSP: number
   swimlaneList: Array<Swimlane>
 }
 
@@ -41,9 +41,9 @@ export interface ChangeFailureRateResponse {
 
 export interface Swimlane {
   optionalItemName: string
-  averageTimeForSP: string
-  averageTimeForCards: string
-  totalTime: string
+  averageTimeForSP: number
+  averageTimeForCards: number
+  totalTime: number
 }
 
 export interface AVGDeploymentFrequency {

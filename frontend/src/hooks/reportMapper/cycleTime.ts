@@ -6,16 +6,16 @@ export const cycleTimeMapper = ({
   swimlaneList,
   totalTimeForCards,
   averageCycleTimePerSP,
-  averageCircleTimePerCard,
+  averageCycleTimePerCard,
 }: CycleTimeResponse) => {
   const mappedCycleTimeValue: ReportDataWithTwoColumns[] = []
 
   const getSwimlaneByItemName = (itemName: string) => {
     return swimlaneList.find((item: Swimlane) => item.optionalItemName === itemName)
   }
-  const calPerColumnTotalTimeDivTotalTime = (itemName: string) => {
+  const calPerColumnTotalTimeDivTotalTime = (itemName: string): number[] | string[] => {
     const swimlane = getSwimlaneByItemName(itemName)
-    return swimlane ? [(parseFloat(swimlane.totalTime) / totalTimeForCards).toFixed(2)] : []
+    return swimlane ? [parseFloat((swimlane.totalTime / totalTimeForCards).toFixed(2))] : []
   }
   const getAverageTimeForPerColumn = (itemName: string) => {
     const swimlane = getSwimlaneByItemName(itemName)
@@ -24,8 +24,8 @@ export const cycleTimeMapper = ({
       : []
   }
 
-  const cycleTimeValue: { [key: string]: string[] } = {
-    AVERAGE_CYCLE_TIME: [`${averageCycleTimePerSP}${Unit.PER_SP}`, `${averageCircleTimePerCard}${Unit.PER_CARD}`],
+  const cycleTimeValue: { [key: string]: string[] | number[] } = {
+    AVERAGE_CYCLE_TIME: [`${averageCycleTimePerSP}${Unit.PER_SP}`, `${averageCycleTimePerCard}${Unit.PER_CARD}`],
     DEVELOPMENT_PROPORTION: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.inDevValue),
     WAITING_PROPORTION: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.waitingValue),
     BLOCK_PROPORTION: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.blockValue),
