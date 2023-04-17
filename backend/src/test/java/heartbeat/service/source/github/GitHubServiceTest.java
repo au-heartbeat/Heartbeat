@@ -37,7 +37,7 @@ class GitHubServiceTest {
 		when(githubFeignClient.getAllRepos(token)).thenReturn(List.of(GitHubRepos.builder().html_url("11111").build(),
 				GitHubRepos.builder().html_url("22222").build(), GitHubRepos.builder().html_url("33333").build()));
 
-		when(githubFeignClient.getGithubOrganizationsInfo(token))
+		when(githubFeignClient.getGitHubOrganizationsInfo(token))
 			.thenReturn(List.of(GitHubOrganizationsInfo.builder().login("org1").build(),
 					GitHubOrganizationsInfo.builder().login("org2").build()));
 

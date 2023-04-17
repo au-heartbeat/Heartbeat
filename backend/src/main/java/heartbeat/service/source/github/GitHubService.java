@@ -34,7 +34,7 @@ public class GitHubService {
 					+ githubReposByUser);
 
 			log.info("[Github] Start to query organization_url by token, token: " + partialToken);
-			List<GitHubOrganizationsInfo> githubOrganizations = githubFeignClient.getGithubOrganizationsInfo(token);
+			List<GitHubOrganizationsInfo> githubOrganizations = githubFeignClient.getGitHubOrganizationsInfo(token);
 			log.info("[Github] Successfully get organizations by token, token: " + partialToken + " organizations: "
 					+ githubOrganizations);
 
