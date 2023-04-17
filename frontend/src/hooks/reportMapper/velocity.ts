@@ -5,7 +5,7 @@ import { VelocityResponse } from '@src/clients/report/dto/response'
 export const velocityMapper = ({ velocityForSP, velocityForCards }: VelocityResponse) => {
   const mappedVelocityValue: ReportDataWithTwoColumns[] = []
 
-  const velocityValue: { [key: string]: string } = {
+  const velocityValue: { [key: string]: number } = {
     VELOCITY_SP: velocityForSP,
     THROUGHPUT_CARDS_COUNT: velocityForCards,
   }

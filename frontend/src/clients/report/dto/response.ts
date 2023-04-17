@@ -8,8 +8,8 @@ export interface ReportResponseDTO {
 }
 
 export interface VelocityResponse {
-  velocityForSP: string
-  velocityForCards: string
+  velocityForSP: number
+  velocityForCards: number
 }
 
 export interface CycleTimeResponse {

@@ -38,8 +38,8 @@ describe('Report Step', () => {
     const { getByText } = setup()
 
     await waitFor(() => {
-      expect(getByText('20')).toBeInTheDocument()
-      expect(getByText('14')).toBeInTheDocument()
+      expect(getByText(20)).toBeInTheDocument()
+      expect(getByText(14)).toBeInTheDocument()
     })
   })
 

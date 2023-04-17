@@ -1,7 +1,7 @@
 export interface ReportDataWithTwoColumns {
   id: number
   name: string
-  valueList: string[]
+  valueList: string[] | number[]
 }
 
 export interface ReportDataWithThreeColumns {
@@ -9,6 +9,6 @@ export interface ReportDataWithThreeColumns {
   name: string
   valuesList: {
     name: string
-    value: string
+    value: string | number
   }[]
 }
