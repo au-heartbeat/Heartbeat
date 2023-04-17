@@ -285,6 +285,12 @@ export const MOCK_REPORT_RESPONSE = {
         averageTimeForCards: 11.95,
         totalTime: 167.27,
       },
+      {
+        optionalItemName: 'In Dev',
+        averageTimeForSP: 12.13,
+        averageTimeForCards: 17.32,
+        totalTime: 242.51,
+      },
     ],
   },
   deploymentFrequency: {
@@ -360,6 +366,19 @@ export const EXPECTED_REPORT_VALUES = {
       valueList: [
         { value: 21.18, unit: '(days/SP)' },
         { value: 30.26, unit: '(days/card)' },
+      ],
+    },
+    {
+      id: 1,
+      name: 'Total development time / Total cycle time',
+      valueList: [{ value: 0.57 }],
+    },
+    {
+      id: 2,
+      name: 'Average development time',
+      valueList: [
+        { value: 12.13, unit: '(days/SP)' },
+        { value: 17.32, unit: '(days/card)' },
       ],
     },
   ],

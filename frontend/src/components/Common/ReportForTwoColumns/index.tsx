@@ -16,12 +16,12 @@ export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) =
         <Row>
           <TableCell rowSpan={row.valueList.length}>{row.name}</TableCell>
           <TableCell>
-            {row.valueList[0].unit ? `${row.valueList[0].value}${row.valueList[0].unit}` : row.valueList[0].value}
+            {row.valueList[0]?.unit ? `${row.valueList[0].value}${row.valueList[0].unit}` : row.valueList[0].value}
           </TableCell>
         </Row>
         {row.valueList.slice(1).map((data) => (
           <Row key={row.id}>
-            <TableCell>{data.unit ? `${data.value}${data.unit}` : data.value}</TableCell>
+            <TableCell>{`${data.value}${data.unit}`}</TableCell>
           </Row>
         ))}
       </Fragment>
