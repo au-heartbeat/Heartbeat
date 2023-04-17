@@ -50,8 +50,10 @@ export const cycleTimeMapper = ({
     AVERAGE_TESTING_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
   }
 
-  Object.entries(CYCLE_TIME_METRICS_NAME).map(([key, cycleName], index) => {
-    mappedCycleTimeValue.push({ id: index, name: cycleName, valueList: cycleTimeValue[key] })
+  Object.entries(CYCLE_TIME_METRICS_NAME).map(([key, cycleName]) => {
+    if (cycleTimeValue[key].length > 0) {
+      mappedCycleTimeValue.push({ id: mappedCycleTimeValue.length, name: cycleName, valueList: cycleTimeValue[key] })
+    }
   })
 
   return mappedCycleTimeValue

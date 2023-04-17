@@ -350,21 +350,105 @@ export const MOCK_REPORT_RESPONSE = {
 }
 export const EXPECTED_REPORT_VALUES = {
   velocityList: [
-    { id: 0, name: 'Velocity(Story Point)', valueList: [20] },
-    { id: 1, name: 'Throughput(Cards Count)', valueList: [14] },
+    { id: 0, name: 'Velocity(Story Point)', valueList: [{ value: 20 }] },
+    { id: 1, name: 'Throughput(Cards Count)', valueList: [{ value: 14 }] },
   ],
   cycleTimeList: [
-    { id: 0, name: 'Average cycle time', valueList: ['21.18(days/SP)', '30.26(days/card)'] },
-    { id: 1, name: 'Total development time / Total cycle time', valueList: [] },
-    { id: 2, name: 'Total waiting for testing time / Total cycle time', valueList: [] },
-    { id: 3, name: 'Total block time / Total cycle time', valueList: [] },
-    { id: 4, name: 'Total review time / Total cycle time', valueList: [] },
-    { id: 5, name: 'Total testing time / Total cycle time', valueList: [] },
-    { id: 6, name: 'Average development time', valueList: [] },
-    { id: 7, name: 'Average waiting for testing time', valueList: [] },
-    { id: 8, name: 'Average block time', valueList: [] },
-    { id: 9, name: 'Average review time', valueList: [] },
-    { id: 10, name: 'Average testing time', valueList: [] },
+    {
+      id: 0,
+      name: 'Average cycle time',
+      valueList: [
+        { value: 21.18, unit: '(days/SP)' },
+        { value: 30.26, unit: '(days/card)' },
+      ],
+    },
+  ],
+  classificationList: [
+    {
+      id: 0,
+      name: 'FS Work Type',
+      valuesList: [{ name: 'Feature Work - Planned', value: '57.14%' }],
+    },
+  ],
+  deploymentFrequencyList: [
+    {
+      id: 0,
+      name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
+      valuesList: [
+        {
+          name: 'Deployment frequency(deployments/day)',
+          value: 0.3,
+        },
+      ],
+    },
+    {
+      id: 1,
+      name: 'Average/',
+      valuesList: [
+        {
+          name: 'Deployment frequency(deployments/day)',
+          value: 0.4,
+        },
+      ],
+    },
+  ],
+  leadTimeForChangesList: [
+    {
+      id: 0,
+      name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
+      valuesList: [
+        { name: 'mergeDelayTime', value: 2702.53 },
+        { name: 'pipelineDelayTime', value: 2587.42 },
+        { name: 'totalDelayTime', value: 5289.95 },
+      ],
+    },
+    {
+      id: 1,
+      name: 'Average/',
+      valuesList: [
+        { name: 'mergeDelayTime', value: 3647.51 },
+        { name: 'pipelineDelayTime', value: 2341.72 },
+        { name: 'totalDelayTime', value: 5989.22 },
+      ],
+    },
+  ],
+  changeFailureRateList: [
+    {
+      id: 0,
+      name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
+      valuesList: [
+        {
+          name: 'Failure rate',
+          value: '0.00% (0/3)',
+        },
+      ],
+    },
+    {
+      id: 1,
+      name: 'Average/',
+      valuesList: [
+        {
+          name: 'Failure rate',
+          value: '0.00% (0/12)',
+        },
+      ],
+    },
+  ],
+}
+export const EXPECTED_REPORT_VALUES_FOR_COMP = {
+  velocityList: [
+    { id: 0, name: 'Velocity(Story Point)', valueList: [{ value: 20 }] },
+    { id: 1, name: 'Throughput(Cards Count)', valueList: [{ value: 14 }] },
+  ],
+  cycleTimeList: [
+    {
+      id: 0,
+      name: 'Average cycle time',
+      valueList: [
+        { value: 21.18, unit: '(days/SP)' },
+        { value: 30.26, unit: '(days/card)' },
+      ],
+    },
   ],
   classificationList: [
     {
