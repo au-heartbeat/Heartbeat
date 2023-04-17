@@ -14,7 +14,7 @@ export const velocityMapper = ({ velocityForSP, velocityForCards }: VelocityResp
     mappedVelocityValue.push({
       id: index,
       name: velocityName,
-      valueList: [velocityValue[key]],
+      valueList: [{ value: velocityValue[key] }],
     })
   })
 

@@ -1,5 +1,5 @@
 import { CYCLE_TIME_METRICS_NAME, METRICS_CONSTANTS, Unit } from '@src/constants'
-import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
+import { ReportDataWithTwoColumns, ValueWithUnits } from '@src/hooks/reportMapper/reportUIDataStructure'
 import { CycleTimeResponse, Swimlane } from '@src/clients/report/dto/response'
 
 export const cycleTimeMapper = ({
@@ -13,19 +13,31 @@ export const cycleTimeMapper = ({
   const getSwimlaneByItemName = (itemName: string) => {
     return swimlaneList.find((item: Swimlane) => item.optionalItemName === itemName)
   }
-  const calPerColumnTotalTimeDivTotalTime = (itemName: string): number[] | string[] => {
+  const calPerColumnTotalTimeDivTotalTime = (itemName: string): ValueWithUnits[] => {
     const swimlane = getSwimlaneByItemName(itemName)
-    return swimlane ? [parseFloat((swimlane.totalTime / totalTimeForCards).toFixed(2))] : []
+    return swimlane ? [{ value: parseFloat((swimlane.totalTime / totalTimeForCards).toFixed(2)) }] : []
   }
   const getAverageTimeForPerColumn = (itemName: string) => {
     const swimlane = getSwimlaneByItemName(itemName)
     return swimlane
-      ? [`${swimlane.averageTimeForSP}${Unit.PER_SP}`, `${swimlane.averageTimeForCards}${Unit.PER_CARD}`]
+      ? [
+          { value: swimlane.averageTimeForSP, unit: Unit.PER_SP },
+          {
+            value: swimlane.averageTimeForCards,
+            unit: Unit.PER_CARD,
+          },
+        ]
       : []
   }
 
-  const cycleTimeValue: { [key: string]: string[] | number[] } = {
-    AVERAGE_CYCLE_TIME: [`${averageCycleTimePerSP}${Unit.PER_SP}`, `${averageCycleTimePerCard}${Unit.PER_CARD}`],
+  const cycleTimeValue: { [key: string]: ValueWithUnits[] } = {
+    AVERAGE_CYCLE_TIME: [
+      { value: averageCycleTimePerSP, unit: Unit.PER_SP },
+      {
+        value: averageCycleTimePerCard,
+        unit: Unit.PER_CARD,
+      },
+    ],
     DEVELOPMENT_PROPORTION: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.inDevValue),
     WAITING_PROPORTION: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.waitingValue),
     BLOCK_PROPORTION: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.blockValue),

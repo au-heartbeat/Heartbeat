@@ -1,7 +1,12 @@
 export interface ReportDataWithTwoColumns {
   id: number
   name: string
-  valueList: string[] | number[]
+  valueList: ValueWithUnits[]
+}
+
+export interface ValueWithUnits {
+  value: number
+  unit?: string
 }
 
 export interface ReportDataWithThreeColumns {
