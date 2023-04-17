@@ -56,25 +56,25 @@ export const ReportStep = () => {
           <ReportForTwoColumns title={'Velocity'} data={velocityData} />
           <ReportForTwoColumns title={'Cycle time'} data={cycleTimeData} />
           <ReportForThreeColumns
-            title={'Classification'}
+            title={'Classifications'}
             fieldName='Field Name'
             listName='Subtitle'
             data={classificationData}
           />
           <ReportForThreeColumns
-            title={'Deployment Frequency'}
+            title={'Deployment frequency'}
             fieldName={PIPELINE_STEP}
             listName={NAME}
             data={deploymentFrequencyData}
           />
           <ReportForThreeColumns
-            title={'Lead Time For Change'}
+            title={'Lead time for changes'}
             fieldName={PIPELINE_STEP}
             listName={NAME}
             data={leadTimeForChangesData}
           />
           <ReportForThreeColumns
-            title={'Change Failure Rate'}
+            title={'Change failure rate'}
             fieldName={PIPELINE_STEP}
             listName={NAME}
             data={changeFailureRateData}
