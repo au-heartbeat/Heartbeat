@@ -36,7 +36,7 @@ describe('deployment frequency data mapper', () => {
         valuesList: [
           {
             name: 'Deployment frequency(deployments/day)',
-            value: 0.3,
+            value: '30.00%',
           },
         ],
       },
@@ -46,7 +46,7 @@ describe('deployment frequency data mapper', () => {
         valuesList: [
           {
             name: 'Deployment frequency(deployments/day)',
-            value: 0.4,
+            value: '40.00%',
           },
         ],
       },
