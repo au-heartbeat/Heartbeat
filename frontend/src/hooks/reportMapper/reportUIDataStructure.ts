@@ -14,6 +14,6 @@ export interface ReportDataWithThreeColumns {
   name: string
   valuesList: {
     name: string
-    value: string | number
+    value: string
   }[]
 }

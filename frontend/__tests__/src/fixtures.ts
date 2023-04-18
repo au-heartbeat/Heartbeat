@@ -396,7 +396,7 @@ export const EXPECTED_REPORT_VALUES = {
       valuesList: [
         {
           name: 'Deployment frequency(deployments/day)',
-          value: 0.3,
+          value: '30.00%',
         },
       ],
     },
@@ -406,7 +406,7 @@ export const EXPECTED_REPORT_VALUES = {
       valuesList: [
         {
           name: 'Deployment frequency(deployments/day)',
-          value: 0.4,
+          value: '40.00%',
         },
       ],
     },
@@ -416,105 +416,18 @@ export const EXPECTED_REPORT_VALUES = {
       id: 0,
       name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
       valuesList: [
-        { name: 'mergeDelayTime', value: 2702.53 },
-        { name: 'pipelineDelayTime', value: 2587.42 },
-        { name: 'totalDelayTime', value: 5289.95 },
+        { name: 'mergeDelayTime', value: '1day 21hours 2minutes' },
+        { name: 'pipelineDelayTime', value: '1day 19hours 7minutes' },
+        { name: 'totalDelayTime', value: '3day 16hours 9minutes' },
       ],
     },
     {
       id: 1,
       name: 'Average/',
       valuesList: [
-        { name: 'mergeDelayTime', value: 3647.51 },
-        { name: 'pipelineDelayTime', value: 2341.72 },
-        { name: 'totalDelayTime', value: 5989.22 },
-      ],
-    },
-  ],
-  changeFailureRateList: [
-    {
-      id: 0,
-      name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
-      valuesList: [
-        {
-          name: 'Failure rate',
-          value: '0.00% (0/3)',
-        },
-      ],
-    },
-    {
-      id: 1,
-      name: 'Average/',
-      valuesList: [
-        {
-          name: 'Failure rate',
-          value: '0.00% (0/12)',
-        },
-      ],
-    },
-  ],
-}
-export const EXPECTED_REPORT_VALUES_FOR_COMP = {
-  velocityList: [
-    { id: 0, name: 'Velocity(Story Point)', valueList: [{ value: 20 }] },
-    { id: 1, name: 'Throughput(Cards Count)', valueList: [{ value: 14 }] },
-  ],
-  cycleTimeList: [
-    {
-      id: 0,
-      name: 'Average cycle time',
-      valueList: [
-        { value: 21.18, unit: '(days/SP)' },
-        { value: 30.26, unit: '(days/card)' },
-      ],
-    },
-  ],
-  classificationList: [
-    {
-      id: 0,
-      name: 'FS Work Type',
-      valuesList: [{ name: 'Feature Work - Planned', value: '57.14%' }],
-    },
-  ],
-  deploymentFrequencyList: [
-    {
-      id: 0,
-      name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
-      valuesList: [
-        {
-          name: 'Deployment frequency(deployments/day)',
-          value: 0.3,
-        },
-      ],
-    },
-    {
-      id: 1,
-      name: 'Average/',
-      valuesList: [
-        {
-          name: 'Deployment frequency(deployments/day)',
-          value: 0.4,
-        },
-      ],
-    },
-  ],
-  leadTimeForChangesList: [
-    {
-      id: 0,
-      name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
-      valuesList: [
-        { name: 'mergeDelayTime', value: 2702.53 },
-        { name: 'pipelineDelayTime', value: 2587.42 },
-        { name: 'totalDelayTime', value: 5289.95 },
-      ],
-    },
-    {
-      id: 1,
-      name: 'Average/',
-      valuesList: [
-        { name: 'mergeDelayTime', value: 3647.51 },
-        { name: 'pipelineDelayTime', value: 2341.72 },
-        { name: 'totalDelayTime', value: 5989.22 },
+        { name: 'mergeDelayTime', value: '2day 12hours 47minutes' },
+        { name: 'pipelineDelayTime', value: '1day 15hours 1minutes' },
+        { name: 'totalDelayTime', value: '4day 3hours 49minutes' },
       ],
     },
   ],
