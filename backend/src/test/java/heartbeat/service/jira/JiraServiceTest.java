@@ -3,20 +3,23 @@ package heartbeat.service.jira;
 import feign.FeignException;
 import heartbeat.client.JiraFeignClient;
 import heartbeat.client.component.JiraUriGenerator;
-import heartbeat.client.dto.AllDoneCardsResponseDTO;
-import heartbeat.client.dto.Assignee;
-import heartbeat.client.dto.CardHistoryResponseDTO;
-import heartbeat.client.dto.DoneCard;
-import heartbeat.client.dto.DoneCardFields;
-import heartbeat.client.dto.FieldResponseDTO;
-import heartbeat.client.dto.Item;
-import heartbeat.client.dto.JiraBoardConfigDTO;
-import heartbeat.client.dto.StatusSelfDTO;
-import heartbeat.client.dto.To;
-import heartbeat.controller.board.vo.request.BoardRequestParam;
-import heartbeat.controller.board.vo.request.BoardType;
-import heartbeat.controller.board.vo.response.BoardConfigResponse;
-import heartbeat.controller.board.vo.response.TargetField;
+import heartbeat.client.dto.board.jira.AllDoneCardsResponseDTO;
+import heartbeat.client.dto.board.jira.HistoryDetail;
+import heartbeat.client.dto.board.jira.Status;
+import heartbeat.controller.board.dto.request.Cards;
+import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
+import heartbeat.controller.board.dto.request.StoryPointsAndCycleTimeRequest;
+import heartbeat.client.dto.board.jira.Assignee;
+import heartbeat.client.dto.board.jira.CardHistoryResponseDTO;
+import heartbeat.client.dto.board.jira.DoneCard;
+import heartbeat.client.dto.board.jira.DoneCardFields;
+import heartbeat.client.dto.board.jira.FieldResponseDTO;
+import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
+import heartbeat.client.dto.board.jira.StatusSelfDTO;
+import heartbeat.controller.board.dto.request.BoardRequestParam;
+import heartbeat.controller.board.dto.request.BoardType;
+import heartbeat.controller.board.dto.response.BoardConfigResponse;
+import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.exception.RequestFailedException;
 import heartbeat.service.board.jira.JiraService;
 import org.junit.jupiter.api.AfterEach;
@@ -348,7 +351,7 @@ class JiraServiceTest {
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jql = String.format(JIRA_JQL, "DONE", boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
-		List<Item> items = Collections.singletonList(new Item("", new To("")));
+		List<HistoryDetail> items = Collections.singletonList(new HistoryDetail(1, "", new Status(""), new Status("")));
 		CardHistoryResponseDTO cardHistoryResponse = CardHistoryResponseDTO.builder().items(items).build();
 
 		AllDoneCardsResponseDTO allDoneCardsResponse = AllDoneCardsResponseDTO.builder()
@@ -382,7 +385,8 @@ class JiraServiceTest {
 		FieldResponseDTO emptyProjectFieldResponse = FieldResponseDTO.builder()
 			.projects(Collections.emptyList())
 			.build();
-		List<Item> items = Collections.singletonList(new Item("assignee", new To(null)));
+		List<HistoryDetail> items = Collections
+			.singletonList(new HistoryDetail(1, "assignee", new Status(null), new Status(null)));
 		CardHistoryResponseDTO cardHistoryResponse = CardHistoryResponseDTO.builder().items(items).build();
 
 		AllDoneCardsResponseDTO allDoneCardsResponse = AllDoneCardsResponseDTO.builder()
@@ -435,6 +439,16 @@ class JiraServiceTest {
 		assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BoardRequestParam.builder().build()))
 			.isInstanceOf(RequestFailedException.class)
 			.hasMessageContaining("Request failed with status code 400, error: ", "");
+	}
+
+	@Test
+	void shouldGetCardsWhenCallGetStoryPointsAndCycleTime() {
+		StoryPointsAndCycleTimeRequest request = StoryPointsAndCycleTimeRequest.builder().build();
+		RequestJiraBoardColumnSetting requestJiraBoardColumnSetting = RequestJiraBoardColumnSetting.builder().build();
+		Cards cards = jiraService.getStoryPointsAndCycleTime(request, List.of(requestJiraBoardColumnSetting),
+				List.of("Zhang"));
+
+		assertThat(cards.equals(Cards.builder().build()));
 	}
 
 }
