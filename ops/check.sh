@@ -19,7 +19,8 @@ security_check() {
 }
 
 shell_check() {
-  docker run --rm -it -v "$PWD:/mnt" koalaman/shellcheck-alpine:latest /mnt/.buildkite/ops/
+  ls -a
+  docker run --rm -v "$PWD:/mnt" koalaman/shellcheck-alpine:latest /mnt/ops/*.sh
 }
 
 backend_license_check() {
