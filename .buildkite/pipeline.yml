@@ -1,6 +1,9 @@
 env:
   RETENTION_DAYS: "10"
 steps:
+  - label: ":lock: Shell check"
+    command: ././buildkite/ops/check shell
+
   - label: ":lock: Security Check"
     command: ./.buildkite/ops/check security
 

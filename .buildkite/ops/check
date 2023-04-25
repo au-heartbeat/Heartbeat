@@ -1,6 +1,5 @@
 #!/bin/bash
-set -e
-set +x
+set -euo pipefail
 
 display_help() {
     echo "Usage: $0 {security|frontend|backend|backend-license|frontend-license|e2e}" >&2
@@ -17,6 +16,10 @@ display_help() {
 
 security_check() {
   docker run --rm -it -v "$PWD:/pwd" trufflesecurity/trufflehog:latest  git file:///pwd --since-commit HEAD  --fail
+}
+
+shell_check() {
+  docker run --rm -it -v "$PWD:/mnt" koalaman/shellcheck-alpine:latest .buildkite/ops/
 }
 
 backend_license_check() {
@@ -62,6 +65,7 @@ while [[ "$#" -gt 0 ]]; do
         frontend) frontend_check ;;
         backend) backend_check ;;
         e2e) e2e_check ;;
+        shell) shell_check ;;
         "backend-license") backend_license_check ;;
         "frontend-license") frontend_license_check ;;
         *) echo "Unknown parameter passed: $1" ;;
