@@ -118,6 +118,7 @@ export const metricsSlice = createSlice({
     },
 
     updateTreatFlagCardAsBlock: (state, action) => {
+      console.log(action.payload)
       state.treatFlagCardAsBlock = action.payload
     },
   },
@@ -146,4 +147,5 @@ export const selectLeadTimeForChanges = (state: RootState) => state.metrics.lead
 export const selectBoardColumns = (state: RootState) => state.metrics.boardColumns
 export const selectMetricsContent = (state: RootState) => state.metrics
 
+export const selectTreatFlagCardAsBlock = (state: RootState) => state.metrics.treatFlagCardAsBlock
 export default metricsSlice.reducer
