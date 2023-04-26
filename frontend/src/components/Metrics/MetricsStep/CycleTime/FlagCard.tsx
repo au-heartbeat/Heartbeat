@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { FlagCardItem, ItemCheckbox, ItemText } from '@src/components/Metrics/MetricsStep/CycleTime/style'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
 import { selectTreatFlagCardAsBlock, updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice'
