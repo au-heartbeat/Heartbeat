@@ -28,6 +28,7 @@ export const ReportStep = () => {
   const { boardColumns, treatFlagCardAsBlock, users, targetFields, doneColumn } = useAppSelector(selectMetricsContent)
   const { metrics, calendarType, dateRange } = configData.basic
   const { board, pipelineTool } = configData
+  const { token, type, site, projectKey, boardId } = board.config
   const params: ReportRequestDTO = {
     metrics: metrics,
     startTime: dateRange.startDate,
@@ -35,11 +36,11 @@ export const ReportStep = () => {
     considerHoliday: calendarType === CHINA_CALENDAR,
     pipeline: pipelineTool.config,
     jiraBoardSetting: {
-      token: board.config.token,
-      type: board.config.type,
-      site: board.config.site,
-      projectKey: board.config.projectKey,
-      boardId: board.config.boardId,
+      token,
+      type,
+      site,
+      projectKey,
+      boardId,
       boardColumns,
       treatFlagCardAsBlock,
       users,
