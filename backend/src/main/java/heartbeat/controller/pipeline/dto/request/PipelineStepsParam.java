@@ -25,4 +25,9 @@ public class PipelineStepsParam {
 	@NotBlank(message = "EndTime is required")
 	private String endTime;
 
+	public PipelineStepsParam(String startTime, String endTime) {
+		this.startTime = startTime;
+		this.endTime = endTime;
+	}
+
 }

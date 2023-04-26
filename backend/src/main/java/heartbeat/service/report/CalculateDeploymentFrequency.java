@@ -41,10 +41,6 @@ public class CalculateDeploymentFrequency {
 					(double) passedDeployTimes / timePeriod, item.getPassed());
 		}).toList();
 
-		double deploymentFrequency = deploymentFrequencyModels.stream()
-			.mapToDouble(DeploymentFrequencyModel::getValue)
-			.sum();
-
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deploymentFrequencyModels.stream()
 			.map((item) -> {
 				DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
@@ -59,25 +55,30 @@ public class CalculateDeploymentFrequency {
 			})
 			.toList();
 
+		double deploymentFrequency = deploymentFrequencyModels.stream()
+			.mapToDouble(DeploymentFrequencyModel::getValue)
+			.sum();
 		int pipelineCount = deploymentFrequencyOfPipelines.size();
 		double avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
 
-		AvgDeploymentFrequency avgDeploymentFrequency = new AvgDeploymentFrequency(avgDeployFrequency);
-
 		return DeploymentFrequency.builder()
-			.avgDeploymentFrequency(avgDeploymentFrequency)
+			.avgDeploymentFrequency(new AvgDeploymentFrequency(avgDeployFrequency))
 			.deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
 			.build();
 	}
 
 	private List<DailyDeploymentCount> mapDeploymentPassedItems(List<DeployInfo> deployInfos) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-		if (deployInfos == null || deployInfos.isEmpty())
-			return Collections.emptyList();
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		List<DailyDeploymentCount> dailyDeploymentCounts = new ArrayList<>();
+
+		if (deployInfos == null || deployInfos.isEmpty()) {
+			return Collections.emptyList();
+		}
+
 		deployInfos.forEach((item) -> {
-			if (!item.getJobFinishTime().equals("") && !item.getJobFinishTime().equals("NaN")) {
-				String localDate = formatter.format(Instant.parse(item.getJobFinishTime()).atZone(ZoneId.of("UTC")));
+			if (!item.getJobFinishTime().isEmpty() && !item.getJobFinishTime().equals("NaN")) {
+				String localDate = dateTimeFormatter
+					.format(Instant.parse(item.getJobFinishTime()).atZone(ZoneId.of("UTC")));
 				DailyDeploymentCount existingDateItem = dailyDeploymentCounts.stream()
 					.filter((dateCountItem) -> dateCountItem.getDate().equals(localDate))
 					.findFirst()

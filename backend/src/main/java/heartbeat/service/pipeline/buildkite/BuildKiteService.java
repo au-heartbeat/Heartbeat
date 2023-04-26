@@ -197,7 +197,7 @@ public class BuildKiteService {
 	public List<BuildKiteBuildInfo> fetchPipelineBuilds(String token, DeploymentEnvironment deploymentEnvironment,
 			String startTime, String endTime) {
 		String partialToken = token.substring(0, token.length() / 2);
-		PipelineStepsParam stepsParam = new PipelineStepsParam("", "", "", startTime, endTime);
+		PipelineStepsParam stepsParam = new PipelineStepsParam(startTime, endTime);
 
 		return this.fetchPipelineStepsByPage(token, deploymentEnvironment.getOrgId(), deploymentEnvironment.getId(),
 				stepsParam, partialToken);
