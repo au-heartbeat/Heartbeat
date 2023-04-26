@@ -55,7 +55,7 @@ export class ReportClient extends HttpClient {
     await this.axiosInstance
       .post(`/report`, params, {
         headers: {
-          'content-type': 'application/x-www-form-urlencoded',
+          'content-type': 'application/json',
         },
       })
       .then((res) => {
