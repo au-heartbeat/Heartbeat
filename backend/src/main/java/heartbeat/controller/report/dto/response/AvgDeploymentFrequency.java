@@ -5,19 +5,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.DecimalFormat;
+
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class AvgDeploymentFrequency {
 
-	@Builder.Default
 	private String name = "Average";
 
 	private String deploymentFrequency;
 
-	public AvgDeploymentFrequency(String deploymentFrequency) {
-		this.deploymentFrequency = deploymentFrequency;
+	public AvgDeploymentFrequency(Double deploymentFrequency) {
+		DecimalFormat df = new DecimalFormat("0.00");
+		this.deploymentFrequency = df.format(deploymentFrequency);
 	}
 
 }

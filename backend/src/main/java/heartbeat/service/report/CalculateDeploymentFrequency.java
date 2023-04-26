@@ -46,18 +46,23 @@ public class CalculateDeploymentFrequency {
 			.sum();
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deploymentFrequencyModels.stream()
-			.map((item) -> new DeploymentFrequencyOfPipeline(item.getName(), item.getStep(), item.getValue(),
-					mapDeploymentPassedItems(item.getPassed()
-						.stream()
-						.filter((data) -> Instant.parse(data.getJobFinishTime()).toEpochMilli() <= endTime)
-						.toList())))
+			.map((item) -> {
+				DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
+						item.getName(), item.getStep(),
+						mapDeploymentPassedItems(item.getPassed()
+							.stream()
+							.filter((data) -> Instant.parse(data.getJobFinishTime()).toEpochMilli() <= endTime)
+							.toList()));
+				deploymentFrequencyOfPipeline.setDeploymentFrequency(item.getValue());
+
+				return deploymentFrequencyOfPipeline;
+			})
 			.toList();
 
 		int pipelineCount = deploymentFrequencyOfPipelines.size();
 		double avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
 
-		// TODO 保留两位小数
-		AvgDeploymentFrequency avgDeploymentFrequency = new AvgDeploymentFrequency(Double.toString(avgDeployFrequency));
+		AvgDeploymentFrequency avgDeploymentFrequency = new AvgDeploymentFrequency(avgDeployFrequency);
 
 		return DeploymentFrequency.builder()
 			.avgDeploymentFrequency(avgDeploymentFrequency)
