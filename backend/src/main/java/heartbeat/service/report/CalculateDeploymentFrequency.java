@@ -28,11 +28,10 @@ public class CalculateDeploymentFrequency {
 		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
 		List<DeploymentFrequencyModel> deploymentFrequencyModels = deployTimes.stream().map((item) -> {
-			int passedDeployTimes = item.getPassed()
-				.stream()
-				.filter((deployInfoItem) -> Instant.parse(deployInfoItem.getJobFinishTime()).toEpochMilli() <= endTime)
-				.toList()
-				.size();
+			int passedDeployTimes = item.getPassed().stream().filter((deployInfoItem) -> {
+				Long time = Instant.parse(deployInfoItem.getJobFinishTime()).toEpochMilli();
+				return time > startTime && time <= endTime;
+			}).toList().size();
 			if (passedDeployTimes == 0 || timePeriod == 0) {
 				return new DeploymentFrequencyModel(item.getPipelineName(), item.getPipelineStep(), 0,
 						Collections.emptyList());
@@ -45,10 +44,10 @@ public class CalculateDeploymentFrequency {
 			.map((item) -> {
 				DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
 						item.getName(), item.getStep(),
-						mapDeploymentPassedItems(item.getPassed()
-							.stream()
-							.filter((data) -> Instant.parse(data.getJobFinishTime()).toEpochMilli() <= endTime)
-							.toList()));
+						mapDeploymentPassedItems(item.getPassed().stream().filter((data) -> {
+							Long time = Instant.parse(data.getJobFinishTime()).toEpochMilli();
+							return time > startTime && time <= endTime;
+						}).toList()));
 				deploymentFrequencyOfPipeline.setDeploymentFrequency(item.getValue());
 
 				return deploymentFrequencyOfPipeline;
