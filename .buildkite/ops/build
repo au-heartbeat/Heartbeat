@@ -39,7 +39,32 @@ build_backend() {
 }
 
 build_mockserver() {
-  echo "build mockserver"
+  if [[ "$BUILDKITE_MESSAGE" == *"[stub]"* ]]; then
+        echo "build_mockserver"
+
+        # Install AWS CLI
+        sudo yum update && sudo yum install -y awscli
+
+        # Configure AWS credentials
+        aws configure set default.region $AWS_REGION
+        aws sts assume-role --role-arn $AWS_GITHUB_ACTION_ROLE
+
+        # Login to Amazon ECR
+        eval $(aws ecr get-login --no-include-email --region $AWS_REGION)
+
+        # Build and tag for MockServer
+        export REGISTRY=`aws ecr describe-repositories --repository-names mock_server --query "repositories[0].repositoryUri" --output text`
+        export IMAGE_TAG="hb${BUILDKITE_BUILD_NUMBER}"
+        docker build -t $REGISTRY:latest ./infra/Dockerfile.stub
+        docker build -t $REGISTRY:$IMAGE_TAG ./infra/Dockerfile.stub
+
+        # Run Trivy vulnerability scanner
+        trivy --exit-code 1 --severity CRITICAL,HIGH --format table --ignore-unfixed --ignorefile .trivyignore $REGISTRY:latest
+
+        # Push for MockServer
+        docker push $REGISTRY:latest
+        docker push $REGISTRY:$IMAGE_TAG
+      fi
 }
 
 build_frontend() {
