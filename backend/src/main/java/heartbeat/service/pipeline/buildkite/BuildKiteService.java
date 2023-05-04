@@ -147,7 +147,7 @@ public class BuildKiteService {
 			pageStepsInfo.addAll(firstPageStepsInfo);
 		}
 		if (totalPage != 1) {
-			Stream<CompletableFuture<List<BuildKiteBuildInfo>>> futureStream = IntStream.range(1, totalPage + 1)
+			Stream<CompletableFuture<List<BuildKiteBuildInfo>>> futureStream = IntStream.range(2, totalPage + 1)
 				.mapToObj(currentPage -> getBuildKiteStepsAsync(token, orgId, pipelineId, stepsParam, perPage,
 						currentPage, partialToken));
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = futureStream.map(CompletableFuture::join)
