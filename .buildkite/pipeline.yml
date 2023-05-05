@@ -20,6 +20,16 @@ steps:
           name: "backend-license-report"
           expire_in: "${RETENTION_DAYS} days"
 
+  - label: "build-frontend"
+    branches: main
+    depends_on: deploy-infra
+    command: ./.buildkite/ops/build frontend
+
+  - label: "build-backend"
+    branches: main
+    # depends_on: deploy-infra
+    command: ./.buildkite/ops/build backend
+
   - wait
   - label: ":rocket: Deploy infra"
     if:  build.branch == "main" && build.message =~ /\[infra\]/

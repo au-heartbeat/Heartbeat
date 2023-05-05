@@ -23,7 +23,30 @@ build_stub() {
 }
 
 build_frontend() {
-  echo "build frontend"
+    local AWS_HOST="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+
+    aws configure set region "$AWS_REGION"
+    eval "$(aws sts assume-role --role-arn "$AWS_GITHUB_ACTION_ROLE" --role-session-name buildkite | jq -r '.Credentials | to_entries | map("\(.key)=\"\(.value | tostring)\"") | .[]')"
+    aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${AWS_HOST}"
+
+    docker build -t "${AWS_HOST}"/heartbeat_frontend:latest ./ -f ./infra/Dockerfile.frontend
+    docker tag "${AWS_HOST}"/heartbeat_frontend:latest "${AWS_HOST}"/heartbeat_frontend:hb"${BUILDKITE_BUILD_NUMBER}"
+
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "$(pwd)"/.trivyignore:/.trivyignore \
+      aquasec/trivy:0.20.0 image \
+      --severity HIGH,CRITICAL \
+      --exit-code 1 \
+      --ignore-unfixed \
+      --format table \
+      --ignorefile /.trivyignore \
+      "${AWS_HOST}"/heartbeat_frontend:latest
+
+    docker push "${AWS_HOST}/heartbeat_frontend:latest"
+    docker push "${AWS_HOST}/heartbeat_frontend:hb${BUILDKITE_BUILD_NUMBER}"
+
+    docker rmi "${AWS_HOST}/heartbeat_frontend:latest"
+    docker rmi "${AWS_HOST}/heartbeat_frontend:hb${BUILDKITE_BUILD_NUMBER}"
 }
 
 if [[ "$#" -le 0 ]]; then
