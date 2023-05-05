@@ -24,5 +24,4 @@ steps:
 #    # depends_on: deploy-infra
 #    command: ./.buildkite/ops/build backend
   - label: "mag: Mock Server Build"
-      #branches: "main"
-      commands: ./.buildkite/ops/build mockserver
+    command: ./.buildkite/ops/build mockserver
