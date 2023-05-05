@@ -3,7 +3,7 @@ export interface ReportRequestDTO {
   startTime: string | null
   endTime: string | null
   considerHoliday: boolean
-  pipeline?: {
+  buildKiteSetting?: {
     type: string
     token: string
     deployment:

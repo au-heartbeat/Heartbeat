@@ -15,6 +15,7 @@ import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns'
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns'
 import { ReportRequestDTO } from '@src/clients/report/dto/request'
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
+import dayjs from 'dayjs'
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
@@ -59,13 +60,12 @@ export const ReportStep = () => {
       }
     }) as { id: string; name: string; orgId: string; orgName: string; repository: string; step: string }[]
   }
-
   const getReportRequestBody = (): ReportRequestDTO => ({
     metrics: metrics,
-    startTime: dateRange.startDate,
-    endTime: dateRange.endDate,
+    startTime: dayjs(dateRange.startDate).valueOf().toString(),
+    endTime: dayjs(dateRange.endDate).valueOf().toString(),
     considerHoliday: calendarType === CHINA_CALENDAR,
-    pipeline: {
+    buildKiteSetting: {
       ...pipelineTool.config,
       deployment: getPipelineConfig(deploymentFrequencySettings),
     },
@@ -91,12 +91,12 @@ export const ReportStep = () => {
   useEffect(() => {
     generateReport(getReportRequestBody()).then((res) => {
       if (res) {
-        setVelocityData(res.velocityList)
-        setCycleTimeData(res.cycleTimeList)
-        setClassificationData(res.classificationList)
-        setDeploymentFrequencyData(res.deploymentFrequencyList)
-        setChangeFailureRateData(res.changeFailureRateList)
-        setLeadTimeForChangesData(res.leadTimeForChangesList)
+        res.velocityList && setVelocityData(res.velocityList)
+        res.cycleTimeList && setCycleTimeData(res.cycleTimeList)
+        res.classificationList && setClassificationData(res.classificationList)
+        res.deploymentFrequencyList && setDeploymentFrequencyData(res.deploymentFrequencyList)
+        res.changeFailureRateList && setChangeFailureRateData(res.changeFailureRateList)
+        res.leadTimeForChangesList && setLeadTimeForChangesData(res.leadTimeForChangesList)
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,32 +108,40 @@ export const ReportStep = () => {
         <Loading />
       ) : (
         <>
-          <ReportForTwoColumns title={'Velocity'} data={velocityData} />
-          <ReportForTwoColumns title={'Cycle time'} data={cycleTimeData} />
-          <ReportForThreeColumns
-            title={'Classifications'}
-            fieldName='Field Name'
-            listName='Subtitle'
-            data={classificationData}
-          />
-          <ReportForThreeColumns
-            title={'Deployment frequency'}
-            fieldName={PIPELINE_STEP}
-            listName={NAME}
-            data={deploymentFrequencyData}
-          />
-          <ReportForThreeColumns
-            title={'Lead time for changes'}
-            fieldName={PIPELINE_STEP}
-            listName={NAME}
-            data={leadTimeForChangesData}
-          />
-          <ReportForThreeColumns
-            title={'Change failure rate'}
-            fieldName={PIPELINE_STEP}
-            listName={NAME}
-            data={changeFailureRateData}
-          />
+          {velocityData && <ReportForTwoColumns title={'Velocity'} data={velocityData} />}
+          {cycleTimeData && <ReportForTwoColumns title={'Cycle time'} data={cycleTimeData} />}
+          {classificationData && (
+            <ReportForThreeColumns
+              title={'Classifications'}
+              fieldName='Field Name'
+              listName='Subtitle'
+              data={classificationData}
+            />
+          )}
+          {deploymentFrequencyData && (
+            <ReportForThreeColumns
+              title={'Deployment frequency'}
+              fieldName={PIPELINE_STEP}
+              listName={NAME}
+              data={deploymentFrequencyData}
+            />
+          )}
+          {leadTimeForChangesData && (
+            <ReportForThreeColumns
+              title={'Lead time for changes'}
+              fieldName={PIPELINE_STEP}
+              listName={NAME}
+              data={leadTimeForChangesData}
+            />
+          )}
+          {changeFailureRateData && (
+            <ReportForThreeColumns
+              title={'Change failure rate'}
+              fieldName={PIPELINE_STEP}
+              listName={NAME}
+              data={changeFailureRateData}
+            />
+          )}
         </>
       )}
     </>
