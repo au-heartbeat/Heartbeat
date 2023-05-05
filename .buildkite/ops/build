@@ -43,7 +43,7 @@ build_mockserver() {
         echo "build_mockserver"
 
         # Install AWS CLI
-        sudo yum update && sudo yum install -y awscli
+        #sudo yum update && sudo yum install -y awscli
 
         # Configure AWS credentials
         aws configure set default.region $AWS_REGION
