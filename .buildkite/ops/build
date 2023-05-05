@@ -47,7 +47,7 @@ build_mockserver() {
 
         # Configure AWS credentials
         aws configure set default.region $AWS_REGION
-        aws sts assume-role --role-arn $AWS_GITHUB_ACTION_ROLE
+        eval "$(aws sts assume-role --role-arn "$AWS_GITHUB_ACTION_ROLE" --role-session-name buildkite | jq -r '.Credentials | to_entries | map("\(.key)=\"\(.value | tostring)\"") | .[]')"
 
         # Login to Amazon ECR
         eval $(aws ecr get-login --no-include-email --region $AWS_REGION)
