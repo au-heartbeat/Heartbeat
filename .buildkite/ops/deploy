@@ -29,10 +29,11 @@ deploy_stub() {
       ssh  -i /var/lib/buildkite-agent/.ssh/HeartBeatKeyPair.pem -p "${AWS_SSH_PORT}" "${AWS_USERNAME}@${AWS_EC2_IP_MOCK_SERVER}" "
           aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}
           cp './infra/docker-compose.yml' ./
+          echo \"OK3\"
           if [[ $(docker images -f label=arch=stubs -q) ]]; then
             docker rmi -f $(docker images -f label=arch=stubs -q)
           fi
-          echo \"OK3\"
+          echo \"OK4\"
           docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:hb2492
           docker-compose up -d mockServer
       "
