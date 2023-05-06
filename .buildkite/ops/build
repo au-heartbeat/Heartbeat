@@ -60,7 +60,6 @@ build_mockserver() {
 #            --format table \
 #            --ignorefile /.trivyignore \
 #            "${AWS_HOST}"/mock_server:latest
-
           docker push "${AWS_HOST}/mock_server:latest"
           docker push "${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}"
 
