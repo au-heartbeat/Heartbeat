@@ -26,6 +26,6 @@ steps:
 #  - label: "mag: Mock Server Build"
 #    command: ./.buildkite/ops/build mockserver
 
-  - label: "mag: Mock Server deploy"
+  - label: "mag: Mock Server deploy-"
 #    depends_on: "mag: Mock Server Build"
     command: ./.buildkite/ops/deploy stub
