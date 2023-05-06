@@ -49,7 +49,7 @@ export interface Swimlane {
 export interface AVGDeploymentFrequency {
   name: string
   step?: string
-  deploymentFrequency: string
+  deploymentFrequency: number
 }
 
 export interface DeploymentDateCount {
@@ -60,7 +60,7 @@ export interface DeploymentDateCount {
 export interface DeploymentFrequencyOfPipeline {
   name: string
   step: string
-  deploymentFrequency: string
+  deploymentFrequency: number
   items: DeploymentDateCount[]
 }
 

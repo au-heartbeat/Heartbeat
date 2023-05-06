@@ -19,21 +19,21 @@ import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks
 
 export const ReportStep = () => {
   const { generateReport, isLoading } = useGenerateReportEffect()
-  const [velocityData, setVelocityData] = useState({ value: INIT_REPORT_DATA_WITH_TWO_COLUMNS, isShow: false })
-  const [cycleTimeData, setCycleTimeData] = useState({ value: INIT_REPORT_DATA_WITH_TWO_COLUMNS, isShow: false })
-  const [classificationData, setClassificationData] = useState({
+  const [velocityState, setVelocityState] = useState({ value: INIT_REPORT_DATA_WITH_TWO_COLUMNS, isShow: false })
+  const [cycleTimeState, setCycleTimeState] = useState({ value: INIT_REPORT_DATA_WITH_TWO_COLUMNS, isShow: false })
+  const [classificationState, setClassificationState] = useState({
     value: INIT_REPORT_DATA_WITH_THREE_COLUMNS,
     isShow: false,
   })
-  const [deploymentFrequencyData, setDeploymentFrequencyData] = useState({
+  const [deploymentFrequencyState, setDeploymentFrequencyState] = useState({
     value: INIT_REPORT_DATA_WITH_THREE_COLUMNS,
     isShow: false,
   })
-  const [leadTimeForChangesData, setLeadTimeForChangesData] = useState({
+  const [leadTimeForChangesState, setLeadTimeForChangesState] = useState({
     value: INIT_REPORT_DATA_WITH_THREE_COLUMNS,
     isShow: false,
   })
-  const [changeFailureRateData, setChangeFailureRateData] = useState({
+  const [changeFailureRateState, setChangeFailureRateState] = useState({
     value: INIT_REPORT_DATA_WITH_THREE_COLUMNS,
     isShow: false,
   })
@@ -117,24 +117,24 @@ export const ReportStep = () => {
 
   useEffect(() => {
     fetchReportData().then((res) => {
-      res?.velocityList && setVelocityData({ ...velocityData, value: res.velocityList, isShow: true })
-      res?.cycleTimeList && setCycleTimeData({ ...cycleTimeData, value: res.cycleTimeList, isShow: true })
-      res?.classificationList && setClassificationData({ value: res.classificationList, isShow: true })
+      res?.velocityList && setVelocityState({ ...velocityState, value: res.velocityList, isShow: true })
+      res?.cycleTimeList && setCycleTimeState({ ...cycleTimeState, value: res.cycleTimeList, isShow: true })
+      res?.classificationList && setClassificationState({ value: res.classificationList, isShow: true })
       res?.deploymentFrequencyList &&
-        setDeploymentFrequencyData({
-          ...deploymentFrequencyData,
+        setDeploymentFrequencyState({
+          ...deploymentFrequencyState,
           value: res.deploymentFrequencyList,
           isShow: true,
         })
       res?.changeFailureRateList &&
-        setChangeFailureRateData({
-          ...changeFailureRateData,
+        setChangeFailureRateState({
+          ...changeFailureRateState,
           value: res.changeFailureRateList,
           isShow: true,
         })
       res?.leadTimeForChangesList &&
-        setLeadTimeForChangesData({
-          ...leadTimeForChangesData,
+        setLeadTimeForChangesState({
+          ...leadTimeForChangesState,
           value: res.leadTimeForChangesList,
           isShow: true,
         })
@@ -147,38 +147,38 @@ export const ReportStep = () => {
         <Loading />
       ) : (
         <>
-          {velocityData.isShow && <ReportForTwoColumns title={'Velocity'} data={velocityData.value} />}
-          {cycleTimeData.isShow && <ReportForTwoColumns title={'Cycle time'} data={cycleTimeData.value} />}
-          {classificationData.isShow && (
+          {velocityState.isShow && <ReportForTwoColumns title={'Velocity'} data={velocityState.value} />}
+          {cycleTimeState.isShow && <ReportForTwoColumns title={'Cycle time'} data={cycleTimeState.value} />}
+          {classificationState.isShow && (
             <ReportForThreeColumns
               title={'Classifications'}
               fieldName='Field Name'
               listName='Subtitle'
-              data={classificationData.value}
+              data={classificationState.value}
             />
           )}
-          {deploymentFrequencyData.isShow && (
+          {deploymentFrequencyState.isShow && (
             <ReportForThreeColumns
               title={'Deployment frequency'}
               fieldName={PIPELINE_STEP}
               listName={NAME}
-              data={deploymentFrequencyData.value}
+              data={deploymentFrequencyState.value}
             />
           )}
-          {leadTimeForChangesData.isShow && (
+          {leadTimeForChangesState.isShow && (
             <ReportForThreeColumns
               title={'Lead time for changes'}
               fieldName={PIPELINE_STEP}
               listName={NAME}
-              data={leadTimeForChangesData.value}
+              data={leadTimeForChangesState.value}
             />
           )}
-          {changeFailureRateData.isShow && (
+          {changeFailureRateState.isShow && (
             <ReportForThreeColumns
               title={'Change failure rate'}
               fieldName={PIPELINE_STEP}
               listName={NAME}
-              data={changeFailureRateData.value}
+              data={changeFailureRateState.value}
             />
           )}
         </>
