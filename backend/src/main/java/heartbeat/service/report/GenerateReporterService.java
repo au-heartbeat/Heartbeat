@@ -52,9 +52,9 @@ public class GenerateReporterService {
 		.toList();
 
 
-	private List<DeployTimes> deployTimesList;
+	private List<DeployTimes> deployTimesList = new ArrayList<>();
 
-	private List<Map.Entry<String, List<BuildKiteBuildInfo>>> buildInfosList;
+	private List<Map.Entry<String, List<BuildKiteBuildInfo>>> buildInfosList = new ArrayList<>();
 
 	public GenerateReportResponse generateReporter(GenerateReportRequest request) {
 		// fetch data for calculate
@@ -141,8 +141,8 @@ public class GenerateReporterService {
 	}
 
 	private synchronized void fetchBuildKiteData(GenerateReportRequest request) {
-		this.deployTimesList = new ArrayList<>();
-		this.buildInfosList = new ArrayList<>();
+		this.deployTimesList.clear();
+		this.buildInfosList.clear();
 		for (DeploymentEnvironment deploymentEnvironment : request.getBuildKiteSetting().getDeployment()) {
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = buildKiteService.fetchPipelineBuilds(
 				request.getBuildKiteSetting().getToken(), deploymentEnvironment, request.getStartTime(),

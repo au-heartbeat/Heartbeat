@@ -37,7 +37,7 @@ public class CalculateDeploymentFrequency {
 						Collections.emptyList());
 			}
 			return new DeploymentFrequencyModel(item.getPipelineName(), item.getPipelineStep(),
-					(double) passedDeployTimes / timePeriod, item.getPassed());
+					(float) passedDeployTimes / timePeriod, item.getPassed());
 		}).toList();
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deploymentFrequencyModels.stream()
@@ -54,11 +54,11 @@ public class CalculateDeploymentFrequency {
 			})
 			.toList();
 
-		double deploymentFrequency = deploymentFrequencyModels.stream()
+		float deploymentFrequency = (float) deploymentFrequencyModels.stream()
 			.mapToDouble(DeploymentFrequencyModel::getValue)
 			.sum();
 		int pipelineCount = deploymentFrequencyOfPipelines.size();
-		double avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
+		float avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
 
 		return DeploymentFrequency.builder()
 			.avgDeploymentFrequency(new AvgDeploymentFrequency(avgDeployFrequency))

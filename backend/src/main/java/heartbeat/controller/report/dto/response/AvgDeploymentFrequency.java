@@ -17,7 +17,7 @@ public class AvgDeploymentFrequency {
 
 	private String deploymentFrequency;
 
-	public AvgDeploymentFrequency(Double deploymentFrequency) {
+	public AvgDeploymentFrequency(float deploymentFrequency) {
 		DecimalFormat df = new DecimalFormat(Constants.FORMAT_DOUBLE_2_DECIMALS);
 		this.deploymentFrequency = df.format(deploymentFrequency);
 	}

@@ -28,7 +28,7 @@ public class DeploymentFrequencyOfPipeline {
 		this.dailyDeploymentCounts = dailyDeploymentCounts;
 	}
 
-	public void setDeploymentFrequency(Double deploymentFrequency) {
+	public void setDeploymentFrequency(float deploymentFrequency) {
 		DecimalFormat df = new DecimalFormat(Constants.FORMAT_DOUBLE_2_DECIMALS);
 		this.deploymentFrequency = df.format(deploymentFrequency);
 	}
