@@ -42,7 +42,7 @@ describe('deployment frequency data mapper', () => {
       },
       {
         id: 1,
-        name: 'Average/',
+        name: 'Average',
         valuesList: [
           {
             name: 'Deployment frequency(deployments/day)',

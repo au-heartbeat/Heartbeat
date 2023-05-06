@@ -259,7 +259,7 @@ export const MOCK_GET_STEPS_PARAMS = {
 export const REMOVE_BUTTON = 'Remove'
 export const ORGANIZATION = 'Organization'
 export const PIPELINE_NAME = 'Pipeline Name'
-export const STEPS = 'Steps'
+export const STEP = 'Step'
 
 export const MOCK_REPORT_RESPONSE = {
   velocity: {
@@ -394,7 +394,7 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 1,
-      name: 'Average/',
+      name: 'Average',
       valuesList: [
         {
           name: 'Deployment frequency(deployments/day)',

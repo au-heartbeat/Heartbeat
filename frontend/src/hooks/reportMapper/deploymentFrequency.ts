@@ -18,7 +18,7 @@ export const deploymentFrequencyMapper = ({
   })
   mappedDeploymentFrequencyValue.push({
     id: mappedDeploymentFrequencyValue.length,
-    name: `${avgDeploymentFrequency.name}/`,
+    name: avgDeploymentFrequency.name,
     valuesList: [
       {
         name: DEPLOYMENT_FREQUENCY_NAME,
