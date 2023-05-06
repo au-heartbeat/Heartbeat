@@ -27,7 +27,7 @@ deploy_stub() {
       scp  -i /var/lib/buildkite-agent/.ssh/HeartBeatKeyPair.pem -P "${AWS_SSH_PORT}" ./infra/docker-compose.yml "${AWS_USERNAME}@${AWS_EC2_IP}:~/"
 #      ssh-agent bash -c "ssh-add ${AWS_PRIVATE_KEY}; scp -P $AWS_SSH_PORT ./infra/docker-compose.yml $AWS_USERNAME@$AWS_EC2_IP_MOCK_SERVER:./"
       echo "OK2"
-      ssh  -i /var/lib/buildkite-agent/.ssh/HeartBeatKeyPair.pem -p "${AWS_SSH_PORT}" "${AWS_USERNAME}@${AWS_EC2_IP_MOCK_SERVER}"
+#      ssh  -i /var/lib/buildkite-agent/.ssh/HeartBeatKeyPair.pem -p "${AWS_SSH_PORT}" "${AWS_USERNAME}@${AWS_EC2_IP_MOCK_SERVER}"
       echo "OK3"
       aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}
       cp './infra/docker-compose.yml' ./
