@@ -29,7 +29,7 @@ export class ReportClient extends HttpClient {
     deploymentFrequency: {
       avgDeploymentFrequency: {
         name: '',
-        deploymentFrequency: 0,
+        deploymentFrequency: '0',
       },
       deploymentFrequencyOfPipelines: [],
     },
