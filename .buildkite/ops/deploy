@@ -32,6 +32,7 @@ deploy_stub() {
           if [[ $(docker images -f label=arch=stubs -q) ]]; then
             docker rmi -f $(docker images -f label=arch=stubs -q)
           fi
+          echo \"OK3\"
           docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:hb2492
           docker-compose up -d mockServer
       "
