@@ -140,7 +140,7 @@ public class GenerateReporterService {
 		// todo:add fetchGithubData logic
 	}
 
-	private void fetchBuildKiteData(GenerateReportRequest request) {
+	private synchronized void fetchBuildKiteData(GenerateReportRequest request) {
 		this.deployTimesList = new ArrayList<>();
 		this.buildInfosList = new ArrayList<>();
 		for (DeploymentEnvironment deploymentEnvironment : request.getBuildKiteSetting().getDeployment()) {
