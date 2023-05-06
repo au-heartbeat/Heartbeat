@@ -42,28 +42,27 @@ build_mockserver() {
   if [[ "$BUILDKITE_MESSAGE" == *"[stub]"* ]]; then
         echo "build_mockserver"
 
-        # Install AWS CLI
-        #sudo yum update && sudo yum install -y awscli
+        local AWS_HOST="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
-        # Configure AWS credentials
-        aws configure set default.region $AWS_REGION
-        eval "$(aws sts assume-role --role-arn "$AWS_GITHUB_ACTION_ROLE" --role-session-name buildkite | jq -r '.Credentials | to_entries | map("\(.key)=\"\(.value | tostring)\"") | .[]')"
+          aws configure set region "$AWS_REGION"
+          eval "$(aws sts assume-role --role-arn "$AWS_GITHUB_ACTION_ROLE" --role-session-name buildkite | jq -r '.Credentials | to_entries | map("\(.key)=\"\(.value | tostring)\"") | .[]')"
+          aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${AWS_HOST}"
 
-        # Login to Amazon ECR
-        eval $(aws ecr get-login --no-include-email --region $AWS_REGION)
+          docker build -t "${AWS_HOST}"/mock_server:latest ./ -f ./infra/Dockerfile.stub
+          docker tag "${AWS_HOST}"/mock_server:latest "${AWS_HOST}"/mock_server:hb"${BUILDKITE_BUILD_NUMBER}"
 
-        # Build and tag for MockServer
-        export REGISTRY=`aws ecr describe-repositories --repository-names mock_server --query "repositories[0].repositoryUri" --output text`
-        export IMAGE_TAG="hb${BUILDKITE_BUILD_NUMBER}"
-        docker build -t $REGISTRY:latest ./ -f ./infra/Dockerfile.stub
-        docker build -t $REGISTRY:$IMAGE_TAG ./ -f ./infra/Dockerfile.stub
+#          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+#            -v "$(pwd)"/.trivyignore:/.trivyignore \
+#            aquasec/trivy:0.20.0 image \
+#            --severity HIGH,CRITICAL \
+#            --exit-code 1 \
+#            --ignore-unfixed \
+#            --format table \
+#            --ignorefile /.trivyignore \
+#            "${AWS_HOST}"/heartbeat_backend:latest
 
-        # Run Trivy vulnerability scanner
-        #trivy --exit-code 1 --severity CRITICAL,HIGH --format table --ignore-unfixed --ignorefile .trivyignore $REGISTRY:latest
-
-        # Push for MockServer
-        docker push $REGISTRY:latest
-        docker push $REGISTRY:$IMAGE_TAG
+          docker push "${AWS_HOST}/mock_server:latest"
+          docker push "${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}"
       fi
 }
 
