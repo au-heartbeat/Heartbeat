@@ -24,7 +24,7 @@ deploy_stub() {
   #if [[ "$(git log -1 --pretty=%B)" == *"[stub]"* ]]; then
       sed -i -e "s/mock_server:latest/${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}\/mock_server:hb${BUILDKITE_BUILD_NUMBER}/g" infra/docker-compose.yml
       echo "OK1"
-      ssh-agent bash -c 'ssh-add ${AWS_PRIVATE_KEY}; scp -P $AWS_SSH_PORT ./infra/docker-compose.yml $AWS_USERNAME@$AWS_EC2_IP_MOCK_SERVER:./'
+      ssh-agent bash -c "ssh-add ${AWS_PRIVATE_KEY}; scp -P $AWS_SSH_PORT ./infra/docker-compose.yml $AWS_USERNAME@$AWS_EC2_IP_MOCK_SERVER:./"
       echo "OK2"
       ssh -i "${AWS_PRIVATE_KEY}" -o "StrictHostKeyChecking=no" "${AWS_USERNAME}@${AWS_EC2_IP_MOCK_SERVER}" "
       aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}
