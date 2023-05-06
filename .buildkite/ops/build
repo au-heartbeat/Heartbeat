@@ -55,8 +55,8 @@ build_mockserver() {
         # Build and tag for MockServer
         export REGISTRY=`aws ecr describe-repositories --repository-names mock_server --query "repositories[0].repositoryUri" --output text`
         export IMAGE_TAG="hb${BUILDKITE_BUILD_NUMBER}"
-        docker build -t $REGISTRY:latest ./infra/Dockerfile.stub
-        docker build -t $REGISTRY:$IMAGE_TAG ./infra/Dockerfile.stub
+        docker build -t $REGISTRY:latest ./ -f ./infra/Dockerfile.stub
+        docker build -t $REGISTRY:$IMAGE_TAG ./ -f ./infra/Dockerfile.stub
 
         # Run Trivy vulnerability scanner
         trivy --exit-code 1 --severity CRITICAL,HIGH --format table --ignore-unfixed --ignorefile .trivyignore $REGISTRY:latest
