@@ -21,6 +21,16 @@ deploy_e2e() {
 
 deploy_stub() {
   echo "deploy_stub"
+  if [[ "$(git log -1 --pretty=%B)" == *"[stub]"* ]]; then
+      sed -i -e "s/mock_server:latest/${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}\/mock_server:hb${BUILDKITE_BUILD_NUMBER}/g" infra/docker-compose.yml
+      ssh -i "${AWS_PRIVATE_KEY}" -o "StrictHostKeyChecking=no" "${AWS_USERNAME}@${AWS_EC2_IP_MOCK_SERVER}" "
+      aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}
+      cp docker-compose.yml ~/docker-compose.yml
+      if [[ -n \$(docker images -f label=arch=stubs -q) ]]; then docker rmi -f $(docker images -f label=arch=stubs -q); fi
+      docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:latest
+      docker-compose up -d mockServer
+      "
+  fi
 }
 
 deploy_prod() {
