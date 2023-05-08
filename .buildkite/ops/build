@@ -31,14 +31,8 @@ build_frontend() {
   eval "$(aws sts assume-role --role-arn "$AWS_BUILDKITE_STEPS_ROLE" --role-session-name buildkite | jq -r '.Credentials | to_entries | map("\(.key)=\"\(.value | tostring)\"") | .[]')"
   aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${AWS_HOST}"
 
-  echo "before docker build frontend"
   docker build -t "${AWS_HOST}"/heartbeat_frontend:latest ./ -f ./infra/Dockerfile.frontend
-  echo "after docker build frontend"
-  echo "-----------------------------"
-  echo "before docker tag"
   docker tag "${AWS_HOST}"/heartbeat_frontend:latest "${AWS_HOST}"/heartbeat_frontend:hb"${BUILDKITE_BUILD_NUMBER}"
-  echo "before docker tag"
-  echo "-----------------------------"
 
   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$(pwd)"/.trivyignore:/.trivyignore \

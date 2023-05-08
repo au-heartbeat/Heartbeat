@@ -1,8 +1,11 @@
 FROM node:19-alpine as builder
 COPY ./frontend /app
 WORKDIR /app
-RUN npm install -g pnpm
-RUN pnpm install && pnpm build
+RUN npm install -g pnpm && \
+    pnpm install --store-dir=/pnpm-store && \
+    rm -rf ~/.cache/Cypress && \
+    pnpm build && \
+    pnpm store prune --store-dir=/pnpm-store
 
 FROM nginx:latest
 LABEL app=Heartbeat
