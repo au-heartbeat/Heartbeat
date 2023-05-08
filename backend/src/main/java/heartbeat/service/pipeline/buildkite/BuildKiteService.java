@@ -43,9 +43,9 @@ import java.util.stream.Stream;
 @Log4j2
 public class BuildKiteService {
 
-	private static final List<String> permissions = List.of("read_builds", "read_organizations", "read_pipelines");
-
 	public static final String BUILD_KITE_LINK_HEADER = HttpHeaders.LINK;
+
+	private static final List<String> permissions = List.of("read_builds", "read_organizations", "read_pipelines");
 
 	private final BuildKiteFeignClient buildKiteFeignClient;
 
@@ -194,6 +194,15 @@ public class BuildKiteService {
 		return 1;
 	}
 
+	public List<BuildKiteBuildInfo> fetchPipelineBuilds(String token, DeploymentEnvironment deploymentEnvironment,
+			String startTime, String endTime) {
+		String partialToken = token.substring(0, token.length() / 2);
+		PipelineStepsParam stepsParam = new PipelineStepsParam("", "", "", startTime, endTime);
+
+		return this.fetchPipelineStepsByPage(token, deploymentEnvironment.getOrgId(), deploymentEnvironment.getId(),
+				stepsParam, partialToken);
+	}
+
 	public DeployTimes countDeployTimes(DeploymentEnvironment deploymentEnvironment,
 			List<BuildKiteBuildInfo> buildInfos) {
 		if (deploymentEnvironment.getOrgId() == null) {
@@ -215,17 +224,9 @@ public class BuildKiteService {
 			DeploymentEnvironment deploymentEnvironment, String states) {
 		return buildInfos.stream()
 			.map(build -> build.mapToDeployInfo(deploymentEnvironment.getStep(), states))
+			.filter(job -> !job.equals(DeployInfo.builder().build()))
 			.filter(job -> !job.getJobStartTime().isEmpty())
 			.toList();
-	}
-
-	public List<BuildKiteBuildInfo> fetchPipelineBuilds(String token, DeploymentEnvironment deploymentEnvironment,
-			String startTime, String endTime) {
-		String partialToken = token.substring(0, token.length() / 2);
-		PipelineStepsParam stepsParam = new PipelineStepsParam("", "", "", startTime, endTime);
-
-		return this.fetchPipelineStepsByPage(token, deploymentEnvironment.getOrgId(), deploymentEnvironment.getId(),
-				stepsParam, partialToken);
 	}
 
 }

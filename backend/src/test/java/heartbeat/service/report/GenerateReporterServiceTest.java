@@ -48,7 +48,7 @@ class GenerateReporterServiceTest {
 	private BuildKiteService buildKiteService;
 
 	@Mock
-	private CalculateDeploymentFrequencyService calculateDeploymentFrequencyService;
+	private CalculateDeploymentFrequency calculateDeploymentFrequency;
 
 	@Test
 	void shouldReturnGenerateReportResponseWhenCallGenerateReporter() {
@@ -131,7 +131,7 @@ class GenerateReporterServiceTest {
 		DeploymentFrequency mockedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(new AvgDeploymentFrequency("Average", "0.1"))
 			.build();
-		when(calculateDeploymentFrequencyService.calculateDeploymentFrequency(any(), anyLong(), anyLong()))
+		when(calculateDeploymentFrequency.calculateDeploymentFrequency(any(), anyLong(), anyLong()))
 			.thenReturn(mockedDeploymentFrequency);
 
 		GenerateReportResponse response = generateReporterService.generateReporter(request);

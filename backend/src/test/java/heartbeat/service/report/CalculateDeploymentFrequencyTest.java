@@ -20,10 +20,10 @@ import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class CalculateDeploymentFrequencyServiceTest {
+class CalculateDeploymentFrequencyTest {
 
 	@InjectMocks
-	private CalculateDeploymentFrequencyService calculateDeploymentFrequencyService;
+	private CalculateDeploymentFrequency calculateDeploymentFrequency;
 
 	@Mock
 	private WorkDay workDay;
@@ -42,7 +42,7 @@ class CalculateDeploymentFrequencyServiceTest {
 			.build();
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequencyService.calculateDeploymentFrequency(
+		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
 				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
@@ -62,7 +62,7 @@ class CalculateDeploymentFrequencyServiceTest {
 			.build();
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(0);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequencyService.calculateDeploymentFrequency(
+		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
 				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("0000000000000"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
@@ -82,7 +82,7 @@ class CalculateDeploymentFrequencyServiceTest {
 			.build();
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequencyService.calculateDeploymentFrequency(
+		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
 				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
@@ -103,7 +103,7 @@ class CalculateDeploymentFrequencyServiceTest {
 			.build();
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequencyService.calculateDeploymentFrequency(
+		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
 				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
@@ -117,7 +117,7 @@ class CalculateDeploymentFrequencyServiceTest {
 			.build();
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequencyService.calculateDeploymentFrequency(
+		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
 				Collections.emptyList(), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
