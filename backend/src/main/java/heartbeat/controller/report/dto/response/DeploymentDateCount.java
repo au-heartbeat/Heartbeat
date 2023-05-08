@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GenerateReportResponse {
+public class DeploymentDateCount {
 
-	private Velocity velocity;
+	private String date;
 
-	private DeploymentFrequency deploymentFrequency;
+	private Integer count;
 
 }

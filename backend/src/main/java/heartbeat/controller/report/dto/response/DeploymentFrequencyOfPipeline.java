@@ -5,14 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GenerateReportResponse {
+public class DeploymentFrequencyOfPipeline {
 
-	private Velocity velocity;
+	private String name;
 
-	private DeploymentFrequency deploymentFrequency;
+	private String step;
+
+	private double deploymentFrequency;
+
+	private List<DeploymentDateCount> items;
 
 }

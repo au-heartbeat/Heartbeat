@@ -1,5 +1,8 @@
 package heartbeat.client;
 
+import feign.codec.Decoder;
+import heartbeat.client.dto.board.jira.HolidayResponseDTO;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import heartbeat.client.dto.board.jira.HolidaysResponseDTO;
 import heartbeat.config.HolidayFeignClientConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
