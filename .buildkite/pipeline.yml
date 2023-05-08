@@ -2,8 +2,10 @@ env:
   RETENTION_DAYS: "10"
 steps:
   - label: mock_server_build
+    key: mock_server_build
     command: ./.buildkite/ops/build mockserver
 
   - label: mock_server_deploy
+    key: mock_server_deploy
     depends_on: mock_server_build
     command: ./.buildkite/ops/deploy stub
