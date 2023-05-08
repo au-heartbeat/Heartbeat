@@ -63,8 +63,8 @@ build_mockserver() {
           docker push "${AWS_HOST}/mock_server:latest"
           docker push "${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}"
 
-          docker rmi "${AWS_HOST}/mock_server:latest"
-          docker rmi "${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}"
+#          docker rmi "${AWS_HOST}/mock_server:latest"
+#          docker rmi "${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}"
       fi
 }
 
