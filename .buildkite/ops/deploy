@@ -36,7 +36,7 @@ deploy_stub() {
           echo \"OK4\"
           docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}
           echo \"OK5\"
-          docker run -p 4323:4323 -d ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER} --name "mockServer"
+          docker run -p 4323:4323 -d --name mockServer ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}
       "
 }
 
