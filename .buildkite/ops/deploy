@@ -32,8 +32,8 @@ deploy_stub() {
                   docker rmi -f \$(docker images -f label=app=stubs -q)
           fi
           echo \"OK4\"
-          docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:hb${BUILDKITE_BUILD_NUMBER}
-          docker-compose up -d mockServer
+          docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/mock_server:hb2064
+          echo \"OK5\"
       "
 }
 
