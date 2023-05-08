@@ -32,7 +32,6 @@ import org.mockito.quality.Strictness;
 
 import java.util.List;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class GenerateReporterServiceTest {
@@ -105,7 +104,7 @@ class GenerateReporterServiceTest {
 				.build()));
 
 		when(buildKiteService.countDeployTimes(any(), any())).thenReturn(
-			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 
 		DeploymentFrequency mockedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(new AvgDeploymentFrequency("Average", 0.10F))

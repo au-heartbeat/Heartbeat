@@ -54,17 +54,17 @@ import static org.mockito.Mockito.when;
 class BuildKiteServiceTest {
 
 	public static final String TOTAL_PAGE_HEADER = """
-		<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="first",
-		<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="prev",
-		<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?per_page=100&page=2>; rel="next",
-		<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=3&per_page=100>; rel="last"
-		""";
+			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="first",
+			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="prev",
+			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?per_page=100&page=2>; rel="next",
+			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=3&per_page=100>; rel="last"
+			""";
 
 	public static final String NONE_TOTAL_PAGE_HEADER = """
-		<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="first",
-		<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="prev",
-		<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?per_page=100&page=2>; rel="next"
-		""";
+			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="first",
+			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?page=1&per_page=100>; rel="prev",
+			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?per_page=100&page=2>; rel="next"
+			""";
 
 	@Mock
 	BuildKiteFeignClient buildKiteFeignClient;
@@ -76,9 +76,9 @@ class BuildKiteServiceTest {
 	void shouldReturnBuildKiteResponseWhenCallBuildKiteApi() throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		List<BuildKitePipelineDTO> pipelineDTOS = mapper.readValue(
-			new File("src/test/java/heartbeat/controller/pipeline/buildKitePipelineInfoData.json"),
-			new TypeReference<>() {
-			});
+				new File("src/test/java/heartbeat/controller/pipeline/buildKitePipelineInfoData.json"),
+				new TypeReference<>() {
+				});
 		BuildKiteTokenInfo buildKiteTokenInfo = BuildKiteTokenInfo.builder()
 			.scopes(List.of("read_builds", "read_organizations", "read_pipelines"))
 			.build();
@@ -116,7 +116,7 @@ class BuildKiteServiceTest {
 		when(buildKiteFeignClient.getTokenInfo(any())).thenReturn(buildKiteTokenInfo);
 
 		assertThrows(RequestFailedException.class, () -> buildKiteService.fetchPipelineInfo(
-			PipelineParam.builder().token("test_token").startTime("startTime").endTime("endTime").build()));
+				PipelineParam.builder().token("test_token").startTime("startTime").endTime("endTime").build()));
 
 		verify(buildKiteFeignClient).getBuildKiteOrganizationsInfo(any());
 	}
@@ -127,7 +127,7 @@ class BuildKiteServiceTest {
 		when(buildKiteFeignClient.getTokenInfo(any())).thenReturn(buildKiteTokenInfo);
 
 		assertThrows(RequestFailedException.class, () -> buildKiteService.fetchPipelineInfo(
-			PipelineParam.builder().token("test_token").startTime("startTime").endTime("endTime").build()));
+				PipelineParam.builder().token("test_token").startTime("startTime").endTime("endTime").build()));
 	}
 
 	@Test
@@ -142,13 +142,13 @@ class BuildKiteServiceTest {
 		List<BuildKiteBuildInfo> buildKiteBuildInfoList = new ArrayList<>();
 		buildKiteBuildInfoList.add(BuildKiteBuildInfo.builder().jobs(List.of(testJob)).build());
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(buildKiteBuildInfoList,
-			HttpStatus.OK);
+				HttpStatus.OK);
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(responseEntity);
 
 		PipelineStepsDTO pipelineStepsDTO = buildKiteService.fetchPipelineSteps(token, organizationId, pipelineId,
-			stepsParam);
+				stepsParam);
 
 		assertNotNull(pipelineStepsDTO);
 		assertThat(pipelineStepsDTO.getSteps().get(0)).isEqualTo("testJob");
@@ -160,13 +160,13 @@ class BuildKiteServiceTest {
 		when(mockException.getMessage()).thenReturn("exception");
 		when(mockException.getStatus()).thenReturn(500);
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			any(), any()))
+				any(), any()))
 			.thenThrow(mockException);
 
 		assertThrows(
-			RequestFailedException.class, () -> buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
-				"test_pipeline_id", new PipelineStepsParam()),
-			"Request failed with status code 500, error: exception");
+				RequestFailedException.class, () -> buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
+						"test_pipeline_id", new PipelineStepsParam()),
+				"Request failed with status code 500, error: exception");
 	}
 
 	@Test
@@ -183,20 +183,20 @@ class BuildKiteServiceTest {
 		BuildKiteJob testJob2 = BuildKiteJob.builder().name("testJob2").build();
 		buildKiteBuildInfoList.add(BuildKiteBuildInfo.builder().jobs(List.of(testJob, testJob2)).build());
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(buildKiteBuildInfoList,
-			httpHeaders, HttpStatus.OK);
+				httpHeaders, HttpStatus.OK);
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(responseEntity);
 		BuildKiteJob testJob3 = BuildKiteJob.builder().name("testJob3").build();
 		BuildKiteJob testJob4 = BuildKiteJob.builder().name("").build();
 		List<BuildKiteBuildInfo> buildKiteBuildInfoList2 = new ArrayList<>();
 		buildKiteBuildInfoList2.add(BuildKiteBuildInfo.builder().jobs(List.of(testJob3, testJob4)).build());
 		when(buildKiteFeignClient.getPipelineStepsInfo(anyString(), anyString(), anyString(), anyString(), anyString(),
-			anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(buildKiteBuildInfoList2);
 
 		PipelineStepsDTO pipelineStepsDTO = buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
-			"test_pipeline_id", stepsParam);
+				"test_pipeline_id", stepsParam);
 
 		assertNotNull(pipelineStepsDTO);
 		assertThat(pipelineStepsDTO.getSteps().size()).isEqualTo(3);
@@ -215,18 +215,18 @@ class BuildKiteServiceTest {
 		BuildKiteJob testJob = BuildKiteJob.builder().name("testJob").build();
 		buildKiteBuildInfoList.add(BuildKiteBuildInfo.builder().jobs(List.of(testJob)).build());
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(buildKiteBuildInfoList,
-			httpHeaders, HttpStatus.OK);
+				httpHeaders, HttpStatus.OK);
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			any(), any()))
+				any(), any()))
 			.thenReturn(responseEntity);
 		when(buildKiteFeignClient.getPipelineStepsInfo(anyString(), anyString(), anyString(), anyString(), anyString(),
-			any(), any()))
+				any(), any()))
 			.thenThrow(new RequestFailedException(404, "Client Error"));
 
 		assertThrows(
-			RequestFailedException.class, () -> buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
-				"test_pipeline_id", new PipelineStepsParam()),
-			"Request failed with status statusCode 500, error: Server Error");
+				RequestFailedException.class, () -> buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
+						"test_pipeline_id", new PipelineStepsParam()),
+				"Request failed with status statusCode 500, error: Server Error");
 	}
 
 	@Test
@@ -239,18 +239,18 @@ class BuildKiteServiceTest {
 		BuildKiteJob testJob = BuildKiteJob.builder().name("testJob").build();
 		buildKiteBuildInfoList.add(BuildKiteBuildInfo.builder().jobs(List.of(testJob)).build());
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(buildKiteBuildInfoList,
-			httpHeaders, HttpStatus.OK);
+				httpHeaders, HttpStatus.OK);
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			any(), any()))
+				any(), any()))
 			.thenReturn(responseEntity);
 		when(buildKiteFeignClient.getPipelineStepsInfo(anyString(), anyString(), anyString(), anyString(), anyString(),
-			any(), any()))
+				any(), any()))
 			.thenThrow(new RequestFailedException(500, "Server Error"));
 
 		assertThrows(
-			RequestFailedException.class, () -> buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
-				"test_pipeline_id", new PipelineStepsParam()),
-			"Request failed with status statusCode 500, error: Server Error");
+				RequestFailedException.class, () -> buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
+						"test_pipeline_id", new PipelineStepsParam()),
+				"Request failed with status statusCode 500, error: Server Error");
 	}
 
 	@Test
@@ -266,13 +266,13 @@ class BuildKiteServiceTest {
 		BuildKiteJob testJob = BuildKiteJob.builder().name("testJob").build();
 		buildKiteBuildInfoList.add(BuildKiteBuildInfo.builder().jobs(List.of(testJob)).build());
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(buildKiteBuildInfoList,
-			httpHeaders, HttpStatus.OK);
+				httpHeaders, HttpStatus.OK);
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(responseEntity);
 
 		PipelineStepsDTO pipelineStepsDTO = buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
-			"test_pipeline_id", stepsParam);
+				"test_pipeline_id", stepsParam);
 
 		assertNotNull(pipelineStepsDTO);
 		assertThat(pipelineStepsDTO.getSteps().size()).isEqualTo(1);
@@ -289,13 +289,13 @@ class BuildKiteServiceTest {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.addAll(HttpHeaders.LINK, linkHeader);
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(null, httpHeaders,
-			HttpStatus.OK);
+				HttpStatus.OK);
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(responseEntity);
 
 		PipelineStepsDTO pipelineStepsDTO = buildKiteService.fetchPipelineSteps("test_token", "test_org_id",
-			"test_pipeline_id", stepsParam);
+				"test_pipeline_id", stepsParam);
 
 		assertNotNull(pipelineStepsDTO);
 		assertThat(pipelineStepsDTO.getSteps().size()).isEqualTo(0);
@@ -312,13 +312,13 @@ class BuildKiteServiceTest {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.addAll(HttpHeaders.LINK, linkHeader);
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(null, httpHeaders,
-			HttpStatus.OK);
+				HttpStatus.OK);
 
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
-			anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(responseEntity);
 		List<BuildKiteBuildInfo> pipelineBuilds = buildKiteService.fetchPipelineBuilds(mockToken, mockDeployment,
-			mockStartTime, mockEndTime);
+				mockStartTime, mockEndTime);
 
 		assertNotNull(pipelineBuilds);
 		assertThat(pipelineBuilds.size()).isEqualTo(0);
@@ -328,12 +328,12 @@ class BuildKiteServiceTest {
 	public void shouldReturnDeployTimesWhenCountDeployTimes() {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
 		List<BuildKiteBuildInfo> mockBuildKiteBuildInfos = List.of(BuildKiteBuildInfoBuilder.withDefault().build(),
-			BuildKiteBuildInfoBuilder.withDefault()
-				.withJobs(List.of(BuildKiteJobBuilder.withDefault().withState("passed").build()))
-				.build(),
-			BuildKiteBuildInfoBuilder.withDefault()
-				.withJobs(List.of(BuildKiteJobBuilder.withDefault().withStartedAt("").build()))
-				.build());
+				BuildKiteBuildInfoBuilder.withDefault()
+					.withJobs(List.of(BuildKiteJobBuilder.withDefault().withState("passed").build()))
+					.build(),
+				BuildKiteBuildInfoBuilder.withDefault()
+					.withJobs(List.of(BuildKiteJobBuilder.withDefault().withStartedAt("").build()))
+					.build());
 		DeployTimes expectedDeployTimes = DeployTimesBuilder.withDefault().build();
 
 		DeployTimes deployTimes = buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos);

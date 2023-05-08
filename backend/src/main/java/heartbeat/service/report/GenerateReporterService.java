@@ -30,10 +30,6 @@ public class GenerateReporterService {
 	// todo: need remove private fields not use void function when finish GenerateReport
 	private CardCollection cardCollection;
 
-	private List<DeployTimes> deployTimesListFromDeploySetting = new ArrayList<>();
-
-	private List<Map.Entry<String, List<BuildKiteBuildInfo>>> buildInfos = new ArrayList<>();
-
 	private final JiraService jiraService;
 
 	private final BuildKiteService buildKiteService;
@@ -50,7 +46,6 @@ public class GenerateReporterService {
 		.of(RequireDataEnum.CHANGE_FAILURE_RATE, RequireDataEnum.DEPLOYMENT_FREQUENCY)
 		.map(RequireDataEnum::getValue)
 		.toList();
-
 
 	private List<DeployTimes> deployTimesList = new ArrayList<>();
 
@@ -72,8 +67,9 @@ public class GenerateReporterService {
 					reportResponse.setVelocity(calculateVelocity());
 					break;
 				case "deployment frequency":
-					reportResponse.setDeploymentFrequency(calculateDeploymentFrequencyService.calculateDeploymentFrequency(
-						this.deployTimesList, Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
+					reportResponse.setDeploymentFrequency(
+							calculateDeploymentFrequency.calculateDeploymentFrequency(this.deployTimesList,
+									Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
 					break;
 				default:
 					// TODO
@@ -133,7 +129,7 @@ public class GenerateReporterService {
 			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock())
 			.build();
 		cardCollection = jiraService.getStoryPointsAndCycleTime(storyPointsAndCycleTimeRequest,
-			jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers());
+				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers());
 	}
 
 	private void fetchGithubData() {
@@ -145,8 +141,8 @@ public class GenerateReporterService {
 		this.buildInfosList.clear();
 		for (DeploymentEnvironment deploymentEnvironment : request.getBuildKiteSetting().getDeployment()) {
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = buildKiteService.fetchPipelineBuilds(
-				request.getBuildKiteSetting().getToken(), deploymentEnvironment, request.getStartTime(),
-				request.getEndTime());
+					request.getBuildKiteSetting().getToken(), deploymentEnvironment, request.getStartTime(),
+					request.getEndTime());
 			DeployTimes deployTimes = buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfos);
 			this.deployTimesList.add(deployTimes);
 			this.buildInfosList.add(Map.entry(deploymentEnvironment.getId(), buildKiteBuildInfos));
