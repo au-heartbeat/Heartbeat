@@ -15,6 +15,7 @@ import heartbeat.controller.pipeline.dto.response.BuildKiteResponseDTO;
 import heartbeat.controller.pipeline.dto.response.Pipeline;
 import heartbeat.controller.pipeline.dto.response.PipelineStepsDTO;
 import heartbeat.controller.pipeline.dto.response.PipelineTransformer;
+import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.RequestFailedException;
 import heartbeat.util.TokenUtil;
@@ -147,7 +148,8 @@ public class BuildKiteService {
 			pageStepsInfo.addAll(firstPageStepsInfo);
 		}
 		if (totalPage != 1) {
-			Stream<CompletableFuture<List<BuildKiteBuildInfo>>> futureStream = IntStream.range(2, totalPage + 1)
+			Stream<CompletableFuture<List<BuildKiteBuildInfo>>> futureStream = IntStream
+				.range(Integer.parseInt(page) + 1, totalPage + 1)
 				.mapToObj(currentPage -> getBuildKiteStepsAsync(token, orgId, pipelineId, stepsParam, perPage,
 						currentPage, partialToken));
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = futureStream.map(CompletableFuture::join)
@@ -206,7 +208,7 @@ public class BuildKiteService {
 	public DeployTimes countDeployTimes(DeploymentEnvironment deploymentEnvironment,
 			List<BuildKiteBuildInfo> buildInfos) {
 		if (deploymentEnvironment.getOrgId() == null) {
-			throw new Error("miss orgId argument");
+			throw new NotFoundException(HttpStatus.NOT_FOUND.value(), "miss orgId argument");
 		}
 		List<DeployInfo> passedBuilds = this.getBuildsByState(buildInfos, deploymentEnvironment, "passed");
 		List<DeployInfo> failedBuilds = this.getBuildsByState(buildInfos, deploymentEnvironment, "failed");

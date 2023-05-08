@@ -29,7 +29,7 @@ public class DeploymentFrequencyOfPipeline {
 	}
 
 	public void setDeploymentFrequency(Double deploymentFrequency) {
-		DecimalFormat df = new DecimalFormat("0.00");
+		DecimalFormat df = new DecimalFormat(Constants.FORMAT_DOUBLE_2_DECIMALS);
 		this.deploymentFrequency = df.format(deploymentFrequency);
 	}
 
