@@ -29,9 +29,9 @@ public class CalculateDeploymentFrequency {
 
         List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
             List<DeployInfo> filteredPassedItems = filterPassedItemsByTime(item.getPassed(), startTime, endTime);
-            int passedDeployTimes = filteredPassedItems.size();
+            int passedDeployTimesCount = filteredPassedItems.size();
             List<DailyDeploymentCount> dailyDeploymentCounts = mapDeploymentPassedItems(filteredPassedItems);
-            float frequency = passedDeployTimes == 0 || timePeriod == 0 ? 0 : (float) passedDeployTimes / timePeriod;
+            float frequency = passedDeployTimesCount == 0 || timePeriod == 0 ? 0 : (float) passedDeployTimesCount / timePeriod;
             DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
                     item.getPipelineName(), item.getPipelineStep(), dailyDeploymentCounts);
             deploymentFrequencyOfPipeline.setDeploymentFrequency(frequency);
