@@ -27,9 +27,6 @@ import java.util.stream.Stream;
 
 public class GenerateReporterService {
 
-	// todo: need remove private fields not use void function when finish GenerateReport
-	private CardCollection cardCollection;
-
 	private final JiraService jiraService;
 
 	private final BuildKiteService buildKiteService;
@@ -42,10 +39,13 @@ public class GenerateReporterService {
 		.map(RequireDataEnum::getValue)
 		.toList();
 
-	private final List<String> BuildKiteMetrics = Stream
+	private final List<String> buildKiteMetrics = Stream
 		.of(RequireDataEnum.CHANGE_FAILURE_RATE, RequireDataEnum.DEPLOYMENT_FREQUENCY)
 		.map(RequireDataEnum::getValue)
 		.toList();
+
+	// todo: need remove private fields not use void function when finish GenerateReport
+	private CardCollection cardCollection;
 
 	private List<DeployTimes> deployTimesList = new ArrayList<>();
 
@@ -108,7 +108,7 @@ public class GenerateReporterService {
 
 		fetchGithubData();
 
-		if (lowMetrics.stream().anyMatch(this.BuildKiteMetrics::contains)) {
+		if (lowMetrics.stream().anyMatch(this.buildKiteMetrics::contains)) {
 			fetchBuildKiteData(request);
 		}
 

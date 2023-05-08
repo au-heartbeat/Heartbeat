@@ -28,28 +28,19 @@ public class CalculateDeploymentFrequency {
 		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
 		List<DeploymentFrequencyModel> deploymentFrequencyModels = deployTimes.stream().map((item) -> {
-			int passedDeployTimes = item.getPassed().stream().filter((deployInfoItem) -> {
-				long time = Instant.parse(deployInfoItem.getJobFinishTime()).toEpochMilli();
-				return time > startTime && time <= endTime;
-			}).toList().size();
-			if (passedDeployTimes == 0 || timePeriod == 0) {
-				return new DeploymentFrequencyModel(item.getPipelineName(), item.getPipelineStep(), 0,
-						Collections.emptyList());
-			}
-			return new DeploymentFrequencyModel(item.getPipelineName(), item.getPipelineStep(),
-					(float) passedDeployTimes / timePeriod, item.getPassed());
+			int passedDeployTimes = getPassedDeployTimes(startTime, endTime, item);
+			float frequency = passedDeployTimes == 0 || timePeriod == 0 ? 0 : (float) passedDeployTimes / timePeriod;
+			return new DeploymentFrequencyModel(item.getPipelineName(), item.getPipelineStep(), frequency,
+					item.getPassed());
 		}).toList();
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deploymentFrequencyModels.stream()
 			.map((item) -> {
+				List<DeployInfo> filteredPassedItems = filterPassedItemsByTime(item.getPassed(), startTime, endTime);
+				List<DailyDeploymentCount> dailyDeploymentCounts = mapDeploymentPassedItems(filteredPassedItems);
 				DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
-						item.getName(), item.getStep(),
-						mapDeploymentPassedItems(item.getPassed().stream().filter((data) -> {
-							long time = Instant.parse(data.getJobFinishTime()).toEpochMilli();
-							return time > startTime && time <= endTime;
-						}).toList()));
+						item.getName(), item.getStep(), dailyDeploymentCounts);
 				deploymentFrequencyOfPipeline.setDeploymentFrequency(item.getValue());
-
 				return deploymentFrequencyOfPipeline;
 			})
 			.toList();
@@ -64,6 +55,20 @@ public class CalculateDeploymentFrequency {
 			.avgDeploymentFrequency(new AvgDeploymentFrequency(avgDeployFrequency))
 			.deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
 			.build();
+	}
+
+	private List<DeployInfo> filterPassedItemsByTime(List<DeployInfo> deployInfos, Long startTime, Long endTime) {
+		return deployInfos.stream().filter((data) -> {
+			long time = Instant.parse(data.getJobFinishTime()).toEpochMilli();
+			return time > startTime && time <= endTime;
+		}).toList();
+	}
+
+	private int getPassedDeployTimes(Long startTime, Long endTime, DeployTimes item) {
+		return item.getPassed().stream().filter((deployInfoItem) -> {
+			long time = Instant.parse(deployInfoItem.getJobFinishTime()).toEpochMilli();
+			return time > startTime && time <= endTime;
+		}).toList().size();
 	}
 
 	private List<DailyDeploymentCount> mapDeploymentPassedItems(List<DeployInfo> deployInfos) {
