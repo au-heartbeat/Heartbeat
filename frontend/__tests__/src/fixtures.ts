@@ -83,7 +83,7 @@ export const MOCK_BOARD_URL_FOR_JIRA = `${BASE_URL}/boards/jira`
 export const MOCK_BOARD_URL_FOR_CLASSIC_JIRA = `${BASE_URL}/boards/classic-jira`
 export const MOCK_PIPELINE_URL = `${BASE_URL}/pipelines/buildkite`
 export const MOCK_SOURCE_CONTROL_URL = `${BASE_URL}/source-control`
-export const MOCK_REPORT_URL = `${BASE_URL}/report`
+export const MOCK_REPORT_URL = `${BASE_URL}/reports`
 
 export enum VERIFY_ERROR_MESSAGE {
   BAD_REQUEST = 'Please reconfirm the input',
