@@ -29,7 +29,7 @@ public class CalculateDeploymentFrequency {
 
 		List<DeploymentFrequencyModel> deploymentFrequencyModels = deployTimes.stream().map((item) -> {
 			int passedDeployTimes = item.getPassed().stream().filter((deployInfoItem) -> {
-				Long time = Instant.parse(deployInfoItem.getJobFinishTime()).toEpochMilli();
+				long time = Instant.parse(deployInfoItem.getJobFinishTime()).toEpochMilli();
 				return time > startTime && time <= endTime;
 			}).toList().size();
 			if (passedDeployTimes == 0 || timePeriod == 0) {
@@ -45,7 +45,7 @@ public class CalculateDeploymentFrequency {
 				DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
 						item.getName(), item.getStep(),
 						mapDeploymentPassedItems(item.getPassed().stream().filter((data) -> {
-							Long time = Instant.parse(data.getJobFinishTime()).toEpochMilli();
+							long time = Instant.parse(data.getJobFinishTime()).toEpochMilli();
 							return time > startTime && time <= endTime;
 						}).toList()));
 				deploymentFrequencyOfPipeline.setDeploymentFrequency(item.getValue());

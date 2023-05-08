@@ -1,5 +1,6 @@
 package heartbeat.controller.report.dto.response;
 
+import heartbeat.config.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class DeploymentFrequencyOfPipeline {
 
 	private String step;
 
-	private String deploymentFrequency;
+	private float deploymentFrequency;
 
 	private List<DailyDeploymentCount> dailyDeploymentCounts;
 
@@ -30,7 +31,7 @@ public class DeploymentFrequencyOfPipeline {
 
 	public void setDeploymentFrequency(float deploymentFrequency) {
 		DecimalFormat df = new DecimalFormat(Constants.FORMAT_DOUBLE_2_DECIMALS);
-		this.deploymentFrequency = df.format(deploymentFrequency);
+		this.deploymentFrequency = Float.parseFloat(df.format(deploymentFrequency));
 	}
 
 }

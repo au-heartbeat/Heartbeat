@@ -1,5 +1,6 @@
 package heartbeat.controller.report.dto.response;
 
+import heartbeat.config.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,11 +16,11 @@ public class AvgDeploymentFrequency {
 
 	private String name = "Average";
 
-	private String deploymentFrequency;
+	private float deploymentFrequency;
 
 	public AvgDeploymentFrequency(float deploymentFrequency) {
 		DecimalFormat df = new DecimalFormat(Constants.FORMAT_DOUBLE_2_DECIMALS);
-		this.deploymentFrequency = df.format(deploymentFrequency);
+		this.deploymentFrequency = Float.parseFloat(df.format(deploymentFrequency));
 	}
 
 }

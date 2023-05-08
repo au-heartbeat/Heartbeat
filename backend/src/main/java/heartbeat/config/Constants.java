@@ -1,4 +1,4 @@
-package heartbeat.controller.report.dto.response;
+package heartbeat.config;
 
 public class Constants {
 
