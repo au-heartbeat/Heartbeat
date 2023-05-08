@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DeploymentDateCount {
+public class DailyDeploymentCount {
 
 	private String date;
 

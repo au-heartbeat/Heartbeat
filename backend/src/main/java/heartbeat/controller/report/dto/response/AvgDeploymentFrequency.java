@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AvgDeploymentFrequency {
 
+	@Builder.Default
 	private String name = "Average";
 
 	private String deploymentFrequency;

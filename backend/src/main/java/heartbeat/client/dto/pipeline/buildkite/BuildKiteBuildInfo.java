@@ -30,7 +30,7 @@ public class BuildKiteBuildInfo {
 
 		if (this.pipelineCreateTime == null || job == null || job.getStartedAt() == null
 				|| job.getFinishedAt() == null) {
-			return new DeployInfo("", "", "", "", "");
+			return DeployInfo.builder().build();
 		}
 
 		return new DeployInfo(this.pipelineCreateTime, job.getStartedAt(), job.getFinishedAt(), this.commit,

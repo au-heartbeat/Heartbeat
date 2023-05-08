@@ -19,6 +19,6 @@ public class DeploymentFrequencyOfPipeline {
 
 	private double deploymentFrequency;
 
-	private List<DeploymentDateCount> items;
+	private List<DailyDeploymentCount> dailyDeploymentCounts;
 
 }
