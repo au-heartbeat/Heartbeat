@@ -5,4 +5,5 @@ steps:
     command: ./.buildkite/ops/build mockserver
 
   - label: "Mock Server deploy"
+    depends_on: "Mock Server Build"
     command: ./.buildkite/ops/deploy stub
