@@ -21,67 +21,69 @@ import java.util.stream.Collectors;
 @Component
 public class CalculateDeploymentFrequency {
 
-    private final WorkDay workDay;
+	private final WorkDay workDay;
 
-    public DeploymentFrequency calculateDeploymentFrequency(List<DeployTimes> deployTimes, Long startTime,
-                                                            Long endTime) {
-        int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
+	public DeploymentFrequency calculateDeploymentFrequency(List<DeployTimes> deployTimes, Long startTime,
+			Long endTime) {
+		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
-        List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
-            List<DeployInfo> filteredPassedItems = filterPassedItemsByTime(item.getPassed(), startTime, endTime);
-            int passedDeployTimesCount = filteredPassedItems.size();
-            List<DailyDeploymentCount> dailyDeploymentCounts = mapDeploymentPassedItems(filteredPassedItems);
-            float frequency = passedDeployTimesCount == 0 || timePeriod == 0 ? 0 : (float) passedDeployTimesCount / timePeriod;
-            DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
-                    item.getPipelineName(), item.getPipelineStep(), dailyDeploymentCounts);
-            deploymentFrequencyOfPipeline.setDeploymentFrequency(frequency);
-            return deploymentFrequencyOfPipeline;
-        }).collect(Collectors.toList());
+		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
+			List<DeployInfo> filteredPassedItems = filterPassedItemsByTime(item.getPassed(), startTime, endTime);
+			int passedDeployTimesCount = filteredPassedItems.size();
+			List<DailyDeploymentCount> dailyDeploymentCounts = mapDeploymentPassedItems(filteredPassedItems);
+			float frequency = passedDeployTimesCount == 0 || timePeriod == 0 ? 0
+					: (float) passedDeployTimesCount / timePeriod;
+			DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
+					item.getPipelineName(), item.getPipelineStep(), dailyDeploymentCounts);
+			deploymentFrequencyOfPipeline.setDeploymentFrequency(frequency);
+			return deploymentFrequencyOfPipeline;
+		}).collect(Collectors.toList());
 
-        float deploymentFrequency = (float) deploymentFrequencyOfPipelines.stream()
-                .mapToDouble(DeploymentFrequencyOfPipeline::getDeploymentFrequency)
-                .sum();
-        int pipelineCount = deploymentFrequencyOfPipelines.size();
-        float avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
+		float deploymentFrequency = (float) deploymentFrequencyOfPipelines.stream()
+			.mapToDouble(DeploymentFrequencyOfPipeline::getDeploymentFrequency)
+			.sum();
+		int pipelineCount = deploymentFrequencyOfPipelines.size();
+		float avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
 
-        return DeploymentFrequency.builder()
-                .avgDeploymentFrequency(new AvgDeploymentFrequency(avgDeployFrequency))
-                .deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
-                .build();
-    }
+		return DeploymentFrequency.builder()
+			.avgDeploymentFrequency(new AvgDeploymentFrequency(avgDeployFrequency))
+			.deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
+			.build();
+	}
 
-    private List<DeployInfo> filterPassedItemsByTime(List<DeployInfo> deployInfos, Long startTime, Long endTime) {
-        return deployInfos.stream().filter((data) -> {
-            long time = Instant.parse(data.getJobFinishTime()).toEpochMilli();
-            return time > startTime && time <= endTime;
-        }).toList();
-    }
+	private List<DeployInfo> filterPassedItemsByTime(List<DeployInfo> deployInfos, Long startTime, Long endTime) {
+		return deployInfos.stream().filter((data) -> {
+			long time = Instant.parse(data.getJobFinishTime()).toEpochMilli();
+			return time > startTime && time <= endTime;
+		}).toList();
+	}
 
-    private List<DailyDeploymentCount> mapDeploymentPassedItems(List<DeployInfo> deployInfos) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        List<DailyDeploymentCount> dailyDeploymentCounts = new ArrayList<>();
+	private List<DailyDeploymentCount> mapDeploymentPassedItems(List<DeployInfo> deployInfos) {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		List<DailyDeploymentCount> dailyDeploymentCounts = new ArrayList<>();
 
-        if (deployInfos == null || deployInfos.isEmpty()) {
-            return Collections.emptyList();
-        }
+		if (deployInfos == null || deployInfos.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-        deployInfos.forEach((item) -> {
-            if (!item.getJobFinishTime().isEmpty() && !item.getJobFinishTime().equals("NaN")) {
-                String localDate = dateTimeFormatter
-                        .format(Instant.parse(item.getJobFinishTime()).atZone(ZoneId.of("UTC")));
-                DailyDeploymentCount existingDateItem = dailyDeploymentCounts.stream()
-                        .filter((dateCountItem) -> dateCountItem.getDate().equals(localDate))
-                        .findFirst()
-                        .orElse(null);
-                if (existingDateItem == null) {
-                    DailyDeploymentCount dateCountItem = new DailyDeploymentCount(localDate, 1);
-                    dailyDeploymentCounts.add(dateCountItem);
-                } else {
-                    existingDateItem.setCount(existingDateItem.getCount() + 1);
-                }
-            }
-        });
-        return dailyDeploymentCounts;
-    }
+		deployInfos.forEach((item) -> {
+			if (!item.getJobFinishTime().isEmpty() && !item.getJobFinishTime().equals("NaN")) {
+				String localDate = dateTimeFormatter
+					.format(Instant.parse(item.getJobFinishTime()).atZone(ZoneId.of("UTC")));
+				DailyDeploymentCount existingDateItem = dailyDeploymentCounts.stream()
+					.filter((dateCountItem) -> dateCountItem.getDate().equals(localDate))
+					.findFirst()
+					.orElse(null);
+				if (existingDateItem == null) {
+					DailyDeploymentCount dateCountItem = new DailyDeploymentCount(localDate, 1);
+					dailyDeploymentCounts.add(dateCountItem);
+				}
+				else {
+					existingDateItem.setCount(existingDateItem.getCount() + 1);
+				}
+			}
+		});
+		return dailyDeploymentCounts;
+	}
 
 }
