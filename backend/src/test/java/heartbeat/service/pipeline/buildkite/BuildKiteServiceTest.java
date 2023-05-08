@@ -9,7 +9,6 @@ import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteOrganizationsInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKitePipelineDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteTokenInfo;
-import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.pipeline.dto.request.PipelineParam;
@@ -18,6 +17,10 @@ import heartbeat.controller.pipeline.dto.response.BuildKiteResponseDTO;
 import heartbeat.controller.pipeline.dto.response.Pipeline;
 import heartbeat.controller.pipeline.dto.response.PipelineStepsDTO;
 import heartbeat.exception.RequestFailedException;
+import heartbeat.service.pipeline.buildkite.builder.BuildKiteBuildInfoBuilder;
+import heartbeat.service.pipeline.buildkite.builder.BuildKiteJobBuilder;
+import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
+import heartbeat.service.pipeline.buildkite.builder.DeploymentEnvironmentBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -302,13 +305,7 @@ class BuildKiteServiceTest {
 		String mockStartTime = "1661702400000";
 		String mockEndTime = "1662739199000";
 		String mockToken = "xxxxxxxxxx";
-		DeploymentEnvironment mockDeployment = DeploymentEnvironment.builder()
-			.orgId("xx")
-			.orgName("xx")
-			.id("xx")
-			.name("xx")
-			.step("xx")
-			.build();
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
 		List<String> linkHeader = new ArrayList<>();
 		linkHeader.add(NONE_TOTAL_PAGE_HEADER);
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -328,66 +325,15 @@ class BuildKiteServiceTest {
 
 	@Test
 	public void shouldReturnDeployTimesWhenCountDeployTimes() {
-		DeploymentEnvironment mockDeployment = DeploymentEnvironment.builder()
-			.orgId("xx")
-			.orgName("xx")
-			.id("xx")
-			.name("xx")
-			.step("xx")
-			.build();
-		List<BuildKiteBuildInfo> mockBuildKiteBuildInfos = List.of(
-				BuildKiteBuildInfo.builder()
-					.jobs(List.of(BuildKiteJob.builder()
-						.startedAt("2022-09-09T04:56:44.162Z")
-						.name("xx")
-						.state("failed")
-						.finishedAt("2022-09-09T04:57:09.545Z")
-						.build()))
-					.commit("xx")
-					.number(1)
-					.pipelineCreateTime("xx")
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+		List<BuildKiteBuildInfo> mockBuildKiteBuildInfos = List.of(BuildKiteBuildInfoBuilder.withDefault().build(),
+				BuildKiteBuildInfoBuilder.withDefault()
+					.withJobs(List.of(BuildKiteJobBuilder.withDefault().withState("passed").build()))
 					.build(),
-				BuildKiteBuildInfo.builder()
-					.jobs(List.of(BuildKiteJob.builder()
-						.startedAt("2022-09-09T04:56:44.162Z")
-						.name("xx")
-						.state("passed")
-						.finishedAt("2022-09-09T04:57:09.545Z")
-						.build()))
-					.commit("xx")
-					.number(1)
-					.pipelineCreateTime("xx")
-					.build(),
-				BuildKiteBuildInfo.builder()
-					.jobs(List.of(BuildKiteJob.builder()
-						.startedAt("")
-						.name("xx")
-						.state("passed")
-						.finishedAt("2022-09-09T04:57:09.545Z")
-						.build()))
-					.commit("xx")
-					.number(1)
-					.pipelineCreateTime("xx")
+				BuildKiteBuildInfoBuilder.withDefault()
+					.withJobs(List.of(BuildKiteJobBuilder.withDefault().withStartedAt("").build()))
 					.build());
-		DeployTimes expectedDeployTimes = DeployTimes.builder()
-			.pipelineId("xx")
-			.pipelineName("xx")
-			.pipelineStep("xx")
-			.passed(List.of(DeployInfo.builder()
-				.pipelineCreateTime("xx")
-				.jobStartTime("2022-09-09T04:56:44.162Z")
-				.jobFinishTime("2022-09-09T04:57:09.545Z")
-				.commitId("xx")
-				.state("passed")
-				.build()))
-			.failed(List.of(DeployInfo.builder()
-				.pipelineCreateTime("xx")
-				.jobStartTime("2022-09-09T04:56:44.162Z")
-				.jobFinishTime("2022-09-09T04:57:09.545Z")
-				.commitId("xx")
-				.state("failed")
-				.build()))
-			.build();
+		DeployTimes expectedDeployTimes = DeployTimesBuilder.withDefault().build();
 
 		DeployTimes deployTimes = buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos);
 
@@ -396,30 +342,12 @@ class BuildKiteServiceTest {
 
 	@Test
 	public void shouldReturnDeployInfoWhenMappedDeployInfoIsNull() {
-		DeploymentEnvironment mockDeployment = DeploymentEnvironment.builder()
-			.orgId("xx")
-			.orgName("xx")
-			.id("xx")
-			.name("xx")
-			.step("xxxx")
-			.build();
-		List<BuildKiteBuildInfo> mockBuildKiteBuildInfos = List.of(BuildKiteBuildInfo.builder()
-			.jobs(List.of(BuildKiteJob.builder()
-				.startedAt("2022-09-09T04:56:44.162Z")
-				.name("xx")
-				.state("xx")
-				.finishedAt("2022-09-09T04:57:09.545Z")
-				.build()))
-			.commit("xx")
-			.number(1)
-			.pipelineCreateTime("xx")
-			.build());
-		DeployTimes expectedDeployTimes = DeployTimes.builder()
-			.pipelineId("xx")
-			.pipelineName("xx")
-			.pipelineStep("xxxx")
-			.passed(Collections.emptyList())
-			.failed(Collections.emptyList())
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().withStep("xxxx").build();
+		List<BuildKiteBuildInfo> mockBuildKiteBuildInfos = List.of(BuildKiteBuildInfoBuilder.withDefault().build());
+		DeployTimes expectedDeployTimes = DeployTimesBuilder.withDefault()
+			.withPipelineStep("xxxx")
+			.withPassed(Collections.emptyList())
+			.withFailed(Collections.emptyList())
 			.build();
 
 		DeployTimes deployTimes = buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos);
