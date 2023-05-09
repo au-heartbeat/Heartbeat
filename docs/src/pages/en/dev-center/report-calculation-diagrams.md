@@ -15,9 +15,9 @@ start
 :calculate time period between startDate and endDate;
 partition "Calculate Deployment Frequency of Pipelines" {
   :iterate over DeployTimes;
-    :filter passed Deploytimes by time;
-    :get passed Deploytimes count;
-    if (dailyDeploymentCounts is 0 or timePeriod is 0) then (yes)
+    :filter passed DeployInfos by time;
+    :get passed DeployInfos count;
+    if (passedDeployInfosCount is 0 or timePeriod is 0) then (yes)
       :set deployment frequency to 0;
     else (no)
       :calculate deployment frequency(passedDeployTimes / timePeriod);
