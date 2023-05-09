@@ -2,6 +2,7 @@ env:
   RETENTION_DAYS: "10"
 
 steps:
+  -
   - label: mock_server_build
     command: ./.buildkite/ops/build mockserver
 
