@@ -12,7 +12,7 @@
   "buildKiteSetting": {
     "type": "BuildKite",
     "token": "0d6*********************************a57a",
-    "deployment": [
+    "deploymentEnvList": [
       {
         "orgId": "xxxx",
         "orgName": "XXXX",

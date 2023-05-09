@@ -31,7 +31,7 @@ public class GenerateReporterService {
 
 	private final BuildKiteService buildKiteService;
 
-	private final CalculateDeploymentFrequency calculateDeploymentFrequency;
+	private final CalculateDeploymentFrequency deploymentFrequency;
 
 	// need add GitHubMetrics and BuildKiteMetrics
 	private final List<String> kanbanMetrics = Stream
@@ -60,6 +60,8 @@ public class GenerateReporterService {
 		calculateCycleTime();
 		calculateLeadTime();
 
+		log.info("Start generate Report, request: {}", request);
+
 		GenerateReportResponse reportResponse = new GenerateReportResponse();
 		request.getMetrics().forEach((metrics) -> {
 			switch (metrics.toLowerCase()) {
@@ -67,9 +69,8 @@ public class GenerateReporterService {
 					reportResponse.setVelocity(calculateVelocity());
 					break;
 				case "deployment frequency":
-					reportResponse.setDeploymentFrequency(
-							calculateDeploymentFrequency.calculateDeploymentFrequency(this.deployTimesList,
-									Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
+					reportResponse.setDeploymentFrequency(deploymentFrequency.calculate(this.deployTimesList,
+							Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
 					break;
 				default:
 					// TODO
@@ -139,7 +140,7 @@ public class GenerateReporterService {
 	private synchronized void fetchBuildKiteData(GenerateReportRequest request) {
 		this.deployTimesList.clear();
 		this.buildInfosList.clear();
-		for (DeploymentEnvironment deploymentEnvironment : request.getBuildKiteSetting().getDeployment()) {
+		for (DeploymentEnvironment deploymentEnvironment : request.getBuildKiteSetting().getDeploymentEnvList()) {
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = buildKiteService.fetchPipelineBuilds(
 					request.getBuildKiteSetting().getToken(), deploymentEnvironment, request.getStartTime(),
 					request.getEndTime());

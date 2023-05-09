@@ -79,7 +79,7 @@ export const ReportStep = () => {
     considerHoliday: calendarType === CHINA_CALENDAR,
     buildKiteSetting: {
       ...pipelineTool.config,
-      deployment: getPipelineConfig(deploymentFrequencySettings),
+      deploymentEnvList: getPipelineConfig(deploymentFrequencySettings),
     },
     codebaseSetting: {
       type: sourceControl.config.type,

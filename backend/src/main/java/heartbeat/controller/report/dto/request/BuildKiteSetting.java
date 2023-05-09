@@ -18,6 +18,6 @@ public class BuildKiteSetting {
 
 	private String token;
 
-	private List<DeploymentEnvironment> deployment;
+	private List<DeploymentEnvironment> deploymentEnvList;
 
 }

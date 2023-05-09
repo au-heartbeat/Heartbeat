@@ -6,7 +6,7 @@ export interface ReportRequestDTO {
   buildKiteSetting?: {
     type: string
     token: string
-    deployment:
+    deploymentEnvList:
       | {
           id: string
           name: string

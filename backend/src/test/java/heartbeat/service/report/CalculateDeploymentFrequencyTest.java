@@ -24,8 +24,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CalculateDeploymentFrequencyTest {
 
+	public static final String JOB_FINISH_TIME_2022 = "2022-09-08T22:45:33.981Z";
+
+	public static final String JOB_FINISH_TIME_2023 = "2023-09-08T22:45:33.981Z";
+
+	public static final String PASSED_STATE = "passed";
+
+	public static final String START_TIME = "0000000000000";
+
+	public static final String END_TIME = "1662739199000";
+
 	@InjectMocks
-	private CalculateDeploymentFrequency calculateDeploymentFrequency;
+	private CalculateDeploymentFrequency deploymentFrequency;
 
 	@Mock
 	private WorkDay workDay;
@@ -33,8 +43,8 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequency() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobFinishTime("2022-09-08T22:45:33.981Z").state("passed").build(),
-					DeployInfo.builder().jobFinishTime("2023-09-08T22:45:33.981Z").state("passed").build()))
+			.withPassed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build(),
+					DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2023).state(PASSED_STATE).build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.1F))
@@ -42,8 +52,8 @@ class CalculateDeploymentFrequencyTest {
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
-				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
+		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -52,7 +62,7 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequencyWhenWorkDayIsZero() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobFinishTime("2022-09-08T22:45:33.981Z").state("passed").build()))
+			.withPassed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.0F))
@@ -60,8 +70,8 @@ class CalculateDeploymentFrequencyTest {
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(0);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
-				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("0000000000000"));
+		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
+				Long.parseLong(START_TIME), Long.parseLong(START_TIME));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -76,8 +86,8 @@ class CalculateDeploymentFrequencyTest {
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
-				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
+		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -86,8 +96,8 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequencyWhenHaveTwoDeployInfo() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobFinishTime("2022-09-08T22:45:33.981Z").state("passed").build(),
-					DeployInfo.builder().jobFinishTime("2022-09-08T22:45:33.981Z").state("passed").build()))
+			.withPassed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build(),
+					DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.2F))
@@ -95,8 +105,8 @@ class CalculateDeploymentFrequencyTest {
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
-				List.of(mockedDeployTimes), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
+		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -109,8 +119,8 @@ class CalculateDeploymentFrequencyTest {
 			.build();
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
-		DeploymentFrequency deploymentFrequency = calculateDeploymentFrequency.calculateDeploymentFrequency(
-				Collections.emptyList(), Long.parseLong("0000000000000"), Long.parseLong("1662739199000"));
+		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(Collections.emptyList(),
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());

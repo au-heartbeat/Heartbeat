@@ -84,7 +84,7 @@ class GenerateReporterServiceTest {
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
 			.type("BuildKite")
 			.token("bkua_6xxxafcc3bxxxxxxb8xxx8d8dxxxf7897cc8b2f1")
-			.deployment(List.of(mockDeployment))
+			.deploymentEnvList(List.of(mockDeployment))
 			.build();
 
 		GenerateReportRequest request = GenerateReportRequest.builder()
@@ -110,8 +110,7 @@ class GenerateReporterServiceTest {
 			.avgDeploymentFrequency(new AvgDeploymentFrequency("Average", 0.10F))
 			.build();
 
-		when(calculateDeploymentFrequency.calculateDeploymentFrequency(any(), anyLong(), anyLong()))
-			.thenReturn(mockedDeploymentFrequency);
+		when(calculateDeploymentFrequency.calculate(any(), anyLong(), anyLong())).thenReturn(mockedDeploymentFrequency);
 
 		GenerateReportResponse response = generateReporterService.generateReporter(request);
 
