@@ -9,14 +9,14 @@ layout: ../../../layouts/MainLayout.astro
 ```plantuml
 @startuml deployment frequency
 skin rose
-title Report - Calculate deployment frequency
+title FlowChart - Heartbeat - Calculate deployment frequency
 start
-:Input deployTimes, startTime, endTime;
-:calculate time period between startTime and endTime;
+:input deployTimes, startTime, endTime/
+:calculate time period between startDate and endDate;
 partition "Calculate Deployment Frequency of Pipelines" {
   :iterate over DeployTimes;
-    :filter passed DeployTimes by time;
-    :get passed DeployTimes count;
+    :filter passed Deploytimes by time;
+    :get passed Deploytimes count;
     if (dailyDeploymentCounts is 0 or timePeriod is 0) then (yes)
       :set deployment frequency to 0;
     else (no)
@@ -26,8 +26,7 @@ partition "Calculate Deployment Frequency of Pipelines" {
     :create DeploymentFrequencyOfPipeline;
     :set name, step, dailyDeploymentCounts and deployment frequency;
     :add DeploymentFrequencyOfPipeline to DeploymentFrequencyOfPipelines;
-    :output DeploymentFrequencyOfPipelines;
-
+  :output DeploymentFrequencyOfPipelines/
 }
 partition "Calculate Average Deployment Frequency of all Pipelines" {
   :get sum of deployment frequency for each pipeline;
@@ -38,9 +37,9 @@ partition "Calculate Average Deployment Frequency of all Pipelines" {
     :calculate average deployment frequency
     (sum of deployment frequency / pipeline count);
   endif
-  :output AvgDeploymentFrequency;
+  :output AvgDeploymentFrequency/
 }
-:Output DeploymentFrequency object with AvgDeploymentFrequency and DeploymentFrequencyOfPipelines;
+:output DeploymentFrequency/
 stop
 @enduml
 ```
