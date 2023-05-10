@@ -65,7 +65,7 @@ public class GenerateReporterService {
 			switch (metrics.toLowerCase()) {
 				case "velocity" -> reportResponse.setVelocity(calculateVelocity());
 				case "deployment frequency" ->
-					reportResponse.setDeploymentFrequency(deploymentFrequency.calculate(this.deployTimesList,
+					reportResponse.setDeploymentFrequency(deploymentFrequency.calculate(deployTimesList,
 							Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
 				default -> {
 					// TODO
@@ -133,15 +133,15 @@ public class GenerateReporterService {
 	}
 
 	private synchronized void fetchBuildKiteData(GenerateReportRequest request) {
-		this.deployTimesList.clear();
-		this.buildInfosList.clear();
+		deployTimesList.clear();
+		buildInfosList.clear();
 		for (DeploymentEnvironment deploymentEnvironment : request.getBuildKiteSetting().getDeploymentEnvList()) {
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = buildKiteService.fetchPipelineBuilds(
 					request.getBuildKiteSetting().getToken(), deploymentEnvironment, request.getStartTime(),
 					request.getEndTime());
 			DeployTimes deployTimes = buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfos);
-			this.deployTimesList.add(deployTimes);
-			this.buildInfosList.add(Map.entry(deploymentEnvironment.getId(), buildKiteBuildInfos));
+			deployTimesList.add(deployTimes);
+			buildInfosList.add(Map.entry(deploymentEnvironment.getId(), buildKiteBuildInfos));
 		}
 	}
 

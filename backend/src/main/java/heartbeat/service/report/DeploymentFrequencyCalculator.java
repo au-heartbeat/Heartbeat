@@ -27,7 +27,7 @@ public class DeploymentFrequencyCalculator {
 	private final WorkDay workDay;
 
 	public DeploymentFrequency calculate(List<DeployTimes> deployTimes, Long startTime, Long endTime) {
-		DecimalFormat df = new DecimalFormat(FORMAT_2_DECIMALS);
+		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
 		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
@@ -40,7 +40,7 @@ public class DeploymentFrequencyCalculator {
 				.name(item.getPipelineName())
 				.step(item.getPipelineStep())
 				.dailyDeploymentCounts(dailyDeploymentCounts)
-				.deploymentFrequency(Float.parseFloat(df.format(frequency)))
+				.deploymentFrequency(Float.parseFloat(decimalFormat.format(frequency)))
 				.build();
 		}).collect(Collectors.toList());
 
@@ -52,7 +52,7 @@ public class DeploymentFrequencyCalculator {
 
 		return DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder()
-				.deploymentFrequency(Float.parseFloat(df.format(avgDeployFrequency)))
+				.deploymentFrequency(Float.parseFloat(decimalFormat.format(avgDeployFrequency)))
 				.build())
 			.deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
 			.build();
