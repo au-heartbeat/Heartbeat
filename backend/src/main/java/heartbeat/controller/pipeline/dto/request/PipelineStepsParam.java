@@ -2,10 +2,12 @@ package heartbeat.controller.pipeline.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PipelineStepsParam {
@@ -24,10 +26,5 @@ public class PipelineStepsParam {
 
 	@NotBlank(message = "EndTime is required")
 	private String endTime;
-
-	public PipelineStepsParam(String startTime, String endTime) {
-		this.startTime = startTime;
-		this.endTime = endTime;
-	}
 
 }

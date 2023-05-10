@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.config.Constants;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DailyDeploymentCount;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
@@ -9,6 +10,7 @@ import heartbeat.controller.report.dto.response.DeploymentFrequencyOfPipeline;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +26,7 @@ public class DeploymentFrequencyCalculator {
 	private final WorkDay workDay;
 
 	public DeploymentFrequency calculate(List<DeployTimes> deployTimes, Long startTime, Long endTime) {
+		DecimalFormat df = new DecimalFormat(Constants.FORMAT_DOUBLE_2_DECIMALS);
 		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
@@ -32,10 +35,12 @@ public class DeploymentFrequencyCalculator {
 			List<DailyDeploymentCount> dailyDeploymentCounts = mapDeploymentPassedItems(filteredPassedItems);
 			float frequency = passedDeployInfosCount == 0 || timePeriod == 0 ? 0
 					: (float) passedDeployInfosCount / timePeriod;
-			DeploymentFrequencyOfPipeline deploymentFrequencyOfPipeline = new DeploymentFrequencyOfPipeline(
-					item.getPipelineName(), item.getPipelineStep(), dailyDeploymentCounts);
-			deploymentFrequencyOfPipeline.setDeploymentFrequency(frequency);
-			return deploymentFrequencyOfPipeline;
+			return DeploymentFrequencyOfPipeline.builder()
+				.name(item.getPipelineName())
+				.step(item.getPipelineStep())
+				.dailyDeploymentCounts(dailyDeploymentCounts)
+				.deploymentFrequency(Float.parseFloat(df.format(frequency)))
+				.build();
 		}).collect(Collectors.toList());
 
 		float deploymentFrequency = (float) deploymentFrequencyOfPipelines.stream()
@@ -45,7 +50,9 @@ public class DeploymentFrequencyCalculator {
 		float avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
 
 		return DeploymentFrequency.builder()
-			.avgDeploymentFrequency(new AvgDeploymentFrequency(avgDeployFrequency))
+			.avgDeploymentFrequency(AvgDeploymentFrequency.builder()
+				.deploymentFrequency(Float.parseFloat(df.format(avgDeployFrequency)))
+				.build())
 			.deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
 			.build();
 	}

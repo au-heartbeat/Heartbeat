@@ -47,7 +47,7 @@ class CalculateDeploymentFrequencyTest {
 					DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2023).state(PASSED_STATE).build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
-			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.1F))
+			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.1F).build())
 			.build();
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
@@ -65,7 +65,7 @@ class CalculateDeploymentFrequencyTest {
 			.withPassed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
-			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.0F))
+			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(0);
@@ -81,7 +81,7 @@ class CalculateDeploymentFrequencyTest {
 	public void testCalculateDeploymentFrequencyWhenPassedDeployInfoIsEmpty() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault().withPassed(Collections.emptyList()).build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
-			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.0F))
+			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
@@ -100,7 +100,7 @@ class CalculateDeploymentFrequencyTest {
 					DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
-			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.2F))
+			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
@@ -115,7 +115,7 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequencyWhenDeployTimesIsEmpty() {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
-			.avgDeploymentFrequency(new AvgDeploymentFrequency(0.0F))
+			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
