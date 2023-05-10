@@ -31,7 +31,7 @@ public class GenerateReporterService {
 
 	private final BuildKiteService buildKiteService;
 
-	private final CalculateDeploymentFrequency deploymentFrequency;
+	private final DeploymentFrequencyCalculator deploymentFrequency;
 
 	// need add GitHubMetrics and BuildKiteMetrics
 	private final List<String> kanbanMetrics = Stream

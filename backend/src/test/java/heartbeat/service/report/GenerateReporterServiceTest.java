@@ -46,7 +46,7 @@ class GenerateReporterServiceTest {
 	private BuildKiteService buildKiteService;
 
 	@Mock
-	private CalculateDeploymentFrequency calculateDeploymentFrequency;
+	private DeploymentFrequencyCalculator calculateDeploymentFrequency;
 
 	@Test
 	void shouldReturnGenerateReportResponseWhenCallGenerateReporter() {

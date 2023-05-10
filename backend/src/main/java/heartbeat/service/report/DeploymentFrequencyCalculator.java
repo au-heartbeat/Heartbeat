@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
-public class CalculateDeploymentFrequency {
+public class DeploymentFrequencyCalculator {
 
 	private final WorkDay workDay;
 

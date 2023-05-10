@@ -35,7 +35,7 @@ class CalculateDeploymentFrequencyTest {
 	public static final String END_TIME = "1662739199000";
 
 	@InjectMocks
-	private CalculateDeploymentFrequency deploymentFrequency;
+	private DeploymentFrequencyCalculator deploymentFrequency;
 
 	@Mock
 	private WorkDay workDay;
