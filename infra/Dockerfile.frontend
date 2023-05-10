@@ -3,7 +3,6 @@ COPY ./frontend /app
 WORKDIR /app
 RUN npm install -g pnpm && \
     pnpm install --store-dir=/pnpm-store && \
-    rm -rf ~/.cache/Cypress && \
     pnpm build && \
     pnpm store prune --store-dir=/pnpm-store
 
