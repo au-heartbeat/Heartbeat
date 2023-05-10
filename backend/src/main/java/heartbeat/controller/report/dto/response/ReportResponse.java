@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GenerateReportResponse {
+public class ReportResponse {
 
 	private Velocity velocity;
 

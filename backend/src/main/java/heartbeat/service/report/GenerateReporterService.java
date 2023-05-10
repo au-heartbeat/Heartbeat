@@ -8,7 +8,7 @@ import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.request.RequireDataEnum;
-import heartbeat.controller.report.dto.response.GenerateReportResponse;
+import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Velocity;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
@@ -51,7 +51,7 @@ public class GenerateReporterService {
 
 	private List<Map.Entry<String, List<BuildKiteBuildInfo>>> buildInfosList = new ArrayList<>();
 
-	public GenerateReportResponse generateReporter(GenerateReportRequest request) {
+	public ReportResponse generateReporter(GenerateReportRequest request) {
 		// fetch data for calculate
 		this.fetchOriginalData(request);
 
@@ -60,24 +60,19 @@ public class GenerateReporterService {
 		calculateCycleTime();
 		calculateLeadTime();
 
-		log.info("Start generate Report, request: {}", request);
-
-		GenerateReportResponse reportResponse = new GenerateReportResponse();
+		ReportResponse reportResponse = new ReportResponse();
 		request.getMetrics().forEach((metrics) -> {
 			switch (metrics.toLowerCase()) {
-				case "velocity":
-					reportResponse.setVelocity(calculateVelocity());
-					break;
-				case "deployment frequency":
+				case "velocity" -> reportResponse.setVelocity(calculateVelocity());
+				case "deployment frequency" ->
 					reportResponse.setDeploymentFrequency(deploymentFrequency.calculate(this.deployTimesList,
 							Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
-					break;
-				default:
+				default -> {
 					// TODO
+				}
 			}
 		});
 
-		log.info("Successfully generate Report, request: {}, report: {}", request, reportResponse);
 		return reportResponse;
 	}
 

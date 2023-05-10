@@ -7,7 +7,7 @@ import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
-import heartbeat.controller.report.dto.response.GenerateReportResponse;
+import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Velocity;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
@@ -71,10 +71,10 @@ class GenerateReporterServiceTest {
 		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any()))
 			.thenReturn(CardCollection.builder().storyPointSum(0).cardsNumber(0).build());
 
-		GenerateReportResponse result = generateReporterService.generateReporter(request);
+		ReportResponse result = generateReporterService.generateReporter(request);
 		Velocity velocity = Velocity.builder().velocityForSP("0").velocityForCards("0").build();
 
-		assertThat(result).isEqualTo(GenerateReportResponse.builder().velocity(velocity).build());
+		assertThat(result).isEqualTo(ReportResponse.builder().velocity(velocity).build());
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class GenerateReporterServiceTest {
 
 		when(calculateDeploymentFrequency.calculate(any(), anyLong(), anyLong())).thenReturn(mockedDeploymentFrequency);
 
-		GenerateReportResponse response = generateReporterService.generateReporter(request);
+		ReportResponse response = generateReporterService.generateReporter(request);
 
 		assertThat(response.getDeploymentFrequency().getAvgDeploymentFrequency())
 			.isEqualTo(deploymentFrequency.getAvgDeploymentFrequency());

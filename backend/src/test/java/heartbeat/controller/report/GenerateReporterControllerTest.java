@@ -6,7 +6,7 @@ import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
-import heartbeat.controller.report.dto.response.GenerateReportResponse;
+import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Velocity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +39,7 @@ class GenerateReporterControllerTest {
 
 	@Test
 	void shouldReturnOkStatusAndCorrectResponseWithRepos() throws Exception {
-		GenerateReportResponse expectedResponse = GenerateReportResponse.builder()
+		ReportResponse expectedResponse = ReportResponse.builder()
 			.velocity(Velocity.builder().velocityForSP("10").build())
 			.deploymentFrequency(DeploymentFrequency.builder()
 				.avgDeploymentFrequency(new AvgDeploymentFrequency("Average", 0.10F))
