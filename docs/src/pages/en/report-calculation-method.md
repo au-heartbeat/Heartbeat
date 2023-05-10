@@ -40,3 +40,34 @@ layout: ../../layouts/MainLayout.astro
 | :------------------- | :------------------------------------------------------------ | :--- |
 | PipeLine name / step | Average number of passed deployments per day for each step    |      |
 | Average              | The average of the deployment frequency of all selected steps |      |
+
+## Meantime To Recovery
+
+### Config
+
+- StartDate、EndDate
+- BuildKite token
+- Organization (id)
+- Pipeline name
+- Step
+
+### Calculate logic
+
+- Get all deployment information according to token、date、organization and pipeline name.
+- For each selected step
+  1. Count DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos)
+  2. Calculate total recovery time and recovery times:
+     - `recovery time = pipeline create time of passed deployment - pipeline create time of last failed deployment`
+     - `total recovery time is sum of recovery time`
+     - `recovery times is number of deployment failed to passed`
+  3. Calculate Mean Time To Recovery: total recovery time divided by the recovery times.
+- Calculate Average Mean Time To Recovery: sum of mean time to recovery for each selected step divided by the total
+  number
+  of selected step.
+
+### Definition
+
+| Metrics               | Description                                                       | Note |
+| :-------------------- | :---------------------------------------------------------------- | :--- |
+| Mean Time To Recovery | Average time required to recover from deployment failed to passed |      |
+| Average               | The average of the mean time to recovery of all selected steps    |      |
