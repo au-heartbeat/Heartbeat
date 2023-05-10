@@ -2,7 +2,6 @@ package heartbeat.service.report;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
-import heartbeat.config.Constants;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DailyDeploymentCount;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
@@ -23,10 +22,12 @@ import java.util.stream.Collectors;
 @Component
 public class DeploymentFrequencyCalculator {
 
+	public static final String FORMAT_2_DECIMALS = "0.00";
+
 	private final WorkDay workDay;
 
 	public DeploymentFrequency calculate(List<DeployTimes> deployTimes, Long startTime, Long endTime) {
-		DecimalFormat df = new DecimalFormat(Constants.FORMAT_DOUBLE_2_DECIMALS);
+		DecimalFormat df = new DecimalFormat(FORMAT_2_DECIMALS);
 		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
