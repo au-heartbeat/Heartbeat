@@ -36,10 +36,8 @@ deploy_e2e() {
         docker rm \$(docker ps -aq -f label=arch=Frontend)
         docker rmi -f \$(docker images -f label=arch=Frontend -q)
     fi
-    export MOCK_SERVER_URL=${AWS_EC2_IP_MOCK_SERVER}:${AWS_EC2_IP_E2E_PORT}
-    echo ${MOCK_SERVER_URL}
+    export MOCK_SERVER_URL=${AWS_EC2_IP_MOCK_SERVER}:${AWS_EC2_IP_MOCK_SERVER_PORT}
     export SPRING_PROFILES_ACTIVE=\"e2e\"
-    echo ${SPRING_PROFILES_ACTIVE}
     docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/heartbeat_backend:hb${BUILDKITE_BUILD_NUMBER}
     docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_HOST}/heartbeat_frontend:hb${BUILDKITE_BUILD_NUMBER}
     docker-compose up -d frontend
@@ -63,7 +61,6 @@ deploy_stub() {
     docker pull ${AWS_ECR_HOST}/heartbeat_stub:hb${BUILDKITE_BUILD_NUMBER}
 
     docker-compose stop stub
-
     export MOCK_SERVER_PORT=${AWS_EC2_IP_MOCK_SERVER_PORT}
     docker-compose -f docker-compose-stub.yml up -d stub
   "

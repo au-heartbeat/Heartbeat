@@ -48,6 +48,10 @@ steps:
     if:  build.branch == "main" && build.message =~ /\[stub\]/
     command: ./.buildkite/ops/build stub
 
+  - label: "build-frontend"
+#    branches: main
+    command: ./.buildkite/ops/build frontend
+
   - label: ":rocket: Deploy Stub"
     if:  build.branch == "main" && build.message =~ /\[stub\]/
     command: ./.buildkite/ops/deploy stub
@@ -56,4 +60,9 @@ steps:
   - label: ":rocket: Deploy prod"
     branches: main
     command: ./.buildkite/ops/deploy prod
+
+  - label: ":rocket: Deploy e2e"
+#    branches: main
+    command: ./.buildkite/ops/deploy e2e
+
 
