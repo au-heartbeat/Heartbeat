@@ -5,10 +5,7 @@ import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
-import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
-import heartbeat.controller.report.dto.response.DeploymentFrequency;
-import heartbeat.controller.report.dto.response.ReportResponse;
-import heartbeat.controller.report.dto.response.Velocity;
+import heartbeat.controller.report.dto.response.*;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 
@@ -47,6 +44,9 @@ class GenerateReporterServiceTest {
 
 	@Mock
 	private DeploymentFrequencyCalculator calculateDeploymentFrequency;
+
+	@Mock
+	private ChangeFailureRateCalculator calculateChangeFailureRate;
 
 	@Test
 	void shouldReturnGenerateReportResponseWhenCallGenerateReporter() {
@@ -116,6 +116,47 @@ class GenerateReporterServiceTest {
 
 		assertThat(response.getDeploymentFrequency().getAvgDeploymentFrequency())
 			.isEqualTo(deploymentFrequency.getAvgDeploymentFrequency());
+	}
+
+	@Test
+	public void testGenerateReporterWithChangeFailureRateMetric() {
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+
+		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
+			.type("BuildKite")
+			.token("bkua_6xxxafcc3bxxxxxxb8xxx8d8dxxxf7897cc8b2f1")
+			.deploymentEnvList(List.of(mockDeployment))
+			.build();
+
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.metrics(List.of("change failure rate"))
+			.buildKiteSetting(buildKiteSetting)
+			.startTime("1661702400000")
+			.endTime("1662739199000")
+			.build();
+
+		ChangeFailureRate changeFailureRate = ChangeFailureRate.builder()
+			.avgChangeFailureRate(AvgChangeFailureRate.builder().failureRate(0.1F).build())
+			.build();
+
+		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
+			.thenReturn(List.of(BuildKiteBuildInfoBuilder.withDefault()
+				.withJobs(List.of(BuildKiteJobBuilder.withDefault().build()))
+				.build()));
+
+		when(buildKiteService.countDeployTimes(any(), any())).thenReturn(
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+
+		ChangeFailureRate mockedChangeFailureRate = ChangeFailureRate.builder()
+			.avgChangeFailureRate(AvgChangeFailureRate.builder().failureRate(0.1F).build())
+			.build();
+
+		when(calculateChangeFailureRate.calculate(any())).thenReturn(mockedChangeFailureRate);
+
+		ReportResponse response = generateReporterService.generateReporter(request);
+
+		assertThat(response.getChangeFailureRate().getAvgChangeFailureRate().getFailureRate())
+			.isEqualTo(changeFailureRate.getAvgChangeFailureRate().getFailureRate());
 	}
 
 }
