@@ -33,6 +33,8 @@ public class GenerateReporterService {
 
 	private final DeploymentFrequencyCalculator deploymentFrequency;
 
+	private final ChangeFailureRateCalculator changeFailureRate;
+
 	// need add GitHubMetrics and BuildKiteMetrics
 	private final List<String> kanbanMetrics = Stream
 		.of(RequireDataEnum.VELOCITY, RequireDataEnum.CYCLE_TIME, RequireDataEnum.CLASSIFICATION)
@@ -67,11 +69,14 @@ public class GenerateReporterService {
 				case "deployment frequency" ->
 					reportResponse.setDeploymentFrequency(deploymentFrequency.calculate(deployTimesList,
 							Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
+				case "change failure rate" ->
+					reportResponse.setChangeFailureRate(changeFailureRate.calculate(deployTimesList));
 				default -> {
 					// TODO
 				}
 			}
 		});
+		log.info("*********reportResponse:{}", reportResponse);
 
 		return reportResponse;
 	}
