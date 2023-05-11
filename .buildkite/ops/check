@@ -52,15 +52,7 @@ frontend_check(){
 e2e_check(){
   cd frontend
   pnpm install --no-frozen-lockfile
-#  docker system prune -a --volumes
-  echo "---------------------"
-  df -h
-  free -h
-  docker pull cypress/browsers:node14.16.0-chrome89-ff86
-#  npx cypress cache clear
-#  docker image prune -af
-  docker run -it -v $PWD:/e2e -w /e2e cypress/browsers:node14.16.0-chrome89-ff86
-#  pnpm run e2e
+  pnpm run e2e
 }
 
 

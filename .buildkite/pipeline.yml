@@ -31,13 +31,13 @@ steps:
 #    command: ./.buildkite/ops/build backend
 
 #  - wait
-  - label: ":rocket: Deploy infra"
+#  - label: ":rocket: Deploy infra"
 #    if:  build.branch == "main" && build.message =~ /\[infra\]/
-    env:
-      AWSHost: "$AWS_HOST"
-      AWSAccountId: "$AWS_ACCOUNT_ID"
-      AWSRegion: "$AWS_REGION"
-    command: ./.buildkite/ops/deploy infra
+#    env:
+#      AWSHost: "$AWS_HOST"
+#      AWSAccountId: "$AWS_ACCOUNT_ID"
+#      AWSRegion: "$AWS_REGION"
+#    command: ./.buildkite/ops/deploy infra
 
 #  - label: "build-backend"
 #    branches: main
@@ -67,7 +67,9 @@ steps:
 #    command: ./.buildkite/ops/deploy e2e
 
 #  - wait
-#  - label: ":rocket: Run e2e test"
-    #    branches: main
-#    command: ./.buildkite/ops/check e2e
+  - label: ":rocket: Run e2e test"
+#        branches: main
+    env:
+      APP_ORIGIN: 'http://${AWS_EC2_IP_E2E}:${AWS_EC2_IP_E2E_FRONTEND_PORT}'
+    command: ./.buildkite/ops/check e2e
 
