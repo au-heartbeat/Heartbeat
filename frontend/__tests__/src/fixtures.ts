@@ -324,13 +324,17 @@ export const MOCK_REPORT_RESPONSE = {
   changeFailureRate: {
     avgChangeFailureRate: {
       name: 'Average',
-      failureRate: '0.00% (0/12)',
+      totalTimes: 6,
+      totalFailedTimes: 0,
+      failureRate: 0.0,
     },
     changeFailureRateOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
-        failureRate: '0.00% (0/3)',
+        failedTimesOfPipeline: 0,
+        totalTimesOfPipeline: 2,
+        failureRate: 0.0,
       },
     ],
   },
@@ -430,7 +434,7 @@ export const EXPECTED_REPORT_VALUES = {
       valuesList: [
         {
           name: 'Failure rate',
-          value: '0.00% (0/3)',
+          value: '0%(0/2)',
         },
       ],
     },
@@ -440,7 +444,7 @@ export const EXPECTED_REPORT_VALUES = {
       valuesList: [
         {
           name: 'Failure rate',
-          value: '0.00% (0/12)',
+          value: '0%(0/6)',
         },
       ],
     },
