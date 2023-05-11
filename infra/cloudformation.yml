@@ -409,7 +409,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !Sub ${EC2ImageId}
-      InstanceType: "t2.medium"
+      InstanceType: "t2.micro"
       Tags:
         - Key: "Name"
           Value: "HearbeatBuildKiteAgent"
