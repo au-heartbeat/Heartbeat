@@ -47,7 +47,7 @@ class CalculateDeploymentFrequencyTest {
 					DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2023).state(PASSED_STATE).build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
-			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.1F).build())
+			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
 
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);

@@ -103,7 +103,7 @@ class GenerateReporterServiceTest {
 				.withJobs(List.of(BuildKiteJobBuilder.withDefault().build()))
 				.build()));
 
-		when(buildKiteService.countDeployTimes(any(), any())).thenReturn(
+		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
 				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 
 		DeploymentFrequency mockedDeploymentFrequency = DeploymentFrequency.builder()
@@ -144,7 +144,7 @@ class GenerateReporterServiceTest {
 				.withJobs(List.of(BuildKiteJobBuilder.withDefault().build()))
 				.build()));
 
-		when(buildKiteService.countDeployTimes(any(), any())).thenReturn(
+		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
 				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 
 		ChangeFailureRate mockedChangeFailureRate = ChangeFailureRate.builder()

@@ -16,14 +16,14 @@ import java.util.List;
 @Log4j2
 public class ChangeFailureRateCalculator {
 
-	public static final String FORMAT_2_DECIMALS = "0.00";
+	public static final String FORMAT_4_DECIMALS = "0.0000";
 
 	private int totalCount = 0;
 
 	private int totalFailureCount = 0;
 
 	public ChangeFailureRate calculate(List<DeployTimes> deployTimesList) {
-		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
+		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_4_DECIMALS);
 
 		List<ChangeFailureRateOfPipeline> changeFailureRateOfPipelines = deployTimesList.stream().map(item -> {
 			int failedTimesOfPipeline = item.getFailed().size();

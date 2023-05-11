@@ -72,6 +72,10 @@ class BuildKiteServiceTest {
 	@InjectMocks
 	BuildKiteService buildKiteService;
 
+	String mockStartTime = "1661702400000";
+
+	String mockEndTime = "1662739199000";
+
 	@Test
 	void shouldReturnBuildKiteResponseWhenCallBuildKiteApi() throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
@@ -303,8 +307,6 @@ class BuildKiteServiceTest {
 
 	@Test
 	public void shouldReturnBuildKiteBuildInfoWhenFetchPipelineBuilds() {
-		String mockStartTime = "1661702400000";
-		String mockEndTime = "1662739199000";
 		String mockToken = "xxxxxxxxxx";
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
 		List<String> linkHeader = new ArrayList<>();
@@ -336,7 +338,8 @@ class BuildKiteServiceTest {
 					.build());
 		DeployTimes expectedDeployTimes = DeployTimesBuilder.withDefault().build();
 
-		DeployTimes deployTimes = buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos);
+		DeployTimes deployTimes = buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos,
+				mockStartTime, mockEndTime);
 
 		assertThat(expectedDeployTimes).isEqualTo(deployTimes);
 	}
@@ -351,7 +354,8 @@ class BuildKiteServiceTest {
 			.withFailed(Collections.emptyList())
 			.build();
 
-		DeployTimes deployTimes = buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos);
+		DeployTimes deployTimes = buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos,
+				mockStartTime, mockEndTime);
 
 		assertThat(expectedDeployTimes).isEqualTo(deployTimes);
 	}
@@ -361,7 +365,9 @@ class BuildKiteServiceTest {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironment.builder().build();
 		List<BuildKiteBuildInfo> mockBuildKiteBuildInfos = List.of(BuildKiteBuildInfo.builder().build());
 
-		Assertions.assertThatThrownBy(() -> buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos))
+		Assertions
+			.assertThatThrownBy(() -> buildKiteService.countDeployTimes(mockDeployment, mockBuildKiteBuildInfos,
+					mockStartTime, mockEndTime))
 			.isInstanceOf(NotFoundException.class)
 			.hasMessageContaining("miss orgId argument");
 	}

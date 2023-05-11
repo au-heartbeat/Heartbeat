@@ -144,7 +144,8 @@ public class GenerateReporterService {
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = buildKiteService.fetchPipelineBuilds(
 					request.getBuildKiteSetting().getToken(), deploymentEnvironment, request.getStartTime(),
 					request.getEndTime());
-			DeployTimes deployTimes = buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfos);
+			DeployTimes deployTimes = buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfos,
+					request.getStartTime(), request.getEndTime());
 			deployTimesList.add(deployTimes);
 			buildInfosList.add(Map.entry(deploymentEnvironment.getId(), buildKiteBuildInfos));
 		}
