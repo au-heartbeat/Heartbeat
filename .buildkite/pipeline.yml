@@ -30,14 +30,14 @@ steps:
     # depends_on: deploy-infra
 #    command: ./.buildkite/ops/build backend
 
-#  - wait
-#  - label: ":rocket: Deploy infra"
+  - wait
+  - label: ":rocket: Deploy infra"
 #    if:  build.branch == "main" && build.message =~ /\[infra\]/
-#    env:
-#      AWSHost: "$AWS_HOST"
-#      AWSAccountId: "$AWS_ACCOUNT_ID"
-#      AWSRegion: "$AWS_REGION"
-#    command: ./.buildkite/ops/deploy infra
+    env:
+      AWSHost: "$AWS_HOST"
+      AWSAccountId: "$AWS_ACCOUNT_ID"
+      AWSRegion: "$AWS_REGION"
+    command: ./.buildkite/ops/deploy infra
 
   - label: "build-backend"
 #    branches: main
