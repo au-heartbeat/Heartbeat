@@ -326,7 +326,7 @@ of selected step.</li>
 <li>Count DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos)</li>
 <li>Calculate total recovery time and recovery times:
 <ul>
-<li><code>recovery time = pipeline create time of passed deployment - pipeline create time of last failed deployment</code></li>
+<li><code>recovery time = pipeline create time of passed deployment - pipeline create time of first failed deployment since last passed</code></li>
 <li><code>total recovery time is sum of recovery time</code></li>
 <li><code>recovery times is number of deployment failed to passed</code></li>
 </ul>
