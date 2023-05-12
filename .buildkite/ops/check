@@ -52,7 +52,10 @@ frontend_check(){
 e2e_check(){
   cd frontend
   pnpm install --no-frozen-lockfile
-  pnpm run e2e
+#  docker run -it -v $PWD/cypress:/e2e -w /e2e cypress/included:8.2.0 --config-file=/e2e/cypress.json --spec "cypress/e2e/test1.spec.js,cypress/integration/test2.spec.js"
+  docker run -it -v $PWD/cypress:/e2e -w /e2e cypress/included:8.2.0 sh -c "TZ='PRC' cypress run --spec cypress --config-file=/e2e/cypress.json"
+
+
 }
 
 

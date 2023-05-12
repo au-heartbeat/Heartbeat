@@ -1,0 +1,10 @@
+{
+  "baseUrl": "http://13.215.41.120:4321/",
+  "defaultCommandTimeout": 10000,
+  "viewportWidth": 1024,
+  "viewportHeight": 768,
+  "video": false,
+  "screenshotsFolder": "cypress/screenshots",
+  "chromeWebSecurity": false,
+  "ignoreTestFiles": "**/*.skip.js"
+}
