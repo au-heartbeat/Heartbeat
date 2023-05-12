@@ -32,7 +32,7 @@ describe('change failure rate data mapper', () => {
       },
       {
         id: 1,
-        name: 'Average/',
+        name: 'Average',
         valuesList: [
           {
             name: 'Failure rate',

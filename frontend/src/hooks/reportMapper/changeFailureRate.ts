@@ -23,7 +23,7 @@ export const changeFailureRateMapper = ({
   })
   mappedChangeFailureRateValue.push({
     id: mappedChangeFailureRateValue.length,
-    name: `${avgChangeFailureRate.name}/`,
+    name: avgChangeFailureRate.name,
     valuesList: [
       {
         name: FAILURE_RATE_NAME,
