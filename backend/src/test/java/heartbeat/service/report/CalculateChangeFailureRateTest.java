@@ -2,7 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
-import heartbeat.controller.report.dto.response.*;
+import heartbeat.controller.report.dto.response.ChangeFailureRate;
 import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CalculateChangeFailureRateTest {
 
-	public static final String JOB_FINISH_TIME_2022 = "2022-09-08T22:45:33.981Z";
+	private static final String JOB_FINISH_TIME_2022 = "2022-09-08T22:45:33.981Z";
 
-	public static final String JOB_FINISH_TIME_2023 = "2023-09-08T22:45:33.981Z";
+	private static final String JOB_FINISH_TIME_2023 = "2023-09-08T22:45:33.981Z";
 
-	public static final String PASSED_STATE = "passed";
+	private static final String PASSED_STATE = "passed";
 
-	public static final String FAILED_STATE = "failed";
+	private static final String FAILED_STATE = "failed";
 
 	@InjectMocks
 	private ChangeFailureRateCalculator changeFailureRate;

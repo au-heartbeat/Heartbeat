@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Component
 public class DeploymentFrequencyCalculator {
 
-	public static final String FORMAT_2_DECIMALS = "0.00";
+	private static final String FORMAT_2_DECIMALS = "0.00";
 
 	private final WorkDay workDay;
 

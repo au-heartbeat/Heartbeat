@@ -5,7 +5,6 @@ import heartbeat.controller.report.dto.response.AvgChangeFailureRate;
 import heartbeat.controller.report.dto.response.ChangeFailureRate;
 import heartbeat.controller.report.dto.response.ChangeFailureRateOfPipeline;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
@@ -13,10 +12,9 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-@Log4j2
 public class ChangeFailureRateCalculator {
 
-	public static final String FORMAT_4_DECIMALS = "0.0000";
+	private static final String FORMAT_4_DECIMALS = "0.0000";
 
 	private int totalCount = 0;
 

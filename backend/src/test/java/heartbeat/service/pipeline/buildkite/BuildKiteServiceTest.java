@@ -67,9 +67,9 @@ class BuildKiteServiceTest {
 			<https://api.buildkite.com/v2/organizations/test_org_id/pipelines/test_pipeline_id/builds?per_page=100&page=2>; rel="next"
 			""";
 
-	public static final String PASSED_STATE = "passed";
+	private static final String PASSED_STATE = "passed";
 
-	public static final String FAILED_STATE = "failed";
+	private static final String FAILED_STATE = "failed";
 
 	@Mock
 	BuildKiteFeignClient buildKiteFeignClient;
@@ -77,9 +77,9 @@ class BuildKiteServiceTest {
 	@InjectMocks
 	BuildKiteService buildKiteService;
 
-	String mockStartTime = "1661702400000";
+	private static final String mockStartTime = "1661702400000";
 
-	String mockEndTime = "1662739199000";
+	private static final String mockEndTime = "1662739199000";
 
 	@Test
 	void shouldReturnBuildKiteResponseWhenCallBuildKiteApi() throws IOException {

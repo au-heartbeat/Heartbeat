@@ -13,7 +13,6 @@ import heartbeat.controller.report.dto.response.Velocity;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
-
 public class GenerateReporterService {
 
 	private final JiraService jiraService;
@@ -76,7 +73,6 @@ public class GenerateReporterService {
 				}
 			}
 		});
-		log.info("*********reportResponse:{}", reportResponse);
 
 		return reportResponse;
 	}
