@@ -1,5 +1,7 @@
 import { defineConfig } from 'cypress'
 
+console.log('-----------------:', process.env.APP_ORIGIN)
+
 export default defineConfig({
   videoCompression: 15,
   e2e: {

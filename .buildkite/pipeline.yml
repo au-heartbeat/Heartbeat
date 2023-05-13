@@ -70,6 +70,7 @@ steps:
   - label: ":rocket: Run e2e test"
 #        branches: main
     env:
-      APP_ORIGIN: 'http://${AWS_EC2_IP_E2E}:${AWS_EC2_IP_E2E_FRONTEND_PORT}'
+      APP_ORIGIN: "http://13.215.41.120:4321/"
     command: ./.buildkite/ops/check e2e
+
 
