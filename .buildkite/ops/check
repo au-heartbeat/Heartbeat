@@ -52,7 +52,7 @@ frontend_check(){
 e2e_check(){
   cd frontend
   pnpm install --no-frozen-lockfile
-  docker run --rm -v $PWD:/e2e -w /e2e cypress/included:10.0.0 --config-file cypress.config.ts
+  docker run --rm -v $PWD:/e2e -w /e2e cypress/included:10.0.0 -e APP_ORIGIN --config-file cypress.config.ts
 }
 
 
