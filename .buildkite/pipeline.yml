@@ -69,8 +69,8 @@ steps:
 #  - wait
   - label: ":rocket: Run e2e test"
 #        branches: main
-    env:
-      APP_ORIGIN: "http://13.215.41.120:4321"
+    # env:
+    #   APP_ORIGIN: "http://13.215.41.120:4321"
     # command: ./.buildkite/ops/check e2e
     plugins:
       - docker#v5.6.0:
