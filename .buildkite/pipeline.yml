@@ -80,7 +80,7 @@ steps:
             APP_ORIGIN: "http://13.215.41.120:4321"
           workdir: /frontend
           volumes:
-            - "~/docker-cache/cypress:/root/.cache/Cypress"
+            - ~/docker-cache/cypress:/root/.cache/Cypress
           command: ["pnpm", "run", "e2e"]
 
 
