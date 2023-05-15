@@ -78,6 +78,7 @@ steps:
           always-pull: true
           environment:
             APP_ORIGIN: "http://13.215.41.120:4321"
+          workdir: "frontend"
           command: ["pnpm", "run", "e2e"]
 
 
