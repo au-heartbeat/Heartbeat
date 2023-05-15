@@ -78,7 +78,9 @@ steps:
           always-pull: true
           environment:
             APP_ORIGIN: "http://13.215.41.120:4321"
-          workdir: /frontend
+          volumes:
+            - $PWD/frontend:e2e
+          workdir: /e2e
           command: ["pnpm", "run", "e2e"]
 
 
