@@ -34,7 +34,7 @@ public class BuildKiteBuildInfo {
 			.filter(item -> Objects.equals(item.getName(), step) && Objects.equals(state, item.getState()))
 			.filter(item -> {
 				Instant time = Instant.parse(item.getFinishedAt());
-				return time.isAfter(startDate) && time.isBefore(endDate);
+				return time.compareTo(startDate) >= 0 && time.compareTo(endDate) <= 0;
 			})
 			.findFirst()
 			.orElse(null);
