@@ -79,7 +79,7 @@ steps:
           environment:
             APP_ORIGIN: "http://13.215.41.120:4321"
           volumes:
-            - $PWD/frontend:e2e
+            - "$PWD/frontend:e2e"
           workdir: /e2e
           command: ["pnpm", "run", "e2e"]
 
