@@ -1,7 +1,7 @@
 import { Checkbox, FormControl, InputLabel, MenuItem, Select, ListItemText, SelectChangeEvent } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
-import { saveTargetFields, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
+import { saveTargetFields, selectMetricsContent, updateClassification } from '@src/context/Metrics/metricsSlice'
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
 import { SELECTED_VALUE_SEPARATOR } from '@src/constants'
 import { useAppSelector } from '@src/hooks'
@@ -21,7 +21,7 @@ export const Classification = ({ options, title, label }: classificationProps) =
   const optionsName = options.map((e) => e.name)
 
   const defaultInput = getArrayIntersection(optionsName, importClassification)
-  const [selectedTargetField, setSelectedTargetField] = useState(isProjectCreated ? [] : defaultInput)
+  const [selectedTargetField, setSelectedTargetField] = useState(defaultInput)
   const isAllSelected = selectedTargetField.length > 0 && selectedTargetField.length === options.length
 
   const handleTargetFieldChange = (event: SelectChangeEvent<string[]>) => {
@@ -29,18 +29,17 @@ export const Classification = ({ options, title, label }: classificationProps) =
     const targetFieldNames = options.map((item) => item.name)
     if (value[value.length - 1] === 'All') {
       setSelectedTargetField(isAllSelected ? [] : targetFieldNames)
+      dispatch(updateClassification(isAllSelected ? [] : targetFieldNames))
       return
     }
     setSelectedTargetField([...value])
-  }
-
-  useEffect(() => {
+    dispatch(updateClassification(value))
     const updatedTargetFields = options.map((option) => ({
       ...option,
       flag: selectedTargetField.includes(option.name),
     }))
     dispatch(saveTargetFields(updatedTargetFields))
-  }, [selectedTargetField, dispatch, options])
+  }
 
   return (
     <>
