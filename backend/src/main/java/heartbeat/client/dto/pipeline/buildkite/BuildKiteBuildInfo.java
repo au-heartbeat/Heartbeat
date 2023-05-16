@@ -2,6 +2,7 @@ package heartbeat.client.dto.pipeline.buildkite;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import heartbeat.util.TimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +35,7 @@ public class BuildKiteBuildInfo {
 			.filter(item -> Objects.equals(item.getName(), step) && Objects.equals(state, item.getState()))
 			.filter(item -> {
 				Instant time = Instant.parse(item.getFinishedAt());
-				return time.compareTo(startDate) >= 0 && time.compareTo(endDate) <= 0;
+				return TimeUtil.isAfterAndEqual(startDate, time) && TimeUtil.isBeforeAndEqual(endDate, time);
 			})
 			.findFirst()
 			.orElse(null);
