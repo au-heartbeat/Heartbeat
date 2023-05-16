@@ -1,4 +1,4 @@
-import { Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import { Checkbox, FormControl, InputLabel, MenuItem, Select, ListItemText, SelectChangeEvent } from '@mui/material'
 import React, { useState } from 'react'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
 import { saveTargetFields, selectMetricsContent, updateClassification } from '@src/context/Metrics/metricsSlice'
@@ -11,29 +11,33 @@ import { getArrayIntersection } from '@src/utils/util'
 interface classificationProps {
   title: string
   label: string
-  targetFields: { name: string; key: string; flag: boolean }[]
+  options: { name: string; key: string; flag: boolean }[]
 }
 
-export const Classification = ({ targetFields, title, label }: classificationProps) => {
+export const Classification = ({ options, title, label }: classificationProps) => {
   const dispatch = useAppDispatch()
-  const isProjectCreated = useAppSelector(selectMetricsContent).isProjectCreated
   const importClassification = useAppSelector(selectMetricsContent).classification
-  const classification = targetFields.map((targetField) => targetField.name)
-  const [selectedClassification, setSelectedClassification] = useState(
-    getArrayIntersection(classification, importClassification)
-  )
-  const isAllSelected = selectedClassification.length > 0 && selectedClassification.length === targetFields.length
+  const isProjectCreated = useAppSelector(selectMetricsContent).isProjectCreated
+  const optionsName = options.map((e) => e.name)
 
-  const handleChange = (event: SelectChangeEvent<string[]>) => {
+  const defaultInput = getArrayIntersection(optionsName, importClassification)
+  const [selectedTargetField, setSelectedTargetField] = useState(defaultInput)
+  const isAllSelected = selectedTargetField.length > 0 && selectedTargetField.length === options.length
+
+  const handleTargetFieldChange = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value
-    const classificationSettings =
-      value[value.length - 1] === 'All' ? (isAllSelected ? [] : classification) : [...value]
-    const updatedTargetFields = targetFields.map((targetField) => ({
-      ...targetField,
-      flag: selectedClassification.includes(targetField.name),
+    const targetFieldNames = options.map((item) => item.name)
+    if (value[value.length - 1] === 'All') {
+      setSelectedTargetField(isAllSelected ? [] : targetFieldNames)
+      dispatch(updateClassification(isAllSelected ? [] : targetFieldNames))
+      return
+    }
+    setSelectedTargetField([...value])
+    dispatch(updateClassification(value))
+    const updatedTargetFields = options.map((option) => ({
+      ...option,
+      flag: selectedTargetField.includes(option.name),
     }))
-    setSelectedClassification(classificationSettings)
-    dispatch(updateClassification(classificationSettings))
     dispatch(saveTargetFields(updatedTargetFields))
   }
 
@@ -50,17 +54,17 @@ export const Classification = ({ targetFields, title, label }: classificationPro
         <Select
           multiple
           labelId='classification-check-box'
-          value={selectedClassification}
-          onChange={handleChange}
-          renderValue={(selectedClassification: string[]) => selectedClassification.join(SELECTED_VALUE_SEPARATOR)}
+          value={selectedTargetField}
+          onChange={handleTargetFieldChange}
+          renderValue={(selectedTargetField: string[]) => selectedTargetField.join(SELECTED_VALUE_SEPARATOR)}
         >
           <MenuItem value='All'>
             <Checkbox checked={isAllSelected} />
             <ListItemText primary='All' />
           </MenuItem>
-          {targetFields.map((targetField) => (
+          {options.map((targetField) => (
             <MenuItem key={targetField.key} value={targetField.name}>
-              <Checkbox checked={selectedClassification.includes(targetField.name)} />
+              <Checkbox checked={selectedTargetField.includes(targetField.name)} />
               <ListItemText primary={targetField.name} />
             </MenuItem>
           ))}
