@@ -7,12 +7,11 @@ import { Provider } from 'react-redux'
 const mockTitle = 'Classification Setting'
 const mockLabel = 'Distinguished by'
 const mockTargetFields = [
-  { flag: false, key: 'issue', name: 'Issue' },
+  { flag: true, key: 'issue', name: 'Issue' },
   { flag: false, key: 'type', name: 'Type' },
 ]
 jest.mock('@src/hooks', () => ({
   useAppSelector: jest.fn().mockReturnValue({
-    classification: ['Issue', 'Parent'],
     isProjectCreated: false,
   }),
 }))
