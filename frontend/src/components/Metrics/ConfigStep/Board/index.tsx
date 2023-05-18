@@ -11,7 +11,7 @@ import {
 } from '@src/constants'
 import { FormEvent, useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch'
-import { selectBoard, selectDateRange } from '@src/context/config/configSlice'
+import { selectBoard, selectConfig, selectDateRange } from '@src/context/config/configSlice'
 import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect'
 import { ErrorNotification } from '@src/components/ErrorNotification'
 import { NoDoneCardPop } from '@src/components/Metrics/ConfigStep/NoDoneCardPop'
@@ -39,8 +39,8 @@ export const Board = () => {
   const isVerified = useAppSelector(selectIsBoardVerified)
   const boardFields = useAppSelector(selectBoard)
   const DateRange = useAppSelector(selectDateRange)
-  const isProjectCreated = useAppSelector(selectMetricsContent).isProjectCreated
-  const importClassificationsKeys = useAppSelector(selectMetricsContent).classification
+  const isProjectCreated = useAppSelector(selectConfig).isProjectCreated
+  const importClassificationsKeys = useAppSelector(selectConfig).basic.classification
   const [isShowNoDoneCard, setIsNoDoneCard] = useState(false)
   const { verifyJira, isLoading, errorMessage } = useVerifyBoardEffect()
   const [fields, setFields] = useState([
@@ -176,15 +176,12 @@ export const Board = () => {
       if (res) {
         if ('targetFields' in res.response) {
           const { targetFields } = res.response
-          isProjectCreated
-            ? dispatch(saveTargetFields(targetFields))
-            : dispatch(
-                saveTargetFields(
-                  targetFields.map((targetField) =>
-                    importClassificationsKeys.includes(targetField.key) ? { ...targetField, flag: true } : targetField
-                  )
-                )
+          const newTargetFields = isProjectCreated
+            ? targetFields
+            : targetFields.map((targetField) =>
+                importClassificationsKeys.includes(targetField.key) ? { ...targetField, flag: true } : targetField
               )
+          dispatch(saveTargetFields(newTargetFields))
         }
         dispatch(updateBoardVerifyState(res.isBoardVerify))
         dispatch(updateJiraVerifyResponse(res.response))

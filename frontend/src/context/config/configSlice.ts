@@ -17,6 +17,7 @@ export interface BasicConfigState {
       endDate: string | null
     }
     metrics: string[]
+    classification: string[]
   }
   board: IBoardState
   pipelineTool: IPipelineToolState
@@ -33,6 +34,7 @@ export const initialBasicConfigState: BasicConfigState = {
       endDate: null,
     },
     metrics: [],
+    classification: [],
   },
   board: initialBoardState,
   pipelineTool: initialPipelineToolState,
