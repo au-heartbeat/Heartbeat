@@ -32,13 +32,15 @@ import {
   selectIsBoardVerified,
   updateJiraVerifyResponse,
 } from '@src/context/config/configSlice'
-import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice'
+import { saveTargetFields, selectMetricsContent, updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice'
 
 export const Board = () => {
   const dispatch = useAppDispatch()
   const isVerified = useAppSelector(selectIsBoardVerified)
   const boardFields = useAppSelector(selectBoard)
   const DateRange = useAppSelector(selectDateRange)
+  const isProjectCreated = useAppSelector(selectMetricsContent).isProjectCreated
+  const importClassificationsKeys = useAppSelector(selectMetricsContent).classification
   const [isShowNoDoneCard, setIsNoDoneCard] = useState(false)
   const { verifyJira, isLoading, errorMessage } = useVerifyBoardEffect()
   const [fields, setFields] = useState([
@@ -172,6 +174,18 @@ export const Board = () => {
     }
     await verifyJira(params).then((res) => {
       if (res) {
+        if ('targetFields' in res.response) {
+          const { targetFields } = res.response
+          isProjectCreated
+            ? dispatch(saveTargetFields(targetFields))
+            : dispatch(
+                saveTargetFields(
+                  targetFields.map((targetField) =>
+                    importClassificationsKeys.includes(targetField.key) ? { ...targetField, flag: true } : targetField
+                  )
+                )
+              )
+        }
         dispatch(updateBoardVerifyState(res.isBoardVerify))
         dispatch(updateJiraVerifyResponse(res.response))
         setIsNoDoneCard(res.isNoDoneCard)

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { boardClient } from '@src/clients/board/BoardClient'
+import { boardClient, IResponse } from '@src/clients/board/BoardClient'
 import { ERROR_MESSAGE_TIME_DURATION, VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
 import { BoardRequestDTO } from '@src/clients/board/dto/request'
 
@@ -8,7 +8,7 @@ export interface useVerifyBoardStateInterface {
     | {
         isBoardVerify: boolean
         isNoDoneCard: boolean
-        response: object
+        response: IResponse | object
       }
     | undefined
   >

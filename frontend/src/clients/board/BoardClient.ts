@@ -2,10 +2,15 @@ import { HttpClient } from '@src/clients/Httpclient'
 import { HttpStatusCode } from 'axios'
 import { BoardRequestDTO } from '@src/clients/board/dto/request'
 
+export interface IResponse {
+  jiraColumns: { key: string; value: { name: string; statuses: string[] } }[]
+  targetFields: { key: string; name: string; flag: boolean }[]
+  users: string[]
+}
 export class BoardClient extends HttpClient {
   isBoardVerify = false
   isNoDoneCard = false
-  response = {}
+  response: IResponse | object = {}
 
   getVerifyBoard = async (params: BoardRequestDTO) => {
     try {
