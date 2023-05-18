@@ -209,8 +209,12 @@
                       Sequence Diagrams
                     </a>
                   </li><li class="nav-link astro-KQNE5HRN">
-                    <a href="/Heartbeat/en/dev-center/report-calculation-diagrams" class="astro-KQNE5HRN">
+                    <a href="/Heartbeat/en/dev-center/flow-diagrams" class="astro-KQNE5HRN">
                       Report Flow Diagrams
+                    </a>
+                  </li><li class="nav-link astro-KQNE5HRN">
+                    <a href="/Heartbeat/en/export-csv" class="astro-KQNE5HRN">
+                      Export CSV
                     </a>
                   </li>
             </ul>
@@ -324,30 +328,16 @@ time for each selected column.</li>
 <h2 id="classification">Classification</h2>
 <h3 id="config-2">Config</h3>
 <ul>
-<li>
-<p>StartDate、EndDate</p>
-</li>
-<li>
-<p>Board type, Board Id, Email, Project key, Site, Token</p>
-</li>
-<li>
-<p>Crews setting</p>
-</li>
-<li>
-<p>Real done</p>
-</li>
-<li>
-<p>Target Fields(Classification setting in metrics page)</p>
-</li>
-<li></li>
-<li>
+<li>StartDate、EndDate</li>
+<li>Board type, Board Id, Email, Project key, Site, Token</li>
+<li>Crews setting</li>
+<li>Real done</li>
+<li>Target Fields(Classification setting in metrics page)</li>
+</ul>
 <h3 id="calculate-logic-2">Calculate logic</h3>
-</li>
-<li>
-<p>Get all cardCollection information (cardsNumber, fields in baseInfo), targetFields.</p>
-</li>
-<li>
-<p>Filter targetFields which flag is true (which were selected in Metrics page)</p>
+<ul>
+<li>Get all cardCollection information (cardsNumber, fields in baseInfo), targetFields.</li>
+<li>Filter targetFields which flag is true (which were selected in Metrics page)
 <ol>
 <li>get object value in fields of card baseInfo.</li>
 <li>get specific classification from object value.</li>
@@ -356,11 +346,8 @@ time for each selected column.</li>
 <li>output the fieldName, specific classification, proportion.</li>
 </ol>
 </li>
-<li></li>
-<li>
-<h3 id="definition-2">Definition</h3>
-</li>
 </ul>
+<h3 id="definition-2">Definition</h3>
 
 
 
@@ -445,38 +432,22 @@ of selected step.</li>
 </ul>
 <h3 id="calculate-logic-4">Calculate logic</h3>
 <ul>
-<li>
-<p>Get all deployment information according to token、date、organization and pipeline name.</p>
-</li>
-<li>
-<p>For each selected step</p>
+<li>Get all deployment information according to token、date、organization and pipeline name.</li>
+<li>For each selected step
 <ol>
-<li>
-<p>Count DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos)</p>
-</li>
-<li>
-<p>Calculate total recovery time and recovery times:</p>
-</li>
-</ol>
+<li>Count DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos)</li>
+<li>Calculate total recovery time and recovery times:
 <ul>
-<li>
-<p><code>recovery time = pipeline create time of passed deployment - pipeline create time of first failed deployment since last passed</code></p>
-</li>
-<li>
-<p><code>total recovery time is sum of recovery time</code></p>
-</li>
-<li>
-<p><code>recovery times is number of deployment failed to passed</code></p>
-</li>
+<li><code>recovery time = pipeline create time of passed deployment - pipeline create time of first failed deployment since last passed</code></li>
+<li><code>total recovery time is sum of recovery time</code></li>
+<li><code>recovery times is number of deployment failed to passed</code></li>
 </ul>
-<ol start="3">
+</li>
 <li>Calculate Mean Time To Recovery: total recovery time divided by the recovery times.</li>
 </ol>
 </li>
-<li>
-<p>Calculate Average Mean Time To Recovery: sum of mean time to recovery for each selected step divided by the total
-number of selected step.</p>
-</li>
+<li>Calculate Average Mean Time To Recovery: sum of mean time to recovery for each selected step divided by the total
+number of selected step.</li>
 </ul>
 <h3 id="definition-4">Definition</h3>
 
@@ -512,43 +483,23 @@ number of selected step.</p>
 </ul>
 <h3 id="calculate-logic-5">Calculate logic</h3>
 <ul>
-<li>
-<p>Get all deployment information according to token、date、organization and pipeline name.</p>
-</li>
-<li>
-<p>For each selected step</p>
+<li>Get all deployment information according to token、date、organization and pipeline name.</li>
+<li>For each selected step
 <ol>
-<li>
-<p>Count DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos)</p>
-</li>
-<li>
-<p>Calculate totalTimesOfPipeline, failedTimesOfPipeline, totalFailedTimes, totalTimes:</p>
-</li>
-</ol>
+<li>Count DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos)</li>
+<li>Calculate totalTimesOfPipeline, failedTimesOfPipeline, totalFailedTimes, totalTimes:
 <ul>
-<li>
-<p><code>failedTimesOfPipeline = number of failed deployInfos</code></p>
-</li>
-<li>
-<p><code>passedTimesOfPipeline = number of passed deployInfos</code></p>
-</li>
-<li>
-<p><code>totalTimesOfPipeline = failedTimesOfPipeline + passedTimesOfPipeline</code></p>
-</li>
-<li>
-<p><code>totalFailedTimes += failedTimesOfPipeline</code></p>
-</li>
-<li>
-<p><code>totalTimes += totalTimesOfPipeline</code></p>
-</li>
+<li><code>failedTimesOfPipeline = number of failed deployInfos</code></li>
+<li><code>passedTimesOfPipeline = number of passed deployInfos</code></li>
+<li><code>totalTimesOfPipeline = failedTimesOfPipeline + passedTimesOfPipeline</code></li>
+<li><code>totalFailedTimes += failedTimesOfPipeline</code></li>
+<li><code>totalTimes += totalTimesOfPipeline</code></li>
 </ul>
-<ol start="3">
+</li>
 <li>Calculate Change Failure Rate: <code>failureRate = failedTimesOfPipeline / totalTimesOfPipeline</code></li>
 </ol>
 </li>
-<li>
-<p>Calculate Average Change Failure Rate: <code>AverageFailureRate = totalFailedTimes/totalTimes</code></p>
-</li>
+<li>Calculate Average Change Failure Rate: <code>AverageFailureRate = totalFailedTimes/totalTimes</code></li>
 </ul>
 <h3 id="definition-5">Definition</h3>
 
