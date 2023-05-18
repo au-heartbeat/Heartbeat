@@ -373,6 +373,9 @@ skinparam defaultTextAlignment center
 title FlowChart - Heartbeat - Generate CSV For Pipeline
 start
 :input request.codebaseSetting,request.buildKiteSetting,request.csvTimeStamp/
+if(check if the buildKiteSetting is undefined) then (yes)
+:return;
+endif
 :generate leadTimeCsvDataList through [Generate Pipeline CSV For LeadTime];
 :generate deploymentCsvDataList through [Generate Pipeline CSV For BuildInfos];
 :concat leadTimeCsvDataList and deploymentCsvDataList to generate pipelineDataList;
