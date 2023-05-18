@@ -292,7 +292,7 @@ start
     partition "Generate leadTimeCsvData "{
       partition "filter buildInfos "{
         :convert each buildInfo to deployInfo;
-        if(deployInfo.commitId !="") then (yes)
+        if(check if the commitId in deployInfo is not empty) then (yes)
           :return buildInfos;
         endif
       }
@@ -336,7 +336,7 @@ start
     partition "Generate deploymentCsvData "{
       partition "filter buildInfos "{
         :convert each buildInfo to deployInfo;
-        if(deployInfo.commitId !="") then (yes)
+        if(check if the commitId in deployInfo is not empty) then (yes)
           :return buildInfos;
         endif
       }
@@ -363,3 +363,20 @@ stop
 ```
 
 ### Generate Pipeline CSV
+
+```plantuml
+@startuml Generate CSV For Pipeline
+skin rose
+skinparam defaultTextAlignment center
+title FlowChart - Heartbeat - Generate CSV For Pipeline
+start
+:input request.codebaseSetting,request.buildKiteSetting,request.csvTimeStamp/
+:generate leadTimeCsvDataList through Generate Pipeline CSV For LeadTime;
+:generate deploymentCsvDataList through Generate Pipeline CSV For BuildInfos;
+:concat leadTimeCsvDataList and deploymentCsvDataList to generate pipelineDataList;
+:output pipelineDataList/
+:convert pipelineDataList to a CSV file;
+:save the CSV on disk;
+stop
+@enduml
+```
