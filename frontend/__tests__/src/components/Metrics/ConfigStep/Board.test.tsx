@@ -16,7 +16,12 @@ import { setupStore } from '../../../utils/setupStoreUtil'
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
 import { HttpStatusCode } from 'axios'
-
+jest.mock('@src/context/Metrics/metricsSlice', () => ({
+  ...jest.requireActual('@src/context/Metrics/metricsSlice'),
+  selectMetricsContent: jest
+    .fn()
+    .mockReturnValue({ isProjectCreated: false, classification: ['key 1', 'invalid key'] }),
+}))
 export const fillBoardFieldsInformation = () => {
   const fields = ['Board Id', 'Email', 'Project Key', 'Site', 'Token']
   const mockInfo = ['2', 'mockEmail@qq.com', 'mockKey', '1', 'mockToken']
@@ -31,8 +36,19 @@ export const fillBoardFieldsInformation = () => {
 
 let store = null
 
-const server = setupServer(rest.get(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) => res(ctx.status(200))))
-
+const server = setupServer(
+  rest.get(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) => {
+    const responseObj = {
+      targetFields: [
+        { key: 'key 1', name: 'name 1', flag: false },
+        { key: 'key 2', name: 'name 2', flag: false },
+      ],
+      jiraColumns: [],
+      users: [],
+    }
+    return res(ctx.status(200), ctx.json(responseObj))
+  })
+)
 describe('Board', () => {
   beforeAll(() => server.listen())
   afterAll(() => server.close())
