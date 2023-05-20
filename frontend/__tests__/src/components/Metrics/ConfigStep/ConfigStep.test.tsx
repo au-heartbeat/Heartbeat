@@ -1,4 +1,4 @@
-import { fireEvent, Matcher, render, within } from '@testing-library/react'
+import { act, fireEvent, Matcher, render, waitFor, within } from '@testing-library/react'
 import { ConfigStep } from '@src/components/Metrics/ConfigStep'
 import {
   CHINA_CALENDAR,
@@ -16,8 +16,14 @@ import { Provider } from 'react-redux'
 import { setupStore } from '../../../utils/setupStoreUtil'
 import dayjs from 'dayjs'
 import { fillBoardFieldsInformation } from './Board.test'
+import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
 
 let store = null
+jest.mock('@src/context/config/configSlice', () => ({
+  ...jest.requireActual('@src/context/config/configSlice'),
+  selectWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
+}))
+jest.useFakeTimers()
 describe('ConfigStep', () => {
   const setup = () => {
     store = setupStore()
@@ -30,6 +36,7 @@ describe('ConfigStep', () => {
 
   afterEach(() => {
     store = null
+    jest.clearAllMocks()
   })
 
   it('should show project name when render configStep', () => {
@@ -95,10 +102,12 @@ describe('ConfigStep', () => {
     expect(chinaCalendar).not.toBeChecked()
   })
 
-  it('should not show board component when init ConfigStep component ', () => {
+  it('should not show board component when init ConfigStep component ', async () => {
     const { queryByText } = setup()
 
-    expect(queryByText(CONFIG_TITLE.BOARD)).toBeNull()
+    await waitFor(() => {
+      expect(queryByText(CONFIG_TITLE.BOARD)).toBeNull()
+    })
   })
 
   it('should show board component when MetricsTypeCheckbox select Velocity,Cycle time', () => {
@@ -152,5 +161,22 @@ describe('ConfigStep', () => {
     expect(queryByText(VERIFY)).toBeVisible()
     expect(queryByText('Verified')).toBeNull()
     expect(queryByText(RESET)).toBeNull()
+  })
+
+  it('should show warning message when selectWarningMessage has a value', () => {
+    const { getByText } = setup()
+
+    expect(getByText('Test warning Message')).toBeVisible()
+  })
+  it('should show disable warning message When selectWarningMessage has a value after two seconds', async () => {
+    const { queryByText } = setup()
+
+    act(() => {
+      jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION)
+    })
+
+    await waitFor(() => {
+      expect(queryByText('Test warning Message')).not.toBeInTheDocument()
+    })
   })
 })

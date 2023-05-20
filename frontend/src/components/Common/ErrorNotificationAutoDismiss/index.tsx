@@ -3,6 +3,7 @@ import { forwardRef, useEffect, useState } from 'react'
 import { ErrorBarAutoDismiss } from './style'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
 import { updateWarningMessage } from '@src/context/config/configSlice'
+import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />
@@ -16,7 +17,7 @@ export const ErrorNotificationAutoDismiss = (props: { message: string }) => {
     const timer = setTimeout(() => {
       setOpen(false)
       dispatch(updateWarningMessage(null))
-    }, 2000)
+    }, ERROR_MESSAGE_TIME_DURATION)
 
     return () => {
       clearTimeout(timer)
