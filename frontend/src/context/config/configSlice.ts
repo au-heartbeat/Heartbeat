@@ -89,7 +89,7 @@ export const configSlice = createSlice({
       const { projectName, dateRange, metrics } = state.basic
 
       state.warningMessage =
-        projectName === '' || dateRange.startDate === null || dateRange.endDate === null || metrics.length == 0
+        !projectName || !dateRange.startDate || !dateRange.endDate || metrics.length == 0
           ? CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE
           : null
       state.board.config = action.payload.board || state.board.config

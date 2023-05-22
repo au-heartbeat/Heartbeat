@@ -1,4 +1,4 @@
-import { act, fireEvent, Matcher, render, waitFor, within } from '@testing-library/react'
+import { fireEvent, Matcher, render, waitFor, within } from '@testing-library/react'
 import { ConfigStep } from '@src/components/Metrics/ConfigStep'
 import {
   CHINA_CALENDAR,
@@ -16,6 +16,7 @@ import { Provider } from 'react-redux'
 import { setupStore } from '../../../utils/setupStoreUtil'
 import dayjs from 'dayjs'
 import { fillBoardFieldsInformation } from './Board.test'
+import { act } from 'react-dom/test-utils'
 import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
 
 let store = null
@@ -23,7 +24,6 @@ jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
   selectWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
 }))
-jest.useFakeTimers()
 describe('ConfigStep', () => {
   const setup = () => {
     store = setupStore()
@@ -34,9 +34,14 @@ describe('ConfigStep', () => {
     )
   }
 
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
   afterEach(() => {
     store = null
     jest.clearAllMocks()
+    jest.useRealTimers()
   })
 
   it('should show project name when render configStep', () => {
@@ -163,11 +168,12 @@ describe('ConfigStep', () => {
     expect(queryByText(RESET)).toBeNull()
   })
 
-  it('should show warning message when selectWarningMessage has a value', () => {
+  it('should show warning message when selectWarningMessage has a value', async () => {
     const { getByText } = setup()
 
     expect(getByText('Test warning Message')).toBeVisible()
   })
+
   it('should show disable warning message When selectWarningMessage has a value after two seconds', async () => {
     const { queryByText } = setup()
 

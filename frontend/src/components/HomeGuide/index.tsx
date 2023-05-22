@@ -5,11 +5,9 @@ import { styled } from '@mui/material/styles'
 import { theme } from '@src/theme'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
-import { updateProjectCreatedState, updateBasicConfigState } from '@src/context/config/configSlice'
-import React, { useState } from 'react'
+import { updateBasicConfigState, updateProjectCreatedState } from '@src/context/config/configSlice'
+import React from 'react'
 import { updateMetricsImportedData } from '@src/context/Metrics/metricsSlice'
-import { ErrorNotificationAutoDismiss } from '../Common/ErrorNotificationAutoDismiss'
-import { CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE } from '@src/constants'
 
 const basicStyle = {
   backgroundColor: theme.main.backgroundColor,
@@ -39,23 +37,7 @@ const GuideButton = styled(Button)<ButtonProps>({
 export const HomeGuide = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const [validConfig, setValidConfig] = useState(true)
-
   const getImportFileElement = () => document.getElementById('importJson') as HTMLInputElement
-
-  const isValidImportedConfig = (configStr: string) => {
-    try {
-      const importedConfig = JSON.parse(configStr)
-      const {
-        projectName,
-        metrics,
-        dateRange: { startDate, endDate },
-      } = importedConfig
-      return !!projectName && !!startDate && !!endDate && metrics.length > 0
-    } catch {
-      return false
-    }
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.files?.[0]
@@ -63,15 +45,11 @@ export const HomeGuide = () => {
     if (input) {
       reader.onload = () => {
         if (reader.result && typeof reader.result === 'string') {
-          if (isValidImportedConfig(reader.result)) {
-            dispatch(updateProjectCreatedState(false))
-            const importedConfig = JSON.parse(reader.result)
-            dispatch(updateBasicConfigState(importedConfig))
-            dispatch(updateMetricsImportedData(importedConfig))
-            navigate('/metrics')
-          } else {
-            setValidConfig(false)
-          }
+          dispatch(updateProjectCreatedState(false))
+          const importedConfig = JSON.parse(reader.result)
+          dispatch(updateBasicConfigState(importedConfig))
+          dispatch(updateMetricsImportedData(importedConfig))
+          navigate('/metrics')
         }
         const fileInput = getImportFileElement()
         fileInput.value = ''
@@ -81,7 +59,6 @@ export const HomeGuide = () => {
   }
 
   const openFileImportBox = () => {
-    setValidConfig(true)
     const fileInput = getImportFileElement()
     fileInput.click()
   }
@@ -92,7 +69,6 @@ export const HomeGuide = () => {
 
   return (
     <>
-      {!validConfig && <ErrorNotificationAutoDismiss message={CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE} />}
       <Stack direction='column' justifyContent='center' alignItems='center' flex={'auto'}>
         <GuideButton onClick={openFileImportBox}>Import project from file</GuideButton>
         <input hidden type='file' data-testid='testInput' id='importJson' accept='.json' onChange={handleChange} />
