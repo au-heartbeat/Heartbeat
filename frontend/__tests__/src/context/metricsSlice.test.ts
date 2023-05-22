@@ -1,20 +1,20 @@
 import saveMetricsSettingReducer, {
-  saveCycleTimeSettings,
-  saveTargetFields,
-  saveUsers,
-  saveDoneColumn,
-  updateDeploymentFrequencySettings,
   addADeploymentFrequencySetting,
-  deleteADeploymentFrequencySetting,
-  selectDeploymentFrequencySettings,
   addALeadTimeForChanges,
+  deleteADeploymentFrequencySetting,
   deleteALeadTimeForChange,
-  updateLeadTimeForChanges,
   initDeploymentFrequencySettings,
   initLeadTimeForChanges,
-  updateTreatFlagCardAsBlock,
+  saveCycleTimeSettings,
+  saveDoneColumn,
+  saveTargetFields,
+  saveUsers,
+  selectDeploymentFrequencySettings,
+  updateDeploymentFrequencySettings,
+  updateLeadTimeForChanges,
   updateMetricsImportedData,
   updateMetricsState,
+  updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice'
 import { store } from '@src/store'
 
@@ -39,6 +39,7 @@ const initState = {
     importedDeployment: [],
     importedLeadTime: [],
   },
+  warningMessage: null,
 }
 
 const mockJiraResponse = {
@@ -349,5 +350,113 @@ describe('saveMetricsSetting reducer', () => {
     const savedMetricsSetting = saveMetricsSettingReducer(initState, updateTreatFlagCardAsBlock(false))
 
     expect(savedMetricsSetting.treatFlagCardAsBlock).toBe(false)
+  })
+
+  //当导入的文件中的key值比response中的值多时,说明现在这个列被删除了
+  it('should set warningMessage have value when there are more values in the import file than in the response', () => {
+    const mockUpdateMetricsStateArguments = {
+      ...mockJiraResponse,
+      isProjectCreated: false,
+    }
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      {
+        ...initState,
+        importedData: {
+          ...initState.importedData,
+          importedCycleTime: {
+            importedCycleTimeSettings: [{ ToDo: 'mockOption' }, { Doing: 'Analysis' }, { Testing: 'TESTING' }],
+            importedTreatFlagCardAsBlock: true,
+          },
+        },
+      },
+      updateMetricsState(mockUpdateMetricsStateArguments)
+    )
+
+    expect(savedMetricsSetting.warningMessage).toEqual(
+      'The column of ToDo is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!'
+    )
+  })
+
+  //当导入文件中的key值比response中的值少时，说明是新增列
+  it('should set warningMessage is null when When the values in the import file are less than those in the response', () => {
+    const mockUpdateMetricsStateArguments = {
+      ...mockJiraResponse,
+      isProjectCreated: false,
+    }
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      {
+        ...initState,
+        importedData: {
+          ...initState.importedData,
+          importedCycleTime: {
+            importedCycleTimeSettings: [{ Doing: 'Analysis' }],
+            importedTreatFlagCardAsBlock: true,
+          },
+        },
+      },
+      updateMetricsState(mockUpdateMetricsStateArguments)
+    )
+
+    expect(savedMetricsSetting.warningMessage).toEqual(
+      'The column of Testing is a new column. Please select a value for it!'
+    )
+  })
+
+  it('should set warningMessage have value when the key value in the import file matches the value in the response, but the value does not match the fixed column', () => {
+    const mockUpdateMetricsStateArguments = {
+      ...mockJiraResponse,
+      isProjectCreated: false,
+    }
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      {
+        ...initState,
+        importedData: {
+          ...initState.importedData,
+          importedCycleTime: {
+            importedCycleTimeSettings: [{ Doing: 'mockOption' }, { Testing: 'Analysis' }],
+            importedTreatFlagCardAsBlock: true,
+          },
+        },
+      },
+      updateMetricsState(mockUpdateMetricsStateArguments)
+    )
+
+    expect(savedMetricsSetting.warningMessage).toEqual(
+      'The value of Doing in imported json is not in dropdown list now. Please select a value for it!'
+    )
+  })
+
+  it('should set warningMessage have value when the key value in the imported file matches the value in the response and the value matches the fixed column', () => {
+    const mockJiraResponse1 = {
+      ...mockJiraResponse,
+      jiraColumns: [
+        {
+          key: 'indeterminate',
+          value: {
+            name: 'Testing',
+            statuses: ['TESTING'],
+          },
+        },
+      ],
+    }
+    const mockUpdateMetricsStateArguments = {
+      ...mockJiraResponse1,
+      isProjectCreated: false,
+    }
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      {
+        ...initState,
+        importedData: {
+          ...initState.importedData,
+          importedCycleTime: {
+            importedCycleTimeSettings: [{ Testing: 'Analysis' }],
+            importedTreatFlagCardAsBlock: true,
+          },
+        },
+      },
+      updateMetricsState(mockUpdateMetricsStateArguments)
+    )
+
+    expect(savedMetricsSetting.warningMessage).toBeNull()
   })
 })

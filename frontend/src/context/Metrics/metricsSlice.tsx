@@ -9,6 +9,7 @@ export interface IPipelineConfig {
   pipelineName: string
   step: string
 }
+
 export interface savedMetricsSettingState {
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[]
   targetFields: { name: string; key: string; flag: boolean }[]
@@ -29,6 +30,7 @@ export interface savedMetricsSettingState {
     importedDeployment: IPipelineConfig[]
     importedLeadTime: IPipelineConfig[]
   }
+  warningMessage: string | null
 }
 
 const initialState: savedMetricsSettingState = {
@@ -51,6 +53,7 @@ const initialState: savedMetricsSettingState = {
     importedDeployment: [],
     importedLeadTime: [],
   },
+  warningMessage: null,
 }
 
 export const metricsSlice = createSlice({
@@ -111,6 +114,63 @@ export const metricsSlice = createSlice({
             ...item,
             flag: importedClassification?.includes(item.key),
           }))
+
+      const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings?.flatMap((obj) =>
+        Object.keys(obj)
+      )
+      const importedCycleTimeSettingsValues = importedCycleTime.importedCycleTimeSettings?.flatMap((obj) =>
+        Object.values(obj)
+      )
+
+      const jiraColumnsNames = jiraColumns?.map(
+        (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name
+      )
+
+      const metricsContainsValues = Object.values(METRICS_CONSTANTS)
+
+      const findDifferentValue = (array1: string[], array2: string[]): string | null => {
+        const differentValue =
+          array1.find((value) => !array2.includes(value)) || array2.find((value) => !array1.includes(value))
+        return differentValue !== undefined ? differentValue : null
+      }
+
+      const importedKeyMismatchWarning = findDifferentValue(importedCycleTimeSettingsKeys, jiraColumnsNames)
+      const importedValueMismatchWarning = findDifferentValue(importedCycleTimeSettingsValues, metricsContainsValues)
+
+      const checkValueInArrays = (value: string | null, arrayA: string[], arrayB: string[]): string | null => {
+        if (value) {
+          if (arrayA.includes(value)) {
+            return `The column of ${importedKeyMismatchWarning} is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!`
+          } else if (arrayB.includes(value)) {
+            return `The column of ${importedKeyMismatchWarning} is a new column. Please select a value for it!`
+          } else {
+            return null
+          }
+        } else {
+          return null
+        }
+      }
+      state.warningMessage =
+        importedKeyMismatchWarning &&
+        checkValueInArrays(importedKeyMismatchWarning, importedCycleTimeSettingsKeys, jiraColumnsNames)
+
+      const findKeyByValue = (objArray: { [key: string]: string }[], value: string): string | null => {
+        const foundObj = objArray.find((obj) => Object.values(obj)[0] === value)
+        if (foundObj) {
+          return `The value of ${
+            Object.keys(foundObj)[0]
+          } in imported json is not in dropdown list now. Please select a value for it!`
+        } else {
+          return null
+        }
+      }
+
+      if (!state.warningMessage) {
+        state.warningMessage =
+          importedValueMismatchWarning &&
+          findKeyByValue(importedCycleTime.importedCycleTimeSettings, importedValueMismatchWarning)
+      }
+
       state.cycleTimeSettings = jiraColumns?.map(
         (item: { key: string; value: { name: string; statuses: string[] } }) => {
           const controlName = item.value.name
@@ -124,6 +184,9 @@ export const metricsSlice = createSlice({
           return { name: controlName, value: defaultOptionValue }
         }
       )
+    },
+    updateWarningMessage: (state, action) => {
+      state.warningMessage = action.payload
     },
 
     deleteADeploymentFrequencySetting: (state, action) => {
@@ -195,5 +258,6 @@ export const selectLeadTimeForChanges = (state: RootState) => state.metrics.lead
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings
 export const selectMetricsContent = (state: RootState) => state.metrics
 export const selectTreatFlagCardAsBlock = (state: RootState) => state.metrics.treatFlagCardAsBlock
+export const selectWarningMessage = (state: RootState) => state.config.warningMessage
 
 export default metricsSlice.reducer
