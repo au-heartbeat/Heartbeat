@@ -4,8 +4,9 @@ import FlagCard from '@src/components/Metrics/MetricsStep/CycleTime/FlagCard'
 import { FormSelectPart } from '@src/components/Metrics/MetricsStep/CycleTime/FormSelectPart'
 import { ErrorDone } from '@src/components/Metrics/MetricsStep/CycleTime/style'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
-import { saveCycleTimeSettings, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
+import { saveCycleTimeSettings, selectMetricsContent, selectWarningMessage } from '@src/context/Metrics/metricsSlice'
 import { useAppSelector } from '@src/hooks'
+import { ErrorNotificationAutoDismiss } from '@src/components/Common/ErrorNotificationAutoDismiss'
 
 interface cycleTimeProps {
   title: string
@@ -15,6 +16,7 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
   const dispatch = useAppDispatch()
   const [isError, setIsError] = useState(false)
   const { cycleTimeSettings } = useAppSelector(selectMetricsContent)
+  const warningMessage = useAppSelector(selectWarningMessage)
   const [cycleTimeOptions, setCycleTimeOptions] = useState(cycleTimeSettings)
 
   const saveCycleTimeOptions = (name: string, value: string) =>
@@ -35,6 +37,7 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
 
   return (
     <>
+      {warningMessage && <ErrorNotificationAutoDismiss message={warningMessage} />}
       <MetricsSettingTitle title={title} />
       {isError && (
         <ErrorDone>

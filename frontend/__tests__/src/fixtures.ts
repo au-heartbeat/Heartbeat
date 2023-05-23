@@ -490,3 +490,5 @@ export const IMPORTED_CONFIG_FIXTURE = {
     },
   ],
 }
+
+export const ERROR_MESSAGE_TIME_DURATION = 2000
