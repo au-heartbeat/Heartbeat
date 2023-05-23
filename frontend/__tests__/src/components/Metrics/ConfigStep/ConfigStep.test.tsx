@@ -1,9 +1,10 @@
-import { fireEvent, Matcher, render, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, Matcher, render, waitFor, within } from '@testing-library/react'
 import { ConfigStep } from '@src/components/Metrics/ConfigStep'
 import {
   CHINA_CALENDAR,
   CONFIG_TITLE,
   CYCLE_TIME,
+  ERROR_MESSAGE_TIME_DURATION,
   PROJECT_NAME_LABEL,
   REGULAR_CALENDAR,
   REQUIRED_DATA,
@@ -16,8 +17,6 @@ import { Provider } from 'react-redux'
 import { setupStore } from '../../../utils/setupStoreUtil'
 import dayjs from 'dayjs'
 import { fillBoardFieldsInformation } from './Board.test'
-import { act } from 'react-dom/test-utils'
-import { ERROR_MESSAGE_TIME_DURATION } from '@src/constants'
 
 let store = null
 jest.mock('@src/context/config/configSlice', () => ({

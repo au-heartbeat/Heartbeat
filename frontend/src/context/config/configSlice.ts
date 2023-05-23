@@ -147,9 +147,6 @@ export const configSlice = createSlice({
       const { githubRepos } = action.payload
       state.sourceControl.verifiedResponse.repoList = githubRepos
     },
-    updateWarningMessage: (state, action) => {
-      state.warningMessage = action.payload
-    },
   },
 })
 export const {
@@ -169,7 +166,6 @@ export const {
   updateSourceControlVerifyState,
   updateSourceControlVerifiedResponse,
   updatePipelineToolVerifyResponseSteps,
-  updateWarningMessage,
 } = configSlice.actions
 
 export const selectProjectName = (state: RootState) => state.config.basic.projectName
