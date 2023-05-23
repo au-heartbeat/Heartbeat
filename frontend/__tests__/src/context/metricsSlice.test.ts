@@ -352,7 +352,6 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.treatFlagCardAsBlock).toBe(false)
   })
 
-  //当导入的文件中的key值比response中的值多时,说明现在这个列被删除了
   it('should set warningMessage have value when there are more values in the import file than in the response', () => {
     const mockUpdateMetricsStateArguments = {
       ...mockJiraResponse,
@@ -377,8 +376,7 @@ describe('saveMetricsSetting reducer', () => {
     )
   })
 
-  //当导入文件中的key值比response中的值少时，说明是新增列
-  it('should set warningMessage is null when When the values in the import file are less than those in the response', () => {
+  it('should set warningMessage have value when the values in the import file are less than those in the response', () => {
     const mockUpdateMetricsStateArguments = {
       ...mockJiraResponse,
       isProjectCreated: false,
@@ -426,21 +424,9 @@ describe('saveMetricsSetting reducer', () => {
     )
   })
 
-  it('should set warningMessage have value when the key value in the imported file matches the value in the response and the value matches the fixed column', () => {
-    const mockJiraResponse1 = {
-      ...mockJiraResponse,
-      jiraColumns: [
-        {
-          key: 'indeterminate',
-          value: {
-            name: 'Testing',
-            statuses: ['TESTING'],
-          },
-        },
-      ],
-    }
+  it('should set warningMessage null when the key value in the imported file matches the value in the response and the value matches the fixed column', () => {
     const mockUpdateMetricsStateArguments = {
-      ...mockJiraResponse1,
+      ...mockJiraResponse,
       isProjectCreated: false,
     }
     const savedMetricsSetting = saveMetricsSettingReducer(
@@ -449,7 +435,7 @@ describe('saveMetricsSetting reducer', () => {
         importedData: {
           ...initState.importedData,
           importedCycleTime: {
-            importedCycleTimeSettings: [{ Testing: 'Analysis' }],
+            importedCycleTimeSettings: [{ Testing: 'Testing' }, { Doing: 'done' }],
             importedTreatFlagCardAsBlock: true,
           },
         },

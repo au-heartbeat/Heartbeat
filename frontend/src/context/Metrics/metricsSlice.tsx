@@ -127,49 +127,50 @@ export const metricsSlice = createSlice({
       )
 
       const metricsContainsValues = Object.values(METRICS_CONSTANTS)
-
-      const findDifferentValue = (array1: string[], array2: string[]): string | null => {
-        const differentValue =
-          array1.find((value) => !array2.includes(value)) || array2.find((value) => !array1.includes(value))
-        return differentValue !== undefined ? differentValue : null
+      const compareArrays = (arrayA: string[], arrayB: string[]): string | null => {
+        if (arrayA?.length > arrayB?.length) {
+          const differentValues = arrayA?.filter((value) => !arrayB.includes(value))
+          return `The column of ${differentValues} is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!`
+        } else {
+          const differentValues = arrayB?.filter((value) => !arrayA.includes(value))
+          return differentValues?.length > 0
+            ? `The column of ${differentValues} is a new column. Please select a value for it!`
+            : null
+        }
       }
+      const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
+      const findDifferentValues = (arrayA: string[], arrayB: string[]): string[] | null => {
+        const diffInArrayA = arrayA?.filter((value) => !arrayB.includes(value))
+        if (diffInArrayA?.length === 0) {
+          return null
+        } else {
+          return diffInArrayA
+        }
+      }
+      const importedValueMismatchWarning = findDifferentValues(importedCycleTimeSettingsValues, metricsContainsValues)
+      const findKeyByValues = (arrayA: { [key: string]: string }[], arrayB: string[]): string | null => {
+        const matchingKeys: string[] = []
 
-      const importedKeyMismatchWarning = findDifferentValue(importedCycleTimeSettingsKeys, jiraColumnsNames)
-      const importedValueMismatchWarning = findDifferentValue(importedCycleTimeSettingsValues, metricsContainsValues)
-
-      const checkValueInArrays = (value: string | null, arrayA: string[], arrayB: string[]): string | null => {
-        if (value) {
-          if (arrayA.includes(value)) {
-            return `The column of ${importedKeyMismatchWarning} is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!`
-          } else if (arrayB.includes(value)) {
-            return `The column of ${importedKeyMismatchWarning} is a new column. Please select a value for it!`
-          } else {
-            return null
+        for (const setting of arrayA) {
+          const key = Object.keys(setting)[0]
+          const value = setting[key]
+          if (arrayB.includes(value)) {
+            matchingKeys.push(key)
           }
-        } else {
-          return null
         }
-      }
-      state.warningMessage =
-        importedKeyMismatchWarning &&
-        checkValueInArrays(importedKeyMismatchWarning, importedCycleTimeSettingsKeys, jiraColumnsNames)
-
-      const findKeyByValue = (objArray: { [key: string]: string }[], value: string): string | null => {
-        const foundObj = objArray.find((obj) => Object.values(obj)[0] === value)
-        if (foundObj) {
-          return `The value of ${
-            Object.keys(foundObj)[0]
-          } in imported json is not in dropdown list now. Please select a value for it!`
-        } else {
-          return null
-        }
+        return `The value of ${matchingKeys} in imported json is not in dropdown list now. Please select a value for it!`
       }
 
-      if (!state.warningMessage) {
-        state.warningMessage =
-          importedValueMismatchWarning &&
-          findKeyByValue(importedCycleTime.importedCycleTimeSettings, importedValueMismatchWarning)
+      const getWarningMessage = (): string | null => {
+        if (importedKeyMismatchWarning?.length) {
+          return compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
+        }
+        if (importedValueMismatchWarning?.length) {
+          return findKeyByValues(importedCycleTime.importedCycleTimeSettings, importedValueMismatchWarning)
+        }
+        return null
       }
+      state.warningMessage = getWarningMessage()
 
       state.cycleTimeSettings = jiraColumns?.map(
         (item: { key: string; value: { name: string; statuses: string[] } }) => {
@@ -184,9 +185,6 @@ export const metricsSlice = createSlice({
           return { name: controlName, value: defaultOptionValue }
         }
       )
-    },
-    updateWarningMessage: (state, action) => {
-      state.warningMessage = action.payload
     },
 
     deleteADeploymentFrequencySetting: (state, action) => {
@@ -258,6 +256,6 @@ export const selectLeadTimeForChanges = (state: RootState) => state.metrics.lead
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings
 export const selectMetricsContent = (state: RootState) => state.metrics
 export const selectTreatFlagCardAsBlock = (state: RootState) => state.metrics.treatFlagCardAsBlock
-export const selectWarningMessage = (state: RootState) => state.config.warningMessage
+export const selectWarningMessage = (state: RootState) => state.metrics.warningMessage
 
 export default metricsSlice.reducer
