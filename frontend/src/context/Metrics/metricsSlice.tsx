@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import camelCase from 'lodash.camelcase'
 import { RootState } from '@src/store'
-import { CYCLE_TIME_LIST, METRICS_CONSTANTS } from '@src/constants'
+import { CLASSIFICATION_WARNING_MESSAGE, CYCLE_TIME_LIST, METRICS_CONSTANTS } from '@src/constants'
 
 export interface IPipelineConfig {
   id: number
@@ -175,10 +175,11 @@ export const metricsSlice = createSlice({
 
       //classification warningMessage
       const keyArray = targetFields?.map((field: { key: string; name: string; flag: boolean }) => field.key)
+
       if (importedClassification?.every((item) => keyArray.includes(item))) {
         state.classificationWarningMessage = null
       } else {
-        state.classificationWarningMessage = `Some classifications in import data might be removed now.`
+        state.classificationWarningMessage = CLASSIFICATION_WARNING_MESSAGE
       }
 
       state.cycleTimeSettings = jiraColumns?.map(

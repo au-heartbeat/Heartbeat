@@ -17,6 +17,7 @@ import saveMetricsSettingReducer, {
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice'
 import { store } from '@src/store'
+import { CLASSIFICATION_WARNING_MESSAGE } from '../fixtures'
 
 const initState = {
   jiraColumns: [],
@@ -483,8 +484,6 @@ describe('saveMetricsSetting reducer', () => {
       updateMetricsState(mockUpdateMetricsStateArguments)
     )
 
-    expect(savedMetricsSetting.classificationWarningMessage).toEqual(
-      'Some classifications in import data might be removed now.'
-    )
+    expect(savedMetricsSetting.classificationWarningMessage).toEqual(CLASSIFICATION_WARNING_MESSAGE)
   })
 })

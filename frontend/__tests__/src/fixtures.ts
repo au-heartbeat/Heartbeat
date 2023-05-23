@@ -492,3 +492,4 @@ export const IMPORTED_CONFIG_FIXTURE = {
 }
 
 export const ERROR_MESSAGE_TIME_DURATION = 2000
+export const CLASSIFICATION_WARNING_MESSAGE = `Some classifications in import data might be removed now.`
