@@ -39,7 +39,8 @@ const initState = {
     importedDeployment: [],
     importedLeadTime: [],
   },
-  warningMessage: null,
+  cycleTimeWarningMessage: null,
+  classificationWarningMessage: null,
 }
 
 const mockJiraResponse = {
@@ -371,7 +372,7 @@ describe('saveMetricsSetting reducer', () => {
       updateMetricsState(mockUpdateMetricsStateArguments)
     )
 
-    expect(savedMetricsSetting.warningMessage).toEqual(
+    expect(savedMetricsSetting.cycleTimeWarningMessage).toEqual(
       'The column of ToDo is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!'
     )
   })
@@ -395,7 +396,7 @@ describe('saveMetricsSetting reducer', () => {
       updateMetricsState(mockUpdateMetricsStateArguments)
     )
 
-    expect(savedMetricsSetting.warningMessage).toEqual(
+    expect(savedMetricsSetting.cycleTimeWarningMessage).toEqual(
       'The column of Testing is a new column. Please select a value for it!'
     )
   })
@@ -419,7 +420,7 @@ describe('saveMetricsSetting reducer', () => {
       updateMetricsState(mockUpdateMetricsStateArguments)
     )
 
-    expect(savedMetricsSetting.warningMessage).toEqual(
+    expect(savedMetricsSetting.cycleTimeWarningMessage).toEqual(
       'The value of Doing in imported json is not in dropdown list now. Please select a value for it!'
     )
   })
@@ -443,6 +444,47 @@ describe('saveMetricsSetting reducer', () => {
       updateMetricsState(mockUpdateMetricsStateArguments)
     )
 
-    expect(savedMetricsSetting.warningMessage).toBeNull()
+    expect(savedMetricsSetting.cycleTimeWarningMessage).toBeNull()
+  })
+
+  //当导入的classification 值不在response中时，显示warning
+  it('should set classification warningMessage null when the key value in the imported file matches the value in the response and the value matches the fixed column', () => {
+    const mockUpdateMetricsStateArguments = {
+      ...mockJiraResponse,
+      isProjectCreated: false,
+    }
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      {
+        ...initState,
+        importedData: {
+          ...initState.importedData,
+          importedClassification: ['issuetype'],
+        },
+      },
+      updateMetricsState(mockUpdateMetricsStateArguments)
+    )
+
+    expect(savedMetricsSetting.classificationWarningMessage).toBeNull()
+  })
+
+  it('should set classification warningMessage have value when the key value in the imported file matches the value in the response and the value matches the fixed column', () => {
+    const mockUpdateMetricsStateArguments = {
+      ...mockJiraResponse,
+      isProjectCreated: false,
+    }
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      {
+        ...initState,
+        importedData: {
+          ...initState.importedData,
+          importedClassification: ['test'],
+        },
+      },
+      updateMetricsState(mockUpdateMetricsStateArguments)
+    )
+
+    expect(savedMetricsSetting.classificationWarningMessage).toEqual(
+      'Some classifications in import data might be removed now.'
+    )
   })
 })
