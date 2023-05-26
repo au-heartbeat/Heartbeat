@@ -148,18 +148,17 @@ export const metricsSlice = createSlice({
             flag: importedClassification?.includes(item.key),
           }))
 
-      if (!isProjectCreated && importedCycleTime.importedCycleTimeSettings.length > 0) {
-        const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings?.flatMap((obj) =>
+      if (!isProjectCreated && importedCycleTime?.importedCycleTimeSettings?.length > 0) {
+        const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
           Object.keys(obj)
         )
-        const importedCycleTimeSettingsValues = importedCycleTime.importedCycleTimeSettings?.flatMap((obj) =>
+        const importedCycleTimeSettingsValues = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
           Object.values(obj)
         )
         const jiraColumnsNames = jiraColumns?.map(
           (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name
         )
         const metricsContainsValues = Object.values(METRICS_CONSTANTS)
-        console.log(importedCycleTimeSettingsKeys)
         const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
         const importedValueMismatchWarning = findDifferentValues(importedCycleTimeSettingsValues, metricsContainsValues)
 
@@ -176,12 +175,15 @@ export const metricsSlice = createSlice({
       } else {
         state.cycleTimeWarningMessage = null
       }
-
-      const keyArray = targetFields?.map((field: { key: string; name: string; flag: boolean }) => field.key)
-      if (importedClassification?.every((item) => keyArray.includes(item))) {
-        state.classificationWarningMessage = null
+      if (!isProjectCreated && importedClassification?.length > 0) {
+        const keyArray = targetFields?.map((field: { key: string; name: string; flag: boolean }) => field.key)
+        if (importedClassification.every((item) => keyArray.includes(item))) {
+          state.classificationWarningMessage = null
+        } else {
+          state.classificationWarningMessage = CLASSIFICATION_WARNING_MESSAGE
+        }
       } else {
-        state.classificationWarningMessage = CLASSIFICATION_WARNING_MESSAGE
+        state.classificationWarningMessage = null
       }
 
       state.cycleTimeSettings = jiraColumns?.map(
