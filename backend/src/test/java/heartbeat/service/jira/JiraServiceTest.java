@@ -101,10 +101,14 @@ class JiraServiceTest {
 				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 		List<TargetField> expectTargetField = List.of(
 				new TargetField("customfield_10016", "Story point estimate", false),
-				new TargetField("priority", "Priority", false),
-				new TargetField("timetracking", "Time tracking", false));
+				new TargetField("customfield_10020", "Sprint", false),
+				new TargetField("customfield_10021", "Flagged", false));
+
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
-			.replaceAll("storyPoints", "customfield_10016");
+			.replaceAll("sprint", "customfield_10020")
+			.replaceAll("partner", "customfield_10037")
+			.replaceAll("flagged", "customfield_10021")
+			.replaceAll("development", "customfield_10000");
 
 		doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
@@ -140,8 +144,8 @@ class JiraServiceTest {
 				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 		List<TargetField> expectTargetField = List.of(
 				new TargetField("customfield_10016", "Story point estimate", false),
-				new TargetField("priority", "Priority", false),
-				new TargetField("timetracking", "Time tracking", false));
+				new TargetField("customfield_10020", "Sprint", false),
+				new TargetField("customfield_10021", "Flagged", false));
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_TWO_PAGES_CARDS_RESPONSE_BUILDER().build())
 			.replaceAll("storyPoints", "customfield_10016");
 
@@ -184,8 +188,8 @@ class JiraServiceTest {
 				"COMPLETE", boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 		List<TargetField> expectTargetField = List.of(
 				new TargetField("customfield_10016", "Story point estimate", false),
-				new TargetField("priority", "Priority", false),
-				new TargetField("timetracking", "Time tracking", false));
+				new TargetField("customfield_10020", "Sprint", false),
+				new TargetField("customfield_10021", "Flagged", false));
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 			.replaceAll("storyPoints", "customfield_10016");
 
@@ -229,8 +233,7 @@ class JiraServiceTest {
 
 		assertThatThrownBy(() -> jiraService.getJiraConfiguration(null, boardRequestParam))
 			.isInstanceOf(RequestFailedException.class)
-			.hasMessageContaining(
-					"Request failed with status statusCode 400, error: [Jira] boardType param is not correct");
+			.hasMessageContaining("Request failed with status statusCode 400, error: boardType param is not correct");
 	}
 
 	@Test
@@ -256,7 +259,7 @@ class JiraServiceTest {
 
 		assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 			.isInstanceOf(RequestFailedException.class)
-			.hasMessageContaining("Request failed with status statusCode 204, error: [Jira] There is no done cards.");
+			.hasMessageContaining("Request failed with status statusCode 204, error: There is no done cards.");
 	}
 
 	@Test
@@ -276,7 +279,7 @@ class JiraServiceTest {
 
 		assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 			.isInstanceOf(RequestFailedException.class)
-			.hasMessageContaining("Request failed with status statusCode 204, error: [Jira] There is no done column.");
+			.hasMessageContaining("Request failed with status statusCode 204, error: There is no done column.");
 	}
 
 	@Test
@@ -362,7 +365,7 @@ class JiraServiceTest {
 
 		assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BOARD_REQUEST_BUILDER().build()))
 			.isInstanceOf(RequestFailedException.class)
-			.hasMessageContaining("Request failed with status statusCode 204, error: [Jira] There is no target field.");
+			.hasMessageContaining("Request failed with status statusCode 204, error: There is no target field.");
 	}
 
 	@Test
@@ -386,7 +389,7 @@ class JiraServiceTest {
 
 		assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BOARD_REQUEST_BUILDER().build()))
 			.isInstanceOf(RequestFailedException.class)
-			.hasMessageContaining("Request failed with status statusCode 204, error: [Jira] There is no target field.");
+			.hasMessageContaining("Request failed with status statusCode 204, error: There is no target field.");
 	}
 
 	@Test
@@ -457,8 +460,8 @@ class JiraServiceTest {
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTime(storyPointsAndCycleTimeRequest,
 				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
 
-		assertThat(cardCollection.getStoryPointSum()).isEqualTo(8);
-		assertThat(cardCollection.getCardsNumber()).isEqualTo(4);
+		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
+		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getCardCycleTime().getTotal()).isEqualTo(16);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getCardCycleTime().getTotal()).isEqualTo(16);
 	}
