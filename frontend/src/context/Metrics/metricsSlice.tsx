@@ -148,7 +148,7 @@ export const metricsSlice = createSlice({
             flag: importedClassification?.includes(item.key),
           }))
 
-      if (!isProjectCreated) {
+      if (!isProjectCreated && importedCycleTime.importedCycleTimeSettings.length > 0) {
         const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings?.flatMap((obj) =>
           Object.keys(obj)
         )
@@ -173,17 +173,15 @@ export const metricsSlice = createSlice({
           return null
         }
         state.cycleTimeWarningMessage = getWarningMessage()
-
-        const keyArray = targetFields?.map((field: { key: string; name: string; flag: boolean }) => field.key)
-
-        if (importedClassification?.every((item) => keyArray.includes(item))) {
-          state.classificationWarningMessage = null
-        } else {
-          state.classificationWarningMessage = CLASSIFICATION_WARNING_MESSAGE
-        }
       } else {
         state.cycleTimeWarningMessage = null
+      }
+
+      const keyArray = targetFields?.map((field: { key: string; name: string; flag: boolean }) => field.key)
+      if (importedClassification?.every((item) => keyArray.includes(item))) {
         state.classificationWarningMessage = null
+      } else {
+        state.classificationWarningMessage = CLASSIFICATION_WARNING_MESSAGE
       }
 
       state.cycleTimeSettings = jiraColumns?.map(
