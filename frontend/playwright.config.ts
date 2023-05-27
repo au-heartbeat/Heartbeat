@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { viewportSize } from './e2e/fixtures'
 
 /**
  * Read environment variables from file.
@@ -28,6 +29,10 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    video: {
+      mode: 'on',
+      size: viewportSize,
+    },
   },
 
   /* Configure projects for major browsers */

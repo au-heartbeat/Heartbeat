@@ -3,12 +3,10 @@ import dayjs from 'dayjs'
 
 import { HomePage } from './pages/Home'
 import { MetricsConfigPage } from './pages/metrics/config'
+import { viewportSize } from './fixtures'
 
 test.use({
-  viewport: {
-    height: 1080,
-    width: 1920,
-  },
+  viewport: viewportSize,
 })
 
 test('should create a project manually', async ({ page }) => {

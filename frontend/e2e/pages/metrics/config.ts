@@ -28,14 +28,14 @@ export class MetricsConfigPage {
     this.collectionDate = page.locator('h3', { hasText: 'Collection Date' })
     this.regularCalendar = page.locator("input[value='Regular Calendar(Weekend Considered)']")
     this.chinaCalendar = page.locator("input[value='Calendar with Chinese Holiday']")
-    this.fromDateInput = page.getByRole('textbox', { name: 'From *' })
+    this.fromDateInput = page.locator('div').filter({ hasText: /^From \*$/ })
     this.fromDateInputButton = page
       .locator('div')
       .filter({ hasText: /^From \*$/ })
       .getByRole('button', { name: 'Choose date' })
     this.fromDateInputValueSelect = (fromDay: Dayjs) =>
       page.getByRole('dialog', { name: 'From *' }).getByRole('gridcell', { name: `${fromDay.date()}` })
-    this.toDateInput = page.getByRole('textbox', { name: 'To *' })
+    this.toDateInput = page.locator('div').filter({ hasText: /^To \*$/ })
     this.toDateInputButton = page
       .locator('div')
       .filter({ hasText: /^To \*$/ })
