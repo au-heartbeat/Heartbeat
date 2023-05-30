@@ -16,8 +16,12 @@ import { PIPELINE_SETTING_TYPES } from '@src/constants'
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch()
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings)
-  const { deploymentFrequencySettingsErrorMessages, checkDuplicatedPipeline, clearErrorMessage } =
-    useMetricsStepValidationCheckContext()
+  const {
+    deploymentFrequencySettingsErrorMessages,
+    checkDuplicatedPipeline,
+    clearErrorMessage,
+    getDuplicatedPipeLineIds,
+  } = useMetricsStepValidationCheckContext()
 
   useEffect(() => {
     checkDuplicatedPipeline(deploymentFrequencySettings, PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE)
@@ -56,6 +60,7 @@ export const DeploymentFrequencySettings = () => {
           onRemovePipeline={(id) => handleRemovePipeline(id)}
           onUpdatePipeline={(id, label, value) => handleUpdatePipeline(id, label, value)}
           onClearErrorMessage={(id, label) => handleClearErrorMessage(id, label)}
+          duplicatedIds={getDuplicatedPipeLineIds(deploymentFrequencySettings)}
         />
       ))}
       <MetricsSettingAddButton onAddPipeline={handleAddPipeline} />

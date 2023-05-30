@@ -1,7 +1,7 @@
 import React from 'react'
 import { SingleSelection } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/SingleSelection'
 import { useAppDispatch } from '@src/hooks'
-import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton } from './style'
+import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style'
 import { Loading } from '@src/components/Loading'
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect'
 import { ErrorNotification } from '@src/components/ErrorNotification'
@@ -28,6 +28,7 @@ interface pipelineMetricSelectionProps {
   onRemovePipeline: (id: number) => void
   onUpdatePipeline: (id: number, label: string, value: string) => void
   onClearErrorMessage: (id: number, label: string) => void
+  duplicatedIds: number[]
 }
 
 export const PipelineMetricSelection = ({
@@ -38,6 +39,7 @@ export const PipelineMetricSelection = ({
   onRemovePipeline,
   onUpdatePipeline,
   onClearErrorMessage,
+  duplicatedIds,
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting
   const dispatch = useAppDispatch()
@@ -66,6 +68,7 @@ export const PipelineMetricSelection = ({
   return (
     <PipelineMetricSelectionWrapper>
       {isLoading && <Loading />}
+      {duplicatedIds.includes(id) && <WarningMessage> This pipeline is the same as another one!</WarningMessage>}
       {errorMessage && <ErrorNotification message={errorMessage} />}
       <SingleSelection
         id={id}

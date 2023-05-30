@@ -16,7 +16,7 @@ import { PIPELINE_SETTING_TYPES } from '@src/constants'
 export const LeadTimeForChanges = () => {
   const dispatch = useAppDispatch()
   const leadTimeForChanges = useAppSelector(selectLeadTimeForChanges)
-  const { leadTimeForChangesErrorMessages, checkDuplicatedPipeline, clearErrorMessage } =
+  const { leadTimeForChangesErrorMessages, checkDuplicatedPipeline, clearErrorMessage, getDuplicatedPipeLineIds } =
     useMetricsStepValidationCheckContext()
 
   useEffect(() => {
@@ -56,6 +56,7 @@ export const LeadTimeForChanges = () => {
           onRemovePipeline={(id) => handleRemovePipeline(id)}
           onUpdatePipeline={(id, label, value) => handleUpdatePipeline(id, label, value)}
           onClearErrorMessage={(id, label) => handleClearErrorMessage(id, label)}
+          duplicatedIds={getDuplicatedPipeLineIds(leadTimeForChanges)}
         />
       ))}
       <MetricsSettingAddButton onAddPipeline={handleAddPipeline} />
