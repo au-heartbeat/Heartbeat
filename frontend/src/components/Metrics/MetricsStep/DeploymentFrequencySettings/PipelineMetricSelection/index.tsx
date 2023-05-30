@@ -24,10 +24,8 @@ interface pipelineMetricSelectionProps {
     step: string
   }
   isShowRemoveButton: boolean
-  errorMessages: { organization: string; pipelineName: string; step: string } | undefined
   onRemovePipeline: (id: number) => void
   onUpdatePipeline: (id: number, label: string, value: string) => void
-  onClearErrorMessage: (id: number, label: string) => void
   duplicatedIds: number[]
 }
 
@@ -35,10 +33,8 @@ export const PipelineMetricSelection = ({
   type,
   pipelineSetting,
   isShowRemoveButton,
-  errorMessages,
   onRemovePipeline,
   onUpdatePipeline,
-  onClearErrorMessage,
   duplicatedIds,
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting
@@ -75,9 +71,7 @@ export const PipelineMetricSelection = ({
         options={organizationNameOptions}
         label={'Organization'}
         value={organization}
-        errorMessage={errorMessages?.organization}
         onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
-        onClearErrorMessage={(id, label) => onClearErrorMessage(id, label)}
       />
       {organization && (
         <SingleSelection
@@ -85,11 +79,9 @@ export const PipelineMetricSelection = ({
           options={pipelineNameOptions}
           label={'Pipeline Name'}
           value={pipelineName}
-          errorMessage={errorMessages?.pipelineName}
           step={step}
           onGetSteps={handleGetSteps}
           onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
-          onClearErrorMessage={(id, label) => onClearErrorMessage(id, label)}
         />
       )}
       {organization && pipelineName && (
@@ -98,9 +90,7 @@ export const PipelineMetricSelection = ({
           options={stepsOptions}
           label={'Step'}
           value={step}
-          errorMessage={errorMessages?.step}
           onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
-          onClearErrorMessage={(id, label) => onClearErrorMessage(id, label)}
         />
       )}
       <ButtonWrapper>
