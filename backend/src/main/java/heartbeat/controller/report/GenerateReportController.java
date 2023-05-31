@@ -22,23 +22,23 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 public class GenerateReportController {
 
-	private final GenerateReporterService generateReporterService;
+    private final GenerateReporterService generateReporterService;
 
-	@PostMapping
-	public ReportResponse generateReport(@RequestBody GenerateReportRequest request) {
-		log.info("Start to generate Report, request: {} ", request);
-		ReportResponse reports = generateReporterService.generateReporter(request);
-		log.info("Successfully generate Report, request: {}, reports: {}", request, reports);
-		return reports;
-	}
+    @PostMapping
+    public ReportResponse generateReport(@RequestBody GenerateReportRequest request) {
+        log.info("Start to generate Report, request: {} ", request);
+        ReportResponse reports = generateReporterService.generateReporter(request);
+        log.info("Successfully generate Report, request: {}, reports: {}", request, reports);
+        return reports;
+    }
 
-	@GetMapping("/csv/{dataType}/{filename}")
-	public InputStreamResource exportCSV(@PathVariable String dataType, @PathVariable String filename) {
-		log.info("Start to export CSV file, dataType: {}, time stamp: {}", dataType, filename);
-		ExportCSVRequest request = new ExportCSVRequest(dataType, filename);
-		InputStreamResource result = generateReporterService.fetchCSVData(request);
-		log.info("Successfully get CSV file data, result: {}", result);
-		return result;
-	}
+    @GetMapping("/{dataType}/{filename}")
+    public InputStreamResource exportCSV(@PathVariable String dataType, @PathVariable String filename) {
+        log.info("Start to export CSV file, dataType: {}, time stamp: {}", dataType, filename);
+        ExportCSVRequest request = new ExportCSVRequest(dataType, filename);
+        InputStreamResource result = generateReporterService.fetchCSVData(request);
+        log.info("Successfully get CSV file data, result: {}", result);
+        return result;
+    }
 
 }
