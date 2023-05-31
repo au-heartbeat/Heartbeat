@@ -85,7 +85,7 @@ class GenerateReporterControllerTest {
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream(expectedResponse.getBytes())));
 
 		MockHttpServletResponse response = mockMvc
-			.perform(get("/reports/csv/{dataType}/{csvTimeStamp}", dataType, csvTimeStamp))
+			.perform(get("/reports/{dataType}/{csvTimeStamp}", dataType, csvTimeStamp))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
