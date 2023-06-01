@@ -18,7 +18,7 @@ import {
   selectPipelineNameWarningMessage,
   updatePipelineStep,
 } from '@src/context/Metrics/metricsSlice'
-import { ErrorNotificationAutoDismiss } from '@src/components/Common/ErrorNotificationAutoDismiss'
+import { WarningNotification } from '@src/components/Common/WarningNotification'
 
 interface pipelineMetricSelectionProps {
   type: string
@@ -70,8 +70,8 @@ export const PipelineMetricSelection = ({
 
   return (
     <PipelineMetricSelectionWrapper>
-      {organizationWarningMessage && <ErrorNotificationAutoDismiss message={organizationWarningMessage} />}
-      {pipelineNameWarningMessage && <ErrorNotificationAutoDismiss message={pipelineNameWarningMessage} />}
+      {organizationWarningMessage && <WarningNotification message={organizationWarningMessage} />}
+      {pipelineNameWarningMessage && <WarningNotification message={pipelineNameWarningMessage} />}
       {isLoading && <Loading />}
       {duplicatedIds.includes(id) && <WarningMessage> This pipeline is the same as another one!</WarningMessage>}
       {errorMessage && <ErrorNotification message={errorMessage} />}
