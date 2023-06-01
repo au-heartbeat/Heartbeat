@@ -281,18 +281,27 @@ export const metricsSlice = createSlice({
               step: '',
             }))
 
-      const getPipelinesWarningMessage = (pipelines: IPipelineConfig[]) =>
-        !pipelines.length || isProjectCreated
-          ? []
-          : pipelines.map(({ id, organization, pipelineName }) => ({
-              id,
-              organization: orgNames.has(organization) ? null : ORGANIZATION_WARNING_MESSAGE,
-              pipelineName:
-                !orgNames.has(organization) || filteredPipelineNames(organization).includes(pipelineName)
-                  ? null
-                  : PIPELINE_NAME_WARNING_MESSAGE,
-              step: null,
-            }))
+      const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
+        const orgWarning = orgNames.has(organization) ? null : ORGANIZATION_WARNING_MESSAGE
+        const pipelineNameWarning =
+          orgWarning || filteredPipelineNames(organization).includes(pipelineName)
+            ? null
+            : PIPELINE_NAME_WARNING_MESSAGE
+
+        return {
+          id,
+          organization: orgWarning,
+          pipelineName: pipelineNameWarning,
+          step: null,
+        }
+      }
+
+      const getPipelinesWarningMessage = (pipelines: IPipelineConfig[]) => {
+        if (!pipelines.length || isProjectCreated) {
+          return []
+        }
+        return pipelines.map((pipeline) => createPipelineWarning(pipeline))
+      }
 
       state.deploymentFrequencySettings = getValidPipelines(importedDeployment)
       state.leadTimeForChanges = getValidPipelines(importedLeadTime)
