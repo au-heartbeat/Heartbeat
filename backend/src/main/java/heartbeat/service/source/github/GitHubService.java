@@ -16,6 +16,12 @@ import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import heartbeat.util.GithubUtil;
 import heartbeat.util.TokenUtil;
 import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -26,11 +32,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -108,90 +109,66 @@ public class GitHubService {
 				.collect(Collectors.toSet()));
 	}
 
-	public List<PipelineLeadTime> fetchPipelinesLeadTime(List<DeployTimes> deployTimes,
+	public CompletableFuture<List<PipelineLeadTime>> fetchPipelinesLeadTime(List<DeployTimes> deployTimes,
 			Map<String, String> repositories, String token) {
-		String realToken = "Bearer " + token;
-		List<PipelineInfoOfRepository> pipelineInfoOfRepositories = getInfoOfRepositories(deployTimes, repositories);
-
-		List<CompletableFuture<PipelineLeadTime>> pipelineLeadTimeFutures = pipelineInfoOfRepositories.stream()
-			.map(item -> {
+		String realToken = "Bearer" + token;
+		return CompletableFuture.supplyAsync(() -> {
+			List<PipelineInfoOfRepository> pipelineInfoOfRepositories = deployTimes.stream().map(deployTime -> {
+				String repository = GithubUtil.getGithubUrlFullName(repositories.get(deployTime.getPipelineId()));
+				return PipelineInfoOfRepository.builder()
+					.repository(repository)
+					.passedDeploy(deployTime.getPassed())
+					.pipelineStep(deployTime.getPipelineStep())
+					.pipelineName(deployTime.getPipelineName())
+					.build();
+			}).toList();
+			return pipelineInfoOfRepositories.stream().map(item -> {
 				if (item.getPassedDeploy() == null || item.getPassedDeploy().isEmpty()) {
-					return CompletableFuture.completedFuture(PipelineLeadTime.builder().build());
+					return PipelineLeadTime.builder().build();
 				}
+				List<DeployInfo> passedDeployInfos = item.getPassedDeploy();
+				List<LeadTime> leadTimes = passedDeployInfos.stream().map(deployInfo -> {
+					List<PullRequestInfo> pullRequestInfos = CompletableFuture
+						.supplyAsync(() -> gitHubFeignClient.getPullRequestListInfo(item.getRepository(),
+								deployInfo.getCommitId(), realToken), taskExecutor)
+						.join();
+					long jobFinishTime = Instant.parse(deployInfo.getJobFinishTime()).toEpochMilli();
+					long jobStartTime = Instant.parse(deployInfo.getJobStartTime()).toEpochMilli();
+					long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
 
-				List<CompletableFuture<LeadTime>> leadTimeFutures = getLeadTimeFutures(realToken, item);
+					LeadTime noMergeDelayTime = LeadTime.builder()
+						.commitId(deployInfo.getCommitId())
+						.pipelineCreateTime((double) pipelineCreateTime)
+						.jobFinishTime((double) jobFinishTime)
+						.pipelineDelayTime((double) jobFinishTime - jobStartTime)
+						.build();
 
-				CompletableFuture<List<LeadTime>> allLeadTimesFuture = CompletableFuture
-					.allOf(leadTimeFutures.toArray(new CompletableFuture[0]))
-					.thenApply(v -> leadTimeFutures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
+					if (pullRequestInfos.isEmpty()) {
+						return noMergeDelayTime;
+					}
 
-				return allLeadTimesFuture.thenApply(leadTimes -> PipelineLeadTime.builder()
+					Optional<PullRequestInfo> mergedPull = pullRequestInfos.stream()
+						.filter(gitHubPull -> gitHubPull.getMergedAt() != null)
+						.findFirst();
+
+					if (mergedPull.isEmpty()) {
+						return noMergeDelayTime;
+					}
+
+					List<CommitInfo> commitInfos = CompletableFuture
+						.supplyAsync(() -> gitHubFeignClient.getPullRequestCommitInfo(item.getRepository(),
+								mergedPull.get().getNumber().toString(), realToken), taskExecutor)
+						.join();
+					CommitInfo firstCommitInfo = commitInfos.get(0);
+					return this.mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo);
+				}).toList();
+				return PipelineLeadTime.builder()
 					.pipelineName(item.getPipelineName())
 					.pipelineStep(item.getPipelineStep())
 					.leadTimes(leadTimes)
-					.build());
-			})
-			.toList();
-
-		return pipelineLeadTimeFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
-	}
-
-	private List<CompletableFuture<LeadTime>> getLeadTimeFutures(String realToken, PipelineInfoOfRepository item) {
-		return item.getPassedDeploy().stream().map(deployInfo -> {
-			CompletableFuture<List<PullRequestInfo>> pullRequestInfoFuture = CompletableFuture
-				.supplyAsync(() -> gitHubFeignClient.getPullRequestListInfo(item.getRepository(),
-						deployInfo.getCommitId(), realToken));
-			return pullRequestInfoFuture
-				.thenApply(pullRequestInfos -> getLeadTimeByPullRequest(realToken, item, deployInfo, pullRequestInfos));
-		}).toList();
-	}
-
-	private List<PipelineInfoOfRepository> getInfoOfRepositories(List<DeployTimes> deployTimes,
-			Map<String, String> repositories) {
-		return deployTimes.stream().map(deployTime -> {
-			String repository = GithubUtil.getGithubUrlFullName(repositories.get(deployTime.getPipelineId()));
-			return PipelineInfoOfRepository.builder()
-				.repository(repository)
-				.passedDeploy(deployTime.getPassed())
-				.pipelineStep(deployTime.getPipelineStep())
-				.pipelineName(deployTime.getPipelineName())
-				.build();
-		}).toList();
-	}
-
-	private LeadTime getLeadTimeByPullRequest(String realToken, PipelineInfoOfRepository item, DeployInfo deployInfo,
-			List<PullRequestInfo> pullRequestInfos) {
-		LeadTime noMergeDelayTime = parseNoMergeLeadTime(deployInfo);
-
-		if (pullRequestInfos.isEmpty()) {
-			return noMergeDelayTime;
-		}
-
-		Optional<PullRequestInfo> mergedPull = pullRequestInfos.stream()
-			.filter(gitHubPull -> gitHubPull.getMergedAt() != null)
-			.findFirst();
-
-		if (mergedPull.isEmpty()) {
-			return noMergeDelayTime;
-		}
-
-		List<CommitInfo> commitInfos = gitHubFeignClient.getPullRequestCommitInfo(item.getRepository(),
-				mergedPull.get().getNumber().toString(), realToken);
-		CommitInfo firstCommitInfo = commitInfos.get(0);
-		return mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo);
-	}
-
-	private LeadTime parseNoMergeLeadTime(DeployInfo deployInfo) {
-		long jobFinishTime = Instant.parse(deployInfo.getJobFinishTime()).toEpochMilli();
-		long jobStartTime = Instant.parse(deployInfo.getJobStartTime()).toEpochMilli();
-		long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
-
-		return LeadTime.builder()
-			.commitId(deployInfo.getCommitId())
-			.pipelineCreateTime((double) pipelineCreateTime)
-			.jobFinishTime((double) jobFinishTime)
-			.pipelineDelayTime((double) jobFinishTime - jobStartTime)
-			.build();
+					.build();
+			}).toList();
+		});
 	}
 
 	public LeadTime mapLeadTimeWithInfo(PullRequestInfo pullRequestInfo, DeployInfo deployInfo, CommitInfo commitInfo) {

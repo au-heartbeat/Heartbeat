@@ -217,7 +217,7 @@ public class BuildKiteService {
 			String startTime, String endTime) {
 		PipelineStepsParam stepsParam = PipelineStepsParam.builder().startTime(startTime).endTime(endTime).build();
 
-		return fetchPipelineStepsByPage(token, deploymentEnvironment.getOrgId(), deploymentEnvironment.getId(),
+		return this.fetchPipelineStepsByPage(token, deploymentEnvironment.getOrgId(), deploymentEnvironment.getId(),
 				stepsParam);
 	}
 
