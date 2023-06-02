@@ -278,7 +278,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken)
+			.get();
 
 		assertEquals(pipelineLeadTimes, result);
 	}
@@ -291,8 +292,8 @@ class GithubServiceTest {
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		List<DeployTimes> emptyDeployTimes = List.of(DeployTimes.builder().build());
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(emptyDeployTimes, repositoryMap,
-				mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(emptyDeployTimes, repositoryMap, mockToken)
+			.get();
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder().build());
 
 		assertEquals(expect, result);
@@ -305,7 +306,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of());
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken)
+			.get();
 
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
 			.pipelineStep("Step")
@@ -333,7 +335,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken)
+			.get();
 
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
 			.pipelineStep("Step")
