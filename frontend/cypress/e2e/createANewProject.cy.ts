@@ -57,8 +57,14 @@ const checkCycleTime = (testId: string, cycleTimeData: BoardDataItem[]) => {
   checkBoardCalculation(testId, cycleTimeData)
 }
 
+const checkPipelineCSV = () => {
+  return cy.task('readDir', 'cypress/downloads').then((files) => {
+    expect(files).to.match(new RegExp(/pipeline-data-.*\.csv/))
+  })
+}
+
 describe('Create a new project', () => {
-  it('Should create a new project manually', () => {
+  it('Should create a new project manually', async () => {
     homePage.navigate()
 
     homePage.createANewProject()
@@ -120,5 +126,13 @@ describe('Create a new project', () => {
     checkVelocity('[data-test-id="Velocity"]', velocityData)
 
     checkCycleTime('[data-test-id="Cycle time"]', cycleTimeData)
+
+    checkDeploymentFrequency('[data-test-id="Deployment frequency"]')
+
+    reportPage.exportPipelineDataButton().should('be.enabled')
+
+    reportPage.exportPipelineData()
+
+    checkPipelineCSV()
   })
 })
