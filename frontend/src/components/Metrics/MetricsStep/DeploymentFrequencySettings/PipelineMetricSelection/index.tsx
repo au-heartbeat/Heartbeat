@@ -75,6 +75,7 @@ export const PipelineMetricSelection = ({
       {organizationWarningMessage && <WarningNotification message={organizationWarningMessage} />}
       {pipelineNameWarningMessage && <WarningNotification message={pipelineNameWarningMessage} />}
       {isLoading && <Loading />}
+      {duplicatedIds.includes(id) && <WarningMessage>This pipeline is the same as another one!</WarningMessage>}
       {errorMessage && <ErrorNotification message={errorMessage} />}
       <SingleSelection
         id={id}
