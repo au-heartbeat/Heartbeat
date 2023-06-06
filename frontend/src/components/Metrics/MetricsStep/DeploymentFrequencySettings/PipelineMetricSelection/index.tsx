@@ -33,7 +33,7 @@ interface pipelineMetricSelectionProps {
   isShowRemoveButton: boolean
   onRemovePipeline: (id: number) => void
   onUpdatePipeline: (id: number, label: string, value: string) => void
-  duplicatedIds: number[]
+  isDuplicated: boolean
 }
 
 export const PipelineMetricSelection = ({
@@ -42,7 +42,7 @@ export const PipelineMetricSelection = ({
   isShowRemoveButton,
   onRemovePipeline,
   onUpdatePipeline,
-  duplicatedIds,
+  isDuplicated,
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting
   const dispatch = useAppDispatch()
@@ -80,7 +80,7 @@ export const PipelineMetricSelection = ({
       {stepWarningMessage && <WarningNotification message={stepWarningMessage} />}
       {isShowNoStepWarning && <WarningNotification message={NO_STEP_WARNING_MESSAGE} />}
       {isLoading && <Loading />}
-      {duplicatedIds.includes(id) && <WarningMessage>This pipeline is the same as another one!</WarningMessage>}
+      {isDuplicated && <WarningMessage>This pipeline is the same as another one!</WarningMessage>}
       {errorMessage && <ErrorNotification message={errorMessage} />}
       <SingleSelection
         id={id}
