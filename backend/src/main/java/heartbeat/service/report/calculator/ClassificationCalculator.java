@@ -111,7 +111,7 @@ public class ClassificationCalculator {
 		}
 	}
 
-	private String pickDisplayNameFromObj(Object object) {
+	private static String pickDisplayNameFromObj(Object object) {
 		if (object instanceof ICardFieldDisplayName) {
 			return ((ICardFieldDisplayName) object).getDisplayName();
 		}

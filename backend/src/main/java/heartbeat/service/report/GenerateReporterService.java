@@ -3,7 +3,6 @@ package heartbeat.service.report;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraCardField;
@@ -50,14 +49,13 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.net.URI;
 import java.time.Instant;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
