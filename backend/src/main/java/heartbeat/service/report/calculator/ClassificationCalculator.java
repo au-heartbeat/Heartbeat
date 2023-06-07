@@ -94,7 +94,7 @@ public class ClassificationCalculator {
 		return classificationFields;
 	}
 
-	private void mapArrayField(Map<String, Map<String, Integer>> resultMap, String fieldsKey, List<Object> objects) {
+	public void mapArrayField(Map<String, Map<String, Integer>> resultMap, String fieldsKey, List<Object> objects) {
 		Map<String, Integer> countMap = resultMap.get(fieldsKey);
 		if (countMap != null) {
 			for (Object object : (List) objects.get(0)) {
@@ -111,7 +111,7 @@ public class ClassificationCalculator {
 		}
 	}
 
-	private static String pickDisplayNameFromObj(Object object) {
+	public String pickDisplayNameFromObj(Object object) {
 		if (object instanceof ICardFieldDisplayName) {
 			return ((ICardFieldDisplayName) object).getDisplayName();
 		}
@@ -147,7 +147,8 @@ public class ClassificationCalculator {
 		return value.replaceAll("\"", "");
 	}
 
-	private static Map<String, Object> extractFields(JiraCardField jiraCardFields) {
+	// TODO private to public
+	public Map<String, Object> extractFields(JiraCardField jiraCardFields) {
 		Map<String, Object> tempFields = new HashMap<>();
 		for (Map.Entry<String, JsonElement> entry : jiraCardFields.getCustomFields().entrySet()) {
 			String key = entry.getKey();
