@@ -1,6 +1,7 @@
 package heartbeat.service.report;
 
 import com.opencsv.CSVWriter;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -122,7 +123,14 @@ public class CSVFileGenerator {
 		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + csvTimeStamp + ".csv";
 		try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
 			String[] header = getHeader(fields);
+
 			writer.writeNext(header);
+			
+
+			HeaderColumnNameMappingStrategy<BoardCSVData> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
+			mappingStrategy.setType(BoardCSVData.class);
+			mappingStrategy.setColumnOrderOnWrite(new ClassFieldOrderComparator(header));
+
 			List<BoardCSVData> boardCSVDataList = new ArrayList<>();
 
 			for (JiraCardDTO cardDTO : cardDTOList) {
@@ -132,6 +140,7 @@ public class CSVFileGenerator {
 
 			StatefulBeanToCsv<BoardCSVData> beanToCsv = new StatefulBeanToCsvBuilder<BoardCSVData>(writer)
 				.withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+				.withMappingStrategy(mappingStrategy)
 				.build();
 			beanToCsv.write(boardCSVDataList);
 		}
@@ -188,7 +197,7 @@ public class CSVFileGenerator {
 	private String[] getHeader(List<BoardCSVConfig> fields) {
 		List<String> headers = new ArrayList<>();
 		fields.forEach((field) -> {
-			headers.add(field.getLabel());
+			headers.add(field.getLabel().toUpperCase());
 		});
 		return headers.toArray(new String[0]);
 	}
