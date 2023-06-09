@@ -121,6 +121,14 @@ public class GenerateReporterService {
 		return repoMap;
 	}
 
+	private static List<BoardCSVConfig> getFixedBoardFields() {
+		List<BoardCSVConfig> fields = new ArrayList<>();
+		for (BoardCSVConfigEnum field : BoardCSVConfigEnum.values()) {
+			fields.add(BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build());
+		}
+		return fields;
+	}
+
 	public synchronized ReportResponse generateReporter(GenerateReportRequest request) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
 		// fetch data for calculate
@@ -255,7 +263,7 @@ public class GenerateReporterService {
 			card.setCycleTimeFlat(buildCycleTimeFlatObject(card));
 			card.setTotalCycleTimeDivideStoryPoints(calculateTotalCycleTimeDivideStoryPoints(card));
 		});
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, allBoardFields, csvTimeStamp);
+		csvFileGenerator.convertBoardDataToCSV(cardDTOList, allBoardFields, newExtraFields, csvTimeStamp);
 
 	}
 
@@ -365,14 +373,6 @@ public class GenerateReporterService {
 			}
 		}
 		return jiraColumns.size();
-	}
-
-	private static List<BoardCSVConfig> getFixedBoardFields() {
-		List<BoardCSVConfig> fields = new ArrayList<>();
-		for (BoardCSVConfigEnum field : BoardCSVConfigEnum.values()) {
-			fields.add(BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build());
-		}
-		return fields;
 	}
 
 	public List<BoardCSVConfig> getExtraFields(List<TargetField> targetFields, List<BoardCSVConfig> currentFields) {

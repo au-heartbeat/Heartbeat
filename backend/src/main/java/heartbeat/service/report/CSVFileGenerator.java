@@ -1,14 +1,10 @@
 package heartbeat.service.report;
 
+import com.google.gson.JsonElement;
 import com.opencsv.CSVWriter;
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
-import heartbeat.controller.report.dto.response.BoardCSVData;
+import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.controller.report.dto.response.LeadTimeInfo;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.exception.FileIOException;
@@ -23,9 +19,12 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -44,6 +43,24 @@ public class CSVFileGenerator {
 		catch (IOException e) {
 			log.error("Failed to read file", e);
 			throw new FileIOException(e);
+		}
+	}
+
+	private static Object getPropertyValue(Object obj, String fieldName) {
+		try {
+			if (fieldName.contains("custom")) {
+				Field customFields = obj.getClass().getDeclaredField("customFields");
+				customFields.setAccessible(true);
+				Map<String, JsonElement> customFieldsMap = (Map<String, JsonElement>) customFields.get(obj);
+				return customFieldsMap.get(fieldName);
+			}
+			Field field = obj.getClass().getDeclaredField(fieldName);
+			field.setAccessible(true);
+			return field.get(obj);
+		}
+		catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -114,7 +131,8 @@ public class CSVFileGenerator {
 		return directory.mkdirs();
 	}
 
-	public void convertBoardDataToCSV(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fields, String csvTimeStamp) {
+	public void convertBoardDataToCSV(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fields,
+			List<BoardCSVConfig> extraFields, String csvTimeStamp) {
 		log.info("Start to create board csv directory");
 		boolean created = createCsvDirectory();
 		String message = created ? "Successfully create csv directory" : "CSV directory is already exist";
@@ -125,73 +143,134 @@ public class CSVFileGenerator {
 			String[] header = getHeader(fields);
 
 			writer.writeNext(header);
-			
+			List<BoardCSVConfig> fixedFields = new ArrayList<>(fields);
+			fixedFields.removeAll(extraFields);
 
-			HeaderColumnNameMappingStrategy<BoardCSVData> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
-			mappingStrategy.setType(BoardCSVData.class);
-			mappingStrategy.setColumnOrderOnWrite(new ClassFieldOrderComparator(header));
+			String[][] fixedFieldsData = getFixedFieldsData(cardDTOList, fixedFields);
+			String[][] extraFieldsData = getExtraFieldsData(cardDTOList, extraFields);
+			String[][] mergedArrays = mergeArrays(fixedFieldsData, extraFieldsData, 14);
 
-			List<BoardCSVData> boardCSVDataList = new ArrayList<>();
+			writer.writeAll(Arrays.asList(mergedArrays));
 
-			for (JiraCardDTO cardDTO : cardDTOList) {
-				BoardCSVData boardCSVData = extractCSVData(cardDTO);
-				boardCSVDataList.add(boardCSVData);
-			}
-
-			StatefulBeanToCsv<BoardCSVData> beanToCsv = new StatefulBeanToCsvBuilder<BoardCSVData>(writer)
-				.withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-				.withMappingStrategy(mappingStrategy)
-				.build();
-			beanToCsv.write(boardCSVDataList);
 		}
 		catch (IOException e) {
 			log.error("Failed to write file", e);
 			throw new FileIOException(e);
 		}
-		// TODO 规范异常处理
-		catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
-	private BoardCSVData extractCSVData(JiraCardDTO cardDTO) {
-		BoardCSVData boardCSVData = BoardCSVData.builder().build();
-		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
-		if (cardDTO.getBaseInfo() != null) {
-			boardCSVData.setIssueKey(cardDTO.getBaseInfo().getKey());
-			boardCSVData.setSummary(cardDTO.getBaseInfo().getFields().getSummary());
-			boardCSVData.setIssueType(cardDTO.getBaseInfo().getFields().getIssuetype().getName());
-			boardCSVData.setStatus(cardDTO.getBaseInfo().getFields().getStatus().getDisplayName());
-			boardCSVData.setStoryPoints(String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints()));
-			if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
-				boardCSVData.setAssigneeName(cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName());
-			}
-			if (cardDTO.getBaseInfo().getFields().getReporter() != null) {
-				boardCSVData.setReporterName(cardDTO.getBaseInfo().getFields().getReporter().getDisplayName());
-			}
+	public String[][] mergeArrays(String[][] fixedFieldsData, String[][] extraFieldsData, int fixedColumnCount) {
+		int mergedColumnLength = fixedFieldsData[0].length + extraFieldsData[0].length;
+		String[][] mergedArray = new String[fixedFieldsData.length][mergedColumnLength];
+		for (int i = 0; i < fixedFieldsData.length; i++) {
+			String[] mergedPerRowArray = new String[mergedColumnLength];
+			System.arraycopy(fixedFieldsData[i], 0, mergedPerRowArray, 0, 14);
+			System.arraycopy(extraFieldsData[i], 0, mergedPerRowArray, fixedColumnCount, extraFieldsData[i].length);
+			System.arraycopy(fixedFieldsData[i], 14, mergedPerRowArray, 14 + extraFieldsData[i].length,
+					fixedFieldsData[i].length - 14);
+			mergedArray[i] = mergedPerRowArray;
+		}
 
-			boardCSVData.setProjectKey(cardDTO.getBaseInfo().getFields().getProject().getKey());
-			boardCSVData.setProjectName(cardDTO.getBaseInfo().getFields().getProject().getName());
-			boardCSVData.setPriorityName(cardDTO.getBaseInfo().getFields().getPriority().getDisplayName());
+		return mergedArray;
+	}
 
-			boardCSVData.setParentSummary(cardDTO.getBaseInfo().getFields().getParent() != null
-					? cardDTO.getBaseInfo().getFields().getParent().getDisplayName() : "");
+	private String[][] getExtraFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> extraFields) {
+		int rowCount = cardDTOList.size() + 1;
+		int columnCount = extraFields.size();
+		String[][] data = new String[rowCount][columnCount];
 
-			boardCSVData.setLabels(cardDTO.getBaseInfo().getFields().getLabels().toString());
-
-			boardCSVData.setTotalCycleTimeDivideStoryPoints(cardDTO.getTotalCycleTimeDivideStoryPoints());
-
-			if (cardDTO.getCardCycleTime() != null) {
-				boardCSVData.setCycleTime(decimalFormat.format(cardDTO.getCardCycleTime().getTotal()));
-				boardCSVData.setAnalysisDays(decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getAnalyse()));
-				boardCSVData.setInDevDays(decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getDevelopment()));
-				boardCSVData.setWaitingDays(decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getWaiting()));
-				boardCSVData.setTestingDays(decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getTesting()));
-				boardCSVData.setBlockDays(decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getBlocked()));
-				boardCSVData.setReviewDays(decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getReview()));
+		for (int i = 0; i < columnCount; i++) {
+			data[0][i] = extraFields.get(i).getLabel();
+		}
+		for (int i = 0; i < cardDTOList.size(); i++) {
+			JiraCardDTO cardDTO = cardDTOList.get(i);
+			for (int j = 0; j < columnCount; j++) {
+				data[i + 1][j] = getExtraData(cardDTO, extraFields.get(j));
 			}
 		}
-		return boardCSVData;
+		return data;
+
+	}
+
+	private String[][] getFixedFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fixedFields) {
+
+		int rowCount = cardDTOList.size() + 1;
+		int columnCount = fixedFields.size();
+		String[][] data = new String[rowCount][columnCount];
+
+		for (int i = 0; i < columnCount; i++) {
+			data[0][i] = fixedFields.get(i).getLabel();
+		}
+		for (int i = 0; i < cardDTOList.size(); i++) {
+			JiraCardDTO cardDTO = cardDTOList.get(i);
+			data[i + 1] = getFixedData(cardDTO);
+		}
+		return data;
+	}
+
+	// private void writerFixedFields(List<JiraCardDTO> cardDTOList, CSVWriter writer,
+	// String[] header)
+	// throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+	// HeaderColumnNameMappingStrategy<BoardCSVData> mappingStrategy = new
+	// HeaderColumnNameMappingStrategy<>();
+	// mappingStrategy.setType(BoardCSVData.class);
+	// mappingStrategy.setColumnOrderOnWrite(new ClassFieldOrderComparator(header));
+	//
+	// List<BoardCSVData> boardCSVDataList = new ArrayList<>();
+	//
+	// for (JiraCardDTO cardDTO : cardDTOList) {
+	// BoardCSVData boardCSVData = extractCSVData(cardDTO);
+	// boardCSVDataList.add(boardCSVData);
+	// }
+	//
+	// StatefulBeanToCsv<BoardCSVData> beanToCsv = new
+	// StatefulBeanToCsvBuilder<BoardCSVData>(writer)
+	// .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+	// .withMappingStrategy(mappingStrategy)
+	// .build();
+	// beanToCsv.write(boardCSVDataList);
+	// }
+
+	private String[] getFixedData(JiraCardDTO cardDTO) {
+		String[] rowData = new String[BoardCSVConfigEnum.values().length];
+		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
+		if (cardDTO.getBaseInfo() != null) {
+			rowData[0] = cardDTO.getBaseInfo().getKey();
+			rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
+			rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
+			rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getDisplayName();
+			rowData[4] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
+			if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
+				rowData[5] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
+			}
+			if (cardDTO.getBaseInfo().getFields().getReporter() != null) {
+				rowData[6] = cardDTO.getBaseInfo().getFields().getReporter().getDisplayName();
+			}
+
+			rowData[7] = cardDTO.getBaseInfo().getFields().getProject().getKey();
+			rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getName();
+			rowData[9] = cardDTO.getBaseInfo().getFields().getPriority().getName();
+
+			// TODO baseInfo.fields.parent.fields.summary
+			rowData[10] = cardDTO.getBaseInfo().getFields().getParent() != null
+					? cardDTO.getBaseInfo().getFields().getParent().getDisplayName() : "";
+
+			// TODO rowData[11] = baseInfo.fields.sprint
+
+			rowData[12] = cardDTO.getBaseInfo().getFields().getLabels().toString();
+
+			if (cardDTO.getCardCycleTime() != null) {
+				rowData[13] = decimalFormat.format(cardDTO.getCardCycleTime().getTotal());
+				rowData[14] = cardDTO.getTotalCycleTimeDivideStoryPoints();
+				rowData[15] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+				rowData[16] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getDevelopment());
+				rowData[17] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getWaiting());
+				rowData[18] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getTesting());
+				rowData[19] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getBlocked());
+				rowData[20] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getReview());
+			}
+		}
+		return rowData;
 	}
 
 	private String[] getHeader(List<BoardCSVConfig> fields) {
@@ -202,21 +281,20 @@ public class CSVFileGenerator {
 		return headers.toArray(new String[0]);
 	}
 
-	// private String getRowData() {
-	// try {
-	// // 获取 fields 字段
-	// Field fieldsField = baseInfo.getClass().getDeclaredField("fields");
-	// fieldsField.setAccessible(true);
-	// Object fieldsObject = fieldsField.get(baseInfo);
-	//
-	// // 获取 summary 字段
-	// Field summaryField = fieldsObject.getClass().getDeclaredField("summary");
-	// summaryField.setAccessible(true);
-	// summary = (String) summaryField.get(fieldsObject);
-	// } catch (NoSuchFieldException | IllegalAccessException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// }
+	private String getExtraData(JiraCardDTO baseInfo, BoardCSVConfig extraField) {
+		String[] values = extraField.getValue().split("\\.");
+
+		Object fieldValue = baseInfo;
+		for (String value : values) {
+			if (fieldValue == null) {
+				break;
+			}
+			fieldValue = getPropertyValue(fieldValue, value);
+		}
+		if (fieldValue != null) {
+			return fieldValue.toString();
+		}
+		return null;
+	}
 
 }
