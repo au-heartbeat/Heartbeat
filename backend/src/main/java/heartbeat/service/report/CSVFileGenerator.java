@@ -118,7 +118,6 @@ public class CSVFileGenerator {
 
 	public InputStreamResource getDataFromCSV(String dataType, long csvTimeStamp) {
 		return switch (dataType) {
-			// todo: add board case
 			case "pipeline" -> readStringFromCsvFile(CSVFileNameEnum.PIPELINE.getValue() + "-" + csvTimeStamp + ".csv");
 			case "board" -> readStringFromCsvFile(CSVFileNameEnum.BOARD.getValue() + "-" + csvTimeStamp + ".csv");
 			default -> new InputStreamResource(new ByteArrayInputStream("".getBytes()));
@@ -140,9 +139,6 @@ public class CSVFileGenerator {
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + csvTimeStamp + ".csv";
 		try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
-			String[] header = getHeader(fields);
-
-			writer.writeNext(header);
 			List<BoardCSVConfig> fixedFields = new ArrayList<>(fields);
 			fixedFields.removeAll(extraFields);
 
@@ -208,29 +204,6 @@ public class CSVFileGenerator {
 		return data;
 	}
 
-	// private void writerFixedFields(List<JiraCardDTO> cardDTOList, CSVWriter writer,
-	// String[] header)
-	// throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
-	// HeaderColumnNameMappingStrategy<BoardCSVData> mappingStrategy = new
-	// HeaderColumnNameMappingStrategy<>();
-	// mappingStrategy.setType(BoardCSVData.class);
-	// mappingStrategy.setColumnOrderOnWrite(new ClassFieldOrderComparator(header));
-	//
-	// List<BoardCSVData> boardCSVDataList = new ArrayList<>();
-	//
-	// for (JiraCardDTO cardDTO : cardDTOList) {
-	// BoardCSVData boardCSVData = extractCSVData(cardDTO);
-	// boardCSVDataList.add(boardCSVData);
-	// }
-	//
-	// StatefulBeanToCsv<BoardCSVData> beanToCsv = new
-	// StatefulBeanToCsvBuilder<BoardCSVData>(writer)
-	// .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-	// .withMappingStrategy(mappingStrategy)
-	// .build();
-	// beanToCsv.write(boardCSVDataList);
-	// }
-
 	private String[] getFixedData(JiraCardDTO cardDTO) {
 		String[] rowData = new String[BoardCSVConfigEnum.values().length];
 		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
@@ -271,14 +244,6 @@ public class CSVFileGenerator {
 			}
 		}
 		return rowData;
-	}
-
-	private String[] getHeader(List<BoardCSVConfig> fields) {
-		List<String> headers = new ArrayList<>();
-		fields.forEach((field) -> {
-			headers.add(field.getLabel().toUpperCase());
-		});
-		return headers.toArray(new String[0]);
 	}
 
 	private String getExtraData(JiraCardDTO baseInfo, BoardCSVConfig extraField) {
