@@ -158,6 +158,7 @@ public class CSVFileGenerator {
 	}
 
 	public String[][] mergeArrays(String[][] fixedFieldsData, String[][] extraFieldsData, int fixedColumnCount) {
+		// TODO 动态获取 fixedColumnCount
 		int mergedColumnLength = fixedFieldsData[0].length + extraFieldsData[0].length;
 		String[][] mergedArray = new String[fixedFieldsData.length][mergedColumnLength];
 		for (int i = 0; i < fixedFieldsData.length; i++) {
@@ -181,13 +182,13 @@ public class CSVFileGenerator {
 		int columnCount = extraFields.size();
 		String[][] data = new String[rowCount][columnCount];
 
-		for (int i = 0; i < columnCount; i++) {
-			data[0][i] = extraFields.get(i).getLabel();
+		for (int column = 0; column < columnCount; column++) {
+			data[0][column] = extraFields.get(column).getLabel();
 		}
-		for (int i = 0; i < cardDTOList.size(); i++) {
-			JiraCardDTO cardDTO = cardDTOList.get(i);
-			for (int j = 0; j < columnCount; j++) {
-				data[i + 1][j] = getExtraData(cardDTO, extraFields.get(j));
+		for (int row = 0; row < cardDTOList.size(); row++) {
+			JiraCardDTO perRowCardDTO = cardDTOList.get(row);
+			for (int column = 0; column < columnCount; column++) {
+				data[row + 1][column] = getExtraData(perRowCardDTO, extraFields.get(column));
 			}
 		}
 		return data;
@@ -200,12 +201,12 @@ public class CSVFileGenerator {
 		int columnCount = fixedFields.size();
 		String[][] data = new String[rowCount][columnCount];
 
-		for (int i = 0; i < columnCount; i++) {
-			data[0][i] = fixedFields.get(i).getLabel();
+		for (int column = 0; column < columnCount; column++) {
+			data[0][column] = fixedFields.get(column).getLabel();
 		}
-		for (int i = 0; i < cardDTOList.size(); i++) {
-			JiraCardDTO cardDTO = cardDTOList.get(i);
-			data[i + 1] = getFixedData(cardDTO);
+		for (int row = 0; row < cardDTOList.size(); row++) {
+			JiraCardDTO cardDTO = cardDTOList.get(row);
+			data[row + 1] = getFixedData(cardDTO);
 		}
 		return data;
 	}
