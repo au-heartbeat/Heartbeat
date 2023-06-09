@@ -10,7 +10,7 @@ public enum BoardCSVConfigEnum {
 	PROJECT_KEY("Project Key", "baseInfo.fields.project.key"),
 	PROJECT_NAME("Project Name", "baseInfo.fields.project.name"), PRIORITY("Priority", "baseInfo.fields.priority.name"),
 	PARENT_SUMMARY("Parent Summary", "baseInfo.fields.parent.fields.summary"),
-	SPRINT("Sprint", "baseInfo.fields.sprint"), LABELS("Labels", "baseInfo.fields.label"),
+	SPRINT("Sprint", "baseInfo.fields.closedSprints.name"), LABELS("Labels", "baseInfo.fields.label"),
 	CYCLE_TIME("Cycle Time", "cardCycleTime.total"),
 	CYCLE_TIME_STORY_POINTS("Cycle Time / Story Points", "totalCycleTimeDivideStoryPoints"),
 	ANALYSIS_DAYS("Analysis Days", "cardCycleTime.steps.analyse"),

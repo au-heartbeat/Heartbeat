@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import com.google.gson.JsonElement;
 import com.opencsv.CSVWriter;
+import heartbeat.client.dto.board.jira.Sprint;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Component
@@ -171,6 +173,10 @@ public class CSVFileGenerator {
 	}
 
 	private String[][] getExtraFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> extraFields) {
+		// TODO new app -> 时间跟踪:empty old app -> 时间跟踪:{}
+		// TODO new app -> Story point estimate: 有小数
+		// TODO old app -> Story point estimate: 无小数
+		// TODO add OriginCycleTime
 		int rowCount = cardDTOList.size() + 1;
 		int columnCount = extraFields.size();
 		String[][] data = new String[rowCount][columnCount];
@@ -206,12 +212,12 @@ public class CSVFileGenerator {
 
 	private String[] getFixedData(JiraCardDTO cardDTO) {
 		String[] rowData = new String[BoardCSVConfigEnum.values().length];
-		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
 		if (cardDTO.getBaseInfo() != null) {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
 			rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
 			rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
-			rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getDisplayName();
+			// TODO check whether no data
+			rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
 			rowData[4] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
 			if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
 				rowData[5] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
@@ -224,26 +230,41 @@ public class CSVFileGenerator {
 			rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getName();
 			rowData[9] = cardDTO.getBaseInfo().getFields().getPriority().getName();
 
-			// TODO baseInfo.fields.parent.fields.summary
-			rowData[10] = cardDTO.getBaseInfo().getFields().getParent() != null
-					? cardDTO.getBaseInfo().getFields().getParent().getDisplayName() : "";
+			// TODO baseInfo.fields.parent.fields.summary data is incorrect
+			if (cardDTO.getBaseInfo().getFields().getParent() != null) {
+				rowData[10] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
+			}
 
-			// TODO rowData[11] = baseInfo.fields.sprint
+			// TODO 与old app不一致，但原始数据sprint为null
+			if (cardDTO.getBaseInfo().getFields().getSprint() != null) {
+				rowData[11] = cardDTO.getBaseInfo().getFields().getSprint().getName();
+			}
 
-			rowData[12] = cardDTO.getBaseInfo().getFields().getLabels().toString();
+			rowData[12] = String.join(",", cardDTO.getBaseInfo().getFields().getLabels());
 
 			if (cardDTO.getCardCycleTime() != null) {
-				rowData[13] = decimalFormat.format(cardDTO.getCardCycleTime().getTotal());
+				// TODO new app do not calculate cycle time for nonDoneCards
+				rowData[13] = formatDecimal(cardDTO.getCardCycleTime().getTotal());
 				rowData[14] = cardDTO.getTotalCycleTimeDivideStoryPoints();
-				rowData[15] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getAnalyse());
-				rowData[16] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getDevelopment());
-				rowData[17] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getWaiting());
-				rowData[18] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getTesting());
-				rowData[19] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getBlocked());
-				rowData[20] = decimalFormat.format(cardDTO.getCardCycleTime().getSteps().getReview());
+				rowData[15] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+				rowData[16] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getDevelopment());
+				rowData[17] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getWaiting());
+				rowData[18] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getTesting());
+				rowData[19] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getBlocked());
+				rowData[20] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getReview());
 			}
 		}
 		return rowData;
+	}
+
+	private String formatDecimal(double value) {
+		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
+		if (value == 0) {
+			return "0";
+		}
+		else {
+			return decimalFormat.format(value);
+		}
 	}
 
 	private String getExtraData(JiraCardDTO baseInfo, BoardCSVConfig extraField) {
@@ -252,14 +273,14 @@ public class CSVFileGenerator {
 		Object fieldValue = baseInfo;
 		for (String value : values) {
 			if (fieldValue == null) {
-				break;
+				return "";
 			}
 			fieldValue = getPropertyValue(fieldValue, value);
 		}
-		if (fieldValue != null) {
+		if (fieldValue != null && !Objects.equals(fieldValue.toString(), "null")) {
 			return fieldValue.toString();
 		}
-		return null;
+		return "";
 	}
 
 }

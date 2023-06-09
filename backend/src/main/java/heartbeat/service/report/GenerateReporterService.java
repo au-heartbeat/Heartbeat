@@ -238,7 +238,7 @@ public class GenerateReporterService {
 		});
 
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
-		// TODO jiraCardWithEmptyValue
+
 		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
 		cardDTOList.addAll(allDoneCards);
 		cardDTOList.addAll(emptyJiraCard);
