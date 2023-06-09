@@ -169,8 +169,6 @@ public class CSVFileGenerator {
 	}
 
 	private String[][] getExtraFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> extraFields) {
-		// TODO new app -> Story point estimate: 有小数
-		// TODO old app -> Story point estimate: 无小数
 		int rowCount = cardDTOList.size() + 1;
 		int columnCount = extraFields.size();
 		String[][] data = new String[rowCount][columnCount];
