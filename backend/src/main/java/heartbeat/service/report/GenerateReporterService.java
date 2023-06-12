@@ -39,6 +39,7 @@ import heartbeat.service.report.calculator.CycleTimeCalculator;
 import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.source.github.GitHubService;
+import heartbeat.util.DecimalUtil;
 import heartbeat.util.GithubUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -274,7 +275,7 @@ public class GenerateReporterService {
 		int storyPoints = card.getBaseInfo().getFields().getStoryPoints();
 		double cardCycleTime = card.getCardCycleTime().getTotal() == 0.0 ? 0.0 : card.getCardCycleTime().getTotal();
 
-		String formattedResult = String.format("%.2f", cardCycleTime / storyPoints);
+		String formattedResult = DecimalUtil.formatDecimalTwo(cardCycleTime / storyPoints);
 		return storyPoints > 0 ? formattedResult : "";
 	}
 
@@ -389,7 +390,7 @@ public class GenerateReporterService {
 			if (!isInCurrentFields) {
 				BoardCSVConfig extraField = new BoardCSVConfig();
 				extraField.setLabel(targetField.getName());
-				extraField.setValue("baseInfo.fields." + targetField.getKey());
+				extraField.setValue("baseInfo.fields.customFields." + targetField.getKey());
 				extraField.setOriginKey(targetField.getKey());
 				extraFields.add(extraField);
 			}

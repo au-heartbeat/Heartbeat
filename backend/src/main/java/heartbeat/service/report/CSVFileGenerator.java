@@ -2,13 +2,13 @@ package heartbeat.service.report;
 
 import com.google.gson.JsonElement;
 import com.opencsv.CSVWriter;
-import heartbeat.client.dto.board.jira.Sprint;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.controller.report.dto.response.LeadTimeInfo;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.exception.FileIOException;
+import heartbeat.util.DecimalUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.InputStreamResource;
@@ -21,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,8 +31,6 @@ import java.util.Objects;
 @Component
 @Log4j2
 public class CSVFileGenerator {
-
-	private static final String FORMAT_2_DECIMALS = "0.00";
 
 	private static InputStreamResource readStringFromCsvFile(String fileName) {
 		try {
@@ -50,12 +47,6 @@ public class CSVFileGenerator {
 
 	private static Object getPropertyValue(Object obj, String fieldName) {
 		try {
-			if (fieldName.contains("custom")) {
-				Field customFields = obj.getClass().getDeclaredField("customFields");
-				customFields.setAccessible(true);
-				Map<String, JsonElement> customFieldsMap = (Map<String, JsonElement>) customFields.get(obj);
-				return customFieldsMap.get(fieldName);
-			}
 			Field field = obj.getClass().getDeclaredField(fieldName);
 			field.setAccessible(true);
 			return field.get(obj);
@@ -146,7 +137,13 @@ public class CSVFileGenerator {
 
 			String[][] fixedFieldsData = getFixedFieldsData(cardDTOList, fixedFields);
 			String[][] extraFieldsData = getExtraFieldsData(cardDTOList, extraFields);
-			String[][] mergedArrays = mergeArrays(fixedFieldsData, extraFieldsData, 14);
+
+			String[] fixedFieldsRow = fixedFieldsData[0];
+			String targetElement = "Cycle Time";
+			List<String> fixedFieldsRowList = Arrays.asList(fixedFieldsRow);
+			int targetIndex = fixedFieldsRowList.indexOf(targetElement);
+
+			String[][] mergedArrays = mergeArrays(fixedFieldsData, extraFieldsData, targetIndex + 1);
 
 			writer.writeAll(Arrays.asList(mergedArrays));
 
@@ -158,15 +155,14 @@ public class CSVFileGenerator {
 	}
 
 	public String[][] mergeArrays(String[][] fixedFieldsData, String[][] extraFieldsData, int fixedColumnCount) {
-		// TODO 动态获取 fixedColumnCount
 		int mergedColumnLength = fixedFieldsData[0].length + extraFieldsData[0].length;
 		String[][] mergedArray = new String[fixedFieldsData.length][mergedColumnLength];
 		for (int i = 0; i < fixedFieldsData.length; i++) {
 			String[] mergedPerRowArray = new String[mergedColumnLength];
-			System.arraycopy(fixedFieldsData[i], 0, mergedPerRowArray, 0, 14);
+			System.arraycopy(fixedFieldsData[i], 0, mergedPerRowArray, 0, fixedColumnCount);
 			System.arraycopy(extraFieldsData[i], 0, mergedPerRowArray, fixedColumnCount, extraFieldsData[i].length);
-			System.arraycopy(fixedFieldsData[i], 14, mergedPerRowArray, 14 + extraFieldsData[i].length,
-					fixedFieldsData[i].length - 14);
+			System.arraycopy(fixedFieldsData[i], fixedColumnCount, mergedPerRowArray, 14 + extraFieldsData[i].length,
+					fixedFieldsData[i].length - fixedColumnCount);
 			mergedArray[i] = mergedPerRowArray;
 		}
 
@@ -174,7 +170,6 @@ public class CSVFileGenerator {
 	}
 
 	private String[][] getExtraFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> extraFields) {
-		// TODO new app -> 时间跟踪:empty old app -> 时间跟踪:{}
 		// TODO new app -> Story point estimate: 有小数
 		// TODO old app -> Story point estimate: 无小数
 		// TODO add OriginCycleTime
@@ -187,8 +182,9 @@ public class CSVFileGenerator {
 		}
 		for (int row = 0; row < cardDTOList.size(); row++) {
 			JiraCardDTO perRowCardDTO = cardDTOList.get(row);
+			Map<String, JsonElement> customFields = (Map<String, JsonElement>) getCustomFields(perRowCardDTO);
 			for (int column = 0; column < columnCount; column++) {
-				data[row + 1][column] = getExtraData(perRowCardDTO, extraFields.get(column));
+				data[row + 1][column] = getExtraData(customFields, extraFields.get(column));
 			}
 		}
 		return data;
@@ -217,7 +213,6 @@ public class CSVFileGenerator {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
 			rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
 			rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
-			// TODO check whether no data
 			rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
 			rowData[4] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
 			if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
@@ -231,7 +226,6 @@ public class CSVFileGenerator {
 			rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getName();
 			rowData[9] = cardDTO.getBaseInfo().getFields().getPriority().getName();
 
-			// TODO baseInfo.fields.parent.fields.summary data is incorrect
 			if (cardDTO.getBaseInfo().getFields().getParent() != null) {
 				rowData[10] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
 			}
@@ -245,43 +239,48 @@ public class CSVFileGenerator {
 
 			if (cardDTO.getCardCycleTime() != null) {
 				// TODO new app do not calculate cycle time for nonDoneCards
-				rowData[13] = formatDecimal(cardDTO.getCardCycleTime().getTotal());
+				rowData[13] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
 				rowData[14] = cardDTO.getTotalCycleTimeDivideStoryPoints();
-				rowData[15] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getAnalyse());
-				rowData[16] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getDevelopment());
-				rowData[17] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getWaiting());
-				rowData[18] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getTesting());
-				rowData[19] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getBlocked());
-				rowData[20] = formatDecimal(cardDTO.getCardCycleTime().getSteps().getReview());
+				rowData[15] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+				rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
+				rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
+				rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
+				rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
+				rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
 			}
 		}
 		return rowData;
 	}
 
-	private String formatDecimal(double value) {
-		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
-		if (value == 0) {
-			return "0";
-		}
-		else {
-			return decimalFormat.format(value);
-		}
-	}
-
-	private String getExtraData(JiraCardDTO baseInfo, BoardCSVConfig extraField) {
-		String[] values = extraField.getValue().split("\\.");
+	private Object getCustomFields(JiraCardDTO baseInfo) {
+		String[] values = { "baseInfo", "fields", "customFields" };
 
 		Object fieldValue = baseInfo;
 		for (String value : values) {
 			if (fieldValue == null) {
-				return "";
+				return null;
 			}
 			fieldValue = getPropertyValue(fieldValue, value);
 		}
-		if (fieldValue != null && !Objects.equals(fieldValue.toString(), "null")) {
-			return fieldValue.toString();
+		return fieldValue;
+	}
+
+	private String getExtraData(Map<String, JsonElement> customFields, BoardCSVConfig extraField) {
+		if (customFields == null) {
+			return null;
 		}
-		return "";
+		String[] values = extraField.getValue().split("\\.");
+		String extraFieldValue = values[values.length - 1];
+		Object fieldValue = customFields.get(extraFieldValue);
+		if (fieldValue == null) {
+			return "";
+		}
+		else if (fieldValue.toString().equals("null")) {
+			return "";
+		}
+		else {
+			return fieldValue.toString().replaceAll("\"", "");
+		}
 	}
 
 }
