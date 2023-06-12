@@ -257,7 +257,7 @@ public class GenerateReporterService {
 			}
 		}).map(CycleTimeInfo::getColumn).distinct().toList();
 
-		columns.forEach(column -> fields.add(
+		columns.forEach(column -> allBoardFields.add(
 				BoardCSVConfig.builder().label("OriginCycleTime: " + column).value("cycleTimeFlat." + column).build()));
 
 		cardDTOList.forEach((card) -> {

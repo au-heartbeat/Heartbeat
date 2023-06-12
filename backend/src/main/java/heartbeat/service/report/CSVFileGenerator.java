@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Component
@@ -40,18 +41,6 @@ public class CSVFileGenerator {
 		catch (IOException e) {
 			log.error("Failed to read file", e);
 			throw new FileIOException(e);
-		}
-	}
-
-	private static Object getPropertyValue(Object obj, String fieldName) {
-		try {
-			Field field = obj.getClass().getDeclaredField(fieldName);
-			field.setAccessible(true);
-			return field.get(obj);
-		}
-		catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-			return null;
 		}
 	}
 
@@ -159,8 +148,8 @@ public class CSVFileGenerator {
 			String[] mergedPerRowArray = new String[mergedColumnLength];
 			System.arraycopy(fixedFieldsData[i], 0, mergedPerRowArray, 0, fixedColumnCount);
 			System.arraycopy(extraFieldsData[i], 0, mergedPerRowArray, fixedColumnCount, extraFieldsData[i].length);
-			System.arraycopy(fixedFieldsData[i], fixedColumnCount, mergedPerRowArray, 14 + extraFieldsData[i].length,
-					fixedFieldsData[i].length - fixedColumnCount);
+			System.arraycopy(fixedFieldsData[i], fixedColumnCount, mergedPerRowArray,
+					fixedColumnCount + extraFieldsData[i].length, fixedFieldsData[i].length - fixedColumnCount);
 			mergedArray[i] = mergedPerRowArray;
 		}
 
@@ -180,13 +169,23 @@ public class CSVFileGenerator {
 		}
 		for (int row = 0; row < cardDTOList.size(); row++) {
 			JiraCardDTO perRowCardDTO = cardDTOList.get(row);
-			Map<String, JsonElement> customFields = (Map<String, JsonElement>) getCustomFields(perRowCardDTO);
+			Map<String, JsonElement> customFields = getCustomFields(perRowCardDTO);
 			for (int column = 0; column < columnCount; column++) {
-				data[row + 1][column] = getExtraData(customFields, extraFields.get(column));
+				data[row + 1][column] = getExtraDataPerRow(customFields, extraFields.get(column));
 			}
 		}
 		return data;
+	}
 
+	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
+		// TODO 解决 getBaseInfo 为 null
+		try {
+			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
+		}
+		catch (NullPointerException e) {
+			log.error("Failed to get field", e);
+			throw new NullPointerException(e.getMessage());
+		}
 	}
 
 	private String[][] getFixedFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fixedFields) {
@@ -200,12 +199,37 @@ public class CSVFileGenerator {
 		}
 		for (int row = 0; row < cardDTOList.size(); row++) {
 			JiraCardDTO cardDTO = cardDTOList.get(row);
-			data[row + 1] = getFixedData(cardDTO);
+
+			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO);
+			String[] originCycleTimePerRow = getOriginCycleTimePerRow(cardDTO, fixedFields);
+			data[row + 1] = Stream.concat(Arrays.stream(fixedDataPerRow), Arrays.stream(originCycleTimePerRow))
+				.toArray(String[]::new);
 		}
 		return data;
 	}
 
-	private String[] getFixedData(JiraCardDTO cardDTO) {
+	private String[] getOriginCycleTimePerRow(JiraCardDTO cardDTO, List<BoardCSVConfig> fixedFields) {
+		BoardCSVConfigEnum[] values = BoardCSVConfigEnum.values();
+		List<String> fixedLabels = new ArrayList<>();
+		List<BoardCSVConfig> originCycleTimeFields = new ArrayList<>(fixedFields);
+
+		for (BoardCSVConfigEnum value : values) {
+			fixedLabels.add(value.getLabel());
+		}
+
+		originCycleTimeFields.removeIf(config -> fixedLabels.contains(config.getLabel()));
+
+		int columnCount = originCycleTimeFields.size();
+		String[] data = new String[columnCount];
+
+		for (int column = 0; column < columnCount; column++) {
+			data[column] = getExtraDataPerRow(cardDTO.getCycleTimeFlat(), originCycleTimeFields.get(column));
+		}
+		return data;
+
+	}
+
+	private String[] getFixedDataPerRow(JiraCardDTO cardDTO) {
 		String[] rowData = new String[BoardCSVConfigEnum.values().length];
 		if (cardDTO.getBaseInfo() != null) {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
@@ -250,26 +274,14 @@ public class CSVFileGenerator {
 		return rowData;
 	}
 
-	private Object getCustomFields(JiraCardDTO baseInfo) {
-		String[] values = { "baseInfo", "fields", "customFields" };
-
-		Object fieldValue = baseInfo;
-		for (String value : values) {
-			if (fieldValue == null) {
-				return null;
-			}
-			fieldValue = getPropertyValue(fieldValue, value);
-		}
-		return fieldValue;
-	}
-
-	private String getExtraData(Map<String, JsonElement> customFields, BoardCSVConfig extraField) {
-		if (customFields == null) {
+	private String getExtraDataPerRow(Object object, BoardCSVConfig extraField) {
+		Map<String, JsonElement> elementMap = (Map<String, JsonElement>) object;
+		if (elementMap == null) {
 			return null;
 		}
 		String[] values = extraField.getValue().split("\\.");
 		String extraFieldValue = values[values.length - 1];
-		Object fieldValue = customFields.get(extraFieldValue);
+		Object fieldValue = elementMap.get(extraFieldValue);
 		if (fieldValue == null) {
 			return "";
 		}
