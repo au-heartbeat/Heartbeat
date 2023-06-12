@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Component
@@ -35,9 +34,8 @@ public class CSVFileGenerator {
 	private static InputStreamResource readStringFromCsvFile(String fileName) {
 		try {
 			InputStream inputStream = new FileInputStream(fileName);
-			InputStreamResource resource = new InputStreamResource(inputStream);
 
-			return resource;
+			return new InputStreamResource(inputStream);
 		}
 		catch (IOException e) {
 			log.error("Failed to read file", e);
