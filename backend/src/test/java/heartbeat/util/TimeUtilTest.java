@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 class TimeUtilTest {
 
@@ -16,7 +14,7 @@ class TimeUtilTest {
 		Instant mockEndDate = Instant.parse("2022-09-08T12:05:30Z");
 		Instant mockTime = Instant.parse("2022-09-06T12:05:30Z");
 
-		assertTrue(TimeUtil.isBeforeAndEqual(mockEndDate, mockTime));
+		Assertions.assertTrue(TimeUtil.isBeforeAndEqual(mockEndDate, mockTime));
 	}
 
 	@Test
@@ -24,7 +22,7 @@ class TimeUtilTest {
 		Instant mockEndDate = Instant.parse("2022-09-08T12:05:30Z");
 		Instant mockTime = Instant.parse("2022-10-10T12:05:30Z");
 
-		assertFalse(TimeUtil.isBeforeAndEqual(mockEndDate, mockTime));
+		Assertions.assertFalse(TimeUtil.isBeforeAndEqual(mockEndDate, mockTime));
 	}
 
 	@Test
@@ -32,7 +30,7 @@ class TimeUtilTest {
 		Instant mockStartDate = Instant.parse("2022-08-31T12:05:30Z");
 		Instant mockTime = Instant.parse("2022-09-06T12:05:30Z");
 
-		assertTrue(TimeUtil.isAfterAndEqual(mockStartDate, mockTime));
+		Assertions.assertTrue(TimeUtil.isAfterAndEqual(mockStartDate, mockTime));
 	}
 
 	@Test
@@ -40,7 +38,7 @@ class TimeUtilTest {
 		Instant mockStartDate = Instant.parse("2022-08-31T12:05:30Z");
 		Instant mockTime = Instant.parse("2022-08-06T12:05:30Z");
 
-		assertFalse(TimeUtil.isAfterAndEqual(mockStartDate, mockTime));
+		Assertions.assertFalse(TimeUtil.isAfterAndEqual(mockStartDate, mockTime));
 	}
 
 	@Test

@@ -20,7 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +31,8 @@ import java.util.stream.Stream;
 @Component
 @Log4j2
 public class CSVFileGenerator {
+
+	private static final String FORMAT_2_DECIMALS = "0.00";
 
 	private static InputStreamResource readStringFromCsvFile(String fileName) {
 		try {
@@ -178,13 +180,11 @@ public class CSVFileGenerator {
 	}
 
 	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
-		// TODO 解决 getBaseInfo 为 null
-		try {
+		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
 			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
 		}
-		catch (NullPointerException e) {
-			log.error("Failed to get field", e);
-			throw new NullPointerException(e.getMessage());
+		else {
+			return null;
 		}
 	}
 
@@ -275,6 +275,7 @@ public class CSVFileGenerator {
 	}
 
 	private String getExtraDataPerRow(Object object, BoardCSVConfig extraField) {
+		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
 		Map<String, JsonElement> elementMap = (Map<String, JsonElement>) object;
 		if (elementMap == null) {
 			return null;
@@ -284,6 +285,9 @@ public class CSVFileGenerator {
 		Object fieldValue = elementMap.get(extraFieldValue);
 		if (fieldValue == null) {
 			return "";
+		}
+		else if (fieldValue instanceof Double) {
+			return decimalFormat.format(fieldValue);
 		}
 		else if (fieldValue.toString().equals("null")) {
 			return "";

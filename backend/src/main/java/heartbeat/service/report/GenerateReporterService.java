@@ -196,7 +196,7 @@ public class GenerateReporterService {
 				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers());
 
 		nonDoneCardCollection = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(storyPointsAndCycleTimeRequest,
-				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers());
+				jiraBoardSetting.getBoardColumns());
 
 		BoardRequestParam boardRequestParam = BoardRequestParam.builder()
 			.boardId(jiraBoardSetting.getBoardId())
