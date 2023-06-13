@@ -186,6 +186,15 @@ public class CSVFileGenerator {
 		return data;
 	}
 
+	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
+		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
+			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
+		}
+		else {
+			return null;
+		}
+	}
+
 	private String[][] getFixedFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fixedFields) {
 
 		int rowCount = cardDTOList.size() + 1;

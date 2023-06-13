@@ -20,7 +20,6 @@ public class Status implements ICardFieldDisplayName, Serializable {
 
 	private String displayValue;
 
-	private String name;
 
 	public Status(String displayValue) {
 		this.displayValue = displayValue;
