@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static org.junit.Assert.assertFalse;
-
 class TimeUtilTest {
 
 	@Test
