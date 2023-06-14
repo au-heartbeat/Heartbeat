@@ -13,7 +13,6 @@ import heartbeat.controller.board.dto.response.CardParent;
 import heartbeat.controller.board.dto.response.ColumnValue;
 import heartbeat.controller.board.dto.response.CycleTimeInfo;
 import heartbeat.controller.board.dto.response.Fields;
-import heartbeat.controller.board.dto.response.FixVersion;
 import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.JiraColumnDTO;
@@ -122,7 +121,7 @@ public class BoardCsvFixture {
 		.originKey("customfield_10016")
 		.build();
 
-	private static final BoardCSVConfig FLAGGED = BoardCSVConfig.builder()
+	private static final BoardCSVConfig FLAGGED_CONFIG = BoardCSVConfig.builder()
 		.label("Flagged")
 		.value("baseInfo.fields.customFields.customfield_10021")
 		.originKey("customfield_10021")
@@ -189,7 +188,7 @@ public class BoardCsvFixture {
 	}
 
 	public static List<BoardCSVConfig> MOCK_EXTRA_FIELDS() {
-		return List.of(STORY_POINT_ESTIMATE_CONFIG, FLAGGED);
+		return List.of(STORY_POINT_ESTIMATE_CONFIG, FLAGGED_CONFIG);
 	}
 
 	public static List<BoardCSVConfig> MOCK_ALL_FIELDS() {
