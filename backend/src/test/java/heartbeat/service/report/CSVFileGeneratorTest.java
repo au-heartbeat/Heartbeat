@@ -1,5 +1,7 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.board.dto.response.JiraCardDTO;
+import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.exception.FileIOException;
 import org.junit.jupiter.api.Assertions;
@@ -87,7 +89,7 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
-	public void shouldHasContentWhenGetDataFromCsv() throws IOException {
+	public void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsPipeline() throws IOException {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
 		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
 
@@ -123,6 +125,71 @@ class CSVFileGeneratorTest {
 		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV("pipeline", 123456L));
 		assertThrows(FileIOException.class,
 				() -> csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, "15469:89/033"));
+	}
+
+	@Test
+	public void shouldGenerateBoardCsvWhenConvertBoardDataToCsv() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+
+		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
+
+		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
+		File csvFile = new File(fileName);
+		Assertions.assertTrue(csvFile.exists());
+		csvFile.delete();
+	}
+
+	@Test
+	public void shouldGenerateBoardCsvWhenConvertBoardDataToCsvGivenBaseInfoIsEmpty() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+
+		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
+
+		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
+		File csvFile = new File(fileName);
+		Assertions.assertTrue(csvFile.exists());
+		csvFile.delete();
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenBoardCsvNotExist() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+
+		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV("board", 1686710104536L));
+		assertThrows(FileIOException.class,
+				() -> csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, "15469:89/033"));
+	}
+
+	@Test
+	public void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsBoard() throws IOException {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+
+		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV("board",
+				Long.parseLong(mockTimeStamp));
+		InputStream csvDataInputStream = inputStreamResource.getInputStream();
+		String boardCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
+			.collect(Collectors.joining("\n"));
+
+		Assertions.assertEquals(boardCsvData,
+				"\"Issue key\",\"Summary\",\"Issue Type\",\"Status\",\"Story Points\",\"assignee\",\"Reporter\","
+						+ "\"Project Key\",\"Project Name\",\"Priority\",\"Parent Summary\",\"Sprint\",\"Labels\","
+						+ "\"Cycle Time\",\"Story point estimate\",\"Cycle Time / Story Points\",\"Analysis Days\","
+						+ "\"In Dev Days\",\"Waiting Days\",\"Testing Days\",\"Block Days\",\"Review Days\",\"OriginCycleTime: DOING\"\n"
+						+ "\"ADM-489\",\"summary\",\"任务\",\"已完成\",\"2\",\"name\",\"name\",\"ADM\",\"Auto Dora Metrics\","
+						+ "\"Medium\",\"parent\",\"sprint 1\",\"\",\"0.90\",\"1.0\",\"0.90\",\"0\",\"0.90\",\"0\",\"0\",\"0\",\"0\",\"0.00\"");
+
+		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
+		File file = new File(fileName);
+		file.delete();
 	}
 
 }

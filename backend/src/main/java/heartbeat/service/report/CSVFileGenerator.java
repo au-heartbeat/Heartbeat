@@ -131,8 +131,9 @@ public class CSVFileGenerator {
 			String targetElement = "Cycle Time";
 			List<String> fixedFieldsRowList = Arrays.asList(fixedFieldsRow);
 			int targetIndex = fixedFieldsRowList.indexOf(targetElement);
+			int insertIndex = targetIndex == -1 ? fixedFieldsRow.length : targetIndex + 1;
 
-			String[][] mergedArrays = mergeArrays(fixedFieldsData, extraFieldsData, targetIndex + 1);
+			String[][] mergedArrays = mergeArrays(fixedFieldsData, extraFieldsData, insertIndex);
 
 			writer.writeAll(Arrays.asList(mergedArrays));
 
@@ -161,7 +162,6 @@ public class CSVFileGenerator {
 	private String[][] getExtraFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> extraFields) {
 		// TODO new app -> Story point estimate: 有小数
 		// TODO old app -> Story point estimate: 无小数
-		// TODO add OriginCycleTime
 		int rowCount = cardDTOList.size() + 1;
 		int columnCount = extraFields.size();
 		String[][] data = new String[rowCount][columnCount];
@@ -192,6 +192,9 @@ public class CSVFileGenerator {
 
 		int rowCount = cardDTOList.size() + 1;
 		int columnCount = fixedFields.size();
+		List<BoardCSVConfig> originCycleTimeFields = getOriginCycleTimeFields(fixedFields);
+		int fixedFieldColumnCount = columnCount - originCycleTimeFields.size();
+
 		String[][] data = new String[rowCount][columnCount];
 
 		for (int column = 0; column < columnCount; column++) {
@@ -200,24 +203,15 @@ public class CSVFileGenerator {
 		for (int row = 0; row < cardDTOList.size(); row++) {
 			JiraCardDTO cardDTO = cardDTOList.get(row);
 
-			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO);
-			String[] originCycleTimePerRow = getOriginCycleTimePerRow(cardDTO, fixedFields);
+			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO, fixedFieldColumnCount);
+			String[] originCycleTimePerRow = getOriginCycleTimePerRow(cardDTO, originCycleTimeFields);
 			data[row + 1] = Stream.concat(Arrays.stream(fixedDataPerRow), Arrays.stream(originCycleTimePerRow))
 				.toArray(String[]::new);
 		}
 		return data;
 	}
 
-	private String[] getOriginCycleTimePerRow(JiraCardDTO cardDTO, List<BoardCSVConfig> fixedFields) {
-		BoardCSVConfigEnum[] values = BoardCSVConfigEnum.values();
-		List<String> fixedLabels = new ArrayList<>();
-		List<BoardCSVConfig> originCycleTimeFields = new ArrayList<>(fixedFields);
-
-		for (BoardCSVConfigEnum value : values) {
-			fixedLabels.add(value.getLabel());
-		}
-
-		originCycleTimeFields.removeIf(config -> fixedLabels.contains(config.getLabel()));
+	private String[] getOriginCycleTimePerRow(JiraCardDTO cardDTO, List<BoardCSVConfig> originCycleTimeFields) {
 
 		int columnCount = originCycleTimeFields.size();
 		String[] data = new String[columnCount];
@@ -229,47 +223,64 @@ public class CSVFileGenerator {
 
 	}
 
-	private String[] getFixedDataPerRow(JiraCardDTO cardDTO) {
-		String[] rowData = new String[BoardCSVConfigEnum.values().length];
+	private List<BoardCSVConfig> getOriginCycleTimeFields(List<BoardCSVConfig> fixedFields) {
+		BoardCSVConfigEnum[] values = BoardCSVConfigEnum.values();
+		List<String> fixedLabels = new ArrayList<>();
+		List<BoardCSVConfig> originCycleTimeFields = new ArrayList<>(fixedFields);
+
+		for (BoardCSVConfigEnum value : values) {
+			fixedLabels.add(value.getLabel());
+		}
+
+		originCycleTimeFields.removeIf(config -> fixedLabels.contains(config.getLabel()));
+
+		return originCycleTimeFields;
+	}
+
+	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount) {
+		String[] rowData = new String[columnCount];
 		if (cardDTO.getBaseInfo() != null) {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
-			rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
-			rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
-			rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
-			rowData[4] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
-			if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
-				rowData[5] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
-			}
-			if (cardDTO.getBaseInfo().getFields().getReporter() != null) {
-				rowData[6] = cardDTO.getBaseInfo().getFields().getReporter().getDisplayName();
+
+			if (cardDTO.getBaseInfo().getFields() != null) {
+				rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
+				rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
+				rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
+				rowData[4] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
+				if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
+					rowData[5] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
+				}
+				if (cardDTO.getBaseInfo().getFields().getReporter() != null) {
+					rowData[6] = cardDTO.getBaseInfo().getFields().getReporter().getDisplayName();
+				}
+
+				rowData[7] = cardDTO.getBaseInfo().getFields().getProject().getKey();
+				rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getName();
+				rowData[9] = cardDTO.getBaseInfo().getFields().getPriority().getName();
+
+				if (cardDTO.getBaseInfo().getFields().getParent() != null) {
+					rowData[10] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
+				}
+
+				// TODO 与old app不一致，但原始数据sprint为null
+				if (cardDTO.getBaseInfo().getFields().getSprint() != null) {
+					rowData[11] = cardDTO.getBaseInfo().getFields().getSprint().getName();
+				}
+
+				rowData[12] = String.join(",", cardDTO.getBaseInfo().getFields().getLabels());
 			}
 
-			rowData[7] = cardDTO.getBaseInfo().getFields().getProject().getKey();
-			rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getName();
-			rowData[9] = cardDTO.getBaseInfo().getFields().getPriority().getName();
-
-			if (cardDTO.getBaseInfo().getFields().getParent() != null) {
-				rowData[10] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
-			}
-
-			// TODO 与old app不一致，但原始数据sprint为null
-			if (cardDTO.getBaseInfo().getFields().getSprint() != null) {
-				rowData[11] = cardDTO.getBaseInfo().getFields().getSprint().getName();
-			}
-
-			rowData[12] = String.join(",", cardDTO.getBaseInfo().getFields().getLabels());
-
-			if (cardDTO.getCardCycleTime() != null) {
-				// TODO new app do not calculate cycle time for nonDoneCards
-				rowData[13] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
-				rowData[14] = cardDTO.getTotalCycleTimeDivideStoryPoints();
-				rowData[15] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
-				rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
-				rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
-				rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
-				rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
-				rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
-			}
+		}
+		if (cardDTO.getCardCycleTime() != null) {
+			// TODO new app do not calculate cycle time for nonDoneCards
+			rowData[13] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
+			rowData[14] = cardDTO.getTotalCycleTimeDivideStoryPoints();
+			rowData[15] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+			rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
+			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
+			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
+			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
+			rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
 		}
 		return rowData;
 	}

@@ -64,10 +64,6 @@ public class PipelineCsvFixture {
 		return List.of(pipelineCsvInfo);
 	}
 
-	public static ExportCSVRequest MOCK_EXPORT_CSV_REQUEST() {
-		return ExportCSVRequest.builder().dataType("pipeline").csvTimeStamp("1685010080107").build();
-	}
-
 	public static PipelineLeadTime MOCK_PIPELINE_LEAD_TIME_DATA() {
 		return PipelineLeadTime.builder()
 			.pipelineStep("xx")
