@@ -110,76 +110,10 @@ public class BoardCsvFixture {
 		.originKey(null)
 		.build();
 
-	private static final BoardCSVConfig FLAGGED_CONFIG = BoardCSVConfig.builder()
-		.label("Flagged")
-		.value("baseInfo.fields.customFields.customfield_10021")
-		.originKey("customfield_10021")
-		.build();
-
-	private static final BoardCSVConfig FIX_VERSIONS_CONFIG = BoardCSVConfig.builder()
-		.label("修复版本")
-		.value("baseInfo.fields.customFields.fixVersions")
-		.originKey("fixVersions")
-		.build();
-
-	private static final BoardCSVConfig DEVELOPMENT_CONFIG = BoardCSVConfig.builder()
-		.label("Development")
-		.value("baseInfo.fields.customFields.customfield_10000")
-		.originKey("customfield_10000")
-		.build();
-
-	private static final BoardCSVConfig PARTNER_CONFIG = BoardCSVConfig.builder()
-		.label("Partner")
-		.value("baseInfo.fields.customFields.customfield_10037")
-		.originKey("customfield_10037")
-		.build();
-
-	private static final BoardCSVConfig EXTRA_LABELS_CONFIG = BoardCSVConfig.builder()
-		.label("标签")
-		.value("baseInfo.fields.customFields.labels")
-		.originKey("labels")
-		.build();
-
-	private static final BoardCSVConfig TIME_TRACKING_CONFIG = BoardCSVConfig.builder()
-		.label("时间跟踪")
-		.value("baseInfo.fields.customFields.timetracking")
-		.originKey("timetracking")
-		.build();
-
-	private static final BoardCSVConfig START_DATE_CONFIG = BoardCSVConfig.builder()
-		.label("Start date")
-		.value("baseInfo.fields.customFields.customfield_10015")
-		.originKey("customfield_10015")
-		.build();
-
 	private static final BoardCSVConfig STORY_POINT_ESTIMATE_CONFIG = BoardCSVConfig.builder()
 		.label("Story point estimate")
 		.value("baseInfo.fields.customFields.customfield_10016")
 		.originKey("customfield_10016")
-		.build();
-
-	private static final BoardCSVConfig QA_CONFIG = BoardCSVConfig.builder()
-		.label("QA")
-		.value("baseInfo.fields.customFields.customfield_10038")
-		.originKey("customfield_10038")
-		.build();
-
-	private static final BoardCSVConfig RANK_CONFIG = BoardCSVConfig.builder()
-		.label("Rank")
-		.value("baseInfo.fields.customFields.customfield_10019")
-		.originKey("customfield_10019")
-		.build();
-
-	private static final BoardCSVConfig ISSUE_COLOR_CONFIG = BoardCSVConfig.builder()
-		.label("Issue color")
-		.value("baseInfo.fields.customFields.customfield_10017")
-		.originKey("customfield_10017")
-		.build();
-
-	private static final BoardCSVConfig FEATURE_OPERATION_CONFIG = BoardCSVConfig.builder()
-		.label("Feature/Operation")
-		.value("baseInfo.fields.customFields.customfield_10027")
-		.originKey("customfield_10027")
 		.build();
 
 	private static final BoardCSVConfig CYCLE_TIME_STORY_POINTS_CONFIG = BoardCSVConfig.builder()
@@ -224,39 +158,9 @@ public class BoardCsvFixture {
 		.originKey(null)
 		.build();
 
-	private static final BoardCSVConfig ORIGIN_CYCLE_TIME_TODO_CONFIG = BoardCSVConfig.builder()
-		.label("OriginCycleTime: TODO")
-		.value("cycleTimeFlat.TODO")
-		.originKey(null)
-		.build();
-
-	private static final BoardCSVConfig ORIGIN_CYCLE_TIME_TESTING_CONFIG = BoardCSVConfig.builder()
-		.label("OriginCycleTime: TESTING")
-		.value("cycleTimeFlat.TESTING")
-		.originKey(null)
-		.build();
-
-	private static final BoardCSVConfig ORIGIN_CYCLE_TIME_DONE_CONFIG = BoardCSVConfig.builder()
-		.label("OriginCycleTime: DONE")
-		.value("cycleTimeFlat.DONE")
-		.originKey(null)
-		.build();
-
 	private static final BoardCSVConfig ORIGIN_CYCLE_TIME_DOING_CONFIG = BoardCSVConfig.builder()
 		.label("OriginCycleTime: DOING")
 		.value("cycleTimeFlat.DOING")
-		.originKey(null)
-		.build();
-
-	private static final BoardCSVConfig ORIGIN_CYCLE_TIME_BLOCKED_CONFIG = BoardCSVConfig.builder()
-		.label("OriginCycleTime: BLOCKED")
-		.value("cycleTimeFlat.BLOCKED")
-		.originKey(null)
-		.build();
-
-	private static final BoardCSVConfig ORIGIN_CYCLE_TIME_REVIEW_CONFIG = BoardCSVConfig.builder()
-		.label("OriginCycleTime: REVIEW")
-		.value("cycleTimeFlat.REVIEW")
 		.originKey(null)
 		.build();
 
@@ -267,24 +171,6 @@ public class BoardCsvFixture {
 				ANALYSIS_DAYS_CONFIG, IN_DEV_DAYS_CONFIG, WAITING_DAYS_CONFIG, TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG,
 				REVIEW_DAYS_CONFIG, ORIGIN_CYCLE_TIME_DOING_CONFIG);
 	}
-
-	// public static List<BoardCSVConfig> MOCK_ALL_FIELDS() {
-	// return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG,
-	// STORY_POINTS_CONFIG,
-	// ASSIGNEE_CONFIG, REPORTER_CONFIG, PROJECT_KEY_CONFIG, PROJECT_NAME_CONFIG,
-	// PRIORITY_CONFIG,
-	// PARENT_SUMMARY_CONFIG, SPRINT_CONFIG, LABELS_CONFIG, CYCLE_TIME_CONFIG,
-	// FLAGGED_CONFIG,
-	// FIX_VERSIONS_CONFIG, DEVELOPMENT_CONFIG, DEVELOPMENT_CONFIG, PARTNER_CONFIG,
-	// EXTRA_LABELS_CONFIG,
-	// TIME_TRACKING_CONFIG, START_DATE_CONFIG, STORY_POINT_ESTIMATE_CONFIG, QA_CONFIG,
-	// RANK_CONFIG,
-	// ISSUE_COLOR_CONFIG, FEATURE_OPERATION_CONFIG, CYCLE_TIME_STORY_POINTS_CONFIG,
-	// ANALYSIS_DAYS_CONFIG,
-	// IN_DEV_DAYS_CONFIG, WAITING_DAYS_CONFIG, TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG,
-	// REVIEW_DAYS_CONFIG,
-	// ORIGIN_CYCLE_TIME_BLOCKED_CONFIG);
-	// }
 
 	public static List<BoardCSVConfig> MOCK_EXTRA_FIELDS() {
 		return List.of(STORY_POINT_ESTIMATE_CONFIG);
@@ -334,10 +220,6 @@ public class BoardCsvFixture {
 	}
 
 	public static List<JiraCardDTO> MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO() {
-		HashMap<String, JsonElement> customFields = new HashMap<>();
-		customFields.put("customfield_10016", new JsonPrimitive(1.0));
-		customFields.put("customfield_10021", JsonNull.INSTANCE);
-
 		HashMap<String, Double> cycleTimeFlat = new HashMap<>();
 		cycleTimeFlat.put("DONE", 16.0335);
 
