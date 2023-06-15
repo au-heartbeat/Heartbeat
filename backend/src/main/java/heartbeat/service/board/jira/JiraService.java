@@ -41,6 +41,7 @@ import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.exception.RequestFailedException;
 import heartbeat.util.BoardUtil;
 import jakarta.annotation.PreDestroy;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,6 +57,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -526,7 +528,7 @@ public class JiraService {
 		for (CycleTimeInfo cycleTimeInfo : cycleTimeInfos) {
 			String swimLane = cycleTimeInfo.getColumn();
 			if (swimLane.equals("FLAG")) {
-				boardMap.put(swimLane.toUpperCase(), CardStepsEnum.BLOCK);
+				boardMap.put(swimLane, CardStepsEnum.BLOCK);
 			}
 			if (boardMap.containsKey(swimLane)) {
 				CardStepsEnum cardStep = boardMap.get(swimLane);

@@ -183,12 +183,8 @@ class CSVFileGeneratorTest {
 			.collect(Collectors.joining("\n"));
 
 		Assertions.assertEquals(boardCsvData,
-				"\"Issue key\",\"Summary\",\"Issue Type\",\"Status\",\"Story Points\",\"assignee\",\"Reporter\","
-						+ "\"Project Key\",\"Project Name\",\"Priority\",\"Parent Summary\",\"Sprint\",\"Labels\","
-						+ "\"Cycle Time\",\"Story point estimate\",\"Cycle Time / Story Points\",\"Analysis Days\","
-						+ "\"In Dev Days\",\"Waiting Days\",\"Testing Days\",\"Block Days\",\"Review Days\",\"OriginCycleTime: DOING\"\n"
-						+ "\"ADM-489\",\"summary\",\"任务\",\"已完成\",\"2\",\"name\",\"name\",\"ADM\",\"Auto Dora Metrics\","
-						+ "\"Medium\",\"parent\",\"sprint 1\",\"\",\"0.90\",\"1.0\",\"0.90\",\"0\",\"0.90\",\"0\",\"0\",\"0\",\"0\",\"0.00\"");
+				"\"Issue key\",\"Summary\",\"Issue Type\",\"Status\",\"Story Points\",\"assignee\",\"Reporter\",\"Project Key\",\"Project Name\",\"Priority\",\"Parent Summary\",\"Sprint\",\"Labels\",\"Cycle Time\",\"Story point estimate\",\"Flagged\",\"Cycle Time / Story Points\",\"Analysis Days\",\"In Dev Days\",\"Waiting Days\",\"Testing Days\",\"Block Days\",\"Review Days\",\"OriginCycleTime: DOING\"\n"
+						+ "\"ADM-489\",\"summary\",\"任务\",,\"2\",\"name\",\"name\",\"ADM\",\"Auto Dora Metrics\",\"Medium\",\"parent\",\"sprint 1\",\"\",\"0.90\",\"1.0\",\"\",\"0.90\",\"0\",\"0.90\",\"0\",\"0\",\"0\",\"0\",\"0.00\"");
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);

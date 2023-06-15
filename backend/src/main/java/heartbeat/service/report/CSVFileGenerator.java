@@ -46,6 +46,15 @@ public class CSVFileGenerator {
 		}
 	}
 
+	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
+		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
+			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
+		}
+		else {
+			return null;
+		}
+	}
+
 	public void convertPipelineDataToCSV(List<PipelineCSVInfo> leadTimeData, String csvTimeStamp) {
 		log.info("Start to create csv directory");
 		boolean created = createCsvDirectory();
@@ -177,15 +186,6 @@ public class CSVFileGenerator {
 			}
 		}
 		return data;
-	}
-
-	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
-		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
-			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
-		}
-		else {
-			return null;
-		}
 	}
 
 	private String[][] getFixedFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fixedFields) {

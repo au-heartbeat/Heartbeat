@@ -28,6 +28,7 @@ import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Velocity;
+import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 import heartbeat.service.pipeline.buildkite.builder.BuildKiteBuildInfoBuilder;
@@ -60,6 +61,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,6 +132,7 @@ class GenerateReporterServiceTest {
 			.treatFlagCardAsBlock(true)
 			.type("jira")
 			.projectKey("PLL")
+			.targetFields(Collections.emptyList())
 			.build();
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.considerHoliday(false)
@@ -142,8 +145,20 @@ class GenerateReporterServiceTest {
 		URI mockUrl = URI.create(SITE_ATLASSIAN_NET);
 
 		Velocity velocity = Velocity.builder().velocityForSP(0).velocityForCards(0).build();
-		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any()))
-			.thenReturn(CardCollection.builder().storyPointSum(0).cardsNumber(0).build());
+		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(0)
+			.cardsNumber(0)
+			.jiraCardDTOList(Collections.emptyList())
+			.build());
+		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(0)
+			.cardsNumber(0)
+			.jiraCardDTOList(Collections.emptyList())
+			.build());
+		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder()
+			.jiraColumnResponse(Collections.emptyList())
+			.doneColumns(Collections.emptyList())
+			.build());
 		when(velocityCalculator.calculateVelocity(any())).thenReturn(velocity);
 		when(urlGenerator.getUri(any())).thenReturn(mockUrl);
 
@@ -171,7 +186,6 @@ class GenerateReporterServiceTest {
 			.jiraBoardSetting(jiraBoardSetting)
 			.startTime("123")
 			.endTime("123")
-			.jiraBoardSetting(JiraBoardSetting.builder().treatFlagCardAsBlock(true).build())
 			.build();
 
 		Classification classification = Classification.builder()
@@ -194,6 +208,20 @@ class GenerateReporterServiceTest {
 			.build();
 
 		when(classificationCalculator.calculate(any(), any())).thenReturn(List.of(mockClassification));
+		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(0)
+			.cardsNumber(0)
+			.jiraCardDTOList(Collections.emptyList())
+			.build());
+		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(0)
+			.cardsNumber(0)
+			.jiraCardDTOList(Collections.emptyList())
+			.build());
+		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder()
+			.jiraColumnResponse(Collections.emptyList())
+			.doneColumns(Collections.emptyList())
+			.build());
 
 		ReportResponse result = generateReporterService.generateReporter(request);
 
@@ -299,6 +327,7 @@ class GenerateReporterServiceTest {
 			.treatFlagCardAsBlock(true)
 			.type("jira")
 			.projectKey("PLL")
+			.targetFields(Collections.emptyList())
 			.build();
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.considerHoliday(false)
@@ -306,17 +335,25 @@ class GenerateReporterServiceTest {
 			.jiraBoardSetting(jiraBoardSetting)
 			.startTime("123")
 			.endTime("123")
-			.jiraBoardSetting(JiraBoardSetting.builder().treatFlagCardAsBlock(true).build())
 			.build();
 
 		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any())).thenReturn(cardCollection);
+		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(0)
+			.cardsNumber(0)
+			.jiraCardDTOList(Collections.emptyList())
+			.build());
+		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder()
+			.jiraColumnResponse(Collections.emptyList())
+			.doneColumns(Collections.emptyList())
+			.build());
 		when(cycleTimeCalculator.calculateCycleTime(cardCollection, request.getJiraBoardSetting().getBoardColumns()))
 			.thenReturn(CycleTime.builder().build());
 
 		ReportResponse result = generateReporterService.generateReporter(request);
+		ReportResponse expect = ReportResponse.builder().cycleTime(CycleTime.builder().build()).build();
 
-		assertThat(result).isEqualTo(ReportResponse.builder().cycleTime(CycleTime.builder().build()).build());
-
+		assertThat(result).isEqualTo(expect);
 	}
 
 	@Test

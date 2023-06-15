@@ -225,18 +225,20 @@ public class GenerateReporterService {
 		List<BoardCSVConfig> fields = getFixedBoardFields();
 		List<BoardCSVConfig> extraFields = getExtraFields(activeTargetFields, fields);
 
-		nonDoneCards.sort((preCard, nextCard) -> {
-			Status preStatus = preCard.getBaseInfo().getFields().getStatus();
-			Status nextStatus = nextCard.getBaseInfo().getFields().getStatus();
-			if (preStatus == null || nextStatus == null) {
-				return jiraColumns.size() + 1;
-			}
-			else {
-				String preCardName = preStatus.getDisplayName();
-				String nextCardName = nextStatus.getDisplayName();
-				return getIndexForStatus(jiraColumns, nextCardName) - getIndexForStatus(jiraColumns, preCardName);
-			}
-		});
+		if (nonDoneCards != null) {
+			nonDoneCards.sort((preCard, nextCard) -> {
+				Status preStatus = preCard.getBaseInfo().getFields().getStatus();
+				Status nextStatus = nextCard.getBaseInfo().getFields().getStatus();
+				if (preStatus == null || nextStatus == null) {
+					return jiraColumns.size() + 1;
+				}
+				else {
+					String preCardName = preStatus.getDisplayName();
+					String nextCardName = nextStatus.getDisplayName();
+					return getIndexForStatus(jiraColumns, nextCardName) - getIndexForStatus(jiraColumns, preCardName);
+				}
+			});
+		}
 
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
 

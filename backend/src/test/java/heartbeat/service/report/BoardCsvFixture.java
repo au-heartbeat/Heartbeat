@@ -116,6 +116,12 @@ public class BoardCsvFixture {
 		.originKey("customfield_10016")
 		.build();
 
+	private static final BoardCSVConfig FLAGGED = BoardCSVConfig.builder()
+		.label("Flagged")
+		.value("baseInfo.fields.customFields.customfield_10021")
+		.originKey("customfield_10021")
+		.build();
+
 	private static final BoardCSVConfig CYCLE_TIME_STORY_POINTS_CONFIG = BoardCSVConfig.builder()
 		.label("Cycle Time / Story Points")
 		.value("totalCycleTimeDivideStoryPoints")
@@ -173,7 +179,7 @@ public class BoardCsvFixture {
 	}
 
 	public static List<BoardCSVConfig> MOCK_EXTRA_FIELDS() {
-		return List.of(STORY_POINT_ESTIMATE_CONFIG);
+		return List.of(STORY_POINT_ESTIMATE_CONFIG, FLAGGED);
 	}
 
 	public static List<BoardCSVConfig> MOCK_ALL_FIELDS() {
@@ -185,12 +191,12 @@ public class BoardCsvFixture {
 	public static List<JiraCardDTO> MOCK_JIRA_CARD_DTO() {
 		HashMap<String, JsonElement> customFields = new HashMap<>();
 		customFields.put("customfield_10016", new JsonPrimitive(1.0));
-		customFields.put("customfield_10021", new JsonPrimitive("null"));
+		customFields.put("customfield_10021", JsonNull.INSTANCE);
 
 		JiraCardField jiraCardField = JiraCardField.builder()
 			.summary("summary")
 			.issuetype(IssueType.builder().name("任务").build())
-			.status(Status.builder().name("已完成").build())
+			.status(Status.builder().displayValue("已完成").build())
 			.storyPoints(2)
 			.assignee(Assignee.builder().displayName("name").build())
 			.reporter(Reporter.builder().displayName("name").build())
