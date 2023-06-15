@@ -51,11 +51,13 @@ import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.exception.RequestFailedException;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.util.BoardUtil;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletionException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

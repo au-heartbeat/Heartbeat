@@ -94,7 +94,7 @@ public class ClassificationCalculator {
 		return classificationFields;
 	}
 
-	public void mapArrayField(Map<String, Map<String, Integer>> resultMap, String fieldsKey, List<Object> objects) {
+	private void mapArrayField(Map<String, Map<String, Integer>> resultMap, String fieldsKey, List<Object> objects) {
 		Map<String, Integer> countMap = resultMap.get(fieldsKey);
 		if (countMap != null) {
 			for (Object object : (List) objects.get(0)) {
@@ -111,7 +111,7 @@ public class ClassificationCalculator {
 		}
 	}
 
-	public String pickDisplayNameFromObj(Object object) {
+	private String pickDisplayNameFromObj(Object object) {
 		if (object instanceof ICardFieldDisplayName) {
 			return ((ICardFieldDisplayName) object).getDisplayName();
 		}

@@ -376,7 +376,7 @@ public class GenerateReporterService {
 		return jiraColumns.size();
 	}
 
-	public List<BoardCSVConfig> getExtraFields(List<TargetField> targetFields, List<BoardCSVConfig> currentFields) {
+	private List<BoardCSVConfig> getExtraFields(List<TargetField> targetFields, List<BoardCSVConfig> currentFields) {
 		List<BoardCSVConfig> extraFields = new ArrayList<>();
 		for (TargetField targetField : targetFields) {
 			boolean isInCurrentFields = false;

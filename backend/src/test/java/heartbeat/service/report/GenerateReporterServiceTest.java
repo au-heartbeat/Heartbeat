@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.Assignee;
 import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraCardField;
@@ -56,10 +57,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING;
@@ -74,6 +75,8 @@ import static heartbeat.TestFixtures.BUILDKITE_TOKEN;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class GenerateReporterServiceTest {
+
+	public static final String SITE_ATLASSIAN_NET = "https://site.atlassian.net";
 
 	@InjectMocks
 	GenerateReporterService generateReporterService;
@@ -113,87 +116,89 @@ class GenerateReporterServiceTest {
 	@Mock
 	private LeadTimeForChangesCalculator leadTimeForChangesCalculator;
 
-	// @Test
-	// void shouldReturnGenerateReportResponseWhenCallGenerateReporter() {
-	// JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
-	// .boardId("")
-	// .boardColumns(List.of())
-	// .token("testToken")
-	// .site("site")
-	// .doneColumn(List.of())
-	// .treatFlagCardAsBlock(true)
-	// .type("jira")
-	// .projectKey("PLL")
-	// .build();
-	// GenerateReportRequest request = GenerateReportRequest.builder()
-	// .considerHoliday(false)
-	// .metrics(List.of("velocity"))
-	// .jiraBoardSetting(jiraBoardSetting)
-	// .startTime("123")
-	// .endTime("123")
-	// .jiraBoardSetting(JiraBoardSetting.builder().treatFlagCardAsBlock(true).build())
-	// .build();
-	//
-	// Velocity velocity =
-	// Velocity.builder().velocityForSP(0).velocityForCards(0).build();
-	// when(jiraService.getStoryPointsAndCycleTime(any(), any(), any()))
-	// .thenReturn(CardCollection.builder().storyPointSum(0).cardsNumber(0).build());
-	// when(velocityCalculator.calculateVelocity(any())).thenReturn(velocity);
-	//
-	// ReportResponse result = generateReporterService.generateReporter(request);
-	//
-	// assertThat(result).isEqualTo(ReportResponse.builder().velocity(velocity).build());
-	// }
+	@Mock
+	private JiraUriGenerator urlGenerator;
 
-	// @Test
-	// public void testGenerateReportWithClassification() {
-	// JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
-	// .boardId("")
-	// .boardColumns(List.of())
-	// .token("testToken")
-	// .site("site")
-	// .doneColumn(List.of())
-	// .treatFlagCardAsBlock(true)
-	// .type("jira")
-	// .projectKey("PLL")
-	// .targetFields(List.of(TargetField.builder().key("assignee").name("Assignee").flag(true).build()))
-	// .build();
-	// GenerateReportRequest request = GenerateReportRequest.builder()
-	// .considerHoliday(false)
-	// .metrics(List.of("classification"))
-	// .jiraBoardSetting(jiraBoardSetting)
-	// .startTime("123")
-	// .endTime("123")
-	// .jiraBoardSetting(JiraBoardSetting.builder().treatFlagCardAsBlock(true).build())
-	// .build();
-	//
-	// Classification classification = Classification.builder()
-	// .fieldName("Assignee")
-	// .pairList((List.of(ClassificationNameValuePair.builder().name("shawn").value(1.0D).build())))
-	// .build();
-	//
-	// when(jiraService.getStoryPointsAndCycleTime(any(), any(),
-	// any())).thenReturn(CardCollection.builder()
-	// .storyPointSum(0)
-	// .cardsNumber(0)
-	// .jiraCardDTOList(List.of(JiraCardDTO.builder()
-	// .baseInfo(JiraCard.builder()
-	// .fields(JiraCardField.builder().assignee(Assignee.builder().displayName("shawn").build()).build())
-	// .build())
-	// .build()))
-	// .build());
-	// Classification mockClassification = Classification.builder()
-	// .fieldName("Assignee")
-	// .pairList((List.of(ClassificationNameValuePair.builder().name("shawn").value(1.0D).build())))
-	// .build();
-	//
-	// when(classificationCalculator.calculate(any(),
-	// any())).thenReturn(List.of(mockClassification));
-	//
-	// ReportResponse result = generateReporterService.generateReporter(request);
-	//
-	// assertThat(result.getClassificationList()).isEqualTo(List.of(classification));
-	// }
+	@Test
+	void shouldReturnGenerateReportResponseWhenCallGenerateReporter() {
+		JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
+			.boardId("")
+			.boardColumns(List.of())
+			.token("testToken")
+			.site("site")
+			.doneColumn(List.of())
+			.treatFlagCardAsBlock(true)
+			.type("jira")
+			.projectKey("PLL")
+			.build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(false)
+			.metrics(List.of("velocity"))
+			.jiraBoardSetting(jiraBoardSetting)
+			.startTime("123")
+			.endTime("123")
+			.build();
+
+		URI mockUrl = URI.create(SITE_ATLASSIAN_NET);
+
+		Velocity velocity = Velocity.builder().velocityForSP(0).velocityForCards(0).build();
+		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any()))
+			.thenReturn(CardCollection.builder().storyPointSum(0).cardsNumber(0).build());
+		when(velocityCalculator.calculateVelocity(any())).thenReturn(velocity);
+		when(urlGenerator.getUri(any())).thenReturn(mockUrl);
+
+		ReportResponse result = generateReporterService.generateReporter(request);
+
+		assertThat(result).isEqualTo(ReportResponse.builder().velocity(velocity).build());
+	}
+
+	@Test
+	public void testGenerateReportWithClassification() {
+		JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
+			.boardId("")
+			.boardColumns(List.of())
+			.token("testToken")
+			.site("site")
+			.doneColumn(List.of())
+			.treatFlagCardAsBlock(true)
+			.type("jira")
+			.projectKey("PLL")
+			.targetFields(List.of(TargetField.builder().key("assignee").name("Assignee").flag(true).build()))
+			.build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(false)
+			.metrics(List.of("classification"))
+			.jiraBoardSetting(jiraBoardSetting)
+			.startTime("123")
+			.endTime("123")
+			.jiraBoardSetting(JiraBoardSetting.builder().treatFlagCardAsBlock(true).build())
+			.build();
+
+		Classification classification = Classification.builder()
+			.fieldName("Assignee")
+			.pairList((List.of(ClassificationNameValuePair.builder().name("shawn").value(1.0D).build())))
+			.build();
+
+		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(0)
+			.cardsNumber(0)
+			.jiraCardDTOList(List.of(JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.fields(JiraCardField.builder().assignee(Assignee.builder().displayName("shawn").build()).build())
+					.build())
+				.build()))
+			.build());
+		Classification mockClassification = Classification.builder()
+			.fieldName("Assignee")
+			.pairList((List.of(ClassificationNameValuePair.builder().name("shawn").value(1.0D).build())))
+			.build();
+
+		when(classificationCalculator.calculate(any(), any())).thenReturn(List.of(mockClassification));
+
+		ReportResponse result = generateReporterService.generateReporter(request);
+
+		assertThat(result.getClassificationList()).isEqualTo(List.of(classification));
+	}
 
 	@Test
 	public void testGenerateReporterWithDeploymentFrequencyMetric() {
@@ -280,43 +285,39 @@ class GenerateReporterServiceTest {
 			.isEqualTo(changeFailureRate.getAvgChangeFailureRate().getFailureRate());
 	}
 
-	// @Test
-	// void
-	// shouldReturnGenerateReportResponseWithCycleTimeModelWhenCallGenerateReporterWithCycleTimeMetrics()
-	// {
-	// CardCollection cardCollection = MOCK_CARD_COLLECTION();
-	// List<RequestJiraBoardColumnSetting> boardColumns = JIRA_BOARD_COLUMNS_SETTING();
-	//
-	// JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
-	// .boardId("")
-	// .boardColumns(boardColumns)
-	// .token("testToken")
-	// .site("site")
-	// .doneColumn(List.of())
-	// .treatFlagCardAsBlock(true)
-	// .type("jira")
-	// .projectKey("PLL")
-	// .build();
-	// GenerateReportRequest request = GenerateReportRequest.builder()
-	// .considerHoliday(false)
-	// .metrics(List.of("cycle time"))
-	// .jiraBoardSetting(jiraBoardSetting)
-	// .startTime("123")
-	// .endTime("123")
-	// .jiraBoardSetting(JiraBoardSetting.builder().treatFlagCardAsBlock(true).build())
-	// .build();
-	//
-	// when(jiraService.getStoryPointsAndCycleTime(any(), any(),
-	// any())).thenReturn(cardCollection);
-	// when(cycleTimeCalculator.calculateCycleTime(cardCollection,
-	// request.getJiraBoardSetting().getBoardColumns()))
-	// .thenReturn(CycleTime.builder().build());
-	//
-	// ReportResponse result = generateReporterService.generateReporter(request);
-	//
-	// assertThat(result).isEqualTo(ReportResponse.builder().cycleTime(CycleTime.builder().build()).build());
-	//
-	// }
+	@Test
+	void shouldReturnGenerateReportResponseWithCycleTimeModelWhenCallGenerateReporterWithCycleTimeMetrics() {
+		CardCollection cardCollection = MOCK_CARD_COLLECTION();
+		List<RequestJiraBoardColumnSetting> boardColumns = JIRA_BOARD_COLUMNS_SETTING();
+
+		JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
+			.boardId("")
+			.boardColumns(boardColumns)
+			.token("testToken")
+			.site("site")
+			.doneColumn(List.of())
+			.treatFlagCardAsBlock(true)
+			.type("jira")
+			.projectKey("PLL")
+			.build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(false)
+			.metrics(List.of("cycle time"))
+			.jiraBoardSetting(jiraBoardSetting)
+			.startTime("123")
+			.endTime("123")
+			.jiraBoardSetting(JiraBoardSetting.builder().treatFlagCardAsBlock(true).build())
+			.build();
+
+		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any())).thenReturn(cardCollection);
+		when(cycleTimeCalculator.calculateCycleTime(cardCollection, request.getJiraBoardSetting().getBoardColumns()))
+			.thenReturn(CycleTime.builder().build());
+
+		ReportResponse result = generateReporterService.generateReporter(request);
+
+		assertThat(result).isEqualTo(ReportResponse.builder().cycleTime(CycleTime.builder().build()).build());
+
+	}
 
 	@Test
 	public void testGenerateReporterWithLeadTimeForChangesMetric() {
