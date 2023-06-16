@@ -1,14 +1,25 @@
 package heartbeat.service.report;
 
+import com.google.gson.JsonElement;
 import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.Assignee;
 import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraCardField;
+import heartbeat.client.dto.board.jira.Status;
 import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
 import heartbeat.controller.board.dto.response.CardCollection;
+import heartbeat.controller.board.dto.response.CardCycleTime;
+import heartbeat.controller.board.dto.response.CardParent;
+import heartbeat.controller.board.dto.response.CycleTimeInfo;
+import heartbeat.controller.board.dto.response.FixVersion;
+import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
+import heartbeat.controller.board.dto.response.JiraProject;
+import heartbeat.controller.board.dto.response.Priority;
+import heartbeat.controller.board.dto.response.Reporter;
+import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
@@ -42,6 +53,7 @@ import heartbeat.service.report.calculator.CycleTimeCalculator;
 import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.source.github.GitHubService;
+import heartbeat.util.JsonFileReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +74,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,7 +111,9 @@ class GenerateReporterServiceTest {
 	@Mock
 	VelocityCalculator velocityCalculator;
 
-	Path mockCsvFilePath = Path.of("./csv/exportPipelineMetrics-1683734399999.csv");
+	Path mockPipelineCsvPath = Path.of("./csv/exportPipelineMetrics-1683734399999.csv");
+
+	Path mockBoardCsvPath = Path.of("./csv/exportBoard-1683734399999.csv");
 
 	@Mock
 	private BuildKiteService buildKiteService;
@@ -516,15 +531,15 @@ class GenerateReporterServiceTest {
 			.thenReturn(List.of(PipelineCsvFixture.MOCK_PIPELINE_LEAD_TIME_DATA()));
 
 		Mockito.doAnswer(invocation -> {
-			Files.createFile(mockCsvFilePath);
+			Files.createFile(mockPipelineCsvPath);
 			return null;
 		}).when(csvFileGenerator).convertPipelineDataToCSV(any(), any());
 
 		generateReporterService.generateReporter(request);
 
-		boolean isExists = Files.exists(mockCsvFilePath);
+		boolean isExists = Files.exists(mockPipelineCsvPath);
 		Assertions.assertTrue(isExists);
-		Files.deleteIfExists(mockCsvFilePath);
+		Files.deleteIfExists(mockPipelineCsvPath);
 	}
 
 	@Test
@@ -549,7 +564,7 @@ class GenerateReporterServiceTest {
 
 	@Test
 	public void shouldDeleteOldCsvWhenExportCsvWithOldCsvOutsideTenHours() throws IOException {
-		Files.createFile(mockCsvFilePath);
+		Files.createFile(mockPipelineCsvPath);
 		ExportCSVRequest mockExportCSVRequest = ExportCSVRequest.builder()
 			.dataType("pipeline")
 			.csvTimeStamp("1685010080107")
@@ -557,7 +572,7 @@ class GenerateReporterServiceTest {
 
 		generateReporterService.fetchCSVData(mockExportCSVRequest);
 
-		boolean isFileDeleted = Files.notExists(mockCsvFilePath);
+		boolean isFileDeleted = Files.notExists(mockPipelineCsvPath);
 		Assertions.assertTrue(isFileDeleted);
 	}
 
@@ -576,6 +591,103 @@ class GenerateReporterServiceTest {
 		boolean isFileDeleted = Files.notExists(csvFilePath);
 		Assertions.assertFalse(isFileDeleted);
 		Files.deleteIfExists(csvFilePath);
+	}
+
+	@Test
+	void shouldGenerateForBoardCsvWhenCallGenerateReporterWithBoardMetric() throws IOException {
+		JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
+			.treatFlagCardAsBlock(true)
+			.targetFields(List.of(TargetField.builder().key("issuetype").name("事务类型").flag(true).build(),
+					TargetField.builder().key("customfield_1001").name("1").flag(true).build(),
+					TargetField.builder().key("customfield_1002").name("2").flag(true).build(),
+					TargetField.builder().key("customfield_1003").name("3").flag(true).build(),
+					TargetField.builder().key("customfield_1004").name("4").flag(true).build(),
+					TargetField.builder().key("customfield_1005").name("5").flag(true).build(),
+					TargetField.builder().key("customfield_1006").name("6").flag(true).build(),
+					TargetField.builder().key("customfield_1007").name("7").flag(true).build(),
+					TargetField.builder().key("customfield_1008").name("8").flag(true).build(),
+					TargetField.builder().key("customfield_1009").name("9").flag(true).build(),
+					TargetField.builder().key("parent").name("父级").flag(false).build()))
+			.build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.metrics(List.of("velocity"))
+			.considerHoliday(false)
+			.jiraBoardSetting(jiraBoardSetting)
+			.startTime("123")
+			.endTime("123")
+			.csvTimeStamp("1683734399999")
+			.build();
+
+		HashMap<String, JsonElement> customFields = JsonFileReader.readJsonFile(
+				"/Users/ting.li/Mio/work/HB/HeartBeat/backend/src/test/java/heartbeat/service/report/fields.json");
+
+		URI mockUrl = URI.create(SITE_ATLASSIAN_NET);
+
+		when(jiraService.getStoryPointsAndCycleTime(any(), any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(2)
+			.cardsNumber(1)
+			.jiraCardDTOList(List.of(JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.key("key1")
+					.fields(JiraCardField.builder()
+						.assignee(Assignee.builder().displayName("Shawn").build())
+						.summary("Tech replacement")
+						.status(Status.builder().displayValue("Doing").build())
+						.issuetype(IssueType.builder().name("Task").build())
+						.reporter(Reporter.builder().displayName("Jack").build())
+						.statusCategoryChangeDate("2023-4-23")
+						.storyPoints(3)
+						.priority(Priority.builder().name("Top").build())
+						.fixVersions(List.of(FixVersion.builder().name("sprint1").build(),
+								FixVersion.builder().name("sprint2").build()))
+						.project(JiraProject.builder().id("1").key("metrics").name("heartBeat").build())
+						.parent(CardParent.builder().key("test").build())
+						.labels(List.of("backend", "frontend"))
+						.customFields(customFields)
+						.build())
+					.build())
+				.cardCycleTime(CardCycleTime.builder()
+					.name("1")
+					.steps(StepsDay.builder().development(0.9).build())
+					.total(0.9)
+					.build())
+				.originCycleTime(List.of(CycleTimeInfo.builder().column("TODO").day(30.7859).build(),
+						CycleTimeInfo.builder().column("DOING").day(3.29E-5).build()))
+				.build()))
+			.build());
+		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any())).thenReturn(CardCollection.builder()
+			.storyPointSum(2)
+			.cardsNumber(1)
+			.jiraCardDTOList(List.of(JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.key("2")
+					.fields(JiraCardField.builder()
+						.issuetype(IssueType.builder().name("缺陷").build())
+						.customFields(customFields)
+						.build())
+					.build())
+				.cardCycleTime(CardCycleTime.builder()
+					.name("1")
+					.steps(StepsDay.builder().development(0.0).build())
+					.total(0.0)
+					.build())
+				.build()))
+			.build());
+		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder()
+			.jiraColumnResponse(Collections.emptyList())
+			.doneColumns(Collections.emptyList())
+			.build());
+		when(urlGenerator.getUri(any())).thenReturn(mockUrl);
+		Mockito.doAnswer(invocation -> {
+			Files.createFile(mockBoardCsvPath);
+			return null;
+		}).when(csvFileGenerator).convertBoardDataToCSV(any(), any(), any(), any());
+
+		generateReporterService.generateReporter(request);
+
+		boolean isExists = Files.exists(mockBoardCsvPath);
+		Assertions.assertTrue(isExists);
+		Files.deleteIfExists(mockBoardCsvPath);
 	}
 
 }

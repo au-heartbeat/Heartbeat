@@ -1,9 +1,12 @@
 package heartbeat.service.report;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
+import heartbeat.client.dto.board.jira.JiraCardField;
 import heartbeat.client.dto.board.jira.Status;
 import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.LeadTime;
@@ -54,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,6 +65,10 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Log4j2
 public class GenerateReporterService {
+
+	private static final String[] FIELD_NAMES = { "assignee", "summary", "status", "issuetype", "reporter",
+			"timetracking", "statusCategoryChangeData", "storyPoints", "fixVersions", "project", "parent", "priority",
+			"labels" };
 
 	private final JiraService jiraService;
 
@@ -128,6 +136,50 @@ public class GenerateReporterService {
 			fields.add(BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build());
 		}
 		return fields;
+	}
+
+	public String getFieldDisplayValue(Object object) {
+		Gson gson = new Gson();
+		boolean isArray = false;
+		String result = "";
+
+		if (object instanceof Double || object instanceof String) {
+			return "";
+		}
+		if (object instanceof List && ((List<?>) object).isEmpty()) {
+			return "";
+		}
+
+		if (object instanceof List) {
+			isArray = true;
+			object = ((List<?>) object).get(0);
+		}
+
+		if (object != null) {
+			JsonObject jsonObject = gson.toJsonTree(object).getAsJsonObject();
+			JsonElement name = jsonObject.get("name");
+			if (name != null) {
+				result = ".name";
+			}
+			JsonElement displayName = jsonObject.get("displayName");
+			if (displayName != null) {
+				result = ".displayName";
+			}
+			JsonElement value = jsonObject.get("value");
+			if (value != null) {
+				result = ".value";
+			}
+			JsonElement key = jsonObject.get("key");
+			if (key != null) {
+				result = ".key";
+			}
+		}
+
+		if (isArray) {
+			result = "[0]" + result;
+		}
+
+		return result;
 	}
 
 	public synchronized ReportResponse generateReporter(GenerateReportRequest request) {
@@ -218,6 +270,11 @@ public class GenerateReporterService {
 
 	private void generateCSVForBoard(List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,
 			List<JiraColumnDTO> jiraColumns, List<TargetField> targetFields, String csvTimeStamp) {
+		List<JiraCardDTO> cardDTOList = new ArrayList<>();
+		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
+		cardDTOList.addAll(allDoneCards);
+		cardDTOList.addAll(emptyJiraCard);
+
 		List<TargetField> activeTargetFields = targetFields.stream()
 			.filter(TargetField::isFlag)
 			.collect(Collectors.toList());
@@ -226,26 +283,23 @@ public class GenerateReporterService {
 		List<BoardCSVConfig> extraFields = getExtraFields(activeTargetFields, fields);
 
 		if (nonDoneCards != null) {
-			nonDoneCards.sort((preCard, nextCard) -> {
-				Status preStatus = preCard.getBaseInfo().getFields().getStatus();
-				Status nextStatus = nextCard.getBaseInfo().getFields().getStatus();
-				if (preStatus == null || nextStatus == null) {
-					return jiraColumns.size() + 1;
-				}
-				else {
-					String preCardName = preStatus.getDisplayName();
-					String nextCardName = nextStatus.getDisplayName();
-					return getIndexForStatus(jiraColumns, nextCardName) - getIndexForStatus(jiraColumns, preCardName);
-				}
-			});
+			if (nonDoneCards.size() > 1) {
+				nonDoneCards.sort((preCard, nextCard) -> {
+					Status preStatus = preCard.getBaseInfo().getFields().getStatus();
+					Status nextStatus = nextCard.getBaseInfo().getFields().getStatus();
+					if (preStatus == null || nextStatus == null) {
+						return jiraColumns.size() + 1;
+					}
+					else {
+						String preCardName = preStatus.getDisplayName();
+						String nextCardName = nextStatus.getDisplayName();
+						return getIndexForStatus(jiraColumns, nextCardName)
+								- getIndexForStatus(jiraColumns, preCardName);
+					}
+				});
+			}
+			cardDTOList.addAll(nonDoneCards);
 		}
-
-		List<JiraCardDTO> cardDTOList = new ArrayList<>();
-
-		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
-		cardDTOList.addAll(allDoneCards);
-		cardDTOList.addAll(emptyJiraCard);
-		cardDTOList.addAll(nonDoneCards);
 
 		List<BoardCSVConfig> newExtraFields = updateExtraFields(extraFields, cardDTOList);
 		List<BoardCSVConfig> allBoardFields = insertExtraFields(newExtraFields, fields);
@@ -314,12 +368,11 @@ public class GenerateReporterService {
 			boolean hasUpdated = false;
 			for (JiraCardDTO card : cardDTOList) {
 				if (card.getBaseInfo() != null) {
-					Map<String, Object> tempFields = classificationCalculator
-						.extractFields(card.getBaseInfo().getFields());
+					Map<String, Object> tempFields = extractFields(card.getBaseInfo().getFields());
 					if (!hasUpdated && field.getOriginKey() != null) {
 						Object object = tempFields.get(field.getOriginKey());
 						String extendField = getFieldDisplayValue(object);
-						if (!extendField.isEmpty()) {
+						if (extendField != null) {
 							field.setValue(field.getValue() + extendField);
 							hasUpdated = true;
 						}
@@ -331,38 +384,29 @@ public class GenerateReporterService {
 		return updatedFields;
 	}
 
-	private String getFieldDisplayValue(Object object) {
-		boolean isArray = false;
-		String result = "";
-		if (object instanceof List && !((List<?>) object).isEmpty()) {
-			isArray = true;
-			object = ((List<?>) object).get(0);
-		}
-		if (object instanceof JsonObject jsonObject) {
-			JsonElement name = jsonObject.get("name");
-			if (name != null) {
-				result = ".name";
-			}
-			JsonElement displayName = jsonObject.get("displayName");
-			if (displayName != null) {
-				result = ".displayName";
-			}
-			JsonElement value = jsonObject.get("value");
-			if (value != null) {
-				result = ".value";
-			}
-			JsonElement key = jsonObject.get("key");
-			if (key != null) {
-				result = ".key";
+	private Map<String, Object> extractFields(JiraCardField jiraCardFields) {
+		Map<String, Object> tempFields = new HashMap<>(jiraCardFields.getCustomFields());
+
+		for (String fieldName : FIELD_NAMES) {
+			switch (fieldName) {
+				case "assignee" -> tempFields.put(fieldName, jiraCardFields.getAssignee());
+				case "summary" -> tempFields.put(fieldName, jiraCardFields.getSummary());
+				case "status" -> tempFields.put(fieldName, jiraCardFields.getStatus());
+				case "issuetype" -> tempFields.put(fieldName, jiraCardFields.getIssuetype());
+				case "reporter" -> tempFields.put(fieldName, jiraCardFields.getReporter());
+				case "statusCategoryChangeData" ->
+					tempFields.put(fieldName, jiraCardFields.getStatusCategoryChangeDate());
+				case "storyPoints" -> tempFields.put(fieldName, jiraCardFields.getStoryPoints());
+				case "fixVersions" -> tempFields.put(fieldName, jiraCardFields.getFixVersions());
+				case "project" -> tempFields.put(fieldName, jiraCardFields.getProject());
+				case "parent" -> tempFields.put(fieldName, jiraCardFields.getParent());
+				case "priority" -> tempFields.put(fieldName, jiraCardFields.getPriority());
+				case "labels" -> tempFields.put(fieldName, jiraCardFields.getLabels());
+				default -> {
+				}
 			}
 		}
-		else {
-			return "";
-		}
-		if (isArray) {
-			result = "[0]" + result;
-		}
-		return result;
+		return tempFields;
 	}
 
 	private int getIndexForStatus(List<JiraColumnDTO> jiraColumns, String name) {
