@@ -232,10 +232,10 @@ public class JiraBoardConfigDTOFixture {
 	}
 
 	public static List<CycleTimeInfo> CYCLE_TIME_INFO_LIST() {
-		return List.of(CycleTimeInfo.builder().column("Waiting for testing").day(1.0).build(),
-				CycleTimeInfo.builder().column("Testing").day(2.0).build(),
-				CycleTimeInfo.builder().column("In Dev").day(3.0).build(),
-				CycleTimeInfo.builder().column("Review").day(4.0).build(),
+		return List.of(CycleTimeInfo.builder().column("WAITING FOR TESTING").day(1.0).build(),
+				CycleTimeInfo.builder().column("TESTING").day(2.0).build(),
+				CycleTimeInfo.builder().column("IN DEV").day(3.0).build(),
+				CycleTimeInfo.builder().column("REVIEW").day(4.0).build(),
 				CycleTimeInfo.builder().column("UNKNOWN").day(5.0).build(),
 				CycleTimeInfo.builder().column("FLAG").day(6.0).build());
 	}
