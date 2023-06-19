@@ -482,7 +482,6 @@ class JiraServiceTest {
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getCardCycleTime().getTotal()).isEqualTo(16);
-		assertThat(cardCollection.getJiraCardDTOList().get(0).getCardCycleTime().getTotal()).isEqualTo(16);
 	}
 
 	@Test
