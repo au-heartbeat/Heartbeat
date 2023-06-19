@@ -271,7 +271,7 @@ public class JiraService {
 			BoardRequestParam boardRequestParam) {
 		String jql = parseJiraJql(boardType, doneColumns, boardRequestParam);
 
-		return getCardList(baseUrl, boardRequestParam, jql);
+		return getCardList(baseUrl, boardRequestParam, jql, "done");
 	}
 
 	private AllDoneCardsResponseDTO formatAllDoneCards(String allDoneCardResponse, List<TargetField> targetFields) {
@@ -633,7 +633,7 @@ public class JiraService {
 			jql = "sprint in openSprints() AND status not in ('" + String.join("','", status) + "')";
 		}
 
-		return getCardList(baseUrl, boardRequestParam, jql);
+		return getCardList(baseUrl, boardRequestParam, jql, "nonDone");
 	}
 
 	private List<JiraCard> getAllNonDoneCardsForKanBan(URI baseUrl, List<String> status,
@@ -645,24 +645,24 @@ public class JiraService {
 		else {
 			jql = "status not in ('" + String.join("','", status) + "')";
 		}
-		return getCardList(baseUrl, boardRequestParam, jql);
+		return getCardList(baseUrl, boardRequestParam, jql, "nonDone");
 	}
 
-	private List<JiraCard> getCardList(URI baseUrl, BoardRequestParam boardRequestParam, String jql) {
-		log.info("Start to get first-page nonDone card information form kanban");
-		String allNonDoneCardResponse = jiraFeignClient.getAllDoneCards(baseUrl, boardRequestParam.getBoardId(),
-				QUERY_COUNT, 0, jql, boardRequestParam.getToken());
-		log.info("Successfully get first-page nonDone card information form kanban");
+	private List<JiraCard> getCardList(URI baseUrl, BoardRequestParam boardRequestParam, String jql,String cardType) {
+		log.info("Start to get first-page {} card information form kanban", cardType);
+		String allCardResponse = jiraFeignClient.getAllDoneCards(baseUrl, boardRequestParam.getBoardId(), QUERY_COUNT,
+				0, jql, boardRequestParam.getToken());
+		log.info("Successfully get first-page {} card information form kanban", cardType);
 
-		AllDoneCardsResponseDTO allNonDoneCardsResponseDTO = formatAllDoneCards(allNonDoneCardResponse);
+		AllDoneCardsResponseDTO allCardsResponseDTO = formatAllDoneCards(allCardResponse);
 
-		List<JiraCard> nonDoneCards = new ArrayList<>(new HashSet<>(allNonDoneCardsResponseDTO.getIssues()));
-		int pages = (int) Math.ceil(Double.parseDouble(allNonDoneCardsResponseDTO.getTotal()) / QUERY_COUNT);
+		List<JiraCard> cards = new ArrayList<>(new HashSet<>(allCardsResponseDTO.getIssues()));
+		int pages = (int) Math.ceil(Double.parseDouble(allCardsResponseDTO.getTotal()) / QUERY_COUNT);
 		if (pages <= 1) {
-			return nonDoneCards;
+			return cards;
 		}
 
-		log.info("Start to get more nonDone card information form kanban");
+		log.info("Start to get more {} card information form kanban", cardType);
 		List<Integer> range = IntStream.rangeClosed(1, pages - 1).boxed().toList();
 		List<CompletableFuture<AllDoneCardsResponseDTO>> futures = range.stream()
 			.map(startFrom -> CompletableFuture.supplyAsync(
@@ -670,14 +670,14 @@ public class JiraService {
 							QUERY_COUNT, startFrom * QUERY_COUNT, jql, boardRequestParam.getToken()))),
 					customTaskExecutor))
 			.toList();
-		log.info("Successfully get more nonDone card information form kanban");
+		log.info("Successfully get more {} card information form kanban", cardType);
 
 		List<AllDoneCardsResponseDTO> nonDoneCardsResponses = futures.stream().map(CompletableFuture::join).toList();
 		List<JiraCard> moreNonDoneCards = nonDoneCardsResponses.stream()
 			.flatMap(moreDoneCardsResponses -> moreDoneCardsResponses.getIssues().stream())
 			.toList();
 
-		return Stream.concat(nonDoneCards.stream(), moreNonDoneCards.stream()).toList();
+		return Stream.concat(cards.stream(), moreNonDoneCards.stream()).toList();
 	}
 
 	public JiraBoardConfigDTO getJiraBoardConfig(URI baseUrl, String boardId, String token) {

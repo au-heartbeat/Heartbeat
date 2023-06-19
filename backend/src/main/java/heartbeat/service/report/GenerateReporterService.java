@@ -291,8 +291,8 @@ public class GenerateReporterService {
 						return jiraColumns.size() + 1;
 					}
 					else {
-						String preCardName = preStatus.getDisplayName();
-						String nextCardName = nextStatus.getDisplayName();
+						String preCardName = preStatus.getName();
+						String nextCardName = nextStatus.getName();
 						return getIndexForStatus(jiraColumns, nextCardName)
 								- getIndexForStatus(jiraColumns, preCardName);
 					}
@@ -410,9 +410,6 @@ public class GenerateReporterService {
 	}
 
 	private int getIndexForStatus(List<JiraColumnDTO> jiraColumns, String name) {
-		if (name == null) {
-			return 0;
-		}
 		for (int index = 0; index < jiraColumns.size(); index++) {
 			List<String> statuses = jiraColumns.get(index).getValue().getStatuses();
 			if (statuses.contains(name.toUpperCase())) {

@@ -10,14 +10,20 @@ import heartbeat.client.dto.board.jira.Sprint;
 import heartbeat.client.dto.board.jira.Status;
 import heartbeat.controller.board.dto.response.CardCycleTime;
 import heartbeat.controller.board.dto.response.CardParent;
+import heartbeat.controller.board.dto.response.ColumnValue;
+import heartbeat.controller.board.dto.response.CycleTimeInfo;
 import heartbeat.controller.board.dto.response.Fields;
+import heartbeat.controller.board.dto.response.FixVersion;
 import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
+import heartbeat.controller.board.dto.response.JiraColumnDTO;
 import heartbeat.controller.board.dto.response.JiraProject;
 import heartbeat.controller.board.dto.response.Priority;
 import heartbeat.controller.board.dto.response.Reporter;
 import heartbeat.controller.board.dto.response.StepsDay;
+import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
+import heartbeat.util.JsonFileReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,6 +176,10 @@ public class BoardCsvFixture {
 		.originKey(null)
 		.build();
 
+	// TODO
+	public static HashMap<String, JsonElement> CUSTOM_FIELDS = JsonFileReader.readJsonFile(
+			"/Users/ting.li/Mio/work/HB/HeartBeat/backend/src/test/java/heartbeat/service/report/fields.json");
+
 	public static List<BoardCSVConfig> MOCK_FIXED_FIELDS() {
 		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STORY_POINTS_CONFIG,
 				ASSIGNEE_CONFIG, REPORTER_CONFIG, PROJECT_KEY_CONFIG, PROJECT_NAME_CONFIG, PRIORITY_CONFIG,
@@ -240,6 +250,131 @@ public class BoardCsvFixture {
 			.totalCycleTimeDivideStoryPoints("0.90")
 			.build();
 		return List.of(jiraCardDTO);
+	}
+
+	public static List<TargetField> MOCK_TARGET_FIELD_LIST() {
+		return List.of(TargetField.builder().key("issuetype").name("事务类型").flag(true).build(),
+				TargetField.builder().key("customfield_1001").name("1").flag(true).build(),
+				TargetField.builder().key("customfield_1002").name("2").flag(true).build(),
+				TargetField.builder().key("customfield_1003").name("3").flag(true).build(),
+				TargetField.builder().key("customfield_1004").name("4").flag(true).build(),
+				TargetField.builder().key("customfield_1005").name("5").flag(true).build(),
+				TargetField.builder().key("customfield_1006").name("6").flag(true).build(),
+				TargetField.builder().key("customfield_1007").name("7").flag(true).build(),
+				TargetField.builder().key("customfield_1008").name("8").flag(true).build(),
+				TargetField.builder().key("customfield_1009").name("9").flag(true).build(),
+				TargetField.builder().key("parent").name("父级").flag(false).build());
+	}
+
+	public static List<JiraCardDTO> MOCK_NON_DONE_CARD_LIST() {
+		List<JiraCardDTO> nonDoneCards = new ArrayList<>();
+		nonDoneCards.add(JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder()
+				.key("1")
+				.fields(JiraCardField.builder()
+					.issuetype(IssueType.builder().name("缺陷").build())
+					.status(Status.builder().name("Testing").build())
+					.customFields(CUSTOM_FIELDS)
+					.build())
+				.build())
+			.cardCycleTime(CardCycleTime.builder()
+				.name("1")
+				.steps(StepsDay.builder().development(0.0).build())
+				.total(0.0)
+				.build())
+			.build());
+		nonDoneCards.add(JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder()
+				.key("1")
+				.fields(JiraCardField.builder()
+					.issuetype(IssueType.builder().name("缺陷").build())
+					.status(Status.builder().name("Review").build())
+					.customFields(CUSTOM_FIELDS)
+					.build())
+				.build())
+			.cardCycleTime(CardCycleTime.builder()
+				.name("1")
+				.steps(StepsDay.builder().development(0.0).build())
+				.total(0.0)
+				.build())
+			.build());
+		nonDoneCards.add(JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder()
+				.key("1")
+				.fields(JiraCardField.builder()
+					.issuetype(IssueType.builder().name("缺陷").build())
+					.status(Status.builder().name("test").build())
+					.customFields(CUSTOM_FIELDS)
+					.build())
+				.build())
+			.cardCycleTime(CardCycleTime.builder()
+				.name("1")
+				.steps(StepsDay.builder().development(0.0).build())
+				.total(0.0)
+				.build())
+			.build());
+		nonDoneCards.add(JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder()
+				.key("1")
+				.fields(JiraCardField.builder()
+					.issuetype(IssueType.builder().name("缺陷").build())
+					.customFields(CUSTOM_FIELDS)
+					.build())
+				.build())
+			.cardCycleTime(CardCycleTime.builder()
+				.name("1")
+				.steps(StepsDay.builder().development(0.0).build())
+				.total(0.0)
+				.build())
+			.build());
+		return nonDoneCards;
+	}
+
+	public static List<JiraCardDTO> MOCK_DONE_CARD_LIST() {
+		return List.of(JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder()
+				.key("key1")
+				.fields(JiraCardField.builder()
+					.assignee(Assignee.builder().displayName("Shawn").build())
+					.summary("Tech replacement")
+					.status(Status.builder().displayValue("Doing").build())
+					.issuetype(IssueType.builder().name("Task").build())
+					.reporter(Reporter.builder().displayName("Jack").build())
+					.statusCategoryChangeDate("2023-4-23")
+					.storyPoints(3)
+					.priority(Priority.builder().name("Top").build())
+					.fixVersions(List.of(FixVersion.builder().name("sprint1").build(),
+							FixVersion.builder().name("sprint2").build()))
+					.project(JiraProject.builder().id("1").key("metrics").name("heartBeat").build())
+					.parent(CardParent.builder().key("test").build())
+					.labels(List.of("backend", "frontend"))
+					.customFields(BoardCsvFixture.CUSTOM_FIELDS)
+					.build())
+				.build())
+			.cardCycleTime(CardCycleTime.builder()
+				.name("1")
+				.steps(StepsDay.builder().development(0.9).build())
+				.total(0.9)
+				.build())
+			.originCycleTime(List.of(CycleTimeInfo.builder().column("TODO").day(30.7859).build(),
+					CycleTimeInfo.builder().column("DOING").day(3.29E-5).build()))
+			.build());
+	}
+
+	public static List<JiraColumnDTO> MOCK_JIRA_COLUMN_LIST() {
+		return List.of(
+				JiraColumnDTO.builder()
+					.key("正在进行")
+					.value(ColumnValue.builder().name("Doing").statuses(List.of("DOING")).build())
+					.build(),
+				JiraColumnDTO.builder()
+					.key("正在进行")
+					.value(ColumnValue.builder().name("Testing").statuses(List.of("TESTING")).build())
+					.build(),
+				JiraColumnDTO.builder()
+					.key("正在进行")
+					.value(ColumnValue.builder().name("Review").statuses(List.of("REVIEW")).build())
+					.build());
 	}
 
 }
