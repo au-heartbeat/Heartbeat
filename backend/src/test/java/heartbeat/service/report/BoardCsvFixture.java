@@ -13,6 +13,7 @@ import heartbeat.controller.board.dto.response.CardParent;
 import heartbeat.controller.board.dto.response.ColumnValue;
 import heartbeat.controller.board.dto.response.CycleTimeInfo;
 import heartbeat.controller.board.dto.response.Fields;
+import heartbeat.controller.board.dto.response.FixVersion;
 import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.JiraColumnDTO;
@@ -121,7 +122,7 @@ public class BoardCsvFixture {
 		.originKey("customfield_10016")
 		.build();
 
-	private static final BoardCSVConfig FLAGGED_CONFIG = BoardCSVConfig.builder()
+	private static final BoardCSVConfig FLAGGED = BoardCSVConfig.builder()
 		.label("Flagged")
 		.value("baseInfo.fields.customFields.customfield_10021")
 		.originKey("customfield_10021")
@@ -176,8 +177,7 @@ public class BoardCsvFixture {
 		.build();
 
 	// TODO
-	public static HashMap<String, JsonElement> CUSTOM_FIELDS = JsonFileReader.readJsonFile(
-			"/Users/ting.li/Mio/work/HB/HeartBeat/backend/src/test/java/heartbeat/service/report/fields.json");
+	public static HashMap<String, JsonElement> CUSTOM_FIELDS = JsonFileReader.readJsonFile("/report/fields.json");
 
 	public static List<BoardCSVConfig> MOCK_FIXED_FIELDS() {
 		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STORY_POINTS_CONFIG,
@@ -188,7 +188,7 @@ public class BoardCsvFixture {
 	}
 
 	public static List<BoardCSVConfig> MOCK_EXTRA_FIELDS() {
-		return List.of(STORY_POINT_ESTIMATE_CONFIG, FLAGGED_CONFIG);
+		return List.of(STORY_POINT_ESTIMATE_CONFIG, FLAGGED);
 	}
 
 	public static List<BoardCSVConfig> MOCK_ALL_FIELDS() {

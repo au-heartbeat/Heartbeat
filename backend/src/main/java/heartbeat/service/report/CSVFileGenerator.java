@@ -39,8 +39,7 @@ public class CSVFileGenerator {
 			InputStream inputStream = new FileInputStream(fileName);
 
 			return new InputStreamResource(inputStream);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Failed to read file", e);
 			throw new FileIOException(e);
 		}
@@ -49,8 +48,7 @@ public class CSVFileGenerator {
 	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
 		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
 			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -65,11 +63,11 @@ public class CSVFileGenerator {
 		File file = new File(fileName);
 
 		try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
-			String[] headers = { "Pipeline Name", "Pipeline Step", "Build Number", "Committer",
-					"First Code Committed Time In PR", "Code Committed Time", "PR Created Time", "PR Merged Time",
-					"Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
-					"Time from PR Created to PR Merged (HH:mm:ss)",
-					"Time from PR Merged to Deployment Completed (HH:mm:ss)", "Status" };
+			String[] headers = {"Pipeline Name", "Pipeline Step", "Build Number", "Committer",
+				"First Code Committed Time In PR", "Code Committed Time", "PR Created Time", "PR Merged Time",
+				"Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
+				"Time from PR Created to PR Merged (HH:mm:ss)",
+				"Time from PR Merged to Deployment Completed (HH:mm:ss)", "Status"};
 
 			csvWriter.writeNext(headers);
 
@@ -94,14 +92,13 @@ public class CSVFileGenerator {
 				String prDelayTime = leadTimeInfo.getPrDelayTime();
 				String pipelineDelayTime = leadTimeInfo.getPipelineDelayTime();
 
-				String[] rowData = { pipelineName, stepName, buildNumber, committerName, firstCommitTimeInPr,
-						commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime, prDelayTime,
-						pipelineDelayTime, state };
+				String[] rowData = {pipelineName, stepName, buildNumber, committerName, firstCommitTimeInPr,
+					commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime, prDelayTime,
+					pipelineDelayTime, state};
 
 				csvWriter.writeNext(rowData);
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Failed to write file", e);
 			throw new FileIOException(e);
 		}
@@ -122,7 +119,7 @@ public class CSVFileGenerator {
 	}
 
 	public void convertBoardDataToCSV(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fields,
-			List<BoardCSVConfig> extraFields, String csvTimeStamp) {
+									  List<BoardCSVConfig> extraFields, String csvTimeStamp) {
 		log.info("Start to create board csv directory");
 		boolean created = createCsvDirectory();
 		String message = created ? "Successfully create csv directory" : "CSV directory is already exist";
@@ -146,8 +143,7 @@ public class CSVFileGenerator {
 
 			writer.writeAll(Arrays.asList(mergedArrays));
 
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Failed to write file", e);
 			throw new FileIOException(e);
 		}
@@ -161,7 +157,7 @@ public class CSVFileGenerator {
 			System.arraycopy(fixedFieldsData[i], 0, mergedPerRowArray, 0, fixedColumnCount);
 			System.arraycopy(extraFieldsData[i], 0, mergedPerRowArray, fixedColumnCount, extraFieldsData[i].length);
 			System.arraycopy(fixedFieldsData[i], fixedColumnCount, mergedPerRowArray,
-					fixedColumnCount + extraFieldsData[i].length, fixedFieldsData[i].length - fixedColumnCount);
+				fixedColumnCount + extraFieldsData[i].length, fixedFieldsData[i].length - fixedColumnCount);
 			mergedArray[i] = mergedPerRowArray;
 		}
 
@@ -184,15 +180,6 @@ public class CSVFileGenerator {
 			}
 		}
 		return data;
-	}
-
-	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
-		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
-			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
-		}
-		else {
-			return null;
-		}
 	}
 
 	private String[][] getFixedFieldsData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fixedFields) {
@@ -303,14 +290,11 @@ public class CSVFileGenerator {
 		Object fieldValue = elementMap.get(extraFieldValue);
 		if (fieldValue == null) {
 			return "";
-		}
-		else if (fieldValue instanceof Double) {
+		} else if (fieldValue instanceof Double) {
 			return decimalFormat.format(fieldValue);
-		}
-		else if (fieldValue.toString().equals("null")) {
+		} else if (fieldValue.toString().equals("null")) {
 			return "";
-		}
-		else {
+		} else {
 			return fieldValue.toString().replaceAll("\"", "");
 		}
 	}
