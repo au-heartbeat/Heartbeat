@@ -204,8 +204,8 @@ public class BoardCsvFixture {
 
 		JiraCardField jiraCardField = JiraCardField.builder()
 			.summary("summary")
-			.issuetype(IssueType.builder().name("任务").build())
-			.status(Status.builder().displayValue("已完成").build())
+			.issuetype(IssueType.builder().name("issue type").build())
+			.status(Status.builder().displayValue("done").build())
 			.storyPoints(2)
 			.assignee(Assignee.builder().displayName("name").build())
 			.reporter(Reporter.builder().displayName("name").build())
