@@ -283,7 +283,6 @@ public class CSVFileGenerator {
 	}
 
 	private String getExtraDataPerRow(Object object, BoardCSVConfig extraField) {
-		DecimalFormat decimalFormat = new DecimalFormat(FORMAT_2_DECIMALS);
 		Map<String, JsonElement> elementMap = (Map<String, JsonElement>) object;
 		if (elementMap == null) {
 			return null;
@@ -295,7 +294,7 @@ public class CSVFileGenerator {
 			return "";
 		}
 		else if (fieldValue instanceof Double) {
-			return decimalFormat.format(fieldValue);
+			return DecimalUtil.formatDecimalTwo((Double) fieldValue);
 		}
 		else if (fieldValue.toString().equals("null")) {
 			return "";
