@@ -35,4 +35,14 @@ class DecimalUtilTest {
 		Assertions.assertEquals(expected, result);
 	}
 
+	@Test
+	void shouldReturnZeroWhenCallFormatDecimalTwo() {
+		double value = 0.00005;
+		String expected = "0";
+
+		String result = DecimalUtil.formatDecimalTwo(value);
+
+		Assertions.assertEquals(expected, result);
+	}
+
 }

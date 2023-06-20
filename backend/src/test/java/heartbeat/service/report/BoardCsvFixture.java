@@ -176,8 +176,8 @@ public class BoardCsvFixture {
 		.originKey(null)
 		.build();
 
-	// TODO
-	public static HashMap<String, JsonElement> CUSTOM_FIELDS = JsonFileReader.readJsonFile("/report/fields.json");
+	public static HashMap<String, JsonElement> CUSTOM_FIELDS = JsonFileReader
+		.readJsonFile("./src/test/resources/fields.json");
 
 	public static List<BoardCSVConfig> MOCK_FIXED_FIELDS() {
 		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STORY_POINTS_CONFIG,
@@ -251,6 +251,45 @@ public class BoardCsvFixture {
 		return List.of(jiraCardDTO);
 	}
 
+	public static List<JiraCardDTO> MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO_FIELDS() {
+		HashMap<String, Double> cycleTimeFlat = new HashMap<>();
+		cycleTimeFlat.put("DONE", 16.0335);
+
+		CardCycleTime cardCycleTime = CardCycleTime.builder()
+			.name("ADM-489")
+			.total(0.90)
+			.steps(StepsDay.builder().development(0.90).build())
+			.build();
+		JiraCardDTO jiraCardDTO = JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder().key("key").build())
+			.cardCycleTime(cardCycleTime)
+			.cycleTimeFlat(cycleTimeFlat)
+			.totalCycleTimeDivideStoryPoints("0.90")
+			.build();
+		return List.of(jiraCardDTO);
+	}
+
+	public static List<JiraCardDTO> MOCK_JIRA_CARD_DTO_WITH_EMPTY_CARD_CYCLE_TIME() {
+		HashMap<String, Double> cycleTimeFlat = new HashMap<>();
+		cycleTimeFlat.put("DONE", 16.0335);
+		JiraCardField jiraCardField = JiraCardField.builder()
+			.summary("summary")
+			.issuetype(IssueType.builder().name("任务").build())
+			.status(Status.builder().displayValue("已完成").build())
+			.storyPoints(2)
+			.project(JiraProject.builder().id("10001").key("ADM").name("Auto Dora Metrics").build())
+			.priority(Priority.builder().name("Medium").build())
+			.labels(Collections.emptyList())
+			.build();
+
+		JiraCardDTO jiraCardDTO = JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder().key("key").fields(jiraCardField).build())
+			.cycleTimeFlat(cycleTimeFlat)
+			.totalCycleTimeDivideStoryPoints("0.90")
+			.build();
+		return List.of(jiraCardDTO);
+	}
+
 	public static List<TargetField> MOCK_TARGET_FIELD_LIST() {
 		return List.of(TargetField.builder().key("issuetype").name("事务类型").flag(true).build(),
 				TargetField.builder().key("customfield_1001").name("1").flag(true).build(),
@@ -262,10 +301,14 @@ public class BoardCsvFixture {
 				TargetField.builder().key("customfield_1007").name("7").flag(true).build(),
 				TargetField.builder().key("customfield_1008").name("8").flag(true).build(),
 				TargetField.builder().key("customfield_1009").name("9").flag(true).build(),
+				TargetField.builder().key("customfield_1010").name("10").flag(true).build(),
+				TargetField.builder().key("customfield_1011").name("11").flag(true).build(),
+				TargetField.builder().key("customfield_1012").name("12").flag(true).build(),
 				TargetField.builder().key("parent").name("父级").flag(false).build());
 	}
 
 	public static List<JiraCardDTO> MOCK_NON_DONE_CARD_LIST() {
+		CUSTOM_FIELDS.put("customfield_1012", new JsonPrimitive("test"));
 		List<JiraCardDTO> nonDoneCards = new ArrayList<>();
 		nonDoneCards.add(JiraCardDTO.builder()
 			.baseInfo(JiraCard.builder()

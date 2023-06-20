@@ -2,7 +2,9 @@ package heartbeat.service.report;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraCardField;
@@ -136,14 +138,26 @@ public class GenerateReporterService {
 		return fields;
 	}
 
+	private static String removeQuotes(String value) {
+		return value.replaceAll("\"", "");
+	}
+
 	public String getFieldDisplayValue(Object object) {
 		Gson gson = new Gson();
 		boolean isArray = false;
 		String result = "";
-
-		if (object instanceof Double || object instanceof String) {
-			return "";
+		if (object instanceof JsonNull || object == null) {
+			return result;
 		}
+
+		if (object instanceof JsonPrimitive) {
+			object = removeQuotes(((JsonPrimitive) object).getAsString());
+		}
+
+		if (object instanceof Double || object instanceof String || object.toString().equals("{}")) {
+			return result;
+		}
+
 		if (object instanceof List && ((List<?>) object).isEmpty()) {
 			return "";
 		}

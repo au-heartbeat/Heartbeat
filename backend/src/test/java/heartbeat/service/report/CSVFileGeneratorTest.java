@@ -76,7 +76,7 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
-	public void shouldMakeCsvDirWhenNotExist() {
+	public void shouldMakeCsvDirWhenNotExistGivenDataTypeIsPipeline() {
 		String csvDirPath = "./csv";
 		File csvDir = new File(csvDirPath);
 		deleteDirectory(csvDir);
@@ -131,6 +131,23 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
+	public void shouldMakeCsvDirWhenNotExistGivenDataTypeIsBoard() {
+		String csvDirPath = "./csv";
+		File csvDir = new File(csvDirPath);
+		deleteDirectory(csvDir);
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+
+		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
+
+		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
+		File csvFile = new File(fileName);
+		Assertions.assertTrue(csvFile.exists());
+		csvFile.delete();
+	}
+
+	@Test
 	public void shouldGenerateBoardCsvWhenConvertBoardDataToCsv() {
 		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
 		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
@@ -147,6 +164,34 @@ class CSVFileGeneratorTest {
 	@Test
 	public void shouldGenerateBoardCsvWhenConvertBoardDataToCsvGivenBaseInfoIsEmpty() {
 		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+
+		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
+
+		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
+		File csvFile = new File(fileName);
+		Assertions.assertTrue(csvFile.exists());
+		csvFile.delete();
+	}
+
+	@Test
+	public void shouldGenerateBoardCsvWhenConvertBoardDataToCsvGivenBaseInfoFieldsIsNull() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO_FIELDS();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+
+		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
+
+		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
+		File csvFile = new File(fileName);
+		Assertions.assertTrue(csvFile.exists());
+		csvFile.delete();
+	}
+
+	@Test
+	public void shouldGenerateBoardCsvWhenConvertBoardDataToCsvGivenCycleTimeIsNull() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_CARD_CYCLE_TIME();
 		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
 		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
 

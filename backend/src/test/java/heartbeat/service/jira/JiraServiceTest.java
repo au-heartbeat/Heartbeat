@@ -24,14 +24,12 @@ import static heartbeat.service.jira.JiraBoardConfigDTOFixture.JIRA_BOARD_SETTIN
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.JIRA_BOARD_SETTING_HAVE_UNKNOWN_COLUMN_BUILD;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.NONE_STATUS_SELF_RESPONSE_BUILDER;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.ONE_PAGE_NO_DONE_CARDS_RESPONSE_BUILDER;
-import static heartbeat.service.jira.JiraBoardConfigDTOFixture.REVIEW_STATUS_SELF_RESPONSE_BUILDER;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.STORY_POINTS_FORM_ALL_DONE_CARD;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.STORY_POINTS_FORM_ALL_DONE_CARD_WITH_EMPTY_STATUS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -517,26 +515,14 @@ class JiraServiceTest {
 	public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForActiveSprint()
 			throws JsonProcessingException {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-		StatusSelfDTO reviewStatusSelf = REVIEW_STATUS_SELF_RESPONSE_BUILDER().build();
-		StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
-		StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
-		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(any(), any(), any());
-		when(jiraFeignClient.getColumnStatusCategory(any(), any(), any())).thenReturn(reviewStatusSelf);
-		when(jiraFeignClient.getColumnStatusCategory(any(), any(), any())).thenReturn(doingStatusSelf);
-		when(jiraFeignClient.getColumnStatusCategory(any(), any(), any())).thenReturn(doneStatusSelf);
 		when(jiraFeignClient.getAllDoneCards(any(), any(), anyInt(), anyInt(), any(), any()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
-		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
-			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
-		jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam);
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns());
 		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
@@ -547,27 +533,15 @@ class JiraServiceTest {
 	public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForActiveSprintWithStatusIsEmpty()
 			throws JsonProcessingException {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-		StatusSelfDTO reviewStatusSelf = REVIEW_STATUS_SELF_RESPONSE_BUILDER().build();
-		StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
-		StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD_WITH_EMPTY_STATUS()
 			.build();
-		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(any(), any(), any());
-		when(jiraFeignClient.getColumnStatusCategory(any(), any(), any())).thenReturn(reviewStatusSelf);
-		when(jiraFeignClient.getColumnStatusCategory(any(), any(), any())).thenReturn(doingStatusSelf);
-		when(jiraFeignClient.getColumnStatusCategory(any(), any(), any())).thenReturn(doneStatusSelf);
 		when(jiraFeignClient.getAllDoneCards(any(), any(), anyInt(), anyInt(), any(), any()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
-		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
-			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
-		jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam);
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns());
 
@@ -575,56 +549,60 @@ class JiraServiceTest {
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
 	}
 
-	// @Test
-	// public void
-	// shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForKanban()
-	// throws JsonProcessingException {
-	// URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-	// StatusSelfDTO reviewStatusSelf = REVIEW_STATUS_SELF_RESPONSE_BUILDER().build();
-	// StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
-	// StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
-	// JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
-	// StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest =
-	// STORY_POINTS_FORM_ALL_DONE_CARD().build();
-	// BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-	// JiraBoardConfigDTO jiraBoardConfigDTO =
-	// JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
-	// String jqlForKanban = "status not in ('" + String.join("','",
-	// storyPointsAndCycleTimeRequest.getStatus())
-	// + "')";
-	// String jqlForActiveSprint = "sprint in openSprints() AND status not in ('"
-	// + String.join("','", storyPointsAndCycleTimeRequest.getStatus()) + "')";
-	// when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-	// doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(any(),
-	// any(), any());
-	// when(jiraFeignClient.getColumnStatusCategory(any(), any(),
-	// any())).thenReturn(reviewStatusSelf);
-	// when(jiraFeignClient.getColumnStatusCategory(any(), any(),
-	// any())).thenReturn(doingStatusSelf);
-	// when(jiraFeignClient.getColumnStatusCategory(any(), any(),
-	// any())).thenReturn(doneStatusSelf);
-	// when(jiraFeignClient.getAllDoneCards(baseUrl, BOARD_ID, QUERY_COUNT, 0,
-	// jqlForActiveSprint,
-	// boardRequestParam.getToken()))
-	// .thenReturn(objectMapper.writeValueAsString(""));
-	// when(jiraFeignClient.getAllDoneCards(baseUrl, BOARD_ID, QUERY_COUNT, 0,
-	// jqlForKanban,
-	// boardRequestParam.getToken()))
-	// .thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
-	//
-	// when(jiraFeignClient.getTargetField(any(), any(),
-	// any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
-	// when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
-	// .thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
-	//
-	// jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam);
-	// CardCollection nonDoneCards =
-	// jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
-	// storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns());
-	//
-	// assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
-	// assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
-	// }
+	@Test
+	public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForKanban()
+			throws JsonProcessingException {
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
+		String jqlForKanban = "status not in ('" + String.join("','", storyPointsAndCycleTimeRequest.getStatus())
+				+ "')";
+		String jqlForActiveSprint = "sprint in openSprints() AND status not in ('"
+				+ String.join("','", storyPointsAndCycleTimeRequest.getStatus()) + "')";
+		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
+		when(jiraFeignClient.getAllDoneCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
+				boardRequestParam.getToken()))
+			.thenReturn("");
+		when(jiraFeignClient.getAllDoneCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban,
+				boardRequestParam.getToken()))
+			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
+
+		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
+
+		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns());
+
+		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
+		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
+	}
+
+	@Test
+	public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForKanbanWithStatusIsEmpty()
+			throws JsonProcessingException {
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD_WITH_EMPTY_STATUS()
+			.build();
+		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
+		String jqlForKanban = "";
+		String jqlForActiveSprint = "sprint in openSprints() ";
+		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
+		when(jiraFeignClient.getAllDoneCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
+				boardRequestParam.getToken()))
+			.thenReturn("");
+		when(jiraFeignClient.getAllDoneCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban,
+				boardRequestParam.getToken()))
+			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
+
+		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
+
+		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns());
+
+		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
+		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
+	}
 
 	@Test
 	public void shouldReturnJiraBoardConfigDTOWhenCallGetJiraBoardConfig() {
