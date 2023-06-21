@@ -1,7 +1,6 @@
 package heartbeat.service.report;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -138,57 +137,38 @@ public class GenerateReporterService {
 		return fields;
 	}
 
-	private static String removeQuotes(String value) {
-		return value.replaceAll("\"", "");
-	}
-
 	public String getFieldDisplayValue(Object object) {
 		Gson gson = new Gson();
-		boolean isArray = false;
 		String result = "";
-		if (object instanceof JsonNull || object == null) {
+		if (object == null || object instanceof JsonNull || object instanceof Double || object instanceof String
+				|| object instanceof JsonPrimitive) {
 			return result;
 		}
 
-		if (object instanceof JsonPrimitive) {
-			object = removeQuotes(((JsonPrimitive) object).getAsString());
-		}
+		Object tempObject = object;
 
-		if (object instanceof Double || object instanceof String || object.toString().equals("{}")) {
-			return result;
-		}
-
-		if (object instanceof List && ((List<?>) object).isEmpty()) {
-			return "";
-		}
-
-		if (object instanceof List) {
-			isArray = true;
-			object = ((List<?>) object).get(0);
-		}
-
-		if (object != null) {
-			JsonObject jsonObject = gson.toJsonTree(object).getAsJsonObject();
-			JsonElement name = jsonObject.get("name");
-			if (name != null) {
-				result = ".name";
+		if (tempObject instanceof List<?> list) {
+			if (list.isEmpty()) {
+				return result;
 			}
-			JsonElement displayName = jsonObject.get("displayName");
-			if (displayName != null) {
-				result = ".displayName";
-			}
-			JsonElement value = jsonObject.get("value");
-			if (value != null) {
-				result = ".value";
-			}
-			JsonElement key = jsonObject.get("key");
-			if (key != null) {
-				result = ".key";
+			else {
+				tempObject = list.get(0);
+				result = "[0]";
 			}
 		}
 
-		if (isArray) {
-			result = "[0]" + result;
+		JsonObject jsonObject = gson.toJsonTree(tempObject).getAsJsonObject();
+		if (jsonObject.has("name")) {
+			result += ".name";
+		}
+		else if (jsonObject.has("displayName")) {
+			result += ".displayName";
+		}
+		else if (jsonObject.has("value")) {
+			result += ".value";
+		}
+		else if (jsonObject.has("key")) {
+			result += ".key";
 		}
 
 		return result;

@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +30,6 @@ import java.util.stream.Stream;
 @Component
 @Log4j2
 public class CSVFileGenerator {
-
-	private static final String FORMAT_2_DECIMALS = "0.00";
 
 	private static InputStreamResource readStringFromCsvFile(String fileName) {
 		try {

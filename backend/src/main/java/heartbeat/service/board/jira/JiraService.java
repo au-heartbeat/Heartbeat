@@ -614,9 +614,9 @@ public class JiraService {
 
 			JiraCardDTO jiraCardDTO = JiraCardDTO.builder()
 				.baseInfo(doneCard)
-				.cycleTime(Collections.EMPTY_LIST)
-				.originCycleTime(Collections.EMPTY_LIST)
-				.cardCycleTime(calculateCardCycleTime(doneCard.getKey(), Collections.EMPTY_LIST, boardColumns))
+				.cycleTime(Collections.emptyList())
+				.originCycleTime(Collections.emptyList())
+				.cardCycleTime(calculateCardCycleTime(doneCard.getKey(), Collections.emptyList(), boardColumns))
 				.build();
 			matchedNonCards.add(jiraCardDTO);
 		});
@@ -649,14 +649,13 @@ public class JiraService {
 	}
 
 	private List<JiraCard> getCardList(URI baseUrl, BoardRequestParam boardRequestParam, String jql, String cardType) {
-		// TODO 变量名称，log
-		log.info("Start to get first-page {} card information form kanban", cardType);
+		log.info("Start to get first-page xxx card information form kanban, param {}", cardType);
 		String allCardResponse = jiraFeignClient.getAllDoneCards(baseUrl, boardRequestParam.getBoardId(), QUERY_COUNT,
 				0, jql, boardRequestParam.getToken());
 		if (allCardResponse.isEmpty()) {
 			return Collections.emptyList();
 		}
-		log.info("Successfully get first-page {} card information form kanban", cardType);
+		log.info("Successfully get first-page xxx card information form kanban, param {}", cardType);
 
 		List<TargetField> targetField = getTargetField(baseUrl, boardRequestParam);
 		AllDoneCardsResponseDTO allCardsResponseDTO = formatAllDoneCards(allCardResponse, targetField);
@@ -667,7 +666,7 @@ public class JiraService {
 			return cards;
 		}
 
-		log.info("Start to get more {} card information form kanban", cardType);
+		log.info("Start to get more xxx card information form kanban, param {}", cardType);
 		List<Integer> range = IntStream.rangeClosed(1, pages - 1).boxed().toList();
 		List<CompletableFuture<AllDoneCardsResponseDTO>> futures = range.stream()
 			.map(startFrom -> CompletableFuture.supplyAsync(
@@ -675,7 +674,7 @@ public class JiraService {
 							QUERY_COUNT, startFrom * QUERY_COUNT, jql, boardRequestParam.getToken()), targetField)),
 					customTaskExecutor))
 			.toList();
-		log.info("Successfully get more {} card information form kanban", cardType);
+		log.info("Successfully get more xxx card information form kanban, param {}", cardType);
 
 		List<AllDoneCardsResponseDTO> nonDoneCardsResponses = futures.stream().map(CompletableFuture::join).toList();
 		List<JiraCard> moreNonDoneCards = nonDoneCardsResponses.stream()
