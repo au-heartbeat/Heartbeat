@@ -483,6 +483,25 @@ class JiraServiceTest {
 	}
 
 	@Test
+	public void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeForSprint() {
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+
+		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
+		when(jiraFeignClient.getAllDoneCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
+				"{\"expand\":\"schema,names\",\"startAt\":0,\"maxResults\":100,\"total\":1,\"issues\":[{\"expand\":\"operations,versionedRepresentations,editmeta,changelog,renderedFields\",\"id\":\"10476\",\"self\":\"https://dorametrics.atlassian.net/rest/agile/1.0/issue/10476\",\"key\":\"ADM-455\",\"fields\":{\"customfield_10020\":[{\"id\":16,\"name\":\"Tool Sprint 11\",\"state\":\"closed\",\"boardId\":2,\"goal\":\"Team A：-15 points\\n1. Finish buildkite intergration.\\n2. Walk through E2E about buildkite part.\\n3. Fix 4 bugs on Metrics page.\\n4. Implement 2 features.\\n  - import config file on Metrics page.\\n  - report backend cycletime calculate.\\n\\nTeam B: -13 points\\n1. Finish report calculate logic of  LeadTimeForChanges and Classification. Except for MTTR, all calculation is done for export page.\\n2. Export pipeline CSV.\\n3.Verify import config file（HomePage, configPage,cycleTimeSetting, classification）\\n4. 3 Bug fix .\",\"startDate\":\"2023-05-15T03:09:23.000Z\",\"endDate\":\"2023-05-28T16:00:00.000Z\",\"completeDate\":\"2023-05-29T03:51:24.898Z\"}],\"customfield_10021\":[{\"self\":\"https://dorametrics.atlassian.net/rest/api/2/customFieldOption/10019\",\"value\":\"Impediment\",\"id\":\"10019\"}],\"customfield_10016\":1}}]}");
+		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
+		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
+			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
+
+		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTime(storyPointsAndCycleTimeRequest,
+				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
+		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
+		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(0);
+	}
+
+	@Test
 	void shouldReturnIllegalArgumentExceptionWhenHaveUnknownColumn() throws JsonProcessingException {
 		String token = "token";
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_HAVE_UNKNOWN_COLUMN_BUILD().build();

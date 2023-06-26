@@ -8,6 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import feign.FeignException;
 import heartbeat.client.JiraFeignClient;
 import heartbeat.client.component.JiraUriGenerator;
@@ -20,6 +21,7 @@ import heartbeat.client.dto.board.jira.Issuetype;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraColumn;
+import heartbeat.client.dto.board.jira.Sprint;
 import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.BoardType;
@@ -286,6 +288,7 @@ public class JiraService {
 			.getAsJsonArray();
 		List<Map<String, JsonElement>> customFieldMapList = new ArrayList<>();
 		ArrayList<Integer> storyPointList = new ArrayList<>();
+		ArrayList<Sprint> sprintList = new ArrayList<>();
 		Map<String, String> resultMap = targetFields.stream()
 			.collect(Collectors.toMap(TargetField::getKey, TargetField::getName));
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
@@ -307,8 +310,40 @@ public class JiraService {
 			Map<String, JsonElement> customFieldMap = new HashMap<>();
 			for (Map.Entry<String, String> entry : resultMap.entrySet()) {
 				String customFieldKey = entry.getKey();
+				String customFieldValue = entry.getValue();
 				if (jsonElement.has(customFieldKey)) {
 					JsonElement fieldValue = jsonElement.get(customFieldKey);
+					if (customFieldValue.equals("Sprint")) {
+						if (fieldValue.isJsonArray()) {
+							JsonArray jsonArray = fieldValue.getAsJsonArray();
+							if (!jsonArray.isJsonNull() && jsonArray.size() > 0) {
+								JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
+								Sprint sprint = gson.fromJson(targetField, Sprint.class);
+								sprintList.add(sprint);
+							}
+						}
+					}
+
+					if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()) {
+						if (fieldValue.isJsonPrimitive()) {
+							JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
+							if (jsonPrimitive.isNumber()) {
+								Number numberValue = jsonPrimitive.getAsNumber();
+								int intValue = numberValue.intValue();
+								fieldValue = new JsonPrimitive(intValue);
+							}
+						}
+					}
+
+					if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull()) {
+						if (fieldValue.isJsonArray()) {
+							JsonArray jsonArray = fieldValue.getAsJsonArray();
+							if (!jsonArray.isJsonNull() && jsonArray.size() > 0) {
+								JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
+								fieldValue = targetField.getAsJsonObject().get("value");
+							}
+						}
+					}
 					customFieldMap.put(customFieldKey, fieldValue);
 				}
 			}
@@ -316,6 +351,9 @@ public class JiraService {
 		}
 		for (int index = 0; index < customFieldMapList.size(); index++) {
 			allDoneCardsResponseDTO.getIssues().get(index).getFields().setCustomFields(customFieldMapList.get(index));
+		}
+		for (int index = 0; index < sprintList.size(); index++) {
+			allDoneCardsResponseDTO.getIssues().get(index).getFields().setSprint(sprintList.get(index));
 		}
 		return allDoneCardsResponseDTO;
 	}

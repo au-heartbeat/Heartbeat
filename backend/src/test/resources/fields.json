@@ -38,7 +38,19 @@
       "completeDate": "2023-05-29T03:51:24.898Z"
     }
   ],
-  "customfield_1007": [
+  "customfield_1008": 1.0,
+  "customfield_1009": {
+    "hasEpicLinkFieldDependency": false,
+    "showField": false,
+    "nonEditableReason": {
+      "reason": "reason",
+      "message": "message"
+    }
+  },
+  "customfield_1010": "null",
+  "customfield_1011": "{}",
+  "customfield_10016": 1.0,
+  "customfield_10020": [
     {
       "id": 1,
       "value": "Sprint 1",
@@ -50,15 +62,11 @@
       "completeDate": "2023-05-29T03:51:24.898Z"
     }
   ],
-  "customfield_1008": 1.0,
-  "customfield_1009": {
-    "hasEpicLinkFieldDependency": false,
-    "showField": false,
-    "nonEditableReason": {
-      "reason": "reason",
-      "message": "message"
+  "customfield_10021": [
+    {
+      "self": "https://dorametrics.atlassian.net/rest/api/2/customFieldOption/10019",
+      "value": "Impediment",
+      "id": "10019"
     }
-  },
-  "customfield_1010": "null",
-  "customfield_1011": "{}"
+  ]
 }
