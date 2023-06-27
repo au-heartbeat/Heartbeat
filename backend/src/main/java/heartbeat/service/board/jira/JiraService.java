@@ -313,35 +313,29 @@ public class JiraService {
 				String customFieldValue = entry.getValue();
 				if (jsonElement.has(customFieldKey)) {
 					JsonElement fieldValue = jsonElement.get(customFieldKey);
-					if (customFieldValue.equals("Sprint")) {
-						if (fieldValue.isJsonArray()) {
-							JsonArray jsonArray = fieldValue.getAsJsonArray();
-							if (!jsonArray.isJsonNull() && jsonArray.size() > 0) {
-								JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
-								Sprint sprint = gson.fromJson(targetField, Sprint.class);
-								sprintList.add(sprint);
-							}
+					if (customFieldValue.equals("Sprint") && !fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
+						JsonArray jsonArray = fieldValue.getAsJsonArray();
+						if (!jsonArray.isJsonNull() && jsonArray.size() > 0) {
+							JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
+							Sprint sprint = gson.fromJson(targetField, Sprint.class);
+							sprintList.add(sprint);
 						}
 					}
-
-					if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()) {
-						if (fieldValue.isJsonPrimitive()) {
-							JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
-							if (jsonPrimitive.isNumber()) {
-								Number numberValue = jsonPrimitive.getAsNumber();
-								int intValue = numberValue.intValue();
-								fieldValue = new JsonPrimitive(intValue);
-							}
+					else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
+							&& fieldValue.isJsonPrimitive()) {
+						JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
+						if (jsonPrimitive.isNumber()) {
+							Number numberValue = jsonPrimitive.getAsNumber();
+							int intValue = numberValue.intValue();
+							fieldValue = new JsonPrimitive(intValue);
 						}
 					}
-
-					if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull()) {
-						if (fieldValue.isJsonArray()) {
-							JsonArray jsonArray = fieldValue.getAsJsonArray();
-							if (!jsonArray.isJsonNull() && jsonArray.size() > 0) {
-								JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
-								fieldValue = targetField.getAsJsonObject().get("value");
-							}
+					else if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull()
+							&& fieldValue.isJsonArray()) {
+						JsonArray jsonArray = fieldValue.getAsJsonArray();
+						if (!jsonArray.isJsonNull() && jsonArray.size() > 0) {
+							JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
+							fieldValue = targetField.getAsJsonObject().get("value");
 						}
 					}
 					customFieldMap.put(customFieldKey, fieldValue);
