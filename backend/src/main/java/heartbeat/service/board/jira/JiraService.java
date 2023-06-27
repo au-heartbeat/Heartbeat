@@ -148,7 +148,8 @@ public class JiraService {
 			.build();
 
 		List<JiraCard> allDoneCards = getAllDoneCards(boardType, baseUrl, request.getStatus(), boardRequestParam);
-		List<JiraCardDTO> matchedCards = getMatchedCards(request, boardColumns, users, baseUrl, allDoneCards);
+		List<JiraCardDTO> matchedCards = getMatchedCards(request, boardColumns, users, baseUrl, allDoneCards,
+				boardRequestParam);
 		int storyPointSum = matchedCards.stream()
 			.mapToInt(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
@@ -433,7 +434,10 @@ public class JiraService {
 
 	private List<JiraCardDTO> getMatchedCards(StoryPointsAndCycleTimeRequest request,
 			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
-			List<JiraCard> allDoneCards) {
+			List<JiraCard> allDoneCards, BoardRequestParam boardRequestParam) {
+		List<TargetField> targetFields = getTargetField(baseUrl, boardRequestParam);
+		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
+		String keyFlagged = cardCustomFieldKey.getFlagged();
 		List<JiraCardDTO> matchedCards = new ArrayList<>();
 		List<CompletableFuture<JiraCard>> futures = allDoneCards.stream()
 			.map(jiraCard -> CompletableFuture.supplyAsync(() -> {
@@ -451,7 +455,7 @@ public class JiraService {
 
 		jiraCards.forEach(doneCard -> {
 			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(baseUrl, doneCard.getKey(), request.getToken(),
-					request.isTreatFlagCardAsBlock());
+					request.isTreatFlagCardAsBlock(), keyFlagged);
 			List<String> assigneeSet = new ArrayList<>(getAssigneeSet(baseUrl, doneCard, request.getToken()));
 			if (doneCard.getFields().getAssignee() != null
 					&& doneCard.getFields().getAssignee().getDisplayName() != null) {
@@ -487,12 +491,13 @@ public class JiraService {
 				|| CardStepsEnum.CLOSED.getValue().equalsIgnoreCase(displayName);
 	}
 
-	private CycleTimeInfoDTO getCycleTime(URI baseUrl, String doneCardKey, String token, Boolean treatFlagCardAsBlock) {
+	private CycleTimeInfoDTO getCycleTime(URI baseUrl, String doneCardKey, String token, Boolean treatFlagCardAsBlock,
+			String keyFlagged) {
 		CardHistoryResponseDTO cardHistoryResponseDTO = jiraFeignClient.getJiraCardHistory(baseUrl, doneCardKey, token);
 		List<StatusChangedItem> statusChangedArray = putStatusChangeEventsIntoAnArray(cardHistoryResponseDTO,
-				treatFlagCardAsBlock);
+				treatFlagCardAsBlock, keyFlagged);
 		List<StatusChangedItem> statusChangeArrayWithoutFlag = putStatusChangeEventsIntoAnArray(cardHistoryResponseDTO,
-				true);
+				true, keyFlagged);
 		List<StatusChangedItem> statusChangedItems = boardUtil.reformTimeLineForFlaggedCards(statusChangedArray);
 		List<CycleTimeInfo> cycleTimeInfos = boardUtil.getCardTimeForEachStep(statusChangedItems);
 		List<CycleTimeInfo> originCycleTimeInfos = boardUtil
@@ -505,7 +510,7 @@ public class JiraService {
 	}
 
 	private List<StatusChangedItem> putStatusChangeEventsIntoAnArray(CardHistoryResponseDTO jiraCardHistory,
-			Boolean treatFlagCardAsBlock) {
+			Boolean treatFlagCardAsBlock, String keyFlagged) {
 		List<StatusChangedItem> statusChangedArray = new ArrayList<>();
 		List<HistoryDetail> statusActivities = jiraCardHistory.getItems()
 			.stream()
@@ -527,10 +532,10 @@ public class JiraService {
 					.build()));
 		}
 
-		if (treatFlagCardAsBlock) {
+		if (treatFlagCardAsBlock && keyFlagged != null) {
 			jiraCardHistory.getItems()
 				.stream()
-				.filter(activity -> "flagged".equals(activity.getFieldId()))
+				.filter(activity -> keyFlagged.equals(activity.getFieldId()))
 				.forEach(activity -> {
 					if ("Impediment".equals(activity.getTo().getDisplayValue())) {
 						statusChangedArray.add(StatusChangedItem.builder()
