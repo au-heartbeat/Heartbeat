@@ -3,7 +3,7 @@ import { rest } from 'msw'
 import { HttpStatusCode } from 'axios'
 import { MOCK_EXPORT_CSV_REQUEST_PARAMS, MOCK_EXPORT_CSV_URL } from '../fixtures'
 import { csvClient } from '@src/clients/report/CSVClient'
-import * as http from 'http'
+import http from 'http'
 
 const server = setupServer(rest.get(MOCK_EXPORT_CSV_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.Ok))))
 
