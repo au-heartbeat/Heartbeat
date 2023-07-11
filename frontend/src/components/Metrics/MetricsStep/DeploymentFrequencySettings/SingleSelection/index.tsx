@@ -1,8 +1,6 @@
 import { InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { FormControlWrapper, StyledAvatar } from './style'
-import { BuildKiteEmoji, getEmojiUrls, removeExtraEmojiName } from '@src/utils/util'
-import emojis from '@src/assets/emojis.json'
+import { FormControlWrapper } from './style'
 
 interface Props {
   options: string[]
@@ -34,10 +32,6 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, step, o
     }
   }, [])
 
-  const emojiView = (input: string, emojis: BuildKiteEmoji[]) => {
-    return getEmojiUrls(input, emojis) && getEmojiUrls(input, emojis).map((url) => <StyledAvatar key={url} src={url} />)
-  }
-
   return (
     <>
       <FormControlWrapper variant='standard' required>
@@ -45,10 +39,7 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, step, o
         <Select labelId={labelId} value={value} onChange={handleChange}>
           {options.map((data) => (
             <MenuItem key={data} value={data} data-test-id={labelId}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {emojiView(data, emojis)}
-                <ListItemText primary={removeExtraEmojiName(data)} />
-              </div>
+              <ListItemText primary={data} />
             </MenuItem>
           ))}
         </Select>
