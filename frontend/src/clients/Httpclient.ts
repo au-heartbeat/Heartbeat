@@ -1,11 +1,8 @@
 import axios, { AxiosInstance, HttpStatusCode } from 'axios'
 import { BadRequestException } from '@src/exceptions/BadRequestException'
 import { UnauthorizedException } from '@src/exceptions/UnauthorizedException'
-import { InternalServerException } from '@src/exceptions/InternalServerException'
-import { UnknownException } from '@src/exceptions/UnkonwException'
 import { NotFoundException } from '@src/exceptions/NotFoundException'
 import { ForbiddenException } from '@src/exceptions/ForbiddenException'
-import { TimeoutException } from '@src/exceptions/TimeoutException'
 
 export class HttpClient {
   protected httpTimeout = 300000
