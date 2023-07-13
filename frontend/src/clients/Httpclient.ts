@@ -34,15 +34,13 @@ export class HttpClient {
               throw new NotFoundException(errorMessage)
             case HttpStatusCode.Forbidden:
               throw new ForbiddenException(errorMessage)
-            case HttpStatusCode.InternalServerError:
-              throw new InternalServerException(errorMessage)
             case HttpStatusCode.ServiceUnavailable:
               throw new TimeoutException(errorMessage)
             default:
               throw error
           }
         } else {
-          throw new UnknownException()
+          throw error
         }
       }
     )
