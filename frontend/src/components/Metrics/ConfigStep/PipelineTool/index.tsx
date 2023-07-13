@@ -45,7 +45,7 @@ export const PipelineTool = () => {
   const DateRange = useAppSelector(selectDateRange)
   const isVerified = useAppSelector(isPipelineToolVerified)
   const isProjectCreated = useAppSelector(selectIsProjectCreated)
-  const { verifyPipelineTool, isLoading, errorMessage } = useVerifyPipelineToolEffect()
+  const { verifyPipelineTool, isLoading, isError, errorMessage } = useVerifyPipelineToolEffect()
   const [fields, setFields] = useState([
     {
       key: 'PipelineTool',
