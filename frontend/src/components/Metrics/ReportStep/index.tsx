@@ -28,8 +28,8 @@ import { Navigate, useNavigate } from 'react-router-dom'
 export const ReportStep = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { generateReport, isLoading, isReportError, errorMessage: reportErrorMsg } = useGenerateReportEffect()
-  const { fetchExportData, errorMessage, isCSVError } = useExportCsvEffect()
+  const { generateReport, isLoading, isError: isReportError, errorMessage: reportErrorMsg } = useGenerateReportEffect()
+  const { fetchExportData, errorMessage, isError: isCSVError } = useExportCsvEffect()
   const [velocityState, setVelocityState] = useState({ value: INIT_REPORT_DATA_WITH_TWO_COLUMNS, isShow: false })
   const [cycleTimeState, setCycleTimeState] = useState({ value: INIT_REPORT_DATA_WITH_TWO_COLUMNS, isShow: false })
   const [classificationState, setClassificationState] = useState({
