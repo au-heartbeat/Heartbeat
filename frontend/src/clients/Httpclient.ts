@@ -28,14 +28,10 @@ export class HttpClient {
               throw new BadRequestException(errorMessage)
             case HttpStatusCode.Unauthorized:
               throw new UnauthorizedException(errorMessage)
-            // case HttpStatusCode.InternalServerError:
-            //   throw new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE)
             case HttpStatusCode.NotFound:
               throw new NotFoundException(errorMessage)
             case HttpStatusCode.Forbidden:
               throw new ForbiddenException(errorMessage)
-            case HttpStatusCode.ServiceUnavailable:
-              throw new TimeoutException(errorMessage)
             default:
               throw error
           }
