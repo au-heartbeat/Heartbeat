@@ -253,8 +253,8 @@ public class GitHubService {
 	}
 
 	public CommitInfo fetchCommitInfo(String commitId, String repositoryId, String token) {
-		String maskToken = TokenUtil.mask(token);
 		try {
+			String maskToken = TokenUtil.mask(token);
 			String realToken = "Bearer " + token;
 			log.info("Start to get commit info_token: {},repoId: {},commitId: {}", maskToken, repositoryId, commitId);
 			CommitInfo commitInfo = gitHubFeignClient.getCommitInfo(repositoryId, commitId, realToken);
@@ -264,12 +264,12 @@ public class GitHubService {
 		}
 		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
-			log.error("Failed to get commit info_token: {}, error: {}", maskToken, cause.getMessage());
+			log.error("Failed to get commit info_repositoryId: {}, error: {}", repositoryId, cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
-			throw new InternalServerErrorException(
-					String.format("Failed to get commit info_token: %s,cause is: %s", maskToken, cause.getMessage()));
+			throw new InternalServerErrorException(String
+				.format("Failed to get commit info_repositoryId: %s,cause is: %s", repositoryId, cause.getMessage()));
 		}
 	}
 
