@@ -225,9 +225,8 @@ public class BuildKiteService {
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
-			throw new InternalServerErrorException(
-					String.format("Failed xto get pipeline builds_param: %s, cause is %s", deploymentEnvironment,
-							cause.getMessage()));
+			throw new InternalServerErrorException(String.format("Failed to get pipeline builds_param: %s, cause is %s",
+					deploymentEnvironment, cause.getMessage()));
 		}
 	}
 
