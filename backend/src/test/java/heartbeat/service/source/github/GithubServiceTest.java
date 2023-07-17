@@ -12,7 +12,6 @@ import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
-import heartbeat.exception.CustomFeignClientException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.RateLimitExceededException;
 import heartbeat.exception.UnauthorizedException;
