@@ -45,7 +45,7 @@ describe('router', () => {
     })
   })
 
-  it('should show xxx when go home page', async () => {
+  it('should show error page when go error page', async () => {
     const errorPageRoute = '/error-page'
 
     const { getByText } = setup(errorPageRoute)
