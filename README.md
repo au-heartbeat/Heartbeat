@@ -8,47 +8,54 @@
 
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B23211%2Fgithub.com%2Fau-heartbeat%2FHeartbeat.svg?type=large)](https://app.fossa.com/projects/custom%2B23211%2Fgithub.com%2Fau-heartbeat%2FHeartbeat?ref=badge_large)
 
-* [About HeartBeat](#1-about-heartbeat)
+
+* [News](#news)
+* [About Heartbeat](#1-about-heartbeat)
 * [Support tools](#2-support-tools)
 * [Product Features](#3-product-features)
-    * [Config project info](#31-config-project-info)
-      * [Config Board/Pipeline/Source data](#311-config-boardpipelinesource-data)
-      * [Config search data](#312-config-search-data)
-      * [Config project account](#313-config-project-account)
-   * [Config Metrics data](#32-config-metrics-data)
-      * [Config Crews/Cycle Time](#321-config-crewscycle-time)
-      * [Setting Classification](#322-setting-classification)
-      * [Deployment Frequency/Lead Time for Changes](#323-deployment-frequencylead-time-for-changes)
-   * [Export and import config info](#33-export-and-import-config-info)
-      * [Export Config Json File](#331-export-config-json-file)
-      * [Import Config Json File](#332-import-config-json-file)
-   * [Generate Metrics Data](#34-generate-metrics-data)
-      * [Velocity](#341-velocity)
-      * [Cycle Time](#342-cycle-time)
-      * [Classification](#343-classification)
-      * [Deployment Frequency](#344-deployment-frequency)
-      * [Lead time for changes Data](#345-lead-time-for-changes-data)
-      * [Change Failure Rate](#346-change-failure-rate)
-   * [Export original data](#35-export-original-data)
-      * [Export board data](#351-export-board-data)
-      * [Export pipeline data](#352-export-pipeline-data)
+  * [Config project info](#31-config-project-info)
+    * [Config Board/Pipeline/Source data](#311-config-boardpipelinesource-data)
+    * [Config search data](#312-config-search-data)
+    * [Config project account](#313-config-project-account)
+  * [Config Metrics data](#32-config-metrics-data)
+    * [Config Crews/Cycle Time](#321-config-crewscycle-time)
+    * [Setting Classification](#322-setting-classification)
+    * [Deployment Frequency/Lead Time for Changes](#323-deployment-frequencylead-time-for-changes)
+  * [Export and import config info](#33-export-and-import-config-info)
+    * [Export Config Json File](#331-export-config-json-file)
+    * [Import Config Json File](#332-import-config-json-file)
+  * [Generate Metrics Data](#34-generate-metrics-data)
+    * [Velocity](#341-velocity)
+    * [Cycle Time](#342-cycle-time)
+    * [Classification](#343-classification)
+    * [Deployment Frequency](#344-deployment-frequency)
+    * [Lead time for changes Data](#345-lead-time-for-changes-data)
+    * [Change Failure Rate](#346-change-failure-rate)
+  * [Export original data](#35-export-original-data)
+    * [Export board data](#351-export-board-data)
+    * [Export pipeline data](#352-export-pipeline-data)
 * [Known issues](#4-known-issues)
-   * [Add/Delete columns in Jira board](#41-adddelete-columns-in-jira-board)
-   * [No crew settings for Pipeline and Github](#42-no-crew-settings-for-pipeline-and-github)
-   * [Change failure rate and MTTR](#43-change-failure-rate-and-mttr)
+  * [Add/Delete columns in Jira board](#41-adddelete-columns-in-jira-board)
+  * [No crew settings for Pipeline and Github](#42-no-crew-settings-for-pipeline-and-github)
+  * [Change failure rate and MTTR](#43-change-failure-rate-and-mttr)
 * [Instructions](#5-instructions)
-   * [Prepare for Jira Project](#51-prepare-for-jira-project)
-   * [Prepare env to use HeartBeat tool](#52-prepare-env-to-use-heartbeat-tool)
-* [Run HeartBeat](#6-run-heartbeat)
-   * [How to run backend](#61-how-to-run-backend)
-      *[How to package it (optional)](#611-how-to-package-it-optional)
-   * [How to run frontend](#62-how-to-run-frontend)
-      *[How to build it](#621-how-to-build-it)
+  * [Prepare for Jira Project](#51-prepare-for-jira-project)
+  * [Prepare env to use Heartbeat tool](#52-prepare-env-to-use-heartbeat-tool)
+* [Run Heartbeat](#6-run-heartbeat)
+  * [How to run backend](#61-how-to-run-backend)
+    *[How to package it (optional)](#611-how-to-package-it-optional)
+  * [How to run frontend](#62-how-to-run-frontend)
+    *[How to build it](#621-how-to-build-it)
 
+# News
 
-# 1 About HeartBeat
+ - [Feb 28 2023 - Released Heartbeat - 0.9.0](release-notes/20230228.md)
+ - [July 27 2023 - Release Heartbeat - 1.0.0](release-notes/20230726.md)
 
-HeartBeat is a tool for tracking project delivery metrics that can help you get a better understanding of delivery performance. This product allows you easily get all aspects of source data faster and more accurate to analyze team delivery performance which enables delivery teams and team leaders focusing on driving continuous improvement and enhancing team productivity and efficiency.
+# 1 About Heartbeat
+
+Heartbeat is a tool for tracking project delivery metrics that can help you get a better understanding of delivery performance. This product allows you easily get all aspects of source data faster and more accurate to analyze team delivery performance which enables delivery teams and team leaders focusing on driving continuous improvement and enhancing team productivity and efficiency.
+
 
 State of DevOps Report is launching in 2019. In this webinar, The 4 key metrics research team and Google Cloud share key metrics to measure DevOps performance, measure the effectiveness of development and delivery practices. They searching about six years, developed four metrics that provide a high-level systems view of software delivery and performance.
 
@@ -59,7 +66,7 @@ State of DevOps Report is launching in 2019. In this webinar, The 4 key metrics 
 3.  Mean Time To Recover (MTTR)
 4.  Change Failure Rate (CFR)
 
-In HeartBeat tool, we also have some other metrics, like: Velocity, Cycle Time and Classification. So we can collect DF, LTC, CFR, Velocity, Cycle Time and Classification.
+In Heartbeat tool, we also have some other metrics, like: Velocity, Cycle Time and Classification. So we can collect DF, LTC, CFR, Velocity, Cycle Time and Classification.
 
 # 2 Support tools
 
@@ -99,7 +106,7 @@ All need to select which data you want to get, for now, we support seven metrics
 - `Velocity` : includes how many story points and cards we have completed within selected time period.
 - `Cycle time`: the time it take for each card start to do until move to done.
 - `Classification`: provide different dimensions to view how much efforts team spent within selected time period.
- 
+
 
 ![Image 3-3](https://user-images.githubusercontent.com/995849/90855755-ef7f4280-e3b2-11ea-8b72-923f544db508.png)\
 _Image 3-3，Metrics Data_
@@ -109,8 +116,7 @@ _Image 3-3，Metrics Data_
 Because all metrics data from different tools that your projects use. Need to have the access to these tools then you can get the data. So after select time period and metrics data, then you need to input the config for different tools(Image 3-4).
 
 According to your selected required data, you need to input account settings for the respective data source. Below is the mapping between your selected data to data source.
- 
-                
+
 | Required Data  | Datasource  |
 |---|---|
 | Velocity  | Board  |
@@ -156,7 +162,9 @@ After inputting the details info, users need to click the `Verify` button to ver
 ![Image 3-5](https://user-images.githubusercontent.com/995849/90856562-c6f84800-e3b4-11ea-80ea-f1a267f1dcd7.png)\
 _Image 3-5, Crews/Cycle Time config_
 
-**Crew Settings:** You could select your team members from a list get from board source. The list will include the assignees for those tickets that finished in the time period selected in the last step. 
+
+**Crew Settings:** You could select your team members from a list get from board source. The list will include the assignees for those tickets that finished in the time period selected in the last step.
+
 **Cycle Time:** It will list all columns for the current active jira board. Then users need to map the each column to the supported columns. Like, if your board have “in progress” column, it means developer doing this ticket, so it should be mapping with “In Dev” for the list we provide.
 
 | Status              | Description                                                                                                                            |
@@ -226,8 +234,10 @@ _Image 3-11，Cycle Time Report_
 
 ### 3.4.3 Classification
 
-It will show the classification data of Board based on your selection on `Classification Settings` in metrics page. 
-The percentage value represent the count of that type tickets vs total count of tickets. 
+
+It will show the classification data of Board based on your selection on `Classification Settings` in metrics page.
+The percentage value represent the count of that type tickets vs total count of tickets.
+
 
 ![Image 3-12](docs/img/Classification-Export.png)\
 _Image 3-12，Classification Report_
@@ -319,12 +329,14 @@ In the current version, if you add or delete some columns for the jira board, it
 | Kanban        | It will change finish time for all last column tickets to add/delete column time                                                          | If delete non-last column: It will change finish time for all last column tickets to add/delete column time<br/>If delete the last column: It will change finish time for current last column tickets to add/delete column time |
 | Scrum         | finish time for all last column tickets to add/delete column time<br/>All finished ticket’s finish time changed to add/delete column time | If delete the last column: It will change finish time for current last column tickets to add/delete column time                                                                                                                 |
 
-## 4.2 No crew settings for Pipeline and Github 
-In case that not only your team but also other team was contributing on the same repo and pipeline, the metrics (`Lead time for change`, `deployment frenquency`, `change failure rate`, `mean time to recovery`) might not be as accurate which might include the other team's contribution. Because currently Heartbeat could't not differentiate which pipeline trigger by your team or other team within specified time range. The feature is still under development. 
+
+## 4.2 No crew settings for Pipeline and Github
+In case that not only your team but also other team was contributing on the same repo and pipeline, the metrics (`Lead time for change`, `deployment frenquency`, `change failure rate`, `mean time to recovery`) might not be as accurate which might include the other team's contribution. Because currently Heartbeat could't not differentiate which pipeline trigger by your team or other team within specified time range. The feature is still under development.
 
 ## 4.3 Change failure rate and MTTR
-Currently the calculated metrics for change failure rate might not be precise in some scenarios. 
-And MTTR is still under development. 
+Currently the calculated metrics for change failure rate might not be precise in some scenarios.
+And MTTR is still under development.
+
 
 # 5 Instructions
 
@@ -346,14 +358,14 @@ For Classic Jira users, before you use this tool, you need to do some settings f
 
 For the next-gen Jira, when you add story points item, the name should be Story Points or Story point estimate.
 
-## 5.2 Prepare env to use HeartBeat tool
+## 5.2 Prepare env to use Heartbeat tool
 
 For now, we just can download the code in our local machine, please follow below steps:
 
 1.  Clone the backend code in your local machine: https://github.com/thoughtworks/HeartBeat/
 2.  Follow the steps as below
 
-# 6 Run HeartBeat
+# 6 Run Heartbeat
 
 ## 6.1 How to run frontend
 
