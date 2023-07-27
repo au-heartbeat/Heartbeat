@@ -8,7 +8,6 @@ import {
   EMAIL,
   EMAIL_REG_EXP,
   EMPTY_STRING,
-  ERROR_PAGE_ROUTE,
 } from '@src/constants'
 import { FormEvent, useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch'
@@ -206,7 +205,7 @@ export const Board = () => {
   return (
     <>
       {isServerError ? (
-        navigate(ERROR_PAGE_ROUTE)
+        navigate('/error-page')
       ) : (
         <StyledSection>
           <NoDoneCardPop isOpen={isShowNoDoneCard} onClose={() => setIsNoDoneCard(false)} />

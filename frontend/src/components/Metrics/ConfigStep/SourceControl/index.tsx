@@ -3,7 +3,6 @@ import {
   CONFIG_TITLE,
   DEFAULT_HELPER_TEXT,
   EMPTY_STRING,
-  ERROR_PAGE_ROUTE,
   GITHUB_TOKEN_REGEXP,
   SOURCE_CONTROL_TYPES,
   TOKEN_HELPER_TEXT,
@@ -131,7 +130,7 @@ export const SourceControl = () => {
   return (
     <>
       {isServerError ? (
-        navigate(ERROR_PAGE_ROUTE)
+        navigate('/error-page')
       ) : (
         <StyledSection>
           {errorMessage && <ErrorNotification message={errorMessage} />}

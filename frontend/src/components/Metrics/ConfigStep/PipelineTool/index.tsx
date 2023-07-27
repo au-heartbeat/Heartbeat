@@ -7,7 +7,6 @@ import {
   TOKEN_HELPER_TEXT,
   EMPTY_STRING,
   DEFAULT_HELPER_TEXT,
-  ERROR_PAGE_ROUTE,
 } from '@src/constants'
 import { FormEvent, useEffect, useState } from 'react'
 import {
@@ -155,7 +154,7 @@ export const PipelineTool = () => {
   return (
     <>
       {isServerError ? (
-        navigate(ERROR_PAGE_ROUTE)
+        navigate('/error-page')
       ) : (
         <StyledSection>
           {errorMessage && <ErrorNotification message={errorMessage} />}

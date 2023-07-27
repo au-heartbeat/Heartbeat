@@ -4,7 +4,6 @@ import Router from '@src/router'
 import { Provider } from 'react-redux'
 import { store } from '@src/store'
 import { ERROR_PAGE_MESSAGE } from './fixtures'
-import { HOME_PAGE_ROUTE } from '@src/constants'
 
 describe('router', () => {
   const setup = (routeUrl: string) =>
@@ -27,7 +26,9 @@ describe('router', () => {
   })
 
   it('should show home page when go home page', async () => {
-    setup(HOME_PAGE_ROUTE)
+    const homeRoute = '/home'
+
+    setup(homeRoute)
 
     await waitFor(() => {
       expect(window.location.pathname).toEqual('/')
