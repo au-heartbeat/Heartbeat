@@ -39,7 +39,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     } catch (e) {
       const err = e as Error
       const { response } = err
-      if (response && response.status) {
+      if (response && response.status && response.status >= 500 && response.status < 600) {
         setIsError(true)
       } else {
         setErrorMessage(`${pipelineType} ${GET_STEPS_FAILED_MESSAGE}: ${err.message}`)
