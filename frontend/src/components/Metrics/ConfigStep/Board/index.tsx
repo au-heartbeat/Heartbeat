@@ -45,7 +45,7 @@ export const Board = () => {
   const DateRange = useAppSelector(selectDateRange)
   const isProjectCreated = useAppSelector(selectIsProjectCreated)
   const [isShowNoDoneCard, setIsNoDoneCard] = useState(false)
-  const { verifyJira, isLoading, isServerError, errorMessage } = useVerifyBoardEffect()
+  const { verifyJira, isLoading, isError, errorMessage } = useVerifyBoardEffect()
   const [fields, setFields] = useState([
     {
       key: 'Board',
@@ -204,8 +204,8 @@ export const Board = () => {
 
   return (
     <>
-      {isServerError ? (
-        navigate('/error-page')
+      {isError ? (
+        navigate('/errorPage')
       ) : (
         <StyledSection>
           <NoDoneCardPop isOpen={isShowNoDoneCard} onClose={() => setIsNoDoneCard(false)} />

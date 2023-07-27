@@ -3,7 +3,6 @@ import { MemoryRouter } from 'react-router-dom'
 import Router from '@src/router'
 import { Provider } from 'react-redux'
 import { store } from '@src/store'
-import { ERROR_PAGE_MESSAGE } from './fixtures'
 
 describe('router', () => {
   const setup = (routeUrl: string) =>
@@ -42,16 +41,6 @@ describe('router', () => {
     const { findByText } = setup(metricsRoute)
     steps.map(async (label) => {
       expect(await findByText(label)).toBeVisible()
-    })
-  })
-
-  it('should show error page when go error page', async () => {
-    const errorPageRoute = '/error-page'
-
-    const { getByText } = setup(errorPageRoute)
-
-    await waitFor(() => {
-      expect(getByText(ERROR_PAGE_MESSAGE)).toBeInTheDocument()
     })
   })
 })

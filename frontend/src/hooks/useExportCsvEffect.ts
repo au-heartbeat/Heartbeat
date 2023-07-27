@@ -7,12 +7,12 @@ import { AxiosError } from 'axios'
 export interface useExportCsvEffectInterface {
   fetchExportData: (params: CSVReportRequestDTO) => void
   errorMessage: string
-  isServerError: boolean
+  isError: boolean
 }
 
 export const useExportCsvEffect = (): useExportCsvEffectInterface => {
   const [errorMessage, setErrorMessage] = useState('')
-  const [isServerError, setIsServerError] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   const fetchExportData = async (params: CSVReportRequestDTO) => {
     try {
@@ -20,7 +20,7 @@ export const useExportCsvEffect = (): useExportCsvEffectInterface => {
     } catch (e) {
       const err = e as AxiosError
       if (!err.message || err.response) {
-        setIsServerError(true)
+        setIsError(true)
       } else {
         setErrorMessage(`failed to export csv: ${err.message}`)
         setTimeout(() => {
@@ -30,5 +30,5 @@ export const useExportCsvEffect = (): useExportCsvEffectInterface => {
     }
   }
 
-  return { fetchExportData, errorMessage, isServerError }
+  return { fetchExportData, errorMessage, isError }
 }

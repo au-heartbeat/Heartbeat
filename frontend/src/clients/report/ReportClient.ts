@@ -53,9 +53,16 @@ export class ReportClient extends HttpClient {
     },
   }
 
+  //TODO:boardClient
   report = async (params: ReportRequestDTO) => {
-    const res = await this.axiosInstance.post(`/reports`, params, {})
-    this.reportResponse = res.data
+    await this.axiosInstance
+      .post(`/reports`, params, {})
+      .then((res) => {
+        this.reportResponse = res.data
+      })
+      .catch((e) => {
+        throw e
+      })
     return {
       response: this.reportResponse,
     }
