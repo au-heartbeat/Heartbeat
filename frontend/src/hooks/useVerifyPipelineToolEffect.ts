@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient'
 import { VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
 import { PipelineRequestDTO } from '@src/clients/pipeline/dto/request'
-import { handleApiRequest } from '@src/hooks/HandleApiRequest/handleApiRequest'
+import { handleApiRequest } from '@src/utils/util'
 
 export interface useVerifyPipeLineToolStateInterface {
   verifyPipelineTool: (params: PipelineRequestDTO) => Promise<
