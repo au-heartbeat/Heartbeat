@@ -14,7 +14,6 @@ import {
   STEP,
 } from '../../../../fixtures'
 import { navigateMock } from '../../../../../setupTests'
-import { UnknownException } from '@src/exceptions/UnknownException'
 
 jest.mock('@src/context/Metrics/metricsSlice', () => ({
   ...jest.requireActual('@src/context/Metrics/metricsSlice'),
@@ -219,10 +218,14 @@ describe('PipelineMetricSelection', () => {
   })
 
   it('should check error page show when isServerError is true', async () => {
+    const error = {
+      response: {
+        status: 500,
+      },
+    }
     metricsClient.getSteps = jest.fn().mockImplementation(() => {
-      throw new UnknownException()
+      throw error
     })
-
     await setup({ id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '' }, false, false)
 
     await waitFor(() => {

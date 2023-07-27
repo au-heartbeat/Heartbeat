@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient'
-import { ERROR_MESSAGE_TIME_DURATION, UNKNOWN_EXCEPTION, VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
+import { ERROR_MESSAGE_TIME_DURATION, VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
 import { SourceControlRequestDTO } from '@src/clients/sourceControl/dto/request'
+import { AxiosError } from 'axios'
 
 export interface useVerifySourceControlStateInterface {
   verifyGithub: (params: SourceControlRequestDTO) => Promise<
@@ -26,8 +27,8 @@ export const useVerifySourceControlEffect = (): useVerifySourceControlStateInter
     try {
       return await sourceControlClient.getVerifySourceControl(params)
     } catch (e) {
-      const err = e as Error
-      if (err.message === UNKNOWN_EXCEPTION) {
+      const err = e as AxiosError
+      if (!err.message || err.response) {
         setIsServerError(true)
       } else {
         setErrorMessage(`${params.type} ${VERIFY_FAILED_ERROR_MESSAGE}: ${err.message}`)
