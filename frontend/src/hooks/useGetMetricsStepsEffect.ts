@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { GET_STEPS_FAILED_MESSAGE } from '@src/constants'
+import { ERROR_MESSAGE_TIME_DURATION, GET_STEPS_FAILED_MESSAGE, UNKNOWN_EXCEPTION } from '@src/constants'
 import { getStepsParams, metricsClient } from '@src/clients/MetricsClient'
-import { handleApiRequest } from '@src/utils/util'
 
 export interface useGetMetricsStepsEffectInterface {
   getSteps: (
@@ -34,17 +33,22 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     pipelineType: string,
     token: string
   ) => {
-    const errorHandler = (err: Error) => {
-      setErrorMessage(`${pipelineType} ${GET_STEPS_FAILED_MESSAGE}: ${err.message}`)
+    setIsLoading(true)
+    try {
+      return await metricsClient.getSteps(params, organizationId, buildId, pipelineType, token)
+    } catch (e) {
+      const err = e as Error
+      if (err.message === UNKNOWN_EXCEPTION) {
+        setIsServerError(true)
+      } else {
+        setErrorMessage(`${pipelineType} ${GET_STEPS_FAILED_MESSAGE}: ${err.message}`)
+        setTimeout(() => {
+          setErrorMessage('')
+        }, ERROR_MESSAGE_TIME_DURATION)
+      }
+    } finally {
+      setIsLoading(false)
     }
-
-    return await handleApiRequest(
-      () => metricsClient.getSteps(params, organizationId, buildId, pipelineType, token),
-      errorHandler,
-      setIsLoading,
-      setIsServerError,
-      setErrorMessage
-    )
   }
 
   return { isLoading, isServerError, getSteps, errorMessage }
