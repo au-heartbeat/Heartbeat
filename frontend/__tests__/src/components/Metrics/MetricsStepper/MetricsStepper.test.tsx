@@ -6,7 +6,6 @@ import {
   BACK,
   CONFIRM_DIALOG_DESCRIPTION,
   EXPECTED_REPORT_VALUES,
-  HOME_PAGE_ROUTE,
   LEAD_TIME_FOR_CHANGES,
   MOCK_REPORT_URL,
   NEXT,
@@ -38,6 +37,7 @@ import {
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice'
 import { exportToJsonFile } from '@src/utils/util'
+import { HOME_PAGE_ROUTE } from '@src/constants'
 
 const START_DATE_LABEL = 'From *'
 const TODAY = dayjs()

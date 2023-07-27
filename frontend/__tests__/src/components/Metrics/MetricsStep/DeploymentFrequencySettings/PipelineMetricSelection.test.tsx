@@ -7,7 +7,6 @@ import { metricsClient } from '@src/clients/MetricsClient'
 import { updatePipelineToolVerifyResponseSteps } from '@src/context/config/configSlice'
 import {
   ERROR_MESSAGE_TIME_DURATION,
-  ERROR_PAGE_ROUTE,
   ORGANIZATION,
   PIPELINE_NAME,
   PIPELINE_SETTING_TYPES,
@@ -16,6 +15,7 @@ import {
 } from '../../../../fixtures'
 import { navigateMock } from '../../../../../setupTests'
 import { UnknownException } from '@src/exceptions/UnknownException'
+import { ERROR_PAGE_ROUTE } from '@src/constants'
 
 jest.mock('@src/context/Metrics/metricsSlice', () => ({
   ...jest.requireActual('@src/context/Metrics/metricsSlice'),
