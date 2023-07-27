@@ -4,7 +4,6 @@ import { reportClient } from '@src/clients/report/ReportClient'
 import { ReportRequestDTO } from '@src/clients/report/dto/request'
 import { reportMapper } from '@src/hooks/reportMapper/report'
 import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
-import { AxiosError } from 'axios'
 
 export interface useGenerateReportEffectInterface {
   generateReport: (params: ReportRequestDTO) => Promise<
@@ -34,8 +33,9 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       const res = await reportClient.report(params)
       return reportMapper(res.response)
     } catch (e) {
-      const err = e as AxiosError
-      if (!err.message || err.response) {
+      const err = e as Error
+      const { response } = err
+      if (response && response.status) {
         setIsError(true)
       } else {
         setErrorMessage(`generate report: ${err.message}`)

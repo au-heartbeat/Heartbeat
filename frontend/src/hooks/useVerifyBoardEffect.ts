@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { boardClient } from '@src/clients/board/BoardClient'
 import { ERROR_MESSAGE_TIME_DURATION, VERIFY_FAILED_ERROR_MESSAGE } from '@src/constants'
 import { BoardRequestDTO } from '@src/clients/board/dto/request'
-import { AxiosError } from 'axios'
 
 export interface useVerifyBoardStateInterface {
   verifyJira: (params: BoardRequestDTO) => Promise<
@@ -28,8 +27,9 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     try {
       return await boardClient.getVerifyBoard(params)
     } catch (e) {
-      const err = e as AxiosError
-      if (!err.message || err.response) {
+      const err = e as Error
+      const { response } = err
+      if (response && response.status) {
         setIsError(true)
       } else {
         setErrorMessage(`${params.type} ${VERIFY_FAILED_ERROR_MESSAGE}: ${err.message}`)
