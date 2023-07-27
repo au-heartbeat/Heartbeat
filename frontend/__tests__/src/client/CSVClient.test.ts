@@ -1,8 +1,9 @@
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
-import { AxiosError, HttpStatusCode } from 'axios'
+import { HttpStatusCode } from 'axios'
 import { MOCK_EXPORT_CSV_REQUEST_PARAMS, MOCK_EXPORT_CSV_URL } from '../fixtures'
 import { csvClient } from '@src/clients/report/CSVClient'
+import http from 'http'
 
 const server = setupServer(rest.get(MOCK_EXPORT_CSV_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.Ok))))
 
@@ -29,10 +30,10 @@ describe('verify export csv', () => {
     expect(removeChildSpy).toHaveBeenCalled()
   })
 
-  it('should throw error when export csv request status 5xx', async () => {
+  it('should throw error when export csv request status 500', async () => {
     server.use(rest.get(MOCK_EXPORT_CSV_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.InternalServerError))))
     await expect(async () => {
       await csvClient.exportCSVData(MOCK_EXPORT_CSV_REQUEST_PARAMS)
-    }).rejects.toThrow(AxiosError)
+    }).rejects.toThrow(http.STATUS_CODES[500])
   })
 })

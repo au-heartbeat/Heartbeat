@@ -2,7 +2,7 @@ import { setupServer } from 'msw/node'
 import { rest } from 'msw'
 import { MOCK_SOURCE_CONTROL_URL, MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS, VERIFY_ERROR_MESSAGE } from '../fixtures'
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient'
-import { AxiosError, HttpStatusCode } from 'axios'
+import { HttpStatusCode } from 'axios'
 
 const server = setupServer(rest.get(MOCK_SOURCE_CONTROL_URL, (req, res, ctx) => res(ctx.status(200))))
 
@@ -42,22 +42,33 @@ describe('verify sourceControl request', () => {
     })
   })
 
-  it('should throw error when sourceControl verify response status 5xx', async () => {
+  it('should throw error when sourceControl verify response status 500', async () => {
     server.use(
-      rest.get(MOCK_SOURCE_CONTROL_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.InternalServerError)))
+      rest.get(MOCK_SOURCE_CONTROL_URL, (req, res, ctx) =>
+        res(
+          ctx.status(HttpStatusCode.InternalServerError),
+          ctx.json({
+            hintInfo: VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR,
+          })
+        )
+      )
     )
 
     sourceControlClient.getVerifySourceControl(MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS).catch((e) => {
       expect(e).toBeInstanceOf(Error)
-      expect((e as Error).message).toMatch('Request failed with status code 500')
+      expect((e as Error).message).toMatch(VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR)
     })
   })
 
   it('should throw error when sourceControl verify response status is 300', async () => {
-    server.use(rest.get(MOCK_SOURCE_CONTROL_URL, (req, res, ctx) => res(ctx.status(HttpStatusCode.MultipleChoices))))
+    server.use(
+      rest.get(MOCK_SOURCE_CONTROL_URL, (req, res, ctx) =>
+        res(ctx.status(HttpStatusCode.MultipleChoices), ctx.json({ hintInfo: VERIFY_ERROR_MESSAGE.UNKNOWN }))
+      )
+    )
 
     await expect(async () => {
       await sourceControlClient.getVerifySourceControl(MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS)
-    }).rejects.toThrow(AxiosError)
+    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.UNKNOWN)
   })
 })
