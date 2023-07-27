@@ -1,6 +1,6 @@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/emojis/emoji'
 import { ERROR_MESSAGE_TIME_DURATION, UNKNOWN_EXCEPTION } from '@src/constants'
-import { Dispatch, SetStateAction } from 'react'
+import React from 'react'
 
 export const exportToJsonFile = (filename: string, json: object) => {
   const dataStr = JSON.stringify(json, null, 4)
@@ -33,9 +33,9 @@ export const transformToCleanedBuildKiteEmoji = (input: OriginBuildKiteEmoji[]):
 export const handleApiRequest = async <T>(
   apiCall: () => Promise<T>,
   errorHandler: (err: Error) => void,
-  setIsLoading: Dispatch<SetStateAction<boolean>>,
-  setIsServerError: Dispatch<SetStateAction<boolean>>,
-  setErrorMessage: Dispatch<SetStateAction<string>>
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsServerError: React.Dispatch<React.SetStateAction<boolean>>,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>
 ) => {
   setIsLoading(true)
   try {

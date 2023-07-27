@@ -17,7 +17,6 @@ import { navigateMock } from '../../../../setupTests'
 import mocked = jest.mocked
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect'
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
-import { ERROR_PAGE_ROUTE } from '@src/constants'
 
 jest.mock('@src/hooks/useGenerateReportEffect', () => ({
   useGenerateReportEffect: jest.fn().mockReturnValue({
@@ -199,7 +198,7 @@ describe('Report Step', () => {
     await setup([REQUIRED_DATA_LIST[1]])
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith(ERROR_PAGE_ROUTE)
+      expect(navigateMock).toHaveBeenCalledWith('/error-page')
     })
   })
 
@@ -214,7 +213,7 @@ describe('Report Step', () => {
     await setup([REQUIRED_DATA_LIST[1]])
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith(ERROR_PAGE_ROUTE)
+      expect(navigateMock).toHaveBeenCalledWith('/error-page')
     })
   })
 

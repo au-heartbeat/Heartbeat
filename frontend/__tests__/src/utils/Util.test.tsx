@@ -38,6 +38,7 @@ describe('handleApiRequest', () => {
   const mockSetErrorMessage = jest.fn()
 
   beforeEach(() => {
+    // Reset the mock functions before each test
     mockSetIsLoading.mockReset()
     mockSetIsServerError.mockReset()
     mockSetErrorMessage.mockReset()
