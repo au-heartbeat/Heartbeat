@@ -22,9 +22,4 @@ export const routes = [
     component: lazy(() => import('../pages/Home')),
     name: 'Home',
   },
-  {
-    path: '/errorPage',
-    component: lazy(() => import('../pages/errorPage')),
-    name: 'errorPage',
-  },
 ]

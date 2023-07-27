@@ -12,13 +12,11 @@ export interface useVerifyPipeLineToolStateInterface {
     | undefined
   >
   isLoading: boolean
-  isError: boolean
   errorMessage: string
 }
 
 export const useVerifyPipelineToolEffect = (): useVerifyPipeLineToolStateInterface => {
   const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const verifyPipelineTool = async (params: PipelineRequestDTO) => {
@@ -27,15 +25,10 @@ export const useVerifyPipelineToolEffect = (): useVerifyPipeLineToolStateInterfa
       return await pipelineToolClient.verifyPipelineTool(params)
     } catch (e) {
       const err = e as Error
-      const { response } = err
-      if (response && response.status && response.status >= 500 && response.status < 600) {
-        setIsError(true)
-      } else {
-        setErrorMessage(`${params.type} ${VERIFY_FAILED_ERROR_MESSAGE}: ${err.message}`)
-        setTimeout(() => {
-          setErrorMessage('')
-        }, ERROR_MESSAGE_TIME_DURATION)
-      }
+      setErrorMessage(`${params.type} ${VERIFY_FAILED_ERROR_MESSAGE}: ${err.message}`)
+      setTimeout(() => {
+        setErrorMessage('')
+      }, ERROR_MESSAGE_TIME_DURATION)
     } finally {
       setIsLoading(false)
     }
@@ -44,7 +37,6 @@ export const useVerifyPipelineToolEffect = (): useVerifyPipeLineToolStateInterfa
   return {
     verifyPipelineTool,
     isLoading,
-    isError,
     errorMessage,
   }
 }

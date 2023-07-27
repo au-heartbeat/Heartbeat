@@ -17,13 +17,11 @@ export interface useGetMetricsStepsEffectInterface {
     | undefined
   >
   isLoading: boolean
-  isError: boolean
   errorMessage: string
 }
 
 export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface => {
   const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const getSteps = async (
@@ -38,19 +36,14 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       return await metricsClient.getSteps(params, organizationId, buildId, pipelineType, token)
     } catch (e) {
       const err = e as Error
-      const { response } = err
-      if (response && response.status && response.status >= 500 && response.status < 600) {
-        setIsError(true)
-      } else {
-        setErrorMessage(`${pipelineType} ${GET_STEPS_FAILED_MESSAGE}: ${err.message}`)
-        setTimeout(() => {
-          setErrorMessage('')
-        }, ERROR_MESSAGE_TIME_DURATION)
-      }
+      setErrorMessage(`${pipelineType} ${GET_STEPS_FAILED_MESSAGE}: ${err.message}`)
+      setTimeout(() => {
+        setErrorMessage('')
+      }, ERROR_MESSAGE_TIME_DURATION)
     } finally {
       setIsLoading(false)
     }
   }
 
-  return { isLoading, isError, getSteps, errorMessage }
+  return { isLoading, getSteps, errorMessage }
 }
