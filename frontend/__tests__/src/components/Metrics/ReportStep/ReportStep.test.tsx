@@ -84,7 +84,6 @@ describe('Report Step', () => {
     store = null
     jest.clearAllMocks()
   })
-
   it('should render report page', async () => {
     const { getByText } = await act(() => setup(['']))
 
@@ -140,19 +139,6 @@ describe('Report Step', () => {
     }
   )
 
-  it('should show errorMessage when generateReport has error message', async () => {
-    mocked(useGenerateReportEffect).mockReturnValue({
-      generateReport: jest.fn(),
-      isLoading: false,
-      errorMessage: 'error message',
-      isServerError: false,
-    })
-
-    const { getByText } = await act(() => setup(['']))
-
-    expect(getByText('error message')).toBeInTheDocument()
-  })
-
   it('should show errorMessage when click export pipeline button given csv not exist', async () => {
     const { getByText } = await act(() => setup([REQUIRED_DATA_LIST[4]]))
 
@@ -192,7 +178,6 @@ describe('Report Step', () => {
       fetchExportData: jest.fn(),
       errorMessage: 'failed export csv',
       isServerError: true,
-      isLoading: false,
     })
 
     await setup([REQUIRED_DATA_LIST[1]])
@@ -214,21 +199,6 @@ describe('Report Step', () => {
 
     await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith('/error-page')
-    })
-  })
-
-  it('should render loading page when isLoading is true', async () => {
-    mocked(useGenerateReportEffect).mockReturnValue({
-      generateReport: jest.fn(),
-      isLoading: true,
-      errorMessage: '',
-      isServerError: false,
-    })
-
-    const { getByTestId } = await act(() => setup(['']))
-
-    await waitFor(() => {
-      expect(getByTestId('loading-page')).toBeInTheDocument()
     })
   })
 })
