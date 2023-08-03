@@ -433,7 +433,7 @@ public class JiraService {
 											   List<JiraCard> allDoneCards, List<TargetField> targetFields) {
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
 		String keyFlagged = cardCustomFieldKey.getFlagged();
-		List<JiraCardDTO> matchedCards = new ArrayList<>();
+		List<JiraCardDTO> realDoneCards = new ArrayList<>();
 		List<CompletableFuture<JiraCard>> futures = allDoneCards.stream()
 			.map(jiraCard -> CompletableFuture.supplyAsync(() -> {
 				CardHistoryResponseDTO jiraCardHistory = jiraFeignClient.getJiraCardHistory(baseUrl, jiraCard.getKey(),
@@ -464,10 +464,10 @@ public class JiraService {
 					.cardCycleTime(calculateCardCycleTime(doneCard.getKey(), cycleTimeInfoDTO.getCycleTimeInfos(),
 							boardColumns))
 					.build();
-				matchedCards.add(jiraCardDTO);
+				realDoneCards.add(jiraCardDTO);
 			}
 		});
-		return matchedCards;
+		return realDoneCards;
 	}
 
 	private boolean isRealDoneCardByHistory(CardHistoryResponseDTO jiraCardHistory, List<String> status) {
