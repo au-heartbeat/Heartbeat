@@ -3,6 +3,7 @@ package heartbeat.service.board.jira;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
 
+import static java.lang.Long.parseLong;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -442,6 +443,15 @@ public class JiraService {
 			.map(jiraCard -> CompletableFuture.supplyAsync(() -> {
 				CardHistoryResponseDTO jiraCardHistory = jiraFeignClient.getJiraCardHistory(baseUrl, jiraCard.getKey(),
 						request.getToken());
+				HistoryDetail detail = jiraCardHistory.getItems()
+					.stream()
+					.filter((historyDetail) -> STATUS_FIELD_ID.equals(historyDetail.getFieldId()))
+					.filter((historyDetail) -> historyDetail.getTimestamp() < parseLong(request.getStartTime()) + 86400000)
+					.reduce((pre, next) -> next)
+					.orElse(null);
+				if (detail == null || request.getStatus().contains(detail.getTo().getDisplayName().toUpperCase())) {
+					return null;
+				}
 				if (isRealDoneCardByHistory(jiraCardHistory,request.getStatus())) {
 					return jiraCard;
 				}
