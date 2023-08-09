@@ -459,7 +459,7 @@ class JiraServiceTest {
 				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
-		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
+		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
 	}
 
 	@Test
@@ -477,8 +477,8 @@ class JiraServiceTest {
 
 		CardCollection doneCards = jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
 				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
-		assertThat(doneCards.getStoryPointSum()).isEqualTo(0);
-		assertThat(doneCards.getCardsNumber()).isEqualTo(0);
+		assertThat(doneCards.getStoryPointSum()).isEqualTo(1);
+		assertThat(doneCards.getCardsNumber()).isEqualTo(1);
 	}
 
 	@Test

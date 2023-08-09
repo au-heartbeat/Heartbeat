@@ -168,7 +168,7 @@ public class JiraBoardConfigDTOFixture {
 					new HistoryDetail(7, "status", new Status("FLAG"), new Status("Block")),
 					new HistoryDetail(8, "customfield_10021", new Status("Impediment"), new Status("FLAG")),
 					new HistoryDetail(9, "flagged", new Status("removeFlag"), new Status("Impediment")),
-					new HistoryDetail(9, "status", new Status("Done"), new Status("Testing")),
+					new HistoryDetail(1672642750000L, "status", new Status("Done"), new Status("Testing")),
 					new HistoryDetail(9, "customfield_10021", new Status("UNKNOWN"), new Status("removeFlag"))));
 	}
 
