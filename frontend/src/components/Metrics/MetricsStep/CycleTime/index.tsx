@@ -35,6 +35,7 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
           : item
       )
     )
+
     if (value === DONE) {
       setSaveDone([...saveDone, name])
       dispatch(saveDoneColumn([]))
@@ -46,6 +47,11 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
 
   useEffect(() => {
     dispatch(saveCycleTimeSettings(cycleTimeOptions))
+    cycleTimeOptions.forEach((item) => {
+      if (item.value === 'Done') {
+        setSaveDone([...saveDone, item.name])
+      }
+    })
   }, [cycleTimeOptions, dispatch])
 
   return (
