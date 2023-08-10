@@ -51,6 +51,7 @@ import static heartbeat.service.jira.JiraBoardConfigDTOFixture.COLUM_SELF_ID_1;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.COLUM_SELF_ID_2;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.COLUM_SELF_ID_3;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.COMPLETE_STATUS_SELF_RESPONSE_BUILDER;
+import static heartbeat.service.jira.JiraBoardConfigDTOFixture.CYCLE_TIME_INFO_LIST;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.DOING_STATUS_SELF_RESPONSE_BUILDER;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.DONE_STATUS_SELF_RESPONSE_BUILDER;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.FIELD_RESPONSE_BUILDER;
@@ -526,6 +527,7 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(FIELD_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
+		when(boardUtil.getCardTimeForEachStep(any())).thenReturn(CYCLE_TIME_INFO_LIST());
 
 		CardCollection doneCards = jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
 				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
