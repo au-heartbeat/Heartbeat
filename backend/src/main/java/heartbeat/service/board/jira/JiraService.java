@@ -364,7 +364,7 @@ public class JiraService {
 					"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s",
 					String.join("','", doneColumns), boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 		}
-		else if (boardType == BoardType.CLASSIC_JIRA) {
+		else {
 			StringBuilder subJql = new StringBuilder();
 			for (int index = 0; index < doneColumns.size() - 1; index++) {
 				subJql.append(String.format("status changed to '%s' during (%s, %s) or ", doneColumns.get(index),
@@ -374,9 +374,6 @@ public class JiraService {
 				.append(String.format("status changed to '%s' during (%s, %s)", doneColumns.get(doneColumns.size() - 1),
 						boardRequestParam.getStartTime(), boardRequestParam.getEndTime()));
 			return String.format("status in ('%s') AND (%s)", String.join("', '", doneColumns), subJql);
-		}
-		else {
-			throw new BadRequestException("boardType param is not correct");
 		}
 	}
 
