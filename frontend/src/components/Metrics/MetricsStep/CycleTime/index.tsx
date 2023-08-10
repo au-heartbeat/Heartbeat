@@ -48,7 +48,7 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
   useEffect(() => {
     dispatch(saveCycleTimeSettings(cycleTimeOptions))
     cycleTimeOptions.forEach((item) => {
-      if (item.value === 'Done') {
+      if (item.value === DONE) {
         setSaveDone([...saveDone, item.name])
       }
     })
