@@ -28,10 +28,6 @@ describe('MetricsStep', () => {
     store = setupStore()
   })
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   it('should render Crews when select velocity, and show Real done when have done column in Cycle time', async () => {
     await store.dispatch(updateMetrics([REQUIRED_DATA_LIST[1]]))
     const { getByText, queryByText } = setup()
