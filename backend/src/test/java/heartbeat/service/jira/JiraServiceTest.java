@@ -122,9 +122,7 @@ class JiraServiceTest {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		String jql = String.format(
-				"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
-				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+		String jql = "sprint in openSprints()";
 		List<TargetField> expectTargetField = List.of(
 				new TargetField("customfield_10016", "Story point estimate", false),
 				new TargetField("customfield_10020", "Sprint", false),
@@ -140,7 +138,7 @@ class JiraServiceTest {
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_2, token)).thenReturn(doingStatusSelf);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
 			.thenReturn(CARD_HISTORY_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getTargetField(baseUrl, "project key", token))
@@ -165,9 +163,7 @@ class JiraServiceTest {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		String jql = String.format(
-				"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
-				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+		String jql = "sprint in openSprints()";
 		List<TargetField> expectTargetField = List.of(
 				new TargetField("customfield_10016", "Story point estimate", false),
 				new TargetField("customfield_10020", "Sprint", false),
@@ -179,8 +175,8 @@ class JiraServiceTest {
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_2, token)).thenReturn(doingStatusSelf);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 100, jql, token)).thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 100, jql, token)).thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistory(baseUrl, "1", token))
 			.thenReturn(CARD_HISTORY_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getTargetField(baseUrl, "project key", token))
@@ -208,10 +204,7 @@ class JiraServiceTest {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		String jql = String.format(
-				"status in ('%s', '%s') AND (status changed to '%s' during (%s, %s) or status changed to '%s' during (%s, %s))",
-				"DONE", "COMPLETE", "DONE", boardRequestParam.getStartTime(), boardRequestParam.getEndTime(),
-				"COMPLETE", boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+		String jql = "sprint in openSprints()";
 		List<TargetField> expectTargetField = List.of(
 				new TargetField("customfield_10016", "Story point estimate", false),
 				new TargetField("customfield_10020", "Sprint", false),
@@ -224,7 +217,7 @@ class JiraServiceTest {
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_3, token)).thenReturn(completeStatusSelf);
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_2, token)).thenReturn(doingStatusSelf);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
 			.thenReturn(CARD_HISTORY_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getTargetField(baseUrl, "project key", token))
@@ -270,22 +263,20 @@ class JiraServiceTest {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		String jql = String.format(
-				"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
-				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+		String jql = "sprint in openSprints()";
 
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 		doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_2, token)).thenReturn(doingStatusSelf);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token))
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token))
 			.thenReturn(objectMapper.writeValueAsString(ONE_PAGE_NO_DONE_CARDS_RESPONSE_BUILDER().build()));
 		when(jiraFeignClient.getTargetField(baseUrl, "project key", token))
 			.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 		assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 			.isInstanceOf(NoContentException.class)
-			.hasMessageContaining("There is no done cards.");
+			.hasMessageContaining("There is no cards.");
 	}
 
 	@Test
@@ -328,9 +319,7 @@ class JiraServiceTest {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		String jql = String.format(
-				"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
-				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+		String jql = "sprint in openSprints()";
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 			.replaceAll("storyPoints", "customfield_10016");
 
@@ -338,7 +327,7 @@ class JiraServiceTest {
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
 		when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_2, token)).thenReturn(doingStatusSelf);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, token)).thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
 			.thenReturn(new CardHistoryResponseDTO(Collections.emptyList()));
 		when(jiraFeignClient.getTargetField(baseUrl, "project key", token))
@@ -458,7 +447,7 @@ class JiraServiceTest {
 			.replaceAll("storyPoints", "customfield_10016");
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 			.thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistory(baseUrl, "1", token))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
@@ -482,7 +471,7 @@ class JiraServiceTest {
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getAllCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
+		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
 				"{\"total\":1,\"issues\":[{\"expand\":\"expand\",\"id\":\"1\",\"self\":\"https:xxxx/issue/1\",\"key\":\"ADM-455\",\"fields\":{\"customfield_10020\":[{\"id\":16,\"name\":\"Tool Sprint 11\",\"state\":\"closed\",\"boardId\":2,\"goal\":\"goals\",\"startDate\":\"2023-05-15T03:09:23.000Z\",\"endDate\":\"2023-05-28T16:00:00.000Z\",\"completeDate\":\"2023-05-29T03:51:24.898Z\"}],\"customfield_10021\":[{\"self\":\"https:xxxx/10019\",\"value\":\"Impediment\",\"id\":\"10019\"}],\"customfield_10016\":1,\"assignee\":{\"displayName\":\"Zhang San\"}}}]}");
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(FIELD_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
@@ -517,7 +506,7 @@ class JiraServiceTest {
 			.replaceAll("storyPoints", "customfield_10016");
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 			.thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistory(baseUrl, "1", token))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
@@ -540,7 +529,7 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getAllCards(any(), any(), anyInt(), anyInt(), any(), any()))
+		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
@@ -561,7 +550,7 @@ class JiraServiceTest {
 			.build();
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getAllCards(any(), any(), anyInt(), anyInt(), any(), any()))
+		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
@@ -585,12 +574,12 @@ class JiraServiceTest {
 				+ "')";
 		String jqlForActiveSprint = "sprint in openSprints() AND status not in ('"
 				+ String.join("','", storyPointsAndCycleTimeRequest.getStatus()) + "')";
-
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
 				boardRequestParam.getToken()))
 			.thenReturn("");
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban, boardRequestParam.getToken()))
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban,
+				boardRequestParam.getToken()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
 
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
@@ -614,13 +603,14 @@ class JiraServiceTest {
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jqlForKanban = "";
 		String jqlForActiveSprint = "sprint in openSprints() ";
-
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
 				boardRequestParam.getToken()))
 			.thenReturn("");
-		when(jiraFeignClient.getAllCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban, boardRequestParam.getToken()))
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban,
+				boardRequestParam.getToken()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
+
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());

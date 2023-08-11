@@ -28,8 +28,8 @@ public interface JiraFeignClient {
 			@RequestHeader String authorization);
 
 	@GetMapping(path = "/rest/agile/1.0/board/{boardId}/issue?maxResults={queryCount}&startAt={startAt}&jql={jql}")
-	String getAllCards(URI baseUrl, @PathVariable String boardId, @PathVariable int queryCount,
-			@PathVariable int startAt, @PathVariable String jql, @RequestHeader String authorization);
+	String getJiraCards(URI baseUrl, @PathVariable String boardId, @PathVariable int queryCount,
+						@PathVariable int startAt, @PathVariable String jql, @RequestHeader String authorization);
 
 	@Cacheable(cacheNames = "jiraActivityfeed", key = "#jiraCardKey")
 	@GetMapping(path = "/rest/internal/2/issue/{jiraCardKey}/activityfeed")
