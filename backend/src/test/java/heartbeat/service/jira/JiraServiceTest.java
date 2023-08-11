@@ -126,9 +126,9 @@ class JiraServiceTest {
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jql = "sprint in openSprints()";
 		List<TargetField> expectTargetField = List.of(
-				new TargetField("customfield_10016", "Story point estimate", false),
-				new TargetField("customfield_10020", "Sprint", false),
-				new TargetField("customfield_10021", "Flagged", false));
+			new TargetField("customfield_10016", "Story point estimate", false),
+			new TargetField("customfield_10020", "Sprint", false),
+			new TargetField("customfield_10021", "Flagged", false));
 
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 			.replaceAll("sprint", "customfield_10020")
@@ -167,9 +167,9 @@ class JiraServiceTest {
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jql = "sprint in openSprints()";
 		List<TargetField> expectTargetField = List.of(
-				new TargetField("customfield_10016", "Story point estimate", false),
-				new TargetField("customfield_10020", "Sprint", false),
-				new TargetField("customfield_10021", "Flagged", false));
+			new TargetField("customfield_10016", "Story point estimate", false),
+			new TargetField("customfield_10020", "Sprint", false),
+			new TargetField("customfield_10021", "Flagged", false));
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_TWO_PAGES_CARDS_RESPONSE_BUILDER().build())
 			.replaceAll("storyPoints", "customfield_10016");
 
@@ -198,7 +198,7 @@ class JiraServiceTest {
 
 	@Test
 	void shouldCallJiraFeignClientAndReturnBoardConfigResponseWhenGetClassicJiraBoardConfig()
-			throws JsonProcessingException {
+		throws JsonProcessingException {
 		JiraBoardConfigDTO jiraBoardConfigDTO = CLASSIC_JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 		StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 		StatusSelfDTO completeStatusSelf = COMPLETE_STATUS_SELF_RESPONSE_BUILDER().build();
@@ -208,9 +208,9 @@ class JiraServiceTest {
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jql = "sprint in openSprints()";
 		List<TargetField> expectTargetField = List.of(
-				new TargetField("customfield_10016", "Story point estimate", false),
-				new TargetField("customfield_10020", "Sprint", false),
-				new TargetField("customfield_10021", "Flagged", false));
+			new TargetField("customfield_10016", "Story point estimate", false),
+			new TargetField("customfield_10020", "Sprint", false),
+			new TargetField("customfield_10021", "Flagged", false));
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 			.replaceAll("storyPoints", "customfield_10016");
 
@@ -441,8 +441,8 @@ class JiraServiceTest {
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jql = String.format(
-				"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
-				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+			"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
+			boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
@@ -479,7 +479,7 @@ class JiraServiceTest {
 			.replaceAll("flagged", "customfield_10021")
 			.replaceAll("development", "customfield_10000");
 
-        //when
+		//when
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
 			.thenReturn(allDoneCards);
@@ -490,8 +490,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 		//then
 
-		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTime(storyPointsAndCycleTimeRequest,
-				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
+		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
+			jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
 	}
@@ -505,7 +505,7 @@ class JiraServiceTest {
         //when
 		//then
 
-		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTime(storyPointsAndCycleTimeRequest,
+		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
 			jiraBoardSetting.getBoardColumns(), List.of("Zhang San")))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Board type does not find!");
@@ -519,7 +519,7 @@ class JiraServiceTest {
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
-				"{\"total\":1,\"issues\":[{\"expand\":\"expand\",\"id\":\"1\",\"self\":\"https:xxxx/issue/1\",\"key\":\"ADM-455\",\"fields\":{\"customfield_10020\":[{\"id\":16,\"name\":\"Tool Sprint 11\",\"state\":\"closed\",\"boardId\":2,\"goal\":\"goals\",\"startDate\":\"2023-05-15T03:09:23.000Z\",\"endDate\":\"2023-05-28T16:00:00.000Z\",\"completeDate\":\"2023-05-29T03:51:24.898Z\"}],\"customfield_10021\":[{\"self\":\"https:xxxx/10019\",\"value\":\"Impediment\",\"id\":\"10019\"}],\"customfield_10016\":1,\"assignee\":{\"displayName\":\"Zhang San\"}}}]}");
+			"{\"total\":1,\"issues\":[{\"expand\":\"expand\",\"id\":\"1\",\"self\":\"https:xxxx/issue/1\",\"key\":\"ADM-455\",\"fields\":{\"customfield_10020\":[{\"id\":16,\"name\":\"Tool Sprint 11\",\"state\":\"closed\",\"boardId\":2,\"goal\":\"goals\",\"startDate\":\"2023-05-15T03:09:23.000Z\",\"endDate\":\"2023-05-28T16:00:00.000Z\",\"completeDate\":\"2023-05-29T03:51:24.898Z\"}],\"customfield_10021\":[{\"self\":\"https:xxxx/10019\",\"value\":\"Impediment\",\"id\":\"10019\"}],\"customfield_10016\":1,\"assignee\":{\"displayName\":\"Zhang San\"}}}]}");
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(FIELD_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistory(any(), any(), any()))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
@@ -538,8 +538,8 @@ class JiraServiceTest {
 			.build();
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().startTime("5").build();
 		String jql = String.format(
-				"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
-				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+			"status in ('%s') AND statusCategoryChangedDate >= %s AND statusCategoryChangedDate <= %s", "DONE",
+			boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 			.replaceAll("storyPoints", "customfield_10016");
@@ -605,15 +605,15 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jqlForKanban = "status not in ('" + String.join("','", storyPointsAndCycleTimeRequest.getStatus())
-				+ "')";
+			+ "')";
 		String jqlForActiveSprint = "sprint in openSprints() AND status not in ('"
-				+ String.join("','", storyPointsAndCycleTimeRequest.getStatus()) + "')";
+			+ String.join("','", storyPointsAndCycleTimeRequest.getStatus()) + "')";
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
-				boardRequestParam.getToken()))
+			boardRequestParam.getToken()))
 			.thenReturn("");
 		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban,
-				boardRequestParam.getToken()))
+			boardRequestParam.getToken()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
 
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
@@ -639,10 +639,10 @@ class JiraServiceTest {
 		String jqlForActiveSprint = "sprint in openSprints() ";
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
-				boardRequestParam.getToken()))
+			boardRequestParam.getToken()))
 			.thenReturn("");
 		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForKanban,
-				boardRequestParam.getToken()))
+			boardRequestParam.getToken()))
 			.thenReturn(objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
 
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
