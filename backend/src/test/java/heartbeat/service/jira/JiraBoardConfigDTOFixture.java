@@ -64,7 +64,7 @@ public class JiraBoardConfigDTOFixture {
 				.columns(List.of(JiraColumn.builder()
 					.name("TODO")
 					.statuses(List.of(new JiraColumnStatus(COLUM_SELF_ID_1), new JiraColumnStatus(COLUM_SELF_ID_2),
-						new JiraColumnStatus(COLUM_SELF_ID_3)))
+							new JiraColumnStatus(COLUM_SELF_ID_3)))
 					.build()))
 				.build());
 	}
@@ -97,38 +97,38 @@ public class JiraBoardConfigDTOFixture {
 		return AllDoneCardsResponseDTO.builder()
 			.total("2")
 			.issues(List.of(
-				new JiraCard("1",
-					JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(2).build()),
-				new JiraCard("1",
-					JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(1).build()),
-				new JiraCard("1", JiraCardField.builder().assignee(new Assignee("Zhang San")).build()),
-				new JiraCard("1",
-					JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(5).build()),
-				new JiraCard("2",
-					JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(5).build())));
+					new JiraCard("1",
+							JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(2).build()),
+					new JiraCard("1",
+							JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(1).build()),
+					new JiraCard("1", JiraCardField.builder().assignee(new Assignee("Zhang San")).build()),
+					new JiraCard("1",
+							JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(5).build()),
+					new JiraCard("2",
+							JiraCardField.builder().assignee(new Assignee("Zhang San")).storyPoints(5).build())));
 	}
 
 	public static AllDoneCardsResponseDTO.AllDoneCardsResponseDTOBuilder ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER() {
 		return AllDoneCardsResponseDTO.builder()
 			.total("3")
 			.issues(List.of(
-				new JiraCard("1",
-					JiraCardField.builder()
-						.assignee(new Assignee("Zhang San"))
-						.issuetype(IssueType.builder().name("缺陷").build())
-						.storyPoints(2)
-						.build()),
-				new JiraCard("2",
-					JiraCardField.builder()
-						.assignee(new Assignee("Zhang San"))
-						.issuetype(IssueType.builder().name("缺陷").build())
-						.storyPoints(1)
-						.build()),
-				new JiraCard("3",
-					JiraCardField.builder()
-						.assignee(new Assignee("Zhang San"))
-						.issuetype(IssueType.builder().name("缺陷").build())
-						.build())));
+					new JiraCard("1",
+							JiraCardField.builder()
+								.assignee(new Assignee("Zhang San"))
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(2)
+								.build()),
+					new JiraCard("2",
+							JiraCardField.builder()
+								.assignee(new Assignee("Zhang San"))
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(1)
+								.build()),
+					new JiraCard("3",
+							JiraCardField.builder()
+								.assignee(new Assignee("Zhang San"))
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.build())));
 	}
 
 	public static AllDoneCardsResponseDTO.AllDoneCardsResponseDTOBuilder ALL_DONE_TWO_PAGES_CARDS_RESPONSE_BUILDER() {
@@ -144,32 +144,32 @@ public class JiraBoardConfigDTOFixture {
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_RESPONSE_BUILDER() {
 		return CardHistoryResponseDTO.builder()
 			.items(List.of(new HistoryDetail(2, "status", new Status("In Dev"), new Status("To do")),
-				new HistoryDetail(3, "status", new Status("Review"), new Status("In Dev")),
-				new HistoryDetail(4, "status", new Status("Waiting for testing"), new Status("Review")),
-				new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for testing"))));
+					new HistoryDetail(3, "status", new Status("Review"), new Status("In Dev")),
+					new HistoryDetail(4, "status", new Status("Waiting for testing"), new Status("Review")),
+					new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for testing"))));
 	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_RESPONSE_BUILDER_WITHOUT_STATUS() {
 		return CardHistoryResponseDTO.builder()
 			.items(List.of(new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do")),
-				new HistoryDetail(3, "assignee", new Status("Review"), new Status("In Dev")),
-				new HistoryDetail(4, "assignee", new Status("Waiting for testing"), new Status("Review")),
-				new HistoryDetail(5, "assignee", new Status("Testing"), new Status("Waiting for testing"))));
+					new HistoryDetail(3, "assignee", new Status("Review"), new Status("In Dev")),
+					new HistoryDetail(4, "assignee", new Status("Waiting for testing"), new Status("Review")),
+					new HistoryDetail(5, "assignee", new Status("Testing"), new Status("Waiting for testing"))));
 	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_MULTI_RESPONSE_BUILDER() {
 		return CardHistoryResponseDTO.builder()
 			.items(List.of(new HistoryDetail(1, "status", new Status("To do"), new Status("Block")),
-				new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do")),
-				new HistoryDetail(3, "status", new Status("Review"), new Status("In Dev")),
-				new HistoryDetail(4, "status", new Status("Waiting for testing"), new Status("Review")),
-				new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for testing")),
-				new HistoryDetail(6, "status", new Status("Block"), new Status("Testing")),
-				new HistoryDetail(7, "status", new Status("FLAG"), new Status("Block")),
-				new HistoryDetail(1672642750001L, "customfield_10021", new Status("Impediment"), new Status("FLAG")),
-				new HistoryDetail(1672642750002L, "flagged", new Status("Impediment"), new Status("removeFlag")),
-				new HistoryDetail(1672642750003L, "status", new Status("Done"), new Status("Testing")),
-				new HistoryDetail(1672642750002L, "customfield_10021", new Status("UNKNOWN"), new Status("removeFlag"))));
+					new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do")),
+					new HistoryDetail(3, "status", new Status("Review"), new Status("In Dev")),
+					new HistoryDetail(4, "status", new Status("Waiting for testing"), new Status("Review")),
+					new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for testing")),
+					new HistoryDetail(6, "status", new Status("Block"), new Status("Testing")),
+					new HistoryDetail(7, "status", new Status("FLAG"), new Status("Block")),
+					new HistoryDetail(1672642750001L, "customfield_10021", new Status("Impediment"), new Status("FLAG")),
+					new HistoryDetail(1672642750002L, "flagged",  new Status("Impediment"),new Status("removeFlag")),
+					new HistoryDetail(1672642750003L, "status", new Status("Done"), new Status("Testing")),
+					new HistoryDetail(1672642750002L, "customfield_10021", new Status("UNKNOWN"), new Status("removeFlag"))));
 	}
 
 	// public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder
@@ -222,15 +222,15 @@ public class JiraBoardConfigDTOFixture {
 		return JiraBoardSetting.builder()
 			.boardId("unknown")
 			.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("In Dev").value("In Dev").build(),
-				RequestJiraBoardColumnSetting.builder()
-					.name("Waiting for testing")
-					.value("Waiting for testing")
-					.build(),
-				RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
-				RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
-				RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
-				RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
-				RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
+					RequestJiraBoardColumnSetting.builder()
+						.name("Waiting for testing")
+						.value("Waiting for testing")
+						.build(),
+					RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
+					RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
+					RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
+					RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
+					RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
 			.token("token")
 			.site("site")
 			.doneColumn(List.of("DONE"))
@@ -238,71 +238,69 @@ public class JiraBoardConfigDTOFixture {
 			.type("jira")
 			.projectKey("PLL")
 			.targetFields(List.of(TargetField.builder().key("testKey1").name("Story Points").flag(true).build(),
-				TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
-				TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
+					TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
+					TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
 	}
-
 	public static JiraBoardSetting.JiraBoardSettingBuilder CLASSIC_JIRA_BOARD_SETTING_BUILD() {
 		return JiraBoardSetting.builder()
 			.boardId("unknown")
 			.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("In Dev").value("In Dev").build(),
-				RequestJiraBoardColumnSetting.builder()
-					.name("Waiting for testing")
-					.value("Waiting for testing")
-					.build(),
-				RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
-				RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
-				RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
-				RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
-				RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
+					RequestJiraBoardColumnSetting.builder()
+						.name("Waiting for testing")
+						.value("Waiting for testing")
+						.build(),
+					RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
+					RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
+					RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
+					RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
+					RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
 			.token("token")
 			.site("site")
-			.doneColumn(List.of("DONE_A", "DONE_B"))
+			.doneColumn(List.of("DONE_A","DONE_B"))
 			.treatFlagCardAsBlock(true)
 			.type("classic-jira")
 			.projectKey("PLL")
 			.targetFields(List.of(TargetField.builder().key("testKey1").name("Story Points").flag(true).build(),
-				TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
-				TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
+					TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
+					TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
 	}
-
 	public static JiraBoardSetting.JiraBoardSettingBuilder INCORRECT_JIRA_BOARD_SETTING_BUILD() {
 		return JiraBoardSetting.builder()
 			.boardId("unknown")
 			.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("In Dev").value("In Dev").build(),
-				RequestJiraBoardColumnSetting.builder()
-					.name("Waiting for testing")
-					.value("Waiting for testing")
-					.build(),
-				RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
-				RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
-				RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
-				RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
-				RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
+					RequestJiraBoardColumnSetting.builder()
+						.name("Waiting for testing")
+						.value("Waiting for testing")
+						.build(),
+					RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
+					RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
+					RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
+					RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
+					RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
 			.token("token")
 			.site("site")
-			.doneColumn(List.of("DONE_A", "DONE_B"))
+			.doneColumn(List.of("DONE_A","DONE_B"))
 			.treatFlagCardAsBlock(true)
 			.type("unknown")
 			.projectKey("PLL")
 			.targetFields(List.of(TargetField.builder().key("testKey1").name("Story Points").flag(true).build(),
-				TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
-				TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
+					TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
+					TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
 	}
 
 	public static JiraBoardSetting.JiraBoardSettingBuilder JIRA_BOARD_SETTING_HAVE_UNKNOWN_COLUMN_BUILD() {
 		return JiraBoardSetting.builder()
 			.boardId("jira")
 			.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("In Dev").value("In Dev").build(),
-				RequestJiraBoardColumnSetting.builder()
-					.name("Waiting for testing")
-					.value("Waiting for testing")
-					.build(),
-				RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
-				RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
-				RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
-				RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
-				RequestJiraBoardColumnSetting.builder().name("xxxx").value("xxxx").build()))
+					RequestJiraBoardColumnSetting.builder()
+						.name("Waiting for testing")
+						.value("Waiting for testing")
+						.build(),
+					RequestJiraBoardColumnSetting.builder().name("Block").value("Block").build(),
+					RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
+					RequestJiraBoardColumnSetting.builder().name("Review").value("Review").build(),
+					RequestJiraBoardColumnSetting.builder().name("FLAG").value("FLAG").build(),
+					RequestJiraBoardColumnSetting.builder().name("xxxx").value("xxxx").build()))
 			.token("token")
 			.site("site")
 			.doneColumn(List.of("DONE"))
@@ -310,8 +308,8 @@ public class JiraBoardConfigDTOFixture {
 			.type("jira")
 			.projectKey("PLL")
 			.targetFields(List.of(TargetField.builder().key("testKey").name("Story Points").flag(true).build(),
-				TargetField.builder().key("testKey").name("Sprint").flag(true).build(),
-				TargetField.builder().key("testKey").name("Flagged").flag(true).build()));
+					TargetField.builder().key("testKey").name("Sprint").flag(true).build(),
+					TargetField.builder().key("testKey").name("Flagged").flag(true).build()));
 	}
 
 	public static StoryPointsAndCycleTimeRequest.StoryPointsAndCycleTimeRequestBuilder STORY_POINTS_FORM_ALL_DONE_CARD() {
@@ -328,7 +326,6 @@ public class JiraBoardConfigDTOFixture {
 			.targetFields(jiraBoardSetting.getTargetFields())
 			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock());
 	}
-
 	public static StoryPointsAndCycleTimeRequest.StoryPointsAndCycleTimeRequestBuilder CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD() {
 		JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
 		return StoryPointsAndCycleTimeRequest.builder()
@@ -343,7 +340,6 @@ public class JiraBoardConfigDTOFixture {
 			.targetFields(jiraBoardSetting.getTargetFields())
 			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock());
 	}
-
 	public static StoryPointsAndCycleTimeRequest.StoryPointsAndCycleTimeRequestBuilder INCORRECT_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD() {
 		JiraBoardSetting jiraBoardSetting = INCORRECT_JIRA_BOARD_SETTING_BUILD().build();
 		return StoryPointsAndCycleTimeRequest.builder()
@@ -376,11 +372,11 @@ public class JiraBoardConfigDTOFixture {
 
 	public static List<CycleTimeInfo> CYCLE_TIME_INFO_LIST() {
 		return List.of(CycleTimeInfo.builder().column("WAITING FOR TESTING").day(1.0).build(),
-			CycleTimeInfo.builder().column("TESTING").day(2.0).build(),
-			CycleTimeInfo.builder().column("IN DEV").day(3.0).build(),
-			CycleTimeInfo.builder().column("REVIEW").day(4.0).build(),
-			CycleTimeInfo.builder().column("UNKNOWN").day(5.0).build(),
-			CycleTimeInfo.builder().column("FLAG").day(6.0).build());
+				CycleTimeInfo.builder().column("TESTING").day(2.0).build(),
+				CycleTimeInfo.builder().column("IN DEV").day(3.0).build(),
+				CycleTimeInfo.builder().column("REVIEW").day(4.0).build(),
+				CycleTimeInfo.builder().column("UNKNOWN").day(5.0).build(),
+				CycleTimeInfo.builder().column("FLAG").day(6.0).build());
 	}
 
 }
