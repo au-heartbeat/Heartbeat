@@ -465,45 +465,48 @@ class JiraServiceTest {
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
 	}
+
 	@Test
 	void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeWhenBoardTypeIsClassicJira() throws JsonProcessingException {
-		//given
+		// given
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 
 		JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
-		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD().build();
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
+			.build();
 		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 			.replaceAll("sprint", "customfield_10020")
 			.replaceAll("partner", "customfield_10037")
 			.replaceAll("flagged", "customfield_10021")
 			.replaceAll("development", "customfield_10000");
 
-        //when
+		// when
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
-		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
-			.thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistory(baseUrl, "1", token))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistory(baseUrl, "2", token))
 			.thenReturn(CARD_HISTORY_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
-		//then
+		// then
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
 			jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
 	}
+
 	@Test
 	void shouldReturnBadRequestExceptionWhenBoardTypeIsNotCorrect() {
-		//given
+		// given
 
 		JiraBoardSetting jiraBoardSetting = INCORRECT_JIRA_BOARD_SETTING_BUILD().build();
-		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = INCORRECT_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD().build();
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = INCORRECT_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
+			.build();
 
-        //when
-		//then
+		// when
+		// then
 
 		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
 			jiraBoardSetting.getBoardColumns(), List.of("Zhang San")))

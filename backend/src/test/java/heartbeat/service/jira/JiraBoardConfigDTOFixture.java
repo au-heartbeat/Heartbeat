@@ -166,10 +166,12 @@ public class JiraBoardConfigDTOFixture {
 					new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for testing")),
 					new HistoryDetail(6, "status", new Status("Block"), new Status("Testing")),
 					new HistoryDetail(7, "status", new Status("FLAG"), new Status("Block")),
-					new HistoryDetail(1672642750001L, "customfield_10021", new Status("Impediment"), new Status("FLAG")),
-					new HistoryDetail(1672642750002L, "flagged",  new Status("Impediment"),new Status("removeFlag")),
+					new HistoryDetail(1672642750001L, "customfield_10021", new Status("Impediment"),
+							new Status("FLAG")),
+					new HistoryDetail(1672642750002L, "flagged", new Status("Impediment"), new Status("removeFlag")),
 					new HistoryDetail(1672642750003L, "status", new Status("Done"), new Status("Testing")),
-					new HistoryDetail(1672642750002L, "customfield_10021", new Status("UNKNOWN"), new Status("removeFlag"))));
+					new HistoryDetail(1672642750002L, "customfield_10021", new Status("UNKNOWN"),
+							new Status("removeFlag"))));
 	}
 
 	// public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder
@@ -241,6 +243,7 @@ public class JiraBoardConfigDTOFixture {
 					TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
 					TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
 	}
+
 	public static JiraBoardSetting.JiraBoardSettingBuilder CLASSIC_JIRA_BOARD_SETTING_BUILD() {
 		return JiraBoardSetting.builder()
 			.boardId("unknown")
@@ -256,7 +259,7 @@ public class JiraBoardConfigDTOFixture {
 					RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
 			.token("token")
 			.site("site")
-			.doneColumn(List.of("DONE_A","DONE_B"))
+			.doneColumn(List.of("DONE_A", "DONE_B"))
 			.treatFlagCardAsBlock(true)
 			.type("classic-jira")
 			.projectKey("PLL")
@@ -264,6 +267,7 @@ public class JiraBoardConfigDTOFixture {
 					TargetField.builder().key("testKey2").name("Sprint").flag(true).build(),
 					TargetField.builder().key("testKey3").name("Flagged").flag(true).build()));
 	}
+
 	public static JiraBoardSetting.JiraBoardSettingBuilder INCORRECT_JIRA_BOARD_SETTING_BUILD() {
 		return JiraBoardSetting.builder()
 			.boardId("unknown")
@@ -279,7 +283,7 @@ public class JiraBoardConfigDTOFixture {
 					RequestJiraBoardColumnSetting.builder().name("UNKNOWN").value("UNKNOWN").build()))
 			.token("token")
 			.site("site")
-			.doneColumn(List.of("DONE_A","DONE_B"))
+			.doneColumn(List.of("DONE_A", "DONE_B"))
 			.treatFlagCardAsBlock(true)
 			.type("unknown")
 			.projectKey("PLL")
@@ -326,6 +330,7 @@ public class JiraBoardConfigDTOFixture {
 			.targetFields(jiraBoardSetting.getTargetFields())
 			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock());
 	}
+
 	public static StoryPointsAndCycleTimeRequest.StoryPointsAndCycleTimeRequestBuilder CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD() {
 		JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
 		return StoryPointsAndCycleTimeRequest.builder()
@@ -340,6 +345,7 @@ public class JiraBoardConfigDTOFixture {
 			.targetFields(jiraBoardSetting.getTargetFields())
 			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock());
 	}
+
 	public static StoryPointsAndCycleTimeRequest.StoryPointsAndCycleTimeRequestBuilder INCORRECT_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD() {
 		JiraBoardSetting jiraBoardSetting = INCORRECT_JIRA_BOARD_SETTING_BUILD().build();
 		return StoryPointsAndCycleTimeRequest.builder()
