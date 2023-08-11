@@ -533,6 +533,7 @@ class JiraServiceTest {
 		assertThat(doneCards.getStoryPointSum()).isEqualTo(1);
 		assertThat(doneCards.getCardsNumber()).isEqualTo(1);
 	}
+
 	@Test
 	public void shouldReturnNullWhenCallGetStoryPointsAndCycleTimeAndHistoryISNull() {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);

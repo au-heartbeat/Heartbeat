@@ -491,9 +491,6 @@ public class JiraService {
 			.filter(historyDetail -> STATUS_FIELD_ID.equals(historyDetail.getFieldId()))
 			.reduce((pre, next) -> next)
 			.orElse(null);
-		if (detail == null) {
-			return false;
-		}
 		String displayName = detail.getTo().getDisplayName();
 		return status.contains(displayName.toUpperCase())
 				|| CardStepsEnum.CLOSED.getValue().equalsIgnoreCase(displayName);
