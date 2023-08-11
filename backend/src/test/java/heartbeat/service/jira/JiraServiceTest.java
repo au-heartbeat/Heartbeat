@@ -461,8 +461,8 @@ class JiraServiceTest {
 			.thenReturn(CARD_HISTORY_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
-		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
-				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
+		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeForDoneCards(
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -493,8 +493,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 		// then
 
-		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
-			jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
+		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeForDoneCards(
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"));
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
 	}
@@ -509,7 +509,7 @@ class JiraServiceTest {
 		// then
 
 		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
-			jiraBoardSetting.getBoardColumns(), List.of("Zhang San")))
+				jiraBoardSetting.getBoardColumns(), List.of("Zhang San")))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Board type does not find!");
 	}
@@ -580,7 +580,7 @@ class JiraServiceTest {
 
 	@Test
 	public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForActiveSprint()
-		throws JsonProcessingException {
+			throws JsonProcessingException {
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();

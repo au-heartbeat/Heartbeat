@@ -638,8 +638,8 @@ public class JiraService {
 			jiraCardWithFields = getAllNonDoneCardsForKanBan(baseUrl, request.getStatus(), boardRequestParam);
 		}
 
-		List<JiraCardDTO> matchedNonCards = getMatchedCards(request, boardColumns, users, baseUrl,
-				jiraCardWithFields.getJiraCards(), jiraCardWithFields.getTargetFields(), true);
+		List<JiraCardDTO> matchedNonCards = getMatchedNonDoneCards(request, boardColumns, users, baseUrl,
+				jiraCardWithFields.getJiraCards(), jiraCardWithFields.getTargetFields());
 		int storyPointSum = matchedNonCards.stream()
 			.mapToInt(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
@@ -651,17 +651,15 @@ public class JiraService {
 			.build();
 	}
 
-	private List<JiraCardDTO> getMatchedCards(StoryPointsAndCycleTimeRequest request,
-			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl, List<JiraCard> allCards,
-			List<TargetField> targetFields, Boolean isNonDone) {
-
-		List<JiraCard> filteredCards = isNonDone ? allCards : filterDoneCards(baseUrl, request, allCards);
+	private List<JiraCardDTO> getMatchedNonDoneCards(StoryPointsAndCycleTimeRequest request,
+			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
+			List<JiraCard> allNonDoneCards, List<TargetField> targetFields) {
 
 		List<JiraCardDTO> matchedCards = new ArrayList<>();
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
 		String keyFlagged = cardCustomFieldKey.getFlagged();
 
-		filteredCards.forEach(card -> {
+		allNonDoneCards.forEach(card -> {
 			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(baseUrl, card.getKey(), request.getToken(),
 					request.isTreatFlagCardAsBlock(), keyFlagged);
 
@@ -670,9 +668,7 @@ public class JiraService {
 				CardCycleTime cardCycleTime = calculateCardCycleTime(card.getKey(),
 						cycleTimeInfoDTO.getCycleTimeInfos(), boardColumns);
 
-				if (isNonDone) {
-					cardCycleTime.setTotal(0.0);
-				}
+				cardCycleTime.setTotal(0.0);
 
 				JiraCardDTO jiraCardDTO = buildJiraCardDTO(card, cycleTimeInfoDTO, cardCycleTime);
 				matchedCards.add(jiraCardDTO);
@@ -680,15 +676,6 @@ public class JiraService {
 		});
 
 		return matchedCards;
-	}
-
-	private List<JiraCard> filterDoneCards(URI baseUrl, StoryPointsAndCycleTimeRequest request,
-			List<JiraCard> allCards) {
-		return allCards.stream().map(card -> CompletableFuture.supplyAsync(() -> {
-			CardHistoryResponseDTO jiraCardHistory = jiraFeignClient.getJiraCardHistory(baseUrl, card.getKey(),
-					request.getToken());
-			return isRealDoneCardByHistory(jiraCardHistory,request.getStatus()) ? card : null;
-		})).map(CompletableFuture::join).filter(Objects::nonNull).toList();
 	}
 
 	private List<String> getAssigneeSetWithDisplayName(URI baseUrl, JiraCard card, String token) {
