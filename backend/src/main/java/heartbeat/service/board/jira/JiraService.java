@@ -145,17 +145,16 @@ public class JiraService {
 		JiraCardWithFields jiraCardWithFields = getAllDoneCards(boardType, baseUrl, request.getStatus(),
 				boardRequestParam);
 		List<JiraCard> allDoneCards = jiraCardWithFields.getJiraCards();
-
-		List<JiraCardDTO> matchedCards = getMatchedCards(request, boardColumns, users, baseUrl, allDoneCards,
-				jiraCardWithFields.getTargetFields(), false);
-		int storyPointSum = matchedCards.stream()
+		List<JiraCardDTO> realDoneCards = getRealDoneCards(request, boardColumns, users, baseUrl, allDoneCards,
+				jiraCardWithFields.getTargetFields());
+		int storyPointSum = realDoneCards.stream()
 			.mapToInt(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
 
 		return CardCollection.builder()
 			.storyPointSum(storyPointSum)
-			.cardsNumber(matchedCards.size())
-			.jiraCardDTOList(matchedCards)
+			.cardsNumber(realDoneCards.size())
+			.jiraCardDTOList(realDoneCards)
 			.build();
 	}
 
@@ -429,9 +428,9 @@ public class JiraService {
 			.collect(Collectors.toList());
 	}
 
-	private List<JiraCardDTO> getMatchedCards(StoryPointsAndCycleTimeRequest request,
-			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
-			List<JiraCard> allDoneCards, List<TargetField> targetFields) {
+	private List<JiraCardDTO> getRealDoneCards(StoryPointsAndCycleTimeRequest request,
+											   List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
+											   List<JiraCard> allDoneCards, List<TargetField> targetFields) {
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
 		String keyFlagged = cardCustomFieldKey.getFlagged();
 		List<JiraCardDTO> matchedCards = new ArrayList<>();
@@ -439,7 +438,7 @@ public class JiraService {
 			.map(jiraCard -> CompletableFuture.supplyAsync(() -> {
 				CardHistoryResponseDTO jiraCardHistory = jiraFeignClient.getJiraCardHistory(baseUrl, jiraCard.getKey(),
 						request.getToken());
-				if (isDoneCardByHistory(jiraCardHistory,request.getStatus())) {
+				if (isRealDoneCardByHistory(jiraCardHistory,request.getStatus())) {
 					return jiraCard;
 				}
 				else {
@@ -471,7 +470,7 @@ public class JiraService {
 		return matchedCards;
 	}
 
-	private boolean isDoneCardByHistory(CardHistoryResponseDTO jiraCardHistory,List<String> status) {
+	private boolean isRealDoneCardByHistory(CardHistoryResponseDTO jiraCardHistory, List<String> status) {
 		HistoryDetail detail = jiraCardHistory.getItems()
 			.stream()
 			.filter(historyDetail -> STATUS_FIELD_ID.equals(historyDetail.getFieldId()))
@@ -675,7 +674,7 @@ public class JiraService {
 		return allCards.stream().map(card -> CompletableFuture.supplyAsync(() -> {
 			CardHistoryResponseDTO jiraCardHistory = jiraFeignClient.getJiraCardHistory(baseUrl, card.getKey(),
 					request.getToken());
-			return isDoneCardByHistory(jiraCardHistory,request.getStatus()) ? card : null;
+			return isRealDoneCardByHistory(jiraCardHistory,request.getStatus()) ? card : null;
 		})).map(CompletableFuture::join).filter(Objects::nonNull).toList();
 	}
 

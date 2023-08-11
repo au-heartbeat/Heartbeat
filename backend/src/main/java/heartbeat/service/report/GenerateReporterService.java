@@ -118,8 +118,8 @@ public class GenerateReporterService {
 		.map(RequireDataEnum::getValue)
 		.toList();
 
-	private static StoryPointsAndCycleTimeRequest getStoryPointsAndCycleTimeRequest(JiraBoardSetting jiraBoardSetting,
-			String startTime, String endTime) {
+	private static StoryPointsAndCycleTimeRequest buildStoryPointsAndCycleTimeRequest(JiraBoardSetting jiraBoardSetting,
+																					  String startTime, String endTime) {
 		return StoryPointsAndCycleTimeRequest.builder()
 			.token(jiraBoardSetting.getToken())
 			.type(jiraBoardSetting.getType())
@@ -204,13 +204,13 @@ public class GenerateReporterService {
 		request.getMetrics().forEach((metrics) -> {
 			switch (metrics.toLowerCase()) {
 				case "velocity" -> reportResponse.setVelocity(
-						velocityCalculator.calculateVelocity(fetchedData.getCardCollectionInfo().getCardCollection()));
+						velocityCalculator.calculateVelocity(fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
 				case "cycle time" -> reportResponse.setCycleTime(
-						cycleTimeCalculator.calculateCycleTime(fetchedData.getCardCollectionInfo().getCardCollection(),
+						cycleTimeCalculator.calculateCycleTime(fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
 								request.getJiraBoardSetting().getBoardColumns()));
 				case "classification" -> reportResponse.setClassificationList(
 						classificationCalculator.calculate(request.getJiraBoardSetting().getTargetFields(),
-								fetchedData.getCardCollectionInfo().getCardCollection()));
+								fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
 				case "deployment frequency" -> reportResponse.setDeploymentFrequency(
 						deploymentFrequency.calculate(fetchedData.getBuildKiteData().getDeployTimesList(),
 								Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
@@ -255,9 +255,9 @@ public class GenerateReporterService {
 		return fetchedData;
 	}
 
-	private CardCollection fetchDoneCardCollection(GenerateReportRequest request) {
+	private CardCollection fetchRealDoneCardCollection(GenerateReportRequest request) {
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
-		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = getStoryPointsAndCycleTimeRequest(
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = buildStoryPointsAndCycleTimeRequest(
 				jiraBoardSetting, request.getStartTime(), request.getEndTime());
 		return jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
 				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers());
@@ -265,7 +265,7 @@ public class GenerateReporterService {
 
 	private CardCollection fetchNonDoneCardCollection(GenerateReportRequest request) {
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
-		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = getStoryPointsAndCycleTimeRequest(
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = buildStoryPointsAndCycleTimeRequest(
 				jiraBoardSetting, request.getStartTime(), request.getEndTime());
 		return jiraService.getStoryPointsAndCycleTimeForNonDoneCards(storyPointsAndCycleTimeRequest,
 				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers());
@@ -282,10 +282,10 @@ public class GenerateReporterService {
 			.endTime(request.getEndTime())
 			.build();
 		CardCollection nonDoneCardCollection = fetchNonDoneCardCollection(request);
-		CardCollection cardCollection = fetchDoneCardCollection(request);
+		CardCollection realDoneCardCollection = fetchRealDoneCardCollection(request);
 
 		CardCollectionInfo collectionInfo = CardCollectionInfo.builder()
-			.cardCollection(cardCollection)
+			.realDoneCardCollection(realDoneCardCollection)
 			.nonDoneCardCollection(nonDoneCardCollection)
 			.build();
 
@@ -295,7 +295,7 @@ public class GenerateReporterService {
 				boardRequestParam.getToken());
 		JiraColumnResult jiraColumns = jiraService.getJiraColumns(boardRequestParam, baseUrl, jiraBoardConfigDTO);
 
-		generateCSVForBoard(cardCollection.getJiraCardDTOList(), nonDoneCardCollection.getJiraCardDTOList(),
+		generateCSVForBoard(realDoneCardCollection.getJiraCardDTOList(), nonDoneCardCollection.getJiraCardDTOList(),
 				jiraColumns.getJiraColumnResponse(), jiraBoardSetting.getTargetFields(), request.getCsvTimeStamp());
 		return collectionInfo;
 	}
