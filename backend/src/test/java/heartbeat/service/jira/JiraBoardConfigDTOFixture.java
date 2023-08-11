@@ -148,6 +148,13 @@ public class JiraBoardConfigDTOFixture {
 					new HistoryDetail(4, "status", new Status("Waiting for testing"), new Status("Review")),
 					new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for testing"))));
 	}
+	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_RESPONSE_BUILDER_TO_DONE() {
+		return CardHistoryResponseDTO.builder()
+			.items(List.of(new HistoryDetail(2, "status", new Status("In Dev"), new Status("To do")),
+					new HistoryDetail(3, "status", new Status("Review"), new Status("In Dev")),
+					new HistoryDetail(4, "status", new Status("Waiting for testing"), new Status("Review")),
+					new HistoryDetail(5, "status", new Status("DONE"), new Status("Waiting for testing"))));
+	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_RESPONSE_BUILDER_WITHOUT_STATUS() {
 		return CardHistoryResponseDTO.builder()
