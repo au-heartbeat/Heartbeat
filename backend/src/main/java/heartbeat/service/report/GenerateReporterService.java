@@ -119,7 +119,7 @@ public class GenerateReporterService {
 		.toList();
 
 	private static StoryPointsAndCycleTimeRequest buildStoryPointsAndCycleTimeRequest(JiraBoardSetting jiraBoardSetting,
-																					  String startTime, String endTime) {
+			String startTime, String endTime) {
 		return StoryPointsAndCycleTimeRequest.builder()
 			.token(jiraBoardSetting.getToken())
 			.type(jiraBoardSetting.getType())
@@ -203,11 +203,11 @@ public class GenerateReporterService {
 		ReportResponse reportResponse = new ReportResponse();
 		request.getMetrics().forEach((metrics) -> {
 			switch (metrics.toLowerCase()) {
-				case "velocity" -> reportResponse.setVelocity(
-						velocityCalculator.calculateVelocity(fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
-				case "cycle time" -> reportResponse.setCycleTime(
-						cycleTimeCalculator.calculateCycleTime(fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
-								request.getJiraBoardSetting().getBoardColumns()));
+				case "velocity" -> reportResponse.setVelocity(velocityCalculator
+					.calculateVelocity(fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
+				case "cycle time" -> reportResponse.setCycleTime(cycleTimeCalculator.calculateCycleTime(
+						fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
+						request.getJiraBoardSetting().getBoardColumns()));
 				case "classification" -> reportResponse.setClassificationList(
 						classificationCalculator.calculate(request.getJiraBoardSetting().getTargetFields(),
 								fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));

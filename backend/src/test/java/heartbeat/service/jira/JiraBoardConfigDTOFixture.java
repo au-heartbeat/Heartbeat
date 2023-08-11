@@ -172,18 +172,23 @@ public class JiraBoardConfigDTOFixture {
 					new HistoryDetail(9, "customfield_10021", new Status("UNKNOWN"), new Status("removeFlag"))));
 	}
 
-//	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_BUILDER() {
-//		return CardHistoryResponseDTO.builder()
-//			.items(List.of(new HistoryDetail(1, "status", new Status("To do"), new Status("Block")),
-//				new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do")),
-//				new HistoryDetail(3, "status", new Status("Review"), new Status("In Dev")),
-//				new HistoryDetail(4, "status", new Status("Waiting for testing"), new Status("Review")),
-//				new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for testing")),
-//				new HistoryDetail(6, "status", new Status("Block"), new Status("Testing")),
-//				new HistoryDetail(9, "status", new Status("Done"), new Status("Testing")),
-//				new HistoryDetail(1672556350001, "status", new Status("Done"), new Status("Testing"))
-//			));
-//	}
+	// public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder
+	// CARD_HISTORY_BUILDER() {
+	// return CardHistoryResponseDTO.builder()
+	// .items(List.of(new HistoryDetail(1, "status", new Status("To do"), new
+	// Status("Block")),
+	// new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do")),
+	// new HistoryDetail(3, "status", new Status("Review"), new Status("In Dev")),
+	// new HistoryDetail(4, "status", new Status("Waiting for testing"), new
+	// Status("Review")),
+	// new HistoryDetail(5, "status", new Status("Testing"), new Status("Waiting for
+	// testing")),
+	// new HistoryDetail(6, "status", new Status("Block"), new Status("Testing")),
+	// new HistoryDetail(9, "status", new Status("Done"), new Status("Testing")),
+	// new HistoryDetail(1672556350001, "status", new Status("Done"), new
+	// Status("Testing"))
+	// ));
+	// }
 
 	public static FieldResponseDTO.FieldResponseDTOBuilder FIELD_RESPONSE_BUILDER() {
 		IssueField storyPointIssueField = new IssueField("customfield_10016", "Story point estimate");

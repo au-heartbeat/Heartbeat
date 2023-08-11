@@ -107,14 +107,13 @@ public class JiraService {
 					jiraBoardConfigDTO);
 
 			return jiraColumnsFuture.thenCombine(targetFieldFuture,
-					(jiraColumnResult,
-							targetFields) -> getUserAsync(boardType, baseUrl, boardRequestParam)
-								.thenApply(users -> BoardConfigDTO.builder()
-									.targetFields(targetFields)
-									.jiraColumnRespons(jiraColumnResult.getJiraColumnResponse())
-									.users(users)
-									.build())
-								.join())
+					(jiraColumnResult, targetFields) -> getUserAsync(boardType, baseUrl, boardRequestParam)
+						.thenApply(users -> BoardConfigDTO.builder()
+							.targetFields(targetFields)
+							.jiraColumnRespons(jiraColumnResult.getJiraColumnResponse())
+							.users(users)
+							.build())
+						.join())
 				.join();
 		}
 		catch (RuntimeException e) {
@@ -246,8 +245,7 @@ public class JiraService {
 
 	private CompletableFuture<List<String>> getUserAsync(BoardType boardType, URI baseUrl,
 			BoardRequestParam boardRequestParam) {
-		return CompletableFuture.supplyAsync(() -> getUsers(boardType, baseUrl, boardRequestParam),
-				customTaskExecutor);
+		return CompletableFuture.supplyAsync(() -> getUsers(boardType, baseUrl, boardRequestParam), customTaskExecutor);
 	}
 
 	private List<String> getUsers(BoardType boardType, URI baseUrl, BoardRequestParam boardRequestParam) {
@@ -277,7 +275,8 @@ public class JiraService {
 		String jql = "";
 		if (BoardType.JIRA.equals(boardType) || BoardType.CLASSIC_JIRA.equals(boardType)) {
 			jql = "sprint in openSprints()";
-		} else {
+		}
+		else {
 			throw new BadRequestException("boardType param is not correct");
 		}
 		return getCardList(baseUrl, boardRequestParam, jql, "all");
@@ -438,8 +437,8 @@ public class JiraService {
 	}
 
 	private List<JiraCardDTO> getRealDoneCards(StoryPointsAndCycleTimeRequest request,
-											   List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
-											   List<JiraCard> allDoneCards, List<TargetField> targetFields) {
+			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
+			List<JiraCard> allDoneCards, List<TargetField> targetFields) {
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
 		String keyFlagged = cardCustomFieldKey.getFlagged();
 		List<JiraCardDTO> realDoneCards = new ArrayList<>();
@@ -450,13 +449,14 @@ public class JiraService {
 				HistoryDetail detail = jiraCardHistory.getItems()
 					.stream()
 					.filter((historyDetail) -> STATUS_FIELD_ID.equals(historyDetail.getFieldId()))
-					.filter((historyDetail) -> historyDetail.getTimestamp() < parseLong(request.getStartTime()) + 86400000)
+					.filter((historyDetail) -> historyDetail.getTimestamp() < parseLong(request.getStartTime())
+							+ 86400000)
 					.reduce((pre, next) -> next)
 					.orElse(null);
 				if (detail == null || request.getStatus().contains(detail.getTo().getDisplayName().toUpperCase())) {
 					return null;
 				}
-				if (isRealDoneCardByHistory(jiraCardHistory,request.getStatus())) {
+				if (isRealDoneCardByHistory(jiraCardHistory, request.getStatus())) {
 					return jiraCard;
 				}
 				else {
@@ -498,7 +498,8 @@ public class JiraService {
 			return false;
 		}
 		String displayName = detail.getTo().getDisplayName();
-		return status.contains(displayName.toUpperCase())|| CardStepsEnum.CLOSED.getValue().equalsIgnoreCase(displayName);
+		return status.contains(displayName.toUpperCase())
+				|| CardStepsEnum.CLOSED.getValue().equalsIgnoreCase(displayName);
 	}
 
 	private CycleTimeInfoDTO getCycleTime(URI baseUrl, String doneCardKey, String token, Boolean treatFlagCardAsBlock,
@@ -742,8 +743,8 @@ public class JiraService {
 	private JiraCardWithFields getCardList(URI baseUrl, BoardRequestParam boardRequestParam, String jql,
 			String cardType) {
 		log.info("Start to get first-page xxx card information form kanban, param {}", cardType);
-		String allCardResponse = jiraFeignClient.getJiraCards(baseUrl, boardRequestParam.getBoardId(), QUERY_COUNT,
-				0, jql, boardRequestParam.getToken());
+		String allCardResponse = jiraFeignClient.getJiraCards(baseUrl, boardRequestParam.getBoardId(), QUERY_COUNT, 0,
+				jql, boardRequestParam.getToken());
 		if (allCardResponse.isEmpty()) {
 			return JiraCardWithFields.builder().jiraCards(Collections.emptyList()).build();
 		}
