@@ -144,9 +144,9 @@ public class JiraService {
 		JiraCardWithFields jiraCardWithFields = getAllDoneCards(boardType, baseUrl, request.getStatus(),
 				boardRequestParam);
 		List<JiraCard> allDoneCards = jiraCardWithFields.getJiraCards();
+
 		for (RequestJiraBoardColumnSetting boardColumn : boardColumns) {
-			String name = boardColumn.getName();
-			CardStepsEnum.fromValue(name);
+			CardStepsEnum.fromValue(boardColumn.getValue());
 		}
 		List<JiraCardDTO> realDoneCards = getRealDoneCards(request, boardColumns, users, baseUrl, allDoneCards,
 				jiraCardWithFields.getTargetFields());
@@ -446,8 +446,8 @@ public class JiraService {
 				HistoryDetail detail = jiraCardHistory.getItems()
 					.stream()
 					.filter((historyDetail) -> STATUS_FIELD_ID.equals(historyDetail.getFieldId()))
-					.filter((historyDetail) -> historyDetail.getTimestamp() < parseLong(request.getStartTime())
-							+ 86400000)
+//					.filter((historyDetail) -> historyDetail.getTimestamp() < parseLong(request.getStartTime())
+//							+ 86400000)
 					.reduce((pre, next) -> next)
 					.orElse(null);
 				if (detail == null || request.getStatus().contains(detail.getTo().getDisplayName().toUpperCase())) {
