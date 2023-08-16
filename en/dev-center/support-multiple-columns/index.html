@@ -451,7 +451,12 @@ remove <code>To do, Analysis, Done</code> column days.</li>
 </ul>
 <h3 id="card-cycle-time">Card Cycle Time</h3>
 <ul>
-<li>Mark other column as done, will not calculate this column days in board CSV.</li>
+<li>
+<p>Mark other column as done, will not calculate this column days in board CSV.</p>
+</li>
+<li>
+<p>Mark testing column as testing, will calculate <code>Total testing time / Total cycle time</code> in board CSV. But mark testing column as done, will not calculate that in board CSV.</p>
+</li>
 </ul>
 <h3 id="origin-cycle-time">Origin Cycle Time</h3>
 <ul>
@@ -460,9 +465,8 @@ remove <code>To do, Analysis, Done</code> column days.</li>
 <h3 id="support-deduplication-of-done-cards">Support deduplication of Done cards</h3>
 <ul>
 <li>We need to exclude the cards with a status of <code>DONE</code> on the startDate at the very begining of our calculation.</li>
-<li>Two possible ways to achieve:
+<li>The way to achieve:
 <ul>
-<li>Use jql when fetching cards from jira</li>
 <li>Use jira card history</li>
 </ul>
 </li>
