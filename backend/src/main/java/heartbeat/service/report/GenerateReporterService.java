@@ -543,14 +543,14 @@ public class GenerateReporterService {
 				DeployInfo deployInfo = buildInfo.mapToDeployInfo(deploymentEnvironment.getStep(), REQUIRED_STATES,
 						startTime, endTime);
 
-				LeadTime noMergeDelayTime = getLeadTimeWithoutMergeDelayTime(deployInfo);
+				LeadTime noPrLeadTime = getLeadTimeWithoutPrLeadTime(deployInfo);
 
 				return PipelineCSVInfo.builder()
 					.pipeLineName(deploymentEnvironment.getName())
 					.stepName(deploymentEnvironment.getStep())
 					.buildInfo(buildInfo)
 					.deployInfo(deployInfo)
-					.leadTimeInfo(new LeadTimeInfo(noMergeDelayTime))
+					.leadTimeInfo(new LeadTimeInfo(noPrLeadTime))
 					.build();
 			}).toList();
 
@@ -631,7 +631,7 @@ public class GenerateReporterService {
 		}
 	}
 
-	private LeadTime getLeadTimeWithoutMergeDelayTime(DeployInfo deployInfo) {
+	private LeadTime getLeadTimeWithoutPrLeadTime(DeployInfo deployInfo) {
 		long jobFinishTime = Instant.parse(deployInfo.getJobFinishTime()).toEpochMilli();
 		long jobStartTime = Instant.parse(deployInfo.getJobStartTime()).toEpochMilli();
 		long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
@@ -640,7 +640,7 @@ public class GenerateReporterService {
 			.commitId(deployInfo.getCommitId())
 			.pipelineCreateTime(pipelineCreateTime)
 			.jobFinishTime(jobFinishTime)
-			.pipelineDelayTime(jobFinishTime - jobStartTime)
+			.pipelineLeadTime(jobFinishTime - jobStartTime)
 			.build();
 	}
 

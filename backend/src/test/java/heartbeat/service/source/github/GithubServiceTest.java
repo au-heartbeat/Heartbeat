@@ -117,10 +117,10 @@ class GithubServiceTest {
 				.prMergedTime(1658549040000L)
 				.firstCommitTimeInPr(1658548980000L)
 				.jobFinishTime(1658549160000L)
-				.pipelineDelayTime(1658549100000L)
+				.pipelineLeadTime(1658549100000L)
 				.pipelineCreateTime(1658549100000L)
-				.prDelayTime(60000L)
-				.pipelineDelayTime(120000)
+				.prLeadTime(60000L)
+				.pipelineLeadTime(120000)
 				.totalTime(180000)
 				.build()))
 			.build());
@@ -220,10 +220,10 @@ class GithubServiceTest {
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(1658548980000L)
 			.jobFinishTime(1658549160000L)
-			.pipelineDelayTime(1658549100000L)
+			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
-			.prDelayTime(60000L)
-			.pipelineDelayTime(120000)
+			.prLeadTime(60000L)
+			.pipelineLeadTime(120000)
 			.totalTime(180000)
 			.build();
 
@@ -240,10 +240,10 @@ class GithubServiceTest {
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
 			.jobFinishTime(1658549160000L)
-			.pipelineDelayTime(1658549100000L)
+			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
-			.prDelayTime(60000L)
-			.pipelineDelayTime(120000)
+			.prLeadTime(60000L)
+			.pipelineLeadTime(120000)
 			.totalTime(180000)
 			.build();
 
@@ -260,10 +260,10 @@ class GithubServiceTest {
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
 			.jobFinishTime(1658549160000L)
-			.pipelineDelayTime(1658549100000L)
+			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
-			.prDelayTime(60000L)
-			.pipelineDelayTime(120000)
+			.prLeadTime(60000L)
+			.pipelineLeadTime(120000)
 			.totalTime(180000L)
 			.build();
 
@@ -313,8 +313,8 @@ class GithubServiceTest {
 				.commitId("111")
 				.jobFinishTime(1658549160000L)
 				.pipelineCreateTime(1658549100000L)
-				.prDelayTime(0L)
-				.pipelineDelayTime(120000)
+				.prLeadTime(0L)
+				.pipelineLeadTime(120000)
 				.totalTime(120000)
 				.build()))
 			.build());
@@ -338,8 +338,8 @@ class GithubServiceTest {
 				.commitId("111")
 				.jobFinishTime(1658549160000L)
 				.pipelineCreateTime(1658549100000L)
-				.prDelayTime(0L)
-				.pipelineDelayTime(120000)
+				.prLeadTime(0L)
+				.pipelineLeadTime(120000)
 				.totalTime(120000)
 				.build()))
 			.build());

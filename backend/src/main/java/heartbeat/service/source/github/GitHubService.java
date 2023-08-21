@@ -172,10 +172,10 @@ public class GitHubService {
 
 	private LeadTime getLeadTimeByPullRequest(String realToken, PipelineInfoOfRepository item, DeployInfo deployInfo,
 			List<PullRequestInfo> pullRequestInfos) {
-		LeadTime noMergeDelayTime = parseNoMergeLeadTime(deployInfo);
+		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo);
 
 		if (pullRequestInfos.isEmpty()) {
-			return noMergeDelayTime;
+			return noPrLeadTime;
 		}
 
 		Optional<PullRequestInfo> mergedPull = pullRequestInfos.stream()
@@ -183,7 +183,7 @@ public class GitHubService {
 			.findFirst();
 
 		if (mergedPull.isEmpty()) {
-			return noMergeDelayTime;
+			return noPrLeadTime;
 		}
 
 		List<CommitInfo> commitInfos = gitHubFeignClient.getPullRequestCommitInfo(item.getRepository(),
@@ -201,9 +201,9 @@ public class GitHubService {
 			.commitId(deployInfo.getCommitId())
 			.pipelineCreateTime(pipelineCreateTime)
 			.jobFinishTime(jobFinishTime)
-			.pipelineDelayTime(jobFinishTime - jobStartTime)
+			.pipelineLeadTime(jobFinishTime - jobStartTime)
 			.totalTime(jobFinishTime - jobStartTime)
-			.prDelayTime(0L)
+			.prLeadTime(0L)
 			.build();
 	}
 
@@ -224,20 +224,20 @@ public class GitHubService {
 			firstCommitTimeInPr = 0;
 		}
 
-		long pipelineDelayTime = jobFinishTime - prMergedTime;
-		long prDelayTime;
+		long pipelineLeadTime = jobFinishTime - prMergedTime;
+		long prLeadTime;
 		long totalTime;
 		if (firstCommitTimeInPr > 0) {
-			prDelayTime = prMergedTime - firstCommitTimeInPr;
+			prLeadTime = prMergedTime - firstCommitTimeInPr;
 		}
 		else {
-			prDelayTime = prMergedTime - prCreatedTime;
+			prLeadTime = prMergedTime - prCreatedTime;
 		}
-		totalTime = prDelayTime + pipelineDelayTime;
+		totalTime = prLeadTime + pipelineLeadTime;
 
 		return LeadTime.builder()
-			.pipelineDelayTime(pipelineDelayTime)
-			.prDelayTime(prDelayTime)
+			.pipelineLeadTime(pipelineLeadTime)
+			.prLeadTime(prLeadTime)
 			.firstCommitTimeInPr(firstCommitTimeInPr)
 			.prMergedTime(prMergedTime)
 			.totalTime(totalTime)

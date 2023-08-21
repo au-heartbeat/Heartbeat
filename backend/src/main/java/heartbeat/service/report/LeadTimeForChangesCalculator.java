@@ -35,47 +35,47 @@ public class LeadTimeForChangesCalculator {
 			List<LeadTime> leadTimes = item.getLeadTimes()
 				.stream()
 				.filter(leadTime -> leadTime.getPrMergedTime() != null && leadTime.getPrMergedTime() != 0)
-				.filter(leadTime -> leadTime.getPrDelayTime() != null && leadTime.getPrDelayTime() != 0)
+				.filter(leadTime -> leadTime.getPrLeadTime() != null && leadTime.getPrLeadTime() != 0)
 				.toList();
 
-			double totalPrDelayTime = leadTimes.stream()
-				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPrDelayTime()))
+			double totalPrLeadTime = leadTimes.stream()
+				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPrLeadTime()))
 				.sum();
-			double totalPipelineDelayTime = leadTimes.stream()
-				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPipelineDelayTime()))
+			double totalPipelineLeadTime = leadTimes.stream()
+				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPipelineLeadTime()))
 				.sum();
 
-			double avgPrDelayTime = TimeUtil.convertMillisecondToMinutes(totalPrDelayTime / leadTimes.size());
-			double avgPipelineDelayTime = TimeUtil
-				.convertMillisecondToMinutes(totalPipelineDelayTime / leadTimes.size());
+			double avgPrLeadTime = TimeUtil.convertMillisecondToMinutes(totalPrLeadTime / leadTimes.size());
+			double avgPipelineLeadTime = TimeUtil
+				.convertMillisecondToMinutes(totalPipelineLeadTime / leadTimes.size());
 
 			leadTimeForChangesOfPipelines.add(LeadTimeForChangesOfPipelines.builder()
 				.name(item.getPipelineName())
 				.step(item.getPipelineStep())
-				.mergeDelayTime(avgPrDelayTime)
-				.pipelineDelayTime(avgPipelineDelayTime)
-				.totalDelayTime(avgPrDelayTime + avgPipelineDelayTime)
+				.prLeadTime(avgPrLeadTime)
+				.pipelineLeadTime(avgPipelineLeadTime)
+				.totalDelayTime(avgPrLeadTime + avgPipelineLeadTime)
 				.build());
 
 			HashMap<String, Double> avgTotalDelayTime = new HashMap<>();
-			avgTotalDelayTime.put("avgPrDelayTime", avgPrDelayTime);
-			avgTotalDelayTime.put("avgPipelineDelayTime", avgPipelineDelayTime);
+			avgTotalDelayTime.put("avgPrLeadTime", avgPrLeadTime);
+			avgTotalDelayTime.put("avgPipelineLeadTime", avgPipelineLeadTime);
 
 			return avgTotalDelayTime;
 		}).toList();
 
-		Double avgPrDelayTimeOfAllPipeline = avgDelayTimeMapList.stream()
-			.map(item -> item.getOrDefault("avgPrDelayTime", 0d))
+		Double avgPrLeadTimeOfAllPipeline = avgDelayTimeMapList.stream()
+			.map(item -> item.getOrDefault("avgPrLeadTime", 0d))
 			.reduce(0.0, Double::sum);
 		Double avgPipeDelayTimeOfAllPipeline = avgDelayTimeMapList.stream()
-			.map(item -> item.getOrDefault("avgPipelineDelayTime", 0d))
+			.map(item -> item.getOrDefault("avgPipelineLeadTime", 0d))
 			.reduce(0.0, Double::sum);
-		Double avgMergeDelayTime = avgPrDelayTimeOfAllPipeline / pipelineCount;
-		Double avgPipelineDelayTime = avgPipeDelayTimeOfAllPipeline / pipelineCount;
+		Double avgPrLeadTime = avgPrLeadTimeOfAllPipeline / pipelineCount;
+		Double avgPipelineLeadTime = avgPipeDelayTimeOfAllPipeline / pipelineCount;
 
-		avgLeadTimeForChanges.setMergeDelayTime(avgMergeDelayTime);
-		avgLeadTimeForChanges.setPipelineDelayTime(avgPipelineDelayTime);
-		avgLeadTimeForChanges.setTotalDelayTime(avgMergeDelayTime + avgPipelineDelayTime);
+		avgLeadTimeForChanges.setPrLeadTime(avgPrLeadTime);
+		avgLeadTimeForChanges.setPipelineLeadTime(avgPipelineLeadTime);
+		avgLeadTimeForChanges.setTotalDelayTime(avgPrLeadTime + avgPipelineLeadTime);
 
 		return new LeadTimeForChanges(leadTimeForChangesOfPipelines, avgLeadTimeForChanges);
 	}
