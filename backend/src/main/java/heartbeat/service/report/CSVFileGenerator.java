@@ -66,7 +66,7 @@ public class CSVFileGenerator {
 					"First Code Committed Time In PR", "Code Committed Time", "PR Created Time", "PR Merged Time",
 					"Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
 					"PR lead time (HH:mm:ss)",
-					"pipeline lead time (HH:mm:ss)", "Status" };
+					"Pipeline lead time (HH:mm:ss)", "Status" };
 
 			csvWriter.writeNext(headers);
 
