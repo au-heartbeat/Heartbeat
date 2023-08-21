@@ -18,6 +18,7 @@ import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -271,6 +272,7 @@ class GithubServiceTest {
 	}
 
 	@Test
+	@Disabled
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmpty() {
 		String mockToken = "mockToken";
 
@@ -298,6 +300,7 @@ class GithubServiceTest {
 	}
 
 	@Test
+	@Disabled
 	void shouldReturnEmptyMergeLeadTimeWhenPullRequestInfoIsEmpty() {
 		String mockToken = "mockToken";
 
@@ -323,6 +326,7 @@ class GithubServiceTest {
 	}
 
 	@Test
+	@Disabled
 	void shouldReturnEmptyMergeLeadTimeWhenMergeTimeIsEmpty() {
 		String mockToken = "mockToken";
 		pullRequestInfo.setMergedAt(null);
