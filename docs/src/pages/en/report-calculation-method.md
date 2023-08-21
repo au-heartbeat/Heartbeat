@@ -207,14 +207,14 @@ layout: ../../layouts/MainLayout.astro
 
      - `prLeadTime = 0`
      - `pipelineLeadTime = jobFinishTime - firstCommitTime`
-     - `totalDelayTine = prLeadTime + pipelineLeadTime`
+     - `totalDelayTime = prLeadTime + pipelineLeadTime`
 
      (2).PR：
 
      - `prLeadTime = prMergedTime - firstCommitTimeInPr`
      - `prLeadTime = prMergedTime - prCreateTime`(if no first commit time)
      - `pipelineLeadTime = jobFinishTime - prMergedTime`
-     - `totalDelayTine = prLeadTime + pipelineLeadTime`
+     - `totalDelayTime = prLeadTime + pipelineLeadTime`
 
 - Calculate Average Lead Time for changes:
   - `AverageLeadMergeDelayTime = totalPrLeadTime / pipelineCount `
