@@ -72,8 +72,8 @@ import org.springframework.stereotype.Service;
 public class GenerateReporterService {
 
 	private static final String[] FIELD_NAMES = { "assignee", "summary", "status", "issuetype", "reporter",
-		"timetracking", "statusCategoryChangeData", "storyPoints", "fixVersions", "project", "parent", "priority",
-		"labels" };
+			"timetracking", "statusCategoryChangeData", "storyPoints", "fixVersions", "project", "parent", "priority",
+			"labels" };
 
 	private static final List<String> REQUIRED_STATES = List.of("passed", "failed");
 
@@ -487,11 +487,11 @@ public class GenerateReporterService {
 
 	private FetchedData.BuildKiteData fetchBuildKiteInfo(GenerateReportRequest request) {
 		return fetchBuildKiteData(request.getStartTime(), request.getEndTime(),
-			request.getBuildKiteSetting().getDeploymentEnvList(), request.getBuildKiteSetting().getToken());
+				request.getBuildKiteSetting().getDeploymentEnvList(), request.getBuildKiteSetting().getToken());
 	}
 
 	private FetchedData.BuildKiteData fetchBuildKiteData(String startTime, String endTime,
-														 List<DeploymentEnvironment> deploymentEnvironments, String token) {
+			List<DeploymentEnvironment> deploymentEnvironments, String token) {
 		List<DeployTimes> deployTimesList = new ArrayList<>();
 		List<Map.Entry<String, List<BuildKiteBuildInfo>>> buildInfosList = new ArrayList<>();
 		List<Map.Entry<String, List<BuildKiteBuildInfo>>> leadTimeBuildInfosList = new ArrayList<>();
@@ -525,7 +525,7 @@ public class GenerateReporterService {
 	}
 
 	private List<PipelineCSVInfo> generateCSVForPipelineWithoutCodebase(List<DeploymentEnvironment> deploymentEnvList,
-																		String startTime, String endTime, List<Entry<String, List<BuildKiteBuildInfo>>> buildInfosList) {
+			String startTime, String endTime, List<Entry<String, List<BuildKiteBuildInfo>>> buildInfosList) {
 		List<PipelineCSVInfo> pipelineCSVInfos = new ArrayList<>();
 
 		for (DeploymentEnvironment deploymentEnvironment : deploymentEnvList) {
@@ -537,18 +537,18 @@ public class GenerateReporterService {
 
 			List<PipelineCSVInfo> pipelineCSVInfoList = buildInfos.stream().filter(buildInfo -> {
 				BuildKiteJob buildKiteJob = buildInfo.getBuildKiteJob(buildInfo.getJobs(),
-					deploymentEnvironment.getStep(), REQUIRED_STATES, startTime, endTime);
+						deploymentEnvironment.getStep(), REQUIRED_STATES, startTime, endTime);
 				return buildKiteJob != null && !buildInfo.getCommit().isEmpty();
 			}).map(buildInfo -> {
 				DeployInfo deployInfo = buildInfo.mapToDeployInfo(deploymentEnvironment.getStep(), REQUIRED_STATES,
-					startTime, endTime);
+						startTime, endTime);
 
 				List<PipelineLeadTime> pipelineLeadTimes = buildKiteData.getPipelineLeadTimes();
 				LeadTime filteredLeadTime = null;
 				if (pipelineLeadTimes != null) {
 					filteredLeadTime = pipelineLeadTimes.stream()
 						.filter(pipelineLeadTime -> Objects.equals(pipelineLeadTime.getPipelineName(),
-							deploymentEnvironment.getName()))
+								deploymentEnvironment.getName()))
 						.flatMap(filteredPipeLineLeadTime -> filteredPipeLineLeadTime.getLeadTimes().stream())
 						.filter(leadTime -> leadTime.getCommitId().equals(deployInfo.getCommitId()))
 						.findFirst()

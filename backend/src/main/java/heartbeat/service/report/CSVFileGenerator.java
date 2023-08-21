@@ -92,8 +92,8 @@ public class CSVFileGenerator {
 				String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
 
 				String[] rowData = { pipelineName, stepName, buildNumber, committerName, firstCommitTimeInPr,
-						commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime, prLeadTime,
-						pipelineLeadTime, state };
+						commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime, prLeadTime, pipelineLeadTime,
+						state };
 
 				csvWriter.writeNext(rowData);
 			}

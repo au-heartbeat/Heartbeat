@@ -46,8 +46,7 @@ public class LeadTimeForChangesCalculator {
 				.sum();
 
 			double avgPrLeadTime = TimeUtil.convertMillisecondToMinutes(totalPrLeadTime / leadTimes.size());
-			double avgPipelineLeadTime = TimeUtil
-				.convertMillisecondToMinutes(totalPipelineLeadTime / leadTimes.size());
+			double avgPipelineLeadTime = TimeUtil.convertMillisecondToMinutes(totalPipelineLeadTime / leadTimes.size());
 
 			leadTimeForChangesOfPipelines.add(LeadTimeForChangesOfPipelines.builder()
 				.name(item.getPipelineName())
