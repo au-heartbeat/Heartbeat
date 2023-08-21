@@ -171,9 +171,8 @@ public class GitHubService {
 	}
 
 	private LeadTime getLeadTimeByPullRequest(String realToken, PipelineInfoOfRepository item, DeployInfo deployInfo,
-			List<PullRequestInfo> pullRequestInfos) {
-		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo);
-
+											  List<PullRequestInfo> pullRequestInfos) {
+		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo, item, realToken);
 		if (pullRequestInfos.isEmpty()) {
 			return noPrLeadTime;
 		}
@@ -187,23 +186,33 @@ public class GitHubService {
 		}
 
 		List<CommitInfo> commitInfos = gitHubFeignClient.getPullRequestCommitInfo(item.getRepository(),
-				mergedPull.get().getNumber().toString(), realToken);
+			mergedPull.get().getNumber().toString(), realToken);
 		CommitInfo firstCommitInfo = commitInfos.get(0);
 		return mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo);
 	}
 
-	private LeadTime parseNoMergeLeadTime(DeployInfo deployInfo) {
+	private LeadTime parseNoMergeLeadTime(DeployInfo deployInfo, PipelineInfoOfRepository item,String realToken) {
 		long jobFinishTime = Instant.parse(deployInfo.getJobFinishTime()).toEpochMilli();
-		long jobStartTime = Instant.parse(deployInfo.getJobStartTime()).toEpochMilli();
 		long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
+		long prLeadTime = 0;
+		long firstCommitTime;
+
+		CommitInfo commitInfo = gitHubFeignClient.getCommitInfo(item.getRepository(), deployInfo.getCommitId(),realToken);
+
+		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
+			&& commitInfo.getCommit().getCommitter().getDate() != null) {
+			firstCommitTime = Instant.parse(commitInfo.getCommit().getCommitter().getDate()).toEpochMilli();
+		} else {
+			firstCommitTime = 0;
+		}
 
 		return LeadTime.builder()
 			.commitId(deployInfo.getCommitId())
 			.pipelineCreateTime(pipelineCreateTime)
 			.jobFinishTime(jobFinishTime)
-			.pipelineLeadTime(jobFinishTime - jobStartTime)
-			.totalTime(jobFinishTime - jobStartTime)
-			.prLeadTime(0L)
+			.pipelineLeadTime(jobFinishTime - firstCommitTime)
+			.totalTime(jobFinishTime - firstCommitTime)
+			.prLeadTime(prLeadTime)
 			.build();
 	}
 
