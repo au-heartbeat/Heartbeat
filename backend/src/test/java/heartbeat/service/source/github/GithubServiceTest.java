@@ -272,13 +272,13 @@ class GithubServiceTest {
 	}
 
 	@Test
-	@Disabled
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmpty() {
 		String mockToken = "mockToken";
 
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 
 		assertEquals(pipelineLeadTimes, result);
@@ -300,13 +300,14 @@ class GithubServiceTest {
 	}
 
 	@Test
-	@Disabled
 	void shouldReturnEmptyMergeLeadTimeWhenPullRequestInfoIsEmpty() {
 		String mockToken = "mockToken";
 
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of());
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(new CommitInfo());
+
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
@@ -326,13 +327,13 @@ class GithubServiceTest {
 	}
 
 	@Test
-	@Disabled
 	void shouldReturnEmptyMergeLeadTimeWhenMergeTimeIsEmpty() {
 		String mockToken = "mockToken";
 		pullRequestInfo.setMergedAt(null);
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(new CommitInfo());
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
