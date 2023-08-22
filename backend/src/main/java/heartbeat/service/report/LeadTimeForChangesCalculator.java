@@ -6,13 +6,14 @@ import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
 import heartbeat.util.TimeUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.LongStream;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Component;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -32,21 +33,24 @@ public class LeadTimeForChangesCalculator {
 			if (item.getLeadTimes() == null || item.getLeadTimes().isEmpty()) {
 				return new HashMap<String, Double>();
 			}
-			List<LeadTime> leadTimes = item.getLeadTimes()
+			int buildNumber = item.getLeadTimes().size();
+			// 过滤掉noPr的数据
+			List<LeadTime> noPrLeadTime = item.getLeadTimes()
 				.stream()
 				.filter(leadTime -> leadTime.getPrMergedTime() != null && leadTime.getPrMergedTime() != 0)
 				.filter(leadTime -> leadTime.getPrLeadTime() != null && leadTime.getPrLeadTime() != 0)
 				.toList();
-
-			double totalPrLeadTime = leadTimes.stream()
+			//通过noPrLeadTimeList去计算totalPrLeadTime
+			double totalPrLeadTime = noPrLeadTime.stream()
 				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPrLeadTime()))
 				.sum();
-			double totalPipelineLeadTime = leadTimes.stream()
+			//通过PipelineLeadTime去计算totalPipelineLeadTime
+			double totalPipelineLeadTime = item.getLeadTimes().stream()
 				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPipelineLeadTime()))
 				.sum();
 
-			double avgPrLeadTime = TimeUtil.convertMillisecondToMinutes(totalPrLeadTime / leadTimes.size());
-			double avgPipelineLeadTime = TimeUtil.convertMillisecondToMinutes(totalPipelineLeadTime / leadTimes.size());
+			double avgPrLeadTime = TimeUtil.convertMillisecondToMinutes(totalPrLeadTime / buildNumber);
+			double avgPipelineLeadTime = TimeUtil.convertMillisecondToMinutes(totalPipelineLeadTime / buildNumber);
 
 			leadTimeForChangesOfPipelines.add(LeadTimeForChangesOfPipelines.builder()
 				.name(item.getPipelineName())
