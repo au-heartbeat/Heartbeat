@@ -40,12 +40,13 @@ public class LeadTimeForChangesCalculator {
 				.filter(leadTime -> leadTime.getPrMergedTime() != null && leadTime.getPrMergedTime() != 0)
 				.filter(leadTime -> leadTime.getPrLeadTime() != null && leadTime.getPrLeadTime() != 0)
 				.toList();
-			//通过noPrLeadTimeList去计算totalPrLeadTime
+			// 通过noPrLeadTimeList去计算totalPrLeadTime
 			double totalPrLeadTime = noPrLeadTime.stream()
 				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPrLeadTime()))
 				.sum();
-			//通过PipelineLeadTime去计算totalPipelineLeadTime
-			double totalPipelineLeadTime = item.getLeadTimes().stream()
+			// 通过PipelineLeadTime去计算totalPipelineLeadTime
+			double totalPipelineLeadTime = item.getLeadTimes()
+				.stream()
 				.flatMapToLong(leadTime -> LongStream.of(leadTime.getPipelineLeadTime()))
 				.sum();
 
