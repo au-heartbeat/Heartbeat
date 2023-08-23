@@ -58,31 +58,32 @@ public class GitHubService {
 			return githubReposByUserFuture
 				.thenCombineAsync(githubOrganizationsFuture, (githubReposByUser, githubOrganizations) -> {
 					log.info("Successfully get repository by token, githubReposByUser size: {}",
-						githubReposByUser.size());
+							githubReposByUser.size());
 					log.info("Successfully get organizations by token, githubOrganizations: {}", githubOrganizations);
 					List<String> githubReposMapped = githubReposByUser.stream().map(GitHubRepo::getHtmlUrl).toList();
 					LinkedHashSet<String> githubRepos = new LinkedHashSet<>(githubReposMapped);
 					CompletableFuture<Set<String>> githubReposByOrganizations = getAllGitHubReposAsync(token,
-						githubOrganizations);
+							githubOrganizations);
 					Set<String> allGitHubRepos = githubReposByOrganizations.join();
 					log.info("Successfully get all repositories by token, repos size: {}", allGitHubRepos.size());
 					githubRepos.addAll(allGitHubRepos);
 					return GitHubResponse.builder().githubRepos(githubRepos).build();
 				}, customTaskExecutor)
 				.join();
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to call GitHub with token_error: {} ", cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(
-				String.format("Failed to call GitHub with token_error: %s", cause.getMessage()));
+					String.format("Failed to call GitHub with token_error: %s", cause.getMessage()));
 		}
 	}
 
 	private CompletableFuture<Set<String>> getAllGitHubReposAsync(String token,
-																  List<GitHubOrganizationsInfo> gitHubOrganizations) {
+			List<GitHubOrganizationsInfo> gitHubOrganizations) {
 		List<CompletableFuture<List<String>>> repoFutures = gitHubOrganizations.stream()
 			.map(GitHubOrganizationsInfo::getLogin)
 			.map(org -> CompletableFuture.supplyAsync(() -> {
@@ -103,11 +104,11 @@ public class GitHubService {
 	}
 
 	public List<PipelineLeadTime> fetchPipelinesLeadTime(List<DeployTimes> deployTimes,
-														 Map<String, String> repositories, String token) {
+			Map<String, String> repositories, String token) {
 		try {
 			String realToken = "Bearer " + token;
 			List<PipelineInfoOfRepository> pipelineInfoOfRepositories = getInfoOfRepositories(deployTimes,
-				repositories);
+					repositories);
 
 			List<CompletableFuture<PipelineLeadTime>> pipelineLeadTimeFutures = pipelineInfoOfRepositories.stream()
 				.map(item -> {
@@ -132,14 +133,15 @@ public class GitHubService {
 				.toList();
 
 			return pipelineLeadTimeFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to get pipeline leadTimes_error: {}", cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(
-				String.format("Failed to get pipeline leadTimes, cause is: %s", cause.getMessage()));
+					String.format("Failed to get pipeline leadTimes, cause is: %s", cause.getMessage()));
 		}
 
 	}
@@ -148,14 +150,14 @@ public class GitHubService {
 		return item.getPassedDeploy().stream().map(deployInfo -> {
 			CompletableFuture<List<PullRequestInfo>> pullRequestInfoFuture = CompletableFuture
 				.supplyAsync(() -> gitHubFeignClient.getPullRequestListInfo(item.getRepository(),
-					deployInfo.getCommitId(), realToken));
+						deployInfo.getCommitId(), realToken));
 			return pullRequestInfoFuture
 				.thenApply(pullRequestInfos -> getLeadTimeByPullRequest(realToken, item, deployInfo, pullRequestInfos));
 		}).toList();
 	}
 
 	private List<PipelineInfoOfRepository> getInfoOfRepositories(List<DeployTimes> deployTimes,
-																 Map<String, String> repositories) {
+			Map<String, String> repositories) {
 		return deployTimes.stream().map(deployTime -> {
 			String repository = GithubUtil.getGithubUrlFullName(repositories.get(deployTime.getPipelineId()));
 			return PipelineInfoOfRepository.builder()
@@ -168,7 +170,7 @@ public class GitHubService {
 	}
 
 	private LeadTime getLeadTimeByPullRequest(String realToken, PipelineInfoOfRepository item, DeployInfo deployInfo,
-											  List<PullRequestInfo> pullRequestInfos) {
+			List<PullRequestInfo> pullRequestInfos) {
 		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo, item, realToken);
 		if (pullRequestInfos.isEmpty()) {
 			return noPrLeadTime;
@@ -183,7 +185,7 @@ public class GitHubService {
 		}
 
 		List<CommitInfo> commitInfos = gitHubFeignClient.getPullRequestCommitInfo(item.getRepository(),
-			mergedPull.get().getNumber().toString(), realToken);
+				mergedPull.get().getNumber().toString(), realToken);
 		CommitInfo firstCommitInfo = commitInfos.get(0);
 		return mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo);
 	}
@@ -196,17 +198,18 @@ public class GitHubService {
 		long firstCommitTime;
 		CommitInfo commitInfo = new CommitInfo();
 		try {
-			commitInfo = gitHubFeignClient.getCommitInfo(item.getRepository(), deployInfo.getCommitId(),
-				realToken);
-		} catch (Exception e) {
-			log.error("Failed to get commit info_repoId: {},commitId: {}, error: {}", item.getRepository(), deployInfo.getCommitId(),
-				e.getMessage());
+			commitInfo = gitHubFeignClient.getCommitInfo(item.getRepository(), deployInfo.getCommitId(), realToken);
+		}
+		catch (Exception e) {
+			log.error("Failed to get commit info_repoId: {},commitId: {}, error: {}", item.getRepository(),
+					deployInfo.getCommitId(), e.getMessage());
 		}
 
 		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
-			&& commitInfo.getCommit().getCommitter().getDate() != null) {
+				&& commitInfo.getCommit().getCommitter().getDate() != null) {
 			firstCommitTime = Instant.parse(commitInfo.getCommit().getCommitter().getDate()).toEpochMilli();
-		} else {
+		}
+		else {
 			firstCommitTime = jobStartTime;
 		}
 
@@ -230,9 +233,10 @@ public class GitHubService {
 		long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
 		long firstCommitTimeInPr;
 		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
-			&& commitInfo.getCommit().getCommitter().getDate() != null) {
+				&& commitInfo.getCommit().getCommitter().getDate() != null) {
 			firstCommitTimeInPr = Instant.parse(commitInfo.getCommit().getCommitter().getDate()).toEpochMilli();
-		} else {
+		}
+		else {
 			firstCommitTimeInPr = 0;
 		}
 
@@ -241,7 +245,8 @@ public class GitHubService {
 		long totalTime;
 		if (firstCommitTimeInPr > 0) {
 			prLeadTime = prMergedTime - firstCommitTimeInPr;
-		} else {
+		}
+		else {
 			prLeadTime = prMergedTime - prCreatedTime;
 		}
 		totalTime = prLeadTime + pipelineLeadTime;
@@ -265,17 +270,18 @@ public class GitHubService {
 			log.info("Start to get commit info, repoId: {},commitId: {}", repositoryId, commitId);
 			CommitInfo commitInfo = gitHubFeignClient.getCommitInfo(repositoryId, commitId, realToken);
 			log.info("Successfully get commit info, repoId: {},commitId: {}, author: {}", repositoryId, commitId,
-				commitInfo.getCommit().getAuthor());
+					commitInfo.getCommit().getAuthor());
 			return commitInfo;
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to get commit info_repoId: {},commitId: {}, error: {}", repositoryId, commitId,
-				cause.getMessage());
+					cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(String.format("Failed to get commit info_repoId: %s,cause is: %s",
-				repositoryId, cause.getMessage()));
+					repositoryId, cause.getMessage()));
 		}
 	}
 
