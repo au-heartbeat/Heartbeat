@@ -13,6 +13,7 @@ import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.exception.InternalServerErrorException;
+import heartbeat.exception.NotFoundException;
 import heartbeat.exception.RateLimitExceededException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
@@ -411,6 +412,19 @@ class GithubServiceTest {
 		assertThatThrownBy(() -> githubService.fetchCommitInfo("12344", "", ""))
 			.isInstanceOf(InternalServerErrorException.class)
 			.hasMessageContaining("Failed to get commit info_repoId");
+	}
+
+	@Test
+	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmptyAndCommitInfoError() {
+		String mockToken = "mockToken";
+
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
+
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenThrow(new NotFoundException("Failed to get commit"));
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+
+		assertEquals(pipelineLeadTimes, result);
 	}
 
 }
