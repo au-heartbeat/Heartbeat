@@ -421,7 +421,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenThrow(new NotFoundException("Failed to get commit"));
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
+			.thenThrow(new NotFoundException("Failed to get commit"));
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 
 		assertEquals(pipelineLeadTimes, result);
