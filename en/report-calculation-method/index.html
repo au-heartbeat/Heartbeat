@@ -70,7 +70,7 @@
     </title>
     
     
-  <link rel="stylesheet" href="/Heartbeat/_astro/adrs.32bea8ef.css" /></head>
+  <link rel="stylesheet" href="/Heartbeat/_astro/adrs.a908dd8d.css" /></head>
 
   <body class="astro-OUAMJN2I">
     <header class="astro-2W66RQV5">
@@ -225,7 +225,7 @@
                       Emoji Flow
                     </a>
                   </li><li class="nav-link astro-KQNE5HRN">
-                    <a href="/Heartbeat/en/dev-center/origin-cycle-time-calculation" class="astro-KQNE5HRN">
+                    <a href="/Heartbeat/en/dev-center/cycle-time-calculation" class="astro-KQNE5HRN">
                       OriginCycleTime calculation
                     </a>
                   </li><li class="nav-link astro-KQNE5HRN">
@@ -349,7 +349,7 @@ time for each selected column.</li>
 <h3 id="config-2">Config</h3>
 <ul>
 <li>StartDate、EndDate</li>
-<li>Board type, Board Id, Email, Project key, Site, Token</li>
+<li>Board type, Board I’d, Email, Project key, Site, Token</li>
 <li>Crews setting</li>
 <li>Real done</li>
 <li>Target Fields(Classification setting in metrics page)</li>
@@ -393,7 +393,7 @@ time for each selected column.</li>
 
 
 
-<table><thead><tr><th align="left">Metrics</th><th align="left">Description</th><th align="left">Note</th></tr></thead><tbody><tr><td align="left">Field name</td><td align="left">TargetFields selected in Metrics Page</td><td align="left"></td></tr><tr><td align="left">Subtitle</td><td align="left">Spcific classification for each targetField</td><td align="left"></td></tr><tr><td align="left">Value</td><td align="left">The proportion of specific classification to Each targetField</td><td align="left"></td></tr></tbody></table>
+<table><thead><tr><th align="left">Metrics</th><th align="left">Description</th><th align="left">Note</th></tr></thead><tbody><tr><td align="left">Field name</td><td align="left">TargetFields selected in Metrics Page</td><td align="left"></td></tr><tr><td align="left">Subtitle</td><td align="left">Specific classification for each targetField</td><td align="left"></td></tr><tr><td align="left">Value</td><td align="left">The proportion of specific classification to Each targetField</td><td align="left"></td></tr></tbody></table>
 <h2 id="deployment-frequency">Deployment Frequency</h2>
 <h3 id="config-3">Config</h3>
 <ul>
@@ -554,36 +554,63 @@ number of selected step.</li>
 </ul>
 <h3 id="calculate-logic-6">Calculate logic</h3>
 <ul>
-<li>Get deployment information according to pipeline config.</li>
-<li>Get pull request infomation according to the repository in deployment information.</li>
-<li>Get commit infomation according to the repository in deployment information.</li>
-<li>For each selected step:
+<li>
+<p>Get deployment information according to pipeline config.</p>
+</li>
+<li>
+<p>Get pull request information according to the repository in deployment information.</p>
+</li>
+<li>
+<p>Get commit information according to the repository in deployment information.</p>
+</li>
+<li>
+<p>For each selected step:</p>
 <ol>
-<li>Get DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos).</li>
-<li>Filter the passed deployInfos.</li>
-<li>Get pull request info according to the repository in passed deployInfos.</li>
-<li>Get commit info according to the commitid in pull request info.</li>
-<li>Now we get some deploy and commit times:
+<li>
+<p>Get DeployTimes. (DeployTimes includes name、step、passed deployInfos and failed deployInfos).</p>
+</li>
+<li>
+<p>Filter the passed deployInfos.</p>
+</li>
+<li>
+<p>Get pull request info according to the repository in passed deployInfos.</p>
+</li>
+<li>
+<p>Get commit info according to the commitId in pull request info.</p>
+</li>
+<li>
+<p>Now we get some deploy and commit times:</p>
 <ul>
 <li><code>jobFinishTime = job finishTime of the job</code></li>
 <li><code>prMergedTime = time of the pull request be merged</code></li>
 <li><code>firstCommitTimeInPr = the first time of the commit in this pull request</code></li>
+<li><code>firstCommitTime = the first time of the commit without pr</code></li>
 </ul>
 </li>
-<li>Calculate Lead Time for changes:
+<li>
+<p>Calculate Lead Time for changes:</p>
+<p>(1).None PR：</p>
 <ul>
-<li><code>mergeDelayTime = prMergedTime - firstCommitTimeInPr</code></li>
-<li><code>pipelineDelayTime = jobFinishTime - prMergedTime</code></li>
-<li><code>totalDelayTine = mergeDelayTime + pipelineDelayTime</code></li>
+<li><code>prLeadTime = 0</code></li>
+<li><code>pipelineLeadTime = jobFinishTime - firstCommitTime</code></li>
+<li><code>totalDelayTime = prLeadTime + pipelineLeadTime</code></li>
+</ul>
+<p>(2).PR：</p>
+<ul>
+<li><code>prLeadTime = prMergedTime - firstCommitTimeInPr</code></li>
+<li><code>prLeadTime = prMergedTime - prCreateTime</code>(if no first commit time)</li>
+<li><code>pipelineLeadTime = jobFinishTime - prMergedTime</code></li>
+<li><code>totalDelayTime = prLeadTime + pipelineLeadTime</code></li>
 </ul>
 </li>
 </ol>
 </li>
-<li>Calculate Average Lead Time for changes:
+<li>
+<p>Calculate Average Lead Time for changes:</p>
 <ul>
-<li><code>AverageLeadMergeDelayTime = totalMergeDelayTime / pipelineCount </code></li>
-<li><code>AveragePipelineDelayTime = totalPipelineDelayTime/pipelineCount</code></li>
-<li><code>AverageTotalDelayTime = AverageLeadMergeDelayTime + AveragePipelineDelayTime</code></li>
+<li><code>AverageLeadMergeDelayTime = totalPrLeadTime / pipelineCount </code></li>
+<li><code>AveragePipelineDelayTime = totalPipelineLeadTime/pipelineCount</code></li>
+<li><code>AverageTotalDelayTime = AveragePrLeadTime + AveragePipelineLeadTime</code></li>
 </ul>
 </li>
 </ul>
@@ -608,7 +635,7 @@ number of selected step.</li>
 
 
 
-<table><thead><tr><th align="left">Metrics</th><th align="left">Description</th><th align="left">Note</th></tr></thead><tbody><tr><td align="left">Lead Time for changes</td><td align="left">The time from code commit to deploy production successd</td><td align="left"></td></tr><tr><td align="left">Average</td><td align="left">The average of lead Time for per pipeline</td><td align="left"></td></tr></tbody></table>
+<table><thead><tr><th align="left">Metrics</th><th align="left">Description</th><th align="left">Note</th></tr></thead><tbody><tr><td align="left">Lead Time for changes</td><td align="left">The time from code commit to deploy production success</td><td align="left"></td></tr><tr><td align="left">Average</td><td align="left">The average of lead Time for per pipeline</td><td align="left"></td></tr></tbody></table>
   </section>
   <nav class="block sm:hidden astro-J75B3YUS">
     <h2 class="heading astro-BYIKQF6W">More</h2>
