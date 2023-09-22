@@ -62,6 +62,7 @@ public class BoardUtil {
 			List<StatusTimeStamp> columnTimeStamp) {
 		List<CycleTimeInfo> cycleTimeInfos = new ArrayList<>();
 		double totalFlagTimeInDays = calculateTotalFlagCycleTime(flagTimeStamp);
+		double totalFlagAndRealDoneOverlapTime = calculateTotalFlagAndRealDoneOverlapTime(realDoneStatus,flagTimeStamp,columnTimeStamp);
 		for (StatusTimeStamp columnTimeStampItem : columnTimeStamp) {
 			double originColumnTimeInDays = workDay.calculateWorkDaysBy24Hours(columnTimeStampItem.getStartTimestamp(),
 					columnTimeStampItem.getEndTimestamp());
@@ -73,7 +74,7 @@ public class BoardUtil {
 			else {
 				double totalOverlapTimeInDays = calculateTotalOverlapTime(columnTimeStampItem, flagTimeStamp);
 				if (Objects.equals(columnTimeStampItem.getStatus(), CardStepsEnum.BLOCK.getValue().toUpperCase())) {
-					realColumnTimeInDays = originColumnTimeInDays + totalFlagTimeInDays - totalOverlapTimeInDays;
+					realColumnTimeInDays = originColumnTimeInDays + totalFlagTimeInDays - totalOverlapTimeInDays - totalFlagAndRealDoneOverlapTime;
 				}
 				else {
 					realColumnTimeInDays = originColumnTimeInDays - totalOverlapTimeInDays;
@@ -85,7 +86,35 @@ public class BoardUtil {
 				.column(columnTimeStampItem.getStatus().toUpperCase())
 				.build());
 		}
+		//如果没有Block column
+		if(!isBlockColumnExisted(columnTimeStamp) && totalFlagTimeInDays > 0){
+			double blockDays = totalFlagTimeInDays - totalFlagAndRealDoneOverlapTime;
+			cycleTimeInfos.add(CycleTimeInfo.builder()
+				.day(blockDays)
+				.column(CardStepsEnum.BLOCK.getValue().toUpperCase())
+				.build());
+		}
+
 		return cycleTimeInfos;
+	}
+
+	private boolean isBlockColumnExisted(List<StatusTimeStamp> columnTimeStamp){
+		for (StatusTimeStamp columnTimeStampItem : columnTimeStamp) {
+			if (Objects.equals(columnTimeStampItem.getStatus(), CardStepsEnum.BLOCK.getValue().toUpperCase())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private double calculateTotalFlagAndRealDoneOverlapTime(List<String> realDoneStatus, List<StatusTimeStamp> flagTimeStamp, List<StatusTimeStamp> columnTimeStamp) {
+		double totalFlagAndRealDoneColumnOverlapTime = 0.0;
+		for (StatusTimeStamp columnTimeStampItem : columnTimeStamp) {
+			if (realDoneStatus.contains(columnTimeStampItem.getStatus().toUpperCase())) {
+				totalFlagAndRealDoneColumnOverlapTime += calculateTotalOverlapTime(columnTimeStampItem, flagTimeStamp);
+			}
+		}
+		return totalFlagAndRealDoneColumnOverlapTime;
 	}
 
 	private static List<StatusChangedItem> getStatusChangedBySorted(List<StatusChangedItem> statusChangedArray) {

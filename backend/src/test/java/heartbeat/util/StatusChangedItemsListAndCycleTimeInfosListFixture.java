@@ -18,6 +18,7 @@ public class StatusChangedItemsListAndCycleTimeInfosListFixture {
 
 	public static List<CycleTimeInfo> CYCLE_TIME_INFOS_LIST_OF_REAL_DONE_COLUMN() {
 		return List.of(CycleTimeInfo.builder().column("DONE").day(EXPECT_DAYS).build(),
+				CycleTimeInfo.builder().column("BLOCK").day(0.0).build(),
 				CycleTimeInfo.builder().column("IN PROGRESS").day(EXPECT_DAYS).build());
 	}
 
