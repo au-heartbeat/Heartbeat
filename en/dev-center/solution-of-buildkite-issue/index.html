@@ -259,7 +259,7 @@
   <section class="main-section astro-J75B3YUS">
     <h1 class="content-title astro-J75B3YUS" id="overview">Solution of BuildKite issue</h1>
     <nav class="block sm:hidden astro-J75B3YUS">
-      <script>(self.Astro=self.Astro||{}).media=(s,a)=>{const t=async()=>{await(await s())()};if(a.value){const e=matchMedia(a.value);e.matches?t():e.addEventListener("change",t,{once:!0})}},window.dispatchEvent(new Event("astro:media"));</script><astro-island uid="1DiI5n" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;expiredtokenexception\&quot;],\&quot;text\&quot;:[0,\&quot;ExpiredTokenException\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;docker-permission-denied\&quot;],\&quot;text\&quot;:[0,\&quot;Docker permission denied\&quot;]}]]&quot;],&quot;class&quot;:[0,&quot;astro-J75B3YUS&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(max-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul><li class="header-link depth-2"><a href="#expiredtokenexception">ExpiredTokenException</a></li><li class="header-link depth-2"><a href="#docker-permission-denied">Docker permission denied</a></li></ul></astro-island>
+      <script>(self.Astro=self.Astro||{}).media=(s,a)=>{const t=async()=>{await(await s())()};if(a.value){const e=matchMedia(a.value);e.matches?t():e.addEventListener("change",t,{once:!0})}},window.dispatchEvent(new Event("astro:media"));</script><astro-island uid="ZGVbfw" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;expiredtokenexception\&quot;],\&quot;text\&quot;:[0,\&quot;ExpiredTokenException\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;docker-permission-denied\&quot;],\&quot;text\&quot;:[0,\&quot;Docker permission denied\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;connection-time-out\&quot;],\&quot;text\&quot;:[0,\&quot;Connection Time Out\&quot;]}]]&quot;],&quot;class&quot;:[0,&quot;astro-J75B3YUS&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(max-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul><li class="header-link depth-2"><a href="#expiredtokenexception">ExpiredTokenException</a></li><li class="header-link depth-2"><a href="#docker-permission-denied">Docker permission denied</a></li><li class="header-link depth-2"><a href="#connection-time-out">Connection Time Out</a></li></ul></astro-island>
     </nav>
     <h2 id="expiredtokenexception">ExpiredTokenException</h2>
 <p><strong>Issue</strong></p>
@@ -269,6 +269,9 @@
 <ul>
 <li>
 <p>Login AWS and Select Singapore region.</p>
+</li>
+<li>
+<p>Choose EC2 and click to enter instance.</p>
 </li>
 <li>
 <p>Connect to <code>HeartbeatBuildKiteAgent</code> EC2 environment.</p>
@@ -291,8 +294,18 @@
 <p><strong>Solution</strong></p>
 <ul>
 <li>Login AWS and Select Singapore region.</li>
+<li>Choose EC2 and click to enter instance.</li>
 <li>Connect to <code>HeartbeatBuildKiteAgent</code> EC2 environment.</li>
 <li>Execute the command <code>sudo chmod 666 /var/run/docker.sock</code></li>
+</ul>
+<h2 id="connection-time-out">Connection Time Out</h2>
+<p><strong>Issue</strong></p>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #c9d1d9">Error: The command exited with status 255</span></span></code></pre>
+<p><strong>Solution</strong></p>
+<ul>
+<li>Login AWS and Select Singapore region.</li>
+<li>Choose EC2 and click to enter instance.</li>
+<li>Reboot all instances.</li>
 </ul>
   </section>
   <nav class="block sm:hidden astro-J75B3YUS">
@@ -324,7 +337,7 @@
       <aside id="grid-right" class="grid-sidebar astro-OUAMJN2I" title="Table of Contents">
         <nav class="sidebar-nav astro-ROIVMLUZ" aria-labelledby="grid-right">
   <div class="sidebar-nav-inner astro-ROIVMLUZ">
-    <astro-island uid="ZGrKcP" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;expiredtokenexception\&quot;],\&quot;text\&quot;:[0,\&quot;ExpiredTokenException\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;docker-permission-denied\&quot;],\&quot;text\&quot;:[0,\&quot;Docker permission denied\&quot;]}]]&quot;],&quot;class&quot;:[0,&quot;astro-ROIVMLUZ&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(min-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul><li class="header-link depth-2"><a href="#expiredtokenexception">ExpiredTokenException</a></li><li class="header-link depth-2"><a href="#docker-permission-denied">Docker permission denied</a></li></ul></astro-island>
+    <astro-island uid="22utgc" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;expiredtokenexception\&quot;],\&quot;text\&quot;:[0,\&quot;ExpiredTokenException\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;docker-permission-denied\&quot;],\&quot;text\&quot;:[0,\&quot;Docker permission denied\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;connection-time-out\&quot;],\&quot;text\&quot;:[0,\&quot;Connection Time Out\&quot;]}]]&quot;],&quot;class&quot;:[0,&quot;astro-ROIVMLUZ&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(min-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul><li class="header-link depth-2"><a href="#expiredtokenexception">ExpiredTokenException</a></li><li class="header-link depth-2"><a href="#docker-permission-denied">Docker permission denied</a></li><li class="header-link depth-2"><a href="#connection-time-out">Connection Time Out</a></li></ul></astro-island>
     <h2 class="heading astro-BYIKQF6W">More</h2>
 <ul class="astro-BYIKQF6W">
   <li class="header-link depth-2 astro-BYIKQF6W">
