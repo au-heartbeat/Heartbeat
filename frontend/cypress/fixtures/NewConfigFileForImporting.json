@@ -29,7 +29,7 @@
   },
   "sourceControl": {
     "type": "GitHub",
-    "token": "ghp_Abc123Abc123Abc123Abc123Abc123Abc123"
+    "token": ""
   },
   "crews": ["lucy", "hi hi", "Yu Zhang"],
   "cycleTime": {
