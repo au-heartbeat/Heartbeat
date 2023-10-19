@@ -259,9 +259,122 @@
   <section class="main-section astro-J75B3YUS">
     <h1 class="content-title astro-J75B3YUS" id="overview">Tech Spikes</h1>
     <nav class="block sm:hidden astro-J75B3YUS">
-      <script>(self.Astro=self.Astro||{}).media=(s,a)=>{const t=async()=>{await(await s())()};if(a.value){const e=matchMedia(a.value);e.matches?t():e.addEventListener("change",t,{once:!0})}},window.dispatchEvent(new Event("astro:media"));</script><astro-island uid="Z1NxXCE" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[]&quot;],&quot;class&quot;:[0,&quot;astro-J75B3YUS&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(max-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul></ul></astro-island>
+      <script>(self.Astro=self.Astro||{}).media=(s,a)=>{const t=async()=>{await(await s())()};if(a.value){const e=matchMedia(a.value);e.matches?t():e.addEventListener("change",t,{once:!0})}},window.dispatchEvent(new Event("astro:media"));</script><astro-island uid="1s6edM" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[[0,{\&quot;depth\&quot;:[0,1],\&quot;slug\&quot;:[0,\&quot;spike--add-github-user-field-for-pipeline-setting-in-metrics-page\&quot;],\&quot;text\&quot;:[0,\&quot;Spike — Add GitHub user field for pipeline setting in metrics page\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;current-situation\&quot;],\&quot;text\&quot;:[0,\&quot;Current situation\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;expect\&quot;],\&quot;text\&quot;:[0,\&quot;Expect\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;solutions\&quot;],\&quot;text\&quot;:[0,\&quot;Solutions\&quot;]}],[0,{\&quot;depth\&quot;:[0,3],\&quot;slug\&quot;:[0,\&quot;1-get-all-committers-by-buildkite-api\&quot;],\&quot;text\&quot;:[0,\&quot;1. Get all committers by buildkite API\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;11-buildkite-api\&quot;],\&quot;text\&quot;:[0,\&quot;1.1 buildkite API\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;12-response-body\&quot;],\&quot;text\&quot;:[0,\&quot;1.2 response body\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;13-description\&quot;],\&quot;text\&quot;:[0,\&quot;1.3 description\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;14-sequence-diagram-c3---heartbeat---metrics\&quot;],\&quot;text\&quot;:[0,\&quot;1.4 sequence diagram (C3 - Heartbeat - Metrics)\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;15-example\&quot;],\&quot;text\&quot;:[0,\&quot;1.5 example\&quot;]}],[0,{\&quot;depth\&quot;:[0,3],\&quot;slug\&quot;:[0,\&quot;2-filter-selected-username-and-generate-csv-file\&quot;],\&quot;text\&quot;:[0,\&quot;2. filter selected username and generate CSV file\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;21-sequence-diagram-c3---generate-csv-for-pipeline\&quot;],\&quot;text\&quot;:[0,\&quot;2.1 sequence diagram (C3 - Generate CSV for pipeline)\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;22-example\&quot;],\&quot;text\&quot;:[0,\&quot;2.2 example\&quot;]}],[0,{\&quot;depth\&quot;:[0,3],\&quot;slug\&quot;:[0,\&quot;\&quot;],\&quot;text\&quot;:[0,\&quot;\&quot;]}]]&quot;],&quot;class&quot;:[0,&quot;astro-J75B3YUS&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(max-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul><li class="header-link depth-2"><a href="#current-situation">Current situation</a></li><li class="header-link depth-2"><a href="#expect">Expect</a></li><li class="header-link depth-2"><a href="#solutions">Solutions</a></li><li class="header-link depth-3"><a href="#1-get-all-committers-by-buildkite-api">1. Get all committers by buildkite API</a></li><li class="header-link depth-3"><a href="#2-filter-selected-username-and-generate-csv-file">2. filter selected username and generate CSV file</a></li><li class="header-link depth-3"><a href="#"></a></li></ul></astro-island>
     </nav>
-    
+    <h1 id="spike--add-github-user-field-for-pipeline-setting-in-metrics-page">Spike — Add GitHub user field for pipeline setting in metrics page</h1>
+<h2 id="current-situation">Current situation</h2>
+<p>Existing pipeline calculation doesn’t consider crew members which might introduce issues like some pipelines were not triggered by your team. As a result, the Lead time for change, change failure rate, deployment frequency, and MTTR might not be precise.</p>
+<h2 id="expect">Expect</h2>
+<p>If user could select related crew member(Buildkite User) for their pipeline trigger, it will <strong>filter out unrelated pipelines</strong>.</p>
+<h2 id="solutions">Solutions</h2>
+<h3 id="1-get-all-committers-by-buildkite-api">1. Get all committers by buildkite API</h3>
+<h4 id="11-buildkite-api">1.1 buildkite API</h4>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">curl </span><span style="color: #A5D6FF">"https://api.buildkite.com/v2/organizations/{org.slug}/pipelines/{pipeline.slug}/builds"</span></span></code></pre>
+<h4 id="12-response-body">1.2 response body</h4>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">[</span></span>
+<span class="line"><span style="color: #C9D1D9">  {</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"id"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"f62a1b4d-10f9-4790-bc1c-e2c3a0c80983"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"graphql_id"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"QnVpbGQtLS1mYmQ2Zjk3OS0yOTRhLTQ3ZjItOTU0Ni1lNTk0M2VlMTAwNzE="</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"url"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"https://api.buildkite.com/v2/organizations/my-great-org/pipelines/my-pipeline/builds/1"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"web_url"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"https://buildkite.com/my-great-org/my-pipeline/builds/1"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"number"</span><span style="color: #C9D1D9">: </span><span style="color: #79C0FF">1</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"state"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"passed"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"blocked"</span><span style="color: #C9D1D9">: </span><span style="color: #79C0FF">false</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"message"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"Bumping to version 0.2-beta.6"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"commit"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"abcd0b72a1e580e90712cdd9eb26d3fb41cd09c8"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"branch"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"main"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"env"</span><span style="color: #C9D1D9">: {},</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"source"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"webhook"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #7EE787">"creator"</span><span style="color: #C9D1D9">: {</span></span>
+<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #7EE787">"id"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"3d3c3bf0-7d58-4afe-8fe7-b3017d5504de"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #7EE787">"name"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"Keith Pitt"</span><span style="color: #C9D1D9">, </span><span style="color: #8B949E">//this is our need</span></span>
+<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #7EE787">"email"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"keith@buildkite.com"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #7EE787">"avatar_url"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"https://www.gravatar.com/avatar/e14f55d3f939977cecbf51b64ff6f861"</span><span style="color: #C9D1D9">,</span></span>
+<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #7EE787">"created_at"</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">"2015-05-22T12:36:45.309Z"</span></span>
+<span class="line"><span style="color: #C9D1D9">    }</span></span>
+<span class="line"><span style="color: #C9D1D9">  }</span></span>
+<span class="line"><span style="color: #C9D1D9">]</span></span></code></pre>
+<h4 id="13-description">1.3 description</h4>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">we need the creator field. for example, in </span><span style="color: #79C0FF">this</span><span style="color: #C9D1D9"> piece buildkite build information, the creator is guzhongren.</span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/buildkite-build-example.png" alt="img1.png"></p>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">We need to add a </span><span style="color: #FF7B72">new</span><span style="color: #C9D1D9"> api to get all creators within the selected time range, and </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> the buildkite creators to fronted render selected box like </span><span style="color: #79C0FF">this</span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/selected-box.png" alt="img1.png"></p>
+<h4 id="14-sequence-diagram-c3---heartbeat---metrics">1.4 sequence diagram (C3 - Heartbeat - Metrics)</h4>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">@</span><span style="color: #FF7B72">startuml</span><span style="color: #C9D1D9"> Export csv file</span></span>
+<span class="line"><span style="color: #C9D1D9">skin rose</span></span>
+<span class="line"><span style="color: #C9D1D9">title C3 </span><span style="color: #FF7B72">-</span><span style="color: #C9D1D9"> Heartbeat </span><span style="color: #FF7B72">-</span><span style="color: #C9D1D9"> Metrics</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">participant FrontEnd</span></span>
+<span class="line"><span style="color: #C9D1D9">participant PipelineController</span></span>
+<span class="line"><span style="color: #C9D1D9">participant BuildKiteService</span></span>
+<span class="line"><span style="color: #C9D1D9">participant BuildKiteFeignClient</span></span>
+<span class="line"><span style="color: #C9D1D9">participant BuildKite</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">group Get BuildKite creators</span></span>
+<span class="line"><span style="color: #C9D1D9">    FrontEnd </span><span style="color: #FF7B72">-></span><span style="color: #C9D1D9"> BuildKiteService </span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> fetch buildkite</span><span style="color: #A5D6FF">'s creator names</span></span>
+<span class="line"><span style="color: #A5D6FF">    activate BuildKiteService</span></span>
+<span class="line"><span style="color: #A5D6FF">    loop fetch build information from BuildKite</span></span>
+<span class="line"><span style="color: #A5D6FF">       BuildKiteService -> BuildKiteFeignClient: fetch pipeline build infomation</span></span>
+<span class="line"><span style="color: #A5D6FF">       activate BuildKiteFeignClient</span></span>
+<span class="line"><span style="color: #A5D6FF">       BuildKiteFeignClient -> BuildKite</span></span>
+<span class="line"><span style="color: #A5D6FF">       activate BuildKite</span></span>
+<span class="line"><span style="color: #A5D6FF">       BuildKiteFeignClient &#x3C;-- BuildKite</span></span>
+<span class="line"><span style="color: #A5D6FF">       deactivate BuildKite</span></span>
+<span class="line"><span style="color: #A5D6FF">       BuildKiteService &#x3C;-- BuildKiteFeignClient: return pipeline build infomation</span></span>
+<span class="line"><span style="color: #A5D6FF">       deactivate BuildKiteFeignClient</span></span>
+<span class="line"><span style="color: #A5D6FF">    end loop</span></span>
+<span class="line"><span style="color: #A5D6FF">    FrontEnd &#x3C;-- BuildKiteService : return buildkite'</span><span style="color: #C9D1D9">s creator names</span></span>
+<span class="line"><span style="color: #C9D1D9">    deactivate BuildKiteService</span></span>
+<span class="line"><span style="color: #C9D1D9">end</span></span>
+<span class="line"><span style="color: #C9D1D9">@</span><span style="color: #FF7B72">enduml</span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/get-buildkite-creators.png" alt="img1.png"></p>
+<h4 id="15-example">1.5 example</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/buildkite-committers.png" alt="img1.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/buildkite-commit-record.png" alt="img1.png"></p>
+<h3 id="2-filter-selected-username-and-generate-csv-file">2. filter selected username and generate CSV file</h3>
+<h4 id="21-sequence-diagram-c3---generate-csv-for-pipeline">2.1 sequence diagram (C3 - Generate CSV for pipeline)</h4>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">@</span><span style="color: #FF7B72">startuml</span><span style="color: #C9D1D9"> report</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">group generate csv </span><span style="color: #FF7B72">for</span><span style="color: #C9D1D9"> pipeline</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">  alt request.buildKiteSetting </span><span style="color: #FF7B72">==</span><span style="color: #C9D1D9"> undefined</span></span>
+<span class="line"><span style="color: #C9D1D9">  GenerateReporter_service </span><span style="color: #FF7B72">-></span><span style="color: #C9D1D9"> GenerateReporter_service</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">return</span></span>
+<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">else</span></span>
+<span class="line"><span style="color: #C9D1D9">    group generate pipeline csv data with codebase</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">      alt request.codebaseSetting </span><span style="color: #FF7B72">==</span><span style="color: #C9D1D9"> undefined</span></span>
+<span class="line"><span style="color: #C9D1D9">      GenerateReporter_service </span><span style="color: #FF7B72">-></span><span style="color: #C9D1D9"> GenerateReporter_service</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> empty pipeline csv data with codebase</span></span>
+<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #FF7B72">else</span></span>
+<span class="line"><span style="color: #C9D1D9">        GenerateReporter_service </span><span style="color: #FF7B72">-></span><span style="color: #C9D1D9"> GithubService</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> get commitInfo</span></span>
+<span class="line"><span style="color: #C9D1D9">        activate GithubService</span></span>
+<span class="line"><span style="color: #C9D1D9">        GithubService </span><span style="color: #FF7B72">-></span><span style="color: #C9D1D9"> GitHubFeignClient</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> get commitInfo</span></span>
+<span class="line"><span style="color: #C9D1D9">        activate GitHubFeignClient</span></span>
+<span class="line"><span style="color: #C9D1D9">        GitHubFeignClient </span><span style="color: #FF7B72">--></span><span style="color: #C9D1D9"> GithubService</span></span>
+<span class="line"><span style="color: #C9D1D9">        deactivate GitHubFeignClient</span></span>
+<span class="line"><span style="color: #C9D1D9">        GithubService </span><span style="color: #FF7B72">--></span><span style="color: #C9D1D9"> GenerateReporter_service</span></span>
+<span class="line"><span style="color: #C9D1D9">        deactivate GithubService</span></span>
+<span class="line"><span style="color: #C9D1D9">        GenerateReporter_service </span><span style="color: #FF7B72">-></span><span style="color: #C9D1D9"> GenerateReporter_service</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> generate pipeline csv data, </span><span style="color: #D2A8FF">performFiltering</span><span style="color: #C9D1D9">(selected user)</span></span>
+<span class="line"><span style="color: #C9D1D9">      end</span></span>
+<span class="line"><span style="color: #C9D1D9">  end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">@</span><span style="color: #FF7B72">enduml</span></span>
+<span class="line"></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/generate-filtered-csc-data.png" alt="img1.png"></p>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">1. existed code:</span></span>
+<span class="line"><span style="color: #C9D1D9">  when generate pipeline csv data default </span><span style="color: #FF7B72">for</span><span style="color: #C9D1D9"> every committers within the selected </span><span style="color: #FF7B72">time</span><span style="color: #C9D1D9"> range</span></span>
+<span class="line"><span style="color: #C9D1D9">2. expected:</span></span>
+<span class="line"><span style="color: #C9D1D9">  Generate report data only </span><span style="color: #FF7B72">for</span><span style="color: #C9D1D9"> the selected person. The selected person is a parameter passed from the front end.</span></span>
+<span class="line"><span style="color: #C9D1D9">3. Code implementation:</span></span>
+<span class="line"><span style="color: #C9D1D9"> extend the parameter of CodebaseSetting with selected committers </span><span style="color: #FF7B72">in</span><span style="color: #C9D1D9"> the method of generateCSVForPipelineWithCodebase, use stream api to filter commit information and get selected committers</span><span style="color: #A5D6FF">' infomation to generate pipeline csv data</span></span></code></pre>
+<h4 id="22-example">2.2 example</h4>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">We</span><span style="color: #FFA657"> tried to complete it at </span><span style="color: #C9D1D9">local</span><span style="color: #FFA657">, and the result of the generated </span><span style="color: #C9D1D9">CSV</span><span style="color: #FFA657"> file as </span><span style="color: #C9D1D9">follows</span><span style="color: #FF7B72">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #C9D1D9">In </span><span style="color: #79C0FF">this</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">case</span><span style="color: #C9D1D9">, we just only want the information of the two specify </span><span style="color: #D2A8FF">Committers</span><span style="color: #C9D1D9">(also known as GitHub user) </span><span style="color: #FF7B72">-</span><span style="color: #C9D1D9"> [guzhongren, wangwang.zhang], The generated CSV shows that we successfully obtained only the information of these two Committers.</span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/export-filtered-csv-data.png" alt="img1.png"></p>
+<p>​</p>
+<h3 id=""></h3>
   </section>
   <nav class="block sm:hidden astro-J75B3YUS">
     <h2 class="heading astro-BYIKQF6W">More</h2>
@@ -292,7 +405,7 @@
       <aside id="grid-right" class="grid-sidebar astro-OUAMJN2I" title="Table of Contents">
         <nav class="sidebar-nav astro-ROIVMLUZ" aria-labelledby="grid-right">
   <div class="sidebar-nav-inner astro-ROIVMLUZ">
-    <astro-island uid="URFS4" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[]&quot;],&quot;class&quot;:[0,&quot;astro-ROIVMLUZ&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(min-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul></ul></astro-island>
+    <astro-island uid="ZREf4q" component-url="/Heartbeat/_astro/TableOfContents.8c3f2d22.js" component-export="default" renderer-url="/Heartbeat/_astro/client.a4d0eb3c.js" props="{&quot;headings&quot;:[1,&quot;[[0,{\&quot;depth\&quot;:[0,1],\&quot;slug\&quot;:[0,\&quot;spike--add-github-user-field-for-pipeline-setting-in-metrics-page\&quot;],\&quot;text\&quot;:[0,\&quot;Spike — Add GitHub user field for pipeline setting in metrics page\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;current-situation\&quot;],\&quot;text\&quot;:[0,\&quot;Current situation\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;expect\&quot;],\&quot;text\&quot;:[0,\&quot;Expect\&quot;]}],[0,{\&quot;depth\&quot;:[0,2],\&quot;slug\&quot;:[0,\&quot;solutions\&quot;],\&quot;text\&quot;:[0,\&quot;Solutions\&quot;]}],[0,{\&quot;depth\&quot;:[0,3],\&quot;slug\&quot;:[0,\&quot;1-get-all-committers-by-buildkite-api\&quot;],\&quot;text\&quot;:[0,\&quot;1. Get all committers by buildkite API\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;11-buildkite-api\&quot;],\&quot;text\&quot;:[0,\&quot;1.1 buildkite API\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;12-response-body\&quot;],\&quot;text\&quot;:[0,\&quot;1.2 response body\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;13-description\&quot;],\&quot;text\&quot;:[0,\&quot;1.3 description\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;14-sequence-diagram-c3---heartbeat---metrics\&quot;],\&quot;text\&quot;:[0,\&quot;1.4 sequence diagram (C3 - Heartbeat - Metrics)\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;15-example\&quot;],\&quot;text\&quot;:[0,\&quot;1.5 example\&quot;]}],[0,{\&quot;depth\&quot;:[0,3],\&quot;slug\&quot;:[0,\&quot;2-filter-selected-username-and-generate-csv-file\&quot;],\&quot;text\&quot;:[0,\&quot;2. filter selected username and generate CSV file\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;21-sequence-diagram-c3---generate-csv-for-pipeline\&quot;],\&quot;text\&quot;:[0,\&quot;2.1 sequence diagram (C3 - Generate CSV for pipeline)\&quot;]}],[0,{\&quot;depth\&quot;:[0,4],\&quot;slug\&quot;:[0,\&quot;22-example\&quot;],\&quot;text\&quot;:[0,\&quot;2.2 example\&quot;]}],[0,{\&quot;depth\&quot;:[0,3],\&quot;slug\&quot;:[0,\&quot;\&quot;],\&quot;text\&quot;:[0,\&quot;\&quot;]}]]&quot;],&quot;class&quot;:[0,&quot;astro-ROIVMLUZ&quot;]}" ssr="" client="media" opts="{&quot;name&quot;:&quot;TableOfContents&quot;,&quot;value&quot;:&quot;(min-width: 50em)&quot;}" await-children=""><h2 id="on-this-page-heading" class="heading">On this page</h2><ul><li class="header-link depth-2"><a href="#current-situation">Current situation</a></li><li class="header-link depth-2"><a href="#expect">Expect</a></li><li class="header-link depth-2"><a href="#solutions">Solutions</a></li><li class="header-link depth-3"><a href="#1-get-all-committers-by-buildkite-api">1. Get all committers by buildkite API</a></li><li class="header-link depth-3"><a href="#2-filter-selected-username-and-generate-csv-file">2. filter selected username and generate CSV file</a></li><li class="header-link depth-3"><a href="#"></a></li></ul></astro-island>
     <h2 class="heading astro-BYIKQF6W">More</h2>
 <ul class="astro-BYIKQF6W">
   <li class="header-link depth-2 astro-BYIKQF6W">
