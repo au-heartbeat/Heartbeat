@@ -590,6 +590,9 @@ number of selected step.</li>
 <li>
 <p>Calculate Lead Time for changes:</p>
 <p>(1).None PR：</p>
+<pre is:raw="" class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #c9d1d9">Two scenario for none pr:</span></span>
+<span class="line"><span style="color: #c9d1d9">1. Get none PR response from github api</span></span>
+<span class="line"><span style="color: #c9d1d9">2. Got PR, but PR commit sha is not equal to deploy commit sha</span></span></code></pre>
 <ul>
 <li><code>prLeadTime = 0</code></li>
 <li><code>pipelineLeadTime = jobFinishTime - firstCommitTime</code></li>
