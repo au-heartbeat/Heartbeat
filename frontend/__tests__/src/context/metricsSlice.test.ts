@@ -18,7 +18,7 @@ import saveMetricsSettingReducer, {
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice'
 import { store } from '@src/store'
-import { CLASSIFICATION_WARNING_MESSAGE, PIPELINE_SETTING_TYPES } from '../fixtures'
+import { CLASSIFICATION_WARNING_MESSAGE, NO_RESULT_DASH, PIPELINE_SETTING_TYPES } from '../fixtures'
 import {
   ASSIGNEE_FILTER_TYPES,
   ORGANIZATION_WARNING_MESSAGE,
@@ -255,8 +255,8 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.users).toEqual(['User B'])
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([
       { name: 'Done', value: 'Done' },
-      { name: 'Doing', value: '----' },
-      { name: 'Testing', value: '----' },
+      { name: 'Doing', value: NO_RESULT_DASH },
+      { name: 'Testing', value: NO_RESULT_DASH },
     ])
     expect(savedMetricsSetting.doneColumn).toEqual(['DONE'])
   })
@@ -298,9 +298,9 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.targetFields).toEqual([{ key: 'issuetype', name: 'Issue Type', flag: false }])
     expect(savedMetricsSetting.users).toEqual(['User A', 'User B'])
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([
-      { name: 'Done', value: '----' },
-      { name: 'Doing', value: '----' },
-      { name: 'Testing', value: '----' },
+      { name: 'Done', value: NO_RESULT_DASH },
+      { name: 'Doing', value: NO_RESULT_DASH },
+      { name: 'Testing', value: NO_RESULT_DASH },
     ])
     expect(savedMetricsSetting.doneColumn).toEqual([])
   })
