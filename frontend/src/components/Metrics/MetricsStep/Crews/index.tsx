@@ -15,10 +15,6 @@ interface crewsProps {
   label: string
 }
 
-export const WarningMessage = styled('p')({
-  color: 'red',
-})
-
 export const Crews = ({ options, title, label }: crewsProps) => {
   const dispatch = useAppDispatch()
   const [isEmptyCrewData, setIsEmptyCrewData] = useState<boolean>(false)

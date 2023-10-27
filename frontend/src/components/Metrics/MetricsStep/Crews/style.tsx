@@ -4,6 +4,6 @@ export const AssigneeFilterContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(2, 1fr)',
 })
-export const WarningMessage = styled('p')({
+export const WarningMessage = styled('div')({
   color: 'red',
 })
