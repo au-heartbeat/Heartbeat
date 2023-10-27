@@ -14,6 +14,7 @@ import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
 import { saveUsers, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
 import { useAppSelector } from '@src/hooks'
+import { AssigneeFilter } from '@src/components/Metrics/MetricsStep/Crews/AssigneeFilter'
 
 interface crewsProps {
   options: string[]
@@ -69,6 +70,7 @@ export const Crews = ({ options, title, label }: crewsProps) => {
             </MenuItem>
           ))}
         </Select>
+        <AssigneeFilter />
         <FormHelperText>
           {isEmptyCrewData ? (
             <>
