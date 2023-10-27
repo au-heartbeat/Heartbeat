@@ -70,7 +70,6 @@ export const Crews = ({ options, title, label }: crewsProps) => {
             </MenuItem>
           ))}
         </Select>
-        <AssigneeFilter />
         <FormHelperText>
           {isEmptyCrewData ? (
             <>
@@ -80,6 +79,7 @@ export const Crews = ({ options, title, label }: crewsProps) => {
             DEFAULT_HELPER_TEXT
           )}
         </FormHelperText>
+        <AssigneeFilter />
       </FormControl>
     </>
   )
