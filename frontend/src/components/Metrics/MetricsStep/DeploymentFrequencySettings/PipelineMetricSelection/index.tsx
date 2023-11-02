@@ -3,7 +3,7 @@ import { SingleSelection } from '@src/components/Metrics/MetricsStep/DeploymentF
 import { useAppDispatch } from '@src/hooks'
 import {
   ButtonWrapper,
-  FormControlWrapper,
+  BranchSelectionWrapper,
   PipelineMetricSelectionWrapper,
   RemoveButton,
   WarningMessage,
@@ -27,9 +27,9 @@ import {
   updatePipelineStep,
 } from '@src/context/Metrics/metricsSlice'
 import { WarningNotification } from '@src/components/Common/WarningNotification'
-import { NO_STEP_WARNING_MESSAGE, SELECTED_VALUE_SEPARATOR } from '@src/constants'
-import { Checkbox, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import { NO_STEP_WARNING_MESSAGE } from '@src/constants'
 import _ from 'lodash'
+import MultiAutoComplete from '@src/components/Common/MultiAutoComplete'
 
 interface pipelineMetricSelectionProps {
   type: string
@@ -60,7 +60,7 @@ export const PipelineMetricSelection = ({
   const organizationNameOptions = selectPipelineOrganizations(store.getState())
   const pipelineNameOptions = selectPipelineNames(store.getState(), organization)
   const stepsOptions = selectSteps(store.getState(), organization, pipelineName)
-  const branchesOptions = selectBranches(store.getState(), organization, pipelineName)
+  const branchesOptions: string[] = selectBranches(store.getState(), organization, pipelineName)
   const organizationWarningMessage = selectOrganizationWarningMessage(store.getState(), id, type)
   const pipelineNameWarningMessage = selectPipelineNameWarningMessage(store.getState(), id, type)
   const stepWarningMessage = selectStepWarningMessage(store.getState(), id, type)
@@ -74,7 +74,7 @@ export const PipelineMetricSelection = ({
     onRemovePipeline(id)
   }
 
-  const handleGetSteps = (_pipelineName: string) => {
+  const handleGetPipelineData = (_pipelineName: string) => {
     const { params, buildId, organizationId, pipelineType, token } = selectStepsParams(
       store.getState(),
       organization,
@@ -86,15 +86,24 @@ export const PipelineMetricSelection = ({
       } else {
         const steps = res?.response ?? []
         const branches = res?.branches ?? []
-        dispatch(updatePipelineToolVerifyResponseSteps({ organization, pipelineName: _pipelineName, steps, branches }))
-        res?.haveStep && dispatch(updatePipelineStep({ steps, id, type, branches }))
+        const pipelineCrews = res?.pipelineCrews ?? []
+        dispatch(
+          updatePipelineToolVerifyResponseSteps({
+            organization,
+            pipelineName: _pipelineName,
+            steps,
+            branches,
+            pipelineCrews,
+          })
+        )
+        res?.haveStep && dispatch(updatePipelineStep({ steps, id, type, branches, pipelineCrews }))
       }
       res && setIsShowNoStepWarning(!res.haveStep)
     })
   }
 
-  const handleBranchChange = (event: SelectChangeEvent<string[]>) => {
-    let selectBranches = event.target.value
+  const handleBranchChange = (event: React.SyntheticEvent, value: string[]) => {
+    let selectBranches = value
     if (_.isEqual(selectBranches[selectBranches.length - 1], 'All')) {
       /* istanbul ignore next */
       selectBranches = _.isEqual(branchesOptions.length, branches.length) ? [] : branchesOptions
@@ -103,29 +112,16 @@ export const PipelineMetricSelection = ({
   }
 
   const BranchSelection = () => (
-    <>
-      <FormControlWrapper variant='standard' required>
-        <InputLabel>Branches</InputLabel>
-        <Select
-          labelId='branch-data-multiple-checkbox-label'
-          multiple
-          value={branches}
-          onChange={handleBranchChange}
-          renderValue={() => branches.join(SELECTED_VALUE_SEPARATOR)}
-        >
-          <MenuItem value='All'>
-            <Checkbox checked={isAllBranchesSelected} />
-            <ListItemText primary='All' />
-          </MenuItem>
-          {branchesOptions.map((data) => (
-            <MenuItem key={data} value={data}>
-              <Checkbox checked={branches.includes(data)} />
-              <ListItemText primary={data} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControlWrapper>
-    </>
+    <BranchSelectionWrapper>
+      <MultiAutoComplete
+        optionList={branchesOptions}
+        selectedOption={branches}
+        textFieldLabel='Branches'
+        isError={false}
+        onChangeHandler={handleBranchChange}
+        isSelectAll={isAllBranchesSelected}
+      />
+    </BranchSelectionWrapper>
   )
 
   return (
@@ -151,7 +147,7 @@ export const PipelineMetricSelection = ({
           label={'Pipeline Name'}
           value={pipelineName}
           step={step}
-          onGetSteps={handleGetSteps}
+          onGetSteps={handleGetPipelineData}
           onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
       )}

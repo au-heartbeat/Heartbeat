@@ -8,7 +8,7 @@ import {
   deleteADeploymentFrequencySetting,
   updateDeploymentFrequencySettings,
 } from '@src/context/Metrics/metricsSlice'
-import { DEPLOYMENT_FREQUENCY_SETTINGS, ORGANIZATION, REMOVE_BUTTON } from '../../../../fixtures'
+import { DEPLOYMENT_FREQUENCY_SETTINGS, LIST_OPEN, ORGANIZATION, REMOVE_BUTTON } from '../../../../fixtures'
 
 jest.mock('@src/hooks', () => ({
   ...jest.requireActual('@src/hooks'),
@@ -27,6 +27,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   selectOrganizationWarningMessage: jest.fn().mockReturnValue(null),
   selectPipelineNameWarningMessage: jest.fn().mockReturnValue(null),
   selectStepWarningMessage: jest.fn().mockReturnValue(null),
+  selectMetricsContent: jest.fn().mockReturnValue({ pipelineCrews: [], users: [] }),
 }))
 
 jest.mock('@src/context/config/configSlice', () => ({
@@ -35,6 +36,7 @@ jest.mock('@src/context/config/configSlice', () => ({
   selectPipelineNames: jest.fn().mockReturnValue(['']),
   selectSteps: jest.fn().mockReturnValue(['']),
   selectBranches: jest.fn().mockReturnValue(['']),
+  selectPipelineCrews: jest.fn().mockReturnValue(['']),
 }))
 
 const mockValidationCheckContext = {
@@ -84,7 +86,7 @@ describe('DeploymentFrequencySettings', () => {
   it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization', async () => {
     const { getAllByRole, getByRole } = setup()
 
-    await userEvent.click(getAllByRole('button', { name: ORGANIZATION })[0])
+    await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0])
     const listBox = within(getByRole('listbox'))
     await userEvent.click(listBox.getByText('mockOrgName'))
 

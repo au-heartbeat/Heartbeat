@@ -6,6 +6,7 @@ export interface ReportRequestDTO {
   buildKiteSetting?: {
     type: string
     token: string
+    pipelineCrews: string[]
     deploymentEnvList:
       | {
           id: string
@@ -40,6 +41,7 @@ export interface ReportRequestDTO {
     boardColumns: { name: string; value: string }[]
     treatFlagCardAsBlock: boolean
     users: string[]
+    assigneeFilter: string
     targetFields: { key: string; name: string; flag: boolean }[]
     doneColumn: string[]
   }
@@ -49,4 +51,6 @@ export interface ReportRequestDTO {
 export interface CSVReportRequestDTO {
   dataType: string
   csvTimeStamp: number
+  startDate: string
+  endDate: string
 }

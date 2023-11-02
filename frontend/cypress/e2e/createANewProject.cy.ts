@@ -32,7 +32,9 @@ const velocityData = [
 ]
 
 const metricsTextList = [
-  'Crews setting',
+  'Board configuration',
+  'Pipeline configuration',
+  'Crew settings',
   'Brian Ong',
   'Harsh Singal',
   'Prashant Agarwal',
@@ -47,22 +49,15 @@ const metricsTextList = [
   'Anthony Tse',
   'Yonghee Jeon Jeon',
   'Cycle time settings',
-  'Analysis',
-  'To do',
-  'In Dev',
-  'Block',
-  'Waiting for testing',
-  'Testing',
-  'Review',
-  'Done',
   'Real done',
-  'DONE, CLOSED',
   'Classification setting',
   'Issue Type',
   'Has Dependancies',
   'FS R&D Classification',
   'Parent',
   'Components',
+  'DONE',
+  'CLOSED',
   'Project',
   'Reporter',
   'Parent Link',
@@ -89,10 +84,19 @@ const metricsTextList = [
   'Time to Detect - Hrs',
   'Cause by - System',
   'Pipeline settings',
-  'XXXX',
-  'RECORD RELEASE TO PROD',
-  'XXXX',
-  'RECORD RELEASE TO PROD',
+]
+
+const metricsAutoCompleteTextList = [
+  { name: 'In Analysis', value: 'Analysis' },
+  { name: 'Ready For Dev', value: 'To do' },
+  { name: 'In Dev', value: 'In Dev' },
+  { name: 'Blocked', value: 'Block' },
+  { name: 'Ready For Test', value: 'Waiting for testing' },
+  { name: 'In Test', value: 'Testing' },
+  { name: 'Ready to Deploy', value: 'Review' },
+  { name: 'Done', value: 'Done' },
+  { name: 'Organization', value: 'XXXX' },
+  { name: 'Step', value: 'RECORD RELEASE TO PROD' },
 ]
 
 const configTextList = [
@@ -185,6 +189,12 @@ const checkFieldsExist = (fields: string[]) => {
   })
 }
 
+const checkAutoCompleteFieldsExist = (fields: { name: string; value: string }[]) => {
+  fields.forEach((item) => {
+    cy.contains(item?.name).siblings().eq(0).find('input').should('have.value', item?.value)
+  })
+}
+
 const checkTextInputValuesExist = (fields: { index: number; value: string }[]) => {
   fields.forEach(({ index, value }) => {
     cy.get('.MuiInputBase-root input[type="text"]').eq(index).should('have.value', value)
@@ -238,7 +248,7 @@ describe('Create a new project', () => {
 
     nextButton().should('be.disabled')
 
-    cy.contains('Crews setting').should('exist')
+    cy.contains('Crew settings').should('exist')
 
     cy.contains('Cycle time settings').should('exist')
 
@@ -313,6 +323,7 @@ describe('Create a new project', () => {
     metricsPage.checkDeploymentFrequencySettings()
 
     checkFieldsExist(metricsTextList)
+    checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
 
     metricsPage.goReportStep()
 
@@ -321,6 +332,7 @@ describe('Create a new project', () => {
     reportPage.backToMetricsStep()
 
     checkFieldsExist(metricsTextList)
+    checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
   })
 
   it('Should have data in config page when back from metrics page', () => {
