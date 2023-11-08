@@ -396,7 +396,7 @@ class GithubServiceTest {
 	}
 
 	@Test
-    public void shouldThrowRateLimitExceededExceptionWhenFetchCommitInfoRateLimit() {
+    public void shouldThrowPermissionDenyExceptionWhenFetchCommitInfo403Forbidden() {
         when(gitHubFeignClient.getCommitInfo(anyString(), anyString(), anyString()))
                 .thenThrow(new PermissionDenyException("request forbidden"));
 
