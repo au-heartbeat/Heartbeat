@@ -17,7 +17,7 @@ public class GitHubFeignClientDecoder implements ErrorDecoder {
 		HttpStatus statusCode = HttpStatus.valueOf(response.status());
 		FeignException exception = FeignException.errorStatus(methodKey, response);
 		String errorMessage = String.format("Failed to get GitHub info_status: %s, reason: %s", statusCode,
-			exception.getMessage());
+				exception.getMessage());
 		return ExceptionUtil.handleCommonFeignClientException(statusCode, errorMessage);
 
 	}
