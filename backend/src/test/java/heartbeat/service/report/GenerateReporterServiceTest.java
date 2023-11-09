@@ -31,6 +31,7 @@ import heartbeat.controller.report.dto.response.MeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.MeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Velocity;
+import heartbeat.exception.NotFoundException;
 import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
@@ -76,6 +77,7 @@ import java.util.stream.Collectors;
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING;
 import static heartbeat.service.report.CycleTimeFixture.MOCK_CARD_COLLECTION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -716,11 +718,23 @@ class GenerateReporterServiceTest {
 	}
 
 	@Test
+	public void shouldThrowNotFoundExceptionWhenExportCsvExpire() throws IOException {
+		ExportCSVRequest mockExportCSVRequest = ExportCSVRequest.builder()
+			.dataType("pipeline")
+			.csvTimeStamp("1685010080107")
+			.build();
+
+		assertThatThrownBy(() -> generateReporterService.fetchCSVData(mockExportCSVRequest))
+			.isInstanceOf(NotFoundException.class)
+			.hasMessageContaining("csv not found");
+	}
+
+	@Test
 	public void shouldReturnCsvDataForPipelineWhenExportCsv() throws IOException {
 		String mockedCsvData = "csv data";
 		ExportCSVRequest mockExportCSVRequest = ExportCSVRequest.builder()
 			.dataType("pipeline")
-			.csvTimeStamp("1685010080107")
+			.csvTimeStamp(String.valueOf(System.currentTimeMillis()))
 			.build();
 
 		InputStream inputStream = new ByteArrayInputStream(mockedCsvData.getBytes());
@@ -736,11 +750,11 @@ class GenerateReporterServiceTest {
 	}
 
 	@Test
-	public void shouldDeleteOldCsvWhenExportCsvWithOldCsvOutsideTenHours() throws IOException {
+	public void shouldDeleteOldCsvWhenExportCsvWithOldCsvOutsideThirtyMinutes() throws IOException {
 		Files.createFile(mockPipelineCsvPath);
 		ExportCSVRequest mockExportCSVRequest = ExportCSVRequest.builder()
 			.dataType("pipeline")
-			.csvTimeStamp("1685010080107")
+			.csvTimeStamp(String.valueOf(System.currentTimeMillis() - 1800000))
 			.build();
 
 		generateReporterService.fetchCSVData(mockExportCSVRequest);
@@ -756,7 +770,7 @@ class GenerateReporterServiceTest {
 		Files.createFile(csvFilePath);
 		ExportCSVRequest mockExportCSVRequest = ExportCSVRequest.builder()
 			.dataType("pipeline")
-			.csvTimeStamp("1685010080107")
+			.csvTimeStamp(String.valueOf(System.currentTimeMillis() - 800000))
 			.build();
 
 		generateReporterService.fetchCSVData(mockExportCSVRequest);
