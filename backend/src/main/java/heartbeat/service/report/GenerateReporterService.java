@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -629,6 +630,10 @@ public class GenerateReporterService {
 		if (csvTimeStamp < currentTimeStamp - EXPORT_CSV_VALIDITY_TIME) {
 			throw new NotFoundException("csv not found");
 		}
+		deleteOldCSV(currentTimeStamp);
+	}
+
+	private void deleteOldCSV(long currentTimeStamp) {
 		File directory = new File("./csv/");
 		File[] files = directory.listFiles();
 		if (!ObjectUtils.isEmpty(files)) {
@@ -643,6 +648,16 @@ public class GenerateReporterService {
 					}
 				}
 			}
+		}
+	}
+
+	public void deleteExpireCSV(long currentTimeStamp) {
+		try {
+			deleteOldCSV(currentTimeStamp);
+			log.info("delete expire csv complete,current time stamp:{}", currentTimeStamp);
+		} catch (Exception exception) {
+			Throwable cause = Optional.ofNullable(exception.getCause()).orElse(exception);
+			log.error("delete expire csv fail，time：{}, exception:{}", currentTimeStamp, cause.getMessage());
 		}
 	}
 }
