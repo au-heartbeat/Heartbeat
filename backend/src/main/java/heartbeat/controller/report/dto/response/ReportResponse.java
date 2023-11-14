@@ -27,4 +27,9 @@ public class ReportResponse {
 
 	private LeadTimeForChanges leadTimeForChanges;
 
+	private Long exportValidityTime;
+
+	public ReportResponse(Long exportValidityTime) {
+		this.exportValidityTime = exportValidityTime;
+	}
 }

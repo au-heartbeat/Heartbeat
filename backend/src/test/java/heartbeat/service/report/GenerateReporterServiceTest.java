@@ -68,7 +68,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -181,7 +180,7 @@ class GenerateReporterServiceTest {
 
 		ReportResponse result = generateReporterService.generateReporter(request);
 
-		assertThat(result).isEqualTo(ReportResponse.builder().velocity(velocity).build());
+		assertThat(result).isEqualTo(ReportResponse.builder().velocity(velocity).exportValidityTime(1800000L).build());
 	}
 
 	@Test
@@ -402,7 +401,7 @@ class GenerateReporterServiceTest {
 			.thenReturn(CycleTime.builder().build());
 
 		ReportResponse result = generateReporterService.generateReporter(request);
-		ReportResponse expect = ReportResponse.builder().cycleTime(CycleTime.builder().build()).build();
+		ReportResponse expect = ReportResponse.builder().cycleTime(CycleTime.builder().build()).exportValidityTime(1800000L).build();
 
 		assertThat(result).isEqualTo(expect);
 	}

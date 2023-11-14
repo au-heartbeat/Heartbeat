@@ -204,7 +204,7 @@ public class GenerateReporterService {
 			generateCSVForPipeline(request, fetchedData.getBuildKiteData());
 		}
 
-		ReportResponse reportResponse = new ReportResponse();
+		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		request.getMetrics().forEach((metrics) -> {
 			switch (metrics.toLowerCase()) {
 				case "velocity" -> reportResponse.setVelocity(velocityCalculator
