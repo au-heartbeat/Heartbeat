@@ -79,6 +79,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import static heartbeat.TestFixtures.BUILDKITE_TOKEN;
@@ -833,6 +834,13 @@ class GenerateReporterServiceTest {
 
 		boolean isFileDeleted = Files.notExists(mockPipelineCsvPath);
 		Assertions.assertTrue(isFileDeleted);
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenDeleteCSV() {
+		GenerateReporterService reporterService = Mockito.spy(generateReporterService);
+		doThrow(new RuntimeException()).when(reporterService).deleteOldCSV(anyLong());
+		generateReporterService.deleteExpireCSV(System.currentTimeMillis());
 	}
 
 	private MeanTimeToRecovery createMockMeanToRecovery() {

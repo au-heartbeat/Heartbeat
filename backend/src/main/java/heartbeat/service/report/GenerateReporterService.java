@@ -633,7 +633,7 @@ public class GenerateReporterService {
 		deleteOldCSV(currentTimeStamp);
 	}
 
-	private void deleteOldCSV(long currentTimeStamp) {
+	public void deleteOldCSV(long currentTimeStamp) {
 		File directory = new File("./csv/");
 		File[] files = directory.listFiles();
 		if (!ObjectUtils.isEmpty(files)) {
@@ -642,15 +642,13 @@ public class GenerateReporterService {
 				String[] splitResult = fileName.split("\\s*\\-|\\.\\s*");
 				String timeStamp = splitResult[1];
 				if (Long.parseLong(timeStamp) < currentTimeStamp - EXPORT_CSV_VALIDITY_TIME) {
-					if (!file.delete()) {
-						log.info("Failed to delete csv file，file name：{}", fileName);
-					}
+					if (!file.delete()) log.info("Failed to delete csv file，file name：{}", fileName);
 				}
 			}
 		}
 	}
 
-	public void deleteExpireCSV(long currentTimeStamp) {
+	public void deleteExpireCSV(Long currentTimeStamp) {
 		try {
 			deleteOldCSV(currentTimeStamp);
 			log.info("delete expire csv complete,current time stamp:{}", currentTimeStamp);

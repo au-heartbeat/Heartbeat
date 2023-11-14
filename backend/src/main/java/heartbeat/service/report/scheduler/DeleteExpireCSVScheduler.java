@@ -16,7 +16,7 @@ public class DeleteExpireCSVScheduler {
 	private final GenerateReporterService generateReporterService;
 
 	@Scheduled(fixedRate = DELETE_INTERVAL_IN_MINUTES, timeUnit = TimeUnit.MINUTES)
-	public void triggerBatchRetry() {
+	public void triggerBatchDelete() {
 		long currentTimeStamp = System.currentTimeMillis();
 		log.info("start delete expire csv,current time stamp:{}", currentTimeStamp);
 		generateReporterService.deleteExpireCSV(currentTimeStamp);
