@@ -22,6 +22,7 @@ export const useExportCsvEffect = (): useExportCsvEffectInterface => {
       const err = e as Error
       if (err instanceof NotFoundException) {
         setIsExpired(true)
+        setErrorMessage('csv file expired')
       } else {
         setErrorMessage(`failed to export csv: ${err.message}`)
         setTimeout(() => {
