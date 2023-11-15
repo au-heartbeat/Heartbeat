@@ -840,7 +840,7 @@ class GenerateReporterServiceTest {
 	public void shouldThrowExceptionWhenDeleteCSV() {
 		GenerateReporterService reporterService = Mockito.spy(generateReporterService);
 		doThrow(new RuntimeException()).when(reporterService).deleteOldCSV(anyLong());
-		generateReporterService.deleteExpireCSV(System.currentTimeMillis());
+		reporterService.deleteExpireCSV(System.currentTimeMillis());
 	}
 
 	private MeanTimeToRecovery createMockMeanToRecovery() {
