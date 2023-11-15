@@ -642,7 +642,7 @@ public class GenerateReporterService {
 				String[] splitResult = fileName.split("\\s*\\-|\\.\\s*");
 				String timeStamp = splitResult[1];
 				if (Long.parseLong(timeStamp) < currentTimeStamp - EXPORT_CSV_VALIDITY_TIME) {
-					if (!file.delete()) log.info("Failed to delete csv file，file name：{}", fileName);
+					log.info("delete file {},file name: {}", file.delete(), fileName);
 				}
 			}
 		}
