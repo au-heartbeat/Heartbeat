@@ -18,6 +18,7 @@ public class DeleteExpireCSVSchedulerTest {
 
 	@InjectMocks
 	private DeleteExpireCSVScheduler deleteExpireCSVScheduler;
+
 	@Mock
 	private GenerateReporterService generateReporterService;
 
@@ -28,4 +29,5 @@ public class DeleteExpireCSVSchedulerTest {
 
 		deleteExpireCSVScheduler.triggerBatchDelete();
 	}
+
 }

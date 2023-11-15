@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class DeleteExpireCSVScheduler {
+
 	public static final int DELETE_INTERVAL_IN_MINUTES = 5;
+
 	private final GenerateReporterService generateReporterService;
 
 	@Scheduled(fixedRate = DELETE_INTERVAL_IN_MINUTES, timeUnit = TimeUnit.MINUTES)

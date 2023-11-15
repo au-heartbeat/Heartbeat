@@ -32,4 +32,5 @@ public class ReportResponse {
 	public ReportResponse(Long exportValidityTime) {
 		this.exportValidityTime = exportValidityTime;
 	}
+
 }
