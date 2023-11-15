@@ -27,3 +27,17 @@ export const transformToCleanedBuildKiteEmoji = (input: OriginBuildKiteEmoji[]):
     image,
     aliases: [...new Set([...aliases, name])],
   }))
+
+export const getJiraBoardToken = (token: string, email: string) => {
+  if (token) {
+    const encodedMsg = btoa(`${email}:${token}`)
+    return `Basic ${encodedMsg}`
+  } else {
+    return ''
+  }
+}
+
+export const findCaseInsensitiveType = (option: string[], value: string): string => {
+  const newValue = option.find((item) => value.toLowerCase() === item.toLowerCase())
+  return newValue ? newValue : value
+}
