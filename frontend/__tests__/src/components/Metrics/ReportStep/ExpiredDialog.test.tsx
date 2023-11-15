@@ -35,7 +35,7 @@ describe('ExpiredDialog', () => {
   it('should close expired dialog when Given isExpired is true And click Ok button', async () => {
     const handleOkFn = jest.fn()
 
-    const { getByText, queryByText } = render(
+    const { getByText } = render(
       <Provider store={setupStore()}>
         <ExpiredDialog isExpired={true} handleOk={handleOkFn}></ExpiredDialog>
       </Provider>
