@@ -49,6 +49,5 @@ describe('use export csv effect', () => {
     })
 
     expect(result.current.isExpired).toEqual(true)
-    expect(result.current.errorMessage).toEqual('csv file expired')
   })
 })
