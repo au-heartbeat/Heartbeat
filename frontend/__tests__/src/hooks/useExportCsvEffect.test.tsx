@@ -47,6 +47,7 @@ describe('use export csv effect', () => {
     act(() => {
       result.current.fetchExportData(MOCK_EXPORT_CSV_REQUEST_PARAMS)
     })
+
     expect(result.current.isExpired).toEqual(true)
     expect(result.current.errorMessage).toEqual('csv file expired')
   })
