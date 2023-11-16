@@ -61,6 +61,8 @@ import org.springframework.core.io.InputStreamResource;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -80,6 +82,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static heartbeat.TestFixtures.BUILDKITE_TOKEN;
@@ -277,7 +280,7 @@ class GenerateReporterServiceTest {
 				.build()));
 
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 
 		DeploymentFrequency mockedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(new AvgDeploymentFrequency("Average", 0.10F))
@@ -319,7 +322,7 @@ class GenerateReporterServiceTest {
 				.build()));
 
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 
 		ChangeFailureRate mockedChangeFailureRate = ChangeFailureRate.builder()
 			.avgChangeFailureRate(AvgChangeFailureRate.builder().failureRate(0.1F).build())
@@ -356,7 +359,7 @@ class GenerateReporterServiceTest {
 				.build()));
 
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 
 		ReportResponse response = generateReporterService.generateReporter(request);
 
@@ -475,7 +478,7 @@ class GenerateReporterServiceTest {
 				.withPipelineCreateTime("2022-09-09T04:57:34Z")
 				.build()));
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(List.of(pipelineLeadTime));
 		when(leadTimeForChangesCalculator.calculate(any())).thenReturn(mockLeadTimeForChanges);
 		when(meanToRecoveryCalculator.calculate(any())).thenReturn(mockMeanToRecovery);
@@ -519,7 +522,7 @@ class GenerateReporterServiceTest {
 				.withJobs(List.of(BuildKiteJobBuilder.withDefault().withState("broken").build()))
 				.build()));
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any()))
 			.thenReturn(List.of(PipelineCsvFixture.MOCK_PIPELINE_LEAD_TIME_DATA()));
 
@@ -568,7 +571,7 @@ class GenerateReporterServiceTest {
 				.withPipelineCreateTime("2022-09-09T04:57:34Z")
 				.build()));
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any()))
 			.thenReturn(List.of(PipelineCsvFixture.MOCK_PIPELINE_LEAD_TIME_DATA()));
 		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(Arrays.asList("xx"));
@@ -620,7 +623,7 @@ class GenerateReporterServiceTest {
 				.withPipelineCreateTime("2022-09-09T04:57:34Z")
 				.build()));
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(null);
 		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(Arrays.asList("xx"));
 
@@ -665,7 +668,7 @@ class GenerateReporterServiceTest {
 				.withPipelineCreateTime("2022-09-09T04:57:34Z")
 				.build()));
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(null);
 		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(Arrays.asList("xx"));
 
@@ -709,7 +712,7 @@ class GenerateReporterServiceTest {
 				.withPipelineCreateTime("2022-09-09T04:57:34Z")
 				.build()));
 		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
-				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(null);
 		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(Arrays.asList("xx"));
 
@@ -833,17 +836,32 @@ class GenerateReporterServiceTest {
 	public void shouldDeleteExpireCsvWhenExportCsvWithCsvOutsideThirtyMinutes() throws IOException {
 		Files.createFile(mockPipelineCsvPath);
 
-		generateReporterService.deleteExpireCSV(System.currentTimeMillis());
+		generateReporterService.deleteExpireCSV(System.currentTimeMillis(), new File("./csv/"));
 
 		boolean isFileDeleted = Files.notExists(mockPipelineCsvPath);
 		Assertions.assertTrue(isFileDeleted);
 	}
 
 	@Test
+	public void shouldDeleteFailWhenDeleteCSV() {
+		File mockFile = mock(File.class);
+		when(mockFile.getName()).thenReturn("file1-1683734399999.CSV");
+		when(mockFile.delete()).thenReturn(false);
+		File[] mockFiles = new File[]{mockFile};
+		File directory = mock(File.class);
+		when(directory.listFiles()).thenReturn(mockFiles);
+		generateReporterService.deleteExpireCSV(System.currentTimeMillis(), directory);
+	}
+
+	@Test
 	public void shouldThrowExceptionWhenDeleteCSV() {
-		GenerateReporterService reporterService = Mockito.spy(generateReporterService);
-		doThrow(new RuntimeException()).when(reporterService).deleteOldCSV(anyLong());
-		reporterService.deleteExpireCSV(System.currentTimeMillis());
+		File mockFile = mock(File.class);
+		when(mockFile.getName()).thenReturn("file1-1683734399999.CSV");
+		when(mockFile.delete()).thenThrow(new RuntimeException("test"));
+		File[] mockFiles = new File[]{mockFile};
+		File directory = mock(File.class);
+		when(directory.listFiles()).thenReturn(mockFiles);
+		generateReporterService.deleteExpireCSV(System.currentTimeMillis(), directory);
 	}
 
 	private MeanTimeToRecovery createMockMeanToRecovery() {
