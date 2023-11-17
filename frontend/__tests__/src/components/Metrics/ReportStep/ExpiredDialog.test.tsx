@@ -14,9 +14,11 @@ describe('ExpiredDialog', () => {
         <ExpiredDialog isExpired={true} handleOk={handleOkFn}></ExpiredDialog>
       </Provider>
     )
+
     expect(getByText(EXPORT_EXPIRED_CSV_MESSAGE)).toBeInTheDocument()
 
     await userEvent.click(getByText('No'))
+
     await waitFor(() => {
       expect(queryByText(EXPORT_EXPIRED_CSV_MESSAGE)).not.toBeInTheDocument()
     })
@@ -30,6 +32,7 @@ describe('ExpiredDialog', () => {
         <ExpiredDialog isExpired={false} handleOk={handleOkFn}></ExpiredDialog>
       </Provider>
     )
+
     expect(queryByText(EXPORT_EXPIRED_CSV_MESSAGE)).not.toBeInTheDocument()
   })
 
@@ -41,6 +44,7 @@ describe('ExpiredDialog', () => {
         <ExpiredDialog isExpired={true} handleOk={handleOkFn}></ExpiredDialog>
       </Provider>
     )
+
     expect(getByText(EXPORT_EXPIRED_CSV_MESSAGE)).toBeInTheDocument()
 
     await userEvent.click(getByText('Yes'))

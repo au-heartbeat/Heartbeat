@@ -33,7 +33,7 @@ export const ExpiredDialog = ({ isExpired, handleOk }: ExpiredDialogInterface) =
       >
         <StyleDialogTitle id='alert-dialog-title'>
           <ReportGmailerrorredIcon />
-          {'Export CSV files have been expired'}
+          {'The report has been expired, please generate it again'}
         </StyleDialogTitle>
         <DialogContent>
           <DialogContentText id='alert-dialog-description'>Go back to previous page to reload?</DialogContentText>
