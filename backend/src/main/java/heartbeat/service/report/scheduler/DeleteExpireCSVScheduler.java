@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
@@ -20,8 +21,8 @@ public class DeleteExpireCSVScheduler {
 	@Scheduled(fixedRate = DELETE_INTERVAL_IN_MINUTES, timeUnit = TimeUnit.MINUTES)
 	public void triggerBatchDelete() {
 		long currentTimeStamp = System.currentTimeMillis();
-		log.info("start delete expire csv,current time stamp:{}", currentTimeStamp);
-		generateReporterService.deleteExpireCSV(currentTimeStamp);
+		log.info("Start delete expire csv, currentTimeStamp: {}", currentTimeStamp);
+		generateReporterService.deleteExpireCSV(currentTimeStamp, new File("./csv/"));
 	}
 
 }

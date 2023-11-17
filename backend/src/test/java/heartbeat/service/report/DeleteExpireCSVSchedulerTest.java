@@ -25,7 +25,7 @@ public class DeleteExpireCSVSchedulerTest {
 	@Test
 	public void shouldTriggerBatchDeleteCSV() {
 
-		Mockito.doAnswer(invocation -> null).when(generateReporterService).deleteExpireCSV(any());
+		Mockito.doAnswer(invocation -> null).when(generateReporterService).deleteExpireCSV(any(), any());
 
 		deleteExpireCSVScheduler.triggerBatchDelete();
 	}
