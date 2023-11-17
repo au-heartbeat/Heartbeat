@@ -10,7 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -25,9 +29,13 @@ public class DeleteExpireCSVSchedulerTest {
 	@Test
 	public void shouldTriggerBatchDeleteCSV() {
 
-		Mockito.doAnswer(invocation -> null).when(generateReporterService).deleteExpireCSV(any(), any());
+		when(generateReporterService.deleteExpireCSV(any(),any())).thenReturn(true);
 
-		deleteExpireCSVScheduler.triggerBatchDelete();
+		assertDoesNotThrow(() -> {
+			deleteExpireCSVScheduler.triggerBatchDelete();
+		});
+		verify(generateReporterService, times(1)).deleteExpireCSV(any(), any());
+
 	}
 
 }

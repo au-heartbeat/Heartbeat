@@ -649,7 +649,7 @@ public class GenerateReporterService {
 				String[] splitResult = fileName.split("\\s*\\-|\\.\\s*");
 				String timeStamp = splitResult[1];
 				if (validateExpire(currentTimeStamp, Long.parseLong(timeStamp)) && !file.delete()) {
-					log.error("Delete file fail, file name: {}", fileName);
+					log.error("Failed to deleted expired CSV file, file name: {}", fileName);
 				}
 			}
 		}
@@ -659,15 +659,17 @@ public class GenerateReporterService {
 		return timeStamp < currentTimeStamp - EXPORT_CSV_VALIDITY_TIME;
 	}
 
-	public void deleteExpireCSV(Long currentTimeStamp, File directory) {
+	public Boolean deleteExpireCSV(Long currentTimeStamp, File directory) {
 		try {
 			deleteOldCSV(currentTimeStamp, directory);
-			log.info("Delete expire csv complete, currentTimeStamp: {}", currentTimeStamp);
+			log.info("Successfully deleted expired CSV files, currentTimeStamp: {}", currentTimeStamp);
+			return true;
 		}
 		catch (Exception exception) {
 			Throwable cause = Optional.ofNullable(exception.getCause()).orElse(exception);
-			log.error("Delete expire csv fail, currentTimeStamp：{}, exception: {}", currentTimeStamp,
+			log.error("Failed to deleted expired CSV files, currentTimeStamp：{}, exception: {}", currentTimeStamp,
 					cause.getMessage());
+			return false;
 		}
 	}
 
