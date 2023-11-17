@@ -648,10 +648,8 @@ public class GenerateReporterService {
 				String fileName = file.getName();
 				String[] splitResult = fileName.split("\\s*\\-|\\.\\s*");
 				String timeStamp = splitResult[1];
-				if (validateExpire(currentTimeStamp, Long.parseLong(timeStamp))) {
-					if (!file.delete()) {
-						log.error("Delete file fail, file name: {}", fileName);
-					}
+				if (validateExpire(currentTimeStamp, Long.parseLong(timeStamp)) && !file.delete()) {
+					log.error("Delete file fail, file name: {}", fileName);
 				}
 			}
 		}
