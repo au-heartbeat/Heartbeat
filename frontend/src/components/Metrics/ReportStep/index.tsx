@@ -274,7 +274,6 @@ const ReportStep = () => {
             <BackButton onClick={handleBack} variant='outlined'>
               Previous
             </BackButton>
-            <ExportButton onClick={() => handleDownload('metric', startDate, endDate)}>Export metric data</ExportButton>
             {isShowExportBoardButton && (
               <ExportButton onClick={() => handleDownload('board', startDate, endDate)}>Export board data</ExportButton>
             )}

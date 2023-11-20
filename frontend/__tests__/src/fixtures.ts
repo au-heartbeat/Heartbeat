@@ -24,8 +24,6 @@ export const EXPORT_PIPELINE_DATA = 'Export pipeline data'
 
 export const EXPORT_BOARD_DATA = 'Export board data'
 
-export const EXPORT_METRIC_DATA = 'Export metric data'
-
 export const VERIFIED = 'Verified'
 
 export const TOKEN_ERROR_MESSAGE = ['Token is invalid', 'Token is required']
