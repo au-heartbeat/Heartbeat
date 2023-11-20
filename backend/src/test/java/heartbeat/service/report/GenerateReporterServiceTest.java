@@ -756,37 +756,6 @@ class GenerateReporterServiceTest {
 	}
 
 	@Test
-	public void shouldDeleteOldCsvWhenExportCsvWithOldCsvOutsideThirtyMinutes() throws IOException {
-		Files.createFile(mockPipelineCsvPath);
-		ExportCSVRequest mockExportCSVRequest = ExportCSVRequest.builder()
-			.dataType("pipeline")
-			.csvTimeStamp(String.valueOf(System.currentTimeMillis() - 1800000))
-			.build();
-
-		generateReporterService.fetchCSVData(mockExportCSVRequest);
-
-		boolean isFileDeleted = Files.notExists(mockPipelineCsvPath);
-		Assertions.assertTrue(isFileDeleted);
-	}
-
-	@Test
-	public void shouldNotDeleteOldCsvWhenExportCsvWithoutOldCsvInsideThirtyMinutes() throws IOException {
-		long currentTimeStamp = System.currentTimeMillis();
-		Path csvFilePath = Path.of(String.format("./csv/exportPipelineMetrics-%s.csv", currentTimeStamp));
-		Files.createFile(csvFilePath);
-		ExportCSVRequest mockExportCSVRequest = ExportCSVRequest.builder()
-			.dataType("pipeline")
-			.csvTimeStamp(String.valueOf(System.currentTimeMillis() - 800000))
-			.build();
-
-		generateReporterService.fetchCSVData(mockExportCSVRequest);
-
-		boolean isFileDeleted = Files.notExists(csvFilePath);
-		Assertions.assertFalse(isFileDeleted);
-		Files.deleteIfExists(csvFilePath);
-	}
-
-	@Test
 	void shouldGenerateForBoardCsvWhenCallGenerateReporterWithBoardMetric() throws IOException {
 		JiraBoardSetting jiraBoardSetting = JiraBoardSetting.builder()
 			.treatFlagCardAsBlock(true)
@@ -840,6 +809,19 @@ class GenerateReporterServiceTest {
 
 		boolean isFileDeleted = Files.notExists(mockPipelineCsvPath);
 		Assertions.assertTrue(isFileDeleted);
+	}
+
+	@Test
+	public void shouldNotDeleteOldCsvWhenExportCsvWithoutOldCsvInsideThirtyMinutes() throws IOException {
+		long currentTimeStamp = System.currentTimeMillis();
+		Path csvFilePath = Path.of(String.format("./csv/exportPipelineMetrics-%s.csv", currentTimeStamp));
+		Files.createFile(csvFilePath);
+
+		generateReporterService.deleteExpireCSV(currentTimeStamp - 800000, new File("./csv/"));
+
+		boolean isFileDeleted = Files.notExists(csvFilePath);
+		Assertions.assertFalse(isFileDeleted);
+		Files.deleteIfExists(csvFilePath);
 	}
 
 	@Test

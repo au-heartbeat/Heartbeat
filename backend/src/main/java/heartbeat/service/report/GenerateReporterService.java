@@ -629,16 +629,14 @@ public class GenerateReporterService {
 
 	public InputStreamResource fetchCSVData(ExportCSVRequest request) {
 		long csvTimeStamp = Long.parseLong(request.getCsvTimeStamp());
-		validateExpireAndDeleteOldCSV(csvTimeStamp);
+		validateExpire(csvTimeStamp);
 		return csvFileGenerator.getDataFromCSV(request.getDataType(), csvTimeStamp);
 	}
 
-	private void validateExpireAndDeleteOldCSV(long csvTimeStamp) {
-		long currentTimeStamp = System.currentTimeMillis();
-		if (validateExpire(currentTimeStamp, csvTimeStamp)) {
+	private void validateExpire(long csvTimeStamp) {
+		if (validateExpire(System.currentTimeMillis(), csvTimeStamp)) {
 			throw new NotFoundException("csv not found");
 		}
-		deleteOldCSV(currentTimeStamp, new File("./csv/"));
 	}
 
 	private void deleteOldCSV(long currentTimeStamp, File directory) {
