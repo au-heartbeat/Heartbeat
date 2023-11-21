@@ -169,6 +169,13 @@ const checkMeanTimeToRecovery = (testId: string) => {
   checkTimeToRecoveryPipelineCalculation(testId)
 }
 
+const checkMetricCSV = () => {
+  cy.wait(2000)
+  return cy.task('readDir', 'cypress/downloads').then((files) => {
+    expect(files).to.match(new RegExp(/metric-.*\.csv/))
+  })
+}
+
 const checkPipelineCSV = () => {
   cy.wait(2000)
   return cy.task('readDir', 'cypress/downloads').then((files) => {
@@ -275,6 +282,12 @@ describe('Create a new project', () => {
     checkDeploymentFrequency('[data-test-id="Deployment frequency"]')
 
     checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
+
+    reportPage.exportMetricDataButton().should('be.enabled')
+
+    reportPage.exportMetricData()
+
+    checkMetricCSV()
 
     reportPage.exportPipelineDataButton().should('be.enabled')
 
