@@ -9,14 +9,25 @@
 <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
 <link rel="sitemap" href="/sitemap-index.xml">
 
-<!-- Global CSS -->
-<link rel="stylesheet" href="/Heartbeat/theme.css">
-<link rel="stylesheet" href="/Heartbeat/index.css">
 
-<!-- Scrollable a11y code helper -->
-<script type="module" src="/Heartbeat/make-scrollable-code-focusable.js"></script>
+<script>
 
-<!-- This is intentionally inlined to avoid FOUC -->
+	const sc = document.createElement("script");
+	sc.setAttribute("src", `${"/Heartbeat"}/make-scrollable-code-focusable.js`);
+	sc.setAttribute("type", "text/javascript");
+	document.head.appendChild(sc);
+
+	const themeLink = document.createElement("link");
+	themeLink.setAttribute('rel', 'stylesheet');
+	themeLink.setAttribute('href', `${"/Heartbeat"}/theme.css`);
+	document.head.appendChild(themeLink);
+
+	const indexLink = document.createElement("link");
+	indexLink.setAttribute('rel', 'stylesheet');
+	indexLink.setAttribute('href', `${"/Heartbeat"}/index.css`);
+	document.head.appendChild(indexLink);
+</script>
+
 <script>
 	const root = document.documentElement;
 	const theme = (() => {
@@ -138,7 +149,7 @@
 					</a>
 				</li>
 				<li class="astro-2w66rqv5">
-					<a class="docs astro-2w66rqv5" href="/en/getting-started/">
+					<a class="docs astro-2w66rqv5" href="/Heartbeat/en/getting-started/">
 						<span class="sr-only astro-2w66rqv5">Docs</span>
 						<svg xmlns="http://www.w3.org/2000/svg" width="226" height="102" viewBox="0 0 226 102" fill="none" aria-hidden="true" class="astro-2w66rqv5">
 							<path class="docs-path astro-2w66rqv5" fill="currentColor" d="M25.805 68c14.688 0 24.883-8.41 24.883-21.14 0-12.786-9.62-19.756-24.653-19.756H0V68h25.805zm-14.17-33.005H24.25c8.352 0 14.17 4.09 14.17 12.039 0 8.236-5.3 13.075-14.113 13.075H11.635V34.995zM82.673 69.382c16.704 0 27.418-8.582 27.418-21.83 0-13.248-10.771-21.83-27.418-21.83-16.589 0-27.418 8.582-27.418 21.83 0 13.19 10.83 21.83 27.418 21.83zm0-8.64c-9.1 0-15.149-5.299-15.149-13.19 0-7.891 6.048-13.19 15.15-13.19 9.1 0 15.205 5.299 15.205 13.19 0 7.891-6.105 13.19-15.206 13.19zM141.497 69.382c13.306 0 22.637-5.299 25.978-14.572l-11.866-2.535c-1.67 5.415-6.393 8.295-13.709 8.295-9.216 0-15.033-5.127-15.033-13.018 0-8.006 5.702-13.018 14.918-13.018 7.43 0 12.154 3.053 13.709 8.64l12.038-2.13c-2.707-9.562-12.268-15.322-25.574-15.322-16.128 0-27.302 9.043-27.302 22.003 0 13.133 10.425 21.657 26.841 21.657zM194.94 69.382c14.745 0 23.212-5.01 23.212-14.054 0-7.603-4.665-10.944-15.955-12.096l-11.289-1.094c-5.242-.576-6.97-1.556-6.97-4.09 0-2.765 3.456-4.262 9.792-4.262 7.834 0 13.709 2.476 16.762 6.508l7.315-6.163c-5.069-5.702-13.133-8.41-23.501-8.41-13.997 0-21.888 4.781-21.888 12.903 0 7.546 4.781 11.232 14.803 12.326l12.557 1.383c4.896.518 6.624 1.555 6.624 4.09 0 3.225-3.456 4.723-10.886 4.723-8.352 0-14.688-3.226-18.087-8.007l-8.294 5.818c4.205 6.451 13.709 10.425 25.805 10.425z"></path>
@@ -419,8 +430,8 @@
 				<fieldset class="category-options astro-skt2cqnz">
 					<legend class="sr-only astro-skt2cqnz">Choose feedback category</legend>
 					<span class="category-option astro-skt2cqnz">
-								<input class="sr-only astro-skt2cqnz" id="issue1lav90d" type="radio" name="category" value="issue" checked="true">
-								<label for="issue1lav90d" class="astro-skt2cqnz">
+								<input class="sr-only astro-skt2cqnz" id="issue42u2q46" type="radio" name="category" value="issue" checked="true">
+								<label for="issue42u2q46" class="astro-skt2cqnz">
 									<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentcolor" viewBox="0 0 24 24" class="astro-skt2cqnz">
 										<path d="M12 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm10.67 1.47-8.05-14a3 3 0 0 0-5.24 0l-8 14A3 3 0 0 0 3.94 22h16.12a3 3 0 0 0 2.61-4.53Zm-1.73 2a1 1 0 0 1-.88.51H3.94a1 1 0 0 1-.88-.51 1 1 0 0 1 0-1l8-14a1 1 0 0 1 1.78 0l8.05 14a1 1 0 0 1 .05 1.02v-.02ZM12 8a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V9a1 1 0 0 0-1-1Z" class="astro-skt2cqnz"></path>
 									</svg>
@@ -429,8 +440,8 @@
 									</span>
 								</label>
 							</span><span class="category-option astro-skt2cqnz">
-								<input class="sr-only astro-skt2cqnz" id="idea1lav90d" type="radio" name="category" value="idea">
-								<label for="idea1lav90d" class="astro-skt2cqnz">
+								<input class="sr-only astro-skt2cqnz" id="idea42u2q46" type="radio" name="category" value="idea">
+								<label for="idea42u2q46" class="astro-skt2cqnz">
 									<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentcolor" viewBox="0 0 24 24" class="astro-skt2cqnz">
 										<path d="M17.09 2.82A8 8 0 0 0 5.86 14.13c.7.8 1.1 1.8 1.14 2.87v3a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3v-2.81c.03-1.17.46-2.3 1.22-3.19a8 8 0 0 0-1.13-11.2v.02ZM15 20a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-1h6v1Zm1.67-7.24c-1 1.2-1.6 2.68-1.67 4.24h-2v-3a1 1 0 0 0-2 0v3H9a6.5 6.5 0 0 0-1.6-4.16 6 6 0 1 1 9.27-.08Z" class="astro-skt2cqnz"></path>
 									</svg>
@@ -439,8 +450,8 @@
 									</span>
 								</label>
 							</span><span class="category-option astro-skt2cqnz">
-								<input class="sr-only astro-skt2cqnz" id="other1lav90d" type="radio" name="category" value="other">
-								<label for="other1lav90d" class="astro-skt2cqnz">
+								<input class="sr-only astro-skt2cqnz" id="other42u2q46" type="radio" name="category" value="other">
+								<label for="other42u2q46" class="astro-skt2cqnz">
 									<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentcolor" viewBox="0 0 24 24" class="astro-skt2cqnz">
 										<path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm14 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" class="astro-skt2cqnz"></path>
 									</svg>
@@ -450,10 +461,10 @@
 								</label>
 							</span>
 				</fieldset>
-				<label for="textarea1lav90d" class="sr-only astro-skt2cqnz">
+				<label for="textarea42u2q46" class="sr-only astro-skt2cqnz">
 					Message
 				</label>
-				<textarea id="textarea1lav90d" name="text" cols="34" rows="3" required placeholder="What do you want us to know?" class="astro-skt2cqnz"></textarea>
+				<textarea id="textarea42u2q46" name="text" cols="34" rows="3" required placeholder="What do you want us to know?" class="astro-skt2cqnz"></textarea>
 				<div class="submit-buttons astro-skt2cqnz">
 					<button type="submit" class="astro-skt2cqnz">Send feedback</button>
 					<p class="astro-skt2cqnz">or</p>
@@ -673,8 +684,8 @@
 				<fieldset class="category-options astro-skt2cqnz">
 					<legend class="sr-only astro-skt2cqnz">Choose feedback category</legend>
 					<span class="category-option astro-skt2cqnz">
-								<input class="sr-only astro-skt2cqnz" id="issue3c4704l" type="radio" name="category" value="issue" checked="true">
-								<label for="issue3c4704l" class="astro-skt2cqnz">
+								<input class="sr-only astro-skt2cqnz" id="issue3lmv5rz" type="radio" name="category" value="issue" checked="true">
+								<label for="issue3lmv5rz" class="astro-skt2cqnz">
 									<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentcolor" viewBox="0 0 24 24" class="astro-skt2cqnz">
 										<path d="M12 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm10.67 1.47-8.05-14a3 3 0 0 0-5.24 0l-8 14A3 3 0 0 0 3.94 22h16.12a3 3 0 0 0 2.61-4.53Zm-1.73 2a1 1 0 0 1-.88.51H3.94a1 1 0 0 1-.88-.51 1 1 0 0 1 0-1l8-14a1 1 0 0 1 1.78 0l8.05 14a1 1 0 0 1 .05 1.02v-.02ZM12 8a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V9a1 1 0 0 0-1-1Z" class="astro-skt2cqnz"></path>
 									</svg>
@@ -683,8 +694,8 @@
 									</span>
 								</label>
 							</span><span class="category-option astro-skt2cqnz">
-								<input class="sr-only astro-skt2cqnz" id="idea3c4704l" type="radio" name="category" value="idea">
-								<label for="idea3c4704l" class="astro-skt2cqnz">
+								<input class="sr-only astro-skt2cqnz" id="idea3lmv5rz" type="radio" name="category" value="idea">
+								<label for="idea3lmv5rz" class="astro-skt2cqnz">
 									<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentcolor" viewBox="0 0 24 24" class="astro-skt2cqnz">
 										<path d="M17.09 2.82A8 8 0 0 0 5.86 14.13c.7.8 1.1 1.8 1.14 2.87v3a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3v-2.81c.03-1.17.46-2.3 1.22-3.19a8 8 0 0 0-1.13-11.2v.02ZM15 20a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-1h6v1Zm1.67-7.24c-1 1.2-1.6 2.68-1.67 4.24h-2v-3a1 1 0 0 0-2 0v3H9a6.5 6.5 0 0 0-1.6-4.16 6 6 0 1 1 9.27-.08Z" class="astro-skt2cqnz"></path>
 									</svg>
@@ -693,8 +704,8 @@
 									</span>
 								</label>
 							</span><span class="category-option astro-skt2cqnz">
-								<input class="sr-only astro-skt2cqnz" id="other3c4704l" type="radio" name="category" value="other">
-								<label for="other3c4704l" class="astro-skt2cqnz">
+								<input class="sr-only astro-skt2cqnz" id="other3lmv5rz" type="radio" name="category" value="other">
+								<label for="other3lmv5rz" class="astro-skt2cqnz">
 									<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentcolor" viewBox="0 0 24 24" class="astro-skt2cqnz">
 										<path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm14 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" class="astro-skt2cqnz"></path>
 									</svg>
@@ -704,10 +715,10 @@
 								</label>
 							</span>
 				</fieldset>
-				<label for="textarea3c4704l" class="sr-only astro-skt2cqnz">
+				<label for="textarea3lmv5rz" class="sr-only astro-skt2cqnz">
 					Message
 				</label>
-				<textarea id="textarea3c4704l" name="text" cols="34" rows="3" required placeholder="What do you want us to know?" class="astro-skt2cqnz"></textarea>
+				<textarea id="textarea3lmv5rz" name="text" cols="34" rows="3" required placeholder="What do you want us to know?" class="astro-skt2cqnz"></textarea>
 				<div class="submit-buttons astro-skt2cqnz">
 					<button type="submit" class="astro-skt2cqnz">Send feedback</button>
 					<p class="astro-skt2cqnz">or</p>
