@@ -1,0 +1,1 @@
+const t="_container_1kkny_1",n="_tab_1kkny_6",a="_tabpanel_1kkny_26",e="_tablist_1kkny_30",o="_selectedIndicator_1kkny_34",s={container:t,"tab-scroll-overflow":"_tab-scroll-overflow_1kkny_6",tab:n,tabpanel:a,tablist:e,selectedIndicator:o};export{s};
