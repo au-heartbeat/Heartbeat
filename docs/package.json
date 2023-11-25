@@ -90,7 +90,7 @@
     "remark": "^14.0.2",
     "remark-directive": "^2.0.1",
     "remove-markdown": "^0.5.0",
-    "simple-git": "^3.11.0",
+    "simple-git": "^3.16.0",
     "tsm": "^2.3.0",
     "typescript": "^5.0.2",
     "unified": "^10.1.2",
