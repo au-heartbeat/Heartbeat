@@ -8,7 +8,7 @@ layout: ../../../layouts/MainLayout.astro
 
 ## Background
 
-Current user can export project configuation file from system. But there is many scurity data which is plain text in the file. It’s doesn’t unsafe. The file should be encrypted and don’t allow user to update as well. It will be decrypted when import.
+Current user can export project configuration file from system. But there is many security data which is plain text in the file. It’s doesn’t unsafe. The file should be encrypted and don’t allow user to update as well. It will be decrypted when import.
 
 ## Story
 
@@ -46,10 +46,12 @@ Notes:
 ### 2. C3
 
 ![encrypt.png](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/filter-committers-image/encrypt-decrypt-system-c3.png)
+
 The front-end will call the corresponding interface in the CryptoController during the encryption process, and the interface will call the corresponding method in the EncryptDecryptService. In the method, follow the process to call the methods in the EncryptDecryptUtil tool class.
 
 - Encryption process
-  ```plantuml
+
+```plantuml
   @startuml
   skin rose
   title C3 - Heartbeat - Encrypted configuration data
@@ -80,10 +82,11 @@ The front-end will call the corresponding interface in the CryptoController duri
   deactivate CryptoController
   end
   @enduml
-  ```
+```
+
 - Decryption process
 
-  ```plantuml
+```plantuml
   @startuml
   skin rose
   title C3 - Heartbeat - Decrypted configuration data
@@ -142,63 +145,70 @@ The front-end will call the corresponding interface in the CryptoController duri
   ' deactivate CryptoController
   end
   @enduml
-  ```
+```
 
 ### 3. API Design
 
-- Encryption Api
+#### 3.1 Encryption Api
 
-  - Path: /encrypt
-  - Method: POST
-  - Parameters:
+- Path: /encrypt
+- Method: POST
+- Parameters:
 
-  ```
+```
   configData(string, required): config data
   password(string, required): download config data password
-  ```
+```
 
-  - Request Example:
+- Request Example:
 
-  ```
+```
   {
     configData: "{projectName: "",dateRange: {startDate: null,endDate: null}...}",
     password: "******"
   }
-  ```
+```
 
-  - Success Request:
-  - Status Code: 200
-  - Response Example:
+- Success Request:
+- Status Code: 200
+- Response Example:
 
-  ```
+```
    {
      encryptedData: "iv + encrypted data + macBytes"
    }
-  ```
+```
 
-- Decryption Api
-  - Path: /decrypt
-  - Method: POST
-  - Parameters:
-  ```
+#### 3.2 Decryption Api
+
+- Path: /decrypt
+- Method: POST
+- Parameters:
+
+```
   encryptedData(string, required): encrypted data
   password(string, required): download config data password
-  ```
-  - Request Example:
-  ```
+```
+
+- Request Example:
+
+```
   {
     encryptedData: "iv + encrypted data + macBytes",
     password: "*******"
   }
-  ```
-  - Success Request:
-  - Status Code: 200
-  - Response Example:
-  ```
+```
+
+- Success Request:
+- Status Code: 200
+- Response Example:
+
+```
   {
     configData: "{"projectName": "","dateRange": {"startDate": null,"endDate": null}...}",
   }
-  ```
+```
+
 - Error Handling
   - 400: Bad Request: Invalid file
   - 401: Unauthorized: Incorrect password
