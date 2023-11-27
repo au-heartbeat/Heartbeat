@@ -15,7 +15,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
     cycleTimeSettings: [
       {
         name: 'Doing',
-        value: 'Analysis',
+        value: ['Analysis', 'In Dev'],
       },
       {
         name: 'Testing',
@@ -63,9 +63,9 @@ describe('CycleTime', () => {
     it('should show selectors title when render Crews component', () => {
       const { getByText } = setup()
 
-      expect(getByText('Doing')).toBeInTheDocument()
-      expect(getByText('Testing')).toBeInTheDocument()
-      expect(getByText('TODO')).toBeInTheDocument()
+      expect(getByText('Doing (Analysis, In Dev)')).toBeInTheDocument()
+      expect(getByText('Testing (Review)')).toBeInTheDocument()
+      expect(getByText('TODO (----)')).toBeInTheDocument()
     })
 
     it('should show right input value when initializing', async () => {
@@ -73,7 +73,7 @@ describe('CycleTime', () => {
       const inputElements = getAllByRole('combobox')
       const selectedInputValues = inputElements.map((input) => input.getAttribute('value'))
 
-      const expectedInputValues = ['Analysis', 'Review', NO_RESULT_DASH]
+      const expectedInputValues = ['Analysis,In Dev', 'Review', NO_RESULT_DASH]
 
       expect(selectedInputValues).toEqual(expectedInputValues)
     })

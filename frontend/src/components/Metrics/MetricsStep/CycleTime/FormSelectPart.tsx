@@ -13,9 +13,7 @@ export const FormSelectPart = ({ selectedOptions, saveCycleTimeOptions }: FormSe
       {selectedOptions.map((item) => (
         <FormSelect
           key={item.name}
-          label={`${item.name} ${
-            Array.isArray(item.value) ? item.value.map((value) => `(${value})`).join(', ') : `(${item.value})`
-          }`}
+          label={`${item.name} ${Array.isArray(item.value) ? `(${item.value.join(', ')})` : `(${item.value})`}`}
           defaultSelected={item.value}
           saveCycleTimeOptions={saveCycleTimeOptions}
         />
