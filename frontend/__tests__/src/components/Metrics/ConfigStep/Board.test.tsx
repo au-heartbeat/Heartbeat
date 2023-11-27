@@ -74,7 +74,7 @@ describe('Board', () => {
 
   it('should show detail options when click board field', () => {
     const { getByRole } = setup()
-    fireEvent.mouseDown(getByRole('button', { name: CONFIG_TITLE.BOARD }))
+    fireEvent.mouseDown(getByRole('combobox', { name: CONFIG_TITLE.BOARD }))
     const listBox = within(getByRole('listbox'))
     const options = listBox.getAllByRole('option')
     const optionValue = options.map((li) => li.getAttribute('data-value'))
@@ -85,7 +85,7 @@ describe('Board', () => {
   it('should show board type when select board field value ', async () => {
     const { getByRole, getByText } = setup()
 
-    fireEvent.mouseDown(getByRole('button', { name: CONFIG_TITLE.BOARD }))
+    fireEvent.mouseDown(getByRole('combobox', { name: CONFIG_TITLE.BOARD }))
     fireEvent.click(getByText(BOARD_TYPES.CLASSIC_JIRA))
 
     await waitFor(() => {
@@ -120,7 +120,7 @@ describe('Board', () => {
 
     fireEvent.change(boardIdInput, { target: { value: 2 } })
     fireEvent.change(emailInput, { target: { value: 'mockEmail@qq.com' } })
-    fireEvent.mouseDown(getByRole('button', { name: CONFIG_TITLE.BOARD }))
+    fireEvent.mouseDown(getByRole('combobox', { name: CONFIG_TITLE.BOARD }))
     fireEvent.click(getByText(BOARD_TYPES.CLASSIC_JIRA))
 
     expect(emailInput.value).toEqual('')

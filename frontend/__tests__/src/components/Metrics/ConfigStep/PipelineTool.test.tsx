@@ -91,7 +91,7 @@ describe('PipelineTool', () => {
 
     await fillPipelineToolFieldsInformation()
 
-    await userEvent.click(getByRole('button', { name: 'Pipeline Tool' }))
+    await userEvent.click(getByRole('combobox', { name: 'Pipeline Tool' }))
     await userEvent.click(getByText(PIPELINE_TOOL_TYPES.GO_CD))
     expect(tokenInput.value).toEqual('')
   }, 50000)
@@ -112,7 +112,7 @@ describe('PipelineTool', () => {
 
   it('should show detail options when click pipelineTool fields', async () => {
     const { getByRole } = setup()
-    await userEvent.click(getByRole('button', { name: 'Pipeline Tool' }))
+    await userEvent.click(getByRole('combobox', { name: 'Pipeline Tool' }))
     const listBox = within(getByRole('listbox'))
     const options = listBox.getAllByRole('option')
     const optionValue = options.map((li) => li.getAttribute('data-value'))
