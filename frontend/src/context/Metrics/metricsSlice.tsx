@@ -14,6 +14,7 @@ import {
 } from '@src/constants'
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice'
 import _ from 'lodash'
+import { IVerifyJiraColumns } from '@src/context/config/board/boardSlice'
 
 export interface IPipelineConfig {
   id: number
@@ -112,17 +113,59 @@ const findDifferentValues = (arrayA: string[], arrayB: string[]): string[] | nul
     return diffInArrayA
   }
 }
-const findKeyByValues = (arrayA: { [key: string]: string }[], arrayB: string[]): string | null => {
+const findDifferentHBStatus = (
+  importedCycleTimeSettingsValues: { [key: string]: string }[],
+  jiraColumns: IVerifyJiraColumns[]
+): string[] => {
+  let diffHBStatus = []
+  const addHBStatusMapping = jiraColumns.map((item) => {
+    const addHBStatuses = item.value.statuses.map((status) => {
+      return {
+        status,
+        HBStatus: importedCycleTimeSettingsValues.find((cycleTimeItem) => Object.keys(cycleTimeItem)[0] === status),
+      }
+    })
+
+    const removeDuplicateHBStatus = []
+    addHBStatuses
+      .map((item) => item.HBStatus)
+      .forEach((status) => {
+        if (!removeDuplicateHBStatus.includes(status)) {
+          removeDuplicateHBStatus.push(status)
+        }
+      })
+    return {
+      columnName: item.value.name,
+      jiraStatus: addHBStatuses.map((item) => item.status),
+      removeDuplicateHBStatus,
+    }
+  })
+
+  addHBStatusMapping.forEach((item) => {
+    if (item.removeDuplicateHBStatus.length > 1) {
+      diffHBStatus = [...diffHBStatus, ...item.jiraStatus]
+    }
+  })
+  return diffHBStatus
+}
+
+const findKeyByValues = (
+  arrayA: { [key: string]: string }[],
+  arrayB: string[] | null,
+  sameColumnButDiffHBStatusKeys: string[]
+): string | null => {
   const matchingKeys: string[] = []
 
   for (const setting of arrayA) {
     const key = Object.keys(setting)[0]
     const value = setting[key]
-    if (arrayB.includes(value)) {
+    if (arrayB?.includes(value)) {
       matchingKeys.push(key)
     }
   }
-  return `The value of ${matchingKeys} in imported json is not in dropdown list now. Please select a value for it!`
+  return `The value of ${
+    matchingKeys || sameColumnButDiffHBStatusKeys.join(', ')
+  } in imported json doesn’t match the dropdown list now. Please select a value for it!`
 }
 
 const setSelectUsers = (users: string[], importedCrews: string[]) =>
@@ -254,13 +297,18 @@ export const metricsSlice = createSlice({
         const metricsContainsValues = Object.values(METRICS_CONSTANTS)
         const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
         const importedValueMismatchWarning = findDifferentValues(importedCycleTimeSettingsValues, metricsContainsValues)
+        const sameColumnButDiffHBStatusKeys = findDifferentHBStatus(importedCycleTimeSettingsValues, jiraColumns)
 
         const getWarningMessage = (): string | null => {
           if (importedKeyMismatchWarning?.length) {
             return compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
           }
-          if (importedValueMismatchWarning?.length) {
-            return findKeyByValues(importedCycleTime.importedCycleTimeSettings, importedValueMismatchWarning)
+          if (importedValueMismatchWarning?.length || sameColumnButDiffHBStatusKeys.length > 0) {
+            return findKeyByValues(
+              importedCycleTime.importedCycleTimeSettings,
+              importedValueMismatchWarning,
+              sameColumnButDiffHBStatusKeys
+            )
           }
           return null
         }

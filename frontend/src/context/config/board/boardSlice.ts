@@ -1,7 +1,7 @@
 import { BOARD_TYPES } from '@src/constants'
 
 export interface IBoardVerifyResponseState {
-  jiraColumns: { key: string; value: { name: string; statuses: string[] } }[]
+  jiraColumns: IVerifyJiraColumns[]
   targetFields: { name: string; key: string; flag: boolean }[]
   users: string[]
 }
@@ -10,6 +10,11 @@ export interface IBoardState {
   isVerified: boolean
   isShow: boolean
   verifiedResponse: IBoardVerifyResponseState
+}
+
+export interface IVerifyJiraColumns {
+  key: string
+  value: { name: string; statuses: string[] }
 }
 
 export const initialVerifiedBoardState: IBoardVerifyResponseState = {
