@@ -23,6 +23,7 @@ describe('NotificationButton', () => {
     const { getByTestId, getByText } = render(<NotificationButton {...result.current} />)
 
     fireEvent.click(getByTestId('NotificationIcon'))
+
     expect(getByText('NotificationPopper')).toBeInTheDocument()
   })
 
@@ -97,6 +98,7 @@ describe('NotificationButton', () => {
     const { getByTestId } = render(<NotificationButton {...result.current} />)
 
     fireEvent.click(getByTestId('NotificationIcon'))
+
     expect(result.current.updateProps).not.toBeCalled()
   })
 
@@ -108,6 +110,7 @@ describe('NotificationButton', () => {
     const { getByTestId } = render(<NotificationButton {...result.current} />)
 
     fireEvent.click(getByTestId('NotificationIcon'))
+
     expect(result.current.updateProps).toBeCalledTimes(1)
   })
 
