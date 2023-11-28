@@ -2,7 +2,7 @@ import { FormSelect } from '@src/components/Metrics/MetricsStep/CycleTime/FormSe
 import React from 'react'
 import { FormSelectPartContainer } from '@src/components/Metrics/MetricsStep/CycleTime/style'
 import { useAppSelector } from '@src/hooks'
-import { selectJiraColumnsWithStatuses } from '@src/context/Metrics/metricsSlice'
+import { selectJiraColumns } from '@src/context/config/configSlice'
 
 interface FormSelectPartProps {
   selectedOptions: { name: string; value: string }[]
@@ -10,11 +10,14 @@ interface FormSelectPartProps {
 }
 
 export const FormSelectPart = ({ selectedOptions, saveCycleTimeOptions }: FormSelectPartProps) => {
-  const jiraColumns = useAppSelector(selectJiraColumnsWithStatuses)
+  const jiraColumns = useAppSelector(selectJiraColumns)
+  const jiraColumnsWithValue = jiraColumns?.map(
+    (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value
+  )
   return (
     <FormSelectPartContainer>
       {selectedOptions.map((item) => {
-        const matchingJiraColumn = jiraColumns.find((column) => column.name === item.name)
+        const matchingJiraColumn = jiraColumnsWithValue.find((column) => column.name === item.name)
         return (
           <FormSelect
             key={item.name}
