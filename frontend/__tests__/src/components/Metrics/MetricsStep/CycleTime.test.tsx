@@ -65,6 +65,10 @@ describe('CycleTime', () => {
       const { getByText } = setup()
       expect(getByText(CYCLE_TIME_SETTINGS)).toBeInTheDocument()
     })
+    it('should show Cycle Time tooltip when render Crews component', () => {
+      const { getByTestId } = setup()
+      expect(getByTestId('InfoOutlinedIcon')).toBeInTheDocument()
+    })
   })
 
   describe('CycleTime Selector List', () => {
