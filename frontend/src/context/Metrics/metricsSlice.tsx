@@ -251,6 +251,10 @@ export const metricsSlice = createSlice({
         const jiraColumnsNames = jiraColumns?.map(
           (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name
         )
+        const jiraColumnsWithStatuses = jiraColumns?.map(
+          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value
+        )
+        state.jiraColumnsWithStatuses = jiraColumnsWithStatuses
         const metricsContainsValues = Object.values(METRICS_CONSTANTS)
         const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
         const importedValueMismatchWarning = findDifferentValues(importedCycleTimeSettingsValues, metricsContainsValues)
@@ -435,6 +439,7 @@ export const selectDeploymentFrequencySettings = (state: RootState) => state.met
 export const selectLeadTimeForChanges = (state: RootState) => state.metrics.leadTimeForChanges
 
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings
+export const selectJiraColumnsWithStatuses = (state: RootState) => state.metrics.jiraColumnsWithStatuses
 export const selectMetricsContent = (state: RootState) => state.metrics
 export const selectTreatFlagCardAsBlock = (state: RootState) => state.metrics.treatFlagCardAsBlock
 export const selectAssigneeFilter = (state: RootState) => state.metrics.assigneeFilter
