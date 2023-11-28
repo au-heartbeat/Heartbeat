@@ -15,7 +15,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
     cycleTimeSettings: [
       {
         name: 'Doing',
-        value: ['Analysis', 'In Dev'],
+        value: 'Analysis',
       },
       {
         name: 'Testing',
@@ -29,6 +29,14 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   }),
   selectTreatFlagCardAsBlock: jest.fn().mockReturnValue(true),
   selectCycleTimeWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
+}))
+jest.mock('@src/context/config/configSlice', () => ({
+  ...jest.requireActual('@src/context/config/configSlice'),
+  selectJiraColumns: jest.fn().mockReturnValue([
+    { key: 'Doing', value: { name: 'Doing', statuses: ['Analysis', 'In Dev'] } },
+    { key: 'Testing', value: { name: 'Testing', statuses: ['Test'] } },
+    { key: 'TODO', value: { name: 'TODO', statuses: ['To do'] } },
+  ]),
 }))
 
 const mockedUseAppDispatch = jest.fn()
@@ -64,8 +72,8 @@ describe('CycleTime', () => {
       const { getByText } = setup()
 
       expect(getByText('Doing (Analysis, In Dev)')).toBeInTheDocument()
-      expect(getByText('Testing (Review)')).toBeInTheDocument()
-      expect(getByText('TODO (----)')).toBeInTheDocument()
+      expect(getByText('Testing (Test)')).toBeInTheDocument()
+      expect(getByText('TODO (To do)')).toBeInTheDocument()
     })
 
     it('should show right input value when initializing', async () => {
@@ -73,7 +81,7 @@ describe('CycleTime', () => {
       const inputElements = getAllByRole('combobox')
       const selectedInputValues = inputElements.map((input) => input.getAttribute('value'))
 
-      const expectedInputValues = ['Analysis,In Dev', 'Review', NO_RESULT_DASH]
+      const expectedInputValues = ['Analysis', 'Review', NO_RESULT_DASH]
 
       expect(selectedInputValues).toEqual(expectedInputValues)
     })

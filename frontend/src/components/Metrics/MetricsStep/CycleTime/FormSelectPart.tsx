@@ -17,11 +17,11 @@ export const FormSelectPart = ({ selectedOptions, saveCycleTimeOptions }: FormSe
   return (
     <FormSelectPartContainer>
       {selectedOptions.map((item) => {
-        const matchingJiraColumn = jiraColumnsWithValue.find((column) => column.name === item.name)
+        const matchingJiraColumn = jiraColumnsWithValue?.find((column) => column.name === item.name)
         return (
           <FormSelect
             key={item.name}
-            label={`${matchingJiraColumn.name} (${matchingJiraColumn.statuses.join(', ')})`}
+            label={`${matchingJiraColumn?.name} (${matchingJiraColumn?.statuses.join(', ')})`}
             defaultSelected={item.value}
             saveCycleTimeOptions={saveCycleTimeOptions}
           />
