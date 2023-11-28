@@ -1,4 +1,4 @@
-import { Autocomplete, TextField } from '@mui/material'
+import { Autocomplete, TextField, Tooltip } from '@mui/material'
 import React, { useState } from 'react'
 import { FormControlSelection } from '@src/components/Metrics/MetricsStep/CycleTime/FormSelect/style'
 import { CYCLE_TIME_LIST } from '@src/constants'
@@ -17,6 +17,16 @@ export const FormSelect = ({ label, defaultSelected, saveCycleTimeOptions }: for
     saveCycleTimeOptions(label, value)
     setSelectedCycleTime(value)
   }
+  const renderInputLabel = () => {
+    if (label.length > 25) {
+      return (
+        <Tooltip title={label} placement={'right'}>
+          <span>{label}</span>
+        </Tooltip>
+      )
+    }
+    return label
+  }
 
   return (
     <FormControlSelection variant='standard' required>
@@ -33,7 +43,7 @@ export const FormSelect = ({ label, defaultSelected, saveCycleTimeOptions }: for
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue)
         }}
-        renderInput={(params) => <TextField required {...params} label={label} variant='standard' />}
+        renderInput={(params) => <TextField required {...params} label={renderInputLabel()} variant='standard' />}
       />
     </FormControlSelection>
   )
