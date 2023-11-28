@@ -224,3 +224,5 @@ export const HEADER_NOTIFICATION_MESSAGE = {
   FIRST_REPORT: 'The file needs to be exported within %s minutes, otherwise it will expire.',
   EXPIRE_IN_FIVE_MINUTES: 'The file will expire in five minutes, please download it in time.',
 }
+
+export const CYCLE_TIME_TOOLTIP = 'The report page will sum all the status in the column for cycletime calculation'

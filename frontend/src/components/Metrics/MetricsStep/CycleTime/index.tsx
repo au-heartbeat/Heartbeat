@@ -11,7 +11,7 @@ import {
 } from '@src/context/Metrics/metricsSlice'
 import { useAppSelector } from '@src/hooks'
 import { WarningNotification } from '@src/components/Common/WarningNotification'
-import { DONE } from '@src/constants'
+import { CYCLE_TIME_TOOLTIP, DONE } from '@src/constants'
 import {
   CycleTimeContainer,
   TitleAndTooltipContainer,
@@ -66,7 +66,7 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
       <TitleAndTooltipContainer>
         <MetricsSettingTitle title={title} />
         <TooltipContainer>
-          <Tooltip title='The report page will sum all the status in the column for cycletime calculation'>
+          <Tooltip title={CYCLE_TIME_TOOLTIP}>
             <IconButton aria-label='info'>
               <InfoOutlinedIcon />
             </IconButton>
