@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { createSlice, current } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import camelCase from 'lodash.camelcase'
 import { RootState } from '@src/store'
 import {
@@ -117,19 +117,16 @@ const findDifferentHBStatus = (
   importedCycleTimeSettingsValues: { [key: string]: string }[],
   jiraColumns: IVerifyJiraColumns[]
 ): string[] => {
-  let diffHBStatus: string[] = []
+  let diffHBStatus = []
   const addHBStatusMapping = jiraColumns.map((item) => {
     const addHBStatuses = item.value.statuses.map((status) => {
-      const HBStatusObj = importedCycleTimeSettingsValues.find(
-        (cycleTimeItem) => Object.keys(cycleTimeItem)[0] === status
-      )
       return {
         status,
-        HBStatus: Object.values(HBStatusObj)[0],
+        HBStatus: importedCycleTimeSettingsValues.find((cycleTimeItem) => Object.keys(cycleTimeItem)[0] === status),
       }
     })
 
-    const removeDuplicateHBStatus: string[] = []
+    const removeDuplicateHBStatus = []
     addHBStatuses
       .map((item) => item.HBStatus)
       .forEach((status) => {
@@ -300,10 +297,7 @@ export const metricsSlice = createSlice({
         const metricsContainsValues = Object.values(METRICS_CONSTANTS)
         const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
         const importedValueMismatchWarning = findDifferentValues(importedCycleTimeSettingsValues, metricsContainsValues)
-        const sameColumnButDiffHBStatusKeys = findDifferentHBStatus(
-          importedCycleTime.importedCycleTimeSettings,
-          jiraColumns
-        )
+        const sameColumnButDiffHBStatusKeys = findDifferentHBStatus(importedCycleTimeSettingsValues, jiraColumns)
 
         const getWarningMessage = (): string | null => {
           if (importedKeyMismatchWarning?.length) {
