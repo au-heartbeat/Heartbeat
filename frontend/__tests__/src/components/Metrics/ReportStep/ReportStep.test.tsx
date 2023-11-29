@@ -257,7 +257,7 @@ describe('Report Step', () => {
     React.useState = jest.fn().mockReturnValue([
       initExportValidityTimeMin,
       () => {
-        //do noting
+        jest.fn()
       },
     ])
     const resetProps = jest.fn()
