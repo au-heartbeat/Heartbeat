@@ -216,6 +216,7 @@ const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInte
             open: true,
             title: HEADER_NOTIFICATION_MESSAGE.EXPIRE_IN_FIVE_MINUTES,
           })
+          clearInterval(timer)
         }
       }, 1000)
       return () => {
