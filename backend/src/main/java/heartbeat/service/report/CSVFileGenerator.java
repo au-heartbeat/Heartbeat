@@ -550,11 +550,10 @@ public class CSVFileGenerator {
 	}
 
 	public void convertReportToJson(ReportResponse reportResponse, String csvTimeStamp) {
-		String reportJson = new Gson().toJson(reportResponse);
 		String tmpFileName = CSVFileNameEnum.REPORT.getValue() + FILENAME_SEPARATOR + csvTimeStamp + TMP_EXTENSION;
 		String fileName = CSVFileNameEnum.REPORT.getValue() + FILENAME_SEPARATOR + csvTimeStamp;
 		try (FileWriter writer = new FileWriter(tmpFileName)) {
-			writer.write(reportJson);
+			writer.write(new Gson().toJson(reportResponse));
 			Files.move(Path.of(tmpFileName), Path.of(fileName), StandardCopyOption.ATOMIC_MOVE,
 					StandardCopyOption.REPLACE_EXISTING);
 		}

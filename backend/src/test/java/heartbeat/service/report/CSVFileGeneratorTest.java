@@ -443,7 +443,7 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldCreateFileWhenConvertReportToJson() throws IOException {
 		// given
-		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
+		ReportResponse reportResponse = ReportResponse.builder().build();
 		long fileTimeStamp = System.currentTimeMillis();
 		// when
 		csvFileGenerator.convertReportToJson(reportResponse, Long.toString(fileTimeStamp));
