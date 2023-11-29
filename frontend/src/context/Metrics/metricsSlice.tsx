@@ -94,38 +94,38 @@ const initialState: savedMetricsSettingState = {
   deploymentWarningMessage: [],
 }
 
-const STATUS_ERROR_TYPE = {
-  JIRA_COLUMN_DELETED: 'JIRA_COLUMN_DELETED',
-  JIRA_COLUMN_ADDED: 'JIRA_COLUMN_ADDED',
-  JIRA_AND_CONFIG_NOT_MATCH: 'JIRA_AND_CONFIG_NOT_MATCH',
+const compareArrays = (arrayA: string[], arrayB: string[]): string | null => {
+  if (arrayA?.length > arrayB?.length) {
+    const differentValues = arrayA?.filter((value) => !arrayB.includes(value))
+    return `The column of ${differentValues} is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!`
+  } else {
+    const differentValues = arrayB?.filter((value) => !arrayA.includes(value))
+    return differentValues?.length > 0
+      ? `The column of ${differentValues} is a new column. Please select a value for it!`
+      : null
+  }
 }
-
-const STATUS_ERROR_MAPPING = (differentValues) => {
-  return [
-    {
-      type: STATUS_ERROR_TYPE.JIRA_COLUMN_DELETED,
-      text: `The column of ${differentValues} is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!`,
-    },
-    {
-      type: STATUS_ERROR_TYPE.JIRA_COLUMN_ADDED,
-      text: `The column of ${differentValues} is a new column. Please select a value for it!`,
-    },
-    {
-      type: STATUS_ERROR_TYPE.JIRA_COLUMN_DELETED,
-      text: `The value of ${differentValues} in imported json doesn’t match the dropdown list now. Please select a value for it!`,
-    },
-  ]
+const findDifferentValues = (arrayA: string[], arrayB: string[]): string[] | null => {
+  const diffInArrayA = arrayA?.filter((value) => !arrayB.includes(value))
+  if (diffInArrayA?.length === 0) {
+    return null
+  } else {
+    return diffInArrayA
+  }
 }
-
-const getHBStatus = (importedCycleTimeSettingsValues, jiraColumns) => {
-  return jiraColumns.map((item) => {
+const findDifferentHBStatus = (
+  importedCycleTimeSettingsValues: { [key: string]: string }[],
+  jiraColumns: IVerifyJiraColumns[]
+): string[] => {
+  let diffHBStatus: string[] = []
+  const addHBStatusMapping = jiraColumns.map((item) => {
     const addHBStatuses = item.value.statuses.map((status) => {
       const HBStatusObj = importedCycleTimeSettingsValues.find(
         (cycleTimeItem) => Object.keys(cycleTimeItem)[0] === status
       )
       return {
         status,
-        HBStatus: HBStatusObj && Object.values(HBStatusObj)[0],
+        HBStatus: Object.values(HBStatusObj)[0],
       }
     })
 
@@ -143,48 +143,32 @@ const getHBStatus = (importedCycleTimeSettingsValues, jiraColumns) => {
       removeDuplicateHBStatus,
     }
   })
-}
 
-const getCycleTimeWarningMessage = (
-  importedCycleTimeSettingsValues: { [key: string]: string }[],
-  jiraColumns: IVerifyJiraColumns[]
-): string | null => {
-  const statusAndColumnMapping = getHBStatus(importedCycleTimeSettingsValues, jiraColumns)
-
-  let newJiraStatus: string[] = []
-  let deletedJiraStatus: string[] = []
-  let diffHBStatus: string[] = []
-  let allHBStatus: string[] = []
-  let diffValues: string[] = []
-  let statusErrorType = STATUS_ERROR_TYPE.JIRA_COLUMN_DELETED
-
-  statusAndColumnMapping.forEach((item) => {
-    if (item.removeDuplicateHBStatus.length === 0) {
-      newJiraStatus = [...newJiraStatus, ...item.jiraStatus]
-    }
+  addHBStatusMapping.forEach((item) => {
     if (item.removeDuplicateHBStatus.length > 1) {
       diffHBStatus = [...diffHBStatus, ...item.jiraStatus]
     }
-    allHBStatus = [...allHBStatus, ...item.removeDuplicateHBStatus]
   })
-  importedCycleTimeSettingsValues.forEach((configStatus) => {
-    if (!allHBStatus.includes(Object.values(configStatus)[0])) {
-      deletedJiraStatus = [...deletedJiraStatus, Object.keys(configStatus)[0]]
+  return diffHBStatus
+}
+
+const findKeyByValues = (
+  arrayA: { [key: string]: string }[],
+  arrayB: string[] | null,
+  sameColumnButDiffHBStatusKeys: string[]
+): string | null => {
+  const matchingKeys: string[] = []
+
+  for (const setting of arrayA) {
+    const key = Object.keys(setting)[0]
+    const value = setting[key]
+    if (arrayB?.includes(value)) {
+      matchingKeys.push(key)
     }
-  })
-
-  if (deletedJiraStatus.length > 0) {
-    diffValues = deletedJiraStatus
-    statusErrorType = STATUS_ERROR_TYPE.JIRA_COLUMN_DELETED
-  } else if (newJiraStatus.length > 0) {
-    diffValues = newJiraStatus
-    statusErrorType = STATUS_ERROR_TYPE.JIRA_COLUMN_ADDED
-  } else {
-    diffValues = diffHBStatus
-    statusErrorType = STATUS_ERROR_TYPE.JIRA_AND_CONFIG_NOT_MATCH
   }
-
-  return STATUS_ERROR_MAPPING(diffValues).find((error) => error.type === statusErrorType)?.text || null
+  return `The value of ${
+    matchingKeys || sameColumnButDiffHBStatusKeys.join(', ')
+  } in imported json doesn’t match the dropdown list now. Please select a value for it!`
 }
 
 const setSelectUsers = (users: string[], importedCrews: string[]) =>
@@ -213,7 +197,7 @@ const setCycleTimeSettings = (
   return jiraColumns?.map((item: { key: string; value: { name: string; statuses: string[] } }) => {
     const controlName = item.value.name
     let defaultOptionValue = METRICS_CONSTANTS.cycleTimeEmptyStr
-    const validImportValue = importedCycleTimeSettings?.find((i) => item.value.statuses.includes(Object.keys(i)[0]))
+    const validImportValue = importedCycleTimeSettings?.find((i) => Object.keys(i)[0] === controlName)
     if (validImportValue && CYCLE_TIME_LIST.includes(Object.values(validImportValue)[0])) {
       defaultOptionValue = Object.values(validImportValue)[0]
     }
@@ -304,10 +288,37 @@ export const metricsSlice = createSlice({
       state.targetFields = isProjectCreated ? targetFields : setSelectTargetFields(targetFields, importedClassification)
 
       if (!isProjectCreated && importedCycleTime?.importedCycleTimeSettings?.length > 0) {
-        state.cycleTimeWarningMessage = getCycleTimeWarningMessage(
+        const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
+          Object.keys(obj)
+        )
+        const importedCycleTimeSettingsValues = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
+          Object.values(obj)
+        )
+        const jiraColumnsNames = jiraColumns?.map(
+          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name
+        )
+        const metricsContainsValues = Object.values(METRICS_CONSTANTS)
+        const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
+        const importedValueMismatchWarning = findDifferentValues(importedCycleTimeSettingsValues, metricsContainsValues)
+        const sameColumnButDiffHBStatusKeys = findDifferentHBStatus(
           importedCycleTime.importedCycleTimeSettings,
           jiraColumns
         )
+
+        const getWarningMessage = (): string | null => {
+          if (importedKeyMismatchWarning?.length) {
+            return compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
+          }
+          if (importedValueMismatchWarning?.length || sameColumnButDiffHBStatusKeys.length > 0) {
+            return findKeyByValues(
+              importedCycleTime.importedCycleTimeSettings,
+              importedValueMismatchWarning,
+              sameColumnButDiffHBStatusKeys
+            )
+          }
+          return null
+        }
+        state.cycleTimeWarningMessage = getWarningMessage()
       } else {
         state.cycleTimeWarningMessage = null
       }
