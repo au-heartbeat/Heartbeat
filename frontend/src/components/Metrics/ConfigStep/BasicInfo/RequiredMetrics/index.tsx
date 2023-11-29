@@ -55,6 +55,7 @@ export const RequiredMetrics = () => {
         <InputLabel id='require-data-multiple-checkbox-label'>Required metrics</InputLabel>
         <Select
           labelId='require-data-multiple-checkbox-label'
+          data-testid='metricsSelector'
           multiple
           value={metrics}
           onChange={handleRequireDataChange}
