@@ -32,7 +32,7 @@ import { ExpiredDialog } from '@src/components/Metrics/ReportStep/ExpiredDialog'
 import { getJiraBoardToken } from '@src/utils/util'
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect'
 
-const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInterface) => {
+const ReportStep = ({ updateProps }: useNotificationLayoutEffectInterface) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { generateReport, isLoading, isServerError, errorMessage: reportErrorMsg } = useGenerateReportEffect()
