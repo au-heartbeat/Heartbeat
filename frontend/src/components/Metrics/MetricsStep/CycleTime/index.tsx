@@ -32,16 +32,21 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
   const [saveDone, setSaveDone] = useState<string[]>([])
 
   const saveCycleTimeOptions = (name: string, value: string) => {
+    console.log(name, value, '2222222222')
+    console.log(cycleTimeOptions, '33333333')
     setCycleTimeOptions(
-      cycleTimeOptions.map((item) =>
+      cycleTimeOptions.map((item) => {
+        console.log(item,"item")
+        console.log(item.name === name, '666666')
         item.name === name
           ? {
               ...item,
               value,
             }
           : item
-      )
+      })
     )
+    console.log(cycleTimeOptions, '444444')
 
     if (value === DONE) {
       setSaveDone([...saveDone, name])

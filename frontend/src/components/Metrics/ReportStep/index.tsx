@@ -120,24 +120,32 @@ const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInte
   }
 
   const jiraColumns = useAppSelector(selectJiraColumns)
+  const jiraColumnsWithValue = jiraColumns?.map(
+    (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value
+  )
 
-  const tempMapper = new Map<string, string>()
-  jiraColumns.forEach((jiraColumn) => {
-    const value = jiraColumn.value
-    tempMapper.set(value.name, value.statuses[0])
-  })
-
-  const filteredCycleTime = cycleTimeSettings
-    .filter((item) => item.value != '----')
-    .map((cycleTimeSetting) => {
-      const previousName = cycleTimeSetting.name
-
-      const cycleTimeSettingObj: ICycleTimeSetting = {
-        name: tempMapper.get(previousName) || previousName,
-        value: cycleTimeSetting.value,
-      }
-      return cycleTimeSettingObj
-    })
+  const filterAndMapCycleTimeSettings = () => {
+    const cycleTimeSettingObjList = []
+    cycleTimeSettings
+      .filter((item) => item.value != '----')
+      .forEach((cycleTimeSetting) => {
+        let jiraColumnsStatuses = []
+        const previousName = cycleTimeSetting.name
+        for (let i = 0; i < jiraColumnsWithValue.length; i++) {
+          if (jiraColumnsWithValue[i].name === previousName) {
+            jiraColumnsStatuses = jiraColumnsWithValue[i].statuses
+            jiraColumnsStatuses.forEach((item) => {
+              const cycleTimeSettingObj = {
+                name: item,
+                value: cycleTimeSetting.value,
+              }
+              cycleTimeSettingObjList.push(cycleTimeSettingObj)
+            })
+          }
+        }
+      })
+    return cycleTimeSettingObjList
+  }
 
   const jiraToken = getJiraBoardToken(token, email)
   const getReportRequestBody = (): ReportRequestDTO => ({
@@ -161,7 +169,7 @@ const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInte
       site,
       projectKey,
       boardId,
-      boardColumns: filteredCycleTime,
+      boardColumns: filterAndMapCycleTimeSettings(),
       treatFlagCardAsBlock,
       users,
       assigneeFilter,
