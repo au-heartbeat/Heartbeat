@@ -22,6 +22,7 @@ export const FormSelectPart = ({ selectedOptions, saveCycleTimeOptions }: FormSe
           <FormSelect
             key={item.name}
             label={`${matchingJiraColumn?.name} (${matchingJiraColumn?.statuses.join(', ')})`}
+            name={`${matchingJiraColumn?.name}`}
             defaultSelected={item.value}
             saveCycleTimeOptions={saveCycleTimeOptions}
           />
