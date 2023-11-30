@@ -219,6 +219,7 @@ const ReportStep = ({ updateProps }: useNotificationLayoutEffectInterface) => {
           clearInterval(timer)
         }
       }, 1000)
+
       return () => {
         clearInterval(timer)
       }
