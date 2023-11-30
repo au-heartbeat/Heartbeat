@@ -117,7 +117,7 @@ describe('ConfigStep', () => {
   it('should show board component when MetricsTypeCheckbox select Velocity,Cycle time', () => {
     const { getByRole, getAllByText } = setup()
 
-    fireEvent.mouseDown(getByRole('combobox', { name: REQUIRED_DATA }))
+    fireEvent.mouseDown(getByRole('button', { name: REQUIRED_DATA }))
     const requireDateSelection = within(getByRole('listbox'))
     fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }))
     fireEvent.click(requireDateSelection.getByRole('option', { name: CYCLE_TIME }))
@@ -128,7 +128,7 @@ describe('ConfigStep', () => {
   it('should show board component when MetricsTypeCheckbox select  Classification, ', () => {
     const { getByRole, getAllByText } = setup()
 
-    fireEvent.mouseDown(getByRole('combobox', { name: REQUIRED_DATA }))
+    fireEvent.mouseDown(getByRole('button', { name: REQUIRED_DATA }))
     const requireDateSelection = within(getByRole('listbox'))
     fireEvent.click(requireDateSelection.getByRole('option', { name: 'Classification' }))
 
@@ -138,7 +138,7 @@ describe('ConfigStep', () => {
   it('should verify again when calendar type is changed given board fields are filled and verified', () => {
     const { getByRole, getByText, queryByText } = setup()
 
-    fireEvent.mouseDown(getByRole('combobox', { name: REQUIRED_DATA }))
+    fireEvent.mouseDown(getByRole('button', { name: REQUIRED_DATA }))
     const requireDateSelection = within(getByRole('listbox'))
     fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }))
     fillBoardFieldsInformation()
@@ -155,7 +155,7 @@ describe('ConfigStep', () => {
     const today = dayjs().format('MM/DD/YYYY')
     const startDateInput = getByLabelText('From *')
 
-    fireEvent.mouseDown(getByRole('combobox', { name: REQUIRED_DATA }))
+    fireEvent.mouseDown(getByRole('button', { name: REQUIRED_DATA }))
     const requireDateSelection = within(getByRole('listbox'))
     fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }))
     fillBoardFieldsInformation()
