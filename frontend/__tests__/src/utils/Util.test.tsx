@@ -100,4 +100,26 @@ describe('filterAndMapCycleTimeSettings function', () => {
     const value = filterAndMapCycleTimeSettings(MOCK_CYCLE_TIME_SETTING, MOCK_JIRA_WITH_STATUES_SETTING)
     expect(value).toStrictEqual(filterCycleTimeSettings)
   })
+
+  it('should filter and map CycleTimeSettings when generate report', () => {
+    const filterCycleTimeSettings = [
+      { name: 'IN DEV', value: 'IN DEV' },
+      { name: 'DOING', value: 'IN DEV' },
+      { name: 'DONE', value: 'DONE' },
+    ]
+
+    const MOCK_CYCLE_TIME_SETTING = [
+      { name: 'TODO', value: 'TODO' },
+      { name: 'IN DEV', value: 'IN DEV' },
+      { name: 'DONE', value: 'DONE' },
+    ]
+
+    const MOCK_JIRA_WITH_STATUES_SETTING = [
+      { name: 'todo', statuses: ['TODO', 'BACKLOG'] },
+      { name: 'IN DEV', statuses: ['IN DEV', 'DOING'] },
+      { name: 'DONE', statuses: ['DONE'] },
+    ]
+    const value = filterAndMapCycleTimeSettings(MOCK_CYCLE_TIME_SETTING, MOCK_JIRA_WITH_STATUES_SETTING)
+    expect(value).toStrictEqual(filterCycleTimeSettings)
+  })
 })
