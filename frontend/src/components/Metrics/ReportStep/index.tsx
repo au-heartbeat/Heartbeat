@@ -125,7 +125,7 @@ const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInte
   )
 
   const filterAndMapCycleTimeSettings = () => {
-    const cycleTimeSettingObjList = []
+    const cycleTimeSettingObjList: Array<ICycleTimeSetting> = []
     cycleTimeSettings
       .filter((item) => item.value != '----')
       .forEach((cycleTimeSetting) => {
