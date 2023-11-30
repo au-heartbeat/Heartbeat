@@ -33,7 +33,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
   selectJiraColumns: jest.fn().mockReturnValue([
-    { key: 'Doing', value: { name: 'Doing', statuses: ['Analysis', 'In Dev'] } },
+    { key: 'Doing', value: { name: 'Doing', statuses: ['Analysis', 'In Dev', 'doing'] } },
     { key: 'Testing', value: { name: 'Testing', statuses: ['Test'] } },
     { key: 'TODO', value: { name: 'TODO', statuses: ['To do'] } },
   ]),
@@ -75,9 +75,27 @@ describe('CycleTime', () => {
     it('should show selectors title when render Crews component', () => {
       const { getByText } = setup()
 
-      expect(getByText('Doing (Analysis, In Dev)')).toBeInTheDocument()
+      expect(getByText('Doing (Analysis, In Dev, doing)')).toBeInTheDocument()
       expect(getByText('Testing (Test)')).toBeInTheDocument()
       expect(getByText('TODO (To do)')).toBeInTheDocument()
+    })
+
+    it('should show selectors title tooltip when title too long', async () => {
+      const { getByText, getByRole } = setup()
+      userEvent.hover(getByText('Doing (Analysis, In Dev, doing)'))
+
+      await waitFor(() => {
+        expect(getByRole('tooltip', { name: 'Doing (Analysis, In Dev, doing)', hidden: true })).toBeVisible()
+      })
+    })
+
+    it('should show selectors title tooltip when title is less 25', async () => {
+      const { getByText, queryByRole } = setup()
+      userEvent.hover(getByText('TODO (To do)'))
+
+      await waitFor(() => {
+        expect(queryByRole('tooltip', { name: 'TODO (To do)', hidden: true })).toBeNull()
+      })
     })
 
     it('should show right input value when initializing', async () => {
