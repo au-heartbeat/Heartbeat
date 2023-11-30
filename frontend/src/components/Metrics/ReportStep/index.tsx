@@ -4,7 +4,7 @@ import { Loading } from '@src/components/Loading'
 import { useAppSelector } from '@src/hooks'
 import { selectConfig, selectMetrics } from '@src/context/config/configSlice'
 import {
-  CHINA_CALENDAR,
+  CHINA_CALENDAR, ERROR_MESSAGE_TIME_DURATION,
   ERROR_PAGE_ROUTE,
   HEADER_NOTIFICATION_MESSAGE,
   INIT_REPORT_DATA_WITH_THREE_COLUMNS,
