@@ -17,7 +17,7 @@ import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns'
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns'
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request'
 import { selectJiraColumns } from '@src/context/config/configSlice'
-import { ICycleTimeSetting, IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
+import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
 import dayjs from 'dayjs'
 import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
 import { BackButton } from '@src/components/Metrics/MetricsStepper/style'
@@ -29,7 +29,7 @@ import { ErrorNotification } from '@src/components/ErrorNotification'
 import { useNavigate } from 'react-router-dom'
 import CollectionDuration from '@src/components/Common/CollectionDuration'
 import { ExpiredDialog } from '@src/components/Metrics/ReportStep/ExpiredDialog'
-import { getJiraBoardToken } from '@src/utils/util'
+import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util'
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect'
 
 const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInterface) => {
@@ -124,29 +124,6 @@ const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInte
     (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value
   )
 
-  const filterAndMapCycleTimeSettings = () => {
-    const cycleTimeSettingObjList: Array<ICycleTimeSetting> = []
-    cycleTimeSettings
-      .filter((item) => item.value != '----')
-      .forEach((cycleTimeSetting) => {
-        let jiraColumnsStatuses = []
-        const previousName = cycleTimeSetting.name
-        for (let i = 0; i < jiraColumnsWithValue.length; i++) {
-          if (jiraColumnsWithValue[i].name === previousName) {
-            jiraColumnsStatuses = jiraColumnsWithValue[i].statuses
-            jiraColumnsStatuses.forEach((item) => {
-              const cycleTimeSettingObj = {
-                name: item,
-                value: cycleTimeSetting.value,
-              }
-              cycleTimeSettingObjList.push(cycleTimeSettingObj)
-            })
-          }
-        }
-      })
-    return cycleTimeSettingObjList
-  }
-
   const jiraToken = getJiraBoardToken(token, email)
   const getReportRequestBody = (): ReportRequestDTO => ({
     metrics: metrics,
@@ -169,7 +146,7 @@ const ReportStep = ({ updateProps, resetProps }: useNotificationLayoutEffectInte
       site,
       projectKey,
       boardId,
-      boardColumns: filterAndMapCycleTimeSettings(),
+      boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings, jiraColumnsWithValue),
       treatFlagCardAsBlock,
       users,
       assigneeFilter,
