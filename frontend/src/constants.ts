@@ -225,4 +225,7 @@ export const HEADER_NOTIFICATION_MESSAGE = {
   EXPIRE_IN_FIVE_MINUTES: 'The file will expire in 5 minutes, please download it in time.',
 }
 
+export const REPORT_LOADING_MESSAGE =
+  'Report is being generated, please do not refresh the page otherwise all the data will be disappear.'
+
 export const CYCLE_TIME_TOOLTIP = 'The report page will sum all the status in the column for cycletime calculation'
