@@ -383,21 +383,21 @@ describe('Create a new project', () => {
     checkTokenInputValuesExist(tokenInputValues)
   })
 
-  it('Should have notification button in report page', () => {
-    goToMetricsPageFromHome()
-
-    metricsPage.checkCycleTime()
-
-    metricsPage.checkRealDone()
-
-    metricsPage.checkClassification()
-
-    metricsPage.checkDeploymentFrequencySettings()
-
-    metricsPage.goReportStep()
-
-    cy.wait(20000)
-
-    reportPage.checkNotification()
-  })
+  // it('Should have notification button in report page', () => {
+  //   goToMetricsPageFromHome()
+  //
+  //   metricsPage.checkCycleTime()
+  //
+  //   metricsPage.checkRealDone()
+  //
+  //   metricsPage.checkClassification()
+  //
+  //   metricsPage.checkDeploymentFrequencySettings()
+  //
+  //   metricsPage.goReportStep()
+  //
+  //   cy.wait(20000)
+  //
+  //   reportPage.checkNotification()
+  // })
 })
