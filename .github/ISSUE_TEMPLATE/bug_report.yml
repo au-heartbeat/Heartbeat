@@ -28,18 +28,6 @@ body:
     required: true
 
 - type: dropdown
-  id: version
-  attributes:
-    label: Version
-    description: What version of our software are you running?
-    options:
-      - Beta (Latest)
-      - Old
-    default: 0
-  validations:
-    required: true
-
-- type: dropdown
   id: browsers
   attributes:
     label: What browsers are you seeing the problem on?
