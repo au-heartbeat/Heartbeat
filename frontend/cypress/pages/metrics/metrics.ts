@@ -115,6 +115,7 @@ class Metrics {
     cy.get('[data-test-id="single-selection-pipeline-name"]:contains("payment-selector-ui")')
 
   private readonly leadTimeForChangeAddOneButton = () => cy.get('[data-testid="AddIcon"]:last')
+  private readonly headerBar = () => cy.get('[data-test-id="Header"]')
 
   private readonly nextButton = () => cy.contains('Next')
   private readonly backButton = () => cy.contains('Previous')
@@ -154,6 +155,7 @@ class Metrics {
     this.stepSelectSomeOption().click()
     this.branchSelect().click()
     this.branchSelectSomeOption().click()
+    this.closeOptions()
 
     this.addOnePipelineButton().click()
     this.organizationSecondSelect(1).click()
@@ -172,6 +174,10 @@ class Metrics {
     this.stepSelectSomeOption().click()
     this.checkDuplicatedMessage()
     this.pipelineRemoveButton().click()
+  }
+
+  closeOptions() {
+    this.headerBar().click()
   }
 
   goReportStep() {

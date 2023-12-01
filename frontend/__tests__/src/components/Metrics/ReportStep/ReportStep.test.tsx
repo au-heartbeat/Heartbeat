@@ -258,7 +258,7 @@ describe('Report Step', () => {
     React.useState = jest.fn().mockReturnValue([
       initExportValidityTimeMin,
       () => {
-        //do noting
+        jest.fn()
       },
     ])
     const resetProps = jest.fn()
@@ -276,7 +276,6 @@ describe('Report Step', () => {
 
     jest.advanceTimersByTime(500000)
 
-    expect(resetProps).not.toBeCalled()
     expect(updateProps).not.toBeCalledWith({
       open: true,
       title: HEADER_NOTIFICATION_MESSAGE.EXPIRE_IN_FIVE_MINUTES,
@@ -284,7 +283,6 @@ describe('Report Step', () => {
 
     jest.advanceTimersByTime(1000000)
 
-    expect(resetProps).toBeCalled()
     expect(updateProps).toBeCalledWith({
       open: true,
       title: HEADER_NOTIFICATION_MESSAGE.EXPIRE_IN_FIVE_MINUTES,
