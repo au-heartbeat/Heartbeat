@@ -41,7 +41,7 @@ export const TooltipContainer = styled('div')({
   marginLeft: '4px',
 })
 
-export const StyledTooltip = styled(({ className, ...props }) => (
+export const StyledTooltip = styled(({ className, ...props }: any) => (
   <Tooltip placement='right-start' {...props} componentsProps={{ tooltip: { className: className } }} />
 ))(`
     max-width: 500px;
