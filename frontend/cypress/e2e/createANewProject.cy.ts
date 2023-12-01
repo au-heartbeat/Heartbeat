@@ -358,6 +358,7 @@ describe('Create a new project', () => {
     metricsPage.checkDeploymentFrequencySettings()
 
     checkFieldsExist(metricsTextList)
+
     checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
 
     metricsPage.goReportStep()
