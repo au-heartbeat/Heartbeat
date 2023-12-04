@@ -76,7 +76,7 @@ export default [
 		key: 'designs/support-multiple-columns',
 	},
 
-	{ text: 'Issue Solutions', header: true, type: 'tech', key: 'Issue Solutions' },
+	{ text: 'Issue Solutions', header: true, type: 'tech', key: 'solutions' },
 	{
 		text: 'Solutions of buildKite issue',
 		slug: 'issue-solutions/solution-of-buildKite-issue',
