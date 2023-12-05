@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(VersionController.class)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureJsonTesters
@@ -26,18 +25,14 @@ class VersionControllerTest {
 	@Value("${heartbeat.version}")
 	private String version;
 
-
 	@Test
 	void shouldReturnHeartBeatVersion() throws Exception {
 
-		final var response = mockMvc
-			.perform(get("/version"))
-			.andExpect(status().isOk())
-			.andReturn()
-			.getResponse();
+		final var response = mockMvc.perform(get("/version")).andExpect(status().isOk()).andReturn().getResponse();
 		final var content = response.getContentAsString();
 		final var result = JsonPath.parse(content).read("$.version").toString();
 
 		assertThat(result).isEqualTo(version);
 	}
+
 }

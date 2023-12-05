@@ -18,6 +18,7 @@ import java.util.Map;
 @Validated
 @Log4j2
 public class VersionController {
+
 	@Value("${heartbeat.version}")
 	private String version;
 
@@ -27,4 +28,5 @@ public class VersionController {
 		response.put("version", version);
 		return ResponseEntity.ok(response);
 	}
+
 }
