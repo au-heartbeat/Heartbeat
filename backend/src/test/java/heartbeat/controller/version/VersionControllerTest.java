@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -22,9 +23,12 @@ class VersionControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Value("${heartbeat.version}")
+	private String version;
+
+
 	@Test
 	void shouldReturnHeartBeatVersion() throws Exception {
-		String version = "1.1.4";
 
 		final var response = mockMvc
 			.perform(get("/version"))
