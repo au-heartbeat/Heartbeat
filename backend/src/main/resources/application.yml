@@ -27,6 +27,3 @@ springdoc:
     path: /docs
   api-docs:
     path: /api-docs
-
-heartbeat:
-  version: 1.1.4
