@@ -47,6 +47,7 @@ import _ from 'lodash'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect'
 import { ROUTE } from '@src/constants/router'
+import { PasswordDialog } from '@src/components/Common/PasswordDialog'
 
 const ConfigStep = lazy(() => import('@src/components/Metrics/ConfigStep'))
 const MetricsStep = lazy(() => import('@src/components/Metrics/MetricsStep'))
@@ -58,6 +59,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
   const dispatch = useAppDispatch()
   const activeStep = useAppSelector(selectStepNumber)
   const [isDialogShowing, setIsDialogShowing] = useState(false)
+  const [isShowPasswordDialog, setIsShowPasswordDialog] = useState(false)
   const requiredData = useAppSelector(selectMetrics)
   const config = useAppSelector(selectConfig)
   const metricsConfig = useAppSelector(selectMetricsContent)
@@ -153,6 +155,18 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
         }
       })
     )
+  }
+
+  const handlePasswordConfirm = () => {
+    handleSave()
+  }
+
+  const handleCancel = () => {
+    setIsShowPasswordDialog(false)
+  }
+
+  const openPasswordDialog = () => {
+    setIsShowPasswordDialog(true)
   }
 
   /* istanbul ignore next */
@@ -285,7 +299,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
         {activeStep !== METRICS_STEPS.REPORT && (
           <>
             <Tooltip title={TIPS.SAVE_CONFIG} placement={'right'}>
-              <SaveButton variant='text' onClick={handleSave} startIcon={<SaveAltIcon />}>
+              <SaveButton variant='text' onClick={openPasswordDialog} startIcon={<SaveAltIcon />}>
                 Save
               </SaveButton>
             </Tooltip>
@@ -303,6 +317,11 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       {isDialogShowing && (
         <ConfirmDialog isDialogShowing={isDialogShowing} onConfirm={backToHomePage} onClose={CancelDialog} />
       )}
+      <PasswordDialog
+        isShowPasswordDialog={isShowPasswordDialog}
+        handleConfirm={handlePasswordConfirm}
+        handleCancel={handleCancel}
+      />
     </>
   )
 }
