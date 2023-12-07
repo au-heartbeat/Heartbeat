@@ -1,11 +1,12 @@
 import { styled } from '@mui/material/styles'
-import { DialogActions, DialogTitle } from '@mui/material'
+import { FormControl } from '@mui/material'
 
-export const StyleDialogTitle = styled(DialogTitle)({
-  display: 'flex',
-  alignItems: 'center',
+export const StylePassWordError = styled('div')({
+  fontSize: '0.75rem',
+  color: '#d32f2f',
 })
 
-export const StyleDialogActions = styled(DialogActions)({
-  padding: '1rem',
+export const StyleFormControl = styled(FormControl)({
+  marginBottom: '0.75rem',
+  marginTop: '0.75rem',
 })

@@ -11,6 +11,8 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import DialogContent from '@mui/material/DialogContent'
 import { StyleDialogActions, StyleDialogTitle } from '@src/components/Metrics/ReportStep/ExpiredDialog/style'
+import { isEmpty } from 'lodash'
+import { StyleFormControl, StylePassWordError } from '@src/components/Common/PasswordDialog/style'
 
 export interface PasswordDialogInterface {
   isShowPasswordDialog: boolean
@@ -21,7 +23,11 @@ export interface PasswordDialogInterface {
 export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCancel }: PasswordDialogInterface) => {
   const [open, setOpen] = React.useState(false)
   const [showPassword, setShowPassword] = React.useState(false)
+  const [password, setPassword] = React.useState('')
+  const [passwordError, setPasswordError] = React.useState('')
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false)
+  const [confirmPassword, setConfirmPassword] = React.useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = React.useState('')
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
 
@@ -35,6 +41,27 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
     event.preventDefault()
   }
 
+  const getPasswordError = (password) => {
+    const passwordRegExp = new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,50}$')
+    if (isEmpty(password)) {
+      return 'The password cannot be empty'
+    }
+    if (!passwordRegExp.test(password)) {
+      return 'The password cannot exceed 6-50 characters and contains both numbers and letters'
+    }
+    return ''
+  }
+
+  const onChangePassword = (e) => {
+    setPassword(e.target.value)
+    setPasswordError(getPasswordError(e.target.value))
+  }
+
+  const onChangeConfirmPassword = (e) => {
+    setConfirmPassword(e.target.value)
+    setConfirmPasswordError(getPasswordError(e.target.value))
+  }
+
   useEffect(() => {
     setOpen(isShowPasswordDialog)
   }, [isShowPasswordDialog])
@@ -44,11 +71,14 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
       <Dialog fullWidth={true} open={open} onClose={handleCancel}>
         <StyleDialogTitle>{'please set password'}</StyleDialogTitle>
         <DialogContent>
-          <FormControl sx={{ width: '35ch' }} variant='standard'>
+          <StyleFormControl sx={{ width: '35ch' }} variant='standard'>
             <InputLabel htmlFor='standard-adornment-password'>Password</InputLabel>
             <Input
               id='standard-adornment-password'
               type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => onChangePassword(e)}
+              error={!isEmpty(passwordError)}
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -61,12 +91,16 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
                 </InputAdornment>
               }
             />
-          </FormControl>
+            <StylePassWordError>{passwordError}</StylePassWordError>
+          </StyleFormControl>
           <FormControl sx={{ width: '35ch' }} variant='standard'>
             <InputLabel htmlFor='standard-confirm-password'>Confirm password</InputLabel>
             <Input
               id='standard-confirm-password'
               type={showConfirmPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => onChangeConfirmPassword(e)}
+              error={!isEmpty(confirmPasswordError)}
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -79,6 +113,7 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
                 </InputAdornment>
               }
             />
+            <StylePassWordError>{confirmPasswordError}</StylePassWordError>
           </FormControl>
         </DialogContent>
         <StyleDialogActions>
