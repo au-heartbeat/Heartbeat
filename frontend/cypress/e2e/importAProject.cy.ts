@@ -115,6 +115,8 @@ describe('Import project from file', () => {
 
     configPage.verifyAndClickNextToMetrics()
 
+    configPage.waitingForProgressBar()
+
     configPage.goMetricsStep()
 
     checkFieldsExist(metricsTextList)
@@ -122,7 +124,46 @@ describe('Import project from file', () => {
 
     metricsPage.goReportStep()
 
-    cy.wait(20000)
+    reportPage.waitingForProgressBar()
+
+    checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
+
+    reportPage.backToMetricsStep()
+
+    checkFieldsExist(metricsTextList)
+    metricsPage.checkCycleTimeTooltip()
+    checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
+
+    metricsPage.BackToConfigStep()
+
+    checkFieldsExist(configTextList)
+
+    checkTextInputValuesExist(textInputValues)
+
+    checkTokenInputValuesExist(tokenInputValues)
+  })
+
+  it('Should import a old config project manually', () => {
+    homePage.navigate()
+
+    homePage.importProjectFromFile('OldConfigFileForImporting.json')
+    cy.url().should('include', '/metrics')
+    checkPipelineToolExist()
+    checkInputValue('.MuiInput-input', 'ConfigFileForImporting')
+
+    configPage.verifyAndClickNextToMetrics()
+
+    configPage.waitingForProgressBar()
+
+    configPage.goMetricsStep()
+
+    checkFieldsExist(metricsTextList)
+    metricsPage.checkCycleTimeTooltip()
+    checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
+
+    metricsPage.goReportStep()
+
+    reportPage.waitingForProgressBar()
 
     checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
 
@@ -139,39 +180,4 @@ describe('Import project from file', () => {
 
     checkTokenInputValuesExist(tokenInputValues)
   })
-
-  // it('Should import a old config project manually', () => {
-  //   homePage.navigate()
-  //
-  //   homePage.importProjectFromFile('OldConfigFileForImporting.json')
-  //   cy.url().should('include', '/metrics')
-  //   checkPipelineToolExist()
-  //   checkInputValue('.MuiInput-input', 'ConfigFileForImporting')
-  //
-  //   configPage.verifyAndClickNextToMetrics()
-  //
-  //   configPage.goMetricsStep()
-  //
-  //   checkFieldsExist(metricsTextList)
-  //   checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
-  //
-  //   metricsPage.goReportStep()
-  //
-  //   cy.wait(20000)
-  //
-  //   checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
-  //
-  //   reportPage.backToMetricsStep()
-  //
-  //   checkFieldsExist(metricsTextList)
-  //   checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
-  //
-  //   metricsPage.BackToConfigStep()
-  //
-  //   checkFieldsExist(configTextList)
-  //
-  //   checkTextInputValuesExist(textInputValues)
-  //
-  //   checkTokenInputValuesExist(tokenInputValues)
-  // })
 })
