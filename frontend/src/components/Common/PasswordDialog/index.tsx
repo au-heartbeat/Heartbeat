@@ -62,6 +62,26 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
     setConfirmPasswordError(getPasswordError(e.target.value))
   }
 
+  const onConfirm = () => {
+    if (password === confirmPassword && isEmpty(passwordError) && isEmpty(confirmPasswordError)) {
+      handleConfirm(password)
+    } else {
+      setConfirmPasswordError('the confirm password should same as password')
+    }
+  }
+
+  const resetPassword = () => {
+    setPassword('')
+    setPasswordError('')
+    setConfirmPassword('')
+    setConfirmPasswordError('')
+  }
+
+  const onCancel = () => {
+    handleCancel()
+    resetPassword()
+  }
+
   useEffect(() => {
     setOpen(isShowPasswordDialog)
   }, [isShowPasswordDialog])
@@ -117,8 +137,8 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
           </FormControl>
         </DialogContent>
         <StyleDialogActions>
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button onClick={handleConfirm} autoFocus variant='contained'>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onConfirm} autoFocus variant='contained'>
             Confirm
           </Button>
         </StyleDialogActions>

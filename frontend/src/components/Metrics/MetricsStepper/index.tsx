@@ -159,6 +159,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
 
   const handlePasswordConfirm = () => {
     handleSave()
+    setIsShowPasswordDialog(false)
   }
 
   const handleCancel = () => {
