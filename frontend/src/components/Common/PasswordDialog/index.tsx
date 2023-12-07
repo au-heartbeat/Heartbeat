@@ -21,7 +21,7 @@ export interface PasswordDialogInterface {
 export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCancel }: PasswordDialogInterface) => {
   const [open, setOpen] = React.useState(false)
   const [showPassword, setShowPassword] = React.useState(false)
-  const [confirmPassword, setShowConfirmPassword] = React.useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false)
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
 
@@ -41,7 +41,7 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
 
   return (
     <Fragment>
-      <Dialog fullWidth={'xs'} open={open} onClose={handleCancel}>
+      <Dialog fullWidth={true} open={open} onClose={handleCancel}>
         <StyleDialogTitle>{'please set password'}</StyleDialogTitle>
         <DialogContent>
           <FormControl sx={{ width: '35ch' }} variant='standard'>
@@ -66,7 +66,7 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
             <InputLabel htmlFor='standard-confirm-password'>Confirm password</InputLabel>
             <Input
               id='standard-confirm-password'
-              type={confirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? 'text' : 'password'}
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -74,7 +74,7 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
                     onClick={handleClickShowConfirmPassword}
                     onMouseDown={handleMouseDownConfirmPassword}
                   >
-                    {confirmPassword ? <VisibilityOff /> : <Visibility />}
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               }
