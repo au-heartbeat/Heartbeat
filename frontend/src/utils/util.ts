@@ -1,7 +1,7 @@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/emojis/emoji'
 import { ICycleTimeSetting, IJiraColumnsWithValue } from '@src/context/Metrics/metricsSlice'
 
-export const exportToJsonFile = (filename: string, json: object) => {
+export const exportToJsonFile = (filename: string, json: string) => {
   const dataStr = JSON.stringify(json, null, 4)
   const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`
   const exportFileDefaultName = `${filename}.json`

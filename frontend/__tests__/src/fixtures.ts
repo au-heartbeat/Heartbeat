@@ -20,6 +20,12 @@ export const VERIFY = 'Verify'
 
 export const RESET = 'Reset'
 
+export const PASSWORD = 'Password'
+
+export const CONFIRM_PASSWORD = 'Confirm password'
+
+export const ENCRYPT_CONFIRM = 'Confirm'
+
 export const EXPORT_PIPELINE_DATA = 'Export pipeline data'
 
 export const EXPORT_BOARD_DATA = 'Export board data'

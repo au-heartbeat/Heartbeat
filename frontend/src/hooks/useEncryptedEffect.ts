@@ -3,12 +3,7 @@ import { DURATION } from '@src/constants/commons'
 import { EncryptDTO, encryptedClient } from '@src/clients/EncryptedClient'
 
 export interface useEncryptedStateInterface {
-  encrypted: (params: EncryptDTO) => Promise<
-    | {
-        encryptedData: string
-      }
-    | undefined
-  >
+  encrypted: (params: EncryptDTO) => Promise<string | undefined>
   isLoading: boolean
   errorMessage: string
 }
@@ -24,8 +19,9 @@ export const useEncryptedEffect = (): useEncryptedStateInterface => {
     } catch (e) {
       const err = e as Error
       setErrorMessage(`${err}`)
-      setTimeout(() => {
+      const timerId: NodeJS.Timer = setTimeout(() => {
         setErrorMessage('')
+        return clearTimeout(timerId)
       }, DURATION.ERROR_MESSAGE_TIME)
     } finally {
       setIsLoading(false)

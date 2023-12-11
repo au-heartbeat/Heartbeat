@@ -6,20 +6,18 @@ export interface EncryptDTO {
 }
 
 export class EncryptedClient extends HttpClient {
-  downloadFile: object = null
+  downloadFile = ''
 
   encrypted = async (params: EncryptDTO) => {
     await this.axiosInstance
       .post(`/encrypt`, params, {})
       .then((res) => {
-        this.downloadFile = res.data
+        this.downloadFile = res.data.encryptedData
       })
       .catch((e) => {
         throw e
       })
-    return {
-      response: this.downloadFile,
-    }
+    return this.downloadFile
   }
 }
 

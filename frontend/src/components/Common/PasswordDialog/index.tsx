@@ -1,4 +1,4 @@
-import { Fragment, useEffect, memo, useState } from 'react'
+import { Fragment, useEffect, memo, useState, MouseEvent, ChangeEvent } from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import InputLabel from '@mui/material/InputLabel'
@@ -30,13 +30,13 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
 
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = (event: MouseEvent) => {
     event.preventDefault()
   }
 
   const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show)
 
-  const handleMouseDownConfirmPassword = (event) => {
+  const handleMouseDownConfirmPassword = (event: MouseEvent) => {
     event.preventDefault()
   }
 
@@ -51,12 +51,12 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
     return ''
   }
 
-  const onChangePassword = (e) => {
+  const onChangePassword = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setPassword(e.target.value)
     setPasswordError(getPasswordError(e.target.value, false))
   }
 
-  const onChangeConfirmPassword = (e) => {
+  const onChangeConfirmPassword = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setConfirmPassword(e.target.value)
     setConfirmPasswordError(getPasswordError(e.target.value, true))
   }

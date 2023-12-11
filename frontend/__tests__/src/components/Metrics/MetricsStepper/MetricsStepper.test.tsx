@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, Matcher, render, screen, SelectorMatcherOptions } from '@testing-library/react'
 import MetricsStepper from '@src/components/Metrics/MetricsStepper'
 import { Provider } from 'react-redux'
 import { setupStore } from '../../../utils/setupStoreUtil'
@@ -6,9 +6,12 @@ import {
   BACK,
   BOARD_TYPES,
   CONFIRM_DIALOG_DESCRIPTION,
+  CONFIRM_PASSWORD,
+  ENCRYPT_CONFIRM,
   HOME_PAGE_ROUTE,
   MOCK_REPORT_URL,
   NEXT,
+  PASSWORD,
   PIPELINE_TOOL_TYPES,
   PROJECT_NAME_LABEL,
   SAVE,
@@ -42,6 +45,7 @@ import {
 } from '@src/context/Metrics/metricsSlice'
 import { exportToJsonFile } from '@src/utils/util'
 import { ASSIGNEE_FILTER_TYPES } from '@src/constants/resources'
+import { encryptedClient } from '@src/clients/EncryptedClient'
 
 const START_DATE_LABEL = 'From *'
 const TODAY = dayjs()
@@ -268,6 +272,22 @@ describe('MetricsStepper', () => {
     expect(getByText(REPORT)).toHaveStyle(`color:${stepperColor}`)
   })
 
+  const triggerSaveButton = async (getByText: {
+    (id: Matcher, options?: SelectorMatcherOptions | undefined): HTMLElement
+    (id: Matcher, options?: SelectorMatcherOptions | undefined): HTMLElement
+    (arg0: string): Element
+  }) => {
+    await act(async () => {
+      await userEvent.click(getByText(SAVE))
+    })
+
+    await act(async () => {
+      await userEvent.type(getByText(PASSWORD), '123abc')
+      await userEvent.type(getByText(CONFIRM_PASSWORD), '123abc')
+      await userEvent.click(getByText(ENCRYPT_CONFIRM))
+    })
+  }
+
   it('should export json when click save button', async () => {
     const expectedFileName = 'config'
     const expectedJson = {
@@ -282,9 +302,11 @@ describe('MetricsStepper', () => {
       projectName: '',
       sourceControl: undefined,
     }
+    encryptedClient.encrypted = jest.fn().mockImplementation(async () => expectedJson)
+
     const { getByText } = setup()
 
-    await userEvent.click(getByText(SAVE))
+    await triggerSaveButton(getByText)
 
     expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   })
@@ -303,11 +325,11 @@ describe('MetricsStepper', () => {
       projectName: '',
       sourceControl: undefined,
     }
+    encryptedClient.encrypted = jest.fn().mockImplementation(async () => expectedJson)
 
     const { getByText } = setup()
-    await fillMetricsData()
-
-    await userEvent.click(getByText(SAVE))
+    fillMetricsData()
+    await triggerSaveButton(getByText)
 
     expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   })
@@ -333,11 +355,13 @@ describe('MetricsStepper', () => {
       doneStatus: undefined,
       leadTime: undefined,
     }
+    encryptedClient.encrypted = jest.fn().mockImplementation(async () => expectedJson)
+
     const { getByText } = setup()
 
     await fillConfigPageData()
     await userEvent.click(getByText(NEXT))
-    await userEvent.click(getByText(SAVE))
+    await triggerSaveButton(getByText)
 
     expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   }, 50000)

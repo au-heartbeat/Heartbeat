@@ -17,7 +17,7 @@ import {
 describe('exportToJsonFile function', () => {
   it('should create a link element with the correct attributes and click it', () => {
     const filename = 'test'
-    const json = { key: 'value' }
+    const json = '{ key: "value" }'
     const documentCreateSpy = jest.spyOn(document, 'createElement')
 
     exportToJsonFile(filename, json)

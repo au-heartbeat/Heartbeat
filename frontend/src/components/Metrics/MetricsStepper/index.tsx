@@ -228,11 +228,9 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       leadTime: leadTimeForChanges,
     }
     const jsonData = activeStep === METRICS_STEPS.CONFIG ? configData : { ...configData, ...metricsData }
-    encrypted({ configData: JSON.stringify(jsonData), password }).then((res) => {
-      if (res) {
-        exportToJsonFile('config', res)
-      }
-    })
+    encrypted({ configData: JSON.stringify(jsonData), password }).then(
+      (res?: string) => res && exportToJsonFile('config', res)
+    )
   }
 
   const handleNext = () => {
