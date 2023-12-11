@@ -40,32 +40,32 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
     event.preventDefault()
   }
 
-  const getPasswordError = (password) => {
+  const getPasswordError = (password, isConfirmedPassword) => {
     const passwordRegExp = new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,50}$')
     if (isEmpty(password)) {
-      return 'The password cannot be empty'
+      return isConfirmedPassword ? 'Confirmed password cannot be blank.' : 'Password cannot be blank.'
     }
     if (!passwordRegExp.test(password)) {
-      return 'The password cannot exceed 6-50 characters and contains both numbers and letters'
+      return 'Password length can only be within 6-50 characters and can only contain letters and numbers.'
     }
     return ''
   }
 
   const onChangePassword = (e) => {
     setPassword(e.target.value)
-    setPasswordError(getPasswordError(e.target.value))
+    setPasswordError(getPasswordError(e.target.value, false))
   }
 
   const onChangeConfirmPassword = (e) => {
     setConfirmPassword(e.target.value)
-    setConfirmPasswordError(getPasswordError(e.target.value))
+    setConfirmPasswordError(getPasswordError(e.target.value, true))
   }
 
   const onConfirm = () => {
     if (password === confirmPassword && isEmpty(passwordError) && isEmpty(confirmPasswordError)) {
       handleConfirm(password)
     } else {
-      setConfirmPasswordError('the confirm password should same as password')
+      setConfirmPasswordError('Confirmed password should be same with the password.')
     }
   }
 
