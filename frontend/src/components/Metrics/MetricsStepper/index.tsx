@@ -162,7 +162,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
   }
 
   const handlePasswordConfirm = useCallback(
-    (password) => {
+    (password: string) => {
       setIsShowPasswordDialog(false)
       handleSave(password)
     },
@@ -178,7 +178,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
   }
 
   /* istanbul ignore next */
-  const handleSave = (password) => {
+  const handleSave = (password: string) => {
     const { projectName, dateRange, calendarType, metrics } = config.basic
     const configData = {
       projectName,

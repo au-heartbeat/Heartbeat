@@ -15,7 +15,7 @@ import { StyleFormControl, StylePassWordError } from '@src/components/Common/Pas
 
 export interface PasswordDialogInterface {
   isShowPasswordDialog: boolean
-  handleConfirm: () => void
+  handleConfirm: (password: string) => void
   handleCancel: () => void
 }
 
@@ -40,7 +40,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
     event.preventDefault()
   }
 
-  const getPasswordError = (password, isConfirmedPassword) => {
+  const getPasswordError = (password: string, isConfirmedPassword: boolean) => {
     const passwordRegExp = new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,50}$')
     if (isEmpty(password)) {
       return isConfirmedPassword ? 'Confirmed password cannot be blank.' : 'Password cannot be blank.'
