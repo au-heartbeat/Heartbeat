@@ -48,6 +48,9 @@ import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect'
 import { ROUTE } from '@src/constants/router'
 import PasswordDialog from '@src/components/Common/PasswordDialog'
+import { useEncryptedEffect } from '@src/hooks/useEncryptedEffect'
+import { ErrorNotification } from '@src/components/ErrorNotification'
+import { Loading } from '@src/components/Loading'
 
 const ConfigStep = lazy(() => import('@src/components/Metrics/ConfigStep'))
 const MetricsStep = lazy(() => import('@src/components/Metrics/MetricsStep'))
@@ -66,6 +69,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
   const [isDisableNextButton, setIsDisableNextButton] = useState(true)
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext()
   const cycleTimeSettings = useAppSelector(selectCycleTimeSettings)
+  const { encrypted, isLoading, errorMessage } = useEncryptedEffect()
 
   const { isShow: isShowBoard, isVerified: isBoardVerified } = config.board
   const { isShow: isShowPipeline, isVerified: isPipelineToolVerified } = config.pipelineTool
@@ -157,10 +161,13 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
     )
   }
 
-  const handlePasswordConfirm = useCallback(() => {
-    handleSave()
-    setIsShowPasswordDialog(false)
-  }, [isShowPasswordDialog])
+  const handlePasswordConfirm = useCallback(
+    (password) => {
+      setIsShowPasswordDialog(false)
+      handleSave(password)
+    },
+    [isShowPasswordDialog]
+  )
 
   const handleCancel = useCallback(() => {
     setIsShowPasswordDialog(false)
@@ -171,7 +178,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
   }
 
   /* istanbul ignore next */
-  const handleSave = () => {
+  const handleSave = (password) => {
     const { projectName, dateRange, calendarType, metrics } = config.basic
     const configData = {
       projectName,
@@ -221,7 +228,11 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       leadTime: leadTimeForChanges,
     }
     const jsonData = activeStep === METRICS_STEPS.CONFIG ? configData : { ...configData, ...metricsData }
-    exportToJsonFile('config', jsonData)
+    encrypted({ configData: JSON.stringify(jsonData), password }).then((res) => {
+      if (res) {
+        exportToJsonFile('config', res)
+      }
+    })
   }
 
   const handleNext = () => {
@@ -318,6 +329,8 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       {isDialogShowing && (
         <ConfirmDialog isDialogShowing={isDialogShowing} onConfirm={backToHomePage} onClose={CancelDialog} />
       )}
+      {errorMessage && <ErrorNotification message={errorMessage} />}
+      {isLoading && <Loading />}
       <PasswordDialog
         isShowPasswordDialog={isShowPasswordDialog}
         handleConfirm={handlePasswordConfirm}
