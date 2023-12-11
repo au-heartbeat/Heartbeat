@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import React, { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import {
   BackButton,
   ButtonContainer,
@@ -47,7 +47,7 @@ import _ from 'lodash'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect'
 import { ROUTE } from '@src/constants/router'
-import { PasswordDialog } from '@src/components/Common/PasswordDialog'
+import PasswordDialog from '@src/components/Common/PasswordDialog'
 
 const ConfigStep = lazy(() => import('@src/components/Metrics/ConfigStep'))
 const MetricsStep = lazy(() => import('@src/components/Metrics/MetricsStep'))
@@ -157,14 +157,14 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
     )
   }
 
-  const handlePasswordConfirm = () => {
+  const handlePasswordConfirm = useCallback(() => {
     handleSave()
     setIsShowPasswordDialog(false)
-  }
+  }, [isShowPasswordDialog])
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setIsShowPasswordDialog(false)
-  }
+  }, [isShowPasswordDialog])
 
   const openPasswordDialog = () => {
     setIsShowPasswordDialog(true)

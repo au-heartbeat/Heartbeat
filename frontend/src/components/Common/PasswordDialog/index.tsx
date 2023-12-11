@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, memo, useState } from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import InputLabel from '@mui/material/InputLabel'
@@ -20,14 +19,14 @@ export interface PasswordDialogInterface {
   handleCancel: () => void
 }
 
-export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCancel }: PasswordDialogInterface) => {
-  const [open, setOpen] = React.useState(false)
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [password, setPassword] = React.useState('')
-  const [passwordError, setPasswordError] = React.useState('')
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false)
-  const [confirmPassword, setConfirmPassword] = React.useState('')
-  const [confirmPasswordError, setConfirmPasswordError] = React.useState('')
+const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel }: PasswordDialogInterface) => {
+  const [open, setOpen] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [password, setPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
 
@@ -145,4 +144,7 @@ export const PasswordDialog = ({ isShowPasswordDialog, handleConfirm, handleCanc
       </Dialog>
     </Fragment>
   )
-}
+})
+
+PasswordDialog.displayName = 'PasswordDialog'
+export default PasswordDialog
