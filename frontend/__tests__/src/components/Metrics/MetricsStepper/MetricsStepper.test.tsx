@@ -87,7 +87,7 @@ jest.mock('@src/emojis/emoji', () => ({
 }))
 
 jest.mock('@src/utils/util', () => ({
-  exportToJsonFile: jest.fn(),
+  exportEncryptContentToFile: jest.fn(),
   getJiraBoardToken: jest.fn(),
   transformToCleanedBuildKiteEmoji: jest.fn(),
   findCaseInsensitiveType: jest.fn(),
@@ -288,20 +288,9 @@ describe('MetricsStepper', () => {
     })
   }
 
-  it('should export json when click save button', async () => {
+  it('should export encrypted file when click save button', async () => {
     const expectedFileName = 'config'
-    const expectedJson = {
-      board: undefined,
-      calendarType: 'Regular Calendar(Weekend Considered)',
-      dateRange: {
-        endDate: null,
-        startDate: null,
-      },
-      metrics: [],
-      pipelineTool: undefined,
-      projectName: '',
-      sourceControl: undefined,
-    }
+    const expectedJson = '5fff61e21d8a0987b0255058pv8YNHkVApLI99InkLqoZX'
     encryptedClient.encrypted = jest.fn().mockImplementation(async () => expectedJson)
 
     const { getByText } = setup()
@@ -311,7 +300,7 @@ describe('MetricsStepper', () => {
     expect(exportEncryptContentToFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   })
 
-  it('should export json when click save button when pipelineTool, sourceControl, and board is not empty', async () => {
+  it('should export encrypted file when click save button when pipelineTool, sourceControl, and board is not empty', async () => {
     const expectedFileName = 'config'
     const expectedJson = {
       board: { boardId: '', email: '', projectKey: '', site: '', token: '', type: 'Jira' },
@@ -334,7 +323,7 @@ describe('MetricsStepper', () => {
     expect(exportEncryptContentToFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   })
 
-  it('should export json file when click save button in metrics page given all content is empty', async () => {
+  it('should export encrypted file when click save button in metrics page given all content is empty', async () => {
     const expectedFileName = 'config'
     const expectedJson = {
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,

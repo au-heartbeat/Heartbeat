@@ -14,7 +14,7 @@ import {
   PIPELINE_TOOL_TYPES,
 } from '../fixtures'
 
-describe('exportToJsonFile function', () => {
+describe('exportEncryptContentToFile function', () => {
   it('should create a link element with the correct attributes and click it', () => {
     const filename = 'test'
     const json = '{ key: "value" }'
