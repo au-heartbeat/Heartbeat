@@ -335,6 +335,12 @@ export enum PIPELINE_SETTING_TYPES {
 
 export const CONFIRM_DIALOG_DESCRIPTION = 'All the filled data will be cleared. Continue to Home page?'
 export const SET_PASSWORD_TITLE = 'please set password'
+export const ENCRYPTED_MESSAGE = {
+  CONFIRMED_PASSWORD_EMPTY: 'Confirmed password cannot be blank.',
+  PASSWORD_EMPTY: 'Password cannot be blank.',
+  NOT_MATCH: 'Password length can only be within 6-50 characters and can only contain letters and numbers.',
+  NOT_SAME: 'Confirmed password should be same with the password.',
+}
 
 export const MOCK_GET_STEPS_PARAMS = {
   params: {

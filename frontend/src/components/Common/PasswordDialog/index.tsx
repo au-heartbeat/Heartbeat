@@ -63,6 +63,14 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
   }
 
   const onConfirm = () => {
+    if (isEmpty(password)) {
+      setPasswordError(getPasswordError('', false))
+      return
+    }
+    if (isEmpty(confirmPassword)) {
+      setConfirmPasswordError(getPasswordError('', true))
+      return
+    }
     if (password === confirmPassword && isEmpty(passwordError) && isEmpty(confirmPasswordError)) {
       handleConfirm(password)
     } else {

@@ -1,6 +1,6 @@
 import { render, act } from '@testing-library/react'
 import PasswordDialog from '@src/components/Common/PasswordDialog/index'
-import { SET_PASSWORD_TITLE, PASSWORD } from '../../../fixtures'
+import { SET_PASSWORD_TITLE, PASSWORD, ENCRYPTED_MESSAGE, ENCRYPT_CONFIRM } from '../../../fixtures'
 import React from 'react/index'
 import userEvent from '@testing-library/user-event'
 
@@ -19,26 +19,40 @@ describe('confirm dialog', () => {
     expect(getByText(SET_PASSWORD_TITLE)).toBeInTheDocument()
   })
 
-  xit('should password visibility', () => {
+  it('should password visibility', () => {
     const { getByText, getByRole } = setup()
     const mockPassword = '123abc'
 
-    act(async () => {
-      await userEvent.type(getByText(PASSWORD), mockPassword)
-      await userEvent.click(getByRole('button', { name: 'toggle password visibility' }))
+    act(() => {
+      userEvent.click(getByRole('button', { name: 'toggle password visibility' }))
+      userEvent.type(getByText(PASSWORD), mockPassword)
     })
-    expect(getByText(mockPassword)).toBeInTheDocument()
+    setTimeout(() => {
+      expect(getByText(mockPassword)).toBeInTheDocument()
+    }, 100)
   })
 
-  xit('should show error for not match', () => {
-    const { getByText } = setup()
+  it('should show error for not match', () => {
+    const { getByText, getByRole } = setup()
     const mockPassword = '123'
 
     act(() => {
+      userEvent.click(getByRole('button', { name: 'toggle password visibility' }))
       userEvent.type(getByText(PASSWORD), mockPassword)
     })
-    expect(
-      getByText('Password length can only be within 6-50 characters and can only contain letters and numbers.')
-    ).toBeInTheDocument()
+    setTimeout(() => {
+      expect(getByText(ENCRYPTED_MESSAGE.NOT_MATCH)).toBeInTheDocument()
+    }, 100)
+  })
+
+  it('should show error for password not black', () => {
+    const { getByText } = setup()
+
+    act(() => {
+      userEvent.click(getByText(ENCRYPT_CONFIRM))
+    })
+    setTimeout(() => {
+      expect(getByText(ENCRYPTED_MESSAGE.PASSWORD_EMPTY)).toBeInTheDocument()
+    }, 100)
   })
 })
