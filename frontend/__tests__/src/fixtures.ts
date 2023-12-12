@@ -1,4 +1,5 @@
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request'
+import { EncryptDTO } from '@src/clients/EncryptedClient'
 
 export const PROJECT_NAME = 'Heartbeat'
 export const PROJECT_DESCRIPTION =
@@ -238,6 +239,11 @@ export const MOCK_EXPORT_CSV_REQUEST_PARAMS: CSVReportRequestDTO = {
   dataType: 'pipeline',
   startDate: IMPORTED_NEW_CONFIG_FIXTURE.dateRange.startDate,
   endDate: IMPORTED_NEW_CONFIG_FIXTURE.dateRange.endDate,
+}
+
+export const MOCK_ENCRYPTED_REQUEST_PARAMS: EncryptDTO = {
+  configData: 'mock',
+  password: '123askkkmckr',
 }
 
 export const MOCK_IMPORT_FILE = {
