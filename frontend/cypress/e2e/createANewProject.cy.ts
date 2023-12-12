@@ -228,6 +228,16 @@ const checkTokenInputValuesExist = (fields: { index: number; value: string }[]) 
   })
 }
 
+const clickSaveButtonAndConfirm = () => {
+  cy.contains('Save').click()
+  const confirmButton = () => cy.get('button:contains("Confirm")')
+  confirmButton().should('be.disabled')
+  cy.contains('Password').siblings().first().type('123abc')
+  cy.contains('Confirm password').siblings().first().type('123abc')
+  confirmButton().should('be.enabled')
+  confirmButton().click({ force: true })
+}
+
 describe('Create a new project', () => {
   it('Should create a new project manually', () => {
     homePage.navigate()
@@ -259,6 +269,8 @@ describe('Create a new project', () => {
     configPage.fillPipelineToolFieldsInfoAndVerify('mock1234'.repeat(5))
 
     configPage.fillSourceControlFieldsInfoAndVerify(`${GITHUB_TOKEN}`)
+
+    clickSaveButtonAndConfirm()
 
     nextButton().should('be.enabled')
 
