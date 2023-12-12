@@ -1,78 +1,145 @@
 class Config {
-  private readonly backButton = () => cy.contains('Previous')
+  get backButton() {
+    return cy.contains('button', 'Previous')
+  }
 
-  private readonly saveButton = () => cy.contains('Save')
+  get yesButton() {
+    return cy.contains('button', 'Yes')
+  }
 
-  private readonly yesButton = () => cy.contains('Yes')
+  get cancelButton() {
+    return cy.contains('button', 'Cancel')
+  }
 
-  private readonly projectNameInput = () => cy.contains('Project name *').siblings().first()
+  get projectNameInput() {
+    return this.basicInformationConfigSection.contains('label', 'Project name').parent()
+  }
 
-  private readonly collectionDateFrom = () => cy.contains('From').parent()
+  get collectionDateFrom() {
+    return this.basicInformationConfigSection.contains('label', 'From').parent()
+  }
 
-  private readonly requiredDataSelect = () => cy.contains('Required metrics').siblings()
+  get requiredDataSelect() {
+    return this.basicInformationConfigSection.contains('label', 'Required metrics').parent()
+  }
 
-  private readonly requiredDataAllSelectOption = () => cy.contains('All')
+  get requiredDataAllSelectOption() {
+    return cy.contains('All')
+  }
 
-  private readonly requiredDataModelCloseElement = () =>
-    cy.get('div.MuiBackdrop-root.MuiBackdrop-invisible.MuiModal-backdrop')
+  get requiredDataModelCloseElement() {
+    return cy.get('div.MuiBackdrop-root.MuiBackdrop-invisible.MuiModal-backdrop')
+  }
 
-  private readonly boardInfoConfigSection = () => cy.get('[aria-label="Board Config"]')
+  get boardInfoSelectionJira() {
+    return cy.contains('Jira')
+  }
 
-  private readonly boardInfoSelectionJira = () => cy.contains('Jira')
+  get boardInfoSelectionClassicJira() {
+    return cy.contains('Classic Jira')
+  }
 
-  private readonly boardInfoSelectionClassicJira = () => cy.contains('Classic Jira')
+  get boardInfoBoardIdInput() {
+    return this.boardConfigSection.contains('label', 'Board Id').parent()
+  }
 
-  private readonly boardInfoBoardIdInput = () => cy.contains('Board Id').siblings().first()
+  get boardInfoEmailInput() {
+    return this.boardConfigSection.contains('label', 'Email').parent()
+  }
 
-  private readonly boardInfoEmailInput = () => cy.contains('Email').siblings().first()
+  get boardInfoProjectKeyInput() {
+    return this.boardConfigSection.contains('label', 'Project Key').parent()
+  }
 
-  private readonly boardInfoProjectKeyInput = () => cy.contains('Project Key').siblings().first()
+  get boardInfoSiteInput() {
+    return this.boardConfigSection.contains('label', 'Site').parent()
+  }
 
-  private readonly boardInfoSiteInput = () => cy.contains('Site').siblings().first()
+  get boardInfoTokenInput() {
+    return this.boardConfigSection.contains('label', 'Token').parent()
+  }
 
-  private readonly boardInfoTokenInput = () => cy.contains('Token').siblings().first()
+  get progressBar() {
+    return cy.get('[data-testid="loading-page"]', { timeout: 10000 })
+  }
 
-  private readonly boardInfoVerifyButton = () => this.boardInfoConfigSection().contains('Verify')
+  get basicInformationConfigSection() {
+    return cy.get('[aria-label="Basic information"]')
+  }
 
-  private readonly pipelineToolTokenInput = () => cy.contains("[data-testid='pipelineToolTextField']", 'Token')
+  get boardConfigSection() {
+    return cy.get('[aria-label="Board Config"]')
+  }
 
-  private readonly pipelineToolVerifyButton = () => cy.get('[data-test-id="pipelineVerifyButton"]')
+  get pipelineToolConfigSection() {
+    return cy.get('[aria-label="Pipeline Tool Config"]')
+  }
 
-  private readonly sourceControlTokenInput = () => cy.contains("[data-testid='sourceControlTextField']", 'Token')
+  get sourceControlConfigSection() {
+    return cy.get('[aria-label="Source Control Config"]')
+  }
 
-  private readonly sourceControlVerifyButton = () => cy.get('[data-test-id="sourceControlVerifyButton"]')
+  get nextStepButton() {
+    return cy.contains('button', 'Next')
+  }
 
-  private readonly progressBar = () => cy.get('[data-testid="loading-page"]', { timeout: 10000 })
+  get boardVerifyButton() {
+    return this.getVerifyButton(this.boardConfigSection)
+  }
 
-  private readonly cancelButton = () => cy.contains('Cancel')
+  get pipelineToolTokenInput() {
+    return this.pipelineToolConfigSection.contains('label', 'Token').parent()
+  }
 
-  private readonly goToMetricsStepButton = () => cy.contains('Next')
+  get pipelineToolVerifyButton() {
+    return this.getVerifyButton(this.pipelineToolConfigSection)
+  }
+
+  get sourceControlTokenInput() {
+    return this.sourceControlConfigSection.contains('label', 'Token').parent()
+  }
+
+  get sourceControlVerifyButton() {
+    return this.getVerifyButton(this.sourceControlConfigSection)
+  }
+
+  getVerifyButton(section: Cypress.Chainable) {
+    return section.contains('button', 'Verify')
+  }
+
+  getVerifiedButton(section: Cypress.Chainable) {
+    return section.contains('button', 'Verified')
+  }
+
+  getResetButton(section: Cypress.Chainable) {
+    return section.contains('button', 'Reset')
+  }
 
   navigate() {
     cy.visit(Cypress.env('url') + '/metrics')
   }
 
   goHomePage() {
-    this.backButton().click()
-    this.yesButton().click()
+    this.backButton.click()
+    this.yesButton.click()
 
     cy.url().should('include', '/home')
   }
 
   typeProjectName(projectName: string) {
-    this.projectNameInput().type(projectName)
+    this.projectNameInput.type(projectName)
   }
 
   selectDateRange() {
-    this.collectionDateFrom().type('09012022')
+    this.collectionDateFrom.type('09012022')
   }
 
   selectMetricsData() {
-    this.requiredDataSelect().click()
+    this.requiredDataSelect.click()
 
-    this.requiredDataAllSelectOption().click()
+    this.requiredDataAllSelectOption.click()
 
-    this.requiredDataModelCloseElement().click({ force: true })
+    this.requiredDataModelCloseElement.click({ force: true })
   }
 
   fillBoardInfoAndVerifyWithClassicJira(
@@ -82,52 +149,47 @@ class Config {
     site: string,
     token: string
   ) {
-    this.boardInfoSelectionJira().click()
-    this.boardInfoSelectionClassicJira().click()
+    this.boardInfoSelectionJira.click()
+    this.boardInfoSelectionClassicJira.click()
 
-    this.boardInfoBoardIdInput().type(boardId)
-    this.boardInfoEmailInput().type(email)
-    this.boardInfoProjectKeyInput().type(projectKey)
-    this.boardInfoSiteInput().type(site)
-    this.boardInfoTokenInput().type(token)
-    this.boardInfoVerifyButton().click()
-    this.waitingForProgressBar()
+    this.boardInfoBoardIdInput.type(boardId)
+    this.boardInfoEmailInput.type(email)
+    this.boardInfoProjectKeyInput.type(projectKey)
+    this.boardInfoSiteInput.type(site)
+    this.boardInfoTokenInput.type(token)
+    this.getVerifyButton(this.boardConfigSection).click()
   }
 
   fillPipelineToolFieldsInfoAndVerify(token: string) {
-    this.pipelineToolTokenInput().type(token)
+    this.pipelineToolTokenInput.type(token)
 
-    this.pipelineToolVerifyButton().click()
+    this.pipelineToolVerifyButton.click()
   }
 
   fillSourceControlFieldsInfoAndVerify(token: string) {
-    this.sourceControlTokenInput().type(token)
+    this.sourceControlTokenInput.type(token)
 
-    this.sourceControlVerifyButton().click()
+    this.sourceControlVerifyButton.click()
   }
 
   verifyAndClickNextToMetrics() {
-    cy.contains('Verify').click()
-    this.pipelineToolVerifyButton().click()
-    this.sourceControlVerifyButton().click()
+    this.boardVerifyButton.click()
+    this.pipelineToolVerifyButton.click()
+    this.sourceControlVerifyButton.click()
   }
 
   CancelBackToHomePage() {
-    this.backButton().click()
-    this.cancelButton().click()
+    this.backButton.click()
+    this.cancelButton.click()
   }
 
   goMetricsStep() {
-    this.goToMetricsStepButton().click()
+    this.nextStepButton.click()
   }
 
   waitingForProgressBar() {
-    this.progressBar().should('be.visible')
-    this.progressBar().should('not.exist')
-  }
-
-  exportProjectConfig() {
-    this.saveButton().click()
+    this.progressBar.should('be.visible')
+    this.progressBar.should('not.exist')
   }
 }
 
