@@ -22,6 +22,7 @@ export interface PasswordDialogInterface {
 
 const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel }: PasswordDialogInterface) => {
   const [open, setOpen] = useState(false)
+  const [isDisabledConfirm, setIsDisabledConfirm] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
@@ -52,29 +53,35 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
     return ''
   }
 
-  const onChangePassword = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setPassword(e.target.value)
-    setPasswordError(getPasswordError(e.target.value, false))
+  const onChangePassword = (value: string) => {
+    const errorMessage = getPasswordError(value, false)
+    setPassword(value)
+    setPasswordError(errorMessage)
+    setIsDisabledConfirm(!isFilledPasswordAndValidSucceed(value, errorMessage, confirmPassword, confirmPasswordError))
   }
 
-  const onChangeConfirmPassword = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setConfirmPassword(e.target.value)
-    setConfirmPasswordError(getPasswordError(e.target.value, true))
+  const onChangeConfirmPassword = (value: string) => {
+    const errorMessage = getPasswordError(value, true)
+    setConfirmPassword(value)
+    setConfirmPasswordError(errorMessage)
+    setIsDisabledConfirm(!isFilledPasswordAndValidSucceed(password, passwordError, value, errorMessage))
+  }
+
+  const isFilledPasswordAndValidSucceed = (
+    password: string,
+    passwordError: string,
+    confirmPassword: string,
+    confirmPasswordError: string
+  ) => {
+    return !isEmpty(password) && !isEmpty(confirmPassword) && isEmpty(passwordError) && isEmpty(confirmPasswordError)
   }
 
   const onConfirm = () => {
-    if (isEmpty(password)) {
-      setPasswordError(getPasswordError('', false))
-      return
-    }
-    if (isEmpty(confirmPassword)) {
-      setConfirmPasswordError(getPasswordError('', true))
-      return
-    }
-    if (password === confirmPassword && isEmpty(passwordError) && isEmpty(confirmPasswordError)) {
-      handleConfirm(password)
-    } else {
+    if (password !== confirmPassword) {
       setConfirmPasswordError(ENCRYPTED_MESSAGE.NOT_SAME)
+    } else {
+      handleConfirm(password)
+      resetPassword()
     }
   }
 
@@ -105,7 +112,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
               id='standard-adornment-password'
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={(e) => onChangePassword(e)}
+              onChange={(e) => onChangePassword(e.target.value)}
               error={!isEmpty(passwordError)}
               endAdornment={
                 <InputAdornment position='end'>
@@ -127,7 +134,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
               id='standard-confirm-password'
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
-              onChange={(e) => onChangeConfirmPassword(e)}
+              onChange={(e) => onChangeConfirmPassword(e.target.value)}
               error={!isEmpty(confirmPasswordError)}
               endAdornment={
                 <InputAdornment position='end'>
@@ -146,7 +153,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
         </DialogContent>
         <StyleDialogActions>
           <Button onClick={onCancel}>Cancel</Button>
-          <Button onClick={onConfirm} autoFocus variant='contained'>
+          <Button disabled={isDisabledConfirm} onClick={onConfirm} autoFocus variant='contained'>
             Confirm
           </Button>
         </StyleDialogActions>
