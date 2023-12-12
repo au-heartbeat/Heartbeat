@@ -87,7 +87,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
 
   return (
     <Fragment>
-      <Dialog fullWidth={true} open={open} onClose={handleCancel}>
+      <Dialog aria-label='password-dialog' fullWidth={true} open={open} onClose={handleCancel}>
         <StyleDialogTitle>{'please set password'}</StyleDialogTitle>
         <DialogContent>
           <StyleFormControl sx={{ width: '35ch' }} variant='standard'>
@@ -123,7 +123,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
-                    aria-label='toggle password visibility'
+                    aria-label='toggle confirmed password visibility'
                     onClick={handleClickShowConfirmPassword}
                     onMouseDown={handleMouseDownConfirmPassword}
                   >

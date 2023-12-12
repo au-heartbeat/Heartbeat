@@ -334,6 +334,7 @@ export enum PIPELINE_SETTING_TYPES {
 }
 
 export const CONFIRM_DIALOG_DESCRIPTION = 'All the filled data will be cleared. Continue to Home page?'
+export const SET_PASSWORD_TITLE = 'please set password'
 
 export const MOCK_GET_STEPS_PARAMS = {
   params: {
