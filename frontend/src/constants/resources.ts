@@ -30,6 +30,13 @@ export const PIPELINE_TOOL_TYPES = {
   GO_CD: 'GoCD',
 }
 
+export const ENCRYPTED_MESSAGE = {
+  CONFIRMED_PASSWORD_EMPTY: 'Confirmed password cannot be blank.',
+  PASSWORD_EMPTY: 'Password cannot be blank.',
+  NOT_MATCH: 'Password length can only be within 6-50 characters and can only contain letters and numbers.',
+  NOT_SAME: 'Confirmed password should be same with the password.',
+}
+
 export const SOURCE_CONTROL_TYPES = {
   GITHUB: 'GitHub',
 }

@@ -12,6 +12,7 @@ import DialogContent from '@mui/material/DialogContent'
 import { StyleDialogActions, StyleDialogTitle } from '@src/components/Metrics/ReportStep/ExpiredDialog/style'
 import { isEmpty } from 'lodash'
 import { StyleFormControl, StylePassWordError } from '@src/components/Common/PasswordDialog/style'
+import { ENCRYPTED_MESSAGE } from '@src/constants/resources'
 
 export interface PasswordDialogInterface {
   isShowPasswordDialog: boolean
@@ -43,10 +44,10 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
   const getPasswordError = (password: string, isConfirmedPassword: boolean) => {
     const passwordRegExp = new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,50}$')
     if (isEmpty(password)) {
-      return isConfirmedPassword ? 'Confirmed password cannot be blank.' : 'Password cannot be blank.'
+      return isConfirmedPassword ? ENCRYPTED_MESSAGE.CONFIRMED_PASSWORD_EMPTY : ENCRYPTED_MESSAGE.PASSWORD_EMPTY
     }
     if (!passwordRegExp.test(password)) {
-      return 'Password length can only be within 6-50 characters and can only contain letters and numbers.'
+      return ENCRYPTED_MESSAGE.NOT_MATCH
     }
     return ''
   }
@@ -65,7 +66,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
     if (password === confirmPassword && isEmpty(passwordError) && isEmpty(confirmPasswordError)) {
       handleConfirm(password)
     } else {
-      setConfirmPasswordError('Confirmed password should be same with the password.')
+      setConfirmPasswordError(ENCRYPTED_MESSAGE.NOT_SAME)
     }
   }
 
