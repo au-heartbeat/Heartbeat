@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { DURATION } from '@src/constants/commons'
-import { EncryptDTO, encryptedClient } from '@src/clients/EncryptedClient'
+import { encryptedClient } from '@src/clients/security/EncryptedClient'
+import { EncryptDTO } from '@src/clients/security/dto/request'
 
 export interface useEncryptedStateInterface {
   encrypted: (params: EncryptDTO) => Promise<string | undefined>
