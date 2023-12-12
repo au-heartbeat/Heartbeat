@@ -13,13 +13,14 @@ import PasswordDialog from '@src/components/Common/PasswordDialog'
 import { useDecryptedEffect } from '@src/hooks/useDecryptedEffect'
 import { Loading } from '@src/components/Loading'
 import { ErrorNotification } from '@src/components/ErrorNotification'
+import { FILE_EXTENSION } from '@src/constants/commons'
 
 export const HomeGuide = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const [validConfig, setValidConfig] = useState(true)
   const [isShowPasswordDialog, setIsShowPasswordDialog] = useState(false)
-  const [fileContent, setFileContent] = useState<string>()
+  const [fileContent, setFileContent] = useState<string>('')
   const { decrypted, isLoading, errorMessage } = useDecryptedEffect()
 
   const getImportFileElement = () => document.getElementById('importJson') as HTMLInputElement
@@ -57,7 +58,6 @@ export const HomeGuide = () => {
       fileInput.value = ''
     }
     reader.readAsText(input, 'utf-8')
-    reader.addEventListener('error', () => setValidConfig(false))
   }
 
   const handleImportConfigFile = (result: string) => {
@@ -91,7 +91,6 @@ export const HomeGuide = () => {
 
   const handlePasswordConfirm = (password: string) => {
     setIsShowPasswordDialog(false)
-    if (!fileContent) return
     decrypted({ encryptedData: fileContent, password }).then((res?: string) => res && handleImportConfigFile(res))
   }
 
@@ -104,7 +103,14 @@ export const HomeGuide = () => {
       {!validConfig && <WarningNotification message={MESSAGE.HOME_VERIFY_IMPORT_WARNING} />}
       <StyledStack direction='column' justifyContent='center' alignItems='center' flex={'auto'}>
         <GuideButton onClick={openFileImportBox}>Import project from file</GuideButton>
-        <input hidden type='file' data-testid='testInput' id='importJson' accept='.json,.hb' onChange={handleChange} />
+        <input
+          hidden
+          type='file'
+          data-testid='testInput'
+          id='importJson'
+          accept={`${FILE_EXTENSION.JSON},${FILE_EXTENSION.HB}`}
+          onChange={handleChange}
+        />
         <GuideButton onClick={createNewProject}>Create a new project</GuideButton>
       </StyledStack>
       <PasswordDialog

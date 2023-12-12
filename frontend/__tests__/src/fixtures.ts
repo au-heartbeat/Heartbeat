@@ -695,3 +695,12 @@ export const AUTOCOMPLETE_SELECT_ACTION = 'selectOption'
 
 export const TIME_DISPLAY_TITTLE_START = 'START'
 export const TIME_DISPLAY_TITTLE_END = 'END'
+export const PASSWORD_DIALOG = {
+  TITLE: 'please set password',
+  CONFIRM_BUTTON: 'Confirm',
+  CANCEL_BUTTON: 'Cancel',
+  INPUT_BOX: 'Password',
+}
+
+export const MOCK_DECRYPTED_DATA =
+  '{"projectName":"ADM","dateRange":{"startDate":"2023-09-07T16:00:00.000Z","endDate":"2023-09-14T16:00:00.000Z"},"calendarType":"Regular Calendar(Weekend Considered)","metrics":["All","Velocity","Cycle time","Classification","Lead time for changes","Deployment frequency","Change failure rate","Mean time to recovery"],"board":{"type":"Jira","boardId":"2","email":"test@test.com","projectKey":"projectKey","site":"site","token":""},"pipelineTool":{"type":"BuildKite","token":""},"sourceControl":{"type":"GitHub","token":""}}'

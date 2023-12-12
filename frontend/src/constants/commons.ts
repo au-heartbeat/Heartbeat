@@ -64,6 +64,7 @@ export const METRICS_STEPS = {
 export const FILE_EXTENSION = {
   HB: '.hb',
   CSV: '.csv',
+  JSON: '.json',
 }
 
 export const URI_DATA_PREFIX = 'data:application/json;charset=utf-8'
