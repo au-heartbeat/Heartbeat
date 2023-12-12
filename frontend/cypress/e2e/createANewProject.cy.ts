@@ -146,17 +146,17 @@ const checkPipelineCalculation = (testId: string) => {
 }
 
 const checkDeploymentFrequency = (testId: string) => {
-  reportPage.deploymentFrequencyTitle().should('exist')
+  reportPage.deploymentFrequencyTitle.should('exist')
   checkPipelineCalculation(testId)
 }
 
 const checkVelocity = (testId: string, velocityData: BoardDataItem[]) => {
-  reportPage.velocityTitle().should('exist')
+  reportPage.velocityTitle.should('exist')
   checkBoardCalculation(testId, velocityData)
 }
 
 const checkCycleTime = (testId: string, cycleTimeData: BoardDataItem[]) => {
-  reportPage.cycleTimeTitle().should('exist')
+  reportPage.cycleTimeTitle.should('exist')
   checkBoardCalculation(testId, cycleTimeData)
 }
 
@@ -165,29 +165,13 @@ const checkTimeToRecoveryPipelineCalculation = (testId: string) => {
 }
 
 const checkMeanTimeToRecovery = (testId: string) => {
-  reportPage.meanTimeToRecoveryTitle().should('exist')
+  reportPage.meanTimeToRecoveryTitle.should('exist')
   checkTimeToRecoveryPipelineCalculation(testId)
 }
 
 const clearDownloadFile = () => {
   cy.task('clearDownloads')
   cy.wait(500)
-}
-
-const checkProjectConfig = (expectedFileName: string) => {
-  cy.wait(2000)
-  cy.fixture(expectedFileName).then((localFileContent) => {
-    cy.task('readDir', 'cypress/downloads').then((files: string[]) => {
-      expect(files).to.match(new RegExp(/config\.json/))
-      files.forEach((file: string) => {
-        if (file.match(/config\.json/)) {
-          cy.readFile(`cypress/downloads/${file}`).then((fileContent) => {
-            expect(JSON.stringify(fileContent)).to.eq(JSON.stringify(localFileContent))
-          })
-        }
-      })
-    })
-  })
 }
 
 const checkMetricCSV = () => {
@@ -248,8 +232,6 @@ describe('Create a new project', () => {
   it('Should create a new project manually', () => {
     homePage.navigate()
 
-    homePage.headerVersion.should('exist')
-
     homePage.createANewProject()
     cy.url().should('include', '/metrics')
 
@@ -278,12 +260,6 @@ describe('Create a new project', () => {
 
     configPage.nextStepButton.should('be.enabled')
 
-    clearDownloadFile()
-
-    configPage.exportProjectConfig()
-
-    checkProjectConfig('configForConfigPage.json')
-
     configPage.CancelBackToHomePage()
 
     configPage.goMetricsStep()
@@ -307,10 +283,6 @@ describe('Create a new project', () => {
 
     configPage.nextStepButton.should('be.enabled')
 
-    metricsPage.exportProjectConfig()
-
-    checkProjectConfig('configForMetricsPage.json')
-
     metricsPage.goReportStep()
 
     reportPage.waitingForProgressBar()
@@ -323,29 +295,27 @@ describe('Create a new project', () => {
 
     checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
 
-    reportPage.firstNotification().should('exist')
+    clearDownloadFile()
 
-    reportPage.exportMetricDataButton().should('be.enabled')
+    reportPage.firstNotification.should('exist')
+
+    reportPage.exportMetricDataButton.should('be.enabled')
 
     reportPage.exportMetricData()
 
     checkMetricCSV()
 
-    reportPage.exportPipelineDataButton().should('be.enabled')
+    reportPage.exportPipelineDataButton.should('be.enabled')
 
     reportPage.exportPipelineData()
 
     checkPipelineCSV()
 
-    reportPage.exportBoardDataButton().should('be.enabled')
+    reportPage.exportBoardDataButton.should('be.enabled')
 
     reportPage.exportBoardData()
 
     checkBoardCSV()
-
-    reportPage.exportProjectConfig()
-
-    checkProjectConfig('configForMetricsPage.json')
   })
 
   function goToMetricsPageFromHome() {

@@ -1,9 +1,13 @@
 import { GITHUB_TOKEN } from '../fixtures/fixtures'
 
 class Home {
-  private readonly createANewProjectButton = () => cy.contains('Create a new project')
+  get createANewProjectButton() {
+    return cy.contains('Create a new project')
+  }
 
-  private readonly importProjectFromFileButton = () => cy.contains('Import project from file')
+  get importProjectFromFileButton() {
+    return cy.contains('Import project from file')
+  }
 
   get headerVersion() {
     return cy.get('span[title="Heartbeat"]').parent().next()
@@ -14,11 +18,11 @@ class Home {
   }
 
   createANewProject() {
-    this.createANewProjectButton().click()
+    this.createANewProjectButton.click()
   }
 
   importProjectFromFile(configFixtureName) {
-    this.importProjectFromFileButton().click()
+    this.importProjectFromFileButton.click()
     cy.fixture(configFixtureName).then((fileContent) => {
       // Add Randomly generated token
       fileContent.sourceControl.token = GITHUB_TOKEN
