@@ -1,10 +1,10 @@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/emojis/emoji'
 import { ICycleTimeSetting, IJiraColumnsWithValue } from '@src/context/Metrics/metricsSlice'
+import { FILE_EXTENSION, URI_DATA_PREFIX } from '@src/constants/commons'
 
-export const exportToJsonFile = (filename: string, json: string) => {
-  const dataStr = JSON.stringify(json, null, 4)
-  const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`
-  const exportFileDefaultName = `${filename}.json`
+export const exportEncryptContentToFile = (filename: string, content: string) => {
+  const dataUri = `${URI_DATA_PREFIX},${encodeURIComponent(content)}`
+  const exportFileDefaultName = `${filename}${FILE_EXTENSION.HB}`
 
   const linkElement = document.createElement('a')
   linkElement.setAttribute('href', dataUri)

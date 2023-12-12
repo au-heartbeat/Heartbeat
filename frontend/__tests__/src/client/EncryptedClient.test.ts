@@ -1,6 +1,6 @@
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
-import { encryptedClient } from '@src/clients/EncryptedClient'
+import { encryptedClient } from '@src/clients/security/EncryptedClient'
 import { BASE_URL } from '../fixtures'
 import { HttpStatusCode } from 'axios'
 

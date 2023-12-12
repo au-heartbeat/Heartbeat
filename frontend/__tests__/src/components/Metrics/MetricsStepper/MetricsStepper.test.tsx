@@ -43,9 +43,9 @@ import {
   updateDeploymentFrequencySettings,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice'
-import { exportToJsonFile } from '@src/utils/util'
+import { exportEncryptContentToFile } from '@src/utils/util'
 import { ASSIGNEE_FILTER_TYPES } from '@src/constants/resources'
-import { encryptedClient } from '@src/clients/EncryptedClient'
+import { encryptedClient } from '@src/clients/security/EncryptedClient'
 
 const START_DATE_LABEL = 'From *'
 const TODAY = dayjs()
@@ -308,7 +308,7 @@ describe('MetricsStepper', () => {
 
     await triggerSaveButton(getByText)
 
-    expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
+    expect(exportEncryptContentToFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   })
 
   it('should export json when click save button when pipelineTool, sourceControl, and board is not empty', async () => {
@@ -331,7 +331,7 @@ describe('MetricsStepper', () => {
     fillMetricsData()
     await triggerSaveButton(getByText)
 
-    expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
+    expect(exportEncryptContentToFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   })
 
   it('should export json file when click save button in metrics page given all content is empty', async () => {
@@ -363,7 +363,7 @@ describe('MetricsStepper', () => {
     await userEvent.click(getByText(NEXT))
     await triggerSaveButton(getByText)
 
-    expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
+    expect(exportEncryptContentToFile).toHaveBeenCalledWith(expectedFileName, expectedJson)
   }, 50000)
 
   it('should clean the config information that is hidden when click next button', async () => {

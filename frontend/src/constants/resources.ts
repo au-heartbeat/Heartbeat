@@ -140,4 +140,5 @@ export const MESSAGE = {
   NOTIFICATION_FIRST_REPORT: 'The file needs to be exported within %s minutes, otherwise it will expire.',
   EXPIRE_IN_FIVE_MINUTES: 'The file will expire in 5 minutes, please download it in time.',
   REPORT_LOADING: 'The report is being generated, please do not refresh the page or all the data will be disappeared.',
+  INCONSISTENT_PASSWORDS_ENTERED_TWICE: 'Confirmed password should be same with the password.',
 }

@@ -37,7 +37,7 @@ import {
 } from '@src/context/config/configSlice'
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext'
 import { Tooltip } from '@mui/material'
-import { exportToJsonFile } from '@src/utils/util'
+import { exportEncryptContentToFile } from '@src/utils/util'
 import {
   savedMetricsSettingState,
   selectCycleTimeSettings,
@@ -229,7 +229,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
     }
     const jsonData = activeStep === METRICS_STEPS.CONFIG ? configData : { ...configData, ...metricsData }
     encrypted({ configData: JSON.stringify(jsonData), password }).then(
-      (res?: string) => res && exportToJsonFile('config', res)
+      (res?: string) => res && exportEncryptContentToFile('config', res)
     )
   }
 

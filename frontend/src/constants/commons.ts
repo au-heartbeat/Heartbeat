@@ -60,3 +60,10 @@ export const METRICS_STEPS = {
   METRICS: 1,
   REPORT: 2,
 }
+
+export const FILE_EXTENSION = {
+  HB: '.hb',
+  CSV: '.csv',
+}
+
+export const URI_DATA_PREFIX = 'data:application/json;charset=utf-8'

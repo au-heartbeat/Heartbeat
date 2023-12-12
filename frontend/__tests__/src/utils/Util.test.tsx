@@ -1,5 +1,5 @@
 import {
-  exportToJsonFile,
+  exportEncryptContentToFile,
   filterAndMapCycleTimeSettings,
   findCaseInsensitiveType,
   getJiraBoardToken,
@@ -20,7 +20,7 @@ describe('exportToJsonFile function', () => {
     const json = '{ key: "value" }'
     const documentCreateSpy = jest.spyOn(document, 'createElement')
 
-    exportToJsonFile(filename, json)
+    exportEncryptContentToFile(filename, json)
 
     expect(documentCreateSpy).toHaveBeenCalledWith('a')
   })
