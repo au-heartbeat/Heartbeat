@@ -32,15 +32,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
 
-  const handleMouseDownPassword = (event: MouseEvent) => {
-    event.preventDefault()
-  }
-
   const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show)
-
-  const handleMouseDownConfirmPassword = (event: MouseEvent) => {
-    event.preventDefault()
-  }
 
   const getPasswordError = (password: string, isConfirmedPassword: boolean) => {
     const passwordRegExp = new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,50}$')
@@ -116,11 +108,7 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
               error={!isEmpty(passwordError)}
               endAdornment={
                 <InputAdornment position='end'>
-                  <IconButton
-                    aria-label='toggle password visibility'
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                  >
+                  <IconButton aria-label='toggle password visibility' onClick={handleClickShowPassword}>
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
@@ -141,7 +129,6 @@ const PasswordDialog = memo(({ isShowPasswordDialog, handleConfirm, handleCancel
                   <IconButton
                     aria-label='toggle confirmed password visibility'
                     onClick={handleClickShowConfirmPassword}
-                    onMouseDown={handleMouseDownConfirmPassword}
                   >
                     {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>

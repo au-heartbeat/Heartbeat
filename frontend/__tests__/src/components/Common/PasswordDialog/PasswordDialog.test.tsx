@@ -56,6 +56,20 @@ describe('confirm dialog', () => {
     expect(input).toHaveValue(mockPassword)
   })
 
+  it('should confirm password visibility', async () => {
+    const { getByText, getByRole, getByLabelText } = setup()
+    const mockPassword = '123abc'
+    const input = getByLabelText(CONFIRM_PASSWORD, { selector: 'input' })
+
+    await act(async () => {
+      await userEvent.click(getByRole('button', { name: 'toggle confirmed password visibility' }))
+      await userEvent.type(getByText(CONFIRM_PASSWORD), mockPassword)
+    })
+
+    expect(input).toBeInTheDocument()
+    expect(input).toHaveValue(mockPassword)
+  })
+
   it('should show error for not match', async () => {
     const { getByText } = setup()
     const mockPassword = '123'
@@ -81,6 +95,20 @@ describe('confirm dialog', () => {
 
     expect(getByText(ENCRYPT_CONFIRM)).toBeDisabled()
     expect(getByText(ENCRYPTED_MESSAGE.PASSWORD_EMPTY)).toBeInTheDocument()
+  })
+
+  it('should show error for confirm password not blank', async () => {
+    const { getByText, getByLabelText } = setup()
+    const mockPrePassword = '123abc'
+    const input = getByLabelText(CONFIRM_PASSWORD, { selector: 'input' })
+
+    await act(async () => {
+      await userEvent.type(getByText(CONFIRM_PASSWORD), mockPrePassword)
+      await userEvent.clear(input)
+    })
+
+    expect(getByText(ENCRYPT_CONFIRM)).toBeDisabled()
+    expect(getByText(ENCRYPTED_MESSAGE.CONFIRMED_PASSWORD_EMPTY)).toBeInTheDocument()
   })
 
   it('should show error for password not same', async () => {
