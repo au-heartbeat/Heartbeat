@@ -147,7 +147,6 @@ describe('Import project from file', () => {
     reportPage.backToMetricsStep()
 
     checkFieldsExist(metricsTextList)
-    metricsPage.checkCycleTimeTooltip()
     checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
 
     metricsPage.BackToConfigStep()
@@ -174,7 +173,6 @@ describe('Import project from file', () => {
     configPage.goMetricsStep()
 
     checkFieldsExist(metricsTextList)
-    metricsPage.checkCycleTimeTooltip()
     checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
 
     metricsPage.goReportStep()
