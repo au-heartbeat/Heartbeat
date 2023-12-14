@@ -104,20 +104,7 @@ const checkInputValue = (selector, expectedValue) => {
     })
 }
 
-const checkRequiredFields = () => {
-  metricsPage.cycleTimeSettingDoneColumnToNone()
-  metricsPage.nextButton().should('be.disabled')
-  metricsPage.cycleTimeSettingDone()
-  metricsPage.checkRealDone()
-  metricsPage.nextButton().should('be.enabled')
-
-  metricsPage.classificationClear().click({ force: true })
-  metricsPage.nextButton().should('be.disabled')
-  metricsPage.checkClassification()
-  metricsPage.nextButton().should('be.enabled')
-}
-
-describe('Import project from file', () => {
+describe.only('Import project from file', () => {
   beforeEach(() => {
     cy.waitForNetworkIdlePrepare({
       method: '*',
@@ -140,14 +127,13 @@ describe('Import project from file', () => {
     configPage.goMetricsStep()
 
     checkFieldsExist(metricsTextList)
-
     checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
 
-    checkRequiredFields()
+    metricsPage.checkRequiredFields()
 
     metricsPage.goReportStep()
 
-    reportPage.waitingForProgressBar()
+    reportPage.pageIndicator.should('exist')
 
     checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
 
@@ -183,7 +169,7 @@ describe('Import project from file', () => {
 
     metricsPage.goReportStep()
 
-    reportPage.waitingForProgressBar()
+    reportPage.pageIndicator.should('exist')
 
     checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
 
