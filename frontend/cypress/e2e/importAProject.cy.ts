@@ -118,6 +118,14 @@ const checkRequiredFields = () => {
 }
 
 describe('Import project from file', () => {
+  beforeEach(() => {
+    cy.waitForNetworkIdlePrepare({
+      method: '*',
+      pattern: '/api/**',
+      alias: 'api',
+    })
+  })
+
   it('Should import a new config project manually', () => {
     homePage.navigate()
 
@@ -126,9 +134,8 @@ describe('Import project from file', () => {
     checkPipelineToolExist()
     checkInputValue('.MuiInput-input', 'ConfigFileForImporting')
 
+    cy.waitForNetworkIdle('@api', 2000)
     configPage.verifyAndClickNextToMetrics()
-
-    configPage.waitingForProgressBar()
 
     configPage.goMetricsStep()
 
@@ -166,9 +173,8 @@ describe('Import project from file', () => {
     checkPipelineToolExist()
     checkInputValue('.MuiInput-input', 'ConfigFileForImporting')
 
+    cy.waitForNetworkIdle('@api', 2000)
     configPage.verifyAndClickNextToMetrics()
-
-    configPage.waitingForProgressBar()
 
     configPage.goMetricsStep()
 
