@@ -174,6 +174,22 @@ const clearDownloadFile = () => {
   cy.wait(500)
 }
 
+const checkProjectConfig = (expectedFileName: string) => {
+  cy.wait(2000)
+  cy.fixture(expectedFileName).then((localFileContent) => {
+    cy.task('readDir', 'cypress/downloads').then((files: string[]) => {
+      expect(files).to.match(new RegExp(/config\.json/))
+      files.forEach((file: string) => {
+        if (file.match(/config\.json/)) {
+          cy.readFile(`cypress/downloads/${file}`).then((fileContent) => {
+            expect(JSON.stringify(fileContent)).to.eq(JSON.stringify(localFileContent))
+          })
+        }
+      })
+    })
+  })
+}
+
 const checkMetricCSV = () => {
   cy.wait(2000)
   cy.fixture('metric.csv').then((localFileContent) => {
@@ -264,6 +280,12 @@ describe('Create a new project', () => {
 
     nextButton().should('be.enabled')
 
+    clearDownloadFile()
+
+    configPage.exportProjectConfig()
+
+    checkProjectConfig('configForConfigPage.json')
+
     configPage.CancelBackToHomePage()
 
     configPage.goMetricsStep()
@@ -287,6 +309,10 @@ describe('Create a new project', () => {
 
     nextButton().should('be.enabled')
 
+    metricsPage.exportProjectConfig()
+
+    checkProjectConfig('configForMetricsPage.json')
+
     metricsPage.goReportStep()
 
     reportPage.waitingForProgressBar()
@@ -298,8 +324,6 @@ describe('Create a new project', () => {
     checkDeploymentFrequency('[data-test-id="Deployment frequency"]')
 
     checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
-
-    clearDownloadFile()
 
     reportPage.firstNotification().should('exist')
 
@@ -320,6 +344,10 @@ describe('Create a new project', () => {
     reportPage.exportBoardData()
 
     checkBoardCSV()
+
+    reportPage.exportProjectConfig()
+
+    checkProjectConfig('configForMetricsPage.json')
   })
 
   function goToMetricsPageFromHome() {

@@ -1,0 +1,34 @@
+{
+  "projectName": "E2E Project",
+  "dateRange": {
+    "startDate": "2022-09-01T00:00:00.000+08:00",
+    "endDate": "2022-09-14T23:59:59.999+08:00"
+  },
+  "calendarType": "Regular Calendar(Weekend Considered)",
+  "metrics": [
+    "All",
+    "Velocity",
+    "Cycle time",
+    "Classification",
+    "Lead time for changes",
+    "Deployment frequency",
+    "Change failure rate",
+    "Mean time to recovery"
+  ],
+  "board": {
+    "type": "Classic Jira",
+    "boardId": "1963",
+    "email": "test@test.com",
+    "projectKey": "PLL",
+    "site": "site",
+    "token": ""
+  },
+  "pipelineTool": {
+    "type": "BuildKite",
+    "token": ""
+  },
+  "sourceControl": {
+    "type": "GitHub",
+    "token": ""
+  }
+}

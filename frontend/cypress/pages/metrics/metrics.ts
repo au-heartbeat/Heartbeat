@@ -130,6 +130,8 @@ class Metrics {
   readonly nextButton = () => cy.contains('Next')
   private readonly backButton = () => cy.contains('Previous')
 
+  private readonly saveButton = () => cy.contains('Save')
+
   private readonly cycleTimeTitleTooltip = () => cy.get('[data-test-id="tooltip')
 
   private readonly progressBar = () => cy.get('[data-testid="loading-page"]', { timeout: 10000 })
@@ -212,6 +214,10 @@ class Metrics {
   waitingForProgressBar() {
     this.progressBar().should('be.visible')
     this.progressBar().should('not.exist')
+  }
+
+  exportProjectConfig() {
+    this.saveButton().click()
   }
 }
 

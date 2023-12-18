@@ -1,0 +1,140 @@
+{
+  "projectName": "E2E Project",
+  "dateRange": {
+    "startDate": "2022-09-01T00:00:00.000+08:00",
+    "endDate": "2022-09-14T23:59:59.999+08:00"
+  },
+  "calendarType": "Regular Calendar(Weekend Considered)",
+  "metrics": [
+    "All",
+    "Velocity",
+    "Cycle time",
+    "Classification",
+    "Lead time for changes",
+    "Deployment frequency",
+    "Change failure rate",
+    "Mean time to recovery"
+  ],
+  "board": {
+    "type": "Classic Jira",
+    "boardId": "1963",
+    "email": "test@test.com",
+    "projectKey": "PLL",
+    "site": "site",
+    "token": ""
+  },
+  "pipelineTool": {
+    "type": "BuildKite",
+    "token": ""
+  },
+  "sourceControl": {
+    "type": "GitHub",
+    "token": ""
+  },
+  "crews": [
+    "Gerard Ho",
+    "HanWei Wang",
+    "Aaron Camilleri",
+    "Anthony Tse",
+    "Yonghee Jeon Jeon",
+    "Harsh Singal",
+    "Prashant Agarwal",
+    "Sumit Narang",
+    "Mengyang Sun",
+    "Qian Zhang",
+    "Brian Ong",
+    "Yu Zhang",
+    "Peihang Yu"
+  ],
+  "assigneeFilter": "lastAssignee",
+  "cycleTime": {
+    "jiraColumns": [
+      {
+        "In Analysis": "Analysis"
+      },
+      {
+        "Ready For Dev": "To do"
+      },
+      {
+        "In Dev": "In Dev"
+      },
+      {
+        "Blocked": "Block"
+      },
+      {
+        "Ready For Test": "Waiting for testing"
+      },
+      {
+        "In Test": "Testing"
+      },
+      {
+        "Ready to Deploy": "Review"
+      },
+      {
+        "Done": "Done"
+      }
+    ],
+    "treatFlagCardAsBlock": true
+  },
+  "doneStatus": ["DONE", "CLOSED"],
+  "classification": [
+    "issuetype",
+    "customfield_21212",
+    "customfield_22466",
+    "parent",
+    "components",
+    "project",
+    "reporter",
+    "customfield_16400",
+    "fixVersions",
+    "priority",
+    "customfield_16800",
+    "labels",
+    "customfield_10004",
+    "customfield_10007",
+    "customfield_10008",
+    "assignee",
+    "customfield_22203",
+    "customfield_21871",
+    "customfield_10009",
+    "customfield_11700",
+    "environment",
+    "versions",
+    "customfield_22213",
+    "customfield_22231",
+    "customfield_17000",
+    "customfield_16302",
+    "customfield_14603",
+    "customfield_22229",
+    "customfield_22228",
+    "customfield_22226"
+  ],
+  "deployment": [
+    {
+      "id": 0,
+      "organization": "XXXX",
+      "pipelineName": "fs-platform-payment-selector",
+      "step": "RECORD RELEASE TO PROD",
+      "branches": [
+        "PLL-1223-for-refering",
+        "PLL-1231",
+        "PLL-1311",
+        "PLL-1311-Fix-Sonarqube",
+        "PLL-1311-fix_trivy",
+        "PLL-1314",
+        "PLL-1320",
+        "PLL-1320-test",
+        "PLL-1321",
+        "PLL-1321-Refactor",
+        "PLL-1322",
+        "PLL-1323",
+        "PLL-1333",
+        "PLL-1378",
+        "PLL-1403",
+        "PLL-1403-1",
+        "PLL_1320",
+        "master"
+      ]
+    }
+  ]
+}

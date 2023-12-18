@@ -1,6 +1,8 @@
 class Config {
   private readonly backButton = () => cy.contains('Previous')
 
+  private readonly saveButton = () => cy.contains('Save')
+
   private readonly yesButton = () => cy.contains('Yes')
 
   private readonly projectNameInput = () => cy.contains('Project name *').siblings().first()
@@ -120,6 +122,10 @@ class Config {
   waitingForProgressBar() {
     this.progressBar().should('be.visible')
     this.progressBar().should('not.exist')
+  }
+
+  exportProjectConfig() {
+    this.saveButton().click()
   }
 }
 

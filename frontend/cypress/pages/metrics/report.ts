@@ -4,6 +4,7 @@ class Report {
   readonly deploymentFrequencyTitle = () => cy.contains('Deployment frequency')
   readonly meanTimeToRecoveryTitle = () => cy.contains('Mean Time To Recovery')
   readonly backButton = () => cy.contains('Previous')
+  readonly saveButton = () => cy.contains('Save')
   readonly exportMetricDataButton = () => cy.contains('Export metric data')
   readonly exportPipelineDataButton = () => cy.contains('Export pipeline data')
   readonly exportBoardDataButton = () => cy.contains('Export board data')
@@ -28,6 +29,10 @@ class Report {
 
   exportBoardData() {
     this.exportBoardDataButton().click()
+  }
+
+  exportProjectConfig() {
+    this.saveButton().click()
   }
 
   checkNotification() {
