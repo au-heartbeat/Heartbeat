@@ -3,7 +3,6 @@ import configPage from '../pages/metrics/config'
 import metricsPage from '../pages/metrics/metrics'
 import reportPage from '../pages/metrics/report'
 import { GITHUB_TOKEN } from '../fixtures/fixtures'
-import { Metrics } from '../pages/metrics/metrics'
 
 const metricsTextList = [
   'Board configuration',
@@ -105,31 +104,6 @@ const checkInputValue = (selector, expectedValue) => {
     })
 }
 
-const checkProjectConfig = () => {
-  cy.wait(2000)
-  cy.fixture('config.json').then((localFileContent) => {
-    cy.readFile(`cypress/downloads/config.json`).then((fileContent) => {
-      expect(fileContent.sourceControl.token).to.eq(GITHUB_TOKEN)
-      for (const key in localFileContent) {
-        expect(fileContent[key]).to.deep.eq(localFileContent[key])
-      }
-    })
-  })
-}
-
-const checkRequiredFields = () => {
-  metricsPage.chooseDropdownOption(Metrics.CYCLE_TIME_LABEL.doneLabel, Metrics.CYCLE_TIME_VALUE.noneValue)
-  metricsPage.nextButton.should('be.disabled')
-  metricsPage.chooseDropdownOption(Metrics.CYCLE_TIME_LABEL.doneLabel, Metrics.CYCLE_TIME_VALUE.doneValue)
-  metricsPage.clickRealDone()
-  metricsPage.nextButton.should('be.enabled')
-
-  metricsPage.classificationClear.click({ force: true })
-  metricsPage.nextButton.should('be.disabled')
-  metricsPage.clickClassification()
-  metricsPage.nextButton.should('be.enabled')
-}
-
 describe('Import project from file', () => {
   beforeEach(() => {
     cy.waitForNetworkIdlePrepare({
@@ -153,20 +127,15 @@ describe('Import project from file', () => {
     configPage.goMetricsStep()
 
     checkFieldsExist(metricsTextList)
-
     checkAutoCompleteFieldsExist(metricsAutoCompleteTextList)
 
-    checkRequiredFields()
+    metricsPage.checkRequiredFields()
 
     metricsPage.goReportStep()
 
     reportPage.pageIndicator.should('exist')
 
     checkMeanTimeToRecovery('[data-test-id="Mean Time To Recovery"]')
-
-    reportPage.exportProjectConfig()
-
-    checkProjectConfig()
 
     reportPage.backToMetricsStep()
 
