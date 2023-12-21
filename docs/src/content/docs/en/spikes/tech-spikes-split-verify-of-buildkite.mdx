@@ -87,11 +87,10 @@ The new api need to be called when the Verify button is clicked. If return 200, 
 
 - Api Design
 ```
-paths: api/v1/pipelines/verify
+paths: api/v1/pipelines/{pipelineType}/verify
 method: post
 request: {
-  token: "your_token",
-  type: "BuildKite"
+  token: "your_token"
 }
 responses:
   Status Code: 200
@@ -145,7 +144,7 @@ end
 The api should be called when entering the Metrics page. Only after two parts of data(The api and previous getPipelineSteps api) are obtained can the loading disappear.
 - Api Design
 ```
-paths: api/v1/pipelines/info
+paths: api/v1/pipelines/{pipelineType}/info
 method: post
 request: {
   PipelineParam:{
@@ -153,7 +152,6 @@ request: {
   startTime: "xxx",
   endTime:"xxx",
   } 
-  type: "BuildKite"
 }
 responses:{
   "pipelineList": 
