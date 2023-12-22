@@ -90,6 +90,12 @@ describe('Header', () => {
       expect(queryByTitle(homeBtnText)).not.toBeInTheDocument()
     })
 
+    it('should not show home icon when pathname is home', () => {
+      const { queryByTitle } = setup('/home')
+
+      expect(queryByTitle(homeBtnText)).not.toBeInTheDocument()
+    })
+
     it('should navigate to home page', () => {
       const { getByTitle } = setup('/not/home/page')
 
