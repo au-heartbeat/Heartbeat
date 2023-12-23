@@ -47,6 +47,7 @@ Thumbs.db
 volume
 csv
 
+nohup.out
 
 # Stubby4j
 /stubs/logs

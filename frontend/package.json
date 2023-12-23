@@ -16,8 +16,8 @@
     "coverage": "jest --env=jsdom --watchAll=false --coverage",
     "e2e:open": "TZ='PRC' cypress open",
     "e2e": "TZ='PRC' cypress run --spec cypress/",
-    "e2e:local": "APP_ENV=local  TZ='PRC' cypress run --spec cypress/",
-    "e2e:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'npm run e2e:local'",
+    "e2e:local": "APP_ENV=local pnpm run e2e",
+    "e2e:with-server": "../ops/e2e.local.sh && pnpm run e2e:local",
     "prepare": "cd .. && husky install frontend/.husky",
     "license-compliance": "license-compliance -r detailed"
   },
