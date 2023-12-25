@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd frontend && pnpm run audit && pnpm run coverage && pnpm run e2e:with-server
+cd frontend && pnpm run audit && pnpm run coverage && cd ..
+cd frontend pnpm run e2e:with-server
 cd ../backend && ./gradlew clean check
