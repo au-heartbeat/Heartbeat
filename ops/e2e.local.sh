@@ -15,7 +15,7 @@ clean() {
   echo "🏆️ Successfully clean all related resources"
 }
 
-# clean
+clean
 
 echo "🐣 Start to start services"
 echo "frontend"
