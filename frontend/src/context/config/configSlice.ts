@@ -8,6 +8,7 @@ import { initialSourceControlState, ISourceControl } from '@src/context/config/s
 import dayjs from 'dayjs'
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice'
 import _ from 'lodash'
+import initialConfigState from "../../../__tests__/src/initialConfigState";
 
 export interface BasicConfigState {
   isProjectCreated: boolean
@@ -156,12 +157,7 @@ export const configSlice = createSlice({
       const { githubRepos } = action.payload
       state.sourceControl.verifiedResponse.repoList = githubRepos
     },
-    resetImportedData: () => ({
-      ...initialBasicConfigState,
-      board: { ...initialBoardState },
-      pipelineTool: { ...initialPipelineToolState },
-      sourceControl: { ...initialSourceControlState },
-    }),
+    resetImportedData: () => initialConfigState,
   },
 })
 export const {
