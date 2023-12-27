@@ -8,7 +8,7 @@ import { initialSourceControlState, ISourceControl } from '@src/context/config/s
 import dayjs from 'dayjs'
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice'
 import _ from 'lodash'
-import initialConfigState from "../../../__tests__/src/initialConfigState";
+import initialConfigState from '../../../__tests__/src/initialConfigState'
 
 export interface BasicConfigState {
   isProjectCreated: boolean
