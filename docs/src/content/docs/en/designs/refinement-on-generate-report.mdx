@@ -479,10 +479,10 @@ Response:
         "totalDelayTime": 0
       }
     } <could be null if not required>,
-    "boardMetricsReady": true <default is false>, 
-    "pipelineMetricsReady": true <default is false>, 
-    "sourceControlMetricsReady": true <default is false>,
-    "allMetricsReady": true <default is false>,
+    "boardMetricsReady": true | false | null <could be null if not required board metrics, default is null>, 
+    "pipelineMetricsReady": true | false | null <could be null if not required pipeline metrics, default is null>, 
+    "sourceControlMetricsReady": true | false | null <could be null if not required source control metrics, default is null>,
+    "allMetricsReady": true | false <default is false>,
     "exportValidityTime": 0
 }
 ```
