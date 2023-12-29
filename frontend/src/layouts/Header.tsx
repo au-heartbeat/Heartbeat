@@ -31,8 +31,8 @@ const Header = (props: useNotificationLayoutEffectInterface) => {
   const version = useAppSelector(getVersion)
 
   const goHome = () => {
-    navigate('/')
     dispatch(resetImportedData())
+    navigate('/')
   }
 
   const shouldShowHomeIcon = () => {
