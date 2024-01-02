@@ -219,11 +219,6 @@ public class GenerateReporterService {
 		List<String> lowMetrics = request.getMetrics().stream().map(String::toLowerCase).toList();
 		FetchedData fetchedData = fetchOriginalData(request, lowMetrics);
 
-		if (lowMetrics.stream().anyMatch(this.codebaseMetrics::contains)
-				|| lowMetrics.stream().anyMatch(this.buildKiteMetrics::contains)) {
-			generateCSVForPipeline(request, fetchedData.getBuildKiteData());
-		}
-
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 
@@ -285,6 +280,14 @@ public class GenerateReporterService {
 		}
 
 		return fetchedData;
+	}
+
+	public void generateCsvForDora(GenerateReportRequest request) {
+		List<String> lowMetrics = request.getMetrics().stream().map(String::toLowerCase).toList();
+		FetchedData fetchedData = fetchOriginalData(request, lowMetrics);
+
+		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
+
 	}
 
 	private CardCollection fetchRealDoneCardCollection(GenerateReportRequest request) {
@@ -806,6 +809,7 @@ public class GenerateReporterService {
 	public ReportResponse getComposedReportResponse(String reportId, boolean isReportReady) {
 		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
 		ReportResponse doraReportResponse = getReportFromHandler(IdUtil.getDoraReportId(reportId));
+		ReportResponse codeReportResponse = getReportFromHandler(IdUtil.getCodeBaseReportId(reportId));
 		MetricsDataReady metricsDataReady = asyncReportRequestHandler.getMetricsDataReady(reportId);
 		ReportResponse response = Optional.ofNullable(boardReportResponse).orElse(doraReportResponse);
 
@@ -817,7 +821,7 @@ public class GenerateReporterService {
 			.deploymentFrequency(getValueOrNull(doraReportResponse, ReportResponse::getDeploymentFrequency))
 			.changeFailureRate(getValueOrNull(doraReportResponse, ReportResponse::getChangeFailureRate))
 			.meanTimeToRecovery(getValueOrNull(doraReportResponse, ReportResponse::getMeanTimeToRecovery))
-			.leadTimeForChanges(getValueOrNull(doraReportResponse, ReportResponse::getLeadTimeForChanges))
+			.leadTimeForChanges(getValueOrNull(codeReportResponse, ReportResponse::getLeadTimeForChanges))
 			.isBoardMetricsReady(getValueOrNull(metricsDataReady, MetricsDataReady::isBoardMetricsReady))
 			.isPipelineMetricsReady(getValueOrNull(metricsDataReady, MetricsDataReady::isPipelineMetricsReady))
 			.isSourceControlMetricsReady(

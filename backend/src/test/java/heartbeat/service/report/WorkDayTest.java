@@ -28,7 +28,7 @@ class WorkDayTest {
 
 	@Test
 	void shouldReturnDayIsHoliday() {
-		String year = "2023";
+		String year = "2024";
 		List<HolidayDTO> holidayDTOList = List.of(
 				HolidayDTO.builder().date("2023-01-01").name("元旦").isOffDay(true).build(),
 				HolidayDTO.builder().date("2023-01-28").name("春节").isOffDay(false).build());

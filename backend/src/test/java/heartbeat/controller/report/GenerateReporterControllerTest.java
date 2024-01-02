@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import heartbeat.controller.report.dto.request.ExportCSVRequest;
 import heartbeat.controller.report.dto.request.GenerateBoardReportRequest;
 import heartbeat.controller.report.dto.request.GenerateDoraReportRequest;
+import heartbeat.controller.report.dto.request.RequireDataEnum;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
 import heartbeat.controller.report.dto.response.ReportResponse;
@@ -28,6 +29,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,6 +52,16 @@ class GenerateReporterControllerTest {
 	private static final String REQUEST_FILE_PATH = "src/test/java/heartbeat/controller/report/request.json";
 
 	private static final String RESPONSE_FILE_PATH = "src/test/java/heartbeat/controller/report/reportResponse.json";
+
+	private final List<String> buildKiteMetrics = Stream
+		.of(RequireDataEnum.CHANGE_FAILURE_RATE, RequireDataEnum.DEPLOYMENT_FREQUENCY,
+				RequireDataEnum.MEAN_TIME_TO_RECOVERY)
+		.map(RequireDataEnum::getValue)
+		.toList();
+
+	private final List<String> codebaseMetrics = Stream.of(RequireDataEnum.LEAD_TIME_FOR_CHANGES)
+		.map(RequireDataEnum::getValue)
+		.toList();
 
 	@MockBean
 	private GenerateReporterService generateReporterService;
@@ -211,15 +225,25 @@ class GenerateReporterControllerTest {
 
 	@Test
 	void shouldGetExceptionAndPutInExceptionMapWhenCallDoraReport() throws Exception {
+
 		ObjectMapper mapper = new ObjectMapper();
 		GenerateDoraReportRequest request = mapper.readValue(new File(REQUEST_FILE_PATH),
 				GenerateDoraReportRequest.class);
+		List<String> pipeLineMetrics = request.getMetrics()
+			.stream()
+			.map(String::toLowerCase)
+			.filter(this.buildKiteMetrics::contains)
+			.collect(Collectors.toList());
+		List<String> codeBaseMetrics = request.getMetrics()
+			.stream()
+			.map(String::toLowerCase)
+			.filter(this.codebaseMetrics::contains)
+			.collect(Collectors.toList());
 		String currentTimeStamp = "1685010080107";
 		request.setCsvTimeStamp(currentTimeStamp);
 
 		RequestFailedException requestFailedException = new RequestFailedException(402, "Client Error");
-		when(generateReporterService.generateReporter(request.convertToReportRequest()))
-			.thenThrow(requestFailedException);
+		when(generateReporterService.generateReporter(any())).thenThrow(requestFailedException);
 		doNothing().when(generateReporterService).initializeMetricsDataReadyInHandler(any(), any());
 		doNothing().when(generateReporterService).saveReporterInHandler(any(), any());
 		doNothing().when(generateReporterService).updateMetricsDataReadyInHandler(any(), any());
@@ -242,7 +266,7 @@ class GenerateReporterControllerTest {
 		verify(generateReporterService, times(0)).saveReporterInHandler(any(), any());
 		verify(generateReporterService, times(0)).updateMetricsDataReadyInHandler(request.getCsvTimeStamp(),
 				request.getMetrics());
-		verify(asyncExceptionHandler).put(IdUtil.getDoraReportId(currentTimeStamp), requestFailedException);
+		verify(asyncExceptionHandler, times(2)).put(IdUtil.getDoraReportId(currentTimeStamp), requestFailedException);
 	}
 
 	@Test

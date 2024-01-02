@@ -577,7 +577,7 @@ class GenerateReporterServiceTest {
 			return null;
 		}).when(csvFileGenerator).convertPipelineDataToCSV(any(), any());
 
-		generateReporterService.generateReporter(request);
+		generateReporterService.generateCsvForDora(request);
 
 		boolean isExists = Files.exists(csvFilePath);
 		Assertions.assertTrue(isExists);
@@ -627,7 +627,49 @@ class GenerateReporterServiceTest {
 			return null;
 		}).when(csvFileGenerator).convertPipelineDataToCSV(any(), any());
 
-		generateReporterService.generateReporter(request);
+		generateReporterService.generateCsvForDora(request);
+
+		boolean isExists = Files.exists(mockPipelineCsvPath);
+		Assertions.assertTrue(isExists);
+		Files.deleteIfExists(mockPipelineCsvPath);
+	}
+
+	@Test
+	void shouldOnlyGenerateCsvForPipelineWhenCodeBaseSettingIsNull() throws IOException {
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+
+		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
+			.type("BuildKite")
+			.token("buildKite_fake_token")
+			.deploymentEnvList(Collections.emptyList())
+			.build();
+
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(true)
+			.metrics(List.of("deployment frequency"))
+			.buildKiteSetting(buildKiteSetting)
+			.codebaseSetting(null)
+			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
+			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
+			.csvTimeStamp("1683734399999")
+			.build();
+
+		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
+			.thenReturn(List.of(BuildKiteBuildInfoBuilder.withDefault()
+				.withJobs(List.of(BuildKiteJobBuilder.withDefault().build()))
+				.withPipelineCreateTime("2022-09-09T04:57:34Z")
+				.build()));
+		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("xx"));
+
+		doAnswer(invocation -> {
+			Files.createFile(mockPipelineCsvPath);
+			return null;
+		}).when(csvFileGenerator).convertPipelineDataToCSV(any(), any());
+
+		generateReporterService.generateCsvForDora(request);
 
 		boolean isExists = Files.exists(mockPipelineCsvPath);
 		Assertions.assertTrue(isExists);
@@ -718,7 +760,7 @@ class GenerateReporterServiceTest {
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(null);
 		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("xx"));
 
-		generateReporterService.generateReporter(request);
+		generateReporterService.generateCsvForDora(request);
 
 		boolean isExists = Files.exists(mockPipelineCsvPath);
 		Assertions.assertFalse(isExists);
@@ -762,7 +804,7 @@ class GenerateReporterServiceTest {
 		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(null);
 		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("xx"));
 
-		generateReporterService.generateReporter(request);
+		generateReporterService.generateCsvForDora(request);
 
 		boolean isExists = Files.exists(mockPipelineCsvPath);
 		Assertions.assertFalse(isExists);
