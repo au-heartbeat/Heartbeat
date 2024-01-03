@@ -6,7 +6,6 @@ import {
   selectDateRange,
   updateBoardVerifyState,
   updateDateRange,
-  updatePipelineToolVerifyState,
   updateSourceControlVerifyState,
 } from '@src/context/config/configSlice'
 import { StyledDateRangePicker, StyledDateRangePickerContainer } from './style'
@@ -18,7 +17,6 @@ export const DateRangePicker = () => {
   const { startDate, endDate } = useAppSelector(selectDateRange)
   const updateVerifyStates = () => {
     dispatch(updateBoardVerifyState(false))
-    dispatch(updatePipelineToolVerifyState(false))
     dispatch(updateSourceControlVerifyState(false))
   }
   const changeStartDate = (value: any) => {
