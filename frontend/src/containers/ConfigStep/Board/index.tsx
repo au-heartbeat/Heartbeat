@@ -59,12 +59,6 @@ export const Board = () => {
       isValid: true,
     },
     {
-      key: 'Project Key',
-      value: boardFields.projectKey,
-      isRequired: true,
-      isValid: true,
-    },
-    {
       key: 'Site',
       value: boardFields.site,
       isRequired: true,
@@ -78,7 +72,7 @@ export const Board = () => {
     },
   ]);
   const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(
-    !fields.every((field) => field.value && field.isValid),
+    !fields.every((field) => field.value && field.isValid)
   );
 
   const initBoardFields = () => {
@@ -93,7 +87,7 @@ export const Board = () => {
   const updateFields = (
     fields: { key: string; value: string; isRequired: boolean; isValid: boolean }[],
     index: number,
-    value: string,
+    value: string
   ) => {
     return fields.map((field, fieldIndex) => {
       if (fieldIndex !== index) {
@@ -105,8 +99,8 @@ export const Board = () => {
         field.key === EMAIL
           ? REGEX.EMAIL.test(newValue)
           : field.key === BOARD_TOKEN
-            ? REGEX.BOARD_TOKEN.test(newValue)
-            : true;
+          ? REGEX.BOARD_TOKEN.test(newValue)
+          : true;
       return {
         ...field,
         value: newValue,
@@ -147,23 +141,21 @@ export const Board = () => {
         type: fields[0].value,
         boardId: fields[1].value,
         email: fields[2].value,
-        projectKey: fields[3].value,
-        site: fields[4].value,
-        token: fields[5].value,
-      }),
+        site: fields[3].value,
+        token: fields[4].value,
+      })
     );
   };
 
   const handleSubmitBoardFields = async (e: FormEvent<HTMLFormElement>) => {
     dispatch(updateTreatFlagCardAsBlock(true));
     updateBoardFields(e);
-    const msg = `${fields[2].value}:${fields[5].value}`;
+    const msg = `${fields[2].value}:${fields[4].value}`;
     const encodeToken = `Basic ${btoa(msg)}`;
     const params = {
       type: fields[0].value,
       boardId: fields[1].value,
-      projectKey: fields[3].value,
-      site: fields[4].value,
+      site: fields[3].value,
       token: encodeToken,
       startTime: dayjs(DateRange.startDate).valueOf(),
       endTime: dayjs(DateRange.endDate).valueOf(),
@@ -238,8 +230,9 @@ export const Board = () => {
               error={!field.isRequired || !field.isValid}
               type={field.key === 'Token' ? 'password' : 'text'}
               helperText={updateFieldHelpText(field)}
+              sx={{ gridColumn: `span ${index === fields.length - 1 ? 2 : 1}` }}
             />
-          ),
+          )
         )}
         <StyledButtonGroup>
           {isVerified && !isLoading ? (

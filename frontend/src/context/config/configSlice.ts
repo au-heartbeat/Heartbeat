@@ -97,9 +97,9 @@ export const configSlice = createSlice({
             ? null
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
-      state.board.config = action.payload.board || state.board.config;
-      state.pipelineTool.config = action.payload.pipelineTool || state.pipelineTool.config;
-      state.sourceControl.config = action.payload.sourceControl || state.sourceControl.config;
+      state.board.config = (action.payload.board && { type: 'Jira', ...action.payload.board }) || state.board.config
+      state.pipelineTool.config = action.payload.pipelineTool || state.pipelineTool.config
+      state.sourceControl.config = action.payload.sourceControl || state.sourceControl.config
     },
     updateProjectCreatedState: (state, action) => {
       state.isProjectCreated = action.payload;
