@@ -14,10 +14,10 @@ import {
   TEST_PROJECT_NAME,
   VELOCITY,
   VERIFY,
-  MOCK_PIPELINE_URL,
   MOCK_BOARD_URL_FOR_JIRA,
-  MOCK_BUILD_KITE_VERIFY_RESPONSE,
   MOCK_JIRA_VERIFY_RESPONSE,
+  DEPLOYMENT_FREQUENCY,
+  MOCK_PIPELINE_VERIFY_URL,
 } from '../../../fixtures'
 import { Provider } from 'react-redux'
 import { setupStore } from '../../../utils/setupStoreUtil'
@@ -25,9 +25,7 @@ import dayjs from 'dayjs'
 import { fillBoardFieldsInformation } from './Board.test'
 
 const server = setupServer(
-  rest.post(MOCK_PIPELINE_URL, (req, res, ctx) =>
-    res(ctx.status(200), ctx.body(JSON.stringify(MOCK_BUILD_KITE_VERIFY_RESPONSE)))
-  ),
+  rest.post(MOCK_PIPELINE_VERIFY_URL, (req, res, ctx) => res(ctx.status(204))),
   rest.post(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) =>
     res(ctx.status(200), ctx.body(JSON.stringify(MOCK_JIRA_VERIFY_RESPONSE)))
   )
@@ -208,7 +206,7 @@ describe('ConfigStep', () => {
     })
   })
 
-  it.only('should not verify again when collection-date or date-picker is changed given pipeline token is filled and verified', async () => {
+  it('should not verify again when collection-date or date-picker is changed given pipeline token is filled and verified', async () => {
     const wrapper = setup()
     const mockToken = 'bkua_112223f7298a28357f323987acb8f521c110f6f3'
     const today = dayjs().format('MM/DD/YYYY')
@@ -216,6 +214,8 @@ describe('ConfigStep', () => {
 
     const requiredMetricsField = wrapper.getByRole('button', { name: REQUIRED_DATA })
     fireEvent.mouseDown(requiredMetricsField)
+    const requireDateSelection = within(wrapper.getByRole('listbox'))
+    fireEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }))
 
     const tokenNode = wrapper.getByTestId('pipelineToolTextField')
 
