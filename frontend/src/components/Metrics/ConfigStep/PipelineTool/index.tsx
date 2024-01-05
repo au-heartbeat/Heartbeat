@@ -127,9 +127,7 @@ export const PipelineTool = () => {
     await verifyPipelineTool(params).then((res) => {
       if (res) {
         dispatch(updatePipelineToolVerifyState(res.isPipelineToolVerified))
-        dispatch(updatePipelineToolVerifyResponse(res.response))
         dispatch(initDeploymentFrequencySettings())
-        res.isPipelineToolVerified && dispatch(updatePipelineSettings({ ...res.response, isProjectCreated }))
       }
     })
   }

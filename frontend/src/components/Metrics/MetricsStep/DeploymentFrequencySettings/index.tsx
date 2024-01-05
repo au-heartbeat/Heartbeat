@@ -2,6 +2,7 @@ import React from 'react'
 import { PipelineMetricSelection } from './PipelineMetricSelection'
 import { useAppDispatch, useAppSelector } from '@src/hooks'
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
+import { Loading } from '@src/components/Loading'
 import {
   addADeploymentFrequencySetting,
   deleteADeploymentFrequencySetting,
@@ -9,6 +10,7 @@ import {
   updateDeploymentFrequencySettings,
 } from '@src/context/Metrics/metricsSlice'
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext'
+import { useGetPipelineToolInfoEffect } from '@src/hooks/useGetPipelineToolInfoEffect'
 import { MetricsSettingAddButton } from '@src/components/Common/MetricsSettingButton'
 import { PIPELINE_SETTING_TYPES } from '@src/constants/resources'
 import { selectPipelineCrews } from '@src/context/config/configSlice'
@@ -17,6 +19,7 @@ import _ from 'lodash'
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch()
+  const { isLoading } = useGetPipelineToolInfoEffect()
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings)
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext()
   const pipelineCrews = useAppSelector(selectPipelineCrews)
@@ -35,6 +38,7 @@ export const DeploymentFrequencySettings = () => {
 
   return (
     <>
+      {isLoading && <Loading />}
       <MetricsSettingTitle title={'Pipeline settings'} />
       {deploymentFrequencySettings.map((deploymentFrequencySetting) => (
         <PipelineMetricSelection
