@@ -1,14 +1,17 @@
 package heartbeat.controller.pipeline;
 
+import heartbeat.controller.pipeline.dto.request.TokenParam;
 import heartbeat.controller.pipeline.dto.request.PipelineParam;
 import heartbeat.controller.pipeline.dto.request.PipelineStepsParam;
 import heartbeat.controller.pipeline.dto.response.BuildKiteResponseDTO;
 import heartbeat.controller.pipeline.dto.response.PipelineStepsDTO;
+import heartbeat.exception.PermissionDenyException;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +36,30 @@ public class PipelineController {
 	public BuildKiteResponseDTO getBuildKiteInfo(@PathVariable String pipelineType,
 			@Valid @RequestBody PipelineParam pipelineParam) {
 		return buildKiteService.fetchPipelineInfo(pipelineParam);
+	}
+
+	@PostMapping("/{pipelineType}/verify")
+	public ResponseEntity<Void> verifyBuildKiteToken(@PathVariable String pipelineType,
+			@Valid @RequestBody TokenParam tokenParam) {
+		if (buildKiteService.getBuildKiteVerify(tokenParam.getToken())) {
+			return ResponseEntity.noContent().build();
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	}
+
+	@PostMapping("/{pipelineType}/info")
+	public ResponseEntity<BuildKiteResponseDTO> fetchBuildKiteInfo(@PathVariable String pipelineType,
+			@Valid @RequestBody PipelineParam pipelineParam) {
+		BuildKiteResponseDTO buildKiteResponse = buildKiteService.getBuildKiteInfo(pipelineParam);
+
+		if (buildKiteResponse.getPipelineList().isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		else {
+			return ResponseEntity.ok(buildKiteResponse);
+		}
 	}
 
 	@GetMapping("/{pipelineType}/{organizationId}/pipelines/{buildId}/steps")

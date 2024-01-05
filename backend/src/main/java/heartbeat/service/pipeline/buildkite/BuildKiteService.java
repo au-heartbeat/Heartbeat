@@ -300,4 +300,60 @@ public class BuildKiteService {
 			.toList();
 	}
 
+	public boolean getBuildKiteVerify(String token) {
+		try {
+			String buildKiteToken = "Bearer " + token;
+			log.info("Start to query token permissions by token");
+			BuildKiteTokenInfo buildKiteTokenInfo = buildKiteFeignClient.getTokenInfo(buildKiteToken);
+			log.info("Successfully query token permissions by token, token info scopes: {}",
+					buildKiteTokenInfo.getScopes());
+			verifyToken(buildKiteTokenInfo);
+			return true;
+		}
+		catch (RuntimeException e) {
+			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
+			log.error("Failed to call BuildKite, e: {}", cause.getMessage());
+			if (cause instanceof BaseException baseException) {
+				throw baseException;
+			}
+			throw new InternalServerErrorException(
+					String.format("Failed to call BuildKite, cause is %s", cause.getMessage()));
+		}
+	}
+
+	public BuildKiteResponseDTO getBuildKiteInfo(PipelineParam pipelineParam) {
+		try {
+			String buildKiteToken = "Bearer " + pipelineParam.getToken();
+			log.info("Start to query BuildKite organizations by token");
+			List<BuildKiteOrganizationsInfo> buildKiteOrganizationsInfo = buildKiteFeignClient
+				.getBuildKiteOrganizationsInfo(buildKiteToken);
+			log.info("Successfully query BuildKite organizations by token, slug: {}", buildKiteOrganizationsInfo);
+
+			log.info("Start to query buildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
+			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
+				.flatMap(org -> buildKiteFeignClient
+					.getPipelineInfo(buildKiteToken, org.getSlug(), "1", "100", pipelineParam.getStartTime(),
+							pipelineParam.getEndTime())
+					.stream()
+					.map(pipeline -> PipelineTransformer.fromBuildKitePipelineDto(pipeline, org.getSlug(),
+							org.getName())))
+				.collect(Collectors.toList());
+			log.info("Successfully get buildKite pipelineInfo, slug:{}, pipelineInfoList size:{}",
+					buildKiteOrganizationsInfo, buildKiteInfoList.size());
+
+			return BuildKiteResponseDTO.builder().pipelineList(buildKiteInfoList).build();
+		}
+		catch (RuntimeException e) {
+			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
+			log.error("Failed to call BuildKite, start time: {}, e: {}", pipelineParam.getStartTime(),
+					cause.getMessage());
+			if (cause instanceof BaseException baseException) {
+				throw baseException;
+			}
+			throw new InternalServerErrorException(
+					String.format("Failed to call BuildKite, cause is %s", cause.getMessage()));
+
+		}
+	}
+
 }
