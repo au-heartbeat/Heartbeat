@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -549,6 +550,103 @@ class BuildKiteServiceTest {
 		assertEquals("Test", result.get(0));
 		assertEquals("Build", result.get(1));
 		assertEquals(targetStep, result.get(2));
+	}
+
+	@Test
+	void shouldReturnTrueWhenTokenIsCorrect() {
+		BuildKiteTokenInfo buildKiteTokenInfo = BuildKiteTokenInfo.builder()
+			.scopes(List.of("read_builds", "read_organizations", "read_pipelines"))
+			.build();
+
+		when(buildKiteFeignClient.getTokenInfo(any())).thenReturn(buildKiteTokenInfo);
+
+		boolean result = buildKiteService.getBuildKiteVerify("test_token");
+		assertTrue(result);
+	}
+
+	@Test
+	void shouldThrowUnauthorizedExceptionWhenTokenIsIncorrect(){
+		when(buildKiteFeignClient.getTokenInfo(any()))
+			.thenThrow(new UnauthorizedException("unauthorized"));
+
+		Assertions
+			.assertThatThrownBy(
+				() -> buildKiteService.getBuildKiteVerify("test_token"))
+			.isInstanceOf(UnauthorizedException.class)
+			.hasMessageContaining("unauthorized");
+	}
+
+	@Test
+	void shouldThrowInternalServerErrorExceptionWhenGetBuildKiteVerify500Exception(){
+		when(buildKiteFeignClient.getTokenInfo(any())).thenReturn(null);
+
+		assertThatThrownBy(() -> buildKiteService.getBuildKiteVerify("test_token"))
+			.isInstanceOf(InternalServerErrorException.class)
+			.hasMessageContaining("Failed to call BuildKite, cause is");
+	}
+
+	@Test
+	void shouldReturnBuildKiteResponseWhenGetBuildKiteInfo() throws IOException {
+		PipelineParam pipelineParam = PipelineParam.builder()
+			.token("test_token")
+			.startTime("startTime")
+			.endTime("endTime")
+			.build();
+		ObjectMapper mapper = new ObjectMapper();
+		List<BuildKitePipelineDTO> pipelineDTOS = mapper.readValue(
+				new File("src/test/java/heartbeat/controller/pipeline/buildKitePipelineInfoData.json"),
+				new TypeReference<>() {
+				});
+
+		when(buildKiteFeignClient.getBuildKiteOrganizationsInfo(any()))
+			.thenReturn(List.of(BuildKiteOrganizationsInfo.builder().name("XXXX").slug("XXXX").build()));
+		when(buildKiteFeignClient.getPipelineInfo("Bearer test_token", "XXXX", "1", "100", "startTime", "endTime"))
+			.thenReturn(pipelineDTOS);
+
+		BuildKiteResponseDTO buildKiteResponseDTO = buildKiteService.getBuildKiteInfo(pipelineParam);
+
+		assertThat(buildKiteResponseDTO.getPipelineList().size()).isEqualTo(1);
+		Pipeline pipeline = buildKiteResponseDTO.getPipelineList().get(0);
+		assertThat(pipeline.getId()).isEqualTo("payment-selector-ui");
+		assertThat(pipeline.getName()).isEqualTo("payment-selector-ui");
+		assertThat(pipeline.getOrgId()).isEqualTo("XXXX");
+		assertThat(pipeline.getOrgName()).isEqualTo("XXXX");
+		assertThat(pipeline.getRepository())
+			.isEqualTo("https://github.com/XXXX-fs/fs-platform-payment-selector-ui.git");
+		assertThat(pipeline.getSteps().size()).isEqualTo(1);
+	}
+
+	@Test
+	void shouldThrowInternalServerErrorExceptionWhenGetBuildKiteInfo500Exception() {
+		PipelineParam pipelineParam = PipelineParam.builder()
+			.token("test_token")
+			.startTime("startTime")
+			.endTime("endTime")
+			.build();
+
+		when(buildKiteFeignClient.getBuildKiteOrganizationsInfo(any())).thenReturn(null);
+		when(buildKiteFeignClient.getPipelineInfo("Bearer test_token", "XXXX", "1", "100", "startTime", "endTime"))
+			.thenReturn(null);
+
+		assertThatThrownBy(() -> buildKiteService.getBuildKiteInfo(pipelineParam))
+			.isInstanceOf(InternalServerErrorException.class)
+			.hasMessageContaining("Failed to call BuildKite, cause is");
+	}
+
+	@Test
+	void shouldThrowUnauthorizedExceptionWhenGetBuildKiteInfoAndTokenIsIncorrect() {
+		PipelineParam pipelineParam = PipelineParam.builder()
+			.token("test_token")
+			.startTime("startTime")
+			.endTime("endTime")
+			.build();
+
+		when(buildKiteFeignClient.getBuildKiteOrganizationsInfo(any()))
+			.thenThrow(new UnauthorizedException("unauthorized"));
+
+		Assertions.assertThatThrownBy(() -> buildKiteService.getBuildKiteInfo(pipelineParam))
+			.isInstanceOf(UnauthorizedException.class)
+			.hasMessageContaining("unauthorized");
 	}
 
 }
