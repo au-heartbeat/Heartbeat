@@ -6,7 +6,8 @@ import {
   updateBoard,
   updateBoardVerifyState,
   updateJiraVerifyResponse,
-} from '@src/context/config/configSlice';
+  updateProjectKey,
+} from '@src/context/config/configSlice'
 import {
   ConfigSectionContainer,
   StyledButtonGroup,
@@ -30,6 +31,15 @@ import { Loading } from '@src/components/Loading';
 import { REGEX } from '@src/constants/regex';
 import dayjs from 'dayjs';
 
+type Field = {
+  key: string;
+  value: string;
+  isRequired: boolean;
+  isValid: boolean;
+  errorMessage: string;
+  col: number;
+};
+
 export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);
@@ -45,30 +55,40 @@ export const Board = () => {
       value: type,
       isRequired: true,
       isValid: true,
+      errorMessage: '',
+      col: 1,
     },
     {
       key: 'Board Id',
       value: boardFields.boardId,
       isRequired: true,
       isValid: true,
+      errorMessage: '',
+      col: 1,
     },
     {
       key: 'Email',
       value: boardFields.email,
       isRequired: true,
       isValid: true,
+      errorMessage: '',
+      col: 1,
     },
     {
       key: 'Site',
       value: boardFields.site,
       isRequired: true,
       isValid: true,
+      errorMessage: '',
+      col: 1,
     },
     {
       key: 'Token',
       value: boardFields.token,
       isRequired: true,
       isValid: true,
+      errorMessage: '',
+      col: 2,
     },
   ]);
   const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(
@@ -84,11 +104,7 @@ export const Board = () => {
     dispatch(updateBoardVerifyState(false));
   };
 
-  const updateFields = (
-    fields: { key: string; value: string; isRequired: boolean; isValid: boolean }[],
-    index: number,
-    value: string
-  ) => {
+  const updateFields = (fields: Field[], index: number, value: string) => {
     return fields.map((field, fieldIndex) => {
       if (fieldIndex !== index) {
         return field;
@@ -106,16 +122,15 @@ export const Board = () => {
         value: newValue,
         isRequired: isValueEmpty,
         isValid: isValueValid,
+        col: field.col,
       };
     });
   };
 
   useEffect(() => {
-    const isFieldInvalid = (field: { key: string; value: string; isRequired: boolean; isValid: boolean }) =>
-      field.isRequired && field.isValid && !!field.value;
+    const isFieldInvalid = (field: Field) => field.isRequired && field.isValid && !!field.value;
 
-    const isAllFieldsValid = (fields: { key: string; value: string; isRequired: boolean; isValid: boolean }[]) =>
-      fields.some((field) => !isFieldInvalid(field));
+    const isAllFieldsValid = (fields: Field[]) => fields.some((field) => !isFieldInvalid(field));
     setIsDisableVerifyButton(isAllFieldsValid(fields));
   }, [fields]);
 
@@ -160,14 +175,17 @@ export const Board = () => {
       startTime: dayjs(DateRange.startDate).valueOf(),
       endTime: dayjs(DateRange.endDate).valueOf(),
     };
-    await verifyJira(params).then((res) => {
-      if (res) {
-        dispatch(updateBoardVerifyState(res.isBoardVerify));
-        dispatch(updateJiraVerifyResponse(res.response));
-        res.isBoardVerify && dispatch(updateMetricsState({ ...res.response, isProjectCreated }));
-        setIsNoDoneCard(!res.haveDoneCard);
-      }
-    });
+    await verifyJira(params)
+      .then((res) => {
+        if (res) {
+          dispatch(updateBoardVerifyState(res.isBoardVerify));
+          // dispatch(updateJiraVerifyResponse(res.response))
+          dispatch(updateProjectKey(res.response.projectKey));
+          res.isBoardVerify && dispatch(updateMetricsState({ ...res.response, isProjectCreated }));
+          setIsNoDoneCard(!res.haveDoneCard);
+        }
+      })
+      .catch((err) => err);
   };
 
   const handleResetBoardFields = () => {
@@ -178,6 +196,7 @@ export const Board = () => {
 
   const updateFieldHelpText = (field: { key: string; isRequired: boolean; isValid: boolean }) => {
     const { key, isRequired, isValid } = field;
+
     if (!isRequired) {
       return `${key} is required!`;
     }
@@ -230,7 +249,7 @@ export const Board = () => {
               error={!field.isRequired || !field.isValid}
               type={field.key === 'Token' ? 'password' : 'text'}
               helperText={updateFieldHelpText(field)}
-              sx={{ gridColumn: `span ${index === fields.length - 1 ? 2 : 1}` }}
+              sx={{ gridColumn: `span ${field.col}` }}
             />
           )
         )}

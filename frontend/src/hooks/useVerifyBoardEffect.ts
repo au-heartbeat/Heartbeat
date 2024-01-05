@@ -7,9 +7,9 @@ import { useState } from 'react';
 export interface useVerifyBoardStateInterface {
   verifyJira: (params: BoardRequestDTO) => Promise<
     | {
-        isBoardVerify: boolean;
-        haveDoneCard: boolean;
-        response: object;
+        isBoardVerify: boolean
+        haveDoneCard: boolean
+        response: Record<string, string | boolean | number>
       }
     | undefined
   >;
@@ -29,8 +29,9 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       const err = e as Error;
       setErrorMessage(`${params.type} ${MESSAGE.VERIFY_FAILED_ERROR}: ${err.message}`);
       setTimeout(() => {
-        setErrorMessage('');
-      }, DURATION.ERROR_MESSAGE_TIME);
+        setErrorMessage('')
+      }, DURATION.ERROR_MESSAGE_TIME)
+      throw e
     } finally {
       setIsLoading(false);
     }
