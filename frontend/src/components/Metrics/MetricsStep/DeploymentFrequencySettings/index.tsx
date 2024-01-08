@@ -16,10 +16,12 @@ import { PIPELINE_SETTING_TYPES } from '@src/constants/resources'
 import { selectPipelineCrews } from '@src/context/config/configSlice'
 import { Crews } from '@src/components/Metrics/MetricsStep/Crews'
 import _ from 'lodash'
+import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases'
+import { HttpStatusCode } from 'axios'
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch()
-  const { isLoading } = useGetPipelineToolInfoEffect()
+  const { isLoading, result: pipelineInfoResult } = useGetPipelineToolInfoEffect()
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings)
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext()
   const pipelineCrews = useAppSelector(selectPipelineCrews)
@@ -39,21 +41,34 @@ export const DeploymentFrequencySettings = () => {
   return (
     <>
       {isLoading && <Loading />}
-      <MetricsSettingTitle title={'Pipeline settings'} />
-      {deploymentFrequencySettings.map((deploymentFrequencySetting) => (
-        <PipelineMetricSelection
-          key={deploymentFrequencySetting.id}
-          type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
-          pipelineSetting={deploymentFrequencySetting}
-          isShowRemoveButton={deploymentFrequencySettings.length > 1}
-          onRemovePipeline={(id) => handleRemovePipeline(id)}
-          onUpdatePipeline={(id, label, value) => handleUpdatePipeline(id, label, value)}
-          isDuplicated={getDuplicatedPipeLineIds(deploymentFrequencySettings).includes(deploymentFrequencySetting.id)}
-        />
-      ))}
-      <MetricsSettingAddButton onAddPipeline={handleAddPipeline} />
-      {!_.isEmpty(pipelineCrews) && (
-        <Crews options={pipelineCrews} title={'Crew setting (optional)'} label={'Included Crews'} type={'pipeline'} />
+      {pipelineInfoResult?.code !== HttpStatusCode.Ok ? (
+        <PresentationForErrorCases {...pipelineInfoResult} />
+      ) : (
+        <>
+          <MetricsSettingTitle title={'Pipeline settings'} />
+          {deploymentFrequencySettings.map((deploymentFrequencySetting) => (
+            <PipelineMetricSelection
+              key={deploymentFrequencySetting.id}
+              type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
+              pipelineSetting={deploymentFrequencySetting}
+              isShowRemoveButton={deploymentFrequencySettings.length > 1}
+              onRemovePipeline={(id) => handleRemovePipeline(id)}
+              onUpdatePipeline={(id, label, value) => handleUpdatePipeline(id, label, value)}
+              isDuplicated={getDuplicatedPipeLineIds(deploymentFrequencySettings).includes(
+                deploymentFrequencySetting.id
+              )}
+            />
+          ))}
+          <MetricsSettingAddButton onAddPipeline={handleAddPipeline} />
+          {!_.isEmpty(pipelineCrews) && (
+            <Crews
+              options={pipelineCrews}
+              title={'Crew setting (optional)'}
+              label={'Included Crews'}
+              type={'pipeline'}
+            />
+          )}
+        </>
       )}
     </>
   )
