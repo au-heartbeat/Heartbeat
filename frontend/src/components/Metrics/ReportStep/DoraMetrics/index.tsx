@@ -192,7 +192,9 @@ const DoraMetrics = ({
           {!errorMessage && (doraReport?.isPipelineMetricsReady || doraReport?.isSourceControlMetricsReady) && (
             <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
           )}
-          {errorMessage && <StyledRetry>{RETRY}</StyledRetry>}
+          {errorMessage && (
+            <StyledRetry onClick={() => startToRequestDoraData(getDoraReportRequestBody())}>{RETRY}</StyledRetry>
+          )}
         </StyledTitleWrapper>
         {shouldShowSourceControl && <ReportGrid reportDetails={getSourceControlItems()} errorMessage={errorMessage} />}
         <StyledSpacing />

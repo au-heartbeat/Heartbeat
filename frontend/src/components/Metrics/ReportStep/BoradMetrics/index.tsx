@@ -135,7 +135,9 @@ const BoardMetrics = ({
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.BOARD.TITLE} />
           {!errorMessage && boardReport?.isBoardMetricsReady && <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>}
-          {errorMessage && <StyledRetry>{RETRY}</StyledRetry>}
+          {errorMessage && (
+            <StyledRetry onClick={() => startToRequestBoardData(getBoardReportRequestBody())}>{RETRY}</StyledRetry>
+          )}
         </StyledTitleWrapper>
         <ReportGrid reportDetails={getBoardItems()} errorMessage={errorMessage} />
       </StyledMetricsSection>

@@ -28,7 +28,8 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const {
     isServerError,
-    errorMessage: reportErrorMsg,
+    errorMessage4Board: reportErrorMsg4Board,
+    errorMessage4Dora: reportErrorMsg4Dora,
     startToRequestBoardData,
     startToRequestDoraData,
     reportData,
@@ -44,8 +45,10 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const startDate = configData.basic.dateRange.startDate ?? '';
   const endDate = configData.basic.dateRange.endDate ?? '';
 
-  const { updateProps } = notification;
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const { updateProps } = notification
+  const [errorMessage, setErrorMessage] = useState<string>()
+  const [errorMessage4Board, setErrorMessage4Board] = useState<string>('')
+  const [errorMessage4Dora, setErrorMessage4Dora] = useState<string>('')
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
@@ -85,8 +88,12 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   }, [exportValidityTimeMin]);
 
   useEffect(() => {
-    setErrorMessage(reportErrorMsg);
-  }, [reportErrorMsg]);
+    setErrorMessage4Board(reportErrorMsg4Board)
+  }, [reportErrorMsg4Board])
+
+  useEffect(() => {
+    setErrorMessage4Dora(reportErrorMsg4Dora)
+  }, [reportErrorMsg4Dora])
 
   useEffect(() => {
     setExportValidityTimeMin(reportData?.exportValidityTime);
