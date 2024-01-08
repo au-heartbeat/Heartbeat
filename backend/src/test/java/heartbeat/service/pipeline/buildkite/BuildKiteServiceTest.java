@@ -644,7 +644,7 @@ class BuildKiteServiceTest {
 		when(buildKiteFeignClient.getBuildKiteOrganizationsInfo(any()))
 			.thenThrow(new UnauthorizedException("unauthorized"));
 
-		Assertions.assertThatThrownBy(() -> buildKiteService.getBuildKiteInfo(pipelineParam))
+		assertThatThrownBy(() -> buildKiteService.getBuildKiteInfo(pipelineParam))
 			.isInstanceOf(UnauthorizedException.class)
 			.hasMessageContaining("unauthorized");
 	}
