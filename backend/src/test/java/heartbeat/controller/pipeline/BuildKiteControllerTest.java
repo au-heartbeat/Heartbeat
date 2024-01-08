@@ -3,6 +3,7 @@ package heartbeat.controller.pipeline;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import heartbeat.controller.pipeline.dto.request.PipelineParam;
+import heartbeat.controller.pipeline.dto.request.TokenParam;
 import heartbeat.controller.pipeline.dto.response.BuildKiteResponseDTO;
 import heartbeat.controller.pipeline.dto.response.Pipeline;
 import heartbeat.controller.pipeline.dto.response.PipelineStepsDTO;
@@ -19,6 +21,7 @@ import heartbeat.service.pipeline.buildkite.BuildKiteService;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.val;
@@ -113,6 +116,72 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
+		assertThat(response.getContentAsString()).isEqualTo("");
+	}
+
+	@Test
+	void shouldReturnNoContentIfTokenCorrectWhenCallBuildKiteMockServer() throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		TokenParam tokenParam = TokenParam.builder().token("test_token").build();
+		doNothing().when(buildKiteService).getBuildKiteVerify(any());
+
+		MockHttpServletResponse response = mockMvc
+			.perform(post("/pipelines/buildKite/verify").contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(tokenParam)))
+			.andExpect(status().isNoContent())
+			.andReturn()
+			.getResponse();
+
+		assertThat(response.getContentAsString()).isEqualTo("");
+	}
+
+	@Test
+	void shouldReturnPipelineInfoIfTokenCorrectWhenCallBuildKiteMockServer() throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		List<Pipeline> pipelines = mapper.readValue(
+				new File("src/test/java/heartbeat/controller/pipeline/pipelineInfoData.json"), new TypeReference<>() {
+				});
+		BuildKiteResponseDTO buildKiteResponseDTO = BuildKiteResponseDTO.builder().pipelineList(pipelines).build();
+		PipelineParam pipelineParam = PipelineParam.builder()
+			.token("test_token")
+			.startTime("16737733")
+			.endTime("17657557")
+			.build();
+
+		when(buildKiteService.getBuildKiteInfo(any())).thenReturn(buildKiteResponseDTO);
+
+		MockHttpServletResponse response = mockMvc
+			.perform(post("/pipelines/buildKite/info").contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(pipelineParam)))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse();
+		final var resultId = JsonPath.parse(response.getContentAsString()).read("$.pipelineList[0].id").toString();
+		assertThat(resultId).contains("payment-selector-ui");
+		final var resultName = JsonPath.parse(response.getContentAsString()).read("$.pipelineList[0].name").toString();
+		assertThat(resultName).contains("payment-selector-ui");
+	}
+
+	@Test
+	void shouldReturnNoContentIfPipelineInfoIsNullWhenCallBuildKiteMockServer() throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		BuildKiteResponseDTO buildKiteResponseDTO = BuildKiteResponseDTO.builder()
+			.pipelineList(Collections.emptyList())
+			.build();
+		PipelineParam pipelineParam = PipelineParam.builder()
+			.token("test_token")
+			.startTime("16737733")
+			.endTime("17657557")
+			.build();
+
+		when(buildKiteService.getBuildKiteInfo(any())).thenReturn(buildKiteResponseDTO);
+
+		MockHttpServletResponse response = mockMvc
+			.perform(post("/pipelines/buildKite/info").contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(pipelineParam)))
+			.andExpect(status().isNoContent())
+			.andReturn()
+			.getResponse();
 		assertThat(response.getContentAsString()).isEqualTo("");
 	}
 
