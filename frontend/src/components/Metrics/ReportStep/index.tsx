@@ -63,7 +63,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   }, [exportValidityTimeMin, isAllMetricsReady]);
 
   useLayoutEffect(() => {
-    if (exportValidityTimeMin) {
+    if (exportValidityTimeMin && isAllMetricsReady) {
       const startTime = Date.now();
       const timer = setInterval(() => {
         const currentTime = Date.now();
@@ -86,7 +86,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
         clearInterval(timer);
       };
     }
-  }, [exportValidityTimeMin]);
+  }, [exportValidityTimeMin, isAllMetricsReady]);
 
   useEffect(() => {
     setErrorMessage(reportErrorMsg);
