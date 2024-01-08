@@ -9,10 +9,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -171,7 +171,7 @@ class BuildKiteServiceTest {
 		BuildKiteTokenInfo buildKiteTokenInfo = BuildKiteTokenInfo.builder().scopes(List.of("mock")).build();
 		when(buildKiteFeignClient.getTokenInfo(any())).thenReturn(buildKiteTokenInfo);
 
-		assertThrows(PermissionDenyException.class, () -> buildKiteService.fetchPipelineInfo(
+		assertThrows(UnauthorizedException.class, () -> buildKiteService.fetchPipelineInfo(
 				PipelineParam.builder().token("test_token").startTime("startTime").endTime("endTime").build()));
 	}
 
@@ -559,9 +559,9 @@ class BuildKiteServiceTest {
 			.build();
 
 		when(buildKiteFeignClient.getTokenInfo(any())).thenReturn(buildKiteTokenInfo);
+		buildKiteService.getBuildKiteVerify("mock_token");
 
-		boolean result = buildKiteService.getBuildKiteVerify("test_token");
-		assertTrue(result);
+		verify(buildKiteFeignClient, times(1)).getTokenInfo(anyString());
 	}
 
 	@Test
