@@ -5,8 +5,9 @@ import { GRID_CONFIG } from '@src/constants/commons';
 import { ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem';
 
 export interface ReportGridProps {
-  lastGrid?: boolean;
-  reportDetails: ReportDetailProps[];
+  lastGrid?: boolean
+  reportDetails: ReportDetailProps[]
+  errorMessage?: string | undefined
 }
 
 export interface ReportDetailProps {
@@ -14,7 +15,7 @@ export interface ReportDetailProps {
   items?: ReportCardItemProps[] | null;
 }
 
-export const ReportGrid = ({ lastGrid, reportDetails }: ReportGridProps) => {
+export const ReportGrid = ({ lastGrid, reportDetails, errorMessage }: ReportGridProps) => {
   const getXS = (index: number) => {
     if (needTakeUpAWholeLine(index)) {
       return GRID_CONFIG.FULL.XS;
@@ -37,7 +38,7 @@ export const ReportGrid = ({ lastGrid, reportDetails }: ReportGridProps) => {
         const xs = getXS(index);
         return (
           <Grid item xs={xs} key={index}>
-            <ReportCard title={detail.title} items={detail.items} xs={xs} />
+            <ReportCard title={detail.title} items={detail.items} xs={xs} errorMessage={errorMessage} />
           </Grid>
         );
       })}

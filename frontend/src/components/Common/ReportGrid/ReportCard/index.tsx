@@ -1,21 +1,36 @@
 import {
+  StyledErrorMessage,
+  StyledErrorSection,
+  StyledImgSection,
   StyledItemSection,
   StyledReportCard,
   StyledReportCardTitle,
-} from '@src/components/Common/ReportGrid/ReportCard/style';
-import React, { HTMLAttributes } from 'react';
-import { ReportCardItem, ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem';
-import { GRID_CONFIG } from '@src/constants/commons';
-import { Loading } from '@src/components/Loading';
+} from '@src/components/Common/ReportGrid/ReportCard/style'
+import React, { HTMLAttributes } from 'react'
+import { ReportCardItem, ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem'
+import { GRID_CONFIG } from '@src/constants/commons'
+import { Loading } from '@src/components/Loading'
+import EmptyBox from '@src/assets/EmptyBox.svg'
 
 interface ReportCardProps extends HTMLAttributes<HTMLDivElement> {
-  title: string;
-  items?: ReportCardItemProps[] | null;
-  xs: number;
+  title: string
+  items?: ReportCardItemProps[] | null
+  xs: number
+  errorMessage: string | undefined
 }
 
-export const ReportCard = ({ title, items, xs }: ReportCardProps) => {
-  const defaultFlex = 1;
+const ErrorMessagePrompt = (props: { errorMessage: string }) => {
+  const { errorMessage } = props
+  return (
+    <StyledErrorSection>
+      <StyledImgSection src={EmptyBox} alt='empty image' />
+      <StyledErrorMessage>{errorMessage}</StyledErrorMessage>
+    </StyledErrorSection>
+  )
+}
+
+export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) => {
+  const defaultFlex = 1
   const getReportItems = () => {
     let style = GRID_CONFIG.FULL;
     switch (xs) {
@@ -63,8 +78,9 @@ export const ReportCard = ({ title, items, xs }: ReportCardProps) => {
 
   return (
     <StyledReportCard data-test-id={title}>
-      {!items && <Loading size='1.5rem' backgroundColor='transparent' />}
+      {!errorMessage && !items && <Loading size='1.5rem' backgroundColor='transparent' />}
       <StyledReportCardTitle>{title}</StyledReportCardTitle>
+      {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} />}
       {items && getReportItems()}
     </StyledReportCard>
   );

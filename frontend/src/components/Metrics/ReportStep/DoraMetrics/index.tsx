@@ -9,26 +9,31 @@ import {
   METRICS_TITLE,
   REQUIRED_DATA,
   SHOW_MORE,
-} from '@src/constants/resources';
-import { ReportRequestDTO } from '@src/clients/report/dto/request';
-import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import dayjs from 'dayjs';
-import { StyledMetricsSection } from '@src/components/Metrics/ReportStep/DoraMetrics/style';
-import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
-import { ReportGrid } from '@src/components/Common/ReportGrid';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { StyledSpacing } from '@src/components/Metrics/ReportStep/style';
-import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
-import { StyledShowMore, StyledTitleWrapper } from '@src/components/Metrics/ReportStep/DoraMetrics/style';
+  RETRY,
+} from '@src/constants/resources'
+import { ReportRequestDTO } from '@src/clients/report/dto/request'
+import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
+import dayjs from 'dayjs'
+import { StyledMetricsSection } from '@src/components/Metrics/ReportStep/DoraMetrics/style'
+import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle'
+import { ReportGrid } from '@src/components/Common/ReportGrid'
+import { ReportResponseDTO } from '@src/clients/report/dto/response'
+import { StyledSpacing } from '@src/components/Metrics/ReportStep/style'
+import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util'
+import { StyledShowMore, StyledTitleWrapper } from '@src/components/Metrics/ReportStep/DoraMetrics/style'
+import { ROUTE } from '@src/constants/router'
+import { RETRIEVE_REPORT_TYPES } from '@src/constants/commons'
+import { StyledRetry } from '../BoradMetrics/style'
 import { Nullable } from '@src/utils/types';
 
 interface DoraMetricsProps {
-  startToRequestDoraData: (request: ReportRequestDTO) => void;
+  startToRequestDoraData: (request: ReportRequestDTO) => void
+  doraReport?: ReportResponseDTO
+  csvTimeStamp: number
+  startDate: string | null
+  endDate: string | null
+  errorMessage: string | undefined
   onShowDetail: () => void;
-  doraReport?: ReportResponseDTO;
-  csvTimeStamp: number;
-  startDate: Nullable<string>;
-  endDate: Nullable<string>;
   isBackFromDetail: boolean;
 }
 
@@ -40,6 +45,7 @@ const DoraMetrics = ({
   csvTimeStamp,
   startDate,
   endDate,
+  errorMessage,
 }: DoraMetricsProps) => {
   const configData = useAppSelector(selectConfig);
   const { pipelineTool, sourceControl } = configData;
@@ -183,13 +189,14 @@ const DoraMetrics = ({
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.DORA.TITLE} />
-          {(doraReport?.isPipelineMetricsReady || doraReport?.isSourceControlMetricsReady) && (
+          {!errorMessage && (doraReport?.isPipelineMetricsReady || doraReport?.isSourceControlMetricsReady) && (
             <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
           )}
+          {errorMessage && <StyledRetry>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
-        {shouldShowSourceControl && <ReportGrid reportDetails={getSourceControlItems()} />}
+        {shouldShowSourceControl && <ReportGrid reportDetails={getSourceControlItems()} errorMessage={errorMessage} />}
         <StyledSpacing />
-        <ReportGrid reportDetails={getPipelineItems()} lastGrid={true} />
+        <ReportGrid reportDetails={getPipelineItems()} lastGrid={true} errorMessage={errorMessage} />
       </StyledMetricsSection>
     </>
   );

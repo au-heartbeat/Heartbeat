@@ -1,11 +1,16 @@
-import { useRef, useState } from 'react';
-import { reportClient } from '@src/clients/report/ReportClient';
-import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
-import { UnknownException } from '@src/exceptions/UnkonwException';
-import { InternalServerException } from '@src/exceptions/InternalServerException';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { DURATION, RETRIEVE_REPORT_TYPES } from '@src/constants/commons';
-import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
+import { useRef, useState } from 'react'
+import { reportClient } from '@src/clients/report/ReportClient'
+import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request'
+import { UnknownException } from '@src/exceptions/UnkonwException'
+import { InternalServerException } from '@src/exceptions/InternalServerException'
+import { ReportResponseDTO } from '@src/clients/report/dto/response'
+import { DURATION, RETRIEVE_REPORT_TYPES } from '@src/constants/commons'
+import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime'
+import { useAppDispatch } from '@src/hooks/useAppDispatch'
+import { updateReportData } from '@src/context/report/reportSlice'
+import { ForbiddenException } from '@src/exceptions/ForbiddenException'
+import { NotFoundException } from '@src/exceptions/NotFoundException'
+import { TimeoutException } from '@src/exceptions/TimeoutException'
 
 export interface useGenerateReportEffectInterface {
   startToRequestBoardData: (boardParams: BoardReportRequestDTO) => void;
@@ -39,13 +44,14 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   };
 
   const handleError = (error: Error) => {
-    if (error instanceof InternalServerException || error instanceof UnknownException) {
-      setIsServerError(true);
+    if (error instanceof ForbiddenException) {
+      setErrorMessage('403')
+    } else if (error instanceof NotFoundException) {
+      setErrorMessage('404')
+    } else if (error instanceof InternalServerException || error instanceof TimeoutException) {
+      setIsServerError(true)
     } else {
-      setErrorMessage(`generate report: ${error.message}`);
-      setTimeout(() => {
-        setErrorMessage('');
-      }, DURATION.ERROR_MESSAGE_TIME);
+      setErrorMessage('timeout')
     }
   };
 

@@ -16,3 +16,11 @@ export const StyledShowMore = styled('div')({
   textDecoration: 'none',
   color: '#4350AF',
 });
+
+export const StyledRetry = styled('div')({
+  marginLeft: '0.5rem',
+  fontSize: '0.8rem',
+  textDecoration: 'none',
+  color: theme.palette.link,
+  cursor: 'pointer',
+})

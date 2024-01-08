@@ -109,6 +109,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={reportData}
           csvTimeStamp={csvTimeStamp}
+          errorMessage={errorMessage}
         />
       )}
       {shouldShowDoraMetrics && (
@@ -120,6 +121,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={reportData}
           csvTimeStamp={csvTimeStamp}
+          errorMessage={errorMessage}
         />
       )}
     </>

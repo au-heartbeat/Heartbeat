@@ -9,12 +9,14 @@ import {
   METRICS_TITLE,
   REQUIRED_DATA,
   SHOW_MORE,
-} from '@src/constants/resources';
-import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import dayjs from 'dayjs';
+  RETRY,
+} from '@src/constants/resources'
+import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request'
+import { selectMetricsContent } from '@src/context/Metrics/metricsSlice'
+import dayjs from 'dayjs'
 import {
   StyledMetricsSection,
+  StyledRetry,
   StyledShowMore,
   StyledTitleWrapper,
 } from '@src/components/Metrics/ReportStep/BoradMetrics/style';
@@ -25,12 +27,12 @@ import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { Nullable } from '@src/utils/types';
 
 interface BoardMetricsProps {
-  startToRequestBoardData: (request: ReportRequestDTO) => void;
-  onShowDetail: () => void;
-  boardReport?: ReportResponseDTO;
-  csvTimeStamp: number;
-  startDate: Nullable<string>;
-  endDate: Nullable<string>;
+  startToRequestBoardData: (request: ReportRequestDTO) => void
+  boardReport?: ReportResponseDTO
+  csvTimeStamp: number
+  startDate: string | null
+  endDate: string | null
+  errorMessage: string | undefined
   isBackFromDetail: boolean;
 }
 
@@ -42,6 +44,7 @@ const BoardMetrics = ({
   csvTimeStamp,
   startDate,
   endDate,
+  errorMessage,
 }: BoardMetricsProps) => {
   const configData = useAppSelector(selectConfig);
   const { cycleTimeSettings, treatFlagCardAsBlock, users, targetFields, doneColumn, assigneeFilter } =
@@ -131,9 +134,10 @@ const BoardMetrics = ({
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.BOARD.TITLE} />
-          {boardReport?.isBoardMetricsReady && <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>}
+          {!errorMessage && boardReport?.isBoardMetricsReady && <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>}
+          {errorMessage && <StyledRetry>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
-        <ReportGrid reportDetails={getBoardItems()} />
+        <ReportGrid reportDetails={getBoardItems()} errorMessage={errorMessage} />
       </StyledMetricsSection>
     </>
   );
