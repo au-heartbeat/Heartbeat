@@ -16,6 +16,7 @@ import heartbeat.client.dto.board.jira.HistoryDetail;
 import heartbeat.client.dto.board.jira.IssueField;
 import heartbeat.client.dto.board.jira.Issuetype;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
+import heartbeat.client.dto.board.jira.JiraBoardVerifyDTO;
 import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraCardWithFields;
 import heartbeat.client.dto.board.jira.JiraColumn;
@@ -23,6 +24,7 @@ import heartbeat.client.dto.board.jira.Sprint;
 import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.BoardType;
+import heartbeat.controller.board.dto.request.BoardVerifyRequestParam;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
 import heartbeat.controller.board.dto.request.StoryPointsAndCycleTimeRequest;
@@ -104,32 +106,87 @@ public class JiraService {
 		customTaskExecutor.shutdown();
 	}
 
-	public BoardConfigDTO getJiraConfiguration(BoardType boardType, BoardRequestParam boardRequestParam) {
+	public String verify(BoardType boardType, BoardVerifyRequestParam boardVerifyRequestParam) {
+		URI baseUrl = urlGenerator.getUri(boardVerifyRequestParam.getSite());
+		try {
+			if (!BoardType.JIRA.equals(boardType)) {
+				throw new BadRequestException("boardType param is not correct");
+			}
+			JiraBoardVerifyDTO jiraBoardVerifyDTO = jiraFeignClient.getBoard(baseUrl,
+					boardVerifyRequestParam.getBoardId(), boardVerifyRequestParam.getToken());
+			return jiraBoardVerifyDTO.getLocation().getProjectKey();
+		}
+		catch (RuntimeException e) {
+			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
+			log.error("Failed when call Jira to verify board, board id: {}, e: {}",
+					boardVerifyRequestParam.getBoardId(), cause.getMessage());
+			if (cause instanceof BaseException baseException) {
+				throw baseException;
+			}
+			throw new InternalServerErrorException(
+					String.format("Failed when call Jira to verify board, cause is %s", cause.getMessage()));
+		}
+	}
+
+	public BoardConfigDTO getInfo(BoardType boardType, BoardRequestParam boardRequestParam) {
 		URI baseUrl = urlGenerator.getUri(boardRequestParam.getSite());
 		try {
-			JiraBoardConfigDTO jiraBoardConfigDTO = getJiraBoardConfig(baseUrl, boardRequestParam.getBoardId(),
-					boardRequestParam.getToken());
-			CompletableFuture<JiraColumnResult> jiraColumnsFuture = getJiraColumnsAsync(boardRequestParam, baseUrl,
-					jiraBoardConfigDTO);
-			CompletableFuture<List<TargetField>> targetFieldFuture = getTargetFieldAsync(baseUrl, boardRequestParam);
-			List<TargetField> ignoredTargetFields = targetFieldFuture.join()
-				.stream()
-				.filter(this::isIgnoredTargetField)
-				.toList();
-			List<TargetField> neededTargetFields = targetFieldFuture.join()
-				.stream()
-				.filter(targetField -> !isIgnoredTargetField(targetField))
-				.toList();
+			if (!BoardType.JIRA.equals(boardType)) {
+				throw new BadRequestException("boardType param is not correct");
+			}
+			String jiraBoardStyle = jiraFeignClient
+				.getProject(baseUrl, boardRequestParam.getProjectKey(), boardRequestParam.getToken())
+				.getStyle();
+			BoardType jiraBoardType = "classic".equals(jiraBoardStyle) ? BoardType.CLASSIC_JIRA : BoardType.JIRA;
 
-			return jiraColumnsFuture.thenCombine(targetFieldFuture,
-					(jiraColumnResult, targetFields) -> getUserAsync(boardType, baseUrl, boardRequestParam)
-						.thenApply(users -> BoardConfigDTO.builder()
+			Map<Boolean, List<TargetField>> partitions = getTargetFieldAsync(baseUrl, boardRequestParam).join()
+				.stream()
+				.collect(Collectors.partitioningBy(this::isIgnoredTargetField));
+			List<TargetField> ignoredTargetFields = partitions.get(true);
+			List<TargetField> neededTargetFields = partitions.get(false);
+
+			return getJiraColumnsAsync(boardRequestParam, baseUrl,
+					getJiraBoardConfig(baseUrl, boardRequestParam.getBoardId(), boardRequestParam.getToken()))
+				.thenCombine(getUserAsync(jiraBoardType, baseUrl, boardRequestParam),
+						(jiraColumnResult, users) -> BoardConfigDTO.builder()
 							.targetFields(neededTargetFields)
 							.jiraColumnResponse(jiraColumnResult.getJiraColumnResponse())
 							.ignoredTargetFields(ignoredTargetFields)
 							.users(users)
 							.build())
-						.join())
+				.join();
+		}
+		catch (RuntimeException e) {
+			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
+			log.error("Failed when call Jira to get board config, project key: {}, board id: {}, e: {}",
+					boardRequestParam.getBoardId(), boardRequestParam.getProjectKey(), cause.getMessage());
+			if (cause instanceof BaseException baseException) {
+				throw baseException;
+			}
+			throw new InternalServerErrorException(
+					String.format("Failed when call Jira to get board config, cause is %s", cause.getMessage()));
+		}
+	}
+
+	public BoardConfigDTO getJiraConfiguration(BoardType boardType, BoardRequestParam boardRequestParam) {
+		URI baseUrl = urlGenerator.getUri(boardRequestParam.getSite());
+		try {
+
+			Map<Boolean, List<TargetField>> partitions = getTargetFieldAsync(baseUrl, boardRequestParam).join()
+				.stream()
+				.collect(Collectors.partitioningBy(this::isIgnoredTargetField));
+			List<TargetField> ignoredTargetFields = partitions.get(true);
+			List<TargetField> neededTargetFields = partitions.get(false);
+
+			return getJiraColumnsAsync(boardRequestParam, baseUrl,
+					getJiraBoardConfig(baseUrl, boardRequestParam.getBoardId(), boardRequestParam.getToken()))
+				.thenCombine(getUserAsync(boardType, baseUrl, boardRequestParam),
+						(jiraColumnResult, users) -> BoardConfigDTO.builder()
+							.targetFields(neededTargetFields)
+							.jiraColumnResponse(jiraColumnResult.getJiraColumnResponse())
+							.ignoredTargetFields(ignoredTargetFields)
+							.users(users)
+							.build())
 				.join();
 		}
 		catch (RuntimeException e) {
@@ -183,8 +240,7 @@ public class JiraService {
 
 	private CompletableFuture<JiraColumnResult> getJiraColumnsAsync(BoardRequestParam boardRequestParam, URI baseUrl,
 			JiraBoardConfigDTO jiraBoardConfigDTO) {
-		return CompletableFuture.supplyAsync(() -> getJiraColumns(boardRequestParam, baseUrl, jiraBoardConfigDTO),
-				customTaskExecutor);
+		return CompletableFuture.supplyAsync(() -> getJiraColumns(boardRequestParam, baseUrl, jiraBoardConfigDTO));
 	}
 
 	public JiraColumnResult getJiraColumns(BoardRequestParam boardRequestParam, URI baseUrl,
@@ -197,8 +253,7 @@ public class JiraService {
 			.getColumns()
 			.stream()
 			.map(jiraColumn -> CompletableFuture.supplyAsync(
-					() -> getColumnNameAndStatus(jiraColumn, baseUrl, jiraColumns, boardRequestParam.getToken()),
-					customTaskExecutor))
+					() -> getColumnNameAndStatus(jiraColumn, baseUrl, jiraColumns, boardRequestParam.getToken())))
 			.toList();
 
 		List<JiraColumnDTO> columnResponse = futures.stream().map(CompletableFuture::join).toList();
@@ -271,7 +326,7 @@ public class JiraService {
 
 	private CompletableFuture<List<String>> getUserAsync(BoardType boardType, URI baseUrl,
 			BoardRequestParam boardRequestParam) {
-		return CompletableFuture.supplyAsync(() -> getUsers(boardType, baseUrl, boardRequestParam), customTaskExecutor);
+		return CompletableFuture.supplyAsync(() -> getUsers(boardType, baseUrl, boardRequestParam));
 	}
 
 	private List<String> getUsers(BoardType boardType, URI baseUrl, BoardRequestParam boardRequestParam) {
@@ -280,7 +335,6 @@ public class JiraService {
 		if (allCards.isEmpty()) {
 			throw new NoContentException("There is no cards.");
 		}
-
 		List<CompletableFuture<List<String>>> futures = allCards.stream()
 			.map(jiraCard -> CompletableFuture
 				.supplyAsync(() -> getAssigneeSet(baseUrl, jiraCard, boardRequestParam.getToken()), customTaskExecutor))
@@ -467,16 +521,16 @@ public class JiraService {
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
 		String keyFlagged = cardCustomFieldKey.getFlagged();
 		List<JiraCardDTO> realDoneCards = new ArrayList<>();
-		List<JiraCard> futures = new ArrayList<>();
+		List<JiraCard> jiraCards = new ArrayList<>();
 
 		for (JiraCard allDoneCard : allDoneCards) {
 			CardHistoryResponseDTO jiraCardHistory = jiraFeignClient.getJiraCardHistory(baseUrl, allDoneCard.getKey(),
 					request.getToken());
 			if (isRealDoneCardByHistory(jiraCardHistory, request)) {
-				futures.add(allDoneCard);
+				jiraCards.add(allDoneCard);
 			}
 		}
-		futures.forEach(doneCard -> {
+		jiraCards.forEach(doneCard -> {
 			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(baseUrl, doneCard.getKey(), request.getToken(),
 					request.isTreatFlagCardAsBlock(), keyFlagged, request.getStatus());
 			List<String> assigneeSet = getAssigneeSet(request, baseUrl, filterMethod, doneCard);
