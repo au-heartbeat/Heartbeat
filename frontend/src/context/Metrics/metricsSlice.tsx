@@ -350,6 +350,11 @@ export const metricsSlice = createSlice({
       state.deploymentWarningMessage = getPipelinesWarningMessage(importedDeployment)
     },
 
+    resetPipelineSettings: (state) => {
+      state.deploymentFrequencySettings = initialState.deploymentFrequencySettings
+      state.deploymentWarningMessage = initialState.deploymentWarningMessage
+    },
+
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload
       const { importedDeployment, importedPipelineCrews } = state.importedData
@@ -424,6 +429,7 @@ export const {
   updateMetricsState,
   updatePipelineSettings,
   updatePipelineStep,
+  resetPipelineSettings,
 } = metricsSlice.actions
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings

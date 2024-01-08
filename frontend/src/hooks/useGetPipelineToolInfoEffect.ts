@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@src/hooks'
 import { pipelineToolClient, IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient'
 import {
@@ -8,7 +8,7 @@ import {
   selectPipelineTool,
   selectDateRange,
 } from '@src/context/config/configSlice'
-import { updatePipelineSettings } from '@src/context/Metrics/metricsSlice'
+import { updatePipelineSettings, resetPipelineSettings } from '@src/context/Metrics/metricsSlice'
 
 export interface IUseVerifyPipeLineToolStateInterface {
   result: IGetPipelineToolInfoResult
@@ -23,7 +23,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   }
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(false)
-  const [touched, setTouched] = useState(false)
+  const apiTouchedRef = useRef(false)
   const [info, setInfo] = useState<IGetPipelineToolInfoResult>(defaultInfoStructure)
   const pipelineToolVerified = useAppSelector(isPipelineToolVerified)
   const isProjectCreated = useAppSelector(selectIsProjectCreated)
@@ -50,18 +50,16 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
         console.error(`Failed to get pipeline tool info in useGetPipelineToolInfoEffect hook`, err?.message)
       } finally {
         setIsLoading(false)
-        setTouched(true)
       }
     }
 
-    if (!touched) {
+    if (!apiTouchedRef.current && !isLoading) {
+      apiTouchedRef.current = true
       getPipelineToolInfo()
     }
 
     return () => {
-      setInfo(defaultInfoStructure)
-      setTouched(false)
-      // todo dispatch redux actions to purge corresponding data
+      dispatch(resetPipelineSettings())
     }
   }, [pipelineToolVerified, isProjectCreated, restoredPipelineTool, dateRange, dispatch])
 
