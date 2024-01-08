@@ -38,6 +38,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
   const [isBackFromDetail, setIsBackFromDetail] = useState<boolean>(false);
+  const [isAllMetricsReady, setIsAllMetricsReady] = useState<boolean>(false);
   const configData = useAppSelector(selectConfig);
   const csvTimeStamp = useAppSelector(selectTimeStamp);
 
@@ -52,13 +53,14 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
 
   useLayoutEffect(() => {
     exportValidityTimeMin &&
+      isAllMetricsReady &&
       updateProps?.({
         open: true,
         title: 'Help Information',
         message: MESSAGE.EXPIRE_INFORMATION(exportValidityTimeMin),
         closeAutomatically: true,
       });
-  }, [exportValidityTimeMin]);
+  }, [exportValidityTimeMin, isAllMetricsReady]);
 
   useLayoutEffect(() => {
     if (exportValidityTimeMin) {
@@ -92,6 +94,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     setExportValidityTimeMin(reportData?.exportValidityTime);
+    reportData && setIsAllMetricsReady(reportData.isAllMetricsReady);
   }, [reportData]);
 
   useLayoutEffect(() => {
