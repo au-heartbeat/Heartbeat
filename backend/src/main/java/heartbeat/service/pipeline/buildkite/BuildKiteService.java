@@ -17,7 +17,7 @@ import heartbeat.controller.pipeline.dto.response.PipelineTransformer;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
-import heartbeat.exception.UnauthorizedException;
+import heartbeat.exception.PermissionDenyException;
 import heartbeat.util.TimeUtil;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.net.URLEncoder;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +64,7 @@ public class BuildKiteService {
 			BuildKiteTokenInfo buildKiteTokenInfo = buildKiteFeignClient.getTokenInfo(buildKiteToken);
 			log.info("Successfully query token permissions by token, token info scopes: {}",
 					buildKiteTokenInfo.getScopes());
-			verifyToken(buildKiteTokenInfo);
+			verifyTokenScopes(buildKiteTokenInfo);
 			log.info("Start to query BuildKite organizations by token");
 			List<BuildKiteOrganizationsInfo> buildKiteOrganizationsInfo = buildKiteFeignClient
 				.getBuildKiteOrganizationsInfo(buildKiteToken);
@@ -98,13 +97,12 @@ public class BuildKiteService {
 		}
 	}
 
-	private void verifyToken(BuildKiteTokenInfo buildKiteTokenInfo) {
+	private void verifyTokenScopes(BuildKiteTokenInfo buildKiteTokenInfo) {
 		for (String permission : permissions) {
 			if (!buildKiteTokenInfo.getScopes().contains(permission)) {
 				log.error("Failed to call BuildKite, because of insufficient permission, current permissions: {}",
 						buildKiteTokenInfo.getScopes());
-				throw new UnauthorizedException("Failed to call BuildKite, because of insufficient permission!");// todo
-																													// 401
+				throw new PermissionDenyException("Failed to call BuildKite, because of insufficient permission!");
 			}
 		}
 	}
@@ -308,7 +306,7 @@ public class BuildKiteService {
 			BuildKiteTokenInfo buildKiteTokenInfo = buildKiteFeignClient.getTokenInfo(buildKiteToken);
 			log.info("Successfully query token permissions by token, token info scopes: {}",
 					buildKiteTokenInfo.getScopes());
-			verifyToken(buildKiteTokenInfo);
+			verifyTokenScopes(buildKiteTokenInfo);
 		}
 		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);

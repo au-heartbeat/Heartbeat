@@ -171,7 +171,7 @@ class BuildKiteServiceTest {
 		BuildKiteTokenInfo buildKiteTokenInfo = BuildKiteTokenInfo.builder().scopes(List.of("mock")).build();
 		when(buildKiteFeignClient.getTokenInfo(any())).thenReturn(buildKiteTokenInfo);
 
-		assertThrows(UnauthorizedException.class, () -> buildKiteService.fetchPipelineInfo(
+		assertThrows(PermissionDenyException.class, () -> buildKiteService.fetchPipelineInfo(
 				PipelineParam.builder().token("test_token").startTime("startTime").endTime("endTime").build()));
 	}
 
