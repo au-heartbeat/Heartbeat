@@ -41,12 +41,8 @@ public class PipelineController {
 	@PostMapping("/{pipelineType}/verify")
 	public ResponseEntity<Void> verifyBuildKiteToken(@PathVariable String pipelineType,
 			@Valid @RequestBody TokenParam tokenParam) {
-		if (buildKiteService.getBuildKiteVerify(tokenParam.getToken())) {
-			return ResponseEntity.noContent().build();
-		}
-		else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+		buildKiteService.getBuildKiteVerify(tokenParam.getToken());
+		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{pipelineType}/info")

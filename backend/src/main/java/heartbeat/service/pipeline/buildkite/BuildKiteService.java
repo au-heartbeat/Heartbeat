@@ -17,7 +17,7 @@ import heartbeat.controller.pipeline.dto.response.PipelineTransformer;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
-import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.UnauthorizedException;
 import heartbeat.util.TimeUtil;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +103,8 @@ public class BuildKiteService {
 			if (!buildKiteTokenInfo.getScopes().contains(permission)) {
 				log.error("Failed to call BuildKite, because of insufficient permission, current permissions: {}",
 						buildKiteTokenInfo.getScopes());
-				throw new PermissionDenyException("Failed to call BuildKite, because of insufficient permission!");
+				throw new UnauthorizedException("Failed to call BuildKite, because of insufficient permission!");// todo
+																													// 401
 			}
 		}
 	}
@@ -300,7 +301,7 @@ public class BuildKiteService {
 			.toList();
 	}
 
-	public boolean getBuildKiteVerify(String token) {
+	public void getBuildKiteVerify(String token) {
 		try {
 			String buildKiteToken = "Bearer " + token;
 			log.info("Start to query token permissions by token");
@@ -308,7 +309,6 @@ public class BuildKiteService {
 			log.info("Successfully query token permissions by token, token info scopes: {}",
 					buildKiteTokenInfo.getScopes());
 			verifyToken(buildKiteTokenInfo);
-			return true;
 		}
 		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
