@@ -41,6 +41,10 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureJsonTesters
 public class BuildKiteControllerTest {
 
+	public static final String TEST_TOKEN = "test_token";
+	public static final String TEST_START_TIME = "16737733";
+	public static final String TEST_END_TIME = "17657557";
+	public static final String BUILD_KITE = "BuildKite";
 	@MockBean
 	private BuildKiteService buildKiteService;
 
@@ -56,16 +60,18 @@ public class BuildKiteControllerTest {
 		BuildKiteResponseDTO buildKiteResponseDTO = BuildKiteResponseDTO.builder().pipelineList(pipelines).build();
 		when(buildKiteService.fetchPipelineInfo(any())).thenReturn(buildKiteResponseDTO);
 		PipelineParam pipelineParam = PipelineParam.builder()
-			.token("test_token")
-			.startTime("16737733")
-			.endTime("17657557")
+			.token(TEST_TOKEN)
+			.startTime(TEST_START_TIME)
+			.endTime(TEST_END_TIME)
 			.build();
+
 		MockHttpServletResponse response = mockMvc
 			.perform(post("/pipelines/buildKite").contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(pipelineParam)))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
+
 		final var resultId = JsonPath.parse(response.getContentAsString()).read("$.pipelineList[0].id").toString();
 		assertThat(resultId).contains("payment-selector-ui");
 		final var resultName = JsonPath.parse(response.getContentAsString()).read("$.pipelineList[0].name").toString();
@@ -99,7 +105,6 @@ public class BuildKiteControllerTest {
 	void shouldReturnNoContentIfNoStepsWhenCallBuildKite() throws Exception {
 		List<String> steps = new ArrayList<>();
 		PipelineStepsDTO emptyPipelineSteps = PipelineStepsDTO.builder().steps(steps).build();
-
 		when(buildKiteService.fetchPipelineSteps(anyString(), anyString(), anyString(), any()))
 			.thenReturn(emptyPipelineSteps);
 
@@ -120,13 +125,13 @@ public class BuildKiteControllerTest {
 	}
 
 	@Test
-	void shouldReturnNoContentIfTokenCorrectWhenCallBuildKiteMockServer() throws Exception {
+	void shouldReturnNoContentWhenCorrectTokenCallBuildKite() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		TokenParam tokenParam = TokenParam.builder().token("test_token").build();
-		doNothing().when(buildKiteService).getBuildKiteVerify(any());
+		TokenParam tokenParam = TokenParam.builder().token(TEST_TOKEN).build();
+		doNothing().when(buildKiteService).verifyToken(any());
 
 		MockHttpServletResponse response = mockMvc
-			.perform(post("/pipelines/buildKite/verify").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/pipelines/{pipelineType}/verify", BUILD_KITE).contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(tokenParam)))
 			.andExpect(status().isNoContent())
 			.andReturn()
@@ -136,26 +141,26 @@ public class BuildKiteControllerTest {
 	}
 
 	@Test
-	void shouldReturnPipelineInfoIfTokenCorrectWhenCallBuildKiteMockServer() throws Exception {
+	void shouldReturnPipelineInfoWhenCorrectTokenWhenCallBuildKite() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		List<Pipeline> pipelines = mapper.readValue(
 				new File("src/test/java/heartbeat/controller/pipeline/pipelineInfoData.json"), new TypeReference<>() {
 				});
 		BuildKiteResponseDTO buildKiteResponseDTO = BuildKiteResponseDTO.builder().pipelineList(pipelines).build();
 		PipelineParam pipelineParam = PipelineParam.builder()
-			.token("test_token")
-			.startTime("16737733")
-			.endTime("17657557")
+			.token(TEST_TOKEN)
+			.startTime(TEST_START_TIME)
+			.endTime(TEST_END_TIME)
 			.build();
-
 		when(buildKiteService.getBuildKiteInfo(any())).thenReturn(buildKiteResponseDTO);
 
 		MockHttpServletResponse response = mockMvc
-			.perform(post("/pipelines/buildKite/info").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/pipelines/{pipelineType}/info", BUILD_KITE).contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(pipelineParam)))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
+
 		final var resultId = JsonPath.parse(response.getContentAsString()).read("$.pipelineList[0].id").toString();
 		assertThat(resultId).contains("payment-selector-ui");
 		final var resultName = JsonPath.parse(response.getContentAsString()).read("$.pipelineList[0].name").toString();
@@ -163,25 +168,25 @@ public class BuildKiteControllerTest {
 	}
 
 	@Test
-	void shouldReturnNoContentIfPipelineInfoIsNullWhenCallBuildKiteMockServer() throws Exception {
+	void shouldReturnNoContentGivenPipelineInfoIsNullWhenCallingBuildKite() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		BuildKiteResponseDTO buildKiteResponseDTO = BuildKiteResponseDTO.builder()
 			.pipelineList(Collections.emptyList())
 			.build();
 		PipelineParam pipelineParam = PipelineParam.builder()
-			.token("test_token")
-			.startTime("16737733")
-			.endTime("17657557")
+			.token(TEST_TOKEN)
+			.startTime(TEST_START_TIME)
+			.endTime(TEST_END_TIME)
 			.build();
-
 		when(buildKiteService.getBuildKiteInfo(any())).thenReturn(buildKiteResponseDTO);
 
 		MockHttpServletResponse response = mockMvc
-			.perform(post("/pipelines/buildKite/info").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/pipelines/{pipelineType}/info", BUILD_KITE).contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(pipelineParam)))
 			.andExpect(status().isNoContent())
 			.andReturn()
 			.getResponse();
+
 		assertThat(response.getContentAsString()).isEqualTo("");
 	}
 
