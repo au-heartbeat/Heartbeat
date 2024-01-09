@@ -11,6 +11,7 @@ public class PipelineTypeTest {
 	@Test
 	public void shouldConvertValueToType() {
 		PipelineType buildKiteType = PipelineType.fromValue("BuildKite");
+
 		assertEquals(buildKiteType, PipelineType.BuildKite);
 	}
 
