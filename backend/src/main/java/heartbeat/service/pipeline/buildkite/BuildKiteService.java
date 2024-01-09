@@ -70,7 +70,7 @@ public class BuildKiteService {
 				.getBuildKiteOrganizationsInfo(buildKiteToken);
 			log.info("Successfully query BuildKite organizations by token, slug: {}", buildKiteOrganizationsInfo);
 
-			log.info("Start to query buildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
+			log.info("Start to query BuildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
 				.flatMap(org -> buildKiteFeignClient
 					.getPipelineInfo(buildKiteToken, org.getSlug(), "1", "100", pipelineParam.getStartTime(),
@@ -79,7 +79,7 @@ public class BuildKiteService {
 					.map(pipeline -> PipelineTransformer.fromBuildKitePipelineDto(pipeline, org.getSlug(),
 							org.getName())))
 				.collect(Collectors.toList());
-			log.info("Successfully get buildKite pipelineInfo, slug:{}, pipelineInfoList size:{}",
+			log.info("Successfully get BuildKite pipelineInfo, slug:{}, pipelineInfoList size:{}",
 					buildKiteOrganizationsInfo, buildKiteInfoList.size());
 
 			return BuildKiteResponseDTO.builder().pipelineList(buildKiteInfoList).build();
@@ -299,7 +299,7 @@ public class BuildKiteService {
 			.toList();
 	}
 
-	public void getBuildKiteVerify(String token) {
+	public void verifyToken(String token) {
 		try {
 			String buildKiteToken = "Bearer " + token;
 			log.info("Start to query token permissions by token");
@@ -327,7 +327,7 @@ public class BuildKiteService {
 				.getBuildKiteOrganizationsInfo(buildKiteToken);
 			log.info("Successfully query BuildKite organizations by token, slug: {}", buildKiteOrganizationsInfo);
 
-			log.info("Start to query buildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
+			log.info("Start to query BuildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
 				.flatMap(org -> buildKiteFeignClient
 					.getPipelineInfo(buildKiteToken, org.getSlug(), "1", "100", pipelineParam.getStartTime(),
@@ -336,7 +336,7 @@ public class BuildKiteService {
 					.map(pipeline -> PipelineTransformer.fromBuildKitePipelineDto(pipeline, org.getSlug(),
 							org.getName())))
 				.collect(Collectors.toList());
-			log.info("Successfully get buildKite pipelineInfo, slug:{}, pipelineInfoList size:{}",
+			log.info("Successfully get BuildKite pipelineInfo, slug:{}, pipelineInfoList size:{}",
 					buildKiteOrganizationsInfo, buildKiteInfoList.size());
 
 			return BuildKiteResponseDTO.builder().pipelineList(buildKiteInfoList).build();

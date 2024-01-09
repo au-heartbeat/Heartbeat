@@ -1,5 +1,6 @@
 package heartbeat.controller.pipeline;
 
+import heartbeat.controller.pipeline.dto.request.PipelineTypeEnum;
 import heartbeat.controller.pipeline.dto.request.TokenParam;
 import heartbeat.controller.pipeline.dto.request.PipelineParam;
 import heartbeat.controller.pipeline.dto.request.PipelineStepsParam;
@@ -37,14 +38,14 @@ public class PipelineController {
 	}
 
 	@PostMapping("/{pipelineType}/verify")
-	public ResponseEntity<Void> verifyBuildKiteToken(@PathVariable String pipelineType,
+	public ResponseEntity<Void> verifyBuildKiteToken(@PathVariable PipelineTypeEnum pipelineType,
 			@Valid @RequestBody TokenParam tokenParam) {
-		buildKiteService.getBuildKiteVerify(tokenParam.getToken());
+		buildKiteService.verifyToken(tokenParam.getToken());
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{pipelineType}/info")
-	public ResponseEntity<BuildKiteResponseDTO> fetchBuildKiteInfo(@PathVariable String pipelineType,
+	public ResponseEntity<BuildKiteResponseDTO> fetchBuildKiteInfo(@PathVariable PipelineTypeEnum pipelineType,
 			@Valid @RequestBody PipelineParam pipelineParam) {
 		BuildKiteResponseDTO buildKiteResponse = buildKiteService.getBuildKiteInfo(pipelineParam);
 
