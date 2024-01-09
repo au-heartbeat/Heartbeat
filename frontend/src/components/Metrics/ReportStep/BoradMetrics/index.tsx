@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
-import { useAppSelector } from '@src/hooks'
-import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice'
+import React, { useEffect } from 'react';
+import { useAppSelector } from '@src/hooks';
+import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -8,22 +8,22 @@ import {
   REPORT_PAGE,
   METRICS_TITLE,
   REQUIRED_DATA,
-} from '@src/constants/resources'
-import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request'
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice'
-import dayjs from 'dayjs'
-import { StyledMetricsSection } from '@src/components/Metrics/ReportStep/BoradMetrics/style'
-import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util'
-import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle'
-import { ReportGrid } from '@src/components/Common/ReportGrid'
-import { ReportResponseDTO } from '@src/clients/report/dto/response'
+} from '@src/constants/resources';
+import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
+import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import dayjs from 'dayjs';
+import { StyledMetricsSection } from '@src/components/Metrics/ReportStep/BoradMetrics/style';
+import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util';
+import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
+import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
 
 interface BoardMetricsProps {
-  startToRequestBoardData: (request: ReportRequestDTO) => void
-  boardReport?: ReportResponseDTO
-  csvTimeStamp: number
-  startDate: string | null
-  endDate: string | null
+  startToRequestBoardData: (request: ReportRequestDTO) => void;
+  boardReport?: ReportResponseDTO;
+  csvTimeStamp: number;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 const BoardMetrics = ({
@@ -33,18 +33,18 @@ const BoardMetrics = ({
   startDate,
   endDate,
 }: BoardMetricsProps) => {
-  const configData = useAppSelector(selectConfig)
+  const configData = useAppSelector(selectConfig);
   const { cycleTimeSettings, treatFlagCardAsBlock, users, targetFields, doneColumn, assigneeFilter } =
-    useAppSelector(selectMetricsContent)
-  const { metrics, calendarType } = configData.basic
-  const { board } = configData
-  const { token, type, site, projectKey, boardId, email } = board.config
-  const jiraToken = getJiraBoardToken(token, email)
-  const jiraColumns = useAppSelector(selectJiraColumns)
+    useAppSelector(selectMetricsContent);
+  const { metrics, calendarType } = configData.basic;
+  const { board } = configData;
+  const { token, type, site, projectKey, boardId, email } = board.config;
+  const jiraToken = getJiraBoardToken(token, email);
+  const jiraColumns = useAppSelector(selectJiraColumns);
   const jiraColumnsWithValue = jiraColumns?.map(
     (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value
-  )
-  const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric))
+  );
+  const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
 
   const getBoardReportRequestBody = (): BoardReportRequestDTO => {
     return {
@@ -66,12 +66,12 @@ const BoardMetrics = ({
         doneColumn,
       },
       csvTimeStamp: csvTimeStamp,
-    }
-  }
+    };
+  };
 
   const getBoardItems = () => {
-    const velocity = boardReport?.velocity
-    const cycleTime = boardReport?.cycleTime
+    const velocity = boardReport?.velocity;
+    const cycleTime = boardReport?.cycleTime;
     const velocityItems = boardMetrics.includes(REQUIRED_DATA.VELOCITY)
       ? [
           {
@@ -90,7 +90,7 @@ const BoardMetrics = ({
             ],
           },
         ]
-      : []
+      : [];
 
     const cycleTimeItems = boardMetrics.includes(REQUIRED_DATA.CYCLE_TIME)
       ? [
@@ -108,14 +108,14 @@ const BoardMetrics = ({
             ],
           },
         ]
-      : []
+      : [];
 
-    return [...velocityItems, ...cycleTimeItems]
-  }
+    return [...velocityItems, ...cycleTimeItems];
+  };
 
   useEffect(() => {
-    startToRequestBoardData(getBoardReportRequestBody())
-  }, [])
+    startToRequestBoardData(getBoardReportRequestBody());
+  }, []);
 
   return (
     <>
@@ -124,7 +124,7 @@ const BoardMetrics = ({
         <ReportGrid reportDetails={getBoardItems()} />
       </StyledMetricsSection>
     </>
-  )
-}
+  );
+};
 
-export default BoardMetrics
+export default BoardMetrics;

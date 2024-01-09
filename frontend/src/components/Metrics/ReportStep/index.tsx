@@ -1,25 +1,25 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect'
-import { useAppSelector } from '@src/hooks'
-import { selectConfig } from '@src/context/config/configSlice'
-import { BOARD_METRICS, DORA_METRICS, MESSAGE } from '@src/constants/resources'
-import { StyledErrorNotification } from '@src/components/Metrics/ReportStep/style'
-import { ErrorNotification } from '@src/components/ErrorNotification'
-import { useNavigate } from 'react-router-dom'
-import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect'
-import { ROUTE } from '@src/constants/router'
-import { ReportButtonGroup } from '@src/components/Metrics/ReportButtonGroup'
-import BoardMetrics from '@src/components/Metrics/ReportStep/BoradMetrics'
-import DoraMetrics from '@src/components/Metrics/ReportStep/DoraMetrics'
-import { selectTimeStamp } from '@src/context/stepper/StepperSlice'
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
+import { useAppSelector } from '@src/hooks';
+import { selectConfig } from '@src/context/config/configSlice';
+import { BOARD_METRICS, DORA_METRICS, MESSAGE } from '@src/constants/resources';
+import { StyledErrorNotification } from '@src/components/Metrics/ReportStep/style';
+import { ErrorNotification } from '@src/components/ErrorNotification';
+import { useNavigate } from 'react-router-dom';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
+import { ROUTE } from '@src/constants/router';
+import { ReportButtonGroup } from '@src/components/Metrics/ReportButtonGroup';
+import BoardMetrics from '@src/components/Metrics/ReportStep/BoradMetrics';
+import DoraMetrics from '@src/components/Metrics/ReportStep/DoraMetrics';
+import { selectTimeStamp } from '@src/context/stepper/StepperSlice';
 
 export interface ReportStepProps {
-  notification: useNotificationLayoutEffectInterface
-  handleSave: () => void
+  notification: useNotificationLayoutEffectInterface;
+  handleSave: () => void;
 }
 
 const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     isServerError,
     errorMessage: reportErrorMsg,
@@ -27,21 +27,21 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
     startToRequestDoraData,
     reportData,
     stopPollingReports,
-  } = useGenerateReportEffect()
+  } = useGenerateReportEffect();
 
-  const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined)
-  const configData = useAppSelector(selectConfig)
-  const csvTimeStamp = useAppSelector(selectTimeStamp)
+  const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
+  const configData = useAppSelector(selectConfig);
+  const csvTimeStamp = useAppSelector(selectTimeStamp);
 
-  const startDate = configData.basic.dateRange.startDate ?? ''
-  const endDate = configData.basic.dateRange.endDate ?? ''
+  const startDate = configData.basic.dateRange.startDate ?? '';
+  const endDate = configData.basic.dateRange.endDate ?? '';
 
-  const { updateProps } = notification
-  const [errorMessage, setErrorMessage] = useState<string>()
+  const { updateProps } = notification;
+  const [errorMessage, setErrorMessage] = useState<string>();
 
-  const { metrics } = configData.basic
-  const shouldShowBoardMetrics = metrics.some((metric) => BOARD_METRICS.includes(metric))
-  const shouldShowDoraMetrics = metrics.some((metric) => DORA_METRICS.includes(metric))
+  const { metrics } = configData.basic;
+  const shouldShowBoardMetrics = metrics.some((metric) => BOARD_METRICS.includes(metric));
+  const shouldShowDoraMetrics = metrics.some((metric) => DORA_METRICS.includes(metric));
 
   useLayoutEffect(() => {
     exportValidityTimeMin &&
@@ -49,47 +49,47 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
         open: true,
         title: MESSAGE.NOTIFICATION_FIRST_REPORT.replace('%s', exportValidityTimeMin.toString()),
         closeAutomatically: true,
-      })
-  }, [exportValidityTimeMin])
+      });
+  }, [exportValidityTimeMin]);
 
   useLayoutEffect(() => {
     if (exportValidityTimeMin) {
-      const startTime = Date.now()
+      const startTime = Date.now();
       const timer = setInterval(() => {
-        const currentTime = Date.now()
-        const elapsedTime = currentTime - startTime
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - startTime;
 
-        const remainingExpireTime = 5 * 60 * 1000
-        const remainingTime = exportValidityTimeMin * 60 * 1000 - elapsedTime
+        const remainingExpireTime = 5 * 60 * 1000;
+        const remainingTime = exportValidityTimeMin * 60 * 1000 - elapsedTime;
         if (remainingTime <= remainingExpireTime) {
           updateProps?.({
             open: true,
             title: MESSAGE.EXPIRE_IN_FIVE_MINUTES,
             closeAutomatically: true,
-          })
-          clearInterval(timer)
+          });
+          clearInterval(timer);
         }
-      }, 1000)
+      }, 1000);
 
       return () => {
-        clearInterval(timer)
-      }
+        clearInterval(timer);
+      };
     }
-  }, [exportValidityTimeMin])
+  }, [exportValidityTimeMin]);
 
   useEffect(() => {
-    setErrorMessage(reportErrorMsg)
-  }, [reportErrorMsg])
+    setErrorMessage(reportErrorMsg);
+  }, [reportErrorMsg]);
 
   useEffect(() => {
-    setExportValidityTimeMin(reportData?.exportValidityTime)
-  }, [reportData])
+    setExportValidityTimeMin(reportData?.exportValidityTime);
+  }, [reportData]);
 
   useLayoutEffect(() => {
     return () => {
-      stopPollingReports()
-    }
-  }, [])
+      stopPollingReports();
+    };
+  }, []);
 
   return (
     <>
@@ -130,13 +130,13 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
             endDate={endDate}
             csvTimeStamp={csvTimeStamp}
             setErrorMessage={(message) => {
-              setErrorMessage(message)
+              setErrorMessage(message);
             }}
           />
         </>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ReportStep
+export default ReportStep;

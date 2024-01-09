@@ -1,18 +1,18 @@
-import { Table, TableBody, TableHead, TableRow } from '@mui/material'
+import { Table, TableBody, TableHead, TableRow } from '@mui/material';
 import {
   BorderTableCell,
   ColumnTableCell,
   Container,
   Row,
   StyledTableCell,
-} from '@src/components/Common/ReportForTwoColumns/style'
-import { Fragment } from 'react'
-import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure'
-import { ReportSelectionTitle } from '@src/components/Metrics/MetricsStep/style'
+} from '@src/components/Common/ReportForTwoColumns/style';
+import { Fragment } from 'react';
+import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
+import { ReportSelectionTitle } from '@src/components/Metrics/MetricsStep/style';
 
 interface ReportForTwoColumnsProps {
-  title: string
-  data: ReportDataWithTwoColumns[]
+  title: string;
+  data: ReportDataWithTwoColumns[];
 }
 
 export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) => {
@@ -31,8 +31,8 @@ export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) =
           </Row>
         ))}
       </Fragment>
-    ))
-  }
+    ));
+  };
 
   return (
     <>
@@ -49,7 +49,7 @@ export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) =
         </Table>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default ReportForTwoColumns
+export default ReportForTwoColumns;
