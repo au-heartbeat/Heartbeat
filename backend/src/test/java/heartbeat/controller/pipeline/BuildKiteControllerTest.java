@@ -145,7 +145,7 @@ public class BuildKiteControllerTest {
 	}
 
 	@Test
-	void shouldReturnPipelineInfoWhenCorrectTokenWhenCallBuildKite() throws Exception {
+	void shouldReturnPipelineInfoWhenCorrectTokenCallBuildKite() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		List<Pipeline> pipelines = mapper.readValue(
 				new File("src/test/java/heartbeat/controller/pipeline/pipelineInfoData.json"), new TypeReference<>() {
