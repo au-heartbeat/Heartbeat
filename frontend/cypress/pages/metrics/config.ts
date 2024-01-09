@@ -47,10 +47,6 @@ class Config {
     return this.boardConfigSection.contains('label', 'Email').parent();
   }
 
-  get boardInfoProjectKeyInput() {
-    return this.boardConfigSection.contains('label', 'Project Key').parent();
-  }
-
   get boardInfoSiteInput() {
     return this.boardConfigSection.contains('label', 'Site').parent();
   }
@@ -146,12 +142,11 @@ class Config {
     this.boardInfoSelectionJira.click();
     this.boardInfoSelectionClassicJira.click();
 
-    this.boardInfoBoardIdInput.type(boardId);
-    this.boardInfoEmailInput.type(email);
-    this.boardInfoProjectKeyInput.type(projectKey);
-    this.boardInfoSiteInput.type(site);
-    this.boardInfoTokenInput.type(token);
-    this.getVerifyButton(this.boardConfigSection).click();
+    this.boardInfoBoardIdInput.type(boardId)
+    this.boardInfoEmailInput.type(email)
+    this.boardInfoSiteInput.type(site)
+    this.boardInfoTokenInput.type(token)
+    this.getVerifyButton(this.boardConfigSection).click()
   }
 
   fillPipelineToolFieldsInfoAndVerify(token: string) {

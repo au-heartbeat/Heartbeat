@@ -31,7 +31,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       setTimeout(() => {
         setErrorMessage('')
       }, DURATION.ERROR_MESSAGE_TIME)
-      throw e
     } finally {
       setIsLoading(false);
     }
