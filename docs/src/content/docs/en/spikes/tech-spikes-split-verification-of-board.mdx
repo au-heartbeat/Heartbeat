@@ -70,18 +70,27 @@ responses:
 ```json
 paths: api/v1/boards/{boardType}/verify
 method: POST
-parameters: {
+request: {
   "boardId": "...",
-  "projectKey": "...",
   "site": "...",
   "token(email+token)": "..."
 }
-responses:
-  Status Code: 200
-401 Unauthorized: "Returned if the user is not logged in"
-403 Returned: "User does not a have valid license"
-404 Returned: "The board does not exist or the user does not have permission to view it"
+responses: {
+  "project": "ADM"
+}
 ```
+
+- Exception Handler
+
+| status | message                                           | hintInfo               |
+|--------|---------------------------------------------------|------------------------|
+| 400    | Token cannot be empty.                            | Please reconfirm the input |
+| 400    | Token's pattern is incorrect.                     | Please reconfirm the input |
+| 400    | boardType param is not correct                    | Please reconfirm the input |
+| 401    | Failed to get Jira info_status: 401 UNAUTHORIZED, reason: xxx | Token is incorrect |
+| 403    | Failed to get Jira info_status: 403 FORBIDDEN, reason: xxx   | 403 Forbidden       |
+| 404    | Failed to get Jira info_status: 404 NOT_FOUND, reason: xxx   | 404 Not Found       |
+| 500    |                                                   | Internal Server Error  |
 
 - Jira API
 
@@ -214,6 +223,18 @@ Example
 }
 ```
 
+- Exception Handler
+
+| status | message                                           | hintInfo               |
+|--------|---------------------------------------------------|------------------------|
+| 400    | Token cannot be empty.                            | Please reconfirm the input |
+| 400    | Token's pattern is incorrect.                     | Please reconfirm the input |
+| 400    | boardType param is not correct                    | Please reconfirm the input |
+| 401    | Failed to get Jira info_status: 401 UNAUTHORIZED, reason: xxx | Token is incorrect |
+| 403    | There is no enough permission.                    | Permission deny        |
+| 404    | Failed to get Jira info_status: 404 NOT_FOUND, reason: xxx   | 404 Not Found       |
+| 500    |                                                   | Internal Server Error  |
+
 #### 2.3 Sequence Diagram
 
 ```plantuml
@@ -232,6 +253,24 @@ participant Jira
     activate JiraController
     JiraController -> JiraService: get board
     activate JiraService
+    JiraService -> JiraFeignClient: get board project for style
+    activate JiraFeignClient
+    JiraFeignClient -> Jira: rest/api/2/project/{projectIdOrKey}
+    activate Jira
+    Jira --> JiraFeignClient
+    deactivate Jira
+    JiraFeignClient --> JiraService
+    deactivate JiraFeignClient
+    group get ignored and needed target fields
+        JiraService -> JiraFeignClient: get target fields
+        activate JiraFeignClient
+        JiraFeignClient -> Jira: /rest/api/2/issue/createmeta?projectKeys={projectKey}&expand=projects.issuetypes.fields
+        activate Jira
+        Jira --> JiraFeignClient
+        deactivate Jira
+        JiraFeignClient --> JiraService
+        deactivate JiraFeignClient
+    end
     JiraService -> JiraFeignClient: get board config info
     activate JiraFeignClient
     JiraFeignClient -> Jira: /rest/agile/1.0/board/{boardId}/configuration
@@ -244,16 +283,6 @@ participant Jira
         JiraService -> JiraFeignClient: get jira column result
         activate JiraFeignClient
         JiraFeignClient -> Jira: /rest/api/2/status/{statusNum}
-        activate Jira
-        Jira --> JiraFeignClient
-        deactivate Jira
-        JiraFeignClient --> JiraService
-        deactivate JiraFeignClient
-    end
-    group get target fields
-        JiraService -> JiraFeignClient: get needed target fields
-        activate JiraFeignClient
-        JiraFeignClient -> Jira: /rest/api/2/issue/createmeta?projectKeys={projectKey}&expand=projects.issuetypes.fields
         activate Jira
         Jira --> JiraFeignClient
         deactivate Jira
