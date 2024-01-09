@@ -42,9 +42,13 @@ import org.springframework.test.web.servlet.MockMvc;
 public class BuildKiteControllerTest {
 
 	public static final String TEST_TOKEN = "test_token";
+
 	public static final String TEST_START_TIME = "16737733";
+
 	public static final String TEST_END_TIME = "17657557";
+
 	public static final String BUILD_KITE = "BuildKite";
+
 	@MockBean
 	private BuildKiteService buildKiteService;
 
