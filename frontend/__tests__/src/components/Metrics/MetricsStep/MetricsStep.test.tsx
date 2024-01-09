@@ -1,7 +1,7 @@
-import { act, render, renderHook, waitFor, within } from '@testing-library/react';
-import MetricsStep from '@src/components/Metrics/MetricsStep';
-import { Provider } from 'react-redux';
-import { setupStore } from '../../../utils/setupStoreUtil';
+import { act, render, renderHook, waitFor, within } from '@testing-library/react'
+import MetricsStep from '@src/components/Metrics/MetricsStep'
+import { Provider } from 'react-redux'
+import { setupStore } from '../../../utils/setupStoreUtil'
 
 import { updateJiraVerifyResponse, updateMetrics } from '@src/context/config/configSlice';
 import {
@@ -148,9 +148,14 @@ describe('MetricsStep', () => {
       expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE);
       const columnsArray = within(cycleTimeSettingsSection).getAllByRole('button', { name: LIST_OPEN });
 
-      await userEvent.click(columnsArray[1]);
-      const options = within(getByRole('listbox')).getAllByRole('option');
-      await userEvent.click(options[1]);
+      await act(async () => {
+        await userEvent.click(columnsArray[1])
+      })
+
+      await act(async () => {
+        const options = within(getByRole('listbox')).getAllByRole('option')
+        await userEvent.click(options[1])
+      })
 
       await waitFor(() => expect(realDoneSettingSection).toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE));
     });
@@ -160,32 +165,48 @@ describe('MetricsStep', () => {
       const cycleTimeSettingsSection = getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
       const realDoneSettingSection = getByLabelText(REAL_DONE_SETTING_SECTION);
 
-      expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE);
-      const columnsArray = within(cycleTimeSettingsSection).getAllByRole('button', { name: LIST_OPEN });
-      await userEvent.click(columnsArray[2]);
-      const options = within(getByRole('listbox')).getAllByRole('option');
-      await userEvent.click(options[options.length - 1]);
+      expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE)
+      const columnsArray = within(cycleTimeSettingsSection).getAllByRole('button', { name: LIST_OPEN })
 
-      await waitFor(() => expect(realDoneSettingSection).toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE));
-    });
+      await act(async () => {
+        await userEvent.click(columnsArray[2])
+      })
+
+      await act(async () => {
+        const options = within(getByRole('listbox')).getAllByRole('option')
+        await userEvent.click(options[options.length - 1])
+      })
+
+      await waitFor(() => expect(realDoneSettingSection).toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE))
+    })
 
     it('should hide real done when change all Cycle time settings to other status', async () => {
-      const { getByLabelText, getByRole } = setup();
-      const cycleTimeSettingsSection = getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
-      const realDoneSettingSection = getByLabelText(REAL_DONE_SETTING_SECTION);
+      const { getByLabelText, getByRole } = setup()
+      const cycleTimeSettingsSection = getByLabelText(CYCLE_TIME_SETTINGS_SECTION)
+      const realDoneSettingSection = getByLabelText(REAL_DONE_SETTING_SECTION)
 
-      expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE);
-      const columnsArray = within(cycleTimeSettingsSection).getAllByRole('button', { name: LIST_OPEN });
+      expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE)
+      const columnsArray = within(cycleTimeSettingsSection).getAllByRole('button', { name: LIST_OPEN })
 
-      await userEvent.click(columnsArray[1]);
-      const options1 = within(getByRole('listbox')).getAllByRole('option');
-      await userEvent.click(options1[1]);
+      await act(async () => {
+        await userEvent.click(columnsArray[1])
+      })
 
-      await userEvent.click(columnsArray[4]);
-      const options2 = within(getByRole('listbox')).getAllByRole('option');
-      await userEvent.click(options2[1]);
+      await act(async () => {
+        const options1 = within(getByRole('listbox')).getAllByRole('option')
+        await userEvent.click(options1[1])
+      })
 
-      await waitFor(() => expect(realDoneSettingSection).not.toBeInTheDocument());
-    });
-  });
-});
+      await act(async () => {
+        await userEvent.click(columnsArray[4])
+      })
+
+      await act(async () => {
+        const options2 = within(getByRole('listbox')).getAllByRole('option')
+        await userEvent.click(options2[1])
+      })
+
+      await waitFor(() => expect(realDoneSettingSection).not.toBeInTheDocument())
+    })
+  })
+})
