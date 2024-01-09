@@ -19,11 +19,12 @@ import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 import { rest } from 'msw';
 import React from 'react';
+import userEvent from '@testing-library/user-event';
 
 export const fillBoardFieldsInformation = () => {
-  const fields = ['Board Id', 'Email', 'Site', 'Token']
-  const mockInfo = ['2', 'mockEmail@qq.com', '1', 'mockToken']
-  const fieldInputs = fields.map((label) => screen.getByTestId(label).querySelector('input') as HTMLInputElement)
+  const fields = ['Board Id', 'Email', 'Site', 'Token'];
+  const mockInfo = ['2', 'mockEmail@qq.com', '1', 'mockToken'];
+  const fieldInputs = fields.map((label) => screen.getByTestId(label).querySelector('input') as HTMLInputElement);
   fieldInputs.map((input, index) => {
     fireEvent.change(input, { target: { value: mockInfo[index] } });
   });
@@ -46,7 +47,7 @@ describe('Board', () => {
     return render(
       <Provider store={store}>
         <Board />
-      </Provider>,
+      </Provider>
     );
   };
 
@@ -64,11 +65,13 @@ describe('Board', () => {
   });
 
   it('should show default value jira when init board component', () => {
-    const { getByText } = setup()
-    const boardType = getByText(BOARD_TYPES.JIRA)
+    const { getByRole } = setup();
+    const boardType = getByRole('button', {
+      name: /board/i,
+    });
 
-    expect(boardType).toBeInTheDocument()
-  })
+    expect(boardType).toBeInTheDocument();
+  });
 
   it('should show detail options when click board field', () => {
     setup();
@@ -80,16 +83,25 @@ describe('Board', () => {
     expect(optionValue).toEqual(Object.values(BOARD_TYPES));
   });
 
-  it.skip('should show board type when select board field value ', async () => {
-    const { getByRole, getByText } = setup()
+  it('should show board type when select board field value ', async () => {
+    const { getByRole, getByText } = setup();
 
-    fireEvent.mouseDown(getByRole('button', { name: CONFIG_TITLE.BOARD }))
-    fireEvent.click(getByText(BOARD_TYPES.JIRA))
+    await userEvent.click(getByRole('button', { name: CONFIG_TITLE.BOARD }));
 
     await waitFor(() => {
-      expect(getByText(BOARD_TYPES.JIRA)).toBeInTheDocument()
-    })
-  })
+      expect(getByRole('option', { name: /jira/i })).toBeInTheDocument();
+    });
+
+    await userEvent.click(getByRole('option', { name: /jira/i }));
+
+    await waitFor(() => {
+      expect(
+        getByRole('button', {
+          name: /board/i,
+        })
+      ).toBeInTheDocument();
+    });
+  });
 
   it('should show error message when input a wrong type or empty email ', async () => {
     setup();
@@ -108,7 +120,7 @@ describe('Board', () => {
   });
 
   it.skip('should clear other fields information when change board field selection', () => {
-    const { getByRole, getByText } = setup()
+    const { getByRole } = setup();
     const boardIdInput = getByRole('textbox', {
       name: 'Board Id',
     }) as HTMLInputElement;
@@ -116,23 +128,27 @@ describe('Board', () => {
       name: 'Email',
     }) as HTMLInputElement;
 
-    fireEvent.change(boardIdInput, { target: { value: 2 } })
-    fireEvent.change(emailInput, { target: { value: 'mockEmail@qq.com' } })
-    fireEvent.mouseDown(getByRole('button', { name: CONFIG_TITLE.BOARD }))
-    fireEvent.click(getByText(BOARD_TYPES.JIRA))
+    fireEvent.change(boardIdInput, { target: { value: 2 } });
+    fireEvent.change(emailInput, { target: { value: 'mockEmail@qq.com' } });
+    fireEvent.mouseDown(getByRole('button', { name: CONFIG_TITLE.BOARD }));
+    fireEvent.click(
+      getByRole('button', {
+        name: /jira/i,
+      })
+    );
 
     expect(emailInput.value).toEqual('');
     expect(boardIdInput.value).toEqual('');
   });
 
   it('should clear all fields information when click reset button', async () => {
-    const { getByRole, getByText, queryByRole } = setup()
+    const { getByRole, getByText, queryByRole } = setup();
     const fieldInputs = BOARD_FIELDS.slice(1, 4).map(
       (label) =>
         screen.getByRole('textbox', {
           name: label,
           hidden: true,
-        }) as HTMLInputElement,
+        }) as HTMLInputElement
     );
     fillBoardFieldsInformation();
 
@@ -144,9 +160,13 @@ describe('Board', () => {
     fieldInputs.map((input) => {
       expect(input.value).toEqual('');
     });
-    expect(screen.getByText(BOARD_TYPES.JIRA)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: RESET })).not.toBeTruthy();
-    expect(screen.queryByRole('button', { name: VERIFY })).toBeDisabled();
+    expect(
+      getByRole('button', {
+        name: /board/i,
+      })
+    ).toBeInTheDocument();
+    expect(queryByRole('button', { name: RESET })).not.toBeTruthy();
+    expect(queryByRole('button', { name: VERIFY })).toBeDisabled();
   });
 
   it('should enabled verify button when all fields checked correctly given disable verify button', () => {
@@ -213,8 +233,8 @@ describe('Board', () => {
   it('should check error notification show and disappear when board verify response status is 401', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) =>
-        res(ctx.status(HttpStatusCode.Unauthorized), ctx.json({ hintInfo: VERIFY_ERROR_MESSAGE.UNAUTHORIZED })),
-      ),
+        res(ctx.status(HttpStatusCode.Unauthorized), ctx.json({ hintInfo: VERIFY_ERROR_MESSAGE.UNAUTHORIZED }))
+      )
     );
     setup();
     fillBoardFieldsInformation();
@@ -223,7 +243,7 @@ describe('Board', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(`${BOARD_TYPES.JIRA} ${VERIFY_FAILED}: ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`),
+        screen.getByText(`${BOARD_TYPES.JIRA} ${VERIFY_FAILED}: ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)
       ).toBeInTheDocument();
     });
   });

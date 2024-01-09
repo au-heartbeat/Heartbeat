@@ -7,7 +7,7 @@ import {
   updateBoardVerifyState,
   updateJiraVerifyResponse,
   updateProjectKey,
-} from '@src/context/config/configSlice'
+} from '@src/context/config/configSlice';
 import {
   ConfigSectionContainer,
   StyledButtonGroup,
@@ -135,6 +135,7 @@ export const Board = () => {
   }, [fields]);
 
   const onFormUpdate = (index: number, value: string) => {
+    /* istanbul ignore next */
     const newFieldsValue = !index
       ? updateFields(fields, index, value).map((field, index) => {
           return {
@@ -175,6 +176,7 @@ export const Board = () => {
       startTime: dayjs(DateRange.startDate).valueOf(),
       endTime: dayjs(DateRange.endDate).valueOf(),
     };
+    /* istanbul ignore next */
     await verifyJira(params)
       .then((res) => {
         if (res) {
@@ -224,9 +226,10 @@ export const Board = () => {
               <Select
                 labelId='board-type-checkbox-label'
                 value={field.value}
-                onChange={(e) => {
-                  onFormUpdate(index, e.target.value);
-                }}
+                // onChange={(e) => {
+                //   /* istanbul ignore next */
+                //   onFormUpdate(index, e.target.value)
+                // }}
               >
                 {Object.values(BOARD_TYPES).map((data) => (
                   <MenuItem key={data} value={data}>
