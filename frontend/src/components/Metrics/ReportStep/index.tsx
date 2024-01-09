@@ -28,8 +28,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const {
     isServerError,
-    errorMessage4Board: reportErrorMsg4Board,
-    errorMessage4Dora: reportErrorMsg4Dora,
+    errorMessage: reportErrorMsg,
     startToRequestBoardData,
     startToRequestDoraData,
     reportData,
@@ -47,8 +46,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
 
   const { updateProps } = notification
   const [errorMessage, setErrorMessage] = useState<string>()
-  const [errorMessage4Board, setErrorMessage4Board] = useState<string>('')
-  const [errorMessage4Dora, setErrorMessage4Dora] = useState<string>('')
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
@@ -88,12 +85,8 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   }, [exportValidityTimeMin]);
 
   useEffect(() => {
-    setErrorMessage4Board(reportErrorMsg4Board)
-  }, [reportErrorMsg4Board])
-
-  useEffect(() => {
-    setErrorMessage4Dora(reportErrorMsg4Dora)
-  }, [reportErrorMsg4Dora])
+    setErrorMessage(reportErrorMsg)
+  }, [reportErrorMsg])
 
   useEffect(() => {
     setExportValidityTimeMin(reportData?.exportValidityTime);
@@ -116,7 +109,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={reportData}
           csvTimeStamp={csvTimeStamp}
-          errorMessage={errorMessage}
         />
       )}
       {shouldShowDoraMetrics && (
@@ -128,7 +120,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={reportData}
           csvTimeStamp={csvTimeStamp}
-          errorMessage={errorMessage}
         />
       )}
     </>

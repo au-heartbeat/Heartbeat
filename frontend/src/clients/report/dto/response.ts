@@ -1,24 +1,34 @@
 import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { Nullable } from '@src/utils/types';
+import { Nullable } from '@src/utils/types';
 
 export interface ReportResponseDTO {
-  velocity: Nullable<VelocityResponse>;
-  cycleTime: Nullable<CycleTimeResponse>;
-  classificationList: Nullable<ClassificationResponse[]>;
-  deploymentFrequency: Nullable<DeploymentFrequencyResponse>;
-  meanTimeToRecovery: Nullable<MeanTimeToRecoveryResponse>;
-  leadTimeForChanges: Nullable<LeadTimeForChangesResponse>;
-  changeFailureRate: Nullable<ChangeFailureRateResponse>;
-  exportValidityTime: Nullable<number>;
-  isBoardMetricsReady: Nullable<boolean>;
-  isPipelineMetricsReady: Nullable<boolean>;
-  isSourceControlMetricsReady: Nullable<boolean>;
-  isAllMetricsReady: boolean;
+  velocity: Nullable<VelocityResponse>
+  cycleTime: Nullable<CycleTimeResponse>
+  deploymentFrequency: Nullable<DeploymentFrequencyResponse>
+  meanTimeToRecovery: Nullable<MeanTimeToRecoveryResponse>
+  leadTimeForChanges: Nullable<LeadTimeForChangesResponse>
+  changeFailureRate: Nullable<ChangeFailureRateResponse>
+  classificationList: Nullable<Array<ClassificationResponse>>
+  exportValidityTime: Nullable<number>
+  isBoardMetricsReady: Nullable<boolean>
+  isPipelineMetricsReady: Nullable<boolean>
+  isSourceControlMetricsReady: Nullable<boolean>
+  isAllMetricsReady: boolean
+  boardError: Nullable<ErrorResponse>
+  pipelineError: Nullable<ErrorResponse>
+  sourceControlError: Nullable<ErrorResponse>
 }
 
 export interface VelocityResponse {
   velocityForSP: number;
   velocityForCards: number;
+}
+
+export interface ErrorResponse {
+  status: number
+  message: string
+  hintInfo: string
 }
 
 export interface CycleTimeResponse {

@@ -32,7 +32,6 @@ interface BoardMetricsProps {
   csvTimeStamp: number
   startDate: string | null
   endDate: string | null
-  errorMessage: string | undefined
   isBackFromDetail: boolean;
 }
 
@@ -44,7 +43,6 @@ const BoardMetrics = ({
   csvTimeStamp,
   startDate,
   endDate,
-  errorMessage,
 }: BoardMetricsProps) => {
   const configData = useAppSelector(selectConfig);
   const { cycleTimeSettings, treatFlagCardAsBlock, users, targetFields, doneColumn, assigneeFilter } =
@@ -124,6 +122,10 @@ const BoardMetrics = ({
 
     return [...velocityItems, ...cycleTimeItems];
   };
+
+  const errorMessage = boardReport?.boardError
+    ? `Failed to get Jira info_status: ${boardReport.boardError.status}...`
+    : undefined
 
   useEffect(() => {
     !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());

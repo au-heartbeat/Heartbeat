@@ -32,7 +32,6 @@ interface DoraMetricsProps {
   csvTimeStamp: number
   startDate: string | null
   endDate: string | null
-  errorMessage: string | undefined
   onShowDetail: () => void;
   isBackFromDetail: boolean;
 }
@@ -45,7 +44,6 @@ const DoraMetrics = ({
   csvTimeStamp,
   startDate,
   endDate,
-  errorMessage,
 }: DoraMetricsProps) => {
   const configData = useAppSelector(selectConfig);
   const { pipelineTool, sourceControl } = configData;
@@ -180,6 +178,16 @@ const DoraMetrics = ({
     return [...deploymentFrequencyList, ...changeFailureRateList, ...meanTimeToRecoveryList];
   };
 
+  const errorMessage4BuildKite = doraReport?.pipelineError
+    ? `Failed to get BuildKite info_status: ${doraReport.pipelineError.status}...`
+    : undefined
+
+  const errorMessage4Github = doraReport?.sourceControlError
+    ? `Failed to get Github info_status: ${doraReport.sourceControlError.status}...`
+    : undefined
+
+  const showRetryButton = !!errorMessage4BuildKite && !!errorMessage4Github
+
   useEffect(() => {
     !isBackFromDetail && startToRequestDoraData(getDoraReportRequestBody());
   }, []);
@@ -189,16 +197,18 @@ const DoraMetrics = ({
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.DORA.TITLE} />
-          {!errorMessage && (doraReport?.isPipelineMetricsReady || doraReport?.isSourceControlMetricsReady) && (
+          {!showRetryButton && (doraReport?.isPipelineMetricsReady || doraReport?.isSourceControlMetricsReady) && (
             <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
           )}
-          {errorMessage && (
+          {showRetryButton && (
             <StyledRetry onClick={() => startToRequestDoraData(getDoraReportRequestBody())}>{RETRY}</StyledRetry>
           )}
         </StyledTitleWrapper>
-        {shouldShowSourceControl && <ReportGrid reportDetails={getSourceControlItems()} errorMessage={errorMessage} />}
+        {shouldShowSourceControl && (
+          <ReportGrid reportDetails={getSourceControlItems()} errorMessage={errorMessage4Github} />
+        )}
         <StyledSpacing />
-        <ReportGrid reportDetails={getPipelineItems()} lastGrid={true} errorMessage={errorMessage} />
+        <ReportGrid reportDetails={getPipelineItems()} lastGrid={true} errorMessage={errorMessage4BuildKite} />
       </StyledMetricsSection>
     </>
   );
