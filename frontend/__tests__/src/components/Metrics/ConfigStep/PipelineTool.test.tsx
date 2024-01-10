@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within, act } from '@testing-library/react'
 import { PipelineTool } from '@src/components/Metrics/ConfigStep/PipelineTool'
 import {
   CONFIG_TITLE,
@@ -17,7 +17,6 @@ import { setupServer } from 'msw/node'
 import { rest } from 'msw'
 import userEvent from '@testing-library/user-event'
 import { HttpStatusCode } from 'axios'
-import { act } from 'react-dom/test-utils'
 
 export const fillPipelineToolFieldsInformation = async () => {
   const mockInfo = 'bkua_mockTokenMockTokenMockTokenMockToken1234'
@@ -75,6 +74,7 @@ describe('PipelineTool', () => {
     const tokenInput = screen.getByTestId('pipelineToolTextField').querySelector('input') as HTMLInputElement
 
     await fillPipelineToolFieldsInformation()
+    await userEvent.click(screen.getByRole('button', { name: 'Pipeline Tool' }))
 
     await act(async () => {
       const requireDateSelection = within(getByLabelText('PipelineTool type select'))
@@ -86,10 +86,10 @@ describe('PipelineTool', () => {
     })
 
     expect(tokenInput.value).toEqual('')
-  }, 50000)
+  })
 
   it('should clear all fields information when click reset button', async () => {
-    const { getByRole, getByText, queryByRole } = setup()
+    const { getByText, queryByRole, getByRole } = setup()
     const tokenInput = screen.getByTestId('pipelineToolTextField').querySelector('input') as HTMLInputElement
     await fillPipelineToolFieldsInformation()
 
@@ -167,9 +167,7 @@ describe('PipelineTool', () => {
       await userEvent.click(getByText(VERIFY))
     })
 
-    act(() => {
-      expect(getByText(RESET)).toBeVisible()
-    })
+    expect(screen.getByText(RESET)).toBeVisible()
 
     await waitFor(() => {
       expect(getByText(VERIFIED)).toBeTruthy()
@@ -177,7 +175,7 @@ describe('PipelineTool', () => {
   })
 
   it('should called verifyPipelineTool method once when click verify button', async () => {
-    const { getByRole, getByText } = setup()
+    const { getByText, getByRole } = setup()
     await fillPipelineToolFieldsInformation()
     await act(async () => {
       await userEvent.click(getByRole('button', { name: VERIFY }))
@@ -190,7 +188,6 @@ describe('PipelineTool', () => {
     const { getByRole, container } = setup()
     await fillPipelineToolFieldsInformation()
     fireEvent.click(getByRole('button', { name: VERIFY }))
-
     await waitFor(() => {
       expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar')
     })
