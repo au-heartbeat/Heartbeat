@@ -31,6 +31,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   let hasPollingStarted = false
 
   const startToRequestBoardData = (boardParams: ReportRequestDTO) => {
+    setTimeout4Board('')
     reportClient
       .retrieveReportByUrl(boardParams, `${reportPath}/${RETRIEVE_REPORT_TYPES.BOARD}`)
       .then((res) => {
@@ -48,7 +49,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     if (error instanceof InternalServerException || error instanceof TimeoutException) {
       setIsServerError(true)
     } else {
-      setReportData(undefined)
       if (source === 'Board') {
         setTimeout4Board('Data loading failed')
       } else if (source === 'Dora') {
@@ -61,6 +61,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   };
 
   const startToRequestDoraData = (doraParams: ReportRequestDTO) => {
+    setTimeout4Dora('')
     reportClient
       .retrieveReportByUrl(doraParams, `${reportPath}/${RETRIEVE_REPORT_TYPES.DORA}`)
       .then((res) => {

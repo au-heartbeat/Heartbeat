@@ -136,7 +136,6 @@ const BoardMetrics = ({
 
   const handleRetry = () => {
     startToRequestBoardData(getBoardReportRequestBody())
-    setAllErrorMessage('')
   }
 
   useEffect(() => {

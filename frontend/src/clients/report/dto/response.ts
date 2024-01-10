@@ -31,7 +31,6 @@ export interface AllErrorResponse {
 export interface ErrorResponse {
   status: number
   message: string
-  hintInfo: string
 }
 
 export interface CycleTimeResponse {
