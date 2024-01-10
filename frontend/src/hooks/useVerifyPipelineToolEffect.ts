@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient'
 import { MESSAGE } from '@src/constants/resources'
 import { PipelineRequestDTO } from '@src/clients/pipeline/dto/request'
-import { DURATION } from '@src/constants/commons'
 
 export interface useVerifyPipeLineToolStateInterface {
   verifyPipelineTool: (params: PipelineRequestDTO) => Promise<
@@ -13,6 +12,7 @@ export interface useVerifyPipeLineToolStateInterface {
   >
   isLoading: boolean
   errorMessage: string
+  clearErrorMessage: () => void
 }
 
 export const useVerifyPipelineToolEffect = (): useVerifyPipeLineToolStateInterface => {
@@ -26,17 +26,19 @@ export const useVerifyPipelineToolEffect = (): useVerifyPipeLineToolStateInterfa
     } catch (e) {
       const err = e as Error
       setErrorMessage(`${params.type} ${MESSAGE.VERIFY_FAILED_ERROR}: ${err.message}`)
-      setTimeout(() => {
-        setErrorMessage('')
-      }, DURATION.ERROR_MESSAGE_TIME)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const clearErrorMessage = () => {
+    if (errorMessage) setErrorMessage('')
   }
 
   return {
     verifyPipelineTool,
     isLoading,
     errorMessage,
+    clearErrorMessage,
   }
 }
