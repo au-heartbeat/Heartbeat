@@ -28,11 +28,12 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const {
     isServerError,
-    errorMessage: reportErrorMsg,
     startToRequestBoardData,
     startToRequestDoraData,
     reportData,
     stopPollingReports,
+    timeout4Board,
+    timeout4Dora,
   } = useGenerateReportEffect();
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
@@ -85,10 +86,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   }, [exportValidityTimeMin]);
 
   useEffect(() => {
-    setErrorMessage(reportErrorMsg)
-  }, [reportErrorMsg])
-
-  useEffect(() => {
     setExportValidityTimeMin(reportData?.exportValidityTime);
   }, [reportData]);
 
@@ -109,6 +106,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={reportData}
           csvTimeStamp={csvTimeStamp}
+          timeoutError={timeout4Board}
         />
       )}
       {shouldShowDoraMetrics && (
@@ -120,6 +118,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={reportData}
           csvTimeStamp={csvTimeStamp}
+          timeoutError={timeout4Dora}
         />
       )}
     </>

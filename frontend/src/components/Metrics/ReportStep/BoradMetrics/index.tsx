@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import { useAppSelector } from '@src/hooks';
-import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice';
+import React, { useEffect, useState } from 'react'
+import { useAppSelector } from '@src/hooks'
+import _ from 'lodash'
+import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice'
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -33,6 +34,8 @@ interface BoardMetricsProps {
   startDate: string | null
   endDate: string | null
   isBackFromDetail: boolean;
+  timeoutError: string
+  onShowDetail:() => void
 }
 
 const BoardMetrics = ({
@@ -43,6 +46,7 @@ const BoardMetrics = ({
   csvTimeStamp,
   startDate,
   endDate,
+  timeoutError,
 }: BoardMetricsProps) => {
   const configData = useAppSelector(selectConfig);
   const { cycleTimeSettings, treatFlagCardAsBlock, users, targetFields, doneColumn, assigneeFilter } =
@@ -58,26 +62,33 @@ const BoardMetrics = ({
   );
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
 
-  const getBoardReportRequestBody = (): BoardReportRequestDTO => ({
-    metrics: boardMetrics,
-    startTime: dayjs(startDate).valueOf().toString(),
-    endTime: dayjs(endDate).valueOf().toString(),
-    considerHoliday: calendarType === CALENDAR.CHINA,
-    jiraBoardSetting: {
-      token: jiraToken,
-      type: type.toLowerCase().replace(' ', '-'),
-      site,
-      projectKey,
-      boardId,
-      boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings, jiraColumnsWithValue),
-      treatFlagCardAsBlock,
-      users,
-      assigneeFilter,
-      targetFields,
-      doneColumn,
-    },
-    csvTimeStamp: csvTimeStamp,
-  });
+  const errorMessage = _.get(boardReport, ['reportError', 'boardError'])
+    ? `Failed to get Jira info_status: ${_.get(boardReport, ['reportError', 'boardError', 'status'])}...`
+    : ''
+  const [allErrorMessage, setAllErrorMessage] = useState('')
+
+  const getBoardReportRequestBody = (): BoardReportRequestDTO => {
+    return {
+      metrics: boardMetrics,
+      startTime: dayjs(startDate).valueOf().toString(),
+      endTime: dayjs(endDate).valueOf().toString(),
+      considerHoliday: calendarType === CALENDAR.CHINA,
+      jiraBoardSetting: {
+        token: jiraToken,
+        type: type.toLowerCase().replace(' ', '-'),
+        site,
+        projectKey,
+        boardId,
+        boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings, jiraColumnsWithValue),
+        treatFlagCardAsBlock,
+        users,
+        assigneeFilter,
+        targetFields,
+        doneColumn,
+      },
+      csvTimeStamp: csvTimeStamp,
+    }
+  }
 
   const getBoardItems = () => {
     const velocity = boardReport?.velocity;
@@ -123,25 +134,28 @@ const BoardMetrics = ({
     return [...velocityItems, ...cycleTimeItems];
   };
 
-  const errorMessage = boardReport?.boardError
-    ? `Failed to get Jira info_status: ${boardReport.boardError.status}...`
-    : undefined
+  const handleRetry = () => {
+    startToRequestBoardData(getBoardReportRequestBody())
+    setAllErrorMessage('')
+  }
 
   useEffect(() => {
     !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());
   }, []);
+
+  useEffect(() => {
+    setAllErrorMessage(timeoutError || errorMessage)
+  }, [timeoutError, errorMessage])
 
   return (
     <>
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.BOARD.TITLE} />
-          {!errorMessage && boardReport?.isBoardMetricsReady && <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>}
-          {errorMessage && (
-            <StyledRetry onClick={() => startToRequestBoardData(getBoardReportRequestBody())}>{RETRY}</StyledRetry>
-          )}
+          {!(timeoutError || errorMessage)  && boardReport?.isBoardMetricsReady && <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>}
+          {(timeoutError || errorMessage) && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
-        <ReportGrid reportDetails={getBoardItems()} errorMessage={errorMessage} />
+        <ReportGrid reportDetails={getBoardItems()} errorMessage={allErrorMessage} />
       </StyledMetricsSection>
     </>
   );

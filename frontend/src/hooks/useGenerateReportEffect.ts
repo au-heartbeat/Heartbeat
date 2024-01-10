@@ -15,7 +15,8 @@ export interface useGenerateReportEffectInterface {
   startToRequestDoraData: (doraParams: ReportRequestDTO) => void
   stopPollingReports: () => void
   isServerError: boolean
-  errorMessage: string
+  timeout4Board: string
+  timeout4Dora: string
   reportData: ReportResponseDTO | undefined
 }
 
@@ -23,7 +24,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const reportPath = '/reports'
   const dispatch = useAppDispatch()
   const [isServerError, setIsServerError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [timeout4Board, setTimeout4Board] = useState('')
+  const [timeout4Dora, setTimeout4Dora] = useState('')
   const [reportData, setReportData] = useState<ReportResponseDTO>()
   const timerIdRef = useRef<number>()
   let hasPollingStarted = false
@@ -37,16 +39,24 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         pollingReport(res.response.callbackUrl, res.response.interval)
       })
       .catch((e) => {
-        handleError(e)
+        handleError(e, 'Board')
         stopPollingReports()
       })
   }
 
-  const handleError = (error: Error) => {
+  const handleError = (error: Error, source: string) => {
     if (error instanceof InternalServerException || error instanceof TimeoutException) {
       setIsServerError(true)
     } else {
-      setErrorMessage('Data loading failed')
+      setReportData(undefined)
+      if (source === 'Board') {
+        setTimeout4Board('Data loading failed')
+      } else if (source === 'Dora') {
+        setTimeout4Dora('Data loading failed')
+      } else {
+        setTimeout4Board('Data loading failed')
+        setTimeout4Dora('Data loading failed')
+      }
     }
   };
 
@@ -59,7 +69,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         pollingReport(res.response.callbackUrl, res.response.interval)
       })
       .catch((e) => {
-        handleError(e)
+        handleError(e, 'Dora')
         stopPollingReports()
       })
   }
@@ -77,7 +87,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         }
       })
       .catch((e) => {
-        handleError(e)
+        handleError(e, 'All')
         stopPollingReports()
       })
   }
@@ -98,6 +108,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     stopPollingReports,
     reportData,
     isServerError,
-    errorMessage,
+    timeout4Board,
+    timeout4Dora,
   }
 }

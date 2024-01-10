@@ -1,6 +1,5 @@
 import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { Nullable } from '@src/utils/types';
-import { Nullable } from '@src/utils/types';
 
 export interface ReportResponseDTO {
   velocity: Nullable<VelocityResponse>
@@ -15,14 +14,18 @@ export interface ReportResponseDTO {
   isPipelineMetricsReady: Nullable<boolean>
   isSourceControlMetricsReady: Nullable<boolean>
   isAllMetricsReady: boolean
-  boardError: Nullable<ErrorResponse>
-  pipelineError: Nullable<ErrorResponse>
-  sourceControlError: Nullable<ErrorResponse>
+  reportError: Nullable<AllErrorResponse>
 }
 
 export interface VelocityResponse {
   velocityForSP: number;
   velocityForCards: number;
+}
+
+export interface AllErrorResponse {
+  boardError: ErrorResponse | null
+  pipelineError: ErrorResponse | null
+  sourceControlError: ErrorResponse | null
 }
 
 export interface ErrorResponse {
