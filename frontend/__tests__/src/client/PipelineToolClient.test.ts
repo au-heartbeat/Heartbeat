@@ -2,9 +2,7 @@ import { setupServer } from 'msw/node'
 import { rest } from 'msw'
 import each from 'jest-each'
 import {
-  MOCK_PIPELINE_URL,
   MOCK_PIPELINE_VERIFY_REQUEST_PARAMS,
-  VERIFY_ERROR_MESSAGE,
   MOCK_PIPELINE_GET_INFO_URL,
   MOCK_BUILD_KITE_GET_INFO_RESPONSE,
   MOCK_PIPELINE_VERIFY_URL,
@@ -122,7 +120,7 @@ describe('PipelineToolClient', () => {
         }
       )
 
-      it('should return "Unknown error" as a last resort when error code didn\'t match the predeifned erorr cases', async () => {
+      it('should return "Unknown error" as a last resort when api error code didn\'t match the predeifned erorr cases', async () => {
         server.use(rest.post(MOCK_PIPELINE_GET_INFO_URL, (req, res, ctx) => res(ctx.status(503))))
         const result = await pipelineToolClient.getPipelineToolInfo(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS)
 
