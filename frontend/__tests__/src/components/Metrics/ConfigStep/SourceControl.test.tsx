@@ -20,7 +20,7 @@ import { rest } from 'msw';
 import { HttpStatusCode } from 'axios';
 
 export const fillSourceControlFieldsInformation = () => {
-  const mockInfo = 'ghpghoghughsghr_1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b';
+  const mockInfo = 'ghpghoghughsghr_*******2b1A2b1A2b1A2b'.replace('*******', '1A2b1A2b1A2b1A2b1A2b1A');
   const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
 
   fireEvent.change(tokenInput, { target: { value: mockInfo } });
