@@ -223,12 +223,12 @@ public class GenerateReporterService {
 	public void generateDoraReport(GenerateReportRequest request) {
 		MetricsDataReady metricsDataStatus = getMetricsStatus(request.getMetrics(), Boolean.TRUE);
 		initializeMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+		if (Objects.nonNull(metricsDataStatus.isPipelineMetricsReady()) && metricsDataStatus.isPipelineMetricsReady()) {
+			generatePipelineReport(request);
+		}
 		if (Objects.nonNull(metricsDataStatus.isSourceControlMetricsReady())
 				&& metricsDataStatus.isSourceControlMetricsReady()) {
 			generateSourceControlReport(request);
-		}
-		if (Objects.nonNull(metricsDataStatus.isPipelineMetricsReady()) && metricsDataStatus.isPipelineMetricsReady()) {
-			generatePipelineReport(request);
 		}
 		generateCsvForDora(request);
 	}
@@ -239,21 +239,18 @@ public class GenerateReporterService {
 				"Start to generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
 				pipelineRequest.getMetrics(), pipelineRequest.getConsiderHoliday(), pipelineRequest.getStartTime(),
 				pipelineRequest.getEndTime(), IdUtil.getPipelineReportId(request.getCsvTimeStamp()));
-		CompletableFuture.runAsync(() -> {
-			try {
-				saveReporterInHandler(generateReporter(pipelineRequest),
-						IdUtil.getPipelineReportId(pipelineRequest.getCsvTimeStamp()));
-				updateMetricsDataReadyInHandler(pipelineRequest.getCsvTimeStamp(), pipelineRequest.getMetrics());
-				log.info(
-						"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
-						pipelineRequest.getMetrics(), pipelineRequest.getConsiderHoliday(),
-						pipelineRequest.getStartTime(), pipelineRequest.getEndTime(),
-						IdUtil.getPipelineReportId(request.getCsvTimeStamp()));
-			}
-			catch (BaseException e) {
-				asyncExceptionHandler.put(IdUtil.getPipelineReportId(request.getCsvTimeStamp()), e);
-			}
-		});
+		try {
+			saveReporterInHandler(generateReporter(pipelineRequest),
+					IdUtil.getPipelineReportId(pipelineRequest.getCsvTimeStamp()));
+			updateMetricsDataReadyInHandler(pipelineRequest.getCsvTimeStamp(), pipelineRequest.getMetrics());
+			log.info(
+					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
+					pipelineRequest.getMetrics(), pipelineRequest.getConsiderHoliday(), pipelineRequest.getStartTime(),
+					pipelineRequest.getEndTime(), IdUtil.getPipelineReportId(request.getCsvTimeStamp()));
+		}
+		catch (BaseException e) {
+			asyncExceptionHandler.put(IdUtil.getPipelineReportId(request.getCsvTimeStamp()), e);
+		}
 	}
 
 	private void generateSourceControlReport(GenerateReportRequest request) {
@@ -263,29 +260,26 @@ public class GenerateReporterService {
 				sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
 				sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(),
 				IdUtil.getSourceControlReportId(request.getCsvTimeStamp()));
-		CompletableFuture.runAsync(() -> {
-			try {
-				saveReporterInHandler(generateReporter(sourceControlRequest),
-						IdUtil.getSourceControlReportId(sourceControlRequest.getCsvTimeStamp()));
-				updateMetricsDataReadyInHandler(sourceControlRequest.getCsvTimeStamp(),
-						sourceControlRequest.getMetrics());
-				log.info(
-						"Successfully generate codebase report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
-						sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
-						sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(),
-						IdUtil.getSourceControlReportId(request.getCsvTimeStamp()));
-			}
-			catch (BaseException e) {
-				asyncExceptionHandler.put(IdUtil.getSourceControlReportId(request.getCsvTimeStamp()), e);
-			}
-		});
+		try {
+			saveReporterInHandler(generateReporter(sourceControlRequest),
+					IdUtil.getSourceControlReportId(sourceControlRequest.getCsvTimeStamp()));
+			updateMetricsDataReadyInHandler(sourceControlRequest.getCsvTimeStamp(), sourceControlRequest.getMetrics());
+			log.info(
+					"Successfully generate codebase report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
+					sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
+					sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(),
+					IdUtil.getSourceControlReportId(request.getCsvTimeStamp()));
+		}
+		catch (BaseException e) {
+			asyncExceptionHandler.put(IdUtil.getSourceControlReportId(request.getCsvTimeStamp()), e);
+		}
 	}
 
 	public synchronized ReportResponse generateReporter(GenerateReportRequest request) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
 		// fetch data for calculate
 		List<String> lowMetrics = request.getMetrics().stream().map(String::toLowerCase).toList();
-		FetchedData fetchedData = fetchOriginalData(request, lowMetrics);
+		FetchedData fetchedData = fetchOriginalData(request, lowMetrics);// double
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
