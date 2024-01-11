@@ -48,6 +48,7 @@ export const Board = () => {
   const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const [isShowNoDoneCard, setIsNoDoneCard] = useState(false);
   const { verifyJira, isLoading, errorMessage } = useVerifyBoardEffect();
+  const { getBoardInfo } = useGetBoardInfoEffect();
   const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
   const [fields, setFields] = useState([
     {
@@ -181,10 +182,14 @@ export const Board = () => {
       .then((res) => {
         if (res) {
           dispatch(updateBoardVerifyState(res.isBoardVerify));
+          getBoardInfo({
+            ...params,
+            projectKey: res.response.projectKey,
+          });
           // dispatch(updateJiraVerifyResponse(res.response))
           dispatch(updateProjectKey(res.response.projectKey));
-          res.isBoardVerify && dispatch(updateMetricsState({ ...res.response, isProjectCreated }));
-          setIsNoDoneCard(!res.haveDoneCard);
+          // res.isBoardVerify && dispatch(updateMetricsState({ ...res.response, isProjectCreated }))
+          // setIsNoDoneCard(!res.haveDoneCard)
         }
       })
       .catch((err) => err);

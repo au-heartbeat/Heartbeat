@@ -9,17 +9,19 @@ export interface useVerifyBoardStateInterface {
     | {
         isBoardVerify: boolean
         haveDoneCard: boolean
-        response: Record<string, string | boolean | number>
+        response: Record<string, any>
       }
     | undefined
-  >;
-  isLoading: boolean;
-  errorMessage: string;
+  >
+  isLoading: boolean
+  errorMessage: string
+  errorFields: Record<string, string>
 }
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [errorFields, setErrorFields] = useState({})
 
   const verifyJira = async (params: BoardRequestDTO) => {
     setIsLoading(true);
@@ -40,5 +42,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     verifyJira,
     isLoading,
     errorMessage,
-  };
-};
+    errorFields,
+  }
+}
