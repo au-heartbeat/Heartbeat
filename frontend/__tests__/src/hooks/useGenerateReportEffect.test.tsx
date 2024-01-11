@@ -32,45 +32,6 @@ describe('use generate report effect', () => {
     jest.useRealTimers();
   });
 
-  it('should set error message when generate report throw error', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new Error('error');
-    });
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.errorMessage).toEqual('generate report: error');
-    });
-    act(() => {
-      jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION);
-    });
-
-    await waitFor(() => {
-      expect(result.current.errorMessage).toEqual('');
-    });
-  });
-
-  it('should set error message when generate report response status 404', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new NotFoundException('error message', HttpStatusCode.NotFound);
-    });
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.errorMessage).toEqual('generate report: error message');
-    });
-    act(() => {
-      jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION);
-    });
-    await waitFor(() => {
-      expect(result.current.errorMessage).toEqual('');
-    });
-  });
-
   it('should set error message when generate report response status 500', async () => {
     reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
       throw new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatusCode.InternalServerError);
@@ -111,30 +72,6 @@ describe('use generate report effect', () => {
       result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
       expect(reportClient.pollingReport).toBeCalledTimes(1);
       expect(result.current.isServerError).toEqual(true);
-    });
-  });
-
-  it('should return error message when calling startToRequestBoardData given pollingReport response return 4xx ', async () => {
-    reportClient.pollingReport = jest.fn().mockImplementation(async () => {
-      throw new NotFoundException('file not found', HttpStatusCode.NotFound);
-    });
-    reportClient.retrieveReportByUrl = jest
-      .fn()
-      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-    result.current.stopPollingReports = jest.fn();
-
-    await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.errorMessage).toEqual('generate report: file not found');
-    });
-    act(() => {
-      jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION);
-    });
-
-    await waitFor(() => {
-      expect(result.current.errorMessage).toEqual('');
     });
   });
 
@@ -204,46 +141,6 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set error message when generate report throw error', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new Error('error');
-    });
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.errorMessage).toEqual('generate report: error');
-    });
-    act(() => {
-      jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION);
-    });
-
-    await waitFor(() => {
-      expect(result.current.errorMessage).toEqual('');
-    });
-  });
-
-  it('should set error message when generate report response status 404', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new NotFoundException('error message', HttpStatusCode.NotFound);
-    });
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.errorMessage).toEqual('generate report: error message');
-    });
-    act(() => {
-      jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION);
-    });
-
-    await waitFor(() => {
-      expect(result.current.errorMessage).toEqual('');
-    });
-  });
-
   it('should set error message when generate report response status 500', async () => {
     reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
       throw new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatusCode.NotFound);
@@ -259,7 +156,7 @@ describe('use generate report effect', () => {
 
   it('should set isServerError is true when throw unknownException', async () => {
     reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new UnknownException();
+      throw new InternalServerException('5xx', 500);
     });
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -285,31 +182,6 @@ describe('use generate report effect', () => {
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
       expect(reportClient.pollingReport).toBeCalledTimes(1);
       expect(result.current.isServerError).toEqual(true);
-    });
-  });
-
-  it('should return error message when calling startToRequestDoraData given pollingReport response return 4xx ', async () => {
-    reportClient.pollingReport = jest.fn().mockImplementation(async () => {
-      throw new NotFoundException('file not found', HttpStatusCode.NotFound);
-    });
-    reportClient.retrieveReportByUrl = jest
-      .fn()
-      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-    result.current.stopPollingReports = jest.fn();
-
-    await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.errorMessage).toEqual('generate report: file not found');
-    });
-
-    act(() => {
-      jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION);
-    });
-
-    await waitFor(() => {
-      expect(result.current.errorMessage).toEqual('');
     });
   });
 

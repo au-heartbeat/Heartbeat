@@ -7,7 +7,6 @@ import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { DURATION, RETRIEVE_REPORT_TYPES } from '@src/constants/commons';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { updateReportData } from '@src/context/report/reportSlice';
 import { TimeoutException } from '@src/exceptions/TimeoutException';
 
 export interface useGenerateReportEffectInterface {
@@ -22,7 +21,6 @@ export interface useGenerateReportEffectInterface {
 
 export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const reportPath = '/reports';
-  const dispatch = useAppDispatch();
   const [isServerError, setIsServerError] = useState(false);
   const [timeout4Board, setTimeout4Board] = useState('');
   const [timeout4Dora, setTimeout4Dora] = useState('');
