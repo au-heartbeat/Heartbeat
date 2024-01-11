@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ReportError {
+
 	private ErrorInfo boardError;
 
 	private ErrorInfo pipelineError;
 
 	private ErrorInfo sourceControlError;
+
 }

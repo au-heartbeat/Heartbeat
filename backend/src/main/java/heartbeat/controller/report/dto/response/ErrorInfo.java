@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ErrorInfo {
+
 	private int status;
 
 	private String errorMessage;
+
 }
