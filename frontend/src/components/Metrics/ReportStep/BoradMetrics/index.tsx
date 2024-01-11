@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useAppSelector } from '@src/hooks'
-import _ from 'lodash'
-import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice'
+import React, { useEffect, useState } from 'react';
+import { useAppSelector } from '@src/hooks';
+import _ from 'lodash';
+import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -11,10 +11,10 @@ import {
   REQUIRED_DATA,
   SHOW_MORE,
   RETRY,
-} from '@src/constants/resources'
-import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request'
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice'
-import dayjs from 'dayjs'
+} from '@src/constants/resources';
+import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
+import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import dayjs from 'dayjs';
 import {
   StyledMetricsSection,
   StyledRetry,
@@ -28,14 +28,14 @@ import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { Nullable } from '@src/utils/types';
 
 interface BoardMetricsProps {
-  startToRequestBoardData: (request: ReportRequestDTO) => void
-  boardReport?: ReportResponseDTO
-  csvTimeStamp: number
-  startDate: string | null
-  endDate: string | null
+  startToRequestBoardData: (request: ReportRequestDTO) => void;
+  boardReport?: ReportResponseDTO;
+  csvTimeStamp: number;
+  startDate: string | null;
+  endDate: string | null;
   isBackFromDetail: boolean;
-  timeoutError: string
-  onShowDetail:() => void
+  timeoutError: string;
+  onShowDetail: () => void;
 }
 
 const BoardMetrics = ({
@@ -64,8 +64,8 @@ const BoardMetrics = ({
 
   const errorMessage = _.get(boardReport, ['reportError', 'boardError'])
     ? `Failed to get Jira info_status: ${_.get(boardReport, ['reportError', 'boardError', 'status'])}...`
-    : ''
-  const [allErrorMessage, setAllErrorMessage] = useState('')
+    : '';
+  const [allErrorMessage, setAllErrorMessage] = useState('');
 
   const getBoardReportRequestBody = (): BoardReportRequestDTO => {
     return {
@@ -87,8 +87,8 @@ const BoardMetrics = ({
         doneColumn,
       },
       csvTimeStamp: csvTimeStamp,
-    }
-  }
+    };
+  };
 
   const getBoardItems = () => {
     const velocity = boardReport?.velocity;
@@ -135,23 +135,25 @@ const BoardMetrics = ({
   };
 
   const handleRetry = () => {
-    startToRequestBoardData(getBoardReportRequestBody())
-  }
+    startToRequestBoardData(getBoardReportRequestBody());
+  };
 
   useEffect(() => {
     !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());
   }, []);
 
   useEffect(() => {
-    setAllErrorMessage(timeoutError || errorMessage)
-  }, [timeoutError, errorMessage])
+    setAllErrorMessage(timeoutError || errorMessage);
+  }, [timeoutError, errorMessage]);
 
   return (
     <>
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.BOARD.TITLE} />
-          {!(timeoutError || errorMessage)  && boardReport?.isBoardMetricsReady && <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>}
+          {!(timeoutError || errorMessage) && boardReport?.isBoardMetricsReady && (
+            <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
+          )}
           {(timeoutError || errorMessage) && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
         <ReportGrid reportDetails={getBoardItems()} errorMessage={allErrorMessage} />

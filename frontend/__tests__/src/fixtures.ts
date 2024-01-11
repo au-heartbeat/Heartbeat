@@ -474,7 +474,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
   isSourceControlMetricsReady: true,
   isAllMetricsReady: true,
   reportError: null,
-}
+};
 
 export const MOCK_RETRIEVE_REPORT_RESPONSE = {
   callbackUrl: 'reports/123',
@@ -639,7 +639,7 @@ export const EMPTY_REPORT_VALUES: ReportResponseDTO = {
   isSourceControlMetricsReady: false,
   isAllMetricsReady: false,
   reportError: null,
-}
+};
 
 export const CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE =
   'Imported data is not perfectly matched. Please review carefully before going next!';

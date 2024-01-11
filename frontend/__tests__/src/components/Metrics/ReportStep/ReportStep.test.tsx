@@ -189,7 +189,7 @@ describe('Report Step', () => {
 
       expect(screen.getByText('4.00')).toBeInTheDocument();
     });
-  })
+  });
 
   describe('behavior', () => {
     it('should call handleBack method when clicking back button given back button enabled', async () => {

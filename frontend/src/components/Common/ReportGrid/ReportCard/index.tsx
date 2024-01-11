@@ -5,32 +5,32 @@ import {
   StyledItemSection,
   StyledReportCard,
   StyledReportCardTitle,
-} from '@src/components/Common/ReportGrid/ReportCard/style'
-import React, { HTMLAttributes } from 'react'
-import { ReportCardItem, ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem'
-import { GRID_CONFIG } from '@src/constants/commons'
-import { Loading } from '@src/components/Loading'
-import EmptyBox from '@src/assets/EmptyBox.svg'
+} from '@src/components/Common/ReportGrid/ReportCard/style';
+import React, { HTMLAttributes } from 'react';
+import { ReportCardItem, ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem';
+import { GRID_CONFIG } from '@src/constants/commons';
+import { Loading } from '@src/components/Loading';
+import EmptyBox from '@src/assets/EmptyBox.svg';
 
 interface ReportCardProps extends HTMLAttributes<HTMLDivElement> {
-  title: string
-  items?: ReportCardItemProps[] | null
-  xs: number
-  errorMessage: string | undefined
+  title: string;
+  items?: ReportCardItemProps[] | null;
+  xs: number;
+  errorMessage: string | undefined;
 }
 
 const ErrorMessagePrompt = (props: { errorMessage: string }) => {
-  const { errorMessage } = props
+  const { errorMessage } = props;
   return (
     <StyledErrorSection>
       <StyledImgSection src={EmptyBox} alt='empty image' />
       <StyledErrorMessage>{errorMessage}</StyledErrorMessage>
     </StyledErrorSection>
-  )
-}
+  );
+};
 
 export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) => {
-  const defaultFlex = 1
+  const defaultFlex = 1;
   const getReportItems = () => {
     let style = GRID_CONFIG.FULL;
     switch (xs) {

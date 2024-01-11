@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import _ from 'lodash'
-import { useAppSelector } from '@src/hooks'
-import { selectConfig } from '@src/context/config/configSlice'
+import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useAppSelector } from '@src/hooks';
+import { selectConfig } from '@src/context/config/configSlice';
 import {
   CALENDAR,
   DORA_METRICS,
@@ -11,31 +11,31 @@ import {
   REQUIRED_DATA,
   SHOW_MORE,
   RETRY,
-} from '@src/constants/resources'
-import { ReportRequestDTO } from '@src/clients/report/dto/request'
-import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
-import dayjs from 'dayjs'
-import { StyledMetricsSection } from '@src/components/Metrics/ReportStep/DoraMetrics/style'
-import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle'
-import { ReportGrid } from '@src/components/Common/ReportGrid'
-import { ReportResponseDTO } from '@src/clients/report/dto/response'
-import { StyledSpacing } from '@src/components/Metrics/ReportStep/style'
-import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util'
-import { StyledShowMore, StyledTitleWrapper } from '@src/components/Metrics/ReportStep/DoraMetrics/style'
-import { ROUTE } from '@src/constants/router'
-import { RETRIEVE_REPORT_TYPES } from '@src/constants/commons'
-import { StyledRetry } from '../BoradMetrics/style'
+} from '@src/constants/resources';
+import { ReportRequestDTO } from '@src/clients/report/dto/request';
+import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import dayjs from 'dayjs';
+import { StyledMetricsSection } from '@src/components/Metrics/ReportStep/DoraMetrics/style';
+import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
+import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { StyledSpacing } from '@src/components/Metrics/ReportStep/style';
+import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
+import { StyledShowMore, StyledTitleWrapper } from '@src/components/Metrics/ReportStep/DoraMetrics/style';
+import { ROUTE } from '@src/constants/router';
+import { RETRIEVE_REPORT_TYPES } from '@src/constants/commons';
+import { StyledRetry } from '../BoradMetrics/style';
 import { Nullable } from '@src/utils/types';
 
 interface DoraMetricsProps {
-  startToRequestDoraData: (request: ReportRequestDTO) => void
-  doraReport?: ReportResponseDTO
-  csvTimeStamp: number
-  startDate: string | null
-  endDate: string | null
+  startToRequestDoraData: (request: ReportRequestDTO) => void;
+  doraReport?: ReportResponseDTO;
+  csvTimeStamp: number;
+  startDate: string | null;
+  endDate: string | null;
   onShowDetail: () => void;
   isBackFromDetail: boolean;
-  timeoutError: string
+  timeoutError: string;
 }
 
 const DoraMetrics = ({
@@ -183,31 +183,31 @@ const DoraMetrics = ({
 
   const errorMessage4BuildKite = _.get(doraReport, ['reportError', 'pipelineError'])
     ? `Failed to get BuildKite info_status: ${_.get(doraReport, ['reportError', 'pipelineError', 'status'])}...`
-    : ''
+    : '';
 
   const errorMessage4Github = _.get(doraReport, ['reportError', 'sourceControlError'])
     ? `Failed to get Github info_status: ${_.get(doraReport, ['reportError', 'sourceControlError', 'status'])}...`
-    : ''
+    : '';
 
-  const showRetryButton = !!(timeoutError || errorMessage4BuildKite || errorMessage4Github)
+  const showRetryButton = !!(timeoutError || errorMessage4BuildKite || errorMessage4Github);
 
-  const [error4Github, setError4Github] = useState('')
-  const [error4BuildKite, setError4BuildKite] = useState('')
+  const [error4Github, setError4Github] = useState('');
+  const [error4BuildKite, setError4BuildKite] = useState('');
 
   const handleRetry = () => {
-    startToRequestDoraData(getDoraReportRequestBody())
-    setError4Github('')
-    setError4BuildKite('')
-  }
+    startToRequestDoraData(getDoraReportRequestBody());
+    setError4Github('');
+    setError4BuildKite('');
+  };
 
   useEffect(() => {
     !isBackFromDetail && startToRequestDoraData(getDoraReportRequestBody());
   }, []);
 
   useEffect(() => {
-    setError4Github(timeoutError || errorMessage4Github)
-    setError4BuildKite(timeoutError || errorMessage4BuildKite)
-  }, [timeoutError, errorMessage4Github, errorMessage4BuildKite])
+    setError4Github(timeoutError || errorMessage4Github);
+    setError4BuildKite(timeoutError || errorMessage4BuildKite);
+  }, [timeoutError, errorMessage4Github, errorMessage4BuildKite]);
 
   return (
     <>

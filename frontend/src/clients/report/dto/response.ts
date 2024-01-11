@@ -2,19 +2,19 @@ import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks
 import { Nullable } from '@src/utils/types';
 
 export interface ReportResponseDTO {
-  velocity: Nullable<VelocityResponse>
-  cycleTime: Nullable<CycleTimeResponse>
-  deploymentFrequency: Nullable<DeploymentFrequencyResponse>
-  meanTimeToRecovery: Nullable<MeanTimeToRecoveryResponse>
-  leadTimeForChanges: Nullable<LeadTimeForChangesResponse>
-  changeFailureRate: Nullable<ChangeFailureRateResponse>
-  classificationList: Nullable<Array<ClassificationResponse>>
-  exportValidityTime: Nullable<number>
-  isBoardMetricsReady: Nullable<boolean>
-  isPipelineMetricsReady: Nullable<boolean>
-  isSourceControlMetricsReady: Nullable<boolean>
-  isAllMetricsReady: boolean
-  reportError: Nullable<AllErrorResponse>
+  velocity: Nullable<VelocityResponse>;
+  cycleTime: Nullable<CycleTimeResponse>;
+  deploymentFrequency: Nullable<DeploymentFrequencyResponse>;
+  meanTimeToRecovery: Nullable<MeanTimeToRecoveryResponse>;
+  leadTimeForChanges: Nullable<LeadTimeForChangesResponse>;
+  changeFailureRate: Nullable<ChangeFailureRateResponse>;
+  classificationList: Nullable<Array<ClassificationResponse>>;
+  exportValidityTime: Nullable<number>;
+  isBoardMetricsReady: Nullable<boolean>;
+  isPipelineMetricsReady: Nullable<boolean>;
+  isSourceControlMetricsReady: Nullable<boolean>;
+  isAllMetricsReady: boolean;
+  reportError: Nullable<AllErrorResponse>;
 }
 
 export interface VelocityResponse {
@@ -23,14 +23,14 @@ export interface VelocityResponse {
 }
 
 export interface AllErrorResponse {
-  boardError: ErrorResponse | null
-  pipelineError: ErrorResponse | null
-  sourceControlError: ErrorResponse | null
+  boardError: ErrorResponse | null;
+  pipelineError: ErrorResponse | null;
+  sourceControlError: ErrorResponse | null;
 }
 
 export interface ErrorResponse {
-  status: number
-  message: string
+  status: number;
+  message: string;
 }
 
 export interface CycleTimeResponse {

@@ -29,13 +29,13 @@ export const StyledErrorSection = styled.div({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-})
+});
 
 export const StyledImgSection = styled.img({
   height: '4.43rem',
-})
+});
 
 export const StyledErrorMessage = styled.div({
   color: '#A2A2A2',
   fontSize: '0.875rem',
-})
+});

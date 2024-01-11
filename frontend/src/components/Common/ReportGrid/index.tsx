@@ -5,9 +5,9 @@ import { GRID_CONFIG } from '@src/constants/commons';
 import { ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem';
 
 export interface ReportGridProps {
-  lastGrid?: boolean
-  reportDetails: ReportDetailProps[]
-  errorMessage?: string | undefined
+  lastGrid?: boolean;
+  reportDetails: ReportDetailProps[];
+  errorMessage?: string | undefined;
 }
 
 export interface ReportDetailProps {

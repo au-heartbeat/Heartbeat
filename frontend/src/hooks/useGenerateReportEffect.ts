@@ -1,79 +1,79 @@
-import { useRef, useState } from 'react'
-import { reportClient } from '@src/clients/report/ReportClient'
-import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request'
-import { UnknownException } from '@src/exceptions/UnkonwException'
-import { InternalServerException } from '@src/exceptions/InternalServerException'
-import { ReportResponseDTO } from '@src/clients/report/dto/response'
-import { DURATION, RETRIEVE_REPORT_TYPES } from '@src/constants/commons'
-import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime'
-import { useAppDispatch } from '@src/hooks/useAppDispatch'
-import { updateReportData } from '@src/context/report/reportSlice'
-import { TimeoutException } from '@src/exceptions/TimeoutException'
+import { useRef, useState } from 'react';
+import { reportClient } from '@src/clients/report/ReportClient';
+import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
+import { UnknownException } from '@src/exceptions/UnkonwException';
+import { InternalServerException } from '@src/exceptions/InternalServerException';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { DURATION, RETRIEVE_REPORT_TYPES } from '@src/constants/commons';
+import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { updateReportData } from '@src/context/report/reportSlice';
+import { TimeoutException } from '@src/exceptions/TimeoutException';
 
 export interface useGenerateReportEffectInterface {
-  startToRequestBoardData: (boardParams: BoardReportRequestDTO) => void
-  startToRequestDoraData: (doraParams: ReportRequestDTO) => void
-  stopPollingReports: () => void
-  isServerError: boolean
-  timeout4Board: string
-  timeout4Dora: string
-  reportData: ReportResponseDTO | undefined
+  startToRequestBoardData: (boardParams: BoardReportRequestDTO) => void;
+  startToRequestDoraData: (doraParams: ReportRequestDTO) => void;
+  stopPollingReports: () => void;
+  isServerError: boolean;
+  timeout4Board: string;
+  timeout4Dora: string;
+  reportData: ReportResponseDTO | undefined;
 }
 
 export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
-  const reportPath = '/reports'
-  const dispatch = useAppDispatch()
-  const [isServerError, setIsServerError] = useState(false)
-  const [timeout4Board, setTimeout4Board] = useState('')
-  const [timeout4Dora, setTimeout4Dora] = useState('')
-  const [reportData, setReportData] = useState<ReportResponseDTO>()
-  const timerIdRef = useRef<number>()
-  let hasPollingStarted = false
+  const reportPath = '/reports';
+  const dispatch = useAppDispatch();
+  const [isServerError, setIsServerError] = useState(false);
+  const [timeout4Board, setTimeout4Board] = useState('');
+  const [timeout4Dora, setTimeout4Dora] = useState('');
+  const [reportData, setReportData] = useState<ReportResponseDTO>();
+  const timerIdRef = useRef<number>();
+  let hasPollingStarted = false;
 
   const startToRequestBoardData = (boardParams: ReportRequestDTO) => {
-    setTimeout4Board('')
+    setTimeout4Board('');
     reportClient
       .retrieveReportByUrl(boardParams, `${reportPath}/${RETRIEVE_REPORT_TYPES.BOARD}`)
       .then((res) => {
-        if (hasPollingStarted) return
-        hasPollingStarted = true
-        pollingReport(res.response.callbackUrl, res.response.interval)
+        if (hasPollingStarted) return;
+        hasPollingStarted = true;
+        pollingReport(res.response.callbackUrl, res.response.interval);
       })
       .catch((e) => {
-        handleError(e, 'Board')
-        stopPollingReports()
-      })
-  }
+        handleError(e, 'Board');
+        stopPollingReports();
+      });
+  };
 
   const handleError = (error: Error, source: string) => {
     if (error instanceof InternalServerException || error instanceof TimeoutException) {
-      setIsServerError(true)
+      setIsServerError(true);
     } else {
       if (source === 'Board') {
-        setTimeout4Board('Data loading failed')
+        setTimeout4Board('Data loading failed');
       } else if (source === 'Dora') {
-        setTimeout4Dora('Data loading failed')
+        setTimeout4Dora('Data loading failed');
       } else {
-        setTimeout4Board('Data loading failed')
-        setTimeout4Dora('Data loading failed')
+        setTimeout4Board('Data loading failed');
+        setTimeout4Dora('Data loading failed');
       }
     }
   };
 
   const startToRequestDoraData = (doraParams: ReportRequestDTO) => {
-    setTimeout4Dora('')
+    setTimeout4Dora('');
     reportClient
       .retrieveReportByUrl(doraParams, `${reportPath}/${RETRIEVE_REPORT_TYPES.DORA}`)
       .then((res) => {
-        if (hasPollingStarted) return
-        hasPollingStarted = true
-        pollingReport(res.response.callbackUrl, res.response.interval)
+        if (hasPollingStarted) return;
+        hasPollingStarted = true;
+        pollingReport(res.response.callbackUrl, res.response.interval);
       })
       .catch((e) => {
-        handleError(e, 'Dora')
-        stopPollingReports()
-      })
-  }
+        handleError(e, 'Dora');
+        stopPollingReports();
+      });
+  };
 
   const pollingReport = (url: string, interval: number) => {
     reportClient
@@ -84,14 +84,14 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         if (response.isAllMetricsReady) {
           stopPollingReports();
         } else {
-          timerIdRef.current = window.setTimeout(() => pollingReport(url, interval), interval * 1000)
+          timerIdRef.current = window.setTimeout(() => pollingReport(url, interval), interval * 1000);
         }
       })
       .catch((e) => {
-        handleError(e, 'All')
-        stopPollingReports()
-      })
-  }
+        handleError(e, 'All');
+        stopPollingReports();
+      });
+  };
 
   const stopPollingReports = () => {
     window.clearTimeout(timerIdRef.current);
@@ -111,5 +111,5 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     isServerError,
     timeout4Board,
     timeout4Dora,
-  }
-}
+  };
+};

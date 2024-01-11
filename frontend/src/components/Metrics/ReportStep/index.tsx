@@ -45,8 +45,8 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const startDate = configData.basic.dateRange.startDate ?? '';
   const endDate = configData.basic.dateRange.endDate ?? '';
 
-  const { updateProps } = notification
-  const [errorMessage, setErrorMessage] = useState<string>()
+  const { updateProps } = notification;
+  const [errorMessage, setErrorMessage] = useState<string>();
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);

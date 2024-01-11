@@ -23,4 +23,4 @@ export const StyledRetry = styled('div')({
   textDecoration: 'none',
   color: '#4350AF',
   cursor: 'pointer',
-})
+});
