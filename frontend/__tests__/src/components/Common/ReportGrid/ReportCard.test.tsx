@@ -19,7 +19,7 @@ describe('Report Card', () => {
       },
     ];
 
-    render(<ReportCard title={'card'} items={items} xs={6} />);
+    const { getByText, queryByText } = render(<ReportCard title={'card'} items={items} xs={6} errorMessage={''} />)
 
     expect(screen.getByText('1.00')).toBeInTheDocument();
     expect(screen.getByText('2.00')).toBeInTheDocument();

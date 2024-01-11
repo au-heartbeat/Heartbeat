@@ -21,6 +21,6 @@ export const StyledRetry = styled('div')({
   marginLeft: '0.5rem',
   fontSize: '0.8rem',
   textDecoration: 'none',
-  color: theme.palette.link,
+  color: '#4350AF',
   cursor: 'pointer',
 })
