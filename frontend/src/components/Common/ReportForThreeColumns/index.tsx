@@ -54,6 +54,14 @@ export const ReportForThreeColumns = ({ title, fieldName, listName, data }: Repo
       </Fragment>
     ));
 
+  const getTitleUnit = (title: string) => {
+    return title === METRICS_TITLE.LEAD_TIME_FOR_CHANGES || title === METRICS_TITLE.MEAN_TIME_TO_RECOVERY
+      ? REPORT_SUFFIX_UNITS.HOURS
+      : title === METRICS_TITLE.DEPLOYMENT_FREQUENCY
+      ? REPORT_SUFFIX_UNITS.DEPLOYMENTS_DAY
+      : '';
+  };
+
   return (
     <>
       <Container>
@@ -63,14 +71,7 @@ export const ReportForThreeColumns = ({ title, fieldName, listName, data }: Repo
             <TableRow>
               <StyledTableCell>{fieldName}</StyledTableCell>
               <StyledTableCell>{listName}</StyledTableCell>
-              <StyledTableCell>
-                Value
-                {title === METRICS_TITLE.LEAD_TIME_FOR_CHANGES || title === METRICS_TITLE.MEAN_TIME_TO_RECOVERY
-                  ? REPORT_SUFFIX_UNITS.HOURS
-                  : title === METRICS_TITLE.DEPLOYMENT_FREQUENCY
-                  ? REPORT_SUFFIX_UNITS.DEPLOYMENTS_DAY
-                  : ''}
-              </StyledTableCell>
+              <StyledTableCell>Value{getTitleUnit(title)}</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>{renderRows()}</TableBody>
