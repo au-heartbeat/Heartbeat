@@ -71,7 +71,7 @@ export const ReportForThreeColumns = ({ title, fieldName, listName, data }: Repo
             <TableRow>
               <StyledTableCell>{fieldName}</StyledTableCell>
               <StyledTableCell>{listName}</StyledTableCell>
-              <StyledTableCell>Value{getTitleUnit(title)}</StyledTableCell>
+              <StyledTableCell>{`Value${getTitleUnit(title)}`}</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>{renderRows()}</TableBody>
