@@ -54,7 +54,8 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
     exportValidityTimeMin &&
       updateProps?.({
         open: true,
-        title: MESSAGE.NOTIFICATION_FIRST_REPORT.replace('%s', exportValidityTimeMin.toString()),
+        title: 'Help Information',
+        message: MESSAGE.NOTIFICATION_FIRST_REPORT.replace('%s', exportValidityTimeMin.toString()),
         closeAutomatically: true,
       });
   }, [exportValidityTimeMin]);
@@ -71,7 +72,8 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
         if (remainingTime <= remainingExpireTime) {
           updateProps?.({
             open: true,
-            title: MESSAGE.EXPIRE_IN_FIVE_MINUTES,
+            title: 'Help Information',
+            message: MESSAGE.EXPIRE_IN_FIVE_MINUTES,
             closeAutomatically: true,
           });
           clearInterval(timer);
