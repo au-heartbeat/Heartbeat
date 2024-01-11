@@ -142,11 +142,11 @@ class Config {
     this.boardInfoSelectionJira.click();
     this.boardInfoSelectionClassicJira.click();
 
-    this.boardInfoBoardIdInput.type(boardId)
-    this.boardInfoEmailInput.type(email)
-    this.boardInfoSiteInput.type(site)
-    this.boardInfoTokenInput.type(token)
-    this.getVerifyButton(this.boardConfigSection).click()
+    this.boardInfoBoardIdInput.type(boardId);
+    this.boardInfoEmailInput.type(email);
+    this.boardInfoSiteInput.type(site);
+    this.boardInfoTokenInput.type(token);
+    this.getVerifyButton(this.boardConfigSection).click();
   }
 
   fillPipelineToolFieldsInfoAndVerify(token: string) {

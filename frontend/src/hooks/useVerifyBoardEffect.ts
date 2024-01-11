@@ -7,21 +7,21 @@ import { useState } from 'react';
 export interface useVerifyBoardStateInterface {
   verifyJira: (params: BoardRequestDTO) => Promise<
     | {
-        isBoardVerify: boolean
-        haveDoneCard: boolean
-        response: Record<string, any>
+        isBoardVerify: boolean;
+        haveDoneCard: boolean;
+        response: Record<string, any>;
       }
     | undefined
-  >
-  isLoading: boolean
-  errorMessage: string
-  errorFields: Record<string, string>
+  >;
+  isLoading: boolean;
+  errorMessage: string;
+  errorFields: Record<string, string>;
 }
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [errorFields, setErrorFields] = useState({})
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [errorFields, setErrorFields] = useState({});
 
   const verifyJira = async (params: BoardRequestDTO) => {
     setIsLoading(true);
@@ -31,8 +31,8 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       const err = e as Error;
       setErrorMessage(`${params.type} ${MESSAGE.VERIFY_FAILED_ERROR}: ${err.message}`);
       setTimeout(() => {
-        setErrorMessage('')
-      }, DURATION.ERROR_MESSAGE_TIME)
+        setErrorMessage('');
+      }, DURATION.ERROR_MESSAGE_TIME);
     } finally {
       setIsLoading(false);
     }
@@ -43,5 +43,5 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     isLoading,
     errorMessage,
     errorFields,
-  }
-}
+  };
+};

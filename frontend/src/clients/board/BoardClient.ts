@@ -12,7 +12,7 @@ export class BoardClient extends HttpClient {
     this.haveDoneCard = true;
     this.response = {};
     try {
-      const result = await this.axiosInstance.post(`/boards/${params.type}/verify`, params)
+      const result = await this.axiosInstance.post(`/boards/${params.type}/verify`, params);
       result.status === HttpStatusCode.NoContent
         ? this.handleBoardNoDoneCard()
         : this.handleBoardVerifySucceed(result.data);

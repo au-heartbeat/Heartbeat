@@ -98,9 +98,9 @@ export const configSlice = createSlice({
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
       /* istanbul ignore next */
-      state.board.config = (action.payload.board && { type: 'Jira', ...action.payload.board }) || state.board.config
-      state.pipelineTool.config = action.payload.pipelineTool || state.pipelineTool.config
-      state.sourceControl.config = action.payload.sourceControl || state.sourceControl.config
+      state.board.config = (action.payload.board && { type: 'Jira', ...action.payload.board }) || state.board.config;
+      state.pipelineTool.config = action.payload.pipelineTool || state.pipelineTool.config;
+      state.sourceControl.config = action.payload.sourceControl || state.sourceControl.config;
     },
     updateProjectCreatedState: (state, action) => {
       state.isProjectCreated = action.payload;
@@ -112,7 +112,7 @@ export const configSlice = createSlice({
       state.board.config = action.payload;
     },
     updateProjectKey: (state, action) => {
-      state.board.config.projectKey = action.payload
+      state.board.config.projectKey = action.payload;
     },
     updateJiraVerifyResponse: (state, action) => {
       const { jiraColumns, targetFields, users } = action.payload;
