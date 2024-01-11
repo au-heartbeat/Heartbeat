@@ -47,7 +47,7 @@ public class BuildKiteControllerTest {
 
 	public static final String TEST_END_TIME = "17657557";
 
-	public static final String BUILD_KITE = "BuildKite";
+	public static final String BUILD_KITE = "buildkite";
 
 	@MockBean
 	private BuildKiteService buildKiteService;

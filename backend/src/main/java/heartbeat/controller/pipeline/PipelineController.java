@@ -31,6 +31,7 @@ public class PipelineController {
 
 	private final BuildKiteService buildKiteService;
 
+	@Deprecated
 	@PostMapping("/{pipelineType}")
 	public BuildKiteResponseDTO getBuildKiteInfo(@PathVariable String pipelineType,
 			@Valid @RequestBody PipelineParam pipelineParam) {
@@ -38,17 +39,18 @@ public class PipelineController {
 	}
 
 	@PostMapping("/{pipelineType}/verify")
-	public ResponseEntity<Void> verifyBuildKiteToken(@PathVariable @NotBlank PipelineType pipelineType,
+	public ResponseEntity<Void> verifyBuildKiteToken(@PathVariable @NotBlank String pipelineType,
 			@Valid @RequestBody TokenParam tokenParam) {
+		PipelineType.fromValue(pipelineType);
 		buildKiteService.verifyToken(tokenParam.getToken());
 		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("/{pipelineType}/info")
-	public ResponseEntity<BuildKiteResponseDTO> fetchBuildKiteInfo(@PathVariable @NotBlank PipelineType pipelineType,
+	public ResponseEntity<BuildKiteResponseDTO> fetchBuildKiteInfo(@PathVariable @NotBlank String pipelineType,
 			@Valid @RequestBody PipelineParam pipelineParam) {
+		PipelineType.fromValue(pipelineType);
 		BuildKiteResponseDTO buildKiteResponse = buildKiteService.getBuildKiteInfo(pipelineParam);
-
 		if (buildKiteResponse.getPipelineList().isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}

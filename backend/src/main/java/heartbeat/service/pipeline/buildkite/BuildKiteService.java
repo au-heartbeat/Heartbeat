@@ -57,6 +57,7 @@ public class BuildKiteService {
 		customTaskExecutor.shutdown();
 	}
 
+	@Deprecated
 	public BuildKiteResponseDTO fetchPipelineInfo(PipelineParam pipelineParam) {
 		try {
 			String buildKiteToken = "Bearer " + pipelineParam.getToken();

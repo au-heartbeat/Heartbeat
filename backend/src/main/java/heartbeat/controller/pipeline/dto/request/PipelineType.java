@@ -2,7 +2,7 @@ package heartbeat.controller.pipeline.dto.request;
 
 public enum PipelineType {
 
-	BuildKite("buildKite");
+	BuildKite("buildkite");
 
 	public final String pipelineType;
 
@@ -12,7 +12,7 @@ public enum PipelineType {
 
 	public static PipelineType fromValue(String type) {
 		return switch (type) {
-			case "buildKite" -> BuildKite;
+			case "buildkite" -> BuildKite;
 			default -> throw new IllegalArgumentException("Pipeline type does not find!");
 		};
 	}
