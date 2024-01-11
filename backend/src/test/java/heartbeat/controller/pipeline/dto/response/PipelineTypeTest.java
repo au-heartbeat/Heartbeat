@@ -12,7 +12,7 @@ public class PipelineTypeTest {
 	public void shouldConvertValueToType() {
 		PipelineType buildKiteType = PipelineType.fromValue("buildkite");
 
-		assertEquals(buildKiteType, PipelineType.BuildKite);
+		assertEquals(buildKiteType, PipelineType.BUILDKITE);
 	}
 
 	@Test
