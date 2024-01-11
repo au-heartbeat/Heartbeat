@@ -17,7 +17,7 @@ export const PREVIOUS = 'Previous';
 
 export const SAVE = 'Save';
 
-export const SHOW_MORE = 'show more >';
+export const SHOW_MORE = 'Show more >';
 
 export const BACK = 'Back';
 
@@ -491,8 +491,8 @@ export const EXPECTED_REPORT_VALUES = {
       id: 0,
       name: 'Average cycle time',
       valueList: [
-        { value: 21.18, unit: '(days/SP)' },
-        { value: '30.26', unit: '(days/card)' },
+        { value: 21.18, unit: '(Days/SP)' },
+        { value: '30.26', unit: '(Days/Card)' },
       ],
     },
     {
@@ -504,8 +504,8 @@ export const EXPECTED_REPORT_VALUES = {
       id: 2,
       name: 'Average development time',
       valueList: [
-        { value: '12.13', unit: '(days/SP)' },
-        { value: '17.32', unit: '(days/card)' },
+        { value: '12.13', unit: '(Days/SP)' },
+        { value: '17.32', unit: '(Days/Card)' },
       ],
     },
   ],
@@ -522,7 +522,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
       valuesList: [
         {
-          name: 'Deployment frequency(deployments/day)',
+          name: 'Deployment frequency',
           value: '0.30',
         },
       ],
@@ -532,7 +532,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'Average',
       valuesList: [
         {
-          name: 'Deployment frequency(deployments/day)',
+          name: 'Deployment frequency',
           value: '0.40',
         },
       ],
