@@ -101,6 +101,7 @@ public class BuildKiteControllerTest {
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
+
 		val resultStep = JsonPath.parse(response.getContentAsString()).read("$.steps[0]");
 		assertThat(resultStep).isEqualTo(":docker: publish image to cloudsmith");
 	}

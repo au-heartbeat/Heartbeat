@@ -416,10 +416,10 @@ class BuildKiteServiceTest {
 		httpHeaders.addAll(HttpHeaders.LINK, linkHeader);
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(null, httpHeaders,
 				HttpStatus.OK);
-
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
 				anyString(), anyString(), any()))
 			.thenReturn(responseEntity);
+
 		List<BuildKiteBuildInfo> pipelineBuilds = buildKiteService.fetchPipelineBuilds(MOCK_TOKEN, mockDeployment,
 				MOCK_START_TIME, MOCK_END_TIME);
 
@@ -430,7 +430,6 @@ class BuildKiteServiceTest {
 	@Test
 	public void shouldThrowUnauthorizedExceptionWhenFetchPipelineBuilds401Exception() {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
 				anyString(), anyString(), any()))
 			.thenThrow(new UnauthorizedException(UNAUTHORIZED_MSG));
@@ -450,7 +449,6 @@ class BuildKiteServiceTest {
 		httpHeaders.addAll(HttpHeaders.LINK, linkHeader);
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(null, httpHeaders,
 				HttpStatus.OK);
-
 		when(buildKiteFeignClient.getPipelineSteps(anyString(), anyString(), anyString(), anyString(), anyString(),
 				anyString(), anyString(), any()))
 			.thenReturn(responseEntity);
