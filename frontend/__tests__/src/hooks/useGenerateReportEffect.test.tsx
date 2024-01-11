@@ -14,6 +14,7 @@ import { InternalServerException } from '@src/exceptions/InternalServerException
 import { HttpStatusCode } from 'axios';
 import clearAllMocks = jest.clearAllMocks;
 import resetAllMocks = jest.resetAllMocks;
+import { TimeoutException } from '@src/exceptions/TimeoutException';
 
 jest.mock('@src/hooks/reportMapper/report', () => ({
   pipelineReportMapper: jest.fn(),
@@ -45,7 +46,33 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set isServerError is true when throw unknownException', async () => {
+  it('should set isServerError is true when throw InternalServerException', async () => {
+    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
+      throw new InternalServerException('5xx error', 500);
+    });
+
+    const { result } = renderHook(() => useGenerateReportEffect());
+
+    await waitFor(() => {
+      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.isServerError).toEqual(true);
+    });
+  });
+
+  it('should set isServerError is true when throw TimeoutException', async () => {
+    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
+      throw new TimeoutException('5xx error', 503);
+    });
+
+    const { result } = renderHook(() => useGenerateReportEffect());
+
+    await waitFor(() => {
+      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.isServerError).toEqual(true);
+    });
+  });
+
+  it('should set timeout4Board is "Data loading failed" when timeout', async () => {
     reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
       throw new UnknownException();
     });
@@ -54,7 +81,7 @@ describe('use generate report effect', () => {
 
     await waitFor(() => {
       result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.isServerError).toEqual(true);
+      expect(result.current.timeout4Board).toEqual('Data loading failed');
     });
   });
 
@@ -154,9 +181,9 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set isServerError is true when throw unknownException', async () => {
+  it('should set isServerError is true when throw InternalServerException', async () => {
     reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new InternalServerException('5xx', 500);
+      throw new InternalServerException('5xx error', 500);
     });
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -164,6 +191,50 @@ describe('use generate report effect', () => {
     await waitFor(() => {
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
       expect(result.current.isServerError).toEqual(true);
+    });
+  });
+
+  it('should set isServerError is true when throw TimeoutException', async () => {
+    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
+      throw new TimeoutException('5xx error', 503);
+    });
+
+    const { result } = renderHook(() => useGenerateReportEffect());
+
+    await waitFor(() => {
+      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.isServerError).toEqual(true);
+    });
+  });
+
+  it('should set timeout4Dora is "Data loading failed" when timeout', async () => {
+    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
+      throw new UnknownException();
+    });
+
+    const { result } = renderHook(() => useGenerateReportEffect());
+
+    await waitFor(() => {
+      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.timeout4Dora).toEqual('Data loading failed');
+    });
+  });
+
+  it('should set timeout4Dora and timeout4Board is "Data loading failed" when polling timeout', async () => {
+    reportClient.pollingReport = jest.fn().mockImplementation(async () => {
+      throw new UnknownException();
+    });
+
+    reportClient.retrieveReportByUrl = jest
+      .fn()
+      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
+
+    const { result } = renderHook(() => useGenerateReportEffect());
+
+    await waitFor(() => {
+      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.timeout4Dora).toEqual('Data loading failed');
+      expect(result.current.timeout4Board).toEqual('Data loading failed');
     });
   });
 
