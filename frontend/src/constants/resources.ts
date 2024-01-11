@@ -146,7 +146,7 @@ export enum CYCLE_TIME_METRICS_NAME {
   AVERAGE_TESTING_TIME = 'Average testing time',
 }
 
-export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment frequency(deployments/day)';
+export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment frequency';
 
 export const FAILURE_RATE_NAME = 'Failure rate';
 
@@ -162,6 +162,7 @@ export enum REPORT_SUFFIX_UNITS {
   PER_SP = '(days/SP)',
   PER_CARD = '(days/card)',
   HOURS = '(hours)',
+  DEPLOYMENTS_DAY = '(deployments/day)',
 }
 
 export const MESSAGE = {
