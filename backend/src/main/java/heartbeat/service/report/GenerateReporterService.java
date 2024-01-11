@@ -265,7 +265,7 @@ public class GenerateReporterService {
 					IdUtil.getSourceControlReportId(sourceControlRequest.getCsvTimeStamp()));
 			updateMetricsDataReadyInHandler(sourceControlRequest.getCsvTimeStamp(), sourceControlRequest.getMetrics());
 			log.info(
-					"Successfully generate codebase report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
+					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
 					sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
 					sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(),
 					IdUtil.getSourceControlReportId(request.getCsvTimeStamp()));
@@ -279,7 +279,7 @@ public class GenerateReporterService {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
 		// fetch data for calculate
 		List<String> lowMetrics = request.getMetrics().stream().map(String::toLowerCase).toList();
-		FetchedData fetchedData = fetchOriginalData(request, lowMetrics);// double
+		FetchedData fetchedData = fetchOriginalData(request, lowMetrics);
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
