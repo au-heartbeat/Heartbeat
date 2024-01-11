@@ -201,21 +201,22 @@ public class GenerateReporterService {
 
 	public void generateBoardReport(GenerateReportRequest request) {
 		initializeMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+		String boardReportId = IdUtil.getBoardReportId(request.getCsvTimeStamp());
 		log.info(
 				"Start to generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 				request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
-				IdUtil.getBoardReportId(request.getCsvTimeStamp()));
+				boardReportId);
 		CompletableFuture.runAsync(() -> {
 			try {
-				saveReporterInHandler(generateReporter(request), IdUtil.getBoardReportId(request.getCsvTimeStamp()));
+				saveReporterInHandler(generateReporter(request), boardReportId);
 				updateMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
 				log.info(
 						"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 						request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(),
-						request.getEndTime(), IdUtil.getBoardReportId(request.getCsvTimeStamp()));
+						request.getEndTime(), boardReportId);
 			}
 			catch (BaseException e) {
-				asyncExceptionHandler.put(IdUtil.getBoardReportId(request.getCsvTimeStamp()), e);
+				asyncExceptionHandler.put(boardReportId, e);
 			}
 		});
 	}
@@ -235,10 +236,11 @@ public class GenerateReporterService {
 
 	private void generatePipelineReport(GenerateReportRequest request) {
 		GenerateReportRequest pipelineRequest = request.convertToPipelineRequest(request);
+		String pipelineReportId = IdUtil.getPipelineReportId(request.getCsvTimeStamp());
 		log.info(
 				"Start to generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
 				pipelineRequest.getMetrics(), pipelineRequest.getConsiderHoliday(), pipelineRequest.getStartTime(),
-				pipelineRequest.getEndTime(), IdUtil.getPipelineReportId(request.getCsvTimeStamp()));
+				pipelineRequest.getEndTime(), pipelineReportId);
 		try {
 			saveReporterInHandler(generateReporter(pipelineRequest),
 					IdUtil.getPipelineReportId(pipelineRequest.getCsvTimeStamp()));
@@ -246,20 +248,20 @@ public class GenerateReporterService {
 			log.info(
 					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
 					pipelineRequest.getMetrics(), pipelineRequest.getConsiderHoliday(), pipelineRequest.getStartTime(),
-					pipelineRequest.getEndTime(), IdUtil.getPipelineReportId(request.getCsvTimeStamp()));
+					pipelineRequest.getEndTime(), pipelineReportId);
 		}
 		catch (BaseException e) {
-			asyncExceptionHandler.put(IdUtil.getPipelineReportId(request.getCsvTimeStamp()), e);
+			asyncExceptionHandler.put(pipelineReportId, e);
 		}
 	}
 
 	private void generateSourceControlReport(GenerateReportRequest request) {
 		GenerateReportRequest sourceControlRequest = request.convertToSourceControlRequest(request);
+		String sourceControlReportId = IdUtil.getSourceControlReportId(request.getCsvTimeStamp());
 		log.info(
 				"Start to generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
 				sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
-				sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(),
-				IdUtil.getSourceControlReportId(request.getCsvTimeStamp()));
+				sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(), sourceControlReportId);
 		try {
 			saveReporterInHandler(generateReporter(sourceControlRequest),
 					IdUtil.getSourceControlReportId(sourceControlRequest.getCsvTimeStamp()));
@@ -267,11 +269,10 @@ public class GenerateReporterService {
 			log.info(
 					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
 					sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
-					sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(),
-					IdUtil.getSourceControlReportId(request.getCsvTimeStamp()));
+					sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(), sourceControlReportId);
 		}
 		catch (BaseException e) {
-			asyncExceptionHandler.put(IdUtil.getSourceControlReportId(request.getCsvTimeStamp()), e);
+			asyncExceptionHandler.put(sourceControlReportId, e);
 		}
 	}
 
