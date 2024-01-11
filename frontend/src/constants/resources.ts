@@ -159,10 +159,10 @@ export const NAME = 'Name';
 export const AVERAGE_FIELD = 'Average';
 
 export enum REPORT_SUFFIX_UNITS {
-  PER_SP = '(days/SP)',
-  PER_CARD = '(days/card)',
-  HOURS = '(hours)',
-  DEPLOYMENTS_DAY = '(deployments/day)',
+  PER_SP = '(Days/SP)',
+  PER_CARD = '(Days/Card)',
+  HOURS = '(Hours)',
+  DEPLOYMENTS_DAY = '(Deployments/Day)',
 }
 
 export const MESSAGE = {
