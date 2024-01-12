@@ -1,10 +1,15 @@
-## Structure
+---
+title: Frontend Structure
+description: Frontend Structure
+---
 
-![img.png](./img.png)
+## Structure Overview
 
-#### Structure
+![Frontend Structure](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/design/frontend-structure.png)
 
-```agsl
+#### Structure Design
+
+```sh
 src
 ├── components
 │   └── xxx
@@ -25,7 +30,7 @@ src
 └── App.tsx
 ```
 
-- **Page**: It is the entrance of each router which has seperated URL. The external data like the data from browser(cookies, storages, url) should be gotten here and pass to container. The testing for page should include the data preparation and integration testing. The page should also define the global layout.
+- **Page**: It is the entrance of each router which has separated URL. The external data like the data from browser(cookies, storages, url) should be gotten here and pass to container. The testing for page should include the data preparation and integration testing. The page should also define the global layout.
 
 - **Component**: They are a set of basic UI elements which is combined with some primitive react element to show the content reflected with the UX design. They should not have any business logic and functionalities. They define their own view mode to control status/style changes. Thus, the testing for component should focus on the UX style and status. They never access the backend endpoints. The name should indicate the UI element, not the business idiom.
 
