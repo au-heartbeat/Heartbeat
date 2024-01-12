@@ -242,8 +242,7 @@ public class GenerateReporterService {
 				pipelineRequest.getMetrics(), pipelineRequest.getConsiderHoliday(), pipelineRequest.getStartTime(),
 				pipelineRequest.getEndTime(), pipelineReportId);
 		try {
-			saveReporterInHandler(generateReporter(pipelineRequest),
-					IdUtil.getPipelineReportId(pipelineRequest.getCsvTimeStamp()));
+			saveReporterInHandler(generateReporter(pipelineRequest), pipelineReportId);
 			updateMetricsDataReadyInHandler(pipelineRequest.getCsvTimeStamp(), pipelineRequest.getMetrics());
 			log.info(
 					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
@@ -263,8 +262,7 @@ public class GenerateReporterService {
 				sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
 				sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(), sourceControlReportId);
 		try {
-			saveReporterInHandler(generateReporter(sourceControlRequest),
-					IdUtil.getSourceControlReportId(sourceControlRequest.getCsvTimeStamp()));
+			saveReporterInHandler(generateReporter(sourceControlRequest), sourceControlReportId);
 			updateMetricsDataReadyInHandler(sourceControlRequest.getCsvTimeStamp(), sourceControlRequest.getMetrics());
 			log.info(
 					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
