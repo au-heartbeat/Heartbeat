@@ -199,7 +199,7 @@ public class GenerateReporterService {
 	}
 
 	public void generateBoardReport(GenerateReportRequest request) {
-		initializeMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+		initializeMetricsDataCompletedInHandler(request.getCsvTimeStamp(), request.getMetrics());
 		String boardReportId = IdUtil.getBoardReportId(request.getCsvTimeStamp());
 		log.info(
 				"Start to generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
@@ -207,7 +207,7 @@ public class GenerateReporterService {
 				boardReportId);
 		try {
 			saveReporterInHandler(generateReporter(request), boardReportId);
-			updateMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+			updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), request.getMetrics());
 			log.info(
 					"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 					request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
@@ -221,12 +221,12 @@ public class GenerateReporterService {
 	private void handleException(GenerateReportRequest request, String reportId, BaseException e) {
 		asyncExceptionHandler.put(reportId, e);
 		if (e.getStatus() == 401 || e.getStatus() == 403 || e.getStatus() == 404)
-			updateMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+			updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), request.getMetrics());
 	}
 
 	public void generateDoraReport(GenerateReportRequest request) {
 		MetricsDataCompleted metricsDataStatus = getMetricsStatus(request.getMetrics(), Boolean.TRUE);
-		initializeMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+		initializeMetricsDataCompletedInHandler(request.getCsvTimeStamp(), request.getMetrics());
 		if (Objects.nonNull(metricsDataStatus.pipelineMetricsCompleted())
 				&& metricsDataStatus.pipelineMetricsCompleted()) {
 			generatePipelineReport(request);
@@ -247,7 +247,7 @@ public class GenerateReporterService {
 				pipelineRequest.getEndTime(), pipelineReportId);
 		try {
 			saveReporterInHandler(generateReporter(pipelineRequest), pipelineReportId);
-			updateMetricsDataReadyInHandler(pipelineRequest.getCsvTimeStamp(), pipelineRequest.getMetrics());
+			updateMetricsDataCompletedInHandler(pipelineRequest.getCsvTimeStamp(), pipelineRequest.getMetrics());
 			log.info(
 					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
 					pipelineRequest.getMetrics(), pipelineRequest.getConsiderHoliday(), pipelineRequest.getStartTime(),
@@ -267,7 +267,8 @@ public class GenerateReporterService {
 				sourceControlRequest.getStartTime(), sourceControlRequest.getEndTime(), sourceControlReportId);
 		try {
 			saveReporterInHandler(generateReporter(sourceControlRequest), sourceControlReportId);
-			updateMetricsDataReadyInHandler(sourceControlRequest.getCsvTimeStamp(), sourceControlRequest.getMetrics());
+			updateMetricsDataCompletedInHandler(sourceControlRequest.getCsvTimeStamp(),
+					sourceControlRequest.getMetrics());
 			log.info(
 					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
 					sourceControlRequest.getMetrics(), sourceControlRequest.getConsiderHoliday(),
@@ -648,7 +649,7 @@ public class GenerateReporterService {
 		asyncReportRequestHandler.putReport(reportId, reportContent);
 	}
 
-	public void initializeMetricsDataReadyInHandler(String timeStamp, List<String> metrics) {
+	public void initializeMetricsDataCompletedInHandler(String timeStamp, List<String> metrics) {
 		MetricsDataCompleted metricsStatus = getMetricsStatus(metrics, Boolean.FALSE);
 		MetricsDataCompleted isPreviousMetricsReady = asyncReportRequestHandler.getMetricsDataReady(timeStamp);
 		MetricsDataCompleted isMetricsDataCompleted = createMetricsDataReady(metricsStatus.boardMetricsCompleted(),
@@ -683,7 +684,7 @@ public class GenerateReporterService {
 		return (isPreviousReadyValue != null || isNewReadyValue == null) ? isPreviousReadyValue : isNewReadyValue;
 	}
 
-	public void updateMetricsDataReadyInHandler(String timeStamp, List<String> metrics) {
+	public void updateMetricsDataCompletedInHandler(String timeStamp, List<String> metrics) {
 		MetricsDataCompleted metricsStatus = getMetricsStatus(metrics, Boolean.TRUE);
 		MetricsDataCompleted previousMetricsReady = asyncReportRequestHandler.getMetricsDataReady(timeStamp);
 		if (previousMetricsReady == null) {

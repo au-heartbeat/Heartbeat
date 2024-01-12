@@ -1115,7 +1115,7 @@ class GenerateReporterServiceTest {
 
 		when(asyncReportRequestHandler.getMetricsDataReady(timeStamp)).thenReturn(null);
 
-		generateReporterService.initializeMetricsDataReadyInHandler(timeStamp, metrics);
+		generateReporterService.initializeMetricsDataCompletedInHandler(timeStamp, metrics);
 		verify(asyncReportRequestHandler).putMetricsDataReady(timeStamp, expectedPut);
 	}
 
@@ -1137,7 +1137,7 @@ class GenerateReporterServiceTest {
 
 		when(asyncReportRequestHandler.getMetricsDataReady(timeStamp)).thenReturn(previousMetricsDataCompleted);
 
-		generateReporterService.initializeMetricsDataReadyInHandler(timeStamp, metrics);
+		generateReporterService.initializeMetricsDataCompletedInHandler(timeStamp, metrics);
 		verify(asyncReportRequestHandler).putMetricsDataReady(timeStamp, expectedPut);
 	}
 
@@ -1158,7 +1158,7 @@ class GenerateReporterServiceTest {
 
 		when(asyncReportRequestHandler.getMetricsDataReady(request.getCsvTimeStamp())).thenReturn(previousReady);
 
-		generateReporterService.updateMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+		generateReporterService.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), request.getMetrics());
 
 		verify(asyncReportRequestHandler, times(1)).putMetricsDataReady(request.getCsvTimeStamp(), expectedReady);
 	}
@@ -1180,7 +1180,7 @@ class GenerateReporterServiceTest {
 		when(asyncReportRequestHandler.getMetricsDataReady(anyString())).thenReturn(null);
 
 		assertThrows(GenerateReportException.class, () -> generateReporterService
-			.updateMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics()));
+			.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), request.getMetrics()));
 
 	}
 
@@ -1299,11 +1299,11 @@ class GenerateReporterServiceTest {
 
 		verify(spyGenerateReporterService, times(1)).generateReporter(reportRequest);
 		verify(spyGenerateReporterService, times(1))
-			.initializeMetricsDataReadyInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
+			.initializeMetricsDataCompletedInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
 		verify(spyGenerateReporterService, times(1)).saveReporterInHandler(
 				spyGenerateReporterService.generateReporter(reportRequest), reportRequest.getCsvTimeStamp());
-		verify(spyGenerateReporterService, times(1)).updateMetricsDataReadyInHandler(reportRequest.getCsvTimeStamp(),
-				reportRequest.getMetrics());
+		verify(spyGenerateReporterService, times(1))
+			.updateMetricsDataCompletedInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
 	}
 
 	@Test
@@ -1323,7 +1323,7 @@ class GenerateReporterServiceTest {
 		spyGenerateReporterService.generateBoardReport(reportRequest);
 
 		verify(spyGenerateReporterService, times(1))
-			.initializeMetricsDataReadyInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
+			.initializeMetricsDataCompletedInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
 		verify(spyGenerateReporterService, times(1))
 			.saveReporterInHandler(spyGenerateReporterService.generateReporter(reportRequest), reportId);
 		verify(asyncExceptionHandler, times(1)).put(reportId, e);
@@ -1347,7 +1347,7 @@ class GenerateReporterServiceTest {
 		spyGenerateReporterService.generateDoraReport(reportRequest);
 
 		verify(spyGenerateReporterService, times(1))
-			.initializeMetricsDataReadyInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
+			.initializeMetricsDataCompletedInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
 		verify(spyGenerateReporterService, times(1))
 			.saveReporterInHandler(spyGenerateReporterService.generateReporter(reportRequest), reportId);
 		verify(asyncExceptionHandler, times(1)).put(reportId, e);
@@ -1371,7 +1371,7 @@ class GenerateReporterServiceTest {
 		spyGenerateReporterService.generateDoraReport(reportRequest);
 
 		verify(spyGenerateReporterService, times(1))
-			.initializeMetricsDataReadyInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
+			.initializeMetricsDataCompletedInHandler(reportRequest.getCsvTimeStamp(), reportRequest.getMetrics());
 		verify(spyGenerateReporterService, times(1))
 			.saveReporterInHandler(spyGenerateReporterService.generateReporter(reportRequest), reportId);
 		verify(asyncExceptionHandler, times(1)).put(reportId, e);
@@ -1400,10 +1400,10 @@ class GenerateReporterServiceTest {
 		spyGenerateReporterService.generateDoraReport(reportRequest);
 
 		verify(spyGenerateReporterService, times(1)).generateReporter(any());
-		verify(spyGenerateReporterService, times(1)).initializeMetricsDataReadyInHandler(any(), any());
+		verify(spyGenerateReporterService, times(1)).initializeMetricsDataCompletedInHandler(any(), any());
 		verify(spyGenerateReporterService, times(1))
 			.saveReporterInHandler(spyGenerateReporterService.generateReporter(any()), reportId);
-		verify(spyGenerateReporterService, times(1)).updateMetricsDataReadyInHandler(any(), any());
+		verify(spyGenerateReporterService, times(1)).updateMetricsDataCompletedInHandler(any(), any());
 	}
 
 	@Test
@@ -1429,10 +1429,10 @@ class GenerateReporterServiceTest {
 		spyGenerateReporterService.generateDoraReport(reportRequest);
 
 		verify(spyGenerateReporterService, times(1)).generateReporter(any());
-		verify(spyGenerateReporterService, times(1)).initializeMetricsDataReadyInHandler(any(), any());
+		verify(spyGenerateReporterService, times(1)).initializeMetricsDataCompletedInHandler(any(), any());
 		verify(spyGenerateReporterService, times(1))
 			.saveReporterInHandler(spyGenerateReporterService.generateReporter(any()), reportId);
-		verify(spyGenerateReporterService, times(1)).updateMetricsDataReadyInHandler(any(), any());
+		verify(spyGenerateReporterService, times(1)).updateMetricsDataCompletedInHandler(any(), any());
 
 	}
 
