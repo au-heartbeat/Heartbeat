@@ -79,9 +79,7 @@ export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) 
   return (
     <StyledReportCard data-test-id={title}>
       {!errorMessage && !items && <Loading size='1.5rem' backgroundColor='transparent' />}
-      {!errorMessage && !items && <Loading size='1.5rem' backgroundColor='transparent' />}
       <StyledReportCardTitle>{title}</StyledReportCardTitle>
-      {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} />}
       {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} />}
       {items && getReportItems()}
     </StyledReportCard>
