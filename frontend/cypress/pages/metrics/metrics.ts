@@ -76,7 +76,7 @@ export class Metrics {
   }
 
   get buildKiteStepNotFoundTips() {
-    return cy.contains('BuildKite get steps failed: Not found');
+    return cy.contains('Failed to get BuildKite steps: Not found');
   }
 
   get pipelineRemoveButton() {
@@ -117,6 +117,10 @@ export class Metrics {
 
   get cycleTimeTitleTooltip() {
     return cy.get('[data-test-id="tooltip');
+  }
+
+  get dateRange() {
+    return cy.get('[data-test-id="date-range"]');
   }
 
   chooseDropdownOption = (label: string, value: string) => {
@@ -192,6 +196,11 @@ export class Metrics {
   BackToConfigStep() {
     this.backButton.click();
   }
+
+  checkDateRange = () => {
+    this.dateRange.contains('2022/09/01');
+    this.dateRange.contains('2022/09/14');
+  };
 }
 
 const metricsPage = new Metrics();
