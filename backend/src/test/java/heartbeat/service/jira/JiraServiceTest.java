@@ -1030,7 +1030,7 @@ class JiraServiceTest {
 
 		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
 				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), null))
-			.isInstanceOf(IllegalArgumentException.class)
+			.isInstanceOf(BadRequestException.class)
 			.hasMessageContaining("Board type does not find!");
 	}
 
@@ -1040,7 +1040,7 @@ class JiraServiceTest {
 		when(jiraFeignClient.getProject(any(), any(), any()))
 			.thenReturn(JiraBoardProject.builder().style("unknown").build());
 		assertThatThrownBy(() -> jiraService.getInfo(boardTypeJira, boardRequestParam))
-			.isInstanceOf(InternalServerErrorException.class)
+			.isInstanceOf(BadRequestException.class)
 			.hasMessageContaining("Board type does not find!");
 	}
 

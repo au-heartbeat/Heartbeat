@@ -25,23 +25,23 @@ public class JiraController {
 
 	@Deprecated
 	@PostMapping("/{boardType}")
-	public BoardConfigDTO getBoard(@PathVariable @NotBlank BoardType boardType,
+	public BoardConfigDTO getBoard(@PathVariable @NotBlank String boardType,
 			@Valid @RequestBody BoardRequestParam boardRequestParam) {
-		return jiraService.getJiraConfiguration(boardType, boardRequestParam);
+		return jiraService.getJiraConfiguration(BoardType.fromValue(boardType), boardRequestParam);
 	}
 
 	@PostMapping("/{boardType}/verify")
-	public JiraVerifyResponse verify(@PathVariable @NotBlank BoardType boardType,
+	public JiraVerifyResponse verify(@PathVariable @NotBlank String boardType,
 			@Valid @RequestBody BoardVerifyRequestParam boardRequestParam) {
-		String projectKey = jiraService.verify(boardType, boardRequestParam);
+		String projectKey = jiraService.verify(BoardType.fromValue(boardType), boardRequestParam);
 		return JiraVerifyResponse.builder().projectKey(projectKey).build();
 	}
 
 	@PostMapping("/{boardType}/info")
-	public BoardConfigDTO getInfo(@PathVariable @NotBlank BoardType boardType,
+	public BoardConfigDTO getInfo(@PathVariable @NotBlank String boardType,
 			@Valid @RequestBody BoardRequestParam boardRequestParam) {
 		checkTime(boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
-		return jiraService.getInfo(boardType, boardRequestParam);
+		return jiraService.getInfo(BoardType.fromValue(boardType), boardRequestParam);
 	}
 
 	private void checkTime(String startTimeString, String endTimeString) {
