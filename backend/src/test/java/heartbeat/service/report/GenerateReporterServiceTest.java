@@ -12,6 +12,7 @@ import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
+import heartbeat.controller.pipeline.dto.request.PipelineType;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.ExportCSVRequest;
@@ -35,6 +36,7 @@ import heartbeat.controller.report.dto.response.MeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Velocity;
+import heartbeat.controller.source.SourceType;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.GenerateReportException;
@@ -62,7 +64,7 @@ import heartbeat.service.source.github.GitHubService;
 import heartbeat.handler.AsyncExceptionHandler;
 import heartbeat.util.IdUtil;
 import lombok.val;
-import org.junit.jupiter.api.Assertions;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -106,6 +108,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import static heartbeat.TestFixtures.BUILDKITE_TOKEN;
+import static heartbeat.TestFixtures.GITHUB_REPOSITORY;
+import static heartbeat.TestFixtures.GITHUB_TOKEN;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
@@ -125,6 +129,10 @@ class GenerateReporterServiceTest {
 	private static final String REQUEST_FILE_PATH = "src/test/java/heartbeat/controller/report/request.json";
 
 	private static final String RESPONSE_FILE_PATH = "src/test/java/heartbeat/controller/report/reportResponse.json";
+
+	private static final String TIMESTAMP = "1683734399999";
+
+	private static final String CSV_TIMESTAMP = "20240109232359";
 
 	@InjectMocks
 	GenerateReporterService generateReporterService;
@@ -208,7 +216,7 @@ class GenerateReporterServiceTest {
 			.jiraBoardSetting(jiraBoardSetting)
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		URI mockUrl = URI.create(SITE_ATLASSIAN_NET);
@@ -257,7 +265,7 @@ class GenerateReporterServiceTest {
 			.jiraBoardSetting(jiraBoardSetting)
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		Classification classification = Classification.builder()
@@ -308,7 +316,7 @@ class GenerateReporterServiceTest {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
+			.type(PipelineType.BUILDKITE.name())
 			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
@@ -319,7 +327,7 @@ class GenerateReporterServiceTest {
 			.buildKiteSetting(buildKiteSetting)
 			.startTime("1661702400000")
 			.endTime("1662739199000")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		DeploymentFrequency deploymentFrequency = DeploymentFrequency.builder()
@@ -352,7 +360,7 @@ class GenerateReporterServiceTest {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
+			.type(PipelineType.BUILDKITE.name())
 			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
@@ -362,7 +370,7 @@ class GenerateReporterServiceTest {
 			.buildKiteSetting(buildKiteSetting)
 			.startTime("1661702400000")
 			.endTime("1662739199000")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		ChangeFailureRate changeFailureRate = ChangeFailureRate.builder()
@@ -393,7 +401,7 @@ class GenerateReporterServiceTest {
 	@Test
 	void testNotGenerateReporterWithNullDevelopmentMetric() {
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
+			.type(PipelineType.BUILDKITE.name())
 			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(Collections.emptyList())
 			.build();
@@ -404,7 +412,7 @@ class GenerateReporterServiceTest {
 			.startTime("1661702400000")
 			.endTime("1662739199000")
 			.codebaseSetting(null)
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
@@ -443,7 +451,7 @@ class GenerateReporterServiceTest {
 			.jiraBoardSetting(jiraBoardSetting)
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(jiraService.getStoryPointsAndCycleTimeForDoneCards(any(), any(), any(), any())).thenReturn(cardCollection);
@@ -472,17 +480,17 @@ class GenerateReporterServiceTest {
 	@Test
 	void testGenerateReporterWithLeadTimeForChangesMetric() {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 
 		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
-			.type("Github")
-			.token("github_fake_token")
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
 			.leadTime(List.of(mockDeployment))
 			.build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
-			.token("buildKite_fake_token")
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
 
@@ -493,7 +501,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(codebaseSetting)
 			.startTime("1661702400000")
 			.endTime("1662739199000")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		PipelineLeadTime pipelineLeadTime = PipelineLeadTime.builder()
@@ -549,17 +557,17 @@ class GenerateReporterServiceTest {
 	void shouldGenerateCsvForPipelineWithPipelineMetricAndBuildInfoIsEmpty() throws IOException {
 		Path csvFilePath = Path.of("./csv/exportPipelineMetrics-1683734399999.csv");
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 
 		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
-			.type("Github")
-			.token("github_fake_token")
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
 			.leadTime(List.of(mockDeployment))
 			.build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
-			.token("buildKite_fake_token")
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
 
@@ -570,7 +578,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(codebaseSetting)
 			.startTime("1661702400000")
 			.endTime("1662739199000")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
@@ -591,24 +599,24 @@ class GenerateReporterServiceTest {
 		generateReporterService.generateDoraReport(request);
 
 		boolean isExists = Files.exists(csvFilePath);
-		Assertions.assertTrue(isExists);
+		assertTrue(isExists);
 		Files.deleteIfExists(csvFilePath);
 	}
 
 	@Test
 	void shouldGenerateCsvForPipelineWithPipelineMetric() throws IOException {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 
 		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
-			.type("Github")
-			.token("github_fake_token")
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
 			.leadTime(List.of(mockDeployment))
 			.build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
-			.token("buildKite_fake_token")
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
 
@@ -619,7 +627,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(codebaseSetting)
 			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
 			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
@@ -641,24 +649,24 @@ class GenerateReporterServiceTest {
 		generateReporterService.generateDoraReport(request);
 
 		boolean isExists = Files.exists(mockPipelineCsvPath);
-		Assertions.assertTrue(isExists);
+		assertTrue(isExists);
 		Files.deleteIfExists(mockPipelineCsvPath);
 	}
 
 	@Test
 	void shouldNotGenerateCsvForPipelineWithPipelineLeadTimeIsNull() throws IOException {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 
 		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
-			.type("Github")
-			.token("github_fake_token")
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
 			.leadTime(List.of(mockDeployment))
 			.build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
-			.token("buildKite_fake_token")
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.pipelineCrews(List.of("xx"))
 			.build();
@@ -670,7 +678,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(codebaseSetting)
 			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
 			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
@@ -687,24 +695,24 @@ class GenerateReporterServiceTest {
 		generateReporterService.generateDoraReport(request);
 
 		boolean isExists = Files.exists(mockPipelineCsvPath);
-		Assertions.assertFalse(isExists);
+		assertFalse(isExists);
 		Files.deleteIfExists(mockPipelineCsvPath);
 	}
 
 	@Test
 	void shouldNotGenerateCsvForPipelineWithCommitIsNull() throws IOException {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 
 		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
-			.type("Github")
-			.token("github_fake_token")
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
 			.leadTime(List.of(mockDeployment))
 			.build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
-			.token("buildKite_fake_token")
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
 			.pipelineCrews(List.of("xxx"))
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
@@ -716,7 +724,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(codebaseSetting)
 			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
 			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
@@ -732,24 +740,24 @@ class GenerateReporterServiceTest {
 		generateReporterService.generateDoraReport(request);
 
 		boolean isExists = Files.exists(mockPipelineCsvPath);
-		Assertions.assertFalse(isExists);
+		assertFalse(isExists);
 		Files.deleteIfExists(mockPipelineCsvPath);
 	}
 
 	@Test
 	void shouldNotGenerateCsvForPipeline() throws IOException {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 
 		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
-			.type("Github")
-			.token("github_fake_token")
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
 			.leadTime(List.of(mockDeployment))
 			.build();
 
 		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
-			.type("BuildKite")
-			.token("buildKite_fake_token")
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
 
@@ -760,7 +768,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(codebaseSetting)
 			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
 			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
@@ -776,7 +784,7 @@ class GenerateReporterServiceTest {
 		generateReporterService.generateDoraReport(request);
 
 		boolean isExists = Files.exists(mockPipelineCsvPath);
-		Assertions.assertFalse(isExists);
+		assertFalse(isExists);
 		Files.deleteIfExists(mockPipelineCsvPath);
 	}
 
@@ -824,7 +832,7 @@ class GenerateReporterServiceTest {
 			.jiraBoardSetting(jiraBoardSetting)
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		URI mockUrl = URI.create(SITE_ATLASSIAN_NET);
@@ -854,7 +862,7 @@ class GenerateReporterServiceTest {
 		generateReporterService.generateReporter(request);
 
 		boolean isExists = Files.exists(mockBoardCsvPath);
-		Assertions.assertTrue(isExists);
+		assertTrue(isExists);
 		Files.deleteIfExists(mockBoardCsvPath);
 	}
 
@@ -865,7 +873,7 @@ class GenerateReporterServiceTest {
 		generateReporterService.deleteExpireCSV(System.currentTimeMillis(), new File("./csv/"));
 
 		boolean isFileDeleted = Files.notExists(mockPipelineCsvPath);
-		Assertions.assertTrue(isFileDeleted);
+		assertTrue(isFileDeleted);
 	}
 
 	@Test
@@ -877,7 +885,7 @@ class GenerateReporterServiceTest {
 		generateReporterService.deleteExpireCSV(currentTimeStamp - 800000, new File("./csv/"));
 
 		boolean isFileDeleted = Files.notExists(csvFilePath);
-		Assertions.assertFalse(isFileDeleted);
+		assertFalse(isFileDeleted);
 		Files.deleteIfExists(csvFilePath);
 	}
 
@@ -892,7 +900,7 @@ class GenerateReporterServiceTest {
 
 		Boolean deleteStatus = generateReporterService.deleteExpireCSV(System.currentTimeMillis(), directory);
 
-		Assertions.assertTrue(deleteStatus);
+		assertTrue(deleteStatus);
 	}
 
 	@Test
@@ -906,7 +914,7 @@ class GenerateReporterServiceTest {
 
 		Boolean deleteStatus = generateReporterService.deleteExpireCSV(System.currentTimeMillis(), directory);
 
-		Assertions.assertFalse(deleteStatus);
+		assertFalse(deleteStatus);
 	}
 
 	private MeanTimeToRecovery createMockMeanToRecovery() {
@@ -1062,7 +1070,7 @@ class GenerateReporterServiceTest {
 			.jiraBoardSetting(null)
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		BadRequestException badRequestException = assertThrows(BadRequestException.class,
@@ -1078,7 +1086,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(null)
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		BadRequestException badRequestException = assertThrows(BadRequestException.class,
@@ -1094,7 +1102,7 @@ class GenerateReporterServiceTest {
 			.buildKiteSetting(null)
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		BadRequestException badRequestException = assertThrows(BadRequestException.class,
@@ -1105,7 +1113,7 @@ class GenerateReporterServiceTest {
 
 	@Test
 	void shouldInitializeValueFalseGivenPreviousMapperIsNullWhenInitializeRelatedMetricsReady() {
-		String timeStamp = "1683734399999";
+		String timeStamp = TIMESTAMP;
 		List<String> metrics = List.of(RequireDataEnum.CYCLE_TIME.getValue());
 		MetricsDataCompleted expectedPut = MetricsDataCompleted.builder()
 			.boardMetricsCompleted(false)
@@ -1121,7 +1129,7 @@ class GenerateReporterServiceTest {
 
 	@Test
 	void shouldReturnPreviousValueGivenPreviousValueExistWhenInitializeRelatedMetricsReady() {
-		String timeStamp = "1683734399999";
+		String timeStamp = TIMESTAMP;
 		List<String> metrics = List.of(RequireDataEnum.CYCLE_TIME.getValue(),
 				RequireDataEnum.DEPLOYMENT_FREQUENCY.getValue());
 		MetricsDataCompleted previousMetricsDataCompleted = MetricsDataCompleted.builder()
@@ -1153,7 +1161,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(buildCodeBaseSetting())
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(asyncReportRequestHandler.getMetricsDataReady(request.getCsvTimeStamp())).thenReturn(previousReady);
@@ -1174,7 +1182,7 @@ class GenerateReporterServiceTest {
 			.codebaseSetting(buildCodeBaseSetting())
 			.startTime("123")
 			.endTime("123")
-			.csvTimeStamp("1683734399999")
+			.csvTimeStamp(TIMESTAMP)
 			.build();
 
 		when(asyncReportRequestHandler.getMetricsDataReady(anyString())).thenReturn(null);
@@ -1206,7 +1214,7 @@ class GenerateReporterServiceTest {
 				.build())
 			.build();
 
-		String timeStamp = "1683734399999";
+		String timeStamp = TIMESTAMP;
 		String boardTimeStamp = "board-1683734399999";
 		String pipelineTimestamp = "pipeline-1683734399999";
 
@@ -1234,7 +1242,7 @@ class GenerateReporterServiceTest {
 			.classificationList(List.of())
 			.build();
 
-		String timeStamp = "1683734399999";
+		String timeStamp = TIMESTAMP;
 		String boardTimeStamp = "board-1683734399999";
 		String doraTimestamp = "dora-1683734399999";
 
@@ -1252,7 +1260,7 @@ class GenerateReporterServiceTest {
 
 	@Test
 	void shouldDoConvertMetricDataToCSVWhenCallGenerateCSVForMetrics() throws IOException {
-		String timeStamp = "1683734399999";
+		String timeStamp = TIMESTAMP;
 		ObjectMapper mapper = new ObjectMapper();
 		ReportResponse reportResponse = mapper
 			.readValue(new File("src/test/java/heartbeat/controller/report/reportResponse.json"), ReportResponse.class);
@@ -1265,7 +1273,7 @@ class GenerateReporterServiceTest {
 
 	@Test
 	void shouldPutReportInHandlerWhenCallSaveReporterInHandler() throws IOException {
-		String timeStamp = "20240109232359";
+		String timeStamp = CSV_TIMESTAMP;
 		String reportId = IdUtil.getPipelineReportId(timeStamp);
 		ObjectMapper mapper = new ObjectMapper();
 		ReportResponse reportResponse = mapper
@@ -1283,7 +1291,7 @@ class GenerateReporterServiceTest {
 		GenerateReportRequest reportRequest = mapper.readValue(new File(REQUEST_FILE_PATH),
 				GenerateReportRequest.class);
 		ReportResponse reportResponse = mapper.readValue(new File(RESPONSE_FILE_PATH), ReportResponse.class);
-		reportRequest.setCsvTimeStamp("20240109232359");
+		reportRequest.setCsvTimeStamp(CSV_TIMESTAMP);
 		MetricsDataCompleted previousMetricsReady = MetricsDataCompleted.builder()
 			.boardMetricsCompleted(true)
 			.pipelineMetricsCompleted(false)
@@ -1311,7 +1319,8 @@ class GenerateReporterServiceTest {
 		ObjectMapper mapper = new ObjectMapper();
 		GenerateReportRequest reportRequest = mapper.readValue(new File(REQUEST_FILE_PATH),
 				GenerateReportRequest.class);
-		reportRequest.setCsvTimeStamp("20240109232359");
+		ReportResponse reportResponse = mapper.readValue(new File(RESPONSE_FILE_PATH), ReportResponse.class);
+		reportRequest.setCsvTimeStamp(CSV_TIMESTAMP);
 		String reportId = "board-20240109232359";
 		GenerateReporterService spyGenerateReporterService = spy(generateReporterService);
 		UnauthorizedException e = new UnauthorizedException("Error message");
@@ -1385,8 +1394,8 @@ class GenerateReporterServiceTest {
 		reportRequest.setMetrics(List.of("Deployment frequency"));
 		ReportResponse reportResponse = mapper.readValue(new File(RESPONSE_FILE_PATH), ReportResponse.class);
 		GenerateReporterService spyGenerateReporterService = spy(generateReporterService);
-		reportRequest.setCsvTimeStamp("20240109232359");
-		String reportId = "pipeline-20240109232359";
+		reportRequest.setCsvTimeStamp(CSV_TIMESTAMP);
+		String reportId = "dora-20240109232359";
 		MetricsDataCompleted previousMetricsReady = MetricsDataCompleted.builder()
 			.boardMetricsCompleted(null)
 			.pipelineMetricsCompleted(false)
@@ -1414,8 +1423,8 @@ class GenerateReporterServiceTest {
 		reportRequest.setMetrics(List.of("Lead time for changes"));
 		ReportResponse reportResponse = mapper.readValue(new File(RESPONSE_FILE_PATH), ReportResponse.class);
 		GenerateReporterService spyGenerateReporterService = spy(generateReporterService);
-		reportRequest.setCsvTimeStamp("20240109232359");
-		String reportId = "github-20240109232359";
+		reportRequest.setCsvTimeStamp(CSV_TIMESTAMP);
+		String codebaseTimeStamp = "github-20240109232359";
 		MetricsDataCompleted previousMetricsReady = MetricsDataCompleted.builder()
 			.boardMetricsCompleted(null)
 			.pipelineMetricsCompleted(false)
@@ -1431,7 +1440,7 @@ class GenerateReporterServiceTest {
 		verify(spyGenerateReporterService, times(1)).generateReporter(any());
 		verify(spyGenerateReporterService, times(1)).initializeMetricsDataCompletedInHandler(any(), any());
 		verify(spyGenerateReporterService, times(1))
-			.saveReporterInHandler(spyGenerateReporterService.generateReporter(any()), reportId);
+			.saveReporterInHandler(spyGenerateReporterService.generateReporter(any()), codebaseTimeStamp);
 		verify(spyGenerateReporterService, times(1)).updateMetricsDataCompletedInHandler(any(), any());
 
 	}
@@ -1445,20 +1454,20 @@ class GenerateReporterServiceTest {
 
 	private BuildKiteSetting buildPipelineSetting() {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 		return BuildKiteSetting.builder()
-			.type("BuildKite")
-			.token("buildKite_fake_token")
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
 			.deploymentEnvList(List.of(mockDeployment))
 			.build();
 	}
 
 	private CodebaseSetting buildCodeBaseSetting() {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
-		mockDeployment.setRepository("https://github.com/XXXX-fs/fs-platform-onboarding");
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
 		return CodebaseSetting.builder()
-			.type("Github")
-			.token("github_fake_token")
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
 			.leadTime(List.of(mockDeployment))
 			.build();
 	}
