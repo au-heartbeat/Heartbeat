@@ -206,19 +206,17 @@ public class GenerateReporterService {
 				"Start to generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 				request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
 				boardReportId);
-		CompletableFuture.runAsync(() -> {
-			try {
-				saveReporterInHandler(generateReporter(request), boardReportId);
-				updateMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
-				log.info(
-						"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
-						request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(),
-						request.getEndTime(), boardReportId);
-			}
-			catch (BaseException e) {
-				asyncExceptionHandler.put(boardReportId, e);
-			}
-		});
+		try {
+			saveReporterInHandler(generateReporter(request), boardReportId);
+			updateMetricsDataReadyInHandler(request.getCsvTimeStamp(), request.getMetrics());
+			log.info(
+					"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
+					request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
+					boardReportId);
+		}
+		catch (BaseException e) {
+			asyncExceptionHandler.put(boardReportId, e);
+		}
 	}
 
 	public void generateDoraReport(GenerateReportRequest request) {
