@@ -103,6 +103,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -477,6 +478,29 @@ class JiraServiceTest {
 		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
 		assertThat(thrown).isInstanceOf(InternalServerErrorException.class)
 			.hasMessageContaining("Failed to call Jira to verify board, cause is");
+	}
+
+	@Test
+	void shouldCallJiraFeignClientSiteAndThrowNotFoundWhenVerifyJiraBoard() {
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
+		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
+		doThrow(new NotFoundException("site not found")).when(jiraFeignClient).getSite(baseUrl);
+		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
+		assertThat(thrown).isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("site not found");
+	}
+
+	@Test
+	void shouldCallJiraFeignClientBoardAndThrowNotFoundWhenVerifyJiraBoard() {
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		String token = "token";
+		BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
+		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
+		doThrow(new NotFoundException("boardId not found")).when(jiraFeignClient).getBoard(baseUrl, BOARD_ID, token);
+		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
+		assertThat(thrown).isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("boardId not found");
 	}
 
 	@Test
