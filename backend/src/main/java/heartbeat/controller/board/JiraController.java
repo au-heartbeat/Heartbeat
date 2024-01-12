@@ -5,6 +5,7 @@ import heartbeat.controller.board.dto.request.BoardType;
 import heartbeat.controller.board.dto.request.BoardVerifyRequestParam;
 import heartbeat.controller.board.dto.response.BoardConfigDTO;
 import heartbeat.controller.board.dto.response.JiraVerifyResponse;
+import heartbeat.exception.BadRequestException;
 import heartbeat.service.board.jira.JiraService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -39,7 +40,16 @@ public class JiraController {
 	@PostMapping("/{boardType}/info")
 	public BoardConfigDTO getInfo(@PathVariable @NotBlank BoardType boardType,
 			@Valid @RequestBody BoardRequestParam boardRequestParam) {
+		checkTime(boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 		return jiraService.getInfo(boardType, boardRequestParam);
+	}
+
+	private void checkTime(String startTimeString, String endTimeString) {
+		long startTime = Long.parseLong(startTimeString);
+		long endTime = Long.parseLong(endTimeString);
+		if (startTime >= endTime) {
+			throw new BadRequestException("Time inputs wrong.");
+		}
 	}
 
 }

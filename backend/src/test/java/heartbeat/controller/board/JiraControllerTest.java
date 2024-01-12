@@ -158,6 +158,18 @@ public class JiraControllerTest {
 	}
 
 	@Test
+	void shouldRequestTimeIncorrectWhenGetBoardInfo() throws Exception {
+		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().startTime("1672556350000")
+			.endTime("1672556350000")
+			.build();
+
+		mockMvc
+			.perform(post("/boards/{boardType}/info", "jira").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(boardRequestParam)))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void shouldBoardVerifyRequestTokenNotBlank() throws Exception {
 		BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().token(null).build();
 

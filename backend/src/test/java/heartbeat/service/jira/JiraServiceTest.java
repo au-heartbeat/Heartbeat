@@ -487,8 +487,7 @@ class JiraServiceTest {
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 		doThrow(new NotFoundException("site not found")).when(jiraFeignClient).getSite(baseUrl);
 		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
-		assertThat(thrown).isInstanceOf(RuntimeException.class)
-			.hasMessageContaining("site not found");
+		assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("site not found");
 	}
 
 	@Test
@@ -499,8 +498,7 @@ class JiraServiceTest {
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 		doThrow(new NotFoundException("boardId not found")).when(jiraFeignClient).getBoard(baseUrl, BOARD_ID, token);
 		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
-		assertThat(thrown).isInstanceOf(RuntimeException.class)
-			.hasMessageContaining("boardId not found");
+		assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("boardId not found");
 	}
 
 	@Test
