@@ -17,7 +17,7 @@ export const PREVIOUS = 'Previous';
 
 export const SAVE = 'Save';
 
-export const SHOW_MORE = 'show more >';
+export const SHOW_MORE = 'Show more >';
 
 export const BACK = 'Back';
 
@@ -105,8 +105,8 @@ export const VERSION_RESPONSE = {
 export enum VERIFY_ERROR_MESSAGE {
   BAD_REQUEST = 'Please reconfirm the input',
   UNAUTHORIZED = 'Token is incorrect',
-  INTERNAL_SERVER_ERROR = 'Internal Server Error',
-  NOT_FOUND = '404 Not Found',
+  INTERNAL_SERVER_ERROR = 'Internal server error',
+  NOT_FOUND = 'Not found',
   PERMISSION_DENIED = 'Permission denied',
   REQUEST_TIMEOUT = 'Request Timeout',
   UNKNOWN = 'Unknown',
@@ -490,8 +490,8 @@ export const EXPECTED_REPORT_VALUES = {
       id: 0,
       name: 'Average cycle time',
       valueList: [
-        { value: 21.18, unit: '(days/SP)' },
-        { value: '30.26', unit: '(days/card)' },
+        { value: 21.18, unit: '(Days/SP)' },
+        { value: '30.26', unit: '(Days/Card)' },
       ],
     },
     {
@@ -503,8 +503,8 @@ export const EXPECTED_REPORT_VALUES = {
       id: 2,
       name: 'Average development time',
       valueList: [
-        { value: '12.13', unit: '(days/SP)' },
-        { value: '17.32', unit: '(days/card)' },
+        { value: '12.13', unit: '(Days/SP)' },
+        { value: '17.32', unit: '(Days/Card)' },
       ],
     },
   ],
@@ -521,7 +521,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
       valuesList: [
         {
-          name: 'Deployment frequency(deployments/day)',
+          name: 'Deployment frequency',
           value: '0.30',
         },
       ],
@@ -531,7 +531,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'Average',
       valuesList: [
         {
-          name: 'Deployment frequency(deployments/day)',
+          name: 'Deployment frequency',
           value: '0.40',
         },
       ],
@@ -692,7 +692,7 @@ export const CLASSIFICATION_WARNING_MESSAGE = `Some classifications in import da
 export const HOME_VERIFY_IMPORT_WARNING_MESSAGE =
   'The content of the imported JSON file is empty. Please confirm carefully';
 
-export const INTERNAL_SERVER_ERROR_MESSAGE = 'Internal Server Error';
+export const INTERNAL_SERVER_ERROR_MESSAGE = 'Internal server error';
 
 export const BASE_PAGE_ROUTE = '/';
 
