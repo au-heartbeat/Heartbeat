@@ -6,13 +6,21 @@
 ```agsl
 src
 ├── components
+│   └── xxx
+│       └── index.tsx
 ├── clients
 ├── context
 ├── constants
 ├── containers
+│   └── xxx
+│       ├── view.tsx
+│       ├── hooks/reducer.ts
+│       └── index.ts
 ├── config
 ├── pages
+│   ├── xxx.tsx
 │   └── Routers
+├── utils
 └── App.tsx
 ```
 
@@ -29,3 +37,5 @@ src
 * **Constants**: All constant values included the messages / wordings in UI.  
 
 * **Config**: Configuration for application.
+
+* **utils**: Some common tools and shared pure methods.
