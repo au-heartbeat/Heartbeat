@@ -4,15 +4,18 @@ set -euo pipefail
 display_help() {
   echo "Usage: $0 {shell|security|frontend|backend|backend-license|frontend-license|e2e}" >&2
   echo
-  echo "   shell              run shell check for the whole project"
-  echo "   security           run security check for the whole project"
-  echo "   frontend           run check for the frontend"
-  echo "   px                 run css px check for the frontend"
-  echo "   backend            run check for the backend"
-  echo "   dot-star           run .* check for the backend"
-  echo "   backend-license    check license for the backend"
-  echo "   frontend-license   check license for the frontend"
-  echo "   e2e                run e2e for the frontend"
+  echo "   shell                run shell check for the whole project"
+  echo "   security             run security check for the whole project"
+  echo "   frontend             run check for the frontend"
+  echo "   frontned-type-check  run typescript check for the frontend"
+  echo "   px                   run css px check for the frontend"
+  echo "   backend              run check for the backend"
+  echo "   dot-star             run .* check for the backend"
+  echo "   rgba                 run css rgba check to deny it"
+  echo "   hex                  run css hex check to deny it"
+  echo "   backend-license      check license for the backend"
+  echo "   frontend-license     check license for the frontend"
+  echo "   e2e                  run e2e for the frontend"
   echo
   exit 1
 }
@@ -67,9 +70,68 @@ frontend_check(){
 px_check() {
   cd frontend
   local result
-  result=$(grep -rin --exclude='*.svg' --exclude='*.png' --exclude='*.yaml' --exclude-dir='node_modules' '[0-9]\+px' ./ || true)
+  result=$(grep -rin \
+    --exclude='*.svg' \
+    --exclude='*.png' \
+    --exclude='*.yaml' \
+    --exclude-dir='node_modules' \
+    '[0-9]\+px' \
+    ./ || true)
   if [ -n "$result" ]; then
     echo "Error: Found files with [0-9]+px pattern:"
+    echo "$result"
+    exit 1
+  else
+    echo "No matching files found."
+  fi
+}
+
+frontned_type_check() {
+  cd frontend
+  pnpm run type-check
+}
+
+rgba_check() {
+  cd frontend
+  local result
+  result=$(grep -rinE \
+   --exclude-dir='node_modules'\
+   --exclude-dir='coverage' \
+   --exclude='*.html' \
+   --exclude='*.svg' \
+   --exclude='*.xml' \
+   --exclude='*.test.tsx' \
+   --exclude='theme.ts' \
+   --exclude='*.webmanifest' \
+   'rgb\(([0-9]{1,3}, ?){2}[0-9]{1,3}\)' \
+  ./ || true)
+  if [ -n "$result" ]; then
+    echo "Error: Found files with Hex color:"
+    echo "$result"
+    exit 1
+  else
+    echo "No matching files found."
+  fi
+}
+
+hex_check() {
+  cd frontend
+  local result
+  result=$(grep -rinE \
+   --exclude-dir='node_modules'\
+   --exclude-dir='coverage' \
+   --exclude='*.html' \
+   --exclude='*.svg' \
+   --exclude='*.xml' \
+   --exclude='*.test.tsx' \
+   --exclude='theme.ts' \
+   --exclude='fixtures.ts' \
+   --exclude='vite.config.ts' \
+   --exclude='*.webmanifest' \
+   '#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}' \
+  ./ || true)
+  if [ -n "$result" ]; then
+    echo "Error: Found files with Hex color:"
     echo "$result"
     exit 1
   else
@@ -106,9 +168,12 @@ while [[ "$#" -gt 0 ]]; do
     shell) check_shell ;;
     security) security_check ;;
     frontend) frontend_check ;;
+    "frontend-type") frontned_type_check ;;
     px) px_check ;;
     backend) backend_check ;;
     "dot-star") dot_star_check ;;
+    hex) hex_check ;;
+    rgba) rgba_check ;;
     e2e) e2e_check ;;
     "backend-license") backend_license_check ;;
     "frontend-license") frontend_license_check ;;

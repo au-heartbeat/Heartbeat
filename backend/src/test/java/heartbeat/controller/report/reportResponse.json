@@ -146,6 +146,6 @@
   "exportValidityTime": 1800000,
   "isBoardMetricsReady": true,
   "isPipelineMetricsReady": true,
-  "isSourceControlMetricsReady": true,
+  "isPipelineMetricsReady": true,
   "isAllMetricsReady": true
 }

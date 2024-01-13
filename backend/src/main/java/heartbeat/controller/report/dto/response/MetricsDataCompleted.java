@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @EqualsAndHashCode
-public class MetricsDataReady {
+public class MetricsDataCompleted {
 
 	private Boolean isBoardMetricsReady;
 
@@ -19,15 +19,15 @@ public class MetricsDataReady {
 
 	private Boolean isSourceControlMetricsReady;
 
-	public Boolean isBoardMetricsReady() {
+	public Boolean boardMetricsCompleted() {
 		return isBoardMetricsReady;
 	}
 
-	public Boolean isPipelineMetricsReady() {
+	public Boolean pipelineMetricsCompleted() {
 		return isPipelineMetricsReady;
 	}
 
-	public Boolean isSourceControlMetricsReady() {
+	public Boolean sourceControlMetricsCompleted() {
 		return isSourceControlMetricsReady;
 	}
 
