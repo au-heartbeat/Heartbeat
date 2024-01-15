@@ -120,14 +120,14 @@ public class JiraService {
 					boardVerifyRequestParam.getBoardId(), boardVerifyRequestParam.getToken());
 			return jiraBoardVerifyDTO.getLocation().getProjectKey();
 		}
+		catch (NotFoundException e) {
+			log.error("Failed to call Jira to verify board url, url: {}", baseUrl);
+			throw new NotFoundException("boardId not found");
+		}
 		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to call Jira to verify board, board id: {}, e: {}", boardVerifyRequestParam.getBoardId(),
 					cause.getMessage());
-			if (cause instanceof NotFoundException) {
-				log.error("Failed to call Jira to verify board url, url: {}", baseUrl);
-				throw new NotFoundException("boardId not found");
-			}
 			throw new InternalServerErrorException(
 					String.format("Failed to call Jira to verify board, cause is %s", cause.getMessage()));
 		}
