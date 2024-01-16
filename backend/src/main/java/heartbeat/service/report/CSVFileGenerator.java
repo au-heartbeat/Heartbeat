@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static heartbeat.controller.report.dto.request.ReportType.*;
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
 import static java.util.concurrent.TimeUnit.HOURS;
 
@@ -145,9 +144,8 @@ public class CSVFileGenerator {
 					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
 			case PIPELINE -> readStringFromCsvFile(
 					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
-			case BOARD -> readStringFromCsvFile(
+			default -> readStringFromCsvFile(
 					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
-			default -> new InputStreamResource(new ByteArrayInputStream("".getBytes()));
 		};
 	}
 
