@@ -13,7 +13,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [errorFields, setErrorFields] = useState({});
   const getBoardInfo = (data: BoardInfoRequestDTO) => {
     setIsLoading(true);
-    return boardInfoClient(data).finally(() => setIsLoading(false));
+    return boardInfoClient.getBoardInfo(data).finally(() => setIsLoading(false));
   };
   return {
     getBoardInfo,

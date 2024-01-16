@@ -1,6 +1,10 @@
-import HttpClient from '@src/clients/CustomHttpClient';
+import { HttpClient } from '@src/clients/Httpclient';
 import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';
 
-export const boardInfoClient = (data: BoardInfoRequestDTO) => {
-  return HttpClient().post(`/board/${data.type.toLowerCase()}/info`, data);
-};
+export class BoardInfoClient extends HttpClient {
+  getBoardInfo = async (params: BoardInfoRequestDTO) => {
+    return this.axiosInstance.post(`/boards/${params.type}/info`, params);
+  };
+}
+
+export const boardInfoClient = new BoardInfoClient();

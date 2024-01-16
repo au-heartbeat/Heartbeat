@@ -9,39 +9,42 @@ export interface useVerifyBoardStateInterface {
     | {
         isBoardVerify: boolean;
         haveDoneCard: boolean;
-        response: Record<string, any>;
+        response: Record<string, string>;
       }
     | undefined
   >;
   isLoading: boolean;
-  errorMessage: string;
   errorFields: Record<string, string>;
 }
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [errorFields, setErrorFields] = useState({});
 
-  const verifyJira = async (params: BoardRequestDTO) => {
+  const verifyJira = (params: BoardRequestDTO) => {
     setIsLoading(true);
-    try {
-      return await boardClient.getVerifyBoard(params);
-    } catch (e) {
-      const err = e as Error;
-      setErrorMessage(`${params.type} ${MESSAGE.VERIFY_FAILED_ERROR}: ${err.message}`);
-      setTimeout(() => {
-        setErrorMessage('');
-      }, DURATION.ERROR_MESSAGE_TIME);
-    } finally {
-      setIsLoading(false);
-    }
+    return boardClient
+      .getVerifyBoard(params)
+      .then((result) => {
+        setErrorFields({});
+        return result;
+      })
+      .catch((e) => {
+        const { hintInfo, status } = e;
+        if (status === 401) {
+          setErrorFields({
+            mail: 'Email is incorrect !',
+            token: 'Token is invalid, please change your token with correct access permission !',
+          });
+        }
+        return e;
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return {
     verifyJira,
     isLoading,
-    errorMessage,
     errorFields,
   };
 };
