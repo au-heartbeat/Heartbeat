@@ -45,9 +45,13 @@ public class JiraController {
 	}
 
 	private void checkTime(String startTimeString, String endTimeString) {
-		long startTime = Long.parseLong(startTimeString);
-		long endTime = Long.parseLong(endTimeString);
-		if (startTime >= endTime) {
+		try {
+			long startTime = Long.parseLong(startTimeString);
+			long endTime = Long.parseLong(endTimeString);
+			if (startTime >= endTime) {
+				throw new BadRequestException("Time inputs wrong.");
+			}
+		} catch (Exception e) {
 			throw new BadRequestException("Time inputs wrong.");
 		}
 	}
