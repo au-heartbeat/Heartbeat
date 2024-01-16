@@ -1,6 +1,8 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.board.dto.response.CardCollection;
+import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
+import heartbeat.controller.pipeline.dto.request.PipelineType;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
@@ -15,6 +17,7 @@ import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Velocity;
+import heartbeat.controller.source.SourceType;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.GenerateReportException;
@@ -23,6 +26,11 @@ import heartbeat.exception.ServiceUnavailableException;
 import heartbeat.handler.AsyncExceptionHandler;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.handler.AsyncReportRequestHandler;
+import heartbeat.service.pipeline.buildkite.builder.BuildKiteBuildInfoBuilder;
+import heartbeat.service.pipeline.buildkite.builder.BuildKiteJobBuilder;
+import heartbeat.service.pipeline.buildkite.builder.DeployInfoBuilder;
+import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
+import heartbeat.service.pipeline.buildkite.builder.DeploymentEnvironmentBuilder;
 import heartbeat.service.report.calculator.ChangeFailureRateCalculator;
 import heartbeat.service.report.calculator.ClassificationCalculator;
 import heartbeat.service.report.calculator.CycleTimeCalculator;
@@ -32,6 +40,8 @@ import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
 import org.junit.jupiter.api.Nested;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -48,6 +58,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static heartbeat.TestFixtures.BUILDKITE_TOKEN;
+import static heartbeat.TestFixtures.GITHUB_REPOSITORY;
+import static heartbeat.TestFixtures.GITHUB_TOKEN;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -56,6 +69,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -122,7 +136,12 @@ class GenerateReporterServiceTest {
 	@Nested
 	class GenerateBoardReport {
 
-		@Test
+		@AfterEach
+	void afterEach() {
+		new File("./csv").delete();
+	}
+
+	@Test
 		void shouldSaveReportResponseWithoutMetricDataAndUpdateMetricCompletedWhenMetricsIsEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
@@ -292,7 +311,7 @@ class GenerateReporterServiceTest {
 			verify(kanbanService).fetchDataFromKanban(eq(request));
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportId()),
-					responseArgumentCaptor.capture());
+				responseArgumentCaptor.capture());
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 
@@ -348,6 +367,107 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
+		void shouldGenerateCsvForPipelineWithPipelineMetricAndBuildInfoIsEmpty() throws IOException {
+			Path csvFilePath = Path.of("./csv/exportPipelineMetrics-1683734399999.csv");
+			DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+			mockDeployment.setRepository(GITHUB_REPOSITORY);
+
+			CodebaseSetting codebaseSetting = CodebaseSetting.builder()
+				.type(SourceType.GITHUB.name())
+				.token(GITHUB_TOKEN)
+				.leadTime(List.of(mockDeployment))
+				.build();
+
+			BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
+				.type(PipelineType.BUILDKITE.name())
+				.token(BUILDKITE_TOKEN)
+				.deploymentEnvList(List.of(mockDeployment))
+				.build();
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.considerHoliday(true)
+				.metrics(List.of("lead time for changes", "deployment frequency"))
+				.buildKiteSetting(buildKiteSetting)
+				.codebaseSetting(codebaseSetting)
+				.startTime("1661702400000")
+				.endTime("1662739199000")
+				.csvTimeStamp(TIMESTAMP)
+				.build();
+
+			when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
+				.thenReturn(List.of(BuildKiteBuildInfoBuilder.withDefault()
+					.withCommit("")
+					.withJobs(List.of(BuildKiteJobBuilder.withDefault().withState("broken").build()))
+					.build()));
+			when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+			when(gitHubService.fetchPipelinesLeadTime(any(), any(), any()))
+				.thenReturn(List.of(PipelineCsvFixture.MOCK_PIPELINE_LEAD_TIME_DATA()));
+
+			doAnswer(invocation -> {
+				Files.createDirectories(Path.of("./csv"));
+				Files.createFile(csvFilePath);
+				return null;
+			}).when(csvFileGenerator).convertPipelineDataToCSV(any(), any());
+
+			generateReporterService.generateDoraReport(request);
+
+			boolean isExists = Files.exists(csvFilePath);
+			assertTrue(isExists);
+			Files.deleteIfExists(csvFilePath);
+		}
+	@Test
+	void shouldGenerateCsvForPipelineWithPipelineMetricAndBuildInfoIsEmpty() throws IOException {
+		Path csvFilePath = Path.of("./csv/exportPipelineMetrics-1683734399999.csv");
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
+
+		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
+			.leadTime(List.of(mockDeployment))
+			.build();
+
+		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
+			.deploymentEnvList(List.of(mockDeployment))
+			.build();
+
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(true)
+			.metrics(List.of("lead time for changes", "deployment frequency"))
+			.buildKiteSetting(buildKiteSetting)
+			.codebaseSetting(codebaseSetting)
+			.startTime("1661702400000")
+			.endTime("1662739199000")
+			.csvTimeStamp(TIMESTAMP)
+			.build();
+
+		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
+			.thenReturn(List.of(BuildKiteBuildInfoBuilder.withDefault()
+				.withCommit("")
+				.withJobs(List.of(BuildKiteJobBuilder.withDefault().withState("broken").build()))
+				.build()));
+		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any()))
+			.thenReturn(List.of(PipelineCsvFixture.MOCK_PIPELINE_LEAD_TIME_DATA()));
+
+		doAnswer(invocation -> {
+			Files.createDirectories(Path.of("./csv"));
+			Files.createFile(csvFilePath);
+			return null;
+		}).when(csvFileGenerator).convertPipelineDataToCSV(any(), any());
+
+		generateReporterService.generateDoraReport(request);
+
+		boolean isExists = Files.exists(csvFilePath);
+		assertTrue(isExists);
+		Files.deleteIfExists(csvFilePath);
+	}
+
+		@Test
 		void shouldThrowErrorWhenCodeSettingIsNullButSourceControlMetricsIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
@@ -368,6 +488,59 @@ class GenerateReporterServiceTest {
 				assertEquals(400, e.getStatus());
 				assertEquals("Failed to fetch Github info due to code base setting is null.", e.getMessage());
 			}
+
+			verify(asyncExceptionHandler).remove(request.getPipelineReportId());
+			verify(asyncExceptionHandler).remove(request.getSourceControlReportId());
+			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(csvFileGenerator, never()).convertPipelineDataToCSV(eq(pipelineCSVInfos),
+				eq(request.getCsvTimeStamp()));
+		}
+
+	@Test
+	void shouldGenerateCsvForPipelineWithPipelineMetric() throws IOException {
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
+
+		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
+			.leadTime(List.of(mockDeployment))
+			.build();
+
+		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
+			.deploymentEnvList(List.of(mockDeployment))
+			.build();
+
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(true)
+			.metrics(List.of("lead time for changes", "deployment frequency"))
+			.buildKiteSetting(buildKiteSetting)
+			.codebaseSetting(codebaseSetting)
+			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
+			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
+			.csvTimeStamp(TIMESTAMP)
+			.build();
+
+		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
+			.thenReturn(List.of(BuildKiteBuildInfoBuilder.withDefault()
+				.withJobs(List.of(BuildKiteJobBuilder.withDefault().build()))
+				.withPipelineCreateTime("2022-09-09T04:57:34Z")
+				.build()));
+		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any()))
+			.thenReturn(List.of(PipelineCsvFixture.MOCK_PIPELINE_LEAD_TIME_DATA()));
+		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("xx"));
+
+		doAnswer(invocation -> {
+			Files.createDirectories(Path.of("./csv"));
+			Files.createFile(mockPipelineCsvPath);
+			return null;
+		}).when(csvFileGenerator).convertPipelineDataToCSV(any(), any());
+
+		generateReporterService.generateDoraReport(request);
 
 			verify(asyncExceptionHandler).remove(request.getPipelineReportId());
 			verify(asyncExceptionHandler).remove(request.getSourceControlReportId());
@@ -726,6 +899,44 @@ class GenerateReporterServiceTest {
 				.thenReturn(MetricsDataCompleted.builder().build());
 			when(asyncExceptionHandler.get(any())).thenReturn(new ServiceUnavailableException("errorMessage"));
 
+		when(jiraService.getStoryPointsAndCycleTimeForDoneCards(any(), any(), any(), any()))
+			.thenReturn(CardCollection.builder()
+				.storyPointSum(2)
+				.cardsNumber(1)
+				.jiraCardDTOList(BoardCsvFixture.MOCK_DONE_CARD_LIST())
+				.build());
+		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any(), any()))
+			.thenReturn(CardCollection.builder()
+				.storyPointSum(2)
+				.cardsNumber(1)
+				.jiraCardDTOList(BoardCsvFixture.MOCK_NON_DONE_CARD_LIST())
+				.build());
+		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder()
+			.jiraColumnResponse(BoardCsvFixture.MOCK_JIRA_COLUMN_LIST())
+			.jiraColumns(Collections.emptyList())
+			.build());
+		when(urlGenerator.getUri(any())).thenReturn(mockUrl);
+		doAnswer(invocation -> {
+			Files.createDirectories(Path.of("./csv"));
+			Files.createFile(mockBoardCsvPath);
+			return null;
+		}).when(csvFileGenerator).convertBoardDataToCSV(any(), any(), any(), any());
+
+			generateReporterService.generateReporter(request);
+
+			boolean isExists = Files.exists(mockBoardCsvPath);
+			assertTrue(isExists);
+			Files.deleteIfExists(mockBoardCsvPath);
+		}
+
+		@Test
+		void shouldThrowServiceUnavailableExceptionWhenErrorIs503() {
+			String reportId = "reportId";
+			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+				.thenReturn(MetricsDataCompleted.builder().build());
+			when(asyncExceptionHandler.get(any())).thenReturn(new ServiceUnavailableException("errorMessage"));
+
 			try {
 				generateReporterService.getComposedReportResponse(reportId, true);
 				fail();
@@ -763,7 +974,8 @@ class GenerateReporterServiceTest {
 
 		@Test
 		void shouldDeleteExpireCsvWhenExportCsvWithCsvOutsideThirtyMinutes() throws IOException {
-			Files.createFile(mockPipelineCsvPath);
+			Files.createDirectories(Path.of("./csv"));
+		Files.createFile(mockPipelineCsvPath);
 
 			generateReporterService.deleteExpireCSV(System.currentTimeMillis(), new File("./csv/"));
 
@@ -773,9 +985,10 @@ class GenerateReporterServiceTest {
 
 		@Test
 		void shouldNotDeleteOldCsvWhenExportCsvWithoutOldCsvInsideThirtyMinutes() throws IOException {
-			long currentTimeStamp = System.currentTimeMillis();
-			Path csvFilePath = Path.of(String.format("./csv/exportPipelineMetrics-%s.csv", currentTimeStamp));
-			Files.createFile(csvFilePath);
+			Files.createDirectories(Path.of("./csv"));
+		long currentTimeStamp = System.currentTimeMillis();
+		Path csvFilePath = Path.of(String.format("./csv/exportPipelineMetrics-%s.csv", currentTimeStamp));
+		Files.createFile(csvFilePath);
 
 			generateReporterService.deleteExpireCSV(currentTimeStamp - 800000, new File("./csv/"));
 
