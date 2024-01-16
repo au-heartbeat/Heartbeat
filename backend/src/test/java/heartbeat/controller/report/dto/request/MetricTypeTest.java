@@ -5,20 +5,20 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ReportTypeTest {
+class MetricTypeTest {
 
 	@Test
 	public void shouldConvertValueToType() {
-		ReportType boardType = ReportType.fromValue("board");
-		ReportType doraType = ReportType.fromValue("dora");
+		MetricType boardType = MetricType.fromValue("board");
+		MetricType doraType = MetricType.fromValue("dora");
 
-		assertEquals(boardType, ReportType.BOARD);
-		assertEquals(doraType, ReportType.DORA);
+		assertEquals(boardType, MetricType.BOARD);
+		assertEquals(doraType, MetricType.DORA);
 	}
 
 	@Test
 	public void shouldThrowExceptionWhenDateTypeNotSupported() {
-		assertThatThrownBy(() -> ReportType.fromValue("unknown")).isInstanceOf(IllegalArgumentException.class)
+		assertThatThrownBy(() -> MetricType.fromValue("unknown")).isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("ReportType not found!");
 	}
 

@@ -1,5 +1,7 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.report.dto.request.ReportType;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,22 +41,22 @@ public class ReportServiceTest {
 	@Test
 	void exportCsvShouldCallCsvFileGeneratorToGotTheStreamWhenTimestampIsValid() throws IOException {
 		long validTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 20000L;
-		when(csvFileGenerator.getDataFromCSV("testCsv", validTimestamp))
+		when(csvFileGenerator.getDataFromCSV(ReportType.METRIC, validTimestamp))
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
 
-		InputStream result = reportService.exportCsv("testCsv", validTimestamp).getInputStream();
+		InputStream result = reportService.exportCsv(ReportType.METRIC, validTimestamp).getInputStream();
 		String returnData = new BufferedReader(new InputStreamReader(result)).lines().collect(Collectors.joining("\n"));
 
 		assertEquals(returnData, "csv data");
-		verify(csvFileGenerator).getDataFromCSV("testCsv", validTimestamp);
+		verify(csvFileGenerator).getDataFromCSV(ReportType.METRIC, validTimestamp);
 	}
 
 	@Test
 	void exportCsvShouldThrowNotFoundExceptionWhenTimestampIsValid() throws IOException {
 		long invalidTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L;
 
-		assertThrows(NotFoundException.class, () -> reportService.exportCsv("testCsv", invalidTimestamp));
-		verify(csvFileGenerator, never()).getDataFromCSV("testCsv", invalidTimestamp);
+		assertThrows(NotFoundException.class, () -> reportService.exportCsv(ReportType.METRIC, invalidTimestamp));
+		verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, invalidTimestamp);
 	}
 
 }

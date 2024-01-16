@@ -3,6 +3,7 @@ package heartbeat.controller.report;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.handler.AsyncExceptionHandler;
@@ -32,10 +33,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(GenerateReportController.class)
+@WebMvcTest(ReportController.class)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureJsonTesters
-class GenerateReporterControllerTest {
+class ReporterControllerTest {
 
 	private static final String REQUEST_FILE_PATH = "src/test/java/heartbeat/controller/report/request.json";
 
@@ -117,15 +118,14 @@ class GenerateReporterControllerTest {
 
 	@Test
 	void shouldReturnWhenExportCsv() throws Exception {
-		String dataType = "pipeline";
 		Long csvTimeStamp = 1685010080107L;
 		String expectedResponse = "csv data";
 
-		when(reporterService.exportCsv(dataType, csvTimeStamp))
+		when(reporterService.exportCsv(ReportType.PIPELINE, csvTimeStamp))
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream(expectedResponse.getBytes())));
 
 		MockHttpServletResponse response = mockMvc
-			.perform(get("/reports/{dataType}/{csvTimeStamp}", dataType, csvTimeStamp))
+			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportType.PIPELINE, csvTimeStamp))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();

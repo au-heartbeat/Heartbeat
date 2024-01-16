@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.opencsv.CSVWriter;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
+import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.LeadTimeInfo;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
@@ -50,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static heartbeat.controller.report.dto.request.ReportType.*;
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
 import static java.util.concurrent.TimeUnit.HOURS;
 
@@ -137,13 +139,13 @@ public class CSVFileGenerator {
 		}
 	}
 
-	public InputStreamResource getDataFromCSV(String dataType, long csvTimeStamp) {
-		return switch (dataType) {
-			case "metric" -> readStringFromCsvFile(
+	public InputStreamResource getDataFromCSV(ReportType reportType, long csvTimeStamp) {
+		return switch (reportType) {
+			case METRIC -> readStringFromCsvFile(
 					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
-			case "pipeline" -> readStringFromCsvFile(
+			case PIPELINE -> readStringFromCsvFile(
 					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
-			case "board" -> readStringFromCsvFile(
+			case BOARD -> readStringFromCsvFile(
 					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
 			default -> new InputStreamResource(new ByteArrayInputStream("".getBytes()));
 		};

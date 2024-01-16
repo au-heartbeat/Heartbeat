@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -13,11 +14,11 @@ public class ReportService {
 
 	private final CSVFileGenerator csvFileGenerator;
 
-	public InputStreamResource exportCsv(String dataType, long csvTimestamp) {
+	public InputStreamResource exportCsv(ReportType reportType, long csvTimestamp) {
 		if (isExpiredTimeStamp(csvTimestamp)) {
 			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
 		}
-		return csvFileGenerator.getDataFromCSV(dataType, csvTimestamp);
+		return csvFileGenerator.getDataFromCSV(reportType, csvTimestamp);
 	}
 
 	private boolean isExpiredTimeStamp(long timeStamp) {
