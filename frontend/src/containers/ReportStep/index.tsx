@@ -46,7 +46,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const endDate = configData.basic.dateRange.endDate ?? '';
   const metrics = configData.basic.metrics;
 
-  const { updateProps, resetProps } = notification;
+  const { addNotification, closeAllNotifications } = notification;
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
@@ -60,13 +60,11 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   useLayoutEffect(() => {
     exportValidityTimeMin &&
       allMetricsCompleted &&
-      updateProps({
-        open: true,
+      addNotification({
         title: 'Help Information',
         message: MESSAGE.EXPIRE_INFORMATION(exportValidityTimeMin),
-        closeAutomatically: true,
       });
-  }, [exportValidityTimeMin, allMetricsCompleted, updateProps]);
+  }, [exportValidityTimeMin, allMetricsCompleted]);
 
   useLayoutEffect(() => {
     if (exportValidityTimeMin && allMetricsCompleted) {
@@ -78,11 +76,9 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
         const remainingExpireTime = 5 * 60 * 1000;
         const remainingTime = exportValidityTimeMin * 60 * 1000 - elapsedTime;
         if (remainingTime <= remainingExpireTime) {
-          updateProps({
-            open: true,
+          addNotification({
             title: 'Help Information',
             message: MESSAGE.EXPIRE_INFORMATION(5),
-            closeAutomatically: true,
           });
           clearInterval(timer);
         }
@@ -92,11 +88,11 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
         clearInterval(timer);
       };
     }
-  }, [exportValidityTimeMin, allMetricsCompleted, updateProps]);
+  }, [exportValidityTimeMin, allMetricsCompleted]);
 
   useLayoutEffect(() => {
-    resetProps();
-  }, [pageType, resetProps]);
+    closeAllNotifications();
+  }, [pageType]);
 
   useEffect(() => {
     setExportValidityTimeMin(reportData?.exportValidityTime);

@@ -1,4 +1,8 @@
-import { AlertTitleWrapper, AlertWrapper } from '@src/components/Common/NotificationButton/style';
+import {
+  AlertTitleWrapper,
+  AlertWrapper,
+  NotificationContainer,
+} from '@src/components/Common/NotificationButton/style';
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -41,32 +45,28 @@ const getStyles = (type: AlertColor | undefined) => {
   }
 };
 
-export const Notification = ({ notificationProps, updateProps }: useNotificationLayoutEffectInterface) => {
-  const handleNotificationClose = () => {
-    updateProps({
-      title: notificationProps.title,
-      message: notificationProps.message,
-      open: false,
-      closeAutomatically: false,
-    });
-  };
-
-  const styles = getStyles(notificationProps.type);
-
+export const Notification = ({ notifications, closeNotification }: useNotificationLayoutEffectInterface) => {
   return (
-    <>
-      {notificationProps.open && (
-        <AlertWrapper
-          onClose={handleNotificationClose}
-          icon={<SvgIcon component={styles.icon} inheritViewBox />}
-          backgroundcolor={styles.backgroundColor}
-          iconcolor={styles.iconColor}
-          bordercolor={styles.borderColor}
-        >
-          <AlertTitleWrapper>{notificationProps.title}</AlertTitleWrapper>
-          {notificationProps.message}
-        </AlertWrapper>
-      )}
-    </>
+    <NotificationContainer>
+      {notifications.map((notification) => {
+        const styles = getStyles(notification.type);
+
+        return (
+          <AlertWrapper
+            key={notification.id}
+            onClose={() => {
+              closeNotification(notification.id);
+            }}
+            icon={<SvgIcon component={styles.icon} inheritViewBox />}
+            backgroundcolor={styles.backgroundColor}
+            iconcolor={styles.iconColor}
+            bordercolor={styles.borderColor}
+          >
+            <AlertTitleWrapper>{notification.title}</AlertTitleWrapper>
+            {notification.message}
+          </AlertWrapper>
+        );
+      })}
+    </NotificationContainer>
   );
 };
