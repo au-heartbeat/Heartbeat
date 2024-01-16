@@ -482,10 +482,10 @@ class JiraServiceTest {
 		BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
 
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
-		doThrow(new NotFoundException("site not found")).when(jiraFeignClient).getSite(baseUrl);
+		doThrow(new NotFoundException("site is incorrect")).when(jiraFeignClient).getSite(baseUrl);
 
 		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
-		assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("site not found");
+		assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("site is incorrect");
 	}
 
 	@Test
@@ -508,10 +508,10 @@ class JiraServiceTest {
 		BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
 
 		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
-		doThrow(new NotFoundException("boardId not found")).when(jiraFeignClient).getBoard(baseUrl, BOARD_ID, token);
+		doThrow(new NotFoundException("boardId is incorrect")).when(jiraFeignClient).getBoard(baseUrl, BOARD_ID, token);
 
 		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
-		assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("boardId not found");
+		assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("boardId is incorrect");
 	}
 
 	@Test

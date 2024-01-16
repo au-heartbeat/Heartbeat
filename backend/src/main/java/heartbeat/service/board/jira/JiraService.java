@@ -122,7 +122,7 @@ public class JiraService {
 		}
 		catch (NotFoundException e) {
 			log.error("Failed to call Jira to verify board url, url: {}", baseUrl);
-			throw new NotFoundException("boardId not found");
+			throw new NotFoundException("boardId is incorrect");
 		}
 		catch (RuntimeException e) {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
@@ -220,7 +220,7 @@ public class JiraService {
 		}
 		catch (NotFoundException e) {
 			log.error("Failed to call Jira to verify board url, url: {}", baseUrl);
-			throw new NotFoundException("site not found");
+			throw new NotFoundException("site is incorrect");
 		}
 	}
 
