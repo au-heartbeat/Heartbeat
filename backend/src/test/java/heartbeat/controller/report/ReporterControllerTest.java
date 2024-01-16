@@ -125,7 +125,7 @@ class ReporterControllerTest {
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream(expectedResponse.getBytes())));
 
 		MockHttpServletResponse response = mockMvc
-			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportType.PIPELINE, csvTimeStamp))
+			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportType.PIPELINE.getValue(), csvTimeStamp))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
