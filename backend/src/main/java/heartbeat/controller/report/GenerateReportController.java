@@ -3,10 +3,10 @@ package heartbeat.controller.report;
 import heartbeat.controller.report.dto.request.DataType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
-import heartbeat.controller.report.dto.request.ExportCSVRequest;
 import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.service.report.GenerateReporterService;
+import heartbeat.service.report.ReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,14 +32,15 @@ public class GenerateReportController {
 
 	private final GenerateReporterService generateReporterService;
 
+	private final ReportService reportService;
+
 	@Value("${callback.interval}")
 	private Integer interval;
 
 	@GetMapping("/{dataType}/{filename}")
 	public InputStreamResource exportCSV(@PathVariable DataType dataType, @PathVariable String filename) {
 		log.info("Start to export CSV file, _dataType: {}, _timeStamp: {}", dataType, filename);
-		ExportCSVRequest request = new ExportCSVRequest(dataType.name().toLowerCase(), filename);
-		InputStreamResource result = generateReporterService.fetchCSVData(request);
+		InputStreamResource result = reportService.exportCsv(dataType.name().toLowerCase(), Long.parseLong(filename));
 		log.info("Successfully get CSV file, _dataType: {}, _timeStamp: {}, _result: {}", dataType, filename, result);
 		return result;
 	}
