@@ -38,9 +38,6 @@ public interface BuildKiteFeignClient {
 	List<BuildKitePipelineDTO> getPipelineInfo(@RequestHeader("Authorization") String token,
 			@PathVariable String organizationId, @PathVariable String page, @PathVariable String perPage);
 
-	@Cacheable(cacheNames = "pipelineSteps",
-			key = "#organizationId+'-'+#pipelineId+'-'+#page+'-'+#perPage+'-'"
-					+ "+#createdFrom+'-'+#createdTo+'-'+(#branch!=null ? #branch.toString() : '')")
 	@GetMapping(path = "v2/organizations/{organizationId}/pipelines/{pipelineId}/builds",
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	@ResponseStatus(HttpStatus.OK)
@@ -50,8 +47,8 @@ public interface BuildKiteFeignClient {
 			@RequestParam("created_to") String createdTo, @RequestParam("branch[]") List<String> branch);
 
 	@Cacheable(cacheNames = "pipelineStepsInfo",
-			key = "#organizationId+'-'+#pipelineId+'-'+#page+'-'+#perPage+'-'"
-					+ "+#createdFrom+'-'+#createdTo+'-'+(#branch!=null ? #branch.toString() : '')")
+			key = "#organizationId+'-'+#pipelineId+'-'+#page+'-'+#perPage+'-'" + "+#createdFrom+'-'+#createdTo+'-'"
+					+ "+(#branch!=null ? #branch.toString() : '')")
 	@GetMapping(path = "v2/organizations/{organizationId}/pipelines/{pipelineId}/builds",
 			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	@ResponseStatus(HttpStatus.OK)
