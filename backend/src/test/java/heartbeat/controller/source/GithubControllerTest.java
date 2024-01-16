@@ -26,6 +26,8 @@ import static heartbeat.TestFixtures.GITHUB_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -79,6 +81,8 @@ class GithubControllerTest {
 				.content(new ObjectMapper().writeValueAsString(sourceControlDTO))
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent());
+
+		verify(gitHubVerifyService, times(1)).verifyTokenV2(GITHUB_TOKEN);
 	}
 
 	@Test
@@ -87,7 +91,7 @@ class GithubControllerTest {
 			.repository(GITHUB_REPOSITORY)
 			.token(GITHUB_TOKEN)
 			.build();
-		doNothing().when(gitHubVerifyService).verifyCanReadTargetBranch("fake/repo", MAIN_BRANCH, GITHUB_TOKEN);
+		doNothing().when(gitHubVerifyService).verifyCanReadTargetBranch(any(), any(), any());
 
 		mockMvc
 			.perform(
@@ -95,6 +99,26 @@ class GithubControllerTest {
 						.content(new ObjectMapper().writeValueAsString(verifyBranchRequest))
 						.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent());
+
+		verify(gitHubVerifyService, times(1)).verifyCanReadTargetBranch(GITHUB_REPOSITORY, MAIN_BRANCH, GITHUB_TOKEN);
+	}
+
+	@Test
+	void shouldReturnNoContentStatusGivenBranchWithSpecialCharactersWhenVerifyTargetBranch() throws Exception {
+		VerifyBranchRequest verifyBranchRequest = VerifyBranchRequest.builder()
+			.repository(GITHUB_REPOSITORY)
+			.token(GITHUB_TOKEN)
+			.build();
+		doNothing().when(gitHubVerifyService).verifyCanReadTargetBranch(any(), any(), any());
+
+		mockMvc
+			.perform(post("/source-control/{sourceType}/repos/branches/{branch}/verify", NORMAL_SOURCE_TYPE,
+					"fake%2Fmain")
+				.content(new ObjectMapper().writeValueAsString(verifyBranchRequest))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isNoContent());
+
+		verify(gitHubVerifyService, times(1)).verifyCanReadTargetBranch(GITHUB_REPOSITORY, "fake/main", GITHUB_TOKEN);
 	}
 
 	@Test
