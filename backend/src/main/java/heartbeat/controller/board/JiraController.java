@@ -52,7 +52,8 @@ public class JiraController {
 			if (start >= end) {
 				throw new BadRequestException(errorMessage);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new BadRequestException(errorMessage);
 		}
 	}
