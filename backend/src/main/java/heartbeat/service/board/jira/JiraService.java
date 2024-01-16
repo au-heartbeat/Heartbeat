@@ -128,6 +128,9 @@ public class JiraService {
 			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to call Jira to verify board, board id: {}, e: {}", boardVerifyRequestParam.getBoardId(),
 					cause.getMessage());
+			if (cause instanceof BaseException baseException) {
+				throw baseException;
+			}
 			throw new InternalServerErrorException(
 					String.format("Failed to call Jira to verify board, cause is %s", cause.getMessage()));
 		}

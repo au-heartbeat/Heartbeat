@@ -22,11 +22,13 @@ import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.enums.AssigneeFilterMethod;
 import heartbeat.exception.BadRequestException;
+import heartbeat.exception.BaseException;
 import heartbeat.exception.CustomFeignClientException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NoContentException;
 import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.util.BoardUtil;
 import heartbeat.util.SystemUtil;
@@ -484,6 +486,19 @@ class JiraServiceTest {
 
 		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
 		assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("site not found");
+	}
+
+	@Test
+	void shouldCallJiraFeignClientAndThrowBaseExceptionWhenVerifyJiraBoard() {
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
+
+		when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
+		doThrow(new UnauthorizedException("")).when(jiraFeignClient)
+			.getBoard(baseUrl, boardVerifyRequestParam.getBoardId(), boardVerifyRequestParam.getToken());
+
+		Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
+		assertThat(thrown).isInstanceOf(BaseException.class);
 	}
 
 	@Test

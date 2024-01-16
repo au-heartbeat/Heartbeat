@@ -51,7 +51,8 @@ public class JiraController {
 			if (startTime >= endTime) {
 				throw new BadRequestException("Time inputs wrong.");
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new BadRequestException("Time inputs wrong.");
 		}
 	}
