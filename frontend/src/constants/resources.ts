@@ -16,12 +16,12 @@ export const BACK = 'Back';
 export const RETRY = 'retry';
 export const TIMEOUT_PROMPT = 'Data loading failed';
 
-export enum NOTIFICATION_TITLE {
-  HELP_INFORMATION = 'Help Information',
-  PLEASE_NOTE_THAT = 'Please note that',
-  SUCCESSFULLY_COMPLETED = 'Successfully completed!',
-  SOMETHING_WENT_WRONG = 'Something went wrong!',
-}
+export const NOTIFICATION_TITLE = {
+  HELP_INFORMATION: 'Help Information',
+  PLEASE_NOTE_THAT: 'Please note that',
+  SUCCESSFULLY_COMPLETED: 'Successfully completed!',
+  SOMETHING_WENT_WRONG: 'Something went wrong!',
+};
 
 export enum REQUIRED_DATA {
   All = 'All',
