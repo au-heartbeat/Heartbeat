@@ -180,13 +180,21 @@ const DoraMetrics = ({
   };
 
   const getErrorMessage4BuildKite = () =>
-    _.get(doraReport, ['reportError', 'pipelineError'])
-      ? `Failed to get BuildKite info_status: ${_.get(doraReport, ['reportError', 'pipelineError', 'status'])}`
+    _.get(doraReport, ['reportMetricsError', 'pipelineMetricsError'])
+      ? `Failed to get BuildKite info_status: ${_.get(doraReport, [
+          'reportMetricsError',
+          'pipelineMetricsError',
+          'status',
+        ])}`
       : '';
 
   const getErrorMessage4Github = () =>
-    _.get(doraReport, ['reportError', 'sourceControlError'])
-      ? `Failed to get Github info_status: ${_.get(doraReport, ['reportError', 'sourceControlError', 'status'])}`
+    _.get(doraReport, ['reportMetricsError', 'sourceControlMetricsError'])
+      ? `Failed to get Github info_status: ${_.get(doraReport, [
+          'reportMetricsError',
+          'sourceControlMetricsError',
+          'status',
+        ])}`
       : '';
 
   const shouldShowRetry = () => {
