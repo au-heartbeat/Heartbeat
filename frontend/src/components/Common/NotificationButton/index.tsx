@@ -10,11 +10,13 @@ import { AlertColor, SvgIcon } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { theme } from '@src/theme';
 import React from 'react';
+import { NOTIFICATION_TITLE } from '@src/constants/resources';
 
 const getStyles = (type: AlertColor | undefined) => {
   switch (type) {
     case 'error':
       return {
+        title: NOTIFICATION_TITLE.SOMETHING_WENT_WRONG,
         icon: CancelIcon,
         iconColor: theme.main.alert.error.iconColor,
         backgroundColor: theme.main.alert.error.backgroundColor,
@@ -22,6 +24,7 @@ const getStyles = (type: AlertColor | undefined) => {
       };
     case 'success':
       return {
+        title: NOTIFICATION_TITLE.SUCCESSFULLY_COMPLETED,
         icon: CheckCircleIcon,
         iconColor: theme.main.alert.success.iconColor,
         backgroundColor: theme.main.alert.success.backgroundColor,
@@ -29,6 +32,7 @@ const getStyles = (type: AlertColor | undefined) => {
       };
     case 'warning':
       return {
+        title: NOTIFICATION_TITLE.PLEASE_NOTE_THAT,
         icon: InfoIcon,
         iconColor: theme.main.alert.warning.iconColor,
         backgroundColor: theme.main.alert.warning.backgroundColor,
@@ -37,6 +41,7 @@ const getStyles = (type: AlertColor | undefined) => {
     case 'info':
     default:
       return {
+        title: NOTIFICATION_TITLE.HELP_INFORMATION,
         icon: InfoIcon,
         iconColor: theme.main.alert.info.iconColor,
         backgroundColor: theme.main.alert.info.backgroundColor,
@@ -62,7 +67,7 @@ export const Notification = ({ notifications, closeNotification }: useNotificati
             iconcolor={styles.iconColor}
             bordercolor={styles.borderColor}
           >
-            <AlertTitleWrapper>{notification.title}</AlertTitleWrapper>
+            <AlertTitleWrapper>{notification.title || styles.title}</AlertTitleWrapper>
             {notification.message}
           </AlertWrapper>
         );

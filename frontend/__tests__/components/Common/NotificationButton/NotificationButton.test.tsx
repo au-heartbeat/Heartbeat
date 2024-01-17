@@ -45,20 +45,21 @@ describe('Notification', () => {
   });
 
   it.each`
-    type         | backgroundColor | icon                 | iconColor    | borderColor
-    ${'error'}   | ${'#FFE7EA'}    | ${'CancelIcon'}      | ${'#D74257'} | ${'#F3B6BE'}
-    ${'success'} | ${'#EFFFF1'}    | ${'CheckCircleIcon'} | ${'#5E9E66'} | ${'#CFE2D1'}
-    ${'warning'} | ${'#FFF4E3'}    | ${'InfoIcon'}        | ${'#D78D20'} | ${'#F3D5A9'}
-    ${'info'}    | ${'#E9ECFF'}    | ${'InfoIcon'}        | ${'#4050B5'} | ${'#939DDA'}
+    type         | title                        | backgroundColor | icon                 | iconColor    | borderColor
+    ${'error'}   | ${'Something went wrong!'}   | ${'#FFE7EA'}    | ${'CancelIcon'}      | ${'#D74257'} | ${'#F3B6BE'}
+    ${'success'} | ${'Successfully completed!'} | ${'#EFFFF1'}    | ${'CheckCircleIcon'} | ${'#5E9E66'} | ${'#CFE2D1'}
+    ${'warning'} | ${'Please note that'}        | ${'#FFF4E3'}    | ${'InfoIcon'}        | ${'#D78D20'} | ${'#F3D5A9'}
+    ${'info'}    | ${'Help Information'}        | ${'#E9ECFF'}    | ${'InfoIcon'}        | ${'#4050B5'} | ${'#939DDA'}
   `(
-    `should render background color $backgroundColor, $icon in $iconColor, border color $borderColor given the "type" value is $type`,
-    async ({ type, backgroundColor, icon, iconColor, borderColor }) => {
+    `should render title $title background color $backgroundColor, $icon in $iconColor, border color $borderColor given the "type" value is $type`,
+    async ({ type, title, backgroundColor, icon, iconColor, borderColor }) => {
       act(() => {
-        result.current.notifications = [{ id: '1', title: 'Notification', message: 'Notification Message 1', type }];
+        result.current.notifications = [{ id: '1', message: 'Notification Message 1', type }];
       });
 
       render(<Notification {...result.current} />);
 
+      expect(screen.getByText(title)).toBeInTheDocument();
       const alertElement = screen.getByRole('alert');
       expect(alertElement).toHaveStyle({ 'background-color': backgroundColor });
       expect(alertElement).toHaveStyle({ border: `0.0625rem solid ${borderColor}` });

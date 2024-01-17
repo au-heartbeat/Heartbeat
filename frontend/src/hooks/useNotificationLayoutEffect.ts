@@ -5,7 +5,7 @@ import { uniqueId } from 'lodash';
 
 export interface Notification {
   id: string;
-  title: string;
+  title?: string;
   message: string;
   type?: AlertColor;
 }

@@ -61,7 +61,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
     exportValidityTimeMin &&
       allMetricsCompleted &&
       addNotification({
-        title: 'Help Information',
         message: MESSAGE.EXPIRE_INFORMATION(exportValidityTimeMin),
       });
   }, [exportValidityTimeMin, allMetricsCompleted]);
@@ -77,7 +76,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
         const remainingTime = exportValidityTimeMin * 60 * 1000 - elapsedTime;
         if (remainingTime <= remainingExpireTime) {
           addNotification({
-            title: 'Help Information',
             message: MESSAGE.EXPIRE_INFORMATION(5),
           });
           clearInterval(timer);
