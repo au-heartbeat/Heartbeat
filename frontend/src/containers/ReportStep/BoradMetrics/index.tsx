@@ -26,6 +26,7 @@ import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { Nullable } from '@src/utils/types';
+import { Loading } from '@src/components/Loading';
 
 interface BoardMetricsProps {
   startToRequestBoardData: (request: ReportRequestDTO) => void;
@@ -138,6 +139,15 @@ const BoardMetrics = ({
     startToRequestBoardData(getBoardReportRequestBody());
   };
 
+  const isShowShowMoreLoading = () => {
+    return (
+      boardMetrics.length === 1 &&
+      boardMetrics[0] === REQUIRED_DATA.CLASSIFICATION &&
+      !(timeoutError || getErrorMessage()) &&
+      !boardReport?.boardMetricsCompleted
+    );
+  };
+
   useEffect(() => {
     !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());
   }, []);
@@ -150,6 +160,7 @@ const BoardMetrics = ({
           {!(timeoutError || getErrorMessage()) && boardReport?.boardMetricsCompleted && (
             <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
           )}
+          {isShowShowMoreLoading() && <Loading placement='start' size='0.8rem' backgroundColor='transparent' />}
           {(timeoutError || getErrorMessage()) && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
         <ReportGrid reportDetails={getBoardItems()} errorMessage={timeoutError || getErrorMessage()} />

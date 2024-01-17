@@ -9,6 +9,7 @@ export const StyledTitleWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
   marginBottom: '1rem',
+  position: 'relative',
 });
 
 export const StyledShowMore = styled('div')({
