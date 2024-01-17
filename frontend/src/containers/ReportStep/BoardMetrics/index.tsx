@@ -8,12 +8,13 @@ import {
 import {
   BOARD_METRICS,
   CALENDAR,
+  MESSAGE,
   METRICS_SUBTITLE,
-  REPORT_PAGE,
   METRICS_TITLE,
+  REPORT_PAGE,
   REQUIRED_DATA,
-  SHOW_MORE,
   RETRY,
+  SHOW_MORE,
 } from '@src/constants/resources';
 import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util';
@@ -24,12 +25,14 @@ import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { Loading } from '@src/components/Loading';
 import { Nullable } from '@src/utils/types';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import { useAppSelector } from '@src/hooks';
 import React, { useEffect } from 'react';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 
 interface BoardMetricsProps {
+  notification: useNotificationLayoutEffectInterface;
   startToRequestBoardData: (request: ReportRequestDTO) => void;
   onShowDetail: () => void;
   boardReport?: ReportResponseDTO;
@@ -41,6 +44,7 @@ interface BoardMetricsProps {
 }
 
 const BoardMetrics = ({
+  notification,
   isBackFromDetail,
   startToRequestBoardData,
   onShowDetail,
@@ -63,6 +67,7 @@ const BoardMetrics = ({
     (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value,
   );
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
+  const { addNotification } = notification;
 
   const getErrorMessage = () =>
     _.get(boardReport, ['reportMetricsError', 'boardMetricsError'])
@@ -149,6 +154,15 @@ const BoardMetrics = ({
   useEffect(() => {
     !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());
   }, []);
+
+  useEffect(() => {
+    if (boardReport?.reportError.boardError) {
+      addNotification({
+        message: MESSAGE.FAILED_TO_GET_DATA('Board Metrics'),
+        type: 'error',
+      });
+    }
+  }, [boardReport?.reportError.boardError]);
 
   return (
     <>

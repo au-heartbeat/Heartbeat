@@ -33,7 +33,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
     stopPollingReports,
     timeout4Board,
     timeout4Dora,
-  } = useGenerateReportEffect();
+  } = useGenerateReportEffect(notification);
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
@@ -107,6 +107,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
     <>
       {shouldShowBoardMetrics && (
         <BoardMetrics
+          notification={notification}
           isBackFromDetail={isBackFromDetail}
           startDate={startDate}
           endDate={endDate}
@@ -119,6 +120,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
       )}
       {shouldShowDoraMetrics && (
         <DoraMetrics
+          notification={notification}
           isBackFromDetail={isBackFromDetail}
           startDate={startDate}
           endDate={endDate}

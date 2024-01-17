@@ -193,6 +193,7 @@ export const MESSAGE = {
   EXPIRE_INFORMATION: (value: number) => `The file will expire in ${value} minutes, please download it in time.`,
   REPORT_LOADING: 'The report is being generated, please do not refresh the page or all the data will be disappeared.',
   LOADING_TIMEOUT: (name: string) => `${name} loading timeout, please click "Retry"!`,
+  FAILED_TO_GET_DATA: (name: string) => `Failed to get ${name} data, please click "retry"!`,
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER = [

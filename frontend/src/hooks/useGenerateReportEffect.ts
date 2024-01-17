@@ -8,7 +8,7 @@ import { reportClient } from '@src/clients/report/ReportClient';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { useRef, useState } from 'react';
 import { MESSAGE, TIMEOUT_PROMPT } from '@src/constants/resources';
-import { useNotificationLayoutEffect } from '@src/hooks/useNotificationLayoutEffect';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 
 export interface useGenerateReportEffectInterface {
   startToRequestBoardData: (boardParams: BoardReportRequestDTO) => void;
@@ -20,8 +20,9 @@ export interface useGenerateReportEffectInterface {
   reportData: ReportResponseDTO | undefined;
 }
 
-export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
-  const { addNotification } = useNotificationLayoutEffect();
+export const useGenerateReportEffect = ({
+  addNotification,
+}: useNotificationLayoutEffectInterface): useGenerateReportEffectInterface => {
   const reportPath = '/reports';
   const [isServerError, setIsServerError] = useState(false);
   const [timeout4Board, setTimeout4Board] = useState('');

@@ -1,31 +1,33 @@
+import React, { useEffect } from 'react';
+import { useAppSelector } from '@src/hooks';
+import { selectConfig } from '@src/context/config/configSlice';
 import {
   CALENDAR,
   DORA_METRICS,
+  MESSAGE,
   METRICS_SUBTITLE,
-  REPORT_PAGE,
   METRICS_TITLE,
+  REPORT_PAGE,
   REQUIRED_DATA,
-  SHOW_MORE,
   RETRY,
+  SHOW_MORE,
 } from '@src/constants/resources';
-import { StyledShowMore, StyledTitleWrapper } from '@src/containers/ReportStep/DoraMetrics/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { StyledMetricsSection } from '@src/containers/ReportStep/DoraMetrics/style';
-import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
+import { StyledMetricsSection, StyledShowMore, StyledTitleWrapper } from '@src/containers/ReportStep/DoraMetrics/style';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { StyledSpacing } from '@src/containers/ReportStep/style';
+import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
-import { selectConfig } from '@src/context/config/configSlice';
 import { StyledRetry } from '../BoardMetrics/BoardMetrics';
 import { Nullable } from '@src/utils/types';
-import { useAppSelector } from '@src/hooks';
-import { useEffect } from 'react';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 
 interface DoraMetricsProps {
+  notification: useNotificationLayoutEffectInterface;
   startToRequestDoraData: (request: ReportRequestDTO) => void;
   onShowDetail: () => void;
   doraReport?: ReportResponseDTO;
@@ -37,6 +39,7 @@ interface DoraMetricsProps {
 }
 
 const DoraMetrics = ({
+  notification,
   isBackFromDetail,
   startToRequestDoraData,
   onShowDetail,
@@ -51,6 +54,7 @@ const DoraMetrics = ({
   const { metrics, calendarType } = configData.basic;
   const { pipelineCrews, deploymentFrequencySettings, leadTimeForChanges } = useAppSelector(selectMetricsContent);
   const shouldShowSourceControl = metrics.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES);
+  const { addNotification } = notification;
 
   const getDoraReportRequestBody = (): ReportRequestDTO => {
     const doraMetrics = metrics.filter((metric) => DORA_METRICS.includes(metric));
@@ -211,6 +215,24 @@ const DoraMetrics = ({
   useEffect(() => {
     !isBackFromDetail && startToRequestDoraData(getDoraReportRequestBody());
   }, []);
+
+  useEffect(() => {
+    if (doraReport?.reportError.pipelineError) {
+      addNotification({
+        message: MESSAGE.FAILED_TO_GET_DATA('Buildkite'),
+        type: 'error',
+      });
+    }
+  }, [doraReport?.reportError.pipelineError]);
+
+  useEffect(() => {
+    if (doraReport?.reportError.sourceControlError) {
+      addNotification({
+        message: MESSAGE.FAILED_TO_GET_DATA('Github'),
+        type: 'error',
+      });
+    }
+  }, [doraReport?.reportError.sourceControlError]);
 
   return (
     <>
