@@ -6,6 +6,7 @@ import PresentationForErrorCases, {
   IPresentationForErrorCasesProps,
 } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import userEvent from '@testing-library/user-event';
+import { AxiosError } from 'axios';
 
 const setup = (props: IPresentationForErrorCasesProps) =>
   render(
@@ -15,7 +16,7 @@ const setup = (props: IPresentationForErrorCasesProps) =>
   );
 
 describe('<PresentationForErrorCases />', () => {
-  const errors = [
+  const commonErrors = [
     { code: 204, title: 'No pipeline!' },
     { code: 400, title: 'Invalid input!' },
     { code: 401, title: 'Unauthorized request!' },
@@ -25,7 +26,7 @@ describe('<PresentationForErrorCases />', () => {
   ];
   const errorMessage =
     'Please go back to the previous page and change your pipeline token with correct access permission.';
-  it.each(errors)(
+  it.each(commonErrors)(
     'should properly render error UI with title:$title and corresponding message',
     ({ code, title: errorTitle }) => {
       const props = { code, errorTitle, errorMessage, isLoading: false, retry: () => '' };
@@ -39,32 +40,40 @@ describe('<PresentationForErrorCases />', () => {
     }
   );
 
-  it('should display "try again" when error code is 503', async () => {
-    const retrySpy = jest.fn();
-    const mockTimeoutError = {
-      code: 503,
-      errorTitle: 'Service Unavailable!',
-      errorMessage: 'Data loading failed, please try again',
-      isLoading: false,
-      retry: retrySpy,
-    };
-    setup(mockTimeoutError);
+  const retryErrors = [
+    { code: AxiosError.ECONNABORTED },
+    { code: AxiosError.ETIMEDOUT },
+    { code: AxiosError.ERR_NETWORK },
+  ];
+  it.each(retryErrors)(
+    'should display "try again" when error code is axios predefined error: $code',
+    async ({ code }) => {
+      const retrySpy = jest.fn();
+      const mockTimeoutError = {
+        code,
+        errorTitle: 'Service Unavailable!',
+        errorMessage: 'Data loading failed, please try again',
+        isLoading: false,
+        retry: retrySpy,
+      };
+      setup(mockTimeoutError);
 
-    const titleNode = screen.queryByText(mockTimeoutError.errorTitle);
-    const tryAgainNode = screen.getByText('try again');
+      const titleNode = screen.queryByText(mockTimeoutError.errorTitle);
+      const tryAgainNode = screen.getByText('try again');
 
-    expect(titleNode).not.toBeInTheDocument();
-    expect(tryAgainNode).toBeInTheDocument();
+      expect(titleNode).not.toBeInTheDocument();
+      expect(tryAgainNode).toBeInTheDocument();
 
-    await userEvent.click(tryAgainNode);
+      await userEvent.click(tryAgainNode);
 
-    expect(retrySpy).toHaveBeenCalled();
-  });
+      expect(retrySpy).toHaveBeenCalled();
+    }
+  );
 
   it('should not fire duplicated retry behavior when retry func is loading', async () => {
     const retrySpy = jest.fn();
     const mockTimeoutErrorProps = {
-      code: 503,
+      code: AxiosError.ETIMEDOUT,
       errorTitle: 'Service Unavailable!',
       errorMessage: 'Data loading failed, please try again',
       isLoading: true,

@@ -37,7 +37,7 @@ export class HttpClient {
             case HttpStatusCode.Forbidden:
               throw new ForbiddenException(errorMessage, status);
             default:
-              if (status > 500) {
+              if (status >= 500) {
                 window.location.href = ROUTE.ERROR_PAGE;
                 throw new InternalServerException(errorMessage, status);
               }
