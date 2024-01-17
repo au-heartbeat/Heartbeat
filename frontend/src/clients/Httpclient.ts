@@ -1,4 +1,5 @@
-import axios, { AxiosInstance, HttpStatusCode, AxiosError, Axios } from 'axios';
+import axios, { AxiosInstance, HttpStatusCode } from 'axios';
+import { HEARTBEAT_TIMEOUT_ERROR_CODES } from '@src/constants/resources';
 import { BadRequestException } from '@src/exceptions/BadRequestException';
 import { UnauthorizedException } from '@src/exceptions/UnauthorizedException';
 import { InternalServerException } from '@src/exceptions/InternalServerException';
@@ -20,7 +21,7 @@ export class HttpClient {
       (res) => res,
       (error) => {
         const { code, response } = error;
-        if (code === AxiosError.ECONNABORTED || code === AxiosError.ETIMEDOUT) {
+        if (HEARTBEAT_TIMEOUT_ERROR_CODES.some((predefinedCode) => predefinedCode === code)) {
           throw new TimeoutException(error?.message, code);
         } else if (response && response.status) {
           const { status, data, statusText } = response;
