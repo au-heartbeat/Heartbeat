@@ -181,12 +181,12 @@ const DoraMetrics = ({
 
   const getErrorMessage4BuildKite = () =>
     _.get(doraReport, ['reportError', 'pipelineError'])
-      ? `Failed to get BuildKite info_status: ${_.get(doraReport, ['reportError', 'pipelineError', 'status'])}...`
+      ? `Failed to get BuildKite info_status: ${_.get(doraReport, ['reportError', 'pipelineError', 'status'])}`
       : '';
 
   const getErrorMessage4Github = () =>
     _.get(doraReport, ['reportError', 'sourceControlError'])
-      ? `Failed to get Github info_status: ${_.get(doraReport, ['reportError', 'sourceControlError', 'status'])}...`
+      ? `Failed to get Github info_status: ${_.get(doraReport, ['reportError', 'sourceControlError', 'status'])}`
       : '';
 
   const showRetryButton = !!(timeoutError || getErrorMessage4BuildKite() || getErrorMessage4Github());

@@ -64,7 +64,7 @@ const BoardMetrics = ({
 
   const getErrorMessage = () =>
     _.get(boardReport, ['reportError', 'boardError'])
-      ? `Failed to get Jira info_status: ${_.get(boardReport, ['reportError', 'boardError', 'status'])}...`
+      ? `Failed to get Jira info_status: ${_.get(boardReport, ['reportError', 'boardError', 'status'])}`
       : '';
 
   const getBoardReportRequestBody = (): BoardReportRequestDTO => {

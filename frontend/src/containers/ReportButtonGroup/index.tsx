@@ -62,8 +62,8 @@ export const ReportButtonGroup = ({
     reportData?.reportError?.sourceControlError;
 
   const isReportHasError =
-    !!reportData?.reportError.boardError &&
-    !!reportData?.reportError.pipelineError &&
+    !!reportData?.reportError.boardError ||
+    !!reportData?.reportError.pipelineError ||
     !!reportData?.reportError.sourceControlError;
 
   return (
