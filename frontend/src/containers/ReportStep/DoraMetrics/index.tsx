@@ -189,7 +189,11 @@ const DoraMetrics = ({
       ? `Failed to get Github info_status: ${_.get(doraReport, ['reportError', 'sourceControlError', 'status'])}`
       : '';
 
-  const showRetryButton = !!(timeoutError || getErrorMessage4BuildKite() || getErrorMessage4Github());
+  const shouldShowRetry = () => {
+    const hasDoraError = !!(timeoutError || getErrorMessage4BuildKite() || getErrorMessage4Github());
+    const dataGetCompleted = doraReport?.sourceControlMetricsCompleted && doraReport?.pipelineMetricsCompleted;
+    return hasDoraError && dataGetCompleted;
+  };
 
   const handleRetry = () => {
     startToRequestDoraData(getDoraReportRequestBody());
@@ -204,10 +208,11 @@ const DoraMetrics = ({
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.DORA.TITLE} />
-          {!showRetryButton && (doraReport?.pipelineMetricsCompleted || doraReport?.sourceControlMetricsCompleted) && (
-            <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
-          )}
-          {showRetryButton && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
+          {!shouldShowRetry() &&
+            (doraReport?.pipelineMetricsCompleted || doraReport?.sourceControlMetricsCompleted) && (
+              <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
+            )}
+          {shouldShowRetry() && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
         {shouldShowSourceControl && (
           <ReportGrid reportDetails={getSourceControlItems()} errorMessage={timeoutError || getErrorMessage4Github()} />
