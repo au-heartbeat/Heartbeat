@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAppSelector } from '@src/hooks';
 import _ from 'lodash';
 import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice';
@@ -16,6 +16,7 @@ import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import dayjs from 'dayjs';
 import {
+  StyledLoading,
   StyledMetricsSection,
   StyledRetry,
   StyledShowMore,
@@ -160,7 +161,11 @@ const BoardMetrics = ({
           {!(timeoutError || getErrorMessage()) && boardReport?.boardMetricsCompleted && (
             <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
           )}
-          {isShowShowMoreLoading() && <Loading placement='start' size='0.8rem' backgroundColor='transparent' />}
+          {isShowShowMoreLoading() && (
+            <StyledLoading>
+              <Loading placement='start' size='0.8rem' backgroundColor='transparent' />
+            </StyledLoading>
+          )}
           {(timeoutError || getErrorMessage()) && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
         <ReportGrid reportDetails={getBoardItems()} errorMessage={timeoutError || getErrorMessage()} />

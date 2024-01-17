@@ -12,7 +12,6 @@ export const LoadingDrop = styled(Backdrop)((props: { placement: Placement }) =>
   display: 'flex',
   flexDirection: 'column',
   alignItems: props.placement === 'center' ? 'center' : 'flex-start',
-  left: props.placement === 'center' ? '0' : '9rem',
   justifyContent: 'center',
 }));
 

@@ -49,7 +49,7 @@ export const ReportForThreeColumns = ({ title, fieldName, listName, data }: Repo
   };
 
   const renderRows = () =>
-    data.slice(0, data.length === 2 && data[1].name === AVERAGE_FIELD ? 1 : data.length).map((row) => (
+    data?.slice(0, data?.length === 2 && data[1]?.name === AVERAGE_FIELD ? 1 : data?.length).map((row) => (
       <Fragment key={row.id}>
         <TableRow data-testid={'tr'}>
           <ColumnTableCell rowSpan={row.valuesList.length + 1}>{emojiRow(row)}</ColumnTableCell>

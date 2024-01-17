@@ -20,6 +20,11 @@ export const StyledShowMore = styled('div')({
   cursor: 'pointer',
 });
 
+export const StyledLoading = styled('div')({
+  position: 'relative',
+  left: '1rem',
+});
+
 export const StyledRetry = styled('div')({
   marginLeft: '0.5rem',
   fontSize: '0.8rem',
