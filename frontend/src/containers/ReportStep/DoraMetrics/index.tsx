@@ -217,22 +217,22 @@ const DoraMetrics = ({
   }, []);
 
   useEffect(() => {
-    if (doraReport?.reportError.pipelineError) {
+    if (doraReport?.reportMetricsError.pipelineMetricsError) {
       addNotification({
         message: MESSAGE.FAILED_TO_GET_DATA('Buildkite'),
         type: 'error',
       });
     }
-  }, [doraReport?.reportError.pipelineError]);
+  }, [doraReport?.reportMetricsError.pipelineMetricsError]);
 
   useEffect(() => {
-    if (doraReport?.reportError.sourceControlError) {
+    if (doraReport?.reportMetricsError.sourceControlMetricsError) {
       addNotification({
         message: MESSAGE.FAILED_TO_GET_DATA('Github'),
         type: 'error',
       });
     }
-  }, [doraReport?.reportError.sourceControlError]);
+  }, [doraReport?.reportMetricsError.sourceControlMetricsError]);
 
   return (
     <>

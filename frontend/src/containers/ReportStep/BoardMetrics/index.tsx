@@ -156,13 +156,13 @@ const BoardMetrics = ({
   }, []);
 
   useEffect(() => {
-    if (boardReport?.reportError.boardError) {
+    if (boardReport?.reportMetricsError.boardMetricsError) {
       addNotification({
         message: MESSAGE.FAILED_TO_GET_DATA('Board Metrics'),
         type: 'error',
       });
     }
-  }, [boardReport?.reportError.boardError]);
+  }, [boardReport?.reportMetricsError.boardMetricsError]);
 
   return (
     <>
