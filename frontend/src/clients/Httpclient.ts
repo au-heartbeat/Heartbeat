@@ -34,12 +34,10 @@ export class HttpClient {
               throw new NotFoundException(errorMessage, status);
             case HttpStatusCode.Forbidden:
               throw new ForbiddenException(errorMessage, status);
-            case HttpStatusCode.InternalServerError:
-              throw new InternalServerException(errorMessage, status);
-            // todo // 5 series error
-            // case HttpStatusCode.ServiceUnavailable:
-            //   throw new TimeoutException(errorMessage, status);
             default:
+              if (status > 500) {
+                throw new InternalServerException(errorMessage, status);
+              }
               throw new UnknownException();
           }
         } else {
