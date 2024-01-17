@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, HttpStatusCode } from 'axios';
+import { ROUTE } from '@src/constants/router';
 import { HEARTBEAT_TIMEOUT_ERROR_CODES } from '@src/constants/resources';
 import { BadRequestException } from '@src/exceptions/BadRequestException';
 import { UnauthorizedException } from '@src/exceptions/UnauthorizedException';
@@ -37,6 +38,7 @@ export class HttpClient {
               throw new ForbiddenException(errorMessage, status);
             default:
               if (status > 500) {
+                window.location.href = ROUTE.ERROR_PAGE;
                 throw new InternalServerException(errorMessage, status);
               }
               throw new UnknownException();
