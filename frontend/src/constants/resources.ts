@@ -192,6 +192,7 @@ export const MESSAGE = {
   ERROR_PAGE: 'Something on internet is not quite right. Perhaps head back to our homepage and try again.',
   EXPIRE_INFORMATION: (value: number) => `The file will expire in ${value} minutes, please download it in time.`,
   REPORT_LOADING: 'The report is being generated, please do not refresh the page or all the data will be disappeared.',
+  LOADING_TIMEOUT: (name: string) => `${name} loading timeout, please click "Retry"!`,
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER = [
