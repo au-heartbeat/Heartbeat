@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, HttpStatusCode } from 'axios';
+import axios, { AxiosInstance, HttpStatusCode, AxiosError, Axios } from 'axios';
 import { BadRequestException } from '@src/exceptions/BadRequestException';
 import { UnauthorizedException } from '@src/exceptions/UnauthorizedException';
 import { InternalServerException } from '@src/exceptions/InternalServerException';
@@ -19,8 +19,10 @@ export class HttpClient {
     this.axiosInstance.interceptors.response.use(
       (res) => res,
       (error) => {
-        const { response } = error;
-        if (response && response.status) {
+        const { code, response } = error;
+        if (code === AxiosError.ECONNABORTED || code === AxiosError.ETIMEDOUT) {
+          throw new TimeoutException(error?.message, code);
+        } else if (response && response.status) {
           const { status, data, statusText } = response;
           const errorMessage = data?.hintInfo ?? statusText;
           switch (status) {
@@ -34,8 +36,9 @@ export class HttpClient {
               throw new ForbiddenException(errorMessage, status);
             case HttpStatusCode.InternalServerError:
               throw new InternalServerException(errorMessage, status);
-            case HttpStatusCode.ServiceUnavailable:
-              throw new TimeoutException(errorMessage, status);
+            // todo // 5 series error
+            // case HttpStatusCode.ServiceUnavailable:
+            //   throw new TimeoutException(errorMessage, status);
             default:
               throw new UnknownException();
           }
