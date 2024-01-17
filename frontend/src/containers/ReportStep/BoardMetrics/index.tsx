@@ -1,10 +1,7 @@
-import {
-  StyledLoading,
-  StyledMetricsSection,
-  StyledRetry,
-  StyledShowMore,
-  StyledTitleWrapper,
-} from '@src/containers/ReportStep/BoardMetrics/BoardMetrics';
+import React, { useEffect } from 'react';
+import { useAppSelector } from '@src/hooks';
+import _ from 'lodash';
+import { selectConfig } from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -16,18 +13,21 @@ import {
   SHOW_MORE,
 } from '@src/constants/resources';
 import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
-import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util';
-import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice';
-import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { ReportGrid } from '@src/components/Common/ReportGrid';
-import { Loading } from '@src/components/Loading';
-import { Nullable } from '@src/utils/types';
-import { useAppSelector } from '@src/hooks';
-import React, { useEffect } from 'react';
 import dayjs from 'dayjs';
-import _ from 'lodash';
+import {
+  StyledLoading,
+  StyledMetricsSection,
+  StyledRetry,
+  StyledShowMore,
+  StyledTitleWrapper,
+} from '@src/containers/ReportStep/BoradMetrics/BoardMetrics';
+import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util';
+import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
+import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { Nullable } from '@src/utils/types';
+import { Loading } from '@src/components/Loading';
 
 interface BoardMetricsProps {
   startToRequestBoardData: (request: ReportRequestDTO) => void;
@@ -53,15 +53,11 @@ const BoardMetrics = ({
   const configData = useAppSelector(selectConfig);
   const { cycleTimeSettings, treatFlagCardAsBlock, users, targetFields, doneColumn, assigneeFilter } =
     useAppSelector(selectMetricsContent);
-  const jiraColumns = useAppSelector(selectJiraColumns);
 
   const { metrics, calendarType } = configData.basic;
   const { board } = configData;
   const { token, type, site, projectKey, boardId, email } = board.config;
   const jiraToken = getJiraBoardToken(token, email);
-  const jiraColumnsWithValue = jiraColumns?.map(
-    (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value,
-  );
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
 
   const getErrorMessage = () =>
@@ -81,7 +77,7 @@ const BoardMetrics = ({
         site,
         projectKey,
         boardId,
-        boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings, jiraColumnsWithValue),
+        boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings),
         treatFlagCardAsBlock,
         users,
         assigneeFilter,

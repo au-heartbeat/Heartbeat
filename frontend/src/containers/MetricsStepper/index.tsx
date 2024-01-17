@@ -28,6 +28,7 @@ import {
   TIPS,
 } from '@src/constants/resources';
 import {
+  ICycleTimeSetting,
   savedMetricsSettingState,
   selectCycleTimeSettings,
   selectMetricsContent,
@@ -163,7 +164,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
         } else {
           return true;
         }
-      }),
+      })
     );
   };
 
@@ -191,6 +192,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       doneColumn,
       targetFields,
       cycleTimeSettings,
+      cycleTimeSettingsType,
       treatFlagCardAsBlock,
       assigneeFilter,
     } = filterMetricsConfig(metricsConfig);
@@ -203,10 +205,17 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       pipelineCrews,
       cycleTime: cycleTimeSettings
         ? {
+            type: cycleTimeSettingsType,
             /* istanbul ignore next */
-            jiraColumns: cycleTimeSettings?.map(({ name, value }: { name: string; value: string }) => ({
-              [name]: value,
-            })),
+            jiraColumns: cycleTimeSettings?.map(({ column, status, value }: ICycleTimeSetting) =>
+              cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+                ? {
+                    [column]: value,
+                  }
+                : {
+                    [status]: value,
+                  }
+            ),
             treatFlagCardAsBlock,
           }
         : undefined,

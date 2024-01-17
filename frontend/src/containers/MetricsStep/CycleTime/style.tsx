@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles';
-import { Checkbox, RadioGroup, Tooltip } from '@mui/material';
+import { Checkbox, Tooltip } from '@mui/material';
 
 export const FlagCardItem = styled('div')({
   display: 'flex',
@@ -34,8 +34,3 @@ export const StyledTooltip = styled(({ className, ...props }: any) => (
     max-width: 31.25rem;
     margin-top: 0.625rem;
 `);
-
-export const StyledRadioGroup = styled(RadioGroup)({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
-});

@@ -1,105 +1,147 @@
 import React, { useCallback } from 'react';
-import { Table, TableBody, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
+import { FormControlLabel, Radio, Table, TableBody, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { saveCycleTimeSettings, saveDoneColumn, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { selectJiraColumns } from '@src/context/config/configSlice';
-import { DONE, METRICS_CYCLE_SETTING_TABLE_HEADER } from '@src/constants/resources';
+import {
+  saveCycleTimeSettings,
+  saveDoneColumn,
+  selectMetricsContent,
+  setCycleTimeSettingsType,
+} from '@src/context/Metrics/metricsSlice';
+import {
+  CYCLE_TIME_SETTINGS_TYPES,
+  DONE,
+  METRICS_CONSTANTS,
+  METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN,
+  METRICS_CYCLE_SETTING_TABLE_HEADER_BY_STATUS,
+} from '@src/constants/resources';
 import { theme } from '@src/theme';
 import CellAutoComplete from '@src/containers/MetricsStep/CycleTime/Table/CellAutoComplete';
-import { StyledTableHeaderCell, StyledTableRowCell } from '@src/containers/MetricsStep/CycleTime/Table/style';
+import {
+  StyledRadioGroup,
+  StyledTableHeaderCell,
+  StyledTableRowCell,
+} from '@src/containers/MetricsStep/CycleTime/Table/style';
 import EllipsisText from '@src/components/Common/EllipsisText';
-
-export const columns = METRICS_CYCLE_SETTING_TABLE_HEADER.map(
-  (config) =>
-    function CellRenderFunc() {
-      return config.emphasis ? (
-        <>
-          <span>{config.text}</span>
-          <span style={{ color: theme.components?.errorMessage.color }}> *</span>
-        </>
-      ) : (
-        config.text
-      );
-    },
-);
 
 const CycleTimeTable = () => {
   const dispatch = useAppDispatch();
-  const { cycleTimeSettings } = useAppSelector(selectMetricsContent);
-  const jiraColumns = useAppSelector(selectJiraColumns);
-  const jiraColumnsWithValue = jiraColumns?.map(
-    (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value,
-  );
-  const rows = cycleTimeSettings.map((setting) => ({
-    ...setting,
-    statuses: jiraColumnsWithValue.find((columnWithValue) => columnWithValue.name === setting.name)?.statuses,
-  }));
+  const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
+  const isColumnAsKey = cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN;
 
   const resetRealDoneColumn = useCallback(
     (name: string, value: string) => {
-      const optionNamesWithDone = cycleTimeSettings.filter((item) => item.value === DONE).map((item) => item.name);
-
       if (value === DONE) {
         dispatch(saveDoneColumn([]));
       }
+
+      const optionNamesWithDone = cycleTimeSettings
+        .filter(({ value }) => value === DONE)
+        .map(({ column, status }) => (isColumnAsKey ? column : status));
 
       if (optionNamesWithDone.includes(name)) {
         dispatch(saveDoneColumn([]));
       }
     },
-    [cycleTimeSettings, dispatch],
+    [cycleTimeSettings, dispatch, isColumnAsKey],
   );
+
   const saveCycleTimeOptions = useCallback(
     (name: string, value: string) => {
       const newCycleTimeSettings = cycleTimeSettings.map((item) =>
-        item.name === name
+        (isColumnAsKey ? item.column === name : item.status === name)
           ? {
               ...item,
               value,
             }
-          : item,
+          : item
       );
 
       resetRealDoneColumn(name, value);
       dispatch(saveCycleTimeSettings(newCycleTimeSettings));
     },
-    [cycleTimeSettings, dispatch, resetRealDoneColumn],
+    [cycleTimeSettings, dispatch, isColumnAsKey, resetRealDoneColumn]
   );
 
+  const header = isColumnAsKey
+    ? METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN
+    : METRICS_CYCLE_SETTING_TABLE_HEADER_BY_STATUS;
+
+  const data = isColumnAsKey
+    ? [...new Set(cycleTimeSettings.map(({ column }) => column))].map((uniqueColumn) => {
+        const statuses = cycleTimeSettings
+          .filter(({ column }) => column === uniqueColumn)
+          .map(({ status }) => status)
+          .join(',');
+        const value =
+          cycleTimeSettings.find(({ column }) => column === uniqueColumn)?.value || METRICS_CONSTANTS.cycleTimeEmptyStr;
+        return [uniqueColumn, statuses, value];
+      })
+    : cycleTimeSettings.map(({ status, column, value }) => [status, column, value]);
+
+  const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setCycleTimeSettingsType(event.target.value));
+    dispatch(
+      saveCycleTimeSettings(
+        cycleTimeSettings.map(({ column, status }) => ({
+          column,
+          status,
+          value: METRICS_CONSTANTS.cycleTimeEmptyStr,
+        }))
+      )
+    );
+  };
+
   return (
-    <TableContainer sx={{ mb: '2rem' }}>
-      <Table aria-label='sticky table'>
-        <TableHead>
-          <TableRow>
-            {columns.map((columnRenderFunc, index) => (
-              <StyledTableHeaderCell sx={{ width: `${(100 / columns.length).toFixed(2)}%` }} key={index}>
-                {columnRenderFunc()}
-              </StyledTableHeaderCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, index) => {
-            const row1Content = row.name;
-            const row2Content = row.statuses?.join(', ');
-            return (
+    <>
+      <StyledRadioGroup aria-label='cycleTimeSettingsType' value={cycleTimeSettingsType} onChange={handleTypeChange}>
+        <FormControlLabel
+          value={CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN}
+          control={<Radio />}
+          label='By Board Column mapping'
+        />
+        <FormControlLabel
+          value={CYCLE_TIME_SETTINGS_TYPES.BY_STATUS}
+          control={<Radio />}
+          label='By Board Status mapping'
+        />
+      </StyledRadioGroup>
+      <TableContainer sx={{ mb: '2rem' }}>
+        <Table aria-label='sticky table'>
+          <TableHead>
+            <TableRow>
+              {header.map(({ emphasis, text }, index) => (
+                <StyledTableHeaderCell length={header.length} key={index}>
+                  {emphasis ? (
+                    <>
+                      <span>{text}</span>
+                      <span style={{ color: theme.components?.errorMessage.color }}> *</span>
+                    </>
+                  ) : (
+                    text
+                  )}
+                </StyledTableHeaderCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row, index) => (
               <TableRow hover key={index}>
-                <StyledTableRowCell>{row1Content}</StyledTableRowCell>
+                <StyledTableRowCell>{row[0]}</StyledTableRowCell>
                 <StyledTableRowCell>
-                  <Tooltip title={row2Content} arrow>
-                    <EllipsisText fitContent>{row2Content}</EllipsisText>
+                  <Tooltip title={row[1]} arrow>
+                    <EllipsisText fitContent>{row[1]}</EllipsisText>
                   </Tooltip>
                 </StyledTableRowCell>
                 <StyledTableRowCell>
-                  <CellAutoComplete name={`${row?.name}`} defaultSelected={row.value} onSelect={saveCycleTimeOptions} />
+                  <CellAutoComplete name={row[0]} defaultSelected={row[2]} onSelect={saveCycleTimeOptions} />
                 </StyledTableRowCell>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 

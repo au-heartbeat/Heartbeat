@@ -42,22 +42,13 @@ export const getJiraBoardToken = (token: string, email: string) => {
   }
 };
 
-export const filterAndMapCycleTimeSettings = (
-  cycleTimeSettings: ICycleTimeSetting[],
-  jiraColumnsWithValue: IJiraColumnsWithValue[],
-) => {
-  return cycleTimeSettings
+export const filterAndMapCycleTimeSettings = (cycleTimeSettings: ICycleTimeSetting[]) =>
+  cycleTimeSettings
     .filter((item) => item.value !== '----')
-    .flatMap((cycleTimeSetting) => {
-      const previousName = cycleTimeSetting.name;
-      const jiraColumnsStatuses = jiraColumnsWithValue.find((item) => item.name === previousName)?.statuses || [];
-
-      return jiraColumnsStatuses.map((item) => ({
-        name: item,
-        value: cycleTimeSetting.value,
-      }));
-    });
-};
+    .map(({ status, value }) => ({
+      name: status,
+      value,
+    }));
 
 export const findCaseInsensitiveType = (option: string[], value: string): string => {
   const newValue = option.find((item) => value.toLowerCase() === item.toLowerCase());
