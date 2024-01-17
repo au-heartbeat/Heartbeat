@@ -1,5 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient';
-import { HttpStatusCode } from 'axios';
+import { HttpStatusCode, AxiosError, isAxiosError } from 'axios';
 import { isHeartBeatException } from '@src/exceptions';
 import { IHeartBeatException } from '@src/exceptions/ExceptionType';
 import { IPipelineVerifyRequestDTO, PipelineInfoRequestDTO } from '@src/clients/pipeline/dto/request';
@@ -61,7 +61,10 @@ export class PipelineToolClient extends HttpClient {
       }
       result.code = response.status;
     } catch (e) {
-      if (isHeartBeatException(e)) {
+      if (isAxiosError(e) && e.code === AxiosError.ERR_NETWORK) {
+        result.code = e.code;
+        result.errorTitle = e.message;
+      } else if (isHeartBeatException(e)) {
         const exception = e as IHeartBeatException;
         result.code = exception.code;
         result.errorTitle = PIPELINE_TOOL_GET_INFO_ERROR_CASE_TEXT_MAPPING[`${exception.code}`] || UNKNOWN_ERROR_TITLE;
