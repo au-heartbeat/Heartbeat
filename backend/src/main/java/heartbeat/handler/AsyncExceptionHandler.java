@@ -3,6 +3,7 @@ package heartbeat.handler;
 import heartbeat.exception.BaseException;
 import heartbeat.util.IdUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -10,15 +11,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static heartbeat.handler.FIleType.ERROR;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
-public class AsyncExceptionHandler {
+public class AsyncExceptionHandler extends AsyncHandler {
 
 	private final Map<String, BaseException> exceptionMap = new ConcurrentHashMap<>();
 
 	public void put(String reportId, BaseException e) {
+		createDirToConvertData(ERROR);
 		exceptionMap.put(reportId, e);
 	}
 
