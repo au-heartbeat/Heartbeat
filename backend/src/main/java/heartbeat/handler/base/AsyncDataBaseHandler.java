@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 
 @Log4j2
@@ -79,7 +80,7 @@ public class AsyncDataBaseHandler {
 			for (File file : files) {
 				String fileName = file.getName();
 				String[] splitResult = fileName.split("\\s*\\-|\\.\\s*");
-				String timeStamp = splitResult[1];
+				String timeStamp = METRICS_DATA_COMPLETED == fIleType ? splitResult[0] : splitResult[1];
 				if (validateExpire(currentTimeStamp, Long.parseLong(timeStamp)) && !file.delete()) {
 					log.error("Failed to deleted expired CSV file, file name: {}", fileName);
 				}
