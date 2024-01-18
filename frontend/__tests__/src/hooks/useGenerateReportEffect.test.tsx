@@ -163,9 +163,9 @@ describe('use generate report effect', () => {
   });
 
   it('should set error message when generate report response status 500', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatusCode.NotFound);
-    });
+    reportClient.retrieveReportByUrl = jest
+      .fn()
+      .mockRejectedValue(new InternalServerException(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatusCode.NotFound));
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
@@ -176,9 +176,7 @@ describe('use generate report effect', () => {
   });
 
   it('should set isServerError is true when throw InternalServerException', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new InternalServerException('5xx error', 500);
-    });
+    reportClient.retrieveReportByUrl = jest.fn().mockRejectedValue(new InternalServerException('5xx error', 500));
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
@@ -189,9 +187,7 @@ describe('use generate report effect', () => {
   });
 
   it('should set isServerError is true when throw TimeoutException', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new TimeoutException('5xx error', 503);
-    });
+    reportClient.retrieveReportByUrl = jest.fn().mockRejectedValue(new TimeoutException('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
@@ -202,9 +198,7 @@ describe('use generate report effect', () => {
   });
 
   it('should set timeout4Dora is "Data loading failed" when timeout', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new UnknownException();
-    });
+    reportClient.retrieveReportByUrl = jest.fn().mockRejectedValue(new UnknownException());
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
