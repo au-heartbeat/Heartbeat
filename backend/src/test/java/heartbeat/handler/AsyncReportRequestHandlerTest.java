@@ -4,51 +4,69 @@ import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.util.IdUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class AsyncReportRequestHandlerTest {
 
+	public static final String APP_OUTPUT_REPORT = "./app/output/report";
+
 	@InjectMocks
 	AsyncReportRequestHandler asyncReportRequestHandler;
+
+	@AfterEach
+	void afterEach() {
+		new File(APP_OUTPUT_REPORT).delete();
+	}
 
 	@InjectMocks
 	AsyncMetricsDataHandler asyncMetricsDataHandler;
 
 	@Test
-	void shouldDeleteReportWhenReportIsExpire() {
+	void shouldDeleteReportWhenReportIsExpire() throws IOException {
 		long currentTimeMillis = System.currentTimeMillis();
 		String currentTime = Long.toString(currentTimeMillis);
 		String expireTime = Long.toString(currentTimeMillis - 1900000L);
-		String boardReportId1 = IdUtil.getBoardReportId(currentTime);
-		String boardReportId2 = IdUtil.getBoardReportId(expireTime);
-		asyncReportRequestHandler.putReport(boardReportId1, ReportResponse.builder().build());
-		asyncReportRequestHandler.putReport(boardReportId2, ReportResponse.builder().build());
+		String unExpireFile = IdUtil.getBoardReportId(currentTime);
+		String expireFile = IdUtil.getBoardReportId(expireTime);
+		asyncReportRequestHandler.putReport(unExpireFile, ReportResponse.builder().build());
+		asyncReportRequestHandler.putReport(expireFile, ReportResponse.builder().build());
 
 		asyncReportRequestHandler.deleteExpireReport(currentTimeMillis);
 
-		assertNull(asyncReportRequestHandler.getReport(boardReportId2));
-		assertNotNull(asyncReportRequestHandler.getReport(boardReportId1));
+		assertNull(asyncReportRequestHandler.getReport(expireFile));
+		assertNotNull(asyncReportRequestHandler.getReport(unExpireFile));
+		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + unExpireFile));
+		assertNull(asyncReportRequestHandler.getReport(unExpireFile));
 	}
 
 	@Test
-	void shouldGetAsyncReportWhenPuttingReportIntoAsyncReportRequestHandler() {
+	void shouldGetAsyncReportWhenPuttingReportIntoAsyncReportRequestHandler() throws IOException {
 		long currentTimeMillis = System.currentTimeMillis();
 		String currentTime = Long.toString(currentTimeMillis);
 		String boardReportId = IdUtil.getBoardReportId(currentTime);
+
 		asyncReportRequestHandler.putReport(boardReportId, ReportResponse.builder().build());
 
 		assertNotNull(asyncReportRequestHandler.getReport(boardReportId));
+		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + boardReportId));
+		assertNull(asyncReportRequestHandler.getReport(boardReportId));
 	}
 
 	@Test
@@ -117,5 +135,4 @@ class AsyncReportRequestHandlerTest {
 
 		assertTrue(reportReady);
 	}
-
 }
