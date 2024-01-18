@@ -4,7 +4,6 @@ import { selectConfig } from '@src/context/config/configSlice';
 import {
   CALENDAR,
   DORA_METRICS,
-  MESSAGE,
   METRICS_SUBTITLE,
   METRICS_TITLE,
   REPORT_PAGE,
@@ -22,12 +21,10 @@ import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { StyledRetry } from '../BoardMetrics/BoardMetrics';
 import { Nullable } from '@src/utils/types';
-import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 
 interface DoraMetricsProps {
-  notification: useNotificationLayoutEffectInterface;
   startToRequestDoraData: (request: ReportRequestDTO) => void;
   onShowDetail: () => void;
   doraReport?: ReportResponseDTO;
@@ -39,7 +36,6 @@ interface DoraMetricsProps {
 }
 
 const DoraMetrics = ({
-  notification,
   isBackFromDetail,
   startToRequestDoraData,
   onShowDetail,
@@ -54,7 +50,6 @@ const DoraMetrics = ({
   const { metrics, calendarType } = configData.basic;
   const { pipelineCrews, deploymentFrequencySettings, leadTimeForChanges } = useAppSelector(selectMetricsContent);
   const shouldShowSourceControl = metrics.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES);
-  const { addNotification } = notification;
 
   const getDoraReportRequestBody = (): ReportRequestDTO => {
     const doraMetrics = metrics.filter((metric) => DORA_METRICS.includes(metric));
@@ -215,24 +210,6 @@ const DoraMetrics = ({
   useEffect(() => {
     !isBackFromDetail && startToRequestDoraData(getDoraReportRequestBody());
   }, []);
-
-  useEffect(() => {
-    if (doraReport?.reportMetricsError.pipelineMetricsError) {
-      addNotification({
-        message: MESSAGE.FAILED_TO_GET_DATA('Buildkite'),
-        type: 'error',
-      });
-    }
-  }, [doraReport?.reportMetricsError.pipelineMetricsError]);
-
-  useEffect(() => {
-    if (doraReport?.reportMetricsError.sourceControlMetricsError) {
-      addNotification({
-        message: MESSAGE.FAILED_TO_GET_DATA('Github'),
-        type: 'error',
-      });
-    }
-  }, [doraReport?.reportMetricsError.sourceControlMetricsError]);
 
   return (
     <>

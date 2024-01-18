@@ -8,7 +8,6 @@ import {
 import {
   BOARD_METRICS,
   CALENDAR,
-  MESSAGE,
   METRICS_SUBTITLE,
   METRICS_TITLE,
   REPORT_PAGE,
@@ -32,7 +31,6 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 
 interface BoardMetricsProps {
-  notification: useNotificationLayoutEffectInterface;
   startToRequestBoardData: (request: ReportRequestDTO) => void;
   onShowDetail: () => void;
   boardReport?: ReportResponseDTO;
@@ -44,7 +42,6 @@ interface BoardMetricsProps {
 }
 
 const BoardMetrics = ({
-  notification,
   isBackFromDetail,
   startToRequestBoardData,
   onShowDetail,
@@ -67,7 +64,6 @@ const BoardMetrics = ({
     (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value,
   );
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
-  const { addNotification } = notification;
 
   const getErrorMessage = () =>
     _.get(boardReport, ['reportMetricsError', 'boardMetricsError'])
@@ -154,15 +150,6 @@ const BoardMetrics = ({
   useEffect(() => {
     !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());
   }, []);
-
-  useEffect(() => {
-    if (boardReport?.reportMetricsError.boardMetricsError) {
-      addNotification({
-        message: MESSAGE.FAILED_TO_GET_DATA('Board Metrics'),
-        type: 'error',
-      });
-    }
-  }, [boardReport?.reportMetricsError.boardMetricsError]);
 
   return (
     <>

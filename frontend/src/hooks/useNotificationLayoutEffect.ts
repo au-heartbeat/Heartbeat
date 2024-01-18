@@ -29,7 +29,7 @@ export const useNotificationLayoutEffect = (): useNotificationLayoutEffectInterf
   };
 
   const closeNotification = (id: string) => {
-    setNotifications(notifications.filter((notification) => notification.id !== id));
+    setNotifications((preNotifications) => preNotifications.filter((notification) => notification.id !== id));
   };
 
   const closeAllNotifications = () => {
