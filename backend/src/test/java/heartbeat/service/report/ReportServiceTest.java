@@ -1,6 +1,8 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportDataType;
+import heartbeat.controller.report.dto.request.ReportType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,6 +28,7 @@ import heartbeat.exception.NotFoundException;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +40,9 @@ public class ReportServiceTest {
 
 	@Mock
 	CSVFileGenerator csvFileGenerator;
+
+	@Mock
+	GenerateReporterService generateReporterService;
 
 	@Test
 	void exportCsvShouldCallCsvFileGeneratorToGotTheStreamWhenTimestampIsValid() throws IOException {
@@ -56,6 +63,24 @@ public class ReportServiceTest {
 
 		assertThrows(NotFoundException.class, () -> reportService.exportCsv(ReportDataType.METRIC, invalidTimestamp));
 		verify(csvFileGenerator, never()).getDataFromCSV(ReportDataType.METRIC, invalidTimestamp);
+	}
+
+	@Test
+	void generateBoardReportByTypeShouldCallGenerateBoardReport(){
+		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
+		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
+		reportService.generateReportByType(request, ReportType.BOARD);
+		verify(generateReporterService).generateBoardReport(request);
+		verify(generateReporterService, never()).generateDoraReport(request);
+	}
+
+	@Test
+	void generateDoraReportByTypeShouldCallGenerateDoraReport(){
+		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
+		doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
+		reportService.generateReportByType(request, ReportType.DORA);
+		verify(generateReporterService).generateDoraReport(request);
+		verify(generateReporterService, never()).generateBoardReport(request);
 	}
 
 }

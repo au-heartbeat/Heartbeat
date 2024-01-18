@@ -48,7 +48,7 @@ public class ReportResponse {
 
 	public ReportResponse(ReportResponse boardReportResponse, ReportResponse doraReportResponse,
 			ReportResponse codebaseReportResponse, MetricsDataCompleted metricsDataCompleted, ReportResponse response,
-			ReportError reportError, boolean isReportReady) {
+			ReportMetricsError reportError, boolean isReportReady) {
 		this.velocity = getValueOrNull(boardReportResponse, ReportResponse::getVelocity);
 		this.classificationList = getValueOrNull(boardReportResponse, ReportResponse::getClassificationList);
 		this.cycleTime = getValueOrNull(boardReportResponse, ReportResponse::getCycleTime);
@@ -63,7 +63,7 @@ public class ReportResponse {
 		this.sourceControlMetricsCompleted = getValueOrNull(metricsDataCompleted,
 				MetricsDataCompleted::sourceControlMetricsCompleted);
 		this.allMetricsCompleted = isReportReady;
-		this.reportError = reportError;
+		this.reportMetricsError = reportError;
 	}
 
 }

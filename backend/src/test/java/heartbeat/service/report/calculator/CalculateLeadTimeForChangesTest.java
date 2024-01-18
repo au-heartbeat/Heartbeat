@@ -1,4 +1,4 @@
-package heartbeat.service.report;
+package heartbeat.service.report.calculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

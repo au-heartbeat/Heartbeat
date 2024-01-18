@@ -1,12 +1,6 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.board.dto.response.CardCollection;
-import heartbeat.controller.board.dto.response.CycleTimeInfo;
-import heartbeat.controller.board.dto.response.JiraCardDTO;
-import heartbeat.controller.board.dto.response.JiraColumnDTO;
-import heartbeat.controller.board.dto.response.TargetField;
-import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
-import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.ErrorInfo;

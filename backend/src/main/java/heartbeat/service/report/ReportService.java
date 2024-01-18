@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportDataType;
+import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -28,10 +29,10 @@ public class ReportService {
 		return timeStamp < System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME;
 	}
 
-	public void generateReportByType(GenerateReportRequest request, String metricType) {
+	public void generateReportByType(GenerateReportRequest request, ReportType metricType) {
 		switch (metricType) {
-			case "board" -> generateReporterService.generateBoardReport(request);
-			case "dora" -> generateReporterService.generateDoraReport(request);
+			case BOARD -> generateReporterService.generateBoardReport(request);
+			case DORA -> generateReporterService.generateDoraReport(request);
 		}
 	}
 
