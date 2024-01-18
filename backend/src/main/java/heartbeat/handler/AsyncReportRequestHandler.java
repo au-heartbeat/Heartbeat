@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import static heartbeat.handler.FIleType.REPORT;
+import static heartbeat.handler.base.FIleType.REPORT;
 
 @Log4j2
 @Component

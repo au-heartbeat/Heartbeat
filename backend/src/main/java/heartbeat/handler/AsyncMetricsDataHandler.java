@@ -1,8 +1,11 @@
 package heartbeat.handler;
 
+import com.google.gson.Gson;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+>>>>>>> ce9c2a486 (ADM-733[backend]refactor: divide AsyncMetricsDataHandler from AsyncReportRequestHandler)
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
-
 @Component
 @RequiredArgsConstructor
 public class AsyncMetricsDataHandler {

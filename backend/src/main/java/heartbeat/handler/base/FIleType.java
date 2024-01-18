@@ -1,4 +1,4 @@
-package heartbeat.handler;
+package heartbeat.handler.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

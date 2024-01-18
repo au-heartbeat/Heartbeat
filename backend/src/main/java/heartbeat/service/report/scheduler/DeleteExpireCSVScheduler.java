@@ -29,6 +29,8 @@ public class DeleteExpireCSVScheduler {
 
 	private final AsyncExceptionHandler asyncExceptionHandler;
 
+	private final AsyncMetricsDataHandler asyncMetricsDataHandler;
+
 	@Scheduled(fixedRate = DELETE_INTERVAL_IN_MINUTES, timeUnit = TimeUnit.MINUTES)
 	public void triggerBatchDelete() {
 		long currentTimeStamp = System.currentTimeMillis();

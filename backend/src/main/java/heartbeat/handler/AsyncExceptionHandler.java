@@ -3,11 +3,12 @@ package heartbeat.handler;
 import com.google.gson.Gson;
 import heartbeat.exception.BaseException;
 import heartbeat.handler.base.AsyncDataBaseHandler;
+import heartbeat.handler.base.AsyncExceptionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import static heartbeat.handler.FIleType.ERROR;
+import static heartbeat.handler.base.FIleType.ERROR;
 
 @Log4j2
 @Component

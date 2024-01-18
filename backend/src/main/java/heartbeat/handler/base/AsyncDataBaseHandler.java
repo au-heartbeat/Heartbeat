@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
-import heartbeat.handler.FIleType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.ObjectUtils;
 
