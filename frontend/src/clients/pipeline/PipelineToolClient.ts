@@ -1,5 +1,5 @@
 import { HttpClient } from '@src/clients/Httpclient';
-import { HttpStatusCode, AxiosError, isAxiosError } from 'axios';
+import { HttpStatusCode } from 'axios';
 import { isHeartBeatException } from '@src/exceptions';
 import { IHeartBeatException } from '@src/exceptions/ExceptionType';
 import { IPipelineVerifyRequestDTO, PipelineInfoRequestDTO } from '@src/clients/pipeline/dto/request';

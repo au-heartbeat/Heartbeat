@@ -115,7 +115,7 @@ describe('PipelineToolClient', () => {
 
       it('should return ERR_NETWORK error as its code when axios client detect network error', async () => {
         server.use(
-          rest.post(MOCK_PIPELINE_GET_INFO_URL, (req, res, ctx) => {
+          rest.post(MOCK_PIPELINE_GET_INFO_URL, (req, res) => {
             return res.networkError('mock network error');
           })
         );
