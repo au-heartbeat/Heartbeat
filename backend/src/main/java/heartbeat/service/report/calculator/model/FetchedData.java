@@ -32,6 +32,7 @@ public class FetchedData {
 	}
 
 	@Data
+	@Setter
 	@Builder
 	public static class BuildKiteData {
 		public BuildKiteData() {
