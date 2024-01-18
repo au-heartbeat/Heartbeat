@@ -5,10 +5,13 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import {
   selectDateRange,
   selectIsBoardVerified,
+  selectIsProjectCreated,
   updateBoard,
   updateBoardVerifyState,
+  updateJiraVerifyResponse,
   updateProjectKey,
 } from '@src/context/config/configSlice';
+import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { NoCardPop } from '@src/containers/ConfigStep/NoDoneCardPop';
@@ -24,6 +27,7 @@ import {
 import dayjs from 'dayjs';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
+import merge from 'lodash/merge';
 
 type Field = {
   key: string;
@@ -38,14 +42,22 @@ export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);
   const DateRange = useAppSelector(selectDateRange);
+  const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const [isShowNoDoneCard, setIsNoDoneCard] = useState(false);
-  const { verifyJira, isLoading, formFields: fields, updateField } = useVerifyBoardEffect();
-  const { getBoardInfo } = useGetBoardInfoEffect();
+  const {
+    verifyJira,
+    isLoading: verifyLoading,
+    formFields: fields,
+    updateField,
+    resetFormFields,
+  } = useVerifyBoardEffect();
+  const { getBoardInfo, isLoading: isGetInfoLoading } = useGetBoardInfoEffect();
   const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(
     !fields.every((field) => field.value && field.isValid)
   );
 
   const initBoardFields = () => {
+    resetFormFields();
     dispatch(updateBoardVerifyState(false));
   };
 
@@ -91,15 +103,19 @@ export const Board = () => {
     await verifyJira(params)
       .then((res) => {
         if (res) {
-          dispatch(updateBoardVerifyState(res.isBoardVerify));
+          dispatch(updateBoardVerifyState(true));
+          dispatch(updateProjectKey(res.response.projectKey));
           getBoardInfo({
             ...params,
             projectKey: res.response.projectKey,
+          }).then((res) => {
+            if (res.data) {
+              dispatch(updateJiraVerifyResponse(res.data));
+              dispatch(updateMetricsState(merge(res.data, isProjectCreated)));
+            } else {
+              setIsNoDoneCard(true);
+            }
           });
-          // dispatch(updateJiraVerifyResponse(res.response))
-          dispatch(updateProjectKey(res.response.projectKey));
-          // res.isBoardVerify && dispatch(updateMetricsState({ ...res.response, isProjectCreated }))
-          // setIsNoDoneCard(!res.haveDoneCard)
         }
       })
       .catch((err) => err);
@@ -114,7 +130,7 @@ export const Board = () => {
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       <NoCardPop isOpen={isShowNoDoneCard} onClose={() => setIsNoDoneCard(false)} />
-      {isLoading && <Loading />}
+      {(verifyLoading || isGetInfoLoading) && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledForm
         onSubmit={(e) => handleSubmitBoardFields(e)}
@@ -161,15 +177,15 @@ export const Board = () => {
           )
         )}
         <StyledButtonGroup>
-          {isVerified && !isLoading ? (
+          {isVerified && !verifyLoading && !isGetInfoLoading ? (
             <VerifyButton disabled>Verified</VerifyButton>
           ) : (
-            <VerifyButton type='submit' disabled={isDisableVerifyButton || isLoading}>
+            <VerifyButton type='submit' disabled={isDisableVerifyButton || verifyLoading || isGetInfoLoading}>
               Verify
             </VerifyButton>
           )}
 
-          {isVerified && !isLoading && <ResetButton type='reset'>Reset</ResetButton>}
+          {isVerified && !verifyLoading && !isGetInfoLoading && <ResetButton type='reset'>Reset</ResetButton>}
         </StyledButtonGroup>
       </StyledForm>
     </ConfigSectionContainer>

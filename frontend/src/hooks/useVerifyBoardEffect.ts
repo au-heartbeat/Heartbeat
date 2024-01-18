@@ -23,19 +23,20 @@ export interface FormField {
 export interface useVerifyBoardStateInterface {
   verifyJira: (params: BoardRequestDTO) => Promise<
     | {
-        isBoardVerify: boolean;
-        haveDoneCard: boolean;
         response: Record<string, string>;
       }
     | undefined
   >;
   isLoading: boolean;
+  isBoardVerified: boolean;
   formFields: FormField[];
   updateField: (name: string, value: string) => void;
+  resetFormFields: () => void;
 }
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isBoardVerified, setIsBoardVerified] = useState(false);
   const boardFields = useAppSelector(selectBoard);
   const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
   const [formFields, setFormFields] = useState<FormField[]>([
@@ -66,7 +67,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       defaultValue: EMPTY_STRING,
       isRequired: true,
       isValid: true,
-      validRule: (value) => REGEX.EMAIL.test(value),
+      validRule: (value: string) => REGEX.EMAIL.test(value),
       errorMessage: '',
       col: 1,
     },
@@ -87,18 +88,25 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       defaultValue: EMPTY_STRING,
       isRequired: true,
       isValid: true,
-      validRule: (value) => REGEX.BOARD_TOKEN.test(value),
+      validRule: (value: string) => REGEX.BOARD_TOKEN.test(value),
       errorMessage: '',
       col: 2,
     },
   ]);
 
+  const resetFormFields = () =>
+    setFormFields(
+      formFields.map((field) => {
+        return { ...field, value: EMPTY_STRING, isRequired: true, isValid: true };
+      })
+    );
+
   const clearError = () => {
     return setFormFields(
       formFields.map((item) => ({
         ...item,
-        isValid: false,
-        isRequired: false,
+        isValid: true,
+        isRequired: true,
         errorMessage: '',
       }))
     );
@@ -153,7 +161,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         const { hintInfo, code } = e;
         if (code === 401) {
           setErrorField(['email', 'token'], [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR]);
-          console.log(formFields);
         }
         if (code === 404 && hintInfo === 'site not found') {
           setErrorField(['site'], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
@@ -169,7 +176,9 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   return {
     verifyJira,
     isLoading,
+    isBoardVerified,
     formFields,
     updateField,
+    resetFormFields,
   };
 };

@@ -26,7 +26,7 @@
   "lint-staged": {
     "**/*.(ts|tsx)": [
       "npm run lint",
-      "tsc --noEmit",
+      "tsc-file --noEmit",
       "npx prettier --write . --ignore-unknown"
     ]
   },
