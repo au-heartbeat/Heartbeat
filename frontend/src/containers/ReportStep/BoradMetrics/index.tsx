@@ -140,7 +140,7 @@ const BoardMetrics = ({
     startToRequestBoardData(getBoardReportRequestBody());
   };
 
-  const isShowShowMoreLoading = () =>
+  const isShowMoreLoadingDisplay = () =>
     boardMetrics.length === 1 &&
     boardMetrics[0] === REQUIRED_DATA.CLASSIFICATION &&
     !(timeoutError || getErrorMessage()) &&
@@ -158,7 +158,7 @@ const BoardMetrics = ({
           {!(timeoutError || getErrorMessage()) && boardReport?.boardMetricsCompleted && (
             <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
           )}
-          {isShowShowMoreLoading() && (
+          {isShowMoreLoadingDisplay() && (
             <StyledLoading>
               <Loading placement='left' size='0.8rem' backgroundColor='transparent' />
             </StyledLoading>
