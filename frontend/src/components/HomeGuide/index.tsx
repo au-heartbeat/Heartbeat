@@ -1,12 +1,12 @@
 import { resetImportedData, updateBasicConfigState, updateProjectCreatedState } from '@src/context/config/configSlice';
+import { setCycleTimeSettingsType, updateMetricsImportedData } from '@src/context/Metrics/metricsSlice';
 import { convertToNewFileConfig, NewFileConfig, OldFileConfig } from '@src/constants/fileConfig';
 import { GuideButton, HomeGuideContainer, StyledStack } from '@src/components/HomeGuide/style';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
-import { updateMetricsImportedData } from '@src/context/Metrics/metricsSlice';
+import { CYCLE_TIME_SETTINGS_TYPES, MESSAGE } from '@src/constants/resources';
 import { resetStep } from '@src/context/stepper/StepperSlice';
 import { resetFormMeta } from '@src/context/meta/metaSlice';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { MESSAGE } from '@src/constants/resources';
 import { useNavigate } from 'react-router-dom';
 import { ROUTE } from '@src/constants/router';
 import { useState } from 'react';
@@ -38,10 +38,17 @@ export const HomeGuide = () => {
         if (reader.result && typeof reader.result === 'string') {
           const importedConfig: OldFileConfig | NewFileConfig = JSON.parse(reader.result);
           const config: NewFileConfig = convertToNewFileConfig(importedConfig);
+          const importedCycleTimeType = (config.cycleTime as { type?: string })?.type;
+          const cycleTimeSettingsType = (Object.values(CYCLE_TIME_SETTINGS_TYPES) as string[]).includes(
+            importedCycleTimeType || '',
+          )
+            ? importedCycleTimeType
+            : CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN;
           if (isValidImportedConfig(config)) {
             dispatch(updateProjectCreatedState(false));
             dispatch(updateBasicConfigState(config));
             dispatch(updateMetricsImportedData(config));
+            dispatch(setCycleTimeSettingsType(cycleTimeSettingsType));
             navigate(ROUTE.METRICS_PAGE);
           } else {
             setValidConfig(false);

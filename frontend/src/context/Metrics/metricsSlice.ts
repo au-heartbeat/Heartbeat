@@ -97,14 +97,14 @@ const initialState: savedMetricsSettingState = {
   deploymentWarningMessage: [],
 };
 
-const compareArrays = (arrayA: string[], arrayB: string[]): string | null => {
+const compareArrays = (arrayA: string[], arrayB: string[], key: string): string | null => {
   if (arrayA?.length > arrayB?.length) {
     const differentValues = arrayA?.filter((value) => !arrayB.includes(value));
-    return `The column of ${differentValues} is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!`;
+    return `The ${key} of ${differentValues} is a deleted ${key}, which means this ${key} existed the time you saved config, but was deleted. Please confirm!`;
   } else {
     const differentValues = arrayB?.filter((value) => !arrayA.includes(value));
     return differentValues?.length > 0
-      ? `The column of ${differentValues} is a new column. Please select a value for it!`
+      ? `The ${key} of ${differentValues} is a new ${key}. Please select a value for it!`
       : null;
   }
 };
@@ -275,8 +275,14 @@ export const metricsSlice = createSlice({
         const jiraColumnsNames = jiraColumns?.map(
           (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name
         );
+        const jiraStatuses = jiraColumns?.flatMap(
+          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.statuses
+        );
         const metricsContainsValues = Object.values(METRICS_CONSTANTS);
-        const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames);
+        const importedKeyMismatchWarning =
+          state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+            ? compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames, 'column')
+            : compareArrays(importedCycleTimeSettingsKeys, jiraStatuses, 'status');
         const importedValueMismatchWarning = findDifferentValues(
           importedCycleTimeSettingsValues,
           metricsContainsValues
@@ -284,7 +290,7 @@ export const metricsSlice = createSlice({
 
         const getWarningMessage = (): string | null => {
           if (importedKeyMismatchWarning?.length) {
-            return compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames);
+            return importedKeyMismatchWarning;
           }
           if (importedValueMismatchWarning?.length) {
             return findKeyByValues(importedCycleTime.importedCycleTimeSettings, importedValueMismatchWarning);
