@@ -1,8 +1,7 @@
 package heartbeat.service.report;
 
-import heartbeat.client.dto.codebase.github.Repo;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
-import heartbeat.controller.report.dto.request.ReportType;
+import heartbeat.controller.report.dto.request.ReportDataType;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
@@ -104,7 +103,7 @@ class CSVFileGeneratorTest {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
 		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
 
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.PIPELINE,
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportDataType.PIPELINE,
 				Long.parseLong(mockTimeStamp));
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String csvPipelineData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
@@ -123,7 +122,7 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldThrowExceptionWhenFileNotExist() {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
-		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, 123456L));
+		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportDataType.PIPELINE, 123456L));
 		assertThrows(FileIOException.class,
 				() -> csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, "15469:89/033"));
 	}
@@ -166,7 +165,7 @@ class CSVFileGeneratorTest {
 		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS_WITH_CUSTOM();
 
 		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.BOARD,
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportDataType.BOARD,
 				Long.parseLong(mockTimeStamp));
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(csvDataInputStream));
@@ -230,7 +229,8 @@ class CSVFileGeneratorTest {
 		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
 		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
 
-		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.BOARD, 1686710104536L));
+		assertThrows(FileIOException.class,
+				() -> csvFileGenerator.getDataFromCSV(ReportDataType.BOARD, 1686710104536L));
 		assertThrows(FileIOException.class,
 				() -> csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, "15469:89/033"));
 	}
@@ -242,7 +242,7 @@ class CSVFileGeneratorTest {
 		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
 
 		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.BOARD,
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportDataType.BOARD,
 				Long.parseLong(mockTimeStamp));
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String boardCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
@@ -296,7 +296,8 @@ class CSVFileGeneratorTest {
 	void shouldThrowExceptionWhenMetricCsvNotExist() {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
 
-		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, 1686710104536L));
+		assertThrows(FileIOException.class,
+				() -> csvFileGenerator.getDataFromCSV(ReportDataType.METRIC, 1686710104536L));
 		assertThrows(FileIOException.class,
 				() -> csvFileGenerator.convertMetricDataToCSV(reportResponse, "15469:89/033"));
 	}
@@ -307,7 +308,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
 
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC,
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportDataType.METRIC,
 				Long.parseLong(mockTimeStamp));
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
@@ -365,7 +366,7 @@ class CSVFileGeneratorTest {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_EMPTY_METRIC_CSV_DATA();
 
 		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC,
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportDataType.METRIC,
 				Long.parseLong(mockTimeStamp));
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
@@ -383,7 +384,7 @@ class CSVFileGeneratorTest {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA_WITH_ONE_PIPELINE();
 
 		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC,
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportDataType.METRIC,
 				Long.parseLong(mockTimeStamp));
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()

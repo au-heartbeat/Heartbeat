@@ -17,7 +17,7 @@ import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
-import heartbeat.controller.report.dto.request.RequireDataEnum;
+import heartbeat.controller.report.dto.request.MetricEnum;
 import heartbeat.controller.report.dto.response.AvgMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.AvgChangeFailureRate;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
@@ -55,12 +55,7 @@ import heartbeat.service.pipeline.buildkite.builder.BuildKiteBuildInfoBuilder;
 import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
 import heartbeat.service.pipeline.buildkite.builder.DeployInfoBuilder;
 import heartbeat.service.pipeline.buildkite.builder.DeploymentEnvironmentBuilder;
-import heartbeat.service.report.calculator.CycleTimeCalculator;
-import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
-import heartbeat.service.report.calculator.ClassificationCalculator;
-import heartbeat.service.report.calculator.ChangeFailureRateCalculator;
-import heartbeat.service.report.calculator.VelocityCalculator;
-import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
+import heartbeat.service.report.calculator.*;
 import heartbeat.service.source.github.GitHubService;
 import heartbeat.util.IdUtil;
 import lombok.val;
@@ -1028,7 +1023,7 @@ class GenerateReporterServiceTest {
 	void shouldThrowBadRequestExceptionGivenMetricsContainKanbanWhenJiraSettingIsNull() {
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.considerHoliday(false)
-			.metrics(List.of(RequireDataEnum.CYCLE_TIME.getValue()))
+			.metrics(List.of(MetricEnum.CYCLE_TIME.getValue()))
 			.jiraBoardSetting(null)
 			.startTime("123")
 			.endTime("123")
@@ -1044,7 +1039,7 @@ class GenerateReporterServiceTest {
 	void shouldThrowBadRequestExceptionGivenMetricsContainCodeBaseWhenCodeBaseSettingIsNull() {
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.considerHoliday(false)
-			.metrics(List.of(RequireDataEnum.LEAD_TIME_FOR_CHANGES.getValue()))
+			.metrics(List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue()))
 			.codebaseSetting(null)
 			.startTime("123")
 			.endTime("123")
@@ -1060,7 +1055,7 @@ class GenerateReporterServiceTest {
 	void shouldThrowBadRequestExceptionGivenMetricsContainBuildKiteWhenBuildKiteSettingIsNull() {
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.considerHoliday(false)
-			.metrics(List.of(RequireDataEnum.CHANGE_FAILURE_RATE.getValue()))
+			.metrics(List.of(MetricEnum.CHANGE_FAILURE_RATE.getValue()))
 			.buildKiteSetting(null)
 			.startTime("123")
 			.endTime("123")
@@ -1076,7 +1071,7 @@ class GenerateReporterServiceTest {
 	@Test
 	void shouldInitializeValueFalseGivenPreviousMapperIsNullWhenInitializeRelatedMetricsCompleted() {
 		String timeStamp = TIMESTAMP;
-		List<String> metrics = List.of(RequireDataEnum.CYCLE_TIME.getValue());
+		List<String> metrics = List.of(MetricEnum.CYCLE_TIME.getValue());
 		MetricsDataCompleted expectedPut = MetricsDataCompleted.builder()
 			.boardMetricsCompleted(false)
 			.pipelineMetricsCompleted(null)
@@ -1092,8 +1087,7 @@ class GenerateReporterServiceTest {
 	@Test
 	void shouldInitializeValueFalseGivenPreviousValueExistWhenInitializeRelatedMetricsCompleted() {
 		String timeStamp = TIMESTAMP;
-		List<String> metrics = List.of(RequireDataEnum.CYCLE_TIME.getValue(),
-				RequireDataEnum.DEPLOYMENT_FREQUENCY.getValue());
+		List<String> metrics = List.of(MetricEnum.CYCLE_TIME.getValue(), MetricEnum.DEPLOYMENT_FREQUENCY.getValue());
 		MetricsDataCompleted previousMetricsDataCompleted = MetricsDataCompleted.builder()
 			.boardMetricsCompleted(true)
 			.pipelineMetricsCompleted(null)
@@ -1307,7 +1301,7 @@ class GenerateReporterServiceTest {
 		GenerateReportRequest reportRequest = mapper.readValue(new File(REQUEST_FILE_PATH),
 				GenerateReportRequest.class);
 		reportRequest.setCsvTimeStamp("20240109232359");
-		reportRequest.setMetrics(List.of(RequireDataEnum.DEPLOYMENT_FREQUENCY.getValue()));
+		reportRequest.setMetrics(List.of(MetricEnum.DEPLOYMENT_FREQUENCY.getValue()));
 		String reportId = "pipeline-20240109232359";
 		GenerateReporterService spyGenerateReporterService = spy(generateReporterService);
 		PermissionDenyException e = new PermissionDenyException("Error message");

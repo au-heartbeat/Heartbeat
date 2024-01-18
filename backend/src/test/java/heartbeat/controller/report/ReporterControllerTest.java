@@ -3,12 +3,13 @@ package heartbeat.controller.report;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
-import heartbeat.controller.report.dto.request.ReportType;
+import heartbeat.controller.report.dto.request.ReportDataType;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.handler.AsyncExceptionHandler;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ReportController.class)
 @ExtendWith(SpringExtension.class)
 @AutoConfigureJsonTesters
+@Log4j2
 class ReporterControllerTest {
 
 	private static final String REQUEST_FILE_PATH = "src/test/java/heartbeat/controller/report/request.json";
@@ -121,17 +123,17 @@ class ReporterControllerTest {
 		Long csvTimeStamp = 1685010080107L;
 		String expectedResponse = "csv data";
 
-		when(reporterService.exportCsv(ReportType.PIPELINE, csvTimeStamp))
+		when(reporterService.exportCsv(ReportDataType.PIPELINE, csvTimeStamp))
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream(expectedResponse.getBytes())));
 
 		MockHttpServletResponse response = mockMvc
-			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportType.PIPELINE.getValue(), csvTimeStamp))
+			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportDataType.PIPELINE.getValue(), csvTimeStamp))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
 
 		assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
-
+		// todo
 	}
 
 	@Test

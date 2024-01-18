@@ -1,7 +1,7 @@
 package heartbeat.controller.report.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.gson.Gson;
+import heartbeat.util.IdUtil;
 import heartbeat.util.MetricsUtil;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -37,23 +38,32 @@ public class GenerateReportRequest {
 	@NotBlank
 	private String csvTimeStamp;
 
-	public GenerateReportRequest convertToPipelineRequest(GenerateReportRequest request) {
-		List<String> pipelineMetrics = MetricsUtil
-			.getPipelineMetrics(request.getMetrics().stream().map(String::toLowerCase).toList());
-		Gson gson = new Gson();
-		GenerateReportRequest result = gson.fromJson(gson.toJson(request), GenerateReportRequest.class);
-
-		result.setMetrics(pipelineMetrics);
-		return result;
+	public List<String> getPipelineMetrics() {
+		return this.metrics.stream().map(String::toLowerCase).filter(MetricsUtil.buildKiteMetrics::contains).toList();
 	}
 
-	public GenerateReportRequest convertToSourceControlRequest(GenerateReportRequest request) {
-		List<String> codebaseMetrics = MetricsUtil
-			.getCodeBaseMetrics(request.getMetrics().stream().map(String::toLowerCase).toList());
-		Gson gson = new Gson();
-		GenerateReportRequest result = gson.fromJson(gson.toJson(request), GenerateReportRequest.class);
-		result.setMetrics(codebaseMetrics);
-		return result;
+	public List<String> getMetrics() {
+		return this.metrics.stream().map(String::toLowerCase).toList();
+	}
+
+	public List<String> getSourceControlMetrics() {
+		return this.metrics.stream().map(String::toLowerCase).filter(MetricsUtil.codebaseMetrics::contains).toList();
+	}
+
+	public List<String> getBoardMetrics() {
+		return this.metrics.stream().map(String::toLowerCase).filter(MetricsUtil.kanbanMetrics::contains).toList();
+	}
+
+	public String getPipelineReportId() {
+		return IdUtil.getPipelineReportId(this.csvTimeStamp);
+	}
+
+	public String getSourceControlReportId() {
+		return IdUtil.getSourceControlReportId(this.csvTimeStamp);
+	}
+
+	public String getBoardReportId() {
+		return IdUtil.getBoardReportId(this.csvTimeStamp);
 	}
 
 }
