@@ -33,7 +33,6 @@ describe('<PresentationForErrorCases />', () => {
 
       const titleNode = screen.getByText(errorTitle);
       const messageNode = screen.getByText(errorMessage);
-
       expect(titleNode).toBeVisible();
       expect(messageNode).toBeVisible();
     }
