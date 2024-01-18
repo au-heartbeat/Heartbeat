@@ -211,7 +211,10 @@ export const REPORT_PAGE = {
   },
 };
 
-export const HEARTBEAT_TIMEOUT_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ETIMEDOUT, AxiosError.ERR_NETWORK];
+export const AXIOS_NETWORK_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ETIMEDOUT, AxiosError.ERR_NETWORK];
+export enum HEARTBEAT_EXCEPTION_CODE {
+  TIMEOUT = 'HB_TIMEOUT',
+}
 
 export const PIPELINE_TOOL_VERIFY_ERROR_CASE_TEXT_MAPPING: { [key: string]: string } = {
   '401': 'Token is incorrect!',

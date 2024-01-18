@@ -8,6 +8,7 @@ import {
 } from '../fixtures';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { HttpStatusCode } from 'axios';
+import { AXIOS_ERROR_MESSAGE } from '../../src/fixtures';
 
 const server = setupServer(
   rest.post(MOCK_PIPELINE_VERIFY_URL, (req, res, ctx) => {
@@ -122,7 +123,7 @@ describe('PipelineToolClient', () => {
 
         const result = await pipelineToolClient.getInfo(MOCK_PIPELINE_VERIFY_REQUEST_PARAMS);
 
-        expect(result.code).toEqual('ERR_NETWORK');
+        expect(result.code).toEqual('HB_TIMEOUT');
         expect(result.data).toBeUndefined();
       });
 
