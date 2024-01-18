@@ -9,13 +9,13 @@ describe('Report for three columns', () => {
   });
 
   it('should show loading when data is empty', () => {
-    render(<ReportForThreeColumns title='title' fieldName='fieldName' listName='listName' data={undefined} />);
+    render(<ReportForThreeColumns title='title' fieldName='fieldName' listName='listName' data={null} />);
 
     expect(screen.getByTestId('loading')).toBeInTheDocument();
     expect(screen.getByText('title')).toBeInTheDocument();
   });
 
-  it('should show table when has data', () => {
+  it('should show table when data is not empty', () => {
     const mockData = [
       { id: 0, name: 'name1', valuesList: [{ name: 'test1', value: '1' }] },
       { id: 1, name: 'name2', valuesList: [{ name: 'test2', value: '2' }] },
