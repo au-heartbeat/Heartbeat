@@ -13,31 +13,37 @@ let store = setupStore();
 jest.mock('@src/context/Metrics/metricsSlice', () => ({
   ...jest.requireActual('@src/context/Metrics/metricsSlice'),
   selectMetricsContent: jest.fn().mockReturnValue({
+    cycleTimeSettingsType: 'byColumn',
     cycleTimeSettings: [
       {
-        name: 'Doing',
+        column: 'Doing',
+        status: 'Analysis',
         value: 'Analysis',
       },
       {
-        name: 'Testing',
+        column: 'Doing',
+        status: 'In Dev',
+        value: 'Analysis',
+      },
+      {
+        column: 'Doing',
+        status: 'doing',
+        value: 'Analysis',
+      },
+      {
+        column: 'Testing',
+        status: 'Test',
         value: 'Review',
       },
       {
-        name: 'TODO',
+        column: 'TODO',
+        status: 'To do',
         value: '----',
       },
     ],
   }),
   selectTreatFlagCardAsBlock: jest.fn().mockReturnValue(true),
   selectCycleTimeWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
-}));
-jest.mock('@src/context/config/configSlice', () => ({
-  ...jest.requireActual('@src/context/config/configSlice'),
-  selectJiraColumns: jest.fn().mockReturnValue([
-    { key: 'Doing', value: { name: 'Doing', statuses: ['Analysis', 'In Dev', 'doing'] } },
-    { key: 'Testing', value: { name: 'Testing', statuses: ['Test'] } },
-    { key: 'TODO', value: { name: 'TODO', statuses: ['To do'] } },
-  ]),
 }));
 
 const mockedUseAppDispatch = jest.fn();

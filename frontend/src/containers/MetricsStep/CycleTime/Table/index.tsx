@@ -72,7 +72,7 @@ const CycleTimeTable = () => {
         const statuses = cycleTimeSettings
           .filter(({ column }) => column === uniqueColumn)
           .map(({ status }) => status)
-          .join(',');
+          .join(', ');
         const value =
           cycleTimeSettings.find(({ column }) => column === uniqueColumn)?.value || METRICS_CONSTANTS.cycleTimeEmptyStr;
         return [uniqueColumn, statuses, value];

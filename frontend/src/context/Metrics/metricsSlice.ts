@@ -150,10 +150,10 @@ const setSelectTargetFields = (
 
 const getCycleTimeSettingsByColumn = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
-  importedCycleTimeSettings?: { [key: string]: string }[]
+  importedCycleTimeSettings: { [key: string]: string }[]
 ) =>
   jiraColumns.flatMap(({ value: { name, statuses } }) => {
-    const importItem = importedCycleTimeSettings?.find((i) => Object.keys(i).includes(name));
+    const importItem = importedCycleTimeSettings.find((i) => Object.keys(i).includes(name));
     const isValidValue = importItem && CYCLE_TIME_LIST.includes(Object.values(importItem)[0]);
     return statuses.map((status) => ({
       column: name,
@@ -164,11 +164,11 @@ const getCycleTimeSettingsByColumn = (
 
 const getCycleTimeSettingsByStatus = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
-  importedCycleTimeSettings?: { [key: string]: string }[]
+  importedCycleTimeSettings: { [key: string]: string }[]
 ) =>
   jiraColumns.flatMap(({ value: { name, statuses } }) =>
     statuses.map((status) => {
-      const importItem = importedCycleTimeSettings?.find((i) => Object.keys(i).includes(status));
+      const importItem = importedCycleTimeSettings.find((i) => Object.keys(i).includes(status));
       const isValidValue = importItem && CYCLE_TIME_LIST.includes(Object.values(importItem)[0]);
       return {
         column: name,
@@ -311,10 +311,13 @@ export const metricsSlice = createSlice({
         state.classificationWarningMessage = null;
       }
 
-      state.cycleTimeSettings =
-        state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
-          ? getCycleTimeSettingsByColumn(jiraColumns, importedCycleTime.importedCycleTimeSettings)
-          : getCycleTimeSettingsByStatus(jiraColumns, importedCycleTime.importedCycleTimeSettings);
+      if (jiraColumns) {
+        state.cycleTimeSettings =
+          state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+            ? getCycleTimeSettingsByColumn(jiraColumns, importedCycleTime.importedCycleTimeSettings)
+            : getCycleTimeSettingsByStatus(jiraColumns, importedCycleTime.importedCycleTimeSettings);
+      }
+
       if (!isProjectCreated && !!importedDoneStatus.length) {
         setSelectDoneColumns(jiraColumns, state.cycleTimeSettings, importedDoneStatus).length <
         importedDoneStatus.length

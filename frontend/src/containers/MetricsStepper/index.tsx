@@ -207,15 +207,16 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
         ? {
             type: cycleTimeSettingsType,
             /* istanbul ignore next */
-            jiraColumns: cycleTimeSettings?.map(({ column, status, value }: ICycleTimeSetting) =>
+            jiraColumns:
               cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
-                ? {
-                    [column]: value,
-                  }
-                : {
-                    [status]: value,
-                  }
-            ),
+                ? ([...new Set(cycleTimeSettings.map(({ column }: ICycleTimeSetting) => column))] as string[]).map(
+                    (uniqueColumn) => ({
+                      [uniqueColumn]:
+                        cycleTimeSettings.find(({ column }: ICycleTimeSetting) => column === uniqueColumn)?.value ||
+                        METRICS_CONSTANTS.cycleTimeEmptyStr,
+                    })
+                  )
+                : cycleTimeSettings?.map(({ status, value }: ICycleTimeSetting) => ({ [status]: value })),
             treatFlagCardAsBlock,
           }
         : undefined,
