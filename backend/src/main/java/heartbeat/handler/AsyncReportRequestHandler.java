@@ -1,5 +1,6 @@
 package heartbeat.handler;
 
+import com.google.gson.Gson;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.util.IdUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class AsyncReportRequestHandler extends AsyncHandler {
+public class AsyncReportRequestHandler extends AsyncReportDataHandler {
 
 	private final Map<String, ReportResponse> reportMap = new ConcurrentHashMap<>();
 
 	public void putReport(String reportId, ReportResponse e) {
 		createDirToConvertData(REPORT);
-		reportMap.put(reportId, e);
+		creatFileByType(REPORT, reportId, new Gson().toJson(e));
 	}
 
 	public ReportResponse getReport(String reportId) {

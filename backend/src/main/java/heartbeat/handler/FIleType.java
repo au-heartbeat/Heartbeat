@@ -7,8 +7,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FIleType {
 
-	ERROR("error"), REPORT("report"), METRICS_DATA_COMPLETED("metrics-data-completed");
+	ERROR("error", "error/"), REPORT("report", "report/"),
+	METRICS_DATA_COMPLETED("metrics-data-completed", "metrics-data-completed/");
 
 	private final String type;
+
+	private final String path;
 
 }

@@ -1,5 +1,6 @@
 package heartbeat.handler;
 
+import com.google.gson.Gson;
 import heartbeat.exception.BaseException;
 import heartbeat.util.IdUtil;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +18,13 @@ import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class AsyncExceptionHandler extends AsyncHandler {
+public class AsyncExceptionHandler extends AsyncReportDataHandler {
 
 	private final Map<String, BaseException> exceptionMap = new ConcurrentHashMap<>();
 
 	public void put(String reportId, BaseException e) {
 		createDirToConvertData(ERROR);
-		exceptionMap.put(reportId, e);
+		creatFileByType(ERROR, reportId, new Gson().toJson(e));
 	}
 
 	public BaseException get(String reportId) {
