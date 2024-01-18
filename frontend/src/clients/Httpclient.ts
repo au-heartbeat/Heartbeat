@@ -24,7 +24,7 @@ export class HttpClient {
         const { code, response } = error;
         if (HEARTBEAT_TIMEOUT_ERROR_CODES.some((predefinedCode) => predefinedCode === code)) {
           throw new TimeoutException(error?.message, code);
-        } else if (response && response.status) {
+        } else if (response && response.status && response.status > 0) {
           const { status, data, statusText } = response;
           const errorMessage = data?.hintInfo ?? statusText;
           switch (status) {
