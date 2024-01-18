@@ -2,11 +2,11 @@ import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { useAppSelector } from '@src/hooks';
 import { isSelectBoardMetrics, isSelectDoraMetrics, selectConfig } from '@src/context/config/configSlice';
-import { StyledCalendarWrapper, StyledErrorNotification } from '@src/containers/ReportStep/style';
-import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import { MESSAGE, REPORT_PAGE_TYPE, REQUIRED_DATA } from '@src/constants/resources';
+import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
+import { useNavigate } from 'react-router-dom';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
-import { ErrorNotification } from '@src/components/ErrorNotification';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { ErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -15,7 +15,6 @@ import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { Nullable } from '@src/utils/types';
 import { BoardDetail, DoraDetail } from './ReportDetail';
-import { useNavigate } from 'react-router-dom';
 import { ROUTE } from '@src/constants/router';
 
 export interface ReportStepProps {
@@ -56,7 +55,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const metrics = configData.basic.metrics;
 
   const { addNotification, closeAllNotifications } = notification;
-  const [errorMessage, setErrorMessage] = useState<string>();
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
@@ -232,16 +230,12 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
               <DateRangeViewer startDate={startDate} endDate={endDate} />
             </StyledCalendarWrapper>
           )}
-          {errorMessage && (
-            <StyledErrorNotification>
-              <ErrorNotification message={errorMessage} />
-            </StyledErrorNotification>
-          )}
           {isSummaryPage
             ? showSummary()
             : !!reportData &&
               (pageType === REPORT_PAGE_TYPE.BOARD ? showBoardDetail(reportData) : showDoraDetail(reportData))}
           <ReportButtonGroup
+            notification={notification}
             isShowSave={isSummaryPage}
             isShowExportMetrics={isSummaryPage}
             isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
@@ -252,9 +246,6 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
             startDate={startDate}
             endDate={endDate}
             csvTimeStamp={csvTimeStamp}
-            setErrorMessage={(message) => {
-              setErrorMessage(message);
-            }}
           />
         </>
       )}

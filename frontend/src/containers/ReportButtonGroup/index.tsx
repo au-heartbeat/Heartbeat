@@ -1,22 +1,23 @@
 import { StyledButtonGroup, StyledExportButton, StyledRightButtonGroup } from '@src/containers/ReportButtonGroup/style';
 import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
-import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import React from 'react';
 import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
+import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
+import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
 import { COMMON_BUTTONS, REPORT_TYPES } from '@src/constants/commons';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { TIPS } from '@src/constants/resources';
-import React, { useEffect } from 'react';
 import { Tooltip } from '@mui/material';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 
 interface ReportButtonGroupProps {
+  notification: useNotificationLayoutEffectInterface;
   handleSave?: () => void;
   handleBack: () => void;
   csvTimeStamp: number;
   startDate: string;
   endDate: string;
-  setErrorMessage: (message: string) => void;
   reportData: ReportResponseDTO | undefined;
   isShowSave: boolean;
   isShowExportBoardButton: boolean;
@@ -25,23 +26,19 @@ interface ReportButtonGroupProps {
 }
 
 export const ReportButtonGroup = ({
+  notification,
   handleSave,
   handleBack,
   csvTimeStamp,
   startDate,
   endDate,
-  setErrorMessage,
   reportData,
   isShowSave,
   isShowExportMetrics,
   isShowExportBoardButton,
   isShowExportPipelineButton,
 }: ReportButtonGroupProps) => {
-  const { fetchExportData, errorMessage, isExpired } = useExportCsvEffect();
-
-  useEffect(() => {
-    setErrorMessage(errorMessage);
-  }, [errorMessage]);
+  const { fetchExportData, isExpired } = useExportCsvEffect(notification);
 
   const exportCSV = (dataType: REPORT_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
