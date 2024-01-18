@@ -58,9 +58,7 @@ describe('use generate report effect', () => {
   });
 
   it('should set isServerError is true when throw TimeoutException', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new TimeoutException('5xx error', 503);
-    });
+    reportClient.retrieveReportByUrl = jest.fn().mockRejectedValue(new TimeoutException('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
@@ -71,9 +69,7 @@ describe('use generate report effect', () => {
   });
 
   it('should set timeout4Board is "Data loading failed" when timeout', async () => {
-    reportClient.retrieveReportByUrl = jest.fn().mockImplementation(async () => {
-      throw new UnknownException();
-    });
+    reportClient.retrieveReportByUrl = jest.fn().mockRejectedValue(new UnknownException());
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
