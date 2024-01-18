@@ -1,13 +1,19 @@
+import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
+import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
+import { FormEvent, useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import {
-  selectBoard,
   selectDateRange,
   selectIsBoardVerified,
-  selectIsProjectCreated,
   updateBoard,
   updateBoardVerifyState,
-  updateJiraVerifyResponse,
   updateProjectKey,
 } from '@src/context/config/configSlice';
+import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
+import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
+import { NoCardPop } from '@src/containers/ConfigStep/NoDoneCardPop';
+import { Loading } from '@src/components/Loading';
+import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
 import {
   ConfigSectionContainer,
   StyledButtonGroup,
@@ -15,117 +21,32 @@ import {
   StyledTextField,
   StyledTypeSelections,
 } from '@src/components/Common/ConfigForms';
-import { updateMetricsState, updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
-import { BOARD_TYPES, CONFIG_TITLE, EMAIL, BOARD_TOKEN } from '@src/constants/resources';
-import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
-import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
-import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
-import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
-import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
-import { ErrorNotification } from '@src/components/ErrorNotification';
-import { NoCardPop } from '@src/containers/ConfigStep/NoDoneCardPop';
-import { findCaseInsensitiveType } from '@src/utils/util';
-import { FormEvent, useEffect, useState } from 'react';
-import { Loading } from '@src/components/Loading';
-import { REGEX } from '@src/constants/regex';
 import dayjs from 'dayjs';
+import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
+import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 
 type Field = {
   key: string;
+  name: string;
   value: string;
   isRequired: boolean;
   isValid: boolean;
-  errorMessage: string;
   col: number;
 };
 
 export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);
-  const boardFields = useAppSelector(selectBoard);
   const DateRange = useAppSelector(selectDateRange);
-  const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const [isShowNoDoneCard, setIsNoDoneCard] = useState(false);
-  const { verifyJira, isLoading, errorMessage } = useVerifyBoardEffect();
+  const { verifyJira, isLoading, formFields: fields, updateField } = useVerifyBoardEffect();
   const { getBoardInfo } = useGetBoardInfoEffect();
-  const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
-  const [fields, setFields] = useState([
-    {
-      key: 'Board',
-      value: type,
-      isRequired: true,
-      isValid: true,
-      errorMessage: '',
-      col: 1,
-    },
-    {
-      key: 'Board Id',
-      value: boardFields.boardId,
-      isRequired: true,
-      isValid: true,
-      errorMessage: '',
-      col: 1,
-    },
-    {
-      key: 'Email',
-      value: boardFields.email,
-      isRequired: true,
-      isValid: true,
-      errorMessage: '',
-      col: 1,
-    },
-    {
-      key: 'Site',
-      value: boardFields.site,
-      isRequired: true,
-      isValid: true,
-      errorMessage: '',
-      col: 1,
-    },
-    {
-      key: 'Token',
-      value: boardFields.token,
-      isRequired: true,
-      isValid: true,
-      errorMessage: '',
-      col: 2,
-    },
-  ]);
   const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(
     !fields.every((field) => field.value && field.isValid)
   );
 
   const initBoardFields = () => {
-    const newFields = fields.map((field, index) => {
-      field.value = !index ? BOARD_TYPES.JIRA : EMPTY_STRING;
-      return field;
-    });
-    setFields(newFields);
     dispatch(updateBoardVerifyState(false));
-  };
-
-  const updateFields = (fields: Field[], index: number, value: string) => {
-    return fields.map((field, fieldIndex) => {
-      if (fieldIndex !== index) {
-        return field;
-      }
-      const newValue = value.trim();
-      const isValueEmpty = !!newValue;
-      const isValueValid =
-        field.key === EMAIL
-          ? REGEX.EMAIL.test(newValue)
-          : field.key === BOARD_TOKEN
-          ? REGEX.BOARD_TOKEN.test(newValue)
-          : true;
-      return {
-        ...field,
-        value: newValue,
-        isRequired: isValueEmpty,
-        isValid: isValueValid,
-        col: field.col,
-      };
-    });
   };
 
   useEffect(() => {
@@ -135,19 +56,8 @@ export const Board = () => {
     setIsDisableVerifyButton(isAllFieldsValid(fields));
   }, [fields]);
 
-  const onFormUpdate = (index: number, value: string) => {
-    /* istanbul ignore next */
-    const newFieldsValue = !index
-      ? updateFields(fields, index, value).map((field, index) => {
-          return {
-            ...field,
-            value: !index ? value : EMPTY_STRING,
-            isValid: true,
-            isRequired: true,
-          };
-        })
-      : updateFields(fields, index, value);
-    setFields(newFieldsValue);
+  const onFormUpdate = (name: string, value: string) => {
+    updateField(name, value);
     dispatch(updateBoardVerifyState(false));
   };
 
@@ -201,22 +111,9 @@ export const Board = () => {
     dispatch(updateBoardVerifyState(false));
   };
 
-  const updateFieldHelpText = (field: { key: string; isRequired: boolean; isValid: boolean }) => {
-    const { key, isRequired, isValid } = field;
-
-    if (!isRequired) {
-      return `${key} is required!`;
-    }
-    if ((key === EMAIL || key === BOARD_TOKEN) && !isValid) {
-      return `${key} is invalid!`;
-    }
-    return DEFAULT_HELPER_TEXT;
-  };
-
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       <NoCardPop isOpen={isShowNoDoneCard} onClose={() => setIsNoDoneCard(false)} />
-      {errorMessage && <ErrorNotification message={errorMessage} />}
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledForm
@@ -229,12 +126,12 @@ export const Board = () => {
             <StyledTypeSelections variant='standard' required key={index}>
               <InputLabel id='board-type-checkbox-label'>Board</InputLabel>
               <Select
+                name={field.name}
                 labelId='board-type-checkbox-label'
                 value={field.value}
-                // onChange={(e) => {
-                //   /* istanbul ignore next */
-                //   onFormUpdate(index, e.target.value)
-                // }}
+                onChange={({ target: { name, value } }) => {
+                  onFormUpdate(name, value);
+                }}
               >
                 {Object.values(BOARD_TYPES).map((data) => (
                   <MenuItem key={data} value={data}>
@@ -246,17 +143,19 @@ export const Board = () => {
           ) : (
             <StyledTextField
               data-testid={field.key}
+              name={field.name}
               key={index}
               required
               label={field.key}
               variant='standard'
               value={field.value}
-              onChange={(e) => {
-                onFormUpdate(index, e.target.value);
+              defaultValue={field.defaultValue}
+              onChange={({ target: { name, value } }) => {
+                onFormUpdate(name, value);
               }}
               error={!field.isRequired || !field.isValid}
               type={field.key === 'Token' ? 'password' : 'text'}
-              helperText={updateFieldHelpText(field)}
+              helperText={field.errorMessage}
               sx={{ gridColumn: `span ${field.col}` }}
             />
           )

@@ -1,9 +1,25 @@
-import { BoardRequestDTO } from '@src/clients/board/dto/request';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { MESSAGE } from '@src/constants/resources';
-import { DURATION } from '@src/constants/commons';
+import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
+import { BoardRequestDTO } from '@src/clients/board/dto/request';
+import { useAppSelector } from '@src/hooks/useAppDispatch';
+import { selectBoard } from '@src/context/config/configSlice';
+import { BOARD_TYPES } from '@src/constants/resources';
+import { findCaseInsensitiveType } from '@src/utils/util';
+import { REGEX } from '@src/constants/regex';
 import { useState } from 'react';
 
+export interface FormField {
+  key: string;
+  name: string;
+  value: string;
+  defaultValue: string;
+  isRequired: boolean;
+  isValid: boolean;
+  validRule?: (value: string) => boolean;
+  errorMessage: string;
+  col: number;
+}
 export interface useVerifyBoardStateInterface {
   verifyJira: (params: BoardRequestDTO) => Promise<
     | {
@@ -14,28 +30,136 @@ export interface useVerifyBoardStateInterface {
     | undefined
   >;
   isLoading: boolean;
-  errorFields: Record<string, string>;
+  formFields: FormField[];
+  updateField: (name: string, value: string) => void;
 }
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorFields, setErrorFields] = useState({});
+  const boardFields = useAppSelector(selectBoard);
+  const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
+  const [formFields, setFormFields] = useState<FormField[]>([
+    {
+      key: 'Board',
+      name: 'boardType',
+      value: type,
+      defaultValue: BOARD_TYPES.JIRA,
+      isRequired: true,
+      isValid: true,
+      errorMessage: '',
+      col: 1,
+    },
+    {
+      key: 'Board Id',
+      name: 'boardId',
+      value: boardFields.boardId,
+      defaultValue: EMPTY_STRING,
+      isRequired: true,
+      isValid: true,
+      errorMessage: '',
+      col: 1,
+    },
+    {
+      key: 'Email',
+      name: 'email',
+      value: boardFields.email,
+      defaultValue: EMPTY_STRING,
+      isRequired: true,
+      isValid: true,
+      validRule: (value) => REGEX.EMAIL.test(value),
+      errorMessage: '',
+      col: 1,
+    },
+    {
+      key: 'Site',
+      name: 'site',
+      value: boardFields.site,
+      defaultValue: EMPTY_STRING,
+      isRequired: true,
+      isValid: true,
+      errorMessage: '',
+      col: 1,
+    },
+    {
+      key: 'Token',
+      name: 'token',
+      value: boardFields.token,
+      defaultValue: EMPTY_STRING,
+      isRequired: true,
+      isValid: true,
+      validRule: (value) => REGEX.BOARD_TOKEN.test(value),
+      errorMessage: '',
+      col: 2,
+    },
+  ]);
+
+  const clearError = () => {
+    return setFormFields(
+      formFields.map((item) => ({
+        ...item,
+        isValid: false,
+        isRequired: false,
+        errorMessage: '',
+      }))
+    );
+  };
+
+  const setErrorField = (names: string[], messages: string[]) => {
+    setFormFields(
+      formFields.map((field) => {
+        return names.includes(field.name)
+          ? { ...field, isValid: false, errorMessage: messages[names.findIndex((name) => name === field.name)] }
+          : field;
+      })
+    );
+  };
+
+  const validField = (field: FormField, inputValue: string) => {
+    const value = inputValue.trim();
+    const isRequired = !!value;
+    const isValid = !field.validRule || field.validRule(field.value.trim());
+    const errorMessage = !isRequired
+      ? `${field.key} is required`
+      : !isValid
+      ? `${field.key} is invalid`
+      : DEFAULT_HELPER_TEXT;
+
+    return {
+      ...field,
+      value,
+      isRequired,
+      isValid,
+      errorMessage,
+    };
+  };
+
+  const updateField = (name: string, value: string) => {
+    setFormFields(
+      formFields.map((field) => {
+        return field.name === name ? validField(field, value) : field;
+      })
+    );
+  };
 
   const verifyJira = (params: BoardRequestDTO) => {
     setIsLoading(true);
     return boardClient
       .getVerifyBoard(params)
       .then((result) => {
-        setErrorFields({});
+        clearError();
         return result;
       })
       .catch((e) => {
-        const { hintInfo, status } = e;
-        if (status === 401) {
-          setErrorFields({
-            mail: 'Email is incorrect !',
-            token: 'Token is invalid, please change your token with correct access permission !',
-          });
+        const { hintInfo, code } = e;
+        if (code === 401) {
+          setErrorField(['email', 'token'], [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR]);
+          console.log(formFields);
+        }
+        if (code === 404 && hintInfo === 'site not found') {
+          setErrorField(['site'], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
+        }
+        if (code === 404 && hintInfo === 'boardId not found') {
+          setErrorField(['boardId'], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
         }
         return e;
       })
@@ -45,6 +169,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   return {
     verifyJira,
     isLoading,
-    errorFields,
+    formFields,
+    updateField,
   };
 };
