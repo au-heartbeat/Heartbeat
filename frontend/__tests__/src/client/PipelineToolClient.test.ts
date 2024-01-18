@@ -8,7 +8,6 @@ import {
 } from '../fixtures';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { HttpStatusCode } from 'axios';
-import { AXIOS_ERROR_MESSAGE } from '../../src/fixtures';
 
 const server = setupServer(
   rest.post(MOCK_PIPELINE_VERIFY_URL, (req, res, ctx) => {
