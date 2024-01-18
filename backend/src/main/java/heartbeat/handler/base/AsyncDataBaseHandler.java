@@ -1,9 +1,10 @@
-package heartbeat.handler;
+package heartbeat.handler.base;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
+import heartbeat.handler.FIleType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.ObjectUtils;
 
@@ -18,7 +19,7 @@ import java.nio.file.StandardCopyOption;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 
 @Log4j2
-public class AsyncReportDataHandler {
+public class AsyncDataBaseHandler {
 
 	private static final String OUTPUT_FILE_PATH = "./app/output/";
 

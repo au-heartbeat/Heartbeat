@@ -2,6 +2,7 @@ package heartbeat.handler;
 
 import com.google.gson.Gson;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.handler.base.AsyncDataBaseHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import static heartbeat.handler.FIleType.REPORT;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class AsyncReportRequestHandler extends AsyncReportDataHandler {
+public class AsyncReportRequestHandler extends AsyncDataBaseHandler {
 
 	public void putReport(String reportId, ReportResponse e) {
 		createDirToConvertData(REPORT);
