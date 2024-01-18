@@ -42,6 +42,7 @@ public class CacheConfig {
 		cacheManager.createCache("boardVerification", getCacheConfiguration(JiraBoardVerifyDTO.class));
 		cacheManager.createCache("boardProject", getCacheConfiguration(JiraBoardProject.class));
 		cacheManager.createCache("jiraCards", getCacheConfiguration(String.class));
+		cacheManager.createCache("jiraCardHistoryByCount", getCacheConfiguration(CardHistoryResponseDTO.class));
 		cacheManager.createCache("holidayResult", getCacheConfiguration(HolidaysResponseDTO.class));
 		cacheManager.createCache("tokenInfo", getCacheConfiguration(BuildKiteTokenInfo.class));
 		cacheManager.createCache("buildKiteOrganizationInfo", getCacheConfiguration(List.class));
