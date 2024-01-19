@@ -61,7 +61,13 @@ public class CacheConfig {
 	@SuppressWarnings("unchecked")
 	private <K, V> javax.cache.configuration.Configuration<K, V> getCacheConfiguration(Class<V> valueType) {
 		val offHeap = ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(2, MemoryUnit.MB);
-		val timeToLive = Duration.ofSeconds(90);
+		Duration timeToLive;
+		if (valueType == HolidaysResponseDTO.class) {
+			timeToLive = Duration.ofSeconds(300);
+		}
+		else {
+			timeToLive = Duration.ofSeconds(90);
+		}
 		CacheConfigurationBuilder<K, V> configuration = CacheConfigurationBuilder
 			.newCacheConfigurationBuilder((Class<K>) String.class, valueType, offHeap)
 			.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(timeToLive));
