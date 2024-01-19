@@ -625,19 +625,9 @@ public class JiraService {
 	private boolean isRealDoneCardByHistory(CardHistoryResponseDTO jiraCardHistory,
 			StoryPointsAndCycleTimeRequest request, JiraCard allDoneCard) {
 		List<String> realDoneStatuses = request.getStatus().stream().map(String::toUpperCase).toList();
-
-		Optional<Long> lastTimeToRealDone = jiraCardHistory.getItems()
-			.stream()
-			.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
-			.filter(history -> !realDoneStatuses.contains(history.getFrom().getDisplayValue().toUpperCase()))
-			.filter(history -> realDoneStatuses.contains(history.getTo().getDisplayValue().toUpperCase()))
-			.map(HistoryDetail::getTimestamp)
-			.max(Long::compareTo);
-
 		long validStartTime = parseLong(request.getStartTime());
 		long validEndTime = parseLong(request.getEndTime());
 
-		// todo need refactor
 		Optional<Long> moveUndoneLastTime = jiraCardHistory.getItems()
 			.stream()
 			.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
@@ -647,33 +637,24 @@ public class JiraService {
 			.filter(time -> time >= validStartTime && time <= validEndTime)
 			.max(Long::compareTo);
 
-		Optional<Long> firstAvailableTimeToRealDone = jiraCardHistory.getItems()
+		Optional<HistoryDetail> realDoneHistory = jiraCardHistory.getItems()
 			.stream()
 			.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
 			.filter(history -> !realDoneStatuses.contains(history.getFrom().getDisplayValue().toUpperCase()))
 			.filter(history -> realDoneStatuses.contains(history.getTo().getDisplayValue().toUpperCase()))
-			.map(HistoryDetail::getTimestamp)
-			.filter(time -> time >= validStartTime && time <= validEndTime)
-			.filter(timestamp -> timestamp > moveUndoneLastTime.orElse(0L))
-			.min(Long::compareTo);
-		if (firstAvailableTimeToRealDone.isPresent()) {
-			Optional<HistoryDetail> firstHistory = jiraCardHistory.getItems()
-				.stream()
-				.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
-				.filter(history -> !realDoneStatuses.contains(history.getFrom().getDisplayValue().toUpperCase()))
-				.filter(history -> realDoneStatuses.contains(history.getTo().getDisplayValue().toUpperCase()))
-				.filter(history -> history.getTimestamp() == firstAvailableTimeToRealDone.orElse(0L))
-				.findFirst();
-			if (firstHistory.isPresent()) {
-				Status firstStatus = firstHistory.get().getTo();
-				if (allDoneCard.getFields().getStatus() != null) {
-					allDoneCard.getFields().getStatus().setName(firstStatus.getDisplayValue());
-				}
-			}
-		}
+			.filter(history -> history.getTimestamp() >= validStartTime && history.getTimestamp() <= validEndTime)
+			.filter(history -> history.getTimestamp() > moveUndoneLastTime.orElse(0L))
+			.findFirst();
 
-		return lastTimeToRealDone.filter(lastTime -> validStartTime <= lastTime && validEndTime >= lastTime)
-			.isPresent();
+		if (realDoneHistory.isPresent()) {
+			if (allDoneCard.getFields().getStatus() != null) {
+				allDoneCard.getFields().getStatus().setName(realDoneHistory.get().getTo().getDisplayValue());
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	private CycleTimeInfoDTO getCycleTime(CardHistoryResponseDTO cardHistoryResponseDTO, Boolean treatFlagCardAsBlock,
