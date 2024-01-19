@@ -1,4 +1,4 @@
-import { HttpClient } from '@src/clients/Httpclient';
+import { HttpClient } from '@src/clients/HttpClient';
 import { HttpStatusCode } from 'axios';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
 

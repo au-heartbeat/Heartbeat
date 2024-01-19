@@ -1,4 +1,4 @@
-import { HttpClient } from '@src/clients/Httpclient';
+import { HttpClient } from '@src/clients/HttpClient';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 
@@ -70,7 +70,7 @@ export class ReportClient extends HttpClient {
     allMetricsCompleted: false,
   };
 
-  retrieveReportByUrl = async (params: ReportRequestDTO, url: string) => {
+  retrieveByUrl = async (params: ReportRequestDTO, url: string) => {
     await this.axiosInstance
       .post(url, params, {})
       .then((res) => {
@@ -84,7 +84,7 @@ export class ReportClient extends HttpClient {
     };
   };
 
-  pollingReport = async (url: string) => {
+  polling = async (url: string) => {
     await this.axiosInstance
       .get(url)
       .then((res) => {
