@@ -1,9 +1,11 @@
 package heartbeat.handler;
 
 import heartbeat.exception.BaseException;
+import heartbeat.exception.GenerateReportException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.util.IdUtil;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -18,8 +20,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CyclicBarrier;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,7 +77,8 @@ class AsyncExceptionHandlerTest {
 			try {
 				barrier.await();
 				asyncExceptionHandler.deleteExpireException(fileId);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		};
@@ -109,6 +114,28 @@ class AsyncExceptionHandlerTest {
 	}
 
 	@Test
+	void shouldThrowExceptionGivenCantWriteFileWhenPutFile() {
+		String boardReportId = "15469:890/33";
+
+		assertThrows(GenerateReportException.class,
+				() -> asyncExceptionHandler.put(boardReportId, new UnauthorizedException("test")));
+	}
+
+	@Test
+	void shouldThrowExceptionGivenCannotReadFileWhenGetFile() throws IOException {
+		new File("./app/output/error/").mkdirs();
+		String boardReportId = IdUtil.getBoardReportId(Long.toString(System.currentTimeMillis()));
+		Path filePath = Paths.get("./app/output/error/" + boardReportId);
+		Files.createFile(filePath);
+		Files.write(filePath, "test".getBytes());
+
+		assertThrows(GenerateReportException.class, () -> asyncExceptionHandler.get(boardReportId));
+
+		Files.deleteIfExists(filePath);
+		assertNull(asyncExceptionHandler.get(boardReportId));
+	}
+
+	@Test
 	void shouldCreateTargetDirWhenPutAsyncException() {
 		boolean mkdirs = new File(APP_OUTPUT_ERROR).mkdirs();
 		long currentTimeMillis = System.currentTimeMillis();
@@ -135,6 +162,20 @@ class AsyncExceptionHandlerTest {
 		assertEquals(HttpStatus.UNAUTHORIZED.value(), baseException.getStatus());
 		assertEquals("test", baseException.getMessage());
 		assertNull(asyncExceptionHandler.get(currentTime));
+	}
+
+	@Test
+	void shouldReturnExceptionGivenWrongFileWhenReadAndRemoveAsyncException() throws IOException {
+		new File("./app/output/error/").mkdirs();
+		String boardReportId = IdUtil.getBoardReportId(Long.toString(System.currentTimeMillis()));
+		Path filePath = Paths.get("./app/output/error/" + boardReportId);
+		Files.createFile(filePath);
+		Files.write(filePath, "test".getBytes());
+
+		assertThrows(GenerateReportException.class, () -> asyncExceptionHandler.remove(boardReportId));
+
+		Files.deleteIfExists(filePath);
+		assertNull(asyncExceptionHandler.get(boardReportId));
 	}
 
 	private void deleteTestFile(String reportId) {

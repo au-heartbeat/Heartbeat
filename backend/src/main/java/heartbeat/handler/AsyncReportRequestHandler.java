@@ -15,7 +15,6 @@ import static heartbeat.handler.base.FIleType.REPORT;
 public class AsyncReportRequestHandler extends AsyncDataBaseHandler {
 
 	public void putReport(String reportId, ReportResponse e) {
-		createDirToConvertData(REPORT);
 		creatFileByType(REPORT, reportId, new Gson().toJson(e));
 	}
 

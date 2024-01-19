@@ -16,7 +16,6 @@ import static heartbeat.handler.base.FIleType.ERROR;
 public class AsyncExceptionHandler extends AsyncDataBaseHandler {
 
 	public void put(String reportId, BaseException e) {
-		createDirToConvertData(ERROR);
 		creatFileByType(ERROR, reportId, new Gson().toJson(e));
 	}
 
