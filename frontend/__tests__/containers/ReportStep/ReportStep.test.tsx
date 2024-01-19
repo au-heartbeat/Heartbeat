@@ -44,7 +44,6 @@ jest.mock('@src/context/stepper/StepperSlice', () => ({
 jest.mock('@src/hooks/useExportCsvEffect', () => ({
   useExportCsvEffect: jest.fn().mockReturnValue({
     fetchExportData: jest.fn(),
-    errorMessage: 'failed export csv',
     isExpired: false,
   }),
 }));
@@ -229,7 +228,7 @@ describe('Report Step', () => {
       expect(handleSaveMock).toHaveBeenCalledTimes(1);
     });
 
-    it('should check error page show when isreportMetricsError is true', () => {
+    it('should call navigate show when isServerError is true', () => {
       reportHook.current.isServerError = true;
 
       setup([REQUIRED_DATA_LIST[1]]);
@@ -237,41 +236,33 @@ describe('Report Step', () => {
       expect(navigateMock).toHaveBeenCalledWith(ERROR_PAGE_ROUTE);
     });
 
-    // todo: to be fixed @ru.jiang
-    // it('should call updateProps when remaining time is less than or equal to 5 minutes', () => {
-    //   const resetProps = jest.fn();
-    //   const updateProps = jest.fn();
-    //   notificationHook.current.resetProps = resetProps;
-    //   notificationHook.current.updateProps = updateProps;
-    //   jest.useFakeTimers();
-    //
-    //   setup(['']);
-    //
-    //   expect(updateProps).not.toBeCalledWith({
-    //     open: true,
-    //     title: MESSAGE.EXPIRE_INFORMATION(5),
-    //     closeAutomatically: true,
-    //   });
-    //
-    //   jest.advanceTimersByTime(500000);
-    //
-    //   expect(updateProps).not.toBeCalledWith({
-    //     open: true,
-    //     title: MESSAGE.EXPIRE_INFORMATION(5),
-    //     closeAutomatically: true,
-    //   });
-    //
-    //   jest.advanceTimersByTime(1000000);
-    //
-    //   expect(updateProps).toBeCalledWith({
-    //     open: true,
-    //     title: 'Help Information',
-    //     message: MESSAGE.EXPIRE_INFORMATION(5),
-    //     closeAutomatically: true,
-    //   });
-    //
-    //   jest.useRealTimers();
-    // });
+    it('should call addNotification when remaining time is less than or equal to 5 minutes', () => {
+      const closeAllNotifications = jest.fn();
+      const addNotification = jest.fn();
+      notificationHook.current.closeAllNotifications = closeAllNotifications;
+      notificationHook.current.addNotification = addNotification;
+      jest.useFakeTimers();
+
+      setup(['']);
+
+      expect(addNotification).not.toBeCalledWith({
+        title: MESSAGE.EXPIRE_INFORMATION(5),
+      });
+
+      jest.advanceTimersByTime(500000);
+
+      expect(addNotification).not.toBeCalledWith({
+        title: MESSAGE.EXPIRE_INFORMATION(5),
+      });
+
+      jest.advanceTimersByTime(1000000);
+
+      expect(addNotification).toBeCalledWith({
+        message: MESSAGE.EXPIRE_INFORMATION(5),
+      });
+
+      jest.useRealTimers();
+    });
 
     it.each([[REQUIRED_DATA_LIST[1]], [REQUIRED_DATA_LIST[4]]])(
       'should render detail page when clicking show more button given metric %s',
@@ -351,7 +342,7 @@ describe('Report Step', () => {
     );
 
     it('should call fetchExportData when clicking "Export pipeline data"', async () => {
-      const { result } = renderHook(() => useExportCsvEffect());
+      const { result } = renderHook(() => useExportCsvEffect(notificationHook.current));
       setup([REQUIRED_DATA_LIST[6]]);
 
       const exportButton = screen.getByText(EXPORT_PIPELINE_DATA);
@@ -388,7 +379,7 @@ describe('Report Step', () => {
     );
 
     it('should call fetchExportData when clicking "Export board data"', async () => {
-      const { result } = renderHook(() => useExportCsvEffect());
+      const { result } = renderHook(() => useExportCsvEffect(notificationHook.current));
       setup([REQUIRED_DATA_LIST[2]]);
 
       const exportButton = screen.getByText(EXPORT_BOARD_DATA);
@@ -414,7 +405,7 @@ describe('Report Step', () => {
     });
 
     it('should call fetchExportData when clicking "Export metric data"', async () => {
-      const { result } = renderHook(() => useExportCsvEffect());
+      const { result } = renderHook(() => useExportCsvEffect(notificationHook.current));
       setup(['']);
 
       const exportButton = screen.getByText(EXPORT_METRIC_DATA);
@@ -433,6 +424,110 @@ describe('Report Step', () => {
       setup(['']);
       await userEvent.click(screen.getByText(EXPORT_METRIC_DATA));
       expect(screen.getByText('Export metric data')).toBeInTheDocument();
+    });
+  });
+
+  describe('error notification', () => {
+    const addNotification = jest.fn();
+    const timeoutError = 'time out error';
+    beforeEach(() => {
+      notificationHook.current.addNotification = addNotification;
+    });
+
+    it('should call addNotification when having timeout4Board error', () => {
+      reportHook.current.timeout4Board = timeoutError;
+
+      setup(REQUIRED_DATA_LIST);
+
+      expect(addNotification).toBeCalledWith({
+        message: MESSAGE.LOADING_TIMEOUT('Board metrics'),
+        type: 'error',
+      });
+    });
+
+    it('should call addNotification when having timeout4Dora error', () => {
+      reportHook.current.timeout4Dora = timeoutError;
+
+      setup(REQUIRED_DATA_LIST);
+
+      expect(addNotification).toBeCalledWith({
+        message: MESSAGE.LOADING_TIMEOUT('DORA metrics'),
+        type: 'error',
+      });
+    });
+
+    it('should call addNotification when having timeout4Report error', () => {
+      reportHook.current.timeout4Report = timeoutError;
+
+      setup(REQUIRED_DATA_LIST);
+
+      expect(addNotification).toBeCalledWith({
+        message: MESSAGE.LOADING_TIMEOUT('Report'),
+        type: 'error',
+      });
+    });
+
+    it('should call addNotification when having boardMetricsError', () => {
+      reportHook.current.reportData = {
+        ...MOCK_REPORT_RESPONSE,
+        reportMetricsError: {
+          boardMetricsError: {
+            status: 400,
+            message: 'Board metrics error',
+          },
+          pipelineMetricsError: null,
+          sourceControlMetricsError: null,
+        },
+      };
+
+      setup(REQUIRED_DATA_LIST);
+
+      expect(addNotification).toBeCalledWith({
+        message: MESSAGE.FAILED_TO_GET_DATA('Board Metrics'),
+        type: 'error',
+      });
+    });
+
+    it('should call addNotification when having pipelineMetricsError', () => {
+      reportHook.current.reportData = {
+        ...MOCK_REPORT_RESPONSE,
+        reportMetricsError: {
+          boardMetricsError: null,
+          pipelineMetricsError: {
+            status: 400,
+            message: 'Pipeline metrics error',
+          },
+          sourceControlMetricsError: null,
+        },
+      };
+
+      setup(REQUIRED_DATA_LIST);
+
+      expect(addNotification).toBeCalledWith({
+        message: MESSAGE.FAILED_TO_GET_DATA('Buildkite'),
+        type: 'error',
+      });
+    });
+
+    it('should call addNotification when having sourceControlMetricsError', () => {
+      reportHook.current.reportData = {
+        ...MOCK_REPORT_RESPONSE,
+        reportMetricsError: {
+          boardMetricsError: null,
+          pipelineMetricsError: null,
+          sourceControlMetricsError: {
+            status: 400,
+            message: 'source control metrics error',
+          },
+        },
+      };
+
+      setup(REQUIRED_DATA_LIST);
+
+      expect(addNotification).toBeCalledWith({
+        message: MESSAGE.FAILED_TO_GET_DATA('Github'),
+        type: 'error',
+      });
     });
   });
 });

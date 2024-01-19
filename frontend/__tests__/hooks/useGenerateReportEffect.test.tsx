@@ -10,9 +10,9 @@ import { UnknownException } from '@src/exceptions/UnknownException';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { reportClient } from '@src/clients/report/ReportClient';
 import { HttpStatusCode } from 'axios';
+import { TimeoutException } from '@src/exceptions/TimeoutException';
 import clearAllMocks = jest.clearAllMocks;
 import resetAllMocks = jest.resetAllMocks;
-import { TimeoutException } from '@src/exceptions/TimeoutException';
 
 jest.mock('@src/hooks/reportMapper/report', () => ({
   pipelineReportMapper: jest.fn(),
@@ -208,7 +208,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set timeout4Dora and timeout4Board is "Data loading failed" when polling timeout', async () => {
+  it('should set timeout4Report is "Data loading failed" when polling timeout', async () => {
     reportClient.polling = jest.fn().mockImplementation(async () => {
       throw new UnknownException();
     });
@@ -221,8 +221,7 @@ describe('use generate report effect', () => {
 
     await waitFor(() => {
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.timeout4Dora).toEqual('Data loading failed');
-      expect(result.current.timeout4Board).toEqual('Data loading failed');
+      expect(result.current.timeout4Report).toEqual('Data loading failed');
     });
   });
 
