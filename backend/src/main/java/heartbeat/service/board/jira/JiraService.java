@@ -21,6 +21,7 @@ import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraCardWithFields;
 import heartbeat.client.dto.board.jira.JiraColumn;
 import heartbeat.client.dto.board.jira.Sprint;
+import heartbeat.client.dto.board.jira.Status;
 import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.BoardType;
@@ -544,7 +545,7 @@ public class JiraService {
 		for (JiraCard allDoneCard : allDoneCards) {
 			CardHistoryResponseDTO jiraCardHistory = getJiraCardHistory(baseUrl, allDoneCard.getKey(), 0,
 					request.getToken());
-			if (isRealDoneCardByHistory(jiraCardHistory, request)) {
+			if (isRealDoneCardByHistory(jiraCardHistory, request, allDoneCard)) {
 				jiraCards.add(allDoneCard);
 			}
 		}
@@ -622,7 +623,7 @@ public class JiraService {
 	}
 
 	private boolean isRealDoneCardByHistory(CardHistoryResponseDTO jiraCardHistory,
-			StoryPointsAndCycleTimeRequest request) {
+			StoryPointsAndCycleTimeRequest request, JiraCard allDoneCard) {
 		List<String> realDoneStatuses = request.getStatus().stream().map(String::toUpperCase).toList();
 
 		Optional<Long> lastTimeToRealDone = jiraCardHistory.getItems()
@@ -635,6 +636,42 @@ public class JiraService {
 
 		long validStartTime = parseLong(request.getStartTime());
 		long validEndTime = parseLong(request.getEndTime());
+
+		// todo need refactor
+		Optional<Long> moveUndoneLastTime = jiraCardHistory.getItems()
+			.stream()
+			.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
+			.filter(history -> realDoneStatuses.contains(history.getFrom().getDisplayValue().toUpperCase()))
+			.filter(history -> !realDoneStatuses.contains(history.getTo().getDisplayValue().toUpperCase()))
+			.map(HistoryDetail::getTimestamp)
+			.filter(time -> time >= validStartTime && time <= validEndTime)
+			.max(Long::compareTo);
+
+		Optional<Long> firstAvailableTimeToRealDone = jiraCardHistory.getItems()
+			.stream()
+			.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
+			.filter(history -> !realDoneStatuses.contains(history.getFrom().getDisplayValue().toUpperCase()))
+			.filter(history -> realDoneStatuses.contains(history.getTo().getDisplayValue().toUpperCase()))
+			.map(HistoryDetail::getTimestamp)
+			.filter(time -> time >= validStartTime && time <= validEndTime)
+			.filter(timestamp -> timestamp > moveUndoneLastTime.orElse(0L))
+			.min(Long::compareTo);
+		if (firstAvailableTimeToRealDone.isPresent()) {
+			Optional<HistoryDetail> firstHistory = jiraCardHistory.getItems()
+				.stream()
+				.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
+				.filter(history -> !realDoneStatuses.contains(history.getFrom().getDisplayValue().toUpperCase()))
+				.filter(history -> realDoneStatuses.contains(history.getTo().getDisplayValue().toUpperCase()))
+				.filter(history -> history.getTimestamp() == firstAvailableTimeToRealDone.orElse(0L))
+				.findFirst();
+			if (firstHistory.isPresent()) {
+				Status firstStatus = firstHistory.get().getTo();
+				if (allDoneCard.getFields().getStatus() != null) {
+					allDoneCard.getFields().getStatus().setName(firstStatus.getDisplayValue());
+				}
+			}
+		}
+
 		return lastTimeToRealDone.filter(lastTime -> validStartTime <= lastTime && validEndTime >= lastTime)
 			.isPresent();
 	}
