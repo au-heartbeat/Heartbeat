@@ -77,7 +77,6 @@ public class GenerateReporterService {
 	private final AsyncExceptionHandler asyncExceptionHandler;
 
 	public void generateBoardReport(GenerateReportRequest request) {
-		initializeMetricsDataCompletedInHandler(request);
 		String boardReportId = request.getBoardReportId();
 		removePreviousAsyncException(boardReportId);
 		log.info(
@@ -98,16 +97,12 @@ public class GenerateReporterService {
 	}
 
 	public void generateDoraReport(GenerateReportRequest request) {
-		MetricsDataCompleted metricsDataStatus = getMetricsStatus(request, Boolean.TRUE);
-		initializeMetricsDataCompletedInHandler(request); // B
 		removePreviousAsyncException(request.getPipelineReportId());
 		removePreviousAsyncException(request.getSourceControlReportId());
-		if (Objects.nonNull(metricsDataStatus.pipelineMetricsCompleted())
-				&& metricsDataStatus.pipelineMetricsCompleted()) {
+		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
 			generatePipelineReport(request);
 		}
-		if (Objects.nonNull(metricsDataStatus.sourceControlMetricsCompleted())
-				&& metricsDataStatus.sourceControlMetricsCompleted()) {
+		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
 			generateSourceControlReport(request);
 		}
 		generateCsvForDora(request);
@@ -281,7 +276,7 @@ public class GenerateReporterService {
 		asyncReportRequestHandler.putReport(reportId, reportContent);
 	}
 
-	private void initializeMetricsDataCompletedInHandler(GenerateReportRequest request) {
+	public void initializeMetricsDataCompletedInHandler(GenerateReportRequest request) {
 		MetricsDataCompleted metricsStatus = getMetricsStatus(request, Boolean.FALSE);
 		String timeStamp = request.getCsvTimeStamp();
 		MetricsDataCompleted previousMetricsCompleted = asyncReportRequestHandler.getMetricsDataCompleted(timeStamp);

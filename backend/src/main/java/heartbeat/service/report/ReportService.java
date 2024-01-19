@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 
 @Service
@@ -30,10 +32,13 @@ public class ReportService {
 	}
 
 	public void generateReportByType(GenerateReportRequest request, ReportType metricType) {
-		switch (metricType) {
-			case BOARD -> generateReporterService.generateBoardReport(request);
-			case DORA -> generateReporterService.generateDoraReport(request);
-		}
+		generateReporterService.initializeMetricsDataCompletedInHandler(request);
+		CompletableFuture.runAsync(() -> {
+			switch (metricType) {
+				case BOARD -> generateReporterService.generateBoardReport(request);
+				case DORA -> generateReporterService.generateDoraReport(request);
+			}
+		});
 	}
 
 }

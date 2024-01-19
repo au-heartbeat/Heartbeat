@@ -70,9 +70,7 @@ public class ReportController {
 			@Schema(type = "string", allowableValues = { "board", "dora" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable ReportType reportType,
 			@RequestBody GenerateReportRequest request) {
-		CompletableFuture.runAsync(() -> {
-			reportService.generateReportByType(request, reportType);
-		});
+		reportService.generateReportByType(request, reportType);
 		String callbackUrl = "/reports/" + request.getCsvTimeStamp();
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());

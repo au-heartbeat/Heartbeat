@@ -59,8 +59,8 @@ public class PipelineService {
 	}
 
 	private Map<String, String> getRepoMap(List<DeploymentEnvironment> deploymentEnvironments) {
-		return deploymentEnvironments.stream().collect(
-			Collectors.toMap(DeploymentEnvironment::getId, DeploymentEnvironment::getRepository));
+		return deploymentEnvironments.stream()
+			.collect(Collectors.toMap(DeploymentEnvironment::getId, DeploymentEnvironment::getRepository));
 	}
 
 	private FetchedData.BuildKiteData fetchBuildKiteData(String startTime, String endTime,
@@ -70,8 +70,8 @@ public class PipelineService {
 		deploymentEnvironments.parallelStream().forEach(deploymentEnvironment -> {
 			List<BuildKiteBuildInfo> buildKiteBuildInfo = getBuildKiteBuildInfo(startTime, endTime,
 					deploymentEnvironment, token, pipelineCrews);
-			result.addDeployTimes(buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfo,
-					startTime, endTime));
+			result.addDeployTimes(
+					buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfo, startTime, endTime));
 			result.addBuildKiteBuildInfos(deploymentEnvironment.getId(), buildKiteBuildInfo);
 		});
 		return result;

@@ -35,11 +35,12 @@ public class FetchedData {
 	@Setter
 	@Builder
 	public static class BuildKiteData {
+
 		public BuildKiteData() {
 			this.pipelineLeadTimes = new ArrayList<>();
 			this.deployTimesList = new ArrayList<>();
 			this.buildInfosList = new ArrayList<>();
-//			this.leadTimeBuildInfosList = new ArrayList<>();
+			// this.leadTimeBuildInfosList = new ArrayList<>();
 		}
 
 		private List<PipelineLeadTime> pipelineLeadTimes;
@@ -60,7 +61,8 @@ public class FetchedData {
 			this.buildInfosList.add(Map.entry(key, buildKiteBuildInfos));
 		}
 
-//		private List<Map.Entry<String, List<BuildKiteBuildInfo>>> leadTimeBuildInfosList;
+		// private List<Map.Entry<String, List<BuildKiteBuildInfo>>>
+		// leadTimeBuildInfosList;
 
 	}
 

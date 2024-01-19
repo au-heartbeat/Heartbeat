@@ -68,7 +68,7 @@ public class ReportServiceTest {
 	}
 
 	@Test
-	void generateBoardReportByTypeShouldCallGenerateBoardReport(){
+	void generateBoardReportByTypeShouldCallGenerateBoardReport() {
 		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 		reportService.generateReportByType(request, ReportType.BOARD);
@@ -77,7 +77,7 @@ public class ReportServiceTest {
 	}
 
 	@Test
-	void generateDoraReportByTypeShouldCallGenerateDoraReport(){
+	void generateDoraReportByTypeShouldCallGenerateDoraReport() {
 		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
 		doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 		reportService.generateReportByType(request, ReportType.DORA);

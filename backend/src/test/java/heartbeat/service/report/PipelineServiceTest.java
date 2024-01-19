@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class PipelineServiceTest {
+
 	@InjectMocks
 	private PipelineService pipelineService;
 
@@ -39,11 +40,12 @@ public class PipelineServiceTest {
 	void fetchGithubDataShouldReturnEmptyBuildInfosListAndEmptyLeadTimeWhenDeploymentEnvironmentsIsEmpty() {
 		val request = GenerateReportRequest.builder()
 			.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList()).build())
-			.metrics(new ArrayList<>()).build();
+			.metrics(new ArrayList<>())
+			.build();
 		val result = pipelineService.fetchGithubData(request);
 
 		assertEquals(result.getBuildInfosList().size(), 0);
-//		assertEquals(result.getLeadTimeBuildInfosList().size(), 0);
+		// assertEquals(result.getLeadTimeBuildInfosList().size(), 0);
 		verify(buildKiteService, never()).countDeployTimes(any(), any(), any(), any());
 	}
 
@@ -51,7 +53,8 @@ public class PipelineServiceTest {
 	void fetchGithubDataShouldReturnEmptyPipelineLeadTimeWhenCodebaseSettingIsEmpty() {
 		val request = GenerateReportRequest.builder()
 			.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList()).build())
-			.metrics(new ArrayList<>()).build();
+			.metrics(new ArrayList<>())
+			.build();
 		val result = pipelineService.fetchGithubData(request);
 
 		assertEquals(result.getPipelineLeadTimes().size(), 0);
@@ -61,20 +64,24 @@ public class PipelineServiceTest {
 	@Test
 	void fetchGithubDataShouldGetPipelineLeadTimeFromGithubServiceWhenCodebaseSettingIsNotEmpty() {
 		val request = GenerateReportRequest.builder()
-			.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList(){{
-				DeploymentEnvironment.builder().id("env1").repository("repo1").build();
-				DeploymentEnvironment.builder().id("env2").repository("repo2").build();
-			}}).build())
+			.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList() {
+				{
+					DeploymentEnvironment.builder().id("env1").repository("repo1").build();
+					DeploymentEnvironment.builder().id("env2").repository("repo2").build();
+				}
+			}).build())
 			.codebaseSetting(CodebaseSetting.builder().token("token").build())
-			.metrics(new ArrayList<>()).build();
+			.metrics(new ArrayList<>())
+			.build();
 
-//		when(buildKiteService.)
+		// when(buildKiteService.)
 		val result = pipelineService.fetchGithubData(request);
 
 		verify(buildKiteService, never()).countDeployTimes(any(), any(), any(), any());
 		assertEquals(result.getPipelineLeadTimes().size(), 0);
-		//buildKiteData.getDeployTimesList(), repoMap,
-		//					request.getCodebaseSetting().getToken()
-		verify(gitHubService).fetchPipelinesLeadTime(any(), any(),"token");
+		// buildKiteData.getDeployTimesList(), repoMap,
+		// request.getCodebaseSetting().getToken()
+		verify(gitHubService).fetchPipelinesLeadTime(any(), any(), "token");
 	}
+
 }
