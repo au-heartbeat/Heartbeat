@@ -3,7 +3,7 @@ package heartbeat.handler.base;
 import heartbeat.exception.BaseException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AsyncExceptionDTOTest {
 
