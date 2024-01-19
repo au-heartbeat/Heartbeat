@@ -1,6 +1,8 @@
-package heartbeat.client.dto.pipeline.buildkite;
+package heartbeat.service.pipeline.buildkite;
 
 import heartbeat.client.BuildKiteFeignClient;
+import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
+import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
