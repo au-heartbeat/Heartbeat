@@ -4,8 +4,8 @@ import {
   selectIsProjectCreated,
   selectMetrics,
   selectUsers,
-  selectBoard,
   updateBoardVerifyState,
+  selectBoard,
 } from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
