@@ -5,17 +5,16 @@ import { isSelectBoardMetrics, isSelectDoraMetrics, selectConfig } from '@src/co
 import { MESSAGE, REPORT_PAGE_TYPE, REQUIRED_DATA } from '@src/constants/resources';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { useNavigate } from 'react-router-dom';
-import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
+import { Notification, useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
+import { ROUTE } from '@src/constants/router';
+import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
+import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
-import { ErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
-import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
-import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { Nullable } from '@src/utils/types';
 import { BoardDetail, DoraDetail } from './ReportDetail';
-import { ROUTE } from '@src/constants/router';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
 
 export interface ReportStepProps {
   notification: useNotificationLayoutEffectInterface;
@@ -40,12 +39,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
   const [isBackFromDetail, setIsBackFromDetail] = useState<boolean>(false);
   const [allMetricsCompleted, setAllMetricsCompleted] = useState<boolean>(false);
-  const [boardMetricsError, setBoardMetricsError] = useState<Nullable<ErrorResponse>>(null);
-  const [pipelineMetricsError, setPipelineMetricsError] = useState<Nullable<ErrorResponse>>(null);
-  const [sourceControlMetricsError, setSourceControlMetricsError] = useState<Nullable<ErrorResponse>>(null);
-  const [timeoutError4Board, setTimeoutError4Board] = useState('');
-  const [timeoutError4Dora, setTimeoutError4Dora] = useState('');
-  const [timeoutError4Report, setTimeoutError4Report] = useState('');
+  const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
 
   const configData = useAppSelector(selectConfig);
   const csvTimeStamp = useAppSelector(selectTimeStamp);
@@ -63,6 +57,9 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
+    return () => {
+      stopPollingReports();
+    };
   }, []);
 
   useLayoutEffect(() => {
@@ -105,79 +102,82 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
     reportData && setAllMetricsCompleted(reportData.allMetricsCompleted);
   }, [reportData]);
 
-  useLayoutEffect(() => {
-    return () => {
-      stopPollingReports();
-    };
-  }, []);
-
   useEffect(() => {
-    if (isSummaryPage && reportData) {
-      setBoardMetricsError(reportData.reportMetricsError.boardMetricsError);
-      setPipelineMetricsError(reportData.reportMetricsError.pipelineMetricsError);
-      setSourceControlMetricsError(reportData.reportMetricsError.sourceControlMetricsError);
+    if (isSummaryPage && notifications4SummaryPage.length > 0) {
+      const notification = notifications4SummaryPage[0];
+      notification && addNotification(notification);
+      setNotifications4SummaryPage(notifications4SummaryPage.slice(1));
     }
-  }, [reportData, isSummaryPage]);
+  }, [notifications4SummaryPage, isSummaryPage]);
 
   useEffect(() => {
-    boardMetricsError &&
-      addNotification({
-        message: MESSAGE.FAILED_TO_GET_DATA('Board Metrics'),
-        type: 'error',
-      });
-  }, [boardMetricsError]);
+    if (reportData?.reportMetricsError.boardMetricsError) {
+      setNotifications4SummaryPage((prevState) => [
+        ...prevState,
+        {
+          message: MESSAGE.FAILED_TO_GET_DATA('Board Metrics'),
+          type: 'error',
+        },
+      ]);
+    }
+  }, [reportData?.reportMetricsError.boardMetricsError]);
 
   useEffect(() => {
-    pipelineMetricsError &&
-      addNotification({
-        message: MESSAGE.FAILED_TO_GET_DATA('Buildkite'),
-        type: 'error',
-      });
-  }, [pipelineMetricsError]);
+    if (reportData?.reportMetricsError.pipelineMetricsError) {
+      setNotifications4SummaryPage((prevState) => [
+        ...prevState,
+        {
+          message: MESSAGE.FAILED_TO_GET_DATA('Buildkite'),
+          type: 'error',
+        },
+      ]);
+    }
+  }, [reportData?.reportMetricsError.pipelineMetricsError]);
 
   useEffect(() => {
-    sourceControlMetricsError &&
-      addNotification({
-        message: MESSAGE.FAILED_TO_GET_DATA('Github'),
-        type: 'error',
-      });
-  }, [sourceControlMetricsError]);
+    if (reportData?.reportMetricsError.sourceControlMetricsError) {
+      setNotifications4SummaryPage((prevState) => [
+        ...prevState,
+        {
+          message: MESSAGE.FAILED_TO_GET_DATA('Github'),
+          type: 'error',
+        },
+      ]);
+    }
+  }, [reportData?.reportMetricsError.sourceControlMetricsError]);
 
   useEffect(() => {
-    isSummaryPage && setTimeoutError4Report(timeout4Report);
-  }, [timeout4Report, isSummaryPage]);
+    timeout4Report &&
+      setNotifications4SummaryPage((prevState) => [
+        ...prevState,
+        {
+          message: MESSAGE.LOADING_TIMEOUT('Report'),
+          type: 'error',
+        },
+      ]);
+  }, [timeout4Report]);
 
   useEffect(() => {
-    isSummaryPage && setTimeoutError4Board(timeout4Board);
-  }, [timeout4Board, isSummaryPage]);
+    timeout4Board &&
+      setNotifications4SummaryPage((prevState) => [
+        ...prevState,
+        {
+          message: MESSAGE.LOADING_TIMEOUT('Board metrics'),
+          type: 'error',
+        },
+      ]);
+  }, [timeout4Board]);
 
   useEffect(() => {
-    isSummaryPage && setTimeoutError4Dora(timeout4Dora);
-  }, [timeout4Dora, isSummaryPage]);
-
-  useEffect(() => {
-    timeoutError4Report &&
-      addNotification({
-        message: MESSAGE.LOADING_TIMEOUT('Report'),
-        type: 'error',
-      });
-  }, [timeoutError4Report]);
-
-  useEffect(() => {
-    timeoutError4Board &&
-      addNotification({
-        message: MESSAGE.LOADING_TIMEOUT('Board metrics'),
-        type: 'error',
-      });
-  }, [timeoutError4Board]);
-
-  useEffect(() => {
-    timeoutError4Dora &&
-      addNotification({
-        message: MESSAGE.LOADING_TIMEOUT('DORA metrics'),
-        type: 'error',
-      });
-  }, [timeoutError4Dora]);
+    timeout4Dora &&
+      setNotifications4SummaryPage((prevState) => [
+        ...prevState,
+        {
+          message: MESSAGE.LOADING_TIMEOUT('DORA metrics'),
+          type: 'error',
+        },
+      ]);
+  }, [timeout4Dora]);
 
   const showSummary = () => (
     <>
