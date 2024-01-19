@@ -26,7 +26,7 @@ public class AsyncDataBaseHandler {
 
 	public static final String SUFFIX_TMP = ".tmp";
 
-	protected void creatFileByType(FIleType fIleType, String fileId, String json) {
+	protected void createFileByType(FIleType fIleType, String fileId, String json) {
 		createDirToConvertData(fIleType);
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
 		String tmpFileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId + SUFFIX_TMP;

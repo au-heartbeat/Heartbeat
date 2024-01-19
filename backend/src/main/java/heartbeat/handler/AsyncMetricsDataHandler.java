@@ -19,7 +19,7 @@ import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
 	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
-		creatFileByType(METRICS_DATA_COMPLETED, timeStamp, new Gson().toJson(metricsDataCompleted));
+		createFileByType(METRICS_DATA_COMPLETED, timeStamp, new Gson().toJson(metricsDataCompleted));
 	}
 
 	public MetricsDataCompleted getMetricsDataCompleted(String timeStamp) {

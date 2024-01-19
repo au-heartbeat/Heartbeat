@@ -62,6 +62,7 @@ class AsyncMetricsDataHandlerTest {
 		long currentTimeMillis = System.currentTimeMillis();
 		String currentTime = Long.toString(currentTimeMillis);
 		MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder().boardMetricsCompleted(false).build();
+
 		asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
 
 		assertNotNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
@@ -76,6 +77,7 @@ class AsyncMetricsDataHandlerTest {
 
 		Exception exception = assertThrows(GenerateReportException.class,
 				() -> asyncMetricsDataHandler.isReportReady(currentTime));
+
 		assertEquals("Failed to locate the report using this report ID.", exception.getMessage());
 	}
 
