@@ -52,7 +52,6 @@ const MetricsStep = () => {
   const getInfo = () => {
     console.log(boardConfig);
     getBoardInfo(boardConfig).then((res) => {
-      dispatch(updateBoardVerifyState(true));
       if (res.data) {
         dispatch(updateBoardVerifyState(true));
         dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
@@ -62,6 +61,7 @@ const MetricsStep = () => {
 
   useLayoutEffect(() => {
     dispatch(closeAllNotifications());
+    getInfo();
   }, []);
 
   useLayoutEffect(() => {
