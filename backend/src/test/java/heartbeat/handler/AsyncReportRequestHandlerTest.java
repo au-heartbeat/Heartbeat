@@ -70,9 +70,4 @@ class AsyncReportRequestHandlerTest {
 		assertNull(asyncReportRequestHandler.getReport(boardReportId));
 	}
 
-
-
-
-
-
 }

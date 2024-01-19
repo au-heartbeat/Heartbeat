@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 @ExtendWith(MockitoExtension.class)
 class AsyncMetricsDataHandlerTest {
 
@@ -76,7 +75,7 @@ class AsyncMetricsDataHandlerTest {
 		String currentTime = Long.toString(currentTimeMillis);
 
 		Exception exception = assertThrows(GenerateReportException.class,
-			() -> asyncMetricsDataHandler.isReportReady(currentTime));
+				() -> asyncMetricsDataHandler.isReportReady(currentTime));
 		assertEquals("Failed to locate the report using this report ID.", exception.getMessage());
 	}
 
@@ -115,4 +114,5 @@ class AsyncMetricsDataHandlerTest {
 		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + currentTime));
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 	}
+
 }

@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CyclicBarrier;
 
 @ExtendWith(MockitoExtension.class)
 class AsyncExceptionHandlerTest {
@@ -33,6 +35,12 @@ class AsyncExceptionHandlerTest {
 		new File(APP_OUTPUT_ERROR).delete();
 	}
 
+	@AfterAll
+	static void afterAll() {
+		new File("./app/output").delete();
+		new File("./app").delete();
+	}
+
 	@Test
 	void shouldDeleteAsyncException() {
 		long fileId = System.currentTimeMillis();
@@ -44,6 +52,40 @@ class AsyncExceptionHandlerTest {
 		asyncExceptionHandler.put(expireFile, new UnauthorizedException(""));
 
 		asyncExceptionHandler.deleteExpireException(fileId);
+
+		assertNull(asyncExceptionHandler.get(expireFile));
+		assertNotNull(asyncExceptionHandler.get(unExpireFile));
+		deleteTestFile(unExpireFile);
+		assertNull(asyncExceptionHandler.get(unExpireFile));
+	}
+
+	@Test
+	void shouldSafeDeleteAsyncExceptionWhenHaveManyThordToDeleteFile() throws InterruptedException {
+		long fileId = System.currentTimeMillis();
+		String currentTime = Long.toString(fileId);
+		String expireTime = Long.toString(fileId - 1900000L);
+		String unExpireFile = IdUtil.getBoardReportId(currentTime);
+		String expireFile = IdUtil.getBoardReportId(expireTime);
+		asyncExceptionHandler.put(unExpireFile, new UnauthorizedException(""));
+		asyncExceptionHandler.put(expireFile, new UnauthorizedException(""));
+		CyclicBarrier barrier = new CyclicBarrier(3);
+		Runnable runnable = () -> {
+			try {
+				barrier.await();
+				asyncExceptionHandler.deleteExpireException(fileId);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		};
+		Thread thread = new Thread(runnable);
+		Thread thread1 = new Thread(runnable);
+		Thread thread2 = new Thread(runnable);
+		thread.start();
+		thread1.start();
+		thread2.start();
+		thread.join();
+		thread1.join();
+		thread2.join();
 
 		assertNull(asyncExceptionHandler.get(expireFile));
 		assertNotNull(asyncExceptionHandler.get(unExpireFile));

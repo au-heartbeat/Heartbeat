@@ -67,7 +67,8 @@ public class AsyncDataBaseHandler {
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
 		try {
 			Files.delete(Path.of(fileName));
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		return t;
@@ -81,8 +82,9 @@ public class AsyncDataBaseHandler {
 				String fileName = file.getName();
 				String[] splitResult = fileName.split("\\s*\\-|\\.\\s*");
 				String timeStamp = METRICS_DATA_COMPLETED == fIleType ? splitResult[0] : splitResult[1];
-				if (validateExpire(currentTimeStamp, Long.parseLong(timeStamp)) && !file.delete()) {
-					log.error("Failed to deleted expired CSV file, file name: {}", fileName);
+				if (validateExpire(currentTimeStamp, Long.parseLong(timeStamp)) && !file.delete() && file.exists()) {
+					log.error("Failed to deleted expired fIleType: {} file, file name: {}", fIleType.getType(),
+							fileName);
 				}
 			}
 		}
@@ -91,4 +93,5 @@ public class AsyncDataBaseHandler {
 	private boolean validateExpire(long currentTimeStamp, long timeStamp) {
 		return timeStamp < currentTimeStamp - EXPORT_CSV_VALIDITY_TIME;
 	}
+
 }
