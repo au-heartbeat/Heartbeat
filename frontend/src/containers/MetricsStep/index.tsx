@@ -4,6 +4,7 @@ import {
   selectIsProjectCreated,
   selectMetrics,
   selectUsers,
+  updateJiraVerifyResponse,
   updateBoardVerifyState,
   selectBoard,
 } from '@src/context/config/configSlice';
