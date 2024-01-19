@@ -1,51 +1,61 @@
-import { CYCLE_TIME_SETTINGS, ERROR_MESSAGE_TIME_DURATION, LIST_OPEN, NO_RESULT_DASH } from '../../fixtures';
-import { saveDoneColumn, updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
-import { act, render, waitFor, within, screen } from '@testing-library/react';
+import React from 'react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
-import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import React from 'react';
+import { setupStore } from '../../utils/setupStoreUtil';
+import { CYCLE_TIME_SETTINGS, ERROR_MESSAGE_TIME_DURATION, LIST_OPEN, NO_RESULT_DASH } from '../../fixtures';
+import {
+  saveCycleTimeSettings,
+  saveDoneColumn,
+  selectMetricsContent,
+  setCycleTimeSettingsType,
+  updateTreatFlagCardAsBlock,
+} from '@src/context/Metrics/metricsSlice';
+import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
 
 const FlagAsBlock = 'Consider the "Flag" as "Block"';
-
+const cycleTimeSettings = [
+  {
+    column: 'Doing',
+    status: 'Analysis',
+    value: 'Analysis',
+  },
+  {
+    column: 'Doing',
+    status: 'In Dev',
+    value: 'Analysis',
+  },
+  {
+    column: 'Doing',
+    status: 'doing',
+    value: 'Analysis',
+  },
+  {
+    column: 'Testing',
+    status: 'Test',
+    value: 'Review',
+  },
+  {
+    column: 'TODO',
+    status: 'To do',
+    value: '----',
+  },
+  {
+    column: 'Done',
+    status: 'done',
+    value: 'Done',
+  },
+];
+const cycleTimeTypeLabels = ['By Board Column mapping', 'By Board Status mapping'];
 let store = setupStore();
+
 jest.mock('@src/context/Metrics/metricsSlice', () => ({
   ...jest.requireActual('@src/context/Metrics/metricsSlice'),
-  selectMetricsContent: jest.fn().mockReturnValue({
-    cycleTimeSettingsType: 'byColumn',
-    cycleTimeSettings: [
-      {
-        column: 'Doing',
-        status: 'Analysis',
-        value: 'Analysis',
-      },
-      {
-        column: 'Doing',
-        status: 'In Dev',
-        value: 'Analysis',
-      },
-      {
-        column: 'Doing',
-        status: 'doing',
-        value: 'Analysis',
-      },
-      {
-        column: 'Testing',
-        status: 'Test',
-        value: 'Review',
-      },
-      {
-        column: 'TODO',
-        status: 'To do',
-        value: '----',
-      },
-    ],
-  }),
+  selectMetricsContent: jest.fn(),
   selectTreatFlagCardAsBlock: jest.fn().mockReturnValue(true),
   selectCycleTimeWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
 }));
-
 const mockedUseAppDispatch = jest.fn();
 jest.mock('@src/hooks/useAppDispatch', () => ({
   useAppDispatch: () => mockedUseAppDispatch,
@@ -55,22 +65,28 @@ const setup = () =>
   render(
     <Provider store={store}>
       <CycleTime />
-    </Provider>,
+    </Provider>
   );
 
 describe('CycleTime', () => {
   beforeEach(() => {
     store = setupStore();
+    (selectMetricsContent as jest.Mock).mockReturnValue({
+      cycleTimeSettingsType: 'byColumn',
+      cycleTimeSettings,
+    });
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
   describe('CycleTime Title', () => {
     it('should show Cycle Time title when render Crews component', () => {
       setup();
       expect(screen.getByText(CYCLE_TIME_SETTINGS)).toBeInTheDocument();
+      expect(screen.getByLabelText('sticky table').querySelector('th')).toHaveTextContent('Board Column');
     });
     it('should show Cycle Time tooltip when render Crews component', () => {
       setup();
@@ -101,9 +117,26 @@ describe('CycleTime', () => {
       const inputElements = screen.getAllByRole('combobox');
       const selectedInputValues = inputElements.map((input) => input.getAttribute('value'));
 
-      const expectedInputValues = ['Analysis', 'Review', NO_RESULT_DASH];
+      expect(selectedInputValues).toEqual(['Analysis', 'Review', NO_RESULT_DASH, 'Done']);
+    });
 
-      expect(selectedInputValues).toEqual(expectedInputValues);
+    it('should use default value when state value is null', () => {
+      (selectMetricsContent as jest.Mock).mockReturnValue({
+        cycleTimeSettingsType: 'byColumn',
+        cycleTimeSettings: [
+          {
+            column: 'Doing',
+            status: 'Analysis',
+            value: null,
+          },
+        ],
+      });
+      setup();
+
+      const inputElements = screen.getAllByRole('combobox');
+      const selectedInputValues = inputElements.map((input) => input.getAttribute('value'));
+
+      expect(selectedInputValues).toEqual([NO_RESULT_DASH]);
     });
 
     it('should show detail options when click included button', async () => {
@@ -282,6 +315,131 @@ describe('CycleTime', () => {
 
     await waitFor(() => {
       expect(screen.queryByText('Test warning Message')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should update cycle time type and clear table value when select status type', async () => {
+    setup();
+
+    await act(async () => {
+      await userEvent.click(screen.getByRole('radio', { name: cycleTimeTypeLabels[1] }));
+    });
+
+    await waitFor(() => {
+      expect(mockedUseAppDispatch).toHaveBeenCalledTimes(2);
+      expect(mockedUseAppDispatch).toHaveBeenCalledWith(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
+      expect(mockedUseAppDispatch).toHaveBeenCalledWith(
+        saveCycleTimeSettings(
+          cycleTimeSettings.map((item) => ({
+            ...item,
+            value: METRICS_CONSTANTS.cycleTimeEmptyStr,
+          }))
+        )
+      );
+    });
+  });
+
+  describe('cycle time by status', () => {
+    beforeEach(() => {
+      (selectMetricsContent as jest.Mock).mockReturnValue({
+        cycleTimeSettingsType: 'byStatus',
+        cycleTimeSettings,
+      });
+    });
+
+    it('should show status mapping table when cycle time settings type by status', async () => {
+      setup();
+
+      expect(screen.getByLabelText('sticky table').querySelector('th')).toHaveTextContent('Board Status');
+      expect(screen.getByText('Analysis')).toBeInTheDocument();
+      expect(screen.getByText('In Dev')).toBeInTheDocument();
+      expect(screen.getByText('doing')).toBeInTheDocument();
+      expect(screen.getByText('Test')).toBeInTheDocument();
+      expect(screen.getByText('To do')).toBeInTheDocument();
+    });
+
+    it('should show selected option when click the dropDown button ', async () => {
+      setup();
+      const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
+      await act(async () => {
+        await userEvent.click(columnsArray[2]);
+      });
+
+      const listBox = within(screen.getByRole('listbox'));
+      const options = listBox.getAllByRole('option');
+      const selectedOption = options.find((option) => option.getAttribute('aria-selected') === 'true');
+
+      const selectedOptionText = selectedOption?.textContent;
+
+      expect(selectedOptionText).toBe('Analysis');
+    });
+
+    it('should show other selections when change option and will not affect Real done', async () => {
+      setup();
+      const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
+      await act(async () => {
+        await userEvent.click(columnsArray[2]);
+      });
+
+      const listBox = within(screen.getByRole('listbox'));
+      const mockOptions = listBox.getAllByRole('option');
+      await act(async () => {
+        await userEvent.click(mockOptions[1]);
+      });
+
+      const inputElements = screen.getAllByRole('combobox');
+      const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[2];
+
+      expect(selectedInputValue).toBe('To do');
+      await waitFor(() => expect(mockedUseAppDispatch).not.toHaveBeenCalledWith(saveDoneColumn([])));
+    });
+
+    it('should reset Real done when marked as done from other options', async () => {
+      setup();
+      const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
+      await act(async () => {
+        await userEvent.click(columnsArray[0]);
+      });
+
+      const listBox = within(screen.getByRole('listbox'));
+      await act(async () => {
+        await userEvent.click(listBox.getAllByRole('option')[8]);
+      });
+
+      const inputElements = screen.getAllByRole('combobox');
+
+      const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[0];
+
+      expect(selectedInputValue).toBe('Done');
+      await waitFor(() => expect(mockedUseAppDispatch).toHaveBeenCalledWith(saveDoneColumn([])));
+    });
+
+    it('should show the right selected value when cancel the done', async () => {
+      setup();
+      const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
+      await act(async () => {
+        await userEvent.click(columnsArray[0]);
+      });
+
+      const listBox = within(screen.getByRole('listbox'));
+      await act(async () => {
+        await userEvent.click(listBox.getAllByRole('option')[8]);
+      });
+
+      await act(async () => {
+        await userEvent.click(columnsArray[0]);
+      });
+
+      const newListBox = within(screen.getByRole('listbox'));
+      await act(async () => {
+        await userEvent.click(newListBox.getAllByRole('option')[7]);
+      });
+
+      const inputElements = screen.getAllByRole('combobox');
+      const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[0];
+
+      expect(selectedInputValue).toBe('Review');
+      await waitFor(() => expect(mockedUseAppDispatch).toHaveBeenCalledWith(saveDoneColumn([])));
     });
   });
 });

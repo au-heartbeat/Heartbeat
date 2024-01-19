@@ -56,7 +56,6 @@ const CycleTimeTable = () => {
             }
           : item
       );
-
       resetRealDoneColumn(name, value);
       dispatch(saveCycleTimeSettings(newCycleTimeSettings));
     },
@@ -83,9 +82,8 @@ const CycleTimeTable = () => {
     dispatch(setCycleTimeSettingsType(event.target.value));
     dispatch(
       saveCycleTimeSettings(
-        cycleTimeSettings.map(({ column, status }) => ({
-          column,
-          status,
+        cycleTimeSettings.map((item) => ({
+          ...item,
           value: METRICS_CONSTANTS.cycleTimeEmptyStr,
         }))
       )

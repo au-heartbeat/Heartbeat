@@ -237,14 +237,17 @@ export const IMPORTED_NEW_CONFIG_FIXTURE = {
   },
   crews: ['lucy', 'hi hi', 'Yu Zhang'],
   classification: ['type', 'Parent'],
-  cycleTime: [
-    {
-      'In Analysis': 'To do',
-    },
-    {
-      'Ready For Dev': 'Analysis',
-    },
-  ],
+  cycleTime: {
+    type: 'byColumn',
+    jiraColumns: [
+      {
+        'In Analysis': 'To do',
+      },
+      {
+        'Ready For Dev': 'Analysis',
+      },
+    ],
+  },
 };
 
 export const MOCK_EXPORT_CSV_REQUEST_PARAMS: CSVReportRequestDTO = {
