@@ -6,7 +6,6 @@ import {
 } from '../fixtures';
 import { InternalServerException } from '@src/exceptions/InternalServerException';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
-import { UnknownException } from '@src/exceptions/UnknownException';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { reportClient } from '@src/clients/report/ReportClient';
 import { HttpStatusCode } from 'axios';
@@ -57,19 +56,8 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set isServerError is true when throw TimeoutException', async () => {
-    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutException('5xx error', 503));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.isServerError).toEqual(true);
-    });
-  });
-
   it('should set timeout4Board is "Data loading failed" when timeout', async () => {
-    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownException());
+    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutException('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
@@ -186,19 +174,8 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set isServerError is true when throw TimeoutException', async () => {
-    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutException('5xx error', 503));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.isServerError).toEqual(true);
-    });
-  });
-
   it('should set timeout4Dora is "Data loading failed" when timeout', async () => {
-    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownException());
+    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutException('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
@@ -210,7 +187,7 @@ describe('use generate report effect', () => {
 
   it('should set timeout4Report is "Data loading failed" when polling timeout', async () => {
     reportClient.polling = jest.fn().mockImplementation(async () => {
-      throw new UnknownException();
+      throw new TimeoutException('5xx error', 503);
     });
 
     reportClient.retrieveByUrl = jest

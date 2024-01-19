@@ -45,9 +45,9 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   };
 
   const handleError = (error: Error, source: string) => {
-    if (error instanceof InternalServerException || error instanceof TimeoutException) {
+    if (error instanceof InternalServerException) {
       setIsServerError(true);
-    } else {
+    } else if (error instanceof TimeoutException) {
       if (source === 'Board') {
         setTimeout4Board(TIMEOUT_PROMPT);
       } else if (source === 'Dora') {
