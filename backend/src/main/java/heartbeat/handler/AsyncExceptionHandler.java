@@ -29,7 +29,7 @@ public class AsyncExceptionHandler extends AsyncDataBaseHandler {
 		return readAndRemoveFileByType(ERROR, reportId, AsyncExceptionDTO.class);
 	}
 
-	public void deleteExpireException(long currentTimeStamp, File directory) {
+	public void deleteExpireExceptionFile(long currentTimeStamp, File directory) {
 		deleteExpireFileByType(ERROR, currentTimeStamp, directory);
 	}
 

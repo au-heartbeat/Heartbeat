@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.Optional;
 
 import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
@@ -24,14 +25,6 @@ public class AsyncDataBaseHandler {
 	private static final String OUTPUT_FILE_PATH = "./app/output/";
 
 	public static final String SUFFIX_TMP = ".tmp";
-
-	private void createDirToConvertData(FIleType fIleType) {
-		File directory = new File(OUTPUT_FILE_PATH + fIleType.getType());
-		boolean isCreateSucceed = directory.mkdirs();
-		String message = isCreateSucceed ? String.format("Successfully create %s directory", fIleType.getType())
-				: String.format("Failed create %s directory because it already exist", fIleType.getType());
-		log.info(message);
-	}
 
 	protected void creatFileByType(FIleType fIleType, String fileId, String json) {
 		createDirToConvertData(fIleType);
@@ -48,6 +41,14 @@ public class AsyncDataBaseHandler {
 			log.error("Failed write file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
 			throw new GenerateReportException("Failed write " + fIleType.getType() + " " + fileId);
 		}
+	}
+
+	private void createDirToConvertData(FIleType fIleType) {
+		File directory = new File(OUTPUT_FILE_PATH + fIleType.getType());
+		boolean isCreateSucceed = directory.mkdirs();
+		String message = isCreateSucceed ? String.format("Successfully create %s directory", fIleType.getType())
+				: String.format("Failed create %s directory because it already exist", fIleType.getType());
+		log.info(message);
 	}
 
 	protected <T> T readFileByType(FIleType fIleType, String fileId, Class<T> classType) {
@@ -82,6 +83,17 @@ public class AsyncDataBaseHandler {
 	}
 
 	protected void deleteExpireFileByType(FIleType fIleType, long currentTimeStamp, File directory) {
+		try {
+			deleteOldFiles(fIleType, currentTimeStamp, directory);
+		}
+		catch (Exception e) {
+			Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
+			log.error("Failed to deleted expired {} files, currentTimeStamp：{}, exception: {}", fIleType.getType(),
+					currentTimeStamp, cause.getMessage());
+		}
+	}
+
+	private void deleteOldFiles(FIleType fIleType, long currentTimeStamp, File directory) {
 		File[] files = directory.listFiles();
 		if (!ObjectUtils.isEmpty(files)) {
 			for (File file : files) {

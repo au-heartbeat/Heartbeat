@@ -58,7 +58,7 @@ class AsyncExceptionHandlerTest {
 		asyncExceptionHandler.put(unExpireFile, new UnauthorizedException(""));
 		asyncExceptionHandler.put(expireFile, new UnauthorizedException(""));
 
-		asyncExceptionHandler.deleteExpireException(fileId, new File(APP_OUTPUT_ERROR));
+		asyncExceptionHandler.deleteExpireExceptionFile(fileId, new File(APP_OUTPUT_ERROR));
 
 		assertNull(asyncExceptionHandler.get(expireFile));
 		assertNotNull(asyncExceptionHandler.get(unExpireFile));
@@ -79,7 +79,7 @@ class AsyncExceptionHandlerTest {
 		Runnable runnable = () -> {
 			try {
 				barrier.await();
-				asyncExceptionHandler.deleteExpireException(fileId, new File(APP_OUTPUT_ERROR));
+				asyncExceptionHandler.deleteExpireExceptionFile(fileId, new File(APP_OUTPUT_ERROR));
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -190,8 +190,8 @@ class AsyncExceptionHandlerTest {
 		File directory = mock(File.class);
 		when(directory.listFiles()).thenReturn(mockFiles);
 
-		assertThrows(RuntimeException.class,
-				() -> asyncExceptionHandler.deleteExpireException(System.currentTimeMillis(), directory));
+		assertDoesNotThrow(
+				() -> asyncExceptionHandler.deleteExpireExceptionFile(System.currentTimeMillis(), directory));
 	}
 
 	@Test
@@ -204,7 +204,8 @@ class AsyncExceptionHandlerTest {
 		File directory = mock(File.class);
 		when(directory.listFiles()).thenReturn(mockFiles);
 
-		assertDoesNotThrow(() -> asyncExceptionHandler.deleteExpireException(System.currentTimeMillis(), directory));
+		assertDoesNotThrow(
+				() -> asyncExceptionHandler.deleteExpireExceptionFile(System.currentTimeMillis(), directory));
 	}
 
 	private void deleteTestFile(String reportId) {

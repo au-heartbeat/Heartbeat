@@ -49,7 +49,7 @@ class AsyncMetricsDataHandlerTest {
 		asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
 		asyncMetricsDataHandler.putMetricsDataCompleted(expireTime, metricsDataCompleted);
 
-		asyncMetricsDataHandler.deleteExpireMetricsDataCompleted(currentTimeMillis, new File(APP_OUTPUT_METRICS));
+		asyncMetricsDataHandler.deleteExpireMetricsDataCompletedFile(currentTimeMillis, new File(APP_OUTPUT_METRICS));
 
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(expireTime));
 		assertNotNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));

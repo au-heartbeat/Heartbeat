@@ -41,7 +41,7 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		return metricsReady.stream().allMatch(Boolean::valueOf);
 	}
 
-	public void deleteExpireMetricsDataCompleted(long currentTimeStamp, File directory) {
+	public void deleteExpireMetricsDataCompletedFile(long currentTimeStamp, File directory) {
 		deleteExpireFileByType(METRICS_DATA_COMPLETED, currentTimeStamp, directory);
 	}
 

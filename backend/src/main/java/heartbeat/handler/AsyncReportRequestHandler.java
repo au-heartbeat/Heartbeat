@@ -24,7 +24,7 @@ public class AsyncReportRequestHandler extends AsyncDataBaseHandler {
 		return readFileByType(REPORT, reportId, ReportResponse.class);
 	}
 
-	public void deleteExpireReport(long currentTimeStamp, File directory) {
+	public void deleteExpireReportFile(long currentTimeStamp, File directory) {
 		deleteExpireFileByType(REPORT, currentTimeStamp, directory);
 	}
 

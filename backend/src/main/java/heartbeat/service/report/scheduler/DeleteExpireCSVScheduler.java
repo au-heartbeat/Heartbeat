@@ -21,6 +21,14 @@ public class DeleteExpireCSVScheduler {
 
 	public static final Long EXPORT_CSV_VALIDITY_TIME = 1800000L;
 
+	public static final String CSV_FILE_PATH = "./app/output/csv/";
+
+	public static final String REPORT_FILE_PATH = "./app/output/report/";
+
+	public static final String ERROR_FILE_PATH = "./app/output/error/";
+
+	public static final String METRICS_FILE_PATH = "./app/output/metrics-data-completed/";
+
 	private final GenerateReporterService generateReporterService;
 
 	private final AsyncReportRequestHandler asyncReportRequestHandler;
@@ -29,17 +37,14 @@ public class DeleteExpireCSVScheduler {
 
 	private final AsyncExceptionHandler asyncExceptionHandler;
 
-	private final AsyncMetricsDataHandler asyncMetricsDataHandler;
-
 	@Scheduled(fixedRate = DELETE_INTERVAL_IN_MINUTES, timeUnit = TimeUnit.MINUTES)
 	public void triggerBatchDelete() {
 		long currentTimeStamp = System.currentTimeMillis();
 		log.info("Start to delete expired CSV files, currentTimeStamp: {}", currentTimeStamp);
-		generateReporterService.deleteExpireCSV(currentTimeStamp, new File("./app/output/csv/"));
-		asyncReportRequestHandler.deleteExpireReport(currentTimeStamp, new File("./app/output/report"));
-		asyncMetricsDataHandler.deleteExpireMetricsDataCompleted(currentTimeStamp,
-				new File("./app/output/metrics-data-completed"));
-		asyncExceptionHandler.deleteExpireException(currentTimeStamp, new File("./app/output/error"));
+		generateReporterService.deleteExpireCSV(currentTimeStamp, new File(CSV_FILE_PATH));
+		asyncReportRequestHandler.deleteExpireReportFile(currentTimeStamp, new File(REPORT_FILE_PATH));
+		asyncMetricsDataHandler.deleteExpireMetricsDataCompletedFile(currentTimeStamp, new File(METRICS_FILE_PATH));
+		asyncExceptionHandler.deleteExpireExceptionFile(currentTimeStamp, new File(ERROR_FILE_PATH));
 	}
 
 }
