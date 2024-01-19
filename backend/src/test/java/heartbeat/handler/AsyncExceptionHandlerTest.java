@@ -6,10 +6,13 @@ import heartbeat.exception.UnauthorizedException;
 import heartbeat.util.IdUtil;
 
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -55,7 +58,7 @@ class AsyncExceptionHandlerTest {
 		asyncExceptionHandler.put(unExpireFile, new UnauthorizedException(""));
 		asyncExceptionHandler.put(expireFile, new UnauthorizedException(""));
 
-		asyncExceptionHandler.deleteExpireException(fileId);
+		asyncExceptionHandler.deleteExpireException(fileId, new File(APP_OUTPUT_ERROR));
 
 		assertNull(asyncExceptionHandler.get(expireFile));
 		assertNotNull(asyncExceptionHandler.get(unExpireFile));
@@ -76,7 +79,7 @@ class AsyncExceptionHandlerTest {
 		Runnable runnable = () -> {
 			try {
 				barrier.await();
-				asyncExceptionHandler.deleteExpireException(fileId);
+				asyncExceptionHandler.deleteExpireException(fileId, new File(APP_OUTPUT_ERROR));
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -176,6 +179,32 @@ class AsyncExceptionHandlerTest {
 
 		Files.deleteIfExists(filePath);
 		assertNull(asyncExceptionHandler.get(boardReportId));
+	}
+
+	@Test
+	void shouldThrowExceptionWhenDeleteFile() {
+		File mockFile = mock(File.class);
+		when(mockFile.getName()).thenReturn("board-1683734399999");
+		when(mockFile.delete()).thenThrow(new RuntimeException("test"));
+		File[] mockFiles = new File[] { mockFile };
+		File directory = mock(File.class);
+		when(directory.listFiles()).thenReturn(mockFiles);
+
+		assertThrows(RuntimeException.class,
+				() -> asyncExceptionHandler.deleteExpireException(System.currentTimeMillis(), directory));
+	}
+
+	@Test
+	void shouldDeleteFailWhenDeleteFile() {
+		File mockFile = mock(File.class);
+		when(mockFile.getName()).thenReturn("board-1683734399999");
+		when(mockFile.delete()).thenReturn(false);
+		when(mockFile.exists()).thenReturn(true);
+		File[] mockFiles = new File[] { mockFile };
+		File directory = mock(File.class);
+		when(directory.listFiles()).thenReturn(mockFiles);
+
+		assertDoesNotThrow(() -> asyncExceptionHandler.deleteExpireException(System.currentTimeMillis(), directory));
 	}
 
 	private void deleteTestFile(String reportId) {

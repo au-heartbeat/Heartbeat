@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 import static heartbeat.handler.base.FIleType.REPORT;
 
 @Log4j2
@@ -22,8 +24,8 @@ public class AsyncReportRequestHandler extends AsyncDataBaseHandler {
 		return readFileByType(REPORT, reportId, ReportResponse.class);
 	}
 
-	public void deleteExpireReport(long currentTimeStamp) {
-		deleteExpireFileByType(REPORT, currentTimeStamp);
+	public void deleteExpireReport(long currentTimeStamp, File directory) {
+		deleteExpireFileByType(REPORT, currentTimeStamp, directory);
 	}
 
 }

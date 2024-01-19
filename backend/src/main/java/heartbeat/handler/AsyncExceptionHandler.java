@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 import static heartbeat.handler.base.FIleType.ERROR;
 
 @Log4j2
@@ -27,8 +29,8 @@ public class AsyncExceptionHandler extends AsyncDataBaseHandler {
 		return readAndRemoveFileByType(ERROR, reportId, AsyncExceptionDTO.class);
 	}
 
-	public void deleteExpireException(long currentTimeStamp) {
-		deleteExpireFileByType(ERROR, currentTimeStamp);
+	public void deleteExpireException(long currentTimeStamp, File directory) {
+		deleteExpireFileByType(ERROR, currentTimeStamp, directory);
 	}
 
 }

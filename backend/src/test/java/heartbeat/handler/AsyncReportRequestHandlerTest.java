@@ -49,7 +49,7 @@ class AsyncReportRequestHandlerTest {
 		asyncReportRequestHandler.putReport(unExpireFile, ReportResponse.builder().build());
 		asyncReportRequestHandler.putReport(expireFile, ReportResponse.builder().build());
 
-		asyncReportRequestHandler.deleteExpireReport(currentTimeMillis);
+		asyncReportRequestHandler.deleteExpireReport(currentTimeMillis, new File(APP_OUTPUT_REPORT));
 
 		assertNull(asyncReportRequestHandler.getReport(expireFile));
 		assertNotNull(asyncReportRequestHandler.getReport(unExpireFile));

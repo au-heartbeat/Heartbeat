@@ -7,6 +7,7 @@ import heartbeat.handler.base.AsyncDataBaseHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -40,8 +41,8 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		return metricsReady.stream().allMatch(Boolean::valueOf);
 	}
 
-	public void deleteExpireMetricsDataCompleted(long currentTimeStamp) {
-		deleteExpireFileByType(METRICS_DATA_COMPLETED, currentTimeStamp);
+	public void deleteExpireMetricsDataCompleted(long currentTimeStamp, File directory) {
+		deleteExpireFileByType(METRICS_DATA_COMPLETED, currentTimeStamp, directory);
 	}
 
 }

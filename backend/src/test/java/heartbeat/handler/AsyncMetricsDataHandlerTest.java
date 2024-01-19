@@ -24,14 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 class AsyncMetricsDataHandlerTest {
 
-	public static final String APP_OUTPUT_REPORT = "./app/output/metrics-data-completed";
+	public static final String APP_OUTPUT_METRICS = "./app/output/metrics-data-completed";
 
 	@InjectMocks
 	AsyncMetricsDataHandler asyncMetricsDataHandler;
 
 	@AfterEach
 	void afterEach() {
-		new File(APP_OUTPUT_REPORT).delete();
+		new File(APP_OUTPUT_METRICS).delete();
 	}
 
 	@AfterAll
@@ -49,11 +49,11 @@ class AsyncMetricsDataHandlerTest {
 		asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
 		asyncMetricsDataHandler.putMetricsDataCompleted(expireTime, metricsDataCompleted);
 
-		asyncMetricsDataHandler.deleteExpireMetricsDataCompleted(currentTimeMillis);
+		asyncMetricsDataHandler.deleteExpireMetricsDataCompleted(currentTimeMillis, new File(APP_OUTPUT_METRICS));
 
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(expireTime));
 		assertNotNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
-		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + currentTime));
+		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 	}
 
@@ -65,7 +65,7 @@ class AsyncMetricsDataHandlerTest {
 		asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
 
 		assertNotNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
-		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + currentTime));
+		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 	}
 
@@ -93,7 +93,7 @@ class AsyncMetricsDataHandlerTest {
 		boolean reportReady = asyncMetricsDataHandler.isReportReady(currentTime);
 
 		assertFalse(reportReady);
-		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + currentTime));
+		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 	}
 
@@ -111,7 +111,7 @@ class AsyncMetricsDataHandlerTest {
 		boolean reportReady = asyncMetricsDataHandler.isReportReady(currentTime);
 
 		assertTrue(reportReady);
-		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + currentTime));
+		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 	}
 

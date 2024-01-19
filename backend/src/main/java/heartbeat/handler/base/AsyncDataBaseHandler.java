@@ -46,7 +46,7 @@ public class AsyncDataBaseHandler {
 		}
 		catch (IOException | RuntimeException e) {
 			log.error("Failed write file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
-			throw new GenerateReportException("Failed write " + fIleType.getType() + " file " + fileId);
+			throw new GenerateReportException("Failed write " + fIleType.getType() + " " + fileId);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class AsyncDataBaseHandler {
 			}
 			catch (IOException | RuntimeException e) {
 				log.error("Failed read file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
-				throw new GenerateReportException("Failed read " + fIleType.getType() + " file " + fileId);
+				throw new GenerateReportException("Failed read " + fIleType.getType() + " " + fileId);
 			}
 		}
 		return null;
@@ -81,8 +81,7 @@ public class AsyncDataBaseHandler {
 		}
 	}
 
-	protected void deleteExpireFileByType(FIleType fIleType, long currentTimeStamp) {
-		File directory = new File(OUTPUT_FILE_PATH + fIleType.getType());
+	protected void deleteExpireFileByType(FIleType fIleType, long currentTimeStamp, File directory) {
 		File[] files = directory.listFiles();
 		if (!ObjectUtils.isEmpty(files)) {
 			for (File file : files) {
