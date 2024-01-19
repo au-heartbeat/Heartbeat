@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
@@ -30,12 +31,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 import heartbeat.util.IdUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.val;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -242,9 +241,9 @@ public class GenerateReporterService {
 			if (request.getBuildKiteSetting() == null)
 				throw new BadRequestException("Failed to fetch BuildKite info due to BuildKite setting is null.");
 			FetchedData.BuildKiteData buildKiteData = pipelineService.fetchBuildKiteInfo(request);
-			val cachedBuildKiteData = fetchedData.getBuildKiteData();
+			BuildKiteData cachedBuildKiteData = fetchedData.getBuildKiteData();
 			if (cachedBuildKiteData != null) {
-				val pipelineLeadTimes = cachedBuildKiteData.getPipelineLeadTimes();
+				List<PipelineLeadTime> pipelineLeadTimes = cachedBuildKiteData.getPipelineLeadTimes();
 				buildKiteData.setPipelineLeadTimes(pipelineLeadTimes);
 			}
 			fetchedData.setBuildKiteData(buildKiteData);

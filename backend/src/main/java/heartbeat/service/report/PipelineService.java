@@ -6,6 +6,7 @@ import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
+import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
@@ -60,9 +61,10 @@ public class PipelineService {
 			List<BuildKiteBuildInfo> buildKiteBuildInfo = getBuildKiteBuildInfo(startTime, endTime,
 					deploymentEnvironment, request.getBuildKiteSetting().getToken(),
 					request.getBuildKiteSetting().getPipelineCrews());
-			result.addDeployTimes(
-					buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfo, startTime, endTime));
+			DeployTimes deployTimesList = buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfo,
+					startTime, endTime);
 			result.addBuildKiteBuildInfos(deploymentEnvironment.getId(), buildKiteBuildInfo);
+			result.addDeployTimes(deployTimesList);
 		});
 		return result;
 	}
