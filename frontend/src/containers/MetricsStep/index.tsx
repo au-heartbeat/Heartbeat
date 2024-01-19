@@ -5,7 +5,6 @@ import {
   selectMetrics,
   selectUsers,
   selectBoard,
-  updateBoardVerifyState,
 } from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
@@ -49,11 +48,8 @@ const MetricsStep = () => {
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
 
-  console.log(errorMessage, 'error message is');
-
   const getInfo = () => {
     getBoardInfo(boardConfig).then((res) => {
-      dispatch(updateBoardVerifyState(true));
       if (res.data) {
         dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
       }
