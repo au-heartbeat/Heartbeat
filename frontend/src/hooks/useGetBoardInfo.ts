@@ -23,6 +23,7 @@ export interface useGetBoardInfoInterface {
   errorMessage: Record<string, string>;
 }
 
+
 const codeMapping = {
   400: {
     title: BOARD_CONFIG_INFO_TITLE.INVALID_INPUT,
