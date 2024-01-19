@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +39,7 @@ public class PipelineService {
 	private final GitHubService gitHubService;
 
 	public FetchedData.BuildKiteData fetchGithubData(GenerateReportRequest request) {
-		FetchedData.BuildKiteData buildKiteData = fetchBuildKiteData(request.getStartTime(), request.getEndTime(),
-				request.getBuildKiteSetting().getDeploymentEnvList(), request.getBuildKiteSetting().getToken(),
-				request.getBuildKiteSetting().getPipelineCrews());
+		FetchedData.BuildKiteData buildKiteData = fetchBuildKiteInfo(request);
 		Map<String, String> repoMap = getRepoMap(request.getBuildKiteSetting().getDeploymentEnvList());
 		List<PipelineLeadTime> pipelineLeadTimes = Collections.emptyList();
 		if (Objects.nonNull(request.getCodebaseSetting())
@@ -53,23 +52,14 @@ public class PipelineService {
 	}
 
 	public FetchedData.BuildKiteData fetchBuildKiteInfo(GenerateReportRequest request) {
-		return fetchBuildKiteData(request.getStartTime(), request.getEndTime(),
-				request.getBuildKiteSetting().getDeploymentEnvList(), request.getBuildKiteSetting().getToken(),
-				request.getBuildKiteSetting().getPipelineCrews());
-	}
-
-	private Map<String, String> getRepoMap(List<DeploymentEnvironment> deploymentEnvironments) {
-		return deploymentEnvironments.stream()
-			.collect(Collectors.toMap(DeploymentEnvironment::getId, DeploymentEnvironment::getRepository));
-	}
-
-	private FetchedData.BuildKiteData fetchBuildKiteData(String startTime, String endTime,
-			List<DeploymentEnvironment> deploymentEnvironments, String token, List<String> pipelineCrews) {
+		String startTime = request.getStartTime();
+		String endTime = request.getEndTime();
 		FetchedData.BuildKiteData result = new FetchedData.BuildKiteData();
 
-		deploymentEnvironments.parallelStream().forEach(deploymentEnvironment -> {
+		request.getBuildKiteSetting().getDeploymentEnvList().parallelStream().forEach(deploymentEnvironment -> {
 			List<BuildKiteBuildInfo> buildKiteBuildInfo = getBuildKiteBuildInfo(startTime, endTime,
-					deploymentEnvironment, token, pipelineCrews);
+					deploymentEnvironment, request.getBuildKiteSetting().getToken(),
+					request.getBuildKiteSetting().getPipelineCrews());
 			result.addDeployTimes(
 					buildKiteService.countDeployTimes(deploymentEnvironment, buildKiteBuildInfo, startTime, endTime));
 			result.addBuildKiteBuildInfos(deploymentEnvironment.getId(), buildKiteBuildInfo);
@@ -77,58 +67,49 @@ public class PipelineService {
 		return result;
 	}
 
-	private List<BuildKiteBuildInfo> getBuildKiteBuildInfo(String startTime, String endTime,
-			DeploymentEnvironment deploymentEnvironment, String token, List<String> pipelineCrews) {
-		Stream<BuildKiteBuildInfo> buildKiteBuildInfo = buildKiteService
-			.fetchPipelineBuilds(token, deploymentEnvironment, startTime, endTime)
-			.stream()
-			.filter(info -> Objects.nonNull(info.getAuthor()));
-
-		if (!CollectionUtils.isEmpty(pipelineCrews)) {
-			buildKiteBuildInfo = buildKiteBuildInfo.filter(info -> pipelineCrews.contains(info.getAuthor().getName()));
-		}
-		return buildKiteBuildInfo.toList();
-	}
-
 	public List<PipelineCSVInfo> generateCSVForPipelineWithCodebase(CodebaseSetting codebaseSetting, String startTime,
 			String endTime, FetchedData.BuildKiteData buildKiteData,
 			List<DeploymentEnvironment> deploymentEnvironments) {
 		List<PipelineCSVInfo> pipelineCSVInfos = new ArrayList<>();
-
-		Map<String, String> repoIdMap = getRepoMap(deploymentEnvironments);
-		for (DeploymentEnvironment deploymentEnvironment : deploymentEnvironments) {
-			String repoId = GithubUtil.getGithubUrlFullName(repoIdMap.get(deploymentEnvironment.getId()));
+		deploymentEnvironments.parallelStream().forEach(deploymentEnvironment -> {
 			List<BuildKiteBuildInfo> buildInfos = getBuildInfos(buildKiteData.getBuildInfosList(),
-					deploymentEnvironment);
-			List<String> pipelineSteps = buildKiteService.getPipelineStepNames(buildInfos);
-
-			List<PipelineCSVInfo> pipelineCSVInfoList = buildInfos.stream()
-				.filter(buildInfo -> isBuildInfoValid(buildInfo, deploymentEnvironment, pipelineSteps, startTime,
-						endTime))
-				.map(buildInfo -> {
-					DeployInfo deployInfo = buildInfo.mapToDeployInfo(
-							buildKiteService.getStepsBeforeEndStep(deploymentEnvironment.getStep(), pipelineSteps),
-							REQUIRED_STATES, startTime, endTime);
-					LeadTime filteredLeadTime = filterLeadTime(buildKiteData, deploymentEnvironment, deployInfo);
-					CommitInfo commitInfo = null;
-					if (Objects.nonNull(codebaseSetting) && StringUtils.hasLength(codebaseSetting.getToken())
-							&& Objects.nonNull(deployInfo.getCommitId())) {
-						commitInfo = gitHubService.fetchCommitInfo(deployInfo.getCommitId(), repoId,
-								codebaseSetting.getToken());
-					}
-					return PipelineCSVInfo.builder()
-						.pipeLineName(deploymentEnvironment.getName())
-						.stepName(deployInfo.getJobName())
-						.buildInfo(buildInfo)
-						.deployInfo(deployInfo)
-						.commitInfo(commitInfo)
-						.leadTimeInfo(new LeadTimeInfo(filteredLeadTime))
-						.build();
-				})
-				.toList();
-			pipelineCSVInfos.addAll(pipelineCSVInfoList);
-		}
+					deploymentEnvironment.getId());
+			if (!buildInfos.isEmpty()) {
+				List<String> pipelineSteps = buildKiteService.getPipelineStepNames(buildInfos);
+				if (!pipelineSteps.isEmpty()) {
+					List<PipelineCSVInfo> pipelineCSVInfoList = buildInfos.stream()
+						.filter(buildInfo -> isBuildInfoValid(buildInfo, deploymentEnvironment, pipelineSteps,
+								startTime, endTime))
+						.map(buildInfo -> getPipelineCSVInfo(codebaseSetting, startTime, endTime, buildKiteData,
+								deploymentEnvironment, buildInfo, pipelineSteps))
+						.toList();
+					pipelineCSVInfos.addAll(pipelineCSVInfoList);
+				}
+			}
+		});
 		return pipelineCSVInfos;
+	}
+
+	private PipelineCSVInfo getPipelineCSVInfo(CodebaseSetting codebaseSetting, String startTime, String endTime,
+			FetchedData.BuildKiteData buildKiteData, DeploymentEnvironment deploymentEnvironment,
+			BuildKiteBuildInfo buildInfo, List<String> pipelineSteps) {
+		DeployInfo deployInfo = buildInfo.mapToDeployInfo(
+				buildKiteService.getStepsBeforeEndStep(deploymentEnvironment.getStep(), pipelineSteps), REQUIRED_STATES,
+				startTime, endTime);
+		CommitInfo commitInfo = null;
+		if (Objects.nonNull(codebaseSetting) && StringUtils.hasLength(codebaseSetting.getToken())
+				&& Objects.nonNull(deployInfo.getCommitId())) {
+			commitInfo = gitHubService.fetchCommitInfo(deployInfo.getCommitId(),
+					GithubUtil.getGithubUrlFullName(deploymentEnvironment.getRepository()), codebaseSetting.getToken());
+		}
+		return PipelineCSVInfo.builder()
+			.pipeLineName(deploymentEnvironment.getName())
+			.stepName(deployInfo.getJobName())
+			.buildInfo(buildInfo)
+			.deployInfo(deployInfo)
+			.commitInfo(commitInfo)
+			.leadTimeInfo(new LeadTimeInfo(filterLeadTime(buildKiteData, deploymentEnvironment, deployInfo)))
+			.build();
 	}
 
 	private boolean isBuildInfoValid(BuildKiteBuildInfo buildInfo, DeploymentEnvironment deploymentEnvironment,
@@ -140,9 +121,9 @@ public class PipelineService {
 	}
 
 	private List<BuildKiteBuildInfo> getBuildInfos(List<Map.Entry<String, List<BuildKiteBuildInfo>>> buildInfosList,
-			DeploymentEnvironment deploymentEnvironment) {
+			String deploymentEnvironmentId) {
 		return buildInfosList.stream()
-			.filter(entry -> entry.getKey().equals(deploymentEnvironment.getId()))
+			.filter(entry -> entry.getKey().equals(deploymentEnvironmentId))
 			.findFirst()
 			.map(Map.Entry::getValue)
 			.orElse(new ArrayList<>());
@@ -161,6 +142,24 @@ public class PipelineService {
 			.filter(leadTime -> leadTime.getCommitId().equals(deployInfo.getCommitId()))
 			.findFirst()
 			.orElse(null);
+	}
+
+	private Map<String, String> getRepoMap(List<DeploymentEnvironment> deploymentEnvironments) {
+		return deploymentEnvironments.stream()
+			.collect(Collectors.toMap(DeploymentEnvironment::getId, DeploymentEnvironment::getRepository));
+	}
+
+	private List<BuildKiteBuildInfo> getBuildKiteBuildInfo(String startTime, String endTime,
+			DeploymentEnvironment deploymentEnvironment, String token, List<String> pipelineCrews) {
+		Stream<BuildKiteBuildInfo> buildKiteBuildInfo = buildKiteService
+			.fetchPipelineBuilds(token, deploymentEnvironment, startTime, endTime)
+			.stream()
+			.filter(info -> Objects.nonNull(info.getAuthor()));
+
+		if (!CollectionUtils.isEmpty(pipelineCrews)) {
+			buildKiteBuildInfo = buildKiteBuildInfo.filter(info -> pipelineCrews.contains(info.getAuthor().getName()));
+		}
+		return buildKiteBuildInfo.toList();
 	}
 
 }
