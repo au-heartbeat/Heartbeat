@@ -5,16 +5,10 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import {
   selectDateRange,
   selectIsBoardVerified,
-  selectIsProjectCreated,
   updateBoard,
   updateBoardVerifyState,
-  updateJiraVerifyResponse,
-  updateProjectKey,
 } from '@src/context/config/configSlice';
-import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
-import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
-import { NoCardPop } from '@src/containers/ConfigStep/NoDoneCardPop';
 import { Loading } from '@src/components/Loading';
 import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
 import {
@@ -27,7 +21,6 @@ import {
 import dayjs from 'dayjs';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
-import merge from 'lodash/merge';
 
 type Field = {
   key: string;
@@ -42,8 +35,6 @@ export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);
   const DateRange = useAppSelector(selectDateRange);
-  const isProjectCreated = useAppSelector(selectIsProjectCreated);
-  const [isShowNoDoneCard, setIsNoDoneCard] = useState(false);
   const {
     verifyJira,
     isLoading: verifyLoading,
@@ -51,7 +42,6 @@ export const Board = () => {
     updateField,
     resetFormFields,
   } = useVerifyBoardEffect();
-  const { getBoardInfo, isLoading: isGetInfoLoading } = useGetBoardInfoEffect();
   const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(
     !fields.every((field) => field.value && field.isValid)
   );
@@ -87,8 +77,8 @@ export const Board = () => {
   };
 
   const handleSubmitBoardFields = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     dispatch(updateTreatFlagCardAsBlock(true));
-    updateBoardFields(e);
     const msg = `${fields[2].value}:${fields[4].value}`;
     const encodeToken = `Basic ${btoa(msg)}`;
     const params = {
@@ -99,26 +89,12 @@ export const Board = () => {
       startTime: dayjs(DateRange.startDate).valueOf(),
       endTime: dayjs(DateRange.endDate).valueOf(),
     };
-    /* istanbul ignore next */
-    await verifyJira(params)
-      .then((res) => {
-        if (res) {
-          dispatch(updateBoardVerifyState(true));
-          dispatch(updateProjectKey(res.response.projectKey));
-          getBoardInfo({
-            ...params,
-            projectKey: res.response.projectKey,
-          }).then((res) => {
-            if (res.data) {
-              dispatch(updateJiraVerifyResponse(res.data));
-              dispatch(updateMetricsState(merge(res.data, isProjectCreated)));
-            } else {
-              setIsNoDoneCard(true);
-            }
-          });
-        }
-      })
-      .catch((err) => err);
+    await verifyJira(params).then((res) => {
+      if (res) {
+        dispatch(updateBoardVerifyState(true));
+        dispatch(updateBoard({ ...params, projectKey: res.response.projectKey }));
+      }
+    });
   };
 
   const handleResetBoardFields = () => {
@@ -129,8 +105,7 @@ export const Board = () => {
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>
-      <NoCardPop isOpen={isShowNoDoneCard} onClose={() => setIsNoDoneCard(false)} />
-      {(verifyLoading || isGetInfoLoading) && <Loading />}
+      {verifyLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledForm
         onSubmit={(e) => handleSubmitBoardFields(e)}
@@ -177,15 +152,15 @@ export const Board = () => {
           )
         )}
         <StyledButtonGroup>
-          {isVerified && !verifyLoading && !isGetInfoLoading ? (
+          {isVerified && !verifyLoading ? (
             <VerifyButton disabled>Verified</VerifyButton>
           ) : (
-            <VerifyButton type='submit' disabled={isDisableVerifyButton || verifyLoading || isGetInfoLoading}>
+            <VerifyButton type='submit' disabled={isDisableVerifyButton || verifyLoading}>
               Verify
             </VerifyButton>
           )}
 
-          {isVerified && !verifyLoading && !isGetInfoLoading && <ResetButton type='reset'>Reset</ResetButton>}
+          {isVerified && !verifyLoading && <ResetButton type='reset'>Reset</ResetButton>}
         </StyledButtonGroup>
       </StyledForm>
     </ConfigSectionContainer>

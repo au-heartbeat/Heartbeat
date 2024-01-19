@@ -1,23 +1,36 @@
 import {
+  selectDateRange,
+  selectJiraColumns,
+  selectIsProjectCreated,
+  selectMetrics,
+  selectUsers,
+  updateJiraVerifyResponse,
+  selectBoard,
+} from '@src/context/config/configSlice';
+import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
-import { selectDateRange, selectJiraColumns, selectMetrics, selectUsers } from '@src/context/config/configSlice';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
+import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { useAppSelector, useAppDispatch } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
-import { useAppSelector } from '@src/hooks';
+import { Loading } from '@src/components/Loading';
 import { useLayoutEffect } from 'react';
+import merge from 'lodash/merge';
 
 const MetricsStep = () => {
+  const boardConfig = useAppSelector(selectBoard);
+  const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const dispatch = useAppDispatch();
   const requiredData = useAppSelector(selectMetrics);
   const users = useAppSelector(selectUsers);
@@ -32,9 +45,20 @@ const MetricsStep = () => {
   const isShowRealDone =
     cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
+  const { getBoardInfo, isLoading } = useGetBoardInfoEffect();
+
+  const getInfo = () => {
+    getBoardInfo(boardConfig).then((res) => {
+      if (res.data) {
+        dispatch(updateJiraVerifyResponse(res.data));
+        dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
+      }
+    });
+  };
 
   useLayoutEffect(() => {
     dispatch(closeAllNotifications());
+    getInfo();
   }, []);
 
   return (
@@ -45,7 +69,8 @@ const MetricsStep = () => {
         </MetricSelectionHeader>
       )}
       <MetricSelectionWrapper>
-        <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
+        {isLoading && <Loading />}
+        <MetricsSelectionTitle>11 Board configuration</MetricsSelectionTitle>
 
         {isShowCrewsAndRealDone && <Crews options={users} title={'Crew settings'} label={'Included Crews'} />}
 

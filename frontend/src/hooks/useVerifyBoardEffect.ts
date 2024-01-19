@@ -28,7 +28,6 @@ export interface useVerifyBoardStateInterface {
     | undefined
   >;
   isLoading: boolean;
-  isBoardVerified: boolean;
   formFields: FormField[];
   updateField: (name: string, value: string) => void;
   resetFormFields: () => void;
@@ -36,7 +35,6 @@ export interface useVerifyBoardStateInterface {
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isBoardVerified, setIsBoardVerified] = useState(false);
   const boardFields = useAppSelector(selectBoard);
   const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
   const [formFields, setFormFields] = useState<FormField[]>([
@@ -176,7 +174,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   return {
     verifyJira,
     isLoading,
-    isBoardVerified,
     formFields,
     updateField,
     resetFormFields,

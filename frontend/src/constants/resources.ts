@@ -251,6 +251,18 @@ export enum HEARTBEAT_EXCEPTION_CODE {
   TIMEOUT = 'HB_TIMEOUT',
 }
 
+export const BOARD_CONFIG_INFO_TITLE = {
+  FORBIDDEN_REQUEST: 'Forbidden request!',
+  INVALID_INPUT: 'Invalid input!',
+  UNAUTHORIZED_REQUEST: 'Unauthorized request!',
+  NOT_FOUND: 'Not found!',
+};
+
+export const BOARD_CONFIG_INFO_ERROR = {
+  FORBIDDEN: 'Please go back to the previous page and change your board token with correct access permission.',
+  NOT_FOUND: 'Please go back to the previous page and check your board info!',
+};
+
 export const PIPELINE_TOOL_VERIFY_ERROR_CASE_TEXT_MAPPING: { [key: string]: string } = {
   '401': 'Token is incorrect!',
   '403': 'Forbidden request, please change your token with correct access permission.',
