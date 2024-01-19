@@ -647,7 +647,7 @@ public class JiraService {
 			.findFirst();
 
 		if (realDoneHistory.isPresent()) {
-			if (allDoneCard.getFields().getStatus() != null) {
+			if (Objects.nonNull(allDoneCard.getFields().getStatus())) {
 				allDoneCard.getFields().getStatus().setName(realDoneHistory.get().getTo().getDisplayValue());
 			}
 			return true;
