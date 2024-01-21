@@ -181,14 +181,14 @@ public class GenerateReporterService {
 	}
 
 	private synchronized ReportResponse generateBoardReporter(GenerateReportRequest request) {
-		workDay.changeConsiderHolidayMode(request.getConsiderHoliday()); // calculator
+		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
 		FetchedData fetchedData = fetchOriginalData(request);
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 
 		final CardCollection realDoneCardCollection = fetchedData.getCardCollectionInfo().getRealDoneCardCollection();
-		request.getBoardMetrics().stream().map(metric -> {
+		request.getBoardMetrics().forEach(metric -> {
 			switch (metric) {
 				case "velocity" ->
 					reportResponse.setVelocity(velocityCalculator.calculateVelocity(realDoneCardCollection));
@@ -197,13 +197,12 @@ public class GenerateReporterService {
 				case "classification" -> reportResponse.setClassificationList(
 						classificationCalculator.calculate(jiraBoardSetting.getTargetFields(), realDoneCardCollection));
 			}
-			return null;
 		});
 
 		return reportResponse;
 	}
 
-	public synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request) {
+	private synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
 
 		FetchedData fetchedData = fetchOriginalData(request);
@@ -274,11 +273,6 @@ public class GenerateReporterService {
 
 	private void saveReporterInHandler(ReportResponse reportContent, String reportId) {
 		asyncReportRequestHandler.putReport(reportId, reportContent);
-	}
-
-	private void saveBoardReportInHandler(ReportResponse reportContent, String reportId) {
-		ReportResponse reportResponse = asyncReportRequestHandler.getReport(reportId);
-
 	}
 
 	public void initializeMetricsDataCompletedInHandler(GenerateReportRequest request) {
