@@ -60,7 +60,7 @@ public class ReportServiceTest {
 	}
 
 	@Test
-	void exportCsvShouldThrowNotFoundExceptionWhenTimestampIsValid() throws IOException {
+	void exportCsvShouldThrowNotFoundExceptionWhenTimestampIsValid() {
 		long invalidTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L;
 
 		assertThrows(NotFoundException.class, () -> reportService.exportCsv(ReportDataType.METRIC, invalidTimestamp));
@@ -68,19 +68,21 @@ public class ReportServiceTest {
 	}
 
 	@Test
-	void generateBoardReportByTypeShouldCallGenerateBoardReport() {
+	void generateBoardReportByTypeShouldCallGenerateBoardReport() throws InterruptedException {
 		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 		reportService.generateReportByType(request, ReportType.BOARD);
+		Thread.sleep(100);
 		verify(generateReporterService).generateBoardReport(request);
 		verify(generateReporterService, never()).generateDoraReport(request);
 	}
 
 	@Test
-	void generateDoraReportByTypeShouldCallGenerateDoraReport() {
+	void generateDoraReportByTypeShouldCallGenerateDoraReport() throws InterruptedException {
 		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
 		doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 		reportService.generateReportByType(request, ReportType.DORA);
+		Thread.sleep(100);
 		verify(generateReporterService).generateDoraReport(request);
 		verify(generateReporterService, never()).generateBoardReport(request);
 	}
