@@ -99,13 +99,14 @@ public class GenerateReporterService {
 	public void generateDoraReport(GenerateReportRequest request) {
 		removePreviousAsyncException(request.getPipelineReportId());
 		removePreviousAsyncException(request.getSourceControlReportId());
+		FetchedData fetchedData = fetchOriginalData(request, new FetchedData());
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
-			generatePipelineReport(request);
+			generatePipelineReport(request, fetchedData);
 		}
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
-			generateSourceControlReport(request);
+			generateSourceControlReport(request, fetchedData);
 		}
-		generateCsvForDora(request);
+		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
 	}
 
 	private void handleException(GenerateReportRequest request, String reportId, BaseException e) {
@@ -114,14 +115,14 @@ public class GenerateReporterService {
 			updateMetricsDataCompletedInHandler(request);
 	}
 
-	private void generatePipelineReport(GenerateReportRequest request) {
+	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
 		String pipelineReportId = request.getPipelineReportId();
 		log.info(
 				"Start to generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
 				request.getPipelineMetrics(), request.getConsiderHoliday(), request.getStartTime(),
 				request.getEndTime(), pipelineReportId);
 		try {
-			saveReporterInHandler(generatePipelineReporter(request), pipelineReportId);
+			saveReporterInHandler(generatePipelineReporter(request, fetchedData), pipelineReportId);
 			updateMetricsDataCompletedInHandler(request);
 			log.info(
 					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
@@ -133,14 +134,14 @@ public class GenerateReporterService {
 		}
 	}
 
-	private void generateSourceControlReport(GenerateReportRequest request) {
+	private void generateSourceControlReport(GenerateReportRequest request, FetchedData fetchedData) {
 		String sourceControlReportId = request.getSourceControlReportId();
 		log.info(
 				"Start to generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
 				request.getSourceControlMetrics(), request.getConsiderHoliday(), request.getStartTime(),
 				request.getEndTime(), sourceControlReportId);
 		try {
-			saveReporterInHandler(generateSourceControlReporter(request), sourceControlReportId);
+			saveReporterInHandler(generateSourceControlReporter(request, fetchedData), sourceControlReportId);
 			updateMetricsDataCompletedInHandler(request);
 			log.info(
 					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
@@ -156,9 +157,9 @@ public class GenerateReporterService {
 		asyncExceptionHandler.remove(reportId);
 	}
 
-	private synchronized ReportResponse generatePipelineReporter(GenerateReportRequest request) {
+	private synchronized ReportResponse generatePipelineReporter(GenerateReportRequest request,
+			FetchedData fetchedData) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
-		FetchedData fetchedData = fetchOriginalData(request);
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
@@ -182,7 +183,7 @@ public class GenerateReporterService {
 
 	private synchronized ReportResponse generateBoardReporter(GenerateReportRequest request) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
-		FetchedData fetchedData = fetchOriginalData(request);
+		FetchedData fetchedData = fetchOriginalData(request, new FetchedData());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
@@ -202,10 +203,9 @@ public class GenerateReporterService {
 		return reportResponse;
 	}
 
-	private synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request) {
+	private synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request,
+			FetchedData fetchedData) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
-
-		FetchedData fetchedData = fetchOriginalData(request);
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
@@ -222,8 +222,7 @@ public class GenerateReporterService {
 		return reportResponse;
 	}
 
-	private FetchedData fetchOriginalData(GenerateReportRequest request) {
-		FetchedData fetchedData = new FetchedData();
+	private FetchedData fetchOriginalData(GenerateReportRequest request, FetchedData fetchedData) {
 		if (CollectionUtils.isNotEmpty(request.getBoardMetrics())) {
 			if (request.getJiraBoardSetting() == null)
 				throw new BadRequestException("Failed to fetch Jira info due to Jira board setting is null.");
@@ -250,13 +249,6 @@ public class GenerateReporterService {
 		}
 
 		return fetchedData;
-	}
-
-	private void generateCsvForDora(GenerateReportRequest request) {
-		FetchedData fetchedData = fetchOriginalData(request);
-
-		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
-
 	}
 
 	private void generateCSVForPipeline(GenerateReportRequest request, BuildKiteData buildKiteData) {
