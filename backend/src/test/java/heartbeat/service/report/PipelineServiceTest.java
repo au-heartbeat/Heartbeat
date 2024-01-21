@@ -242,25 +242,27 @@ public class PipelineServiceTest {
 		void shouldReturnEmptyWhenNoBuildInfoFoundForDeploymentEnvironment() {
 			String startTime = "startTime", endTime = "endTime";
 			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
-				CodebaseSetting.builder().build(), startTime, endTime, FetchedData.BuildKiteData.builder().build(),
-				List.of(DeploymentEnvironment.builder().id("env1").build()));
+					CodebaseSetting.builder().build(), startTime, endTime, FetchedData.BuildKiteData.builder().build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
 
 			assertEquals(0, result.size());
 		}
 
-//		@Test
-//		void shouldOnlyReturnMatchedInfoWhenBuildInfoForDeploymentEnvironmentIsNotEmpty() {
-//			String startTime = "startTime", endTime = "endTime";
-//			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
-//				CodebaseSetting.builder().build(), startTime, endTime,
-//				FetchedData.BuildKiteData.builder().buildInfosList(
-//					List.of(Map.entry("env1", List.of(BuildKiteBuildInfo.builder().build())))
-//				).build(),
-//				List.of(DeploymentEnvironment.builder().id("env1").build(),
-//					DeploymentEnvironment.builder().id("env2").build()));
-//
-//			assertEquals(0, result.size());
-//		}
+		// @Test
+		// void
+		// shouldOnlyReturnMatchedInfoWhenBuildInfoForDeploymentEnvironmentIsNotEmpty() {
+		// String startTime = "startTime", endTime = "endTime";
+		// List<PipelineCSVInfo> result =
+		// pipelineService.generateCSVForPipelineWithCodebase(
+		// CodebaseSetting.builder().build(), startTime, endTime,
+		// FetchedData.BuildKiteData.builder().buildInfosList(
+		// List.of(Map.entry("env1", List.of(BuildKiteBuildInfo.builder().build())))
+		// ).build(),
+		// List.of(DeploymentEnvironment.builder().id("env1").build(),
+		// DeploymentEnvironment.builder().id("env2").build()));
+		//
+		// assertEquals(0, result.size());
+		// }
 
 	}
 

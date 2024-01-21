@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import static heartbeat.util.ValueUtil.getValueOrNull;
 import static heartbeat.util.ValueUtil.valueOrDefault;
 
 @Service
@@ -275,6 +276,11 @@ public class GenerateReporterService {
 		asyncReportRequestHandler.putReport(reportId, reportContent);
 	}
 
+	private void saveBoardReportInHandler(ReportResponse reportContent, String reportId) {
+		ReportResponse reportResponse = asyncReportRequestHandler.getReport(reportId);
+
+	}
+
 	public void initializeMetricsDataCompletedInHandler(GenerateReportRequest request) {
 		MetricsDataCompleted metricsStatus = getMetricsStatus(request, Boolean.FALSE);
 		String timeStamp = request.getCsvTimeStamp();
@@ -398,15 +404,29 @@ public class GenerateReporterService {
 	}
 
 	public ReportResponse getComposedReportResponse(String reportId, boolean isReportReady) {
-		ReportResponse response;
+		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
+		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
+		ReportResponse sourceControlReportResponse = getReportFromHandler(IdUtil.getSourceControlReportId(reportId));
+		MetricsDataCompleted metricsDataCompleted = asyncReportRequestHandler.getMetricsDataCompleted(reportId);
+		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(reportId);
 
-		return new ReportResponse(getReportFromHandler(IdUtil.getBoardReportId(reportId)),
-				getReportFromHandler(IdUtil.getPipelineReportId(reportId)),
-				getReportFromHandler(IdUtil.getSourceControlReportId(reportId)),
-				asyncReportRequestHandler.getMetricsDataCompleted(reportId),
-				valueOrDefault(getReportFromHandler(IdUtil.getPipelineReportId(reportId)),
-						getReportFromHandler(IdUtil.getBoardReportId(reportId))),
-				getReportErrorAndHandleAsyncException(reportId), isReportReady);
+		return ReportResponse.builder()
+			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
+			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
+			.cycleTime(getValueOrNull(boardReportResponse, ReportResponse::getCycleTime))
+			.exportValidityTime(EXPORT_CSV_VALIDITY_TIME)
+			.deploymentFrequency(getValueOrNull(pipleineReportResponse, ReportResponse::getDeploymentFrequency))
+			.changeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getChangeFailureRate))
+			.meanTimeToRecovery(getValueOrNull(pipleineReportResponse, ReportResponse::getMeanTimeToRecovery))
+			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
+			.boardMetricsCompleted(getValueOrNull(metricsDataCompleted, MetricsDataCompleted::boardMetricsCompleted))
+			.pipelineMetricsCompleted(
+					getValueOrNull(metricsDataCompleted, MetricsDataCompleted::pipelineMetricsCompleted))
+			.sourceControlMetricsCompleted(
+					getValueOrNull(metricsDataCompleted, MetricsDataCompleted::sourceControlMetricsCompleted))
+			.allMetricsCompleted(isReportReady)
+			.reportMetricsError(reportMetricsError)
+			.build();
 	}
 
 	public ReportMetricsError getReportErrorAndHandleAsyncException(String reportId) {
