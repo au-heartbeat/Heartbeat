@@ -1,5 +1,6 @@
 package heartbeat.util;
 
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +59,14 @@ class TimeUtilTest {
 
 		double result2 = TimeUtil.convertMillisecondToMinutes(600000d);
 		Assertions.assertEquals(10d, result2);
+	}
+
+	@Test
+	void shouldConvertTimeStampsToHoursMinutesSeconds() {
+		String timeStamp = "1258436697";
+        String result = TimeUtil.msToHMS(Long.parseLong(timeStamp));
+
+		Assertions.assertEquals("349:33:56", result);
 	}
 
 }
