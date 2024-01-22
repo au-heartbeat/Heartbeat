@@ -2,7 +2,7 @@ package heartbeat.util;
 
 import java.util.function.Function;
 
-public class ValueUtil {
+public interface ValueUtil {
 
 	public static <T, R> R getValueOrNull(T object, Function<T, R> getter) {
 		return object != null ? getter.apply(object) : null;
