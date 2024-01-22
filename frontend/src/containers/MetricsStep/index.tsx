@@ -7,15 +7,14 @@ import {
   updateBoardVerifyState,
   selectBoard,
 } from '@src/context/config/configSlice';
-import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
+import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
+import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
+import { selectCycleTimeSettings, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { selectMetricsContent, updateMetricsState } from '@src/context/Metrics/metricsSlice';
 import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
@@ -25,10 +24,11 @@ import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import EmptyContent from '@src/components/Common/EmptyContent';
 import { useAppSelector, useAppDispatch } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
-import { useLayoutEffect } from 'react';
-import merge from 'lodash/merge';
-import isEmpty from 'lodash/isEmpty';
 import { Loading } from '@src/components/Loading';
+import { useLayoutEffect } from 'react';
+import isEmpty from 'lodash/isEmpty';
+import merge from 'lodash/merge';
+import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { Classification } from './Classification';
 
 const MetricsStep = () => {
