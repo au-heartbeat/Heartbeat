@@ -4,7 +4,6 @@ import {
   selectIsProjectCreated,
   selectMetrics,
   selectUsers,
-  updateJiraVerifyResponse,
   updateBoardVerifyState,
   selectBoard,
 } from '@src/context/config/configSlice';
@@ -63,6 +62,9 @@ const MetricsStep = () => {
 
   useLayoutEffect(() => {
     dispatch(closeAllNotifications());
+  }, []);
+
+  useLayoutEffect(() => {
     getInfo();
   }, []);
 
