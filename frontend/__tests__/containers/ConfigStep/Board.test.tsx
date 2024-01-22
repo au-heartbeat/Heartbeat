@@ -147,6 +147,7 @@ describe('Board', () => {
     expect(boardIdInput.value).toEqual('');
   });
 
+<<<<<<< HEAD
   it('should clear all fields information when click reset button and reselect board type', async () => {
     const { getByRole, queryByRole } = setup();
     mockVerifySuccess();
@@ -155,15 +156,44 @@ describe('Board', () => {
     await waitFor(() => {
       expect(screen.getByText(/verify/i)).not.toBeDisabled();
     });
+=======
+  it('should clear all fields information when click reset button', async () => {
+    const { getByRole, getByText, queryByRole } = setup();
+    const fieldInputs = BOARD_FIELDS.slice(1, 4).map(
+      (label) =>
+        screen.getByRole('textbox', {
+          name: label,
+          hidden: true,
+        }) as HTMLInputElement,
+    );
+    fillBoardFieldsInformation();
+
+    fireEvent.click(screen.getByText(VERIFY));
+>>>>>>> a5957470 ([kai.zhou][adm-718]: test: fix some unit test)
 
     await userEvent.click(screen.getByText(/verify/i));
 
     await waitFor(() => {
       expect(getByRole('button', { name: /reset/i })).toBeInTheDocument();
     });
+<<<<<<< HEAD
     expect(queryByRole('button', { name: /verified/i })).toBeDisabled();
 
     await userEvent.click(getByRole('button', { name: /reset/i }));
+=======
+    expect(
+      getByRole('button', {
+        name: /board/i,
+      }),
+    ).toBeInTheDocument();
+    expect(queryByRole('button', { name: RESET })).not.toBeTruthy();
+    expect(queryByRole('button', { name: VERIFY })).toBeDisabled();
+  });
+
+  it('should enabled verify button when all fields checked correctly given disable verify button', () => {
+    setup();
+    const verifyButton = screen.getByRole('button', { name: /verify/i });
+>>>>>>> a5957470 ([kai.zhou][adm-718]: test: fix some unit test)
 
     await waitFor(() => {
       expect(screen.getByLabelText(/board id/i)).not.toHaveValue();
@@ -203,7 +233,11 @@ describe('Board', () => {
   it('should called verifyBoard method once when click verify button', async () => {
     mockVerifySuccess();
     setup();
+<<<<<<< HEAD
     await fillBoardFieldsInformation();
+=======
+    fillBoardFieldsInformation();
+>>>>>>> a5957470 ([kai.zhou][adm-718]: test: fix some unit test)
     fireEvent.click(screen.getByRole('button', { name: /verify/i }));
 
     await waitFor(() => {
@@ -222,14 +256,28 @@ describe('Board', () => {
   });
 
   it('should check error notification show and disappear when board verify response status is 401', async () => {
+<<<<<<< HEAD
     server.use(rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => res(ctx.status(HttpStatusCode.Unauthorized))));
+=======
+    server.use(
+      rest.post(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) =>
+        res(ctx.status(HttpStatusCode.Unauthorized), ctx.json({ hintInfo: VERIFY_ERROR_MESSAGE.UNAUTHORIZED })),
+      ),
+    );
+>>>>>>> a5957470 ([kai.zhou][adm-718]: test: fix some unit test)
     setup();
     await fillBoardFieldsInformation();
 
     fireEvent.click(screen.getByRole('button', { name: /verify/i }));
 
     await waitFor(() => {
+<<<<<<< HEAD
       expect(screen.getByText(/email is incorrect/i)).toBeInTheDocument();
+=======
+      expect(
+        screen.getByText(`${BOARD_TYPES.JIRA} ${VERIFY_FAILED}: ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`),
+      ).toBeInTheDocument();
+>>>>>>> a5957470 ([kai.zhou][adm-718]: test: fix some unit test)
     });
   });
 });
