@@ -5,6 +5,7 @@ import {
   selectMetrics,
   selectUsers,
   selectBoard,
+  updateBoardVerifyState,
 } from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
@@ -50,6 +51,7 @@ const MetricsStep = () => {
 
   const getInfo = () => {
     getBoardInfo(boardConfig).then((res) => {
+      dispatch(updateBoardVerifyState(true));
       if (res.data) {
         dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
       }
