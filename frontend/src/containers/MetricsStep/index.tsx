@@ -1,9 +1,3 @@
-import { useAppSelector, useAppDispatch } from '@src/hooks';
-import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
-import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
-import { selectCycleTimeSettings, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import {
   selectDateRange,
   selectJiraColumns,
@@ -19,17 +13,23 @@ import {
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
+import { selectCycleTimeSettings, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { selectMetricsContent, updateMetricsState } from '@src/context/Metrics/metricsSlice';
 import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
+import { Classification } from '@src/containers/MetricsStep/Classification';
+import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
+import DateRangeViewer from '@src/components/Common/DateRangeViewer';
+import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
-import { Crews } from '@src/containers/MetricsStep/Crews';
-import { useLayoutEffect } from 'react';
-import merge from 'lodash/merge';
-import isEmpty from 'lodash/isEmpty';
-import { Classification } from './Classification';
-import { Loading } from '@src/components/Loading';
 import EmptyContent from '@src/components/Common/EmptyContent';
+import { useAppSelector, useAppDispatch } from '@src/hooks';
+import { Crews } from '@src/containers/MetricsStep/Crews';
+import { Loading } from '@src/components/Loading';
+import { useLayoutEffect } from 'react';
+import isEmpty from 'lodash/isEmpty';
+import merge from 'lodash/merge';
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
