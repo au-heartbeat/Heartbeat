@@ -629,7 +629,6 @@ public class GenerateReporterService {
 		List<BuildKiteBuildInfo> buildKiteBuildInfo = buildKiteService
 			.fetchPipelineBuilds(token, deploymentEnvironment, startTime, endTime)
 			.stream()
-			.filter(info -> Objects.nonNull(info.getAuthor()))
 			.toList();
 
 		if (!CollectionUtils.isEmpty(pipelineCrews)) {
