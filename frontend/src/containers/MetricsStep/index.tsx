@@ -63,10 +63,6 @@ const MetricsStep = () => {
     getInfo();
   }, []);
 
-  useLayoutEffect(() => {
-    getInfo();
-  }, []);
-
   return (
     <>
       {startDate && endDate && (
