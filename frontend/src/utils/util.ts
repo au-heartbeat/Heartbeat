@@ -1,6 +1,7 @@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting } from '@src/context/Metrics/metricsSlice';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
+import { METRICS_CONSTANTS } from '@src/constants/resources';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 dayjs.extend(duration);
@@ -44,7 +45,7 @@ export const getJiraBoardToken = (token: string, email: string) => {
 
 export const filterAndMapCycleTimeSettings = (cycleTimeSettings: ICycleTimeSetting[]) =>
   cycleTimeSettings
-    .filter((item) => item.value !== '----')
+    .filter((item) => item.value !== METRICS_CONSTANTS.cycleTimeEmptyStr)
     .map(({ status, value }) => ({
       name: status,
       value,

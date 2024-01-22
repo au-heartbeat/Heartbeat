@@ -107,6 +107,7 @@ describe('filterAndMapCycleTimeSettings function', () => {
       { column: 'DONE', status: 'Done', value: 'DONE' },
     ];
     const value = filterAndMapCycleTimeSettings(MOCK_CYCLE_TIME_SETTING);
+
     expect(value).toStrictEqual([
       { name: 'ToDo', value: 'TODO' },
       { name: 'Backlog', value: 'TODO' },

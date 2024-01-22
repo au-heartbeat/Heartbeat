@@ -30,6 +30,11 @@ export const HomeGuide = () => {
     }
   };
 
+  const getCycleTimeSettingsType = (typeInConfig?: string) =>
+    (Object.values(CYCLE_TIME_SETTINGS_TYPES) as string[]).includes(typeInConfig || '')
+      ? typeInConfig
+      : CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.files?.[0];
     const reader = new FileReader();
@@ -38,17 +43,11 @@ export const HomeGuide = () => {
         if (reader.result && typeof reader.result === 'string') {
           const importedConfig: OldFileConfig | NewFileConfig = JSON.parse(reader.result);
           const config: NewFileConfig = convertToNewFileConfig(importedConfig);
-          const importedCycleTimeType = (config.cycleTime as { type?: string })?.type;
-          const cycleTimeSettingsType = (Object.values(CYCLE_TIME_SETTINGS_TYPES) as string[]).includes(
-            importedCycleTimeType || '',
-          )
-            ? importedCycleTimeType
-            : CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN;
           if (isValidImportedConfig(config)) {
             dispatch(updateProjectCreatedState(false));
             dispatch(updateBasicConfigState(config));
             dispatch(updateMetricsImportedData(config));
-            dispatch(setCycleTimeSettingsType(cycleTimeSettingsType));
+            dispatch(setCycleTimeSettingsType(getCycleTimeSettingsType(config.cycleTime?.type)));
             navigate(ROUTE.METRICS_PAGE);
           } else {
             setValidConfig(false);
@@ -65,6 +64,7 @@ export const HomeGuide = () => {
     dispatch(resetImportedData());
     dispatch(resetStep());
     dispatch(resetFormMeta());
+    dispatch(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN));
   };
 
   const openFileImportBox = () => {

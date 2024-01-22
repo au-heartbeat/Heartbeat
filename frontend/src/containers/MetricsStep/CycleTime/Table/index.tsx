@@ -105,7 +105,7 @@ const CycleTimeTable = () => {
         />
       </StyledRadioGroup>
       <TableContainer sx={{ mb: '2rem' }}>
-        <Table aria-label='sticky table'>
+        <Table aria-label='cycle time settings table'>
           <TableHead>
             <TableRow>
               {header.map(({ emphasis, text }, index) => (
@@ -123,16 +123,16 @@ const CycleTimeTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row, index) => (
+            {data.map(([boardKey, boardSupplement, state], index) => (
               <TableRow hover key={index}>
-                <StyledTableRowCell>{row[0]}</StyledTableRowCell>
+                <StyledTableRowCell>{boardKey}</StyledTableRowCell>
                 <StyledTableRowCell>
-                  <Tooltip title={row[1]} arrow>
-                    <EllipsisText fitContent>{row[1]}</EllipsisText>
+                  <Tooltip title={boardSupplement} arrow>
+                    <EllipsisText fitContent>{boardSupplement}</EllipsisText>
                   </Tooltip>
                 </StyledTableRowCell>
                 <StyledTableRowCell>
-                  <CellAutoComplete name={row[0]} defaultSelected={row[2]} onSelect={saveCycleTimeOptions} />
+                  <CellAutoComplete name={boardKey} defaultSelected={state} onSelect={saveCycleTimeOptions} />
                 </StyledTableRowCell>
               </TableRow>
             ))}

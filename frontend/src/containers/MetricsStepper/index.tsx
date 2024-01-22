@@ -19,6 +19,16 @@ import {
   TIPS,
 } from '@src/constants/resources';
 import {
+  BackButton,
+  ButtonContainer,
+  MetricsStepperContent,
+  NextButton,
+  SaveButton,
+  StyledStep,
+  StyledStepLabel,
+  StyledStepper,
+} from './style';
+import {
   ICycleTimeSetting,
   savedMetricsSettingState,
   selectCycleTimeSettings,
@@ -188,16 +198,13 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       assigneeFilter,
     } = filterMetricsConfig(metricsConfig);
 
-    /* istanbul ignore next */
     const metricsData = {
       crews: users,
       assigneeFilter: assigneeFilter,
-      /* istanbul ignore next */
       pipelineCrews,
       cycleTime: cycleTimeSettings
         ? {
             type: cycleTimeSettingsType,
-            /* istanbul ignore next */
             jiraColumns:
               cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
                 ? ([...new Set(cycleTimeSettings.map(({ column }: ICycleTimeSetting) => column))] as string[]).map(

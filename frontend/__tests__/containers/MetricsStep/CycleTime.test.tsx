@@ -134,7 +134,6 @@ describe('CycleTime', () => {
 
       const inputElements = screen.getAllByRole('combobox');
       const selectedInputValues = inputElements.map((input) => input.getAttribute('value'));
-
       expect(selectedInputValues).toEqual([NO_RESULT_DASH]);
     });
 
@@ -319,10 +318,7 @@ describe('CycleTime', () => {
 
   it('should update cycle time type and clear table value when select status type', async () => {
     setup();
-
-    await act(async () => {
-      await userEvent.click(screen.getByRole('radio', { name: cycleTimeTypeLabels[1] }));
-    });
+    await userEvent.click(screen.getByRole('radio', { name: cycleTimeTypeLabels[1] }));
 
     expect(mockedUseAppDispatch).toHaveBeenCalledTimes(2);
     expect(mockedUseAppDispatch).toHaveBeenCalledWith(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
@@ -357,85 +353,56 @@ describe('CycleTime', () => {
     it('should show selected option when click the dropDown button ', async () => {
       setup();
       const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
-      await act(async () => {
-        await userEvent.click(columnsArray[2]);
-      });
+      await userEvent.click(columnsArray[2]);
 
       const listBox = within(screen.getByRole('listbox'));
       const options = listBox.getAllByRole('option');
       const selectedOption = options.find((option) => option.getAttribute('aria-selected') === 'true');
-
       const selectedOptionText = selectedOption?.textContent;
-
       expect(selectedOptionText).toBe('Analysis');
     });
 
     it('should show other selections when change option and will not affect Real done', async () => {
       setup();
       const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
-      await act(async () => {
-        await userEvent.click(columnsArray[2]);
-      });
-
+      await userEvent.click(columnsArray[2]);
       const listBox = within(screen.getByRole('listbox'));
       const mockOptions = listBox.getAllByRole('option');
-      await act(async () => {
-        await userEvent.click(mockOptions[1]);
-      });
+      await userEvent.click(mockOptions[1]);
 
       const inputElements = screen.getAllByRole('combobox');
       const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[2];
-
       expect(selectedInputValue).toBe('To do');
-      await waitFor(() => expect(mockedUseAppDispatch).not.toHaveBeenCalledWith(saveDoneColumn([])));
+      expect(mockedUseAppDispatch).not.toHaveBeenCalledWith(saveDoneColumn([]));
     });
 
     it('should reset Real done when marked as done from other options', async () => {
       setup();
       const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
-      await act(async () => {
-        await userEvent.click(columnsArray[0]);
-      });
-
+      await userEvent.click(columnsArray[0]);
       const listBox = within(screen.getByRole('listbox'));
-      await act(async () => {
-        await userEvent.click(listBox.getAllByRole('option')[8]);
-      });
+      await userEvent.click(listBox.getAllByRole('option')[8]);
 
       const inputElements = screen.getAllByRole('combobox');
-
       const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[0];
-
       expect(selectedInputValue).toBe('Done');
-      await waitFor(() => expect(mockedUseAppDispatch).toHaveBeenCalledWith(saveDoneColumn([])));
+      expect(mockedUseAppDispatch).toHaveBeenCalledWith(saveDoneColumn([]));
     });
 
     it('should show the right selected value when cancel the done', async () => {
       setup();
       const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
-      await act(async () => {
-        await userEvent.click(columnsArray[0]);
-      });
-
+      await userEvent.click(columnsArray[0]);
       const listBox = within(screen.getByRole('listbox'));
-      await act(async () => {
-        await userEvent.click(listBox.getAllByRole('option')[8]);
-      });
-
-      await act(async () => {
-        await userEvent.click(columnsArray[0]);
-      });
-
+      await userEvent.click(listBox.getAllByRole('option')[8]);
+      await userEvent.click(columnsArray[0]);
       const newListBox = within(screen.getByRole('listbox'));
-      await act(async () => {
-        await userEvent.click(newListBox.getAllByRole('option')[7]);
-      });
+      await userEvent.click(newListBox.getAllByRole('option')[7]);
 
       const inputElements = screen.getAllByRole('combobox');
       const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[0];
-
       expect(selectedInputValue).toBe('Review');
-      await waitFor(() => expect(mockedUseAppDispatch).toHaveBeenCalledWith(saveDoneColumn([])));
+      expect(mockedUseAppDispatch).toHaveBeenCalledWith(saveDoneColumn([]));
     });
   });
 });
