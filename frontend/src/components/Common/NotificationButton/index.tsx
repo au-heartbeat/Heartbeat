@@ -5,12 +5,12 @@ import {
 } from '@src/components/Common/NotificationButton/style';
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { NOTIFICATION_TITLE } from '@src/constants/resources';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { AlertColor, SvgIcon } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { theme } from '@src/theme';
 import React from 'react';
-import { NOTIFICATION_TITLE } from '@src/constants/resources';
 
 const getStyles = (type: AlertColor | undefined) => {
   switch (type) {

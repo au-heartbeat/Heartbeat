@@ -24,7 +24,6 @@ import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { Loading } from '@src/components/Loading';
 import { Nullable } from '@src/utils/types';
-import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import { useAppSelector } from '@src/hooks';
 import React, { useEffect } from 'react';
 import dayjs from 'dayjs';

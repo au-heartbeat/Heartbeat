@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { AlertColor } from '@mui/material';
 import { DURATION } from '@src/constants/commons';
+import { AlertColor } from '@mui/material';
 import { uniqueId } from 'lodash';
+import { useState } from 'react';
 
 export interface Notification {
   id: string;

@@ -1,6 +1,3 @@
-import React, { useEffect } from 'react';
-import { useAppSelector } from '@src/hooks';
-import { selectConfig } from '@src/context/config/configSlice';
 import {
   CALENDAR,
   DORA_METRICS,
@@ -11,16 +8,19 @@ import {
   RETRY,
   SHOW_MORE,
 } from '@src/constants/resources';
-import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { StyledMetricsSection, StyledShowMore, StyledTitleWrapper } from '@src/containers/ReportStep/DoraMetrics/style';
+import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { StyledSpacing } from '@src/containers/ReportStep/style';
-import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { selectConfig } from '@src/context/config/configSlice';
 import { StyledRetry } from '../BoardMetrics/BoardMetrics';
 import { Nullable } from '@src/utils/types';
+import { useAppSelector } from '@src/hooks';
+import React, { useEffect } from 'react';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 

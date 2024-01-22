@@ -21,9 +21,9 @@ import {
   updateMetrics,
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
-import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { updateDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
 import { useNotificationLayoutEffect } from '@src/hooks/useNotificationLayoutEffect';
+import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import { backStep } from '@src/context/stepper/StepperSlice';

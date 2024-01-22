@@ -1,9 +1,9 @@
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { TimeoutException } from '@src/exceptions/TimeoutException';
 import { MESSAGE, TIMEOUT_PROMPT } from '@src/constants/resources';
-import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import { reportClient } from '@src/clients/report/ReportClient';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { useRef, useState } from 'react';

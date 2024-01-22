@@ -1,15 +1,15 @@
 import { StyledButtonGroup, StyledExportButton, StyledRightButtonGroup } from '@src/containers/ReportButtonGroup/style';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
 import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import React from 'react';
-import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
-import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
+import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
 import { COMMON_BUTTONS, REPORT_TYPES } from '@src/constants/commons';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { TIPS } from '@src/constants/resources';
 import { Tooltip } from '@mui/material';
-import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
+import React from 'react';
 
 interface ReportButtonGroupProps {
   notification: useNotificationLayoutEffectInterface;

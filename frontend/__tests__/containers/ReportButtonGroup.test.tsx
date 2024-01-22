@@ -1,7 +1,7 @@
+import { useNotificationLayoutEffect } from '@src/hooks/useNotificationLayoutEffect';
 import { EXPORT_METRIC_DATA, MOCK_REPORT_RESPONSE } from '../fixtures';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import { render, renderHook, screen } from '@testing-library/react';
-import { useNotificationLayoutEffect } from '@src/hooks/useNotificationLayoutEffect';
 
 describe('test', () => {
   const { result: notificationHook } = renderHook(() => useNotificationLayoutEffect());
