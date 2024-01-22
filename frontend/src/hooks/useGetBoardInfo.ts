@@ -5,8 +5,16 @@ import { AxiosResponse } from 'axios';
 import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import get from 'lodash/get';
 
+export type JiraColumns = Record<string, string>[];
+export type TargetFields = Record<string, string>[];
+export type Users = string[];
+export interface BoardInfoResponse {
+  jiraColumns: JiraColumns;
+  targetFields: TargetFields;
+  users: Users;
+}
 export interface useGetBoardInfoInterface {
-  getBoardInfo: (data: BoardInfoRequestDTO) => Promise<AxiosResponse<string, string>>;
+  getBoardInfo: (data: BoardInfoRequestDTO) => Promise<AxiosResponse<BoardInfoResponse>>;
   isLoading: boolean;
   errorMessage: Record<string, string>;
 }
@@ -35,8 +43,18 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [errorMessage, setErrorMessage] = useState({});
   const getBoardInfo = (data: BoardInfoRequestDTO) => {
     setIsLoading(true);
+    setErrorMessage({});
     return boardInfoClient
       .getBoardInfo(data)
+      .then((res) => {
+        if (!res.data) {
+          setErrorMessage({
+            title: 'No card within selected date range!',
+            message: 'Please go back to the previous page and change your collection date, or check your board info!',
+          });
+        }
+        return res;
+      })
       .catch((err) => {
         const { code } = err;
         setErrorMessage(get(codeMapping, code, {}));

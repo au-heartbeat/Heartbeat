@@ -20,8 +20,12 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
   const dispatch = useAppDispatch();
   const [isEmptyCrewData, setIsEmptyCrewData] = useState<boolean>(false);
   const { users, pipelineCrews } = useAppSelector(selectMetricsContent);
-  const [selectedCrews, setSelectedCrews] = useState(isBoardCrews ? users : pipelineCrews);
+  const [selectedCrews, setSelectedCrews] = useState<string[]>([]);
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length;
+
+  useEffect(() => {
+    setSelectedCrews(isBoardCrews ? users : pipelineCrews);
+  }, [users, isBoardCrews, pipelineCrews]);
 
   useEffect(() => {
     setIsEmptyCrewData(selectedCrews.length === 0);

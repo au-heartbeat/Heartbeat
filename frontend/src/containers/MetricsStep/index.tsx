@@ -4,8 +4,8 @@ import {
   selectIsProjectCreated,
   selectMetrics,
   selectUsers,
-  updateJiraVerifyResponse,
   selectBoard,
+  updateBoardVerifyState,
 } from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
@@ -22,10 +22,12 @@ import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
+import EmptyContent from '@src/components/Common/EmptyContent';
 import { useAppSelector, useAppDispatch } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
 import { useLayoutEffect } from 'react';
+import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
 
 const MetricsStep = () => {
@@ -45,12 +47,12 @@ const MetricsStep = () => {
   const isShowRealDone =
     cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
-  const { getBoardInfo, isLoading } = useGetBoardInfoEffect();
+  const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
 
   const getInfo = () => {
     getBoardInfo(boardConfig).then((res) => {
+      dispatch(updateBoardVerifyState(true));
       if (res.data) {
-        dispatch(updateJiraVerifyResponse(res.data));
         dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
       }
     });
@@ -70,18 +72,24 @@ const MetricsStep = () => {
       )}
       <MetricSelectionWrapper>
         {isLoading && <Loading />}
-        <MetricsSelectionTitle>11 Board configuration</MetricsSelectionTitle>
+        {isEmpty(errorMessage) ? (
+          <>
+            <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
 
-        {isShowCrewsAndRealDone && <Crews options={users} title={'Crew settings'} label={'Included Crews'} />}
+            {isShowCrewsAndRealDone && <Crews options={users} title={'Crew settings'} label={'Included Crews'} />}
 
-        {requiredData.includes(REQUIRED_DATA.CYCLE_TIME) && <CycleTime />}
+            {requiredData.includes(REQUIRED_DATA.CYCLE_TIME) && <CycleTime />}
 
-        {isShowCrewsAndRealDone && isShowRealDone && (
-          <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
-        )}
+            {isShowCrewsAndRealDone && isShowRealDone && (
+              <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
+            )}
 
-        {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
-          <Classification targetFields={targetFields} title={'Classification setting'} label={'Distinguished By'} />
+            {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
+              <Classification targetFields={targetFields} title={'Classification setting'} label={'Distinguished By'} />
+            )}
+          </>
+        ) : (
+          <EmptyContent title={errorMessage.title} message={errorMessage.message} />
         )}
       </MetricSelectionWrapper>
 
