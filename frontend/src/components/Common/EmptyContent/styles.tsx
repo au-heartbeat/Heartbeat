@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
 import { theme } from '@src/theme';
+import styled from '@emotion/styled';
 
 export const StyledErrorSection = styled.div({
   display: 'flex',

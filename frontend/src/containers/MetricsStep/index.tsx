@@ -25,11 +25,11 @@ import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import EmptyContent from '@src/components/Common/EmptyContent';
 import { useAppSelector, useAppDispatch } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
-import { Classification } from './Classification';
-import { Loading } from '@src/components/Loading';
 import { useLayoutEffect } from 'react';
-import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
+import isEmpty from 'lodash/isEmpty';
+import { Loading } from '@src/components/Loading';
+import { Classification } from './Classification';
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
