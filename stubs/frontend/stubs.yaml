@@ -65,6 +65,18 @@
     status: 204
 
 - request:
+    method: POST
+    url: /api/v1/source-control/.*/info
+
+  response:
+    headers:
+      content-type: application/json
+      Access-Control-Allow-Origin: "*"
+    status: 204
+    file: ./frontend/config/board.json
+
+
+- request:
     method: GET
     url: /api/v1/source-control
 

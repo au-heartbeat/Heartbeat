@@ -14,12 +14,11 @@ import {
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { setupStore } from '../../utils/setupStoreUtil';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 import { rest } from 'msw';
-import React from 'react';
-import userEvent from '@testing-library/user-event';
 
 export const fillBoardFieldsInformation = () => {
   const fields = ['Board Id', 'Email', 'Site', 'Token'];
@@ -47,7 +46,7 @@ describe('Board', () => {
     return render(
       <Provider store={store}>
         <Board />
-      </Provider>
+      </Provider>,
     );
   };
 
@@ -73,9 +72,9 @@ describe('Board', () => {
     expect(boardType).toBeInTheDocument();
   });
 
-  it('should show detail options when click board field', () => {
+  it('should show detail options when click board field', async () => {
     setup();
-    fireEvent.mouseDown(screen.getByRole('button', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('button', { name: /board jira/i }));
     const listBox = within(screen.getByRole('listbox'));
     const options = listBox.getAllByRole('option');
     const optionValue = options.map((li) => li.getAttribute('data-value'));
@@ -86,7 +85,7 @@ describe('Board', () => {
   it('should show board type when select board field value ', async () => {
     const { getByRole, getByText } = setup();
 
-    await userEvent.click(getByRole('button', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(getByRole('button', { name: /board jira/i }));
 
     await waitFor(() => {
       expect(getByRole('option', { name: /jira/i })).toBeInTheDocument();
@@ -98,7 +97,7 @@ describe('Board', () => {
       expect(
         getByRole('button', {
           name: /board/i,
-        })
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -134,7 +133,7 @@ describe('Board', () => {
     fireEvent.click(
       getByRole('button', {
         name: /jira/i,
-      })
+      }),
     );
 
     expect(emailInput.value).toEqual('');
@@ -148,14 +147,11 @@ describe('Board', () => {
         screen.getByRole('textbox', {
           name: label,
           hidden: true,
-        }) as HTMLInputElement
+        }) as HTMLInputElement,
     );
     fillBoardFieldsInformation();
 
     fireEvent.click(screen.getByText(VERIFY));
-    await waitFor(() => {
-      fireEvent.click(screen.getByRole('button', { name: RESET }));
-    });
 
     fieldInputs.map((input) => {
       expect(input.value).toEqual('');
@@ -163,7 +159,7 @@ describe('Board', () => {
     expect(
       getByRole('button', {
         name: /board/i,
-      })
+      }),
     ).toBeInTheDocument();
     expect(queryByRole('button', { name: RESET })).not.toBeTruthy();
     expect(queryByRole('button', { name: VERIFY })).toBeDisabled();
@@ -171,7 +167,7 @@ describe('Board', () => {
 
   it('should enabled verify button when all fields checked correctly given disable verify button', () => {
     setup();
-    const verifyButton = screen.getByRole('button', { name: VERIFY });
+    const verifyButton = screen.getByRole('button', { name: /verify/i });
 
     expect(verifyButton).toBeDisabled();
 
@@ -198,7 +194,7 @@ describe('Board', () => {
   it('should called verifyBoard method once when click verify button', async () => {
     setup();
     fillBoardFieldsInformation();
-    fireEvent.click(screen.getByRole('button', { name: VERIFY }));
+    fireEvent.click(screen.getByRole('button', { name: /verify/i }));
 
     await waitFor(() => {
       expect(screen.getByText('Verified')).toBeInTheDocument();
@@ -233,8 +229,8 @@ describe('Board', () => {
   it('should check error notification show and disappear when board verify response status is 401', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (req, res, ctx) =>
-        res(ctx.status(HttpStatusCode.Unauthorized), ctx.json({ hintInfo: VERIFY_ERROR_MESSAGE.UNAUTHORIZED }))
-      )
+        res(ctx.status(HttpStatusCode.Unauthorized), ctx.json({ hintInfo: VERIFY_ERROR_MESSAGE.UNAUTHORIZED })),
+      ),
     );
     setup();
     fillBoardFieldsInformation();
@@ -243,7 +239,7 @@ describe('Board', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(`${BOARD_TYPES.JIRA} ${VERIFY_FAILED}: ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`)
+        screen.getByText(`${BOARD_TYPES.JIRA} ${VERIFY_FAILED}: ${VERIFY_ERROR_MESSAGE.UNAUTHORIZED}`),
       ).toBeInTheDocument();
     });
   });

@@ -1,5 +1,5 @@
-import { HttpClient } from '@src/clients/Httpclient';
 import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';
+import { HttpClient } from '../HttpClient';
 
 export class BoardInfoClient extends HttpClient {
   getBoardInfo = async (params: BoardInfoRequestDTO) => {

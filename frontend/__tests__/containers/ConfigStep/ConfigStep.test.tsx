@@ -137,8 +137,8 @@ describe('ConfigStep', () => {
 
     fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
     const requireDateSelection = within(screen.getByRole('listbox'));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: CYCLE_TIME }));
+    fireEvent.click(requireDateSelection.getByRole('option', { name: /velocity/i }));
+    fireEvent.click(requireDateSelection.getByRole('option', { name: /cycle time/i }));
 
     expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
   });
