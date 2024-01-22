@@ -1,13 +1,11 @@
 package heartbeat.controller.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportDataType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.GenerateReportException;
-import heartbeat.handler.AsyncExceptionHandler;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
 import lombok.extern.log4j.Log4j2;
@@ -25,13 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
@@ -91,15 +86,12 @@ class ReporterControllerTest {
 		when(generateReporterService.checkGenerateReportIsDone(reportId)).thenReturn(false);
 		when(generateReporterService.getComposedReportResponse(reportId, false)).thenReturn(reportResponse);
 
-		MockHttpServletResponse response = mockMvc
+		mockMvc
 			.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.allMetricsCompleted").value(false))
 			.andReturn()
 			.getResponse();
-		final var content = response.getContentAsString();
-		final var isAllMetricsReady = JsonPath.parse(content).read("$.allMetricsCompleted");
-
-		assertEquals(false, isAllMetricsReady);
 	}
 
 	@Test
@@ -109,17 +101,12 @@ class ReporterControllerTest {
 		when(generateReporterService.checkGenerateReportIsDone(reportId))
 			.thenThrow(new GenerateReportException("Report time expires"));
 
-		var response = mockMvc.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isInternalServerError())
+			.andExpect(jsonPath("$.message").value("Report time expires"))
+			.andExpect(jsonPath("$.hintInfo").value("Failed to generate report"))
 			.andReturn()
 			.getResponse();
-
-		final var content = response.getContentAsString();
-		final var errorMessage = JsonPath.parse(content).read("$.message").toString();
-		final var hintInfo = JsonPath.parse(content).read("$.hintInfo").toString();
-
-		assertEquals("Report time expires", errorMessage);
-		assertEquals("Failed to generate report", hintInfo);
 	}
 
 	@Test
@@ -137,12 +124,13 @@ class ReporterControllerTest {
 			.getResponse();
 
 		assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
-		// todo
 	}
 
 	@Test
 	void shouldReturnCallBackUrlWithAcceptedStatusAndInvokeGenerateReportByType() throws Exception {
-		GenerateReportRequest request = GenerateReportRequest.builder().metrics(List.of("velocity")).build();
+		ObjectMapper mapper = new ObjectMapper();
+		GenerateReportRequest request = mapper.readValue(new File(REQUEST_FILE_PATH), GenerateReportRequest.class);
+
 		String currentTimeStamp = "1685010080107";
 		request.setCsvTimeStamp(currentTimeStamp);
 
@@ -152,8 +140,8 @@ class ReporterControllerTest {
 			.perform(post("/reports/{reportType}", ReportType.DORA.reportType).contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(request)))
 			.andExpect(status().isAccepted())
-			.andExpect(jsonPath("S.callbackUrl").value("/reports/" + currentTimeStamp))
-			.andExpect(jsonPath("S.interval").value("10"))
+			.andExpect(jsonPath("$.callbackUrl").value("/reports/" + currentTimeStamp))
+			.andExpect(jsonPath("$.interval").value("10"))
 			.andReturn()
 			.getResponse();
 
