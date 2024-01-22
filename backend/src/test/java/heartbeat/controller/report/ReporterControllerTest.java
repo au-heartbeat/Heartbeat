@@ -86,8 +86,7 @@ class ReporterControllerTest {
 		when(generateReporterService.checkGenerateReportIsDone(reportId)).thenReturn(false);
 		when(generateReporterService.getComposedReportResponse(reportId, false)).thenReturn(reportResponse);
 
-		mockMvc
-			.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.allMetricsCompleted").value(false))
 			.andReturn()
