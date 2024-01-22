@@ -3,7 +3,6 @@ import {
   BOARD_METRICS_TITLE,
   CLASSIFICATION,
   EMPTY_REPORT_VALUES,
-  ERROR_PAGE_ROUTE,
   EXPORT_BOARD_DATA,
   EXPORT_METRIC_DATA,
   EXPORT_PIPELINE_DATA,
@@ -22,9 +21,9 @@ import {
   updateMetrics,
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
+import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { updateDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
 import { useNotificationLayoutEffect } from '@src/hooks/useNotificationLayoutEffect';
-import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import { backStep } from '@src/context/stepper/StepperSlice';
@@ -32,7 +31,6 @@ import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import ReportStep from '@src/containers/ReportStep';
 import { MESSAGE } from '@src/constants/resources';
-import { navigateMock } from '../../setupTests';
 import { Provider } from 'react-redux';
 import React from 'react';
 
@@ -75,7 +73,7 @@ jest.mock('@src/utils/util', () => ({
 let store = null;
 describe('Report Step', () => {
   const { result: notificationHook } = renderHook(() => useNotificationLayoutEffect());
-  const { result: reportHook } = renderHook(() => useGenerateReportEffect());
+  const { result: reportHook } = renderHook(() => useGenerateReportEffect(notificationHook.current));
   beforeEach(() => {
     resetReportHook();
   });
@@ -86,7 +84,6 @@ describe('Report Step', () => {
     reportHook.current.startToRequestBoardData = jest.fn();
     reportHook.current.startToRequestDoraData = jest.fn();
     reportHook.current.stopPollingReports = jest.fn();
-    reportHook.current.isServerError = false;
     reportHook.current.reportData = { ...MOCK_REPORT_RESPONSE, exportValidityTime: 30 };
   };
   const handleSaveMock = jest.fn();
@@ -226,14 +223,6 @@ describe('Report Step', () => {
       await userEvent.click(save);
 
       expect(handleSaveMock).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call navigate show when isServerError is true', () => {
-      reportHook.current.isServerError = true;
-
-      setup([REQUIRED_DATA_LIST[1]]);
-
-      expect(navigateMock).toHaveBeenCalledWith(ERROR_PAGE_ROUTE);
     });
 
     it('should call addNotification when remaining time is less than or equal to 5 minutes', () => {

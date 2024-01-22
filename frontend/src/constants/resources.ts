@@ -195,6 +195,7 @@ export const MESSAGE = {
   LOADING_TIMEOUT: (name: string) => `${name} loading timeout, please click "Retry"!`,
   FAILED_TO_GET_DATA: (name: string) => `Failed to get ${name} data, please click "retry"!`,
   FAILED_TO_EXPORT_CSV: 'Failed to export csv.',
+  FAILED_TO_REQUEST: 'Failed to request !',
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER = [
@@ -222,6 +223,7 @@ export const REPORT_PAGE = {
 };
 
 export const AXIOS_NETWORK_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ETIMEDOUT, AxiosError.ERR_NETWORK];
+
 export enum HEARTBEAT_EXCEPTION_CODE {
   TIMEOUT = 'HB_TIMEOUT',
 }

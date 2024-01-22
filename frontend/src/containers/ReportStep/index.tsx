@@ -4,9 +4,7 @@ import { useAppSelector } from '@src/hooks';
 import { isSelectBoardMetrics, isSelectDoraMetrics, selectConfig } from '@src/context/config/configSlice';
 import { MESSAGE, REPORT_PAGE_TYPE, REQUIRED_DATA } from '@src/constants/resources';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
-import { useNavigate } from 'react-router-dom';
 import { Notification, useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
-import { ROUTE } from '@src/constants/router';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
@@ -22,10 +20,8 @@ export interface ReportStepProps {
 }
 
 const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const {
-    isServerError,
     startToRequestBoardData,
     startToRequestDoraData,
     reportData,
@@ -33,7 +29,7 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
     timeout4Board,
     timeout4Dora,
     timeout4Report,
-  } = useGenerateReportEffect();
+  } = useGenerateReportEffect(notification);
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
@@ -221,34 +217,28 @@ const ReportStep = ({ notification, handleSave }: ReportStepProps) => {
 
   return (
     <>
-      {isServerError ? (
-        navigate(ROUTE.ERROR_PAGE)
-      ) : (
-        <>
-          {startDate && endDate && (
-            <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
-              <DateRangeViewer startDate={startDate} endDate={endDate} />
-            </StyledCalendarWrapper>
-          )}
-          {isSummaryPage
-            ? showSummary()
-            : !!reportData &&
-              (pageType === REPORT_PAGE_TYPE.BOARD ? showBoardDetail(reportData) : showDoraDetail(reportData))}
-          <ReportButtonGroup
-            notification={notification}
-            isShowSave={isSummaryPage}
-            isShowExportMetrics={isSummaryPage}
-            isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
-            isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
-            handleBack={() => handleBack()}
-            handleSave={() => handleSave()}
-            reportData={reportData}
-            startDate={startDate}
-            endDate={endDate}
-            csvTimeStamp={csvTimeStamp}
-          />
-        </>
+      {startDate && endDate && (
+        <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
+          <DateRangeViewer startDate={startDate} endDate={endDate} />
+        </StyledCalendarWrapper>
       )}
+      {isSummaryPage
+        ? showSummary()
+        : !!reportData &&
+          (pageType === REPORT_PAGE_TYPE.BOARD ? showBoardDetail(reportData) : showDoraDetail(reportData))}
+      <ReportButtonGroup
+        notification={notification}
+        isShowSave={isSummaryPage}
+        isShowExportMetrics={isSummaryPage}
+        isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
+        isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
+        handleBack={() => handleBack()}
+        handleSave={() => handleSave()}
+        reportData={reportData}
+        startDate={startDate}
+        endDate={endDate}
+        csvTimeStamp={csvTimeStamp}
+      />
     </>
   );
 };
