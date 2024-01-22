@@ -1,16 +1,3 @@
-import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
-import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
-import { FormEvent, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import {
-  selectDateRange,
-  selectIsBoardVerified,
-  updateBoard,
-  updateBoardVerifyState,
-} from '@src/context/config/configSlice';
-import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
-import { Loading } from '@src/components/Loading';
-import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
 import {
   ConfigSectionContainer,
   StyledButtonGroup,
@@ -18,9 +5,22 @@ import {
   StyledTextField,
   StyledTypeSelections,
 } from '@src/components/Common/ConfigForms';
-import dayjs from 'dayjs';
+import {
+  selectDateRange,
+  selectIsBoardVerified,
+  updateBoard,
+  updateBoardVerifyState,
+} from '@src/context/config/configSlice';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
+import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
+import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
+import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
+import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
+import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
+import { FormEvent, useEffect, useState } from 'react';
+import { Loading } from '@src/components/Loading';
+import dayjs from 'dayjs';
 
 type Field = {
   key: string;
@@ -43,7 +43,7 @@ export const Board = () => {
     resetFormFields,
   } = useVerifyBoardEffect();
   const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(
-    !fields.every((field) => field.value && field.isValid)
+    !fields.every((field) => field.value && field.isValid),
   );
 
   const initBoardFields = () => {
@@ -72,7 +72,7 @@ export const Board = () => {
         email: fields[2].value,
         site: fields[3].value,
         token: fields[4].value,
-      })
+      }),
     );
   };
 
@@ -149,7 +149,7 @@ export const Board = () => {
               helperText={field.errorMessage}
               sx={{ gridColumn: `span ${field.col}` }}
             />
-          )
+          ),
         )}
         <StyledButtonGroup>
           {isVerified && !verifyLoading ? (

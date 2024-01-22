@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';
 import { AxiosResponse } from 'axios';
-import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
+import { useState } from 'react';
 import get from 'lodash/get';
 
 export type JiraColumns = Record<string, string>[];

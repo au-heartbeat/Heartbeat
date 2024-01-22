@@ -1,11 +1,11 @@
-import { boardClient } from '@src/clients/board/BoardClient';
-import { MESSAGE } from '@src/constants/resources';
 import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
-import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { selectBoard } from '@src/context/config/configSlice';
-import { BOARD_TYPES } from '@src/constants/resources';
+import { boardClient } from '@src/clients/board/BoardClient';
+import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { findCaseInsensitiveType } from '@src/utils/util';
+import { BOARD_TYPES } from '@src/constants/resources';
+import { MESSAGE } from '@src/constants/resources';
 import { REGEX } from '@src/constants/regex';
 import { useState } from 'react';
 
@@ -96,7 +96,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     setFormFields(
       formFields.map((field) => {
         return { ...field, value: EMPTY_STRING, isRequired: true, isValid: true };
-      })
+      }),
     );
 
   const clearError = () => {
@@ -106,7 +106,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         isValid: true,
         isRequired: true,
         errorMessage: '',
-      }))
+      })),
     );
   };
 
@@ -116,7 +116,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         return names.includes(field.name)
           ? { ...field, isValid: false, errorMessage: messages[names.findIndex((name) => name === field.name)] }
           : field;
-      })
+      }),
     );
   };
 
@@ -127,8 +127,8 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     const errorMessage = !isRequired
       ? `${field.key} is required`
       : !isValid
-      ? `${field.key} is invalid`
-      : DEFAULT_HELPER_TEXT;
+        ? `${field.key} is invalid`
+        : DEFAULT_HELPER_TEXT;
 
     return {
       ...field,
@@ -143,7 +143,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     setFormFields(
       formFields.map((field) => {
         return field.name === name ? validField(field, value) : field;
-      })
+      }),
     );
   };
 
