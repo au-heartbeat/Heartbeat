@@ -109,7 +109,6 @@ export const configSlice = createSlice({
       state.board.isVerified = action.payload;
     },
     updateBoard: (state, action) => {
-      console.log(action.payload);
       state.board.config = action.payload;
     },
     updateJiraVerifyResponse: (state, action) => {
