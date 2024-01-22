@@ -79,11 +79,13 @@ public class PipelineService {
 			if (!buildInfos.isEmpty()) {
 				List<String> pipelineSteps = buildKiteService.getPipelineStepNames(buildInfos);
 				if (!pipelineSteps.isEmpty()) {
+					List<String> validSteps = buildKiteService.getStepsBeforeEndStep(deploymentEnvironment.getStep(),
+							pipelineSteps);
 					List<PipelineCSVInfo> pipelineCSVInfoList = buildInfos.stream()
-						.filter(buildInfo -> isBuildInfoValid(buildInfo, deploymentEnvironment, pipelineSteps,
-								startTime, endTime))
+						.filter(buildInfo -> isValidBuildInfo(buildInfo, deploymentEnvironment, validSteps, startTime,
+								endTime))
 						.map(buildInfo -> getPipelineCSVInfo(codebaseSetting, startTime, endTime, buildKiteData,
-								deploymentEnvironment, buildInfo, pipelineSteps))
+								deploymentEnvironment, buildInfo, validSteps))
 						.toList();
 					pipelineCSVInfos.addAll(pipelineCSVInfoList);
 				}
@@ -95,9 +97,8 @@ public class PipelineService {
 	private PipelineCSVInfo getPipelineCSVInfo(CodebaseSetting codebaseSetting, String startTime, String endTime,
 			FetchedData.BuildKiteData buildKiteData, DeploymentEnvironment deploymentEnvironment,
 			BuildKiteBuildInfo buildInfo, List<String> pipelineSteps) {
-		DeployInfo deployInfo = buildInfo.mapToDeployInfo(
-				buildKiteService.getStepsBeforeEndStep(deploymentEnvironment.getStep(), pipelineSteps), REQUIRED_STATES,
-				startTime, endTime);
+		DeployInfo deployInfo = buildKiteService.mapToDeployInfo(buildInfo, pipelineSteps, REQUIRED_STATES, startTime,
+				endTime);
 		CommitInfo commitInfo = null;
 		if (Objects.nonNull(codebaseSetting) && StringUtils.hasLength(codebaseSetting.getToken())
 				&& Objects.nonNull(deployInfo.getCommitId())) {
@@ -114,10 +115,9 @@ public class PipelineService {
 			.build();
 	}
 
-	private boolean isBuildInfoValid(BuildKiteBuildInfo buildInfo, DeploymentEnvironment deploymentEnvironment,
+	private boolean isValidBuildInfo(BuildKiteBuildInfo buildInfo, DeploymentEnvironment deploymentEnvironment,
 			List<String> steps, String startTime, String endTime) {
-		BuildKiteJob buildKiteJob = buildInfo.getBuildKiteJob(buildInfo.getJobs(),
-				buildKiteService.getStepsBeforeEndStep(deploymentEnvironment.getStep(), steps), REQUIRED_STATES,
+		BuildKiteJob buildKiteJob = buildKiteService.getBuildKiteJob(buildInfo.getJobs(), steps, REQUIRED_STATES,
 				startTime, endTime);
 		return buildKiteJob != null && !buildInfo.getCommit().isEmpty();
 	}

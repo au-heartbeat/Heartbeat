@@ -1,5 +1,6 @@
 package heartbeat.controller.report.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import heartbeat.util.IdUtil;
 import heartbeat.util.MetricsUtil;
@@ -37,6 +38,7 @@ public class GenerateReportRequest {
 	@NotBlank
 	private String csvTimeStamp;
 
+	@JsonIgnore
 	public List<String> getPipelineMetrics() {
 		return this.metrics.stream().map(String::toLowerCase).filter(MetricsUtil.buildKiteMetrics::contains).toList();
 	}
@@ -45,22 +47,27 @@ public class GenerateReportRequest {
 		return this.metrics.stream().map(String::toLowerCase).toList();
 	}
 
+	@JsonIgnore
 	public List<String> getSourceControlMetrics() {
 		return this.metrics.stream().map(String::toLowerCase).filter(MetricsUtil.codebaseMetrics::contains).toList();
 	}
 
+	@JsonIgnore
 	public List<String> getBoardMetrics() {
 		return this.metrics.stream().map(String::toLowerCase).filter(MetricsUtil.kanbanMetrics::contains).toList();
 	}
 
+	@JsonIgnore
 	public String getPipelineReportId() {
 		return IdUtil.getPipelineReportId(this.csvTimeStamp);
 	}
 
+	@JsonIgnore
 	public String getSourceControlReportId() {
 		return IdUtil.getSourceControlReportId(this.csvTimeStamp);
 	}
 
+	@JsonIgnore
 	public String getBoardReportId() {
 		return IdUtil.getBoardReportId(this.csvTimeStamp);
 	}

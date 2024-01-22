@@ -1,7 +1,10 @@
 package heartbeat.service.report;
 
+import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
+import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
+import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
@@ -11,7 +14,6 @@ import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.source.github.GitHubService;
-import lombok.val;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -236,35 +238,177 @@ public class PipelineServiceTest {
 					Lists.list());
 
 			assertEquals(0, result.size());
+			verify(buildKiteService, never()).getPipelineStepNames(any());
 		}
 
-		// @Test
-		// void shouldReturnEmptyWhenNoBuildInfoFoundForDeploymentEnvironment() {
-		// String startTime = "startTime", endTime = "endTime";
-		// List<PipelineCSVInfo> result =
-		// pipelineService.generateCSVForPipelineWithCodebase(
-		// CodebaseSetting.builder().build(), startTime, endTime,
-		// FetchedData.BuildKiteData.builder().build(),
-		// List.of(DeploymentEnvironment.builder().id("env1").build()));
-		//
-		// assertEquals(0, result.size());
-		// }
+		@Test
+		void shouldReturnEmptyWhenNoBuildInfoFoundForDeploymentEnvironment() {
+			String startTime = "startTime", endTime = "endTime";
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder().buildInfosList(List.of(Map.entry("env1", List.of()))).build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
 
-		// @Test
-		// void
-		// shouldOnlyReturnMatchedInfoWhenBuildInfoForDeploymentEnvironmentIsNotEmpty() {
-		// String startTime = "startTime", endTime = "endTime";
-		// List<PipelineCSVInfo> result =
-		// pipelineService.generateCSVForPipelineWithCodebase(
-		// CodebaseSetting.builder().build(), startTime, endTime,
-		// FetchedData.BuildKiteData.builder().buildInfosList(
-		// List.of(Map.entry("env1", List.of(BuildKiteBuildInfo.builder().build())))
-		// ).build(),
-		// List.of(DeploymentEnvironment.builder().id("env1").build(),
-		// DeploymentEnvironment.builder().id("env2").build()));
-		//
-		// assertEquals(0, result.size());
-		// }
+			assertEquals(0, result.size());
+			verify(buildKiteService, never()).getPipelineStepNames(any());
+		}
+
+		@Test
+		void shouldReturnEmptyWhenPipelineStepsIsEmpty() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().build());
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of());
+
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
+
+			assertEquals(0, result.size());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+		}
+
+		@Test
+		void shouldReturnEmptyWhenBuildJobIsEmpty() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().build());
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime))).thenReturn(null);
+			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
+
+			assertEquals(0, result.size());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime));
+		}
+
+		@Test
+		void shouldFilterOutInvalidBuildOfCommentIsEmtpy() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("").build());
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(BuildKiteJob.builder().build());
+
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
+
+			assertEquals(0, result.size());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
+		}
+
+		@Test
+		void shouldGenerateValueWithoutCommitWhenCodebaseSettingIsEmpty() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(BuildKiteJob.builder().build());
+			when(buildKiteService.mapToDeployInfo(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(DeployInfo.builder().jobName("test").build());
+
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(null, startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
+
+			assertEquals(1, result.size());
+			assertEquals(null, result.get(0).getCommitInfo());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
+		}
+
+		@Test
+		void shouldGenerateValueWithoutCommitWhenCodebaseSettingTokenIsEmpty() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(BuildKiteJob.builder().build());
+			when(buildKiteService.mapToDeployInfo(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(DeployInfo.builder().jobName("test").build());
+
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
+
+			assertEquals(1, result.size());
+			assertEquals(null, result.get(0).getCommitInfo());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
+		}
+
+		@Test
+		void shouldGenerateValueWithoutCommitWhenCommitIdIsEmpty() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(BuildKiteJob.builder().build());
+			when(buildKiteService.mapToDeployInfo(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(DeployInfo.builder().jobName("test").build());
+
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().token("token").build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").build()));
+
+			assertEquals(1, result.size());
+			assertEquals(null, result.get(0).getCommitInfo());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
+		}
+
+		@Test
+		void shouldGenerateValueHasCommit() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
+			CommitInfo fakeCommitInfo = CommitInfo.builder().build();
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(BuildKiteJob.builder().build());
+			DeployInfo fakeDeploy = DeployInfo.builder().commitId("commitId").jobName("test").build();
+			when(buildKiteService.mapToDeployInfo(any(), any(), any(), any(), any())).thenReturn(fakeDeploy);
+			when(gitHubService.fetchCommitInfo(any(), any(), any())).thenReturn(fakeCommitInfo);
+
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().token("token").build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").name("env-name").build()));
+
+			assertEquals(1, result.size());
+			PipelineCSVInfo pipelineCSVInfo = result.get(0);
+			assertEquals("env-name", pipelineCSVInfo.getPipeLineName());
+			assertEquals(fakeCommitInfo, pipelineCSVInfo.getCommitInfo());
+			assertEquals(fakeDeploy, pipelineCSVInfo.getDeployInfo());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
+		}
 
 	}
 

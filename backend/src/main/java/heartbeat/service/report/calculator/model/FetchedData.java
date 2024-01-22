@@ -47,10 +47,6 @@ public class FetchedData {
 
 		private List<Map.Entry<String, List<BuildKiteBuildInfo>>> buildInfosList;
 
-		public void addPipelineLeadTimes(PipelineLeadTime pipelineLeadTime) {
-			this.pipelineLeadTimes.add(pipelineLeadTime);
-		}
-
 		public void addDeployTimes(DeployTimes deployTimesList) {
 			this.deployTimesList.add(deployTimesList);
 		}
