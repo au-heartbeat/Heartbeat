@@ -49,6 +49,8 @@ const MetricsStep = () => {
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
 
+  console.log(errorMessage, 'error message is');
+
   const getInfo = () => {
     getBoardInfo(boardConfig).then((res) => {
       dispatch(updateBoardVerifyState(true));
