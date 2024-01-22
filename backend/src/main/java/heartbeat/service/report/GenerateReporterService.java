@@ -270,7 +270,7 @@ public class GenerateReporterService {
 	public void initializeMetricsDataCompletedInHandler(GenerateReportRequest request) {
 		MetricsDataCompleted metricsStatus = getMetricsStatus(request, Boolean.FALSE);
 		String timeStamp = request.getCsvTimeStamp();
-		MetricsDataCompleted previousMetricsCompleted = asyncReportRequestHandler.getMetricsDataCompleted(timeStamp);
+		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(timeStamp);
 		MetricsDataCompleted isMetricsDataCompleted = createMetricsDataCompleted(metricsStatus,
 				previousMetricsCompleted);
 		asyncMetricsDataHandler.putMetricsDataCompleted(timeStamp, isMetricsDataCompleted);
@@ -299,7 +299,7 @@ public class GenerateReporterService {
 	private void updateMetricsDataCompletedInHandler(GenerateReportRequest request) {
 		MetricsDataCompleted metricsStatus = getMetricsStatus(request, Boolean.TRUE);
 		String timeStamp = request.getCsvTimeStamp();
-		MetricsDataCompleted previousMetricsCompleted = asyncReportRequestHandler.getMetricsDataCompleted(timeStamp);
+		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(timeStamp);
 		if (previousMetricsCompleted == null) {
 			log.error("Failed to update metrics data completed through this timestamp.");
 			throw new GenerateReportException("Failed to update metrics data completed through this timestamp.");
@@ -393,7 +393,7 @@ public class GenerateReporterService {
 		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
 		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
 		ReportResponse sourceControlReportResponse = getReportFromHandler(IdUtil.getSourceControlReportId(reportId));
-		MetricsDataCompleted metricsDataCompleted = asyncReportRequestHandler.getMetricsDataCompleted(reportId);
+		MetricsDataCompleted metricsDataCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(reportId);
 		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(reportId);
 
 		return ReportResponse.builder()
