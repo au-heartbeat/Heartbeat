@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
-import { useAppSelector } from '@src/hooks';
-import _ from 'lodash';
-import { selectConfig } from '@src/context/config/configSlice';
+import {
+  StyledLoading,
+  StyledMetricsSection,
+  StyledRetry,
+  StyledShowMore,
+  StyledTitleWrapper,
+} from '@src/containers/ReportStep/BoardMetrics/BoardMetrics';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -13,21 +16,18 @@ import {
   SHOW_MORE,
 } from '@src/constants/resources';
 import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import dayjs from 'dayjs';
-import {
-  StyledLoading,
-  StyledMetricsSection,
-  StyledRetry,
-  StyledShowMore,
-  StyledTitleWrapper,
-} from '@src/containers/ReportStep/BoradMetrics/BoardMetrics';
 import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
-import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { Nullable } from '@src/utils/types';
+import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { selectConfig } from '@src/context/config/configSlice';
 import { Loading } from '@src/components/Loading';
+import { Nullable } from '@src/utils/types';
+import { useAppSelector } from '@src/hooks';
+import React, { useEffect } from 'react';
+import dayjs from 'dayjs';
+import _ from 'lodash';
 
 interface BoardMetricsProps {
   startToRequestBoardData: (request: ReportRequestDTO) => void;

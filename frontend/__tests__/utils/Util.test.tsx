@@ -7,7 +7,7 @@ import {
   getJiraBoardToken,
   transformToCleanedBuildKiteEmoji,
 } from '@src/utils/util';
-import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/emojis/emoji';
+import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { PIPELINE_TOOL_TYPES } from '../fixtures';
 

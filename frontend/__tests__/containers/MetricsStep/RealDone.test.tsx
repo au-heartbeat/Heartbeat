@@ -113,7 +113,7 @@ describe('RealDone', () => {
         saveCycleTimeSettings([
           { column: 'Done', status: 'DONE', value: 'Done' },
           { column: 'Done', status: 'CANCELLED', value: 'Done' },
-        ])
+        ]),
       );
       const { getByRole } = setup();
 

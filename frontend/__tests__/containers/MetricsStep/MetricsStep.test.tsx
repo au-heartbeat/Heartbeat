@@ -56,7 +56,7 @@ describe('MetricsStep', () => {
       saveCycleTimeSettings([
         { column: 'Testing', status: 'testing', value: 'Done' },
         { column: 'Testing', status: 'test', value: 'Done' },
-      ])
+      ]),
     );
 
     const { getByText, queryByText } = setup();

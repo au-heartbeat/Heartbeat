@@ -1,13 +1,3 @@
-import React, { useCallback } from 'react';
-import { FormControlLabel, Radio, Table, TableBody, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
-import { useAppSelector } from '@src/hooks';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import {
-  saveCycleTimeSettings,
-  saveDoneColumn,
-  selectMetricsContent,
-  setCycleTimeSettingsType,
-} from '@src/context/Metrics/metricsSlice';
 import {
   CYCLE_TIME_SETTINGS_TYPES,
   DONE,
@@ -15,14 +5,24 @@ import {
   METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN,
   METRICS_CYCLE_SETTING_TABLE_HEADER_BY_STATUS,
 } from '@src/constants/resources';
-import { theme } from '@src/theme';
-import CellAutoComplete from '@src/containers/MetricsStep/CycleTime/Table/CellAutoComplete';
+import {
+  saveCycleTimeSettings,
+  saveDoneColumn,
+  selectMetricsContent,
+  setCycleTimeSettingsType,
+} from '@src/context/Metrics/metricsSlice';
 import {
   StyledRadioGroup,
   StyledTableHeaderCell,
   StyledTableRowCell,
 } from '@src/containers/MetricsStep/CycleTime/Table/style';
+import { FormControlLabel, Radio, Table, TableBody, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
+import CellAutoComplete from '@src/containers/MetricsStep/CycleTime/Table/CellAutoComplete';
 import EllipsisText from '@src/components/Common/EllipsisText';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { useAppSelector } from '@src/hooks';
+import React, { useCallback } from 'react';
+import { theme } from '@src/theme';
 
 const CycleTimeTable = () => {
   const dispatch = useAppDispatch();
@@ -54,12 +54,12 @@ const CycleTimeTable = () => {
               ...item,
               value,
             }
-          : item
+          : item,
       );
       resetRealDoneColumn(name, value);
       dispatch(saveCycleTimeSettings(newCycleTimeSettings));
     },
-    [cycleTimeSettings, dispatch, isColumnAsKey, resetRealDoneColumn]
+    [cycleTimeSettings, dispatch, isColumnAsKey, resetRealDoneColumn],
   );
 
   const header = isColumnAsKey
@@ -85,8 +85,8 @@ const CycleTimeTable = () => {
         cycleTimeSettings.map((item) => ({
           ...item,
           value: METRICS_CONSTANTS.cycleTimeEmptyStr,
-        }))
-      )
+        })),
+      ),
     );
   };
 

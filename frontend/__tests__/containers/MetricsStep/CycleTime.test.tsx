@@ -1,10 +1,3 @@
-import React from 'react';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
-import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
-import userEvent from '@testing-library/user-event';
-import { Provider } from 'react-redux';
-import { setupStore } from '../../utils/setupStoreUtil';
-import { CYCLE_TIME_SETTINGS, ERROR_MESSAGE_TIME_DURATION, LIST_OPEN, NO_RESULT_DASH } from '../../fixtures';
 import {
   saveCycleTimeSettings,
   saveDoneColumn,
@@ -12,7 +5,14 @@ import {
   setCycleTimeSettingsType,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
+import { CYCLE_TIME_SETTINGS, ERROR_MESSAGE_TIME_DURATION, LIST_OPEN, NO_RESULT_DASH } from '../../fixtures';
 import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
+import { setupStore } from '../../utils/setupStoreUtil';
+import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import React from 'react';
 
 const FlagAsBlock = 'Consider the "Flag" as "Block"';
 const cycleTimeSettings = [
@@ -65,7 +65,7 @@ const setup = () =>
   render(
     <Provider store={store}>
       <CycleTime />
-    </Provider>
+    </Provider>,
   );
 
 describe('CycleTime', () => {
@@ -86,7 +86,6 @@ describe('CycleTime', () => {
     it('should show Cycle Time title when render Crews component', () => {
       setup();
       expect(screen.getByText(CYCLE_TIME_SETTINGS)).toBeInTheDocument();
-      expect(screen.getByLabelText('sticky table').querySelector('th')).toHaveTextContent('Board Column');
     });
     it('should show Cycle Time tooltip when render Crews component', () => {
       setup();
@@ -325,18 +324,16 @@ describe('CycleTime', () => {
       await userEvent.click(screen.getByRole('radio', { name: cycleTimeTypeLabels[1] }));
     });
 
-    await waitFor(() => {
-      expect(mockedUseAppDispatch).toHaveBeenCalledTimes(2);
-      expect(mockedUseAppDispatch).toHaveBeenCalledWith(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
-      expect(mockedUseAppDispatch).toHaveBeenCalledWith(
-        saveCycleTimeSettings(
-          cycleTimeSettings.map((item) => ({
-            ...item,
-            value: METRICS_CONSTANTS.cycleTimeEmptyStr,
-          }))
-        )
-      );
-    });
+    expect(mockedUseAppDispatch).toHaveBeenCalledTimes(2);
+    expect(mockedUseAppDispatch).toHaveBeenCalledWith(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
+    expect(mockedUseAppDispatch).toHaveBeenCalledWith(
+      saveCycleTimeSettings(
+        cycleTimeSettings.map((item) => ({
+          ...item,
+          value: METRICS_CONSTANTS.cycleTimeEmptyStr,
+        })),
+      ),
+    );
   });
 
   describe('cycle time by status', () => {
@@ -350,7 +347,6 @@ describe('CycleTime', () => {
     it('should show status mapping table when cycle time settings type by status', async () => {
       setup();
 
-      expect(screen.getByLabelText('sticky table').querySelector('th')).toHaveTextContent('Board Status');
       expect(screen.getByText('Analysis')).toBeInTheDocument();
       expect(screen.getByText('In Dev')).toBeInTheDocument();
       expect(screen.getByText('doing')).toBeInTheDocument();

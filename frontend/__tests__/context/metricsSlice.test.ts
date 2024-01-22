@@ -17,8 +17,8 @@ import saveMetricsSettingReducer, {
   updatePipelineStep,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
-import { CLASSIFICATION_WARNING_MESSAGE, NO_RESULT_DASH, PIPELINE_SETTING_TYPES } from '../fixtures';
 import { ASSIGNEE_FILTER_TYPES, CYCLE_TIME_SETTINGS_TYPES, MESSAGE } from '@src/constants/resources';
+import { CLASSIFICATION_WARNING_MESSAGE, NO_RESULT_DASH, PIPELINE_SETTING_TYPES } from '../fixtures';
 import { setupStore } from '../utils/setupStoreUtil';
 import { store } from '@src/store';
 

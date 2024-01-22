@@ -9,17 +9,8 @@ import {
   updateSourceControlVerifyState,
 } from '@src/context/config/configSlice';
 import {
-  BackButton,
-  ButtonContainer,
-  MetricsStepperContent,
-  NextButton,
-  SaveButton,
-  StyledStep,
-  StyledStepLabel,
-  StyledStepper,
-} from './style';
-import {
   BOARD_TYPES,
+  CYCLE_TIME_SETTINGS_TYPES,
   DONE,
   METRICS_CONSTANTS,
   PIPELINE_TOOL_TYPES,
@@ -164,7 +155,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
         } else {
           return true;
         }
-      })
+      }),
     );
   };
 
@@ -214,7 +205,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
                       [uniqueColumn]:
                         cycleTimeSettings.find(({ column }: ICycleTimeSetting) => column === uniqueColumn)?.value ||
                         METRICS_CONSTANTS.cycleTimeEmptyStr,
-                    })
+                    }),
                   )
                 : cycleTimeSettings?.map(({ status, value }: ICycleTimeSetting) => ({ [status]: value })),
             treatFlagCardAsBlock,

@@ -1,7 +1,4 @@
 /* istanbul ignore file */
-import { createSlice } from '@reduxjs/toolkit';
-import camelCase from 'lodash.camelcase';
-import { RootState } from '@src/store';
 import {
   ASSIGNEE_FILTER_TYPES,
   CYCLE_TIME_LIST,
@@ -10,6 +7,9 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { createSlice } from '@reduxjs/toolkit';
+import camelCase from 'lodash.camelcase';
+import { RootState } from '@src/store';
 import _ from 'lodash';
 
 export interface IPipelineConfig {
@@ -31,10 +31,6 @@ export interface ICycleTimeSetting {
   column: string;
   status: string;
   value: string;
-}
-export interface IJiraColumnsWithValue {
-  name: string;
-  statuses: string[];
 }
 
 export interface savedMetricsSettingState {
@@ -141,7 +137,7 @@ const setPipelineCrews = (pipelineCrews: string[], importedPipelineCrews: string
 
 const setSelectTargetFields = (
   targetFields: { name: string; key: string; flag: boolean }[],
-  importedClassification: string[]
+  importedClassification: string[],
 ) =>
   targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
     ...item,
@@ -150,7 +146,7 @@ const setSelectTargetFields = (
 
 const getCycleTimeSettingsByColumn = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
-  importedCycleTimeSettings: { [key: string]: string }[]
+  importedCycleTimeSettings: { [key: string]: string }[],
 ) =>
   jiraColumns.flatMap(({ value: { name, statuses } }) => {
     const importItem = importedCycleTimeSettings.find((i) => Object.keys(i).includes(name));
@@ -164,7 +160,7 @@ const getCycleTimeSettingsByColumn = (
 
 const getCycleTimeSettingsByStatus = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
-  importedCycleTimeSettings: { [key: string]: string }[]
+  importedCycleTimeSettings: { [key: string]: string }[],
 ) =>
   jiraColumns.flatMap(({ value: { name, statuses } }) =>
     statuses.map((status) => {
@@ -175,13 +171,13 @@ const getCycleTimeSettingsByStatus = (
         status,
         value: isValidValue ? (Object.values(importItem)[0] as string) : METRICS_CONSTANTS.cycleTimeEmptyStr,
       };
-    })
+    }),
   );
 
 const setSelectDoneColumns = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
   cycleTimeSettings: ICycleTimeSetting[],
-  importedDoneStatus: string[]
+  importedDoneStatus: string[],
 ) => {
   const doneStatus =
     jiraColumns?.find((item) => item.key === METRICS_CONSTANTS.doneKeyFromBackend)?.value.statuses ?? [];
@@ -267,16 +263,16 @@ export const metricsSlice = createSlice({
 
       if (!isProjectCreated && importedCycleTime?.importedCycleTimeSettings?.length > 0) {
         const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
-          Object.keys(obj)
+          Object.keys(obj),
         );
         const importedCycleTimeSettingsValues = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
-          Object.values(obj)
+          Object.values(obj),
         );
         const jiraColumnsNames = jiraColumns?.map(
-          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name
+          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name,
         );
         const jiraStatuses = jiraColumns?.flatMap(
-          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.statuses
+          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.statuses,
         );
         const metricsContainsValues = Object.values(METRICS_CONSTANTS);
         const importedKeyMismatchWarning =
@@ -285,7 +281,7 @@ export const metricsSlice = createSlice({
             : compareArrays(importedCycleTimeSettingsKeys, jiraStatuses, 'status');
         const importedValueMismatchWarning = findDifferentValues(
           importedCycleTimeSettingsValues,
-          metricsContainsValues
+          metricsContainsValues,
         );
 
         const getWarningMessage = (): string | null => {
@@ -305,7 +301,7 @@ export const metricsSlice = createSlice({
       if (!isProjectCreated && importedClassification?.length > 0) {
         const keyArray = targetFields?.map((field: { key: string; name: string; flag: boolean }) => field.key);
         const ignoredKeyArray = ignoredTargetFields?.map(
-          (field: { key: string; name: string; flag: boolean }) => field.key
+          (field: { key: string; name: string; flag: boolean }) => field.key,
         );
         const filteredImportedClassification = importedClassification.filter((item) => !ignoredKeyArray.includes(item));
         if (filteredImportedClassification.every((item) => keyArray.includes(item))) {
@@ -415,7 +411,7 @@ export const metricsSlice = createSlice({
                 step: validStep,
                 branches: validBranches,
               }
-            : pipeline
+            : pipeline,
         );
 
       const getStepWarningMessage = (pipelines: IPipelineWarningMessageConfig[]) => {
@@ -425,7 +421,7 @@ export const metricsSlice = createSlice({
                 ...pipeline,
                 step: stepWarningMessage,
               }
-            : pipeline
+            : pipeline,
         );
       };
 
