@@ -1,8 +1,8 @@
 import { BranchSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection';
 import { updatePipelineToolVerifyResponse } from '@src/context/config/configSlice';
-import { MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL } from '../../../fixtures';
+import { MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL } from '@test/fixtures';
 import { render, screen, waitFor } from '@testing-library/react';
-import { setupStore } from '../../../utils/setupStoreUtil';
+import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
@@ -93,7 +93,7 @@ describe('BranchSelection', () => {
   });
 
   it('should show cancel button when retry successfully', async () => {
-    server.use(rest.post(MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL, (req, res, ctx) => res.networkError('error')));
+    server.use(rest.post(MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL, (req, res) => res.networkError('error')));
     setup();
     const retryButtons = await screen.findAllByTestId('ReplayIcon');
     server.use(rest.post(MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL, (req, res, ctx) => res(ctx.status(204))));
