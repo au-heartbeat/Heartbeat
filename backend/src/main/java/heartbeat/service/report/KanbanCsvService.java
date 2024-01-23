@@ -1,30 +1,37 @@
 package heartbeat.service.report;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraCardField;
 import heartbeat.client.dto.board.jira.Status;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
-import heartbeat.controller.board.dto.request.StoryPointsAndCycleTimeRequest;
-import heartbeat.controller.board.dto.response.*;
+import heartbeat.controller.board.dto.response.CardCollection;
+import heartbeat.controller.board.dto.response.JiraCardDTO;
+import heartbeat.controller.board.dto.response.JiraColumnDTO;
+import heartbeat.controller.board.dto.response.TargetField;
+import heartbeat.controller.board.dto.response.CycleTimeInfo;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
-import heartbeat.service.report.calculator.model.FetchedData;
-import heartbeat.util.DecimalUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -72,54 +79,57 @@ public class KanbanCsvService {
 
 		if (nonDoneCards != null) {
 			if (nonDoneCards.size() > 1) {
-				nonDoneCards.sort((preCard, nextCard) -> {
+				nonDoneCards.sort((preCard, nextCard) -> { // 8, 0, -2
 					Status preStatus = preCard.getBaseInfo().getFields().getStatus();
 					Status nextStatus = nextCard.getBaseInfo().getFields().getStatus();
 					if (preStatus == null || nextStatus == null) {
 						return jiraColumns.size() + 1;
 					}
 					else {
-						String preCardName = preStatus.getName();
-						String nextCardName = nextStatus.getName();
-						return getIndexForStatus(jiraColumns, nextCardName)
-								- getIndexForStatus(jiraColumns, preCardName);
+						String preCardStatusName = preStatus.getName();
+						String nextCardStatusName = nextStatus.getName();
+						return getIndexForStatus(jiraColumns, nextCardStatusName)
+								- getIndexForStatus(jiraColumns, preCardStatusName);
 					}
 				});
 			}
 			cardDTOList.addAll(nonDoneCards);
 		}
-		List<String> columns = cardDTOList.stream().flatMap(cardDTO -> {
+
+		List<TargetField> enabledTargetFields = targetFields.stream().filter(TargetField::isFlag).toList();
+
+		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields();
+		List<BoardCSVConfig> extraFields = getExtraFields(enabledTargetFields, fixedBoardFields);
+
+		List<BoardCSVConfig> newExtraFields = updateExtraFieldsWithCardField(extraFields, cardDTOList);
+		List<BoardCSVConfig> allBoardFields = insertExtraFieldsAfterCycleTime(newExtraFields, fixedBoardFields);
+
+		// append OriginCycleTime
+		cardDTOList.stream().flatMap(cardDTO -> {
 			if (cardDTO.getOriginCycleTime() != null) {
 				return cardDTO.getOriginCycleTime().stream();
 			}
 			else {
 				return Stream.empty();
 			}
-		}).map(CycleTimeInfo::getColumn).distinct().toList();
-
-		List<TargetField> activeTargetFields = targetFields.stream().filter(TargetField::isFlag).toList();
-
-		List<BoardCSVConfig> fields = getFixedBoardFields();
-		List<BoardCSVConfig> extraFields = getExtraFields(activeTargetFields, fields);
-
-		List<BoardCSVConfig> newExtraFields = updateExtraFields(extraFields, cardDTOList);
-		List<BoardCSVConfig> allBoardFields = insertExtraFields(newExtraFields, fields);
-
-		columns.forEach(column -> allBoardFields.add(
-				BoardCSVConfig.builder().label("OriginCycleTime: " + column).value("cycleTimeFlat." + column).build()));
+		})
+			.map(CycleTimeInfo::getColumn)
+			.distinct()
+			.forEach(column -> allBoardFields.add(BoardCSVConfig.builder()
+				.label("OriginCycleTime: " + column)
+				.value("cycleTimeFlat." + column)
+				.build()));
 
 		cardDTOList.forEach(card -> {
 			card.setCycleTimeFlat(card.buildCycleTimeFlatObject());
 			card.setTotalCycleTimeDivideStoryPoints(card.getTotalCycleTimeDivideStoryPoints());
 		});
-		// csvFileGenerator.test(cardDTOList, allBoardFields, newExtraFields,
-		// csvTimeStamp);
 		csvFileGenerator.convertBoardDataToCSV(cardDTOList, allBoardFields, newExtraFields, csvTimeStamp);
 	}
 
-	private List<BoardCSVConfig> insertExtraFields(List<BoardCSVConfig> extraFields,
-			List<BoardCSVConfig> currentFields) {
-		List<BoardCSVConfig> modifiedFields = new ArrayList<>(currentFields);
+	private List<BoardCSVConfig> insertExtraFieldsAfterCycleTime(final List<BoardCSVConfig> extraFields,
+			final List<BoardCSVConfig> fixedBoardFields) {
+		List<BoardCSVConfig> modifiedFields = new ArrayList<>(fixedBoardFields);
 		int insertIndex = 0;
 		for (int i = 0; i < modifiedFields.size(); i++) {
 			BoardCSVConfig currentField = modifiedFields.get(i);
@@ -132,16 +142,17 @@ public class KanbanCsvService {
 		return modifiedFields;
 	}
 
-	private List<BoardCSVConfig> updateExtraFields(List<BoardCSVConfig> extraFields, List<JiraCardDTO> cardDTOList) {
+	private List<BoardCSVConfig> updateExtraFieldsWithCardField(List<BoardCSVConfig> extraFields,
+			final List<JiraCardDTO> cardDTOList) {
 		List<BoardCSVConfig> updatedFields = new ArrayList<>();
 		for (BoardCSVConfig field : extraFields) {
 			boolean hasUpdated = false;
 			for (JiraCardDTO card : cardDTOList) {
-				if (card.getBaseInfo() != null) {
+				if (card.getBaseInfo() != null) { // this is trying to filter out the
+													// empty row
 					Map<String, Object> tempFields = extractFields(card.getBaseInfo().getFields());
-					if (!hasUpdated && field.getOriginKey() != null) {
-						Object object = tempFields.get(field.getOriginKey());
-						String extendField = getFieldDisplayValue(object);
+					if (!hasUpdated) {
+						String extendField = getFieldDisplayValue(tempFields.get(field.getOriginKey()));
 						if (extendField != null) {
 							field.setValue(field.getValue() + extendField);
 							hasUpdated = true;
@@ -189,34 +200,28 @@ public class KanbanCsvService {
 		return jiraColumns.size();
 	}
 
-	private List<BoardCSVConfig> getExtraFields(List<TargetField> targetFields, List<BoardCSVConfig> currentFields) {
+	private List<BoardCSVConfig> getExtraFields(List<TargetField> targetFields, List<BoardCSVConfig> fixedBoardFields) {
 		List<BoardCSVConfig> extraFields = new ArrayList<>();
 		for (TargetField targetField : targetFields) {
-			boolean isInCurrentFields = false;
-			for (BoardCSVConfig currentField : currentFields) {
-				if (currentField.getLabel().equalsIgnoreCase(targetField.getName())
-						|| currentField.getValue().contains(targetField.getKey())) {
-					isInCurrentFields = true;
-					break;
-				}
-			}
-			if (!isInCurrentFields) {
-				BoardCSVConfig extraField = new BoardCSVConfig();
-				extraField.setLabel(targetField.getName());
-				extraField.setValue("baseInfo.fields.customFields." + targetField.getKey());
-				extraField.setOriginKey(targetField.getKey());
-				extraFields.add(extraField);
+			boolean isNotBelongTarget = fixedBoardFields.stream()
+				.noneMatch(currentField -> currentField.getLabel().equalsIgnoreCase(targetField.getName())
+						|| currentField.getValue().contains(targetField.getKey()));
+
+			if (isNotBelongTarget) {
+				extraFields.add(BoardCSVConfig.builder()
+					.originKey(targetField.getKey())
+					.label(targetField.getName())
+					.value("baseInfo.fields.customFields." + targetField.getKey())
+					.build());
 			}
 		}
 		return extraFields;
 	}
 
 	private List<BoardCSVConfig> getFixedBoardFields() {
-		List<BoardCSVConfig> fields = new ArrayList<>();
-		for (BoardCSVConfigEnum field : BoardCSVConfigEnum.values()) {
-			fields.add(BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build());
-		}
-		return fields;
+		return Arrays.stream(BoardCSVConfigEnum.values())
+			.map(field -> BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build())
+			.collect(Collectors.toList());
 	}
 
 	private String getFieldDisplayValue(Object object) {
@@ -256,22 +261,6 @@ public class KanbanCsvService {
 		}
 
 		return result;
-	}
-
-	private static StoryPointsAndCycleTimeRequest buildStoryPointsAndCycleTimeRequest(JiraBoardSetting jiraBoardSetting,
-			String startTime, String endTime) {
-		return StoryPointsAndCycleTimeRequest.builder()
-			.token(jiraBoardSetting.getToken())
-			.type(jiraBoardSetting.getType())
-			.site(jiraBoardSetting.getSite())
-			.project(jiraBoardSetting.getProjectKey())
-			.boardId(jiraBoardSetting.getBoardId())
-			.status(jiraBoardSetting.getDoneColumn())
-			.startTime(startTime)
-			.endTime(endTime)
-			.targetFields(jiraBoardSetting.getTargetFields())
-			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock())
-			.build();
 	}
 
 }
