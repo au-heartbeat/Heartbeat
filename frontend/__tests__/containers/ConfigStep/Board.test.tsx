@@ -147,7 +147,7 @@ describe('Board', () => {
     expect(boardIdInput.value).toEqual('');
   });
 
-  it('should clear all fields information when click reset button', async () => {
+  it('should clear all fields information when click reset button and reselect board type', async () => {
     const { getByRole, queryByRole } = setup();
     mockVerifySuccess();
     await fillBoardFieldsInformation();
@@ -170,6 +170,17 @@ describe('Board', () => {
       expect(screen.getByLabelText(/email/i)).not.toHaveValue();
       expect(screen.getByLabelText(/site/i)).not.toHaveValue();
       expect(screen.getByLabelText(/token/i)).not.toHaveValue();
+    });
+
+    await userEvent.click(getByRole('button', { name: /board/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByRole('option', { name: /jira/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /board jira/i })).toBeInTheDocument();
     });
   });
 

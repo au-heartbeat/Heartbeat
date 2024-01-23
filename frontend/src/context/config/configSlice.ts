@@ -112,9 +112,6 @@ export const configSlice = createSlice({
       console.log(action.payload);
       state.board.config = action.payload;
     },
-    updateProjectKey: (state, action) => {
-      state.board.config.projectKey = action.payload;
-    },
     updateJiraVerifyResponse: (state, action) => {
       const { jiraColumns, targetFields, users } = action.payload;
       state.board.verifiedResponse.jiraColumns = jiraColumns;
@@ -174,7 +171,6 @@ export const {
   updateMetrics,
   updateBoard,
   updateBoardVerifyState,
-  updateProjectKey,
   updateJiraVerifyResponse,
   updateBasicConfigState,
   updatePipelineToolVerifyState,

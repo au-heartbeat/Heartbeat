@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';

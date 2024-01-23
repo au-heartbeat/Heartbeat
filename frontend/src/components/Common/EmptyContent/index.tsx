@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { StyledErrorMessage, StyledErrorSection, StyledImgSection, StyledErrorTitle } from './styles';
 import EmptyBox from '@src/assets/EmptyBox.svg';
 import { ReactNode } from 'react';

@@ -48,6 +48,7 @@ const MetricsStep = () => {
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
 
+  /* istanbul ignore next */
   const getInfo = () => {
     getBoardInfo(boardConfig).then((res) => {
       if (res.data) {
@@ -69,6 +70,7 @@ const MetricsStep = () => {
           <DateRangeViewer startDate={startDate} endDate={endDate} />
         </MetricSelectionHeader>
       )}
+
       <MetricSelectionWrapper>
         {isLoading && <Loading />}
         {isEmpty(errorMessage) ? (

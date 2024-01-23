@@ -15,6 +15,7 @@ import {
   MOCK_BUILD_KITE_GET_INFO_RESPONSE,
   MOCK_JIRA_VERIFY_RESPONSE,
   MOCK_PIPELINE_GET_INFO_URL,
+  MOCK_BOARD_INFO_URL,
   REAL_DONE,
   REAL_DONE_SETTING_SECTION,
   REQUIRED_DATA_LIST,
@@ -25,6 +26,7 @@ import { updateJiraVerifyResponse, updateMetrics } from '@src/context/config/con
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
 import userEvent from '@testing-library/user-event';
+import { HttpStatusCode } from 'axios';
 
 jest.mock('@src/context/notification/NotificationSlice', () => ({
   ...jest.requireActual('@src/context/notification/NotificationSlice'),
@@ -255,6 +257,23 @@ describe('MetricsStep', () => {
       const { queryByText } = setup();
 
       expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
+    });
+
+    it('when get board card when no data then should be render no card container', async () => {
+      server.use(
+        rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
+          return res(ctx.status(HttpStatusCode.Ok));
+        }),
+      );
+
+      const { getByText } = setup();
+
+      await waitFor(() => {
+        expect(getByText('No card within selected date range!')).toBeInTheDocument();
+      });
+      expect(
+        getByText('Please go back to the previous page and change your collection date, or check your board info!'),
+      ).toBeInTheDocument();
     });
   });
 });
