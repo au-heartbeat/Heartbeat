@@ -35,10 +35,6 @@ class Config {
     return cy.contains('Jira');
   }
 
-  get boardInfoSelectionClassicJira() {
-    return cy.contains('Classic Jira');
-  }
-
   get boardInfoBoardIdInput() {
     return this.boardConfigSection.contains('label', 'Board Id').parent();
   }
@@ -132,16 +128,7 @@ class Config {
     this.requiredDataModelCloseElement.click({ force: true });
   }
 
-  fillBoardInfoAndVerifyWithClassicJira(
-    boardId: string,
-    email: string,
-    projectKey: string,
-    site: string,
-    token: string,
-  ) {
-    this.boardInfoSelectionJira.click();
-    this.boardInfoSelectionClassicJira.click();
-
+  fillBoardInfoAndVerifyWithJira(boardId: string, email: string, projectKey: string, site: string, token: string) {
     this.boardInfoBoardIdInput.type(boardId);
     this.boardInfoEmailInput.type(email);
     this.boardInfoSiteInput.type(site);

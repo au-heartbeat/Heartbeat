@@ -101,7 +101,7 @@ const cycleTimeSettingsAutoCompleteTextList = [
 const configTextList = [
   'Project name *',
   'Velocity, Cycle time, Classification, Lead time for changes, Deployment frequency, Change failure rate, Mean time to recovery',
-  'Classic Jira',
+  'Jira',
   'BuildKite',
   'GitHub',
 ];
@@ -273,7 +273,7 @@ describe('Create a new project', () => {
 
     configPage.selectMetricsData();
 
-    configPage.fillBoardInfoAndVerifyWithClassicJira('1963', 'test@test.com', 'PLL', 'site', 'mockToken');
+    configPage.fillBoardInfoAndVerifyWithJira('1963', 'test@test.com', 'PLL', 'site', 'mockToken');
     configPage.getVerifiedButton(configPage.boardConfigSection).should('be.disabled');
     configPage.getResetButton(configPage.boardConfigSection).should('be.enabled');
 
