@@ -3,6 +3,8 @@ package heartbeat.service.report;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportDataType;
 import heartbeat.controller.report.dto.request.ReportType;
+import heartbeat.controller.report.dto.response.MetricsDataCompleted;
+import heartbeat.handler.AsyncMetricsDataHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import heartbeat.exception.NotFoundException;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doAnswer;
@@ -42,6 +45,9 @@ public class ReportServiceTest {
 
 	@Mock
 	CSVFileGenerator csvFileGenerator;
+
+	@Mock
+	AsyncMetricsDataHandler asyncMetricsDataHandler;
 
 	@Mock
 	GenerateReporterService generateReporterService;
@@ -85,6 +91,17 @@ public class ReportServiceTest {
 		Thread.sleep(100);
 		verify(generateReporterService).generateDoraReport(request);
 		verify(generateReporterService, never()).generateBoardReport(request);
+	}
+
+	@Test
+	void ShouldInitializeMetricsDataCompletedInHandlerWithPreOneWhenPreOneExisted() throws InterruptedException {
+		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
+		when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(MetricsDataCompleted.builder().build());
+		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
+		reportService.generateReportByType(request, ReportType.BOARD);
+		Thread.sleep(100);
+		verify(generateReporterService).generateBoardReport(request);
+		verify(generateReporterService, never()).generateDoraReport(request);
 	}
 
 }

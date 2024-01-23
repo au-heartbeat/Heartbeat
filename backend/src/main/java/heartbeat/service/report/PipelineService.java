@@ -57,7 +57,7 @@ public class PipelineService {
 		String endTime = request.getEndTime();
 		FetchedData.BuildKiteData result = new FetchedData.BuildKiteData();
 
-		request.getBuildKiteSetting().getDeploymentEnvList().parallelStream().forEach(deploymentEnvironment -> {
+		request.getBuildKiteSetting().getDeploymentEnvList().stream().forEach(deploymentEnvironment -> {
 			List<BuildKiteBuildInfo> buildKiteBuildInfo = getBuildKiteBuildInfo(startTime, endTime,
 					deploymentEnvironment, request.getBuildKiteSetting().getToken(),
 					request.getBuildKiteSetting().getPipelineCrews());

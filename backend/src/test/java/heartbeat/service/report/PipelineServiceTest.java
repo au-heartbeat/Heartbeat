@@ -1,6 +1,7 @@
 package heartbeat.service.report;
 
 import heartbeat.client.dto.codebase.github.CommitInfo;
+import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
@@ -10,6 +11,7 @@ import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.response.LeadTimeInfo;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 import heartbeat.service.report.calculator.model.FetchedData;
@@ -168,13 +170,19 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldReturnValueWhenDeploymentEnvListIsNotEmpty() {
-			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = new ArrayList<>();
+			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = List.of(BuildKiteBuildInfo.builder()
+				.author(BuildKiteBuildInfo.Author.builder().name("someone").build())
+				.build());
 			String startTime = "startTime", endTime = "endTime", token = "token";
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.buildKiteSetting(BuildKiteSetting.builder()
+					.token(token)
+					.pipelineCrews(List.of("someone"))
 					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("env1").repository("repo1").build()))
 					.build())
 				.metrics(new ArrayList<>())
+				.startTime(startTime)
+				.endTime(endTime)
 				.build();
 
 			when(buildKiteService.fetchPipelineBuilds(eq(token), any(), eq(startTime), eq(endTime)))
@@ -397,6 +405,39 @@ public class PipelineServiceTest {
 			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
 					CodebaseSetting.builder().token("token").build(), startTime, endTime,
 					FetchedData.BuildKiteData.builder()
+						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
+						.build(),
+					List.of(DeploymentEnvironment.builder().id("env1").name("env-name").build()));
+
+			assertEquals(1, result.size());
+			PipelineCSVInfo pipelineCSVInfo = result.get(0);
+			assertEquals("env-name", pipelineCSVInfo.getPipeLineName());
+			assertEquals(fakeCommitInfo, pipelineCSVInfo.getCommitInfo());
+			assertEquals(fakeDeploy, pipelineCSVInfo.getDeployInfo());
+			verify(buildKiteService, times(1)).getPipelineStepNames(any());
+			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
+		}
+
+		@Test
+		void shouldGenerateValueWithLeadTimeWhenLeadTimeExisting() {
+			String startTime = "startTime", endTime = "endTime";
+			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
+			CommitInfo fakeCommitInfo = CommitInfo.builder().build();
+			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime)))
+				.thenReturn(BuildKiteJob.builder().build());
+			DeployInfo fakeDeploy = DeployInfo.builder().commitId("commitId").jobName("test").build();
+			when(buildKiteService.mapToDeployInfo(any(), any(), any(), any(), any())).thenReturn(fakeDeploy);
+			when(gitHubService.fetchCommitInfo(any(), any(), any())).thenReturn(fakeCommitInfo);
+
+			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
+					CodebaseSetting.builder().token("token").build(), startTime, endTime,
+					FetchedData.BuildKiteData.builder()
+						.pipelineLeadTimes(List.of(PipelineLeadTime.builder()
+							.leadTimes(List.of(LeadTime.builder().commitId("commitId").build()))
+							.pipelineName("env-name")
+							.build()))
 						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
 						.build(),
 					List.of(DeploymentEnvironment.builder().id("env1").name("env-name").build()));
