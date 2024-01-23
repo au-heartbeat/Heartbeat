@@ -348,7 +348,8 @@ class KanbanCsvServiceTest {
 	}
 
 	@Test
-	void shouldAddFixedFieldsWhen() throws URISyntaxException {
+	void shouldAddFixedFieldsWithCorrectValueFormatWhenCustomFieldValueInstanceOfListAndContainsStringKeyOrValueOrNameOrDisplayName()
+			throws URISyntaxException {
 		URI uri = new URI("site-uri");
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
@@ -372,8 +373,11 @@ class KanbanCsvServiceTest {
 					.jiraBoardSetting(JiraBoardSetting.builder()
 						.targetFields(List.of(
 								TargetField.builder().name("assignee").flag(true).key("key-assignee").build(),
-								TargetField.builder().name("fake-target1").flag(true).key("key-target1").build(),
-								TargetField.builder().name("fake-target2").flag(false).key("key-target2").build()))
+								TargetField.builder().name("fake-target1").flag(true).key("customfield_1012").build(),
+								TargetField.builder().name("fake-target2").flag(true).key("customfield_1013").build(),
+								TargetField.builder().name("fake-target3").flag(true).key("customfield_1014").build(),
+								TargetField.builder().name("fake-target4").flag(true).key("customfield_1015").build(),
+								TargetField.builder().name("fake-target5").flag(false).key("key-target2").build()))
 						.build())
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
@@ -381,11 +385,18 @@ class KanbanCsvServiceTest {
 
 		verify(csvFileGenerator).convertBoardDataToCSV(anyList(), csvFieldsCaptor.capture(),
 				csvNewFieldsCaptor.capture(), any());
-		assertEquals(22, csvFieldsCaptor.getValue().size());
-		BoardCSVConfig targetValue = csvNewFieldsCaptor.getValue().get(0);
-		assertEquals("baseInfo.fields.customFields.key-target1", targetValue.getValue());
-		assertEquals("fake-target1", targetValue.getLabel());
-		assertEquals("key-target1", targetValue.getOriginKey());
+
+		assertEquals(25, csvFieldsCaptor.getValue().size());
+		BoardCSVConfig targetValue1 = csvNewFieldsCaptor.getValue().get(0);
+		BoardCSVConfig targetValue2 = csvNewFieldsCaptor.getValue().get(1);
+		BoardCSVConfig targetValue3 = csvNewFieldsCaptor.getValue().get(2);
+		BoardCSVConfig targetValue4 = csvNewFieldsCaptor.getValue().get(3);
+		assertEquals("baseInfo.fields.customFields.customfield_1012[0].name", targetValue1.getValue());
+		assertEquals("fake-target1", targetValue1.getLabel());
+		assertEquals("customfield_1012", targetValue1.getOriginKey());
+		assertEquals("baseInfo.fields.customFields.customfield_1013[0].value", targetValue2.getValue());
+		assertEquals("baseInfo.fields.customFields.customfield_1014[0].key", targetValue3.getValue());
+		assertEquals("baseInfo.fields.customFields.customfield_1015[0].displayName", targetValue4.getValue());
 	}
 
 }
