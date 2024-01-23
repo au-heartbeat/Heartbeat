@@ -1,7 +1,6 @@
 package heartbeat.service.report;
 
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
-import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.ErrorInfo;
@@ -41,7 +40,6 @@ import org.springframework.util.ObjectUtils;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static heartbeat.util.ValueUtil.getValueOrNull;
-import static heartbeat.util.ValueUtil.valueOrDefault;
 
 @Service
 @RequiredArgsConstructor
@@ -103,7 +101,7 @@ public class GenerateReporterService {
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
 			generatePipelineReport(request, fetchedData);
 		}
-		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
+		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
 			generateSourceControlReport(request, fetchedData);
 		}
 		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
@@ -188,15 +186,16 @@ public class GenerateReporterService {
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 
-		final CardCollection realDoneCardCollection = fetchedData.getCardCollectionInfo().getRealDoneCardCollection();
 		request.getBoardMetrics().forEach(metric -> {
 			switch (metric) {
-				case "velocity" ->
-					reportResponse.setVelocity(velocityCalculator.calculateVelocity(realDoneCardCollection));
-				case "cycle time" -> reportResponse.setCycleTime(cycleTimeCalculator
-					.calculateCycleTime(realDoneCardCollection, jiraBoardSetting.getBoardColumns()));
-				case "classification" -> reportResponse.setClassificationList(
-						classificationCalculator.calculate(jiraBoardSetting.getTargetFields(), realDoneCardCollection));
+				case "velocity" -> reportResponse.setVelocity(velocityCalculator
+					.calculateVelocity(fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
+				case "cycle time" -> reportResponse.setCycleTime(cycleTimeCalculator.calculateCycleTime(
+						fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
+						jiraBoardSetting.getBoardColumns()));
+				case "classification" -> reportResponse
+					.setClassificationList(classificationCalculator.calculate(jiraBoardSetting.getTargetFields(),
+							fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
 			}
 		});
 
@@ -232,8 +231,7 @@ public class GenerateReporterService {
 		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
 			if (request.getCodebaseSetting() == null)
 				throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
-			BuildKiteData buildKiteData = pipelineService.fetchGithubData(request);
-			fetchedData.setBuildKiteData(buildKiteData);
+			fetchedData.setBuildKiteData(pipelineService.fetchGithubData(request));
 		}
 
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
@@ -267,37 +265,8 @@ public class GenerateReporterService {
 		asyncReportRequestHandler.putReport(reportId, reportContent);
 	}
 
-	public void initializeMetricsDataCompletedInHandler(GenerateReportRequest request) {
-		MetricsDataCompleted metricsStatus = getMetricsStatus(request, Boolean.FALSE);
-		String timeStamp = request.getCsvTimeStamp();
-		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(timeStamp);
-		MetricsDataCompleted isMetricsDataCompleted = createMetricsDataCompleted(metricsStatus,
-				previousMetricsCompleted);
-		asyncMetricsDataHandler.putMetricsDataCompleted(timeStamp, isMetricsDataCompleted);
-	}
-
-	private MetricsDataCompleted createMetricsDataCompleted(MetricsDataCompleted metricProcess,
-			MetricsDataCompleted previousMetricsCompleted) {
-		return previousMetricsCompleted == null
-				? MetricsDataCompleted.builder()
-					.boardMetricsCompleted(metricProcess.boardMetricsCompleted())
-					.pipelineMetricsCompleted(metricProcess.pipelineMetricsCompleted())
-					.sourceControlMetricsCompleted(metricProcess.sourceControlMetricsCompleted())
-					.build()
-				: MetricsDataCompleted.builder()
-					.boardMetricsCompleted(valueOrDefault(previousMetricsCompleted.boardMetricsCompleted(),
-							metricProcess.boardMetricsCompleted()))
-					.pipelineMetricsCompleted(valueOrDefault(previousMetricsCompleted.pipelineMetricsCompleted(),
-							metricProcess.pipelineMetricsCompleted()))
-					.sourceControlMetricsCompleted(
-							valueOrDefault(previousMetricsCompleted.sourceControlMetricsCompleted(),
-									metricProcess.sourceControlMetricsCompleted()))
-					.build();
-
-	}
-
 	private void updateMetricsDataCompletedInHandler(GenerateReportRequest request) {
-		MetricsDataCompleted metricsStatus = getMetricsStatus(request, Boolean.TRUE);
+		MetricsDataCompleted metricsStatus = request.getMetricsStatus(Boolean.TRUE);
 		String timeStamp = request.getCsvTimeStamp();
 		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(timeStamp);
 		if (previousMetricsCompleted == null) {
@@ -320,14 +289,6 @@ public class GenerateReporterService {
 		if (Boolean.TRUE.equals(exist) && Objects.nonNull(previousValue))
 			return Boolean.TRUE;
 		return previousValue;
-	}
-
-	private MetricsDataCompleted getMetricsStatus(GenerateReportRequest request, Boolean flag) {
-		return MetricsDataCompleted.builder()
-			.boardMetricsCompleted(CollectionUtils.isNotEmpty(request.getBoardMetrics()) ? flag : null)
-			.pipelineMetricsCompleted(CollectionUtils.isNotEmpty(request.getPipelineMetrics()) ? flag : null)
-			.sourceControlMetricsCompleted(CollectionUtils.isNotEmpty(request.getSourceControlMetrics()) ? flag : null)
-			.build();
 	}
 
 	public boolean checkGenerateReportIsDone(String reportTimeStamp) {
@@ -385,7 +346,7 @@ public class GenerateReporterService {
 		}
 	}
 
-	public ReportResponse getReportFromHandler(String reportId) {
+	private ReportResponse getReportFromHandler(String reportId) {
 		return asyncReportRequestHandler.getReport(reportId);
 	}
 
@@ -415,7 +376,7 @@ public class GenerateReporterService {
 			.build();
 	}
 
-	public ReportMetricsError getReportErrorAndHandleAsyncException(String reportId) {
+	private ReportMetricsError getReportErrorAndHandleAsyncException(String reportId) {
 		BaseException boardException = asyncExceptionHandler.get(IdUtil.getBoardReportId(reportId));
 		BaseException pipelineException = asyncExceptionHandler.get(IdUtil.getPipelineReportId(reportId));
 		BaseException sourceControlException = asyncExceptionHandler.get(IdUtil.getSourceControlReportId(reportId));

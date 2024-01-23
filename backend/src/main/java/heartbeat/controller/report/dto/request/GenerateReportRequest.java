@@ -2,6 +2,7 @@ package heartbeat.controller.report.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.util.IdUtil;
 import heartbeat.util.MetricsUtil;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 
@@ -70,6 +72,15 @@ public class GenerateReportRequest {
 	@JsonIgnore
 	public String getBoardReportId() {
 		return IdUtil.getBoardReportId(this.csvTimeStamp);
+	}
+
+	@JsonIgnore
+	public MetricsDataCompleted getMetricsStatus(Boolean flag) {
+		return MetricsDataCompleted.builder()
+			.boardMetricsCompleted(CollectionUtils.isNotEmpty(getBoardMetrics()) ? flag : null)
+			.pipelineMetricsCompleted(CollectionUtils.isNotEmpty(getPipelineMetrics()) ? flag : null)
+			.sourceControlMetricsCompleted(CollectionUtils.isNotEmpty(getSourceControlMetrics()) ? flag : null)
+			.build();
 	}
 
 }
