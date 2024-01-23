@@ -56,13 +56,14 @@
 
 - request:
     method: POST
-    url: /api/v1/source-control/.*/verify
+    url: /api/v1/source-control/jira/verify
 
   response:
     headers:
       content-type: application/json
       Access-Control-Allow-Origin: "*"
     status: 204
+    file: ./frontend/config/board-verify.json
 
 - request:
     method: POST
