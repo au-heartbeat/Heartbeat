@@ -52,10 +52,8 @@ export const Board = () => {
   };
 
   useEffect(() => {
-    const isFieldInvalid = (field: Field) => field.isRequired && field.isValid && !!field.value;
-
-    const isAllFieldsValid = (fields: Field[]) => fields.some((field) => !isFieldInvalid(field));
-    setIsDisableVerifyButton(isAllFieldsValid(fields));
+    const invalidFields = fields.filter(({ value, isRequired, isValid }) => !value || !isRequired || !isValid);
+    setIsDisableVerifyButton(!!invalidFields.length);
   }, [fields]);
 
   const onFormUpdate = (name: string, value: string) => {
@@ -90,7 +88,8 @@ export const Board = () => {
       endTime: dayjs(DateRange.endDate).valueOf(),
     };
     await verifyJira(params).then((res) => {
-      if (res) {
+      console.log(res);
+      if (res?.response) {
         dispatch(updateBoardVerifyState(true));
         dispatch(updateBoard({ ...params, projectKey: res.response.projectKey }));
       }
