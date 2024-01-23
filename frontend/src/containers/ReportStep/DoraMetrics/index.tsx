@@ -2,15 +2,14 @@ import {
   CALENDAR,
   DORA_METRICS,
   METRICS_SUBTITLE,
-  REPORT_PAGE,
   METRICS_TITLE,
+  REPORT_PAGE,
   REQUIRED_DATA,
-  SHOW_MORE,
   RETRY,
+  SHOW_MORE,
 } from '@src/constants/resources';
-import { StyledShowMore, StyledTitleWrapper } from '@src/containers/ReportStep/DoraMetrics/style';
+import { StyledMetricsSection, StyledShowMore, StyledTitleWrapper } from '@src/containers/ReportStep/DoraMetrics/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { StyledMetricsSection } from '@src/containers/ReportStep/DoraMetrics/style';
 import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -21,7 +20,7 @@ import { selectConfig } from '@src/context/config/configSlice';
 import { StyledRetry } from '../BoardMetrics/BoardMetrics';
 import { Nullable } from '@src/utils/types';
 import { useAppSelector } from '@src/hooks';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 
@@ -197,11 +196,11 @@ const DoraMetrics = ({
         ])}`
       : '';
 
-  const hasDoraError = !!(timeoutError || getErrorMessage4BuildKite() || getErrorMessage4Github());
+  const hasDoraError = !!(getErrorMessage4BuildKite() || getErrorMessage4Github());
 
   const shouldShowRetry = () => {
     const dataGetCompleted = doraReport?.sourceControlMetricsCompleted && doraReport?.pipelineMetricsCompleted;
-    return hasDoraError && dataGetCompleted;
+    return (hasDoraError && dataGetCompleted) || timeoutError;
   };
 
   const handleRetry = () => {
@@ -217,9 +216,11 @@ const DoraMetrics = ({
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.DORA.TITLE} />
-          {!hasDoraError && (doraReport?.pipelineMetricsCompleted || doraReport?.sourceControlMetricsCompleted) && (
-            <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
-          )}
+          {!hasDoraError &&
+            !timeoutError &&
+            (doraReport?.pipelineMetricsCompleted || doraReport?.sourceControlMetricsCompleted) && (
+              <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
+            )}
           {shouldShowRetry() && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
         {shouldShowSourceControl && (

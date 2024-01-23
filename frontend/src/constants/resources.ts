@@ -16,6 +16,13 @@ export const BACK = 'Back';
 export const RETRY = 'retry';
 export const TIMEOUT_PROMPT = 'Data loading failed';
 
+export const NOTIFICATION_TITLE = {
+  HELP_INFORMATION: 'Help Information',
+  PLEASE_NOTE_THAT: 'Please note that',
+  SUCCESSFULLY_COMPLETED: 'Successfully completed!',
+  SOMETHING_WENT_WRONG: 'Something went wrong!',
+};
+
 export enum REQUIRED_DATA {
   All = 'All',
   VELOCITY = 'Velocity',
@@ -75,9 +82,9 @@ export const PIPELINE_TOOL_TYPES = {
   GO_CD: 'GoCD',
 };
 
-export const SOURCE_CONTROL_TYPES = {
-  GITHUB: 'GitHub',
-};
+export enum SOURCE_CONTROL_TYPES {
+  GITHUB = 'GitHub',
+}
 
 export enum PIPELINE_SETTING_TYPES {
   DEPLOYMENT_FREQUENCY_SETTINGS_TYPE = 'DeploymentFrequencySettings',
@@ -185,15 +192,34 @@ export const MESSAGE = {
   ERROR_PAGE: 'Something on internet is not quite right. Perhaps head back to our homepage and try again.',
   EXPIRE_INFORMATION: (value: number) => `The file will expire in ${value} minutes, please download it in time.`,
   REPORT_LOADING: 'The report is being generated, please do not refresh the page or all the data will be disappeared.',
+  LOADING_TIMEOUT: (name: string) => `${name} loading timeout, please click "Retry"!`,
+  FAILED_TO_GET_DATA: (name: string) => `Failed to get ${name} data, please click "retry"!`,
+  FAILED_TO_EXPORT_CSV: 'Failed to export csv.',
+  FAILED_TO_REQUEST: 'Failed to request !',
 };
 
-export const METRICS_CYCLE_SETTING_TABLE_HEADER = [
+export const METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN = [
   {
     text: 'Board Column',
     emphasis: false,
   },
   {
-    text: 'Status',
+    text: 'Board Status',
+    emphasis: false,
+  },
+  {
+    text: 'Heartbeat State',
+    emphasis: true,
+  },
+];
+
+export const METRICS_CYCLE_SETTING_TABLE_HEADER_BY_STATUS = [
+  {
+    text: 'Board Status',
+    emphasis: false,
+  },
+  {
+    text: 'Board Column',
     emphasis: false,
   },
   {
@@ -211,7 +237,13 @@ export const REPORT_PAGE = {
   },
 };
 
+export enum CYCLE_TIME_SETTINGS_TYPES {
+  BY_COLUMN = 'byColumn',
+  BY_STATUS = 'byStatus',
+}
+
 export const AXIOS_NETWORK_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ETIMEDOUT, AxiosError.ERR_NETWORK];
+
 export enum HEARTBEAT_EXCEPTION_CODE {
   TIMEOUT = 'HB_TIMEOUT',
 }

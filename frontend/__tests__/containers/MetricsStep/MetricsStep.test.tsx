@@ -12,17 +12,18 @@ import {
   CYCLE_TIME_SETTINGS_SECTION,
   DEPLOYMENT_FREQUENCY_SETTINGS,
   LIST_OPEN,
+  MOCK_BUILD_KITE_GET_INFO_RESPONSE,
   MOCK_JIRA_VERIFY_RESPONSE,
+  MOCK_PIPELINE_GET_INFO_URL,
   REAL_DONE,
   REAL_DONE_SETTING_SECTION,
   REQUIRED_DATA_LIST,
   SELECT_CONSIDER_AS_DONE_MESSAGE,
-  MOCK_PIPELINE_GET_INFO_URL,
-  MOCK_BUILD_KITE_GET_INFO_RESPONSE,
 } from '../../fixtures';
-import { saveCycleTimeSettings, saveDoneColumn } from '@src/context/Metrics/metricsSlice';
+import { saveCycleTimeSettings, saveDoneColumn, setCycleTimeSettingsType } from '@src/context/Metrics/metricsSlice';
 import { updateJiraVerifyResponse, updateMetrics } from '@src/context/config/configSlice';
 import { useNotificationLayoutEffect } from '@src/hooks/useNotificationLayoutEffect';
+import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
 import userEvent from '@testing-library/user-event';
 
 let store = setupStore();
@@ -52,16 +53,18 @@ describe('MetricsStep', () => {
 
   it('should render Crews when select velocity, and show Real done when have done column in Cycle time', async () => {
     store.dispatch(updateMetrics([REQUIRED_DATA_LIST[1]]));
+    store.dispatch(
+      saveCycleTimeSettings([
+        { column: 'Testing', status: 'testing', value: 'Done' },
+        { column: 'Testing', status: 'test', value: 'Done' },
+      ]),
+    );
+
     const { getByText, queryByText } = setup();
 
     expect(getByText(CREWS_SETTING)).toBeInTheDocument();
     expect(queryByText(CYCLE_TIME_SETTINGS)).not.toBeInTheDocument();
     expect(queryByText(CLASSIFICATION_SETTING)).not.toBeInTheDocument();
-
-    act(() => {
-      store.dispatch(saveCycleTimeSettings([{ name: 'Testing', value: 'Done' }]));
-    });
-
     expect(getByText(REAL_DONE)).toBeInTheDocument();
   });
 
@@ -73,7 +76,7 @@ describe('MetricsStep', () => {
   });
 
   it('should hide Real Done when no done column in cycleTime settings', async () => {
-    await store.dispatch(saveCycleTimeSettings([{ name: 'Testing', value: 'Block' }]));
+    await store.dispatch(saveCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Block' }]));
     const { queryByText } = setup();
 
     expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
@@ -93,9 +96,9 @@ describe('MetricsStep', () => {
     expect(getByText(DEPLOYMENT_FREQUENCY_SETTINGS)).toBeInTheDocument();
   });
 
-  it('should call resetProps when resetProps is not undefined', async () => {
+  it('should call closeAllNotifications', async () => {
     act(() => {
-      result.current.resetProps = jest.fn();
+      result.current.closeAllNotifications = jest.fn();
     });
 
     await waitFor(() =>
@@ -106,40 +109,75 @@ describe('MetricsStep', () => {
       ),
     );
 
-    expect(result.current.resetProps).toBeCalled();
+    expect(result.current.closeAllNotifications).toBeCalled();
   });
 
   describe('with pre-filled cycle time data', () => {
     beforeEach(() => {
       const cycleTimeSettingsWithTwoDoneValue = [
         {
-          name: 'To Do',
+          column: 'To Do',
+          status: 'BACKLOG',
           value: 'To Do',
         },
         {
-          name: 'In Progress',
+          column: 'To Do',
+          status: 'TO DO',
+          value: 'To Do',
+        },
+        {
+          column: 'To Do',
+          status: 'GOING TO DO',
+          value: 'To Do',
+        },
+        {
+          column: 'In Progress',
+          status: 'IN PROGRESS',
           value: 'Done',
         },
         {
-          name: 'Block',
+          column: 'In Progress',
+          status: 'IN DEV',
+          value: 'Done',
+        },
+        {
+          column: 'Block',
+          status: 'BLOCK',
           value: 'Block',
         },
         {
-          name: 'Test',
+          column: 'Test',
+          status: 'TESTING',
           value: 'To do',
         },
         {
-          name: 'Done',
+          column: 'Test',
+          status: 'TO BE TESTED',
+          value: 'To do',
+        },
+        {
+          column: 'Done',
+          status: 'PRE-DONE,',
+          value: 'Done',
+        },
+        {
+          column: 'Done',
+          status: 'DONE',
+          value: 'Done',
+        },
+        {
+          column: 'Done',
+          status: 'CANCEL',
           value: 'Done',
         },
       ];
-      const doneColumn = ['IN PROGRESS', 'IN DEV', 'PRE-DONE', 'DONE', 'CANCLE'];
+      const doneColumn = ['IN PROGRESS', 'IN DEV', 'PRE-DONE', 'DONE', 'CANCEL'];
       const jiraColumns = [
         { key: 'indeterminate', value: { name: 'To Do', statuses: ['BACKLOG', 'TO DO', 'GOING TO DO'] } },
         { key: 'indeterminate', value: { name: 'In Progress', statuses: ['IN PROGRESS', 'IN DEV'] } },
         { key: 'indeterminate', value: { name: 'Block', statuses: ['BLOCK'] } },
         { key: 'indeterminate', value: { name: 'Test', statuses: ['TESTING', 'TO BE TESTED'] } },
-        { key: 'done', value: { name: 'Done', statuses: ['PRE-DONE,', 'DONE', 'CANCLE'] } },
+        { key: 'done', value: { name: 'Done', statuses: ['PRE-DONE,', 'DONE', 'CANCEL'] } },
       ];
 
       store.dispatch(updateMetrics(REQUIRED_DATA_LIST));
@@ -202,6 +240,13 @@ describe('MetricsStep', () => {
       await userEvent.click(options2[1]);
 
       await waitFor(() => expect(realDoneSettingSection).not.toBeInTheDocument());
+    });
+
+    it('should hide Real Done when cycleTime settings type is by status', async () => {
+      await store.dispatch(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
+      const { queryByText } = setup();
+
+      expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
     });
   });
 });

@@ -9,19 +9,19 @@ import {
   BOARD_METRICS,
   CALENDAR,
   METRICS_SUBTITLE,
-  REPORT_PAGE,
   METRICS_TITLE,
+  REPORT_PAGE,
   REQUIRED_DATA,
-  SHOW_MORE,
   RETRY,
+  SHOW_MORE,
 } from '@src/constants/resources';
 import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util';
-import { selectConfig, selectJiraColumns } from '@src/context/config/configSlice';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { selectConfig } from '@src/context/config/configSlice';
 import { Loading } from '@src/components/Loading';
 import { Nullable } from '@src/utils/types';
 import { useAppSelector } from '@src/hooks';
@@ -53,15 +53,11 @@ const BoardMetrics = ({
   const configData = useAppSelector(selectConfig);
   const { cycleTimeSettings, treatFlagCardAsBlock, users, targetFields, doneColumn, assigneeFilter } =
     useAppSelector(selectMetricsContent);
-  const jiraColumns = useAppSelector(selectJiraColumns);
 
   const { metrics, calendarType } = configData.basic;
   const { board } = configData;
   const { token, type, site, projectKey, boardId, email } = board.config;
   const jiraToken = getJiraBoardToken(token, email);
-  const jiraColumnsWithValue = jiraColumns?.map(
-    (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value,
-  );
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
 
   const getErrorMessage = () =>
@@ -81,7 +77,7 @@ const BoardMetrics = ({
         site,
         projectKey,
         boardId,
-        boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings, jiraColumnsWithValue),
+        boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings),
         treatFlagCardAsBlock,
         users,
         assigneeFilter,
