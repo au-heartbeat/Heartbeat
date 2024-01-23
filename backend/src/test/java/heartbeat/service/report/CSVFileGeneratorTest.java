@@ -82,6 +82,7 @@ class CSVFileGeneratorTest {
 		fileInputStream.close();
 		file.delete();
 	}
+
 	@Test
 	void shouldConvertPipelineDataToCsvGivenNullCommitInfo() throws IOException {
 
@@ -96,12 +97,12 @@ class CSVFileGeneratorTest {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
 		assertEquals(
-			"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Committer\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"",
-			headers);
+				"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Committer\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"",
+				headers);
 		String firstLine = reader.readLine();
 		assertEquals(
-			"\"Heartbeat\",\":rocket: Deploy prod\",\"880\",,\"2023-05-08T07:18:18Z\",,\"168369327000\",\"1683793037000\",\"1684793037000\",\"8379303\",\"16837\",\"653037000\",\"passed\",\"branch\"",
-			firstLine);
+				"\"Heartbeat\",\":rocket: Deploy prod\",\"880\",,\"2023-05-08T07:18:18Z\",,\"168369327000\",\"1683793037000\",\"1684793037000\",\"8379303\",\"16837\",\"653037000\",\"passed\",\"branch\"",
+				firstLine);
 		reader.close();
 		fileInputStream.close();
 		file.delete();

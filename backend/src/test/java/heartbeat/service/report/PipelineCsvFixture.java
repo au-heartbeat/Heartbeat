@@ -63,6 +63,7 @@ public class PipelineCsvFixture {
 			.build();
 		return List.of(pipelineCsvInfo);
 	}
+
 	public static List<PipelineCSVInfo> MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO() {
 		PipelineCSVInfo pipelineCsvInfo = PipelineCSVInfo.builder()
 			.pipeLineName("Heartbeat")
