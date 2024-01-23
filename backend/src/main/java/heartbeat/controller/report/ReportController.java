@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.concurrent.CompletableFuture;
-
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Report")
