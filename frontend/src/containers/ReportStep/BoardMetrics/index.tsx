@@ -16,7 +16,7 @@ import {
   SHOW_MORE,
 } from '@src/constants/resources';
 import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
-import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util';
+import { filterAndMapCycleTimeSettings, getJiraBoardToken, getRealDoneStatus } from '@src/utils/util';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -51,8 +51,15 @@ const BoardMetrics = ({
   errorMessage,
 }: BoardMetricsProps) => {
   const configData = useAppSelector(selectConfig);
-  const { cycleTimeSettings, treatFlagCardAsBlock, users, targetFields, doneColumn, assigneeFilter } =
-    useAppSelector(selectMetricsContent);
+  const {
+    cycleTimeSettingsType,
+    cycleTimeSettings,
+    treatFlagCardAsBlock,
+    users,
+    targetFields,
+    doneColumn,
+    assigneeFilter,
+  } = useAppSelector(selectMetricsContent);
 
   const { metrics, calendarType } = configData.basic;
   const { board } = configData;
@@ -82,7 +89,7 @@ const BoardMetrics = ({
         users,
         assigneeFilter,
         targetFields,
-        doneColumn,
+        doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
       },
       csvTimeStamp: csvTimeStamp,
     };

@@ -89,6 +89,7 @@ jest.mock('@src/utils/util', () => ({
   transformToCleanedBuildKiteEmoji: jest.fn(),
   findCaseInsensitiveType: jest.fn(),
   filterAndMapCycleTimeSettings: jest.fn(),
+  getRealDoneStatus: jest.fn(),
   formatDate: jest.fn(),
 }));
 

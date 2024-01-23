@@ -174,21 +174,18 @@ const getCycleTimeSettingsByStatus = (
     }),
   );
 
-const setSelectDoneColumns = (
+const getSelectedDoneStatus = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
   cycleTimeSettings: ICycleTimeSetting[],
   importedDoneStatus: string[],
 ) => {
   const doneStatus =
     jiraColumns?.find((item) => item.key === METRICS_CONSTANTS.doneKeyFromBackend)?.value.statuses ?? [];
-  const selectedDoneColumns = cycleTimeSettings
+  const selectedDoneStatus = cycleTimeSettings
     ?.filter(({ value }) => value === METRICS_CONSTANTS.doneValue)
-    .map(({ column }) => column);
-  const filteredStatus = jiraColumns
-    ?.filter(({ value }) => selectedDoneColumns.includes(value.name))
-    .flatMap(({ value }) => value.statuses);
-  const status = selectedDoneColumns?.length < 1 ? doneStatus : filteredStatus;
-  return status.filter((item: string) => importedDoneStatus?.includes(item));
+    .map(({ status }) => status);
+  const status = selectedDoneStatus?.length < 1 ? doneStatus : selectedDoneStatus;
+  return status.filter((item: string) => importedDoneStatus.includes(item));
 };
 
 export const metricsSlice = createSlice({
@@ -320,15 +317,13 @@ export const metricsSlice = createSlice({
             : getCycleTimeSettingsByStatus(jiraColumns, importedCycleTime.importedCycleTimeSettings);
       }
 
-      if (!isProjectCreated && !!importedDoneStatus.length) {
-        setSelectDoneColumns(jiraColumns, state.cycleTimeSettings, importedDoneStatus).length <
-        importedDoneStatus.length
+      if (!isProjectCreated && importedDoneStatus.length > 0) {
+        const selectedDoneStatus = getSelectedDoneStatus(jiraColumns, state.cycleTimeSettings, importedDoneStatus);
+        selectedDoneStatus.length < importedDoneStatus.length
           ? (state.realDoneWarningMessage = MESSAGE.REAL_DONE_WARNING)
           : (state.realDoneWarningMessage = null);
+        state.doneColumn = selectedDoneStatus;
       }
-      state.doneColumn = isProjectCreated
-        ? []
-        : setSelectDoneColumns(jiraColumns, state.cycleTimeSettings, importedDoneStatus);
 
       state.assigneeFilter =
         importedAssigneeFilter === ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE ||
