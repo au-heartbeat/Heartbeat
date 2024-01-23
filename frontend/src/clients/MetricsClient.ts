@@ -1,4 +1,4 @@
-import { HttpClient } from '@src/clients/Httpclient';
+import { HttpClient } from '@src/clients/HttpClient';
 import { HttpStatusCode } from 'axios';
 
 export interface getStepsParams {
@@ -20,7 +20,7 @@ export class MetricsClient extends HttpClient {
     organizationId: string,
     buildId: string,
     pipelineType: string,
-    token: string
+    token: string,
   ) => {
     this.steps = [];
     this.haveStep = true;
@@ -31,7 +31,7 @@ export class MetricsClient extends HttpClient {
           Authorization: `${token}`,
         },
         params,
-      }
+      },
     );
     if (result.status === HttpStatusCode.NoContent) {
       this.haveStep = false;

@@ -1,9 +1,9 @@
 import { GITHUB_TOKEN, METRICS_TITLE } from '../fixtures/fixtures';
-import homePage from '../pages/home';
-import configPage from '../pages/metrics/config';
-import metricsPage from '../pages/metrics/metrics';
-import reportPage from '../pages/metrics/report';
 import { TIPS } from '../../src/constants/resources';
+import metricsPage from '../pages/metrics/metrics';
+import configPage from '../pages/metrics/config';
+import reportPage from '../pages/metrics/report';
+import homePage from '../pages/home';
 
 const cycleTimeData = [
   { label: 'Average Cycle Time(Days/SP)', value: '7.64' },
@@ -143,6 +143,7 @@ const checkMetricsCalculation = (testId: string, boardData: MetricsDataItem[]) =
 const checkBoardShowMore = () => {
   reportPage.showMoreBoardButton.should('exist');
   reportPage.goToBoardDetailPage();
+  reportPage.checkDateRange();
   cy.get(`[data-test-id="${METRICS_TITLE.VELOCITY}"]`).find('tbody > tr').should('have.length', 2);
   cy.get(`[data-test-id="${METRICS_TITLE.CYCLE_TIME}"]`).find('tbody > tr').should('have.length', 17);
   cy.get(`[data-test-id="${METRICS_TITLE.CLASSIFICATION}"]`).find('tbody > tr').should('have.length', 122);
@@ -156,6 +157,7 @@ const checkBoardShowMore = () => {
 const checkDoraShowMore = () => {
   reportPage.showMoreDoraButton.should('exist');
   reportPage.goToDoraDetailPage();
+  reportPage.checkDateRange();
 
   cy.get(`[data-test-id="${METRICS_TITLE.DEPLOYMENT_FREQUENCY}"]`).find('tbody > tr').should('have.length', 2);
   cy.get(`[data-test-id="${METRICS_TITLE.LEAD_TIME_FOR_CHANGES}"]`).find('tbody > tr').should('have.length', 4);

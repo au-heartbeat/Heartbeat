@@ -1,36 +1,37 @@
-import { Crews } from '@src/containers/MetricsStep/Crews';
-import { useAppSelector } from '@src/hooks';
-import { RealDone } from '@src/containers/MetricsStep/RealDone';
-import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
-import { Classification } from '@src/containers/MetricsStep/Classification';
-import { selectDateRange, selectJiraColumns, selectMetrics, selectUsers } from '@src/context/config/configSlice';
-import { DONE, REQUIRED_DATA } from '@src/constants/resources';
-import { selectCycleTimeSettings, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
-import { useLayoutEffect } from 'react';
+import { selectDateRange, selectJiraColumns, selectMetrics, selectUsers } from '@src/context/config/configSlice';
+import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
+import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
+import { Classification } from '@src/containers/MetricsStep/Classification';
+import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import DateRangeViewer from '@src/components/Common/DateRangeViewer';
+import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
+import { RealDone } from '@src/containers/MetricsStep/RealDone';
+import { Crews } from '@src/containers/MetricsStep/Crews';
+import { useAppSelector } from '@src/hooks';
+import { useLayoutEffect } from 'react';
 
-const MetricsStep = ({ resetProps }: useNotificationLayoutEffectInterface) => {
+const MetricsStep = ({ closeAllNotifications }: useNotificationLayoutEffectInterface) => {
   const requiredData = useAppSelector(selectMetrics);
   const users = useAppSelector(selectUsers);
   const jiraColumns = useAppSelector(selectJiraColumns);
   const targetFields = useAppSelector(selectMetricsContent).targetFields;
-  const cycleTimeSettings = useAppSelector(selectCycleTimeSettings);
+  const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
   const { startDate, endDate } = useAppSelector(selectDateRange);
   const isShowCrewsAndRealDone =
     requiredData.includes(REQUIRED_DATA.VELOCITY) ||
     requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
     requiredData.includes(REQUIRED_DATA.CLASSIFICATION);
-  const isShowRealDone = cycleTimeSettings.some((e) => e.value === DONE);
+  const isShowRealDone =
+    cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN && cycleTimeSettings.some((e) => e.value === DONE);
 
   useLayoutEffect(() => {
-    resetProps();
+    closeAllNotifications();
   }, []);
 
   return (

@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@src/assets/Logo.svg';
 
-import { PROJECT_NAME } from '@src/constants/commons';
 import {
   HomeIconContainer,
   HomeIconElement,
@@ -13,13 +12,15 @@ import {
   StyledHeaderInfo,
   StyledVersion,
 } from '@src/layouts/style';
-import { useEffect } from 'react';
-import { headerClient } from '@src/clients/header/HeaderClient';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { getVersion, saveVersion } from '@src/context/header/headerSlice';
-import { useAppSelector } from '@src/hooks';
-import { isEmpty } from 'lodash';
+import { getVersion, resetFormMeta, saveVersion } from '@src/context/meta/metaSlice';
 import { resetImportedData } from '@src/context/config/configSlice';
+import { headerClient } from '@src/clients/header/HeaderClient';
+import { resetStep } from '@src/context/stepper/StepperSlice';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { PROJECT_NAME } from '@src/constants/commons';
+import { useAppSelector } from '@src/hooks';
+import { useEffect } from 'react';
+import { isEmpty } from 'lodash';
 
 const Header = () => {
   const location = useLocation();
@@ -28,7 +29,9 @@ const Header = () => {
   const version = useAppSelector(getVersion);
 
   const goHome = () => {
+    dispatch(resetStep());
     dispatch(resetImportedData());
+    dispatch(resetFormMeta());
     navigate('/');
   };
 

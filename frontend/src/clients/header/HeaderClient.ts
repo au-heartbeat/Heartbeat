@@ -1,5 +1,5 @@
-import { HttpClient } from '@src/clients/Httpclient';
 import { VersionResponseDTO } from '@src/clients/header/dto/request';
+import { HttpClient } from '@src/clients/HttpClient';
 
 export class HeaderClient extends HttpClient {
   response: VersionResponseDTO = {

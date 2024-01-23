@@ -1,29 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
-import { useAppSelector } from '@src/hooks';
-import { selectConfig } from '@src/context/config/configSlice';
 import {
   CALENDAR,
   DORA_METRICS,
   METRICS_SUBTITLE,
-  REPORT_PAGE,
   METRICS_TITLE,
+  REPORT_PAGE,
   REQUIRED_DATA,
-  SHOW_MORE,
   RETRY,
+  SHOW_MORE,
 } from '@src/constants/resources';
-import { ReportRequestDTO } from '@src/clients/report/dto/request';
+import { StyledMetricsSection, StyledShowMore, StyledTitleWrapper } from '@src/containers/ReportStep/DoraMetrics/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import dayjs from 'dayjs';
-import { StyledMetricsSection } from '@src/containers/ReportStep/DoraMetrics/style';
-import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
-import { ReportGrid } from '@src/components/Common/ReportGrid';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { StyledSpacing } from '@src/containers/ReportStep/style';
 import { formatMillisecondsToHours, formatMinToHours } from '@src/utils/util';
-import { StyledShowMore, StyledTitleWrapper } from '@src/containers/ReportStep/DoraMetrics/style';
-import { StyledRetry } from '../BoradMetrics/style';
+import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { ReportRequestDTO } from '@src/clients/report/dto/request';
+import { StyledSpacing } from '@src/containers/ReportStep/style';
+import { ReportGrid } from '@src/components/Common/ReportGrid';
+import { selectConfig } from '@src/context/config/configSlice';
+import { StyledRetry } from '../BoardMetrics/BoardMetrics';
 import { Nullable } from '@src/utils/types';
+import { useAppSelector } from '@src/hooks';
+import React, { useEffect } from 'react';
+import dayjs from 'dayjs';
+import _ from 'lodash';
 
 interface DoraMetricsProps {
   startToRequestDoraData: (request: ReportRequestDTO) => void;
@@ -80,7 +79,7 @@ const DoraMetrics = ({
     }
     return pipelineConfigs.map(({ organization, pipelineName, step, branches }) => {
       const pipelineConfigFromPipelineList = configData.pipelineTool.verifiedResponse.pipelineList.find(
-        (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization
+        (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization,
       );
       if (pipelineConfigFromPipelineList != undefined) {
         const { orgName, orgId, name, id, repository } = pipelineConfigFromPipelineList;
@@ -181,7 +180,7 @@ const DoraMetrics = ({
 
   const getErrorMessage4BuildKite = () =>
     _.get(doraReport, ['reportMetricsError', 'pipelineMetricsError'])
-      ? `Failed to get BuildKite info_status: ${_.get(doraReport, [
+      ? `Failed to get BuildKite info, status: ${_.get(doraReport, [
           'reportMetricsError',
           'pipelineMetricsError',
           'status',
@@ -190,18 +189,18 @@ const DoraMetrics = ({
 
   const getErrorMessage4Github = () =>
     _.get(doraReport, ['reportMetricsError', 'sourceControlMetricsError'])
-      ? `Failed to get Github info_status: ${_.get(doraReport, [
+      ? `Failed to get Github info, status: ${_.get(doraReport, [
           'reportMetricsError',
           'sourceControlMetricsError',
           'status',
         ])}`
       : '';
 
-  const hasDoraError = !!(timeoutError || getErrorMessage4BuildKite() || getErrorMessage4Github());
+  const hasDoraError = !!(getErrorMessage4BuildKite() || getErrorMessage4Github());
 
   const shouldShowRetry = () => {
     const dataGetCompleted = doraReport?.sourceControlMetricsCompleted && doraReport?.pipelineMetricsCompleted;
-    return hasDoraError && dataGetCompleted;
+    return (hasDoraError && dataGetCompleted) || timeoutError;
   };
 
   const handleRetry = () => {
@@ -217,9 +216,11 @@ const DoraMetrics = ({
       <StyledMetricsSection>
         <StyledTitleWrapper>
           <ReportTitle title={REPORT_PAGE.DORA.TITLE} />
-          {!hasDoraError && (doraReport?.pipelineMetricsCompleted || doraReport?.sourceControlMetricsCompleted) && (
-            <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
-          )}
+          {!hasDoraError &&
+            !timeoutError &&
+            (doraReport?.pipelineMetricsCompleted || doraReport?.sourceControlMetricsCompleted) && (
+              <StyledShowMore onClick={onShowDetail}>{SHOW_MORE}</StyledShowMore>
+            )}
           {shouldShowRetry() && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
         {shouldShowSourceControl && (

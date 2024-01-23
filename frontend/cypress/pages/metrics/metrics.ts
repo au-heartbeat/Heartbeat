@@ -31,7 +31,7 @@ export class Metrics {
 
   get closeModelElement() {
     return cy.get(
-      '.Mui-expanded > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"] > path'
+      '.Mui-expanded > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"] > path',
     );
   }
 
@@ -87,8 +87,8 @@ export class Metrics {
     return cy.contains('Branches').eq(0).siblings();
   }
 
-  get branchSelectSomeOption() {
-    return cy.contains('All');
+  get branchSelectMasterOption() {
+    return cy.get('li[role="option"]').contains('master');
   }
 
   get pipelineStepSelectXXOption() {
@@ -173,7 +173,7 @@ export class Metrics {
 
   selectBranchOption() {
     this.branchSelect.click();
-    this.branchSelectSomeOption.click();
+    this.branchSelectMasterOption.click();
     this.closeOptions();
   }
 

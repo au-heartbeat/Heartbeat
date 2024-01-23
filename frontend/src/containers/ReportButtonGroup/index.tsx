@@ -1,22 +1,23 @@
-import { Tooltip } from '@mui/material';
-import { TIPS } from '@src/constants/resources';
-import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import { COMMON_BUTTONS, DOWNLOAD_TYPES } from '@src/constants/commons';
-import React, { useEffect } from 'react';
-import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
-import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
-import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
 import { StyledButtonGroup, StyledExportButton, StyledRightButtonGroup } from '@src/containers/ReportButtonGroup/style';
+import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect';
+import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
+import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
+import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
+import { COMMON_BUTTONS, REPORT_TYPES } from '@src/constants/commons';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import { TIPS } from '@src/constants/resources';
+import { Tooltip } from '@mui/material';
+import React from 'react';
 
 interface ReportButtonGroupProps {
+  notification: useNotificationLayoutEffectInterface;
   handleSave?: () => void;
   handleBack: () => void;
   csvTimeStamp: number;
   startDate: string;
   endDate: string;
-  setErrorMessage: (message: string) => void;
   reportData: ReportResponseDTO | undefined;
   isShowSave: boolean;
   isShowExportBoardButton: boolean;
@@ -25,32 +26,28 @@ interface ReportButtonGroupProps {
 }
 
 export const ReportButtonGroup = ({
+  notification,
   handleSave,
   handleBack,
   csvTimeStamp,
   startDate,
   endDate,
-  setErrorMessage,
   reportData,
   isShowSave,
   isShowExportMetrics,
   isShowExportBoardButton,
   isShowExportPipelineButton,
 }: ReportButtonGroupProps) => {
-  const { fetchExportData, errorMessage, isExpired } = useExportCsvEffect();
+  const { fetchExportData, isExpired } = useExportCsvEffect(notification);
 
-  useEffect(() => {
-    setErrorMessage(errorMessage);
-  }, [errorMessage]);
-
-  const exportCSV = (dataType: DOWNLOAD_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
+  const exportCSV = (dataType: REPORT_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
     csvTimeStamp: csvTimeStamp,
     startDate: startDate,
     endDate: endDate,
   });
 
-  const handleDownload = (dataType: DOWNLOAD_TYPES, startDate: string, endDate: string) => {
+  const handleDownload = (dataType: REPORT_TYPES, startDate: string, endDate: string) => {
     fetchExportData(exportCSV(dataType, startDate, endDate));
   };
 
@@ -83,7 +80,7 @@ export const ReportButtonGroup = ({
           {isShowExportMetrics && (
             <StyledExportButton
               disabled={!(reportData?.allMetricsCompleted && !isReportHasError)}
-              onClick={() => handleDownload(DOWNLOAD_TYPES.METRICS, startDate, endDate)}
+              onClick={() => handleDownload(REPORT_TYPES.METRICS, startDate, endDate)}
             >
               {COMMON_BUTTONS.EXPORT_METRIC_DATA}
             </StyledExportButton>
@@ -91,7 +88,7 @@ export const ReportButtonGroup = ({
           {isShowExportBoardButton && (
             <StyledExportButton
               disabled={!(reportData?.boardMetricsCompleted && !reportData?.reportMetricsError?.boardMetricsError)}
-              onClick={() => handleDownload(DOWNLOAD_TYPES.BOARD, startDate, endDate)}
+              onClick={() => handleDownload(REPORT_TYPES.BOARD, startDate, endDate)}
             >
               {COMMON_BUTTONS.EXPORT_BOARD_DATA}
             </StyledExportButton>
@@ -99,7 +96,7 @@ export const ReportButtonGroup = ({
           {isShowExportPipelineButton && (
             <StyledExportButton
               disabled={!!pipelineButtonDisabled}
-              onClick={() => handleDownload(DOWNLOAD_TYPES.PIPELINE, startDate, endDate)}
+              onClick={() => handleDownload(REPORT_TYPES.PIPELINE, startDate, endDate)}
             >
               {COMMON_BUTTONS.EXPORT_PIPELINE_DATA}
             </StyledExportButton>

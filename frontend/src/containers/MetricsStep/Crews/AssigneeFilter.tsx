@@ -1,9 +1,9 @@
-import { FormControlLabel, RadioGroup, Radio } from '@mui/material';
-import React from 'react';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { useAppSelector } from '@src/hooks';
 import { selectAssigneeFilter, updateAssigneeFilter } from '@src/context/Metrics/metricsSlice';
-import { AssigneeFilterContainer } from '@src/containers/MetricsStep/Crews/style';
+import { StyledRadioGroup } from '@src/containers/MetricsStep/Crews/style';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { FormControlLabel, Radio } from '@mui/material';
+import { useAppSelector } from '@src/hooks';
+import React from 'react';
 
 export const AssigneeFilter = () => {
   const dispatch = useAppDispatch();
@@ -14,17 +14,9 @@ export const AssigneeFilter = () => {
   };
 
   return (
-    <AssigneeFilterContainer>
-      <RadioGroup
-        aria-label='assigneeFilter'
-        name='assigneeFilter'
-        value={assigneeFilter}
-        onChange={handleChange}
-        style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
-      >
-        <FormControlLabel value='lastAssignee' control={<Radio />} label='Last assignee' />
-        <FormControlLabel value='historicalAssignee' control={<Radio />} label='Historical assignee' />
-      </RadioGroup>
-    </AssigneeFilterContainer>
+    <StyledRadioGroup aria-label='assigneeFilter' name='assigneeFilter' value={assigneeFilter} onChange={handleChange}>
+      <FormControlLabel value='lastAssignee' control={<Radio />} label='Last assignee' />
+      <FormControlLabel value='historicalAssignee' control={<Radio />} label='Historical assignee' />
+    </StyledRadioGroup>
   );
 };
