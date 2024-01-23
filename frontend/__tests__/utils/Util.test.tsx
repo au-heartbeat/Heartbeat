@@ -9,9 +9,9 @@ import {
   transformToCleanedBuildKiteEmoji,
 } from '@src/utils/util';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
+import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { PIPELINE_TOOL_TYPES } from '../fixtures';
-import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
 
 describe('exportToJsonFile function', () => {
   it('should create a link element with the correct attributes and click it', () => {

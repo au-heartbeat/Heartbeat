@@ -15,8 +15,8 @@ import {
   RETRY,
   SHOW_MORE,
 } from '@src/constants/resources';
-import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { filterAndMapCycleTimeSettings, getJiraBoardToken, getRealDoneStatus } from '@src/utils/util';
+import { BoardReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';

@@ -59,7 +59,6 @@ const mockValidationCheckContext = {
   leadTimeForChangesErrorMessages: [],
   clearErrorMessage: jest.fn(),
   checkDuplicatedPipeline: jest.fn(),
-  isPipelineValid: jest.fn().mockReturnValue(true),
   getDuplicatedPipeLineIds: jest.fn().mockReturnValue([]),
 };
 

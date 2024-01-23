@@ -7,6 +7,7 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { initialBasicConfigState } from '@src/context/config/configSlice';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
@@ -71,7 +72,7 @@ const initialState: savedMetricsSettingState = {
   doneColumn: [],
   cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
   cycleTimeSettings: [],
-  deploymentFrequencySettings: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
+  deploymentFrequencySettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   treatFlagCardAsBlock: true,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
@@ -347,15 +348,15 @@ export const metricsSlice = createSlice({
           .filter((pipeline: pipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase())
           .map((item: pipeline) => item.name);
       const getValidPipelines = (pipelines: IPipelineConfig[]) =>
-        !pipelines.length || isProjectCreated
-          ? [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }]
-          : pipelines.map(({ id, organization, pipelineName }) => ({
+        pipelines.length > 0
+          ? pipelines.map(({ id, organization, pipelineName, step, branches }) => ({
               id,
               organization: orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '',
               pipelineName: filteredPipelineNames(organization).includes(pipelineName) ? pipelineName : '',
-              step: '',
-              branches: [],
-            }));
+              step: step || '',
+              branches: branches || [],
+            }))
+          : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
 
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
         const orgWarning = orgNames.some((i) => (i as string).toLowerCase() === organization.toLowerCase())
@@ -381,30 +382,36 @@ export const metricsSlice = createSlice({
         return pipelines.map((pipeline) => createPipelineWarning(pipeline));
       };
 
-      state.deploymentFrequencySettings = getValidPipelines(importedDeployment);
-      state.deploymentWarningMessage = getPipelinesWarningMessage(importedDeployment);
+      const deploymentSettings =
+        state.deploymentFrequencySettings.length > 0 ? state.deploymentFrequencySettings : importedDeployment;
+      state.deploymentFrequencySettings = getValidPipelines(deploymentSettings);
+      state.deploymentWarningMessage = getPipelinesWarningMessage(deploymentSettings);
     },
 
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload;
       const { importedDeployment, importedPipelineCrews } = state.importedData;
-      const updatedImportedPipeline = importedDeployment;
-      const updatedImportedPipelineStep = updatedImportedPipeline.find((pipeline) => pipeline.id === id)?.step ?? '';
-      const updatedImportedPipelineBranches =
-        updatedImportedPipeline.find((pipeline) => pipeline.id === id)?.branches ?? [];
-      const validStep = steps.includes(updatedImportedPipelineStep) ? updatedImportedPipelineStep : '';
-      const validBranches = _.filter(branches, (branch) => updatedImportedPipelineBranches.includes(branch));
+      const updatedImportedPipelineStep = importedDeployment.find((pipeline) => pipeline.id === id)?.step ?? '';
+      const updatedImportedPipelineBranches = importedDeployment.find((pipeline) => pipeline.id === id)?.branches ?? [];
+      const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
       const validPipelineCrews = _.filter(pipelineCrews, (crew) => importedPipelineCrews.includes(crew));
       state.pipelineCrews = validPipelineCrews;
-      const stepWarningMessage = steps.includes(updatedImportedPipelineStep) ? null : MESSAGE.STEP_WARNING;
+      const stepWarningMessage = (selectedStep: string) => (steps.includes(selectedStep) ? null : MESSAGE.STEP_WARNING);
+
+      const validStep = (selectedStep: string): string => (steps.includes(selectedStep) ? selectedStep : '');
+
+      const validBranches = (selectedBranches: string[]): string[] =>
+        _.filter(branches, (branch) => selectedBranches.includes(branch));
 
       const getPipelineSettings = (pipelines: IPipelineConfig[]) =>
         pipelines.map((pipeline) =>
           pipeline.id === id
             ? {
                 ...pipeline,
-                step: validStep,
-                branches: validBranches,
+                step: validStep(pipeline.step || updatedImportedPipelineStep),
+                branches: validBranches(
+                  pipeline.branches.length > 0 ? pipeline.branches : updatedImportedPipelineBranches,
+                ),
               }
             : pipeline,
         );
@@ -414,7 +421,7 @@ export const metricsSlice = createSlice({
           pipeline?.id === id
             ? {
                 ...pipeline,
-                step: stepWarningMessage,
+                step: stepWarningMessage(selectedPipelineStep || updatedImportedPipelineStep),
               }
             : pipeline,
         );
@@ -440,6 +447,7 @@ export const metricsSlice = createSlice({
     updateAssigneeFilter: (state, action) => {
       state.assigneeFilter = action.payload;
     },
+    resetMetricData: () => initialState,
   },
 });
 
@@ -460,6 +468,7 @@ export const {
   updatePipelineSettings,
   updatePipelineStep,
   setCycleTimeSettingsType,
+  resetMetricData,
 } = metricsSlice.actions;
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;

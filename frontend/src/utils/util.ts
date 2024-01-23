@@ -1,7 +1,7 @@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
+import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
 import { ICycleTimeSetting } from '@src/context/Metrics/metricsSlice';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
-import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 
