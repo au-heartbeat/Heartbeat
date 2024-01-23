@@ -53,21 +53,9 @@
       Access-Control-Allow-Origin: "*"
     status: 200
     file: ./frontend/config/board.json
-
 - request:
     method: POST
-    url: /api/v1/source-control/jira/verify
-
-  response:
-    headers:
-      content-type: application/json
-      Access-Control-Allow-Origin: "*"
-    status: 204
-    file: ./frontend/config/board-verify.json
-
-- request:
-    method: POST
-    url: /api/v1/source-control/.*/info
+    url: /api/v1/boards/jira/info
 
   response:
     headers:
@@ -98,3 +86,5 @@
       Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
       Access-Control-Allow-Headers: "Content-Type"
     status: 204
+
+

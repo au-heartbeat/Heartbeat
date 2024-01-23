@@ -114,3 +114,80 @@
       content-type: application/json
     status: 200
     file: ./backend/jira/jsons/jira.issue.<% url.1 %>.activityfeed.json
+
+- request:
+    method: GET
+    url: /rest/agile/1.0/board/(\w+)
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+    file: ./backend/jira/jsons/jira.board.verify.json
+
+- request:
+    method: GET
+    url: /
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+
+- request:
+    method: GET
+    url: /rest/api/(\w+)/project/(\w+)
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+    file: ./backend/jira/jsons/jira.board.info.project.json
+
+- request:
+    method: GET
+    url: /rest/api/(\w+)/issue/createmeta
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+    file: ./backend/jira/jsons/jira.board.info.creatmeta.json
+
+- request:
+    method: GET
+    url: /rest/api/(\w+)/status/(\w+)
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+
+- request:
+    method: GET
+    url: /rest/agile/1.0/board/(\w+)/issue
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+
+- request:
+    method: GET
+    url: /rest/agile/1.0/board/(\w+)/issue
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+    file: ./backend/jira/jsons/jira.board.info.issue.json
+
+- request:
+    method: GET
+    url: /rest/agile/1.0/board/(\w+)/configuration
+
+  response:
+    headers:
+      content-type: application/json
+    status: 200
+    file: ./backend/jira/jsons/jira.board.info.configuration.json
