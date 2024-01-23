@@ -33,7 +33,7 @@ public class JiraCardDTO {
 
 	@JsonIgnore
 	public String getTotalCycleTimeDivideStoryPoints() {
-		if (this.getBaseInfo() == null || this.getCardCycleTime() == null) {
+		if (this.getBaseInfo() == null || this.getCardCycleTime() == null || this.getBaseInfo().getFields() == null) {
 			return "";
 		}
 		double storyPoints = this.getBaseInfo().getFields().getStoryPoints();
