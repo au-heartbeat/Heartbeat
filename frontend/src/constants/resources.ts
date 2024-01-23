@@ -186,7 +186,7 @@ export const MESSAGE = {
   VERIFY_FAILED_ERROR: 'verify failed',
   VERIFY_MAIL_FAILED_ERROR: 'Email is incorrect !',
   VERIFY_TOKEN_FAILED_ERROR: 'Token is invalid, please change your token with correct access permission !',
-  VERIFY_SITE_FAILED_ERROR: 'Site is  incorrect !',
+  VERIFY_SITE_FAILED_ERROR: 'Site is incorrect !',
   VERIFY_BOARD_FAILED_ERROR: 'Board Id is incorrect !',
   UNKNOWN_ERROR: 'Unknown',
   GET_STEPS_FAILED: 'Failed to get',

@@ -21,12 +21,9 @@ export interface FormField {
   col: number;
 }
 export interface useVerifyBoardStateInterface {
-  verifyJira: (params: BoardRequestDTO) => Promise<
-    | {
-        response: Record<string, string>;
-      }
-    | undefined
-  >;
+  verifyJira: (params: BoardRequestDTO) => Promise<{
+    response: Record<string, string>;
+  }>;
   isLoading: boolean;
   formFields: FormField[];
   updateField: (name: string, value: string) => void;
@@ -156,14 +153,14 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         return result;
       })
       .catch((e) => {
-        const { hintInfo, code } = e;
+        const { message, code } = e;
         if (code === 401) {
           setErrorField(['email', 'token'], [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR]);
         }
-        if (code === 404 && hintInfo === 'site not found') {
+        if (code === 404 && message === 'site not found') {
           setErrorField(['site'], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
         }
-        if (code === 404 && hintInfo === 'boardId not found') {
+        if (code === 404 && message === 'boardId not found') {
           setErrorField(['boardId'], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
         }
         return e;
