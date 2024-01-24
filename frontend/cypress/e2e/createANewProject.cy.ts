@@ -273,7 +273,7 @@ describe('Create a new project', () => {
 
     configPage.selectMetricsData();
 
-    configPage.fillBoardInfoAndVerifyWithJira('1963', 'test@test.com', 'PLL', 'site', 'mockToken');
+    configPage.fillBoardInfoAndVerifyWithJira('1963', 'test@test.com', 'site', 'mockToken');
     configPage.getVerifiedButton(configPage.boardConfigSection).should('be.disabled');
     configPage.getResetButton(configPage.boardConfigSection).should('be.enabled');
 

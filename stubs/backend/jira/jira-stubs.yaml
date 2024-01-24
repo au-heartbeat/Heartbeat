@@ -57,7 +57,6 @@
       startAt: 0
       jql: status changed during %281661961600000%2C 1663171199999%29
 
-
   response:
     headers:
       content-type: application/json
@@ -173,8 +172,6 @@
       content-type: application/json
     status: 200
     file: ./backend/jira/jsons/jira.board.info.configuration.json
-
-
 # - request:
 #     method: GET
 #     url: /rest/api/2/status/(PLL-\d+)

@@ -128,7 +128,7 @@ class Config {
     this.requiredDataModelCloseElement.click({ force: true });
   }
 
-  fillBoardInfoAndVerifyWithJira(boardId: string, email: string, projectKey: string, site: string, token: string) {
+  fillBoardInfoAndVerifyWithJira(boardId: string, email: string, site: string, token: string) {
     this.boardInfoBoardIdInput.type(boardId);
     this.boardInfoEmailInput.type(email);
     this.boardInfoSiteInput.type(site);
