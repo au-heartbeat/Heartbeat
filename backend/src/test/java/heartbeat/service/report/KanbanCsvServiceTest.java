@@ -1,5 +1,7 @@
 package heartbeat.service.report;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraCard;
@@ -36,7 +38,8 @@ import static heartbeat.service.report.BoardCsvFixture.MOCK_JIRA_CARD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -351,18 +354,21 @@ class KanbanCsvServiceTest {
 	void shouldAddFixedFieldsWithCorrectValueFormatWhenCustomFieldValueInstanceOfListAndContainsStringKeyOrValueOrNameOrDisplayName()
 			throws URISyntaxException {
 		URI uri = new URI("site-uri");
+		JsonArray jsonArray = new JsonArray();
+		jsonArray.add(new JsonObject());
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
 		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder()
 			.jiraColumnResponse(List
 				.of(JiraColumnDTO.builder().value(ColumnValue.builder().statuses(List.of("BLOCKED")).build()).build()))
 			.build());
-		JiraCardDTO jiraCardDTO = JiraCardDTO.builder()
+		JiraCardField fields = MOCK_JIRA_CARD();
+		fields.getCustomFields().put("json-array", jsonArray);
+		fields.getCustomFields().put("json-obj", new JsonObject());
+		JiraCardDTO doneJiraCardDTO = JiraCardDTO.builder()
 			.baseInfo(JiraCard.builder().fields(MOCK_JIRA_CARD()).build())
 			.build();
-		JiraCardDTO blockedJiraCard = JiraCardDTO.builder()
-			.baseInfo(JiraCard.builder().fields(MOCK_JIRA_CARD()).build())
-			.build();
+		JiraCardDTO blockedJiraCard = JiraCardDTO.builder().baseInfo(JiraCard.builder().fields(fields).build()).build();
 		List<JiraCardDTO> NonDoneJiraCardDTOList = new ArrayList<>() {
 			{
 				add(blockedJiraCard);
@@ -377,26 +383,30 @@ class KanbanCsvServiceTest {
 								TargetField.builder().name("fake-target2").flag(true).key("customfield_1013").build(),
 								TargetField.builder().name("fake-target3").flag(true).key("customfield_1014").build(),
 								TargetField.builder().name("fake-target4").flag(true).key("customfield_1015").build(),
-								TargetField.builder().name("fake-target5").flag(false).key("key-target2").build()))
+								TargetField.builder().name("fake-target5").flag(false).key("key-target2").build(),
+								TargetField.builder().name("fake-target6").flag(true).key("json-array").build(),
+								TargetField.builder().name("fake-target7").flag(true).key("json-obj").build()))
 						.build())
 					.build(),
-				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
+				CardCollection.builder().jiraCardDTOList(List.of(doneJiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
 
 		verify(csvFileGenerator).convertBoardDataToCSV(anyList(), csvFieldsCaptor.capture(),
 				csvNewFieldsCaptor.capture(), any());
 
-		assertEquals(25, csvFieldsCaptor.getValue().size());
+		assertEquals(27, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue1 = csvNewFieldsCaptor.getValue().get(0);
 		BoardCSVConfig targetValue2 = csvNewFieldsCaptor.getValue().get(1);
 		BoardCSVConfig targetValue3 = csvNewFieldsCaptor.getValue().get(2);
 		BoardCSVConfig targetValue4 = csvNewFieldsCaptor.getValue().get(3);
+		BoardCSVConfig targetValue5 = csvNewFieldsCaptor.getValue().get(4);
 		assertEquals("baseInfo.fields.customFields.customfield_1012[0].name", targetValue1.getValue());
 		assertEquals("fake-target1", targetValue1.getLabel());
 		assertEquals("customfield_1012", targetValue1.getOriginKey());
 		assertEquals("baseInfo.fields.customFields.customfield_1013[0].value", targetValue2.getValue());
 		assertEquals("baseInfo.fields.customFields.customfield_1014[0].key", targetValue3.getValue());
 		assertEquals("baseInfo.fields.customFields.customfield_1015[0].displayName", targetValue4.getValue());
+		assertEquals("baseInfo.fields.customFields.json-array[0]", targetValue5.getValue());
 	}
 
 }

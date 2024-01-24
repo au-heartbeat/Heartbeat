@@ -37,7 +37,7 @@ public class JiraCardDTO {
 			return "";
 		}
 		double storyPoints = this.getBaseInfo().getFields().getStoryPoints();
-		double cardCycleTime = this.getCardCycleTime().getTotal() == 0.0 ? 0.0 : this.getCardCycleTime().getTotal();
+		double cardCycleTime = this.getCardCycleTime().getTotal();
 
 		String formattedResult = DecimalUtil.formatDecimalTwo(cardCycleTime / storyPoints);
 		return storyPoints > 0.0 ? formattedResult : "";
