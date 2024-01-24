@@ -214,7 +214,7 @@ export const IMPORTED_NEW_CONFIG_FIXTURE = {
   },
   calendarType: 'Calendar with Chinese Holiday',
   board: {
-    type: 'Classic Jira',
+    type: 'Jira',
     verifyToken: 'mockVerifyToken',
     boardId: '1963',
     token: 'mockToken',

@@ -5,10 +5,10 @@
 	"location": {
 		"projectId": 10001,
 		"displayName": "FAKE (FA)",
-		"projectName": "FAKE",
-		"projectKey": "FAKE",
+		"projectName": "1963",
+		"projectKey": "PLL",
 		"projectTypeKey": "software",
-		"avatarURI": null,
+		"avatarURI": "http://fake.avatar.com",
 		"name": "FAKE (FA)"
 	}
 }

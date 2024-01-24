@@ -117,7 +117,7 @@
 
 - request:
     method: GET
-    url: /rest/agile/1.0/board/(\w+)
+    url: /rest/agile/1.0/board/(\w+)$
 
   response:
     headers:
@@ -136,7 +136,7 @@
 
 - request:
     method: GET
-    url: /rest/api/(\w+)/project/(\w+)
+    url: /rest/api/2/project/(\w+)
 
   response:
     headers:
@@ -146,22 +146,13 @@
 
 - request:
     method: GET
-    url: /rest/api/(\w+)/issue/createmeta
+    url: /rest/api/2/issue/createmeta
 
   response:
     headers:
       content-type: application/json
     status: 200
-    file: ./backend/jira/jsons/jira.board.info.creatmeta.json
-
-- request:
-    method: GET
-    url: /rest/api/(\w+)/status/(\w+)
-
-  response:
-    headers:
-      content-type: application/json
-    status: 200
+    file: ./backend/jira/jsons/jira.board.info.createmeta.json
 
 - request:
     method: GET
@@ -171,16 +162,7 @@
     headers:
       content-type: application/json
     status: 200
-
-- request:
-    method: GET
-    url: /rest/agile/1.0/board/(\w+)/issue
-
-  response:
-    headers:
-      content-type: application/json
-    status: 200
-    file: ./backend/jira/jsons/jira.board.info.issue.json
+    file: ./backend/jira/jsons/jira.issue.createmeta.targetfields.json
 
 - request:
     method: GET
@@ -191,3 +173,14 @@
       content-type: application/json
     status: 200
     file: ./backend/jira/jsons/jira.board.info.configuration.json
+
+
+# - request:
+#     method: GET
+#     url: /rest/api/2/status/(PLL-\d+)
+
+#   response:
+#     headers:
+#       content-type: application/json
+#     status: 200
+#     file: ./backend/jira/jsons/jira.board.info.status.json
