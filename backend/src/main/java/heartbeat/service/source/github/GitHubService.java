@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.Objects;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -144,7 +143,8 @@ public class GitHubService {
 			String repository = GithubUtil.getGithubUrlFullName(repositories.get(deployTime.getPipelineId()));
 			return PipelineInfoOfRepository.builder()
 				.repository(repository)
-				.passedDeploy(deployTime.getPassed())
+				.passedDeploy(deployTime.getPassed().stream().filter(deployInfo ->
+					deployInfo.getJobName().equals(deployTime.getPipelineStep())).toList())
 				.pipelineStep(deployTime.getPipelineStep())
 				.pipelineName(deployTime.getPipelineName())
 				.build();
