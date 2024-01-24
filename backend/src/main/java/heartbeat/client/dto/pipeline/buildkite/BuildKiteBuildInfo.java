@@ -32,6 +32,8 @@ public class BuildKiteBuildInfo implements Serializable {
 
 	private Author author;
 
+	private Creator creator;
+
 	private String branch;
 
 	@Data
@@ -40,6 +42,21 @@ public class BuildKiteBuildInfo implements Serializable {
 	@NoArgsConstructor
 	@Builder
 	public static class Author implements Serializable {
+
+		private String userName;
+
+		private String name;
+
+		private String email;
+
+	}
+
+	@Data
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Builder
+	public static class Creator implements Serializable {
 
 		private String userName;
 

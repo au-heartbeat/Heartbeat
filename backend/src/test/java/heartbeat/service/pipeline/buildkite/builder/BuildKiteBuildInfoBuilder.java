@@ -23,6 +23,19 @@ public class BuildKiteBuildInfoBuilder {
 		return new BuildKiteBuildInfoBuilder(buildInfo);
 	}
 
+	public static BuildKiteBuildInfoBuilder withDefaultAndCreator() {
+
+		BuildKiteBuildInfo buildInfo = new BuildKiteBuildInfo();
+
+		buildInfo.setJobs(List.of(BuildKiteJobBuilder.withDefault().build()));
+		buildInfo.setCommit("xx");
+		buildInfo.setNumber(1);
+		buildInfo.setPipelineCreateTime("xx");
+		buildInfo.setAuthor(BuildKiteBuildInfo.Author.builder().name("xx").build());
+		buildInfo.setCreator(BuildKiteBuildInfo.Creator.builder().name("xx").build());
+		return new BuildKiteBuildInfoBuilder(buildInfo);
+	}
+
 	public BuildKiteBuildInfo build() {
 		return buildKiteBuildInfo;
 	}

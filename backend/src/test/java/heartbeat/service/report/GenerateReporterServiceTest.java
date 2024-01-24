@@ -694,6 +694,99 @@ class GenerateReporterServiceTest {
 	}
 
 	@Test
+	void shouldNotGenerateCsvForPipelineWithPipelineLeadTimeIsNullAndWithCreator() throws IOException {
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
+
+		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
+			.leadTime(List.of(mockDeployment))
+			.build();
+
+		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
+			.deploymentEnvList(List.of(mockDeployment))
+			.pipelineCrews(List.of("xx"))
+			.build();
+
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(true)
+			.metrics(List.of("lead time for changes", "deployment frequency"))
+			.buildKiteSetting(buildKiteSetting)
+			.codebaseSetting(codebaseSetting)
+			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
+			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
+			.csvTimeStamp(TIMESTAMP)
+			.build();
+
+		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
+			.thenReturn(List.of(BuildKiteBuildInfoBuilder.withDefaultAndCreator()
+				.withCommit("")
+				.withJobs(List.of(BuildKiteJobBuilder.withDefault().build()))
+				.withPipelineCreateTime("2022-09-09T04:57:34Z")
+				.build()));
+		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(null);
+		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("xx"));
+
+		generateReporterService.generateDoraReport(request);
+
+		boolean isExists = Files.exists(mockPipelineCsvPath);
+		assertFalse(isExists);
+		Files.deleteIfExists(mockPipelineCsvPath);
+	}
+
+	@Test
+	void shouldNotGenerateCsvForPipelineWithPipelineLeadTimeIsNullAndWithCreatorNotInPipelineCrews()
+			throws IOException {
+		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
+		mockDeployment.setRepository(GITHUB_REPOSITORY);
+
+		CodebaseSetting codebaseSetting = CodebaseSetting.builder()
+			.type(SourceType.GITHUB.name())
+			.token(GITHUB_TOKEN)
+			.leadTime(List.of(mockDeployment))
+			.build();
+
+		BuildKiteSetting buildKiteSetting = BuildKiteSetting.builder()
+			.type(PipelineType.BUILDKITE.name())
+			.token(BUILDKITE_TOKEN)
+			.deploymentEnvList(List.of(mockDeployment))
+			.pipelineCrews(List.of("xxxx"))
+			.build();
+
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.considerHoliday(true)
+			.metrics(List.of("lead time for changes", "deployment frequency"))
+			.buildKiteSetting(buildKiteSetting)
+			.codebaseSetting(codebaseSetting)
+			.startTime(String.valueOf(Instant.MIN.getEpochSecond()))
+			.endTime(String.valueOf(Instant.MAX.getEpochSecond()))
+			.csvTimeStamp(TIMESTAMP)
+			.build();
+
+		when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
+			.thenReturn(List.of(BuildKiteBuildInfoBuilder.withDefaultAndCreator()
+				.withCommit("")
+				.withJobs(List.of(BuildKiteJobBuilder.withDefault().build()))
+				.withPipelineCreateTime("2022-09-09T04:57:34Z")
+				.build()));
+		when(buildKiteService.countDeployTimes(any(), any(), any(), any())).thenReturn(
+				DeployTimesBuilder.withDefault().withPassed(List.of(DeployInfoBuilder.withDefault().build())).build());
+		when(gitHubService.fetchPipelinesLeadTime(any(), any(), any())).thenReturn(null);
+		when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("xx"));
+
+		generateReporterService.generateDoraReport(request);
+
+		boolean isExists = Files.exists(mockPipelineCsvPath);
+		assertFalse(isExists);
+		Files.deleteIfExists(mockPipelineCsvPath);
+	}
+
+	@Test
 	void shouldNotGenerateCsvForPipelineWithCommitIsNull() throws IOException {
 		DeploymentEnvironment mockDeployment = DeploymentEnvironmentBuilder.withDefault().build();
 		mockDeployment.setRepository(GITHUB_REPOSITORY);
