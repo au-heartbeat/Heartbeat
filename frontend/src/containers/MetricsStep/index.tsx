@@ -50,6 +50,7 @@ const MetricsStep = () => {
 
   /* istanbul ignore next */
   const getInfo = () => {
+    console.log(boardConfig);
     getBoardInfo(boardConfig).then((res) => {
       if (res.data) {
         dispatch(updateBoardVerifyState(true));

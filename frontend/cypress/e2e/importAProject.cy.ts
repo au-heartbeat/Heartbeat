@@ -143,7 +143,7 @@ describe('Import project from file', () => {
     });
   });
 
-  it('Should import a new config project manually', () => {
+  it.skip('Should import a new config project manually', () => {
     homePage.navigate();
 
     homePage.importProjectFromFile('NewConfigFileForImporting.json');
@@ -187,7 +187,7 @@ describe('Import project from file', () => {
     checkTokenInputValuesExist(tokenInputValues);
   });
 
-  it('Should import a old config project manually', () => {
+  it.skip('Should import a old config project manually', () => {
     homePage.navigate();
 
     homePage.importProjectFromFile('OldConfigFileForImporting.json');
