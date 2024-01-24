@@ -68,9 +68,7 @@ export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) 
               showDividingLine={items.length > 1 && index > 0}
               style={{ flex: getFlex(items.length) }}
             />
-          ) : (
-            <></>
-          ),
+          ) : null,
         )}
       </StyledItemSection>
     );

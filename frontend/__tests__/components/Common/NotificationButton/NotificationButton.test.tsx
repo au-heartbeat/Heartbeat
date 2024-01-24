@@ -19,8 +19,8 @@ describe('Notification', () => {
   it('should render all notifications correctly', () => {
     act(() => {
       result.current.notifications = mockNotifications;
+      render(<Notification {...result.current} />);
     });
-    render(<Notification {...result.current} />);
 
     expect(screen.queryAllByText('Notification')).toHaveLength(2);
     expect(screen.getByText('Notification Message 1')).toBeInTheDocument();
@@ -31,13 +31,13 @@ describe('Notification', () => {
     act(() => {
       result.current.notifications = mockNotifications;
       result.current.closeNotification = jest.fn();
+      render(<Notification {...result.current} />);
     });
 
-    render(<Notification {...result.current} />);
-
     const closeButton = screen.getAllByRole('button', { name: 'Close' });
-
-    await userEvent.click(closeButton[0]);
+    act(() => {
+      userEvent.click(closeButton[0]);
+    });
 
     await waitFor(() => {
       expect(result.current.closeNotification).toBeCalledWith('1');
@@ -55,9 +55,8 @@ describe('Notification', () => {
     async ({ type, title, backgroundColor, icon, iconColor, borderColor }) => {
       act(() => {
         result.current.notifications = [{ id: '1', message: 'Notification Message 1', type }];
+        render(<Notification {...result.current} />);
       });
-
-      render(<Notification {...result.current} />);
 
       expect(screen.getByText(title)).toBeInTheDocument();
       const alertElement = screen.getByRole('alert');

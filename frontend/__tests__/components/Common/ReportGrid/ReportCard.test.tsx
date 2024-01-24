@@ -2,6 +2,7 @@ import { ReportCard } from '@src/components/Common/ReportGrid/ReportCard';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import clearAllMocks = jest.clearAllMocks;
+import { act } from 'react-dom/test-utils';
 
 describe('Report Card', () => {
   afterEach(() => {
@@ -23,8 +24,9 @@ describe('Report Card', () => {
         subtitle: 'Total Lead Time',
       },
     ];
-
-    render(<ReportCard title={'card'} items={items} xs={6} errorMessage={''} />);
+    act(() => {
+      render(<ReportCard title={'card'} items={items} xs={6} errorMessage={''} />);
+    });
 
     expect(screen.getByText('1.00')).toBeInTheDocument();
     expect(screen.getByText('2.00')).toBeInTheDocument();
@@ -33,8 +35,9 @@ describe('Report Card', () => {
 
   it('should show error message when errorMessage is not empty', () => {
     const errorMessage = 'Data loading failed';
-
-    render(<ReportCard title={'card'} items={null} xs={6} errorMessage={errorMessage} />);
+    act(() => {
+      render(<ReportCard title={'card'} items={null} xs={6} errorMessage={errorMessage} />);
+    });
 
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });

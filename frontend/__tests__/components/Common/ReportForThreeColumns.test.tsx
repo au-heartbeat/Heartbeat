@@ -1,11 +1,14 @@
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
 import { render, screen } from '@testing-library/react';
 import { LOADING, VELOCITY } from '../../fixtures';
+import { act } from 'react-dom/test-utils';
 import React from 'react';
 
 describe('Report for three columns', () => {
   it('should show loading when data is empty', () => {
-    render(<ReportForThreeColumns title={VELOCITY} fieldName='fieldName' listName='listName' data={null} />);
+    act(() => {
+      render(<ReportForThreeColumns title={VELOCITY} fieldName='fieldName' listName='listName' data={null} />);
+    });
 
     expect(screen.getByTestId(LOADING)).toBeInTheDocument();
     expect(screen.getByText(VELOCITY)).toBeInTheDocument();
@@ -17,8 +20,9 @@ describe('Report for three columns', () => {
       { id: 1, name: 'name2', valuesList: [{ name: 'test2', value: '2' }] },
       { id: 2, name: 'name3', valuesList: [{ name: 'test3', value: '3' }] },
     ];
-
-    render(<ReportForThreeColumns title={VELOCITY} fieldName='fieldName' listName='listName' data={mockData} />);
+    act(() => {
+      render(<ReportForThreeColumns title={VELOCITY} fieldName='fieldName' listName='listName' data={mockData} />);
+    });
 
     expect(screen.getByTestId(VELOCITY)).toBeInTheDocument();
   });
