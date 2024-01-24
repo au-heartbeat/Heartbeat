@@ -12,7 +12,7 @@
   "endDate": "2022-09-14T23:59:59.999+08:00",
   "considerHoliday": true,
   "board": {
-    "type": "ira",
+    "type": "Jira",
     "verifyToken": "mockVerifyToken",
     "boardId": "1963",
     "token": "mockToken",
