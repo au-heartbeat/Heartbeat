@@ -23,13 +23,6 @@ export const NOTIFICATION_TITLE = {
   SOMETHING_WENT_WRONG: 'Something went wrong!',
 };
 
-export const NOTIFICATION_TITLE = {
-  HELP_INFORMATION: 'Help Information',
-  PLEASE_NOTE_THAT: 'Please note that',
-  SUCCESSFULLY_COMPLETED: 'Successfully completed!',
-  SOMETHING_WENT_WRONG: 'Something went wrong!',
-};
-
 export enum REQUIRED_DATA {
   All = 'All',
   VELOCITY = 'Velocity',
@@ -205,11 +198,7 @@ export const MESSAGE = {
   LOADING_TIMEOUT: (name: string) => `${name} loading timeout, please click "Retry"!`,
   FAILED_TO_GET_DATA: (name: string) => `Failed to get ${name} data, please click "retry"!`,
   FAILED_TO_EXPORT_CSV: 'Failed to export csv.',
-<<<<<<< HEAD
   FAILED_TO_REQUEST: 'Failed to request!',
-=======
-  FAILED_TO_REQUEST: 'Failed to request !',
->>>>>>> aee9244d (ADM-747: [frontend] feat: handle error (#968))
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN = [

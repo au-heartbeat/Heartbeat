@@ -147,7 +147,6 @@ describe('Board', () => {
     expect(boardIdInput.value).toEqual('');
   });
 
-
   it('should clear all fields information when click reset button and reselect board type', async () => {
     const { getByRole, queryByRole } = setup();
     mockVerifySuccess();
@@ -157,94 +156,94 @@ describe('Board', () => {
       expect(screen.getByText(/verify/i)).not.toBeDisabled();
     });
 
-  it('should clear all fields information when click reset button', async () => {
-    const { getByRole, getByText, queryByRole } = setup();
-    const fieldInputs = BOARD_FIELDS.slice(1, 4).map(
-      (label) =>
-        screen.getByRole('textbox', {
-          name: label,
-          hidden: true,
-        }) as HTMLInputElement,
-    );
-    fillBoardFieldsInformation();
+    it('should clear all fields information when click reset button', async () => {
+      const { getByRole, getByText, queryByRole } = setup();
+      const fieldInputs = BOARD_FIELDS.slice(1, 4).map(
+        (label) =>
+          screen.getByRole('textbox', {
+            name: label,
+            hidden: true,
+          }) as HTMLInputElement,
+      );
+      fillBoardFieldsInformation();
 
-    fireEvent.click(screen.getByText(VERIFY));
+      fireEvent.click(screen.getByText(VERIFY));
 
-    await userEvent.click(screen.getByText(/verify/i));
+      await userEvent.click(screen.getByText(/verify/i));
 
-    await waitFor(() => {
-      expect(getByRole('button', { name: /reset/i })).toBeInTheDocument();
+      await waitFor(() => {
+        expect(getByRole('button', { name: /reset/i })).toBeInTheDocument();
+      });
+      expect(queryByRole('button', { name: /verified/i })).toBeDisabled();
+
+      await userEvent.click(getByRole('button', { name: /reset/i }));
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/board id/i)).not.toHaveValue();
+        expect(screen.getByLabelText(/email/i)).not.toHaveValue();
+        expect(screen.getByLabelText(/site/i)).not.toHaveValue();
+        expect(screen.getByLabelText(/token/i)).not.toHaveValue();
+      });
+
+      await userEvent.click(getByRole('button', { name: /board/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
+      });
+      await userEvent.click(screen.getByRole('option', { name: /jira/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /board jira/i })).toBeInTheDocument();
+      });
     });
-    expect(queryByRole('button', { name: /verified/i })).toBeDisabled();
 
-    await userEvent.click(getByRole('button', { name: /reset/i }));
+    it('should show reset button and verified button when verify succeed ', async () => {
+      mockVerifySuccess();
+      setup();
+      await fillBoardFieldsInformation();
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/board id/i)).not.toHaveValue();
-      expect(screen.getByLabelText(/email/i)).not.toHaveValue();
-      expect(screen.getByLabelText(/site/i)).not.toHaveValue();
-      expect(screen.getByLabelText(/token/i)).not.toHaveValue();
+      fireEvent.click(screen.getByText(VERIFY));
+
+      await waitFor(() => {
+        expect(screen.getByText(RESET)).toBeVisible();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(VERIFIED)).toBeTruthy();
+      });
     });
 
-    await userEvent.click(getByRole('button', { name: /board/i }));
+    it('should called verifyBoard method once when click verify button', async () => {
+      mockVerifySuccess();
+      setup();
+      await fillBoardFieldsInformation();
+      fireEvent.click(screen.getByRole('button', { name: /verify/i }));
 
-    await waitFor(() => {
-      expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Verified')).toBeInTheDocument();
+      });
     });
-    await userEvent.click(screen.getByRole('option', { name: /jira/i }));
 
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /board jira/i })).toBeInTheDocument();
+    it('should check loading animation when click verify button', async () => {
+      const { container } = setup();
+      await fillBoardFieldsInformation();
+      fireEvent.click(screen.getByRole('button', { name: VERIFY }));
+
+      await waitFor(() => {
+        expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar');
+      });
+    });
+
+    it('should check error notification show and disappear when board verify response status is 401', async () => {
+      server.use(rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => res(ctx.status(HttpStatusCode.Unauthorized))));
+      setup();
+      await fillBoardFieldsInformation();
+
+      fireEvent.click(screen.getByRole('button', { name: /verify/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/email is incorrect/i)).toBeInTheDocument();
+      });
     });
   });
-
-  it('should show reset button and verified button when verify succeed ', async () => {
-    mockVerifySuccess();
-    setup();
-    await fillBoardFieldsInformation();
-
-    fireEvent.click(screen.getByText(VERIFY));
-
-    await waitFor(() => {
-      expect(screen.getByText(RESET)).toBeVisible();
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText(VERIFIED)).toBeTruthy();
-    });
-  });
-
-  it('should called verifyBoard method once when click verify button', async () => {
-    mockVerifySuccess();
-    setup();
-    await fillBoardFieldsInformation();
-    fireEvent.click(screen.getByRole('button', { name: /verify/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Verified')).toBeInTheDocument();
-    });
-  });
-
-  it('should check loading animation when click verify button', async () => {
-    const { container } = setup();
-    await fillBoardFieldsInformation();
-    fireEvent.click(screen.getByRole('button', { name: VERIFY }));
-
-    await waitFor(() => {
-      expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar');
-    });
-  });
-
-  it('should check error notification show and disappear when board verify response status is 401', async () => {
-    server.use(rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => res(ctx.status(HttpStatusCode.Unauthorized))));
-    setup();
-    await fillBoardFieldsInformation();
-
-    fireEvent.click(screen.getByRole('button', { name: /verify/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/email is incorrect/i)).toBeInTheDocument();
-    });
-  });
-})
 });

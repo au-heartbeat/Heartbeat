@@ -28,14 +28,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     timeout4Board,
     timeout4Dora,
     timeout4Report,
-<<<<<<< HEAD
     generalError4Board,
     generalError4Dora,
     generalError4Report,
   } = useGenerateReportEffect();
-=======
-  } = useGenerateReportEffect(notification);
->>>>>>> aee9244d (ADM-747: [frontend] feat: handle error (#968))
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
@@ -182,7 +178,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
   }, [timeout4Dora]);
-<<<<<<< HEAD
 
   useEffect(() => {
     generalError4Board &&
@@ -216,8 +211,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
   }, [generalError4Report]);
-=======
->>>>>>> aee9244d (ADM-747: [frontend] feat: handle error (#968))
 
   const showSummary = () => (
     <>
@@ -230,11 +223,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={reportData}
           csvTimeStamp={csvTimeStamp}
-<<<<<<< HEAD
           errorMessage={timeout4Board || timeout4Report || generalError4Board || generalError4Report}
-=======
-          timeoutError={timeout4Board || timeout4Report}
->>>>>>> aee9244d (ADM-747: [frontend] feat: handle error (#968))
         />
       )}
       {shouldShowDoraMetrics && (
@@ -246,11 +235,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={reportData}
           csvTimeStamp={csvTimeStamp}
-<<<<<<< HEAD
           errorMessage={timeout4Dora || timeout4Report || generalError4Dora || generalError4Report}
-=======
-          timeoutError={timeout4Dora || timeout4Report}
->>>>>>> aee9244d (ADM-747: [frontend] feat: handle error (#968))
         />
       )}
     </>

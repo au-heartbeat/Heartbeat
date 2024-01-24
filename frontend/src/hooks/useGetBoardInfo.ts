@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 /* istanbul ignore file */
-=======
->>>>>>> 3905e1fa ([kai.zhou][adm-718]: chroe: format code)
-=======
-/* istanbul ignore file */
->>>>>>> 83c42229 ([kai.zhou][adm-718]: fix unit test coverage)
 import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';
