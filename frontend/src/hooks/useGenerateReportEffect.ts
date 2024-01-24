@@ -43,7 +43,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       })
       .catch((e) => {
         handleError(e, 'Board');
-        stopPollingReports();
       });
   };
 
@@ -78,7 +77,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       })
       .catch((e) => {
         handleError(e, 'Dora');
-        stopPollingReports();
       });
   };
 
