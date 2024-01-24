@@ -135,3 +135,10 @@ With this graphQL replacement, the fields required in the project are the status
 
 As you can see from graphQL above, these three rest apis can be replaced by a single graphQL api, simply by modifying the schema
 
+## Question
+There are three other interfaces to the rest api for jira that do not support graphQL replacement.
+1. path = "/rest/internal/2/issue/{jiraCardKey}/activityfeed?startAt={startAt}&maxResults={queryCount}"，No query history card record was found in the current data
+
+2. path = "/rest/api/2/issue/createmeta?projectKeys={projectKey}&expand=projects.issuetypes.fields"，No way to query
+
+3. path = "rest/api/2/project/{projectIdOrKey}"。The graphQL interface returns a style of TEAM_MANAGED_PROJECT and COMPANY_MANAGED_PROJECT，not in the style we need
