@@ -78,20 +78,6 @@
     status: 200
     file: ./backend/jira/jsons/jira.board.1963.issue.allnondone.json
 
-# target Fields
-- request:
-    method: GET
-    url: /rest/api/2/issue/createmeta
-    query:
-      projectKeys: PLL
-      expand: projects.issuetypes.fields
-
-  response:
-    headers:
-      content-type: application/json
-    status: 200
-    file: ./backend/jira/jsons/jira.issue.createmeta.targetfields.json
-
 # Done Cards History
 - request:
     method: GET
@@ -146,6 +132,9 @@
 - request:
     method: GET
     url: /rest/api/2/issue/createmeta
+    query:
+      projectKeys: PLL
+      expand: projects.issuetypes.fields
 
   response:
     headers:
