@@ -61,7 +61,9 @@ describe('use verify pipelineTool state', () => {
       );
     });
 
-    result.current.clearErrorMessage();
+    act(() => {
+      result.current.clearErrorMessage();
+    });
 
     await waitFor(() => {
       expect(result.current.errorMessage).toEqual('');

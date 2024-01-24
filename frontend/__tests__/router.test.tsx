@@ -1,5 +1,6 @@
 import { ERROR_PAGE_MESSAGE, ERROR_PAGE_ROUTE, BASE_PAGE_ROUTE, METRICS_PAGE_ROUTE } from './fixtures';
 import { render, waitFor } from '@testing-library/react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import React, { lazy } from 'react';
@@ -14,11 +15,13 @@ jest.useFakeTimers();
 describe('router', () => {
   const setup = (routeUrl: string) =>
     render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[routeUrl]}>
-          <Router />
-        </MemoryRouter>
-      </Provider>,
+      <ErrorBoundary fallbackRender={() => 'error'}>
+        <Provider store={store}>
+          <MemoryRouter initialEntries={[routeUrl]}>
+            <Router />
+          </MemoryRouter>
+        </Provider>
+      </ErrorBoundary>,
     );
 
   it('should show home page when loading on a bad page', async () => {

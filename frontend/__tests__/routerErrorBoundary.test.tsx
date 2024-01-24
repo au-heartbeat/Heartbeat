@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { MemoryRouter } from 'react-router-dom';
 import { METRICS_PAGE_ROUTE } from './fixtures';
 import { Provider } from 'react-redux';
@@ -25,9 +26,11 @@ describe('router', () => {
   const setup = (routeUrl: string) =>
     render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[routeUrl]}>
-          <Router />
-        </MemoryRouter>
+        <ErrorBoundary fallbackRender={() => 'error'}>
+          <MemoryRouter initialEntries={[routeUrl]}>
+            <Router />
+          </MemoryRouter>
+        </ErrorBoundary>
       </Provider>,
     );
 
