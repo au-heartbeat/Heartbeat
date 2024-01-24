@@ -44,8 +44,9 @@ describe('Notification', () => {
     });
 
     const closeButton = screen.getAllByRole('button', { name: 'Close' });
-
-    await userEvent.click(closeButton[0]);
+    act(() => {
+      userEvent.click(closeButton[0]);
+    });
 
     await waitFor(() => {
       expect(closeNotification).toBeCalledWith('1');
