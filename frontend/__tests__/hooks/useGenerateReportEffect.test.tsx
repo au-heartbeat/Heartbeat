@@ -44,7 +44,7 @@ describe('use generate report effect', () => {
       .fn()
       .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
 
-    const { result } = renderHook(() => useGenerateReportEffect(notificationHook.current));
+    const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
       result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
@@ -66,7 +66,7 @@ describe('use generate report effect', () => {
       .fn()
       .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
 
-    const { result } = renderHook(() => useGenerateReportEffect(notificationHook.current));
+    const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
       result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
@@ -88,7 +88,7 @@ describe('use generate report effect', () => {
       .fn()
       .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
 
-    const { result } = renderHook(() => useGenerateReportEffect(notificationHook.current));
+    const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
@@ -126,7 +126,7 @@ describe('use generate report effect', () => {
       .fn()
       .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
 
-    const { result } = renderHook(() => useGenerateReportEffect(notificationHook.current));
+    const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
@@ -143,7 +143,7 @@ describe('use generate report effect', () => {
       .fn()
       .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
 
-    const { result } = renderHook(() => useGenerateReportEffect(notificationHook.current));
+    const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
@@ -165,7 +165,7 @@ describe('use generate report effect', () => {
       .fn()
       .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
 
-    const { result } = renderHook(() => useGenerateReportEffect(notificationHook.current));
+    const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
       result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
