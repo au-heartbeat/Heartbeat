@@ -196,6 +196,9 @@ public class GenerateReporterService {
 				case "classification" -> reportResponse
 					.setClassificationList(classificationCalculator.calculate(jiraBoardSetting.getTargetFields(),
 							fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
+				default -> {
+					// TODO
+				}
 			}
 		});
 

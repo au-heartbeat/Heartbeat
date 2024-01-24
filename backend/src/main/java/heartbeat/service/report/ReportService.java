@@ -43,6 +43,9 @@ public class ReportService {
 			switch (metricType) {
 				case BOARD -> generateReporterService.generateBoardReport(request);
 				case DORA -> generateReporterService.generateDoraReport(request);
+				default -> {
+					// TODO
+				}
 			}
 		});
 	}

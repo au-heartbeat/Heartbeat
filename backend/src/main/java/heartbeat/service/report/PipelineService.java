@@ -82,8 +82,7 @@ public class PipelineService {
 					List<String> validSteps = buildKiteService.getStepsBeforeEndStep(deploymentEnvironment.getStep(),
 							pipelineSteps);
 					List<PipelineCSVInfo> pipelineCSVInfoList = buildInfos.stream()
-						.filter(buildInfo -> isValidBuildInfo(buildInfo, deploymentEnvironment, validSteps, startTime,
-								endTime))
+						.filter(buildInfo -> isValidBuildInfo(buildInfo, validSteps, startTime, endTime))
 						.map(buildInfo -> getPipelineCSVInfo(codebaseSetting, startTime, endTime, buildKiteData,
 								deploymentEnvironment, buildInfo, validSteps))
 						.toList();
@@ -115,8 +114,8 @@ public class PipelineService {
 			.build();
 	}
 
-	private boolean isValidBuildInfo(BuildKiteBuildInfo buildInfo, DeploymentEnvironment deploymentEnvironment,
-			List<String> steps, String startTime, String endTime) {
+	private boolean isValidBuildInfo(BuildKiteBuildInfo buildInfo, List<String> steps, String startTime,
+			String endTime) {
 		BuildKiteJob buildKiteJob = buildKiteService.getBuildKiteJob(buildInfo.getJobs(), steps, REQUIRED_STATES,
 				startTime, endTime);
 		return buildKiteJob != null && !buildInfo.getCommit().isEmpty();

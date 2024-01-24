@@ -81,7 +81,9 @@ public class PipelineServiceTest {
 		@Test
 		void shouldGetPipelineLeadTimeFromGithubServiceAndBuildkiteServiceWhenCodebaseSettingIsNotEmpty() {
 			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = new ArrayList<>();
-			String startTime = "startTime", endTime = "endTime", token = "token";
+			String startTime = "startTime";
+			String endTime = "endTime";
+			String token = "token";
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.buildKiteSetting(BuildKiteSetting.builder()
 					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("env1").repository("repo1").build(),
@@ -119,7 +121,9 @@ public class PipelineServiceTest {
 					BuildKiteBuildInfo.builder()
 						.author(BuildKiteBuildInfo.Author.builder().name("test-author2").build())
 						.build());
-			String startTime = "startTime", endTime = "endTime", token = "token";
+			String startTime = "startTime";
+			String endTime = "endTime";
+			String token = "token";
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.buildKiteSetting(BuildKiteSetting.builder()
 					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("env1").repository("repo1").build()))
@@ -173,7 +177,9 @@ public class PipelineServiceTest {
 			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = List.of(BuildKiteBuildInfo.builder()
 				.author(BuildKiteBuildInfo.Author.builder().name("someone").build())
 				.build());
-			String startTime = "startTime", endTime = "endTime", token = "token";
+			String startTime = "startTime";
+			String endTime = "endTime";
+			String token = "token";
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.buildKiteSetting(BuildKiteSetting.builder()
 					.token(token)
@@ -207,7 +213,9 @@ public class PipelineServiceTest {
 					BuildKiteBuildInfo.builder()
 						.author(BuildKiteBuildInfo.Author.builder().name("test-author2").build())
 						.build());
-			String startTime = "startTime", endTime = "endTime", token = "token";
+			String startTime = "startTime";
+			String endTime = "endTime";
+			String token = "token";
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.buildKiteSetting(BuildKiteSetting.builder()
 					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("env1").repository("repo1").build()))
@@ -240,7 +248,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldReturnEmptyWhenDeploymentEnvironmentsIsEmpty() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
 					CodebaseSetting.builder().build(), startTime, endTime, FetchedData.BuildKiteData.builder().build(),
 					Lists.list());
@@ -251,7 +260,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldReturnEmptyWhenNoBuildInfoFoundForDeploymentEnvironment() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipelineWithCodebase(
 					CodebaseSetting.builder().build(), startTime, endTime,
 					FetchedData.BuildKiteData.builder().buildInfosList(List.of(Map.entry("env1", List.of()))).build(),
@@ -263,7 +273,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldReturnEmptyWhenPipelineStepsIsEmpty() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().build());
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of());
 
@@ -280,7 +291,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldReturnEmptyWhenBuildJobIsEmpty() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().build());
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
 			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(startTime), eq(endTime))).thenReturn(null);
@@ -299,7 +311,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldFilterOutInvalidBuildOfCommentIsEmtpy() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("").build());
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
 			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
@@ -320,7 +333,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldGenerateValueWithoutCommitWhenCodebaseSettingIsEmpty() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
 			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
@@ -343,7 +357,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldGenerateValueWithoutCommitWhenCodebaseSettingTokenIsEmpty() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
 			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
@@ -367,7 +382,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldGenerateValueWithoutCommitWhenCommitIdIsEmpty() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
 			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
@@ -391,7 +407,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldGenerateValueHasCommit() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
 			CommitInfo fakeCommitInfo = CommitInfo.builder().build();
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
@@ -420,7 +437,8 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldGenerateValueWithLeadTimeWhenLeadTimeExisting() {
-			String startTime = "startTime", endTime = "endTime";
+			String startTime = "startTime";
+			String endTime = "endTime";
 			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
 			CommitInfo fakeCommitInfo = CommitInfo.builder().build();
 			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
