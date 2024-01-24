@@ -9,7 +9,15 @@ import {
   VERIFIED,
   VERIFY,
 } from '../../fixtures';
-import { fireEvent, getByLabelText, render, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
+import {
+  fireEvent,
+  getByLabelText,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
@@ -147,14 +155,13 @@ describe('Board', () => {
     expect(boardIdInput.value).toEqual('');
   });
 
-
   it('should clear all fields information when click reset button', async () => {
     const { getByRole, getByText, queryByRole } = setup();
     mockVerifySuccess();
     await fillBoardFieldsInformation();
 
     await waitFor(() => {
-      expect(getByRole('button', {name: /verify/i})).not.toBeDisabled();
+      expect(getByRole('button', { name: /verify/i })).not.toBeDisabled();
     });
 
     await userEvent.click(screen.getByText(/verify/i));
@@ -197,7 +204,6 @@ describe('Board', () => {
     });
 
     expect(screen.getByText(VERIFIED)).toBeInTheDocument();
-
   });
 
   it('should called verifyBoard method once when click verify button', async () => {
