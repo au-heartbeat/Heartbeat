@@ -633,7 +633,8 @@ public class GenerateReporterService {
 
 		if (!CollectionUtils.isEmpty(pipelineCrews)) {
 			buildKiteBuildInfo = buildKiteBuildInfo.stream()
-				.filter(info -> info.getCreator() != null && pipelineCrews.contains(info.getCreator().getName()))
+				.filter(info -> ((info.getCreator() == null && pipelineCrews.contains("Unknown")))
+						|| (info.getCreator() != null && pipelineCrews.contains(info.getCreator().getName())))
 				.toList();
 		}
 		return buildKiteBuildInfo;

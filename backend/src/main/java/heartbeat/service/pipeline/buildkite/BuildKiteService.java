@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -73,12 +72,14 @@ public class BuildKiteService {
 	}
 
 	public List<String> getPipelineCrewNames(List<BuildKiteBuildInfo> buildKiteBuildInfos) {
-		return buildKiteBuildInfos.stream()
+		List<String> buildInfosList = new ArrayList<>(buildKiteBuildInfos.stream()
 			.filter(buildKiteBuildInfo -> Objects.nonNull(buildKiteBuildInfo.getCreator()))
 			.map(buildKiteBuildInfo -> buildKiteBuildInfo.getCreator().getName())
 			.distinct()
 			.sorted()
-			.toList();
+			.toList());
+		buildInfosList.add("Unknown");
+		return buildInfosList;
 	}
 
 	public List<String> getStepsBeforeEndStep(String endStep, List<String> steps) {

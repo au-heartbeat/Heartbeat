@@ -36,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -113,7 +112,8 @@ public class CSVFileGenerator {
 						commitDate = csvInfo.getCommitInfo().getCommit().getAuthor().getDate();
 					}
 
-					if (csvInfo.getBuildInfo().getCreator() != null) {
+					if (csvInfo.getBuildInfo().getCreator() != null
+							&& csvInfo.getBuildInfo().getCreator().getName() != null) {
 						creatorName = csvInfo.getBuildInfo().getCreator().getName();
 					}
 
