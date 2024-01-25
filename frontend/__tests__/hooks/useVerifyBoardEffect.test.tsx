@@ -23,6 +23,7 @@ const mockConfig = {
   type: 'jira',
   boardId: '1',
   site: 'fake',
+  email: 'fake@fake.com',
   token: FAKE_TOKEN,
   startTime: null,
   endTime: null,
@@ -33,14 +34,14 @@ describe('use verify board state', () => {
     jest.clearAllMocks();
     server.close();
   });
-  it('should got initial data state when hook render given none input then', async () => {
+  it('should got initial data state when hook render given none input', async () => {
     const { result } = renderHook(() => useVerifyBoardEffect());
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.formFields.length).toBe(5);
   });
 
-  it('should got success callback when call verify function given success call then', async () => {
+  it('should got success callback when call verify function given success call', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
         return res(ctx.status(HttpStatusCode.Ok), ctx.json({ projectKey: 'FAKE' }));
@@ -57,7 +58,7 @@ describe('use verify board state', () => {
     });
   });
 
-  it('should got email and token fields error message when call verify function given a invalid token then', async () => {
+  it('should got email and token fields error message when call verify function given a invalid token', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
         return res(ctx.status(HttpStatusCode.Unauthorized));
@@ -103,7 +104,7 @@ describe('use verify board state', () => {
     });
   });
 
-  it('should got board id field error message when call verify function given a invalid board id then ', async () => {
+  it('should got board id field error message when call verify function given a invalid board id', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
         return res(
