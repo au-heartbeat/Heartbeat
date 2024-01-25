@@ -1,7 +1,9 @@
 /* istanbul ignore file */
+// TODO: add test coverage @Kai Zhou
 import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';
+import { getJiraBoardToken } from '@src/utils/util';
 import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import get from 'lodash/get';
@@ -46,7 +48,10 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
     setIsLoading(true);
     setErrorMessage({});
     return boardInfoClient
-      .getBoardInfo(data)
+      .getBoardInfo({
+        ...data,
+        token: getJiraBoardToken(data.token, data.email),
+      })
       .then((res) => {
         if (!res.data) {
           setErrorMessage({

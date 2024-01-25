@@ -251,7 +251,7 @@ describe('Create a new project', () => {
 
   //TODO: just ignore for bug bash , need t0 fix next time @Zhou Kai, @Xingmeng Tao
 
-  it.skip('Should create a new project manually', () => {
+  it('Should create a new project manually', () => {
     homePage.navigate();
 
     homePage.headerVersion.should('exist');

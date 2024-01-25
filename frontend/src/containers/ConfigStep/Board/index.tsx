@@ -68,14 +68,12 @@ export const Board = () => {
   const handleSubmitBoardFields = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(updateTreatFlagCardAsBlock(true));
-    const msg = `${fields[2].value}:${fields[4].value}`;
-    const encodeToken = `Basic ${btoa(msg)}`;
     const params = {
       type: fields[0].value,
       boardId: fields[1].value,
       email: fields[2].value,
       site: fields[3].value,
-      token: encodeToken,
+      token: fields[4].value,
       startTime: dayjs(DateRange.startDate).valueOf(),
       endTime: dayjs(DateRange.endDate).valueOf(),
     };

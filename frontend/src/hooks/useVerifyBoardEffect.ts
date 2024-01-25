@@ -5,6 +5,7 @@ import { boardClient } from '@src/clients/board/BoardClient';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { findCaseInsensitiveType } from '@src/utils/util';
 import { BOARD_TYPES } from '@src/constants/resources';
+import { getJiraBoardToken } from '@src/utils/util';
 import { MESSAGE } from '@src/constants/resources';
 import { REGEX } from '@src/constants/regex';
 import { HttpStatusCode } from 'axios';
@@ -148,7 +149,10 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const verifyJira = (params: BoardRequestDTO) => {
     setIsLoading(true);
     return boardClient
-      .getVerifyBoard(params)
+      .getVerifyBoard({
+        ...params,
+        token: getJiraBoardToken(params.token, params.email),
+      })
       .then((result) => {
         clearError();
         return result;
