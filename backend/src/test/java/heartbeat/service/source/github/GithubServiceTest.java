@@ -102,6 +102,7 @@ class GithubServiceTest {
 			.pipelineName("Name")
 			.pipelineStep("Step")
 			.passed(List.of(DeployInfo.builder()
+				.jobName("Step")
 				.pipelineCreateTime("2022-07-23T04:05:00.000+00:00")
 				.jobStartTime("2022-07-23T04:04:00.000+00:00")
 				.jobFinishTime("2022-07-23T04:06:00.000+00:00")
