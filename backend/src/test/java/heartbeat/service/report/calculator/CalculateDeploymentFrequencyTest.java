@@ -48,10 +48,17 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequency() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
-					.jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build(),
-					DeployInfo.builder().jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
-						.jobFinishTime(JOB_FINISH_TIME_2023).state(PASSED_STATE).build()))
+			.withPassed(List.of(
+					DeployInfo.builder()
+						.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+						.jobFinishTime(JOB_FINISH_TIME_2022)
+						.state(PASSED_STATE)
+						.build(),
+					DeployInfo.builder()
+						.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+						.jobFinishTime(JOB_FINISH_TIME_2023)
+						.state(PASSED_STATE)
+						.build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
@@ -69,8 +76,11 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequencyWhenWorkDayIsZero() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
-				.jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build()))
+			.withPassed(List.of(DeployInfo.builder()
+				.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+				.jobFinishTime(JOB_FINISH_TIME_2022)
+				.state(PASSED_STATE)
+				.build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
@@ -104,8 +114,17 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequencyWhenHaveTwoDeployInfo() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobName(JOB_NAME_EQUALS_PIPELINE_STEP).jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build(),
-					DeployInfo.builder().jobName(JOB_NAME_EQUALS_PIPELINE_STEP).jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build()))
+			.withPassed(List.of(
+					DeployInfo.builder()
+						.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+						.jobFinishTime(JOB_FINISH_TIME_2022)
+						.state(PASSED_STATE)
+						.build(),
+					DeployInfo.builder()
+						.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+						.jobFinishTime(JOB_FINISH_TIME_2022)
+						.state(PASSED_STATE)
+						.build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
@@ -137,12 +156,22 @@ class CalculateDeploymentFrequencyTest {
 	@Test
 	public void testCalculateDeploymentFrequencyWhenHaveDeployInfoWhoseJobNameIsNotEqualToPipelineStep() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
-					.jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build(),
-				DeployInfo.builder().jobName(OTHER_JOB_NAME)
-					.jobFinishTime(JOB_FINISH_TIME_2022).state(PASSED_STATE).build(),
-				DeployInfo.builder().jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
-					.jobFinishTime(JOB_FINISH_TIME_2023).state(PASSED_STATE).build()))
+			.withPassed(List.of(
+					DeployInfo.builder()
+						.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+						.jobFinishTime(JOB_FINISH_TIME_2022)
+						.state(PASSED_STATE)
+						.build(),
+					DeployInfo.builder()
+						.jobName(OTHER_JOB_NAME)
+						.jobFinishTime(JOB_FINISH_TIME_2022)
+						.state(PASSED_STATE)
+						.build(),
+					DeployInfo.builder()
+						.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+						.jobFinishTime(JOB_FINISH_TIME_2023)
+						.state(PASSED_STATE)
+						.build()))
 			.build();
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
@@ -151,7 +180,7 @@ class CalculateDeploymentFrequencyTest {
 		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-			Long.parseLong(START_TIME), Long.parseLong(END_TIME));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
