@@ -69,15 +69,16 @@ describe('ConfigStep', () => {
 
   it('should show project name when input some letters', () => {
     setup();
+    const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
     const hasInputValue = (e: HTMLElement, inputValue: Matcher) => {
       return screen.getByDisplayValue(inputValue) === e;
     };
-    const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
+
+    act(() => {
+      fireEvent.change(input, { target: { value: TEST_PROJECT_NAME } });
+    });
 
     expect(input).toBeInTheDocument();
-
-    fireEvent.change(input, { target: { value: TEST_PROJECT_NAME } });
-
     expect(hasInputValue(input, TEST_PROJECT_NAME)).toBe(true);
   });
 
@@ -85,8 +86,10 @@ describe('ConfigStep', () => {
     setup();
     const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
 
-    fireEvent.change(input, { target: { value: TEST_PROJECT_NAME } });
-    fireEvent.change(input, { target: { value: '' } });
+    act(() => {
+      fireEvent.change(input, { target: { value: TEST_PROJECT_NAME } });
+      fireEvent.change(input, { target: { value: '' } });
+    });
 
     expect(screen.getByText('Project name is required')).toBeInTheDocument();
   });
@@ -95,7 +98,9 @@ describe('ConfigStep', () => {
     setup();
     const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
 
-    fireEvent.focus(input);
+    act(() => {
+      fireEvent.focus(input);
+    });
 
     expect(screen.getByText('Project name is required')).toBeInTheDocument();
   });
@@ -113,12 +118,17 @@ describe('ConfigStep', () => {
     setup();
     const chinaCalendar = screen.getByRole('radio', { name: CHINA_CALENDAR });
     const regularCalendar = screen.getByRole('radio', { name: REGULAR_CALENDAR });
-    fireEvent.click(chinaCalendar);
+
+    act(() => {
+      fireEvent.click(chinaCalendar);
+    });
 
     expect(chinaCalendar).toBeChecked();
     expect(regularCalendar).not.toBeChecked();
 
-    fireEvent.click(regularCalendar);
+    act(() => {
+      fireEvent.click(regularCalendar);
+    });
 
     expect(regularCalendar).toBeChecked();
     expect(chinaCalendar).not.toBeChecked();
@@ -135,10 +145,14 @@ describe('ConfigStep', () => {
   it('should show board component when MetricsTypeCheckbox select Velocity,Cycle time', () => {
     setup();
 
-    fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    act(() => {
+      fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    });
     const requireDateSelection = within(screen.getByRole('listbox'));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: CYCLE_TIME }));
+    act(() => {
+      fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+      fireEvent.click(requireDateSelection.getByRole('option', { name: CYCLE_TIME }));
+    });
 
     expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
   });
@@ -146,9 +160,13 @@ describe('ConfigStep', () => {
   it('should show board component when MetricsTypeCheckbox select  Classification, ', () => {
     setup();
 
-    fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    act(() => {
+      fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    });
     const requireDateSelection = within(screen.getByRole('listbox'));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: 'Classification' }));
+    act(() => {
+      fireEvent.click(requireDateSelection.getByRole('option', { name: 'Classification' }));
+    });
 
     expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
   });
@@ -156,12 +174,19 @@ describe('ConfigStep', () => {
   it('should verify again when calendar type is changed given board fields are filled and verified', () => {
     setup();
 
-    fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    act(() => {
+      fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    });
     const requireDateSelection = within(screen.getByRole('listbox'));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+    act(() => {
+      fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+    });
     fillBoardFieldsInformation();
-    fireEvent.click(screen.getByText(VERIFY));
-    fireEvent.click(screen.getByText(CHINA_CALENDAR));
+
+    act(() => {
+      fireEvent.click(screen.getByText(VERIFY));
+      fireEvent.click(screen.getByText(CHINA_CALENDAR));
+    });
 
     expect(screen.queryByText(VERIFY)).toBeVisible();
     expect(screen.queryByText('Verified')).toBeNull();
@@ -173,12 +198,19 @@ describe('ConfigStep', () => {
     const today = dayjs().format('MM/DD/YYYY');
     const startDateInput = screen.getByLabelText('From *');
 
-    fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    act(() => {
+      fireEvent.mouseDown(screen.getByRole('button', { name: REQUIRED_DATA }));
+    });
     const requireDateSelection = within(screen.getByRole('listbox'));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+    act(() => {
+      fireEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+    });
     fillBoardFieldsInformation();
-    fireEvent.click(screen.getByText(VERIFY));
-    fireEvent.change(startDateInput, { target: { value: today } });
+
+    act(() => {
+      fireEvent.click(screen.getByText(VERIFY));
+      fireEvent.change(startDateInput, { target: { value: today } });
+    });
 
     expect(screen.queryByText(VERIFY)).toBeVisible();
     expect(screen.queryByText('Verified')).toBeNull();
@@ -204,29 +236,33 @@ describe('ConfigStep', () => {
   });
 
   it('should not verify again when collection-date or date-picker is changed given pipeline token is filled and verified', async () => {
-    const wrapper = setup();
+    setup();
     const mockToken = 'bkua_mockTokenMockTokenMockTokenMockToken1234';
     const today = dayjs().format('MM/DD/YYYY');
-    const startDateInput = wrapper.getByLabelText('From *');
+    const startDateInput = screen.getByLabelText('From *');
 
-    const requiredMetricsField = wrapper.getByRole('button', { name: REQUIRED_DATA });
-    fireEvent.mouseDown(requiredMetricsField);
-    const requireDateSelection = within(wrapper.getByRole('listbox'));
-    fireEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }));
-
-    const tokenNode = within(wrapper.getByTestId('pipelineToolTextField')).getByLabelText('input Token');
-
-    fireEvent.change(tokenNode, { target: { value: mockToken } });
-
-    const submitButton = wrapper.getByText(VERIFY);
-    fireEvent.click(submitButton);
-
-    fireEvent.change(startDateInput, { target: { value: today } });
+    act(() => {
+      const requiredMetricsField = screen.getByRole('button', { name: REQUIRED_DATA });
+      fireEvent.mouseDown(requiredMetricsField);
+    });
+    act(() => {
+      const requireDateSelection = within(screen.getByRole('listbox'));
+      fireEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }));
+    });
+    act(() => {
+      const tokenNode = within(screen.getByTestId('pipelineToolTextField')).getByLabelText('input Token');
+      fireEvent.change(tokenNode, { target: { value: mockToken } });
+    });
+    act(() => {
+      const submitButton = screen.getByText(VERIFY);
+      fireEvent.click(submitButton);
+      fireEvent.change(startDateInput, { target: { value: today } });
+    });
 
     await waitFor(() => {
-      expect(wrapper.queryByText(VERIFY)).toBeNull();
-      expect(wrapper.queryByText('Verified')).toBeVisible();
-      expect(wrapper.queryByText(RESET)).toBeVisible();
+      expect(screen.queryByText(VERIFY)).toBeNull();
+      expect(screen.queryByText('Verified')).toBeVisible();
+      expect(screen.queryByText(RESET)).toBeVisible();
     });
   });
 });
