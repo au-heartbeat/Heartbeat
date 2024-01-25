@@ -62,7 +62,7 @@ describe('Board', () => {
   });
 
   it('should show board title and fields when render board component ', () => {
-    const { getByRole, getByLabelText, getAllByText } = setup();
+    const { getByLabelText, getAllByText } = setup();
 
     BOARD_FIELDS.map((field) => {
       expect(getByLabelText(`${field} *`)).toBeInTheDocument();
@@ -71,8 +71,8 @@ describe('Board', () => {
   });
 
   it('should show default value jira when init board component', () => {
-    const { getByRole } = setup();
-    const boardType = getByRole('button', {
+    setup();
+    const boardType = screen.getByRole('button', {
       name: /board/i,
     });
 
@@ -80,9 +80,8 @@ describe('Board', () => {
   });
 
   it('should show detail options when click board field', async () => {
-    const { getByRole } = setup();
-    await userEvent.click(getByRole('button', { name: /board jira/i }));
-    const listBox = within(getByRole('listbox'));
+    await userEvent.click(screen.getByRole('button', { name: /board jira/i }));
+    const listBox = within(screen.getByRole('listbox'));
     const options = listBox.getAllByRole('option');
     const optionValue = options.map((li) => li.getAttribute('data-value'));
 
@@ -90,19 +89,18 @@ describe('Board', () => {
   });
 
   it('should show board type when select board field value ', async () => {
-    const { getByRole } = setup();
 
-    await userEvent.click(getByRole('button', { name: /board jira/i }));
+    await userEvent.click(screen.getByRole('button', { name: /board jira/i }));
 
     await waitFor(() => {
-      expect(getByRole('option', { name: /jira/i })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
     });
 
-    await userEvent.click(getByRole('option', { name: /jira/i }));
+    await userEvent.click(screen.getByRole('option', { name: /jira/i }));
 
     await waitFor(() => {
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: /board/i,
         }),
       ).toBeInTheDocument();
@@ -126,19 +124,18 @@ describe('Board', () => {
   });
 
   it.skip('should clear other fields information when change board field selection', async () => {
-    const { getByRole } = setup();
-    const boardIdInput = getByRole('textbox', {
+    const boardIdInput = screen.getByRole('textbox', {
       name: 'Board Id',
     }) as HTMLInputElement;
-    const emailInput = getByRole('textbox', {
+    const emailInput = screen.getByRole('textbox', {
       name: 'Email',
     }) as HTMLInputElement;
 
     await userEvent.type(boardIdInput, '2');
     await userEvent.type(emailInput, 'mockEmail@qq.com');
-    await userEvent.click(getByRole('button', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('button', { name: CONFIG_TITLE.BOARD }));
     await userEvent.click(
-      getByRole('button', {
+      screen.getByRole('button', {
         name: /jira/i,
       }),
     );
@@ -148,22 +145,22 @@ describe('Board', () => {
   });
 
   it('should clear all fields information when click reset button', async () => {
-    const { getByRole, getByText, queryByRole, getByLabelText } = setup();
+    const { getByText, queryByRole, getByLabelText } = setup();
     mockVerifySuccess();
     await fillBoardFieldsInformation();
 
     await waitFor(() => {
-      expect(getByRole('button', { name: /verify/i })).not.toBeDisabled();
+      expect(screen.getByRole('button', { name: /verify/i })).not.toBeDisabled();
     });
 
     await userEvent.click(getByText(/verify/i));
 
     await waitFor(() => {
-      expect(getByRole('button', { name: /reset/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
     });
     expect(queryByRole('button', { name: /verified/i })).toBeDisabled();
 
-    await userEvent.click(getByRole('button', { name: /reset/i }));
+    await userEvent.click(screen.getByRole('button', { name: /reset/i }));
 
     await waitFor(() => {
       expect(getByLabelText(/board id/i)).not.toHaveValue();
@@ -172,15 +169,15 @@ describe('Board', () => {
       expect(getByLabelText(/token/i)).not.toHaveValue();
     });
 
-    await userEvent.click(getByRole('button', { name: /board/i }));
+    await userEvent.click(screen.getByRole('button', { name: /board/i }));
 
     await waitFor(() => {
-      expect(getByRole('option', { name: /jira/i })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
     });
-    await userEvent.click(getByRole('option', { name: /jira/i }));
+    await userEvent.click(screen.getByRole('option', { name: /jira/i }));
 
     await waitFor(() => {
-      expect(getByRole('button', { name: /board jira/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /board jira/i })).toBeInTheDocument();
     });
   });
 
@@ -210,9 +207,9 @@ describe('Board', () => {
   });
 
   it('should check loading animation when click verify button', async () => {
-    const { container, getByRole } = setup();
+    const { container } = setup();
     await fillBoardFieldsInformation();
-    await userEvent.click(getByRole('button', { name: VERIFY }));
+    await userEvent.click(screen.getByRole('button', { name: VERIFY }));
 
     await waitFor(() => {
       expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar');
@@ -221,10 +218,10 @@ describe('Board', () => {
 
   it('should check error notification show and disappear when board verify response status is 401', async () => {
     server.use(rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => res(ctx.status(HttpStatusCode.Unauthorized))));
-    const { getByRole, getByText } = setup();
+    const { getByText } = setup();
     await fillBoardFieldsInformation();
 
-    await userEvent.click(getByRole('button', { name: /verify/i }));
+    await userEvent.click(screen.getByRole('button', { name: /verify/i }));
 
     await waitFor(() => {
       expect(getByText(/email is incorrect/i)).toBeInTheDocument();
