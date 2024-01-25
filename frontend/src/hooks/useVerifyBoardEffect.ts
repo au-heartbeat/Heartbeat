@@ -7,6 +7,7 @@ import { findCaseInsensitiveType } from '@src/utils/util';
 import { BOARD_TYPES } from '@src/constants/resources';
 import { MESSAGE } from '@src/constants/resources';
 import { REGEX } from '@src/constants/regex';
+import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
 export interface FormField {
@@ -154,13 +155,13 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       })
       .catch((e) => {
         const { message, code } = e;
-        if (code === 401) {
+        if (code === HttpStatusCode.Unauthorized) {
           setErrorField(['email', 'token'], [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR]);
         }
-        if (code === 404 && message === 'site not found') {
+        if (code === HttpStatusCode.NotFound && message === 'site not found') {
           setErrorField(['site'], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
         }
-        if (code === 404 && message === 'boardId not found') {
+        if (code === HttpStatusCode.NotFound && message === 'boardId not found') {
           setErrorField(['boardId'], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
         }
         return e;

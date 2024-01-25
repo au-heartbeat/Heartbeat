@@ -161,12 +161,3 @@
       content-type: application/json
     status: 200
     file: ./backend/jira/jsons/jira.board.info.configuration.json
-# - request:
-#     method: GET
-#     url: /rest/api/2/status/(PLL-\d+)
-
-#   response:
-#     headers:
-#       content-type: application/json
-#     status: 200
-#     file: ./backend/jira/jsons/jira.board.info.status.json

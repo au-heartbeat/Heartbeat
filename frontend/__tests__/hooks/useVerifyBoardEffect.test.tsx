@@ -1,10 +1,10 @@
 import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
+import { MOCK_BOARD_URL_FOR_JIRA, FAKE_TOKEN } from '@test/fixtures';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { MOCK_BOARD_URL_FOR_JIRA } from '@test/fixtures';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 
-import { Iron } from '@mui/icons-material';
+import { BOARD_TYPES } from '@test/fixtures';
 import { rest } from 'msw';
 
 const mockDispatch = jest.fn();
@@ -14,25 +14,33 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('@src/hooks/useAppDispatch', () => ({
-  useAppSelector: () => ({ type: 'Jira' }),
+  useAppSelector: () => ({ type: BOARD_TYPES.JIRA }),
 }));
 
 const server = setupServer();
 
+const mockConfig = {
+  type: 'jira',
+  boardId: '1',
+  site: 'fake',
+  token: FAKE_TOKEN,
+  startTime: null,
+  endTime: null,
+};
 describe('use verify board state', () => {
   beforeAll(() => server.listen());
   afterAll(() => {
     jest.clearAllMocks();
     server.close();
   });
-  it('when hook render given none input  then should got initial data state ', async () => {
+  it('should got initial data state when hook render given none input then', async () => {
     const { result } = renderHook(() => useVerifyBoardEffect());
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.formFields.length).toBe(5);
   });
 
-  it('when call verify function given success call then should got success callback', async () => {
+  it('should got success callback when call verify function given success call then', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
         return res(ctx.status(HttpStatusCode.Ok), ctx.json({ projectKey: 'FAKE' }));
@@ -42,21 +50,14 @@ describe('use verify board state', () => {
     const { result } = renderHook(() => useVerifyBoardEffect());
     const { verifyJira } = result.current;
 
-    const callback = await verifyJira({
-      type: 'jira',
-      boardId: '1',
-      site: 'fake',
-      token: 'fake-token',
-      startTime: null,
-      endTime: null,
-    });
+    const callback = await verifyJira(mockConfig);
 
     await waitFor(() => {
       expect(callback.response.projectKey).toEqual('FAKE');
     });
   });
 
-  it('when call verify function given a invalid token then should got email and token fields error message', async () => {
+  it('should got email and token fields error message when call verify function given a invalid token then', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
         return res(ctx.status(HttpStatusCode.Unauthorized));
@@ -65,25 +66,17 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      result.current.verifyJira({
-        type: 'jira',
-        boardId: '1',
-        site: 'fake',
-        token: 'fake-token',
-        startTime: null,
-        endTime: null,
-      });
+      result.current.verifyJira(mockConfig);
     });
 
     await waitFor(() => {
       const emailFiled = result.current.formFields.find((field) => field.name === 'email');
-      const tokenField = result.current.formFields.find((field) => field.name === 'token');
-
       expect(emailFiled?.errorMessage).toBe('Email is incorrect !');
-      expect(tokenField?.errorMessage).toBe(
-        'Token is invalid, please change your token with correct access permission !',
-      );
     });
+    const tokenField = result.current.formFields.find((field) => field.name === 'token');
+    expect(tokenField?.errorMessage).toBe(
+      'Token is invalid, please change your token with correct access permission !',
+    );
   });
 
   it('when call verify function given a invalid site then should got site field error message', async () => {
@@ -100,14 +93,7 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      result.current.verifyJira({
-        type: 'jira',
-        boardId: '1',
-        site: 'fake',
-        token: 'fake-token',
-        startTime: null,
-        endTime: null,
-      });
+      result.current.verifyJira(mockConfig);
     });
 
     await waitFor(() => {
@@ -117,7 +103,7 @@ describe('use verify board state', () => {
     });
   });
 
-  it('when call verify function given a invalid board id then should got board id field error message', async () => {
+  it('should got board id field error message when call verify function given a invalid board id then ', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
         return res(
@@ -131,14 +117,7 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      result.current.verifyJira({
-        type: 'jira',
-        boardId: '1',
-        site: 'fake',
-        token: 'fake-token',
-        startTime: null,
-        endTime: null,
-      });
+      result.current.verifyJira(mockConfig);
     });
 
     await waitFor(() => {

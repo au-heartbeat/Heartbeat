@@ -1,3 +1,4 @@
+// TODO: refactor case, replace fireEvent use userEvent. @Kai Zhou
 import {
   CHINA_CALENDAR,
   CONFIG_TITLE,

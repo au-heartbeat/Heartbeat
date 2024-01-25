@@ -736,3 +736,5 @@ export const CYCLE_TIME_SETTINGS_SECTION = 'Cycle time settings section';
 export const REAL_DONE_SETTING_SECTION = 'Real done setting section';
 export const SELECT_CONSIDER_AS_DONE_MESSAGE = 'Must select which you want to consider as Done';
 export const MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT = 'Token is incorrect!';
+
+export const FAKE_TOKEN = 'fake-token';
