@@ -1,5 +1,5 @@
 import { WarningNotification } from '@src/components/Common/WarningNotification';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, waitFor, screen } from '@testing-library/react';
 import { ERROR_MESSAGE_TIME_DURATION } from '../../fixtures';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { Provider } from 'react-redux';
@@ -22,17 +22,17 @@ describe('ErrorNotificationAutoDismiss', () => {
     jest.clearAllMocks();
   });
 
-  test('renders error message and dismisses after 2 seconds', async () => {
-    const { getByText, queryByText } = setup();
+  it('renders error message and dismisses after 2 seconds', async () => {
+    setup();
 
-    expect(getByText(message)).toBeInTheDocument();
+    expect(screen.getByText(message)).toBeInTheDocument();
 
     act(() => {
       jest.advanceTimersByTime(ERROR_MESSAGE_TIME_DURATION);
     });
 
     await waitFor(() => {
-      expect(queryByText(message)).not.toBeInTheDocument();
+      expect(screen.queryByText(message)).not.toBeInTheDocument();
     });
   });
 });

@@ -1,11 +1,14 @@
 import { ProjectDescription } from '@src/components/ProjectDescription';
+import { render, screen } from '@testing-library/react';
 import { PROJECT_DESCRIPTION } from '../fixtures';
-import { render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 
 describe('ProjectDescription', () => {
   it('should show project description', () => {
-    const { getByRole } = render(<ProjectDescription />);
+    act(() => {
+      render(<ProjectDescription />);
+    });
 
-    expect(getByRole('description').textContent).toContain(PROJECT_DESCRIPTION);
+    expect(screen.getByRole('description').textContent).toContain(PROJECT_DESCRIPTION);
   });
 });

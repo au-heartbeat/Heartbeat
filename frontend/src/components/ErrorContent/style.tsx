@@ -23,14 +23,14 @@ export const ErrorImg = styled.img({
   height: '7rem',
 });
 
-export const Some = styled.text({
+export const Some = styled.span({
   fontSize: '2.5rem',
   fontWeight: '600',
   fontFamily: 'system-ui',
   paddingLeft: '1rem',
 });
 
-export const Error = styled.text({
+export const Error = styled.span({
   paddingLeft: '1rem',
   fontSize: '4.5rem',
   fontWeight: '600',
@@ -45,14 +45,14 @@ export const ErrorMessage = styled.div({
   paddingRight: '12rem',
 });
 
-export const OhNo = styled.text({
+export const OhNo = styled.span({
   fontSize: '7rem',
   fontWeight: '750',
   fontFamily: 'system-ui',
   letterSpacing: '0.2rem',
 });
 
-export const Okay = styled.text({
+export const Okay = styled.span({
   margin: 'auto 0',
   paddingLeft: '1rem',
   fontSize: '1.5rem',

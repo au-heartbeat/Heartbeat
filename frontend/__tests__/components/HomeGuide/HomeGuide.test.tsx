@@ -10,6 +10,7 @@ import { setupStore } from '../../utils/setupStoreUtil';
 import { HomeGuide } from '@src/components/HomeGuide';
 import userEvent from '@testing-library/user-event';
 import { navigateMock } from '../../setupTests';
+import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 
 const mockedUseAppDispatch = jest.fn();
@@ -56,35 +57,37 @@ describe('HomeGuide', () => {
   });
 
   it('should show 2 buttons', () => {
-    const { getByText } = setup();
+    setup();
 
-    expect(getByText(IMPORT_PROJECT_FROM_FILE)).toBeInTheDocument();
-    expect(getByText(CREATE_NEW_PROJECT)).toBeInTheDocument();
+    expect(screen.getByText(IMPORT_PROJECT_FROM_FILE)).toBeInTheDocument();
+    expect(screen.getByText(CREATE_NEW_PROJECT)).toBeInTheDocument();
   });
 
   it('should render input when click guide button', async () => {
-    const { getByTestId } = setup();
-    const fileInput = getByTestId('testInput');
-
+    setup();
+    const fileInput = screen.getByTestId('testInput');
     const clickSpy = jest.spyOn(fileInput, 'click');
-    await userEvent.click(screen.getByText(IMPORT_PROJECT_FROM_FILE));
+
+    await act(async () => {
+      await userEvent.click(screen.getByText(IMPORT_PROJECT_FROM_FILE));
+    });
+
     expect(clickSpy).toHaveBeenCalled();
   });
 
   it('should go to Metrics page and read file when click import file button', async () => {
-    const { getByTestId } = setup();
-
+    setup();
     const file = new File([`${JSON.stringify(IMPORTED_NEW_CONFIG_FIXTURE)}`], 'test.json', {
       type: 'file',
     });
-
-    const input = getByTestId('testInput');
-
+    const input = screen.getByTestId('testInput');
     Object.defineProperty(input, 'files', {
       value: [file],
     });
 
-    fireEvent.change(input);
+    await act(async () => {
+      await fireEvent.change(input);
+    });
 
     await waitFor(() => {
       expect(mockedUseAppDispatch).toHaveBeenCalledTimes(4);
@@ -94,7 +97,11 @@ describe('HomeGuide', () => {
 
   it('should go to Metrics page when click create a new project button', async () => {
     setup();
-    await userEvent.click(screen.getByText(CREATE_NEW_PROJECT));
+
+    await act(async () => {
+      await userEvent.click(screen.getByText(CREATE_NEW_PROJECT));
+    });
+
     expect(navigateMock).toHaveBeenCalledTimes(1);
     expect(navigateMock).toHaveBeenCalledWith(METRICS_PAGE_ROUTE);
   });
@@ -102,6 +109,7 @@ describe('HomeGuide', () => {
   describe('isValidImportedConfig', () => {
     it('should show warning message when no projectName dateRange metrics all exist', async () => {
       const emptyConfig = {};
+
       const queryByText = await setupInputFile(emptyConfig);
 
       await waitFor(() => {
