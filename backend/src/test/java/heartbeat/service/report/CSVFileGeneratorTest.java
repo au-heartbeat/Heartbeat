@@ -1,6 +1,5 @@
 package heartbeat.service.report;
 
-import heartbeat.client.dto.codebase.github.Repo;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
@@ -73,7 +72,7 @@ class CSVFileGeneratorTest {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
 		assertEquals(
-				"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Committer\",\"Creator\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"",
+				"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Code Committer\",\"Pipeline Creator\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"",
 				headers);
 		String firstLine = reader.readLine();
 		assertEquals(
@@ -98,7 +97,7 @@ class CSVFileGeneratorTest {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
 		assertEquals(
-				"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Committer\",\"Creator\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"",
+				"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Code Committer\",\"Pipeline Creator\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"",
 				headers);
 		String firstLine = reader.readLine();
 		assertEquals(
@@ -136,7 +135,7 @@ class CSVFileGeneratorTest {
 			.collect(Collectors.joining("\n"));
 
 		Assertions.assertEquals(
-				"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Committer\",\"Creator\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"\n"
+				"\"Pipeline Name\",\"Pipeline Step\",\"Build Number\",\"Code Committer\",\"Pipeline Creator\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"\n"
 						+ "\"Heartbeat\",\":rocket: Deploy prod\",\"880\",\"XXXX\",\"XXXX\",\"2023-05-08T07:18:18Z\",\"2023-05-10T06:43:02.653Z\",\"168369327000\",\"1683793037000\",\"1684793037000\",\"8379303\",\"16837\",\"653037000\",\"passed\",\"branch\"",
 				csvPipelineData);
 

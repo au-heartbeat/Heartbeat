@@ -91,10 +91,10 @@ public class CSVFileGenerator {
 		if (!fileName.contains("..") && fileName.startsWith("./csv")) {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
-				String[] headers = { "Pipeline Name", "Pipeline Step", "Build Number", "Committer", "Creator",
-						"First Code Committed Time In PR", "Code Committed Time", "PR Created Time", "PR Merged Time",
-						"Deployment Completed Time", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch" };
+				String[] headers = { "Pipeline Name", "Pipeline Step", "Build Number", "Code Committer",
+						"Pipeline Creator", "First Code Committed Time In PR", "Code Committed Time", "PR Created Time",
+						"PR Merged Time", "Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
+						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch" };
 
 				csvWriter.writeNext(headers);
 
