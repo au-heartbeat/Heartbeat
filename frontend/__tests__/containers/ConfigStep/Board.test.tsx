@@ -89,7 +89,6 @@ describe('Board', () => {
   });
 
   it('should show board type when select board field value ', async () => {
-
     await userEvent.click(screen.getByRole('button', { name: /board jira/i }));
 
     await waitFor(() => {
