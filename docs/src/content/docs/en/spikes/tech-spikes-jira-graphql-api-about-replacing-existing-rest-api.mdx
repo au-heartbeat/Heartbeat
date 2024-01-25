@@ -5,7 +5,7 @@ description: Jira graphQL API about replacing existing REST API.
 
 ## Current situation
 
-The existing jira API are all REST API, and the REST API has the problem of over-fetching or multiple requests.
+The existing Jira API are all RESTFUL API, and the RESTFUL API has the problem of over-fetching or multiple requests.
 
 ## Expect
 
@@ -19,10 +19,8 @@ Jira provides the functionality of the graphQL API, which provides us with an AP
 
 ## Example
 
-
-### 一、For heartbeat's API `/boards/{boardType}/verify`
+### One. For heartbeat's API `/boards/{boardType}/verify`
 Jira's API `/rest/agile/1.0/board/{boardId}` is used, but only projectKey is used in the logic.
-
 #### Solution
 Using the graphQL API instead for `/rest/agile/1.0/board/{boardId}`, as follows:
 ```json
@@ -42,7 +40,7 @@ Query Variables
 }
 ```
 
-### 二、For heartbeat's API `/boards /{boardType}` and `/boards /{boardType}/info`
+### Two. For heartbeat's API `/boards /{boardType}` and `/boards /{boardType}/info`
 Using the jira's REST API as follows:
 1. `/rest/agile/1.0/board/{boardId}/configuration`, to obtain the board id, name attribute, column name, and status id.
 2. `/rest/api/2/status/{statusNum}`, to get the untranslatedName of status and the key and name of category.
@@ -147,7 +145,8 @@ There are three other interfaces to the REST API for jira that do not support gr
 
 3. `/rest/api/2/project/{projectIdOrKey}`, the graphQL API returns a style of `TEAM_MANAGED_PROJECT` and `COMPANY_MANAGED_PROJECT`，not in the style we need.
 
-## Test jira graphQL API
+
+## Test Jira graphQL API
 Here are three apis you can use to test jira's graphQL, as follows:
 1. https://dorametrics.atlassian.net/jsw/graphql
 
