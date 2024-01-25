@@ -29,13 +29,14 @@ let store = null;
 
 const server = setupServer();
 
-const mockVerifySuccess = () => {
+const mockVerifySuccess = (delay = 0) => {
   server.use(
     rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) =>
       res(
         ctx.json({
           projectKey: 'FAKE',
         }),
+        ctx.delay(delay),
       ),
     ),
   );
@@ -80,6 +81,7 @@ describe('Board', () => {
   });
 
   it('should show detail options when click board field', async () => {
+    setup();
     await userEvent.click(screen.getByRole('button', { name: /board jira/i }));
     const listBox = within(screen.getByRole('listbox'));
     const options = listBox.getAllByRole('option');
@@ -89,6 +91,7 @@ describe('Board', () => {
   });
 
   it('should show board type when select board field value ', async () => {
+    setup();
     await userEvent.click(screen.getByRole('button', { name: /board jira/i }));
 
     await waitFor(() => {
@@ -206,12 +209,13 @@ describe('Board', () => {
   });
 
   it('should check loading animation when click verify button', async () => {
-    const { container } = setup();
+    mockVerifySuccess(300);
+    const { getByRole } = setup();
     await fillBoardFieldsInformation();
-    await userEvent.click(screen.getByRole('button', { name: VERIFY }));
+    await userEvent.click(getByRole('button', { name: VERIFY }));
 
     await waitFor(() => {
-      expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar');
+      expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
   });
 

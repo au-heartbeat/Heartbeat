@@ -22,15 +22,6 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Loading } from '@src/components/Loading';
 import dayjs from 'dayjs';
 
-type Field = {
-  key: string;
-  name: string;
-  value: string;
-  isRequired: boolean;
-  isValid: boolean;
-  col: number;
-};
-
 export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);

@@ -69,11 +69,11 @@ describe('ConfigStep', () => {
   });
 
   it('should show project name when input some letters', () => {
-    setup();
+    const { getByRole, getByDisplayValue } = setup();
     const hasInputValue = (e: HTMLElement, inputValue: Matcher) => {
-      return screen.getByDisplayValue(inputValue) === e;
+      return getByDisplayValue(inputValue) === e;
     };
-    const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
+    const input = getByRole('textbox', { name: PROJECT_NAME_LABEL });
 
     expect(input).toBeInTheDocument();
 

@@ -259,7 +259,7 @@ describe('MetricsStep', () => {
       expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
     });
 
-    it('when get board card when no data then should be render no card container', async () => {
+    it('should be render no card container when get board card when no data', async () => {
       server.use(
         rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
           return res(ctx.status(HttpStatusCode.Ok));
@@ -274,6 +274,29 @@ describe('MetricsStep', () => {
       expect(
         getByText('Please go back to the previous page and change your collection date, or check your board info!'),
       ).toBeInTheDocument();
+    });
+
+    it('should be render form container when got board card success', async () => {
+      server.use(
+        rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
+          return res(
+            ctx.status(HttpStatusCode.Ok),
+            ctx.json({
+              ignoredTargetFields: [],
+              jiraColumns: [],
+              targetFields: [],
+              users: [],
+            }),
+          );
+        }),
+      );
+
+      const { getByText } = setup();
+
+      await waitFor(() => {
+        expect(getByText(/crew settings/i)).toBeInTheDocument();
+      });
+      expect(getByText(/cycle time settings/i)).toBeInTheDocument();
     });
   });
 });
