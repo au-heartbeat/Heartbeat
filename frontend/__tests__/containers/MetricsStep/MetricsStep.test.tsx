@@ -1,4 +1,4 @@
-import { act, render, renderHook, waitFor, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import MetricsStep from '@src/containers/MetricsStep';
 import { Provider } from 'react-redux';
@@ -22,9 +22,14 @@ import {
 } from '../../fixtures';
 import { saveCycleTimeSettings, saveDoneColumn, setCycleTimeSettingsType } from '@src/context/Metrics/metricsSlice';
 import { updateJiraVerifyResponse, updateMetrics } from '@src/context/config/configSlice';
-import { useNotificationLayoutEffect } from '@src/hooks/useNotificationLayoutEffect';
+import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
 import userEvent from '@testing-library/user-event';
+
+jest.mock('@src/context/notification/NotificationSlice', () => ({
+  ...jest.requireActual('@src/context/notification/NotificationSlice'),
+  closeAllNotifications: jest.fn().mockReturnValue({ type: 'CLOSE_ALL_NOTIFICATIONS' }),
+}));
 
 let store = setupStore();
 const server = setupServer(
@@ -36,11 +41,10 @@ const server = setupServer(
 beforeAll(() => server.listen());
 afterAll(() => server.close());
 
-const { result } = renderHook(() => useNotificationLayoutEffect());
 const setup = () =>
   render(
     <Provider store={store}>
-      <MetricsStep {...result.current} />
+      <MetricsStep />
     </Provider>,
   );
 
@@ -49,7 +53,9 @@ describe('MetricsStep', () => {
     store = setupStore();
   });
 
-  const { result } = renderHook(() => useNotificationLayoutEffect());
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('should render Crews when select velocity, and show Real done when have done column in Cycle time', async () => {
     store.dispatch(updateMetrics([REQUIRED_DATA_LIST[1]]));
@@ -66,6 +72,18 @@ describe('MetricsStep', () => {
     expect(queryByText(CYCLE_TIME_SETTINGS)).not.toBeInTheDocument();
     expect(queryByText(CLASSIFICATION_SETTING)).not.toBeInTheDocument();
     expect(getByText(REAL_DONE)).toBeInTheDocument();
+  });
+
+  it('should not show Real done when only one value is done for cycle time', async () => {
+    store.dispatch(updateMetrics([REQUIRED_DATA_LIST[1]]));
+    store.dispatch(saveCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Done' }]));
+
+    const { getByText, queryByText } = setup();
+
+    expect(getByText(CREWS_SETTING)).toBeInTheDocument();
+    expect(queryByText(CYCLE_TIME_SETTINGS)).not.toBeInTheDocument();
+    expect(queryByText(CLASSIFICATION_SETTING)).not.toBeInTheDocument();
+    expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
   });
 
   it('should show Cycle Time Settings when select cycle time in config page', async () => {
@@ -97,19 +115,9 @@ describe('MetricsStep', () => {
   });
 
   it('should call closeAllNotifications', async () => {
-    act(() => {
-      result.current.closeAllNotifications = jest.fn();
-    });
+    setup();
 
-    await waitFor(() =>
-      render(
-        <Provider store={store}>
-          <MetricsStep {...result.current} />
-        </Provider>,
-      ),
-    );
-
-    expect(result.current.closeAllNotifications).toBeCalled();
+    expect(closeAllNotifications).toHaveBeenCalledTimes(1);
   });
 
   describe('with pre-filled cycle time data', () => {

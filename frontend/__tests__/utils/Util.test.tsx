@@ -5,9 +5,11 @@ import {
   formatMillisecondsToHours,
   formatMinToHours,
   getJiraBoardToken,
+  getRealDoneStatus,
   transformToCleanedBuildKiteEmoji,
 } from '@src/utils/util';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
+import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { PIPELINE_TOOL_TYPES } from '../fixtures';
 
@@ -127,5 +129,51 @@ describe('filterAndMapCycleTimeSettings function', () => {
     const expected = 2;
     const result = formatMillisecondsToHours(7200000);
     expect(result).toEqual(expected);
+  });
+});
+
+const MOCK_CYCLE_TIME_SETTING_With_ONE_DONE = [
+  { column: 'TODO', status: 'ToDo', value: 'TODO' },
+  { column: 'TODO', status: 'Backlog', value: 'TODO' },
+  { column: 'IN DEV', status: 'InDev', value: 'IN DEV' },
+  { column: 'IN DEV', status: 'Doing', value: 'IN DEV' },
+  { column: 'DONE', status: 'DONE', value: 'Done' },
+];
+
+const MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE = [
+  { column: 'TODO', status: 'ToDo', value: 'TODO' },
+  { column: 'TODO', status: 'Backlog', value: 'TODO' },
+  { column: 'IN DEV', status: 'InDev', value: 'IN DEV' },
+  { column: 'IN DEV', status: 'Doing', value: 'Done' },
+  { column: 'DONE', status: 'DONE', value: 'Done' },
+];
+
+describe('getRealDoneStatus', () => {
+  it('should return selected done status given cycle time settings only one done value and type is by column', () => {
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_With_ONE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, []);
+
+    expect(result).toEqual(['DONE']);
+  });
+
+  it('should return selected done status given cycle time settings only one done value and type is by status', () => {
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_With_ONE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, []);
+
+    expect(result).toEqual(['DONE']);
+  });
+
+  it('should return status from real done settings given cycle time settings type is by column', () => {
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, [
+      'Doing',
+    ]);
+
+    expect(result).toEqual(['Doing']);
+  });
+
+  it('should return selected done status given cycle time settings type is by column', () => {
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, [
+      'something',
+    ]);
+
+    expect(result).toEqual(['Doing', 'DONE']);
   });
 });
