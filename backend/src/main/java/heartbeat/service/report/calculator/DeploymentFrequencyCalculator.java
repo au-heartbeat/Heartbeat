@@ -29,8 +29,10 @@ public class DeploymentFrequencyCalculator {
 		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
-			int passedDeployInfosCount = (int) item.getPassed().stream().filter(deployInfo -> deployInfo.getJobName()
-				.equals(item.getPipelineStep())).count();
+			int passedDeployInfosCount = (int) item.getPassed()
+				.stream()
+				.filter(deployInfo -> deployInfo.getJobName().equals(item.getPipelineStep()))
+				.count();
 			List<DailyDeploymentCount> dailyDeploymentCounts = mapDeploymentPassedItems(item.getPassed());
 			float frequency = passedDeployInfosCount == 0 || timePeriod == 0 ? 0
 					: (float) passedDeployInfosCount / timePeriod;

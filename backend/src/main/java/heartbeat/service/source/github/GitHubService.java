@@ -143,8 +143,10 @@ public class GitHubService {
 			String repository = GithubUtil.getGithubUrlFullName(repositories.get(deployTime.getPipelineId()));
 			return PipelineInfoOfRepository.builder()
 				.repository(repository)
-				.passedDeploy(deployTime.getPassed().stream().filter(deployInfo ->
-					deployInfo.getJobName().equals(deployTime.getPipelineStep())).toList())
+				.passedDeploy(deployTime.getPassed()
+					.stream()
+					.filter(deployInfo -> deployInfo.getJobName().equals(deployTime.getPipelineStep()))
+					.toList())
 				.pipelineStep(deployTime.getPipelineStep())
 				.pipelineName(deployTime.getPipelineName())
 				.build();

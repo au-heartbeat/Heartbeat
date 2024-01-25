@@ -360,6 +360,13 @@ public class GenerateReporterService {
 		MetricsDataCompleted metricsDataCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(reportId);
 		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(reportId);
 
+		Boolean boardMetricsCompleted = boardReportResponse != null ? true
+				: getValueOrNull(metricsDataCompleted, MetricsDataCompleted::boardMetricsCompleted);
+		Boolean pipelineMetricsCompleted = pipleineReportResponse != null ? true
+				: getValueOrNull(metricsDataCompleted, MetricsDataCompleted::pipelineMetricsCompleted);
+		Boolean sourceControlMetricsCompleted = sourceControlReportResponse != null ? true
+				: getValueOrNull(metricsDataCompleted, MetricsDataCompleted::sourceControlMetricsCompleted);
+
 		return ReportResponse.builder()
 			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
 			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
@@ -369,11 +376,9 @@ public class GenerateReporterService {
 			.changeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getChangeFailureRate))
 			.meanTimeToRecovery(getValueOrNull(pipleineReportResponse, ReportResponse::getMeanTimeToRecovery))
 			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
-			.boardMetricsCompleted(getValueOrNull(metricsDataCompleted, MetricsDataCompleted::boardMetricsCompleted))
-			.pipelineMetricsCompleted(
-					getValueOrNull(metricsDataCompleted, MetricsDataCompleted::pipelineMetricsCompleted))
-			.sourceControlMetricsCompleted(
-					getValueOrNull(metricsDataCompleted, MetricsDataCompleted::sourceControlMetricsCompleted))
+			.boardMetricsCompleted(boardMetricsCompleted)
+			.pipelineMetricsCompleted(pipelineMetricsCompleted)
+			.sourceControlMetricsCompleted(sourceControlMetricsCompleted)
 			.allMetricsCompleted(isReportReady)
 			.reportMetricsError(reportMetricsError)
 			.build();

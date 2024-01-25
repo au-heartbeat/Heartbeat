@@ -629,6 +629,24 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
+		void shouldReturnCompletedNullGivenResponseNullWhenGetDataFromCache() {
+			String reportId = "reportId";
+			when(asyncReportRequestHandler.getReport(any())).thenReturn(null);
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+				.thenReturn(MetricsDataCompleted.builder().build());
+			when(asyncExceptionHandler.get(any())).thenReturn(null);
+
+			ReportResponse res = generateReporterService.getComposedReportResponse(reportId, true);
+
+			assertEquals(EXPORT_CSV_VALIDITY_TIME, res.getExportValidityTime());
+			assertEquals(true, res.getAllMetricsCompleted());
+			assertEquals(null, res.getBoardMetricsCompleted());
+			assertEquals(null, res.getPipelineMetricsCompleted());
+			assertEquals(null, res.getSourceControlMetricsCompleted());
+			assertEquals(null, res.getReportMetricsError().getBoardMetricsError());
+		}
+
+		@Test
 		void shouldReturnErrorDataWhenExceptionIs404Or403Or401() {
 			String reportId = "reportId";
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
