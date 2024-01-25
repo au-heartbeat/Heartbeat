@@ -206,15 +206,13 @@ public class PipelineServiceTest {
 		@Test
 		void shouldFilterCreatorByInputCrews() {
 			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = List.of(
-				BuildKiteBuildInfo.builder()
-					.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator1").build())
-					.build(),
-				BuildKiteBuildInfo.builder()
-					.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator2").build())
-					.build(),
-				BuildKiteBuildInfo.builder()
-					.creator(null)
-					.build());
+					BuildKiteBuildInfo.builder()
+						.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator1").build())
+						.build(),
+					BuildKiteBuildInfo.builder()
+						.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator2").build())
+						.build(),
+					BuildKiteBuildInfo.builder().creator(null).build());
 			String startTime = "startTime";
 			String endTime = "endTime";
 			String token = "token";
@@ -229,8 +227,7 @@ public class PipelineServiceTest {
 				.metrics(new ArrayList<>())
 				.build();
 
-			when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any()))
-				.thenReturn(fakeBuildKiteBuildInfos);
+			when(buildKiteService.fetchPipelineBuilds(any(), any(), any(), any())).thenReturn(fakeBuildKiteBuildInfos);
 			when(buildKiteService.countDeployTimes(any(), eq(fakeBuildKiteBuildInfos), eq(startTime), eq(endTime)))
 				.thenReturn(DeployTimes.builder().build());
 
