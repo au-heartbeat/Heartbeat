@@ -403,6 +403,7 @@ class GenerateReporterServiceTest {
 					eq(request.getCsvTimeStamp()));
 		}
 
+
 		@Test
 		void shouldGenerateCsvWithPipelineReportWhenPipeLineMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
