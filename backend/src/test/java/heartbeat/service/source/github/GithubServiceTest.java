@@ -108,6 +108,7 @@ class GithubServiceTest {
 				.jobFinishTime("2022-07-23T04:06:00.000+00:00")
 				.commitId("111")
 				.state("passed")
+				.jobName("Step")
 				.build()))
 			.build());
 

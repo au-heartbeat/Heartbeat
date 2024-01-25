@@ -141,12 +141,14 @@ public class GitHubService {
 			Map<String, String> repositories) {
 		return deployTimes.stream().map(deployTime -> {
 			String repository = GithubUtil.getGithubUrlFullName(repositories.get(deployTime.getPipelineId()));
+			List<DeployInfo> validPassedDeploy = deployTime.getPassed() == null ? null
+					: deployTime.getPassed()
+						.stream()
+						.filter(deployInfo -> deployInfo.getJobName().equals(deployTime.getPipelineStep()))
+						.toList();
 			return PipelineInfoOfRepository.builder()
 				.repository(repository)
-				.passedDeploy(deployTime.getPassed()
-					.stream()
-					.filter(deployInfo -> deployInfo.getJobName().equals(deployTime.getPipelineStep()))
-					.toList())
+				.passedDeploy(validPassedDeploy)
 				.pipelineStep(deployTime.getPipelineStep())
 				.pipelineName(deployTime.getPipelineName())
 				.build();
