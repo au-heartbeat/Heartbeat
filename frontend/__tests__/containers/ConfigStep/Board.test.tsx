@@ -63,7 +63,7 @@ describe('Board', () => {
   });
 
   it('should show board title and fields when render board component ', () => {
-
+    setup();
     BOARD_FIELDS.map((field) => {
       expect(screen.getByLabelText(`${field} *`)).toBeInTheDocument();
     });

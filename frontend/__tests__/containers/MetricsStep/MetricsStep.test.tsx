@@ -272,7 +272,9 @@ describe('MetricsStep', () => {
         expect(screen.getByText('No card within selected date range!')).toBeInTheDocument();
       });
       expect(
-        screen.getByText('Please go back to the previous page and change your collection date, or check your board info!'),
+        screen.getByText(
+          'Please go back to the previous page and change your collection date, or check your board info!',
+        ),
       ).toBeInTheDocument();
     });
 
