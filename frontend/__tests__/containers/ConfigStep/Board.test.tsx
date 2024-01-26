@@ -144,10 +144,10 @@ describe('Board', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText(/board id/i)).not.toHaveValue();
-      expect(screen.getByLabelText(/email/i)).not.toHaveValue();
-      expect(screen.getByLabelText(/site/i)).not.toHaveValue();
-      expect(screen.getByLabelText(/token/i)).not.toHaveValue();
     });
+    expect(screen.getByLabelText(/email/i)).not.toHaveValue();
+    expect(screen.getByLabelText(/site/i)).not.toHaveValue();
+    expect(screen.getByLabelText(/token/i)).not.toHaveValue();
 
     await userEvent.click(screen.getByRole('button', { name: /board/i }));
 
