@@ -63,12 +63,11 @@ describe('Board', () => {
   });
 
   it('should show board title and fields when render board component ', () => {
-    const { getByLabelText, getAllByText } = setup();
 
     BOARD_FIELDS.map((field) => {
-      expect(getByLabelText(`${field} *`)).toBeInTheDocument();
+      expect(screen.getByLabelText(`${field} *`)).toBeInTheDocument();
     });
-    expect(getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
   });
 
   it('should show default value jira when init board component', () => {
@@ -126,7 +125,7 @@ describe('Board', () => {
   });
 
   it('should clear all fields information when click reset button', async () => {
-    const { getByText, queryByRole, getByLabelText } = setup();
+    setup();
     mockVerifySuccess();
     await fillBoardFieldsInformation();
 
@@ -134,20 +133,20 @@ describe('Board', () => {
       expect(screen.getByRole('button', { name: /verify/i })).not.toBeDisabled();
     });
 
-    await userEvent.click(getByText(/verify/i));
+    await userEvent.click(screen.getByText(/verify/i));
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
     });
-    expect(queryByRole('button', { name: /verified/i })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
 
     await userEvent.click(screen.getByRole('button', { name: /reset/i }));
 
     await waitFor(() => {
-      expect(getByLabelText(/board id/i)).not.toHaveValue();
-      expect(getByLabelText(/email/i)).not.toHaveValue();
-      expect(getByLabelText(/site/i)).not.toHaveValue();
-      expect(getByLabelText(/token/i)).not.toHaveValue();
+      expect(screen.getByLabelText(/board id/i)).not.toHaveValue();
+      expect(screen.getByLabelText(/email/i)).not.toHaveValue();
+      expect(screen.getByLabelText(/site/i)).not.toHaveValue();
+      expect(screen.getByLabelText(/token/i)).not.toHaveValue();
     });
 
     await userEvent.click(screen.getByRole('button', { name: /board/i }));
@@ -164,34 +163,34 @@ describe('Board', () => {
 
   it('should show reset button and verified button when verify succeed ', async () => {
     mockVerifySuccess();
-    const { getByText } = setup();
+    setup();
     await fillBoardFieldsInformation();
 
-    await userEvent.click(getByText(VERIFY));
+    await userEvent.click(screen.getByText(VERIFY));
 
     await waitFor(() => {
-      expect(getByText(RESET)).toBeVisible();
+      expect(screen.getByText(RESET)).toBeVisible();
     });
 
-    expect(getByText(VERIFIED)).toBeInTheDocument();
+    expect(screen.getByText(VERIFIED)).toBeInTheDocument();
   });
 
   it('should called verifyBoard method once when click verify button', async () => {
     mockVerifySuccess();
-    const { getByRole, getByText } = setup();
+    setup();
     await fillBoardFieldsInformation();
-    await userEvent.click(getByRole('button', { name: /verify/i }));
+    await userEvent.click(screen.getByRole('button', { name: /verify/i }));
 
     await waitFor(() => {
-      expect(getByText('Verified')).toBeInTheDocument();
+      expect(screen.getByText('Verified')).toBeInTheDocument();
     });
   });
 
   it('should check loading animation when click verify button', async () => {
     mockVerifySuccess(300);
-    const { getByRole } = setup();
+    setup();
     await fillBoardFieldsInformation();
-    await userEvent.click(getByRole('button', { name: VERIFY }));
+    await userEvent.click(screen.getByRole('button', { name: VERIFY }));
 
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toBeInTheDocument();
@@ -200,13 +199,13 @@ describe('Board', () => {
 
   it('should check error notification show and disappear when board verify response status is 401', async () => {
     server.use(rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => res(ctx.status(HttpStatusCode.Unauthorized))));
-    const { getByText } = setup();
+    setup();
     await fillBoardFieldsInformation();
 
     await userEvent.click(screen.getByRole('button', { name: /verify/i }));
 
     await waitFor(() => {
-      expect(getByText(/email is incorrect/i)).toBeInTheDocument();
+      expect(screen.getByText(/email is incorrect/i)).toBeInTheDocument();
     });
   });
 });

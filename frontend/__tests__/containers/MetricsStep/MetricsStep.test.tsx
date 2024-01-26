@@ -1,4 +1,4 @@
-import { render, waitFor, within } from '@testing-library/react';
+import { render, waitFor, within, screen } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import MetricsStep from '@src/containers/MetricsStep';
 import { Provider } from 'react-redux';
@@ -68,52 +68,52 @@ describe('MetricsStep', () => {
       ]),
     );
 
-    const { getByText, queryByText } = setup();
+    setup();
 
-    expect(getByText(CREWS_SETTING)).toBeInTheDocument();
-    expect(queryByText(CYCLE_TIME_SETTINGS)).not.toBeInTheDocument();
-    expect(queryByText(CLASSIFICATION_SETTING)).not.toBeInTheDocument();
-    expect(getByText(REAL_DONE)).toBeInTheDocument();
+    expect(screen.getByText(CREWS_SETTING)).toBeInTheDocument();
+    expect(screen.queryByText(CYCLE_TIME_SETTINGS)).not.toBeInTheDocument();
+    expect(screen.queryByText(CLASSIFICATION_SETTING)).not.toBeInTheDocument();
+    expect(screen.getByText(REAL_DONE)).toBeInTheDocument();
   });
 
   it('should not show Real done when only one value is done for cycle time', async () => {
     store.dispatch(updateMetrics([REQUIRED_DATA_LIST[1]]));
     store.dispatch(saveCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Done' }]));
 
-    const { getByText, queryByText } = setup();
+    setup();
 
-    expect(getByText(CREWS_SETTING)).toBeInTheDocument();
-    expect(queryByText(CYCLE_TIME_SETTINGS)).not.toBeInTheDocument();
-    expect(queryByText(CLASSIFICATION_SETTING)).not.toBeInTheDocument();
-    expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
+    expect(screen.getByText(CREWS_SETTING)).toBeInTheDocument();
+    expect(screen.queryByText(CYCLE_TIME_SETTINGS)).not.toBeInTheDocument();
+    expect(screen.queryByText(CLASSIFICATION_SETTING)).not.toBeInTheDocument();
+    expect(screen.queryByText(REAL_DONE)).not.toBeInTheDocument();
   });
 
   it('should show Cycle Time Settings when select cycle time in config page', async () => {
     await store.dispatch(updateMetrics([REQUIRED_DATA_LIST[2]]));
-    const { getByText } = setup();
+    setup();
 
-    expect(getByText(CYCLE_TIME_SETTINGS)).toBeInTheDocument();
+    expect(screen.getByText(CYCLE_TIME_SETTINGS)).toBeInTheDocument();
   });
 
   it('should hide Real Done when no done column in cycleTime settings', async () => {
     await store.dispatch(saveCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Block' }]));
-    const { queryByText } = setup();
+    setup();
 
-    expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
+    expect(screen.queryByText(REAL_DONE)).not.toBeInTheDocument();
   });
 
   it('should show Classification Setting when select classification in config page', async () => {
     await store.dispatch(updateMetrics([REQUIRED_DATA_LIST[3]]));
-    const { getByText } = setup();
+    setup();
 
-    expect(getByText(CLASSIFICATION_SETTING)).toBeInTheDocument();
+    expect(screen.getByText(CLASSIFICATION_SETTING)).toBeInTheDocument();
   });
 
   it('should show DeploymentFrequencySettings component when select deployment frequency in config page', async () => {
     await store.dispatch(updateMetrics([REQUIRED_DATA_LIST[5]]));
-    const { getByText } = setup();
+    setup();
 
-    expect(getByText(DEPLOYMENT_FREQUENCY_SETTINGS)).toBeInTheDocument();
+    expect(screen.getByText(DEPLOYMENT_FREQUENCY_SETTINGS)).toBeInTheDocument();
   });
 
   it('should call closeAllNotifications', async () => {
@@ -202,51 +202,51 @@ describe('MetricsStep', () => {
     });
 
     it('should reset real done when change Cycle time settings DONE to other status', async () => {
-      const { getByLabelText, getByRole } = setup();
-      const realDoneSettingSection = getByLabelText(REAL_DONE_SETTING_SECTION);
+      setup();
+      const realDoneSettingSection = screen.getByLabelText(REAL_DONE_SETTING_SECTION);
 
       expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE);
-      const doneSelectTrigger = within(getByLabelText('Cycle time select for Done')).getByRole('combobox');
+      const doneSelectTrigger = within(screen.getByLabelText('Cycle time select for Done')).getByRole('combobox');
 
       await userEvent.click(doneSelectTrigger as HTMLInputElement);
 
-      const noneOption = within(getByRole('presentation')).getByText('----');
+      const noneOption = within(screen.getByRole('presentation')).getByText('----');
       await userEvent.click(noneOption);
 
       expect(realDoneSettingSection).toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE);
     });
 
     it('should reset real done when change Cycle time settings other status to DONE', async () => {
-      const { getByLabelText, getByRole } = setup();
-      const cycleTimeSettingsSection = getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
-      const realDoneSettingSection = getByLabelText(REAL_DONE_SETTING_SECTION);
+      setup();
+      const cycleTimeSettingsSection = screen.getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
+      const realDoneSettingSection = screen.getByLabelText(REAL_DONE_SETTING_SECTION);
 
       expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE);
       const columnsArray = within(cycleTimeSettingsSection).getAllByRole('button', { name: LIST_OPEN });
 
       await userEvent.click(columnsArray[2]);
-      const options = within(getByRole('listbox')).getAllByRole('option');
+      const options = within(screen.getByRole('listbox')).getAllByRole('option');
       await userEvent.click(options[options.length - 1]);
 
       await waitFor(() => expect(realDoneSettingSection).toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE));
     });
 
     it('should hide real done when change all Cycle time settings to other status', async () => {
-      const { getByLabelText, getByRole } = setup();
-      const cycleTimeSettingsSection = getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
-      const realDoneSettingSection = getByLabelText(REAL_DONE_SETTING_SECTION);
+      setup();
+      const cycleTimeSettingsSection = screen.getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
+      const realDoneSettingSection = screen.getByLabelText(REAL_DONE_SETTING_SECTION);
 
       expect(realDoneSettingSection).not.toHaveTextContent(SELECT_CONSIDER_AS_DONE_MESSAGE);
       const columnsArray = within(cycleTimeSettingsSection).getAllByRole('button', { name: LIST_OPEN });
 
       await userEvent.click(columnsArray[1]);
 
-      const options1 = within(getByRole('listbox')).getAllByRole('option');
+      const options1 = within(screen.getByRole('listbox')).getAllByRole('option');
       await userEvent.click(options1[1]);
 
       await userEvent.click(columnsArray[4]);
 
-      const options2 = within(getByRole('listbox')).getAllByRole('option');
+      const options2 = within(screen.getByRole('listbox')).getAllByRole('option');
       await userEvent.click(options2[1]);
 
       await waitFor(() => expect(realDoneSettingSection).not.toBeInTheDocument());
@@ -266,13 +266,13 @@ describe('MetricsStep', () => {
         }),
       );
 
-      const { getByText } = setup();
+      setup();
 
       await waitFor(() => {
-        expect(getByText('No card within selected date range!')).toBeInTheDocument();
+        expect(screen.getByText('No card within selected date range!')).toBeInTheDocument();
       });
       expect(
-        getByText('Please go back to the previous page and change your collection date, or check your board info!'),
+        screen.getByText('Please go back to the previous page and change your collection date, or check your board info!'),
       ).toBeInTheDocument();
     });
 
@@ -291,12 +291,12 @@ describe('MetricsStep', () => {
         }),
       );
 
-      const { getByText } = setup();
+      setup();
 
       await waitFor(() => {
-        expect(getByText(/crew settings/i)).toBeInTheDocument();
+        expect(screen.getByText(/crew settings/i)).toBeInTheDocument();
       });
-      expect(getByText(/cycle time settings/i)).toBeInTheDocument();
+      expect(screen.getByText(/cycle time settings/i)).toBeInTheDocument();
     });
   });
 });
