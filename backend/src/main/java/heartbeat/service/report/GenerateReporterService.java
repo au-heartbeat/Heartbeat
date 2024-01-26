@@ -360,12 +360,13 @@ public class GenerateReporterService {
 		MetricsDataCompleted metricsDataCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(reportId);
 		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(reportId);
 
-		Boolean boardMetricsCompleted = boardReportResponse != null ? true
-				: getValueOrNull(metricsDataCompleted, MetricsDataCompleted::boardMetricsCompleted);
-		Boolean pipelineMetricsCompleted = pipleineReportResponse != null ? true
-				: getValueOrNull(metricsDataCompleted, MetricsDataCompleted::pipelineMetricsCompleted);
-		Boolean sourceControlMetricsCompleted = sourceControlReportResponse != null ? true
-				: getValueOrNull(metricsDataCompleted, MetricsDataCompleted::sourceControlMetricsCompleted);
+		Boolean boardMetricsCompleted = getValueOrNull(metricsDataCompleted,
+				MetricsDataCompleted::boardMetricsCompleted) == null ? null : boardReportResponse != null;
+		Boolean pipelineMetricsCompleted = getValueOrNull(metricsDataCompleted,
+				MetricsDataCompleted::pipelineMetricsCompleted) == null ? null : pipleineReportResponse != null;
+		Boolean sourceControlMetricsCompleted = getValueOrNull(metricsDataCompleted,
+				MetricsDataCompleted::sourceControlMetricsCompleted) == null ? null
+						: sourceControlReportResponse != null;
 
 		return ReportResponse.builder()
 			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
