@@ -3,8 +3,8 @@ import { AssigneeFilter } from '@src/containers/MetricsStep/Crews/AssigneeFilter
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
 import { WarningMessage } from '@src/containers/MetricsStep/Crews/style';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import React, { useEffect, useState } from 'react';
 import { FormHelperText } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 
@@ -23,7 +23,7 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
   const [selectedCrews, setSelectedCrews] = useState<string[]>([]);
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length;
 
-  useEffect(() => {
+  useMemo(() => {
     setSelectedCrews(isBoardCrews ? users : pipelineCrews);
   }, [users, isBoardCrews, pipelineCrews]);
 
