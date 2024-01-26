@@ -72,12 +72,10 @@ describe('use verify board state', () => {
 
     await waitFor(() => {
       const emailFiled = result.current.formFields.find((field) => field.name === 'email');
-      expect(emailFiled?.errorMessage).toBe('Email is incorrect !');
+      expect(emailFiled?.errorMessage).toBe('Email is incorrect!');
     });
     const tokenField = result.current.formFields.find((field) => field.name === 'token');
-    expect(tokenField?.errorMessage).toBe(
-      'Token is invalid, please change your token with correct access permission !',
-    );
+    expect(tokenField?.errorMessage).toBe('Token is invalid, please change your token with correct access permission!');
   });
 
   it('when call verify function given a invalid site then should got site field error message', async () => {
@@ -100,7 +98,7 @@ describe('use verify board state', () => {
     await waitFor(() => {
       const site = result.current.formFields.find((field) => field.name === 'site');
 
-      expect(site?.errorMessage).toBe('Site is incorrect !');
+      expect(site?.errorMessage).toBe('Site is incorrect!');
     });
   });
 
@@ -124,7 +122,7 @@ describe('use verify board state', () => {
     await waitFor(() => {
       const boardId = result.current.formFields.find((field) => field.name === 'boardId');
 
-      expect(boardId?.errorMessage).toBe('Board Id is incorrect !');
+      expect(boardId?.errorMessage).toBe('Board Id is incorrect!');
     });
   });
 });

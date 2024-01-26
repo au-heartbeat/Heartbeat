@@ -53,8 +53,8 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
       .then((res) => {
         if (!res.data) {
           setErrorMessage({
-            title: 'No card within selected date range!',
-            message: 'Please go back to the previous page and change your collection date, or check your board info!',
+            title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
+            message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
           });
         }
         return res;

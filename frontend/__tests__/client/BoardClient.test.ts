@@ -22,7 +22,7 @@ describe('verify board request', () => {
     expect(result.isBoardVerify).toEqual(true);
   });
 
-  it('should isBoardVerify is true when select classic jira and board verify response status 200', async () => {
+  it('should isBoardVerify is true when select jira and board verify response status 200', async () => {
     const result = await boardClient.getVerifyBoard(MOCK_JIRA_BOARD_VERIFY_REQUEST_PARAMS);
 
     expect(result.isBoardVerify).toEqual(true);

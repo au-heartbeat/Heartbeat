@@ -32,6 +32,11 @@ export interface useVerifyBoardStateInterface {
   resetFormFields: () => void;
 }
 
+const ERROR_INFO = {
+  SITE_NOT_FOUND: 'site not found',
+  BOARD_NOT_FOUND: 'boardId not found',
+};
+
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const boardFields = useAppSelector(selectBoard);
@@ -162,10 +167,10 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         if (code === HttpStatusCode.Unauthorized) {
           setErrorField(['email', 'token'], [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR]);
         }
-        if (code === HttpStatusCode.NotFound && message === 'site not found') {
+        if (code === HttpStatusCode.NotFound && message === ERROR_INFO.SITE_NOT_FOUND) {
           setErrorField(['site'], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
         }
-        if (code === HttpStatusCode.NotFound && message === 'boardId not found') {
+        if (code === HttpStatusCode.NotFound && message === ERROR_INFO.BOARD_NOT_FOUND) {
           setErrorField(['boardId'], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
         }
         return e;

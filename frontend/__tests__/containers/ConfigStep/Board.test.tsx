@@ -125,27 +125,6 @@ describe('Board', () => {
     expect(screen.getByText(EMAIL_REQUIRE_ERROR_MESSAGE)).toBeVisible();
   });
 
-  it.skip('should clear other fields information when change board field selection', async () => {
-    const boardIdInput = screen.getByRole('textbox', {
-      name: 'Board Id',
-    }) as HTMLInputElement;
-    const emailInput = screen.getByRole('textbox', {
-      name: 'Email',
-    }) as HTMLInputElement;
-
-    await userEvent.type(boardIdInput, '2');
-    await userEvent.type(emailInput, 'mockEmail@qq.com');
-    await userEvent.click(screen.getByRole('button', { name: CONFIG_TITLE.BOARD }));
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /jira/i,
-      }),
-    );
-
-    expect(emailInput.value).toEqual('');
-    expect(boardIdInput.value).toEqual('');
-  });
-
   it('should clear all fields information when click reset button', async () => {
     const { getByText, queryByRole, getByLabelText } = setup();
     mockVerifySuccess();

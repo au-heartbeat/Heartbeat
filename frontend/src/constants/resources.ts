@@ -177,10 +177,10 @@ export enum REPORT_SUFFIX_UNITS {
 
 export const MESSAGE = {
   VERIFY_FAILED_ERROR: 'verify failed',
-  VERIFY_MAIL_FAILED_ERROR: 'Email is incorrect !',
-  VERIFY_TOKEN_FAILED_ERROR: 'Token is invalid, please change your token with correct access permission !',
-  VERIFY_SITE_FAILED_ERROR: 'Site is incorrect !',
-  VERIFY_BOARD_FAILED_ERROR: 'Board Id is incorrect !',
+  VERIFY_MAIL_FAILED_ERROR: 'Email is incorrect!',
+  VERIFY_TOKEN_FAILED_ERROR: 'Token is invalid, please change your token with correct access permission!',
+  VERIFY_SITE_FAILED_ERROR: 'Site is incorrect!',
+  VERIFY_BOARD_FAILED_ERROR: 'Board Id is incorrect!',
   UNKNOWN_ERROR: 'Unknown',
   GET_STEPS_FAILED: 'Failed to get',
   HOME_VERIFY_IMPORT_WARNING: 'The content of the imported JSON file is empty. Please confirm carefully',
@@ -256,11 +256,13 @@ export const BOARD_CONFIG_INFO_TITLE = {
   INVALID_INPUT: 'Invalid input!',
   UNAUTHORIZED_REQUEST: 'Unauthorized request!',
   NOT_FOUND: 'Not found!',
+  NO_CONTENT: 'No card within selected date range!',
 };
 
 export const BOARD_CONFIG_INFO_ERROR = {
   FORBIDDEN: 'Please go back to the previous page and change your board token with correct access permission.',
   NOT_FOUND: 'Please go back to the previous page and check your board info!',
+  NOT_CONTENT: 'Please go back to the previous page and change your collection date, or check your board info!',
 };
 
 export const PIPELINE_TOOL_VERIFY_ERROR_CASE_TEXT_MAPPING: { [key: string]: string } = {
