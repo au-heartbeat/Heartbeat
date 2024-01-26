@@ -99,10 +99,10 @@ public class GenerateReporterService {
 		removePreviousAsyncException(request.getSourceControlReportId());
 		FetchedData fetchedData = fetchOriginalData(request, new FetchedData());
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
-			generatePipelineReport(request, fetchedData);
+			generatePipelineReport(request.toPipelineRequest(), fetchedData);
 		}
 		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
-			generateSourceControlReport(request, fetchedData);
+			generateSourceControlReport(request.toSourceControlRequest(), fetchedData);
 		}
 		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
 	}
