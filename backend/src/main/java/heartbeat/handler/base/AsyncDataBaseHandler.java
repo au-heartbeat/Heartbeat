@@ -115,11 +115,18 @@ public class AsyncDataBaseHandler {
 
 	public void acquireLock(FIleType fIleType, String fileId) {
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId + SUFFIX_LOCK;
-		File file = new File(fileName);
-		if (!file.getParentFile().exists()) {
-			file.getParentFile().mkdirs();
+		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
+			File file = new File(fileName);
+			if (!file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
+			while (!tryLock(file)) {
+			}
 		}
-		while (!tryLock(file)) {}
+		else {
+			throw new GenerateReportException(
+					"Failed locked " + fIleType.getType() + " file " + fileId + "invalid file name");
+		}
 	}
 
 	public boolean tryLock(File file) {
@@ -133,10 +140,15 @@ public class AsyncDataBaseHandler {
 
 	protected void unLock(FIleType fIleType, String fileId) {
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId + SUFFIX_LOCK;
-		File lockFile = new File(fileName);
-
-		if (lockFile.exists()) {
-			lockFile.delete();
+		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
+			File lockFile = new File(fileName);
+			if (lockFile.exists()) {
+				lockFile.delete();
+			}
+		}
+		else {
+			throw new GenerateReportException(
+					"Failed unlocked " + fIleType.getType() + " file " + fileId + "invalid file name");
 		}
 	}
 

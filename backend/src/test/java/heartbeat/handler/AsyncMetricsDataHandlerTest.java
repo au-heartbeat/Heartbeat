@@ -3,6 +3,7 @@ package heartbeat.handler;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,8 @@ class AsyncMetricsDataHandlerTest {
 	}
 
 	@Test
-	void shouldHangUntilFileIsDeletedWhenPuttingMetricsReadyIntoAsyncReportRequestHandler() throws IOException, InterruptedException {
+	void shouldHangUntilFileIsDeletedWhenPuttingMetricsReadyIntoAsyncReportRequestHandler()
+			throws IOException, InterruptedException {
 		long currentTimeMillis = System.currentTimeMillis();
 		String currentTime = Long.toString(currentTimeMillis);
 		MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder().boardMetricsCompleted(false).build();
@@ -144,8 +146,14 @@ class AsyncMetricsDataHandlerTest {
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 	}
 
+	@Test
+	void shouldThrowGenerateReportExceptionGivenFileNameInvalidWhenHandlerPutMetricsData() {
+		Assert.assertThrows(GenerateReportException.class,
+				() -> asyncMetricsDataHandler.putMetricsDataCompleted("../", MetricsDataCompleted.builder().build()));
+	}
+
 	private void createLockFile(String currentTime) throws IOException {
-		String fileName = APP_OUTPUT_METRICS + "/" +currentTime + ".lock";
+		String fileName = APP_OUTPUT_METRICS + "/" + currentTime + ".lock";
 		File file = new File(fileName);
 		file.getParentFile().mkdirs();
 		file.createNewFile();
