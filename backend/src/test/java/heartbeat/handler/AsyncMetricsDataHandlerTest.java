@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -75,6 +77,27 @@ class AsyncMetricsDataHandlerTest {
 	}
 
 	@Test
+	void shouldHangUntilFileIsDeletedWhenPuttingMetricsReadyIntoAsyncReportRequestHandler() throws IOException, InterruptedException {
+		long currentTimeMillis = System.currentTimeMillis();
+		String currentTime = Long.toString(currentTimeMillis);
+		MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder().boardMetricsCompleted(false).build();
+		createLockFile(currentTime);
+		CountDownLatch latch = new CountDownLatch(1);
+		Thread thread = new Thread(() -> {
+			asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
+			latch.countDown();
+		});
+
+		thread.start();
+
+		boolean executionContinuous = latch.await(4, TimeUnit.SECONDS);
+		assertFalse(executionContinuous);
+		thread.interrupt();
+		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime + ".lock"));
+		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
+	}
+
+	@Test
 	void shouldThrowGenerateReportExceptionWhenPreviousMetricsDataReadyIsNull() {
 		long currentTimeMillis = System.currentTimeMillis();
 		String currentTime = Long.toString(currentTimeMillis);
@@ -119,6 +142,13 @@ class AsyncMetricsDataHandlerTest {
 		assertTrue(reportReady);
 		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
+	}
+
+	private void createLockFile(String currentTime) throws IOException {
+		String fileName = APP_OUTPUT_METRICS + "/" +currentTime + ".lock";
+		File file = new File(fileName);
+		file.getParentFile().mkdirs();
+		file.createNewFile();
 	}
 
 }
