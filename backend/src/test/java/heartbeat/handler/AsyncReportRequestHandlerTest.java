@@ -1,7 +1,9 @@
 package heartbeat.handler;
 
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.exception.GenerateReportException;
 import heartbeat.util.IdUtil;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -32,8 +35,11 @@ class AsyncReportRequestHandlerTest {
 
 	@AfterAll
 	static void afterAll() {
-		new File("./app/output").delete();
-		new File("./app").delete();
+		try {
+			FileUtils.cleanDirectory(new File("./app"));
+		}
+		catch (IOException ignored) {
+		}
 	}
 
 	@Test
@@ -65,6 +71,17 @@ class AsyncReportRequestHandlerTest {
 		assertNotNull(asyncReportRequestHandler.getReport(boardReportId));
 		Files.deleteIfExists(Path.of(APP_OUTPUT_REPORT + "/" + boardReportId));
 		assertNull(asyncReportRequestHandler.getReport(boardReportId));
+	}
+
+	@Test
+	void shouldThrowGenerateReportExceptionGivenFileNameInvalidWhenHandlerPutData() {
+		assertThrows(GenerateReportException.class,
+				() -> asyncReportRequestHandler.putReport("../", ReportResponse.builder().build()));
+	}
+
+	@Test
+	void shouldThrowGenerateReportExceptionGivenFileNameInvalidWhenHandlerGetData() {
+		assertThrows(GenerateReportException.class, () -> asyncReportRequestHandler.getReport("../"));
 	}
 
 }

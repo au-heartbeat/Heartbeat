@@ -30,15 +30,22 @@ public class AsyncDataBaseHandler {
 		createDirToConvertData(fIleType);
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
 		String tmpFileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId + SUFFIX_TMP;
-		log.info("Start to write file type: {}, file name: {}", fIleType.getType(), fileName);
-		try (FileWriter writer = new FileWriter(tmpFileName)) {
-			writer.write(json);
-			Files.move(Path.of(tmpFileName), Path.of(fileName), StandardCopyOption.ATOMIC_MOVE);
-			log.info("Successfully write file type: {}, file name: {}", fIleType.getType(), fileId);
+		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())
+				&& tmpFileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
+			log.info("Start to write file type: {}, file name: {}", fIleType.getType(), fileName);
+			try (FileWriter writer = new FileWriter(tmpFileName)) {
+				writer.write(json);
+				Files.move(Path.of(tmpFileName), Path.of(fileName), StandardCopyOption.ATOMIC_MOVE);
+				log.info("Successfully write file type: {}, file name: {}", fIleType.getType(), fileId);
+			}
+			catch (IOException | RuntimeException e) {
+				log.error("Failed write file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
+				throw new GenerateReportException("Failed write " + fIleType.getType() + " " + fileId);
+			}
 		}
-		catch (IOException | RuntimeException e) {
-			log.error("Failed write file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
-			throw new GenerateReportException("Failed write " + fIleType.getType() + " " + fileId);
+		else {
+			throw new GenerateReportException(
+					"Failed write file " + fIleType.getType() + " " + fileId + "invalid filename");
 		}
 	}
 
@@ -52,32 +59,44 @@ public class AsyncDataBaseHandler {
 
 	protected <T> T readFileByType(FIleType fIleType, String fileId, Class<T> classType) {
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
-		if (Files.exists(Path.of(fileName))) {
-			try (JsonReader reader = new JsonReader(new FileReader(fileName))) {
-				return new Gson().fromJson(reader, classType);
+		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
+			if (Files.exists(Path.of(fileName))) {
+				try (JsonReader reader = new JsonReader(new FileReader(fileName))) {
+					return new Gson().fromJson(reader, classType);
+				}
+				catch (IOException | RuntimeException e) {
+					log.error("Failed read file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
+					throw new GenerateReportException("Failed read file " + fIleType.getType() + " " + fileId);
+				}
 			}
-			catch (IOException | RuntimeException e) {
-				log.error("Failed read file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
-				throw new GenerateReportException("Failed read file " + fIleType.getType() + " " + fileId);
-			}
+		}
+		else {
+			throw new GenerateReportException(
+					"Failed read file " + fIleType.getType() + " " + fileId + "invalid filename");
 		}
 		return null;
 	}
 
 	protected <T> T readAndRemoveFileByType(FIleType fIleType, String fileId, Class<T> classType) {
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
-		log.info("Start to remove file type: {}, file name: {}", fIleType.getType(), fileId);
-		try {
-			T t = readFileByType(fIleType, fileId, classType);
-			if (Objects.nonNull(t)) {
-				Files.delete(Path.of(fileName));
+		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
+			log.info("Start to remove file type: {}, file name: {}", fIleType.getType(), fileId);
+			try {
+				T t = readFileByType(fIleType, fileId, classType);
+				if (Objects.nonNull(t)) {
+					Files.delete(Path.of(fileName));
+				}
+				log.info("Successfully remove file type: {}, file name: {}", fIleType.getType(), fileId);
+				return t;
 			}
-			log.info("Successfully remove file type: {}, file name: {}", fIleType.getType(), fileId);
-			return t;
+			catch (IOException | RuntimeException e) {
+				log.info("Failed remove file type: {}, file name: {}", fIleType.getType(), fileId);
+				throw new GenerateReportException("Failed remove " + fIleType.getType() + " file " + fileId);
+			}
 		}
-		catch (IOException | RuntimeException e) {
-			log.info("Failed remove file type: {}, file name: {}", fIleType.getType(), fileId);
-			throw new GenerateReportException("Failed remove " + fIleType.getType() + " file " + fileId);
+		else {
+			throw new GenerateReportException(
+					"Failed remove " + fIleType.getType() + " file " + fileId + "invalid file name");
 		}
 	}
 

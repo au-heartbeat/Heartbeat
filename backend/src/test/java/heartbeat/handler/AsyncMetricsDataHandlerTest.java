@@ -2,6 +2,7 @@ package heartbeat.handler;
 
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,11 @@ class AsyncMetricsDataHandlerTest {
 
 	@AfterAll
 	static void afterAll() {
-		new File("./app/output").delete();
-		new File("./app").delete();
+		try {
+			FileUtils.cleanDirectory(new File("./app"));
+		}
+		catch (IOException ignored) {
+		}
 	}
 
 	@Test
