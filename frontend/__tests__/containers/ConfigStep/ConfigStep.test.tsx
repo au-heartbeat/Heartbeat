@@ -70,12 +70,11 @@ describe('ConfigStep', () => {
     setup();
 
     const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
-
     await waitFor(() => {
       expect(input).toBeInTheDocument();
     });
 
-    userEvent.type(input, TEST_PROJECT_NAME);
+    await userEvent.type(input, TEST_PROJECT_NAME);
 
     await waitFor(() => {
       expect(input).toHaveValue(TEST_PROJECT_NAME);
@@ -84,13 +83,16 @@ describe('ConfigStep', () => {
 
   it('should show error message when project name is Empty', async () => {
     setup();
-    const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
 
-    userEvent.type(input, TEST_PROJECT_NAME);
+    const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
+    await userEvent.type(input, TEST_PROJECT_NAME);
+
     await waitFor(() => {
       expect(input).toHaveValue(TEST_PROJECT_NAME);
     });
-    userEvent.clear(input);
+
+    await userEvent.clear(input);
+
     await waitFor(() => {
       expect(screen.getByText(/project name is required/i)).toBeInTheDocument();
     });
@@ -100,7 +102,7 @@ describe('ConfigStep', () => {
     setup();
     const input = screen.getByRole('textbox', { name: PROJECT_NAME_LABEL });
 
-    userEvent.click(input);
+    await userEvent.click(input);
 
     await waitFor(() => {
       expect(screen.getByText('Project name is required')).toBeInTheDocument();
@@ -109,25 +111,26 @@ describe('ConfigStep', () => {
 
   it('should select Regular calendar by default when rendering the radioGroup', () => {
     setup();
+
     const defaultValue = screen.getByRole('radio', { name: REGULAR_CALENDAR });
     const chinaCalendar = screen.getByRole('radio', { name: CHINA_CALENDAR });
-
     expect(defaultValue).toBeChecked();
     expect(chinaCalendar).not.toBeChecked();
   });
 
   it('should switch the radio when any radioLabel is selected', async () => {
     setup();
+
     const chinaCalendar = screen.getByRole('radio', { name: CHINA_CALENDAR });
     const regularCalendar = screen.getByRole('radio', { name: REGULAR_CALENDAR });
-    userEvent.click(chinaCalendar);
+    await userEvent.click(chinaCalendar);
 
     await waitFor(() => {
       expect(chinaCalendar).toBeChecked();
     });
     expect(regularCalendar).not.toBeChecked();
 
-    userEvent.click(regularCalendar);
+    await userEvent.click(regularCalendar);
 
     await waitFor(() => {
       expect(regularCalendar).toBeChecked();
@@ -146,16 +149,15 @@ describe('ConfigStep', () => {
   it('should show board component when MetricsTypeCheckbox select Velocity,Cycle time', async () => {
     setup();
 
-    userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
+    await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
 
     await waitFor(() => {
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
 
     const requireDateSelection = within(screen.getByRole('listbox'));
-
-    userEvent.click(requireDateSelection.getByRole('option', { name: /velocity/i }));
-    userEvent.click(requireDateSelection.getByRole('option', { name: /cycle time/i }));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: /velocity/i }));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: /cycle time/i }));
 
     await waitFor(() => {
       expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
@@ -165,13 +167,14 @@ describe('ConfigStep', () => {
   it('should show board component when MetricsTypeCheckbox select  Classification, ', async () => {
     setup();
 
-    userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
+    await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
+
     await waitFor(() => {
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
 
     const requireDateSelection = within(screen.getByRole('listbox'));
-    userEvent.click(requireDateSelection.getByRole('option', { name: 'Classification' }));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: 'Classification' }));
 
     await waitFor(() => {
       expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
@@ -181,35 +184,39 @@ describe('ConfigStep', () => {
   it.skip('should verify again when calendar type is changed given board fields are filled and verified', async () => {
     setup();
 
-    userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
+    await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
+
     await waitFor(() => {
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
+
     const requireDateSelection = within(screen.getByRole('listbox'));
-    userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
 
     await waitFor(() => {
       expect(screen.getByLabelText(/board id/i)).toBeInTheDocument();
     });
 
-    fillBoardFieldsInformation();
-    userEvent.click(screen.getByText(VERIFY));
-    userEvent.click(screen.getByText(CHINA_CALENDAR));
+    await fillBoardFieldsInformation();
+    await userEvent.click(screen.getByText(VERIFY));
+    await userEvent.click(screen.getByText(CHINA_CALENDAR));
 
     await waitFor(() => {
-      expect(screen.queryByText(/verify/i)).toBeInTheDocument();
+      expect(screen.getByText(/verify/i)).toBeInTheDocument();
     });
 
     // expect(screen.queryByText(RESET)).toBeNull();
   });
 
   it('should verify again when date picker is changed given board fields are filled and verified', async () => {
-    setup();
     const today = dayjs().format('MM/DD/YYYY');
-    const startDateInput = screen.getByLabelText('From *');
+    setup();
 
+    const startDateInput = screen.getByLabelText('From *');
     await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
+
     const requireDateSelection = within(screen.getByRole('listbox'));
+
     await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
     await fillBoardFieldsInformation();
     await userEvent.click(screen.getByText(VERIFY));
@@ -218,7 +225,6 @@ describe('ConfigStep', () => {
     await waitFor(() => {
       expect(screen.queryByText(VERIFY)).toBeVisible();
     });
-
     expect(screen.queryByText('Verified')).toBeNull();
     expect(screen.queryByText(RESET)).toBeNull();
   });
