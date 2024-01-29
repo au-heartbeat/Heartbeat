@@ -1,5 +1,5 @@
 import { Autocomplete, TextField, Tooltip } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FormControlSelection } from '@src/components/Metrics/MetricsStep/CycleTime/FormSelect/style'
 import { Z_INDEX } from '@src/constants/commons'
 import { CYCLE_TIME_LIST } from '@src/constants/resources'
@@ -14,6 +14,10 @@ interface formSelectProps {
 export const FormSelect = ({ label, name, defaultSelected, saveCycleTimeOptions }: formSelectProps) => {
   const [selectedCycleTime, setSelectedCycleTime] = useState(defaultSelected)
   const [inputValue, setInputValue] = useState<string>('')
+
+  useEffect(() => {
+    setSelectedCycleTime(defaultSelected)
+  }, [defaultSelected])
 
   const handleSelectedCycleTimeChange = (value: string) => {
     saveCycleTimeOptions(name, value)

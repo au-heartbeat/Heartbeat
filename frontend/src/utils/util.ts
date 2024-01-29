@@ -1,5 +1,6 @@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/emojis/emoji'
 import { ICycleTimeSetting, IJiraColumnsWithValue } from '@src/context/Metrics/metricsSlice'
+import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources'
 
 export const exportToJsonFile = (filename: string, json: object) => {
   const dataStr = JSON.stringify(json, null, 4)
@@ -38,21 +39,28 @@ export const getJiraBoardToken = (token: string, email: string) => {
   }
 }
 
-export const filterAndMapCycleTimeSettings = (
-  cycleTimeSettings: ICycleTimeSetting[],
-  jiraColumnsWithValue: IJiraColumnsWithValue[]
-) => {
-  return cycleTimeSettings
-    .filter((item) => item.value !== '----')
-    .flatMap((cycleTimeSetting) => {
-      const previousName = cycleTimeSetting.name
-      const jiraColumnsStatuses = jiraColumnsWithValue.find((item) => item.name === previousName)?.statuses || []
+export const filterAndMapCycleTimeSettings = (cycleTimeSettings: ICycleTimeSetting[]) =>
+  cycleTimeSettings
+    .filter((item) => item.value !== METRICS_CONSTANTS.cycleTimeEmptyStr)
+    .map(({ status, value }) => ({
+      name: status,
+      value,
+    }))
 
-      return jiraColumnsStatuses.map((item) => ({
-        name: item,
-        value: cycleTimeSetting.value,
-      }))
-    })
+export const getRealDoneStatus = (
+  cycleTimeSettings: ICycleTimeSetting[],
+  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
+  realDoneStatus: string[]
+) => {
+  const selectedDoneStatus = cycleTimeSettings
+    .filter(({ value }) => value === METRICS_CONSTANTS.doneValue)
+    .map(({ status }) => status)
+  if (selectedDoneStatus.length <= 1) {
+    return selectedDoneStatus
+  }
+  return cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+    ? realDoneStatus
+    : cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).map(({ status }) => status)
 }
 
 export const findCaseInsensitiveType = (option: string[], value: string): string => {

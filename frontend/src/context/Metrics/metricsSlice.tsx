@@ -2,7 +2,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 import camelCase from 'lodash.camelcase'
 import { RootState } from '@src/store'
-import { ASSIGNEE_FILTER_TYPES, CYCLE_TIME_LIST, MESSAGE, METRICS_CONSTANTS } from '@src/constants/resources'
+import {
+  ASSIGNEE_FILTER_TYPES,
+  CYCLE_TIME_LIST,
+  CYCLE_TIME_SETTINGS_TYPES,
+  MESSAGE,
+  METRICS_CONSTANTS,
+} from '@src/constants/resources'
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice'
 import _ from 'lodash'
 
@@ -22,7 +28,8 @@ export interface IPipelineWarningMessageConfig {
 }
 
 export interface ICycleTimeSetting {
-  name: string
+  column: string
+  status: string
   value: string
 }
 export interface IJiraColumnsWithValue {
@@ -36,6 +43,7 @@ export interface savedMetricsSettingState {
   users: string[]
   pipelineCrews: string[]
   doneColumn: string[]
+  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES
   cycleTimeSettings: ICycleTimeSetting[]
   deploymentFrequencySettings: IPipelineConfig[]
   leadTimeForChanges: IPipelineConfig[]
@@ -65,6 +73,7 @@ const initialState: savedMetricsSettingState = {
   users: [],
   pipelineCrews: [],
   doneColumn: [],
+  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
   cycleTimeSettings: [],
   deploymentFrequencySettings: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
@@ -88,14 +97,14 @@ const initialState: savedMetricsSettingState = {
   deploymentWarningMessage: [],
 }
 
-const compareArrays = (arrayA: string[], arrayB: string[]): string | null => {
+const compareArrays = (arrayA: string[], arrayB: string[], key: string): string | null => {
   if (arrayA?.length > arrayB?.length) {
     const differentValues = arrayA?.filter((value) => !arrayB.includes(value))
-    return `The column of ${differentValues} is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!`
+    return `The ${key} of ${differentValues} is a deleted ${key}, which means this ${key} existed the time you saved config, but was deleted. Please confirm!`
   } else {
     const differentValues = arrayB?.filter((value) => !arrayA.includes(value))
     return differentValues?.length > 0
-      ? `The column of ${differentValues} is a new column. Please select a value for it!`
+      ? `The ${key} of ${differentValues} is a new ${key}. Please select a value for it!`
       : null
   }
 }
@@ -139,36 +148,48 @@ const setSelectTargetFields = (
     flag: importedClassification?.includes(item.key),
   }))
 
-const setCycleTimeSettings = (
+const getCycleTimeSettingsByColumn = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
   importedCycleTimeSettings: { [key: string]: string }[]
-) => {
-  return jiraColumns?.map((item: { key: string; value: { name: string; statuses: string[] } }) => {
-    const controlName = item.value.name
-    let defaultOptionValue = METRICS_CONSTANTS.cycleTimeEmptyStr
-    const validImportValue = importedCycleTimeSettings?.find((i) => Object.keys(i)[0] === controlName)
-    if (validImportValue && CYCLE_TIME_LIST.includes(Object.values(validImportValue)[0])) {
-      defaultOptionValue = Object.values(validImportValue)[0]
-    }
-    return { name: controlName, value: defaultOptionValue }
+) =>
+  jiraColumns.flatMap(({ value: { name, statuses } }) => {
+    const importItem = importedCycleTimeSettings.find((i) => Object.keys(i).includes(name))
+    const isValidValue = importItem && CYCLE_TIME_LIST.includes(Object.values(importItem)[0])
+    return statuses.map((status) => ({
+      column: name,
+      status,
+      value: isValidValue ? (Object.values(importItem)[0] as string) : METRICS_CONSTANTS.cycleTimeEmptyStr,
+    }))
   })
-}
 
-const setSelectDoneColumns = (
+const getCycleTimeSettingsByStatus = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
-  cycleTimeSettings: { name: string; value: string }[],
+  importedCycleTimeSettings: { [key: string]: string }[]
+) =>
+  jiraColumns.flatMap(({ value: { name, statuses } }) =>
+    statuses.map((status) => {
+      const importItem = importedCycleTimeSettings.find((i) => Object.keys(i).includes(status))
+      const isValidValue = importItem && CYCLE_TIME_LIST.includes(Object.values(importItem)[0])
+      return {
+        column: name,
+        status,
+        value: isValidValue ? (Object.values(importItem)[0] as string) : METRICS_CONSTANTS.cycleTimeEmptyStr,
+      }
+    })
+  )
+
+const getSelectedDoneStatus = (
+  jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
+  cycleTimeSettings: ICycleTimeSetting[],
   importedDoneStatus: string[]
 ) => {
   const doneStatus =
     jiraColumns?.find((item) => item.key === METRICS_CONSTANTS.doneKeyFromBackend)?.value.statuses ?? []
-  const selectedDoneColumns = cycleTimeSettings
+  const selectedDoneStatus = cycleTimeSettings
     ?.filter(({ value }) => value === METRICS_CONSTANTS.doneValue)
-    .map(({ name }) => name)
-  const filteredStatus = jiraColumns
-    ?.filter(({ value }) => selectedDoneColumns.includes(value.name))
-    .flatMap(({ value }) => value.statuses)
-  const status = selectedDoneColumns?.length < 1 ? doneStatus : filteredStatus
-  return status.filter((item: string) => importedDoneStatus?.includes(item))
+    .map(({ status }) => status)
+  const status = selectedDoneStatus?.length < 1 ? doneStatus : selectedDoneStatus
+  return status.filter((item: string) => importedDoneStatus.includes(item))
 }
 
 export const metricsSlice = createSlice({
@@ -189,6 +210,9 @@ export const metricsSlice = createSlice({
     },
     saveCycleTimeSettings: (state, action) => {
       state.cycleTimeSettings = action.payload
+    },
+    setCycleTimeSettingsType: (state, action) => {
+      state.cycleTimeSettingsType = action.payload
     },
     addADeploymentFrequencySetting: (state) => {
       const newId =
@@ -246,13 +270,19 @@ export const metricsSlice = createSlice({
         const jiraColumnsNames = jiraColumns?.map(
           (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.name
         )
+        const jiraStatuses = jiraColumns?.flatMap(
+          (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value.statuses
+        )
         const metricsContainsValues = Object.values(METRICS_CONSTANTS)
-        const importedKeyMismatchWarning = compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
+        const importedKeyMismatchWarning =
+          state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+            ? compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames, 'column')
+            : compareArrays(importedCycleTimeSettingsKeys, jiraStatuses, 'status')
         const importedValueMismatchWarning = findDifferentValues(importedCycleTimeSettingsValues, metricsContainsValues)
 
         const getWarningMessage = (): string | null => {
           if (importedKeyMismatchWarning?.length) {
-            return compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames)
+            return importedKeyMismatchWarning
           }
           if (importedValueMismatchWarning?.length) {
             return findKeyByValues(importedCycleTime.importedCycleTimeSettings, importedValueMismatchWarning)
@@ -279,17 +309,19 @@ export const metricsSlice = createSlice({
         state.classificationWarningMessage = null
       }
 
-      state.cycleTimeSettings = setCycleTimeSettings(jiraColumns, importedCycleTime.importedCycleTimeSettings)
-      if (!isProjectCreated && !!importedDoneStatus.length) {
-        setSelectDoneColumns(jiraColumns, state.cycleTimeSettings, importedDoneStatus).length <
-        importedDoneStatus.length
+      if (jiraColumns) {
+        state.cycleTimeSettings =
+          state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+            ? getCycleTimeSettingsByColumn(jiraColumns, importedCycleTime.importedCycleTimeSettings)
+            : getCycleTimeSettingsByStatus(jiraColumns, importedCycleTime.importedCycleTimeSettings)
+      }
+      if (!isProjectCreated && importedDoneStatus.length > 0) {
+        const selectedDoneStatus = getSelectedDoneStatus(jiraColumns, state.cycleTimeSettings, importedDoneStatus)
+        selectedDoneStatus.length < importedDoneStatus.length
           ? (state.realDoneWarningMessage = MESSAGE.REAL_DONE_WARNING)
           : (state.realDoneWarningMessage = null)
+        state.doneColumn = selectedDoneStatus
       }
-      state.doneColumn = isProjectCreated
-        ? []
-        : setSelectDoneColumns(jiraColumns, state.cycleTimeSettings, importedDoneStatus)
-
       state.assigneeFilter =
         importedAssigneeFilter === ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE ||
         importedAssigneeFilter === ASSIGNEE_FILTER_TYPES.HISTORICAL_ASSIGNEE
@@ -424,6 +456,7 @@ export const {
   updateMetricsState,
   updatePipelineSettings,
   updatePipelineStep,
+  setCycleTimeSettingsType,
 } = metricsSlice.actions
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings

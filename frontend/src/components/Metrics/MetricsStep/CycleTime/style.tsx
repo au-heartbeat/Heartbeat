@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles'
-import { Checkbox, Tooltip } from '@mui/material'
+import { Checkbox, RadioGroup, Tooltip } from '@mui/material'
 import { PipelineMetricSelectionWrapper } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style'
 
 export const FlagCardItem = styled('div')({
@@ -47,3 +47,8 @@ export const StyledTooltip = styled(({ className, ...props }: any) => (
     max-width: 31.25rem;
     margin-top: 0.625rem;
 `)
+
+export const StyledRadioGroup = styled(RadioGroup)({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(4, 1fr)',
+})

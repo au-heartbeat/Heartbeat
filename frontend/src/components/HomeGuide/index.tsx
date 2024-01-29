@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '@src/hooks/useAppDispatch'
 import { updateBasicConfigState, updateProjectCreatedState } from '@src/context/config/configSlice'
 import React, { useState } from 'react'
-import { updateMetricsImportedData } from '@src/context/Metrics/metricsSlice'
+import { setCycleTimeSettingsType, updateMetricsImportedData } from '@src/context/Metrics/metricsSlice'
 import { resetStep } from '@src/context/stepper/StepperSlice'
 import { WarningNotification } from '@src/components/Common/WarningNotification'
 import { convertToNewFileConfig, NewFileConfig, OldFileConfig } from '@src/fileConfig/fileConfig'
 import { GuideButton, HomeGuideContainer, StyledStack } from '@src/components/HomeGuide/style'
-import { MESSAGE } from '@src/constants/resources'
+import { CYCLE_TIME_SETTINGS_TYPES, MESSAGE } from '@src/constants/resources'
 import { ROUTE } from '@src/constants/router'
 
 export const HomeGuide = () => {
@@ -31,6 +31,11 @@ export const HomeGuide = () => {
     }
   }
 
+  const getCycleTimeSettingsType = (typeInConfig?: string) =>
+    (Object.values(CYCLE_TIME_SETTINGS_TYPES) as string[]).includes(typeInConfig || '')
+      ? typeInConfig
+      : CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.files?.[0]
     const reader = new FileReader()
@@ -43,6 +48,7 @@ export const HomeGuide = () => {
             dispatch(updateProjectCreatedState(false))
             dispatch(updateBasicConfigState(config))
             dispatch(updateMetricsImportedData(config))
+            dispatch(setCycleTimeSettingsType(getCycleTimeSettingsType(config.cycleTime?.type)))
             navigate(ROUTE.METRICS_PAGE)
           } else {
             setValidConfig(false)
@@ -64,6 +70,7 @@ export const HomeGuide = () => {
 
   const createNewProject = () => {
     dispatch(resetStep())
+    dispatch(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN))
     navigate(ROUTE.METRICS_PAGE)
   }
 

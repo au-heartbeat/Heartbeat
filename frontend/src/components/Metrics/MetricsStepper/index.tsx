@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch'
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice'
 import {
   BOARD_TYPES,
+  CYCLE_TIME_SETTINGS_TYPES,
   DONE,
   METRICS_CONSTANTS,
   PIPELINE_SETTING_TYPES,
@@ -38,6 +39,7 @@ import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepV
 import { Tooltip } from '@mui/material'
 import { exportToJsonFile } from '@src/utils/util'
 import {
+  ICycleTimeSetting,
   savedMetricsSettingState,
   selectCycleTimeSettings,
   selectMetricsContent,
@@ -62,19 +64,17 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
   const metricsConfig = useAppSelector(selectMetricsContent)
   const [isDisableNextButton, setIsDisableNextButton] = useState(true)
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext()
-  const cycleTimeSettings = useAppSelector(selectCycleTimeSettings)
 
   const { isShow: isShowBoard, isVerified: isBoardVerified } = config.board
   const { isShow: isShowPipeline, isVerified: isPipelineToolVerified } = config.pipelineTool
   const { isShow: isShowSourceControl, isVerified: isSourceControlVerified } = config.sourceControl
   const isShowCycleTimeSettings = requiredData.includes(REQUIRED_DATA.CYCLE_TIME)
-  const isCycleTimeSettingsVerified = cycleTimeSettings.some((e) => e.value === DONE)
+  const isCycleTimeSettingsVerified = metricsConfig.cycleTimeSettings.some((e) => e.value === DONE)
   const isShowClassificationSetting = requiredData.includes(REQUIRED_DATA.CLASSIFICATION)
   const isClassificationSettingVerified = metricsConfig.targetFields.some((item) => item.flag)
 
   const { metrics, projectName, dateRange } = config.basic
 
-  const selectedBoardColumns = useAppSelector(selectCycleTimeSettings)
   const verifyPipeline = (type: string) => {
     const pipelines =
       type === PIPELINE_SETTING_TYPES.LEAD_TIME_FOR_CHANGES_TYPE
@@ -87,9 +87,10 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
     )
   }
 
-  const isShowCrewsSetting = isShowBoard
   const isShowRealDone =
-    isShowBoard && selectedBoardColumns.filter((column) => column.value === METRICS_CONSTANTS.doneValue).length > 0
+    isShowBoard &&
+    metricsConfig.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
+    metricsConfig.cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).length > 1
   const isShowDeploymentFrequency =
     requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
     requiredData.includes(REQUIRED_DATA.CHANGE_FAILURE_RATE) ||
@@ -111,7 +112,7 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
         : setIsDisableNextButton(true)
     } else if (activeStep === METRICS_STEPS.METRICS) {
       const nextButtonValidityOptions = [
-        { isShow: isShowCrewsSetting, isValid: isCrewsSettingValid },
+        { isShow: isShowBoard, isValid: isCrewsSettingValid },
         { isShow: isShowRealDone, isValid: isRealDoneValid },
         { isShow: isShowDeploymentFrequency, isValid: isDeploymentFrequencyValid },
         { isShow: isShowCycleTimeSettings, isValid: isCycleTimeSettingsVerified },
@@ -133,7 +134,6 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
     metrics,
     projectName,
     dateRange,
-    selectedBoardColumns,
     metricsConfig,
   ])
 
@@ -178,22 +178,28 @@ const MetricsStepper = (props: useNotificationLayoutEffectInterface) => {
       doneColumn,
       targetFields,
       cycleTimeSettings,
+      cycleTimeSettingsType,
       treatFlagCardAsBlock,
       assigneeFilter,
     } = filterMetricsConfig(metricsConfig)
 
-    /* istanbul ignore next */
     const metricsData = {
       crews: users,
       assigneeFilter: assigneeFilter,
-      /* istanbul ignore next */
       pipelineCrews,
       cycleTime: cycleTimeSettings
         ? {
-            /* istanbul ignore next */
-            jiraColumns: cycleTimeSettings?.map(({ name, value }: { name: string; value: string }) => ({
-              [name]: value,
-            })),
+            type: cycleTimeSettingsType,
+            jiraColumns:
+              cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+                ? ([...new Set(cycleTimeSettings.map(({ column }: ICycleTimeSetting) => column))] as string[]).map(
+                    (uniqueColumn) => ({
+                      [uniqueColumn]:
+                        cycleTimeSettings.find(({ column }: ICycleTimeSetting) => column === uniqueColumn)?.value ||
+                        METRICS_CONSTANTS.cycleTimeEmptyStr,
+                    })
+                  )
+                : cycleTimeSettings?.map(({ status, value }: ICycleTimeSetting) => ({ [status]: value })),
             treatFlagCardAsBlock,
           }
         : undefined,

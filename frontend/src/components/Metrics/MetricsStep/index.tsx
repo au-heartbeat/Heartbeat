@@ -4,8 +4,8 @@ import { RealDone } from '@src/components/Metrics/MetricsStep/RealDone'
 import { CycleTime } from '@src/components/Metrics/MetricsStep/CycleTime'
 import { Classification } from '@src/components/Metrics/MetricsStep/Classification'
 import { selectDateRange, selectJiraColumns, selectMetrics, selectUsers } from '@src/context/config/configSlice'
-import { REQUIRED_DATA, DONE } from '@src/constants/resources'
-import { selectCycleTimeSettings, selectMetricsContent } from '@src/context/Metrics/metricsSlice'
+import { REQUIRED_DATA, DONE, CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources'
+import { selectMetricsContent } from '@src/context/Metrics/metricsSlice'
 import { DeploymentFrequencySettings } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings'
 import CollectionDuration from '@src/components/Common/CollectionDuration'
 import { MetricSelectionWrapper, MetricsSelectionTitle } from '@src/components/Metrics/MetricsStep/style'
@@ -17,13 +17,15 @@ const MetricsStep = ({ resetProps }: useNotificationLayoutEffectInterface) => {
   const users = useAppSelector(selectUsers)
   const jiraColumns = useAppSelector(selectJiraColumns)
   const targetFields = useAppSelector(selectMetricsContent).targetFields
-  const cycleTimeSettings = useAppSelector(selectCycleTimeSettings)
+  const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent)
   const { startDate, endDate } = useAppSelector(selectDateRange)
   const isShowCrewsAndRealDone =
     requiredData.includes(REQUIRED_DATA.VELOCITY) ||
     requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
     requiredData.includes(REQUIRED_DATA.CLASSIFICATION)
-  const isShowRealDone = cycleTimeSettings.some((e) => e.value === DONE)
+  const isShowRealDone =
+    cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
+    cycleTimeSettings.filter((e) => e.value === DONE).length > 1
 
   useLayoutEffect(() => {
     resetProps?.()

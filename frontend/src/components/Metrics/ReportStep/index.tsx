@@ -24,7 +24,7 @@ import { ErrorNotification } from '@src/components/ErrorNotification'
 import { useNavigate } from 'react-router-dom'
 import CollectionDuration from '@src/components/Common/CollectionDuration'
 import { ExpiredDialog } from '@src/components/Metrics/ReportStep/ExpiredDialog'
-import { filterAndMapCycleTimeSettings, getJiraBoardToken } from '@src/utils/util'
+import { filterAndMapCycleTimeSettings, getJiraBoardToken, getRealDoneStatus } from '@src/utils/util'
 import { useNotificationLayoutEffectInterface } from '@src/hooks/useNotificationLayoutEffect'
 import { ReportResponse } from '@src/clients/report/dto/response'
 import { ROUTE } from '@src/constants/router'
@@ -74,6 +74,7 @@ const ReportStep = ({ updateProps, handleSave }: ReportStepInterface) => {
   const configData = useAppSelector(selectConfig)
   const {
     cycleTimeSettings,
+    cycleTimeSettingsType,
     treatFlagCardAsBlock,
     users,
     pipelineCrews,
@@ -129,11 +130,6 @@ const ReportStep = ({ updateProps, handleSave }: ReportStepInterface) => {
     }[]
   }
 
-  const jiraColumns = useAppSelector(selectJiraColumns)
-  const jiraColumnsWithValue = jiraColumns?.map(
-    (obj: { key: string; value: { name: string; statuses: string[] } }) => obj.value
-  )
-
   const jiraToken = getJiraBoardToken(token, email)
   const getReportRequestBody = (): ReportRequestDTO => ({
     metrics: metrics,
@@ -156,12 +152,12 @@ const ReportStep = ({ updateProps, handleSave }: ReportStepInterface) => {
       site,
       projectKey,
       boardId,
-      boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings, jiraColumnsWithValue),
+      boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings),
       treatFlagCardAsBlock,
       users,
       assigneeFilter,
       targetFields,
-      doneColumn,
+      doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
     },
     csvTimeStamp: csvTimeStamp,
   })
