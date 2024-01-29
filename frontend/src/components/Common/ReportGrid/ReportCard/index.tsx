@@ -19,7 +19,7 @@ interface ReportCardProps extends HTMLAttributes<HTMLDivElement> {
   errorMessage: string | undefined;
 }
 
-const ErrorMessagePrompt = (props: { errorMessage: string }) => {
+export const ErrorMessagePrompt = (props: { errorMessage: string }) => {
   const { errorMessage } = props;
   return (
     <StyledErrorSection>

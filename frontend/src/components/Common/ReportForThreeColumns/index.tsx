@@ -8,6 +8,7 @@ import {
 import { AVERAGE_FIELD, METRICS_TITLE, REPORT_SUFFIX_UNITS } from '@src/constants/resources';
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { EmojiWrap, StyledAvatar, StyledTypography } from '@src/constants/emojis/style';
+import { ErrorMessagePrompt } from '@src/components/Common/ReportGrid/ReportCard';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { ReportSelectionTitle } from '@src/containers/MetricsStep/style';
 import { Table, TableBody, TableHead, TableRow } from '@mui/material';
@@ -21,6 +22,7 @@ interface ReportForThreeColumnsProps {
   fieldName: string;
   listName: string;
   data: Optional<ReportDataWithThreeColumns[]>;
+  errorMessage?: string;
 }
 
 export const StyledLoadingWrapper = styled('div')({
@@ -29,7 +31,13 @@ export const StyledLoadingWrapper = styled('div')({
   width: '100%',
 });
 
-export const ReportForThreeColumns = ({ title, fieldName, listName, data }: ReportForThreeColumnsProps) => {
+export const ReportForThreeColumns = ({
+  title,
+  fieldName,
+  listName,
+  data,
+  errorMessage,
+}: ReportForThreeColumnsProps) => {
   const emojiRow = (row: ReportDataWithThreeColumns) => {
     const { name } = row;
     const emojiUrls: string[] = getEmojiUrls(name);
@@ -75,7 +83,13 @@ export const ReportForThreeColumns = ({ title, fieldName, listName, data }: Repo
     <>
       <Container>
         <ReportSelectionTitle>{title}</ReportSelectionTitle>
-        {data ? (
+        {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} />}
+        {!errorMessage && !data && (
+          <StyledLoadingWrapper>
+            <Loading size='1.5rem' backgroundColor='transparent' />
+          </StyledLoadingWrapper>
+        )}
+        {!errorMessage && data && (
           <Table data-test-id={title} data-testid={title}>
             <TableHead>
               <TableRow>
@@ -86,10 +100,6 @@ export const ReportForThreeColumns = ({ title, fieldName, listName, data }: Repo
             </TableHead>
             <TableBody>{renderRows()}</TableBody>
           </Table>
-        ) : (
-          <StyledLoadingWrapper>
-            <Loading size='1.5rem' backgroundColor='transparent' />
-          </StyledLoadingWrapper>
         )}
       </Container>
     </>
