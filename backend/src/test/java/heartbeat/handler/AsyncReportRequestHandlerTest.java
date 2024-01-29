@@ -30,9 +30,6 @@ class AsyncReportRequestHandlerTest {
 		new File(APP_OUTPUT_REPORT).delete();
 	}
 
-	@InjectMocks
-	AsyncMetricsDataHandler asyncMetricsDataHandler;
-
 	@AfterAll
 	static void afterAll() {
 		new File("./app/output").delete();

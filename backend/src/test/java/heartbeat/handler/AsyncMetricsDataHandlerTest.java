@@ -82,7 +82,7 @@ class AsyncMetricsDataHandlerTest {
 	}
 
 	@Test
-	void shouldReturnFalseWhenExistFalseValue() throws IOException {
+	void shouldReturnFalseWhenExistFalseValue() {
 		long currentTimeMillis = System.currentTimeMillis();
 		String currentTime = Long.toString(currentTimeMillis);
 		MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
@@ -95,7 +95,7 @@ class AsyncMetricsDataHandlerTest {
 		boolean reportReady = asyncMetricsDataHandler.isReportReady(currentTime);
 
 		assertFalse(reportReady);
-		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
+		new File(APP_OUTPUT_METRICS + "/" + currentTime).delete();
 		assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 	}
 

@@ -4,16 +4,6 @@ import heartbeat.exception.BaseException;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.util.IdUtil;
-
-import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +18,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.CyclicBarrier;
+
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AsyncExceptionHandlerTest {
@@ -81,8 +80,7 @@ class AsyncExceptionHandlerTest {
 				barrier.await();
 				asyncExceptionHandler.deleteExpireExceptionFile(fileId, new File(APP_OUTPUT_ERROR));
 			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
+			catch (Exception ignored) {
 			}
 		};
 		Thread thread = new Thread(runnable);

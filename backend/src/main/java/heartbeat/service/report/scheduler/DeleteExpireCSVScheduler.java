@@ -40,7 +40,7 @@ public class DeleteExpireCSVScheduler {
 	@Scheduled(fixedRate = DELETE_INTERVAL_IN_MINUTES, timeUnit = TimeUnit.MINUTES)
 	public void triggerBatchDelete() {
 		long currentTimeStamp = System.currentTimeMillis();
-		log.info("Start to delete expired CSV files, currentTimeStamp: {}", currentTimeStamp);
+		log.info("Start to delete expired files, currentTimeStamp: {}", currentTimeStamp);
 		generateReporterService.deleteExpireCSV(currentTimeStamp, new File(CSV_FILE_PATH));
 		asyncReportRequestHandler.deleteExpireReportFile(currentTimeStamp, new File(REPORT_FILE_PATH));
 		asyncMetricsDataHandler.deleteExpireMetricsDataCompletedFile(currentTimeStamp, new File(METRICS_FILE_PATH));

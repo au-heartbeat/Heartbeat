@@ -26,15 +26,14 @@ public class AsyncDataBaseHandler {
 
 	public static final String SUFFIX_TMP = ".tmp";
 
-	protected void createFileByType(FIleType fIleType, String fileId, String json) {
+	protected synchronized void createFileByType(FIleType fIleType, String fileId, String json) {
 		createDirToConvertData(fIleType);
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
 		String tmpFileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId + SUFFIX_TMP;
 		log.info("Start to write file type: {}, file name: {}", fIleType.getType(), fileName);
 		try (FileWriter writer = new FileWriter(tmpFileName)) {
 			writer.write(json);
-			Files.move(Path.of(tmpFileName), Path.of(fileName), StandardCopyOption.ATOMIC_MOVE,
-					StandardCopyOption.REPLACE_EXISTING);
+			Files.move(Path.of(tmpFileName), Path.of(fileName), StandardCopyOption.ATOMIC_MOVE);
 			log.info("Successfully write file type: {}, file name: {}", fIleType.getType(), fileId);
 		}
 		catch (IOException | RuntimeException e) {
@@ -59,7 +58,7 @@ public class AsyncDataBaseHandler {
 			}
 			catch (IOException | RuntimeException e) {
 				log.error("Failed read file type: {}, file name: {}, reason: {}", fIleType.getType(), fileId, e);
-				throw new GenerateReportException("Failed read " + fIleType.getType() + " " + fileId);
+				throw new GenerateReportException("Failed read file " + fIleType.getType() + " " + fileId);
 			}
 		}
 		return null;

@@ -32,8 +32,6 @@ import heartbeat.service.report.calculator.LeadTimeForChangesCalculator;
 import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
-import org.junit.jupiter.api.Nested;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -823,24 +821,39 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
+		void shouldDeleteFailWhenDeleteFile() {
+			File mockFile = mock(File.class);
+			when(mockFile.getName()).thenReturn("board-1683734399999");
+			when(mockFile.delete()).thenReturn(false);
+			when(mockFile.exists()).thenReturn(true);
+			File[] mockFiles = new File[] { mockFile };
+			File directory = mock(File.class);
+			when(directory.listFiles()).thenReturn(mockFiles);
+
+			Boolean deleteStatus = generateReporterService.deleteExpireCSV(System.currentTimeMillis(), directory);
+
+			assertTrue(deleteStatus);
+		}
+
+		@Test
 		void shouldReturnTrueWhenReportIsReady() {
-			// given
+
 			String fileTimeStamp = Long.toString(System.currentTimeMillis());
-			// when
+
 			when(asyncMetricsDataHandler.isReportReady(fileTimeStamp)).thenReturn(true);
 			boolean generateReportIsOver = generateReporterService.checkGenerateReportIsDone(fileTimeStamp);
-			// then
+
 			assertTrue(generateReportIsOver);
 		}
 
 		@Test
 		void shouldReturnFalseWhenReportIsNotReady() {
-			// given
+
 			String fileTimeStamp = Long.toString(System.currentTimeMillis());
 			asyncReportRequestHandler.putReport("111111111", MetricCsvFixture.MOCK_METRIC_CSV_DATA_WITH_ONE_PIPELINE());
-			// when
+
 			boolean generateReportIsOver = generateReporterService.checkGenerateReportIsDone(fileTimeStamp);
-			// then
+
 			assertFalse(generateReportIsOver);
 
 		}
