@@ -79,17 +79,20 @@ export const ReportForThreeColumns = ({
         : '';
   };
 
+  const shouldShowLoading = !errorMessage && !data;
+  const shouldShowData = !errorMessage && data;
+
   return (
     <>
       <Container>
         <ReportSelectionTitle>{title}</ReportSelectionTitle>
-        {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} />}
-        {!errorMessage && !data && (
+        {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} style={{ marginBottom: '1.5rem' }} />}
+        {shouldShowLoading && (
           <StyledLoadingWrapper>
             <Loading size='1.5rem' backgroundColor='transparent' />
           </StyledLoadingWrapper>
         )}
-        {!errorMessage && data && (
+        {shouldShowData && (
           <Table data-test-id={title} data-testid={title}>
             <TableHead>
               <TableRow>
