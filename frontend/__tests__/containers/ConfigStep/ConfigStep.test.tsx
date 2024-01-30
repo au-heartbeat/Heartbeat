@@ -2,10 +2,9 @@
 import {
   CHINA_CALENDAR,
   CONFIG_TITLE,
-  CYCLE_TIME,
   DEPLOYMENT_FREQUENCY,
   ERROR_MESSAGE_TIME_DURATION,
-  FAKE_TOKEN,
+  FAKE_PIPELINE_TOKEN,
   MOCK_BOARD_URL_FOR_JIRA,
   MOCK_PIPELINE_VERIFY_URL,
   PROJECT_NAME_LABEL,
@@ -17,29 +16,27 @@ import {
   VERIFIED,
   VERIFY,
 } from '../../fixtures';
+import { fillBoardFieldsInformation } from '@test/containers/ConfigStep/Board.test';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
+import userEvent from '@testing-library/user-event';
 import ConfigStep from '@src/containers/ConfigStep';
-import ue from '@testing-library/user-event';
+import { closeMuiModal } from '@test/testUtils';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
 
-const userEvent = ue.setup({
-  advanceTimers: jest.advanceTimersByTime,
-});
-
-const fillBoardFieldsInformation = async () => {
-  await userEvent.type(screen.getByLabelText(/board id/i), '1');
-  await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
-  await userEvent.type(screen.getByLabelText(/site/i), 'fake');
-  await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
-};
-
 const server = setupServer(
   rest.post(MOCK_PIPELINE_VERIFY_URL, (_, res, ctx) => res(ctx.status(204))),
-  rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => res(ctx.status(200))),
+  rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json({
+        projectKey: 'FAKE',
+      }),
+    ),
+  ),
 );
 
 let store = null;
@@ -47,6 +44,7 @@ jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
   selectWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
 }));
+
 describe('ConfigStep', () => {
   const setup = () => {
     store = setupStore();
@@ -59,14 +57,9 @@ describe('ConfigStep', () => {
 
   beforeAll(() => server.listen());
 
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
   afterEach(() => {
     store = null;
     jest.clearAllMocks();
-    jest.useRealTimers();
   });
 
   afterAll(() => server.close());
@@ -192,52 +185,6 @@ describe('ConfigStep', () => {
     });
   });
 
-  it.skip('should no need verify again when calendar type is changed given board fields are filled and verified', async () => {
-    setup();
-
-    await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
-
-    await waitFor(() => {
-      expect(screen.getByRole('listbox')).toBeInTheDocument();
-    });
-
-    const requireDateSelection = within(screen.getByRole('listbox'));
-    await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/board id/i)).toBeInTheDocument();
-    });
-
-    await fillBoardFieldsInformation();
-    await userEvent.click(screen.getByText(VERIFY));
-    await userEvent.click(screen.getByText(CHINA_CALENDAR));
-
-    await waitFor(() => {
-      expect(screen.getByText(/verify/i)).toBeInTheDocument();
-    });
-
-    expect(screen.queryByText(RESET)).toBeNull();
-  });
-
-  it('should no need verify again when date picker is changed given board fields are filled and verified', async () => {
-    const today = dayjs().format('MM/DD/YYYY');
-    setup();
-
-    await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
-    const requireDateSelection = within(screen.getByRole('listbox'));
-    await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
-
-    await fillBoardFieldsInformation();
-    await userEvent.click(screen.getByText(VERIFY));
-
-    const startDateInput = screen.getByLabelText('From *');
-    await userEvent.type(startDateInput, today);
-
-    await waitFor(() => {
-      expect(screen.getByText(VERIFIED)).toBeInTheDocument();
-    });
-  });
-
   it('should show warning message when selectWarningMessage has a value', async () => {
     setup();
 
@@ -245,6 +192,7 @@ describe('ConfigStep', () => {
   });
 
   it('should show disable warning message When selectWarningMessage has a value after two seconds', async () => {
+    jest.useFakeTimers();
     setup();
 
     act(() => {
@@ -254,32 +202,50 @@ describe('ConfigStep', () => {
     await waitFor(() => {
       expect(screen.queryByText('Test warning Message')).not.toBeInTheDocument();
     });
+
+    jest.useRealTimers();
   });
 
-  it.skip('should not verify again when collection-date or date-picker is changed given pipeline token is filled and verified', async () => {
-    const wrapper = setup();
-    const mockToken = 'bkua_mockTokenMockTokenMockTokenMockToken1234';
+  it('should no need verify again when date picker is changed given board fields are filled and verified', async () => {
     const today = dayjs().format('MM/DD/YYYY');
-    const startDateInput = wrapper.getByLabelText('From *');
+    setup();
 
-    const requiredMetricsField = wrapper.getByRole('button', { name: REQUIRED_DATA });
-    await userEvent.click(requiredMetricsField);
-    const requireDateSelection = within(wrapper.getByRole('listbox'));
-    await userEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }));
-
-    const tokenNode = within(wrapper.getByTestId('pipelineToolTextField')).getByLabelText('input Token');
-
-    await userEvent.type(tokenNode, mockToken);
-
-    const submitButton = wrapper.getByText(VERIFY);
-    await userEvent.click(submitButton);
-
+    await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
+    const requireDateSelection = within(screen.getByRole('listbox'));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+    await closeMuiModal(userEvent);
+    await fillBoardFieldsInformation();
+    await userEvent.click(screen.getByText(VERIFY));
+    const startDateInput = screen.getByLabelText('From *');
     await userEvent.type(startDateInput, today);
 
     await waitFor(() => {
-      expect(wrapper.queryByText(VERIFY)).toBeNull();
+      expect(screen.queryByText(VERIFY)).toBeNull();
     });
-    expect(wrapper.queryByText('Verified')).toBeVisible();
-    expect(wrapper.queryByText(RESET)).toBeVisible();
+    expect(screen.queryByText(VERIFIED)).toBeVisible();
+    expect(screen.queryByText(RESET)).toBeVisible();
+  });
+
+  it('should no need verify again when collection-date or date-picker is changed given pipeline token is filled and verified', async () => {
+    const today = dayjs().format('MM/DD/YYYY');
+    setup();
+
+    const requiredMetricsField = screen.getByRole('button', { name: REQUIRED_DATA });
+    await userEvent.click(requiredMetricsField);
+    const requireDateSelection = within(screen.getByRole('listbox'));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }));
+    await closeMuiModal(userEvent);
+    const tokenNode = within(screen.getByTestId('pipelineToolTextField')).getByLabelText('input Token');
+    await userEvent.type(tokenNode, FAKE_PIPELINE_TOKEN);
+    const submitButton = screen.getByText(VERIFY);
+    await userEvent.click(submitButton);
+    const startDateInput = screen.getByLabelText('From *');
+    await userEvent.type(startDateInput, today);
+
+    await waitFor(() => {
+      expect(screen.queryByText(VERIFY)).toBeNull();
+    });
+    expect(screen.queryByText(VERIFIED)).toBeVisible();
+    expect(screen.queryByText(RESET)).toBeVisible();
   });
 });

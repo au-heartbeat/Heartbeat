@@ -740,3 +740,5 @@ export const SELECT_CONSIDER_AS_DONE_MESSAGE = 'Must select which you want to co
 export const MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT = 'Token is incorrect!';
 
 export const FAKE_TOKEN = 'fake-token';
+
+export const FAKE_PIPELINE_TOKEN = 'bkua_mockTokenMockTokenMockTokenMockToken1234';
