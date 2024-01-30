@@ -28,6 +28,7 @@ import { Loading } from '@src/components/Loading';
 import { useLayoutEffect } from 'react';
 import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
+import dayjs from 'dayjs';
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
@@ -49,7 +50,11 @@ const MetricsStep = () => {
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
 
   const getInfo = () => {
-    getBoardInfo(boardConfig).then((res) => {
+    getBoardInfo({
+      ...boardConfig,
+      startTime: dayjs(startDate).valueOf().toString(),
+      endTime: dayjs(endDate).valueOf().toString(),
+    }).then((res) => {
       if (res.data) {
         dispatch(updateBoardVerifyState(true));
         dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));

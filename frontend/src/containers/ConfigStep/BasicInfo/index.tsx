@@ -49,7 +49,6 @@ const BasicInfo = () => {
         <RadioGroup
           value={calendarType}
           onChange={(e) => {
-            dispatch(updateBoardVerifyState(false));
             dispatch(updateCalendarType(e.target.value));
           }}
         >

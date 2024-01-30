@@ -6,9 +6,9 @@ import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { REQUIRED_DATA } from '@src/constants/resources';
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
+import union from 'lodash/union';
+import merge from 'lodash/merge';
 import dayjs from 'dayjs';
-import _ from 'lodash';
-
 export interface BasicConfigState {
   isProjectCreated: boolean;
   basic: {
@@ -97,9 +97,7 @@ export const configSlice = createSlice({
             ? null
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
-      /* istanbul ignore next */
-      // TODO: need to fix @Kai Zhou
-      state.board.config = (action.payload.board && { type: 'Jira', ...action.payload.board }) || state.board.config;
+      state.board.config = merge(action.payload.board, { type: 'jira' }) || state.board.config;
       state.pipelineTool.config = action.payload.pipelineTool || state.pipelineTool.config;
       state.sourceControl.config = action.payload.sourceControl || state.sourceControl.config;
     },
@@ -145,7 +143,7 @@ export const configSlice = createSlice({
             : pipeline,
       );
 
-      state.pipelineTool.verifiedResponse.pipelineCrews = _.union(
+      state.pipelineTool.verifiedResponse.pipelineCrews = union(
         state.pipelineTool.verifiedResponse.pipelineCrews,
         pipelineCrews,
       );

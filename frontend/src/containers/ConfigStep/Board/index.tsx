@@ -74,10 +74,12 @@ export const Board = () => {
       email: fields[2].value,
       site: fields[3].value,
       token: fields[4].value,
+    };
+    await verifyJira({
+      ...params,
       startTime: dayjs(DateRange.startDate).valueOf(),
       endTime: dayjs(DateRange.endDate).valueOf(),
-    };
-    await verifyJira(params).then((res) => {
+    }).then((res) => {
       if (res?.response) {
         dispatch(updateBoardVerifyState(true));
         dispatch(updateBoard({ ...params, projectKey: res.response.projectKey }));

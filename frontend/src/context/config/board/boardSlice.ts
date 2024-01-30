@@ -13,8 +13,6 @@ export interface IBoardState {
     projectKey: string;
     site: string;
     token: string;
-    startTime: number;
-    endTime: number;
   };
   isVerified: boolean;
   isShow: boolean;
@@ -35,8 +33,6 @@ export const initialBoardState: IBoardState = {
     projectKey: '',
     site: '',
     token: '',
-    startTime: 0,
-    endTime: 0,
   },
   isVerified: false,
   isShow: false,

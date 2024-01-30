@@ -13,8 +13,8 @@ export interface BoardInfoRequestDTO {
   type: string;
   site: string;
   email: string;
-  startTime: number | null;
-  endTime: number | null;
+  startTime: string | null;
+  endTime: string | null;
   boardId: string;
   projectKey: string;
 }

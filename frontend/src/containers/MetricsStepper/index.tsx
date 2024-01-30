@@ -41,7 +41,9 @@ import { exportToJsonFile } from '@src/utils/util';
 import { useNavigate } from 'react-router-dom';
 import { ROUTE } from '@src/constants/router';
 import { Tooltip } from '@mui/material';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import every from 'lodash/every';
+import omit from 'lodash/omit';
 
 const ConfigStep = lazy(() => import('@src/containers/ConfigStep'));
 const MetricsStep = lazy(() => import('@src/containers/MetricsStep'));
@@ -86,9 +88,9 @@ const MetricsStepper = () => {
 
     return (
       pipelines.every(({ step }) => step !== '') &&
-      pipelines.every(({ branches }) => !_.isEmpty(branches)) &&
+      pipelines.every(({ branches }) => !isEmpty(branches)) &&
       getDuplicatedPipeLineIds(pipelines).length === 0 &&
-      _.every(pipelinesFormMeta, (item) => _.every(item.branches, (branch) => !branch.error && !branch.needVerify))
+      every(pipelinesFormMeta, (item) => every(item.branches, (branch) => !branch.error && !branch.needVerify))
     );
   }, [formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
 
@@ -167,7 +169,7 @@ const MetricsStepper = () => {
       calendarType,
       metrics,
 
-      board: isShowBoard ? config.board.config : undefined,
+      board: isShowBoard ? omit(config.board.config, ['projectKey']) : undefined,
       /* istanbul ignore next */
       pipelineTool: isShowPipeline ? config.pipelineTool.config : undefined,
       /* istanbul ignore next */
