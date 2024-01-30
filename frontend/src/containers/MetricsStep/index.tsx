@@ -13,12 +13,10 @@ import {
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { selectMetricsContent, updateMetricsState } from '@src/context/Metrics/metricsSlice';
 import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
+import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { updateMetricsState } from '@src/context/Metrics/metricsSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
