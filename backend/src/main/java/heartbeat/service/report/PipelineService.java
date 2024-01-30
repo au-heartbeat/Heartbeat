@@ -148,7 +148,7 @@ public class PipelineService {
 	private Map<String, String> getRepoMap(List<DeploymentEnvironment> deploymentEnvironments) {
 		return deploymentEnvironments.stream()
 			.collect(Collectors.toMap(DeploymentEnvironment::getId, DeploymentEnvironment::getRepository,
-					(value1, value2) -> value2));
+					(previousValue, newValue) -> newValue));
 	}
 
 	private List<BuildKiteBuildInfo> getBuildKiteBuildInfo(String startTime, String endTime,
