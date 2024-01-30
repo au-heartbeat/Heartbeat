@@ -1,40 +1,39 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
-import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.request.MetricType;
+import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
+import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.mockito.stubbing.Answer;
 import org.springframework.core.io.InputStreamResource;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import heartbeat.exception.NotFoundException;
-
-import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
@@ -104,4 +103,23 @@ public class ReportServiceTest {
 		verify(generateReporterService, never()).generateDoraReport(request);
 	}
 
+	@Test
+	void ShouldInitializeMetricsDataCompletedInHandlerWhenRequestMetricsExist() throws InterruptedException {
+		GenerateReportRequest request = GenerateReportRequest.builder().csvTimeStamp("csvTimeStamp").metrics(List.of("velocity", "lead time for changes")).build();
+		when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(MetricsDataCompleted.builder().pipelineMetricsCompleted(true).build());
+		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
+		reportService.generateReportByType(request, MetricType.BOARD);
+		Thread.sleep(100);
+		verify(asyncMetricsDataHandler).putMetricsDataCompleted(
+			argThat("csvTimeStamp"::equals),
+			argThat(metricsDataCompleted -> {
+				Assertions.assertFalse(metricsDataCompleted.boardMetricsCompleted());
+				Assertions.assertTrue(metricsDataCompleted.pipelineMetricsCompleted());
+				Assertions.assertFalse(metricsDataCompleted.sourceControlMetricsCompleted());
+				return true;
+			})
+		);
+		verify(generateReporterService).generateBoardReport(request);
+		verify(generateReporterService, never()).generateDoraReport(request);
+	}
 }
