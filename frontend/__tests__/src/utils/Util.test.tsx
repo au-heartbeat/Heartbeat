@@ -3,16 +3,13 @@ import {
   filterAndMapCycleTimeSettings,
   findCaseInsensitiveType,
   getJiraBoardToken,
+  getRealDoneStatus,
   transformToCleanedBuildKiteEmoji,
 } from '@src/utils/util'
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/emojis/emoji'
 import { EMPTY_STRING } from '@src/constants/commons'
-import {
-  FILTER_CYCLE_TIME_SETTINGS,
-  MOCK_CYCLE_TIME_SETTING,
-  MOCK_JIRA_WITH_STATUES_SETTING,
-  PIPELINE_TOOL_TYPES,
-} from '../fixtures'
+import { PIPELINE_TOOL_TYPES } from '../fixtures'
+import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources'
 
 describe('exportToJsonFile function', () => {
   it('should create a link element with the correct attributes and click it', () => {
@@ -102,29 +99,80 @@ describe('findCaseInsensitiveType function', () => {
 
 describe('filterAndMapCycleTimeSettings function', () => {
   it('should filter and map CycleTimeSettings when generate report', () => {
-    const value = filterAndMapCycleTimeSettings(MOCK_CYCLE_TIME_SETTING, MOCK_JIRA_WITH_STATUES_SETTING)
-    expect(value).toStrictEqual(FILTER_CYCLE_TIME_SETTINGS)
+    const MOCK_CYCLE_TIME_SETTING = [
+      { column: 'TODO', status: 'ToDo', value: 'TODO' },
+      { column: 'TODO', status: 'Backlog', value: 'TODO' },
+      { column: 'IN DEV', status: 'InDev', value: 'IN DEV' },
+      { column: 'IN DEV', status: 'Doing', value: 'IN DEV' },
+      { column: 'DONE', status: 'Done', value: 'DONE' },
+    ]
+
+    const value = filterAndMapCycleTimeSettings(MOCK_CYCLE_TIME_SETTING)
+
+    expect(value).toStrictEqual([
+      { name: 'ToDo', value: 'TODO' },
+      { name: 'Backlog', value: 'TODO' },
+      { name: 'InDev', value: 'IN DEV' },
+      { name: 'Doing', value: 'IN DEV' },
+      { name: 'Done', value: 'DONE' },
+    ])
+  })
+})
+
+describe('getRealDoneStatus', () => {
+  it('should return selected done status when cycle time settings only have one done value and type is by column', () => {
+    const MOCK_CYCLE_TIME_SETTING = [
+      { column: 'TODO', status: 'ToDo', value: 'TODO' },
+      { column: 'TODO', status: 'Backlog', value: 'TODO' },
+      { column: 'IN DEV', status: 'InDev', value: 'IN DEV' },
+      { column: 'IN DEV', status: 'Doing', value: 'IN DEV' },
+      { column: 'DONE', status: 'DONE', value: 'Done' },
+    ]
+
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, [])
+
+    expect(result).toEqual(['DONE'])
   })
 
-  it('should filter and map CycleTimeSettings when generate report', () => {
-    const filterCycleTimeSettings = [
-      { name: 'IN DEV', value: 'IN DEV' },
-      { name: 'DOING', value: 'IN DEV' },
-      { name: 'DONE', value: 'DONE' },
-    ]
-
+  it('should return selected done status when cycle time settings only have one done value and type is by status', () => {
     const MOCK_CYCLE_TIME_SETTING = [
-      { name: 'TODO', value: 'TODO' },
-      { name: 'IN DEV', value: 'IN DEV' },
-      { name: 'DONE', value: 'DONE' },
+      { column: 'TODO', status: 'ToDo', value: 'TODO' },
+      { column: 'TODO', status: 'Backlog', value: 'TODO' },
+      { column: 'IN DEV', status: 'InDev', value: 'IN DEV' },
+      { column: 'IN DEV', status: 'Doing', value: 'IN DEV' },
+      { column: 'DONE', status: 'DONE', value: 'Done' },
     ]
 
-    const MOCK_JIRA_WITH_STATUES_SETTING = [
-      { name: 'todo', statuses: ['TODO', 'BACKLOG'] },
-      { name: 'IN DEV', statuses: ['IN DEV', 'DOING'] },
-      { name: 'DONE', statuses: ['DONE'] },
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, [])
+
+    expect(result).toEqual(['DONE'])
+  })
+
+  it('should return real done status when cycle time settings type is by column', () => {
+    const MOCK_CYCLE_TIME_SETTING = [
+      { column: 'TODO', status: 'ToDo', value: 'TODO' },
+      { column: 'TODO', status: 'Backlog', value: 'TODO' },
+      { column: 'IN DEV', status: 'InDev', value: 'IN DEV' },
+      { column: 'IN DEV', status: 'Doing', value: 'Done' },
+      { column: 'DONE', status: 'DONE', value: 'Done' },
     ]
-    const value = filterAndMapCycleTimeSettings(MOCK_CYCLE_TIME_SETTING, MOCK_JIRA_WITH_STATUES_SETTING)
-    expect(value).toStrictEqual(filterCycleTimeSettings)
+
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, ['Doing'])
+
+    expect(result).toEqual(['Doing'])
+  })
+
+  it('should return selected done status when cycle time settings type is by column', () => {
+    const MOCK_CYCLE_TIME_SETTING = [
+      { column: 'TODO', status: 'ToDo', value: 'TODO' },
+      { column: 'TODO', status: 'Backlog', value: 'TODO' },
+      { column: 'IN DEV', status: 'InDev', value: 'IN DEV' },
+      { column: 'IN DEV', status: 'Doing', value: 'Done' },
+      { column: 'DONE', status: 'DONE', value: 'Done' },
+    ]
+
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, ['something'])
+
+    expect(result).toEqual(['Doing', 'DONE'])
   })
 })

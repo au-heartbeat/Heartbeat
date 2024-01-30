@@ -88,6 +88,7 @@ jest.mock('@src/utils/util', () => ({
   transformToCleanedBuildKiteEmoji: jest.fn(),
   findCaseInsensitiveType: jest.fn(),
   filterAndMapCycleTimeSettings: jest.fn(),
+  getRealDoneStatus: jest.fn(),
 }))
 
 jest.mock('@src/hooks/useGenerateReportEffect', () => ({

@@ -109,7 +109,12 @@ describe('RealDone', () => {
     })
 
     it('should show doing when choose Testing column is Done', async () => {
-      await store.dispatch(saveCycleTimeSettings([{ name: 'Done', value: 'Done' }]))
+      await store.dispatch(
+        saveCycleTimeSettings([
+          { column: 'Done', status: 'DONE', value: 'Done' },
+          { column: 'Done', status: 'CANCELLED', value: 'Done' },
+        ])
+      )
       const { getByRole } = setup()
 
       await act(async () => {
@@ -142,29 +147,6 @@ describe('RealDone', () => {
       await waitFor(() => {
         expect(queryByText('Test warning Message')).not.toBeInTheDocument()
       })
-    })
-  })
-
-  describe('when done column with only one status', () => {
-    it('should not show read done box', async () => {
-      const mockColumnsList = [
-        {
-          key: 'done',
-          value: {
-            name: 'Done',
-            statuses: ['DONE'],
-          },
-        },
-      ]
-
-      const { queryByText } = render(
-        <Provider store={store}>
-          <RealDone columns={mockColumnsList} label={mockLabel} title={mockTitle} />
-        </Provider>
-      )
-
-      expect(queryByText(mockTitle)).not.toBeInTheDocument()
-      expect(queryByText(mockLabel)).not.toBeInTheDocument()
     })
   })
 })

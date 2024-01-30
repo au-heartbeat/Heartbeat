@@ -60,6 +60,7 @@ jest.mock('@src/utils/util', () => ({
   transformToCleanedBuildKiteEmoji: jest.fn(),
   getJiraBoardToken: jest.fn(),
   filterAndMapCycleTimeSettings: jest.fn(),
+  getRealDoneStatus: jest.fn(),
 }))
 
 let store = null
