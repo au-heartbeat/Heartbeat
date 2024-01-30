@@ -33,8 +33,8 @@ export interface useVerifyBoardStateInterface {
 }
 
 const ERROR_INFO = {
-  SITE_NOT_FOUND: 'site not found',
-  BOARD_NOT_FOUND: 'boardId not found',
+  SITE_NOT_FOUND: 'site is incorrect',
+  BOARD_NOT_FOUND: 'boardId is incorrect',
 };
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
@@ -127,7 +127,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const validField = (field: FormField, inputValue: string) => {
     const value = inputValue.trim();
     const isRequired = !!value;
-    const isValid = !field.validRule || field.validRule(field.value.trim());
+    const isValid = !field.validRule || field.validRule(value);
     const errorMessage = !isRequired
       ? `${field.key} is required`
       : !isValid
@@ -163,14 +163,14 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         return result;
       })
       .catch((e) => {
-        const { message, code } = e;
+        const { description, code } = e;
         if (code === HttpStatusCode.Unauthorized) {
           setErrorField(['email', 'token'], [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR]);
         }
-        if (code === HttpStatusCode.NotFound && message === ERROR_INFO.SITE_NOT_FOUND) {
+        if (code === HttpStatusCode.NotFound && description === ERROR_INFO.SITE_NOT_FOUND) {
           setErrorField(['site'], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
         }
-        if (code === HttpStatusCode.NotFound && message === ERROR_INFO.BOARD_NOT_FOUND) {
+        if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setErrorField(['boardId'], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
         }
         return e;
