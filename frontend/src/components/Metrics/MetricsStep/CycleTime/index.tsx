@@ -102,12 +102,12 @@ export const CycleTime = ({ title }: cycleTimeProps) => {
           </StyledTooltip>
         </TooltipContainer>
       </TitleAndTooltipContainer>
+      <StyledRadioGroup aria-label='cycleTimeSettingsType' value={cycleTimeSettingsType} onChange={handleTypeChange}>
+        <FormControlLabel value={CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN} control={<Radio />} label='By Column' />
+        <FormControlLabel value={CYCLE_TIME_SETTINGS_TYPES.BY_STATUS} control={<Radio />} label='By Status' />
+      </StyledRadioGroup>
       <CycleTimeContainer>
         {warningMessage && <WarningNotification message={warningMessage} />}
-        <StyledRadioGroup aria-label='cycleTimeSettingsType' value={cycleTimeSettingsType} onChange={handleTypeChange}>
-          <FormControlLabel value={CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN} control={<Radio />} label='By Column' />
-          <FormControlLabel value={CYCLE_TIME_SETTINGS_TYPES.BY_STATUS} control={<Radio />} label='By Status' />
-        </StyledRadioGroup>
         <FormSelectPart selectedOptions={data} saveCycleTimeOptions={saveCycleTimeOptions} />
         <FlagCard />
       </CycleTimeContainer>
