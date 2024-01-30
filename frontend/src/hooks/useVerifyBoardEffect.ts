@@ -30,6 +30,7 @@ export interface useVerifyBoardStateInterface {
   formFields: FormField[];
   updateField: (name: string, value: string) => void;
   resetFormFields: () => void;
+  clearError: () => void;
 }
 
 const ERROR_INFO = {
@@ -104,14 +105,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     );
 
   const clearError = () => {
-    return setFormFields(
-      formFields.map((item) => ({
-        ...item,
-        isValid: true,
-        isRequired: true,
-        errorMessage: '',
-      })),
-    );
+    return setFormFields(formFields.map(clearErrorField));
   };
 
   const setErrorField = (names: string[], messages: string[]) => {
@@ -122,6 +116,15 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
           : field;
       }),
     );
+  };
+
+  const clearErrorField = (field: FormField) => {
+    return {
+      ...field,
+      isValid: true,
+      isRequired: true,
+      errorMessage: '',
+    };
   };
 
   const validField = (field: FormField, inputValue: string) => {
@@ -146,7 +149,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const updateField = (name: string, value: string) => {
     setFormFields(
       formFields.map((field) => {
-        return field.name === name ? validField(field, value) : field;
+        return field.name === name ? validField(field, value) : clearErrorField(field);
       }),
     );
   };
@@ -183,6 +186,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     isLoading,
     formFields,
     updateField,
+    clearError,
     resetFormFields,
   };
 };
