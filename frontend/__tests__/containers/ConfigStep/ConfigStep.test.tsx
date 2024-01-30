@@ -5,8 +5,8 @@ import {
   CYCLE_TIME,
   DEPLOYMENT_FREQUENCY,
   ERROR_MESSAGE_TIME_DURATION,
+  FAKE_TOKEN,
   MOCK_BOARD_URL_FOR_JIRA,
-  MOCK_JIRA_VERIFY_RESPONSE,
   MOCK_PIPELINE_VERIFY_URL,
   PROJECT_NAME_LABEL,
   REGULAR_CALENDAR,
@@ -14,17 +14,28 @@ import {
   RESET,
   TEST_PROJECT_NAME,
   VELOCITY,
+  VERIFIED,
   VERIFY,
 } from '../../fixtures';
-import { act, fireEvent, Matcher, render, screen, waitFor, within } from '@testing-library/react';
-import { fillBoardFieldsInformation } from './Board.test';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
-import userEvent from '@testing-library/user-event';
 import ConfigStep from '@src/containers/ConfigStep';
+import ue from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
+
+const userEvent = ue.setup({
+  advanceTimers: jest.advanceTimersByTime,
+});
+
+const fillBoardFieldsInformation = async () => {
+  await userEvent.type(screen.getByLabelText(/board id/i), '1');
+  await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
+  await userEvent.type(screen.getByLabelText(/site/i), 'fake');
+  await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
+};
 
 const server = setupServer(
   rest.post(MOCK_PIPELINE_VERIFY_URL, (_, res, ctx) => res(ctx.status(204))),
@@ -181,7 +192,7 @@ describe('ConfigStep', () => {
     });
   });
 
-  it.skip('should verify again when calendar type is changed given board fields are filled and verified', async () => {
+  it.skip('should no need verify again when calendar type is changed given board fields are filled and verified', async () => {
     setup();
 
     await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
@@ -205,28 +216,26 @@ describe('ConfigStep', () => {
       expect(screen.getByText(/verify/i)).toBeInTheDocument();
     });
 
-    // expect(screen.queryByText(RESET)).toBeNull();
+    expect(screen.queryByText(RESET)).toBeNull();
   });
 
-  it('should verify again when date picker is changed given board fields are filled and verified', async () => {
+  it('should no need verify again when date picker is changed given board fields are filled and verified', async () => {
     const today = dayjs().format('MM/DD/YYYY');
     setup();
 
-    const startDateInput = screen.getByLabelText('From *');
     await userEvent.click(screen.getByRole('button', { name: REQUIRED_DATA }));
-
     const requireDateSelection = within(screen.getByRole('listbox'));
-
     await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+
     await fillBoardFieldsInformation();
     await userEvent.click(screen.getByText(VERIFY));
+
+    const startDateInput = screen.getByLabelText('From *');
     await userEvent.type(startDateInput, today);
 
     await waitFor(() => {
-      expect(screen.queryByText(VERIFY)).toBeVisible();
+      expect(screen.getByText(VERIFIED)).toBeInTheDocument();
     });
-    expect(screen.queryByText('Verified')).toBeNull();
-    expect(screen.queryByText(RESET)).toBeNull();
   });
 
   it('should show warning message when selectWarningMessage has a value', async () => {
