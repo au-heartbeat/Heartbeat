@@ -8,9 +8,9 @@ import {
 import { AVERAGE_FIELD, METRICS_TITLE, REPORT_SUFFIX_UNITS } from '@src/constants/resources';
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { EmojiWrap, StyledAvatar, StyledTypography } from '@src/constants/emojis/style';
-import { ErrorMessagePrompt } from '@src/components/Common/ReportGrid/ReportCard';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { ReportSelectionTitle } from '@src/containers/MetricsStep/style';
+import { ErrorMessagePrompt } from '@src/components/ErrorMessagePrompt';
 import { Table, TableBody, TableHead, TableRow } from '@mui/material';
 import { Loading } from '@src/components/Loading';
 import { styled } from '@mui/material/styles';
