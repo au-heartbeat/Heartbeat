@@ -4,7 +4,6 @@ import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.response.ChangeFailureRate;
 import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
-import heartbeat.service.report.calculator.ChangeFailureRateCalculator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,13 +28,19 @@ class CalculateChangeFailureRateTest {
 
 	private static final String FAILED_STATE = "failed";
 
+	private static final String JOB_NAME_EQUALS_PIPELINE_STEP = "xx";
+
 	@InjectMocks
 	private ChangeFailureRateCalculator changeFailureRate;
 
 	@Test
 	public void testCalculateChangeFailureRate() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2023).state(PASSED_STATE).build()))
+			.withPassed(List.of(DeployInfo.builder()
+				.jobFinishTime(JOB_FINISH_TIME_2023)
+				.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
+				.state(PASSED_STATE)
+				.build()))
 			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
 			.build();
 
