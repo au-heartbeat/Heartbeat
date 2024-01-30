@@ -15,7 +15,7 @@ import { withGoBack } from './withBack';
 interface Property {
   data: ReportResponseDTO | undefined;
   onBack: () => void;
-  errorMessage: string | undefined;
+  errorMessage: string;
 }
 
 const showSectionWith2Columns = (title: string, value: Optional<ReportDataWithTwoColumns[]>) =>
