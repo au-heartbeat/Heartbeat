@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,20 +62,23 @@ public class PipelineServiceTest {
 
 		@Test
 		void shouldReturnEmptyBuildInfosListAndEmptyLeadTimeWhenDeploymentEnvironmentsIsEmpty() {
+			String token = "token";
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList()).build())
+				.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList<>()).build())
 				.metrics(new ArrayList<>())
+				.codebaseSetting(CodebaseSetting.builder().token(token).build())
 				.build();
 			FetchedData.BuildKiteData result = pipelineService.fetchGithubData(request);
 
 			assertEquals(0, result.getBuildInfosList().size());
 			verify(buildKiteService, never()).countDeployTimes(any(), any(), any(), any());
+			verify(gitHubService).fetchPipelinesLeadTime(List.of(), new HashMap<>(), token);
 		}
 
 		@Test
 		void shouldReturnEmptyPipelineLeadTimeWhenCodebaseSettingIsEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList()).build())
+				.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList<>()).build())
 				.metrics(new ArrayList<>())
 				.build();
 			FetchedData.BuildKiteData result = pipelineService.fetchGithubData(request);
@@ -84,7 +88,7 @@ public class PipelineServiceTest {
 		}
 
 		@Test
-		void shouldGetPipelineLeadTimeFromGithubServiceAndBuildkiteServiceWhenCodebaseSettingIsNotEmpty() {
+		void shouldGetPipelineLeadTimeFromGithubServiceAndBuildKiteServiceWhenCodebaseSettingIsNotEmpty() {
 			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = new ArrayList<>();
 			String startTime = "startTime";
 			String endTime = "endTime";
@@ -197,7 +201,7 @@ public class PipelineServiceTest {
 		@Test
 		void shouldReturnEmptyWhenDeploymentEnvListIsEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList()).build())
+				.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(new ArrayList<>()).build())
 				.metrics(new ArrayList<>())
 				.build();
 			FetchedData.BuildKiteData result = pipelineService.fetchBuildKiteInfo(request);

@@ -6,7 +6,6 @@ import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,7 +28,6 @@ import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -110,15 +108,12 @@ public class ReportServiceTest {
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 		reportService.generateReportByType(request, MetricType.BOARD);
 		Thread.sleep(100);
-		verify(asyncMetricsDataHandler).putMetricsDataCompleted(
-			argThat("csvTimeStamp"::equals),
-			argThat(metricsDataCompleted -> {
-				Assertions.assertFalse(metricsDataCompleted.boardMetricsCompleted());
-				Assertions.assertTrue(metricsDataCompleted.pipelineMetricsCompleted());
-				Assertions.assertFalse(metricsDataCompleted.sourceControlMetricsCompleted());
-				return true;
-			})
-		);
+		MetricsDataCompleted expectMetricsDataResult = MetricsDataCompleted.builder()
+			.boardMetricsCompleted(false)
+			.pipelineMetricsCompleted(true)
+			.sourceControlMetricsCompleted(false)
+			.build();
+		verify(asyncMetricsDataHandler).putMetricsDataCompleted("csvTimeStamp", expectMetricsDataResult);
 		verify(generateReporterService).generateBoardReport(request);
 		verify(generateReporterService, never()).generateDoraReport(request);
 	}
