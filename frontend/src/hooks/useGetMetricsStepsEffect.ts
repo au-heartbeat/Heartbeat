@@ -1,9 +1,9 @@
+import { shouldCallStepApi, updatePipelineToolShouldCallStepApi } from '@src/context/config/configSlice';
 import { getStepsParams, metricsClient } from '@src/clients/MetricsClient';
+import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { MESSAGE } from '@src/constants/resources';
 import { DURATION } from '@src/constants/commons';
 import { useState } from 'react';
-import { shouldCallStepApi, updatePipelineToolShouldCallStepApi } from "@src/context/config/configSlice";
-import { useAppDispatch, useAppSelector } from "@src/hooks/index";
 
 export interface useGetMetricsStepsEffectInterface {
   getSteps: (

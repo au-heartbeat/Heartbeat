@@ -1,14 +1,14 @@
 import { useGetPipelineToolInfoEffect } from '@src/hooks/useGetPipelineToolInfoEffect';
+import { updatePipelineToolShouldCallInfoApi } from '@src/context/config/configSlice';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { MOCK_BUILD_KITE_GET_INFO_RESPONSE } from '../fixtures';
 import { renderHook, waitFor } from '@testing-library/react';
 import { setupStore } from '../utils/setupStoreUtil';
+import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { HttpStatusCode } from 'axios';
 import { ReactNode } from 'react';
 import React from 'react';
-import {act} from "react-dom/test-utils";
-import { updatePipelineToolShouldCallInfoApi } from "@src/context/config/configSlice";
 
 const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
@@ -50,7 +50,7 @@ beforeEach(() => {
 describe('use get pipelineTool info side effect', () => {
   it('should return immediately if shouldCallApi is false', async () => {
     const store = setupStore();
-    const Wrapper = ({children}: { children: ReactNode }) => {
+    const Wrapper = ({ children }: { children: ReactNode }) => {
       return <Provider store={store}>{children}</Provider>;
     };
 
@@ -58,7 +58,7 @@ describe('use get pipelineTool info side effect', () => {
       store.dispatch(updatePipelineToolShouldCallInfoApi(false));
     });
 
-    const {result} = renderHook(() => useGetPipelineToolInfoEffect(), {wrapper: Wrapper});
+    const { result } = renderHook(() => useGetPipelineToolInfoEffect(), { wrapper: Wrapper });
 
     act(() => {
       result.current.apiCallFunc();
