@@ -35,18 +35,16 @@ class CalculateChangeFailureRateTest {
 	@Test
 	public void testCalculateChangeFailureRate() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfoBuilder.withDefault()
-				.withJobName(OTHER_JOB_NAME)
-				.withJobFinishTime(JOB_FINISH_TIME_2023)
-				.build(), DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build()))
+			.withPassed(List.of(DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build(),
+					DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build()))
 			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
 			.build();
 
 		ChangeFailureRate changeFailureRate = this.changeFailureRate.calculate(List.of(mockedDeployTimes));
 
-		assertThat(changeFailureRate.getAvgChangeFailureRate().getFailureRate()).isEqualTo(0.5F);
+		assertThat(changeFailureRate.getAvgChangeFailureRate().getFailureRate()).isEqualTo(0.3333F);
 		assertThat(changeFailureRate.getAvgChangeFailureRate().getTotalFailedTimes()).isEqualTo(1);
-		assertThat(changeFailureRate.getAvgChangeFailureRate().getTotalTimes()).isEqualTo(2);
+		assertThat(changeFailureRate.getAvgChangeFailureRate().getTotalTimes()).isEqualTo(3);
 	}
 
 	@Test
@@ -61,6 +59,23 @@ class CalculateChangeFailureRateTest {
 		assertThat(changeFailureRate.getAvgChangeFailureRate().getFailureRate()).isEqualTo(0.0F);
 		assertThat(changeFailureRate.getAvgChangeFailureRate().getTotalFailedTimes()).isEqualTo(0);
 		assertThat(changeFailureRate.getAvgChangeFailureRate().getTotalTimes()).isEqualTo(0);
+	}
+
+	@Test
+	public void testCalculateChangeFailureRateWhenHavePassedDeployInfoWhoseJobNameIsNotEqualToPipelineStep() {
+		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
+			.withPassed(List.of(DeployInfoBuilder.withDefault()
+				.withJobName(OTHER_JOB_NAME)
+				.withJobFinishTime(JOB_FINISH_TIME_2023)
+				.build(), DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build()))
+			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
+			.build();
+
+		ChangeFailureRate changeFailureRate = this.changeFailureRate.calculate(List.of(mockedDeployTimes));
+
+		assertThat(changeFailureRate.getAvgChangeFailureRate().getFailureRate()).isEqualTo(0.5F);
+		assertThat(changeFailureRate.getAvgChangeFailureRate().getTotalFailedTimes()).isEqualTo(1);
+		assertThat(changeFailureRate.getAvgChangeFailureRate().getTotalTimes()).isEqualTo(2);
 	}
 
 }
