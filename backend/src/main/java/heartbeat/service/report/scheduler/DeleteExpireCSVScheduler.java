@@ -21,13 +21,13 @@ public class DeleteExpireCSVScheduler {
 
 	public static final Long EXPORT_CSV_VALIDITY_TIME = 1800000L;
 
-	public static final String CSV_FILE_PATH = "./app/output/csv/";
+	public static final String CSV_FILE_PATH = "./output/csv/";
 
-	public static final String REPORT_FILE_PATH = "./app/output/report/";
+	public static final String REPORT_FILE_PATH = "./output/report/";
 
-	public static final String ERROR_FILE_PATH = "./app/output/error/";
+	public static final String ERROR_FILE_PATH = "./output/error/";
 
-	public static final String METRICS_FILE_PATH = "./app/output/metrics-data-completed/";
+	public static final String METRICS_FILE_PATH = "./output/metrics-data-completed/";
 
 	private final GenerateReporterService generateReporterService;
 

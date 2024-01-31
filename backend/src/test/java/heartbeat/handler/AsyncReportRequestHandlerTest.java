@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 class AsyncReportRequestHandlerTest {
 
-	public static final String APP_OUTPUT_REPORT = "./app/output/report";
+	public static final String APP_OUTPUT_REPORT = "./output/report";
 
 	@InjectMocks
 	AsyncReportRequestHandler asyncReportRequestHandler;
@@ -36,7 +36,7 @@ class AsyncReportRequestHandlerTest {
 	@AfterAll
 	static void afterAll() {
 		try {
-			FileUtils.cleanDirectory(new File("./app"));
+			FileUtils.cleanDirectory(new File("./output"));
 		}
 		catch (IOException ignored) {
 		}

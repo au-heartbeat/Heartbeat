@@ -9,7 +9,7 @@ services:
     deploy:
       replicas: 1
     volumes:
-      - file_volume:/app/output
+      - file_volume:/output
     networks:
       - default
     environment:

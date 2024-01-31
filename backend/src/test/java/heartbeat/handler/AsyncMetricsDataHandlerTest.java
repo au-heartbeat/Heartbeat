@@ -28,7 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 class AsyncMetricsDataHandlerTest {
 
-	public static final String APP_OUTPUT_METRICS = "./app/output/metrics-data-completed";
+	public static final String APP_OUTPUT_METRICS = "./output/metrics-data-completed";
+
+	public static final int TIMEOUT_COUNT = 4;
 
 	@InjectMocks
 	AsyncMetricsDataHandler asyncMetricsDataHandler;
@@ -41,7 +43,7 @@ class AsyncMetricsDataHandlerTest {
 	@AfterAll
 	static void afterAll() {
 		try {
-			FileUtils.cleanDirectory(new File("./app"));
+			FileUtils.cleanDirectory(new File("./output"));
 		}
 		catch (IOException ignored) {
 		}
@@ -92,7 +94,7 @@ class AsyncMetricsDataHandlerTest {
 
 		thread.start();
 
-		boolean executionContinuous = latch.await(4, TimeUnit.SECONDS);
+		boolean executionContinuous = latch.await(TIMEOUT_COUNT, TimeUnit.SECONDS);
 		assertFalse(executionContinuous);
 		thread.interrupt();
 		Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime + ".lock"));

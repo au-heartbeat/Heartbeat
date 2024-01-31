@@ -73,7 +73,7 @@ class GenerateReporterServiceTest {
 
 	private static final String TIMESTAMP = "1683734399999";
 
-	public static final String APP_OUTPUT_CSV_PATH = "./app/output/csv";
+	public static final String APP_OUTPUT_CSV_PATH = "./output/csv";
 
 	@InjectMocks
 	GenerateReporterService generateReporterService;
@@ -133,8 +133,7 @@ class GenerateReporterServiceTest {
 
 	@AfterAll
 	static void afterAll() {
-		new File("./app/output").delete();
-		new File("./app").delete();
+		new File("./output").delete();
 	}
 
 	@Nested

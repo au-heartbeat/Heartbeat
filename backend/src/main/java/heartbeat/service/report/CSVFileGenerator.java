@@ -62,7 +62,7 @@ public class CSVFileGenerator {
 
 	private static final String CSV_EXTENSION = ".csv";
 
-	public static final String FILE_LOCAL_PATH = "./app/output/csv";
+	public static final String FILE_LOCAL_PATH = "./output/csv";
 
 	private static InputStreamResource readStringFromCsvFile(String fileName) {
 		try {

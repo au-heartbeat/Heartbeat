@@ -12,7 +12,7 @@ class AsyncDataBaseHandlerTest {
 
 	@Test
 	void shouldReturnFalseGivenCreateFileThrowExceptionWhenTryLock() {
-		File file = new File("./app/output/lock");
+		File file = new File("./output/lock/test.lock");
 
 		boolean result = asyncDataBaseHandler.tryLock(file);
 

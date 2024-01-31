@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AsyncExceptionHandlerTest {
 
-	public static final String APP_OUTPUT_ERROR = "./app/output/error";
+	public static final String APP_OUTPUT_ERROR = "./output/error";
 
 	@InjectMocks
 	AsyncExceptionHandler asyncExceptionHandler;
@@ -45,7 +45,7 @@ class AsyncExceptionHandlerTest {
 	@AfterAll
 	static void afterAll() {
 		try {
-			FileUtils.cleanDirectory(new File("./app"));
+			FileUtils.cleanDirectory(new File("./output"));
 		}
 		catch (IOException ignored) {
 		}
@@ -128,9 +128,9 @@ class AsyncExceptionHandlerTest {
 
 	@Test
 	void shouldThrowExceptionGivenCannotReadFileWhenGetFile() throws IOException {
-		new File("./app/output/error/").mkdirs();
+		new File("./output/error/").mkdirs();
 		String boardReportId = IdUtil.getBoardReportId(Long.toString(System.currentTimeMillis()));
-		Path filePath = Paths.get("./app/output/error/" + boardReportId);
+		Path filePath = Paths.get("./output/error/" + boardReportId);
 		Files.createFile(filePath);
 		Files.write(filePath, "test".getBytes());
 
@@ -171,9 +171,9 @@ class AsyncExceptionHandlerTest {
 
 	@Test
 	void shouldReturnExceptionGivenWrongFileWhenReadAndRemoveAsyncException() throws IOException {
-		new File("./app/output/error/").mkdirs();
+		new File("./output/error/").mkdirs();
 		String boardReportId = IdUtil.getBoardReportId(Long.toString(System.currentTimeMillis()));
-		Path filePath = Paths.get("./app/output/error/" + boardReportId);
+		Path filePath = Paths.get("./output/error/" + boardReportId);
 		Files.createFile(filePath);
 		Files.write(filePath, "test".getBytes());
 

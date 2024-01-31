@@ -22,7 +22,7 @@ import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT
 @Log4j2
 public class AsyncDataBaseHandler {
 
-	private static final String OUTPUT_FILE_PATH = "./app/output/";
+	private static final String OUTPUT_FILE_PATH = "./output/";
 
 	public static final String SUFFIX_TMP = ".tmp";
 
@@ -120,8 +120,10 @@ public class AsyncDataBaseHandler {
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
 			}
+			log.info("Start to get file lock for fIleType: {}, fileId:{}.", fIleType, fileId);
 			while (!tryLock(file)) {
 			}
+			log.info("Successfully get file lock for fIleType: {}, fileId:{}.", fIleType, fileId);
 		}
 		else {
 			throw new GenerateReportException(
@@ -141,10 +143,12 @@ public class AsyncDataBaseHandler {
 	protected void unLock(FIleType fIleType, String fileId) {
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId + SUFFIX_LOCK;
 		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
+			log.info("Start to unlock file lock for fIleType: {}, fileId:{}.", fIleType, fileId);
 			File lockFile = new File(fileName);
 			if (lockFile.exists()) {
 				lockFile.delete();
 			}
+			log.info("Successfully unlock file for fIleType: {}, fileId:{}.", fIleType, fileId);
 		}
 		else {
 			throw new GenerateReportException(
