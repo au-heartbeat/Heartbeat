@@ -3,6 +3,7 @@ import {
   selectPipelineOrganizations,
   selectSteps,
   selectStepsParams,
+  shouldCallStepApi,
   updatePipelineToolVerifyResponseSteps,
 } from '@src/context/config/configSlice';
 import {
@@ -19,7 +20,7 @@ import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { ErrorNotification } from '@src/components/ErrorNotification';
 import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
-import { useAppDispatch } from '@src/hooks';
+import { useAppDispatch, useAppSelector} from '@src/hooks';
 import { store } from '@src/store';
 import { useState } from 'react';
 
@@ -56,6 +57,7 @@ export const PipelineMetricSelection = ({
   const pipelineNameWarningMessage = selectPipelineNameWarningMessage(store.getState(), id);
   const stepWarningMessage = selectStepWarningMessage(store.getState(), id);
   const [isShowNoStepWarning, setIsShowNoStepWarning] = useState(false);
+  const shouldCallApi = useAppSelector(shouldCallStepApi);
 
   const handleRemoveClick = () => {
     onRemovePipeline(id);
@@ -95,7 +97,7 @@ export const PipelineMetricSelection = ({
       {pipelineNameWarningMessage && <WarningNotification message={pipelineNameWarningMessage} />}
       {stepWarningMessage && <WarningNotification message={stepWarningMessage} />}
       {isShowNoStepWarning && <WarningNotification message={MESSAGE.NO_STEP_WARNING} />}
-      {isLoading && <Loading />}
+      {shouldCallApi && isLoading && <Loading />}
       {isDuplicated && <WarningMessage>This pipeline is the same as another one!</WarningMessage>}
       {errorMessage && <ErrorNotification message={errorMessage} />}
       <SingleSelection
