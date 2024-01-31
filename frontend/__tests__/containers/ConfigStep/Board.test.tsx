@@ -111,17 +111,23 @@ describe('Board', () => {
   it('should show error message when input a wrong type or empty email ', async () => {
     setup();
     const EMAil_INVALID_ERROR_MESSAGE = 'Email is invalid!';
-    const emailInput = screen.getByTestId('Email').querySelector('input') as HTMLInputElement;
+    const emailInput = screen.getByRole('textbox', {
+      name: /email/i,
+    });
 
-    fireEvent.change(emailInput, { target: { value: 'wrong type email' } });
+    await userEvent.type(emailInput, 'wrong@email');
 
-    expect(screen.getByText(EMAil_INVALID_ERROR_MESSAGE)).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByText(EMAil_INVALID_ERROR_MESSAGE)).toBeVisible();
+    });
+
     expect(screen.getByText(EMAil_INVALID_ERROR_MESSAGE)).toHaveStyle(ERROR_MESSAGE_COLOR);
 
-    fireEvent.change(emailInput, { target: { value: '' } });
+    await userEvent.clear(emailInput);
 
-    const EMAIL_REQUIRE_ERROR_MESSAGE = 'Email is required!';
-    expect(screen.getByText(EMAIL_REQUIRE_ERROR_MESSAGE)).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByText('Email is required!')).toBeVisible();
+    });
   });
 
   it('should clear all fields information when click reset button', async () => {

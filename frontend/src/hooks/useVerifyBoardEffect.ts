@@ -132,9 +132,9 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     const isRequired = !!value;
     const isValid = !field.validRule || field.validRule(value);
     const errorMessage = !isRequired
-      ? `${field.key} is required`
+      ? `${field.key} is required!`
       : !isValid
-        ? `${field.key} is invalid`
+        ? `${field.key} is invalid!`
         : DEFAULT_HELPER_TEXT;
 
     return {

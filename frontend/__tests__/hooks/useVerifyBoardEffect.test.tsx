@@ -84,7 +84,7 @@ describe('use verify board state', () => {
         return res(
           ctx.status(HttpStatusCode.NotFound),
           ctx.json({
-            hintInfo: 'site not found',
+            message: 'site is incorrect',
           }),
         );
       }),
@@ -108,7 +108,7 @@ describe('use verify board state', () => {
         return res(
           ctx.status(HttpStatusCode.NotFound),
           ctx.json({
-            hintInfo: 'boardId not found',
+            message: 'boardId is incorrect',
           }),
         );
       }),

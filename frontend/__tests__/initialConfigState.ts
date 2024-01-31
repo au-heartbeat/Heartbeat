@@ -21,8 +21,6 @@ const initialConfigState: BasicConfigState = {
       projectKey: '',
       site: '',
       token: '',
-      startTime: 0,
-      endTime: 0,
     },
     isVerified: false,
     isShow: false,

@@ -310,7 +310,7 @@ describe('MetricsStepper', () => {
   it('should export json when click save button when pipelineTool, sourceControl, and board is not empty', async () => {
     const expectedFileName = 'config';
     const expectedJson = {
-      board: { boardId: '', email: '', projectKey: '', site: '', token: '', type: 'Jira', startTime: 0, endTime: 0 },
+      board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
       calendarType: 'Regular Calendar(Weekend Considered)',
       dateRange: {
         endDate: null,
@@ -334,7 +334,7 @@ describe('MetricsStepper', () => {
     const expectedFileName = 'config';
     const expectedJson = {
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
-      board: { boardId: '', email: '', projectKey: '', site: '', token: '', type: 'Jira', startTime: 0, endTime: 0 },
+      board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
       calendarType: 'Regular Calendar(Weekend Considered)',
       dateRange: {
         endDate: dayjs().endOf('date').add(13, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
@@ -364,7 +364,7 @@ describe('MetricsStepper', () => {
     const expectedFileName = 'config';
     const expectedJson = {
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
-      board: { boardId: '', email: '', projectKey: '', site: '', token: '', type: 'Jira', startTime: 0, endTime: 0 },
+      board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
       calendarType: 'Regular Calendar(Weekend Considered)',
       dateRange: {
         endDate: dayjs().endOf('date').add(13, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
@@ -390,10 +390,16 @@ describe('MetricsStepper', () => {
       expect(screen.getByText(NEXT)).toBeInTheDocument();
     });
     await userEvent.click(screen.getByText(NEXT));
+
+    await waitFor(() => {
+      expect(screen.getByText(SAVE)).toBeInTheDocument();
+    });
     await userEvent.click(screen.getByText(SAVE));
 
-    expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson);
-  }, 50000);
+    await waitFor(() => {
+      expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson);
+    });
+  }, 25000);
 
   it('should clean the config information that is hidden when click next button', async () => {
     setup();
