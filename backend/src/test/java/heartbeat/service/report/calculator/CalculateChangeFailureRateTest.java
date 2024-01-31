@@ -3,6 +3,7 @@ package heartbeat.service.report.calculator;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.response.ChangeFailureRate;
+import heartbeat.service.pipeline.buildkite.builder.DeployInfoBuilder;
 import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,11 +25,9 @@ class CalculateChangeFailureRateTest {
 
 	private static final String JOB_FINISH_TIME_2023 = "2023-09-08T22:45:33.981Z";
 
-	private static final String PASSED_STATE = "passed";
-
 	private static final String FAILED_STATE = "failed";
 
-	private static final String JOB_NAME_EQUALS_PIPELINE_STEP = "xx";
+	private static final String OTHER_JOB_NAME = "JobName";
 
 	@InjectMocks
 	private ChangeFailureRateCalculator changeFailureRate;
@@ -36,11 +35,10 @@ class CalculateChangeFailureRateTest {
 	@Test
 	public void testCalculateChangeFailureRate() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
-			.withPassed(List.of(DeployInfo.builder()
-				.jobFinishTime(JOB_FINISH_TIME_2023)
-				.jobName(JOB_NAME_EQUALS_PIPELINE_STEP)
-				.state(PASSED_STATE)
-				.build()))
+			.withPassed(List.of(DeployInfoBuilder.withDefault()
+				.withJobName(OTHER_JOB_NAME)
+				.withJobFinishTime(JOB_FINISH_TIME_2023)
+				.build(), DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build()))
 			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
 			.build();
 
