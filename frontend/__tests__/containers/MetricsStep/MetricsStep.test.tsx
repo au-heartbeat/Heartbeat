@@ -40,9 +40,6 @@ const server = setupServer(
   ),
 );
 
-beforeAll(() => server.listen());
-afterAll(() => server.close());
-
 const setup = () =>
   render(
     <Provider store={store}>
@@ -51,6 +48,9 @@ const setup = () =>
   );
 
 describe('MetricsStep', () => {
+  beforeAll(() => server.listen());
+  afterAll(() => server.close());
+
   beforeEach(() => {
     store = setupStore();
   });

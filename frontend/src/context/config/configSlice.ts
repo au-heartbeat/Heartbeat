@@ -97,7 +97,7 @@ export const configSlice = createSlice({
             ? null
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
-      state.board.config = merge(action.payload.board, { type: 'jira' }) || state.board.config;
+      state.board.config = merge(action.payload.board, { type: 'jira' });
       state.pipelineTool.config = action.payload.pipelineTool || state.pipelineTool.config;
       state.sourceControl.config = action.payload.sourceControl || state.sourceControl.config;
     },
