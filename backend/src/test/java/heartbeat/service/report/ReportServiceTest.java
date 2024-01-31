@@ -103,8 +103,12 @@ public class ReportServiceTest {
 
 	@Test
 	void ShouldInitializeMetricsDataCompletedInHandlerWhenRequestMetricsExist() throws InterruptedException {
-		GenerateReportRequest request = GenerateReportRequest.builder().csvTimeStamp("csvTimeStamp").metrics(List.of("velocity", "lead time for changes")).build();
-		when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(MetricsDataCompleted.builder().pipelineMetricsCompleted(true).build());
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.csvTimeStamp("csvTimeStamp")
+			.metrics(List.of("velocity", "lead time for changes"))
+			.build();
+		when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
+			.thenReturn(MetricsDataCompleted.builder().pipelineMetricsCompleted(true).build());
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 		reportService.generateReportByType(request, MetricType.BOARD);
 		Thread.sleep(100);
@@ -117,4 +121,5 @@ public class ReportServiceTest {
 		verify(generateReporterService).generateBoardReport(request);
 		verify(generateReporterService, never()).generateDoraReport(request);
 	}
+
 }
