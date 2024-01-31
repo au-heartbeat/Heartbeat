@@ -85,10 +85,16 @@ const MetricsStepper = () => {
   const isDeploymentFrequencyValid = useMemo(() => {
     const pipelines = metricsConfig.deploymentFrequencySettings;
     const pipelinesFormMeta = formMeta.metrics.pipelines;
+    const selectedPipelines = pipelineList.filter((pipeline) => {
+      const selectedPipelineName = pipelines.map((item) => item.pipelineName);
+      const selectedPipelineOrgName = pipelines.map((item) => item.organization);
+      return selectedPipelineName.includes(pipeline.name) && selectedPipelineOrgName.includes(pipeline.orgName);
+    });
 
     return (
-      pipelineList.every(({ steps }) => !_.isEmpty(steps)) &&
-      pipelineList.every(({ branches }) => !_.isEmpty(branches)) &&
+      !_.isEmpty(selectedPipelines) &&
+      selectedPipelines.every(({ steps }) => !_.isEmpty(steps)) &&
+      selectedPipelines.every(({ branches }) => !_.isEmpty(branches)) &&
       getDuplicatedPipeLineIds(pipelines).length === 0 &&
       _.every(pipelinesFormMeta, (item) => _.every(item.branches, (branch) => !branch.error && !branch.needVerify))
     );
