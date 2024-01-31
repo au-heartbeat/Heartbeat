@@ -30,7 +30,7 @@ const BranchChip = ({ value, needVerify, error, updateBranchMeta, repository, er
     };
     const response = await sourceControlClient.verifyBranch(params);
 
-    if (response.code === HttpStatusCode.NoContent || params.token === '') {
+    if (response.code === HttpStatusCode.NoContent) {
       updateBranchMeta({ value });
     } else {
       updateBranchMeta({ value, error: true, errorDetail: response.code });
