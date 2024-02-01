@@ -18,9 +18,9 @@ import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMes
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { ErrorNotification } from '@src/components/ErrorNotification';
-import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
+import { useAppDispatch, useAppSelector} from '@src/hooks';
 import { store } from '@src/store';
 import { useState } from 'react';
 

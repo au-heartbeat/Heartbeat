@@ -1,21 +1,22 @@
-import { ContextProvider } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { InternalServerException } from '@src/exceptions/InternalServerException';
 import { ERROR_MESSAGE_TIME_DURATION, MOCK_GET_STEPS_PARAMS } from '../fixtures';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { metricsClient } from '@src/clients/MetricsClient';
 import { act, renderHook } from '@testing-library/react';
-import { setupStore } from '@test/utils/setupStoreUtil';
-import { Provider } from 'react-redux';
 import { HttpStatusCode } from 'axios';
+import {setupStore} from "@test/utils/setupStoreUtil";
+import {Provider} from "react-redux";
+import {ContextProvider} from "@src/hooks/useMetricsStepValidationCheckContext";
+import React from "react";
 
 const setup = () => {
   const store = setupStore();
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
+  const wrapper = ({children}: { children: React.ReactNode }) => (
     <Provider store={store}>
       <ContextProvider>{children}</ContextProvider>
     </Provider>
   );
-  return renderHook(() => useGetMetricsStepsEffect(), { wrapper });
+  return renderHook(() => useGetMetricsStepsEffect(), {wrapper});
 };
 
 describe('use get steps effect', () => {
