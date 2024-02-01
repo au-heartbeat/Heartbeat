@@ -24,13 +24,17 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   selectClassificationWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
 }));
 
+const RenderComponent = () => {
+  const targetFields = useSelector((state: any) => state.metrics.targetFields); //store.getState().metrics.targetFields;
+  return <Classification title={mockTitle} label={mockLabel} targetFields={targetFields} />;
+};
+
 const setup = async (initField: TargetField[]) => {
   const store = setupStore();
   await store.dispatch(saveTargetFields(initField));
-  const targetFields = store.getState().metrics.targetFields;
   return render(
     <Provider store={store}>
-      <Classification title={mockTitle} label={mockLabel} targetFields={targetFields} />
+      <RenderComponent />
     </Provider>,
   );
 };
@@ -74,6 +78,7 @@ describe('Classification', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: names[0] })).toBeVisible();
     });
+    expect(screen.getByRole('button', { name: names[1] })).toBeVisible();
   });
 
   it('should show toggle show all options when toggle select all option', async () => {
@@ -84,16 +89,9 @@ describe('Classification', () => {
     await userEvent.click(screen.getByRole('option', { name: /all/i }));
 
     await waitFor(() => {
-      expect(screen.queryByRole('button', { name: names[0] })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: names[0] })).not.toBeInTheDocument();
     });
-    expect(screen.queryByRole('button', { name: names[1] })).toBeInTheDocument();
-
-    // await userEvent.click(screen.getByRole('option', { name: /all/i }))
-
-    // await waitFor(() => {
-    //   expect(screen.queryByRole('button', { name: names[0] })).not.toBeInTheDocument();
-    // })
-    // expect(screen.queryByRole('button', { name: names[1] })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: names[1] })).not.toBeInTheDocument();
   });
 
   it('should show selected targetField when click selected field', async () => {
@@ -107,8 +105,9 @@ describe('Classification', () => {
 
     await userEvent.click(listBox.getByRole('option', { name: names[0] }));
 
-    expect(screen.queryByRole('button', { name: names[0] })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: names[1] })).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: names[0] })).not.toBeInTheDocument();
+    });
   });
 
   it('should show warning message when classification warning message has a value in cycleTime component', async () => {
