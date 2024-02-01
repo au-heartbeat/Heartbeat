@@ -1,6 +1,7 @@
 import {
   selectConfig,
   selectMetrics,
+  selectPipelineList,
   updateBoard,
   updateBoardVerifyState,
   updatePipelineTool,
@@ -61,6 +62,7 @@ const MetricsStepper = () => {
   const [isDisableNextButton, setIsDisableNextButton] = useState(true);
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
   const formMeta = useAppSelector(getFormMeta);
+  const pipelineList = useAppSelector(selectPipelineList);
 
   const { isShow: isShowBoard, isVerified: isBoardVerified } = config.board;
   const { isShow: isShowPipeline, isVerified: isPipelineToolVerified } = config.pipelineTool;
@@ -85,8 +87,14 @@ const MetricsStepper = () => {
   const isDeploymentFrequencyValid = useMemo(() => {
     const pipelines = metricsConfig.deploymentFrequencySettings;
     const pipelinesFormMeta = formMeta.metrics.pipelines;
+    const selectedPipelines = pipelineList.filter((pipeline) => {
+      const selectedPipelineName = pipelines.map((item) => item.pipelineName);
+      const selectedPipelineOrgName = pipelines.map((item) => item.organization);
+      return selectedPipelineName.includes(pipeline.name) && selectedPipelineOrgName.includes(pipeline.orgName);
+    });
 
     return (
+      !isEmpty(selectedPipelines) &&
       pipelines.every(({ step }) => step !== '') &&
       pipelines.every(({ branches }) => !isEmpty(branches)) &&
       getDuplicatedPipeLineIds(pipelines).length === 0 &&
