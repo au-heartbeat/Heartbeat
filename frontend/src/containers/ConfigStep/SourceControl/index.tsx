@@ -13,13 +13,13 @@ import {
 } from '@src/context/config/configSlice';
 import { useVerifySourceControlTokenEffect } from '@src/hooks/useVerifySourceControlTokenEffect';
 import { CONFIG_TITLE, SOURCE_CONTROL_TYPES, TOKEN_HELPER_TEXT } from '@src/constants/resources';
-import { VerifyButton, ResetButton } from '@src/components/Common/Buttons';
+import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
-import { FormEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
+import { DEFAULT_HELPER_TEXT } from '@src/constants/commons';
 import { findCaseInsensitiveType } from '@src/utils/util';
-import { EMPTY_STRING } from '@src/constants/commons';
+import { FormEvent, useMemo, useState } from 'react';
 import { Loading } from '@src/components/Loading';
 import { REGEX } from '@src/constants/regex';
 
@@ -29,7 +29,6 @@ enum FIELD_KEY {
 }
 
 export const SourceControl = () => {
-  const touched = useRef(false);
   const dispatch = useAppDispatch();
   const sourceControlFields = useAppSelector(selectSourceControl);
   const isVerified = useAppSelector(isSourceControlVerified);
@@ -40,94 +39,80 @@ export const SourceControl = () => {
       key: 'SourceControl',
       value: type,
       isValid: true,
-      isRequired: true,
     },
     {
       key: 'Token',
       value: sourceControlFields.token,
-      isValid: true,
-      isRequired: true,
+      isValid: REGEX.GITHUB_TOKEN.test(sourceControlFields.token),
     },
   ]);
 
-  const updateSourceControlFields = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
-      touched.current = true;
-      e.preventDefault();
-      dispatch(
-        updateSourceControl({
-          type: fields[FIELD_KEY.TYPE].value,
-          token: fields[FIELD_KEY.TOKEN].value,
-        }),
-      );
-    },
-    [dispatch, fields],
-  );
-
-  const handleSubmitSourceControlFields = useCallback(
-    async (e: FormEvent<HTMLFormElement>) => {
-      updateSourceControlFields(e);
-      const params = {
-        type: fields[FIELD_KEY.TYPE].value as SOURCE_CONTROL_TYPES,
-        token: fields[FIELD_KEY.TOKEN].value,
-      };
-      verifyToken(params);
-    },
-    [fields, updateSourceControlFields, verifyToken],
-  );
-
-  const handleResetSourceControlFields = useCallback(() => {
-    const newFields = fields.map((field, index) => {
-      field.value = index === FIELD_KEY.TOKEN ? '' : SOURCE_CONTROL_TYPES.GITHUB;
-      return field;
-    });
-    setFields(newFields);
+  const handleUpdate = (fields: { key: string; value: string; isValid: boolean }[]) => {
+    clearErrorMessage();
+    setFields(fields);
     dispatch(updateSourceControlVerifyState(false));
-  }, [dispatch, fields]);
+    dispatch(
+      updateSourceControl({
+        type: fields[FIELD_KEY.TYPE].value,
+        token: fields[FIELD_KEY.TOKEN].value,
+      }),
+    );
+  };
 
-  const onTokenInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const newFieldsValue = fields.map((field, fieldIndex) => {
-        if (fieldIndex === FIELD_KEY.TOKEN) {
-          field.value = value;
-          field.isValid = value !== EMPTY_STRING && REGEX.GITHUB_TOKEN.test(value);
-        }
-        return field;
-      });
-      touched.current = true;
-      clearErrorMessage();
-      setFields(newFieldsValue);
-      dispatch(updateSourceControlVerifyState(false));
-    },
-    [clearErrorMessage, dispatch, fields],
-  );
+  const onInputChange = (value: string) => {
+    const newFields = fields.map((field, index) =>
+      index === FIELD_KEY.TOKEN
+        ? {
+            key: field.key,
+            value: value.trim(),
+            isValid: REGEX.GITHUB_TOKEN.test(value.trim()),
+          }
+        : field,
+    );
+    handleUpdate(newFields);
+  };
 
-  const sourceControlHelperText = useMemo(() => {
-    const value = fields[FIELD_KEY.TOKEN].value;
-    if (!touched.current) return '';
-    if (errorMessage) return errorMessage;
-    if (value === EMPTY_STRING) return TOKEN_HELPER_TEXT.RequiredTokenText;
-    if (!REGEX.GITHUB_TOKEN.test(value)) return TOKEN_HELPER_TEXT.InvalidTokenText;
-    return '';
-  }, [errorMessage, fields]);
+  const onReset = () => {
+    const newFields = fields.map(({ key }, index) => ({
+      key,
+      value: index === FIELD_KEY.TOKEN ? '' : SOURCE_CONTROL_TYPES.GITHUB,
+      isValid: true,
+    }));
+    handleUpdate(newFields);
+  };
 
-  const isSourceControlError = useMemo(() => touched.current && !!sourceControlHelperText, [sourceControlHelperText]);
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await verifyToken({
+      type: fields[FIELD_KEY.TYPE].value as SOURCE_CONTROL_TYPES,
+      token: fields[FIELD_KEY.TOKEN].value,
+    });
+  };
 
   const isDisableVerifyButton = useMemo(
     () => isLoading || !fields.every((field) => field.isValid && !!field.value) || !!errorMessage,
     [errorMessage, fields, isLoading],
   );
 
+  const sourceControlHelperText = useMemo(() => {
+    const { value, isValid } = fields[FIELD_KEY.TOKEN];
+    if (!value) {
+      return TOKEN_HELPER_TEXT.RequiredTokenText;
+    }
+    if (errorMessage) {
+      return errorMessage;
+    }
+    if (!isValid) {
+      return TOKEN_HELPER_TEXT.InvalidTokenText;
+    }
+    return DEFAULT_HELPER_TEXT;
+  }, [errorMessage, fields]);
+
   return (
     <ConfigSectionContainer aria-label='Source Control Config'>
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.SOURCE_CONTROL}</ConfigSelectionTitle>
-      <StyledForm
-        onSubmit={handleSubmitSourceControlFields}
-        onChange={updateSourceControlFields}
-        onReset={handleResetSourceControlFields}
-      >
+      <StyledForm onSubmit={onSubmit} onReset={onReset}>
         <StyledTypeSelections variant='standard' required>
           <InputLabel id='sourceControl-type-checkbox-label'>Source Control</InputLabel>
           <Select labelId='sourceControl-type-checkbox-label' value={fields[FIELD_KEY.TYPE].value}>
@@ -146,8 +131,8 @@ export const SourceControl = () => {
           variant='standard'
           type='password'
           value={fields[FIELD_KEY.TOKEN].value}
-          onChange={onTokenInputChange}
-          error={isSourceControlError}
+          onChange={(e) => onInputChange(e.target.value)}
+          error={!!sourceControlHelperText}
           helperText={sourceControlHelperText}
         />
         <StyledButtonGroup>

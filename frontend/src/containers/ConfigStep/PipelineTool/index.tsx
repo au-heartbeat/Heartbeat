@@ -19,9 +19,14 @@ import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { findCaseInsensitiveType } from '@src/utils/util';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { Loading } from '@src/components/Loading';
 import { REGEX } from '@src/constants/regex';
+
+enum FIELD_KEY {
+  TYPE = 0,
+  TOKEN = 1,
+}
 
 export const PipelineTool = () => {
   const dispatch = useAppDispatch();
@@ -38,42 +43,34 @@ export const PipelineTool = () => {
     {
       key: 'Token',
       value: pipelineToolFields.token,
-      isValid: true,
+      isValid: REGEX.BUILDKITE_TOKEN.test(pipelineToolFields.token),
     },
   ]);
-  const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(true);
-
-  useEffect(() => {
-    const isAllFieldsValid = (fields: { key: string; value: string; isValid: boolean }[]) =>
-      fields.every((field) => field.isValid && !!field.value && !errorMessage);
-    setIsDisableVerifyButton(!isAllFieldsValid(fields));
-  }, [clearErrorMessage, errorMessage, fields]);
 
   const handleUpdate = (fields: { key: string; value: string; isValid: boolean }[]) => {
+    clearErrorMessage();
     setFields(fields);
     dispatch(updatePipelineToolVerifyState(false));
     dispatch(
       updatePipelineTool({
-        type: fields[0].value,
-        token: fields[1].value,
+        type: fields[FIELD_KEY.TYPE].value,
+        token: fields[FIELD_KEY.TOKEN].value,
       }),
     );
   };
 
   const onSelectUpdate = (value: string) => {
-    clearErrorMessage();
     const newFields = fields.map(({ key }, index) => ({
       key,
-      value: index === 0 ? value : EMPTY_STRING,
+      value: index === FIELD_KEY.TYPE ? value : EMPTY_STRING,
       isValid: true,
     }));
     handleUpdate(newFields);
   };
 
   const onInputUpdate = (value: string) => {
-    clearErrorMessage();
     const newFields = fields.map((field, index) =>
-      index === 0
+      index === FIELD_KEY.TYPE
         ? field
         : {
             key: field.key,
@@ -84,8 +81,30 @@ export const PipelineTool = () => {
     handleUpdate(newFields);
   };
 
-  const updateFieldHelpText = () => {
-    const { value, isValid } = fields[1];
+  const onReset = () => {
+    const newFields = fields.map(({ key }, index) => ({
+      key,
+      value: index === FIELD_KEY.TYPE ? PIPELINE_TOOL_TYPES.BUILD_KITE : EMPTY_STRING,
+      isValid: true,
+    }));
+    handleUpdate(newFields);
+  };
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await verifyPipelineTool({
+      type: fields[FIELD_KEY.TYPE].value,
+      token: fields[FIELD_KEY.TOKEN].value,
+    });
+  };
+
+  const isDisableVerifyButton = useMemo(
+    () => isLoading || !fields.every((field) => field.isValid && !!field.value) || !!errorMessage,
+    [errorMessage, fields, isLoading],
+  );
+
+  const updateFieldHelpText = useMemo(() => {
+    const { value, isValid } = fields[FIELD_KEY.TOKEN];
     if (!value) {
       return TOKEN_HELPER_TEXT.RequiredTokenText;
     }
@@ -96,24 +115,7 @@ export const PipelineTool = () => {
       return TOKEN_HELPER_TEXT.InvalidTokenText;
     }
     return DEFAULT_HELPER_TEXT;
-  };
-
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await verifyPipelineTool({
-      type: fields[0].value,
-      token: fields[1].value,
-    });
-  };
-
-  const onReset = () => {
-    const newFields = fields.map(({ key }, index) => ({
-      key,
-      value: index === 0 ? PIPELINE_TOOL_TYPES.BUILD_KITE : EMPTY_STRING,
-      isValid: true,
-    }));
-    handleUpdate(newFields);
-  };
+  }, [errorMessage, fields]);
 
   return (
     <ConfigSectionContainer aria-label='Pipeline Tool Config'>
@@ -125,7 +127,7 @@ export const PipelineTool = () => {
           <Select
             labelId='pipelineTool-type-checkbox-label'
             aria-label='Pipeline Tool type select'
-            value={fields[0].value}
+            value={fields[FIELD_KEY.TYPE].value}
             onChange={(e) => onSelectUpdate(e.target.value)}
           >
             {Object.values(PIPELINE_TOOL_TYPES).map((toolType) => (
@@ -137,24 +139,24 @@ export const PipelineTool = () => {
         </StyledTypeSelections>
         <StyledTextField
           data-testid='pipelineToolTextField'
-          key={fields[1].key}
+          key={fields[FIELD_KEY.TOKEN].key}
           required
-          label={fields[1].key}
+          label={fields[FIELD_KEY.TOKEN].key}
           variant='standard'
           type='password'
           inputProps={{
-            'aria-label': `input ${fields[1].key}`,
+            'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}`,
           }}
-          value={fields[1].value}
+          value={fields[FIELD_KEY.TOKEN].value}
           onChange={(e) => onInputUpdate(e.target.value)}
-          error={!fields[1].isValid || !fields[1].value || !!errorMessage}
-          helperText={updateFieldHelpText()}
+          error={!!updateFieldHelpText}
+          helperText={updateFieldHelpText}
         />
         <StyledButtonGroup>
           {isVerified && !isLoading ? (
             <VerifyButton disabled>Verified</VerifyButton>
           ) : (
-            <VerifyButton type='submit' disabled={isDisableVerifyButton || isLoading}>
+            <VerifyButton type='submit' disabled={isDisableVerifyButton}>
               Verify
             </VerifyButton>
           )}
