@@ -81,8 +81,6 @@ describe('pipelineTool reducer', () => {
           token: '',
         },
         isVerified: false,
-        shouldCallInfoApi: true,
-        shouldCallStepApi: true,
         isShow: false,
         verifiedResponse: {
           pipelineList: [
@@ -131,8 +129,6 @@ describe('pipelineTool reducer', () => {
           token: '',
         },
         isVerified: false,
-        shouldCallInfoApi: true,
-        shouldCallStepApi: true,
         isShow: false,
         verifiedResponse: {
           pipelineList: [

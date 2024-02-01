@@ -37,8 +37,6 @@ const initialConfigState: BasicConfigState = {
     },
     isVerified: false,
     isShow: false,
-    shouldCallInfoApi: true,
-    shouldCallStepApi: true,
     verifiedResponse: {
       pipelineList: [],
       pipelineCrews: [],

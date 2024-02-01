@@ -4,8 +4,6 @@ import {
   updateBoard,
   updateBoardVerifyState,
   updatePipelineTool,
-  updatePipelineToolShouldCallInfoApi,
-  updatePipelineToolShouldCallStepApi,
   updatePipelineToolVerifyState,
   updateSourceControl,
   updateSourceControlVerifyState,
@@ -233,8 +231,6 @@ const MetricsStepper = () => {
   };
 
   const handleBack = () => {
-    dispatch(updatePipelineToolShouldCallInfoApi(true));
-    dispatch(updatePipelineToolShouldCallStepApi(true));
     setIsDialogShowing(!activeStep);
     dispatch(backStep());
   };

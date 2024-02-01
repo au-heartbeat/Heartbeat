@@ -2,8 +2,6 @@ import { getStepsParams, metricsClient } from '@src/clients/MetricsClient';
 import { MESSAGE } from '@src/constants/resources';
 import { DURATION } from '@src/constants/commons';
 import { useState } from 'react';
-import { shouldCallStepApi, updatePipelineToolShouldCallStepApi } from "@src/context/config/configSlice";
-import { useAppDispatch, useAppSelector } from "@src/hooks/index";
 
 export interface useGetMetricsStepsEffectInterface {
   getSteps: (
@@ -28,8 +26,6 @@ export interface useGetMetricsStepsEffectInterface {
 export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const shouldCallApi = useAppSelector(shouldCallStepApi);
-  const dispatch = useAppDispatch();
 
   const getSteps = async (
     params: getStepsParams,
@@ -48,7 +44,6 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
         setErrorMessage('');
       }, DURATION.ERROR_MESSAGE_TIME);
     } finally {
-      shouldCallApi && dispatch(updatePipelineToolShouldCallStepApi(false));
       setIsLoading(false);
     }
   };

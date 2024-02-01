@@ -7,8 +7,6 @@ import { Provider } from 'react-redux';
 import { HttpStatusCode } from 'axios';
 import { ReactNode } from 'react';
 import React from 'react';
-import {act} from "react-dom/test-utils";
-import { updatePipelineToolShouldCallInfoApi } from "@src/context/config/configSlice";
 
 const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
@@ -48,27 +46,6 @@ beforeEach(() => {
 });
 
 describe('use get pipelineTool info side effect', () => {
-  it('should return immediately if shouldCallApi is false', async () => {
-    const store = setupStore();
-    const Wrapper = ({children}: { children: ReactNode }) => {
-      return <Provider store={store}>{children}</Provider>;
-    };
-
-    act(() => {
-      store.dispatch(updatePipelineToolShouldCallInfoApi(false));
-    });
-
-    const {result} = renderHook(() => useGetPipelineToolInfoEffect(), {wrapper: Wrapper});
-
-    act(() => {
-      result.current.apiCallFunc();
-    });
-
-    await waitFor(() => {
-      expect(pipelineToolClient.getInfo).not.toHaveBeenCalled();
-    });
-  });
-
   it('should return success data and loading state when client goes happy path', async () => {
     const { result } = renderHook(() => useGetPipelineToolInfoEffect(), { wrapper: Wrapper });
 

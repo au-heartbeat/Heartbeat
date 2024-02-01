@@ -120,12 +120,6 @@ export const configSlice = createSlice({
     updatePipelineToolVerifyState: (state, action) => {
       state.pipelineTool.isVerified = action.payload;
     },
-    updatePipelineToolShouldCallInfoApi: (state, action) => {
-      state.pipelineTool.shouldCallInfoApi = action.payload;
-    },
-    updatePipelineToolShouldCallStepApi: (state, action) => {
-      state.pipelineTool.shouldCallStepApi = action.payload;
-    },
     updatePipelineTool: (state, action) => {
       state.pipelineTool.config = action.payload;
     },
@@ -185,8 +179,6 @@ export const {
   updateSourceControlVerifiedResponse,
   updatePipelineToolVerifyResponseSteps,
   resetImportedData,
-  updatePipelineToolShouldCallInfoApi,
-  updatePipelineToolShouldCallStepApi,
 } = configSlice.actions;
 
 export const selectProjectName = (state: RootState) => state.config.basic.projectName;
@@ -199,8 +191,6 @@ export const isSelectDoraMetrics = (state: RootState) =>
   state.config.basic.metrics.some((metric) => DORA_METRICS.includes(metric));
 export const selectBoard = (state: RootState) => state.config.board.config;
 export const isPipelineToolVerified = (state: RootState) => state.config.pipelineTool.isVerified;
-export const shouldCallInfoApi = (state: RootState) => state.config.pipelineTool.shouldCallInfoApi;
-export const shouldCallStepApi = (state: RootState) => state.config.pipelineTool.shouldCallStepApi;
 export const selectPipelineTool = (state: RootState) => state.config.pipelineTool.config;
 export const isSourceControlVerified = (state: RootState) => state.config.sourceControl.isVerified;
 export const selectSourceControl = (state: RootState) => state.config.sourceControl.config;
