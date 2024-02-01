@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static heartbeat.controller.report.dto.request.MetricEnum.LEAD_TIME_FOR_CHANGES;
+import static heartbeat.controller.report.dto.request.MetricEnum.VELOCITY;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -102,16 +104,16 @@ public class ReportServiceTest {
 	}
 
 	@Test
-	void ShouldInitializeMetricsDataCompletedInHandlerWhenRequestMetricsExist() throws InterruptedException {
+	void ShouldInitializeMetricsDataCompletedInHandlerWhenRequestMetricsExist() {
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.csvTimeStamp("csvTimeStamp")
-			.metrics(List.of("velocity", "lead time for changes"))
+			.metrics(List.of(VELOCITY.getValue(), LEAD_TIME_FOR_CHANGES.getValue()))
 			.build();
 		when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 			.thenReturn(MetricsDataCompleted.builder().pipelineMetricsCompleted(true).build());
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
+
 		reportService.generateReportByType(request, MetricType.BOARD);
-		Thread.sleep(100);
 		MetricsDataCompleted expectMetricsDataResult = MetricsDataCompleted.builder()
 			.boardMetricsCompleted(false)
 			.pipelineMetricsCompleted(true)

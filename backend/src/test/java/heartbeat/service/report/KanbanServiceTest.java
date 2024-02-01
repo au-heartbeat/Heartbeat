@@ -32,7 +32,7 @@ class KanbanServiceTest {
 	private KanbanCsvService kanbanCsvService;
 
 	@Test
-	void shouldCallCsvServiceToGenerateScvInfo() {
+	void shouldCallCsvServiceToGenerateCSVInfoWhenJiraBoardSettingIsNotNull() {
 		JiraBoardSetting mockJiraBoardSetting = KanbanFixture.MOCK_JIRA_BOARD_SETTING();
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.jiraBoardSetting(mockJiraBoardSetting)
