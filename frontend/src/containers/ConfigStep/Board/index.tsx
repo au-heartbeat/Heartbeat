@@ -130,7 +130,6 @@ export const Board = () => {
               label={field.key}
               variant='standard'
               value={field.value}
-              defaultValue={field.defaultValue}
               onChange={({ target: { name, value } }) => {
                 onFormUpdate(name, value);
               }}
