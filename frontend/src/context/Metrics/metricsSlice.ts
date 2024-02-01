@@ -489,8 +489,7 @@ export const selectOrganizationWarningMessage = (state: RootState, id: number) =
 
 export const selectPipelineNameWarningMessage = (state: RootState, id: number) => {
   const { deploymentWarningMessage } = state.metrics;
-  const warningMessage = deploymentWarningMessage;
-  return warningMessage.find((item) => item.id === id)?.pipelineName;
+  return deploymentWarningMessage.find((item) => item.id === id)?.pipelineName;
 };
 
 export const selectStepWarningMessage = (state: RootState, id: number) => {
