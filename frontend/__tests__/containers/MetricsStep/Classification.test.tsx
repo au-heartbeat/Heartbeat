@@ -40,8 +40,6 @@ const setup = async (initField: TargetField[]) => {
 };
 
 describe('Classification', () => {
-  beforeEach(() => {});
-
   afterEach(() => {
     jest.clearAllMocks();
   });
