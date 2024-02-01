@@ -94,9 +94,11 @@ const MetricsStepper = () => {
     });
 
     return (
-      !isEmpty(selectedPipelines) &&
-      pipelines.every(({ step }) => step !== '') &&
-      pipelines.every(({ branches }) => !isEmpty(branches)) &&
+      isEmpty(selectedPipelines) &&
+      pipelines.every(({ step }) => isEmpty(step)) &&
+      pipelines.every(({ branches }) => isEmpty(branches)) &&
+      selectedPipelines.every(({ steps }) => isEmpty(steps)) &&
+      selectedPipelines.every(({ branches }) => isEmpty(branches)) &&
       getDuplicatedPipeLineIds(pipelines).length === 0 &&
       every(pipelinesFormMeta, (item) => every(item.branches, (branch) => !branch.error && !branch.needVerify))
     );
