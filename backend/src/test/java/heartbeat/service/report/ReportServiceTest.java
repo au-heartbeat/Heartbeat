@@ -76,8 +76,10 @@ public class ReportServiceTest {
 	void generateBoardReportByTypeShouldCallGenerateBoardReport() throws InterruptedException {
 		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
+
 		reportService.generateReportByType(request, MetricType.BOARD);
 		Thread.sleep(100);
+
 		verify(generateReporterService).generateBoardReport(request);
 		verify(generateReporterService, never()).generateDoraReport(request);
 	}
@@ -86,8 +88,10 @@ public class ReportServiceTest {
 	void generateDoraReportByTypeShouldCallGenerateDoraReport() throws InterruptedException {
 		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
 		doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
+
 		reportService.generateReportByType(request, MetricType.DORA);
 		Thread.sleep(100);
+
 		verify(generateReporterService).generateDoraReport(request);
 		verify(generateReporterService, never()).generateBoardReport(request);
 	}
@@ -97,14 +101,21 @@ public class ReportServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().metrics(new ArrayList<>()).build();
 		when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(MetricsDataCompleted.builder().build());
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
+
 		reportService.generateReportByType(request, MetricType.BOARD);
 		Thread.sleep(100);
+
 		verify(generateReporterService).generateBoardReport(request);
 		verify(generateReporterService, never()).generateDoraReport(request);
 	}
 
 	@Test
 	void ShouldInitializeMetricsDataCompletedInHandlerWhenRequestMetricsExist() {
+		MetricsDataCompleted expectMetricsDataResult = MetricsDataCompleted.builder()
+			.boardMetricsCompleted(false)
+			.pipelineMetricsCompleted(true)
+			.sourceControlMetricsCompleted(false)
+			.build();
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.csvTimeStamp("csvTimeStamp")
 			.metrics(List.of(VELOCITY.getValue(), LEAD_TIME_FOR_CHANGES.getValue()))
@@ -114,11 +125,7 @@ public class ReportServiceTest {
 		doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 
 		reportService.generateReportByType(request, MetricType.BOARD);
-		MetricsDataCompleted expectMetricsDataResult = MetricsDataCompleted.builder()
-			.boardMetricsCompleted(false)
-			.pipelineMetricsCompleted(true)
-			.sourceControlMetricsCompleted(false)
-			.build();
+
 		verify(asyncMetricsDataHandler).putMetricsDataCompleted("csvTimeStamp", expectMetricsDataResult);
 		verify(generateReporterService).generateBoardReport(request);
 		verify(generateReporterService, never()).generateDoraReport(request);
