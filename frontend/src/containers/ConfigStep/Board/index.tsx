@@ -32,7 +32,6 @@ export const Board = () => {
     formFields: fields,
     updateField,
     resetFormFields,
-    clearError,
   } = useVerifyBoardEffect();
   const [isDisableVerifyButton, setIsDisableVerifyButton] = useState(
     !fields.every((field) => field.value && field.isValid),

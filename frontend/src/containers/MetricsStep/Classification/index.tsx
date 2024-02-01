@@ -3,10 +3,10 @@ import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import React, { useMemo, useState } from 'react';
 import { useAppSelector } from '@src/hooks';
+import React, { useMemo } from 'react';
 
-export interface TargetField {
+export interface TargetFieldType {
   name: string;
   key: string;
   flag: boolean;
@@ -14,7 +14,7 @@ export interface TargetField {
 export interface classificationProps {
   title: string;
   label: string;
-  targetFields: TargetField[];
+  targetFields: TargetFieldType[];
 }
 
 export const Classification = ({ targetFields, title, label }: classificationProps) => {

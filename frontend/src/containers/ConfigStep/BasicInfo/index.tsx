@@ -2,7 +2,6 @@ import {
   selectCalendarType,
   selectProjectName,
   selectWarningMessage,
-  updateBoardVerifyState,
   updateCalendarType,
   updateProjectName,
 } from '@src/context/config/configSlice';

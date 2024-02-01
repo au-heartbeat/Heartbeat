@@ -1,11 +1,13 @@
 import { act, render, waitFor, within, screen } from '@testing-library/react';
+import { TargetFieldType } from '@src/containers/MetricsStep/Classification';
 import { Classification } from '@src/containers/MetricsStep/Classification';
-import { TargetField } from '@src/containers/MetricsStep/Classification';
 import { saveTargetFields } from '@src/context/Metrics/metricsSlice';
 import { ERROR_MESSAGE_TIME_DURATION } from '../../fixtures';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider, useSelector } from 'react-redux';
+
+type State<T> = Record<string, Record<string, T>>;
 
 const mockTitle = 'Classification Setting';
 const mockLabel = 'Distinguished by';
@@ -25,11 +27,11 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
 }));
 
 const RenderComponent = () => {
-  const targetFields = useSelector((state: any) => state.metrics.targetFields); //store.getState().metrics.targetFields;
+  const targetFields = useSelector((state: State<TargetFieldType[]>) => state.metrics.targetFields);
   return <Classification title={mockTitle} label={mockLabel} targetFields={targetFields} />;
 };
 
-const setup = async (initField: TargetField[]) => {
+const setup = async (initField: TargetFieldType[]) => {
   const store = setupStore();
   await store.dispatch(saveTargetFields(initField));
   return render(

@@ -7,7 +7,6 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
-import { initialBasicConfigState } from '@src/context/config/configSlice';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
