@@ -1,3 +1,4 @@
+import { dotenv } from 'cypress-plugin-dotenv';
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
@@ -13,7 +14,10 @@ export default defineConfig({
       require('./cypress/plugins/clearDownloadFile.ts')(on, config);
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       require('cypress-mochawesome-reporter/plugin')(on);
-      return config;
+      return dotenv(config, {
+        path: './cypress/.env.local',
+        debug: true,
+      });
     },
   },
   chromeWebSecurity: false,
