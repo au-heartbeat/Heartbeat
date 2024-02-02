@@ -1,4 +1,5 @@
 import { selectBoard, selectDateRange, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
+import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { findCaseInsensitiveType, getJiraBoardToken } from '@src/utils/util';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
@@ -11,13 +12,13 @@ import { REGEX } from '@src/constants/regex';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 
 export interface Field {
   key: string;
   value: string;
-  validRule?: (value: string) => boolean;
-  errorMessage: string;
+  validateRule?: (value: string) => boolean;
+  validatedError: string;
+  verifiedError: string;
   col: number;
 }
 
@@ -47,11 +48,11 @@ const KEYS = {
   TOKEN: 'Token',
 };
 
-const getErrorMessage = (key: string, value: string, validRule?: (value: string) => boolean) => {
+const getValidatedError = (key: string, value: string, validateRule?: (value: string) => boolean) => {
   if (!value) {
     return `${key} is required!`;
   }
-  if (validRule && !validRule(value)) {
+  if (validateRule && !validateRule(value)) {
     return `${key} is invalid!`;
   }
   return DEFAULT_HELPER_TEXT;
@@ -67,33 +68,38 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     {
       key: KEYS.BOARD,
       value: type,
-      errorMessage: getErrorMessage(KEYS.BOARD, type),
+      validatedError: getValidatedError(KEYS.BOARD, type),
+      verifiedError: '',
       col: 1,
     },
     {
       key: KEYS.BOARD_ID,
       value: boardFields.boardId,
-      errorMessage: getErrorMessage(KEYS.BOARD_ID, boardFields.boardId),
+      validatedError: getValidatedError(KEYS.BOARD_ID, boardFields.boardId),
+      verifiedError: '',
       col: 1,
     },
     {
       key: KEYS.EMAIL,
       value: boardFields.email,
-      validRule: VALIDATOR.EMAIL,
-      errorMessage: getErrorMessage(KEYS.EMAIL, boardFields.email, VALIDATOR.EMAIL),
+      validateRule: VALIDATOR.EMAIL,
+      validatedError: getValidatedError(KEYS.EMAIL, boardFields.email, VALIDATOR.EMAIL),
+      verifiedError: '',
       col: 1,
     },
     {
       key: KEYS.SITE,
       value: boardFields.site,
-      errorMessage: getErrorMessage(KEYS.SITE, boardFields.site),
+      validatedError: getValidatedError(KEYS.SITE, boardFields.site),
+      verifiedError: '',
       col: 1,
     },
     {
       key: KEYS.TOKEN,
       value: boardFields.token,
-      validRule: VALIDATOR.TOKEN,
-      errorMessage: getErrorMessage(KEYS.TOKEN, boardFields.token, VALIDATOR.TOKEN),
+      validateRule: VALIDATOR.TOKEN,
+      validatedError: getValidatedError(KEYS.TOKEN, boardFields.token, VALIDATOR.TOKEN),
+      verifiedError: '',
       col: 2,
     },
   ]);
@@ -116,30 +122,43 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         : {
             ...field,
             value: EMPTY_STRING,
-            errorMessage: getErrorMessage(field.key, EMPTY_STRING, field.validRule),
+            validatedError: getValidatedError(field.key, EMPTY_STRING, field.validateRule),
+            verifiedError: '',
           },
     );
     handleUpdate(newFields);
   };
 
+  const getFieldsWithNoVerifiedError = (fields: Field[]) =>
+    fields.map((field) => ({
+      ...field,
+      verifiedError: '',
+    }));
+
   const updateField = (key: string, value: string) => {
-    const newFields = fields.map((field) => {
-      return field.key === key
+    const shouldClearVerifiedError = !!fields.find((field) => field.key === key)?.verifiedError;
+    const fieldsWithError = shouldClearVerifiedError ? getFieldsWithNoVerifiedError(fields) : fields;
+    const newFields = fieldsWithError.map((field) =>
+      field.key === key
         ? {
             ...field,
             value: value.trim(),
-            errorMessage: getErrorMessage(field.key, value.trim(), field.validRule),
+            validatedError: getValidatedError(field.key, value.trim(), field.validateRule),
           }
-        : field;
-    });
+        : field,
+    );
     handleUpdate(newFields);
   };
 
-  const setErrorMessage = (keys: string[], messages: string[]) => {
+  const setVerifiedError = (keys: string[], messages: string[]) => {
     setFields(
       fields.map((field) => {
         return keys.includes(field.key)
-          ? { ...field, errorMessage: messages[keys.findIndex((key) => key === field.key)] }
+          ? {
+              ...field,
+              validatedError: '',
+              verifiedError: messages[keys.findIndex((key) => key === field.key)],
+            }
           : field;
       }),
     );
@@ -164,13 +183,16 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       if (isHeartBeatException(e)) {
         const { description, code } = e as IHeartBeatException;
         if (code === HttpStatusCode.Unauthorized) {
-          setErrorMessage([KEYS.TOKEN], [MESSAGE.VERIFY_TOKEN_FAILED_ERROR]);
+          setVerifiedError(
+            [KEYS.EMAIL, KEYS.TOKEN],
+            [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR],
+          );
         }
         if (code === HttpStatusCode.NotFound && description === ERROR_INFO.SITE_NOT_FOUND) {
-          setErrorMessage([KEYS.SITE], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
+          setVerifiedError([KEYS.SITE], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
         }
         if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
-          setErrorMessage([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
+          setVerifiedError([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
         }
       }
     }

@@ -25,7 +25,7 @@ export const Board = () => {
   };
 
   const isDisableVerifyButton = useMemo(
-    () => isLoading || !fields.every((field) => !!field.value && !field.errorMessage),
+    () => isLoading || !fields.every((field) => !!field.value && !field.validatedError && !field.verifiedError),
     [fields, isLoading],
   );
 
@@ -34,7 +34,7 @@ export const Board = () => {
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledForm onSubmit={onSubmit} onReset={resetFields}>
-        {fields.map(({ key, value, errorMessage, col }, index) =>
+        {fields.map(({ key, value, validatedError, verifiedError, col }, index) =>
           !index ? (
             <StyledTypeSelections variant='standard' required key={index}>
               <InputLabel id='board-type-checkbox-label'>Board</InputLabel>
@@ -55,9 +55,9 @@ export const Board = () => {
               variant='standard'
               value={value}
               onChange={(e) => updateField(key, e.target.value)}
-              error={!value || !!errorMessage}
+              error={!value || !!validatedError || !!verifiedError}
               type={key === 'Token' ? 'password' : 'text'}
-              helperText={errorMessage}
+              helperText={validatedError || verifiedError}
               sx={{ gridColumn: `span ${col}` }}
             />
           ),

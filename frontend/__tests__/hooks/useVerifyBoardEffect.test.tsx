@@ -53,8 +53,12 @@ describe('use verify board state', () => {
       result.current.verifyJira();
     });
 
+    const emailFiled = result.current.fields.find((field) => field.key === 'Email');
     const tokenField = result.current.fields.find((field) => field.key === 'Token');
-    expect(tokenField?.errorMessage).toBe('Token is invalid, please change your token with correct access permission!');
+    expect(emailFiled?.verifiedError).toBe('Email is incorrect!');
+    expect(tokenField?.verifiedError).toBe(
+      'Token is invalid, please change your token with correct access permission!',
+    );
   });
 
   it('when call verify function given a invalid site then should got site field error message', async () => {
@@ -78,7 +82,7 @@ describe('use verify board state', () => {
     await waitFor(() => {
       const site = result.current.fields.find((field) => field.key === 'Site');
 
-      expect(site?.errorMessage).toBe('Site is incorrect!');
+      expect(site?.verifiedError).toBe('Site is incorrect!');
     });
   });
 
@@ -103,7 +107,30 @@ describe('use verify board state', () => {
     await waitFor(() => {
       const boardId = result.current.fields.find((field) => field.key === 'Board Id');
 
-      expect(boardId?.errorMessage).toBe('Board Id is incorrect!');
+      expect(boardId?.validatedError).toBe('');
+      expect(boardId?.verifiedError).toBe('Board Id is incorrect!');
     });
+  });
+
+  it('should clear all verified error messages when update a verified error field', async () => {
+    server.use(
+      rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
+        return res(ctx.status(HttpStatusCode.Unauthorized));
+      }),
+    );
+
+    const { result } = renderHook(() => useVerifyBoardEffect());
+    await act(() => {
+      updateFields(result);
+      result.current.verifyJira();
+    });
+    await waitFor(() => {
+      result.current.updateField('Token', 'fake-token-new');
+    });
+
+    const emailFiled = result.current.fields.find((field) => field.key === 'Email');
+    const tokenField = result.current.fields.find((field) => field.key === 'Token');
+    expect(emailFiled?.verifiedError).toBe('');
+    expect(tokenField?.verifiedError).toBe('');
   });
 });
