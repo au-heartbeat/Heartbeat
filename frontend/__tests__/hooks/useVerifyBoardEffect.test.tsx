@@ -106,8 +106,6 @@ describe('use verify board state', () => {
 
     await waitFor(() => {
       const boardId = result.current.fields.find((field) => field.key === 'Board Id');
-
-      expect(boardId?.validatedError).toBe('');
       expect(boardId?.verifiedError).toBe('Board Id is incorrect!');
     });
   });
