@@ -72,7 +72,12 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
       .catch((err) => {
         const { code } = err;
         setErrorMessage(
-          codeMapping(code, <StyledRetryButton onClick={() => getBoardInfo(data)}>Retry</StyledRetryButton>),
+          codeMapping(
+            code,
+            <StyledRetryButton isLoading={isLoading} onClick={() => getBoardInfo(data)}>
+              Retry
+            </StyledRetryButton>,
+          ),
         );
         return err;
       })
