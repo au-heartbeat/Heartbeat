@@ -91,6 +91,7 @@ class ReporterControllerTest {
 			.andExpect(jsonPath("$.allMetricsCompleted").value(false))
 			.andReturn()
 			.getResponse();
+		verify(generateReporterService).getComposedReportResponse(any());
 	}
 
 	@Test
@@ -105,6 +106,7 @@ class ReporterControllerTest {
 			.andExpect(jsonPath("$.message").value("Failed to get report due to report time expires"))
 			.andReturn()
 			.getResponse();
+		verify(generateReporterService).getComposedReportResponse(any());
 	}
 
 	@Test

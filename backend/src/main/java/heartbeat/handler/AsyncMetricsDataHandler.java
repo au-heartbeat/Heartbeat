@@ -49,6 +49,8 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		switch (metricType) {
 			case BOARD -> previousMetricsCompleted.setBoardMetricsCompleted(true);
 			case DORA -> previousMetricsCompleted.setDoraMetricsCompleted(true);
+			default -> {
+			}
 		}
 		putMetricsDataCompleted(timeStamp, previousMetricsCompleted);
 	}
