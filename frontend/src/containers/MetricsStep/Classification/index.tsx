@@ -4,6 +4,7 @@ import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { Checkbox, createFilterOptions, TextField } from '@mui/material';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { ALL_OPTION_META } from '@src/constants/resources';
 import { Z_INDEX } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks';
 import React, { useMemo } from 'react';
@@ -15,31 +16,29 @@ export interface classificationProps {
 }
 
 export const suffixForDuplicateNames = (targetFields: ITargetFieldType[]) => {
-  const countMap = {} as { [key: string]: number };
-  type TTargetFieldTypeMeta = [ITargetFieldType, number, boolean?];
-  let metas: TTargetFieldTypeMeta[] = [];
+  const nameSumMap = new Map<string, number>();
+  const nameCountMap = new Map<string, number>();
 
-  for (const targetField of targetFields) {
-    if (countMap[targetField.name]) {
-      const count = ++countMap[targetField.name];
-      const meta = [targetField, count] as [ITargetFieldType, number];
-      metas.push(meta);
-    } else {
-      countMap[targetField.name] = 1;
-      const meta = [targetField, 1] as [ITargetFieldType, number];
-      metas.push(meta);
-    }
-  }
-
-  metas = metas.map((meta) => {
-    const [{ name }] = meta;
-    const isDuplicated = metas.filter(([{ name: anotherName }]) => anotherName === name).length > 1;
-    return [...meta, isDuplicated] as unknown as TTargetFieldTypeMeta;
+  targetFields.forEach((item) => {
+    const name = item.name;
+    const count = nameCountMap.get(item.name) || 0;
+    nameSumMap.set(name, count + 1);
+    nameCountMap.set(name, count + 1);
   });
 
-  return metas.map(([targetField, count, isDuplicated]) =>
-    isDuplicated ? { ...targetField, name: `${targetField.name}-${count}` } : { ...targetField },
-  );
+  return targetFields.map((item) => {
+    const newItem = { ...item };
+    const name = newItem.name;
+    const count = nameCountMap.get(newItem.name) || 0;
+    const maxCount = nameSumMap.get(newItem.name) || 0;
+
+    if (maxCount > 1) {
+      newItem.name = `${newItem.name}-${maxCount - count + 1}`;
+      nameCountMap.set(name, count - 1);
+    }
+
+    return newItem;
+  });
 };
 
 export const Classification = ({ targetFields, title, label }: classificationProps) => {
@@ -80,8 +79,8 @@ export const Classification = ({ targetFields, title, label }: classificationPro
           const filtered = createFilterOptions<ITargetFieldType>()(options, params);
           const allOption = {
             flag: isAllSelected,
-            name: 'All',
-            key: 'all',
+            name: ALL_OPTION_META.label,
+            key: ALL_OPTION_META.key,
           };
           return [allOption, ...filtered];
         }}
@@ -91,7 +90,7 @@ export const Classification = ({ targetFields, title, label }: classificationPro
           const selectAllProps = option.key === 'all' ? { checked: isAllSelected } : {};
           return (
             <li {...props}>
-              <Checkbox style={{ marginRight: 8 }} checked={state.selected} {...selectAllProps} />
+              <Checkbox style={{ marginRight: '0.5rem' }} checked={state.selected} {...selectAllProps} />
               {option.name as string}
             </li>
           );
