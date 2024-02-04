@@ -2,6 +2,7 @@ import { expect, Locator, Page } from '@playwright/test';
 import { Dayjs } from 'dayjs';
 export class ConfigStep {
   readonly page: Page;
+  readonly stepTitle: Locator;
   readonly projectNameInput: Locator;
   readonly regularCalendar: Locator;
   readonly chineseCalendar: Locator;
@@ -19,6 +20,7 @@ export class ConfigStep {
 
   constructor(page: Page) {
     this.page = page;
+    this.stepTitle = page.getByText('Config');
     this.projectNameInput = page.getByLabel('Project name *');
     this.regularCalendar = page.getByText('Regular Calendar(Weekend');
     this.chineseCalendar = page.getByText('Calendar with Chinese Holiday');
@@ -42,6 +44,10 @@ export class ConfigStep {
     this.classificationCheckbox = page.getByRole('option', { name: 'Classification' }).getByRole('checkbox');
     this.requiredDataErrorMessage = page.getByText('Metrics is required');
     this.nextButton = page.getByRole('button', { name: 'Next' });
+  }
+
+  async waitForShown() {
+    await expect(this.stepTitle).toHaveClass(/Mui-active/);
   }
 
   async typeProjectName(projectName: string) {
