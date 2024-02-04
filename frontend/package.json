@@ -22,7 +22,8 @@
     "e2e:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'npm run e2e:local'",
     "playwright": "pnpm exec playwright test",
     "playwright:ui": "pnpm exec playwright test --ui",
-    "playwright:report": "npx playwright show-report",
+    "playwright:report": "pnpm exec  playwright show-report",
+    "playwright:codegen": "pnpm exec playwright codegen localhost:4321",
     "prepare": "cd .. && husky install frontend/.husky",
     "license-compliance": "license-compliance -r detailed",
     "type-check": "tsc --noEmit"
