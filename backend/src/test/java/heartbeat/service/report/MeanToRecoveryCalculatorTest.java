@@ -73,10 +73,10 @@ class MeanToRecoveryCalculatorTest {
 	@Test
 	void shouldCalculateMeanTimeToRecoveryWhenDeployTimesIsNotEmptyAndHasCanceledJob() {
 		DeployTimes deploy1 = createDeployTimes("Pipeline 1", "Step 1", 2, 3);
-		deploy1.getPassed().get(0).setIsPipelineCanceled(true);
+		deploy1.getPassed().get(0).setPipelineCanceled(true);
 
 		DeployTimes deploy2 = createDeployTimes("Pipeline 2", "Step 2", 1, 2);
-		deploy2.getFailed().get(0).setIsPipelineCanceled(true);
+		deploy2.getFailed().get(0).setPipelineCanceled(true);
 
 		DeployTimes deploy3 = createDeployTimes("Pipeline 3", "Step 3", 0, 3);
 
@@ -123,7 +123,7 @@ class MeanToRecoveryCalculatorTest {
 		for (int i = 1; i <= failedCount; i++) {
 			DeployInfo failedJob = new DeployInfo();
 			failedJob.setState("failed");
-			failedJob.setIsPipelineCanceled(false);
+			failedJob.setPipelineCanceled(false);
 			failedJob.setJobFinishTime(DateTimeFormatter.ISO_INSTANT.format(baseTimestamp.minusMillis(i * interval)));
 			failedJob
 				.setPipelineCreateTime(DateTimeFormatter.ISO_INSTANT.format(baseTimestamp.minusMillis(i * interval)));
@@ -132,7 +132,7 @@ class MeanToRecoveryCalculatorTest {
 
 		for (int i = 1; i <= passedCount; i++) {
 			DeployInfo passedJob = new DeployInfo();
-			passedJob.setIsPipelineCanceled(false);
+			passedJob.setPipelineCanceled(false);
 			passedJob.setState("passed");
 			passedJob.setJobFinishTime(DateTimeFormatter.ISO_INSTANT.format(baseTimestamp.plusMillis(i * interval)));
 			passedJob
