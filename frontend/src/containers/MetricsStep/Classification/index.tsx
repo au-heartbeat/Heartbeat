@@ -44,12 +44,12 @@ export const suffixForDuplicateNames = (targetFields: ITargetFieldType[]) => {
 
 export const Classification = ({ targetFields, title, label }: classificationProps) => {
   const dispatch = useAppDispatch();
-  const targetFieldsWithSuffix = suffixForDuplicateNames(targetFields);
+  const targetFieldsWithSuffix = useMemo(() => suffixForDuplicateNames(targetFields), [targetFields]);
   const classificationWarningMessage = useAppSelector(selectClassificationWarningMessage);
   const selectedOptions = targetFieldsWithSuffix.filter(({ flag }) => flag);
   const isAllSelected = useMemo(() => {
     return selectedOptions.length > 0 && selectedOptions.length === targetFieldsWithSuffix.length;
-  }, [selectedOptions]);
+  }, [selectedOptions, targetFieldsWithSuffix]);
 
   const handleChange = (_: React.SyntheticEvent, value: ITargetFieldType[]) => {
     let nextSelectedOptions: ITargetFieldType[];
