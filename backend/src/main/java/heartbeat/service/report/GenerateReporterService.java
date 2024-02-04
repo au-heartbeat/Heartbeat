@@ -4,7 +4,6 @@ import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.ErrorInfo;
-import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
@@ -37,6 +36,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static heartbeat.controller.report.dto.request.MetricType.BOARD;
+import static heartbeat.controller.report.dto.request.MetricType.DORA;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static heartbeat.util.ValueUtil.getValueOrNull;
 
@@ -82,14 +83,16 @@ public class GenerateReporterService {
 				boardReportId);
 		try {
 			saveReporterInHandler(generateBoardReporter(request), boardReportId);
-			updateMetricsDataCompletedInHandler(request);
+			asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), BOARD);
 			log.info(
 					"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 					request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
 					boardReportId);
 		}
 		catch (BaseException e) {
-			handleException(request, boardReportId, e);
+			asyncExceptionHandler.put(boardReportId, e);
+			if (List.of(401, 403, 404).contains(e.getStatus()))
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), BOARD);
 		}
 	}
 
@@ -104,12 +107,7 @@ public class GenerateReporterService {
 			generateSourceControlReport(request.toSourceControlRequest(), fetchedData);
 		}
 		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
-	}
-
-	private void handleException(GenerateReportRequest request, String reportId, BaseException e) {
-		asyncExceptionHandler.put(reportId, e);
-		if (List.of(401, 403, 404).contains(e.getStatus()))
-			updateMetricsDataCompletedInHandler(request);
+		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), DORA);
 	}
 
 	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
@@ -120,14 +118,15 @@ public class GenerateReporterService {
 				request.getEndTime(), pipelineReportId);
 		try {
 			saveReporterInHandler(generatePipelineReporter(request, fetchedData), pipelineReportId);
-			updateMetricsDataCompletedInHandler(request);
 			log.info(
 					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
 					request.getPipelineMetrics(), request.getConsiderHoliday(), request.getStartTime(),
 					request.getEndTime(), pipelineReportId);
 		}
 		catch (BaseException e) {
-			handleException(request, pipelineReportId, e);
+			asyncExceptionHandler.put(pipelineReportId, e);
+			if (List.of(401, 403, 404).contains(e.getStatus()))
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), DORA);
 		}
 	}
 
@@ -139,14 +138,15 @@ public class GenerateReporterService {
 				request.getEndTime(), sourceControlReportId);
 		try {
 			saveReporterInHandler(generateSourceControlReporter(request, fetchedData), sourceControlReportId);
-			updateMetricsDataCompletedInHandler(request);
 			log.info(
 					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
 					request.getSourceControlMetrics(), request.getConsiderHoliday(), request.getStartTime(),
 					request.getEndTime(), sourceControlReportId);
 		}
 		catch (BaseException e) {
-			handleException(request, sourceControlReportId, e);
+			asyncExceptionHandler.put(sourceControlReportId, e);
+			if (List.of(401, 403, 404).contains(e.getStatus()))
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), DORA);
 		}
 	}
 
@@ -267,39 +267,6 @@ public class GenerateReporterService {
 		asyncReportRequestHandler.putReport(reportId, reportContent);
 	}
 
-	private void updateMetricsDataCompletedInHandler(GenerateReportRequest request) {
-		MetricsDataCompleted metricsStatus = request.getMetricsStatus(Boolean.TRUE);
-		String timeStamp = request.getCsvTimeStamp();
-		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(timeStamp);
-		if (previousMetricsCompleted == null) {
-			log.error("Failed to update metrics data completed through this timestamp.");
-			throw new GenerateReportException("Failed to update metrics data completed through this timestamp.");
-		}
-		MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
-			.boardMetricsCompleted(checkCurrentMetricsCompletedState(metricsStatus.boardMetricsCompleted(),
-					previousMetricsCompleted.boardMetricsCompleted()))
-			.pipelineMetricsCompleted(checkCurrentMetricsCompletedState(metricsStatus.pipelineMetricsCompleted(),
-					previousMetricsCompleted.pipelineMetricsCompleted()))
-			.sourceControlMetricsCompleted(
-					checkCurrentMetricsCompletedState(metricsStatus.sourceControlMetricsCompleted(),
-							previousMetricsCompleted.sourceControlMetricsCompleted()))
-			.build();
-		asyncMetricsDataHandler.putMetricsDataCompleted(timeStamp, metricsDataCompleted);
-	}
-
-	private Boolean checkCurrentMetricsCompletedState(Boolean exist, Boolean previousValue) {
-		if (Boolean.TRUE.equals(exist) && Objects.nonNull(previousValue))
-			return Boolean.TRUE;
-		return previousValue;
-	}
-
-	public boolean checkGenerateReportIsDone(String reportTimeStamp) {
-		if (validateExpire(System.currentTimeMillis(), Long.parseLong(reportTimeStamp))) {
-			throw new GenerateReportException("Failed to get report due to report time expires");
-		}
-		return asyncMetricsDataHandler.isReportReady(reportTimeStamp);
-	}
-
 	private ErrorInfo handleAsyncExceptionAndGetErrorInfo(BaseException exception) {
 		if (Objects.nonNull(exception)) {
 			int status = exception.getStatus();
@@ -352,21 +319,21 @@ public class GenerateReporterService {
 		return asyncReportRequestHandler.getReport(reportId);
 	}
 
-	public ReportResponse getComposedReportResponse(String reportId, boolean isReportReady) {
+	public MetricsDataDTO checkReportReadyStatus(String reportTimeStamp) {
+		if (validateExpire(System.currentTimeMillis(), Long.parseLong(reportTimeStamp))) {
+			throw new GenerateReportException("Failed to get report due to report time expires");
+		}
+		return asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(reportTimeStamp);
+	}
+
+	public ReportResponse getComposedReportResponse(String reportId) {
+		MetricsDataDTO reportReadyStatus = checkReportReadyStatus(reportId);
+
 		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
 		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
 		ReportResponse sourceControlReportResponse = getReportFromHandler(IdUtil.getSourceControlReportId(reportId));
-		MetricsDataCompleted metricsDataCompleted = asyncMetricsDataHandler.getMetricsDataCompleted(reportId);
+
 		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(reportId);
-
-		Boolean boardMetricsCompleted = getValueOrNull(metricsDataCompleted,
-				MetricsDataCompleted::boardMetricsCompleted) == null ? null : boardReportResponse != null;
-		Boolean pipelineMetricsCompleted = getValueOrNull(metricsDataCompleted,
-				MetricsDataCompleted::pipelineMetricsCompleted) == null ? null : pipleineReportResponse != null;
-		Boolean sourceControlMetricsCompleted = getValueOrNull(metricsDataCompleted,
-				MetricsDataCompleted::sourceControlMetricsCompleted) == null ? null
-						: sourceControlReportResponse != null;
-
 		return ReportResponse.builder()
 			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
 			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
@@ -376,10 +343,9 @@ public class GenerateReporterService {
 			.changeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getChangeFailureRate))
 			.meanTimeToRecovery(getValueOrNull(pipleineReportResponse, ReportResponse::getMeanTimeToRecovery))
 			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
-			.boardMetricsCompleted(boardMetricsCompleted)
-			.pipelineMetricsCompleted(pipelineMetricsCompleted)
-			.sourceControlMetricsCompleted(sourceControlMetricsCompleted)
-			.allMetricsCompleted(isReportReady)
+			.boardMetricsCompleted(reportReadyStatus.isBoardReady)
+			.doraMetricsCompleted(reportReadyStatus.isDoraReady)
+			.allMetricsCompleted(reportReadyStatus.isAllMetricsReady)
 			.reportMetricsError(reportMetricsError)
 			.build();
 	}
