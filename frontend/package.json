@@ -20,6 +20,9 @@
     "e2e:open": "dotenvx run --env-file=./cypress/.env.local -- cypress open",
     "e2e:local": "dotenvx run --env-file=./cypress/.env.local -- cypress run --spec cypress/",
     "e2e:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'npm run e2e:local'",
+    "playwright": "pnpm exec playwright test",
+    "playwright:ui": "pnpm exec playwright test --ui",
+    "playwright:report": "npx playwright show-report",
     "prepare": "cd .. && husky install frontend/.husky",
     "license-compliance": "license-compliance -r detailed",
     "type-check": "tsc --noEmit"
@@ -54,6 +57,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^0.14.1",
+    "@playwright/test": "^1.41.2",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
