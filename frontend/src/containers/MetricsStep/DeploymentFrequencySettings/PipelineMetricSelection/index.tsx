@@ -20,8 +20,8 @@ import { ErrorNotification } from '@src/components/ErrorNotification';
 import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { useAppDispatch } from '@src/hooks';
+import { useEffect, useState } from 'react';
 import { store } from '@src/store';
-import { useState } from 'react';
 
 interface pipelineMetricSelectionProps {
   type: string;
@@ -61,7 +61,11 @@ export const PipelineMetricSelection = ({
     onRemovePipeline(id);
   };
 
-  const handleGetPipelineData = (_pipelineName: string) => {
+  useEffect(() => {
+    getPipelineSteps(pipelineName);
+  }, []);
+
+  const getPipelineSteps = (_pipelineName: string) => {
     const { params, buildId, organizationId, pipelineType, token } = selectStepsParams(
       store.getState(),
       organization,
@@ -111,7 +115,7 @@ export const PipelineMetricSelection = ({
           options={pipelineNameOptions}
           label={'Pipeline Name'}
           value={pipelineName}
-          onGetSteps={handleGetPipelineData}
+          onGetSteps={getPipelineSteps}
           onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
       )}

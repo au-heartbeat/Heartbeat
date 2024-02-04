@@ -86,7 +86,7 @@ const MetricsStepper = () => {
   const isCrewsSettingValid = metricsConfig.users.length > 0;
   const isRealDoneValid = metricsConfig.doneColumn.length > 0;
 
-  const isDeploymentFrequencyValid = useMemo(() => {
+  const isDeploymentFrequencyValid = () => {
     const pipelines = metricsConfig.deploymentFrequencySettings;
     const pipelinesFormMeta = formMeta.metrics.pipelines;
     const selectedPipelines = pipelineList.filter((pipeline) => {
@@ -104,7 +104,7 @@ const MetricsStepper = () => {
       getDuplicatedPipeLineIds(pipelines).length === 0 &&
       every(pipelinesFormMeta, (item) => every(item.branches, (branch) => !branch.error && !branch.needVerify))
     );
-  }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
+  };
 
   useEffect(() => {
     if (activeStep === METRICS_STEPS.CONFIG) {
@@ -123,7 +123,7 @@ const MetricsStepper = () => {
       const nextButtonValidityOptions = [
         { isShow: isShowBoard, isValid: isCrewsSettingValid },
         { isShow: isShowRealDone, isValid: isRealDoneValid },
-        { isShow: isShowDeploymentFrequency, isValid: isDeploymentFrequencyValid },
+        { isShow: isShowDeploymentFrequency, isValid: isDeploymentFrequencyValid() },
         { isShow: isShowCycleTimeSettings, isValid: isCycleTimeSettingsVerified },
         { isShow: isShowClassificationSetting, isValid: isClassificationSettingVerified },
       ];
@@ -144,11 +144,12 @@ const MetricsStepper = () => {
     projectName,
     dateRange,
     metricsConfig,
+    formMeta,
     isCrewsSettingValid,
     isShowRealDone,
     isRealDoneValid,
     isShowDeploymentFrequency,
-    isDeploymentFrequencyValid,
+    pipelineList,
     isShowCycleTimeSettings,
     isCycleTimeSettingsVerified,
     isShowClassificationSetting,
