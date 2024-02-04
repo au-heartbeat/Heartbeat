@@ -57,11 +57,11 @@ public class PipelineServiceTest {
 	@Captor
 	ArgumentCaptor<Map<String, String>> roadMapArgumentCaptor;
 
-	public String token = "startTime";
+	public String token = "token";
 
-	public String startTime = "endTime";
+	public String startTime = "startTime";
 
-	public String endTime = "token";
+	public String endTime = "endTime";
 
 	@Nested
 	class FetchGithubData {
