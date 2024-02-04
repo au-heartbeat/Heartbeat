@@ -260,7 +260,7 @@ describe('MetricsStep', () => {
       expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
     });
 
-    it('should not call closeAllNotifications if back step and shouldRefreshData is false', async () => {
+    it('should not call closeAllNotifications given back step and shouldRefreshData is false', async () => {
       store.dispatch(backStep());
       setup();
 
@@ -269,7 +269,7 @@ describe('MetricsStep', () => {
       });
     });
 
-    it('should call closeAllNotifications if next step and shouldRefreshData is false', async () => {
+    it('should call closeAllNotifications given next step and shouldRefreshData is false', async () => {
       store.dispatch(nextStep());
       setup();
 
