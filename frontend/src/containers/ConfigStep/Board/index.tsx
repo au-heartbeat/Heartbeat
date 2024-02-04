@@ -17,7 +17,7 @@ import { FormEvent, useMemo } from 'react';
 
 export const Board = () => {
   const isVerified = useAppSelector(selectIsBoardVerified);
-  const { verifyJira, isLoading, fields, updateField, resetFields } = useVerifyBoardEffect();
+  const { verifyJira, isLoading, fields, updateField, validateField, resetFields } = useVerifyBoardEffect();
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ export const Board = () => {
   };
 
   const isDisableVerifyButton = useMemo(
-    () => isLoading || !fields.every((field) => !!field.value && !field.validatedError && !field.verifiedError),
+    () => isLoading || fields.some((field) => !field.value || field.validatedError || field.verifiedError),
     [fields, isLoading],
   );
 
@@ -54,8 +54,9 @@ export const Board = () => {
               label={key}
               variant='standard'
               value={value}
+              onFocus={() => validateField(key)}
               onChange={(e) => updateField(key, e.target.value)}
-              error={!value || !!validatedError || !!verifiedError}
+              error={!!validatedError || !!verifiedError}
               type={key === 'Token' ? 'password' : 'text'}
               helperText={validatedError || verifiedError}
               sx={{ gridColumn: `span ${col}` }}

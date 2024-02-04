@@ -28,27 +28,37 @@ enum FIELD_KEY {
   TOKEN = 1,
 }
 
+const getErrorMessage = (value: string) => {
+  if (!value) {
+    return TOKEN_HELPER_TEXT.RequiredTokenText;
+  }
+  if (!REGEX.GITHUB_TOKEN.test(value.trim())) {
+    return TOKEN_HELPER_TEXT.InvalidTokenText;
+  }
+  return DEFAULT_HELPER_TEXT;
+};
+
 export const SourceControl = () => {
   const dispatch = useAppDispatch();
   const sourceControlFields = useAppSelector(selectSourceControl);
   const isVerified = useAppSelector(isSourceControlVerified);
-  const { verifyToken, isLoading, errorMessage, clearErrorMessage } = useVerifySourceControlTokenEffect();
+  const { verifyToken, isLoading, verifiedError, clearVerifiedError } = useVerifySourceControlTokenEffect();
   const type = findCaseInsensitiveType(Object.values(SOURCE_CONTROL_TYPES), sourceControlFields.type);
   const [fields, setFields] = useState([
     {
       key: 'SourceControl',
       value: type,
-      isValid: true,
+      validatedError: '',
     },
     {
       key: 'Token',
       value: sourceControlFields.token,
-      isValid: REGEX.GITHUB_TOKEN.test(sourceControlFields.token),
+      validatedError: sourceControlFields.token ? getErrorMessage(sourceControlFields.token) : '',
     },
   ]);
 
-  const handleUpdate = (fields: { key: string; value: string; isValid: boolean }[]) => {
-    clearErrorMessage();
+  const handleUpdate = (fields: { key: string; value: string; validatedError: string }[]) => {
+    clearVerifiedError();
     setFields(fields);
     dispatch(updateSourceControlVerifyState(false));
     dispatch(
@@ -59,24 +69,26 @@ export const SourceControl = () => {
     );
   };
 
-  const onInputChange = (value: string) => {
-    const newFields = fields.map((field, index) =>
+  const getNewFields = (value: string) =>
+    fields.map((field, index) =>
       index === FIELD_KEY.TOKEN
         ? {
             key: field.key,
             value: value.trim(),
-            isValid: REGEX.GITHUB_TOKEN.test(value.trim()),
+            validatedError: getErrorMessage(value.trim()),
           }
         : field,
     );
-    handleUpdate(newFields);
-  };
+
+  const onInputChange = (value: string) => handleUpdate(getNewFields(value));
+
+  const onInputFocus = (value: string) => setFields(getNewFields(value));
 
   const onReset = () => {
     const newFields = fields.map(({ key }, index) => ({
       key,
       value: index === FIELD_KEY.TOKEN ? '' : SOURCE_CONTROL_TYPES.GITHUB,
-      isValid: true,
+      validatedError: '',
     }));
     handleUpdate(newFields);
   };
@@ -90,23 +102,9 @@ export const SourceControl = () => {
   };
 
   const isDisableVerifyButton = useMemo(
-    () => isLoading || !fields.every((field) => field.isValid && !!field.value) || !!errorMessage,
-    [errorMessage, fields, isLoading],
+    () => isLoading || fields.some((field) => !field.value || field.validatedError) || !!verifiedError,
+    [verifiedError, fields, isLoading],
   );
-
-  const sourceControlHelperText = useMemo(() => {
-    const { value, isValid } = fields[FIELD_KEY.TOKEN];
-    if (!value) {
-      return TOKEN_HELPER_TEXT.RequiredTokenText;
-    }
-    if (errorMessage) {
-      return errorMessage;
-    }
-    if (!isValid) {
-      return TOKEN_HELPER_TEXT.InvalidTokenText;
-    }
-    return DEFAULT_HELPER_TEXT;
-  }, [errorMessage, fields]);
 
   return (
     <ConfigSectionContainer aria-label='Source Control Config'>
@@ -131,9 +129,10 @@ export const SourceControl = () => {
           variant='standard'
           type='password'
           value={fields[FIELD_KEY.TOKEN].value}
+          onFocus={(e) => onInputFocus(e.target.value)}
           onChange={(e) => onInputChange(e.target.value)}
-          error={!!sourceControlHelperText}
-          helperText={sourceControlHelperText}
+          error={!!fields[FIELD_KEY.TOKEN].validatedError || !!verifiedError}
+          helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
         />
         <StyledButtonGroup>
           {isVerified && !isLoading ? (

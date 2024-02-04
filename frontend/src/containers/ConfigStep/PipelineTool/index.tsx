@@ -28,27 +28,37 @@ enum FIELD_KEY {
   TOKEN = 1,
 }
 
+const getErrorMessage = (value: string) => {
+  if (!value) {
+    return TOKEN_HELPER_TEXT.RequiredTokenText;
+  }
+  if (!REGEX.BUILDKITE_TOKEN.test(value.trim())) {
+    return TOKEN_HELPER_TEXT.InvalidTokenText;
+  }
+  return DEFAULT_HELPER_TEXT;
+};
+
 export const PipelineTool = () => {
   const dispatch = useAppDispatch();
   const pipelineToolFields = useAppSelector(selectPipelineTool);
   const isVerified = useAppSelector(isPipelineToolVerified);
-  const { verifyPipelineTool, isLoading, errorMessage, clearErrorMessage } = useVerifyPipelineToolEffect();
+  const { verifyPipelineTool, isLoading, verifiedError, clearVerifiedError } = useVerifyPipelineToolEffect();
   const type = findCaseInsensitiveType(Object.values(PIPELINE_TOOL_TYPES), pipelineToolFields.type);
   const [fields, setFields] = useState([
     {
       key: 'PipelineTool',
       value: type,
-      isValid: true,
+      validatedError: '',
     },
     {
       key: 'Token',
       value: pipelineToolFields.token,
-      isValid: REGEX.BUILDKITE_TOKEN.test(pipelineToolFields.token),
+      validatedError: pipelineToolFields.token ? getErrorMessage(pipelineToolFields.token) : '',
     },
   ]);
 
-  const handleUpdate = (fields: { key: string; value: string; isValid: boolean }[]) => {
-    clearErrorMessage();
+  const handleUpdate = (fields: { key: string; value: string; validatedError: string }[]) => {
+    clearVerifiedError();
     setFields(fields);
     dispatch(updatePipelineToolVerifyState(false));
     dispatch(
@@ -63,29 +73,31 @@ export const PipelineTool = () => {
     const newFields = fields.map(({ key }, index) => ({
       key,
       value: index === FIELD_KEY.TYPE ? value : EMPTY_STRING,
-      isValid: true,
+      validatedError: '',
     }));
     handleUpdate(newFields);
   };
 
-  const onInputUpdate = (value: string) => {
-    const newFields = fields.map((field, index) =>
-      index === FIELD_KEY.TYPE
-        ? field
-        : {
+  const getNewFields = (value: string) =>
+    fields.map((field, index) =>
+      index === FIELD_KEY.TOKEN
+        ? {
             key: field.key,
             value: value.trim(),
-            isValid: REGEX.BUILDKITE_TOKEN.test(value.trim()),
-          },
+            validatedError: getErrorMessage(value.trim()),
+          }
+        : field,
     );
-    handleUpdate(newFields);
-  };
+
+  const onInputUpdate = (value: string) => handleUpdate(getNewFields(value));
+
+  const onInputFocus = (value: string) => setFields(getNewFields(value));
 
   const onReset = () => {
     const newFields = fields.map(({ key }, index) => ({
       key,
       value: index === FIELD_KEY.TYPE ? PIPELINE_TOOL_TYPES.BUILD_KITE : EMPTY_STRING,
-      isValid: true,
+      validatedError: '',
     }));
     handleUpdate(newFields);
   };
@@ -99,23 +111,9 @@ export const PipelineTool = () => {
   };
 
   const isDisableVerifyButton = useMemo(
-    () => isLoading || !fields.every((field) => field.isValid && !!field.value) || !!errorMessage,
-    [errorMessage, fields, isLoading],
+    () => isLoading || fields.some((field) => !field.value || field.validatedError) || !!verifiedError,
+    [fields, isLoading, verifiedError],
   );
-
-  const updateFieldHelpText = useMemo(() => {
-    const { value, isValid } = fields[FIELD_KEY.TOKEN];
-    if (!value) {
-      return TOKEN_HELPER_TEXT.RequiredTokenText;
-    }
-    if (errorMessage) {
-      return errorMessage;
-    }
-    if (!isValid) {
-      return TOKEN_HELPER_TEXT.InvalidTokenText;
-    }
-    return DEFAULT_HELPER_TEXT;
-  }, [errorMessage, fields]);
 
   return (
     <ConfigSectionContainer aria-label='Pipeline Tool Config'>
@@ -148,9 +146,10 @@ export const PipelineTool = () => {
             'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}`,
           }}
           value={fields[FIELD_KEY.TOKEN].value}
+          onFocus={(e) => onInputFocus(e.target.value)}
           onChange={(e) => onInputUpdate(e.target.value)}
-          error={!!updateFieldHelpText}
-          helperText={updateFieldHelpText}
+          error={!!fields[FIELD_KEY.TOKEN].validatedError || !!verifiedError}
+          helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
         />
         <StyledButtonGroup>
           {isVerified && !isLoading ? (

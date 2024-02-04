@@ -110,6 +110,23 @@ describe('use verify board state', () => {
     });
   });
 
+  it('should got token fields error message when call verify function given a unknown error', async () => {
+    server.use(
+      rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {
+        return res(ctx.status(HttpStatusCode.ServiceUnavailable));
+      }),
+    );
+
+    const { result } = renderHook(() => useVerifyBoardEffect());
+    await act(() => {
+      updateFields(result);
+      result.current.verifyJira();
+    });
+
+    const tokenField = result.current.fields.find((field) => field.key === 'Token');
+    expect(tokenField?.verifiedError).toBe('Unknown error');
+  });
+
   it('should clear all verified error messages when update a verified error field', async () => {
     server.use(
       rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => {

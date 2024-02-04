@@ -125,6 +125,24 @@ describe('SourceControl', () => {
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
   });
 
+  it('should not show error message when field does not trigger any event given an empty value', () => {
+    setup();
+
+    screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
+
+    expect(screen.queryByText(TOKEN_ERROR_MESSAGE[1])).not.toBeInTheDocument();
+  });
+
+  it('should show error message when focus on field given an empty value', () => {
+    setup();
+
+    const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
+    fireEvent.focus(tokenInput, { target: { value: '' } });
+
+    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
+    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
+  });
+
   it('should show error message and error style when token is invalid', () => {
     setup();
     const mockInfo = 'mockToken';

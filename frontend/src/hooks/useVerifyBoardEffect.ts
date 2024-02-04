@@ -1,11 +1,11 @@
 import { selectBoard, selectDateRange, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
+import { BOARD_TYPES, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { findCaseInsensitiveType, getJiraBoardToken } from '@src/utils/util';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
 import { IHeartBeatException } from '@src/exceptions/ExceptionType';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
-import { BOARD_TYPES, MESSAGE } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { isHeartBeatException } from '@src/exceptions';
 import { REGEX } from '@src/constants/regex';
@@ -27,6 +27,7 @@ export interface useVerifyBoardStateInterface {
   isLoading: boolean;
   fields: Field[];
   updateField: (key: string, value: string) => void;
+  validateField: (key: string) => void;
   resetFields: () => void;
 }
 
@@ -68,14 +69,14 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     {
       key: KEYS.BOARD,
       value: type,
-      validatedError: getValidatedError(KEYS.BOARD, type),
+      validatedError: '',
       verifiedError: '',
       col: 1,
     },
     {
       key: KEYS.BOARD_ID,
       value: boardFields.boardId,
-      validatedError: getValidatedError(KEYS.BOARD_ID, boardFields.boardId),
+      validatedError: '',
       verifiedError: '',
       col: 1,
     },
@@ -83,14 +84,14 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       key: KEYS.EMAIL,
       value: boardFields.email,
       validateRule: VALIDATOR.EMAIL,
-      validatedError: getValidatedError(KEYS.EMAIL, boardFields.email, VALIDATOR.EMAIL),
+      validatedError: boardFields.email ? getValidatedError(KEYS.EMAIL, boardFields.email, VALIDATOR.EMAIL) : '',
       verifiedError: '',
       col: 1,
     },
     {
       key: KEYS.SITE,
       value: boardFields.site,
-      validatedError: getValidatedError(KEYS.SITE, boardFields.site),
+      validatedError: '',
       verifiedError: '',
       col: 1,
     },
@@ -98,7 +99,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       key: KEYS.TOKEN,
       value: boardFields.token,
       validateRule: VALIDATOR.TOKEN,
-      validatedError: getValidatedError(KEYS.TOKEN, boardFields.token, VALIDATOR.TOKEN),
+      validatedError: boardFields.token ? getValidatedError(KEYS.TOKEN, boardFields.token, VALIDATOR.TOKEN) : '',
       verifiedError: '',
       col: 2,
     },
@@ -122,7 +123,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         : {
             ...field,
             value: EMPTY_STRING,
-            validatedError: getValidatedError(field.key, EMPTY_STRING, field.validateRule),
+            validatedError: '',
             verifiedError: '',
           },
     );
@@ -148,6 +149,18 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         : field,
     );
     handleUpdate(newFields);
+  };
+
+  const validateField = (key: string) => {
+    const newFields = fields.map((field) =>
+      field.key === key
+        ? {
+            ...field,
+            validatedError: getValidatedError(field.key, field.value, field.validateRule),
+          }
+        : field,
+    );
+    setFields(newFields);
   };
 
   const setVerifiedError = (keys: string[], messages: string[]) => {
@@ -187,12 +200,12 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
             [KEYS.EMAIL, KEYS.TOKEN],
             [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR],
           );
-        }
-        if (code === HttpStatusCode.NotFound && description === ERROR_INFO.SITE_NOT_FOUND) {
+        } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.SITE_NOT_FOUND) {
           setVerifiedError([KEYS.SITE], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
-        }
-        if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
+        } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setVerifiedError([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
+        } else {
+          setVerifiedError([KEYS.TOKEN], [UNKNOWN_ERROR_TITLE]);
         }
       }
     }
@@ -204,6 +217,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     isLoading,
     fields,
     updateField,
+    validateField,
     resetFields,
   };
 };
