@@ -100,15 +100,15 @@ public class GenerateReporterService {
 		removePreviousAsyncException(request.getPipelineReportId());
 		removePreviousAsyncException(request.getSourceControlReportId());
 		FetchedData fetchedData = new FetchedData();
-		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
-			GenerateReportRequest sourceControlRequest = request.toSourceControlRequest();
-			fetchOriginalData(sourceControlRequest, fetchedData);
-			generateSourceControlReport(sourceControlRequest, fetchedData);
-		}
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
 			GenerateReportRequest pipelineRequest = request.toPipelineRequest();
 			fetchOriginalData(pipelineRequest, fetchedData);
 			generatePipelineReport(pipelineRequest, fetchedData);
+		}
+		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
+			GenerateReportRequest sourceControlRequest = request.toSourceControlRequest();
+			fetchOriginalData(sourceControlRequest, fetchedData);
+			generateSourceControlReport(sourceControlRequest, fetchedData);
 		}
 		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), DORA);
@@ -243,13 +243,7 @@ public class GenerateReporterService {
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
 			if (request.getBuildKiteSetting() == null)
 				throw new BadRequestException("Failed to fetch BuildKite info due to BuildKite setting is null.");
-			FetchedData.BuildKiteData buildKiteData = pipelineService.fetchBuildKiteInfo(request);
-			BuildKiteData cachedBuildKiteData = fetchedData.getBuildKiteData();
-			if (cachedBuildKiteData != null) {
-				List<PipelineLeadTime> pipelineLeadTimes = cachedBuildKiteData.getPipelineLeadTimes();
-				buildKiteData.setPipelineLeadTimes(pipelineLeadTimes);
-			}
-			fetchedData.setBuildKiteData(buildKiteData);
+			fetchedData.setBuildKiteData(pipelineService.fetchBuildKiteInfo(request));
 		}
 
 		return fetchedData;
