@@ -79,8 +79,14 @@ describe('Classification', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: names[0] })).toBeVisible();
+    });
+    await waitFor(() => {
       expect(screen.getByRole('button', { name: names[1] })).toBeVisible();
+    });
+    await waitFor(() => {
       expect(screen.getByRole('button', { name: `${names[2]}-1` })).toBeVisible();
+    });
+    await waitFor(() => {
       expect(screen.getByRole('button', { name: `${names[3]}-2` })).toBeVisible();
     });
   });
@@ -111,8 +117,14 @@ describe('Classification', () => {
 
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: names[0] })).not.toBeInTheDocument();
+    });
+    await waitFor(() => {
       expect(screen.queryByRole('button', { name: names[1] })).not.toBeInTheDocument();
+    });
+    await waitFor(() => {
       expect(screen.queryByRole('button', { name: `${names[2]}-1` })).not.toBeInTheDocument();
+    });
+    await waitFor(() => {
       expect(screen.queryByRole('button', { name: `${names[3]}-2` })).not.toBeInTheDocument();
     });
   });
