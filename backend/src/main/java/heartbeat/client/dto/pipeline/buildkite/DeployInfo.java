@@ -21,6 +21,8 @@ public class DeployInfo {
 
 	private String state;
 
+	private Boolean isPipelineCanceled;
+
 	private String jobName;
 
 }

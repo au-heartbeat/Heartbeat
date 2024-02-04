@@ -18,6 +18,7 @@ public class DeployInfoBuilder {
 		deployInfo.setCommitId("xx");
 		deployInfo.setState("passed");
 		deployInfo.setJobName("xx");
+		deployInfo.setIsPipelineCanceled(false);
 		return new DeployInfoBuilder(deployInfo);
 	}
 

@@ -318,7 +318,7 @@ public class BuildKiteService {
 		}
 
 		return new DeployInfo(buildInfo.getPipelineCreateTime(), job.getStartedAt(), job.getFinishedAt(),
-				buildInfo.getCommit(), job.getState(), job.getName());
+				buildInfo.getCommit(), job.getState(), "canceled".equals(buildInfo.getState()), job.getName());
 	}
 
 }
