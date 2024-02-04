@@ -6,6 +6,7 @@ import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
+import heartbeat.controller.report.dto.request.MetricEnum;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.response.ChangeFailureRate;
 import heartbeat.controller.report.dto.response.Classification;
@@ -555,7 +556,8 @@ class GenerateReporterServiceTest {
 				.considerHoliday(false)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(List.of("lead time for changes", "change failure rate"))
+				.metrics(
+						List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue(), MetricEnum.CHANGE_FAILURE_RATE.getValue()))
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
@@ -567,9 +569,9 @@ class GenerateReporterServiceTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
 			when(pipelineService.generateCSVForPipelineWithCodebase(any(), any(), any(), any(), any()))
 				.thenReturn(pipelineCSVInfos);
-			when(pipelineService.fetchGithubData(request))
+			when(pipelineService.fetchGithubData(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
-			when(pipelineService.fetchBuildKiteInfo(request))
+			when(pipelineService.fetchBuildKiteInfo(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
 			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
@@ -591,7 +593,7 @@ class GenerateReporterServiceTest {
 				.considerHoliday(false)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(List.of("lead time for changes"))
+				.metrics(List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue()))
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)

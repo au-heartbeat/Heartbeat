@@ -99,12 +99,16 @@ public class GenerateReporterService {
 	public void generateDoraReport(GenerateReportRequest request) {
 		removePreviousAsyncException(request.getPipelineReportId());
 		removePreviousAsyncException(request.getSourceControlReportId());
-		FetchedData fetchedData = fetchOriginalData(request, new FetchedData());
-		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
-			generatePipelineReport(request.toPipelineRequest(), fetchedData);
-		}
+		FetchedData fetchedData = new FetchedData();
 		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
-			generateSourceControlReport(request.toSourceControlRequest(), fetchedData);
+			GenerateReportRequest sourceControlRequest = request.toSourceControlRequest();
+			fetchOriginalData(sourceControlRequest, fetchedData);
+			generateSourceControlReport(sourceControlRequest, fetchedData);
+		}
+		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
+			GenerateReportRequest pipelineRequest = request.toPipelineRequest();
+			fetchOriginalData(pipelineRequest, fetchedData);
+			generatePipelineReport(pipelineRequest, fetchedData);
 		}
 		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), DORA);
