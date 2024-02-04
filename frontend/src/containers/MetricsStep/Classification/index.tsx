@@ -29,8 +29,8 @@ export const suffixForDuplicateNames = (targetFields: ITargetFieldType[]) => {
   return targetFields.map((item) => {
     const newItem = { ...item };
     const name = newItem.name;
-    const count = nameCountMap.get(newItem.name) || 0;
-    const maxCount = nameSumMap.get(newItem.name) || 0;
+    const count = nameCountMap.get(newItem.name) as number;
+    const maxCount = nameSumMap.get(newItem.name) as number;
 
     if (maxCount > 1) {
       newItem.name = `${newItem.name}-${maxCount - count + 1}`;
