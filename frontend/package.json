@@ -21,10 +21,10 @@
     "cypress:local": "dotenvx run --env-file=./cypress/.env.local -- cypress run --spec cypress/",
     "cypress:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'npm run e2e:local'",
     "e2e": "pnpm exec playwright test",
-    "e2e:local": "dotenvx run --env-file=./e2e/.env.local -- pnpm run playwright",
-    "e2e:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'pnpm run playwright:local'",
+    "e2e:local": "dotenvx run --env-file=./e2e/.env.local -- pnpm run e2e",
+    "e2e:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'pnpm run e2e:local'",
     "e2e:ui": "dotenvx run --env-file=./e2e/.env.local -- pnpm exec playwright test --ui",
-    "e2e:report": "pnpm exec  playwright show-report",
+    "e2e:report": "pnpm exec playwright show-report",
     "e2e:codegen": "pnpm exec playwright codegen localhost:4321",
     "prepare": "cd .. && husky install frontend/.husky",
     "license-compliance": "license-compliance -r detailed",
@@ -112,5 +112,10 @@
   "bugs": {
     "url": "https://github.com/thoughtworks/HeartBeat/issues",
     "email": "heartbeat@thoughtworks.com"
+  },
+  "pnpm": {
+    "overrides": {
+      "got@<11.8.5": ">=11.8.5"
+    }
   }
 }
