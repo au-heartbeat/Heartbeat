@@ -27,7 +27,7 @@ let store = setupStore();
 const setup = () => {
   return render(
     <Provider store={store}>
-      <Crews title={mockTitle} label={mockLabel} options={mockOptions} />
+      <Crews title={mockTitle} label={mockLabel} />
     </Provider>,
   );
 };

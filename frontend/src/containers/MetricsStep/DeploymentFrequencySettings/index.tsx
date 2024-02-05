@@ -63,12 +63,7 @@ export const DeploymentFrequencySettings = () => {
           ))}
           <MetricsSettingAddButton onAddPipeline={handleAddPipeline} />
           {!_.isEmpty(pipelineCrews) && (
-            <Crews
-              options={pipelineCrews}
-              title={'Crew setting (optional)'}
-              label={'Included Crews'}
-              type={'pipeline'}
-            />
+            <Crews title={'Crew setting (optional)'} label={'Included Crews'} type={'pipeline'} />
           )}
         </>
       )}

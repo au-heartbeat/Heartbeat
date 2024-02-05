@@ -1,9 +1,7 @@
 import {
   selectDateRange,
-  selectJiraColumns,
   selectIsProjectCreated,
   selectMetrics,
-  selectUsers,
   updateBoardVerifyState,
   selectBoard,
 } from '@src/context/config/configSlice';
@@ -36,10 +34,7 @@ const MetricsStep = () => {
   const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const dispatch = useAppDispatch();
   const requiredData = useAppSelector(selectMetrics);
-  const users = useAppSelector(selectUsers);
-  const jiraColumns = useAppSelector(selectJiraColumns);
-  const targetFields = useAppSelector(selectMetricsContent).targetFields;
-  const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
+  const { jiraColumns, targetFields, cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
   const { startDate, endDate } = useAppSelector(selectDateRange);
   const isShowCrewsAndRealDone =
     requiredData.includes(REQUIRED_DATA.VELOCITY) ||
@@ -85,7 +80,7 @@ const MetricsStep = () => {
           <>
             <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
 
-            {isShowCrewsAndRealDone && <Crews options={users} title={'Crew settings'} label={'Included Crews'} />}
+            {isShowCrewsAndRealDone && <Crews title={'Crew settings'} label={'Included Crews'} />}
 
             {requiredData.includes(REQUIRED_DATA.CYCLE_TIME) && <CycleTime />}
 

@@ -1,6 +1,7 @@
+import { renderHook, act, waitFor, render } from '@testing-library/react';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
-import { renderHook, act, waitFor } from '@testing-library/react';
 import { MOCK_BOARD_INFO_URL, FAKE_TOKEN } from '@test/fixtures';
+import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 import { rest } from 'msw';
@@ -63,5 +64,29 @@ describe('use get board info', () => {
       expect(result.current.errorMessage.title).toEqual(title);
     });
     expect(result.current.errorMessage.message).toEqual(message);
+  });
+  it('should got retry button message when network error', async () => {
+    server.use(
+      rest.post(MOCK_BOARD_INFO_URL, (_, res) => {
+        return res.networkError('ERR_NETWORK');
+      }),
+    );
+    const { result } = renderHook(() => useGetBoardInfoEffect());
+
+    const mockedCall = jest.spyOn(result.current, 'getBoardInfo');
+
+    await act(() => {
+      result.current.getBoardInfo(mockBoardConfig);
+    });
+
+    await waitFor(() => {
+      expect(result.current.errorMessage.message).toBeTruthy();
+    });
+
+    await userEvent.click(render(<>{result.current.errorMessage.message}</>).getByText(/retry/i));
+
+    await waitFor(() => {
+      expect(mockedCall).toBeCalled();
+    });
   });
 });

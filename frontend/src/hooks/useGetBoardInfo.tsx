@@ -18,7 +18,7 @@ export interface BoardInfoResponse {
 export interface useGetBoardInfoInterface {
   getBoardInfo: (data: BoardInfoRequestDTO) => Promise<AxiosResponse<BoardInfoResponse>>;
   isLoading: boolean;
-  errorMessage: Record<string, string>;
+  errorMessage: Record<string, ReactNode>;
 }
 
 const codeMapping = (code: string | number, retry: ReactNode) => {
