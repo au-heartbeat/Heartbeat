@@ -39,6 +39,7 @@ const server = setupServer(
   rest.post(MOCK_PIPELINE_GET_INFO_URL, (req, res, ctx) =>
     res(ctx.status(200), ctx.body(JSON.stringify(MOCK_BUILD_KITE_GET_INFO_RESPONSE))),
   ),
+  rest.post(MOCK_BOARD_INFO_URL, (req, res, ctx) => res(ctx.status(500))),
 );
 
 const setup = () =>
