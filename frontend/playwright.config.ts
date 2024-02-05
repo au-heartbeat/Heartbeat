@@ -2,14 +2,12 @@ import { defineConfig, devices } from '@playwright/test';
 import { viewportDefault } from './e2e/fixtures/consts';
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-/**
  * See https://playwright.dev/docs/test-configuration.
  */
+
+if (process.env.CI) {
+  console.log('Start to run E2E testing on CI');
+}
 
 if (!process.env.E2E_BASE_URL) {
   throw new Error('Failed to start E2E testing, please configure the env var E2E_BASE_URL');
@@ -22,19 +20,21 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  outputDir: './e2e/test-results',
+  reporter: [['html', { open: process.env.CI ? 'never' : 'on-failure', outputFolder: './e2e/reports/html' }], ['list']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.E2E_BASE_URL,
+    viewport: viewportDefault,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    viewport: viewportDefault,
+    trace: 'on',
+    screenshot: 'only-on-failure',
   },
 
   /* Configure projects for major browsers */
