@@ -128,6 +128,7 @@ export const SourceControl = () => {
           label={fields[FIELD_KEY.TOKEN].key}
           variant='standard'
           type='password'
+          inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
           value={fields[FIELD_KEY.TOKEN].value}
           onFocus={(e) => onInputFocus(e.target.value)}
           onChange={(e) => onInputChange(e.target.value)}

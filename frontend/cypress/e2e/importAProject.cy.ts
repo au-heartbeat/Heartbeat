@@ -56,8 +56,8 @@ const textInputValues = [
 
 const tokenInputValues = [
   { index: 0, value: 'mockToken' },
-  { index: 1, value: `${PIPELINE_TOKEN}` },
-  { index: 2, value: `${GITHUB_TOKEN}` },
+  { index: 1, value: PIPELINE_TOKEN },
+  { index: 2, value: GITHUB_TOKEN },
 ];
 
 const checkFieldsExist = (fields: string[]) => {
