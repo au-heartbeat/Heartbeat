@@ -10,6 +10,11 @@ import { viewportDefault } from './e2e/fixtures/consts';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+
+if (!process.env.E2E_BASE_URL) {
+  throw new Error('Failed to start E2E testing, please configure the env var E2E_BASE_URL');
+}
+
 export default defineConfig({
   testDir: './e2e',
   /* Run tests in files in parallel */
@@ -25,7 +30,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:4321/',
+    baseURL: process.env.E2E_BASE_URL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
