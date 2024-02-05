@@ -5,11 +5,11 @@ import {
   StyledTextField,
   StyledTypeSelections,
 } from '@src/components/Common/ConfigForms';
+import { KEYS, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { selectIsBoardVerified } from '@src/context/config/configSlice';
-import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { Loading } from '@src/components/Loading';
@@ -57,7 +57,7 @@ export const Board = () => {
               onFocus={() => validateField(key)}
               onChange={(e) => updateField(key, e.target.value)}
               error={!!validatedError || !!verifiedError}
-              type={key === 'Token' ? 'password' : 'text'}
+              type={key === KEYS.TOKEN ? 'password' : 'text'}
               helperText={validatedError || verifiedError}
               sx={{ gridColumn: `span ${col}` }}
             />

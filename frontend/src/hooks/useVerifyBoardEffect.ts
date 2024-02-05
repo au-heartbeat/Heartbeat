@@ -41,7 +41,7 @@ const VALIDATOR = {
   TOKEN: (value: string) => REGEX.BOARD_TOKEN.test(value),
 };
 
-const KEYS = {
+export const KEYS = {
   BOARD: 'Board',
   BOARD_ID: 'Board Id',
   EMAIL: 'Email',
