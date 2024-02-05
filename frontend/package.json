@@ -22,6 +22,7 @@
     "e2e:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'npm run e2e:local'",
     "playwright": "pnpm exec playwright test",
     "playwright:local": "dotenvx run --env-file=./e2e/.env.local -- pnpm run playwright",
+    "playwright:with-server": "ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'pnpm run playwright:local'",
     "playwright:ui": "dotenvx run --env-file=./e2e/.env.local -- pnpm exec playwright test --ui",
     "playwright:report": "pnpm exec  playwright show-report",
     "playwright:codegen": "pnpm exec playwright codegen localhost:4321",
