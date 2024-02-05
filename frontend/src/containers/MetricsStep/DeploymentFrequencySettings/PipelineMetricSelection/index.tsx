@@ -67,7 +67,7 @@ export const PipelineMetricSelection = ({
 
   useEffect(() => {
     !isInfoLoading && shouldLoad && handleGetPipelineData(pipelineName);
-  }, [pipelineName, isInfoLoading]);
+  }, [shouldLoad, pipelineName, isInfoLoading]);
 
   const handleGetPipelineData = (_pipelineName: string) => {
     const { params, buildId, organizationId, pipelineType, token } = selectStepsParams(

@@ -1,11 +1,9 @@
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { Autocomplete, Box, ListItemText, TextField } from '@mui/material';
-import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { EmojiWrap, StyledAvatar } from '@src/constants/emojis/style';
-import React, { useEffect, useState } from 'react';
 import { Z_INDEX } from '@src/constants/commons';
 import { FormControlWrapper } from './style';
-import { useAppSelector } from '@src/hooks';
+import React, { useState } from 'react';
 
 interface Props {
   options: string[];
