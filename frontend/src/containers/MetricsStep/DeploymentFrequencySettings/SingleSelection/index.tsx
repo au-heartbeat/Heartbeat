@@ -18,25 +18,15 @@ interface Props {
 
 export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDatePipeline }: Props) => {
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
-  const [selectedOptions, setSelectedOptions] = useState(value);
   const [inputValue, setInputValue] = useState<string>(value);
-  const shouldLoad = useAppSelector(shouldMetricsLoad);
 
   const handleSelectedOptionsChange = (value: string) => {
-    setSelectedOptions(value);
     if (onGetSteps) {
       onUpDatePipeline(id, 'Step', '');
       onGetSteps(value);
     }
     onUpDatePipeline(id, label, value);
   };
-
-  useEffect(() => {
-    if (onGetSteps && !!selectedOptions && shouldLoad) {
-      onGetSteps(selectedOptions);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const emojiView = (pipelineStepName: string) => {
     const emojiUrls: string[] = getEmojiUrls(pipelineStepName);
