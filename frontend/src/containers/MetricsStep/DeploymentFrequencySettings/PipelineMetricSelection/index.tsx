@@ -19,9 +19,9 @@ import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { ErrorNotification } from '@src/components/ErrorNotification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
+import { useCallback, useEffect, useState } from 'react';
 import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
-import { useEffect, useState } from 'react';
 import { store } from '@src/store';
 
 interface pipelineMetricSelectionProps {
@@ -67,6 +67,7 @@ export const PipelineMetricSelection = ({
 
   useEffect(() => {
     !isInfoLoading && shouldLoad && handleGetPipelineData(pipelineName);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldLoad, pipelineName, isInfoLoading]);
 
   const handleGetPipelineData = (_pipelineName: string) => {
