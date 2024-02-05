@@ -9,8 +9,8 @@ if (process.env.CI) {
   console.log('Start to run E2E testing on CI');
 }
 
-if (!process.env.E2E_BASE_URL) {
-  throw new Error('Failed to start E2E testing, please configure the env var E2E_BASE_URL');
+if (!process.env.APP_ORIGIN) {
+  throw new Error('Failed to start E2E testing, please configure the env var APP_ORIGIN');
 }
 
 export default defineConfig({
@@ -29,7 +29,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.E2E_BASE_URL,
+    baseURL: process.env.APP_ORIGIN,
     viewport: viewportDefault,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
