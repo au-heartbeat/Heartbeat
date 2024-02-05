@@ -9,23 +9,23 @@ import { FormHelperText } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 
 interface crewsProps {
+  options: string[];
   title: string;
   label: string;
   type?: string;
 }
 
-export const Crews = ({ title, label, type = 'board' }: crewsProps) => {
+export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => {
   const isBoardCrews = type === 'board';
   const dispatch = useAppDispatch();
-  const { users, pipelineCrews } = useAppSelector(selectMetricsContent);
-  const options = isBoardCrews ? users : pipelineCrews;
   const [isEmptyCrewData, setIsEmptyCrewData] = useState<boolean>(false);
+  const { users, pipelineCrews } = useAppSelector(selectMetricsContent);
   const [selectedCrews, setSelectedCrews] = useState<string[]>([]);
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length;
 
   useMemo(() => {
-    setSelectedCrews(options);
-  }, [options]);
+    setSelectedCrews(isBoardCrews ? users : pipelineCrews);
+  }, [users, isBoardCrews, pipelineCrews]);
 
   useEffect(() => {
     setIsEmptyCrewData(selectedCrews.length === 0);

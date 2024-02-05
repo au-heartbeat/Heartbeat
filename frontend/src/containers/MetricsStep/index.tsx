@@ -4,6 +4,9 @@ import {
   selectMetrics,
   updateBoardVerifyState,
   selectBoard,
+  updateJiraVerifyResponse,
+  selectUsers,
+  selectJiraColumns,
 } from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
@@ -34,7 +37,10 @@ const MetricsStep = () => {
   const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const dispatch = useAppDispatch();
   const requiredData = useAppSelector(selectMetrics);
-  const { jiraColumns, targetFields, cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
+  const users = useAppSelector(selectUsers);
+  const jiraColumns = useAppSelector(selectJiraColumns);
+  const targetFields = useAppSelector(selectMetricsContent).targetFields;
+  const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
   const { startDate, endDate } = useAppSelector(selectDateRange);
   const isShowCrewsAndRealDone =
     requiredData.includes(REQUIRED_DATA.VELOCITY) ||
@@ -54,6 +60,7 @@ const MetricsStep = () => {
     }).then((res) => {
       if (res.data) {
         dispatch(updateBoardVerifyState(true));
+        dispatch(updateJiraVerifyResponse(res.data));
         dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
       }
     });
@@ -80,7 +87,7 @@ const MetricsStep = () => {
           <>
             <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
 
-            {isShowCrewsAndRealDone && <Crews title={'Crew settings'} label={'Included Crews'} />}
+            {isShowCrewsAndRealDone && <Crews options={users} title={'Crew settings'} label={'Included Crews'} />}
 
             {requiredData.includes(REQUIRED_DATA.CYCLE_TIME) && <CycleTime />}
 
