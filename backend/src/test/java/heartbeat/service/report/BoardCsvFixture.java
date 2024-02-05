@@ -57,6 +57,12 @@ public class BoardCsvFixture {
 		.originKey(null)
 		.build();
 
+	private static final BoardCSVConfig STATUS_DATE_CONFIG = BoardCSVConfig.builder()
+		.label("Status Date")
+		.value("baseInfo.fields.statuscategorychangedate")
+		.originKey(null)
+		.build();
+
 	private static final BoardCSVConfig STORY_POINTS_CONFIG = BoardCSVConfig.builder()
 		.label("Story Points")
 		.value("baseInfo.fields.storyPoints")
@@ -211,11 +217,12 @@ public class BoardCsvFixture {
 		.readJsonFile("./src/test/resources/fields.json");
 
 	public static List<BoardCSVConfig> MOCK_FIXED_FIELDS() {
-		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STORY_POINTS_CONFIG,
-				ASSIGNEE_CONFIG, REPORTER_CONFIG, PROJECT_KEY_CONFIG, PROJECT_NAME_CONFIG, PRIORITY_CONFIG,
-				PARENT_SUMMARY_CONFIG, SPRINT_CONFIG, LABELS_CONFIG, CYCLE_TIME_CONFIG, CYCLE_TIME_STORY_POINTS_CONFIG,
-				ANALYSIS_DAYS_CONFIG, IN_DEV_DAYS_CONFIG, WAITING_DAYS_CONFIG, TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG,
-				REVIEW_DAYS_CONFIG, ORIGIN_CYCLE_TIME_DOING_CONFIG, ORIGIN_CYCLE_BLOCKED_CONFIG);
+		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STATUS_DATE_CONFIG,
+				STORY_POINTS_CONFIG, ASSIGNEE_CONFIG, REPORTER_CONFIG, PROJECT_KEY_CONFIG, PROJECT_NAME_CONFIG,
+				PRIORITY_CONFIG, PARENT_SUMMARY_CONFIG, SPRINT_CONFIG, LABELS_CONFIG, CYCLE_TIME_CONFIG,
+				CYCLE_TIME_STORY_POINTS_CONFIG, ANALYSIS_DAYS_CONFIG, IN_DEV_DAYS_CONFIG, WAITING_DAYS_CONFIG,
+				TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG, REVIEW_DAYS_CONFIG, ORIGIN_CYCLE_TIME_DOING_CONFIG,
+				ORIGIN_CYCLE_BLOCKED_CONFIG);
 	}
 
 	public static List<BoardCSVConfig> MOCK_EXTRA_FIELDS_WITH_CUSTOM() {
@@ -258,6 +265,7 @@ public class BoardCsvFixture {
 			.summary("summary")
 			.issuetype(IssueType.builder().name("issue type").build())
 			.status(Status.builder().displayValue("done").build())
+			.statuscategorychangedate("2024-2-5")
 			.storyPoints(2)
 			.assignee(Assignee.builder().displayName("name").build())
 			.reporter(Reporter.builder().displayName("name").build())

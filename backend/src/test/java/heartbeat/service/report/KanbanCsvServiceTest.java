@@ -302,7 +302,7 @@ class KanbanCsvServiceTest {
 
 		verify(csvFileGenerator).convertBoardDataToCSV(anyList(), csvFieldsCaptor.capture(),
 				csvNewFieldsCaptor.capture(), any());
-		assertEquals(22, csvFieldsCaptor.getValue().size());
+		assertEquals(23, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue = csvNewFieldsCaptor.getValue().get(0);
 		assertEquals("baseInfo.fields.customFields.key-target1", targetValue.getValue());
 		assertEquals("fake-target1", targetValue.getLabel());
@@ -343,10 +343,10 @@ class KanbanCsvServiceTest {
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
 
 		verify(csvFileGenerator).convertBoardDataToCSV(anyList(), csvFieldsCaptor.capture(), anyList(), any());
-		assertEquals(23, csvFieldsCaptor.getValue().size());
+		assertEquals(24, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(22);
-		assertEquals("cycleTimeFlat.BLOCKED", targetValue.getValue());
-		assertEquals("OriginCycleTime: BLOCKED", targetValue.getLabel());
+		assertEquals("cardCycleTime.steps.review", targetValue.getValue());
+		assertEquals("Review Days", targetValue.getLabel());
 		assertNull(targetValue.getOriginKey());
 	}
 
@@ -394,7 +394,7 @@ class KanbanCsvServiceTest {
 		verify(csvFileGenerator).convertBoardDataToCSV(anyList(), csvFieldsCaptor.capture(),
 				csvNewFieldsCaptor.capture(), any());
 
-		assertEquals(27, csvFieldsCaptor.getValue().size());
+		assertEquals(28, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue1 = csvNewFieldsCaptor.getValue().get(0);
 		BoardCSVConfig targetValue2 = csvNewFieldsCaptor.getValue().get(1);
 		BoardCSVConfig targetValue3 = csvNewFieldsCaptor.getValue().get(2);
