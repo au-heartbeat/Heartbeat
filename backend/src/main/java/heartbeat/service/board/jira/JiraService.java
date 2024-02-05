@@ -386,10 +386,7 @@ public class JiraService {
 		AllCardsResponseDTO allCardsResponseDTO = gson.fromJson(allCardResponse, AllCardsResponseDTO.class);
 		List<JiraCard> jiraCards = allCardsResponseDTO.getIssues();
 
-		JsonArray elements = JsonParser.parseString(allCardResponse)
-			.getAsJsonObject()
-			.get("issues")
-			.getAsJsonArray();
+		JsonArray elements = JsonParser.parseString(allCardResponse).getAsJsonObject().get("issues").getAsJsonArray();
 		List<Map<String, JsonElement>> customFieldMapList = new ArrayList<>();
 		ArrayList<Double> storyPointList = new ArrayList<>();
 		ArrayList<Sprint> sprintList = new ArrayList<>();

@@ -176,7 +176,7 @@ public class KanbanCsvService {
 				case "issuetype" -> tempFields.put(fieldName, jiraCardFields.getIssuetype());
 				case "reporter" -> tempFields.put(fieldName, jiraCardFields.getReporter());
 				case "statusCategoryChangeData" ->
-					tempFields.put(fieldName, jiraCardFields.getStatusCategoryChangeDate());
+					tempFields.put(fieldName, jiraCardFields.getStatuscategorychangedate());
 				case "storyPoints" -> tempFields.put(fieldName, jiraCardFields.getStoryPoints());
 				case "fixVersions" -> tempFields.put(fieldName, jiraCardFields.getFixVersions());
 				case "project" -> tempFields.put(fieldName, jiraCardFields.getProject());

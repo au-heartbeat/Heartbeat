@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BoardCsvFixture {
 
@@ -464,7 +463,7 @@ public class BoardCsvFixture {
 					.status(Status.builder().displayValue("Doing").build())
 					.issuetype(IssueType.builder().name("Task").build())
 					.reporter(Reporter.builder().displayName("Jack").build())
-					.statusCategoryChangeDate("2023-4-23")
+					.statuscategorychangedate("2023-4-23")
 					.storyPoints(3)
 					.priority(Priority.builder().name("Top").build())
 					.fixVersions(List.of(FixVersion.builder().name("sprint1").build(),
