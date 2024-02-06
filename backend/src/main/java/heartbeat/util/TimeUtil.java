@@ -46,4 +46,11 @@ public interface TimeUtil {
 		return hours + ":" + minutes + ":" + seconds;
 	}
 
+	static int compareToDateString(String preDateString, String nextDateString) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		ZonedDateTime preDate = ZonedDateTime.parse(preDateString, formatter);
+		ZonedDateTime nextDate = ZonedDateTime.parse(nextDateString, formatter);
+		return nextDate.compareTo(preDate);
+	}
+
 }
