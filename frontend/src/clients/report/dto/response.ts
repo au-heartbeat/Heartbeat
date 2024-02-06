@@ -14,6 +14,7 @@ export interface ReportResponseDTO {
   doraMetricsCompleted: boolean;
   allMetricsCompleted: boolean;
   reportMetricsError: AllErrorResponse;
+  [key: string]: any;
 }
 
 export interface VelocityResponse {
