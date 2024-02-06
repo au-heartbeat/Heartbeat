@@ -6,6 +6,7 @@ import {
   selectUsers,
   updateBoardVerifyState,
   selectBoard,
+  updateJiraVerifyResponse,
 } from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
@@ -59,6 +60,7 @@ const MetricsStep = () => {
     }).then((res) => {
       if (res.data) {
         dispatch(updateBoardVerifyState(true));
+        dispatch(updateJiraVerifyResponse(res.data));
         dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
       }
     });
