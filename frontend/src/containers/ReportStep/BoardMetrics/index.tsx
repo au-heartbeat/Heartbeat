@@ -68,7 +68,7 @@ const BoardMetrics = ({
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
   const boardMetricsCompleted = boardMetrics
     .map((metric) => BOARD_METRICS_MAPPING[metric])
-    .every((metric) => (boardReport ? boardReport[metric] : false));
+    .every((metric) => (boardReport?.[metric] ?? false));
 
   const getBoardReportRequestBody = (): BoardReportRequestDTO => {
     return {
