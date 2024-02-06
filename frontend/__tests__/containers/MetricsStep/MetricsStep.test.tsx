@@ -39,7 +39,6 @@ const server = setupServer(
   rest.post(MOCK_PIPELINE_GET_INFO_URL, (req, res, ctx) =>
     res(ctx.status(200), ctx.body(JSON.stringify(MOCK_BUILD_KITE_GET_INFO_RESPONSE))),
   ),
-  rest.post(MOCK_BOARD_INFO_URL, (req, res, ctx) => res(ctx.status(500))),
 );
 
 const setup = () =>
@@ -204,6 +203,7 @@ describe('MetricsStep', () => {
     });
 
     it('should reset real done when change Cycle time settings DONE to other status', async () => {
+      server.use(rest.post(MOCK_BOARD_INFO_URL, (req, res, ctx) => res(ctx.status(500))));
       setup();
       const realDoneSettingSection = screen.getByLabelText(REAL_DONE_SETTING_SECTION);
 
@@ -219,6 +219,7 @@ describe('MetricsStep', () => {
     });
 
     it('should reset real done when change Cycle time settings other status to DONE', async () => {
+      server.use(rest.post(MOCK_BOARD_INFO_URL, (req, res, ctx) => res(ctx.status(500))));
       setup();
       const cycleTimeSettingsSection = screen.getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
       const realDoneSettingSection = screen.getByLabelText(REAL_DONE_SETTING_SECTION);

@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor, render } from '@testing-library/react';
+import { renderHook, act, waitFor, render, screen } from '@testing-library/react';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { MOCK_BOARD_INFO_URL, FAKE_TOKEN } from '@test/fixtures';
 import userEvent from '@testing-library/user-event';
@@ -83,7 +83,9 @@ describe('use get board info', () => {
       expect(result.current.errorMessage.message).toBeTruthy();
     });
 
-    await userEvent.click(render(<>{result.current.errorMessage.message}</>).getByText(/retry/i));
+    render(<>{result.current.errorMessage.message}</>);
+
+    await userEvent.click(screen.getByText(/retry/i));
 
     await waitFor(() => {
       expect(mockedCall).toBeCalled();
