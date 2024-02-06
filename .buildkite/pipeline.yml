@@ -102,6 +102,7 @@ steps:
     command: ./ops/deploy.sh e2e
 
   - label: ":rocket: Run e2e"
+    if: build.branch == "main" && build.message =~ /(?i)\[e2e\]/
     branches: main
     key: "check-e2e"
     depends_on:
