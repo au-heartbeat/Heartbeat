@@ -54,7 +54,7 @@ const DoraMetrics = ({
   const doraMetricsCompleted = metrics
     .filter((metric) => DORA_METRICS.includes(metric))
     .map((metric) => DORA_METRICS_MAPPING[metric])
-    .every((metric) => (doraReport?.[metric] ?? false));
+    .every((metric) => doraReport?.[metric] ?? false);
 
   const getDoraReportRequestBody = (): ReportRequestDTO => {
     const doraMetrics = metrics.filter((metric) => DORA_METRICS.includes(metric));
