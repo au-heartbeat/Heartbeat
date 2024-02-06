@@ -3,6 +3,7 @@ import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/res
 import { ICycleTimeSetting } from '@src/context/Metrics/metricsSlice';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import duration from 'dayjs/plugin/duration';
+import { Optional } from '@src/utils/types';
 import dayjs from 'dayjs';
 
 dayjs.extend(duration);
@@ -83,4 +84,26 @@ export const formatMinToHours = (duration: number) => {
 
 export const formatMillisecondsToHours = (duration: number) => {
   return dayjs.duration(duration, 'milliseconds').asHours();
+};
+
+export const formatDuplicatedNameWithSuffix = <T extends { name: string }>(data: Optional<T[]> = []) => {
+  const nameSumMap = new Map<string, number>();
+  const nameCountMap = new Map<string, number>();
+  data?.forEach((item) => {
+    const name = item.name;
+    const count = nameCountMap.get(item.name) || 0;
+    nameSumMap.set(name, count + 1);
+    nameCountMap.set(name, count + 1);
+  });
+  return data?.map((item) => {
+    const newItem = { ...item };
+    const name = newItem.name;
+    const count = nameCountMap.get(newItem.name) as number;
+    const maxCount = nameSumMap.get(newItem.name) as number;
+    if (maxCount > 1) {
+      newItem.name = `${newItem.name}-${maxCount - count + 1}`;
+      nameCountMap.set(name, count - 1);
+    }
+    return newItem;
+  });
 };
