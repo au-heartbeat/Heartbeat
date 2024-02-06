@@ -23,6 +23,19 @@ export const NOTIFICATION_TITLE = {
   SOMETHING_WENT_WRONG: 'Something went wrong!',
 };
 
+export const BOARD_METRICS_MAPPING: Record<string, string> = {
+  'Cycle time': 'cycleTime',
+  Velocity: 'velocity',
+  Classification: 'classificationList',
+};
+
+export const DORA_METRICS_MAPPING: Record<string, string> = {
+  'Lead time for changes': 'leadTimeForChanges',
+  'Deployment frequency': 'deploymentFrequency',
+  'Change failure rate': 'changeFailureRate',
+  'Mean time to recovery': 'meanTimeToRecovery',
+};
+
 export enum REQUIRED_DATA {
   All = 'All',
   VELOCITY = 'Velocity',
@@ -259,12 +272,14 @@ export const BOARD_CONFIG_INFO_TITLE = {
   UNAUTHORIZED_REQUEST: 'Unauthorized request!',
   NOT_FOUND: 'Not found!',
   NO_CONTENT: 'No card within selected date range!',
+  EMPTY: '',
 };
 
 export const BOARD_CONFIG_INFO_ERROR = {
   FORBIDDEN: 'Please go back to the previous page and change your board token with correct access permission.',
   NOT_FOUND: 'Please go back to the previous page and check your board info!',
   NOT_CONTENT: 'Please go back to the previous page and change your collection date, or check your board info!',
+  RETRY: 'Data loading failed, please',
 };
 
 export const PIPELINE_TOOL_VERIFY_ERROR_CASE_TEXT_MAPPING: { [key: string]: string } = {
