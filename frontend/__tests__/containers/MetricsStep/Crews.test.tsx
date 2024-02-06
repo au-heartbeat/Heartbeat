@@ -4,7 +4,6 @@ import { Crews } from '@src/containers/MetricsStep/Crews';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import React from 'react';
 
 const mockOptions = ['crew A', 'crew B'];
 const mockTitle = 'Crews Setting';

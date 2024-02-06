@@ -1,10 +1,9 @@
-import { StyledRetryButton } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases/style';
 import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';
 import { HEARTBEAT_EXCEPTION_CODE } from '@src/constants/resources';
+import { AxiosResponse, HttpStatusCode } from 'axios';
 import { ReactNode, useState } from 'react';
-import { AxiosResponse } from 'axios';
 import get from 'lodash/get';
 
 export type JiraColumns = Record<string, string>[];
@@ -21,31 +20,32 @@ export interface useGetBoardInfoInterface {
   errorMessage: Record<string, ReactNode>;
 }
 
-const codeMapping = (code: string | number, retry: ReactNode) => {
+const codeMapping = (code: string | number) => {
   const codes = {
-    400: {
+    [HttpStatusCode.BadRequest]: {
       title: BOARD_CONFIG_INFO_TITLE.INVALID_INPUT,
       message: BOARD_CONFIG_INFO_ERROR.NOT_FOUND,
+      code: HttpStatusCode.BadRequest,
     },
-    401: {
+    [HttpStatusCode.Unauthorized]: {
       title: BOARD_CONFIG_INFO_TITLE.UNAUTHORIZED_REQUEST,
       message: BOARD_CONFIG_INFO_ERROR.NOT_FOUND,
+      code: HttpStatusCode.Unauthorized,
     },
-    403: {
+    [HttpStatusCode.Forbidden]: {
       title: BOARD_CONFIG_INFO_TITLE.FORBIDDEN_REQUEST,
       message: BOARD_CONFIG_INFO_ERROR.FORBIDDEN,
+      code: HttpStatusCode.Forbidden,
     },
-    404: {
+    [HttpStatusCode.NotFound]: {
       title: BOARD_CONFIG_INFO_TITLE.NOT_FOUND,
       message: BOARD_CONFIG_INFO_ERROR.NOT_FOUND,
+      code: HttpStatusCode.NotFound,
     },
     [HEARTBEAT_EXCEPTION_CODE.TIMEOUT]: {
       title: BOARD_CONFIG_INFO_TITLE.EMPTY,
-      message: (
-        <>
-          {BOARD_CONFIG_INFO_ERROR.RETRY} {retry}
-        </>
-      ),
+      message: BOARD_CONFIG_INFO_ERROR.RETRY,
+      code: HEARTBEAT_EXCEPTION_CODE.TIMEOUT,
     },
   };
   return get(codes, code);
@@ -65,20 +65,14 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           setErrorMessage({
             title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
             message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
+            code: HttpStatusCode.NoContent,
           });
         }
         return res;
       })
       .catch((err) => {
         const { code } = err;
-        setErrorMessage(
-          codeMapping(
-            code,
-            <StyledRetryButton isLoading={isLoading} onClick={() => getBoardInfo(data)}>
-              Retry
-            </StyledRetryButton>,
-          ),
-        );
+        setErrorMessage(codeMapping(code));
         return err;
       })
       .finally(() => setIsLoading(false));
