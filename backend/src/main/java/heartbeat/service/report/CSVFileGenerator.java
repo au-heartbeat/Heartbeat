@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
+import static heartbeat.util.TimeUtil.convertToSimpleISOFormat;
 import static java.util.concurrent.TimeUnit.HOURS;
 
 @RequiredArgsConstructor
@@ -293,7 +294,7 @@ public class CSVFileGenerator {
 				rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
 				rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
 				rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
-				rowData[4] = cardDTO.getBaseInfo().getFields().getStatuscategorychangedate();
+				rowData[4] = convertToSimpleISOFormat(cardDTO.getBaseInfo().getFields().getStatuscategorychangedate());
 				rowData[5] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
 				if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
 					rowData[6] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
