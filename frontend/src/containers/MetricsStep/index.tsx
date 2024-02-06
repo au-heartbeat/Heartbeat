@@ -117,7 +117,7 @@ const MetricsStep = () => {
                   errorMessage.message
                 ) : (
                   <>
-                    {errorMessage.message}{' '}
+                    {errorMessage.message}
                     {
                       <StyledRetryButton variant='text' disabled={isLoading} onClick={getInfo}>
                         Retry
