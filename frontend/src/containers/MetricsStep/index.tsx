@@ -69,7 +69,9 @@ const MetricsStep = () => {
   useLayoutEffect(() => {
     if (!shouldLoad) return;
     dispatch(closeAllNotifications());
-    getInfo();
+    if (isShowCrewsAndRealDone) {
+      getInfo();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -81,28 +83,34 @@ const MetricsStep = () => {
         </MetricSelectionHeader>
       )}
 
-      <MetricSelectionWrapper>
-        {isLoading && <Loading />}
-        {isEmpty(errorMessage) ? (
-          <>
-            <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
+      {isShowCrewsAndRealDone && (
+        <MetricSelectionWrapper>
+          {isLoading && <Loading />}
+          {isEmpty(errorMessage) ? (
+            <>
+              <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
 
-            {isShowCrewsAndRealDone && <Crews options={users} title={'Crew settings'} label={'Included Crews'} />}
+              <Crews options={users} title={'Crew settings'} label={'Included Crews'} />
 
-            {requiredData.includes(REQUIRED_DATA.CYCLE_TIME) && <CycleTime />}
+              {requiredData.includes(REQUIRED_DATA.CYCLE_TIME) && <CycleTime />}
 
-            {isShowCrewsAndRealDone && isShowRealDone && (
-              <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
-            )}
+              {isShowRealDone && (
+                <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
+              )}
 
-            {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
-              <Classification targetFields={targetFields} title={'Classification setting'} label={'Distinguished By'} />
-            )}
-          </>
-        ) : (
-          <EmptyContent title={errorMessage.title} message={errorMessage.message} />
-        )}
-      </MetricSelectionWrapper>
+              {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
+                <Classification
+                  targetFields={targetFields}
+                  title={'Classification setting'}
+                  label={'Distinguished By'}
+                />
+              )}
+            </>
+          ) : (
+            <EmptyContent title={errorMessage.title} message={errorMessage.message} />
+          )}
+        </MetricSelectionWrapper>
+      )}
 
       {(requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
         requiredData.includes(REQUIRED_DATA.CHANGE_FAILURE_RATE) ||
