@@ -70,9 +70,7 @@ export enum METRICS_SUBTITLE {
   VELOCITY = 'Velocity(Story Point)',
 }
 
-export const SOURCE_CONTROL_METRICS: string[] = [
-  REQUIRED_DATA.LEAD_TIME_FOR_CHANGES,
-];
+export const SOURCE_CONTROL_METRICS: string[] = [REQUIRED_DATA.LEAD_TIME_FOR_CHANGES];
 
 export const PIPELINE_METRICS: string[] = [
   REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
