@@ -1,6 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 import { viewportDefault } from './e2e/fixtures/consts';
 
+const isWebkit = process.env.IS_WEBKIT === 'true';
+console.log(`isWebkit: ${isWebkit}`);
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -12,6 +15,51 @@ if (process.env.CI) {
 if (!process.env.APP_ORIGIN) {
   throw new Error('Failed to start E2E testing, please configure the env var APP_ORIGIN');
 }
+
+const e2eBaseProjects = [
+  {
+    name: 'chromium',
+    use: { ...devices['Desktop Chrome'] },
+  },
+
+  {
+    name: 'firefox',
+    use: { ...devices['Desktop Firefox'] },
+  },
+
+  /* Test against Tablet viewports. */
+  {
+    name: 'Tablet',
+    use: devices['iPad landscape'],
+  },
+
+  /* Test against branded browsers. */
+  // {
+  //   name: 'Microsoft Edge',
+  //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+  // },
+  // {
+  //   name: 'Google Chrome',
+  //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+  // },
+
+  /* Test against mobile viewports. */
+  // {
+  //   name: 'Mobile Chrome',
+  //   use: { ...devices['Pixel 5'] },
+  // },
+  // {
+  //   name: 'Mobile Safari',
+  //   use: { ...devices['iPhone 12'] },
+  // },
+];
+
+const e2eSafariProject = [
+  {
+    name: 'webkit',
+    use: { ...devices['Desktop Safari'] },
+  },
+];
 
 export default defineConfig({
   testDir: './e2e',
@@ -38,42 +86,7 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    //
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
+  projects: isWebkit ? e2eSafariProject : e2eBaseProjects,
 
   /* Run your local dev server before starting the tests */
   // webServer: {

@@ -37,7 +37,6 @@ export const DORA_METRICS_MAPPING: Record<string, string> = {
 };
 
 export enum REQUIRED_DATA {
-  All = 'All',
   VELOCITY = 'Velocity',
   CYCLE_TIME = 'Cycle time',
   CLASSIFICATION = 'Classification',
@@ -69,6 +68,14 @@ export enum METRICS_SUBTITLE {
   THROUGHPUT = 'Throughput(Cards Count)',
   VELOCITY = 'Velocity(Story Point)',
 }
+
+export const SOURCE_CONTROL_METRICS: string[] = [REQUIRED_DATA.LEAD_TIME_FOR_CHANGES];
+
+export const PIPELINE_METRICS: string[] = [
+  REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
+  REQUIRED_DATA.CHANGE_FAILURE_RATE,
+  REQUIRED_DATA.MEAN_TIME_TO_RECOVERY,
+];
 
 export const DORA_METRICS: string[] = [
   REQUIRED_DATA.LEAD_TIME_FOR_CHANGES,

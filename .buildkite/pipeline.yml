@@ -102,7 +102,7 @@ steps:
     command: ./ops/deploy.sh e2e
 
   - label: ":rocket: Run e2e"
-    if: build.branch == "main" && build.message =~ /(?i)\[e2e\]/
+    branches: main
     key: "check-e2e"
     depends_on:
       - "deploy-e2e"
@@ -117,20 +117,8 @@ steps:
       - "check-frontend-license"
       - "check-backend-license"
     command: ./ops/check.sh e2e
-    plugins:
-      - artifacts#v1.9.0:
-          upload:
-            - "frontend/e2e/reports/**/*"
-          name: "e2e-reports"
-          expire_in: "${RETENTION_DAYS} days"
-      - aws-ssm#v1.0.0:
-          parameters:
-            E2E_TOKEN_JIRA: /E2E/TOKEN_JIRA
-
-  - label: ":rocket: Run e2e only"
-    if: build.branch == "main" && build.message =~ /(?i)\[e2e-only\]/
-    key: "check-e2e-only"
-    command: ./ops/check.sh e2e
+    env:
+      IS_WEBKIT: false
     plugins:
       - artifacts#v1.9.0:
           upload:
@@ -143,5 +131,6 @@ steps:
 
   - label: ":rocket: Deploy prod"
     if: build.branch == "main" && (build.message =~ /(?i)\[frontend\]/ || build.message =~ /(?i)\[backend\]/)
-    depends_on: "check-e2e"
+    depends_on:
+      - "check-e2e"
     command: ./ops/deploy.sh prod
