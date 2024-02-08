@@ -1,3 +1,5 @@
+import { CONFIG_STEP_SAVING_FILENAME } from '../../fixtures/fixtures';
+import { config as configStepData } from '../../fixtures/configStep';
 import { expect, Locator, Page } from '@playwright/test';
 import { Dayjs } from 'dayjs';
 import path from 'path';
@@ -186,6 +188,10 @@ export class ConfigStep {
     await expect(this.nextButton).toBeDisabled();
   }
 
+  async validateNextButtonClickable() {
+    await expect(this.nextButton).toBeEnabled();
+  }
+
   async selectAllRequiredMetrics() {
     await this.requiredMetricsLabel.click();
     await this.requiredMetricsAllOption.click();
@@ -266,14 +272,14 @@ export class ConfigStep {
     await expect(this.sourceControlVerifiedButton).toBeVisible();
   }
 
-  async saveConfigStepAsJSONThenVerifyDownloadFile(json: any) {
+  async saveConfigStepAsJSONThenVerifyDownloadFile(json: typeof configStepData) {
     const downloadPromise = this.page.waitForEvent('download');
 
     await expect(this.saveAsButton).toBeEnabled();
 
     await this.saveAsButton.click();
     const download = await downloadPromise;
-    const savePath = path.resolve(__dirname, '..', '..', './temp/config-step.json');
+    const savePath = path.resolve(__dirname, '..', '..', './temp', `./${CONFIG_STEP_SAVING_FILENAME}`);
     await download.saveAs(savePath);
 
     const downloadPath = await download.path();
@@ -282,6 +288,10 @@ export class ConfigStep {
     expect(fileData).toEqual(json);
 
     await download.delete();
+  }
+
+  async goToMetrics() {
+    await this.nextButton.click();
   }
 }
 
