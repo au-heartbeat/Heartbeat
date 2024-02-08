@@ -57,6 +57,17 @@ query getTokenScope {
 ```
 slug: ID ---- "organization-slug"
 first: Int ---- 10
+- Field correspondence
+<table>
+  <tr>
+    <td>REST API</td>
+    <td>graphQL API</td>
+  </tr>  
+  <tr>
+  <td>scopes</td>
+  <td>nodes.scopes</td>
+</tr>
+</table>
 
 2.We need to get buildkite organisation info. 
 *Existing REST API*
@@ -64,25 +75,50 @@ first: Int ---- 10
 Key info we need as follows:
 ```
 {
-"name": "string",
-"slug": "string"
+"slug": "string",
+"name": "string"
 }
 ```
-Actually this REST doesn't fetch unused info, and we didn't find a scheme we need.
+*Using GraphQL API*
+GraphQL Scheme:
+```
+query getTokenScope {
+  organization(slug:ID!) {
+    slug
+    name
+    }
+}
+```
+Query variables:
+slug: ID ---- "organization-slug"
+
+- Field correspondence
+<table>
+  <tr>
+    <td>REST API</td>
+    <td>graphQL API</td>
+  </tr>
+  <tr>
+    <td>slug</td>
+    <td>slug</td>
+  </tr>
+  <tr>
+    <td>name</td>
+    <td>name</td>
+  </tr>
+</table>
 
 3.We need to get our pipeline info.
 *Existing REST API*
-- GET v2/organizations/{organizationId}/pipelines?page={page}&per_page={perPage}
+- `GET v2/organizations/{organizationId}/pipelines?page={page}&per_page={perPage}`
 Key info we need as follows:
 ```
 {
-"id": "string",
 "name": "string",
-"orgId": "string",
-"orgName": "string",
+"slug": "string",,
 "repository": "string",
 "steps": [
-    "string"
+    "name": "string"
   ]
 }
 ```
@@ -92,8 +128,6 @@ GraphQL Scheme:
 ```
 query getPipelineInfo {
   organization(slug: ID!) {
-    slug
-    name
     pipelines(first: Int) {
       edges {
         node {
@@ -115,10 +149,32 @@ Query variables:
 slug: ID ---- "organization-slug"
 first: Int ---- 10
 
-
+- Field correspondence
+<table>
+  <tr>
+    <td>REST API</td>
+    <td>graphQL API</td>
+  </tr>
+  <tr>
+    <td>slug</td>
+    <td>edges.node.slug</td>
+  </tr>
+  <tr>
+    <td>name</td>
+    <td>edges.node.name</td>
+  </tr>
+  <tr>
+    <td>repository</td>
+    <td>edges.node.repository.url</td>
+  </tr>
+  <tr>
+    <td>steps</td>
+    <td>edges.node.steps.yaml</td>
+  </tr>
+</table>
 4.We need to get our pipeline steps info.
 *Existing REST API*
-- GET v2/organizations/{organizationId}/pipelines/{pipelineId}/builds
+- `GET v2/organizations/{organizationId}/pipelines/{pipelineId}/builds`
 Key info we need as follows:
 ```
 {
@@ -130,7 +186,6 @@ Key info we need as follows:
     }
 	"pipelineCreateTime": "string",
 	"branch": "string",
-	"repository": "string",
 	"number": 4004,
 	"steps": [
 		"jobs": {
@@ -148,12 +203,8 @@ We find almost all steps info we need can get from this scheme. But we can't get
 GraphQL Scheme:
 ```
 query getPipelineStepsInfo {
-  pipeline(slug: ID!) {
-    builds(first: Int, ...) {
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
+  pipeline(slug: "thoughtworks-Heartbeat/heartbeat") {
+    builds(first: 1) {
       edges {
         node {
           state
@@ -171,16 +222,14 @@ query getPipelineStepsInfo {
               email
             }
           }
-          startedAt
-          finishedAt
-          url
-          uuid
-          jobs(passed: true, last: 1) {
+          jobs(first: 1) {
             edges {
               node {
                 ... on JobTypeCommand {
-                  command
-                  createdAt
+                  label
+                  state
+                  startedAt
+                  finishedAt
                 }
               }
             }
@@ -218,3 +267,58 @@ last: Int
 Returns the last n elements from the list.
 
 state: [BuildStates!]
+- Field correspondence
+<table>
+  <tr>
+    <td>REST API</td>
+    <td>graphQL API</td>
+  </tr>
+  <tr>
+    <td>state</td>
+    <td>builds.edges.node.state</td>
+  </tr>
+  <tr>
+    <td>commit</td>
+    <td>builds.edges.node.commit</td>
+  </tr>
+  <tr>
+    <td>creator.name</td>
+    <td>builds.edges.node.createdBy.name</td>
+  </tr>
+  <tr>
+    <td>creator.email</td>
+    <td>builds.edges.node.createdBy.email</td>
+  </tr>
+  <tr>
+    <td>pipelineCreateTime</td>
+    <td>builds.edges.node.createdAt</td>
+  </tr>
+  <tr>
+    <td>branch</td>
+    <td>builds.edges.node.branch</td>
+  </tr>
+  <tr>
+    <td>number</td>
+    <td>builds.edges.node.number</td>
+  </tr>
+  <tr>
+    <td>steps.jobs.name</td>
+    <td>builds.edges.node.jobs.node.label</td>
+  </tr>
+  <tr>
+    <td>steps.jobs.state</td>
+    <td>builds.edges.node.jobs.node.state</td>
+  </tr>
+  <tr>
+    <td>steps.jobs.startedAt</td>
+    <td>builds.edges.node.jobs.node.startedAt</td>
+  </tr>
+  <tr>
+    <td>steps.jobs.finishedAt</td>
+    <td>builds.edges.node.jobs.node.finishedAt</td>
+  </tr>
+</table>
+
+
+#### Test buildKite graphQL API curl
+https://docs.google.com/document/d/19m2cBgnY9OcFvCVNpHoj1tlTJuVlw0p_aZHXg85-Zds/edit?usp=drive_link
