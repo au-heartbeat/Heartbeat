@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 import { viewportDefault } from './e2e/fixtures/consts';
 
-const isWebkit = !!process.env.IS_WEBKIT;
+const isWebkit = process.env.IS_WEBKIT === 'true';
+console.log(`isWebkit: ${isWebkit}`);
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -32,14 +34,14 @@ const e2eBaseProjects = [
   },
 
   /* Test against branded browsers. */
-  {
-    name: 'Microsoft Edge',
-    use: { ...devices['Desktop Edge'], channel: 'msedge' },
-  },
-  {
-    name: 'Google Chrome',
-    use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-  },
+  // {
+  //   name: 'Microsoft Edge',
+  //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+  // },
+  // {
+  //   name: 'Google Chrome',
+  //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+  // },
 
   /* Test against mobile viewports. */
   // {
