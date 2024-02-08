@@ -1,5 +1,5 @@
+import { GITHUB_TOKEN, PIPELINE_TOKEN } from '../fixtures/fixtures';
 import { TIPS } from '../../src/constants/resources';
-import { GITHUB_TOKEN } from '../fixtures/fixtures';
 import metricsPage from '../pages/metrics/metrics';
 import configPage from '../pages/metrics/config';
 import reportPage from '../pages/metrics/report';
@@ -40,8 +40,8 @@ const textInputValues = [
 
 const tokenInputValues = [
   { index: 0, value: 'mockToken' },
-  { index: 1, value: 'mock1234'.repeat(5) },
-  { index: 2, value: `${GITHUB_TOKEN}` },
+  { index: 1, value: PIPELINE_TOKEN },
+  { index: 2, value: GITHUB_TOKEN },
 ];
 
 const checkCycleTimeTooltip = () => {
@@ -94,6 +94,8 @@ describe('Create a new project', () => {
   });
 
   it('Should create a new project manually', () => {
+    cy.log(Cypress.env('ENV_VAR_TEST'));
+
     homePage.navigate();
 
     homePage.headerVersion.should('exist');
@@ -117,13 +119,13 @@ describe('Create a new project', () => {
 
     configPage.selectMetricsData();
 
-    configPage.fillBoardInfoAndVerifyWithJira('1963', 'test@test.com', 'site', 'mockToken');
+    configPage.fillBoardInfoAndVerifyWithJira('1963', 'test@test.com', 'site', Cypress.env('TOKEN_JIRA'));
     configPage.getVerifiedButton(configPage.boardConfigSection).should('be.disabled');
     configPage.getResetButton(configPage.boardConfigSection).should('be.enabled');
 
-    configPage.fillPipelineToolFieldsInfoAndVerify('mock1234'.repeat(5));
+    configPage.fillPipelineToolFieldsInfoAndVerify(Cypress.env('TOKEN_BUILD_KITE'));
 
-    configPage.fillSourceControlFieldsInfoAndVerify(`${GITHUB_TOKEN}`);
+    configPage.fillSourceControlFieldsInfoAndVerify(Cypress.env('TOKEN_GITHUB'));
 
     configPage.nextStepButton.should('be.enabled');
 

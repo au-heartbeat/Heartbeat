@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
+import static heartbeat.util.TimeUtil.convertToSimpleISOFormat;
 import static java.util.concurrent.TimeUnit.HOURS;
 
 @RequiredArgsConstructor
@@ -95,9 +96,9 @@ public class CSVFileGenerator {
 		if (!fileName.contains("..") && fileName.startsWith(FILE_LOCAL_PATH)) {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
-				String[] headers = { "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Pipeline Creator", "First Code Committed Time In PR", "Code Committed Time", "PR Created Time",
-						"PR Merged Time", "Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
+				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
+						"Code Committer", "Pipeline Creator", "First Code Committed Time In PR", "Code Committed Time",
+						"PR Created Time", "PR Merged Time", "Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
 						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch" };
 
 				csvWriter.writeNext(headers);
@@ -106,6 +107,7 @@ public class CSVFileGenerator {
 					String committerName = null;
 					String commitDate = null;
 					String creatorName = null;
+					String organization = csvInfo.getOrganizationName();
 					String pipelineName = csvInfo.getPipeLineName();
 					String stepName = csvInfo.getStepName();
 					String valid = String.valueOf(csvInfo.getValid()).toLowerCase();
@@ -132,9 +134,9 @@ public class CSVFileGenerator {
 					String prLeadTime = leadTimeInfo.getPrLeadTime();
 					String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
 
-					String[] rowData = { pipelineName, stepName, valid, buildNumber, committerName, creatorName,
-							firstCommitTimeInPr, commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime,
-							prLeadTime, pipelineLeadTime, state, branch };
+					String[] rowData = { organization, pipelineName, stepName, valid, buildNumber, committerName,
+							creatorName, firstCommitTimeInPr, commitDate, prCreatedTime, prMergedTime, jobFinishTime,
+							totalTime, prLeadTime, pipelineLeadTime, state, branch };
 
 					csvWriter.writeNext(rowData);
 				}
@@ -292,39 +294,40 @@ public class CSVFileGenerator {
 				rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
 				rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
 				rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
-				rowData[4] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
+				rowData[4] = convertToSimpleISOFormat(cardDTO.getBaseInfo().getFields().getStatuscategorychangedate());
+				rowData[5] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
 				if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
-					rowData[5] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
+					rowData[6] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
 				}
 				if (cardDTO.getBaseInfo().getFields().getReporter() != null) {
-					rowData[6] = cardDTO.getBaseInfo().getFields().getReporter().getDisplayName();
+					rowData[7] = cardDTO.getBaseInfo().getFields().getReporter().getDisplayName();
 				}
 
-				rowData[7] = cardDTO.getBaseInfo().getFields().getProject().getKey();
-				rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getName();
-				rowData[9] = cardDTO.getBaseInfo().getFields().getPriority().getName();
+				rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getKey();
+				rowData[9] = cardDTO.getBaseInfo().getFields().getProject().getName();
+				rowData[10] = cardDTO.getBaseInfo().getFields().getPriority().getName();
 
 				if (cardDTO.getBaseInfo().getFields().getParent() != null) {
-					rowData[10] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
+					rowData[11] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
 				}
 
 				if (cardDTO.getBaseInfo().getFields().getSprint() != null) {
-					rowData[11] = cardDTO.getBaseInfo().getFields().getSprint().getName();
+					rowData[12] = cardDTO.getBaseInfo().getFields().getSprint().getName();
 				}
 
-				rowData[12] = String.join(",", cardDTO.getBaseInfo().getFields().getLabels());
+				rowData[13] = String.join(",", cardDTO.getBaseInfo().getFields().getLabels());
 			}
 
 		}
 		if (cardDTO.getCardCycleTime() != null) {
-			rowData[13] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
-			rowData[14] = cardDTO.getTotalCycleTimeDivideStoryPoints();
-			rowData[15] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
-			rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
-			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
-			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
-			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
-			rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
+			rowData[14] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
+			rowData[15] = cardDTO.getTotalCycleTimeDivideStoryPoints();
+			rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
+			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
+			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
+			rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
+			rowData[21] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
 		}
 		return rowData;
 	}

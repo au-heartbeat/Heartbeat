@@ -21,7 +21,7 @@ import {
   REQUIRED_DATA_LIST,
   SELECT_CONSIDER_AS_DONE_MESSAGE,
 } from '../../fixtures';
-import { saveCycleTimeSettings, saveDoneColumn, setCycleTimeSettingsType } from '@src/context/Metrics/metricsSlice';
+import { updateCycleTimeSettings, saveDoneColumn, setCycleTimeSettingsType } from '@src/context/Metrics/metricsSlice';
 import { updateJiraVerifyResponse, updateMetrics } from '@src/context/config/configSlice';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { backStep, nextStep } from '@src/context/stepper/StepperSlice';
@@ -63,7 +63,7 @@ describe('MetricsStep', () => {
   it('should render Crews when select velocity, and show Real done when have done column in Cycle time', async () => {
     store.dispatch(updateMetrics([REQUIRED_DATA_LIST[1]]));
     store.dispatch(
-      saveCycleTimeSettings([
+      updateCycleTimeSettings([
         { column: 'Testing', status: 'testing', value: 'Done' },
         { column: 'Testing', status: 'test', value: 'Done' },
       ]),
@@ -79,7 +79,7 @@ describe('MetricsStep', () => {
 
   it('should not show Real done when only one value is done for cycle time', async () => {
     store.dispatch(updateMetrics([REQUIRED_DATA_LIST[1]]));
-    store.dispatch(saveCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Done' }]));
+    store.dispatch(updateCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Done' }]));
 
     setup();
 
@@ -97,7 +97,7 @@ describe('MetricsStep', () => {
   });
 
   it('should hide Real Done when no done column in cycleTime settings', async () => {
-    await store.dispatch(saveCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Block' }]));
+    await store.dispatch(updateCycleTimeSettings([{ column: 'Testing', status: 'testing', value: 'Block' }]));
     setup();
 
     expect(screen.queryByText(REAL_DONE)).not.toBeInTheDocument();
@@ -192,7 +192,7 @@ describe('MetricsStep', () => {
       ];
 
       store.dispatch(updateMetrics(REQUIRED_DATA_LIST));
-      store.dispatch(saveCycleTimeSettings(cycleTimeSettingsWithTwoDoneValue));
+      store.dispatch(updateCycleTimeSettings(cycleTimeSettingsWithTwoDoneValue));
       store.dispatch(saveDoneColumn(doneColumn));
       store.dispatch(
         updateJiraVerifyResponse({
@@ -203,6 +203,7 @@ describe('MetricsStep', () => {
     });
 
     it('should reset real done when change Cycle time settings DONE to other status', async () => {
+      server.use(rest.post(MOCK_BOARD_INFO_URL, (req, res, ctx) => res(ctx.status(500))));
       setup();
       const realDoneSettingSection = screen.getByLabelText(REAL_DONE_SETTING_SECTION);
 
@@ -218,6 +219,7 @@ describe('MetricsStep', () => {
     });
 
     it('should reset real done when change Cycle time settings other status to DONE', async () => {
+      server.use(rest.post(MOCK_BOARD_INFO_URL, (req, res, ctx) => res(ctx.status(500))));
       setup();
       const cycleTimeSettingsSection = screen.getByLabelText(CYCLE_TIME_SETTINGS_SECTION);
       const realDoneSettingSection = screen.getByLabelText(REAL_DONE_SETTING_SECTION);
@@ -318,6 +320,19 @@ describe('MetricsStep', () => {
         expect(screen.getByText(/crew settings/i)).toBeInTheDocument();
       });
       expect(screen.getByText(/cycle time settings/i)).toBeInTheDocument();
+    });
+
+    it('should show retry button when call get info timeout', async () => {
+      server.use(
+        rest.post(MOCK_BOARD_INFO_URL, (_, res) => {
+          return res.networkError('HB_TIMEOUT');
+        }),
+      );
+      setup();
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+      });
     });
   });
 });

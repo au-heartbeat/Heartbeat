@@ -46,7 +46,7 @@ backend_license_check() {
 
 frontend_license_check() {
   cd frontend
-  npm install
+  npm install --force
   npm run license-compliance
 }
 
@@ -75,6 +75,7 @@ px_check() {
     --exclude='*.png' \
     --exclude='*.yaml' \
     --exclude-dir='node_modules' \
+    --exclude-dir='coverage' \
     '[0-9]\+px' \
     ./ || true)
   if [ -n "$result" ]; then
@@ -155,6 +156,7 @@ dot_star_check() {
 e2e_check(){
   cd frontend
   pnpm install --no-frozen-lockfile
+  pnpm exec playwright install
   pnpm run e2e
 }
 
