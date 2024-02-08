@@ -1,6 +1,6 @@
-import { CONFIG_STEP_SAVING_FILENAME } from '../fixtures/fixtures';
 import { config as configStepData } from '../fixtures/configStep';
 import { test } from '../fixtures/testWithExtendFixtures';
+import { CONFIG_STEP_SAVING_FILENAME } from '../fixtures';
 import dayjs from 'dayjs';
 import path from 'path';
 import fs from 'fs';
@@ -40,9 +40,9 @@ test('Create a new project', async ({ homePage, configStep, metricsStep }) => {
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormVisible();
   await configStep.checkSourceControlFormVisible();
-  await configStep.fillAndverifyBoardConfig(configStepData.board);
+  await configStep.fillAndVerifyBoardConfig(configStepData.board);
   await configStep.resetBoardConfig();
-  await configStep.fillAndverifyBoardConfig(configStepData.board);
+  await configStep.fillAndVerifyBoardConfig(configStepData.board);
   await configStep.fillAndVerifyPipelineToolForm(configStepData.pipelineTool);
   await configStep.fillAndVerifySourceControlForm(configStepData.sourceControl);
   await configStep.saveConfigStepAsJSONThenVerifyDownloadFile(configStepData);

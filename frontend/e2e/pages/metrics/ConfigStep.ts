@@ -1,5 +1,5 @@
-import { CONFIG_STEP_SAVING_FILENAME } from '../../fixtures/fixtures';
 import { config as configStepData } from '../../fixtures/configStep';
+import { CONFIG_STEP_SAVING_FILENAME } from '../../fixtures';
 import { expect, Locator, Page } from '@playwright/test';
 import { Dayjs } from 'dayjs';
 import path from 'path';
@@ -226,7 +226,7 @@ export class ConfigStep {
     await this.boardTokenInput.fill(token);
   }
 
-  async fillAndverifyBoardConfig(boardData: IBoardData) {
+  async fillAndVerifyBoardConfig(boardData: IBoardData) {
     await this.fillBoardConfigForm(boardData);
 
     await expect(this.boardVerifyButton).toBeEnabled();
