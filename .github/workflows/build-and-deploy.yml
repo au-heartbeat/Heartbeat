@@ -522,9 +522,9 @@ jobs:
       #       docker-compose -f docker-compose-stub.yml up -d stub
   e2e:
     runs-on: ubuntu-latest
-    # needs:
-    #   - deploy-e2e
-    #   - deploy-stub
+    needs:
+      - deploy-e2e
+      - deploy-stub
     container:
       image: mcr.microsoft.com/playwright:latest
     steps:
@@ -554,9 +554,9 @@ jobs:
 
   e2e-webkit:
     runs-on: ubuntu-latest
-    # needs:
-    #   - deploy-e2e
-    #   - deploy-stub
+    needs:
+      - deploy-e2e
+      - deploy-stub
     container:
       image: mcr.microsoft.com/playwright:latest
     steps:
