@@ -16,6 +16,7 @@ display_help() {
   echo "   backend-license      check license for the backend"
   echo "   frontend-license     check license for the frontend"
   echo "   e2e                  run e2e for the frontend"
+  echo "   e2e-container        run e2e for the frontend in container"
   echo
   exit 1
 }
@@ -153,8 +154,13 @@ dot_star_check() {
   fi
 }
 
+e2e_container_check() {
+  dokcer run --rm --ipc=host -v ./:/work -w /work mcr.microsoft.com/playwright /bin/bash ./ops/check.sh e2e
+}
+
 e2e_check(){
   export TZ=Asia/Shanghai
+  npm install -g pnpm
   cd frontend
   pnpm install --no-frozen-lockfile
   pnpm exec playwright install
@@ -180,6 +186,7 @@ while [[ "$#" -gt 0 ]]; do
     hex) hex_check ;;
     rgba) rgba_check ;;
     e2e) e2e_check ;;
+    "e2e-container) e2e_container_check ;;
     "backend-license") backend_license_check ;;
     "frontend-license") frontend_license_check ;;
     *) echo "Unknown parameter passed: $1" ;;
