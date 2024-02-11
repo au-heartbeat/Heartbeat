@@ -155,7 +155,7 @@ dot_star_check() {
 }
 
 e2e_container_check() {
-  dokcer run --rm --ipc=host -v ./:/work -w /work mcr.microsoft.com/playwright /bin/bash ./ops/check.sh e2e
+  docker run --rm --ipc=host -v ./:/work -w /work mcr.microsoft.com/playwright /bin/bash ./ops/check.sh e2e
 }
 
 e2e_check(){
@@ -186,7 +186,7 @@ while [[ "$#" -gt 0 ]]; do
     hex) hex_check ;;
     rgba) rgba_check ;;
     e2e) e2e_check ;;
-    "e2e-container) e2e_container_check ;;
+    "e2e-container") e2e_container_check ;;
     "backend-license") backend_license_check ;;
     "frontend-license") frontend_license_check ;;
     *) echo "Unknown parameter passed: $1" ;;
