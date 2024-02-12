@@ -155,7 +155,7 @@ dot_star_check() {
 }
 
 e2e_container_check() {
-  docker run --rm --ipc=host \
+  docker run --rm \
     -e "APP_ORIGIN=${APP_HTTP_SCHEDULE:-}://${AWS_EC2_IP_E2E:-}:${AWS_EC2_IP_E2E_FRONTEND_PORT:-}" \
     -e "E2E_TOKEN_JIRA=${E2E_TOKEN_JIRA:-}" \
     -e "E2E_TOKEN_BUILD_KITE=${E2E_TOKEN_BUILD_KITE:-}" \
@@ -167,6 +167,7 @@ e2e_container_check() {
 }
 
 e2e_check(){
+  echo "start to run e2e"
   export TZ=Asia/Shanghai
   npm install -g pnpm
   cd frontend
