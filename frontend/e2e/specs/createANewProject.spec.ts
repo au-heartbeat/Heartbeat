@@ -26,9 +26,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep }) => {
     startDate: dayjs(configStepData.dateRange.startDate).format('MM/DD/YYYY'),
     endDate: dayjs(configStepData.dateRange.endDate).format('MM/DD/YYYY'),
   };
-  console.log(process.env.APP_ORIGIN);
-  console.log(process.env.E2E_TOKEN_JIRA?.substring(1, 5));
-  console.log(dayjs.locale());
+  console.log(JSON.stringify(configStep));
   console.log(`dateRange: ${JSON.stringify(dateRange)}`);
 
   await homePage.goto();
