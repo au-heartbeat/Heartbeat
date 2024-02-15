@@ -177,7 +177,7 @@ e2e_check(){
   pnpm exec playwright install msedge
   pnpm exec playwright install chrome
   pnpm run e2e
-  rm -rf ./node_modules
+  rm -rf ../.pnpm-store
 }
 
 if [[ "$#" -le 0 ]]; then
