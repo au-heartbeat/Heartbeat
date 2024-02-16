@@ -102,7 +102,7 @@ steps:
   #   command: ./ops/deploy.sh e2e
 
   - label: ":rocket: Run e2e"
-    branches: main
+    # branches: main
     key: "check-e2e"
     depends_on:
       # - "deploy-e2e"
