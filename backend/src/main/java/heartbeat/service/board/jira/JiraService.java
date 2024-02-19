@@ -423,6 +423,10 @@ public class JiraService {
 							Sprint sprint = gson.fromJson(targetField, Sprint.class);
 							sprintList.add(sprint);
 						}
+						else {
+							log.error("[TEST JIRA SERVICE] Failed to get sprint for card: {}",
+									element.getAsJsonObject().get("key"));
+						}
 					}
 					else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
 							&& fieldValue.isJsonPrimitive()) {
@@ -449,8 +453,14 @@ public class JiraService {
 		for (int index = 0; index < customFieldMapList.size(); index++) {
 			allCardsResponseDTO.getIssues().get(index).getFields().setCustomFields(customFieldMapList.get(index));
 		}
+
+		log.info("[TEST JIRA SERVICE] Successfully get sprint list size: {}", sprintList.size());
+		log.info("[TEST JIRA SERVICE] Successfully get all card list size: {}", allCardsResponseDTO.getIssues().size());
 		for (int index = 0; index < sprintList.size(); index++) {
 			allCardsResponseDTO.getIssues().get(index).getFields().setSprint(sprintList.get(index));
+			String key = allCardsResponseDTO.getIssues().get(index).getKey();
+			Sprint sprint = allCardsResponseDTO.getIssues().get(index).getFields().getSprint();
+			log.info("[TEST JIRA SERVICE] Successfully set sprint for key: {}, sprint: {}", key, sprint);
 		}
 		return allCardsResponseDTO;
 	}
