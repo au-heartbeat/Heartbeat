@@ -43,7 +43,7 @@ export const StyledErrorMessage = styled('span')({
 
 export const StyledRetryButton = styled(Link)({
   marginLeft: '.5rem',
-  fontWeight: '700',
+  fontWeight: '900',
   fontSize: '1.25rem',
   textDecoration: 'none',
   cursor: 'pointer',
