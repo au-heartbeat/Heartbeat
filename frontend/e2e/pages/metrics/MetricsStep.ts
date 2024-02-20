@@ -1,3 +1,4 @@
+import { config as metricsStep } from '../../fixtures/metricsStep';
 import { expect, Locator, Page } from '@playwright/test';
 
 export class MetricsStep {
@@ -20,10 +21,30 @@ export class MetricsStep {
   readonly cycleTimeSelectForTestingSelect: Locator;
   readonly cycleTimeSelectForDoneSelect: Locator;
   readonly organizationSelect: Locator;
-  readonly pipelineNameSelect: Locator;
   readonly stepSelect: Locator;
   readonly branchSelect: Locator;
   readonly branchSelectIndicator: Locator;
+
+  readonly boardCrewSettingsLabel: Locator;
+  readonly boardCrewSettingsAllOption: Locator;
+  readonly boardCycleTimeSection: Locator;
+  readonly boardConsiderAsBlockCheckbox: Locator;
+  readonly boardByColumnRadioBox: Locator;
+  readonly boardByStatusRadioBox: Locator;
+  readonly boardCycleTimeTooltip: Locator;
+  readonly boardCrewSettingContainer: Locator;
+  readonly boardCrewSettingSelectedChips: Locator;
+  readonly boardClassificationLabel: Locator;
+  readonly boardClassificationContainer: Locator;
+  readonly boardClassificationSelectedChips: Locator;
+
+  readonly pipelineSettingSection: Locator;
+  readonly pipelineOrganizationSelect: Locator;
+  readonly pipelineNameSelect: Locator;
+  readonly pipelineStepSelect: Locator;
+  readonly pipelineBranchSelect: Locator;
+  readonly pipelineDefaultBranchSelectContainer: Locator;
+  readonly pipelineDefaultSelectedBranchChips: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -49,6 +70,30 @@ export class MetricsStep {
     this.stepSelect = page.getByLabel('Step *');
     this.branchSelect = page.getByLabel('Branches *');
     this.branchSelectIndicator = page.getByRole('progressbar');
+    this.boardCycleTimeSection = page.getByLabel('Cycle time settings section');
+    this.boardConsiderAsBlockCheckbox = this.boardCycleTimeSection.getByRole('checkbox');
+    this.boardByColumnRadioBox = this.boardCycleTimeSection.getByLabel('By Column');
+    this.boardByStatusRadioBox = this.boardCycleTimeSection.getByLabel('By Status');
+    this.boardCycleTimeTooltip = this.boardCycleTimeSection.getByLabel('tooltip');
+    this.boardCrewSettingsLabel = this.page.getByLabel('Included Crews *');
+    this.boardCrewSettingsAllOption = this.page.getByRole('option', { name: 'All' });
+    this.boardCrewSettingContainer = this.page.getByLabel('Included Crews multiple select');
+    this.boardCrewSettingSelectedChips = this.boardCrewSettingContainer.getByRole('button').filter({ hasText: /.+/ });
+    this.boardClassificationLabel = this.page.getByLabel('Distinguished By *');
+    this.boardClassificationContainer = this.page.getByLabel('Classification Setting AutoComplete');
+    this.boardClassificationSelectedChips = this.boardClassificationContainer
+      .getByRole('button')
+      .filter({ hasText: /.+/ });
+
+    this.pipelineSettingSection = this.page.getByLabel('Pipeline Configuration Section');
+    this.pipelineOrganizationSelect = this.pipelineSettingSection.getByLabel('Organization *');
+    this.pipelineNameSelect = this.pipelineSettingSection.getByLabel('Pipeline Name *');
+    this.pipelineStepSelect = this.pipelineSettingSection.getByLabel('Step *');
+    this.pipelineBranchSelect = this.pipelineSettingSection.getByLabel('Branches *');
+    this.pipelineDefaultBranchSelectContainer = this.pipelineSettingSection.getByLabel('Pipeline Branch AutoComplete');
+    this.pipelineDefaultSelectedBranchChips = this.pipelineDefaultBranchSelectContainer
+      .getByRole('button')
+      .filter({ hasText: /.+/ });
   }
 
   async waitForShown() {
@@ -73,11 +118,128 @@ export class MetricsStep {
   }
 
   async checkCycleTimeConsiderCheckboxChecked() {
-    await expect(this.considerAsBlockCheckbox).toBeChecked();
+    await expect(this.boardConsiderAsBlockCheckbox).toBeChecked();
   }
 
   async checkCycleTimeSettingIsByColumn() {
-    await expect(this.byColumnRadioBox).toBeChecked();
+    await expect(this.boardByColumnRadioBox).toBeChecked();
+  }
+
+  async checkCycleTimeSettingsTooltip() {
+    await expect(this.boardCycleTimeTooltip).toBeVisible();
+    await this.boardCycleTimeTooltip.hover();
+    await expect(
+      this.page.getByText('The report page will sum all the status in the column for cycletime calculation'),
+    ).toBeVisible();
+  }
+
+  async checkCrewSettingsVisible(crews: string[]) {
+    await expect(this.boardCrewSettingsLabel).toBeVisible();
+    await this.boardCrewSettingsLabel.click();
+    await expect(this.boardCrewSettingsAllOption).toBeVisible();
+    const crewsLocators = crews.map((crew) => expect(this.page.getByRole('option', { name: crew })).toBeVisible());
+    await Promise.all(crewsLocators);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectGivenCrews(crews: string[]) {
+    await this.boardCrewSettingsLabel.click();
+    const options = this.page.getByRole('option');
+    for (const option of (await options.all()).slice(1)) {
+      const optionName = (await option.textContent()) as string;
+      const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (crews.includes(optionName)) {
+        if (!isOptionSelected) {
+          await option.click();
+        }
+      } else {
+        if (isOptionSelected) {
+          await option.click();
+        }
+      }
+    }
+
+    await expect(this.boardCrewSettingSelectedChips).toHaveCount(crews.length);
+    crews.forEach(async (crew) => {
+      await expect(this.boardCrewSettingContainer.getByRole('button', { name: crew })).toBeVisible();
+    });
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectboardByStatusRadioBox() {
+    await this.boardByStatusRadioBox.check();
+    await expect(this.boardByStatusRadioBox).toBeChecked();
+  }
+
+  async selectGivenClassifications(classificationKeys: string[]) {
+    await this.boardClassificationLabel.click();
+    const options = this.page.getByRole('option');
+    for (const option of (await options.all()).slice(1)) {
+      const optionKey = (await option.getAttribute('data-testid')) as string;
+      const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (classificationKeys.includes(optionKey)) {
+        if (!isOptionSelected) {
+          await option.click();
+        }
+      } else {
+        if (isOptionSelected) {
+          await option.click();
+        }
+      }
+    }
+
+    await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectGivenPipelineBranches(branches: string[]) {
+    await this.pipelineBranchSelect.click();
+    const options = this.page.getByRole('option');
+    for (const option of (await options.all()).slice(1)) {
+      const optionName = (await option.textContent()) as string;
+      const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (branches.includes(optionName)) {
+        if (!isOptionSelected) {
+          await option.click();
+        }
+      } else {
+        if (isOptionSelected) {
+          await option.click();
+        }
+      }
+    }
+
+    await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectDefaultGivenPipelineSetting(pipelineSettings: typeof metricsStep.deployment) {
+    const firstPipelineConfig = pipelineSettings[0];
+    await this.pipelineOrganizationSelect.click();
+    const targetOrganizationOption = this.page.getByRole('option', { name: firstPipelineConfig.organization });
+    await expect(targetOrganizationOption).toBeVisible();
+    await targetOrganizationOption.click();
+
+    await this.pipelineNameSelect.click();
+    const targetNameOption = this.page.getByRole('option', { name: firstPipelineConfig.pipelineName });
+    await expect(targetNameOption).toBeVisible();
+    await targetNameOption.click();
+
+    await this.pipelineStepSelect.click();
+    const emojiRegExp = /:.+:/;
+    const emoji = firstPipelineConfig.step.match(emojiRegExp);
+    let stepName = '';
+    if (emoji === null) {
+      stepName = firstPipelineConfig.step;
+    } else {
+      const splitor = emoji as unknown as string;
+      stepName = firstPipelineConfig.step.split(splitor)[1];
+    }
+    const targetStepOption = this.page.getByRole('option', { name: stepName });
+    await expect(targetStepOption).toBeVisible();
+    await targetStepOption.click();
+
+    await this.selectGivenPipelineBranches(firstPipelineConfig.branches);
   }
   async waitForHiddenLoading() {
     await expect(this.loadings.first()).toBeHidden();

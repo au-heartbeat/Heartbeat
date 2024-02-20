@@ -14,6 +14,7 @@ if (!process.env.APP_ORIGIN) {
 }
 
 export default defineConfig({
+  timeout: 3 * 60 * 1000,
   testDir: './e2e',
   timeout: 100 * 1000,
   expect: {

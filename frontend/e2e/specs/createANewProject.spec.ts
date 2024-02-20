@@ -1,3 +1,4 @@
+import { config as metricsStepData } from '../fixtures/metricsStep';
 import { CONFIG_STEP_SAVING_FILENAME } from '../fixtures/fixtures';
 import { config as configStepData } from '../fixtures/configStep';
 import { test } from '../fixtures/testWithExtendFixtures';
@@ -56,4 +57,10 @@ test('Create a new project', async ({ homePage, configStep, metricsStep }) => {
   await metricsStep.checkLastAssigneeCrewFilterChecked();
   await metricsStep.checkCycleTimeConsiderCheckboxChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
+  await metricsStep.checkCycleTimeSettingsTooltip();
+  await metricsStep.checkCrewSettingsVisible(metricsStepData.crews);
+  await metricsStep.selectGivenCrews(metricsStepData.crews);
+  await metricsStep.selectboardByStatusRadioBox();
+  await metricsStep.selectGivenClassifications(metricsStepData.classification);
+  await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
 });
