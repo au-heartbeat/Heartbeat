@@ -396,6 +396,7 @@ public class JiraService {
 		Map<String, String> resultMap = targetFields.stream()
 			.collect(Collectors.toMap(TargetField::getKey, TargetField::getName));
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
+		log.info("[TEST JIRA SERVICE] Successfully get elements size: {}", elements.size());
 		for (JsonElement element : elements) {
 			JsonObject jsonElement = element.getAsJsonObject().get("fields").getAsJsonObject();
 			JsonElement storyPoints = jsonElement.getAsJsonObject().get(cardCustomFieldKey.getStoryPoints());
@@ -419,16 +420,31 @@ public class JiraService {
 				String customFieldValue = entry.getValue();
 				if (jsonElement.has(customFieldKey)) {
 					JsonElement fieldValue = jsonElement.get(customFieldKey);
-					if (customFieldValue.equals("Sprint") && !fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
-						JsonArray jsonArray = fieldValue.getAsJsonArray();
-						if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
-							Type listType = new TypeToken<List<Sprint>>() {
-							}.getType();
-							List<Sprint> sprints = gson.fromJson(jsonArray, listType);
-							sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
-									Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
-							sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
-									sprints.get(sprints.size() - 1));
+					if (customFieldValue.equals("Sprint")) {
+						log.info(
+								"[TEST JIRA SERVICE] Successfully get sprint key: {}, customFieldKey: {}, customField：{}",
+								element.getAsJsonObject().get("key").getAsString(), customFieldKey, fieldValue);
+						if (!fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
+							JsonArray jsonArray = fieldValue.getAsJsonArray();
+							if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+								Type listType = new TypeToken<List<Sprint>>() {
+								}.getType();
+								List<Sprint> sprints = gson.fromJson(jsonArray, listType);
+								sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
+										Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
+								sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
+										sprints.get(sprints.size() - 1));
+							}
+							else {
+								log.error(
+										"[TEST JIRA SERVICE] Failed get as json array for card: {}, with customFieldKey: {}",
+										element.getAsJsonObject().get("key"), customFieldKey);
+							}
+						}
+						else {
+							log.error(
+									"[TEST JIRA SERVICE] Failed get field value for card: {}, with customFieldKey: {}",
+									element.getAsJsonObject().get("key"), customFieldKey);
 						}
 					}
 					else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
@@ -449,6 +465,13 @@ public class JiraService {
 						}
 					}
 					customFieldMap.put(customFieldKey, fieldValue);
+				}
+				else {
+					if (customFieldValue.equals("Sprint")) {
+						log.error(
+								"[TEST JIRA SERVICE] Failed get customFieldKey in json for card: {}, with customFieldKey: {}",
+								element.getAsJsonObject().get("key"), customFieldKey);
+					}
 				}
 			}
 			customFieldMapList.add(customFieldMap);
