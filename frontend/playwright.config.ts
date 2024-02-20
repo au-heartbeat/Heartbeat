@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { viewportDefault } from './e2e/fixtures/consts';
+import { VIEWPORT_DEFAULT } from 'e2e/fixtures';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -15,6 +15,11 @@ if (!process.env.APP_ORIGIN) {
 
 export default defineConfig({
   testDir: './e2e',
+  timeout: 100 * 1000,
+  expect: {
+    timeout: 100 * 1000,
+    toHaveScreenshot: { maxDiffPixels: 100 },
+  },
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -30,7 +35,7 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.APP_ORIGIN,
-    viewport: viewportDefault,
+    viewport: VIEWPORT_DEFAULT,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on',
@@ -44,15 +49,31 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
     // },
-    //
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+
+    /* Test against Tablet viewports. */
+    {
+      name: 'Tablet',
+      use: devices['iPad landscape'],
+    },
+
+    /* Test against branded browsers. */
+    {
+      name: 'Microsoft Edge',
+      use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    },
+    {
+      name: 'Google Chrome',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    },
 
     /* Test against mobile viewports. */
     // {
@@ -62,16 +83,6 @@ export default defineConfig({
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
 

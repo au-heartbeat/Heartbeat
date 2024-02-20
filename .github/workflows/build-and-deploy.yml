@@ -91,7 +91,7 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v2
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2.12.0
+        uses: gradle/gradle-build-action@v3.0.0
       - name: Test and check
         run: ./gradlew clean check
       - name: Build
@@ -115,7 +115,7 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v2
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2.12.0
+        uses: gradle/gradle-build-action@v3.0.0
       - name: License check
         run: ./gradlew clean checkLicense
       - uses: actions/upload-artifact@v4
@@ -522,31 +522,35 @@ jobs:
       #       docker-compose -f docker-compose-stub.yml up -d stub
   e2e:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     needs:
       - deploy-e2e
       - deploy-stub
+    container:
+      image: mcr.microsoft.com/playwright:latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           node-version: ${{ vars.NODE_VERSION }}
-      - name: Install dependencies
+      - name: Install
         run: |
           npm install -g pnpm
-          pnpm install --no-frozen-lockfile
+      - name: Set env
+        run: echo "HOME=/root" >> $GITHUB_ENV
       - name: Run E2E
         env:
           APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
-        run: pnpm run e2e
+          E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
+          E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
+          E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
+        shell: bash {0}
+        run: ./ops/check.sh e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos
-          path: frontend/cypress/videos/
-          retention-days: ${{ vars.RETENTION_DAYS }}
+          name: playwright-report
+          path: frontend/e2e/reports/
+          retention-days: 30
 
   deploy:
     runs-on: ubuntu-latest

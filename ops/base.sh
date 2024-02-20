@@ -15,7 +15,7 @@ build_and_push_image() {
 
 #  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 #    -v "$(pwd)"/.trivyignore:/.trivyignore \
-#    aquasec/trivy:0.36.1 image \
+#    aquasec/trivy image \
 #    --severity HIGH,CRITICAL \
 #    --exit-code 1 \
 #    --ignore-unfixed \
