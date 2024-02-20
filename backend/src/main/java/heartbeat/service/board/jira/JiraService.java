@@ -392,7 +392,7 @@ public class JiraService {
 		JsonArray elements = JsonParser.parseString(allCardResponse).getAsJsonObject().get("issues").getAsJsonArray();
 		List<Map<String, JsonElement>> customFieldMapList = new ArrayList<>();
 		ArrayList<Double> storyPointList = new ArrayList<>();
-		ArrayList<Sprint> sprintList = new ArrayList<>();
+		Map<String, Sprint> sprintMap = new HashMap<>();
 		Map<String, String> resultMap = targetFields.stream()
 			.collect(Collectors.toMap(TargetField::getKey, TargetField::getName));
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
@@ -427,7 +427,8 @@ public class JiraService {
 							List<Sprint> sprints = gson.fromJson(jsonArray, listType);
 							sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
 									Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
-							sprintList.add(sprints.get(sprints.size() - 1));
+							sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
+									sprints.get(sprints.size() - 1));
 						}
 					}
 					else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
@@ -456,13 +457,15 @@ public class JiraService {
 			allCardsResponseDTO.getIssues().get(index).getFields().setCustomFields(customFieldMapList.get(index));
 		}
 
-		log.info("[TEST JIRA SERVICE] Successfully get sprint list size: {}", sprintList.size());
+		log.info("[TEST JIRA SERVICE] Successfully get sprint list size: {}", sprintMap.size());
 		log.info("[TEST JIRA SERVICE] Successfully get all card list size: {}", allCardsResponseDTO.getIssues().size());
-		for (int index = 0; index < sprintList.size(); index++) {
-			allCardsResponseDTO.getIssues().get(index).getFields().setSprint(sprintList.get(index));
+		for (int index = 0; index < allCardsResponseDTO.getIssues().size(); index++) {
 			String key = allCardsResponseDTO.getIssues().get(index).getKey();
-			Sprint sprint = allCardsResponseDTO.getIssues().get(index).getFields().getSprint();
-			log.info("[TEST JIRA SERVICE] Successfully set sprint for key: {}, sprint: {}", key, sprint);
+			Sprint targetSprint = sprintMap.get(key);
+			if (Objects.isNull(targetSprint)) {
+				log.error("[TEST JIRA SERVICE] Failed get key: {}, sprint", key);
+			}
+			allCardsResponseDTO.getIssues().get(index).getFields().setSprint(targetSprint);
 		}
 		return allCardsResponseDTO;
 	}
