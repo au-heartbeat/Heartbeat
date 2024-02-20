@@ -77,6 +77,8 @@ public class JiraBoardConfigDTOFixture {
 
 	public static final long TIMESTAMP_3 = 1673556350001L;
 
+	public static final String JIRA_CARD_WITH_TWO_SPRINT = "{\"startAt\":0,\"total\":5,\"issues\":[{\"key\":\"TS-1\",\"fields\":{\"assignee\":{\"displayName\":\"Zhang San\"},\"customfield_10020\":[{\"name\":\"TS Sprint 1\",\"completeDate\":\"2024-02-08T03:52:22.395Z\"},{\"name\":\"TS Sprint 2\",\"completeDate\":\"2024-02-07T04:21:14.512Z\"}]}}]}";
+
 	public static JiraBoardConfigDTO.JiraBoardConfigDTOBuilder JIRA_BOARD_CONFIG_RESPONSE_BUILDER() {
 
 		return JiraBoardConfigDTO.builder()

@@ -1273,12 +1273,11 @@ class JiraServiceTest {
 			.build();
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jqlForActiveSprint = "sprint in openSprints() ";
-		String allDoneCards = "{\"startAt\":0,\"total\":5,\"issues\":[{\"key\":\"TS-1\",\"fields\":{\"assignee\":{\"displayName\":\"Zhang San\"},\"customfield_10020\":[{\"name\":\"TS Sprint 1\",\"completeDate\":\"2024-02-08T03:52:22.395Z\"},{\"name\":\"TS Sprint 2\",\"completeDate\":\"2024-02-07T04:21:14.512Z\"}]}}]}";
+		String allDoneCards = JiraBoardConfigDTOFixture.JIRA_CARD_WITH_TWO_SPRINT;
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jqlForActiveSprint,
 				boardRequestParam.getToken()))
 			.thenReturn(allDoneCards);
-
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
