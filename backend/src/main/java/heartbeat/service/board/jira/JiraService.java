@@ -396,7 +396,6 @@ public class JiraService {
 		Map<String, String> resultMap = targetFields.stream()
 			.collect(Collectors.toMap(TargetField::getKey, TargetField::getName));
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields);
-		log.info("[TEST JIRA SERVICE] Successfully get elements size: {}", elements.size());
 		for (JsonElement element : elements) {
 			JsonObject jsonElement = element.getAsJsonObject().get("fields").getAsJsonObject();
 			JsonElement storyPoints = jsonElement.getAsJsonObject().get(cardCustomFieldKey.getStoryPoints());
@@ -420,31 +419,16 @@ public class JiraService {
 				String customFieldValue = entry.getValue();
 				if (jsonElement.has(customFieldKey)) {
 					JsonElement fieldValue = jsonElement.get(customFieldKey);
-					if (customFieldValue.equals("Sprint")) {
-						log.info(
-								"[TEST JIRA SERVICE] Successfully get sprint key: {}, customFieldKey: {}, customField：{}",
-								element.getAsJsonObject().get("key").getAsString(), customFieldKey, fieldValue);
-						if (!fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
-							JsonArray jsonArray = fieldValue.getAsJsonArray();
-							if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
-								Type listType = new TypeToken<List<Sprint>>() {
-								}.getType();
-								List<Sprint> sprints = gson.fromJson(jsonArray, listType);
-								sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
-										Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
-								sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
-										sprints.get(sprints.size() - 1));
-							}
-							else {
-								log.error(
-										"[TEST JIRA SERVICE] Failed get as json array for card: {}, with customFieldKey: {}",
-										element.getAsJsonObject().get("key"), customFieldKey);
-							}
-						}
-						else {
-							log.error(
-									"[TEST JIRA SERVICE] Failed get field value for card: {}, with customFieldKey: {}",
-									element.getAsJsonObject().get("key"), customFieldKey);
+					if (customFieldValue.equals("Sprint") && !fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
+						JsonArray jsonArray = fieldValue.getAsJsonArray();
+						if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+							Type listType = new TypeToken<List<Sprint>>() {
+							}.getType();
+							List<Sprint> sprints = gson.fromJson(jsonArray, listType);
+							sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
+									Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
+							sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
+									sprints.get(sprints.size() - 1));
 						}
 					}
 					else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
@@ -466,13 +450,6 @@ public class JiraService {
 					}
 					customFieldMap.put(customFieldKey, fieldValue);
 				}
-				else {
-					if (customFieldValue.equals("Sprint")) {
-						log.error(
-								"[TEST JIRA SERVICE] Failed get customFieldKey in json for card: {}, with customFieldKey: {}",
-								element.getAsJsonObject().get("key"), customFieldKey);
-					}
-				}
 			}
 			customFieldMapList.add(customFieldMap);
 		}
@@ -480,15 +457,9 @@ public class JiraService {
 			allCardsResponseDTO.getIssues().get(index).getFields().setCustomFields(customFieldMapList.get(index));
 		}
 
-		log.info("[TEST JIRA SERVICE] Successfully get sprint list size: {}", sprintMap.size());
-		log.info("[TEST JIRA SERVICE] Successfully get all card list size: {}", allCardsResponseDTO.getIssues().size());
 		for (int index = 0; index < allCardsResponseDTO.getIssues().size(); index++) {
 			String key = allCardsResponseDTO.getIssues().get(index).getKey();
-			Sprint targetSprint = sprintMap.get(key);
-			if (Objects.isNull(targetSprint)) {
-				log.error("[TEST JIRA SERVICE] Failed get key: {}, sprint", key);
-			}
-			allCardsResponseDTO.getIssues().get(index).getFields().setSprint(targetSprint);
+			allCardsResponseDTO.getIssues().get(index).getFields().setSprint(sprintMap.get(key));
 		}
 		return allCardsResponseDTO;
 	}

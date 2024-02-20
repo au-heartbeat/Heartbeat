@@ -1272,7 +1272,6 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD_WITH_EMPTY_STATUS()
 			.build();
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-		String jqlForKanban = "";
 		String jqlForActiveSprint = "sprint in openSprints() ";
 		String allDoneCards = "{\"startAt\":0,\"total\":5,\"issues\":[{\"key\":\"TS-1\",\"fields\":{\"assignee\":{\"displayName\":\"Zhang San\"},\"customfield_10020\":[{\"name\":\"TS Sprint 1\",\"completeDate\":\"2024-02-08T03:52:22.395Z\"},{\"name\":\"TS Sprint 2\",\"completeDate\":\"2024-02-07T04:21:14.512Z\"}]}}]}";
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
