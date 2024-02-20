@@ -454,12 +454,12 @@ public class JiraService {
 			customFieldMapList.add(customFieldMap);
 		}
 		for (int index = 0; index < customFieldMapList.size(); index++) {
-			allCardsResponseDTO.getIssues().get(index).getFields().setCustomFields(customFieldMapList.get(index));
+			jiraCards.get(index).getFields().setCustomFields(customFieldMapList.get(index));
 		}
 
-		for (int index = 0; index < allCardsResponseDTO.getIssues().size(); index++) {
-			String key = allCardsResponseDTO.getIssues().get(index).getKey();
-			allCardsResponseDTO.getIssues().get(index).getFields().setSprint(sprintMap.get(key));
+		for (int index = 0; index < jiraCards.size(); index++) {
+			String key = jiraCards.get(index).getKey();
+			jiraCards.get(index).getFields().setSprint(sprintMap.get(key));
 		}
 		return allCardsResponseDTO;
 	}
