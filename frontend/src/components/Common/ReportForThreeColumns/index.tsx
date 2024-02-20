@@ -12,11 +12,10 @@ import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji'
 import { ReportSelectionTitle } from '@src/containers/MetricsStep/style';
 import { ErrorMessagePrompt } from '@src/components/ErrorMessagePrompt';
 import { Table, TableBody, TableHead, TableRow } from '@mui/material';
-import { formatDuplicatedNameWithSuffix } from '@src/utils/util';
 import { Loading } from '@src/components/Loading';
-import React, { Fragment, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { Optional } from '@src/utils/types';
+import React, { Fragment } from 'react';
 
 interface ReportForThreeColumnsProps {
   title: string;
@@ -39,9 +38,6 @@ export const ReportForThreeColumns = ({
   data,
   errorMessage,
 }: ReportForThreeColumnsProps) => {
-  const modifiedData = useMemo(() => {
-    return formatDuplicatedNameWithSuffix(data);
-  }, [data]);
   const emojiRow = (row: ReportDataWithThreeColumns) => {
     const { name } = row;
     const emojiUrls: string[] = getEmojiUrls(name);
@@ -61,7 +57,7 @@ export const ReportForThreeColumns = ({
   };
 
   const renderRows = () =>
-    modifiedData?.slice(0, data?.length === 2 && data[1]?.name === AVERAGE_FIELD ? 1 : data?.length).map((row) => (
+    data?.slice(0, data?.length === 2 && data[1]?.name === AVERAGE_FIELD ? 1 : data?.length).map((row) => (
       <Fragment key={row.id}>
         <TableRow data-testid={'tr'}>
           <ColumnTableCell rowSpan={row.valuesList.length + 1}>{emojiRow(row)}</ColumnTableCell>

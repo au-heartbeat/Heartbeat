@@ -1,9 +1,9 @@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
+import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { ICycleTimeSetting } from '@src/context/Metrics/metricsSlice';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import duration from 'dayjs/plugin/duration';
-import { Optional } from '@src/utils/types';
 import dayjs from 'dayjs';
 
 dayjs.extend(duration);
@@ -86,22 +86,22 @@ export const formatMillisecondsToHours = (duration: number) => {
   return dayjs.duration(duration, 'milliseconds').asHours();
 };
 
-export const formatDuplicatedNameWithSuffix = <T extends { name: string }>(data: Optional<T[]> = []) => {
+export const formatDuplicatedNameWithSuffix = (data: ITargetFieldType[]) => {
   const nameSumMap = new Map<string, number>();
   const nameCountMap = new Map<string, number>();
-  data?.forEach((item) => {
+  data.forEach((item) => {
     const name = item.name;
     const count = nameCountMap.get(item.name) || 0;
     nameSumMap.set(name, count + 1);
     nameCountMap.set(name, count + 1);
   });
-  return data?.map((item) => {
+  return data.map((item) => {
     const newItem = { ...item };
     const name = newItem.name;
-    const count = nameCountMap.get(newItem.name) as number;
-    const maxCount = nameSumMap.get(newItem.name) as number;
+    const count = nameCountMap.get(name) as number;
+    const maxCount = nameSumMap.get(name) as number;
     if (maxCount > 1) {
-      newItem.name = `${newItem.name}-${maxCount - count + 1}`;
+      newItem.name = `${name}-${maxCount - count + 1}`;
       nameCountMap.set(name, count - 1);
     }
     return newItem;

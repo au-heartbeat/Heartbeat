@@ -18,10 +18,7 @@ export interface classificationProps {
 
 export const Classification = ({ targetFields, title, label }: classificationProps) => {
   const dispatch = useAppDispatch();
-  const targetFieldsWithSuffix = useMemo(
-    () => formatDuplicatedNameWithSuffix<ITargetFieldType>(targetFields) || [],
-    [targetFields],
-  );
+  const targetFieldsWithSuffix = formatDuplicatedNameWithSuffix(targetFields);
   const classificationWarningMessage = useAppSelector(selectClassificationWarningMessage);
   const selectedOptions = targetFieldsWithSuffix.filter(({ flag }) => flag);
   const isAllSelected = useMemo(() => {
