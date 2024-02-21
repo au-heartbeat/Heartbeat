@@ -48,7 +48,6 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.waitForHiddenLoading();
   await metricsStep.selectBoardGivenCrews(metricsStepData.crews);
-  await metricsStep.selectboardByStatusRadioBox();
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData);
   await metricsStep.selectGivenClassifications(metricsStepData.classification);

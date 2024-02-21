@@ -168,11 +168,6 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
-  async selectboardByStatusRadioBox() {
-    await this.boardByStatusRadioBox.check();
-    await expect(this.boardByStatusRadioBox).toBeChecked();
-  }
-
   async selectGivenClassifications(classificationKeys: string[]) {
     await this.boardClassificationLabel.click();
     const options = this.page.getByRole('option');

@@ -76,8 +76,6 @@ const CycleTimeTable = () => {
       })
     : cycleTimeSettings.map(({ status, column, value }) => [status, column, value]);
 
-  const selectColumnAriaLabelMeta = cycleTimeSettings.map((setting) => setting.column);
-
   const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setCycleTimeSettingsType(event.target.value));
     dispatch(
@@ -125,12 +123,7 @@ const CycleTimeTable = () => {
                   </Tooltip>
                 </StyledTableRowCell>
                 <StyledTableRowCell>
-                  <CellAutoComplete
-                    ariaLabelMeta={selectColumnAriaLabelMeta[index]}
-                    name={boardKey}
-                    defaultSelected={state}
-                    onSelect={saveCycleTimeOptions}
-                  />
+                  <CellAutoComplete name={boardKey} defaultSelected={state} onSelect={saveCycleTimeOptions} />
                 </StyledTableRowCell>
               </TableRow>
             ))}
