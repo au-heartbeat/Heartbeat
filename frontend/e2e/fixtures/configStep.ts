@@ -6,6 +6,7 @@ export const config = {
   },
   calendarType: 'Regular Calendar(Weekend Considered)',
   metrics: [
+    'All',
     'Velocity',
     'Cycle time',
     'Classification',

@@ -226,7 +226,7 @@ export class ConfigStep {
     await this.boardTokenInput.fill(token);
   }
 
-  async fillAndVerifyBoardConfig(boardData: IBoardData) {
+  async fillAndverifyBoardConfig(boardData: IBoardData) {
     await this.fillBoardConfigForm(boardData);
 
     await expect(this.boardVerifyButton).toBeEnabled();
