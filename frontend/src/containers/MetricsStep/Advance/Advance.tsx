@@ -35,6 +35,17 @@ export const Advance = () => {
     // dispatch(updateAdvancedSettings(newAdvancedSettings));
   };
 
+  function getAdvancedStettings(fields: Field[]) {
+    const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
+    const flag = fields.find((item) => item.key === 'Flag')?.value;
+    return { storyPoint, flag };
+  }
+
+  const handleUpdate = (fields: Field[]) => {
+    setFields(fields);
+    dispatch(updateAdvancedSettings(getAdvancedStettings(fields)));
+  };
+
   const updateField = (key: string, value: string) => {
     const newFields = fields.map((field) =>
       field.key === key
@@ -45,14 +56,6 @@ export const Advance = () => {
         : field,
     );
     handleUpdate(newFields);
-  };
-
-  const handleUpdate = (fields: Field[]) => {
-    setFields(fields);
-    const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
-    const flag = fields.find((item) => item.key === 'Flag')?.value;
-    const newAdvancedSettings = { storyPoint, flag };
-    dispatch(updateAdvancedSettings(newAdvancedSettings));
   };
 
   return (
