@@ -23,7 +23,7 @@
     "e2e:ui": "dotenvx run --env-file=./e2e/.env.local -- pnpm exec playwright test --ui --headed",
     "e2e:report": "pnpm exec playwright show-report",
     "e2e:codegen": "pnpm exec playwright codegen 13.215.41.120:4321",
-    "e2e:updateSnapshots": "npx playwright test --update-snapshots",
+    "e2e:updateSnapshots": "pnpm run e2e:local --update-snapshots",
     "prepare": "cd .. && husky install frontend/.husky",
     "license-compliance": "license-compliance -r detailed",
     "type-check": "tsc --noEmit"
