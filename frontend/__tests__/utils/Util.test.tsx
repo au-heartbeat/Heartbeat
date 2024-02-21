@@ -7,6 +7,7 @@ import {
   getJiraBoardToken,
   getRealDoneStatus,
   transformToCleanedBuildKiteEmoji,
+  formatDuplicatedNameWithSuffix,
 } from '@src/utils/util';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
@@ -175,5 +176,29 @@ describe('getRealDoneStatus', () => {
     ]);
 
     expect(result).toEqual(['Doing', 'DONE']);
+  });
+});
+
+describe('formatDuplicatedNameWithSuffix function', () => {
+  it('should add suffix for duplicated name', () => {
+    const duplicatedName = 'Story testing';
+    const basicTargetFields = [
+      { flag: true, key: 'issue', name: 'Issue' },
+      { flag: false, key: 'type', name: 'Type' },
+    ];
+    const mockTargetFields = [
+      ...basicTargetFields,
+      { flag: true, key: 'custom_field10060', name: duplicatedName },
+      { flag: false, key: 'custom_field10061', name: duplicatedName },
+    ];
+
+    const result = formatDuplicatedNameWithSuffix(mockTargetFields);
+
+    const expectResult = [
+      ...basicTargetFields,
+      { flag: true, key: 'custom_field10060', name: `${duplicatedName}-1` },
+      { flag: false, key: 'custom_field10061', name: `${duplicatedName}-2` },
+    ];
+    expect(result).toStrictEqual(expectResult);
   });
 });
