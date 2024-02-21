@@ -9,9 +9,16 @@ interface ICellAutoCompleteProps {
   defaultSelected: string;
   onSelect: (name: string, value: string) => void;
   customRenderInput?: React.FC;
+  ariaLabelMeta: string;
 }
 
-const CellAutoComplete = ({ name, defaultSelected, onSelect, customRenderInput }: ICellAutoCompleteProps) => {
+const CellAutoComplete = ({
+  name,
+  defaultSelected,
+  onSelect,
+  customRenderInput,
+  ariaLabelMeta,
+}: ICellAutoCompleteProps) => {
   const [selectedCycleTime, setSelectedCycleTime] = useState(defaultSelected);
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -37,7 +44,7 @@ const CellAutoComplete = ({ name, defaultSelected, onSelect, customRenderInput }
 
   return (
     <Autocomplete
-      aria-label={`Cycle time select for ${name}`}
+      aria-label={`Cycle time select for ${ariaLabelMeta}`}
       disableClearable
       options={CYCLE_TIME_LIST}
       value={selectedCycleTime}

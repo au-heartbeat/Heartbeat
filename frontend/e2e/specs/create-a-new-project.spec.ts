@@ -1,3 +1,4 @@
+import { config as metricsStepData } from '../fixtures/metricsStep';
 import { config as configStepData } from '../fixtures/configStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import { clearTempDir } from 'e2e/utils/clearTempDir';
@@ -12,6 +13,10 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
     startDate: format(configStepData.dateRange.startDate),
     endDate: format(configStepData.dateRange.endDate),
   };
+  const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+
   await homePage.goto();
   await homePage.createANewProject();
   await configStep.waitForShown();
@@ -25,9 +30,9 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormVisible();
   await configStep.checkSourceControlFormVisible();
-  await configStep.fillAndVerifyBoardConfig(configStepData.board);
+  await configStep.fillAndverifyBoardConfig(configStepData.board);
   await configStep.resetBoardConfig();
-  await configStep.fillAndVerifyBoardConfig(configStepData.board);
+  await configStep.fillAndverifyBoardConfig(configStepData.board);
   await configStep.fillAndVerifyPipelineToolForm(configStepData.pipelineTool);
   await configStep.fillAndVerifySourceControlForm(configStepData.sourceControl);
   await configStep.saveConfigStepAsJSONThenVerifyDownloadFile(configStepData);
@@ -42,17 +47,12 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkCycleTimeConsiderCheckboxChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.waitForHiddenLoading();
-  await metricsStep.selectHeartbeatState(
-    'To do',
-    'In Dev',
-    'Block',
-    'Review',
-    'Waiting for testing',
-    'Testing',
-    'Done',
-  );
-  await metricsStep.selectDistinguishedByOptions();
-  await metricsStep.selectPipelineSetting();
+  await metricsStep.selectBoardGivenCrews(metricsStepData.crews);
+  await metricsStep.selectboardByStatusRadioBox();
+  await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
+  await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.selectGivenClassifications(metricsStepData.classification);
+  await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
