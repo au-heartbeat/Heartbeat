@@ -66,9 +66,7 @@ first: Int ---- 10
 |------------|---------------|
 | scopes     | nodes.scopes  |
 
-
-
-- *Test GraphQL API curl*
+*Test GraphQL API curl*
 ```
 curl --request POST \
   --url https://graphql.buildkite.com/v1 \
@@ -108,7 +106,7 @@ slug: ID ---- "organization-slug"
 | slug       | slug        |
 | name       | name        |
 
-- *Test GraphQL API curl*
+*Test GraphQL API curl*
 ```
 curl --request POST \
   --url https://graphql.buildkite.com/v1 \
@@ -167,7 +165,7 @@ first: Int ---- 10
 | repository  | edges.node.repository.url  |
 | steps       | edges.node.steps.yaml      |
 
-- *Test GraphQL API curl*
+*Test GraphQL API curl*
 ```
 curl --request POST \
   --url https://graphql.buildkite.com/v1 \
@@ -305,7 +303,7 @@ before: entering the start cursor of the current page. Page up
 | steps.jobs.startedAt   | builds.edges.node.jobs.node.startedAt  |
 | steps.jobs.finishedAt  | builds.edges.node.jobs.node.finishedAt |
 
-- *Test GraphQL API curl*
+*Test GraphQL API curl*
 ```
 curl --request POST \
   --url 'https://graphql.buildkite.com/v1?=' \
