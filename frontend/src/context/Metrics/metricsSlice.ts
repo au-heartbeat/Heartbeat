@@ -56,7 +56,7 @@ export interface savedMetricsSettingState {
     importedDoneStatus: string[];
     importedClassification: string[];
     importedDeployment: IPipelineConfig[];
-    importedAdvancedSettings: { storyPoint: string; flag: string };
+    importedAdvancedSettings: { storyPoint: string; flag: string } | null;
   };
   cycleTimeWarningMessage: string | null;
   classificationWarningMessage: string | null;
@@ -87,7 +87,7 @@ const initialState: savedMetricsSettingState = {
     importedDoneStatus: [],
     importedClassification: [],
     importedDeployment: [],
-    importedAdvancedSettings: { storyPoint: '', flag: '' },
+    importedAdvancedSettings: null,
   },
   cycleTimeWarningMessage: null,
   classificationWarningMessage: null,
