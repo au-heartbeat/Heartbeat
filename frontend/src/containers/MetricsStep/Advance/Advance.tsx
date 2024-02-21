@@ -29,6 +29,26 @@ export const Advance = () => {
   ]);
 
   const handleAdvancedSettings = () => {
+    // const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
+    // const flag = fields.find((item) => item.key === 'Flag')?.value;
+    // const newAdvancedSettings = { storyPoint, flag };
+    // dispatch(updateAdvancedSettings(newAdvancedSettings));
+  };
+
+  const updateField = (key: string, value: string) => {
+    const newFields = fields.map((field) =>
+      field.key === key
+        ? {
+            ...field,
+            value: value.trim(),
+          }
+        : field,
+    );
+    handleUpdate(newFields);
+  };
+
+  const handleUpdate = (fields: Field[]) => {
+    setFields(fields);
     const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
     const flag = fields.find((item) => item.key === 'Flag')?.value;
     const newAdvancedSettings = { storyPoint, flag };
@@ -63,6 +83,7 @@ export const Advance = () => {
             key={index}
             label={key}
             value={value}
+            onChange={(e) => updateField(key, e.target.value)}
           />
         ))}
       </AdvancedForm>
