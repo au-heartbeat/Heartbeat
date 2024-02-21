@@ -162,9 +162,8 @@ e2e_container_check() {
     -e "E2E_TOKEN_JIRA=${E2E_TOKEN_JIRA:-}" \
     -e "E2E_TOKEN_BUILD_KITE=${E2E_TOKEN_BUILD_KITE:-}" \
     -e "E2E_TOKEN_GITHUB=${E2E_TOKEN_GITHUB:-}" \
-    -e "CI='true'" \
     heartbeat_e2e:latest \
-    pnpm run e2e
+    pnpm run e2e:ci
 }
 
 e2e_check(){
@@ -176,7 +175,7 @@ e2e_check(){
   pnpm exec playwright install
   pnpm exec playwright install msedge
   pnpm exec playwright install chrome
-  pnpm run e2e
+  pnpm run e2e:ci
 }
 
 if [[ "$#" -le 0 ]]; then
