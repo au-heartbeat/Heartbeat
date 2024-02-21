@@ -56,6 +56,7 @@ export interface savedMetricsSettingState {
     importedDoneStatus: string[];
     importedClassification: string[];
     importedDeployment: IPipelineConfig[];
+    importedAdvancedSettings: { storyPoint: string; flag: string };
   };
   cycleTimeWarningMessage: string | null;
   classificationWarningMessage: string | null;
@@ -86,6 +87,7 @@ const initialState: savedMetricsSettingState = {
     importedDoneStatus: [],
     importedClassification: [],
     importedDeployment: [],
+    importedAdvancedSettings: { storyPoint: '', flag: '' },
   },
   cycleTimeWarningMessage: null,
   classificationWarningMessage: null,
@@ -237,8 +239,17 @@ export const metricsSlice = createSlice({
     },
 
     updateMetricsImportedData: (state, action) => {
-      const { crews, cycleTime, doneStatus, classification, deployment, leadTime, assigneeFilter, pipelineCrews } =
-        action.payload;
+      const {
+        crews,
+        cycleTime,
+        doneStatus,
+        classification,
+        deployment,
+        advancedSettings,
+        leadTime,
+        assigneeFilter,
+        pipelineCrews,
+      } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
       state.importedData.importedCycleTime.importedCycleTimeSettings =
@@ -249,6 +260,7 @@ export const metricsSlice = createSlice({
       state.importedData.importedDoneStatus = doneStatus || state.importedData.importedDoneStatus;
       state.importedData.importedClassification = classification || state.importedData.importedClassification;
       state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
+      state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvanceSettings;
     },
 
     updateMetricsState: (state, action) => {
@@ -476,6 +488,7 @@ export const selectDeploymentFrequencySettings = (state: RootState) => state.met
 
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings;
 export const selectMetricsContent = (state: RootState) => state.metrics;
+export const selectAdvancedSettings = (state: RootState) => state.metrics.importedData.importedAdvancedSettings;
 export const selectTreatFlagCardAsBlock = (state: RootState) => state.metrics.treatFlagCardAsBlock;
 export const selectAssigneeFilter = (state: RootState) => state.metrics.assigneeFilter;
 export const selectCycleTimeWarningMessage = (state: RootState) => state.metrics.cycleTimeWarningMessage;

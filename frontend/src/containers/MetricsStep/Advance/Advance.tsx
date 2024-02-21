@@ -1,11 +1,7 @@
-import {
-  ItemCheckbox,
-  StyledTooltip,
-  TitleAndTooltipContainer,
-  TooltipContainer
-} from '../CycleTime/style';
+import { ItemCheckbox, StyledTooltip, TitleAndTooltipContainer, TooltipContainer } from '../CycleTime/style';
 import { selectTreatFlagCardAsBlock, updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { AdvancedContainer, AdvancedForm, AdvancedTitleContainer } from './style';
+import { selectAdvancedSettings } from '@src/context/Metrics/metricsSlice';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { IconButton, Link, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
@@ -15,33 +11,33 @@ import { useState } from 'react';
 
 export const Advance = () => {
   const dispatch = useAppDispatch();
-  const flagCardAsBlock = useAppSelector(selectTreatFlagCardAsBlock);
-
-  const handleFlagCardAsBlock = () => {
-    dispatch(updateTreatFlagCardAsBlock(!flagCardAsBlock));
-  };
-
+  const advancedSettings = useAppSelector(selectAdvancedSettings);
   const [fields, setFields] = useState<Field[]>([
     {
       key: 'Story Point',
-      value: '',
+      value: advancedSettings.storyPoint,
       validatedError: '',
       verifiedError: '',
       col: 2,
     },
     {
       key: 'Flag',
-      value: '',
+      value: advancedSettings.flag,
       validatedError: '',
       verifiedError: '',
       col: 2,
     },
   ]);
 
+  const handleAdvancedSettings = () => {
+    // dispatch(updateTreatFlagCardAsBlock(!flagCardAsBlock));
+    dispatch(updateAdvancedSettings(!flagCardAsBlock));
+  };
+
   return (
     <>
-      <AdvancedContainer onClick={handleFlagCardAsBlock}>
-        <ItemCheckbox checked={flagCardAsBlock} />
+      <AdvancedContainer onClick={handleAdvancedSettings}>
+        <ItemCheckbox checked={!!advancedSettings} />
         <TitleAndTooltipContainer>
           <AdvancedTitleContainer>Advanced settings</AdvancedTitleContainer>
           <TooltipContainer data-test-id={'tooltip'}>
@@ -58,13 +54,14 @@ export const Advance = () => {
       </AdvancedContainer>
 
       <AdvancedForm>
-        {fields.map(({ key, col }, index) => (
+        {fields.map(({ key, col, value }, index) => (
           <TextField
             id='standard-basic'
             variant='standard'
             sx={{ gridColumn: `span ${col}` }}
             key={index}
             label={key}
+            value={value}
           />
         ))}
       </AdvancedForm>

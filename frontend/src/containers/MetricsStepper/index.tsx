@@ -232,6 +232,10 @@ const MetricsStepper = () => {
       classification: targetFields
         ?.filter((item: { name: string; key: string; flag: boolean }) => item.flag)
         ?.map((item: { name: string; key: string; flag: boolean }) => item.key),
+      advancedSettings: {
+        storyPoint: '1',
+        flag: '2',
+      },
       deployment: deploymentFrequencySettings,
       leadTime: leadTimeForChanges,
     };
