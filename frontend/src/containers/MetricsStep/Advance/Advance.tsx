@@ -1,7 +1,6 @@
 import { ItemCheckbox, StyledTooltip, TitleAndTooltipContainer, TooltipContainer } from '../CycleTime/style';
-import { selectTreatFlagCardAsBlock, updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
+import { selectAdvancedSettings, updateAdvancedSettings } from '@src/context/Metrics/metricsSlice';
 import { AdvancedContainer, AdvancedForm, AdvancedTitleContainer } from './style';
-import { selectAdvancedSettings } from '@src/context/Metrics/metricsSlice';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { IconButton, Link, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
@@ -30,8 +29,10 @@ export const Advance = () => {
   ]);
 
   const handleAdvancedSettings = () => {
-    // dispatch(updateTreatFlagCardAsBlock(!flagCardAsBlock));
-    dispatch(updateAdvancedSettings(!flagCardAsBlock));
+    const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
+    const flag = fields.find((item) => item.key === 'Flag')?.value;
+    const newAdvancedSettings = { storyPoint, flag };
+    dispatch(updateAdvancedSettings(newAdvancedSettings));
   };
 
   return (
