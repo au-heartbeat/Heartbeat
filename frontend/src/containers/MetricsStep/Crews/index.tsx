@@ -31,7 +31,7 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
     setIsEmptyCrewData(selectedCrews.length === 0);
   }, [selectedCrews]);
 
-  const handleCrewChange = (event: React.SyntheticEvent, value: string[]) => {
+  const handleCrewChange = (_: React.SyntheticEvent, value: string[]) => {
     if (value[value.length - 1] === 'All') {
       setSelectedCrews(selectedCrews.length === options.length ? [] : options);
       return;
