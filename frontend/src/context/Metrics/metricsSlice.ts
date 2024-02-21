@@ -460,7 +460,12 @@ export const metricsSlice = createSlice({
     updateAssigneeFilter: (state, action) => {
       state.assigneeFilter = action.payload;
     },
+
     resetMetricData: () => initialState,
+
+    updateAdvancedSettings: (state, action) => {
+      state.importedData.importedAdvancedSettings = action.payload;
+    },
   },
 });
 
@@ -482,6 +487,7 @@ export const {
   updatePipelineStep,
   setCycleTimeSettingsType,
   resetMetricData,
+  updateAdvancedSettings,
 } = metricsSlice.actions;
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
