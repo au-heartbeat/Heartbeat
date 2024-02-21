@@ -2,11 +2,10 @@ export const config = {
   projectName: 'Heartbeat Metrics',
   dateRange: {
     startDate: '2024-01-15T00:00:00.000+08:00',
-    endDate: '2024-01-19T23:59:59.999+08:00',
+    endDate: '2024-01-30T23:59:59.999+08:00',
   },
   calendarType: 'Calendar with Chinese Holiday',
   metrics: [
-    'All',
     'Velocity',
     'Cycle time',
     'Classification',
@@ -19,7 +18,6 @@ export const config = {
     type: 'Jira',
     boardId: '2',
     email: 'heartbeatuser2023@gmail.com',
-    projectKey: 'ADM',
     site: 'dorametrics',
     token: process.env.E2E_TOKEN_JIRA as string,
   },

@@ -1,13 +1,18 @@
-import { config as metricsStep } from '../../fixtures/metricsStep';
+import { config as metricsStepData } from '../../fixtures/metricsStep';
+import { METRICS_STEP_SAVING_FILENAME } from '../../fixtures';
 import { expect, Locator, Page } from '@playwright/test';
+import path from 'path';
+import fs from 'fs';
 
 export class MetricsStep {
   readonly page: Page;
   readonly stepTitle: Locator;
   readonly nextButton: Locator;
+  readonly previousButton: Locator;
   readonly boardConfigurationTitle: Locator;
   readonly pipelineConfigurationTitle: Locator;
   readonly loadings: Locator;
+  readonly saveAsButton: Locator;
 
   readonly boardCrewSettingsLabel: Locator;
   readonly boardCrewSettingChipsContainer: Locator;
@@ -45,6 +50,8 @@ export class MetricsStep {
     this.page = page;
     this.stepTitle = page.getByText('Metrics', { exact: true });
     this.nextButton = page.getByRole('button', { name: 'Next' });
+    this.previousButton = page.getByRole('button', { name: 'Previous' });
+    this.saveAsButton = page.getByRole('button', { name: 'Save' });
     this.boardConfigurationTitle = page.getByText('Board configuration');
     this.pipelineConfigurationTitle = page.getByText('Pipeline configuration');
     this.loadings = page.getByTestId('loading');
@@ -277,7 +284,7 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
-  async selectDefaultGivenPipelineSetting(pipelineSettings: typeof metricsStep.deployment) {
+  async selectDefaultGivenPipelineSetting(pipelineSettings: typeof metricsStepData.deployment) {
     const firstPipelineConfig = pipelineSettings[0];
 
     await this.selectOrganization(firstPipelineConfig.organization);
@@ -308,6 +315,68 @@ export class MetricsStep {
       await expect(this.pipelineCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
     });
     await this.page.keyboard.press('Escape');
+  }
+
+  validateSavedJsonCriticalFieldsEqualsToFixture(file: typeof metricsStepData, fixture: typeof metricsStepData) {
+    const fileCopy = JSON.parse(JSON.stringify(file));
+    const fixtureCopy = JSON.parse(JSON.stringify(fixture));
+
+    /**
+     * Belows are tuples comparison
+     *
+     * Saved json array elements might present different order with the fixture,
+     * Since the UI interaction is unpredictable(select and unselect options of multi-autocomplete).
+     * However, if the elements are the same(regardless of order), we say, the saved json is correct.
+     */
+    const savedMetrics = fileCopy.metrics;
+    const fixtureMetrics = fixtureCopy.metrics;
+    expect(savedMetrics).toEqual(expect.arrayContaining(fixtureMetrics));
+    expect(fixtureMetrics).toEqual(expect.arrayContaining(savedMetrics));
+
+    const savedCrews = fileCopy.crews;
+    const fixtureCrews = fixtureCopy.crews;
+    expect(savedCrews).toEqual(expect.arrayContaining(fixtureCrews));
+    expect(fixtureCrews).toEqual(expect.arrayContaining(savedCrews));
+
+    const savedClassification = fileCopy.classification;
+    const fixtureClassification = fixtureCopy.classification;
+    expect(savedClassification).toEqual(expect.arrayContaining(fixtureClassification));
+    expect(fixtureClassification).toEqual(expect.arrayContaining(savedClassification));
+
+    /**
+     * Then compare regular fields
+     */
+    delete fileCopy.metrics;
+    delete fileCopy.crews;
+    delete fileCopy.classification;
+    delete fileCopy.doneStatus;
+    delete fixtureCopy.metrics;
+    delete fixtureCopy.crews;
+    delete fixtureCopy.classification;
+    delete fixtureCopy.doneStatus;
+    expect(fileCopy).toEqual(fixtureCopy);
+  }
+
+  async saveConfigStepAsJSONThenVerifyDownloadFile(json: typeof metricsStepData) {
+    const downloadPromise = this.page.waitForEvent('download');
+
+    await expect(this.saveAsButton).toBeEnabled();
+
+    await this.saveAsButton.click();
+    const download = await downloadPromise;
+    const savePath = path.resolve(__dirname, '..', '..', './temp', `./${METRICS_STEP_SAVING_FILENAME}`);
+    await download.saveAs(savePath);
+
+    const downloadPath = await download.path();
+    const fileData = JSON.parse(fs.readFileSync(downloadPath, 'utf8'));
+
+    this.validateSavedJsonCriticalFieldsEqualsToFixture(fileData, json);
+
+    await download.delete();
+  }
+
+  async goToPreviousStep() {
+    await this.previousButton.click();
   }
 
   async goToReportPage() {

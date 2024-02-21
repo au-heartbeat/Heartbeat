@@ -145,11 +145,16 @@ export class ConfigStep {
     await expect(this.page).toHaveURL(/\//);
   }
 
-  async selectRegularCalendar() {
-    await this.regularCalendar.click();
-
-    await expect(this.chineseCalendar).not.toBeChecked();
-    await expect(this.regularCalendar).toBeChecked();
+  async selectRegularCalendar(calendarType: string) {
+    if (calendarType === 'Calendar with Chinese Holiday') {
+      await this.chineseCalendar.click();
+      await expect(this.chineseCalendar).toBeChecked();
+      await expect(this.regularCalendar).not.toBeChecked();
+    } else {
+      await this.regularCalendar.click();
+      await expect(this.regularCalendar).toBeChecked();
+      await expect(this.chineseCalendar).not.toBeChecked();
+    }
   }
 
   async selectDateRange(fromDay: Dayjs, toDay: Dayjs) {
