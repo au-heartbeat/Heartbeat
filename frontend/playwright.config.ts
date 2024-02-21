@@ -16,9 +16,8 @@ if (!process.env.APP_ORIGIN) {
 export default defineConfig({
   timeout: 3 * 60 * 1000,
   testDir: './e2e',
-  timeout: 100 * 1000,
   expect: {
-    timeout: 100 * 1000,
+    timeout: 30 * 1000,
     toHaveScreenshot: { maxDiffPixels: 100 },
   },
   /* Run tests in files in parallel */

@@ -37,6 +37,9 @@ export class MetricsStep {
   readonly pipelineDefaultSelectedBranchChips: Locator;
   readonly pipelineBranchSelectIndicator: Locator;
   readonly pipelineBranchesErrorMessage: Locator;
+  readonly pipelineCrewSettingsLabel: Locator;
+  readonly pipelineCrewSettingChipsContainer: Locator;
+  readonly pipelineCrewSettingSelectedChips: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -94,6 +97,15 @@ export class MetricsStep {
       .filter({ hasText: /.+/ });
     this.pipelineBranchesErrorMessage = page.getByText('The codebase branch marked in red is invalid!');
     this.pipelineBranchSelectIndicator = page.getByRole('progressbar');
+    this.pipelineCrewSettingsLabel = this.pipelineSettingSection
+      .getByLabel('Included Crews multiple select')
+      .getByLabel('Included Crews');
+    this.pipelineCrewSettingChipsContainer = this.pipelineSettingSection
+      .getByLabel('Included Crews multiple select')
+      .first();
+    this.pipelineCrewSettingSelectedChips = this.pipelineCrewSettingChipsContainer
+      .getByRole('button')
+      .filter({ hasText: /.+/ });
   }
 
   async waitForShown() {
@@ -262,6 +274,7 @@ export class MetricsStep {
     }
     await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
     await expect(this.pipelineBranchesErrorMessage).not.toBeVisible();
+    await this.page.keyboard.press('Escape');
   }
 
   async selectDefaultGivenPipelineSetting(pipelineSettings: typeof metricsStep.deployment) {
@@ -271,6 +284,30 @@ export class MetricsStep {
     await this.selectPipelineName(firstPipelineConfig.pipelineName);
     await this.selectStep(firstPipelineConfig.step);
     await this.selectBranch(firstPipelineConfig.branches);
+  }
+
+  async selectGivenPipelineCrews(crews: string[]) {
+    await this.pipelineCrewSettingsLabel.click();
+    const options = this.page.getByRole('option');
+    for (const option of (await options.all()).slice(1)) {
+      const optionName = (await option.textContent()) as string;
+      const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (crews.includes(optionName)) {
+        if (!isOptionSelected) {
+          await option.click();
+        }
+      } else {
+        if (isOptionSelected) {
+          await option.click();
+        }
+      }
+    }
+
+    await expect(this.pipelineCrewSettingChipsContainer).toHaveCount(crews.length);
+    crews.forEach(async (crew) => {
+      await expect(this.pipelineCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
+    });
+    await this.page.keyboard.press('Escape');
   }
 
   async goToReportPage() {

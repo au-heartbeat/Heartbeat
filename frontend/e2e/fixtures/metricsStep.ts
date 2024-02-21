@@ -42,6 +42,7 @@ export const config = {
     'Yunsong Yang',
   ],
   assigneeFilter: 'lastAssignee',
+  pipelineCrews: ['heartbeat-user'],
   cycleTime: {
     type: 'byColumn',
     jiraColumns: [

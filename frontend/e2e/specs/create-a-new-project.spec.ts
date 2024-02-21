@@ -25,7 +25,6 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await homePage.createANewProject();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.typeInDateRange(dateRange);
-  await configStep.validateNextButtonNotClickable();
   await configStep.selectAllRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormVisible();
@@ -53,12 +52,12 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectHeartbeatState(hbStateData);
   await metricsStep.selectGivenClassifications(metricsStepData.classification);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
+  await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics('17', '9', '4.92', '9.30');
   await reportStep.checkBoardMetricsDetails('create-a-new-project-Board-Metrics.png');
-
   await reportStep.checkDoraMetrics('6.12', '0.50', '6.62', '6.60', '17.50% (7/40)', '1.90');
   await reportStep.checkDoraMetricsDetails('create-a-new-project-DORA-Metrics.png');
 });

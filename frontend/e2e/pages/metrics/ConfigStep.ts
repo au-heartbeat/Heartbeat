@@ -293,6 +293,7 @@ export class ConfigStep {
   async goToMetrics() {
     await this.nextButton.click();
   }
+
   async verifyAllConfig() {
     await this.boardVerifyButton.click();
     await this.pipelineToolVerifyButton.click();
