@@ -14,28 +14,31 @@ export const Advance = () => {
   const [fields, setFields] = useState<Field[]>([
     {
       key: 'Story Point',
-      value: advancedSettings.storyPoint,
+      value: advancedSettings?.storyPoint ?? '',
       validatedError: '',
       verifiedError: '',
       col: 2,
     },
     {
       key: 'Flag',
-      value: advancedSettings.flag,
+      value: advancedSettings?.flag ?? '',
       validatedError: '',
       verifiedError: '',
       col: 2,
     },
   ]);
 
-  const handleAdvancedSettings = () => {
-    // const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
-    // const flag = fields.find((item) => item.key === 'Flag')?.value;
-    // const newAdvancedSettings = { storyPoint, flag };
-    // dispatch(updateAdvancedSettings(newAdvancedSettings));
+  const toggleAdvancedSettings = () => {
+    const newFields = fields.map((field) => ({
+      ...field,
+      value: '',
+    }));
+    setFields(newFields);
+    const newAdvancedStettings = advancedSettings ? null : { storyPoints: '', flag: '' };
+    dispatch(updateAdvancedSettings(newAdvancedStettings));
   };
 
-  function getAdvancedStettings(fields: Field[]) {
+  function getAdvancedSettings(fields: Field[]) {
     const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
     const flag = fields.find((item) => item.key === 'Flag')?.value;
     return { storyPoint, flag };
@@ -43,7 +46,7 @@ export const Advance = () => {
 
   const handleUpdate = (fields: Field[]) => {
     setFields(fields);
-    dispatch(updateAdvancedSettings(getAdvancedStettings(fields)));
+    dispatch(updateAdvancedSettings(getAdvancedSettings(fields)));
   };
 
   const updateField = (key: string, value: string) => {
@@ -60,7 +63,7 @@ export const Advance = () => {
 
   return (
     <>
-      <AdvancedContainer onClick={handleAdvancedSettings}>
+      <AdvancedContainer onClick={toggleAdvancedSettings}>
         <ItemCheckbox checked={!!advancedSettings} />
         <TitleAndTooltipContainer>
           <AdvancedTitleContainer>Advanced settings</AdvancedTitleContainer>
@@ -77,19 +80,21 @@ export const Advance = () => {
         </TitleAndTooltipContainer>
       </AdvancedContainer>
 
-      <AdvancedForm>
-        {fields.map(({ key, col, value }, index) => (
-          <TextField
-            id='standard-basic'
-            variant='standard'
-            sx={{ gridColumn: `span ${col}` }}
-            key={index}
-            label={key}
-            value={value}
-            onChange={(e) => updateField(key, e.target.value)}
-          />
-        ))}
-      </AdvancedForm>
+      {advancedSettings && (
+        <AdvancedForm>
+          {fields.map(({ key, col, value }, index) => (
+            <TextField
+              id='standard-basic'
+              variant='standard'
+              sx={{ gridColumn: `span ${col}` }}
+              key={index}
+              label={key}
+              value={value}
+              onChange={(e) => updateField(key, e.target.value)}
+            />
+          ))}
+        </AdvancedForm>
+      )}
     </>
   );
 };
