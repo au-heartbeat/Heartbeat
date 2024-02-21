@@ -1,8 +1,27 @@
+import { CONFIG_STEP_SAVING_FILENAME } from '../fixtures/fixtures';
 import { config as configStepData } from '../fixtures/configStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import dayjs from 'dayjs';
+import path from 'path';
+import fs from 'fs';
 
-test('Create a new project', async ({ homePage, configStep }) => {
+const clearTempDir = async () => {
+  try {
+    const configStepSavePath = path.resolve(__dirname, '..', './temp/', `./${CONFIG_STEP_SAVING_FILENAME}`);
+    const stats = fs.statSync(configStepSavePath);
+    if (stats) {
+      fs.rmSync(configStepSavePath);
+    }
+  } finally {
+    console.log('e2e/temp/ dir cleared, going to start testing suite.');
+  }
+};
+
+test.beforeAll(async () => {
+  await clearTempDir();
+});
+
+test('Create a new project', async ({ homePage, configStep, metricsStep }) => {
   const dateRange = {
     startDate: dayjs(configStepData.dateRange.startDate).format('MM/DD/YYYY'),
     endDate: dayjs(configStepData.dateRange.endDate).format('MM/DD/YYYY'),
@@ -27,4 +46,14 @@ test('Create a new project', async ({ homePage, configStep }) => {
   await configStep.fillAndVerifyPipelineToolForm(configStepData.pipelineTool);
   await configStep.fillAndVerifySourceControlForm(configStepData.sourceControl);
   await configStep.saveConfigStepAsJSONThenVerifyDownloadFile(configStepData);
+  await configStep.validateNextButtonClickable();
+  await configStep.goToMetrics();
+
+  await metricsStep.waitForShown();
+  await metricsStep.validateNextButtonNotClickable();
+  await metricsStep.checkBoardConfigurationVisible();
+  await metricsStep.checkPipelineConfigurationVisible();
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeConsiderCheckboxChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
 });
