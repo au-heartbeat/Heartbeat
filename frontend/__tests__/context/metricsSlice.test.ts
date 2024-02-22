@@ -47,6 +47,7 @@ const initState = {
     importedClassification: [],
     importedDeployment: [],
     importedLeadTime: [],
+    importedAdvancedSettings: null,
   },
   cycleTimeWarningMessage: null,
   classificationWarningMessage: null,
@@ -107,6 +108,7 @@ describe('saveMetricsSetting reducer', () => {
       importedClassification: [],
       importedDeployment: [],
       importedPipelineCrews: [],
+      importedAdvancedSettings: null,
     });
   });
 
@@ -185,6 +187,10 @@ describe('saveMetricsSetting reducer', () => {
       deployment: [{ id: 0, organization: 'organization', pipelineName: 'pipelineName', step: 'step' }],
       leadTime: [],
       pipelineCrews: [],
+      advancedSettings: {
+        storyPoint: '1',
+        flag: '2',
+      },
     };
     const savedMetricsSetting = saveMetricsSettingReducer(
       initState,
@@ -203,6 +209,7 @@ describe('saveMetricsSetting reducer', () => {
       importedClassification: mockMetricsImportedData.classification,
       importedDeployment: mockMetricsImportedData.deployment,
       importedLeadTime: mockMetricsImportedData.leadTime,
+      advancedSettings: mockMetricsImportedData.advancedSettings,
     });
   });
 
