@@ -74,9 +74,7 @@ export const Advance = () => {
               </IconButton>
             </StyledTooltip>
           </TooltipContainer>
-          <Link href='#' underline='none'>
-            how to set up?
-          </Link>
+          <Link underline='none'>how to set up?</Link>
         </TitleAndTooltipContainer>
       </AdvancedContainer>
 
