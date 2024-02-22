@@ -10,6 +10,6 @@ export const DORA_METRICS_RESULT = {
   PipelineLeadTime: '0.50',
   TotalLeadTime: '6.62',
   DeploymentFrequency: '6.60',
-  FailureRate: '17.50',
+  FailureRate: '17.50% (7/40)',
   MeanTimeToRecovery: '1.90',
 };

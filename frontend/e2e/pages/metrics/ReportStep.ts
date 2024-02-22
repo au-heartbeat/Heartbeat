@@ -48,11 +48,11 @@ export class ReportStep {
     await this.previousButton.click();
   }
 
-  //eslint-disable-next-line @typescript-eslint/no-unused-vars
   async checkDoraMetricsDetails(snapshotPath: string) {
     await this.showMoreLinks.nth(1).click();
-    //FIXME fix snapshot issue
-    // await expect(this.page).toHaveScreenshot([snapshotPath]);
+    await expect(this.page).toHaveScreenshot(snapshotPath, {
+      fullPage: true,
+    });
     await this.backButton.click();
   }
 
@@ -75,11 +75,11 @@ export class ReportStep {
     await expect(this.averageCycleTimeForCard).toContainText(`${averageCycleTimeForCard}Average Cycle Time(Days/Card)`);
   }
 
-  //eslint-disable-next-line @typescript-eslint/no-unused-vars
   async checkBoardMetricsDetails(snapshotPath: string) {
     await this.showMoreLinks.first().click();
-    //FIXME fix snapshot issue
-    // await expect(this.page).toHaveScreenshot([snapshotPath]);
+    await expect(this.page).toHaveScreenshot(snapshotPath, {
+      fullPage: true,
+    });
     await this.backButton.click();
   }
 
