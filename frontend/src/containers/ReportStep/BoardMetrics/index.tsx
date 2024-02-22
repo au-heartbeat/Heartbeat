@@ -94,6 +94,18 @@ const BoardMetrics = ({
         assigneeFilter,
         targetFields: formatDuplicatedNameWithSuffix(targetFields),
         doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
+        overrideFields: [
+          {
+            name: 'Story Points',
+            key: importedAdvancedSettings?.storyPoint ?? '',
+            flag: true,
+          },
+          {
+            name: 'Flagged',
+            key: importedAdvancedSettings?.flag ?? '',
+            flag: true,
+          },
+        ],
       },
       csvTimeStamp: csvTimeStamp,
       advancedSettings: [
