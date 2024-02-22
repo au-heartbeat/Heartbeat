@@ -34,8 +34,8 @@ export const Advance = () => {
       value: '',
     }));
     setFields(newFields);
-    const newAdvancedStettings = advancedSettings ? null : { storyPoints: '', flag: '' };
-    dispatch(updateAdvancedSettings(newAdvancedStettings));
+    const newAdvancedSettings = advancedSettings ? null : { storyPoints: '', flag: '' };
+    dispatch(updateAdvancedSettings(newAdvancedSettings));
   };
 
   function getAdvancedSettings(fields: Field[]) {
