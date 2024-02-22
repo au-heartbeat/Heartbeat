@@ -108,18 +108,6 @@ const BoardMetrics = ({
         ],
       },
       csvTimeStamp: csvTimeStamp,
-      advancedSettings: [
-        {
-          name: 'Story Point',
-          key: importedAdvancedSettings?.storyPoint ?? '',
-          flag: true,
-        },
-        {
-          name: 'Flag',
-          key: importedAdvancedSettings?.flag ?? '',
-          flag: true,
-        },
-      ],
     };
   };
 
