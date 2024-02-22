@@ -11,6 +11,34 @@ test.beforeAll(async () => {
   await clearTempDir();
 });
 
+test('Page jump for import', async ({ homePage, configStep, metricsStep, reportStep }) => {
+  const modifiedHbStateData = modifiedMetricsStepData.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+
+  await homePage.goto();
+  await homePage.importProjectFromFile();
+  await configStep.goToHomePage();
+  await configStep.cancelGoToHomePage();
+  await configStep.waitForShown();
+
+  await configStep.verifyAllConfig();
+  await configStep.goToMetrics();
+  await metricsStep.selectHistoricalAssigneeCrewFilter();
+  await metricsStep.selectCrews(modifiedMetricsStepData.crews);
+  await metricsStep.selectCycleTimeSettingsType(modifiedMetricsStepData.cycleTime.type);
+  await metricsStep.selectModifiedHeartbeatState(modifiedHbStateData);
+  await metricsStep.selectCycleTimeConsiderAsBlockCheckbox();
+  await metricsStep.selectClassifications(modifiedMetricsStepData.classification);
+  await metricsStep.goToReportPage();
+  await reportStep.goToPreviousStep();
+  await metricsStep.checkCrews(modifiedMetricsStepData.crews);
+  await metricsStep.checkBoardByStatusRadioBoxChecked();
+  await metricsStep.checkModifiedHeartbeatState(modifiedHbStateData);
+  await metricsStep.checkCycleTimeConsiderAsBlockUnchecked();
+  await metricsStep.checkClassifications(modifiedMetricsStepData.classification);
+});
+
 test('Page jump for create', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
     startDate: format(configStepData.dateRange.startDate),

@@ -287,6 +287,15 @@ export class ConfigStep {
     await this.nextButton.click();
   }
 
+  async goToHomePage() {
+    await this.previousButton.click();
+  }
+
+  async cancelGoToHomePage() {
+    const cancelButton = this.page.getByRole('button', { name: 'Cancel' });
+    await cancelButton.click();
+  }
+
   async verifyAllConfig() {
     await this.boardVerifyButton.click();
     await this.pipelineToolVerifyButton.click();
