@@ -7,7 +7,6 @@ export const AdvancedTitleContainer = styled.div({
   fontWeight: '600',
 });
 
-
 export const AdvancedContainer = styled('div')({
   display: 'flex',
   margin: '1.75rem 0 0.375rem',
