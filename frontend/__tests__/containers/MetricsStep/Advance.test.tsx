@@ -12,10 +12,9 @@ jest.mock('@src/hooks/useAppDispatch', () => ({
   useAppDispatch: () => mockedUseAppDispatch,
 }));
 
-let store = null;
+let store = setupStore();
 
 describe('Advance', () => {
-  store = setupStore();
   const setup = () => {
     store = setupStore();
     render(
@@ -25,22 +24,37 @@ describe('Advance', () => {
     );
   };
   afterEach(() => {
-    store = null;
+    jest.clearAllMocks();
   });
 
   it('should show Advanced setting title when render Advance component', () => {
     setup();
+
     expect(screen.getByText(ADVANCED_SETTINGS_TITLE)).toBeInTheDocument();
   });
 
   it('should show Advanced setting input when click check box', async () => {
     setup();
+
     await act(async () => {
       await userEvent.click(screen.getByRole('checkbox'));
     });
 
     await waitFor(() => {
       expect(mockedUseAppDispatch).toHaveBeenCalledWith(updateAdvancedSettings({ storyPoint: '', flag: '' }));
+    });
+  });
+
+  it('should show Advanced setting input when Advanced settings not null', async () => {
+    setup();
+    store.dispatch(updateAdvancedSettings({ storyPoint: '', flag: '' }));
+
+    await act(async () => {
+      await userEvent.click(screen.getByRole('checkbox'));
+    });
+
+    await waitFor(() => {
+      expect(mockedUseAppDispatch).toHaveBeenCalledWith(updateAdvancedSettings(null));
     });
   });
 
