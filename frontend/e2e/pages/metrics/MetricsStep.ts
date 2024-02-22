@@ -1,8 +1,7 @@
 import { config as metricsStepData } from '../../fixtures/metricsStep';
 import { METRICS_STEP_SAVING_FILENAME } from '../../fixtures';
+import { downloadFileAndCheck } from '../../utils/download';
 import { expect, Locator, Page } from '@playwright/test';
-import path from 'path';
-import fs from 'fs';
 
 export class MetricsStep {
   readonly page: Page;
@@ -144,7 +143,7 @@ export class MetricsStep {
     await expect(this.boardByColumnRadioBox).toBeChecked();
   }
 
-  async selectBoardGivenCrews(crews: string[]) {
+  async selectCrews(crews: string[]) {
     await this.boardCrewSettingsLabel.click();
     const options = this.page.getByRole('option');
     for (const option of (await options.all()).slice(1)) {
@@ -168,7 +167,7 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
-  async selectGivenClassifications(classificationKeys: string[]) {
+  async selectClassifications(classificationKeys: string[]) {
     await this.boardClassificationLabel.click();
     const options = this.page.getByRole('option');
     for (const option of (await options.all()).slice(1)) {
@@ -353,21 +352,10 @@ export class MetricsStep {
   }
 
   async saveConfigStepAsJSONThenVerifyDownloadFile(json: typeof metricsStepData) {
-    const downloadPromise = this.page.waitForEvent('download');
-
-    await expect(this.saveAsButton).toBeEnabled();
-
-    await this.saveAsButton.click();
-    const download = await downloadPromise;
-    const savePath = path.resolve(__dirname, '..', '..', './temp', `./${METRICS_STEP_SAVING_FILENAME}`);
-    await download.saveAs(savePath);
-
-    const downloadPath = await download.path();
-    const fileData = JSON.parse(fs.readFileSync(downloadPath, 'utf8'));
-
-    this.validateSavedJsonCriticalFieldsEqualsToFixture(fileData, json);
-
-    await download.delete();
+    return downloadFileAndCheck(this.page, this.saveAsButton, METRICS_STEP_SAVING_FILENAME, async (fileDataString) => {
+      const fileData = JSON.parse(fileDataString);
+      this.validateSavedJsonCriticalFieldsEqualsToFixture(fileData, json);
+    });
   }
 
   async goToPreviousStep() {

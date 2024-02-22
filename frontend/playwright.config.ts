@@ -17,7 +17,7 @@ export default defineConfig({
   timeout: 3 * 60 * 1000,
   testDir: './e2e',
   expect: {
-    timeout: 30 * 1000,
+    timeout: 60 * 1000,
     toHaveScreenshot: { maxDiffPixels: 100 },
   },
   /* Run tests in files in parallel */

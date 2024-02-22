@@ -47,10 +47,10 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkCycleTimeConsiderCheckboxChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.waitForHiddenLoading();
-  await metricsStep.selectBoardGivenCrews(metricsStepData.crews);
+  await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData);
-  await metricsStep.selectGivenClassifications(metricsStepData.classification);
+  await metricsStep.selectClassifications(metricsStepData.classification);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
   // await metricsStep.goToPreviousStep();
