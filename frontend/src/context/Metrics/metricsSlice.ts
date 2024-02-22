@@ -260,7 +260,7 @@ export const metricsSlice = createSlice({
       state.importedData.importedDoneStatus = doneStatus || state.importedData.importedDoneStatus;
       state.importedData.importedClassification = classification || state.importedData.importedClassification;
       state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
-      state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvanceSettings;
+      state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvancedSettings;
     },
 
     updateMetricsState: (state, action) => {
