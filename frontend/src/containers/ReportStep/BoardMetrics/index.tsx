@@ -64,6 +64,7 @@ const BoardMetrics = ({
     targetFields,
     doneColumn,
     assigneeFilter,
+    importedData: { importedAdvancedSettings },
   } = useAppSelector(selectMetricsContent);
 
   const { metrics, calendarType } = configData.basic;
@@ -95,6 +96,18 @@ const BoardMetrics = ({
         doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
       },
       csvTimeStamp: csvTimeStamp,
+      advancedSettings: [
+        {
+          name: 'Story Point',
+          key: importedAdvancedSettings?.storyPoint ?? '',
+          flag: true,
+        },
+        {
+          name: 'Flag',
+          key: importedAdvancedSettings?.flag ?? '',
+          flag: true,
+        },
+      ],
     };
   };
 
