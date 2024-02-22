@@ -46,6 +46,7 @@ export interface ReportRequestDTO {
     doneColumn: string[];
   };
   csvTimeStamp?: number;
+  advancedSettings: { key: string; name: string; flag: boolean }[];
 }
 
 export interface BoardReportRequestDTO {
