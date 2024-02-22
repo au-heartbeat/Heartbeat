@@ -210,7 +210,7 @@ describe('saveMetricsSetting reducer', () => {
       importedClassification: mockMetricsImportedData.classification,
       importedDeployment: mockMetricsImportedData.deployment,
       importedLeadTime: mockMetricsImportedData.leadTime,
-      advancedSettings: mockMetricsImportedData.advancedSettings,
+      importedAdvancedSettings: mockMetricsImportedData.advancedSettings,
     });
   });
 
