@@ -3,14 +3,16 @@ import { selectAdvancedSettings, updateAdvancedSettings } from '@src/context/Met
 import { AdvancedContainer, AdvancedForm, AdvancedTitleContainer } from './style';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { IconButton, Link, TextField } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '@src/hooks';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { Field } from '@src/hooks/useVerifyBoardEffect';
 import { TIPS } from '@src/constants/resources';
+import { useAppSelector } from '@src/hooks';
 import { useState } from 'react';
 
 export const Advance = () => {
   const dispatch = useAppDispatch();
   const advancedSettings = useAppSelector(selectAdvancedSettings);
+  const [open, setOpen] = useState(!!advancedSettings);
   const [fields, setFields] = useState<Field[]>([
     {
       key: 'Story Point',
@@ -33,8 +35,9 @@ export const Advance = () => {
       ...field,
       value: '',
     }));
+    setOpen(!open);
     setFields(newFields);
-    const newAdvancedSettings = advancedSettings ? null : { storyPoints: '', flag: '' };
+    const newAdvancedSettings = advancedSettings ? null : { storyPoint: '', flag: '' };
     dispatch(updateAdvancedSettings(newAdvancedSettings));
   };
 
@@ -78,16 +81,17 @@ export const Advance = () => {
         </TitleAndTooltipContainer>
       </AdvancedContainer>
 
-      {advancedSettings && (
+      {open && (
         <AdvancedForm>
           {fields.map(({ key, col, value }, index) => (
             <TextField
-              id='standard-basic'
               variant='standard'
               sx={{ gridColumn: `span ${col}` }}
               key={index}
               label={key}
               value={value}
+              data-testid={key}
+              inputProps={{ 'aria-label': `input ${key}` }}
               onChange={(e) => updateField(key, e.target.value)}
             />
           ))}
