@@ -64,7 +64,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
     BOARD_METRICS_RESULT.AverageCycleTime4SP,
     BOARD_METRICS_RESULT.AverageCycleTime4Card,
   );
-  await reportStep.checkBoardMetricsDetails('create-a-new-project-Board-Metrics.png');
+  await reportStep.checkBoardMetricsDetails('create-a-new-project-Board-Metrics.png', 9);
   await reportStep.checkDoraMetrics(
     DORA_METRICS_RESULT.PrLeadTime,
     DORA_METRICS_RESULT.PipelineLeadTime,
@@ -74,4 +74,5 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
     DORA_METRICS_RESULT.MeanTimeToRecovery,
   );
   await reportStep.checkDoraMetricsDetails('create-a-new-project-DORA-Metrics.png');
+  await reportStep.checkMetricDownloadData();
 });

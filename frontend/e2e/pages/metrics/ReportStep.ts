@@ -1,7 +1,10 @@
-import { checkDownloadReport } from 'e2e/utils/download';
+import { checkDownloadReport, downloadFileAndCheck } from 'e2e/utils/download';
 import { expect, Locator, Page } from '@playwright/test';
 
 import { E2E_EXPECT_TIMEOUT } from '../../fixtures';
+import { parse } from 'csv-parse/sync';
+import path from 'path';
+import fs from 'fs';
 
 export class ReportStep {
   readonly page: Page;
@@ -53,6 +56,13 @@ export class ReportStep {
     await expect(this.page).toHaveScreenshot(snapshotPath, {
       fullPage: true,
     });
+    await downloadFileAndCheck(this.page, this.exportPipelineDataButton, 'pipelineData.csv', async (fileDataString) => {
+      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/pipelineData.csv'));
+      const localCsv = parse(localCsvFile);
+      const downloadCsv = parse(fileDataString);
+
+      expect(localCsv).toStrictEqual(downloadCsv);
+    });
     await this.backButton.click();
   }
 
@@ -75,11 +85,20 @@ export class ReportStep {
     await expect(this.averageCycleTimeForCard).toContainText(`${averageCycleTimeForCard}Average Cycle Time(Days/Card)`);
   }
 
-  async checkBoardMetricsDetails(snapshotPath: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async checkBoardMetricsDetails(snapshotPath: string, csvCompareLines: number) {
     await this.showMoreLinks.first().click();
     await expect(this.page).toHaveScreenshot(snapshotPath, {
       fullPage: true,
     });
+    //FIXME fix csv compare issue
+    // await downloadFileAndCheck(this.page, this.exportBoardData, 'boardData.csv', async (fileDataString) => {
+    //   const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/boardData.csv'));
+    //   const localCsv = parse(localCsvFile, { to: csvCompareLines });
+    //   const downloadCsv = parse(fileDataString, { to: csvCompareLines });
+    //
+    //   expect(localCsv).toStrictEqual(downloadCsv);
+    // });
     await this.backButton.click();
   }
 
@@ -97,6 +116,16 @@ export class ReportStep {
     await expect(this.deploymentFrequency).toContainText(`${deploymentFrequency}Deployment Frequency(Deployments/Day)`);
     await expect(this.failureRate).toContainText(`${failureRate}Failure Rate`);
     await expect(this.meanTimeToRecovery).toContainText(`${meanTimeToRecovery}Mean Time To Recovery(Hours)`);
+  }
+
+  async checkMetricDownloadData() {
+    await downloadFileAndCheck(this.page, this.exportMetricData, 'metricData.csv', async (fileDataString) => {
+      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/metricData.csv'));
+      const localCsv = parse(localCsvFile);
+      const downloadCsv = parse(fileDataString);
+
+      expect(localCsv).toStrictEqual(downloadCsv);
+    });
   }
 
   async checkDownloadReports() {
