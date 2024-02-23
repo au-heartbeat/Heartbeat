@@ -411,9 +411,7 @@ public class JiraService {
 				storyPointList.add(storyPoint);
 			}
 			for (int index = 0; index < jiraCards.size(); index++) {
-				if (storyPointList.size() > index) {
-					jiraCards.get(index).getFields().setStoryPoints(storyPointList.get(index));
-				}
+				updateStoryPointsWhenStorypointListSizeLargeThanCurrentIndex(jiraCards, storyPointList, index);
 			}
 			Map<String, JsonElement> customFieldMap = new HashMap<>();
 			for (Map.Entry<String, String> entry : resultMap.entrySet()) {
@@ -423,32 +421,19 @@ public class JiraService {
 					JsonElement fieldValue = jsonElement.get(customFieldKey);
 					if (customFieldValue.equals("Sprint") && !fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
 						JsonArray jsonArray = fieldValue.getAsJsonArray();
-						if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
-							Type listType = new TypeToken<List<Sprint>>() {
-							}.getType();
-							List<Sprint> sprints = gson.fromJson(jsonArray, listType);
-							sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
-									Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
-							sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
-									sprints.get(sprints.size() - 1));
-						}
+						updateSprintMapWhenJsonArrayHasValue(gson, sprintMap, element, jsonArray);
 					}
 					else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
 							&& fieldValue.isJsonPrimitive()) {
 						JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
 						if (jsonPrimitive.isNumber()) {
-							Number numberValue = jsonPrimitive.getAsNumber();
-							double doubleValue = numberValue.doubleValue();
-							fieldValue = new JsonPrimitive(doubleValue);
+							fieldValue = updateFieldValue(jsonPrimitive);
 						}
 					}
 					else if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull()
 							&& fieldValue.isJsonArray()) {
 						JsonArray jsonArray = fieldValue.getAsJsonArray();
-						if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
-							JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
-							fieldValue = targetField.getAsJsonObject().get("value");
-						}
+						fieldValue = updateFieldvalueWhenJsonArrayHasValue(fieldValue, jsonArray);
 					}
 					customFieldMap.put(customFieldKey, fieldValue);
 				}
@@ -459,11 +444,46 @@ public class JiraService {
 			jiraCards.get(index).getFields().setCustomFields(customFieldMapList.get(index));
 		}
 
-		for (int index = 0; index < jiraCards.size(); index++) {
-			String key = jiraCards.get(index).getKey();
-			jiraCards.get(index).getFields().setSprint(sprintMap.get(key));
+		for (JiraCard jiraCard : jiraCards) {
+			String key = jiraCard.getKey();
+			jiraCard.getFields().setSprint(sprintMap.get(key));
 		}
 		return allCardsResponseDTO;
+	}
+
+	private static JsonElement updateFieldvalueWhenJsonArrayHasValue(JsonElement fieldValue, JsonArray jsonArray) {
+		if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+			JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
+			fieldValue = targetField.getAsJsonObject().get("value");
+		}
+		return fieldValue;
+	}
+
+	private static JsonElement updateFieldValue(JsonPrimitive jsonPrimitive) {
+		JsonElement fieldValue;
+		Number numberValue = jsonPrimitive.getAsNumber();
+		double doubleValue = numberValue.doubleValue();
+		fieldValue = new JsonPrimitive(doubleValue);
+		return fieldValue;
+	}
+
+	private static void updateSprintMapWhenJsonArrayHasValue(Gson gson, Map<String, Sprint> sprintMap,
+			JsonElement element, JsonArray jsonArray) {
+		if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+			Type listType = new TypeToken<List<Sprint>>() {
+			}.getType();
+			List<Sprint> sprints = gson.fromJson(jsonArray, listType);
+			sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
+					Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
+			sprintMap.put(element.getAsJsonObject().get("key").getAsString(), sprints.get(sprints.size() - 1));
+		}
+	}
+
+	private static void updateStoryPointsWhenStorypointListSizeLargeThanCurrentIndex(List<JiraCard> jiraCards,
+			ArrayList<Double> storyPointList, int index) {
+		if (storyPointList.size() > index) {
+			jiraCards.get(index).getFields().setStoryPoints(storyPointList.get(index));
+		}
 	}
 
 	private String parseJiraJql(BoardType boardType, List<String> doneColumns, BoardRequestParam boardRequestParam) {
