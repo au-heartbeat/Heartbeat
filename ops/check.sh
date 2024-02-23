@@ -158,7 +158,8 @@ e2e_container_check() {
   docker build -t "heartbeat_e2e:latest" ./ -f ./ops/infra/Dockerfile.e2e
 
   docker run --rm \
-    -v "$(pwd)/e2e/reports:/app/e2e/reports" \
+    -v "$(pwd)/frontend/e2e/reports:/app/e2e/reports" \
+    --user 992:991 \
     -e "APP_ORIGIN=${APP_HTTP_SCHEDULE:-}://${AWS_EC2_IP_E2E:-}:${AWS_EC2_IP_E2E_PORT:-}" \
     -e "E2E_TOKEN_JIRA=${E2E_TOKEN_JIRA:-}" \
     -e "E2E_TOKEN_BUILD_KITE=${E2E_TOKEN_BUILD_KITE:-}" \
