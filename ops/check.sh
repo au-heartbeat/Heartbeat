@@ -162,6 +162,7 @@ e2e_container_check() {
     -e "E2E_TOKEN_JIRA=${E2E_TOKEN_JIRA:-}" \
     -e "E2E_TOKEN_BUILD_KITE=${E2E_TOKEN_BUILD_KITE:-}" \
     -e "E2E_TOKEN_GITHUB=${E2E_TOKEN_GITHUB:-}" \
+    -e "CI=${CI:-}" \
     heartbeat_e2e:latest \
     pnpm run e2e:ci
 }
