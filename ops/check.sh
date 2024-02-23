@@ -167,7 +167,8 @@ e2e_container_check() {
     heartbeat_e2e:latest \
     pnpm run e2e:major-ci
 
-  docker exec hb_e2e_runner tar czf - /app/e2e/reports | cat  > ./e2e-reports.tar.gz
+  docker exec hb_e2e_runner tar -zcvf /app/e2e-reports.tar.gz /app/e2e/reports
+  docker cp hb_e2e_runner:/app/e2e-reports.tar.gz ./e2e-reports.tar.gz
   docker rm hb_e2e_runner
 }
 
