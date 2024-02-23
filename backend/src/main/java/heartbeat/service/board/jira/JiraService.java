@@ -732,7 +732,7 @@ public class JiraService {
 		double total = 0;
 		for (CycleTimeInfo cycleTimeInfo : cycleTimeInfos) {
 			String swimLane = cycleTimeInfo.getColumn();
-			if (swimLane.equals("FLAG")) {
+			if (swimLane.equals(CardStepsEnum.BLOCK.getValue().toUpperCase())) {
 				boardMap.put(swimLane, CardStepsEnum.BLOCK);
 			}
 			if (boardMap.containsKey(swimLane)) {

@@ -588,7 +588,7 @@ public class JiraBoardConfigDTOFixture {
 				CycleTimeInfo.builder().column("REVIEW").day(4.0).build(),
 				CycleTimeInfo.builder().column("ANALYSIS").day(9.0).build(),
 				CycleTimeInfo.builder().column(UNKNOWN).day(5.0).build(),
-				CycleTimeInfo.builder().column(FLAG).day(6.0).build());
+				CycleTimeInfo.builder().column("BLOCK").day(6.0).build());
 	}
 
 	public static JiraBoardSetting.JiraBoardSettingBuilder JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD() {
