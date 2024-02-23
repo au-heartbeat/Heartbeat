@@ -54,7 +54,7 @@ public class KanbanFixture {
 			time = time.plusMinutes(1);
 			jiraCardDTOS.add(JiraCardDTO.builder()
 				.baseInfo(JiraCard.builder()
-					.fields(JiraCardField.builder().created(time.plusDays(1).format(formatter)).build())
+					.fields(JiraCardField.builder().created(time.format(formatter)).build())
 					.build())
 				.build());
 		}
