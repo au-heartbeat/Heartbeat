@@ -167,7 +167,7 @@ e2e_container_check() {
     heartbeat_e2e:latest \
     pnpm run e2e:major-ci
 
-  docker cp hb_e2e_runner:/app/e2e/reports ./reports
+  docker cp hb_e2e_runner:/app/e2e/reports ./e2e-reports
   docker rm hb_e2e_runner
 }
 
