@@ -13,6 +13,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +53,13 @@ public class JiraCardField {
 
 	private List<String> labels;
 
+	private String created;
+
 	private Map<String, JsonElement> customFields;
+
+	public OffsetDateTime convertCreatedTime() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		return OffsetDateTime.parse(created, formatter);
+	}
 
 }
