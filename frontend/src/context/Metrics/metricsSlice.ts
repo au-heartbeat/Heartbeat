@@ -198,22 +198,18 @@ export const metricsSlice = createSlice({
   initialState,
   reducers: {
     saveTargetFields: (state, action) => {
-      state.isDirty = true;
       state.targetFields = action.payload;
     },
     saveDoneColumn: (state, action) => {
-      state.isDirty = true;
       state.doneColumn = action.payload;
     },
     saveUsers: (state, action) => {
-      state.isDirty = true;
       state.users = action.payload;
     },
     savePipelineCrews: (state, action) => {
       state.pipelineCrews = action.payload;
     },
     updateCycleTimeSettings: (state, action) => {
-      state.isDirty = true;
       state.cycleTimeSettings = action.payload;
     },
     setCycleTimeSettingsType: (state, action) => {

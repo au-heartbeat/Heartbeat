@@ -1,4 +1,9 @@
-import { saveUsers, selectMetricsContent, savePipelineCrews } from '@src/context/Metrics/metricsSlice';
+import {
+  saveUsers,
+  selectMetricsContent,
+  savePipelineCrews,
+  updateMetricsDirtyStatus,
+} from '@src/context/Metrics/metricsSlice';
 import { AssigneeFilter } from '@src/containers/MetricsStep/Crews/AssigneeFilter';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
@@ -18,6 +23,7 @@ interface crewsProps {
 export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => {
   const isBoardCrews = type === 'board';
   const dispatch = useAppDispatch();
+
   const [isEmptyCrewData, setIsEmptyCrewData] = useState<boolean>(false);
   const { users, pipelineCrews } = useAppSelector(selectMetricsContent);
   const [selectedCrews, setSelectedCrews] = useState<string[]>([]);
@@ -36,6 +42,7 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
       setSelectedCrews(selectedCrews.length === options.length ? [] : options);
       return;
     }
+    dispatch(updateMetricsDirtyStatus(true));
     setSelectedCrews([...value]);
   };
 

@@ -3,6 +3,7 @@ import {
   selectCycleTimeSettings,
   selectMetricsContent,
   selectRealDoneWarningMessage,
+  updateMetricsDirtyStatus,
 } from '@src/context/Metrics/metricsSlice';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
@@ -40,7 +41,9 @@ export const RealDone = ({ columns, title, label }: realDoneProps) => {
       dispatch(saveDoneColumn(selectedDoneStatus.length === status.length ? [] : status));
       return;
     }
+
     setSelectedDoneStatus([...value]);
+    dispatch(updateMetricsDirtyStatus(true));
     dispatch(saveDoneColumn([...value]));
   };
 

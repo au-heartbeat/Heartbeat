@@ -9,16 +9,11 @@ import {
   selectJiraColumns,
 } from '@src/context/config/configSlice';
 import {
-  selectMetricsContent,
-  updateMetricsState,
-  selectMetricsIsDirty,
-  updateMetricsDirtyStatus,
-} from '@src/context/Metrics/metricsSlice';
-import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
+import { selectMetricsContent, updateMetricsState, selectMetricsIsDirty } from '@src/context/Metrics/metricsSlice';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
 import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
@@ -40,7 +35,6 @@ import merge from 'lodash/merge';
 import dayjs from 'dayjs';
 
 const MetricsStep = () => {
-  const isDirty = useAppSelector(selectMetricsIsDirty);
   const boardConfig = useAppSelector(selectBoard);
   const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const dispatch = useAppDispatch();
@@ -59,6 +53,7 @@ const MetricsStep = () => {
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
+  const isDirty = useAppSelector(selectMetricsIsDirty);
 
   const getInfo = useCallback(
     () =>
@@ -71,7 +66,6 @@ const MetricsStep = () => {
           dispatch(updateBoardVerifyState(true));
           dispatch(updateJiraVerifyResponse(res.data));
           dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
-          dispatch(updateMetricsDirtyStatus(false));
         }
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
