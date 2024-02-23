@@ -61,7 +61,7 @@ class KanbanServiceTest {
 	}
 
 	@Test
-	void shouldCallCsvServiceToGenerateCSVInfoWhenNoneDoneCardsGreaterThan5() {
+	void shouldCallCsvServiceToGenerateCSVInfoWhenNoneDoneCardsGreaterThan50() {
 		JiraBoardSetting mockJiraBoardSetting = KanbanFixture.MOCK_JIRA_BOARD_SETTING();
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.jiraBoardSetting(mockJiraBoardSetting)
@@ -78,8 +78,12 @@ class KanbanServiceTest {
 
 		FetchedData.CardCollectionInfo result = kanbanService.fetchDataFromKanban(request);
 
-		assertEquals("2023-11-02T01:55:00.000+0800",
+		assertEquals("2023-11-01T01:55:00.000+0800",
 				result.getNonDoneCardCollection().getJiraCardDTOList().get(0).getBaseInfo().getFields().getCreated());
+		assertEquals("2023-11-01T01:54:00.000+0800",
+				result.getNonDoneCardCollection().getJiraCardDTOList().get(1).getBaseInfo().getFields().getCreated());
+		assertEquals("2023-11-01T01:53:00.000+0800",
+				result.getNonDoneCardCollection().getJiraCardDTOList().get(2).getBaseInfo().getFields().getCreated());
 		assertEquals(50, result.getNonDoneCardCollection().getJiraCardDTOList().size());
 	}
 
