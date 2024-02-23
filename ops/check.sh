@@ -165,7 +165,7 @@ e2e_container_check() {
     -e "E2E_TOKEN_GITHUB=${E2E_TOKEN_GITHUB:-}" \
     -e "CI=${CI:-}" \
     heartbeat_e2e:latest \
-    pnpm run e2e:major-ci
+    pnpm run e2e:major-ci && tail -f /dev/null
 
   docker rm hb_e2e_runner
 }
