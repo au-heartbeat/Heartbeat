@@ -1,4 +1,4 @@
-export const importProjectFromFile = {
+export const importMultipleDoneProjectFromFile = {
   projectName: 'Heartbeat Metrics',
   dateRange: {
     startDate: '2024-01-15T00:00:00.000+08:00',
