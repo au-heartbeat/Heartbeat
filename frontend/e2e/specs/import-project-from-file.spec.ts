@@ -7,15 +7,26 @@ test.beforeAll(async () => {
 
 test('Import project from file', async ({ homePage, configStep, metricsStep, reportStep }) => {
   await homePage.goto();
-  await homePage.importProjectFromFile();
+  await homePage.importMultipleDoneProjectFromFile();
+  await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
   await configStep.verifyAllConfig();
   await configStep.goToMetrics();
+  await metricsStep.waitForShown();
 
+  await metricsStep.goToPreviousStep();
+  await configStep.goToMetrics();
+  await metricsStep.waitForShown();
+  await metricsStep.goToReportPage();
+  await reportStep.goToPreviousStep();
+
+  await reportStep.clickHomeIconThenBackToHomepage();
+  await homePage.importFlagAsBlockProjectFromFile();
+  await configStep.verifyBoardConfig();
+  await configStep.goToMetrics();
   await metricsStep.waitForShown();
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
-
   await reportStep.checkBoardMetrics('17', '9', '4.86', '9.18');
   await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
   await reportStep.checkDoraMetrics('6.12', '0.50', '6.62', '6.60', '17.50% (7/40)', '1.90');

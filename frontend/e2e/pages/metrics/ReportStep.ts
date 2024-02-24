@@ -24,6 +24,7 @@ export class ReportStep {
   readonly exportPipelineDataButton: Locator;
   readonly exportBoardData: Locator;
   readonly exportMetricData: Locator;
+  readonly homeIcon: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -47,6 +48,7 @@ export class ReportStep {
     this.exportMetricData = this.page.getByText('Export metric data');
     this.exportBoardData = this.page.getByText('Export board data');
     this.exportPipelineDataButton = this.page.getByText('Export pipeline data');
+    this.homeIcon = page.getByTitle('Home');
   }
 
   async goToPreviousStep() {
@@ -134,5 +136,10 @@ export class ReportStep {
     await checkDownloadReport(this.page, this.exportMetricData, 'metricReport.csv');
     await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
     await checkDownloadReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
+  }
+
+  async clickHomeIconThenBackToHomepage() {
+    await this.homeIcon.click();
+    await expect(this.page).toHaveURL(/\//);
   }
 }

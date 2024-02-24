@@ -44,6 +44,7 @@ export class MetricsStep {
   readonly pipelineCrewSettingsLabel: Locator;
   readonly pipelineCrewSettingChipsContainer: Locator;
   readonly pipelineCrewSettingSelectedChips: Locator;
+  readonly homeIcon: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -112,6 +113,7 @@ export class MetricsStep {
     this.pipelineCrewSettingSelectedChips = this.pipelineCrewSettingChipsContainer
       .getByRole('button')
       .filter({ hasText: /.+/ });
+    this.homeIcon = page.getByTitle('Home');
   }
 
   async waitForShown() {
@@ -363,5 +365,10 @@ export class MetricsStep {
 
   async goToReportPage() {
     await this.page.getByRole('button', { name: 'Next' }).click();
+  }
+
+  async clickHomeIconThenBackToHomepage() {
+    await this.homeIcon.click();
+    await expect(this.page).toHaveURL(/\//);
   }
 }

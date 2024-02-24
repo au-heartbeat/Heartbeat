@@ -1,3 +1,4 @@
+import { importFlagAsBlockFile } from '../fixtures/add-flag-as-block-config-file';
 import { importProjectFromFile } from '../fixtures/hb-e2e-for-importing-file';
 import { expect, Locator, Page } from '@playwright/test';
 export class HomePage {
@@ -23,11 +24,19 @@ export class HomePage {
   async createANewProject() {
     await this.createANewProjectButton.click();
   }
-  async importProjectFromFile() {
+  async importMultipleDoneProjectFromFile() {
     await this.importProjectFromFileInput.setInputFiles({
       name: 'hb-e2e-test',
       mimeType: 'text/plain',
       buffer: Buffer.from(JSON.stringify(importProjectFromFile)),
+    });
+  }
+
+  async importFlagAsBlockProjectFromFile() {
+    await this.importProjectFromFileInput.setInputFiles({
+      name: 'hb-e2e-test',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(JSON.stringify(importFlagAsBlockFile)),
     });
   }
 }
