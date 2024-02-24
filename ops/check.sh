@@ -165,8 +165,9 @@ e2e_container_check() {
     -e "E2E_TOKEN_GITHUB=${E2E_TOKEN_GITHUB:-}" \
     -e "CI=${CI:-}" \
     heartbeat_e2e:latest \
-    pnpm run e2e:major-ci && sleep infinity
+    pnpm run e2e:major-ci && tar -zcvf ./e2e-reports.tar.gz ./e2e/reports
 
+  docker cp hb_e2e_runner:/app/e2e-reports.tar.gz ./e2e-reports.tar.gz
   docker rm hb_e2e_runner
 }
 
