@@ -1,6 +1,5 @@
 import { importMultipleDoneProjectFromFile } from '../fixtures/importFile/multiple-done-config-file';
 import { importFlagAsBlockFile } from '../fixtures/importFile/add-flag-as-block-config-file';
-import { importProjectFromFile } from '../fixtures/hb-e2e-for-importing-file';
 import { expect, Locator, Page } from '@playwright/test';
 export class HomePage {
   readonly page: Page;
@@ -25,11 +24,12 @@ export class HomePage {
   async createANewProject() {
     await this.createANewProjectButton.click();
   }
+
   async importProjectFromFile() {
     await this.importProjectFromFileInput.setInputFiles({
       name: 'hb-e2e-test',
       mimeType: 'text/plain',
-      buffer: Buffer.from(JSON.stringify(importProjectFromFile)),
+      buffer: Buffer.from(JSON.stringify(importMultipleDoneProjectFromFile)),
     });
   }
 
