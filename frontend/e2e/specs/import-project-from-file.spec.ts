@@ -23,6 +23,14 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.goToPreviousStep();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
+  await metricsStep.goToReportPage();
+  await reportStep.goToPreviousStep();
+
+  await reportStep.clickHomeIconThenBackToHomepage();
+  await homePage.importFlagAsBlockProjectFromFile();
+  await configStep.verifyBoardConfig();
+  await configStep.goToMetrics();
+  await metricsStep.waitForShown();
 
   // To verify board configuration matches json file data
   await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
