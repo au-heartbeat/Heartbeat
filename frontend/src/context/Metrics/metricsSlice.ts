@@ -342,7 +342,15 @@ export const metricsSlice = createSlice({
     updatePipelineSettings: (state, action) => {
       const { pipelineList, isProjectCreated, pipelineCrews } = action.payload;
       const { importedDeployment, importedPipelineCrews } = state.importedData;
-      state.pipelineCrews = isProjectCreated ? pipelineCrews : setPipelineCrews(pipelineCrews, importedPipelineCrews);
+      if (isProjectCreated) {
+        if (_.isEmpty(pipelineCrews)) {
+          state.pipelineCrews = [];
+        } else {
+          state.pipelineCrews = pipelineCrews;
+        }
+      } else {
+        state.pipelineCrews = setPipelineCrews(pipelineCrews, importedPipelineCrews);
+      }
       const orgNames: Array<string> = _.uniq(pipelineList.map((item: pipeline) => item.orgName));
       const filteredPipelineNames = (organization: string) =>
         pipelineList
