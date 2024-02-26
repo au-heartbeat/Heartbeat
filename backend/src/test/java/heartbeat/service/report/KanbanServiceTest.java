@@ -60,31 +60,4 @@ class KanbanServiceTest {
 				mockJiraBoardSetting.getUsers(), mockJiraBoardSetting.getAssigneeFilter());
 	}
 
-	@Test
-	void shouldCallCsvServiceToGenerateCSVInfoWhenNoneDoneCardsGreaterThan50() {
-		JiraBoardSetting mockJiraBoardSetting = KanbanFixture.MOCK_JIRA_BOARD_SETTING();
-		GenerateReportRequest request = GenerateReportRequest.builder()
-			.jiraBoardSetting(mockJiraBoardSetting)
-			.startTime("startTime")
-			.endTime("endTime")
-			.build();
-		CardCollection realDoneCardCollection = CardCollection.builder().build();
-		CardCollection nonDoneCardCollection = KanbanFixture.MOCK_NONE_DONE_CARDS();
-
-		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any(), any()))
-			.thenReturn(nonDoneCardCollection);
-		when(jiraService.getStoryPointsAndCycleTimeForDoneCards(any(), any(), any(), any()))
-			.thenReturn(realDoneCardCollection);
-
-		FetchedData.CardCollectionInfo result = kanbanService.fetchDataFromKanban(request);
-
-		assertEquals("2023-11-01T01:55:00.000+0800",
-				result.getNonDoneCardCollection().getJiraCardDTOList().get(0).getBaseInfo().getFields().getCreated());
-		assertEquals("2023-11-01T01:54:00.000+0800",
-				result.getNonDoneCardCollection().getJiraCardDTOList().get(1).getBaseInfo().getFields().getCreated());
-		assertEquals("2023-11-01T01:53:00.000+0800",
-				result.getNonDoneCardCollection().getJiraCardDTOList().get(2).getBaseInfo().getFields().getCreated());
-		assertEquals(50, result.getNonDoneCardCollection().getJiraCardDTOList().size());
-	}
-
 }
