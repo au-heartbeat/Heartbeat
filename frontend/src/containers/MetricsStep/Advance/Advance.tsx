@@ -37,13 +37,13 @@ export const Advance = () => {
     }));
     setOpen(!open);
     setFields(newFields);
-    const newAdvancedSettings = advancedSettings ? null : { storyPoint: '', flag: '' };
-    dispatch(updateAdvancedSettings(newAdvancedSettings));
+    dispatch(updateAdvancedSettings(null));
   };
 
   function getAdvancedSettings(fields: Field[]) {
     const storyPoint = fields.find((item) => item.key === 'Story Point')?.value;
     const flag = fields.find((item) => item.key === 'Flag')?.value;
+    if (storyPoint === '' && flag === '') return null;
     return { storyPoint, flag };
   }
 
@@ -67,7 +67,7 @@ export const Advance = () => {
   return (
     <>
       <AdvancedContainer onClick={toggleAdvancedSettings}>
-        <ItemCheckbox checked={!!advancedSettings} />
+        <ItemCheckbox checked={open} />
         <TitleAndTooltipContainer>
           <AdvancedTitleContainer>Advanced settings</AdvancedTitleContainer>
           <TooltipContainer data-test-id={'tooltip'}>
