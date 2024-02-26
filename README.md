@@ -283,11 +283,13 @@ After generating the report, you can export the original data for your board and
 
 ### 3.5.1 Export board data
 
-It will export a csv file for board data. It contains two parts:
+It will export a csv file for board data
 
-**Part 1:** Export the all done tickets during the time period
+#### 3.5.1.1 Done card exporting 
+Export the all done tickets during the time period(Image 1)
 
-**Part 2:** Export the latest updated 50 non-done tickets in your current active board. And it will order by ticket status and then by last status change date(Image 3-16)
+#### 3.5.1.1 Undone card exporting 
+Export the latest updated 50 non-done tickets in your current active board. And it will order by heartbeat state and then last status change date(Image 3-16)
 
 ![Image 3-16](https://user-images.githubusercontent.com/995849/89784291-01f3b380-db4b-11ea-8f5a-d475e80014fb.png)\
 _Image 3-16，Exported Board Data_
