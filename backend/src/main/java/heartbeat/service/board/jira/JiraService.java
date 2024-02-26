@@ -408,45 +408,7 @@ public class JiraService {
 					jiraCards.get(index).getFields().setStoryPoints(storyPointList.get(index));
 				}
 			}
-			Map<String, JsonElement> customFieldMap = new HashMap<>();
-			for (Map.Entry<String, String> entry : resultMap.entrySet()) {
-				String customFieldKey = entry.getKey();
-				String customFieldValue = entry.getValue();
-				if (jsonElement.has(customFieldKey)) {
-					JsonElement fieldValue = jsonElement.get(customFieldKey);
-					if (customFieldValue.equals("Sprint") && !fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
-						JsonArray jsonArray = fieldValue.getAsJsonArray();
-						if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
-							Type listType = new TypeToken<List<Sprint>>() {
-							}.getType();
-							List<Sprint> sprints = gson.fromJson(jsonArray, listType);
-							sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
-									Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
-							sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
-									sprints.get(sprints.size() - 1));
-						}
-					}
-					else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
-							&& fieldValue.isJsonPrimitive()) {
-						JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
-						if (jsonPrimitive.isNumber()) {
-							Number numberValue = jsonPrimitive.getAsNumber();
-							double doubleValue = numberValue.doubleValue();
-							fieldValue = new JsonPrimitive(doubleValue);
-						}
-					}
-					else if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull()
-							&& fieldValue.isJsonArray()) {
-						JsonArray jsonArray = fieldValue.getAsJsonArray();
-						if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
-							JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
-							fieldValue = targetField.getAsJsonObject().get("value");
-						}
-					}
-					customFieldMap.put(customFieldKey, fieldValue);
-				}
-			}
-			customFieldMapList.add(customFieldMap);
+			customFieldMapList.add(getCustomfieldMap(gson, sprintMap, resultMap, element, jsonElement));
 		}
 		for (int index = 0; index < customFieldMapList.size(); index++) {
 			jiraCards.get(index).getFields().setCustomFields(customFieldMapList.get(index));
@@ -457,6 +419,48 @@ public class JiraService {
 			jiraCard.getFields().setSprint(sprintMap.get(key));
 		}
 		return allCardsResponseDTO;
+	}
+
+	private static Map<String, JsonElement> getCustomfieldMap(Gson gson, Map<String, Sprint> sprintMap, Map<String, String> resultMap, JsonElement element, JsonObject jsonElement) {
+		Map<String, JsonElement> customFieldMap = new HashMap<>();
+		for (Map.Entry<String, String> entry : resultMap.entrySet()) {
+			String customFieldKey = entry.getKey();
+			String customFieldValue = entry.getValue();
+			if (jsonElement.has(customFieldKey)) {
+				JsonElement fieldValue = jsonElement.get(customFieldKey);
+				if (customFieldValue.equals("Sprint") && !fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
+					JsonArray jsonArray = fieldValue.getAsJsonArray();
+					if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+						Type listType = new TypeToken<List<Sprint>>() {
+						}.getType();
+						List<Sprint> sprints = gson.fromJson(jsonArray, listType);
+						sprints.sort(Comparator.comparing(Sprint::getCompleteDate,
+								Comparator.nullsLast(Comparator.comparing(ZonedDateTime::parse))));
+						sprintMap.put(element.getAsJsonObject().get("key").getAsString(),
+								sprints.get(sprints.size() - 1));
+					}
+				}
+				else if (customFieldValue.equals("Story point estimate") && !fieldValue.isJsonNull()
+						&& fieldValue.isJsonPrimitive()) {
+					JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
+					if (jsonPrimitive.isNumber()) {
+						Number numberValue = jsonPrimitive.getAsNumber();
+						double doubleValue = numberValue.doubleValue();
+						fieldValue = new JsonPrimitive(doubleValue);
+					}
+				}
+				else if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull()
+						&& fieldValue.isJsonArray()) {
+					JsonArray jsonArray = fieldValue.getAsJsonArray();
+					if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+						JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
+						fieldValue = targetField.getAsJsonObject().get("value");
+					}
+				}
+				customFieldMap.put(customFieldKey, fieldValue);
+			}
+		}
+		return customFieldMap;
 	}
 
 	private String parseJiraJql(BoardType boardType, List<String> doneColumns, BoardRequestParam boardRequestParam) {
