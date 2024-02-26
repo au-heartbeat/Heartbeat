@@ -41,7 +41,7 @@ describe('Advance', () => {
     });
 
     await waitFor(() => {
-      expect(mockedUseAppDispatch).toHaveBeenCalledWith(updateAdvancedSettings({ storyPoint: '', flag: '' }));
+      expect(mockedUseAppDispatch).toHaveBeenCalledWith(updateAdvancedSettings(null));
     });
   });
 
@@ -58,7 +58,7 @@ describe('Advance', () => {
     });
   });
 
-  it('should input Advanced setting value after click check box', async () => {
+  it('should input Advanced setting value after click check box when value are not all empty', async () => {
     setup();
 
     await act(async () => {
@@ -73,6 +73,27 @@ describe('Advance', () => {
 
     await waitFor(() => {
       expect(mockedUseAppDispatch).toHaveBeenCalledWith(updateAdvancedSettings({ flag: '456', storyPoint: '123' }));
+    });
+  });
+
+  it('should clear Advanced setting value when value are all empty', async () => {
+    setup();
+
+    await act(async () => {
+      await userEvent.click(screen.getByRole('checkbox'));
+      const storyPointInput = within(screen.getByTestId('Story Point')).getByLabelText(
+        'input Story Point',
+      ) as HTMLInputElement;
+      const flagInput = within(screen.getByTestId('Flag')).getByLabelText('input Flag') as HTMLInputElement;
+      await userEvent.type(storyPointInput, '123');
+      await userEvent.type(flagInput, '4');
+
+      await userEvent.clear(storyPointInput);
+      await userEvent.clear(flagInput);
+    });
+
+    await waitFor(() => {
+      expect(mockedUseAppDispatch).toHaveBeenCalledWith(updateAdvancedSettings(null));
     });
   });
 });
