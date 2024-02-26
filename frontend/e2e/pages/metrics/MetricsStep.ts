@@ -169,6 +169,15 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async checkCrewsAreChanged(crews: string[]) {
+    await this.boardCrewSettingsLabel.click();
+    await expect(this.boardCrewSettingSelectedChips).toHaveCount(crews.length);
+    crews.forEach(async (crew) => {
+      await expect(this.boardCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
+    });
+    await this.page.keyboard.press('Escape');
+  }
+
   async selectClassifications(classificationKeys: string[]) {
     await this.boardClassificationLabel.click();
     const options = this.page.getByRole('option');
@@ -370,5 +379,12 @@ export class MetricsStep {
   async clickHomeIconThenBackToHomepage() {
     await this.homeIcon.click();
     await expect(this.page).toHaveURL(/\//);
+  }
+
+  async checkPipelineConfigurationAreChanged() {
+    await expect(this.pipelineOrganizationSelect).toHaveValue('Thoughtworks-Heartbeat');
+    await expect(this.pipelineNameSelect).toHaveValue('Heartbeat');
+    await expect(this.pipelineStepSelect).toHaveValue('Deploy prod');
+    await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(1);
   }
 }
