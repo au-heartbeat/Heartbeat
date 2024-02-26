@@ -92,13 +92,13 @@ export class ReportStep {
       fullPage: true,
     });
     //FIXME fix csv compare issue
-    // await downloadFileAndCheck(this.page, this.exportBoardData, 'boardData.csv', async (fileDataString) => {
-    //   const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/boardData.csv'));
-    //   const localCsv = parse(localCsvFile, { to: csvCompareLines });
-    //   const downloadCsv = parse(fileDataString, { to: csvCompareLines });
-    //
-    //   expect(localCsv).toStrictEqual(downloadCsv);
-    // });
+    await downloadFileAndCheck(this.page, this.exportBoardData, 'boardData.csv', async (fileDataString) => {
+      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/boardData.csv'));
+      const localCsv = parse(localCsvFile, { to: csvCompareLines });
+      const downloadCsv = parse(fileDataString, { to: csvCompareLines });
+
+      expect(localCsv).toStrictEqual(downloadCsv);
+    });
     await this.backButton.click();
   }
 
