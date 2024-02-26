@@ -48,7 +48,7 @@ export class ReportStep {
     this.exportMetricData = this.page.getByText('Export metric data');
     this.exportBoardData = this.page.getByText('Export board data');
     this.exportPipelineDataButton = this.page.getByText('Export pipeline data');
-    this.homeIcon = page.getByTitle('Home');
+    this.homeIcon = page.getByLabel('Home');
   }
 
   async goToPreviousStep() {

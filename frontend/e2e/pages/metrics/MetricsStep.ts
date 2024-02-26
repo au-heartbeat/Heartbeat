@@ -113,7 +113,7 @@ export class MetricsStep {
     this.pipelineCrewSettingSelectedChips = this.pipelineCrewSettingChipsContainer
       .getByRole('button')
       .filter({ hasText: /.+/ });
-    this.homeIcon = page.getByTitle('Home');
+    this.homeIcon = page.getByLabel('Home');
   }
 
   async waitForShown() {
