@@ -222,6 +222,15 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async checkCrewsAreChanged(crews: string[]) {
+    await this.boardCrewSettingsLabel.click();
+    await expect(this.boardCrewSettingSelectedChips).toHaveCount(crews.length);
+    crews.forEach(async (crew) => {
+      await expect(this.boardCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
+    });
+    await this.page.keyboard.press('Escape');
+  }
+
   async selectClassifications(classificationKeys: string[]) {
     await this.boardClassificationLabel.click();
     const options = this.page.getByRole('option');

@@ -23,8 +23,31 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.goToPreviousStep();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
+
+  // Make changes to Metrics page data
+  await metricsStep.selectCrews(importMultipleDoneProjectFromFile.crews);
+  await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
+
+  // Go to config page then next to metrics page, metrics data should stay changed
+  await metricsStep.goToPreviousStep();
+  await configStep.goToMetrics();
+  await metricsStep.waitForShown();
+  await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
+  await metricsStep.checkPipelineConfigurationAreChanged();
+
+  // Go to report page then back to metrics page, metrics data should stay changed
   await metricsStep.goToReportPage();
   await reportStep.goToPreviousStep();
+  await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
+  await metricsStep.checkPipelineConfigurationAreChanged();
+
+  // Set metrics data to imported json file
+  await metricsStep.selectCrews(importMultipleDoneProjectFromFile.crews);
+  await metricsStep.selectDefaultGivenPipelineSetting(importMultipleDoneProjectFromFile.deployment);
+
+  await metricsStep.goToReportPage();
+  await reportStep.confirmGeneratedReport();
+  await reportStep.checkBoardMetrics('17', '9', '4.86', '9.18');
 
   await reportStep.clickHomeIconThenBackToHomepage();
   await homePage.importFlagAsBlockProjectFromFile();
