@@ -421,7 +421,8 @@ public class JiraService {
 		return allCardsResponseDTO;
 	}
 
-	private static Map<String, JsonElement> getCustomfieldMap(Gson gson, Map<String, Sprint> sprintMap, Map<String, String> resultMap, JsonElement element, JsonObject jsonElement) {
+	private static Map<String, JsonElement> getCustomfieldMap(Gson gson, Map<String, Sprint> sprintMap,
+			Map<String, String> resultMap, JsonElement element, JsonObject jsonElement) {
 		Map<String, JsonElement> customFieldMap = new HashMap<>();
 		for (Map.Entry<String, String> entry : resultMap.entrySet()) {
 			String customFieldKey = entry.getKey();
@@ -449,8 +450,7 @@ public class JiraService {
 						fieldValue = new JsonPrimitive(doubleValue);
 					}
 				}
-				else if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull()
-						&& fieldValue.isJsonArray()) {
+				else if (customFieldValue.equals("Flagged") && !fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
 					JsonArray jsonArray = fieldValue.getAsJsonArray();
 					if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
 						JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
@@ -729,7 +729,7 @@ public class JiraService {
 		double total = 0;
 		for (CycleTimeInfo cycleTimeInfo : cycleTimeInfos) {
 			String swimLane = cycleTimeInfo.getColumn();
-			if (swimLane.equals(CardStepsEnum.BLOCK.getValue().toUpperCase())) {
+			if (swimLane.equalsIgnoreCase(CardStepsEnum.BLOCK.getValue())) {
 				boardMap.put(swimLane, CardStepsEnum.BLOCK);
 			}
 			if (boardMap.containsKey(swimLane)) {
