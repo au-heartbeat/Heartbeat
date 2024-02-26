@@ -166,7 +166,9 @@ const BoardMetrics = ({
     !boardReport?.boardMetricsCompleted;
 
   useEffect(() => {
-    !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());
+    const boardReportRequestBody = getBoardReportRequestBody();
+    console.log('boardReportRequestBody', boardReportRequestBody);
+    !isBackFromDetail && startToRequestBoardData(boardReportRequestBody);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
