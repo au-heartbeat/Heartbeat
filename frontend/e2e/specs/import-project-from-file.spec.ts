@@ -28,7 +28,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
   await metricsStep.checkLastAssigneeCrewFilterChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
-  // await metricsStep.checkHeartbeatStateIsSet(hbStateData)
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData);
   await metricsStep.checkClassificationAreSet(importMultipleDoneProjectFromFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
   // Make changes to Metrics page data
@@ -61,7 +61,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
     BOARD_METRICS_RESULT.AverageCycleTime4Card,
   );
   // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
-
+  await reportStep.checkMetricDownloadData();
   await reportStep.checkDownloadReports();
 
   await reportStep.clickHomeIconThenBackToHomepage();
