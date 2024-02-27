@@ -54,7 +54,12 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics('17', '9', '4.86', '9.18');
+  await reportStep.checkBoardMetrics(
+    BOARD_METRICS_RESULT.Velocity,
+    BOARD_METRICS_RESULT.Throughput,
+    BOARD_METRICS_RESULT.AverageCycleTime4SP,
+    BOARD_METRICS_RESULT.AverageCycleTime4Card,
+  );
   // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
 
   await reportStep.checkDownloadReports();
