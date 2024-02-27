@@ -24,6 +24,13 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
 
+  // To verify board configuration matches json file data
+  await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+  // await metricsStep.checkHeartbeatStateIsSet(hbStateData)
+  await metricsStep.checkClassificationAreSet(importMultipleDoneProjectFromFile.classification);
+  await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
   // Make changes to Metrics page data
   await metricsStep.selectCrews(importMultipleDoneProjectFromFile.crews);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
@@ -48,6 +55,9 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics('17', '9', '4.86', '9.18');
+  // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
+
+  await reportStep.checkDownloadReports();
 
   await reportStep.clickHomeIconThenBackToHomepage();
   await homePage.importFlagAsBlockProjectFromFile();
