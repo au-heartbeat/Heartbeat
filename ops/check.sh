@@ -155,7 +155,6 @@ dot_star_check() {
 }
 
 e2e_container_check() {
-  local result
   docker build -t "heartbeat_e2e:latest" ./ -f ./ops/infra/Dockerfile.e2e
 
   docker run \
@@ -166,7 +165,7 @@ e2e_container_check() {
     -e "E2E_TOKEN_GITHUB=${E2E_TOKEN_GITHUB:-}" \
     -e "CI=${CI:-}" \
     heartbeat_e2e:latest \
-    bash -c "pnpm run e2e:major-ci; result=$?; tar -zcvf ./e2e-reports.tar.gz ./e2e/reports; exit $result"
+    bash -c "local result; pnpm run e2e:major-ci; result=$?; tar -zcvf ./e2e-reports.tar.gz ./e2e/reports; exit $result"
 
   docker cp hb_e2e_runner:/app/e2e-reports.tar.gz ./e2e-reports.tar.gz
   docker rm hb_e2e_runner
