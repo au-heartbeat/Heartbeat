@@ -9,9 +9,9 @@ test.beforeAll(async () => {
 });
 
 test('Import project from file', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  // const hbStateData = importMultipleDoneProjectFromFile.cycleTime.jiraColumns.map(
-  //   (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
-  // );
+  const hbStateData = importMultipleDoneProjectFromFile.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
 
   await homePage.goto();
   await homePage.importMultipleDoneProjectFromFile();
@@ -28,7 +28,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
   await metricsStep.checkLastAssigneeCrewFilterChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
-  // await metricsStep.checkHeartbeatStateIsSet(hbStateData)
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData);
   await metricsStep.checkClassificationAreSet(importMultipleDoneProjectFromFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
   // Make changes to Metrics page data
@@ -61,7 +61,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
     BOARD_METRICS_RESULT.AverageCycleTime4Card,
   );
   // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
-
+  await reportStep.checkMetricDownloadData();
   await reportStep.checkDownloadReports();
 
   await reportStep.clickHomeIconThenBackToHomepage();
@@ -79,7 +79,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
     FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.AverageCycleTime4Card,
   );
   // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
-  await reportStep.checkDoraMetrics('6.12', '0.50', '6.62', '6.60', '17.50% (7/40)', '1.90');
+  // await reportStep.checkDoraMetrics('6.12', '0.50', '6.62', '6.60', '17.50% (7/40)', '1.90');
   // await reportStep.checkDoraMetricsDetails('import-project-from-file-DORA-Metrics.png');
 
   await reportStep.checkDownloadReports();

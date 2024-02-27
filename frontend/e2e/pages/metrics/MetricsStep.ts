@@ -249,21 +249,37 @@ export class MetricsStep {
     await this.page.getByRole('option', { name: doneOption }).click();
   }
 
-  // async checkHeartbeatStateIsSet([
-  //    todoOption,
-  //    doingOption,
-  //    blockOption,
-  //    reviewOption,
-  //    forReadyOption,
-  //    testingOption,
-  //    doneOption,
-  //  ]: string[]) {
-  //
-  //   await expect(this.boardCycleTimeSection.getByLabel('Cycle time select for TODO')
-  //     .locator('div')
-  //     .locator('div')
-  //     .getAttribute("defaultValue")).toEqual("To do");
-  // }
+  async checkHeartbeatStateIsSet([
+    todoOption,
+    doingOption,
+    blockOption,
+    reviewOption,
+    forReadyOption,
+    testingOption,
+    doneOption,
+  ]: string[]) {
+    await expect(this.boardCycleTimeSection.getByLabel('Cycle time select for TODO').getByRole('combobox')).toHaveValue(
+      todoOption,
+    );
+    await expect(
+      this.boardCycleTimeSection.getByLabel('Cycle time select for Doing').getByRole('combobox'),
+    ).toHaveValue(doingOption);
+    await expect(
+      this.boardCycleTimeSection.getByLabel('Cycle time select for Blocked').getByRole('combobox'),
+    ).toHaveValue(blockOption);
+    await expect(
+      this.boardCycleTimeSection.getByLabel('Cycle time select for Review').getByRole('combobox'),
+    ).toHaveValue(reviewOption);
+    await expect(
+      this.boardCycleTimeSection.getByLabel('Cycle time select for READY FOR TESTING').getByRole('combobox'),
+    ).toHaveValue(forReadyOption);
+    await expect(
+      this.boardCycleTimeSection.getByLabel('Cycle time select for Testing').getByRole('combobox'),
+    ).toHaveValue(testingOption);
+    await expect(this.boardCycleTimeSection.getByLabel('Cycle time select for Done').getByRole('combobox')).toHaveValue(
+      doneOption,
+    );
+  }
 
   async selectOrganization(orgName: string) {
     await expect(this.loadings).toBeHidden();
