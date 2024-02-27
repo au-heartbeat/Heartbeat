@@ -135,6 +135,11 @@ export class MetricsStep {
     await expect(this.boardLastAssigneeRadioBox).toBeChecked();
   }
 
+  async checkClassificationText() {
+    await expect(this.boardLastAssigneeRadioBox).toBeVisible();
+    await expect(this.boardLastAssigneeRadioBox).toBeChecked();
+  }
+
   async checkCycleTimeConsiderCheckboxChecked() {
     await expect(this.boardConsiderAsBlockCheckbox).toBeChecked();
   }
@@ -160,11 +165,15 @@ export class MetricsStep {
       }
     }
 
+    this.checkCrews(crews);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async checkCrews(crews: string[]) {
     await expect(this.boardCrewSettingSelectedChips).toHaveCount(crews.length);
     crews.forEach(async (crew) => {
       await expect(this.boardCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
     });
-    await this.page.keyboard.press('Escape');
   }
 
   async selectClassifications(classificationKeys: string[]) {
