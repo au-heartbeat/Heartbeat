@@ -33,13 +33,13 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
   await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
-  await metricsStep.checkPipelineConfigurationAreChanged();
+  await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
 
   // Go to report page then back to metrics page, metrics data should stay changed
   await metricsStep.goToReportPage();
   await reportStep.goToPreviousStep();
   await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
-  await metricsStep.checkPipelineConfigurationAreChanged();
+  await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
 
   // Set metrics data to imported json file
   await metricsStep.selectCrews(importMultipleDoneProjectFromFile.crews);
