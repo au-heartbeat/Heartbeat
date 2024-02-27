@@ -537,6 +537,7 @@ public class JiraService {
 
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields, request.getOverrideFields());
 		String keyFlagged = cardCustomFieldKey.getFlagged();
+		log.info("Successfully get cardCustomFieldKey: {}, keyFlagged:{}",cardCustomFieldKey,keyFlagged);
 		List<JiraCardDTO> realDoneCards = new ArrayList<>();
 		List<JiraCard> jiraCards = new ArrayList<>();
 
