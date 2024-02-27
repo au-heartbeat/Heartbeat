@@ -234,7 +234,7 @@ public class JiraService {
 		JiraCardWithFields jiraCardWithFields = getAllDoneCards(boardType, baseUrl, request.getStatus(),
 				boardRequestParam, request.getOverrideFields());
 		List<JiraCard> allDoneCards = jiraCardWithFields.getJiraCards();
-		log.info("Successfully get allDoneCards: {}, storyPoints:{}", allDoneCards,
+		log.info("Successfully get allDoneCards storyPoints:{}",
 				allDoneCards.stream().map(allDoneCard -> allDoneCard.getFields().getStoryPoints()).toList());
 
 		for (RequestJiraBoardColumnSetting boardColumn : boardColumns) {
