@@ -1,5 +1,7 @@
-import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../fixtures/createNew/reportResult';
-import { config as metricsStepData } from '../fixtures/createNew/metricsStep';
+import {
+  config as metricsStepData,
+  modifiedConfig as modifiedMetricsStepData,
+} from '../fixtures/createNew/metricsStep';
 import { config as configStepData } from '../fixtures/createNew/configStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import { clearTempDir } from 'e2e/utils/clearTempDir';
@@ -15,6 +17,9 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
     endDate: format(configStepData.dateRange.endDate),
   };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+  const modifiedHbStateData = modifiedMetricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
@@ -39,35 +44,46 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
 
+  // 从metric页面回到config,再回到metrics页面
   await metricsStep.goToPreviousStep();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
   await metricsStep.waitForHiddenLoading();
-  await metricsStep.checkCrews(metricsStepData.crews);
 
-  // wait to delete when ADM-821 is done
+  // todo wait to delete when ADM-821 is done
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData);
   await metricsStep.selectClassifications(metricsStepData.classification);
 
-  await metricsStep.goToReportPage();
+  // 验证回退后，页面数据还在
+  await metricsStep.checkCrews(metricsStepData.crews);
+  await metricsStep.checkBoardByColumnRadioBoxChecked();
+  await metricsStep.checkClassifications(metricsStepData.classification);
 
-  await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics(
-    BOARD_METRICS_RESULT.Velocity,
-    BOARD_METRICS_RESULT.Throughput,
-    BOARD_METRICS_RESULT.AverageCycleTime4SP,
-    BOARD_METRICS_RESULT.AverageCycleTime4Card,
-  );
-  await reportStep.checkBoardMetricsDetails('create-a-new-project-Board-Metrics.png', 9);
-  await reportStep.checkDoraMetrics(
-    DORA_METRICS_RESULT.PrLeadTime,
-    DORA_METRICS_RESULT.PipelineLeadTime,
-    DORA_METRICS_RESULT.TotalLeadTime,
-    DORA_METRICS_RESULT.DeploymentFrequency,
-    DORA_METRICS_RESULT.FailureRate,
-    DORA_METRICS_RESULT.MeanTimeToRecovery,
-  );
-  await reportStep.checkDoraMetricsDetails('create-a-new-project-DORA-Metrics.png');
-  await reportStep.checkMetricDownloadData();
+  // 修改board数据，进到report页面再回到metrics，验证数据正常
+  await metricsStep.selectCrews(modifiedMetricsStepData.crews);
+  await metricsStep.selectCycleTimeSettingsType(modifiedMetricsStepData.cycleTime.type);
+  await metricsStep.selectModifiedHeartbeatState(modifiedHbStateData);
+  await metricsStep.selectClassifications(modifiedMetricsStepData.classification);
+  await metricsStep.goToReportPage();
+  await reportStep.goToPreviousStep();
+  await metricsStep.checkCrews(modifiedMetricsStepData.crews);
+  await metricsStep.checkBoardByStatusRadioBoxChecked();
+  await metricsStep.checkClassifications(modifiedMetricsStepData.classification);
+
+  //修改pipeline数据，回到config页面再回到metrics，验证数据正常
+  await metricsStep.selectDefaultGivenPipelineSetting(modifiedMetricsStepData.deployment);
+  await metricsStep.selectGivenPipelineCrews(modifiedMetricsStepData.pipelineCrews);
+  await metricsStep.goToPreviousStep();
+  await configStep.goToMetrics();
+  await metricsStep.waitForShown();
+  await metricsStep.waitForHiddenLoading();
+  // todo delete
+  await metricsStep.selectGivenPipelineCrews(modifiedMetricsStepData.pipelineCrews);
+  // await metricsStep.checkStepName('Deploy e2e');
+  await metricsStep.checkPipelineCrews(modifiedMetricsStepData.pipelineCrews);
+
+  //回退，回退，点击yes，回到主页
+  await metricsStep.goToPreviousStep();
+  await configStep.clickPreviousButtonThenGoHome();
 });

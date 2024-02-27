@@ -165,7 +165,7 @@ export class MetricsStep {
       }
     }
 
-    this.checkCrews(crews);
+    await this.checkCrews(crews);
     await this.page.keyboard.press('Escape');
   }
 
@@ -193,8 +193,12 @@ export class MetricsStep {
       }
     }
 
-    await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
+    await this.checkClassifications(classificationKeys);
     await this.page.keyboard.press('Escape');
+  }
+
+  async checkClassifications(classificationKeys: string[]) {
+    await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
   }
 
   async waitForHiddenLoading() {
@@ -204,11 +208,19 @@ export class MetricsStep {
   async selectCycleTimeSettingsType(by: string) {
     if (by === 'byColumn') {
       await this.boardByColumnRadioBox.click();
-      await expect(this.boardByColumnRadioBox).toBeChecked();
+      await this.checkBoardByColumnRadioBoxChecked();
     } else {
       await this.boardByStatusRadioBox.click();
-      await expect(this.boardByStatusRadioBox).toBeChecked();
+      await this.checkBoardByStatusRadioBoxChecked();
     }
+  }
+
+  async checkBoardByColumnRadioBoxChecked() {
+    await expect(this.boardByColumnRadioBox).toBeChecked();
+  }
+
+  async checkBoardByStatusRadioBoxChecked() {
+    await expect(this.boardByStatusRadioBox).toBeChecked();
   }
 
   async selectHeartbeatState([
@@ -234,6 +246,23 @@ export class MetricsStep {
 
     await this.boardCycleTimeSelectForREADY.click();
     await this.page.getByRole('option', { name: forReadyOption }).click();
+
+    await this.boardCycleTimeSelectForTesting.click();
+    await this.page.getByRole('option', { name: testingOption, exact: true }).click();
+
+    await this.boardCycleTimeSelectForDone.click();
+    await this.page.getByRole('option', { name: doneOption }).click();
+  }
+
+  async selectModifiedHeartbeatState([todoOption, doingOption, blockOption, testingOption, doneOption]: string[]) {
+    await this.boardCycleTimeSelectForTODO.click();
+    await this.page.getByRole('option', { name: todoOption }).click();
+
+    await this.boardCycleTimeSelectForDoing.click();
+    await this.page.getByRole('option', { name: doingOption }).click();
+
+    await this.boardCycleTimeSelectForBlocked.click();
+    await this.page.getByRole('option', { name: blockOption }).click();
 
     await this.boardCycleTimeSelectForTesting.click();
     await this.page.getByRole('option', { name: testingOption, exact: true }).click();
@@ -270,9 +299,13 @@ export class MetricsStep {
       stepName = doneStepMaybeWithEmoji.split(splitor)[1];
     }
     const targetStepOption = this.page.getByRole('option', { name: stepName });
-    await expect(targetStepOption).toBeVisible();
+    await this.checkStepName(stepName);
     await targetStepOption.click();
     await expect(this.loadings).toBeHidden();
+  }
+
+  async checkStepName(stepName: string) {
+    await expect(this.page.getByRole('option', { name: stepName })).toBeVisible();
   }
 
   async selectBranch(branches: string[]) {
@@ -313,10 +346,14 @@ export class MetricsStep {
       }
     }
 
-    crews.forEach(async (crew) => {
+    await this.checkPipelineCrews(crews);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async checkPipelineCrews(crews: string[]) {
+    await crews.forEach(async (crew) => {
       await expect(this.pipelineCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
     });
-    await this.page.keyboard.press('Escape');
   }
 
   validateSavedJsonCriticalFieldsEqualsToFixture(file: typeof metricsStepData, fixture: typeof metricsStepData) {
