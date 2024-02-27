@@ -50,11 +50,6 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.waitForShown();
   await metricsStep.waitForHiddenLoading();
 
-  // todo wait to delete when ADM-821 is done
-  await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
-  await metricsStep.selectHeartbeatState(hbStateData);
-  await metricsStep.selectClassifications(metricsStepData.classification);
-
   // 验证回退后，页面数据还在
   await metricsStep.checkCrews(metricsStepData.crews);
   await metricsStep.checkBoardByColumnRadioBoxChecked();
