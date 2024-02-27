@@ -95,6 +95,8 @@ public class JiraService {
 
 	private static final String DONE_CARD_TAG = "done";
 
+	private static final String NONE_DONE_CARD_TAG = "nonDone";
+
 	private final ThreadPoolTaskExecutor customTaskExecutor;
 
 	private final JiraFeignClient jiraFeignClient;
@@ -877,7 +879,7 @@ public class JiraService {
 					+ "') ORDER BY updated DESC";
 		}
 
-		return getCardList(baseUrl, boardRequestParam, jql, "nonDone", NONE_DONE_MAX_QUERY_COUNT);
+		return getCardList(baseUrl, boardRequestParam, jql, NONE_DONE_CARD_TAG, NONE_DONE_MAX_QUERY_COUNT);
 	}
 
 	private JiraCardWithFields getAllNonDoneCardsForKanBan(URI baseUrl, List<String> status,
@@ -889,7 +891,7 @@ public class JiraService {
 		else {
 			jql = "status not in ('" + String.join("','", status) + "') ORDER BY updated DESC";
 		}
-		return getCardList(baseUrl, boardRequestParam, jql, "nonDone", NONE_DONE_MAX_QUERY_COUNT);
+		return getCardList(baseUrl, boardRequestParam, jql, NONE_DONE_CARD_TAG, NONE_DONE_MAX_QUERY_COUNT);
 	}
 
 	private JiraCardWithFields getCardList(URI baseUrl, BoardRequestParam boardRequestParam, String jql,
@@ -907,7 +909,7 @@ public class JiraService {
 
 		List<JiraCard> cards = new ArrayList<>(new LinkedHashSet<>(allCardsResponseDTO.getIssues()));
 		int pages = (int) Math.ceil(Double.parseDouble(allCardsResponseDTO.getTotal()) / QUERY_COUNT);
-		if (pages <= 1) {
+		if (cardType.equals(NONE_DONE_CARD_TAG) || pages <= 1) {
 			return JiraCardWithFields.builder().jiraCards(cards).targetFields(targetField).build();
 		}
 
