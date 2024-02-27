@@ -2,6 +2,7 @@ import { config as metricsStepData } from '../../fixtures/createNew/metricsStep'
 import { METRICS_STEP_SAVING_FILENAME } from '../../fixtures';
 import { downloadFileAndCheck } from '../../utils/download';
 import { expect, Locator, Page } from '@playwright/test';
+import { size } from 'lodash';
 
 export class MetricsStep {
   readonly page: Page;
@@ -381,10 +382,11 @@ export class MetricsStep {
     await expect(this.page).toHaveURL(/\//);
   }
 
-  async checkPipelineConfigurationAreChanged() {
-    await expect(this.pipelineOrganizationSelect).toHaveValue('Thoughtworks-Heartbeat');
-    await expect(this.pipelineNameSelect).toHaveValue('Heartbeat');
-    await expect(this.pipelineStepSelect).toHaveValue('Deploy prod');
-    await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(1);
+  async checkPipelineConfigurationAreChanged(pipelineSettings: typeof metricsStepData.deployment) {
+    const firstPipelineConfig = pipelineSettings[0];
+
+    await expect(this.pipelineOrganizationSelect).toHaveValue(firstPipelineConfig.organization);
+    await expect(this.pipelineNameSelect).toHaveValue(firstPipelineConfig.pipelineName);
+    await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(size(firstPipelineConfig.branches));
   }
 }
