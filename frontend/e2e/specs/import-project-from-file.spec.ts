@@ -8,6 +8,10 @@ test.beforeAll(async () => {
 });
 
 test('Import project from file', async ({ homePage, configStep, metricsStep, reportStep }) => {
+  // const hbStateData = importMultipleDoneProjectFromFile.cycleTime.jiraColumns.map(
+  //   (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  // );
+
   await homePage.goto();
   await homePage.importMultipleDoneProjectFromFile();
   await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
@@ -19,6 +23,13 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
 
+  // To verify board configuration matches json file data
+  await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+  // await metricsStep.checkHeartbeatStateIsSet(hbStateData)
+  await metricsStep.checkClassificationAreSet(importMultipleDoneProjectFromFile.classification);
+  await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
   // Make changes to Metrics page data
   await metricsStep.selectCrews(importMultipleDoneProjectFromFile.crews);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
@@ -43,6 +54,9 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics('17', '9', '4.86', '9.18');
+  // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
+
+  await reportStep.checkDownloadReports();
 
   await reportStep.clickHomeIconThenBackToHomepage();
   await homePage.importFlagAsBlockProjectFromFile();
@@ -52,7 +66,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics('17', '9', '4.86', '9.18');
+  await reportStep.checkBoardMetrics('0', '0', '0', '0');
   await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
   await reportStep.checkDoraMetrics('6.12', '0.50', '6.62', '6.60', '17.50% (7/40)', '1.90');
   await reportStep.checkDoraMetricsDetails('import-project-from-file-DORA-Metrics.png');

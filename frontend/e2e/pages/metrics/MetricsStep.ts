@@ -200,6 +200,10 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async checkClassificationAreSet(classificationKeys: string[]) {
+    await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
+  }
+
   async waitForHiddenLoading() {
     await expect(this.loadings.first()).toBeHidden();
   }
@@ -244,6 +248,22 @@ export class MetricsStep {
     await this.boardCycleTimeSelectForDone.click();
     await this.page.getByRole('option', { name: doneOption }).click();
   }
+
+  // async checkHeartbeatStateIsSet([
+  //    todoOption,
+  //    doingOption,
+  //    blockOption,
+  //    reviewOption,
+  //    forReadyOption,
+  //    testingOption,
+  //    doneOption,
+  //  ]: string[]) {
+  //
+  //   await expect(this.boardCycleTimeSection.getByLabel('Cycle time select for TODO')
+  //     .locator('div')
+  //     .locator('div')
+  //     .getAttribute("defaultValue")).toEqual("To do");
+  // }
 
   async selectOrganization(orgName: string) {
     await expect(this.loadings).toBeHidden();
