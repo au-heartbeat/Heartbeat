@@ -8,6 +8,7 @@ import fs from 'fs';
 
 export class ReportStep {
   readonly page: Page;
+  readonly pageHeader: Locator;
   readonly velocityPart: Locator;
   readonly averageCycleTimeForSP: Locator;
   readonly averageCycleTimeForCard: Locator;
@@ -26,7 +27,8 @@ export class ReportStep {
 
   constructor(page: Page) {
     this.page = page;
-    this.velocityPart = page.locator('[data-test-id="Velocity"] [data-test-id="report-section"]');
+    this.pageHeader = this.page.locator('[data-test-id="Header"]');
+    this.velocityPart = this.page.locator('[data-test-id="Velocity"] [data-test-id="report-section"]');
     this.averageCycleTimeForSP = this.page.locator('[data-test-id="Cycle Time"] [data-test-id="report-section"]');
     this.averageCycleTimeForCard = this.page.locator('[data-test-id="Cycle Time"] [data-test-id="report-section"]');
     this.prLeadTime = this.page.locator('[data-test-id="Lead Time For Changes"] [data-test-id="report-section"]');
@@ -55,6 +57,7 @@ export class ReportStep {
     await this.showMoreLinks.nth(1).click();
     await expect(this.page).toHaveScreenshot(snapshotPath, {
       fullPage: true,
+      mask: [this.pageHeader],
     });
     await downloadFileAndCheck(this.page, this.exportPipelineDataButton, 'pipelineData.csv', async (fileDataString) => {
       const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/pipelineData.csv'));
@@ -85,13 +88,12 @@ export class ReportStep {
     await expect(this.averageCycleTimeForCard).toContainText(`${averageCycleTimeForCard}Average Cycle Time(Days/Card)`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async checkBoardMetricsDetails(snapshotPath: string, csvCompareLines: number) {
     await this.showMoreLinks.first().click();
     await expect(this.page).toHaveScreenshot(snapshotPath, {
       fullPage: true,
+      mask: [this.pageHeader],
     });
-    //FIXME fix csv compare issue
     await downloadFileAndCheck(this.page, this.exportBoardData, 'boardData.csv', async (fileDataString) => {
       const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/boardData.csv'));
       const localCsv = parse(localCsvFile, { to: csvCompareLines });
