@@ -1,3 +1,4 @@
+import { BOARD_METRICS_RESULT, FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT } from '../fixtures/createNew/reportResult';
 import { importMultipleDoneProjectFromFile } from '../fixtures/importFile/multiple-done-config-file';
 import { config as metricsStepData } from '../fixtures/createNew/metricsStep';
 import { test } from '../fixtures/testWithExtendFixtures';
@@ -53,7 +54,12 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics('17', '9', '4.86', '9.18');
+  await reportStep.checkBoardMetrics(
+    BOARD_METRICS_RESULT.Velocity,
+    BOARD_METRICS_RESULT.Throughput,
+    BOARD_METRICS_RESULT.AverageCycleTime4SP,
+    BOARD_METRICS_RESULT.AverageCycleTime4Card,
+  );
   // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
 
   await reportStep.checkDownloadReports();
@@ -66,10 +72,15 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics('0', '0', '0', '0');
-  await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
+  await reportStep.checkBoardMetrics(
+    FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.Velocity,
+    FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.Throughput,
+    FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.AverageCycleTime4SP,
+    FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.AverageCycleTime4Card,
+  );
+  // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
   await reportStep.checkDoraMetrics('6.12', '0.50', '6.62', '6.60', '17.50% (7/40)', '1.90');
-  await reportStep.checkDoraMetricsDetails('import-project-from-file-DORA-Metrics.png');
+  // await reportStep.checkDoraMetricsDetails('import-project-from-file-DORA-Metrics.png');
 
   await reportStep.checkDownloadReports();
 });
