@@ -23,7 +23,7 @@ import { setupStore } from '../utils/setupStoreUtil';
 import { store } from '@src/store';
 
 const initState = {
-  isDirty: false,
+  isBoarConfigDirty: false,
   jiraColumns: [],
   targetFields: [],
   users: [],

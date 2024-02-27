@@ -2,7 +2,7 @@ import {
   saveUsers,
   selectMetricsContent,
   savePipelineCrews,
-  updateMetricsDirtyStatus,
+  updateMetricsBoardDirtyStatus,
 } from '@src/context/Metrics/metricsSlice';
 import { AssigneeFilter } from '@src/containers/MetricsStep/Crews/AssigneeFilter';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
@@ -42,7 +42,9 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
       setSelectedCrews(selectedCrews.length === options.length ? [] : options);
       return;
     }
-    dispatch(updateMetricsDirtyStatus(true));
+    if (isBoardCrews) {
+      dispatch(updateMetricsBoardDirtyStatus(true));
+    }
     setSelectedCrews([...value]);
   };
 

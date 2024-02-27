@@ -260,7 +260,6 @@ const MetricsStepper = () => {
         branches: [],
       }));
       dispatch(updatePipelineList(initPipelineSteps));
-      // dispatch(updateCycleTimeSettings([]));
     }
   };
 

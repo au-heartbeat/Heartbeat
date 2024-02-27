@@ -13,7 +13,7 @@ import {
   MetricSelectionWrapper,
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
-import { selectMetricsContent, updateMetricsState, selectMetricsIsDirty } from '@src/context/Metrics/metricsSlice';
+import { selectMetricsContent, updateMetricsState, selectMetricsBoardIsDirty } from '@src/context/Metrics/metricsSlice';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
 import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
@@ -53,7 +53,7 @@ const MetricsStep = () => {
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
-  const isDirty = useAppSelector(selectMetricsIsDirty);
+  const isBoarConfigDirty = useAppSelector(selectMetricsBoardIsDirty);
 
   const getInfo = useCallback(
     () =>
@@ -75,9 +75,9 @@ const MetricsStep = () => {
   useLayoutEffect(() => {
     if (!shouldLoad) return;
     dispatch(closeAllNotifications());
-    if (!shouldLoad || !isShowCrewsAndRealDone || isDirty) return;
+    if (!shouldLoad || !isShowCrewsAndRealDone || isBoarConfigDirty) return;
     getInfo();
-  }, [shouldLoad, isShowCrewsAndRealDone, isDirty, dispatch, getInfo]);
+  }, [shouldLoad, isShowCrewsAndRealDone, isBoarConfigDirty, dispatch, getInfo]);
 
   return (
     <>

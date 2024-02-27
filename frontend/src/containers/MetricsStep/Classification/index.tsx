@@ -1,7 +1,7 @@
 import {
   saveTargetFields,
   selectClassificationWarningMessage,
-  updateMetricsDirtyStatus,
+  updateMetricsBoardDirtyStatus,
 } from '@src/context/Metrics/metricsSlice';
 import { TypedStyledAutocompleted, ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
@@ -41,7 +41,7 @@ export const Classification = ({ targetFields, title, label }: classificationPro
       ...targetField,
       flag: !!nextSelectedOptions.find((option) => option.key === targetField.key),
     }));
-    dispatch(updateMetricsDirtyStatus(true));
+    dispatch(updateMetricsBoardDirtyStatus(true));
     dispatch(saveTargetFields(updatedTargetFields));
   };
 

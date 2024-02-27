@@ -5,7 +5,7 @@ import {
   StyledTextField,
   StyledTypeSelections,
 } from '@src/components/Common/ConfigForms';
-import { updateMetricsDirtyStatus } from '@src/context/Metrics/metricsSlice';
+import { updateMetricsBoardDirtyStatus } from '@src/context/Metrics/metricsSlice';
 import { KEYS, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
 import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
@@ -24,7 +24,7 @@ export const Board = () => {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await verifyJira();
-    dispatch(updateMetricsDirtyStatus(false));
+    dispatch(updateMetricsBoardDirtyStatus(false));
   };
 
   const isDisableVerifyButton = useMemo(
