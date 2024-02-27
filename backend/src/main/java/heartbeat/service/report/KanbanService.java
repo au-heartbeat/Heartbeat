@@ -22,6 +22,8 @@ public class KanbanService {
 	public FetchedData.CardCollectionInfo fetchDataFromKanban(GenerateReportRequest request) {
 		CardCollection nonDoneCardCollection = fetchNonDoneCardCollection(request);
 		CardCollection realDoneCardCollection = fetchRealDoneCardCollection(request);
+		log.info("Number of done cards is :" + realDoneCardCollection.getCardsNumber());
+		log.info("Number of none done cards is :" + nonDoneCardCollection.getCardsNumber());
 		kanbanCsvService.generateCsvInfo(request, realDoneCardCollection, nonDoneCardCollection);
 
 		return FetchedData.CardCollectionInfo.builder()

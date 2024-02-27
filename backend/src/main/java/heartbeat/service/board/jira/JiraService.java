@@ -234,7 +234,8 @@ public class JiraService {
 		JiraCardWithFields jiraCardWithFields = getAllDoneCards(boardType, baseUrl, request.getStatus(),
 				boardRequestParam, request.getOverrideFields());
 		List<JiraCard> allDoneCards = jiraCardWithFields.getJiraCards();
-		log.info("Successfully get allDoneCards: {}, storyPoints:{}", allDoneCards, allDoneCards.stream().map(allDoneCard->allDoneCard.getFields().getStoryPoints()).toList());
+		log.info("Successfully get allDoneCards: {}, storyPoints:{}", allDoneCards,
+				allDoneCards.stream().map(allDoneCard -> allDoneCard.getFields().getStoryPoints()).toList());
 
 		for (RequestJiraBoardColumnSetting boardColumn : boardColumns) {
 			CardStepsEnum.fromValue(boardColumn.getValue());
@@ -560,8 +561,8 @@ public class JiraService {
 					.cardCycleTime(calculateCardCycleTime(doneCard.getKey(), cycleTimeInfoDTO.getCycleTimeInfos(),
 							boardColumns))
 					.build();
-				log.info("Successfully get cardCycleTime: {}", calculateCardCycleTime(doneCard.getKey(), cycleTimeInfoDTO.getCycleTimeInfos(),
-					boardColumns) );
+				log.info("Successfully get cardCycleTime: {}",
+						calculateCardCycleTime(doneCard.getKey(), cycleTimeInfoDTO.getCycleTimeInfos(), boardColumns));
 				realDoneCards.add(jiraCardDTO);
 			}
 		});
