@@ -29,7 +29,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   outputDir: './e2e/test-results',
-  reporter: [['html', { open: 'always', outputFolder: './e2e/reports/html' }], ['list']],
+  reporter: [['html', { open: process.env.CI ? 'never' : 'on-failure', outputFolder: './e2e/reports/html' }], ['list']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
