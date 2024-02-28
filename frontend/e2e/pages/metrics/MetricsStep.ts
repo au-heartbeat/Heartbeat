@@ -374,7 +374,7 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
-  async checkBranch(branches: string) {
+  async checkBranch(branches: string[]) {
     await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
   }
 
