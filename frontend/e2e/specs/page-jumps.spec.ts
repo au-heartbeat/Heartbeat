@@ -42,7 +42,7 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectGivenPipelineCrews(modifiedMetricsStepData.pipelineCrews);
   await metricsStep.goToPreviousStep();
   await configStep.goToMetrics();
-  await metricsStep.checkPipelineSetting(modifiedMetricsStepData.deployment);
+  await metricsStep.checkBranch(modifiedMetricsStepData.deployment[0].branches);
   await metricsStep.checkPipelineCrews(modifiedMetricsStepData.pipelineCrews);
 
   await metricsStep.goToPreviousStep();

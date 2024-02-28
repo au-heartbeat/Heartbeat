@@ -45,9 +45,6 @@ export class MetricsStep {
   readonly pipelineNameSelect: Locator;
   readonly pipelineStepSelect: Locator;
   readonly pipelineBranchSelect: Locator;
-  readonly pipelineOrganizationInput: Locator;
-  readonly pipelineNameInput: Locator;
-  readonly pipelineStepInput: Locator;
   readonly pipelineDefaultBranchSelectContainer: Locator;
   readonly pipelineDefaultSelectedBranchChips: Locator;
   readonly pipelineBranchSelectIndicator: Locator;
@@ -130,9 +127,6 @@ export class MetricsStep {
     this.pipelineNameSelect = this.pipelineSettingSection.getByLabel('Pipeline Name *');
     this.pipelineStepSelect = this.pipelineSettingSection.getByLabel('Step *');
     this.pipelineBranchSelect = this.pipelineSettingSection.getByLabel('Branches *');
-    this.pipelineOrganizationInput = this.pipelineSettingSection.getByLabel('Organization *').getByRole('combobox');
-    this.pipelineNameInput = this.pipelineSettingSection.getByLabel('Pipeline Name *').getByRole('combobox');
-    this.pipelineStepInput = this.pipelineSettingSection.getByLabel('Step *').getByRole('combobox');
     this.pipelineDefaultBranchSelectContainer = this.pipelineSettingSection.getByLabel('Pipeline Branch AutoComplete');
     this.pipelineDefaultSelectedBranchChips = this.pipelineDefaultBranchSelectContainer
       .getByRole('button')
@@ -406,14 +400,6 @@ export class MetricsStep {
 
     await this.checkPipelineCrews(crews);
     await this.page.keyboard.press('Escape');
-  }
-
-  async checkPipelineSetting(pipelineSettings: typeof metricsStepData.deployment) {
-    const firstPipelineConfig = pipelineSettings[0];
-
-    await expect(this.pipelineOrganizationInput).toHaveAttribute('value', firstPipelineConfig.organization);
-    await expect(this.pipelineNameInput).toHaveAttribute('value', firstPipelineConfig.pipelineName);
-    await expect(this.pipelineStepInput).toHaveAttribute('value', firstPipelineConfig.step);
   }
 
   async checkPipelineCrews(crews: string[]) {
