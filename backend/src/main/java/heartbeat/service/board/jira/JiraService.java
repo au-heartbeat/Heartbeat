@@ -909,7 +909,8 @@ public class JiraService {
 					+ "') ORDER BY updated DESC";
 		}
 
-		return getCardList(baseUrl, boardRequestParam, jql, NONE_DONE_CARD_TAG, overrideFields, NONE_DONE_MAX_QUERY_COUNT);
+		return getCardList(baseUrl, boardRequestParam, jql, NONE_DONE_CARD_TAG, overrideFields,
+				NONE_DONE_MAX_QUERY_COUNT);
 	}
 
 	private JiraCardWithFields getAllNonDoneCardsForKanBan(URI baseUrl, List<String> status,
@@ -921,7 +922,8 @@ public class JiraService {
 		else {
 			jql = "status not in ('" + String.join("','", status) + "') ORDER BY updated DESC";
 		}
-		return getCardList(baseUrl, boardRequestParam, jql, NONE_DONE_CARD_TAG, overrideFields, NONE_DONE_MAX_QUERY_COUNT);
+		return getCardList(baseUrl, boardRequestParam, jql, NONE_DONE_CARD_TAG, overrideFields,
+				NONE_DONE_MAX_QUERY_COUNT);
 	}
 
 	private JiraCardWithFields getCardList(URI baseUrl, BoardRequestParam boardRequestParam, String jql,
