@@ -60,7 +60,7 @@ const main = async (args: string[]) => {
       cwd: DIR.BACK_END,
       stderr: 'inherit',
       shell: true,
-    })`./gradlew bootRun --args='--spring.profiles.active=local --MOCK_SERVER_URL=http://localhost:4323'`;
+    })`./gradlew bootRun --args='--spring.profiles.active=local'`;
 
   const waitForUrl = (url: string) =>
     new Promise((resolve) => {
