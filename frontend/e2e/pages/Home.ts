@@ -32,6 +32,6 @@ export class HomePage {
   }
 
   async waitForShown() {
-    await expect(await this.importProjectFromFileInput).toHaveClass(/Mui-active/);
+    await expect(await this.importProjectFromFileButton).toBeVisible();
   }
 }

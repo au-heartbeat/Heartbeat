@@ -402,6 +402,14 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async checkPipelineSetting(pipelineSettings: typeof metricsStepData.deployment) {
+    const firstPipelineConfig = pipelineSettings[0];
+
+    await expect(this.pipelineOrganizationSelect).toHaveAttribute('value', firstPipelineConfig.organization);
+    await expect(this.pipelineNameSelect).toHaveAttribute('value', firstPipelineConfig.pipelineName);
+    await expect(this.pipelineStepSelect).toHaveAttribute('value', firstPipelineConfig.step.replace(/:[^:\s]+: /, ''));
+  }
+
   async checkPipelineCrews(crews: string[]) {
     await crews.forEach(async (crew) => {
       await expect(this.pipelineCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
