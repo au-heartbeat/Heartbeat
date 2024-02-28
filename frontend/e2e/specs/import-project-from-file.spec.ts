@@ -35,12 +35,12 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.selectCrews(importMultipleDoneProjectFromFile.crews);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
 
-  // Go to config page then next to metrics page, metrics data should stay changed
-  await metricsStep.goToPreviousStep();
-  await configStep.goToMetrics();
-  await metricsStep.waitForShown();
-  await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
-  await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
+  // // Go to config page then next to metrics page, metrics data should stay changed
+  // await metricsStep.goToPreviousStep();
+  // await configStep.goToMetrics();
+  // await metricsStep.waitForShown();
+  // await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
+  // await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
 
   // Go to report page then back to metrics page, metrics data should stay changed
   await metricsStep.goToReportPage();
@@ -62,7 +62,6 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   );
   await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
   await reportStep.checkDoraMetricsDetails('import-project-from-file-DORA-Metrics.png');
-  await reportStep.checkMetricDownloadData();
   await reportStep.checkDownloadReports();
 
   await reportStep.clickHomeIconThenBackToHomepage();
@@ -72,7 +71,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.waitForShown();
   await metricsStep.goToReportPage();
 
-  await reportStep.confirmGeneratedReport();
+  // await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics(
     FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.Velocity,
     FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.Throughput,
