@@ -60,7 +60,8 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
     BOARD_METRICS_RESULT.AverageCycleTime4SP,
     BOARD_METRICS_RESULT.AverageCycleTime4Card,
   );
-  // await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
+  await reportStep.checkBoardMetricsDetails('import-project-from-file-Board-Metrics.png', 9);
+  await reportStep.checkDoraMetricsDetails('import-project-from-file-DORA-Metrics.png');
   await reportStep.checkMetricDownloadData();
   await reportStep.checkDownloadReports();
 
