@@ -160,8 +160,8 @@ export const modifiedConfig = {
       id: 0,
       organization: 'Thoughtworks-Heartbeat',
       pipelineName: 'Heartbeat',
-      step: ':rocket: Deploy e2e',
-      branches: ['main'],
+      step: ':rocket: Deploy prod',
+      branches: ['main', 'gh-pages'],
     },
   ],
 };

@@ -299,13 +299,9 @@ export class MetricsStep {
       stepName = doneStepMaybeWithEmoji.split(splitor)[1];
     }
     const targetStepOption = this.page.getByRole('option', { name: stepName });
-    await this.checkStepName(stepName);
+    await expect(targetStepOption).toBeVisible();
     await targetStepOption.click();
     await expect(this.loadings).toBeHidden();
-  }
-
-  async checkStepName(stepName: string) {
-    await expect(this.page.getByRole('option', { name: stepName })).toBeVisible();
   }
 
   async selectBranch(branches: string[]) {
@@ -318,6 +314,10 @@ export class MetricsStep {
     await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
     await expect(this.pipelineBranchesErrorMessage).not.toBeVisible();
     await this.page.keyboard.press('Escape');
+  }
+
+  async checkBranch(branches: string) {
+    await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
   }
 
   async selectDefaultGivenPipelineSetting(pipelineSettings: typeof metricsStepData.deployment) {

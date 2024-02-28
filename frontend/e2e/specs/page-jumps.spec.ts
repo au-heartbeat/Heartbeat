@@ -44,18 +44,15 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
 
-  // 从metric页面回到config,再回到metrics页面
   await metricsStep.goToPreviousStep();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
   await metricsStep.waitForHiddenLoading();
 
-  // 验证回退后，页面数据还在
   await metricsStep.checkCrews(metricsStepData.crews);
   await metricsStep.checkBoardByColumnRadioBoxChecked();
   await metricsStep.checkClassifications(metricsStepData.classification);
 
-  // 修改board数据，进到report页面再回到metrics，验证数据正常
   await metricsStep.selectCrews(modifiedMetricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(modifiedMetricsStepData.cycleTime.type);
   await metricsStep.selectModifiedHeartbeatState(modifiedHbStateData);
@@ -66,7 +63,6 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkBoardByStatusRadioBoxChecked();
   await metricsStep.checkClassifications(modifiedMetricsStepData.classification);
 
-  //修改pipeline数据，回到config页面再回到metrics，验证数据正常
   await metricsStep.selectDefaultGivenPipelineSetting(modifiedMetricsStepData.deployment);
   await metricsStep.selectGivenPipelineCrews(modifiedMetricsStepData.pipelineCrews);
   await metricsStep.goToPreviousStep();
@@ -75,10 +71,9 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.waitForHiddenLoading();
   // todo delete
   await metricsStep.selectGivenPipelineCrews(modifiedMetricsStepData.pipelineCrews);
-  // await metricsStep.checkStepName('Deploy e2e');
+  await metricsStep.checkBranch(modifiedMetricsStepData.deployment[0].branches);
   await metricsStep.checkPipelineCrews(modifiedMetricsStepData.pipelineCrews);
 
-  //回退，回退，点击yes，回到主页
   await metricsStep.goToPreviousStep();
   await configStep.clickPreviousButtonThenGoHome();
 });
