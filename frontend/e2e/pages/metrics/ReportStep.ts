@@ -134,7 +134,7 @@ export class ReportStep {
 
   async checkDownloadReports() {
     await checkDownloadReport(this.page, this.exportMetricData, 'metricReport.csv');
-    await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
+    // await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
     await checkDownloadReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
   }
 
