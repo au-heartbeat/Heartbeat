@@ -287,13 +287,18 @@ export class ConfigStep {
     await this.nextButton.click();
   }
 
-  async goToHomePage() {
+  async goToPreviousStep() {
     await this.previousButton.click();
   }
 
-  async cancelGoToHomePage() {
+  async cancelGoToPreviousStep() {
     const cancelButton = this.page.getByRole('button', { name: 'Cancel' });
     await cancelButton.click();
+  }
+
+  async confirmGoToPreviousStep() {
+    const confirmButton = this.page.getByRole('button', { name: 'Yes' });
+    await confirmButton.click();
   }
 
   async verifyAllConfig() {

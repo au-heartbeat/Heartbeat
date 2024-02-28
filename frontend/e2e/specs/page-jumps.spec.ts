@@ -18,8 +18,8 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
 
   await homePage.goto();
   await homePage.importProjectFromFile();
-  await configStep.goToHomePage();
-  await configStep.cancelGoToHomePage();
+  await configStep.goToPreviousStep();
+  await configStep.cancelGoToPreviousStep();
   await configStep.waitForShown();
 
   await configStep.verifyAllConfig();
@@ -37,6 +37,18 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkModifiedHeartbeatState(modifiedHbStateData);
   await metricsStep.checkCycleTimeConsiderAsBlockUnchecked();
   await metricsStep.checkClassifications(modifiedMetricsStepData.classification);
+
+  await metricsStep.selectDefaultGivenPipelineSetting(modifiedMetricsStepData.deployment);
+  await metricsStep.selectGivenPipelineCrews(modifiedMetricsStepData.pipelineCrews);
+  await metricsStep.goToPreviousStep();
+  await configStep.goToMetrics();
+  await metricsStep.checkPipelineSetting(modifiedMetricsStepData.deployment);
+  await metricsStep.checkPipelineCrews(modifiedMetricsStepData.pipelineCrews);
+
+  await metricsStep.goToPreviousStep();
+  await configStep.goToPreviousStep();
+  await configStep.confirmGoToPreviousStep();
+  await homePage.waitForShown();
 });
 
 test('Page jump for create', async ({ homePage, configStep, metricsStep, reportStep }) => {
