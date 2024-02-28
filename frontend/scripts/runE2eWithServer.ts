@@ -3,7 +3,7 @@ import process from 'process';
 import path from 'path';
 
 const LOCALHOST_LIST = ['http://127.0.0.1', 'http://localhost'];
-const WAIT_TIMEOUT = 30000;
+const WAIT_TIMEOUT = 60000;
 const WAIT_INTERVAL = 3000;
 
 const HEALTH_ENDPOINT_SUFFIX = {
