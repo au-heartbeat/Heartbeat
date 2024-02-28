@@ -34,6 +34,7 @@ export interface ICycleTimeSetting {
 }
 
 export interface savedMetricsSettingState {
+  isBoarConfigDirty: boolean;
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[];
   targetFields: { name: string; key: string; flag: boolean }[];
   users: string[];
@@ -56,6 +57,7 @@ export interface savedMetricsSettingState {
     importedDoneStatus: string[];
     importedClassification: string[];
     importedDeployment: IPipelineConfig[];
+    importedAdvancedSettings: { storyPoint: string; flag: string } | null;
   };
   cycleTimeWarningMessage: string | null;
   classificationWarningMessage: string | null;
@@ -64,6 +66,7 @@ export interface savedMetricsSettingState {
 }
 
 const initialState: savedMetricsSettingState = {
+  isBoarConfigDirty: false,
   jiraColumns: [],
   targetFields: [],
   users: [],
@@ -86,6 +89,7 @@ const initialState: savedMetricsSettingState = {
     importedDoneStatus: [],
     importedClassification: [],
     importedDeployment: [],
+    importedAdvancedSettings: null,
   },
   cycleTimeWarningMessage: null,
   classificationWarningMessage: null,
@@ -239,9 +243,22 @@ export const metricsSlice = createSlice({
       });
     },
 
+    updateMetricsBoardDirtyStatus: (state, action) => {
+      state.isBoarConfigDirty = action.payload;
+    },
+
     updateMetricsImportedData: (state, action) => {
-      const { crews, cycleTime, doneStatus, classification, deployment, leadTime, assigneeFilter, pipelineCrews } =
-        action.payload;
+      const {
+        crews,
+        cycleTime,
+        doneStatus,
+        classification,
+        deployment,
+        advancedSettings,
+        leadTime,
+        assigneeFilter,
+        pipelineCrews,
+      } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
       state.importedData.importedCycleTime.importedCycleTimeSettings =
@@ -252,6 +269,7 @@ export const metricsSlice = createSlice({
       state.importedData.importedDoneStatus = doneStatus || state.importedData.importedDoneStatus;
       state.importedData.importedClassification = classification || state.importedData.importedClassification;
       state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
+      state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvancedSettings;
     },
 
     updateMetricsState: (state, action) => {
@@ -451,7 +469,12 @@ export const metricsSlice = createSlice({
     updateAssigneeFilter: (state, action) => {
       state.assigneeFilter = action.payload;
     },
+
     resetMetricData: () => initialState,
+
+    updateAdvancedSettings: (state, action) => {
+      state.importedData.importedAdvancedSettings = action.payload;
+    },
   },
 });
 
@@ -473,12 +496,17 @@ export const {
   updatePipelineStep,
   setCycleTimeSettingsType,
   resetMetricData,
+  updateAdvancedSettings,
+  updateMetricsBoardDirtyStatus,
 } = metricsSlice.actions;
+
+export const selectMetricsBoardIsDirty = (state: RootState) => state.metrics.isBoarConfigDirty;
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
 
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings;
 export const selectMetricsContent = (state: RootState) => state.metrics;
+export const selectAdvancedSettings = (state: RootState) => state.metrics.importedData.importedAdvancedSettings;
 export const selectTreatFlagCardAsBlock = (state: RootState) => state.metrics.treatFlagCardAsBlock;
 export const selectAssigneeFilter = (state: RootState) => state.metrics.assigneeFilter;
 export const selectCycleTimeWarningMessage = (state: RootState) => state.metrics.cycleTimeWarningMessage;

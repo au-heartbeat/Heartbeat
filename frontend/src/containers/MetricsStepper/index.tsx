@@ -21,13 +21,6 @@ import {
   TIPS,
 } from '@src/constants/resources';
 import {
-  ICycleTimeSetting,
-  updateCycleTimeSettings,
-  savedMetricsSettingState,
-  selectCycleTimeSettings,
-  selectMetricsContent,
-} from '@src/context/Metrics/metricsSlice';
-import {
   BackButton,
   ButtonContainer,
   MetricsStepperContent,
@@ -37,13 +30,19 @@ import {
   StyledStepLabel,
   StyledStepper,
 } from './style';
+import {
+  ICycleTimeSetting,
+  savedMetricsSettingState,
+  selectCycleTimeSettings,
+  selectMetricsContent,
+} from '@src/context/Metrics/metricsSlice';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
 import { ConfirmDialog } from '@src/containers/MetricsStepper/ConfirmDialog';
-import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { getFormMeta } from '@src/context/meta/metaSlice';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { exportToJsonFile } from '@src/utils/util';
@@ -206,6 +205,7 @@ const MetricsStepper = () => {
       cycleTimeSettingsType,
       treatFlagCardAsBlock,
       assigneeFilter,
+      importedData,
     } = filterMetricsConfig(metricsConfig);
 
     const metricsData = {
@@ -232,6 +232,7 @@ const MetricsStepper = () => {
       classification: targetFields
         ?.filter((item: { name: string; key: string; flag: boolean }) => item.flag)
         ?.map((item: { name: string; key: string; flag: boolean }) => item.key),
+      advancedSettings: importedData.importedAdvancedSettings,
       deployment: deploymentFrequencySettings,
       leadTime: leadTimeForChanges,
     };
@@ -261,7 +262,6 @@ const MetricsStepper = () => {
         branches: [],
       }));
       dispatch(updatePipelineList(initPipelineSteps));
-      dispatch(updateCycleTimeSettings([]));
     }
   };
 

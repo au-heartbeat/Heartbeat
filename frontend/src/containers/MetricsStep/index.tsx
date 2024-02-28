@@ -13,8 +13,8 @@ import {
   MetricSelectionWrapper,
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
+import { selectMetricsContent, updateMetricsState, selectMetricsBoardIsDirty } from '@src/context/Metrics/metricsSlice';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import { selectMetricsContent, updateMetricsState } from '@src/context/Metrics/metricsSlice';
 import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
 import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
@@ -30,6 +30,7 @@ import { useAppSelector, useAppDispatch } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
+import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
 import dayjs from 'dayjs';
@@ -53,6 +54,7 @@ const MetricsStep = () => {
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
+  const isBoarConfigDirty = useAppSelector(selectMetricsBoardIsDirty);
 
   const getInfo = useCallback(
     () =>
@@ -74,9 +76,9 @@ const MetricsStep = () => {
   useLayoutEffect(() => {
     if (!shouldLoad) return;
     dispatch(closeAllNotifications());
-    if (!shouldLoad || !isShowCrewsAndRealDone) return;
+    if (!shouldLoad || !isShowCrewsAndRealDone || isBoarConfigDirty) return;
     getInfo();
-  }, [shouldLoad, isShowCrewsAndRealDone, dispatch, getInfo]);
+  }, [shouldLoad, isShowCrewsAndRealDone, isBoarConfigDirty, dispatch, getInfo]);
 
   return (
     <>
@@ -107,6 +109,7 @@ const MetricsStep = () => {
                   label={'Distinguished By'}
                 />
               )}
+              <Advance />
             </>
           ) : (
             <EmptyContent
