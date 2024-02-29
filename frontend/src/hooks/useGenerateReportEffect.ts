@@ -29,10 +29,10 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const [generalError4Board, setGeneralError4Board] = useState('');
   const [generalError4Dora, setGeneralError4Dora] = useState('');
   const [generalError4Report, setGeneralError4Report] = useState('');
+  const [allDataCompleted, setAllDataCompleted] = useState(false);
   const [reportData, setReportData] = useState<ReportResponseDTO | undefined>();
   const timerIdRef = useRef<number>();
   let hasPollingStarted = false;
-  let allDataCompleted = false;
   let doraCalled = false;
   let boardCalled = false;
 
@@ -88,11 +88,11 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   const checkAllMetricsCompleted = (response: ReportResponseDTO) => {
     if (doraCalled && boardCalled) {
-      allDataCompleted = response.boardMetricsCompleted && response.doraMetricsCompleted;
+      setAllDataCompleted(response.boardMetricsCompleted && response.doraMetricsCompleted);
     } else if (doraCalled && !boardCalled) {
-      allDataCompleted = response.doraMetricsCompleted;
+      setAllDataCompleted(response.doraMetricsCompleted);
     } else if (!doraCalled && boardCalled) {
-      allDataCompleted = response.boardMetricsCompleted;
+      setAllDataCompleted(response.boardMetricsCompleted);
     }
   };
 
