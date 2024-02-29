@@ -18,6 +18,7 @@ export interface useGenerateReportEffectInterface {
   generalError4Dora: string;
   generalError4Report: string;
   reportData: ReportResponseDTO | undefined;
+  allDataCompleted: boolean;
 }
 
 export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
@@ -31,12 +32,16 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const [reportData, setReportData] = useState<ReportResponseDTO | undefined>();
   const timerIdRef = useRef<number>();
   let hasPollingStarted = false;
+  let allDataCompleted = false;
+  let doraCalled = false;
+  let boardCalled = false;
 
   const startToRequestBoardData = (boardParams: ReportRequestDTO) => {
     setTimeout4Board('');
     reportClient
       .retrieveByUrl(boardParams, `${reportPath}/${METRIC_TYPES.BOARD}`)
       .then((res) => {
+        boardCalled = true;
         if (hasPollingStarted) return;
         hasPollingStarted = true;
         pollingReport(res.response.callbackUrl, res.response.interval);
@@ -71,6 +76,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     reportClient
       .retrieveByUrl(doraParams, `${reportPath}/${METRIC_TYPES.DORA}`)
       .then((res) => {
+        doraCalled = true;
         if (hasPollingStarted) return;
         hasPollingStarted = true;
         pollingReport(res.response.callbackUrl, res.response.interval);
@@ -80,6 +86,16 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       });
   };
 
+  const checkAllMetricsCompleted = (response: ReportResponseDTO) => {
+    if (doraCalled && boardCalled) {
+      allDataCompleted = response.boardMetricsCompleted && response.doraMetricsCompleted;
+    } else if (doraCalled && !boardCalled) {
+      allDataCompleted = response.doraMetricsCompleted;
+    } else if (!doraCalled && boardCalled) {
+      allDataCompleted = response.boardMetricsCompleted;
+    }
+  };
+
   const pollingReport = (url: string, interval: number) => {
     setTimeout4Report('');
     reportClient
@@ -87,7 +103,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       .then((res: { status: number; response: ReportResponseDTO }) => {
         const response = res.response;
         handleAndUpdateData(response);
-        if (response.allMetricsCompleted || !hasPollingStarted) {
+        checkAllMetricsCompleted(response);
+        if (allDataCompleted || !hasPollingStarted) {
           stopPollingReports();
         } else {
           timerIdRef.current = window.setTimeout(() => pollingReport(url, interval), interval * 1000);
@@ -120,5 +137,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     generalError4Board,
     generalError4Dora,
     generalError4Report,
+    allDataCompleted,
   };
 };
