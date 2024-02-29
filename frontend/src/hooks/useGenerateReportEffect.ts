@@ -88,8 +88,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   const checkAllMetricsCompleted = (boardMetricsCompleted: boolean, doraMetricsCompleted: boolean) => {
     if (doraCalled && boardCalled) {
-      setAllDataCompleted(boardMetricsCompleted && boardMetricsCompleted);
-      return boardMetricsCompleted && boardMetricsCompleted;
+      setAllDataCompleted(boardMetricsCompleted && doraMetricsCompleted);
+      return boardMetricsCompleted && doraMetricsCompleted;
     } else if (doraCalled && !boardCalled) {
       setAllDataCompleted(doraMetricsCompleted);
       return doraMetricsCompleted;
@@ -104,10 +104,11 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     reportClient
       .polling(url)
       .then((res: { status: number; response: ReportResponseDTO }) => {
+        console.log('res', res)
         const response = res.response;
         handleAndUpdateData(response);
         if (
-          checkAllMetricsCompleted(response.doraMetricsCompleted, response.boardMetricsCompleted) ||
+          checkAllMetricsCompleted(response.boardMetricsCompleted, response.doraMetricsCompleted) ||
           !hasPollingStarted
         ) {
           stopPollingReports();
