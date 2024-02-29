@@ -29,7 +29,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkLastAssigneeCrewFilterChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.checkHeartbeatStateIsSet(hbStateData);
-  await metricsStep.checkClassificationAreSet(importMultipleDoneProjectFromFile.classification);
+  await metricsStep.checkClassifications(importMultipleDoneProjectFromFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
   // Make changes to Metrics page data
   await metricsStep.selectCrews(importMultipleDoneProjectFromFile.crews);
