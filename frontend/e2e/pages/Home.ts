@@ -40,4 +40,8 @@ export class HomePage {
       buffer: Buffer.from(JSON.stringify(importFlagAsBlockFile)),
     });
   }
+
+  async waitForShown() {
+    await expect(await this.importProjectFromFileButton).toBeVisible();
+  }
 }

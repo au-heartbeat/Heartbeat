@@ -18,6 +18,7 @@ export class MetricsStep {
   readonly boardCrewSettingChipsContainer: Locator;
   readonly boardCrewSettingSelectedChips: Locator;
   readonly boardLastAssigneeRadioBox: Locator;
+  readonly boardHistoricalAssigneeRadioBox: Locator;
   readonly boardCycleTimeSection: Locator;
   readonly boardByColumnRadioBox: Locator;
   readonly boardByStatusRadioBox: Locator;
@@ -28,6 +29,13 @@ export class MetricsStep {
   readonly boardCycleTimeSelectForREADY: Locator;
   readonly boardCycleTimeSelectForTesting: Locator;
   readonly boardCycleTimeSelectForDone: Locator;
+  readonly boardCycleTimeInputForTODO: Locator;
+  readonly boardCycleTimeInputForDoing: Locator;
+  readonly boardCycleTimeInputForBlocked: Locator;
+  readonly boardCycleTimeInputForReview: Locator;
+  readonly boardCycleTimeInputForREADY: Locator;
+  readonly boardCycleTimeInputForTesting: Locator;
+  readonly boardCycleTimeInputForDone: Locator;
   readonly boardConsiderAsBlockCheckbox: Locator;
   readonly boardClassificationLabel: Locator;
   readonly boardClassificationChipsContainer: Locator;
@@ -63,6 +71,7 @@ export class MetricsStep {
       .getByRole('button')
       .filter({ hasText: /.+/ });
     this.boardLastAssigneeRadioBox = page.getByLabel('Last assignee');
+    this.boardHistoricalAssigneeRadioBox = page.getByLabel('Historical assignee');
     this.boardCycleTimeSection = page.getByLabel('Cycle time settings section');
     this.boardByColumnRadioBox = this.boardCycleTimeSection.getByLabel('By Column');
     this.boardByStatusRadioBox = this.boardCycleTimeSection.getByLabel('By Status');
@@ -87,6 +96,27 @@ export class MetricsStep {
     this.boardCycleTimeSelectForDone = this.boardCycleTimeSection
       .getByLabel('Cycle time select for Done')
       .getByLabel('Open');
+    this.boardCycleTimeInputForTODO = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for TODO')
+      .getByRole('combobox');
+    this.boardCycleTimeInputForDoing = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for Doing')
+      .getByRole('combobox');
+    this.boardCycleTimeInputForBlocked = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for Blocked')
+      .getByRole('combobox');
+    this.boardCycleTimeInputForReview = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for Review')
+      .getByRole('combobox');
+    this.boardCycleTimeInputForREADY = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for WAIT FOR TEST')
+      .getByRole('combobox');
+    this.boardCycleTimeInputForTesting = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for Testing')
+      .getByRole('combobox');
+    this.boardCycleTimeInputForDone = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for Done')
+      .getByRole('combobox');
     this.boardConsiderAsBlockCheckbox = this.boardCycleTimeSection.getByRole('checkbox');
     this.boardClassificationLabel = page.getByLabel('Distinguished By *');
     this.boardClassificationChipsContainer = page.getByLabel('Classification Setting AutoComplete');
@@ -138,8 +168,17 @@ export class MetricsStep {
     await expect(this.boardLastAssigneeRadioBox).toBeChecked();
   }
 
+  async checkClassificationText() {
+    await expect(this.boardLastAssigneeRadioBox).toBeVisible();
+    await expect(this.boardLastAssigneeRadioBox).toBeChecked();
+  }
+
   async checkCycleTimeConsiderCheckboxChecked() {
     await expect(this.boardConsiderAsBlockCheckbox).toBeChecked();
+  }
+
+  async checkCycleTimeConsiderAsBlockUnchecked() {
+    await expect(this.boardConsiderAsBlockCheckbox).not.toBeChecked();
   }
 
   async checkCycleTimeSettingIsByColumn() {
@@ -163,11 +202,15 @@ export class MetricsStep {
       }
     }
 
+    await this.checkCrews(crews);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async checkCrews(crews: string[]) {
     await expect(this.boardCrewSettingSelectedChips).toHaveCount(crews.length);
     crews.forEach(async (crew) => {
       await expect(this.boardCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
     });
-    await this.page.keyboard.press('Escape');
   }
 
   async checkCrewsAreChanged(crews: string[]) {
@@ -196,11 +239,11 @@ export class MetricsStep {
       }
     }
 
-    await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
+    await this.checkClassifications(classificationKeys);
     await this.page.keyboard.press('Escape');
   }
 
-  async checkClassificationAreSet(classificationKeys: string[]) {
+  async checkClassifications(classificationKeys: string[]) {
     await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
   }
 
@@ -208,14 +251,36 @@ export class MetricsStep {
     await expect(this.loadings.first()).toBeHidden();
   }
 
+  async selectHistoricalAssigneeCrewFilter() {
+    await this.boardHistoricalAssigneeRadioBox.click();
+  }
+
   async selectCycleTimeSettingsType(by: string) {
     if (by === 'byColumn') {
       await this.boardByColumnRadioBox.click();
-      await expect(this.boardByColumnRadioBox).toBeChecked();
+      await this.checkBoardByColumnRadioBoxChecked();
     } else {
       await this.boardByStatusRadioBox.click();
-      await expect(this.boardByStatusRadioBox).toBeChecked();
+      await this.checkBoardByStatusRadioBoxChecked();
     }
+  }
+
+  async checkBoardByColumnRadioBoxChecked() {
+    await expect(this.boardByColumnRadioBox).toBeChecked();
+  }
+
+  async checkBoardByStatusRadioBoxChecked() {
+    await expect(this.boardByStatusRadioBox).toBeChecked();
+  }
+
+  async checkModifiedHeartbeatState([todoOption, doingOption, blockOption, testingOption, doneOption]: string[]) {
+    await expect(this.boardCycleTimeInputForTODO).toHaveAttribute('value', todoOption);
+    await expect(this.boardCycleTimeInputForDoing).toHaveAttribute('value', doingOption);
+    await expect(this.boardCycleTimeInputForBlocked).toHaveAttribute('value', blockOption);
+    await expect(this.boardCycleTimeInputForReview).toHaveAttribute('value', '----');
+    await expect(this.boardCycleTimeInputForREADY).toHaveAttribute('value', '----');
+    await expect(this.boardCycleTimeInputForTesting).toHaveAttribute('value', testingOption);
+    await expect(this.boardCycleTimeInputForDone).toHaveAttribute('value', doneOption);
   }
 
   async selectHeartbeatState([
@@ -279,6 +344,26 @@ export class MetricsStep {
     await expect(this.boardCycleTimeSection.getByLabel('Cycle time select for Done').getByRole('combobox')).toHaveValue(
       doneOption,
     );
+    
+  async selectModifiedHeartbeatState([todoOption, doingOption, blockOption, testingOption, doneOption]: string[]) {
+    await this.boardCycleTimeSelectForTODO.click();
+    await this.page.getByRole('option', { name: todoOption }).click();
+
+    await this.boardCycleTimeSelectForDoing.click();
+    await this.page.getByRole('option', { name: doingOption }).click();
+
+    await this.boardCycleTimeSelectForBlocked.click();
+    await this.page.getByRole('option', { name: blockOption }).click();
+
+    await this.boardCycleTimeSelectForTesting.click();
+    await this.page.getByRole('option', { name: testingOption, exact: true }).click();
+
+    await this.boardCycleTimeSelectForDone.click();
+    await this.page.getByRole('option', { name: doneOption }).click();
+  }
+
+  async selectCycleTimeConsiderAsBlockCheckbox() {
+    await this.boardConsiderAsBlockCheckbox.click();
   }
 
   async selectOrganization(orgName: string) {
@@ -326,6 +411,10 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async checkBranch(branches: string[]) {
+    await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
+  }
+
   async selectDefaultGivenPipelineSetting(pipelineSettings: typeof metricsStepData.deployment) {
     const firstPipelineConfig = pipelineSettings[0];
 
@@ -352,10 +441,22 @@ export class MetricsStep {
       }
     }
 
-    crews.forEach(async (crew) => {
+    await this.checkPipelineCrews(crews);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async checkPipelineSetting(pipelineSettings: typeof metricsStepData.deployment) {
+    const firstPipelineConfig = pipelineSettings[0];
+
+    await expect(this.pipelineOrganizationSelect).toHaveAttribute('value', firstPipelineConfig.organization);
+    await expect(this.pipelineNameSelect).toHaveAttribute('value', firstPipelineConfig.pipelineName);
+    await expect(this.pipelineStepSelect).toHaveAttribute('value', firstPipelineConfig.step.replace(/:[^:\s]+: /, ''));
+  }
+
+  async checkPipelineCrews(crews: string[]) {
+    await crews.forEach(async (crew) => {
       await expect(this.pipelineCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
     });
-    await this.page.keyboard.press('Escape');
   }
 
   validateSavedJsonCriticalFieldsEqualsToFixture(file: typeof metricsStepData, fixture: typeof metricsStepData) {
