@@ -71,7 +71,6 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.waitForShown();
   await metricsStep.goToReportPage();
 
-  // await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics(
     FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.Velocity,
     FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT.Throughput,
