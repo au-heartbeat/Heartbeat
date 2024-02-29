@@ -31,17 +31,17 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const [generalError4Report, setGeneralError4Report] = useState('');
   const [allDataCompleted, setAllDataCompleted] = useState(false);
   const [reportData, setReportData] = useState<ReportResponseDTO | undefined>();
-  const timerIdRef = useRef<number>();
+  const timerIdRef = useRef<number | undefined>();
   let hasPollingStarted = false;
-  let doraCalled = false;
-  let boardCalled = false;
+  const doraCalled = useRef<boolean>(false);
+  const boardCalled = useRef<boolean>(false);
 
   const startToRequestBoardData = (boardParams: ReportRequestDTO) => {
     setTimeout4Board('');
     reportClient
       .retrieveByUrl(boardParams, `${reportPath}/${METRIC_TYPES.BOARD}`)
       .then((res) => {
-        boardCalled = true;
+        boardCalled.current = true;
         if (hasPollingStarted) return;
         hasPollingStarted = true;
         pollingReport(res.response.callbackUrl, res.response.interval);
@@ -76,7 +76,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     reportClient
       .retrieveByUrl(doraParams, `${reportPath}/${METRIC_TYPES.DORA}`)
       .then((res) => {
-        doraCalled = true;
+        doraCalled.current = true;
         if (hasPollingStarted) return;
         hasPollingStarted = true;
         pollingReport(res.response.callbackUrl, res.response.interval);
@@ -86,15 +86,22 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       });
   };
 
+  const setAllMetricsCompleted = (response: ReportResponseDTO) => {
+    if (doraCalled.current && boardCalled.current) {
+      setAllDataCompleted(response.boardMetricsCompleted && response.doraMetricsCompleted);
+    } else if (doraCalled.current && !boardCalled.current) {
+      setAllDataCompleted(response.doraMetricsCompleted);
+    } else if (!doraCalled.current && boardCalled.current) {
+      setAllDataCompleted(response.boardMetricsCompleted);
+    }
+  };
+
   const checkAllMetricsCompleted = (boardMetricsCompleted: boolean, doraMetricsCompleted: boolean) => {
-    if (doraCalled && boardCalled) {
-      setAllDataCompleted(boardMetricsCompleted && doraMetricsCompleted);
+    if (doraCalled.current && boardCalled.current) {
       return boardMetricsCompleted && doraMetricsCompleted;
-    } else if (doraCalled && !boardCalled) {
-      setAllDataCompleted(doraMetricsCompleted);
+    } else if (doraCalled.current && !boardCalled.current) {
       return doraMetricsCompleted;
-    } else if (!doraCalled && boardCalled) {
-      setAllDataCompleted(boardMetricsCompleted);
+    } else if (!doraCalled.current && boardCalled.current) {
       return boardMetricsCompleted;
     }
   };
@@ -104,9 +111,9 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     reportClient
       .polling(url)
       .then((res: { status: number; response: ReportResponseDTO }) => {
-        console.log('res', res)
         const response = res.response;
         handleAndUpdateData(response);
+        setAllMetricsCompleted(response);
         if (
           checkAllMetricsCompleted(response.boardMetricsCompleted, response.doraMetricsCompleted) ||
           !hasPollingStarted
