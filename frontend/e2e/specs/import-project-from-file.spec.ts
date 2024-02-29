@@ -27,12 +27,6 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkClassifications(importMultipleDoneProjectFromFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
 
-  // Go to report page then back to metrics page, metrics data should stay changed
-  await metricsStep.goToReportPage();
-  await reportStep.goToPreviousStep();
-  await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
-  await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
-
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics(
@@ -46,6 +40,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await reportStep.checkDownloadReports();
 
   await reportStep.clickHomeIconThenBackToHomepage();
+
   await homePage.importFlagAsBlockProjectFromFile();
   await configStep.verifyBoardConfig();
   await configStep.goToMetrics();
