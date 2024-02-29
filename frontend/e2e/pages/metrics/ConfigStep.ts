@@ -39,6 +39,7 @@ export class ConfigStep {
   readonly nextButton: Locator;
   readonly previousModal: Locator;
   readonly previousModalYesButton: Locator;
+  readonly previousModalCancelButton: Locator;
   readonly requiredMetricsLabel: Locator;
   readonly requiredMetricsAllOption: Locator;
   readonly boardContainer: Locator;
@@ -94,6 +95,7 @@ export class ConfigStep {
     this.nextButton = page.getByRole('button', { name: 'Next' });
     this.previousModal = page.getByText('All the filled data will be cleared. Continue to Home page?');
     this.previousModalYesButton = page.getByRole('button', { name: 'Yes' });
+    this.previousModalCancelButton = page.getByRole('button', { name: 'Cancel' });
 
     this.requiredMetricsLabel = page.getByLabel('Required metrics *');
     this.requiredMetricsAllOption = page.getByRole('option', { name: 'All' });
@@ -142,6 +144,16 @@ export class ConfigStep {
     await this.previousModalYesButton.click();
 
     await expect(this.page).toHaveURL(/\//);
+  }
+
+  async clickPreviousButtonAndClickCancelThenRemainPage() {
+    await this.previousButton.click();
+
+    await expect(this.previousModal).toBeVisible();
+
+    await this.previousModalCancelButton.click();
+
+    await expect(this.page).toHaveURL(/\/metrics/);
   }
 
   async selectRegularCalendar(calendarType: string) {
@@ -287,10 +299,28 @@ export class ConfigStep {
     await this.nextButton.click();
   }
 
+  async goToPreviousStep() {
+    await this.previousButton.click();
+  }
+
+  async cancelGoToPreviousStep() {
+    const cancelButton = this.page.getByRole('button', { name: 'Cancel' });
+    await cancelButton.click();
+  }
+
+  async confirmGoToPreviousStep() {
+    const confirmButton = this.page.getByRole('button', { name: 'Yes' });
+    await confirmButton.click();
+  }
+
   async verifyAllConfig() {
     await this.boardVerifyButton.click();
     await this.pipelineToolVerifyButton.click();
     await this.sourceControlVerifyButton.click();
+  }
+
+  async verifyBoardConfig() {
+    await this.boardVerifyButton.click();
   }
 }
 
