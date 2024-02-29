@@ -33,14 +33,6 @@ export class HomePage {
     });
   }
 
-  async importProjectFromFile() {
-    await this.importProjectFromFileInput.setInputFiles({
-      name: 'hb-e2e-test',
-      mimeType: 'text/plain',
-      buffer: Buffer.from(JSON.stringify(importMultipleDoneProjectFromFile)),
-    });
-  }
-
   async importFlagAsBlockProjectFromFile() {
     await this.importProjectFromFileInput.setInputFiles({
       name: 'hb-e2e-test',
