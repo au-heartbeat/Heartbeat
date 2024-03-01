@@ -62,8 +62,8 @@ export const ReportForThreeColumns = ({
       if (isEmpty(row.valuesList)) {
         row.valuesList = [
           {
-            name: '-',
-            value: '-',
+            name: '--',
+            value: '--',
           },
         ];
       }

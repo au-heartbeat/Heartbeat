@@ -28,6 +28,6 @@ describe('Report for three columns', () => {
 
     render(<ReportForThreeColumns title={VELOCITY} fieldName='fieldName' listName='listName' data={mockData} />);
 
-    expect(screen.getAllByText('-')).toHaveLength(2);
+    expect(screen.getAllByText('--')).toHaveLength(2);
   });
 });
