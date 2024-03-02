@@ -204,6 +204,11 @@ jobs:
           bash <(curl -Ls https://coverage.codacy.com/get.sh)
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: frontend
+          args: >
+            -Dsonar.organization=au-heartbeat
+            -Dsonar.projectKey=au-heartbeat-heartbeat-frontend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
