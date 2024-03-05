@@ -39,5 +39,24 @@ The backend cannot distinguish between the above wrong case 1 and wrong case 2. 
 
 ## Solutions
 
+# For backend
+
+# Modify generateReport Api
+1.Previous api is POST /reports/{metricType}, but now need to modify as POST /reports and add new Parameter List<MetricType> metricTypes in requestBody.
+2.Then write the metricTypes on file.
+3.According to the metricTypes to generate boardCsv or DoraCsv then we start another thread to check if boardCsv and DoraCsv are generated. if check pass, then we can generate metricCsv.
+
+# Modify polling Api(POST /reports/{reportId})
+1.to use metricTypesFile to check if allMetricsCompleted index is true by use the combination of boardMetricsCompleted index and doraMetricsCompleted index or just one of these two index. 
+2.remove generate metricCsv file in this api logic.
+
+# Add a new scheduled task
+1. Delete expire metricTypes file regularly.
+
+# For Frontend
+
+1.revert to previous version's logic, still use allMetricsCompleted index to decide whether the button can click or not.
+2.modify the url and requestBody of generateReport Api。
+
 
 
