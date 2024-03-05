@@ -284,7 +284,7 @@ export const BOARD_CONFIG_INFO_TITLE = {
   EMPTY: '',
 };
 
-export const PIPELINE_CONFIG_INFO_TITLE = {
+export const PipelineConfigInfoTitle = {
   NO_CONTENT: 'No pipeline within selected date range!',
   EMPTY: '',
 };

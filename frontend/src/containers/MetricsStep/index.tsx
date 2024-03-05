@@ -11,7 +11,7 @@ import {
 import {
   CYCLE_TIME_SETTINGS_TYPES,
   DONE,
-  PIPELINE_CONFIG_INFO_TITLE,
+  PipelineConfigInfoTitle,
   PIPELINE_TOOL_GET_INFO_NO_CONTENT_ERROR_MESSAGE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
@@ -150,7 +150,7 @@ const MetricsStep = () => {
           <MetricsSelectionTitle>Pipeline configuration</MetricsSelectionTitle>
           {isFutureTime ? (
             <EmptyContent
-              title={PIPELINE_CONFIG_INFO_TITLE.NO_CONTENT}
+              title={PipelineConfigInfoTitle.NO_CONTENT}
               message={PIPELINE_TOOL_GET_INFO_NO_CONTENT_ERROR_MESSAGE}
             />
           ) : (
