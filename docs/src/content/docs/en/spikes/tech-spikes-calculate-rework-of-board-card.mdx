@@ -1,0 +1,59 @@
+---
+title: Spike the logic of calculating card rework
+description: Spike the logic of calculating card rework
+---
+
+#
+
+## Background
+
+According to the needs of the business, users believe that analyzing the overall situation of the flow state of the card can be a good way to find the problems of the team and optimize the team.
+
+## Expect
+
+ 1. View the rework times of all cards in the current iteration. 
+ 2. Export the rework times of each card.
+
+## Solutions
+
+### 1. Modifying the original API
+
+#### 1.1 Modifying to generate report API design
+On the design of the original report generating API, a new rework setting is added to the request body.
+- AS-IS
+```json
+path: /reports/{metricType}
+method: POST
+request: {
+  ...
+  "reworkTimesSetting" : {
+      "reworkState": String
+      "excludedStates": List<String>
+  }
+}
+```
+
+#### 1.1 Modifying to query generation metric API design
+On the design of the original query generation metric API,  add rework metrics data to the response body.
+- AS-IS
+```json
+path: /reports/{reportId}
+method: GET
+response: {
+  ...
+  "rework" : {
+      "totalReworkTimes": Integer
+      "reworkState": String
+      "fromAnalysis": Integer
+      "fromInDev": Integer
+      "fromBlock": Integer
+      "fromWaitingForTesting": Integer
+      "fromTesting": Integer
+      "fromReview": Integer
+      "fromDone": Integer
+      "totalReworkCards": Integer
+      "reworkCardsRatio": Double
+
+  }
+}
+```
