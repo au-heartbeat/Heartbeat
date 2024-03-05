@@ -304,10 +304,10 @@ describe('MetricsStep', () => {
       ).toBeInTheDocument();
     });
 
-    it('should render no pipeline container when get pipeline when selected future time ', async () => {
+    it('should render no pipeline container given now is 2024-01-01 when get pipeline when selected future time ', async () => {
       const MOCK_FUTURE_DATE_RANGE = {
-        startDate: '2034-04-04T00:00:00+08:00',
-        endDate: '2034-04-18T00:00:00+08:00',
+        startDate: '2024-02-04T00:00:00+08:00',
+        endDate: '2024-02-18T00:00:00+08:00',
       };
 
       jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
@@ -328,7 +328,7 @@ describe('MetricsStep', () => {
       jest.useRealTimers();
     });
 
-    it('should render pipeline container when get pipeline when selected past time ', async () => {
+    it('should render pipeline container given now is 2024-01-01 when get pipeline when selected past time ', async () => {
       const MOCK_PAST_DATE_RANGE = {
         startDate: '2014-04-04T00:00:00+08:00',
         endDate: '2014-04-18T00:00:00+08:00',
