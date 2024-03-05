@@ -73,7 +73,7 @@ const MetricsStepper = () => {
   const { isShow: isShowBoard, isVerified: isBoardVerified } = config.board;
   const { isShow: isShowPipeline, isVerified: isPipelineToolVerified } = config.pipelineTool;
   const { isShow: isShowSourceControl, isVerified: isSourceControlVerified } = config.sourceControl;
-  const isShowBoardSettings =
+  const isShowCycleTimeSettings =
     requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
     requiredData.includes(REQUIRED_DATA.CLASSIFICATION) ||
     requiredData.includes(REQUIRED_DATA.VELOCITY);
@@ -131,7 +131,7 @@ const MetricsStepper = () => {
         { isShow: isShowBoard, isValid: isCrewsSettingValid },
         { isShow: isShowRealDone, isValid: isRealDoneValid },
         { isShow: isShowDeploymentFrequency, isValid: isDeploymentFrequencyValid },
-        { isShow: isShowBoardSettings, isValid: isCycleTimeSettingsVerified },
+        { isShow: isShowCycleTimeSettings, isValid: isCycleTimeSettingsVerified },
         { isShow: isShowClassificationSetting, isValid: isClassificationSettingVerified },
       ];
       const activeNextButtonValidityOptions = nextButtonValidityOptions.filter(({ isShow }) => isShow);
@@ -156,7 +156,7 @@ const MetricsStepper = () => {
     isRealDoneValid,
     isShowDeploymentFrequency,
     isDeploymentFrequencyValid,
-    isShowBoardSettings,
+    isShowCycleTimeSettings,
     isCycleTimeSettingsVerified,
     isShowClassificationSetting,
     isClassificationSettingVerified,
