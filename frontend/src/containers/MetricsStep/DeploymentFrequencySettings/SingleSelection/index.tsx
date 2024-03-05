@@ -2,11 +2,11 @@ import { selectDeploymentFrequencySettings } from '@src/context/Metrics/metricsS
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { Autocomplete, Box, ListItemText, TextField } from '@mui/material';
 import { EmojiWrap, StyledAvatar } from '@src/constants/emojis/style';
+import { getDisabledOptions } from '@src/utils/util';
 import { Z_INDEX } from '@src/constants/commons';
 import { FormControlWrapper } from './style';
 import { useAppSelector } from '@src/hooks';
 import React, { useState } from 'react';
-import { includes } from 'lodash';
 
 interface Props {
   options: string[];
@@ -35,16 +35,6 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDat
     return emojiUrls.map((url) => <StyledAvatar key={url} src={url} />);
   };
 
-  const getPipelineNameOptionDisabled = (option: string) => {
-    if (label === 'Pipeline Name') {
-      return includes(
-        deploymentFrequencySettings.map((item) => item.pipelineName),
-        option,
-      );
-    }
-    return false;
-  };
-
   return (
     <>
       <FormControlWrapper variant='standard' required>
@@ -52,7 +42,9 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDat
           disableClearable
           data-test-id={labelId}
           options={options}
-          getOptionDisabled={(option: string) => getPipelineNameOptionDisabled(option)}
+          getOptionDisabled={(option: string) =>
+            label === 'Pipeline Name' && getDisabledOptions(deploymentFrequencySettings, option)
+          }
           getOptionLabel={(option: string) => removeExtraEmojiName(option).trim()}
           renderOption={(props, option: string) => (
             <Box component='li' {...props}>
