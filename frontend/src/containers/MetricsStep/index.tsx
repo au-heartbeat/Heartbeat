@@ -59,7 +59,8 @@ const MetricsStep = () => {
   const isShowCrewsAndRealDone =
     requiredData.includes(REQUIRED_DATA.VELOCITY) ||
     requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
-    requiredData.includes(REQUIRED_DATA.CLASSIFICATION);
+    requiredData.includes(REQUIRED_DATA.CLASSIFICATION) ||
+    requiredData.includes(REQUIRED_DATA.REWORK_TIMES);
   const isShowRealDone =
     cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
