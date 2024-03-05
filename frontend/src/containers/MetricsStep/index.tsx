@@ -66,7 +66,7 @@ const MetricsStep = () => {
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
-  const isFutureTime = !!startDate && new Date(startDate) > new Date();
+  const isFutureTime = dayjs().isBefore(startDate);
 
   const getInfo = useCallback(
     () =>
