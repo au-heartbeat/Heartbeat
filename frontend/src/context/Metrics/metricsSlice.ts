@@ -378,8 +378,9 @@ export const metricsSlice = createSlice({
         pipelineList
           .filter((pipeline: pipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase())
           .map((item: pipeline) => item.name);
-      const getValidPipelines = (pipelines: IPipelineConfig[]) =>
-        pipelines.length && pipelines.filter(({ id }) => id).length
+      const getValidPipelines = (pipelines: IPipelineConfig[]) => {
+        const hasPipeline = pipelines.filter(({ id }) => id).length;
+        return pipelines.length && hasPipeline
           ? pipelines.map(({ id, organization, pipelineName, step, branches }) => ({
               id,
               organization: orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '',
@@ -388,7 +389,7 @@ export const metricsSlice = createSlice({
               branches: branches || [],
             }))
           : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
-
+      };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
         const orgWarning = orgNames.some((i) => (i as string).toLowerCase() === organization.toLowerCase())
           ? null
