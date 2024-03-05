@@ -310,6 +310,8 @@ describe('MetricsStep', () => {
         endDate: '2034-04-18T00:00:00+08:00',
       };
 
+      jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
+
       store.dispatch(updateDateRange(MOCK_FUTURE_DATE_RANGE));
 
       setup();
@@ -322,6 +324,8 @@ describe('MetricsStep', () => {
           'Please go back to the previous page and change your collection date, or check your pipeline info!',
         ),
       ).toBeInTheDocument();
+
+      jest.useRealTimers();
     });
 
     it('should render pipeline container when get pipeline when selected past time ', async () => {
@@ -330,6 +334,8 @@ describe('MetricsStep', () => {
         endDate: '2014-04-18T00:00:00+08:00',
       };
 
+      jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
+
       store.dispatch(updateDateRange(MOCK_PAST_DATE_RANGE));
 
       setup();
@@ -337,6 +343,8 @@ describe('MetricsStep', () => {
       await waitFor(() => {
         expect(screen.getByText('Pipeline settings')).toBeInTheDocument();
       });
+
+      jest.useRealTimers();
     });
 
     it('should be render form container when got board card success', async () => {
