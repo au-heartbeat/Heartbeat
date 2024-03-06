@@ -16,7 +16,7 @@ export const StyledTableCell = styled(TableCell)(() => ({
 }));
 
 export const BorderTableCell = styled(TableCell)(() => ({
-  border: `0.07rem solid #efefef`,
+  border: `0.07rem solid ${theme.main.boardColor}`,
   borderRight: 'none',
   color: theme.palette.secondary.contrastText,
 }));
