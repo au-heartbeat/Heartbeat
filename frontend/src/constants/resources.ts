@@ -271,6 +271,8 @@ export enum CYCLE_TIME_SETTINGS_TYPES {
 
 export const AXIOS_NETWORK_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ETIMEDOUT, AxiosError.ERR_NETWORK];
 
+export const NO_PIPELINE_STEP_ERROR = 'No steps for this pipeline!';
+
 export enum HEARTBEAT_EXCEPTION_CODE {
   TIMEOUT = 'HB_TIMEOUT',
 }
