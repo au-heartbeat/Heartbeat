@@ -102,7 +102,6 @@ describe('PipelineMetricSelection', () => {
           onRemovePipeline={mockHandleClickRemoveButton}
           onUpdatePipeline={mockUpdatePipeline}
           isDuplicated={isDuplicated}
-          isFutureTime={false}
           isInfoLoading={false}
         />
       </Provider>,

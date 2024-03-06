@@ -81,7 +81,7 @@ describe('DeploymentFrequencySettings', () => {
   const setup = () =>
     render(
       <Provider store={store}>
-        <DeploymentFrequencySettings isFutureTime={false} />
+        <DeploymentFrequencySettings />
       </Provider>,
     );
   afterEach(() => {
