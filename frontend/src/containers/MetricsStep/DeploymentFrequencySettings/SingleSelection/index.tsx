@@ -13,11 +13,20 @@ interface Props {
   label: string;
   value: string;
   id: number;
+  isFutureTime?: boolean;
   onGetSteps?: (pipelineName: string) => void;
   onUpDatePipeline: (id: number, label: string, value: string) => void;
 }
 
-export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDatePipeline }: Props) => {
+export const SingleSelection = ({
+  options,
+  label,
+  value,
+  id,
+  isFutureTime = false,
+  onGetSteps,
+  onUpDatePipeline,
+}: Props) => {
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
   const [inputValue, setInputValue] = useState<string>(value);
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
@@ -62,7 +71,16 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDat
           onInputChange={(event, newInputValue) => {
             setInputValue(newInputValue);
           }}
-          renderInput={(params) => <TextField required {...params} label={label} variant='standard' />}
+          renderInput={(params) => (
+            <TextField
+              required
+              {...params}
+              label={label}
+              variant='standard'
+              error={isFutureTime}
+              helperText={'No steps for this pipeline!'}
+            />
+          )}
           slotProps={{
             popper: {
               sx: {
