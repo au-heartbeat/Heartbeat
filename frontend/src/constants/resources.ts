@@ -284,11 +284,6 @@ export const BOARD_CONFIG_INFO_TITLE = {
   EMPTY: '',
 };
 
-export const PipelineConfigInfoTitle = {
-  NO_CONTENT: 'No pipeline within selected date range!',
-  EMPTY: '',
-};
-
 export const BOARD_CONFIG_INFO_ERROR = {
   FORBIDDEN: 'Please go back to the previous page and change your board token with correct access permission.',
   NOT_FOUND: 'Please go back to the previous page and check your board info!',
@@ -313,9 +308,6 @@ export const UNKNOWN_ERROR_TITLE = 'Unknown error';
 
 export const PIPELINE_TOOL_GET_INFO_ERROR_MESSAGE =
   'Please go back to the previous page and change your pipeline token with correct access permission.';
-
-export const PIPELINE_TOOL_GET_INFO_NO_CONTENT_ERROR_MESSAGE =
-  'Please go back to the previous page and change your collection date, or check your pipeline info!';
 
 export const PIPELINE_TOOL_RETRY_MESSAGE = 'Data loading failed, please';
 export const PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE = ' try again';
