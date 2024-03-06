@@ -37,7 +37,6 @@ interface pipelineMetricSelectionProps {
     branches: string[];
   };
   isInfoLoading: boolean;
-  isFutureTime: boolean;
   isShowRemoveButton: boolean;
   onRemovePipeline: (id: number) => void;
   onUpdatePipeline: (id: number, label: string, value: string | StringConstructor[] | unknown) => void;
@@ -52,7 +51,6 @@ export const PipelineMetricSelection = ({
   onUpdatePipeline,
   isDuplicated,
   isInfoLoading,
-  isFutureTime,
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting;
   const dispatch = useAppDispatch();
@@ -139,7 +137,6 @@ export const PipelineMetricSelection = ({
           options={stepsOptions}
           label={'Step'}
           value={validStepValue}
-          isFutureTime={isFutureTime}
           onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
       )}

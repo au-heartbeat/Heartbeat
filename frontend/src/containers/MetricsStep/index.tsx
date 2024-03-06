@@ -60,7 +60,6 @@ const MetricsStep = () => {
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
-  const isFutureTime = dayjs().isBefore(startDate);
 
   const getInfo = useCallback(
     () =>
@@ -142,7 +141,7 @@ const MetricsStep = () => {
         requiredData.includes(REQUIRED_DATA.MEAN_TIME_TO_RECOVERY)) && (
         <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
           <MetricsSelectionTitle>Pipeline configuration</MetricsSelectionTitle>
-          <DeploymentFrequencySettings isFutureTime={isFutureTime} />
+          <DeploymentFrequencySettings />
         </MetricSelectionWrapper>
       )}
     </>

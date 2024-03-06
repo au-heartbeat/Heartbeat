@@ -19,11 +19,7 @@ import { Loading } from '@src/components/Loading';
 import { HttpStatusCode } from 'axios';
 import isEmpty from 'lodash/isEmpty';
 
-type Props = {
-  isFutureTime: boolean;
-};
-
-export const DeploymentFrequencySettings = ({ isFutureTime }: Props) => {
+export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch();
   const { isLoading, result: pipelineInfoResult, apiCallFunc } = useGetPipelineToolInfoEffect();
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
@@ -54,7 +50,6 @@ export const DeploymentFrequencySettings = ({ isFutureTime }: Props) => {
           {deploymentFrequencySettings.map((deploymentFrequencySetting) => (
             <PipelineMetricSelection
               isInfoLoading={isLoading}
-              isFutureTime={isFutureTime}
               key={deploymentFrequencySetting.id}
               type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
               pipelineSetting={deploymentFrequencySetting}
