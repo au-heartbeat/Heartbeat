@@ -4,6 +4,32 @@ description: E2E Testing
 ---
 ## E2E Overview
 We currently use Playwright as the testing framework for E2E testing. In order to ensure the credibility of the test, we no longer use stub/mock 3rd services, but directly test against 3rd services.
+```plantuml
+@startuml
+set separator none
+title Heartbeat - E2E Architecture
+
+left to right direction
+
+!include <C4/C4>
+!include <C4/C4_Context>
+!include <C4/C4_Container>
+
+Person(E2ErunnerPlaywright, "E2E runner \n Playwright", $descr="", $tags="", $link="")
+System(3rdApi, "3rdApi", $descr="", $tags="", $link="")
+
+System_Boundary("Heartbeat_boundary", "Heartbeat", $tags="") {
+  Container(Heartbeat.HBFrontend, "HB Frontend", $techn="", $descr="", $tags="", $link="")
+  Container(Heartbeat.HBBackend, "HB Backend", $techn="", $descr="", $tags="", $link="")
+}
+
+Rel(E2ErunnerPlaywright, Heartbeat.HBFrontend, "Uses", $techn="", $tags="", $link="")
+Rel(Heartbeat.HBFrontend, Heartbeat.HBBackend, "API call to", $techn="", $tags="", $link="")
+Rel(Heartbeat.HBBackend, 3rdApi, "", $techn="", $tags="", $link="")
+
+SHOW_LEGEND(true)
+@enduml
+```
 
 ## What is Playwright?
 Playwright is an open-source automation library for browser testing and web scraping developed by Microsoft. It provides a high-level API for automating browsers such as Chrome, Firefox, and WebKit. It's similar to other tools like Puppeteer but offers cross-browser support and additional features like being able to test on multiple browsers in parallel.
