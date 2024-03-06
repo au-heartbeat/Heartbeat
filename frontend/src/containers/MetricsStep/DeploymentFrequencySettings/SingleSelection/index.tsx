@@ -7,6 +7,7 @@ import { Z_INDEX } from '@src/constants/commons';
 import { FormControlWrapper } from './style';
 import { useAppSelector } from '@src/hooks';
 import React, { useState } from 'react';
+import { sortBy } from 'lodash';
 
 interface Props {
   options: string[];
@@ -21,6 +22,11 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDat
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
   const [inputValue, setInputValue] = useState<string>(value);
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
+  console.log(
+    1111,
+    options,
+    sortBy(options, (item) => getDisabledOptions(deploymentFrequencySettings, item)),
+  );
 
   const handleSelectedOptionsChange = (value: string) => {
     if (onGetSteps) {
@@ -41,7 +47,7 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDat
         <Autocomplete
           disableClearable
           data-test-id={labelId}
-          options={options}
+          options={sortBy(options, (item) => getDisabledOptions(deploymentFrequencySettings, item))}
           getOptionDisabled={(option: string) =>
             label === 'Pipeline Name' && getDisabledOptions(deploymentFrequencySettings, option)
           }
