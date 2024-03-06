@@ -41,6 +41,7 @@ import { useAppSelector, useAppDispatch } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
+import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
@@ -124,6 +125,7 @@ const MetricsStep = () => {
                 />
               )}
               <Advance />
+              <ReworkSettings />
             </>
           ) : (
             <EmptyContent
