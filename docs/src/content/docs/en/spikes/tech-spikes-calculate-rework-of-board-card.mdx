@@ -24,7 +24,7 @@ On the design of the original report generating API, a new rework setting is add
 ```json
 path: /reports/{metricType}
 method: POST
-request: {
+request body: {
   ...
   "reworkTimesSetting" : {
       "reworkState": String
@@ -33,7 +33,7 @@ request: {
 }
 ```
 
-#### 1.1 Modifying to query generation metric API design
+#### 1.2 Modifying to query generation metric API design
 On the design of the original query generation metric API,  add rework metrics data to the response body.
 - AS-IS
 ```json
@@ -44,7 +44,6 @@ response: {
   "rework" : {
       "totalReworkTimes": Integer
       "reworkState": String
-      "fromAnalysis": Integer
       "fromInDev": Integer
       "fromBlock": Integer
       "fromWaitingForTesting": Integer
@@ -57,3 +56,25 @@ response: {
   }
 }
 ```
+### 3. Modifying the logic of generating a board csv
+When generating the board csv file, we need to export the rework information of each card, so we need to add a series of table header information, and assemble and filter according to the config provided by reworkSetting. The following is the full table header information about rework:
+
+- rework times to `status`
+- from in dev to `status`
+- from block to `status`
+- from waiting for testing to `status`
+- from testing to `status`
+- from review to `status`
+- from done to `status`
+
+`status` is the  rework in our previous setting, and the exported table header is spliced according to it.
+
+According to business needs, we will only have some headers, for example, we need to calculate `rework to review`, exported headers will only have `rework times to review` and `from done to review`.Because the meaning of rework is to calculate from the subsequent process to the previous process
+
+*Implementation method*
+
+In 2, we have obtained `reworkTimeInfos`, and then can use this data to write into a csv file.
+
+tasking:
+- In `KanbanCsvService.generateCSVForBoard()` method, we need to use reworkTimeInfos to build table header. Reference CycleTimeInfo to build the header.
+- In `CSVFileGenerator.getFixedFieldsData()` method, we need to build the row for rework. Reference `CSVFileGenerator.getOriginCycleTimePerRow()`.
