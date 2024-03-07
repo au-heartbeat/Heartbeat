@@ -22,7 +22,7 @@ jobs:
     if: "contains(github.event.head_commit.message, '[update e2e base image]')"
     runs-on: ubuntu-latest
     env:
-      E2E_IMAGE_NAME: hearbeat-e2e-base
+      E2E_IMAGE_NAME: hearbeat_e2e_base
     steps:
       - uses: actions/checkout@v4
       - name: Login to GitHub Container Registry
@@ -39,7 +39,25 @@ jobs:
           tags: |
             ghcr.io/${{ env.E2E_IMAGE_NAME }}:${{ github.run_number }}
             ghcr.io/${{ env.E2E_IMAGE_NAME }}:latest
-
+  e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run e2e
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -e APP_ORIGIN=${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
+            -e E2E_TOKEN_JIRA=${{ secrets.E2E_TOKEN_JIRA }} \
+            -e E2E_TOKEN_BUILD_KITE=${{ secrets.E2E_TOKEN_BUILD_KITE }} \
+            -e E2E_TOKEN_GITHUB=${{ secrets.E2E_TOKEN_GITHUB }} \
+            -e E2E_TOKEN_FLAG_AS_BLOCK_JIRA=${{ secrets.E2E_TOKEN_FLAG_AS_BLOCK_JIRA }} \
+            -v "${PWD}:/app" \
+            ghcr.io/au-heartbeat/hearbeat_e2e_base:latest \
+            -it \
+            pnpm run e2e:c
   # fossa-check:
   #   runs-on: ubuntu-latest
   #   steps:
