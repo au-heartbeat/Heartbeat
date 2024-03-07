@@ -39,14 +39,6 @@ jobs:
           tags: |
             ghcr.io/${{ env.E2E_IMAGE_NAME }}:${{ github.run_number }}
             ghcr.io/${{ env.E2E_IMAGE_NAME }}:latest
-      - name: Build and Push Docker Image for backend
-        uses: docker/build-push-action@v5
-        with:
-          file: ./ops/infra/Dockerfile.backend
-          push: true
-          tags: |
-            ghcr.io/${{ env.E2E_IMAGE_NAME }}:${{ github.run_number }}
-            ghcr.io/${{ env.E2E_IMAGE_NAME }}:lates
 
   # fossa-check:
   #   runs-on: ubuntu-latest

@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/playwright:latest
 
+WORKDIR /app
 ENV TZ=Asia/Shanghai
 ENV PATH /app/node_modules/.bin:$PATH
 RUN npm install -g pnpm
 RUN pnpm exec playwright install msedge
 RUN pnpm exec playwright install chrome
-WORKDIR /app
