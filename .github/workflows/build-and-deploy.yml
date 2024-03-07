@@ -58,7 +58,6 @@ jobs:
             -e E2E_TOKEN_FLAG_AS_BLOCK_JIRA=${{ secrets.E2E_TOKEN_FLAG_AS_BLOCK_JIRA }} \
             -v "${PWD}:/app" \
             ghcr.io/${{ env.LOWCASE_REPO_OWNER_NAME }}/${{ env.E2E_IMAGE_NAME }}:latest \
-            -it \
             pnpm run e2e:ci
   # fossa-check:
   #   runs-on: ubuntu-latest
