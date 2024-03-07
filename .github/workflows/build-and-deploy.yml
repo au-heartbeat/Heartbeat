@@ -51,7 +51,7 @@ jobs:
       - name: Run e2e
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-            -e APP_ORIGIN=${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
+            -e APP_ORIGIN=${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }} \
             -e E2E_TOKEN_JIRA=${{ secrets.E2E_TOKEN_JIRA }} \
             -e E2E_TOKEN_BUILD_KITE=${{ secrets.E2E_TOKEN_BUILD_KITE }} \
             -e E2E_TOKEN_GITHUB=${{ secrets.E2E_TOKEN_GITHUB }} \
