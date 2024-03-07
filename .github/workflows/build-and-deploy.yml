@@ -7,6 +7,10 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+env:
+  LOWCASE_REPO_OWNER_NAME: ${{ github.repository_owner}}
+  E2E_IMAGE_NAME: hearbeat_e2e_base
+
 jobs:
   shellcheck:
     name: Shellcheck
@@ -21,8 +25,6 @@ jobs:
   build-and-push-e2e-base-image:
     if: "contains(github.event.head_commit.message, '[update e2e base image]')"
     runs-on: ubuntu-latest
-    env:
-      E2E_IMAGE_NAME: hearbeat_e2e_base
     steps:
       - uses: actions/checkout@v4
       - name: Login to GitHub Container Registry
@@ -37,8 +39,8 @@ jobs:
           file: ./ops/infra/Dockerfile.e2e
           push: true
           tags: |
-            ghcr.io/${{ env.E2E_IMAGE_NAME }}:${{ github.run_number }}
-            ghcr.io/${{ env.E2E_IMAGE_NAME }}:latest
+            ghcr.io/${{ env.LOWCASE_REPO_OWNER_NAME }}/${{ env.E2E_IMAGE_NAME }}:${{ github.run_number }}
+            ghcr.io/${{ env.LOWCASE_REPO_OWNER_NAME }}/${{ env.E2E_IMAGE_NAME }}:latest
   e2e:
     runs-on: ubuntu-latest
     defaults:
@@ -55,7 +57,7 @@ jobs:
             -e E2E_TOKEN_GITHUB=${{ secrets.E2E_TOKEN_GITHUB }} \
             -e E2E_TOKEN_FLAG_AS_BLOCK_JIRA=${{ secrets.E2E_TOKEN_FLAG_AS_BLOCK_JIRA }} \
             -v "${PWD}:/app" \
-            ghcr.io/au-heartbeat/hearbeat_e2e_base:latest \
+            ghcr.io/${{ env.LOWCASE_REPO_OWNER_NAME }}/${{ env.E2E_IMAGE_NAME }}:latest \
             -it \
             pnpm run e2e:c
   # fossa-check:
