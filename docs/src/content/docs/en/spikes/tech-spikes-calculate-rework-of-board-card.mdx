@@ -20,7 +20,7 @@ According to the needs of the business, users believe that analyzing the overall
 
 #### 1.1 Modifying to generate report API design
 On the design of the original report generating API, a new rework setting is added to the request body.
-- AS-IS
+- TO-BE
 ```json
 path: /reports/{metricType}
 method: POST
@@ -35,7 +35,7 @@ request body: {
 
 #### 1.2 Modifying to query generation metric API design
 On the design of the original query generation metric API,  add rework metrics data to the response body.
-- AS-IS
+- TO-BE
 ```json
 path: /reports/{reportId}
 method: GET
@@ -56,20 +56,62 @@ response: {
   }
 }
 ```
+
+### 2. Calculate rework times and return to frontend
+
+We will calculate rework times for each `from state` on every real done card. The specific tasks are as follows:
+
+1. In the `JiraService.getRealDoneCards()` method, we added a new line that references the getReworkTimes method below the line getAssigneeSet().
+2. We created a new method called `getReworkTimes()`, which receives a `CardHistoryResponseDTO` and returns a list of `ReworkTimeInfo`, which is a class as follows:
+
+```
+ReworkTimeInfo
+{
+  "state": "In Dev",
+  "times": 1
+}
+```
+
+`ReworkTimeInfo` has two variables, `state` stores the rework target state. And `times` stores the rework times which is initialized to 0.
+
+3. In the getReworkTimes method:
+    - We filter out all items that have the field id as 'status' and the `from` member is not in excluded states.
+    - We define a `reworkJudgmentMap` map, whose key is target rework state and value is a set containing source states.
+    
+    ```
+      reworkJudgmentMap.put(DEVELOPMENT, Set.of(BLOCK, REVIEW, WAITING, TESTING, DONE));
+      reworkJudgmentMap.put(BLOCK, Set.of(REVIEW, WAITING, TESTING, DONE));
+      reworkJudgmentMap.put(REVIEW, Set.of(WAITING, TESTING, DONE));
+      reworkJudgmentMap.put(WAITING, Set.of(TESTING, DONE));
+      reworkJudgmentMap.put(TESTING, Set.of(DONE));
+    ```
+
+    - We traverse all items and check the 'to' and the 'from' member.
+    - If the "to" member is used as the key and the value mapped by "reworkJudgmentMap" contains the "from" member, then the item records a rework. We create a `ReworkTimeInfo` and set 'state' to 'from' and 'times' add one.
+
+4. We set the `ReworkTimeInfo` list in `JiraCardDTO` object as `reworkTimeInfos` member variables.
+5. In the `GenerateReporterService.generateBoardReporter()` method, we use `reworkTimeInfos` variable in `JiraCardDTO` object calculate rework metrics and put them to `ReportResponse`, which are the same as the API in the 1.2 section.
+    - We traverse all items in `reworkTimeInfos` and sum the rework times in each state.
+    - Then we sum the total time of reworks in each state as the `totalReworkTimes`.
+    - If a card's `reworkTimeInfos` is not empty, we set `totalReworkCards` add one.
+    - The `reworkCardsRatio` is calculated by dividing `totalReworkCards` by total real done card count on the current sprint.
+
+
+
 ### 3. Modifying the logic of generating a board csv
 When generating the board csv file, we need to export the rework information of each card, so we need to add a series of table header information, and assemble and filter according to the config provided by reworkSetting. The following is the full table header information about rework:
 
-- rework times to `status`
-- from in dev to `status`
-- from block to `status`
-- from waiting for testing to `status`
-- from testing to `status`
-- from review to `status`
-- from done to `status`
+- rework times to `state`
+- from in dev to `state`
+- from block to `state`
+- from review to `state`
+- from waiting for testing to `state`
+- from testing to `state`
+- from done to `state`
 
-`status` is the  rework in our previous setting, and the exported table header is spliced according to it.
+`state` is the rework in our previous setting, and the exported table header is spliced according to it.
 
-According to business needs, we will only have some headers, for example, we need to calculate `rework to review`, exported headers will only have `rework times to review` and `from done to review`.Because the meaning of rework is to calculate from the subsequent process to the previous process
+According to business needs, we will only have some headers, for example, we need to calculate `rework to review`, exported headers will have `rework times to review` , `from done to waiting for testing`,`from done to testing` and `from done to review`. Because the meaning of rework is to calculate from the subsequent process to the previous process
 
 *Implementation method*
 
