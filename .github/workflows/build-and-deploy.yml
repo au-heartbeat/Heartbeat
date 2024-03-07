@@ -58,7 +58,7 @@ jobs:
             -e E2E_TOKEN_FLAG_AS_BLOCK_JIRA=${{ secrets.E2E_TOKEN_FLAG_AS_BLOCK_JIRA }} \
             -v "${PWD}:/app" \
             ghcr.io/${{ env.LOWCASE_REPO_OWNER_NAME }}/${{ env.E2E_IMAGE_NAME }}:latest \
-            git init -q && pnpm install --no-frozen-lockfile && pnpm run e2e
+            git init -q && npm install -g && pnpm pnpm install --no-frozen-lockfile && pnpm run e2e
   # fossa-check:
   #   runs-on: ubuntu-latest
   #   steps:
