@@ -20,6 +20,11 @@ export interface IPipelineConfig {
   branches: string[];
 }
 
+export interface IReworkConfig {
+  rework2State: string;
+  excludeStates: string[];
+}
+
 export interface IPipelineWarningMessageConfig {
   id: number | null;
   organization: string | null;
@@ -44,6 +49,7 @@ export interface savedMetricsSettingState {
   cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES;
   cycleTimeSettings: ICycleTimeSetting[];
   deploymentFrequencySettings: IPipelineConfig[];
+  reworkTimesSettings: IReworkConfig;
   leadTimeForChanges: IPipelineConfig[];
   treatFlagCardAsBlock: boolean;
   assigneeFilter: string;
@@ -77,6 +83,7 @@ const initialState: savedMetricsSettingState = {
   cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
   cycleTimeSettings: [],
   deploymentFrequencySettings: [],
+  reworkTimesSettings: {} as IReworkConfig,
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   treatFlagCardAsBlock: true,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
@@ -483,6 +490,10 @@ export const metricsSlice = createSlice({
     updateAdvancedSettings: (state, action) => {
       state.importedData.importedAdvancedSettings = action.payload;
     },
+
+    updateReworkTimesSettings: (state, action) => {
+      state.reworkTimesSettings = action.payload;
+    },
   },
 });
 
@@ -507,12 +518,14 @@ export const {
   updateAdvancedSettings,
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
+  updateReworkTimesSettings,
 } = metricsSlice.actions;
 
 export const selectShouldGetBoardConfig = (state: RootState) => state.metrics.shouldGetBoardConfig;
 export const selectShouldGetPipelineConfig = (state: RootState) => state.metrics.shouldGetPipeLineConfig;
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
+export const selectReworkTimesSettings = (state: RootState) => state.metrics.reworkTimesSettings;
 
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings;
 export const selectMetricsContent = (state: RootState) => state.metrics;

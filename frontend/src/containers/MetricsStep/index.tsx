@@ -125,7 +125,7 @@ const MetricsStep = () => {
                 />
               )}
               <Advance />
-              <ReworkSettings />
+              {requiredData.includes(REQUIRED_DATA.REWORK_TIMES) && <ReworkSettings />}
             </>
           ) : (
             <EmptyContent
