@@ -19,14 +19,13 @@ import {
   MetricSelectionWrapper,
   MetricsSelectionTitle,
 } from '@src/containers/MetricsStep/style';
+import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA, HEARTBEAT_EXCEPTION_CODE } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
-import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
-import { HEARTBEAT_EXCEPTION_CODE } from '@src/constants/resources';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';

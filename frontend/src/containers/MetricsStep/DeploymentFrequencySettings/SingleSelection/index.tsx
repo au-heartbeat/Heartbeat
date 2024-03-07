@@ -3,7 +3,7 @@ import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji'
 import { Autocomplete, Box, ListItemText, TextField } from '@mui/material';
 import { getDisabledOptions, sortDisabledOptions } from '@src/utils/util';
 import { EmojiWrap, StyledAvatar } from '@src/constants/emojis/style';
-import { Z_INDEX } from '@src/constants/commons';
+import { DEFAULT_HELPER_TEXT, Z_INDEX } from '@src/constants/commons';
 import { FormControlWrapper } from './style';
 import { useAppSelector } from '@src/hooks';
 import React, { useState } from 'react';
@@ -74,7 +74,14 @@ export const SingleSelection = ({
             setInputValue(newInputValue);
           }}
           renderInput={(params) => (
-            <TextField required {...params} label={label} variant='standard' error={isError} helperText={errorText} />
+            <TextField
+              required
+              {...params}
+              label={label}
+              variant='standard'
+              error={isError}
+              helperText={isError ? errorText : DEFAULT_HELPER_TEXT}
+            />
           )}
           slotProps={{
             popper: {
