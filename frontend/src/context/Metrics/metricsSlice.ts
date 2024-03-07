@@ -21,7 +21,7 @@ export interface IPipelineConfig {
 }
 
 export interface IReworkConfig {
-  rework2State: string;
+  rework2State: string | undefined;
   excludeStates: string[];
 }
 
@@ -83,7 +83,10 @@ const initialState: savedMetricsSettingState = {
   cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
   cycleTimeSettings: [],
   deploymentFrequencySettings: [],
-  reworkTimesSettings: {} as IReworkConfig,
+  reworkTimesSettings: {
+    rework2State: undefined,
+    excludeStates: [],
+  },
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   treatFlagCardAsBlock: true,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,

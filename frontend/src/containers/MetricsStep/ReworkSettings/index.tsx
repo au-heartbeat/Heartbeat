@@ -7,23 +7,23 @@ import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { CYCLE_TIME_LIST } from '@src/constants/resources';
 import { SingleSelection } from './SingleSelection';
-import React, { useState } from 'react';
+import React from 'react';
 
 const url = 'XXX';
 
 function ReworkSettings() {
-  const [selectedReworkSettings, setSelectedReworkSettings] = useState<string[]>([]);
   const reworkTimesSettings = useAppSelector(selectReworkTimesSettings);
   const dispatch = useAppDispatch();
 
-  const isAllSelected = CYCLE_TIME_LIST.length > 0 && selectedReworkSettings.length === CYCLE_TIME_LIST.length;
+  const isAllSelected =
+    CYCLE_TIME_LIST.length > 0 && reworkTimesSettings.excludeStates.length === CYCLE_TIME_LIST.length;
 
   const handleReworkSettingsChange = (_: React.SyntheticEvent, value: string[]) => {
+    let selectValue = value;
     if (value[value.length - 1] === 'All') {
-      setSelectedReworkSettings(selectedReworkSettings.length === CYCLE_TIME_LIST.length ? [] : CYCLE_TIME_LIST);
-      return;
+      selectValue = reworkTimesSettings.excludeStates.length === CYCLE_TIME_LIST.length ? [] : CYCLE_TIME_LIST;
     }
-    setSelectedReworkSettings([...value]);
+    dispatch(updateReworkTimesSettings({ ...reworkTimesSettings, excludeStates: selectValue }));
   };
 
   return (
@@ -50,7 +50,7 @@ function ReworkSettings() {
           isError={false}
           isSelectAll={isAllSelected}
           onChangeHandler={handleReworkSettingsChange}
-          selectedOption={selectedReworkSettings}
+          selectedOption={reworkTimesSettings.excludeStates}
           textFieldLabel={'Exclude which states (optional)'}
           isBoardCrews={false}
         />

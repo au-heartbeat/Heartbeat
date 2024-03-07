@@ -6,7 +6,7 @@ import React from 'react';
 interface Props {
   options: string[];
   label: string;
-  value: string;
+  value: string | undefined;
   onValueChange: (value: string) => void;
 }
 

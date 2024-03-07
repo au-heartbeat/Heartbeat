@@ -16,10 +16,14 @@ export const ReworkHeaderWrapper = styled('div')({
 export const ReworkSettingsWrapper = styled('div')`
   position: relative;
   width: 100%;
-  padding: 1.5rem 0 0.5rem 0;
   border: ${theme.main.cardBorder};
   box-shadow: none;
   margin-bottom: 1rem;
   line-height: '2rem';
   boarder-radius: 0.25rem;
+  padding: 2.5%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
