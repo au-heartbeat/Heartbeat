@@ -59,7 +59,7 @@ jobs:
             -v "${PWD}:/app" \
             ghcr.io/${{ env.LOWCASE_REPO_OWNER_NAME }}/${{ env.E2E_IMAGE_NAME }}:latest \
             -it \
-            pnpm run e2e:c
+            pnpm run e2e:ci
   # fossa-check:
   #   runs-on: ubuntu-latest
   #   steps:
