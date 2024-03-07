@@ -12,14 +12,25 @@ import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { selectIsBoardVerified } from '@src/context/config/configSlice';
+import { StyledAlert } from '@src/containers/ConfigStep/Board/style';
 import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { Loading } from '@src/components/Loading';
 import { FormEvent, useMemo } from 'react';
-
 export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);
-  const { verifyJira, isLoading, fields, updateField, validateField, resetFields } = useVerifyBoardEffect();
+  const {
+    verifyJira,
+    isLoading,
+    fields,
+    updateField,
+    isShowAlert,
+    setIsShowAlert,
+    validateField,
+    resetFields,
+    isHBTimeOut,
+  } = useVerifyBoardEffect();
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,6 +47,17 @@ export const Board = () => {
     <ConfigSectionContainer aria-label='Board Config'>
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
+      {isHBTimeOut && isShowAlert && (
+        <StyledAlert
+          icon={<HighlightOffIcon fontSize='inherit' />}
+          severity='error'
+          onClose={() => {
+            setIsShowAlert(false);
+          }}
+        >
+          Submission timeout on <span style={{ fontWeight: 700 }}>Board</span> , please reverify!
+        </StyledAlert>
+      )}
       <StyledForm onSubmit={onSubmit} onReset={resetFields}>
         {fields.map(({ key, value, validatedError, verifiedError, col }, index) =>
           !index ? (
@@ -69,12 +91,14 @@ export const Board = () => {
         <StyledButtonGroup>
           {isVerified && !isLoading ? (
             <VerifyButton disabled>Verified</VerifyButton>
+          ) : isHBTimeOut ? (
+            <VerifyButton type='submit'>Reverify</VerifyButton>
           ) : (
             <VerifyButton type='submit' disabled={isDisableVerifyButton}>
               Verify
             </VerifyButton>
           )}
-          {isVerified && !isLoading && <ResetButton type='reset'>Reset</ResetButton>}
+          {(isVerified || isHBTimeOut) && !isLoading && <ResetButton type='reset'>Reset</ResetButton>}
         </StyledButtonGroup>
       </StyledForm>
     </ConfigSectionContainer>
