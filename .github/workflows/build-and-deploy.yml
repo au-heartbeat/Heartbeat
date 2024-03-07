@@ -21,9 +21,6 @@ jobs:
   build-and-push-e2e-base-image:
     if: "contains(github.event.head_commit.message, '[update e2e base image]')"
     runs-on: ubuntu-latest
-    needs:
-      - build_frontend
-      - build_backend
     env:
       E2E_IMAGE_NAME: hearbeat-e2e-base
     steps:
