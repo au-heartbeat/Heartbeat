@@ -4,6 +4,6 @@ WORKDIR /app
 ENV TZ=Asia/Shanghai
 ENV PATH /app/node_modules/.bin:$PATH
 RUN npm install -g pnpm
-RUN npm install -g @playwright/test
+RUN pnpm install @playwright/test
 RUN pnpm exec playwright install msedge
 RUN pnpm exec playwright install chrome
