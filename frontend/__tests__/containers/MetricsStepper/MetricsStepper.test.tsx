@@ -2,6 +2,7 @@ import {
   BASE_PAGE_ROUTE,
   BOARD_TYPES,
   CONFIRM_DIALOG_DESCRIPTION,
+  DEFAULT_REWORK_SETTINGS,
   MOCK_REPORT_URL,
   NEXT,
   PIPELINE_TOOL_TYPES,
@@ -357,10 +358,7 @@ describe('MetricsStepper', () => {
       deployment: undefined,
       doneStatus: undefined,
       leadTime: undefined,
-      reworkTimesSettings: {
-        rework2State: null,
-        excludeStates: [],
-      },
+      reworkTimesSettings: DEFAULT_REWORK_SETTINGS,
     };
     setup();
 

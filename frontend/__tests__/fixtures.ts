@@ -753,3 +753,8 @@ export const FAKE_TOKEN = 'fake-token';
 export const FAKE_PIPELINE_TOKEN = 'bkua_mockTokenMockTokenMockTokenMockToken1234';
 
 export const ADVANCED_SETTINGS_TITLE = 'Advanced settings';
+
+export const DEFAULT_REWORK_SETTINGS = {
+  rework2State: null,
+  excludeStates: [],
+};

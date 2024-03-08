@@ -127,7 +127,7 @@ describe('MetricsTypeCheckbox', () => {
 
   it('should show some selections when click all option and then click velocity selection', async () => {
     const { getByRole, getByText } = setup();
-    const displayedDataList = REQUIRED_DATA_LIST.slice(1, 8);
+    const displayedDataList = REQUIRED_DATA_LIST.slice(1, REQUIRED_DATA_LIST.length - 1);
 
     await act(async () => {
       await userEvent.click(getByRole('button', { name: REQUIRED_DATA }));

@@ -3,6 +3,7 @@ import {
   BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
   REGULAR_CALENDAR,
   CHINA_CALENDAR,
+  DEFAULT_REWORK_SETTINGS,
 } from '../../fixtures';
 import { convertToNewFileConfig } from '@src/constants/fileConfig';
 
@@ -43,10 +44,7 @@ describe('#fileConfig', () => {
         organization: 'Thoughtworks-Heartbeat',
       },
     ],
-    reworkTimesSettings: {
-      rework2State: null,
-      excludeStates: [],
-    },
+    reworkTimesSettings: DEFAULT_REWORK_SETTINGS,
   };
 
   it('should return original config when it is not old config', () => {
