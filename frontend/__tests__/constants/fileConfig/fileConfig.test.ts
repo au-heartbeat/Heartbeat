@@ -43,6 +43,10 @@ describe('#fileConfig', () => {
         organization: 'Thoughtworks-Heartbeat',
       },
     ],
+    reworkTimesSettings: {
+      rework2State: null,
+      excludeStates: [],
+    },
   };
 
   it('should return original config when it is not old config', () => {

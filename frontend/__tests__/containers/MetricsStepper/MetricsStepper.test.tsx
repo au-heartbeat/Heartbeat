@@ -357,6 +357,10 @@ describe('MetricsStepper', () => {
       deployment: undefined,
       doneStatus: undefined,
       leadTime: undefined,
+      reworkTimesSettings: {
+        rework2State: null,
+        excludeStates: [],
+      },
     };
     setup();
 

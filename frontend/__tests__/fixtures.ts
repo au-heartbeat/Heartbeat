@@ -247,6 +247,10 @@ export const IMPORTED_NEW_CONFIG_FIXTURE = {
       },
     ],
   },
+  reworkTimesSettings: {
+    rework2State: null,
+    excludeStates: [],
+  },
 };
 
 export const MOCK_EXPORT_CSV_REQUEST_PARAMS: CSVReportRequestDTO = {
@@ -701,6 +705,10 @@ export const BASIC_IMPORTED_OLD_CONFIG_FIXTURE = {
       orgId: 'Thoughtworks-Heartbeat',
     },
   ],
+  reworkTimesSettings: {
+    rework2State: null,
+    excludeStates: [],
+  },
 };
 
 export const ERROR_MESSAGE_TIME_DURATION = 4000;
