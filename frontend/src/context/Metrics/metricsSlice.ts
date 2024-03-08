@@ -49,7 +49,6 @@ export interface savedMetricsSettingState {
   cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES;
   cycleTimeSettings: ICycleTimeSetting[];
   deploymentFrequencySettings: IPipelineConfig[];
-  reworkTimesSettings: IReworkConfig;
   leadTimeForChanges: IPipelineConfig[];
   treatFlagCardAsBlock: boolean;
   assigneeFilter: string;
@@ -65,6 +64,7 @@ export interface savedMetricsSettingState {
     importedClassification: string[];
     importedDeployment: IPipelineConfig[];
     importedAdvancedSettings: { storyPoint: string; flag: string } | null;
+    reworkTimesSettings: IReworkConfig;
   };
   cycleTimeWarningMessage: string | null;
   classificationWarningMessage: string | null;
@@ -83,10 +83,6 @@ const initialState: savedMetricsSettingState = {
   cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
   cycleTimeSettings: [],
   deploymentFrequencySettings: [],
-  reworkTimesSettings: {
-    rework2State: null,
-    excludeStates: [],
-  },
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   treatFlagCardAsBlock: true,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
@@ -102,6 +98,10 @@ const initialState: savedMetricsSettingState = {
     importedClassification: [],
     importedDeployment: [],
     importedAdvancedSettings: null,
+    reworkTimesSettings: {
+      rework2State: null,
+      excludeStates: [],
+    },
   },
   cycleTimeWarningMessage: null,
   classificationWarningMessage: null,
@@ -274,6 +274,7 @@ export const metricsSlice = createSlice({
         leadTime,
         assigneeFilter,
         pipelineCrews,
+        reworkTimesSettings,
       } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
@@ -286,6 +287,7 @@ export const metricsSlice = createSlice({
       state.importedData.importedClassification = classification || state.importedData.importedClassification;
       state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
       state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvancedSettings;
+      state.importedData.reworkTimesSettings = reworkTimesSettings || state.importedData.reworkTimesSettings;
     },
 
     updateMetricsState: (state, action) => {
@@ -495,7 +497,7 @@ export const metricsSlice = createSlice({
     },
 
     updateReworkTimesSettings: (state, action) => {
-      state.reworkTimesSettings = action.payload;
+      state.importedData.reworkTimesSettings = action.payload;
     },
   },
 });
@@ -528,7 +530,7 @@ export const selectShouldGetBoardConfig = (state: RootState) => state.metrics.sh
 export const selectShouldGetPipelineConfig = (state: RootState) => state.metrics.shouldGetPipeLineConfig;
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
-export const selectReworkTimesSettings = (state: RootState) => state.metrics.reworkTimesSettings;
+export const selectReworkTimesSettings = (state: RootState) => state.metrics.importedData.reworkTimesSettings;
 
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings;
 export const selectMetricsContent = (state: RootState) => state.metrics;
