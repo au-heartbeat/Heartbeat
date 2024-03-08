@@ -12,11 +12,11 @@ import {
 } from '@src/components/Common/ConfigForms';
 import { useVerifySourceControlTokenEffect } from '@src/hooks/useVerifySourceControlTokenEffect';
 import { CONFIG_TITLE, SOURCE_CONTROL_TYPES, TOKEN_HELPER_TEXT } from '@src/constants/resources';
+import { StyledAlert } from '@src/containers/ConfigStep/TimeoutAlert/style';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
-import { StyledAlert } from '@src/containers/ConfigStep/Board/style';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { DEFAULT_HELPER_TEXT } from '@src/constants/commons';
 import { findCaseInsensitiveType } from '@src/utils/util';

@@ -1,5 +1,5 @@
+import { Alert, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Alert } from '@mui/material';
 export const StyledAlert = styled(Alert)({
   '&.MuiPaper-root': {
     border: '1px solid #F3B6BE',
@@ -9,3 +9,4 @@ export const StyledAlert = styled(Alert)({
     marginBottom: '0.5rem',
   },
 });
+export const StyledTypography = styled(Typography)({});
