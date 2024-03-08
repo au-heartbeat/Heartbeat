@@ -64,7 +64,7 @@ const getValidatedError = (key: string, value: string, validateRule?: (value: st
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const [isHBTimeOut, setIsHBTimeOut] = useState(false);
-  const [isShowAlert, setIsShowAlert] = useState(true);
+  const [isShowAlert, setIsShowAlert] = useState(false);
   const boardFields = useAppSelector(selectBoard);
   const dispatch = useAppDispatch();
   const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
@@ -198,7 +198,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     } catch (e) {
       if (isHeartBeatException(e)) {
         const { description, code } = e as IHeartBeatException;
-
         if (code === HttpStatusCode.Unauthorized) {
           setVerifiedError(
             [KEYS.EMAIL, KEYS.TOKEN],

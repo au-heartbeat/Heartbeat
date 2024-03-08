@@ -10,7 +10,7 @@ import axios, { AxiosInstance, HttpStatusCode } from 'axios';
 import { ROUTE } from '@src/constants/router';
 
 export class HttpClient {
-  protected httpTimeout = 10;
+  protected httpTimeout = 1000;
   protected axiosInstance: AxiosInstance;
 
   constructor() {

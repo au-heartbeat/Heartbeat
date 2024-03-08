@@ -1,13 +1,12 @@
 import {
   ConfigSectionContainer,
-  StyledButtonGroup,
   StyledForm,
   StyledTextField,
   StyledTypeSelections,
 } from '@src/components/Common/ConfigForms';
 import { updateShouldGetBoardConfig } from '@src/context/Metrics/metricsSlice';
 import { KEYS, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
-import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
+import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
@@ -44,9 +43,7 @@ export const Board = () => {
   );
 
   return (
-    <ConfigSectionContainer aria-label='Board Config'>
-      {isLoading && <Loading />}
-      <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
+    <>
       {isHBTimeOut && isShowAlert && (
         <StyledAlert
           icon={<HighlightOffIcon fontSize='inherit' />}
@@ -58,49 +55,47 @@ export const Board = () => {
           Submission timeout on <span style={{ fontWeight: 700 }}>Board</span> , please reverify!
         </StyledAlert>
       )}
-      <StyledForm onSubmit={onSubmit} onReset={resetFields}>
-        {fields.map(({ key, value, validatedError, verifiedError, col }, index) =>
-          !index ? (
-            <StyledTypeSelections variant='standard' required key={index}>
-              <InputLabel id='board-type-checkbox-label'>Board</InputLabel>
-              <Select labelId='board-type-checkbox-label' value={value}>
-                {Object.values(BOARD_TYPES).map((data) => (
-                  <MenuItem key={data} value={data}>
-                    <ListItemText primary={data} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </StyledTypeSelections>
-          ) : (
-            <StyledTextField
-              data-testid={key}
-              key={index}
-              required
-              label={key}
-              variant='standard'
-              value={value}
-              onFocus={() => validateField(key)}
-              onChange={(e) => updateField(key, e.target.value)}
-              error={!!validatedError || !!verifiedError}
-              type={key === KEYS.TOKEN ? 'password' : 'text'}
-              helperText={validatedError || verifiedError}
-              sx={{ gridColumn: `span ${col}` }}
-            />
-          ),
-        )}
-        <StyledButtonGroup>
-          {isVerified && !isLoading ? (
-            <VerifyButton disabled>Verified</VerifyButton>
-          ) : isHBTimeOut ? (
-            <VerifyButton type='submit'>Reverify</VerifyButton>
-          ) : (
-            <VerifyButton type='submit' disabled={isDisableVerifyButton}>
-              Verify
-            </VerifyButton>
+      <ConfigSectionContainer aria-label='Board Config'>
+        {isLoading && <Loading />}
+        <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
+        <StyledForm onSubmit={onSubmit} onReset={resetFields}>
+          {fields.map(({ key, value, validatedError, verifiedError, col }, index) =>
+            !index ? (
+              <StyledTypeSelections variant='standard' required key={index}>
+                <InputLabel id='board-type-checkbox-label'>Board</InputLabel>
+                <Select labelId='board-type-checkbox-label' value={value}>
+                  {Object.values(BOARD_TYPES).map((data) => (
+                    <MenuItem key={data} value={data}>
+                      <ListItemText primary={data} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </StyledTypeSelections>
+            ) : (
+              <StyledTextField
+                data-testid={key}
+                key={index}
+                required
+                label={key}
+                variant='standard'
+                value={value}
+                onFocus={() => validateField(key)}
+                onChange={(e) => updateField(key, e.target.value)}
+                error={!!validatedError || !!verifiedError}
+                type={key === KEYS.TOKEN ? 'password' : 'text'}
+                helperText={validatedError || verifiedError}
+                sx={{ gridColumn: `span ${col}` }}
+              />
+            ),
           )}
-          {(isVerified || isHBTimeOut) && !isLoading && <ResetButton type='reset'>Reset</ResetButton>}
-        </StyledButtonGroup>
-      </StyledForm>
-    </ConfigSectionContainer>
+          <ConfigButtonGrop
+            isHBTimeOut={isHBTimeOut}
+            isVerified={isVerified}
+            isDisableVerifyButton={isDisableVerifyButton}
+            isLoading={isLoading}
+          />
+        </StyledForm>
+      </ConfigSectionContainer>
+    </>
   );
 };
