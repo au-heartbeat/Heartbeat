@@ -49,6 +49,7 @@ export const REQUIRED_DATA_LIST = [
   'Velocity',
   'Cycle time',
   'Classification',
+  'Rework times',
   'Lead time for changes',
   'Deployment frequency',
   'Change failure rate',
@@ -58,6 +59,7 @@ export const ALL = 'All';
 export const VELOCITY = 'Velocity';
 export const CYCLE_TIME = 'Cycle time';
 export const CLASSIFICATION = 'Classification';
+export const REWORK_TIMES = 'Rework times';
 export const LEAD_TIME_FOR_CHANGES = 'Lead time for changes';
 export const DEPLOYMENT_FREQUENCY = 'Deployment frequency';
 export const CHANGE_FAILURE_RATE = 'Change failure rate';
