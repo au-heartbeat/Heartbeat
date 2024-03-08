@@ -20,7 +20,7 @@ export const SingleSelection = ({ options, label, value, onValueChange }: Props)
           disableClearable
           data-test-id={labelId}
           options={options}
-          value={value}
+          value={value as string | undefined}
           onChange={(event, newValue: string) => onValueChange(newValue)}
           renderInput={(params) => <TextField required {...params} label={label} variant='standard' />}
           slotProps={{
