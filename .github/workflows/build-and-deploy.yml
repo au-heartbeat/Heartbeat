@@ -52,12 +52,12 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             -v "${PWD}:/app" \
+            -e APP_ORIGIN=${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}\
+            -e E2E_TOKEN_JIRA=${{ secrets.E2E_TOKEN_JIRA }}\
+            -e E2E_TOKEN_BUILD_KITE=${{ secrets.E2E_TOKEN_BUILD_KITE }}\
+            -e E2E_TOKEN_GITHUB=${{ secrets.E2E_TOKEN_GITHUB }}\
+            -e E2E_TOKEN_FLAG_AS_BLOCK_JIRA=${{ secrets.E2E_TOKEN_FLAG_AS_BLOCK_JIRA }}\
             ghcr.io/${{ env.LOWCASE_REPO_OWNER_NAME }}/${{ env.E2E_IMAGE_NAME }}:latest \
-            export APP_ORIGIN=${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }} && \
-            export E2E_TOKEN_JIRA=${{ secrets.E2E_TOKEN_JIRA }} && \
-            export E2E_TOKEN_BUILD_KITE=${{ secrets.E2E_TOKEN_BUILD_KITE }} && \
-            export E2E_TOKEN_GITHUB=${{ secrets.E2E_TOKEN_GITHUB }} && \
-            export E2E_TOKEN_FLAG_AS_BLOCK_JIRA=${{ secrets.E2E_TOKEN_FLAG_AS_BLOCK_JIRA }} && \
             git init -q && \
             npm install -g pnpm && \
             pnpm pnpm install --no-frozen-lockfile && \
