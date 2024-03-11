@@ -106,8 +106,48 @@ start
 stop
 @enduml
 ```
-5. If user check "Consider the 'Flag' as 'Block', we will do as follows:
-    - TODO
+5. Some users are in the block state according to the added flag, so if user check "Consider the 'Flag' as 'Block', and the calculation logic should change, the implementation pseudocode is as follows:
+```plantuml
+@startuml Way of Code Working
+skin rose
+start
+
+: get our need rework condition;
+: get all history of card;
+: filter state and flag change history cards;
+: Define currentState and hasBlock;
+repeat :iterate all history cards;
+  if (history card is state change?) then (yes)
+    :currentState = card.to.state;
+    if (hasBlock?) then (no)
+      if (is rework condition?) then (yes)
+        :fromToTimes += 1;
+      else (no)
+      endif
+    else(yes)
+    endif
+  elseif (history card is flag change?) then (yes)
+    if (history card is add flag?) then (yes)
+      :hasBlock = true;
+      if (is rework condition?) then (yes)
+        :fromCurrentStateToBlock += 1;
+      else(no)
+      endif
+    elseif (history card is cancel flag?) then (yes)
+      :hasBlock = false;
+      if (is rework condition?) then (yes)
+        :fromBlockToCurrentState += 1;
+      else(no)
+      endif
+    else(no)
+    endif
+  else(no)
+  endif
+repeat while (has card history not iteration?) is (yes)
+:return the list of ReworkTimeInfo objects;
+stop
+@enduml
+```
 
 6. We set the `ReworkTimeInfo` list in `JiraCardDTO` object as `reworkTimeInfos` member variables.
 7. In the `GenerateReporterService.generateBoardReporter()` method, we use `reworkTimeInfos` variable in `JiraCardDTO` object calculate rework metrics and put them to `ReportResponse`, which are the same as the API in the 1.2 section.
