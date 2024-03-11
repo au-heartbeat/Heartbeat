@@ -45,6 +45,7 @@ function ReworkSettings() {
           }
         />
         <MultiAutoComplete
+          testId='rework-settings-exclude-selection'
           ariaLabel='Exclude which states (optional)'
           optionList={CYCLE_TIME_LIST}
           isError={false}

@@ -754,6 +754,10 @@ export const FAKE_PIPELINE_TOKEN = 'bkua_mockTokenMockTokenMockTokenMockToken123
 
 export const ADVANCED_SETTINGS_TITLE = 'Advanced settings';
 
+export const REWORK_SETTINGS_TITLE = 'Rework times settings';
+export const REWORK_TO_WHICH_STATE = 'Rework to which state';
+export const REWORK_EXCLUDE_WHICH_STATE = 'Exclude which states (optional)';
+
 export const DEFAULT_REWORK_SETTINGS = {
   rework2State: null,
   excludeStates: [],

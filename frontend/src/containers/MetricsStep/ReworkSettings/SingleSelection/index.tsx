@@ -11,14 +11,14 @@ interface Props {
 }
 
 export const SingleSelection = ({ options, label, value, onValueChange }: Props) => {
-  const labelId = `rework-single-selection-${label.toLowerCase().replace(' ', '-')}`;
+  const labelId = `rework-single-selection-${label.toLowerCase().replace(/\s/g, '-')}`;
 
   return (
     <>
       <FormControlWrapper variant='standard' required>
         <Autocomplete
           disableClearable
-          data-test-id={labelId}
+          data-testid={labelId}
           options={options}
           value={value as string | undefined}
           onChange={(event, newValue: string) => onValueChange(newValue)}
