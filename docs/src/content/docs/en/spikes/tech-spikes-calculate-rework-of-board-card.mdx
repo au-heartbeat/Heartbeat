@@ -44,6 +44,7 @@ response: {
   "rework" : {
       "totalReworkTimes": Integer
       "reworkState": String
+      "fromToDo": Integer
       "fromInDev": Integer
       "fromBlock": Integer
       "fromWaitingForTesting": Integer
@@ -77,6 +78,8 @@ ReworkTimeInfo
 3. We define a `reworkJudgmentMap` map, whose key is target rework state and value is a set containing source states.
 
   ```
+   reworkJudgmentMap.put(ANALYSE, Set.of(TODO, DEVELOPMENT, BLOCK, REVIEW, WAITING, TESTING, DONE));
+   reworkJudgmentMap.put(TODO, Set.of(DEVELOPMENT, BLOCK, REVIEW, WAITING, TESTING, DONE));
    reworkJudgmentMap.put(DEVELOPMENT, Set.of(BLOCK, REVIEW, WAITING, TESTING, DONE));
    reworkJudgmentMap.put(BLOCK, Set.of(REVIEW, WAITING, TESTING, DONE));
    reworkJudgmentMap.put(REVIEW, Set.of(WAITING, TESTING, DONE));
@@ -84,7 +87,28 @@ ReworkTimeInfo
    reworkJudgmentMap.put(TESTING, Set.of(DONE));
   ```
 
-4. In the `getReworkTimes()` method, if user not check "Consider the 'Flag' as 'Block', we will do as follows:
+4. Determine the rework we need, there are three condition
+- Initialize rework judgment.
+- Rework state selected by the user.
+- User excluded state.
+```plantuml
+@startuml calculate rework times when not check "Consider the 'Flag' as 'Block'"
+skin rose
+start
+:get the constant of reworkJudgmentMap;
+:get the rework state and exclude state selected by the user;
+:get the value of reworkJudgementMap according to rework state, and then exclude the value of reworkJudgementMap according to exclude states;
+:input fromState and toState;
+  if(reworkJudgementMap.get(fromState).contain(toState)) then(yes)
+   :return true;
+  else(no)
+  endif
+stop
+@end
+@enduml
+```
+
+5. In the `getReworkTimes()` method, if user not check "Consider the 'Flag' as 'Block', we will do as follows:
 
 ```plantuml
 @startuml calculate rework times when not check "Consider the 'Flag' as 'Block'"
@@ -106,7 +130,7 @@ start
 stop
 @enduml
 ```
-5. Some users are in the block state according to the added flag, so if user check "Consider the 'Flag' as 'Block', and the calculation logic should change, the implementation pseudocode is as follows:
+6. Some users are in the block state according to the added flag, so if user check "Consider the 'Flag' as 'Block', and the calculation logic should change, the implementation pseudocode is as follows:
 ```plantuml
 @startuml Way of Code Working
 skin rose
@@ -149,8 +173,8 @@ stop
 @enduml
 ```
 
-6. We set the `ReworkTimeInfo` list in `JiraCardDTO` object as `reworkTimeInfos` member variables.
-7. In the `GenerateReporterService.generateBoardReporter()` method, we use `reworkTimeInfos` variable in `JiraCardDTO` object calculate rework metrics and put them to `ReportResponse`, which are the same as the API in the 1.2 section.
+7. We set the `ReworkTimeInfo` list in `JiraCardDTO` object as `reworkTimeInfos` member variables.
+8. In the `GenerateReporterService.generateBoardReporter()` method, we use `reworkTimeInfos` variable in `JiraCardDTO` object calculate rework metrics and put them to `ReportResponse`, which are the same as the API in the 1.2 section.
     - We traverse all items in `reworkTimeInfos` and sum the rework times in each state.
     - Then we sum the total time of reworks in each state as the `totalReworkTimes`.
     - If a card's `reworkTimeInfos` is not empty, we set `totalReworkCards` add one.
@@ -162,6 +186,7 @@ stop
 When generating the board csv file, we need to export the rework information of each card, so we need to add a series of table header information, and assemble and filter according to the config provided by reworkSetting. The following is the full table header information about rework:
 
 - rework times to `state`
+- from in todo to `state`
 - from in dev to `state`
 - from block to `state`
 - from review to `state`
