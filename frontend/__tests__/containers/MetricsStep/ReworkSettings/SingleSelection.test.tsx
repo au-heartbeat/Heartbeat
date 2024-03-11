@@ -1,11 +1,7 @@
 import { SingleSelection } from '@src/containers/MetricsStep/ReworkSettings/SingleSelection';
 import { act, render, waitFor, within } from '@testing-library/react';
-import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { LIST_OPEN } from '@test/fixtures';
-import { Provider } from 'react-redux';
-
-let store = setupStore();
 
 describe('SingleSelection', () => {
   const mockOptions = ['opton1', 'opton2', 'opton3'];
@@ -13,19 +9,13 @@ describe('SingleSelection', () => {
   const mockValue = 'mockOptions 1';
   const mockOnValueChange = jest.fn();
 
-  beforeEach(() => {
-    store = setupStore();
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   const setup = () =>
     render(
-      <Provider store={store}>
-        <SingleSelection options={mockOptions} label={mockLabel} value={mockValue} onValueChange={mockOnValueChange} />
-      </Provider>,
+      <SingleSelection options={mockOptions} label={mockLabel} value={mockValue} onValueChange={mockOnValueChange} />,
     );
 
   it('should trigger onValueChange callback when select value option', async () => {
