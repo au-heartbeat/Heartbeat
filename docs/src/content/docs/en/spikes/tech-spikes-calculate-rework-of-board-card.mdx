@@ -74,23 +74,43 @@ ReworkTimeInfo
 
 `ReworkTimeInfo` has two variables, `state` stores the rework target state. And `times` stores the rework times which is initialized to 0.
 
-3. In the getReworkTimes method:
-    - We filter out all items that have the field id as 'status' and the `from` member is not in excluded states.
-    - We define a `reworkJudgmentMap` map, whose key is target rework state and value is a set containing source states.
-    
-    ```
-      reworkJudgmentMap.put(DEVELOPMENT, Set.of(BLOCK, REVIEW, WAITING, TESTING, DONE));
-      reworkJudgmentMap.put(BLOCK, Set.of(REVIEW, WAITING, TESTING, DONE));
-      reworkJudgmentMap.put(REVIEW, Set.of(WAITING, TESTING, DONE));
-      reworkJudgmentMap.put(WAITING, Set.of(TESTING, DONE));
-      reworkJudgmentMap.put(TESTING, Set.of(DONE));
-    ```
+3. We define a `reworkJudgmentMap` map, whose key is target rework state and value is a set containing source states.
 
-    - We traverse all items and check the 'to' and the 'from' member.
-    - If the "to" member is used as the key and the value mapped by "reworkJudgmentMap" contains the "from" member, then the item records a rework. We create a `ReworkTimeInfo` and set 'state' to 'from' and 'times' add one.
+  ```
+   reworkJudgmentMap.put(DEVELOPMENT, Set.of(BLOCK, REVIEW, WAITING, TESTING, DONE));
+   reworkJudgmentMap.put(BLOCK, Set.of(REVIEW, WAITING, TESTING, DONE));
+   reworkJudgmentMap.put(REVIEW, Set.of(WAITING, TESTING, DONE));
+   reworkJudgmentMap.put(WAITING, Set.of(TESTING, DONE));
+   reworkJudgmentMap.put(TESTING, Set.of(DONE));
+  ```
 
-4. We set the `ReworkTimeInfo` list in `JiraCardDTO` object as `reworkTimeInfos` member variables.
-5. In the `GenerateReporterService.generateBoardReporter()` method, we use `reworkTimeInfos` variable in `JiraCardDTO` object calculate rework metrics and put them to `ReportResponse`, which are the same as the API in the 1.2 section.
+4. In the `getReworkTimes()` method, if user not check "Consider the 'Flag' as 'Block', we will do as follows:
+
+```plantuml
+@startuml calculate rework times when not check "Consider the 'Flag' as 'Block'"
+skin rose
+start
+
+:filter out all items that have the field id as 'status';
+  repeat : Pick up one item;
+    if( Is the "from" member contained by the the value mapped by "reworkJudgmentMap" when "to" member is used as the key?) then (yes)
+      :Create a new ReworkTimeInfo object;
+      :Set the "state" member to "from";
+      :Set the "times" member add 1;
+    else(no)
+    endif
+  repeat while (Is there any item in the list?) is (Yes)
+  ->No;
+:return the list of ReworkTimeInfo objects;
+
+stop
+@enduml
+```
+5. If user check "Consider the 'Flag' as 'Block', we will do as follows:
+    - TODO
+
+6. We set the `ReworkTimeInfo` list in `JiraCardDTO` object as `reworkTimeInfos` member variables.
+7. In the `GenerateReporterService.generateBoardReporter()` method, we use `reworkTimeInfos` variable in `JiraCardDTO` object calculate rework metrics and put them to `ReportResponse`, which are the same as the API in the 1.2 section.
     - We traverse all items in `reworkTimeInfos` and sum the rework times in each state.
     - Then we sum the total time of reworks in each state as the `totalReworkTimes`.
     - If a card's `reworkTimeInfos` is not empty, we set `totalReworkCards` add one.
