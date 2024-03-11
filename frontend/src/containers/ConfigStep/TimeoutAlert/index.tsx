@@ -17,7 +17,9 @@ export const TimeoutAlert = ({ isHBTimeOut, isShowAlert, setIsShowAlert, moduleT
             setIsShowAlert(false);
           }}
         >
-          Submission timeout on <StyledTypography>{moduleType}</StyledTypography> , please reverify!
+          <StyledTypography>
+            Submission timeout on <span>{moduleType}</span> , please reverify!
+          </StyledTypography>
         </StyledAlert>
       )}
     </>

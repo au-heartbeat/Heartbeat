@@ -6,14 +6,13 @@ import {
 } from '@src/components/Common/ConfigForms';
 import { updateShouldGetBoardConfig } from '@src/context/Metrics/metricsSlice';
 import { KEYS, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
-import { StyledAlert } from '@src/containers/ConfigStep/TimeoutAlert/style';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { selectIsBoardVerified } from '@src/context/config/configSlice';
+import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
 import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { Loading } from '@src/components/Loading';
 import { FormEvent, useMemo } from 'react';
 export const Board = () => {
@@ -44,17 +43,12 @@ export const Board = () => {
 
   return (
     <>
-      {isHBTimeOut && isShowAlert && (
-        <StyledAlert
-          icon={<HighlightOffIcon fontSize='inherit' />}
-          severity='error'
-          onClose={() => {
-            setIsShowAlert(false);
-          }}
-        >
-          Submission timeout on <span style={{ fontWeight: 700 }}>Board</span> , please reverify!
-        </StyledAlert>
-      )}
+      <TimeoutAlert
+        isShowAlert={isShowAlert}
+        isHBTimeOut={isHBTimeOut}
+        setIsShowAlert={setIsShowAlert}
+        moduleType={'Board'}
+      />
       <ConfigSectionContainer aria-label='Board Config'>
         {isLoading && <Loading />}
         <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>

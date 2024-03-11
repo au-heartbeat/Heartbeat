@@ -9,4 +9,9 @@ export const StyledAlert = styled(Alert)({
     marginBottom: '0.5rem',
   },
 });
-export const StyledTypography = styled(Typography)({});
+export const StyledTypography = styled(Typography)({
+  '& span': {
+    color: '#000000',
+    fontWeight: 600,
+  },
+});
