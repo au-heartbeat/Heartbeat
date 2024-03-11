@@ -520,9 +520,9 @@ jobs:
 
   slack-notification:
     name: Slack Notification
+    if: github.ref == 'refs/heads/main' && always()
     needs:
       - e2e
-    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
