@@ -19,11 +19,11 @@ import { BranchSelection } from '@src/containers/MetricsStep/DeploymentFrequency
 import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
+import { MESSAGE, NO_PIPELINE_STEP_ERROR } from '@src/constants/resources';
 import { ErrorNotification } from '@src/components/ErrorNotification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { store } from '@src/store';
 
@@ -137,6 +137,8 @@ export const PipelineMetricSelection = ({
           options={stepsOptions}
           label={'Step'}
           value={validStepValue}
+          isError={isShowNoStepWarning}
+          errorText={NO_PIPELINE_STEP_ERROR}
           onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
       )}

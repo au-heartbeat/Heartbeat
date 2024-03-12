@@ -71,6 +71,8 @@ jest.mock('@src/context/config/configSlice', () => ({
   ]),
 }));
 
+const store = setupStore();
+
 describe('PipelineMetricSelection', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());
@@ -91,7 +93,6 @@ describe('PipelineMetricSelection', () => {
     isShowRemoveButton: boolean,
     isDuplicated: boolean,
   ) => {
-    const store = setupStore();
     store.dispatch(updateShouldGetPipelineConfig(true));
     return render(
       <Provider store={store}>
@@ -203,6 +204,8 @@ describe('PipelineMetricSelection', () => {
           'There is no step during this period for this pipeline! Please change the search time in the Config page!',
         ),
       ).toBeInTheDocument();
+
+      expect(getByText('No steps for this pipeline!')).toBeInTheDocument();
     });
   });
 
