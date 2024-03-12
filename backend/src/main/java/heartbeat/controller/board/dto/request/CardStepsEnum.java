@@ -29,7 +29,7 @@ public enum CardStepsEnum {
 		throw new IllegalArgumentException("Type does not find!");
 	}
 
-	static final Map<CardStepsEnum, Set<CardStepsEnum>> reworkJudgmentMap = new EnumMap<>(CardStepsEnum.class);
+	public static final Map<CardStepsEnum, Set<CardStepsEnum>> reworkJudgmentMap = new EnumMap<>(CardStepsEnum.class);
 
 	static {
 		reworkJudgmentMap.put(ANALYSE, Set.of(TODO, DEVELOPMENT, BLOCK, REVIEW, WAITING, TESTING, DONE));

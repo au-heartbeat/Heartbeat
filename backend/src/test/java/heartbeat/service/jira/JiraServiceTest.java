@@ -553,10 +553,10 @@ class JiraServiceTest {
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "2", 0, 100, token))
 			.thenReturn(new CardHistoryResponseDTO(false, new ArrayList<>(
-					List.of(new HistoryDetail(1, "status", new Status("To do"), new Status("Block"), null)))));
+					List.of(new HistoryDetail(1, "status", new Status("To do"), new Status("Block"), null, null)))));
 		when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "2", 100, 100, token))
 			.thenReturn(new CardHistoryResponseDTO(true, new ArrayList<>(
-					List.of(new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do"), null)))));
+					List.of(new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do"), null, null)))));
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 		// when
 		jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,

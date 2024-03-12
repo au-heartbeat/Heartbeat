@@ -9,8 +9,8 @@ import java.util.List;
 @Setter
 public class ReworkTimesSetting {
 
-	private String reworkState;
+	private CardStepsEnum reworkState;
 
-	private List<String> excludeStates;
+	private List<CardStepsEnum> excludeStates;
 
 }
