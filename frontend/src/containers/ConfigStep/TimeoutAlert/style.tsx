@@ -1,17 +1,19 @@
 import { Alert, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { theme } from '@src/theme';
+
 export const StyledAlert = styled(Alert)({
   '&.MuiPaper-root': {
-    border: '1px solid #F3B6BE',
-    backgroundColor: '#FFE7EA',
-    borderRadius: '8px',
+    border: `0,07rem solid ${theme.main.alert.error.borderColor}`,
+    backgroundColor: theme.main.alert.error.backgroundColor,
+    borderRadius: '0.5rem',
     padding: '0.3rem 1rem',
     marginBottom: '0.5rem',
   },
 });
 export const StyledTypography = styled(Typography)({
   '& span': {
-    color: '#000000',
+    color: theme.main.secondColor,
     fontWeight: 600,
   },
 });
