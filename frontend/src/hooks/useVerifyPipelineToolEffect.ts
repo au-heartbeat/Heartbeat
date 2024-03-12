@@ -16,7 +16,6 @@ export const useVerifyPipelineToolEffect = () => {
   const verifyPipelineTool = async (params: IPipelineVerifyRequestDTO): Promise<void> => {
     setIsLoading(true);
     const response = await pipelineToolClient.verify(params, setIsHBTimeOut, setIsShowAlert);
-    console.log(11, response.code);
     if (response.code === HttpStatusCode.NoContent) {
       dispatch(updatePipelineToolVerifyState(true));
       dispatch(initDeploymentFrequencySettings());

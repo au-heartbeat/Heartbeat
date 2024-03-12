@@ -737,6 +737,9 @@ export const CYCLE_TIME_SETTINGS_SECTION = 'Cycle time settings section';
 export const REAL_DONE_SETTING_SECTION = 'Real done setting section';
 export const SELECT_CONSIDER_AS_DONE_MESSAGE = 'Must select which you want to consider as Done';
 export const MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT = 'Token is incorrect!';
+export const MOCK_PIPELINE_VERIFY_UNAUTHORIZED_TEXT = 'Token is incorrect!';
+export const MOCK_PIPELINE_VERIFY_FORBIDDEN_ERROR_TEXT =
+  'Forbidden request, please change your token with correct access permission.';
 
 export const FAKE_TOKEN = 'fake-token';
 

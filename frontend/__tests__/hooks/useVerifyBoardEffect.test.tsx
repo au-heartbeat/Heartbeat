@@ -135,7 +135,7 @@ describe('use verify board state', () => {
     expect(tokenField?.verifiedError).toBe('');
   });
 
-  it('should timeout is true when api is timeout', async () => {
+  it('should set timeout is true when getVerifyBoard api is timeout', async () => {
     const mockedError = new TimeoutException('', HEARTBEAT_EXCEPTION_CODE.TIMEOUT);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
