@@ -1,8 +1,7 @@
+import { selectReworkTimesSettings, updateReworkTimesSettings } from '@src/context/Metrics/metricsSlice';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { ReworkHeaderWrapper, ReworkSettingsWrapper, StyledLink } from './style';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import { selectReworkTimesSettings } from '@src/context/Metrics/metricsSlice';
-import { updateReworkTimesSettings } from '@src/context/Metrics/metricsSlice';
 import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { CYCLE_TIME_LIST } from '@src/constants/resources';

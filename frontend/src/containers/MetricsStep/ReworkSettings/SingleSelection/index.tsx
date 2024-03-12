@@ -14,24 +14,22 @@ export const SingleSelection = ({ options, label, value, onValueChange }: Props)
   const labelId = `rework-single-selection-${label.toLowerCase().replace(/\s/g, '-')}`;
 
   return (
-    <>
-      <FormControlWrapper variant='standard' required>
-        <Autocomplete
-          disableClearable
-          data-testid={labelId}
-          options={options}
-          value={value as string | undefined}
-          onChange={(event, newValue: string) => onValueChange(newValue)}
-          renderInput={(params) => <TextField required {...params} label={label} variant='standard' />}
-          slotProps={{
-            popper: {
-              sx: {
-                zIndex: Z_INDEX.DROPDOWN,
-              },
+    <FormControlWrapper variant='standard' required>
+      <Autocomplete
+        disableClearable
+        data-testid={labelId}
+        options={options}
+        value={value as string | undefined}
+        onChange={(event, newValue: string) => onValueChange(newValue)}
+        renderInput={(params) => <TextField required {...params} label={label} variant='standard' />}
+        slotProps={{
+          popper: {
+            sx: {
+              zIndex: Z_INDEX.DROPDOWN,
             },
-          }}
-        />
-      </FormControlWrapper>
-    </>
+          },
+        }}
+      />
+    </FormControlWrapper>
   );
 };
