@@ -4,7 +4,7 @@ import { theme } from '@src/theme';
 
 export const StyledAlert = styled(Alert)({
   '&.MuiPaper-root': {
-    border: `0,07rem solid ${theme.main.alert.error.borderColor}`,
+    border: `0.07rem solid ${theme.main.alert.error.borderColor}`,
     backgroundColor: theme.main.alert.error.backgroundColor,
     borderRadius: '0.5rem',
     padding: '0.3rem 1rem',
