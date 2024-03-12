@@ -1,9 +1,9 @@
 import { selectDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { Autocomplete, Box, ListItemText, TextField } from '@mui/material';
+import { getDisabledOptions, sortDisabledOptions } from '@src/utils/util';
 import { EmojiWrap, StyledAvatar } from '@src/constants/emojis/style';
-import { getDisabledOptions } from '@src/utils/util';
-import { Z_INDEX } from '@src/constants/commons';
+import { DEFAULT_HELPER_TEXT, Z_INDEX } from '@src/constants/commons';
 import { FormControlWrapper } from './style';
 import { useAppSelector } from '@src/hooks';
 import React, { useState } from 'react';
@@ -13,11 +13,22 @@ interface Props {
   label: string;
   value: string;
   id: number;
+  isError?: boolean;
+  errorText?: string;
   onGetSteps?: (pipelineName: string) => void;
   onUpDatePipeline: (id: number, label: string, value: string) => void;
 }
 
-export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDatePipeline }: Props) => {
+export const SingleSelection = ({
+  options,
+  label,
+  value,
+  id,
+  isError = false,
+  errorText,
+  onGetSteps,
+  onUpDatePipeline,
+}: Props) => {
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
   const [inputValue, setInputValue] = useState<string>(value);
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
@@ -41,7 +52,7 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDat
         <Autocomplete
           disableClearable
           data-test-id={labelId}
-          options={options}
+          options={sortDisabledOptions(deploymentFrequencySettings, options)}
           getOptionDisabled={(option: string) =>
             label === 'Pipeline Name' && getDisabledOptions(deploymentFrequencySettings, option)
           }
@@ -62,7 +73,16 @@ export const SingleSelection = ({ options, label, value, id, onGetSteps, onUpDat
           onInputChange={(event, newInputValue) => {
             setInputValue(newInputValue);
           }}
-          renderInput={(params) => <TextField required {...params} label={label} variant='standard' />}
+          renderInput={(params) => (
+            <TextField
+              required
+              {...params}
+              label={label}
+              variant='standard'
+              error={isError}
+              helperText={isError ? errorText : DEFAULT_HELPER_TEXT}
+            />
+          )}
           slotProps={{
             popper: {
               sx: {
