@@ -14,7 +14,7 @@ export const useVerifySourceControlTokenEffect = () => {
   const [isShowAlert, setIsShowAlert] = useState(false);
   const verifyToken = async (params: SourceControlVerifyRequestDTO) => {
     setIsLoading(true);
-    const response = await sourceControlClient.verifyToken(params);
+    const response = await sourceControlClient.verifyToken(params, setIsHBTimeOut, setIsShowAlert);
     if (response.code === HttpStatusCode.NoContent) {
       dispatch(updateSourceControlVerifyState(true));
     } else if (response.code === HEARTBEAT_EXCEPTION_CODE.TIMEOUT) {

@@ -10,7 +10,11 @@ export interface SourceControlResult {
 }
 
 export class SourceControlClient extends HttpClient {
-  verifyToken = async (params: SourceControlVerifyRequestDTO) => {
+  verifyToken = async (
+    params: SourceControlVerifyRequestDTO,
+    setIsShowAlert: (value: boolean) => void,
+    setIsHBTimeOut: (value: boolean) => void,
+  ) => {
     const result: SourceControlResult = {};
     const { token, type } = params;
     try {
@@ -18,6 +22,8 @@ export class SourceControlClient extends HttpClient {
         token,
       });
       result.code = response.status;
+      setIsShowAlert(false);
+      setIsHBTimeOut(false);
     } catch (e) {
       if (isHeartBeatException(e)) {
         const exception = e as IHeartBeatException;
