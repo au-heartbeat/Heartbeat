@@ -60,6 +60,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -258,10 +260,20 @@ public class JiraService {
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
 
+		int reworkCardNumber = realDoneCards.stream()
+			.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
+			.toList()
+			.size();
+		double reworkRatio = BigDecimal.valueOf(reworkCardNumber)
+			.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
+			.doubleValue();
+
 		return CardCollection.builder()
 			.storyPointSum(storyPointSum)
 			.cardsNumber(realDoneCards.size())
 			.jiraCardDTOList(realDoneCards)
+			.reworkCardNumber(reworkCardNumber)
+			.reworkRatio(reworkRatio)
 			.build();
 	}
 
