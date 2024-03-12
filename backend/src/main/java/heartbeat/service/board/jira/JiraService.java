@@ -564,6 +564,7 @@ public class JiraService {
 					.originCycleTime(cycleTimeInfoDTO.getOriginCycleTimeInfos())
 					.cardCycleTime(calculateCardCycleTime(doneCard.getKey(), cycleTimeInfoDTO.getCycleTimeInfos(),
 							boardColumns))
+					// TODO: calculate and set rework times here
 					.build();
 				realDoneCards.add(jiraCardDTO);
 			}
@@ -764,6 +765,7 @@ public class JiraService {
 		return CardCycleTime.builder().name(cardId).steps(stepsDay).total(total).build();
 	}
 
+	// override fields 表示什么？
 	private CardCustomFieldKey covertCustomFieldKey(List<TargetField> model, List<TargetField> overrideFields) {
 		CardCustomFieldKey cardCustomFieldKey = CardCustomFieldKey.builder().build();
 		for (TargetField value : model) {
