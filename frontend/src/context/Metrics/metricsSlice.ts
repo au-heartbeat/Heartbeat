@@ -390,8 +390,9 @@ export const metricsSlice = createSlice({
         pipelineList
           .filter((pipeline: pipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase())
           .map((item: pipeline) => item.name);
-      const getValidPipelines = (pipelines: IPipelineConfig[]) =>
-        pipelines.length > 0
+      const getValidPipelines = (pipelines: IPipelineConfig[]) => {
+        const hasPipeline = pipelines.filter(({ id }) => id !== undefined).length;
+        return pipelines.length && hasPipeline
           ? pipelines.map(({ id, organization, pipelineName, step, branches }) => ({
               id,
               organization: orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '',
@@ -400,7 +401,7 @@ export const metricsSlice = createSlice({
               branches: branches || [],
             }))
           : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
-
+      };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
         const orgWarning = orgNames.some((i) => (i as string).toLowerCase() === organization.toLowerCase())
           ? null
@@ -419,7 +420,8 @@ export const metricsSlice = createSlice({
       };
 
       const getPipelinesWarningMessage = (pipelines: IPipelineConfig[]) => {
-        if (!pipelines.length || isProjectCreated) {
+        const hasPipeline = pipelines.filter(({ id }) => id !== undefined).length;
+        if (!pipelines.length || isProjectCreated || !hasPipeline) {
           return [];
         }
         return pipelines.map((pipeline) => createPipelineWarning(pipeline));
@@ -427,6 +429,7 @@ export const metricsSlice = createSlice({
 
       const deploymentSettings =
         state.deploymentFrequencySettings.length > 0 ? state.deploymentFrequencySettings : importedDeployment;
+
       state.deploymentFrequencySettings = getValidPipelines(deploymentSettings);
       state.deploymentWarningMessage = getPipelinesWarningMessage(deploymentSettings);
     },

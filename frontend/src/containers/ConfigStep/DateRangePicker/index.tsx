@@ -1,3 +1,9 @@
+import {
+  initDeploymentFrequencySettings,
+  saveUsers,
+  updateShouldGetBoardConfig,
+  updateShouldGetPipelineConfig,
+} from '@src/context/Metrics/metricsSlice';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StyledDateRangePicker, StyledDateRangePickerContainer } from './style';
@@ -12,6 +18,12 @@ import isNull from 'lodash/isNull';
 export const DateRangePicker = () => {
   const dispatch = useAppDispatch();
   const { startDate, endDate } = useAppSelector(selectDateRange);
+  const dispatchUpdateConfig = () => {
+    dispatch(updateShouldGetBoardConfig(true));
+    dispatch(updateShouldGetPipelineConfig(true));
+    dispatch(initDeploymentFrequencySettings());
+    dispatch(saveUsers([]));
+  };
   const changeStartDate = (value: Nullable<Dayjs>) => {
     dispatch(
       updateDateRange(
@@ -26,6 +38,7 @@ export const DateRangePicker = () => {
             },
       ),
     );
+    dispatchUpdateConfig();
   };
 
   const changeEndDate = (value: Dayjs) => {
@@ -35,6 +48,7 @@ export const DateRangePicker = () => {
         endDate: !isNull(value) ? value.endOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ') : null,
       }),
     );
+    dispatchUpdateConfig();
   };
 
   return (
