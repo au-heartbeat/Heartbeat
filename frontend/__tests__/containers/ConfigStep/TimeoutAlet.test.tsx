@@ -21,12 +21,12 @@ describe('TimeoutAlert', () => {
     );
   };
 
-  it('renders the correct message with the moduleType', () => {
+  it('should render the correct message when given the moduleType', () => {
     setup(setIsShowAlert, true, true, 'Board'); // Use a different moduleType for clarity
     const message = screen.getByText('Board'); // Use a regex for flexibility
     expect(message).toBeInTheDocument();
   });
-  it('does not render the alert when isHBTimeOut or isShowAlert is false', () => {
+  it('should not render the alert when isHBTimeOut or isShowAlert is false', () => {
     setup(setIsShowAlert, false, true, 'Board');
     expect(screen.queryByText('Board')).not.toBeInTheDocument();
 
@@ -34,7 +34,7 @@ describe('TimeoutAlert', () => {
     expect(screen.queryByText('Board')).not.toBeInTheDocument();
   });
 
-  it('calls setIsShowAlert with false and hides the alert on clicking the close icon', async () => {
+  it('should call setIsShowAlert with false and hides the alert when click the close icon', async () => {
     setup(setIsShowAlert, true, true, 'any'); // Ensure alert is visible
     const closeIcon = screen.getByTestId('CloseIcon');
     act(() => {

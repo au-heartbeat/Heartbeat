@@ -14,13 +14,13 @@ describe('ConfigButtonGroup', () => {
     );
   };
 
-  it('renders a disabled VerifyButton with "Verified" text when isVerified is true and isLoading is false', () => {
+  it('should render a disabled VerifyButton with "Verified" text when isVerified is true and isLoading is false', () => {
     setup(true, false, false, false); // Use a different moduleType for clarity
     expect(screen.getByText('Verified')).toBeInTheDocument();
     expect(screen.getByText('Reset')).toBeInTheDocument();
     expect(screen.getByText('Verified')).toBeDisabled();
   });
-  it('renders a VerifyButton with "Reverify" text and submit type when isHBTimeOut is true', () => {
+  it('should render a VerifyButton with "Reverify" text when isHBTimeOut is true', () => {
     setup(false, false, true, false); // Use a different moduleType for clarity
     expect(screen.getByText('Reverify')).toBeInTheDocument();
     expect(screen.getByText('Reverify')).toHaveAttribute('type', 'submit');

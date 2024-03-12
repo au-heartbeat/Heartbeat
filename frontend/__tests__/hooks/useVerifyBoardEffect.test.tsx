@@ -1,7 +1,6 @@
 import { useVerifyBoardEffect, useVerifyBoardStateInterface } from '@src/hooks/useVerifyBoardEffect';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { FAKE_TOKEN } from '@test/fixtures';
-import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 
 import { InternalServerException } from '@src/exceptions/InternalServerException';
@@ -23,14 +22,6 @@ jest.mock('@src/hooks/useAppDispatch', () => ({
   useAppDispatch: jest.fn(() => jest.fn()),
 }));
 
-jest.mock('@src/clients/board/BoardClient', () => ({
-  boardClient: {
-    getVerifyBoard: jest.fn(),
-  },
-}));
-
-const server = setupServer();
-
 const updateFields = (result: { current: useVerifyBoardStateInterface }) => {
   result.current.updateField('Board Id', '1');
   result.current.updateField('Email', 'fake@qq.com');
@@ -39,10 +30,8 @@ const updateFields = (result: { current: useVerifyBoardStateInterface }) => {
 };
 
 describe('use verify board state', () => {
-  beforeAll(() => server.listen());
   afterAll(() => {
     jest.clearAllMocks();
-    server.close();
   });
   it('should got initial data state when hook render given none input', async () => {
     const { result } = renderHook(() => useVerifyBoardEffect());
@@ -89,7 +78,7 @@ describe('use verify board state', () => {
     expect(emailText?.verifiedError).toBe('');
   });
 
-  it('when call verify function given a invalid site then should got site field error message', async () => {
+  it('should got site field error message when call verify function given a invalid site', async () => {
     const mockedError = new NotFoundException('site is incorrect', HttpStatusCode.NotFound, 'site is incorrect');
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
