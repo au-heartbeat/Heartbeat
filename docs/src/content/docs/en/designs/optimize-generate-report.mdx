@@ -110,15 +110,15 @@ Backend --> Frontend: response 202 with callback
 deactivate Backend
 
 
+Backend --> Backend: initialize reportStatus according to metricTypes list element
+activate Backend
+
+group async check if metricCsv can be generated 
 loop until (metricTypes list final element)
-    Backend -> Backend: write metricType on one file
-    activate Backend
-    
     
     alt metricsType is Board
-        Backend --> Backend: initialize boardMetricsCompleted index as false
         group async process board related metrics
-            Backend -> Jira: get Jira raw data
+            Backend -> Jira: get Jira raw data，put this thread into thread list
             activate Backend
             activate Jira
             Jira --> Backend: Jira raw 
@@ -135,14 +135,13 @@ loop until (metricTypes list final element)
         
         
     else metricsType is Dora
-        Backend --> Backend: initialize doraMetricsCompleted as false
         group async process pipeline and sourcecontrol related metrics
-            Backend -> Buildkite: get Buildkite raw data
+            Backend -> Buildkite: get Buildkite raw data, put this thread into thread list
             activate Backend
             activate Buildkite
             Buildkite --> Backend: Buildkite raw data
             deactivate Buildkite
-            Backend -> Backend: calculate metrics for deployment frequency, \nchange failure rate and mean time to recovery
+            Backend -> Backend: calculate metrics for deployment frequency, change failure rate and mean time to recovery
             note left
                 pipeline metrics are ready for display
             end note
@@ -164,30 +163,15 @@ loop until (metricTypes list final element)
             deactivate Backend
         end
     end
-     deactivate Backend
+     
+     Backend --> Backend: wait for threadList element all execute completed
+     Backend --> Backend: generate metricCsv
+     note left
+     update allMetricsCompleted as true and write it on the file
+     end note
 end 
-
-
-group async check if metricCsv can be generated 
- loop until (allMetricsCompleted==true) 
-    Backend -> Backend: calculate the size of metricTypes list 
-    alt the size of metricTypes list equal to one and metricTypes list contains board element
-           Backend --> Backend: allMetricsCompleted index is decided by the value of boardMetricsCompleted index
-       else the size of metricTypes list equal to one and metricTypes list contains dora element
-           Backend --> Backend: allMetricsCompleted index is decided by the value of doraMetricsCompleted index
-       else the size of metricTypes list equal to two and metricTypes list contains both board element and dora element
-           Backend --> Backend: allMetricsCompleted index is decided by the combination of value for doraMetricsCompleted index and boardMetricsCompleted index
-       end
-       alt allMetricsCompleted is true
-               Backend --> Backend: Metric csv generated, metric report is ready for download
-           else allMetricsCompleted is false
-            Backend --> Backend: Metric csv can not be generated, metric report is not ready for download
-           end
-               deactivate Backend
-           end 
-       deactivate Backend
-   end 
-
+    deactivate Backend
+end 
 
 loop until (response code is 201 and body.allMetricsCompleted==true) or (response code is 5xx) 
     Frontend -> Backend: Polling the report
@@ -211,7 +195,7 @@ URI: POST /reports
 Request payload:
 {
    ...
-   "metricsType": [
+   "metricTypes": [
         "string"
       ]
 }
