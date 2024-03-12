@@ -48,6 +48,16 @@ export enum REQUIRED_DATA {
   MEAN_TIME_TO_RECOVERY = 'Mean time to recovery',
 }
 
+export const REQUIRED_DATA_TITLE = {
+  Velocity: 'Velocity',
+  'Cycle time': 'Cycle time',
+  Classification: 'Classification',
+  'Lead time for changes': 'Lead time for changes',
+  'Deployment frequency': 'Deployment frequency',
+  'Change failure rate': 'Dev change failure rate',
+  'Mean time to recovery': 'Dev mean time to recovery',
+};
+
 export enum METRICS_TITLE {
   VELOCITY = 'Velocity',
   CYCLE_TIME = 'Cycle Time',
@@ -55,17 +65,17 @@ export enum METRICS_TITLE {
   REWORK_TIMES = 'Rework times',
   LEAD_TIME_FOR_CHANGES = 'Lead Time For Changes',
   DEPLOYMENT_FREQUENCY = 'Deployment Frequency',
-  CHANGE_FAILURE_RATE = 'Change Failure Rate',
-  MEAN_TIME_TO_RECOVERY = 'Mean Time To Recovery',
+  CHANGE_FAILURE_RATE = 'Dev Change Failure Rate',
+  MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
 }
 
 export enum METRICS_SUBTITLE {
   PR_LEAD_TIME = 'PR Lead Time(Hours)',
   PIPELINE_LEAD_TIME = 'Pipeline Lead Time(Hours)',
   TOTAL_DELAY_TIME = 'Total Lead Time(Hours)',
-  DEPLOYMENT_FREQUENCY = 'Deployment Frequency(Deployments/Day)',
-  MEAN_TIME_TO_RECOVERY_HOURS = 'Mean Time To Recovery(Hours)',
-  FAILURE_RATE = 'Failure Rate',
+  DEPLOYMENT_FREQUENCY = '(Deployments/Days)',
+  MEAN_TIME_TO_RECOVERY_HOURS = '(Hours)',
+  FAILURE_RATE = '',
   AVERAGE_CYCLE_TIME_PRE_SP = 'Average Cycle Time(Days/SP)',
   AVERAGE_CYCLE_TIME_PRE_CARD = 'Average Cycle Time(Days/Card)',
   THROUGHPUT = 'Throughput(Cards Count)',
@@ -196,11 +206,11 @@ export enum CYCLE_TIME_METRICS_NAME {
   AVERAGE_TESTING_TIME = 'Average testing time',
 }
 
-export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment frequency';
+export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment Frequency';
 
-export const FAILURE_RATE_NAME = 'Failure rate';
+export const FAILURE_RATE_NAME = 'Dev Change Failure Rate';
 
-export const MEAN_TIME_TO_RECOVERY_NAME = 'Mean Time To Recovery';
+export const MEAN_TIME_TO_RECOVERY_NAME = 'Dev Mean Time To Recovery';
 
 export const PIPELINE_STEP = 'Pipeline/step';
 
