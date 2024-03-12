@@ -26,6 +26,8 @@ public class JiraCardDTO {
 
 	private CardCycleTime cardCycleTime;
 
+	private List<ReworkTimesInfo> reworkTimesInfos;
+
 	private Object cycleTimeFlat;
 
 	@Nullable
