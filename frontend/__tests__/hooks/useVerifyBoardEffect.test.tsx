@@ -69,6 +69,26 @@ describe('use verify board state', () => {
     );
   });
 
+  it('should clear email validatedError when updateField by Email', async () => {
+    const mockedError = new UnauthorizedException('', HttpStatusCode.Unauthorized, '');
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    const { result } = renderHook(() => useVerifyBoardEffect());
+    await act(async () => {
+      await updateFields(result);
+      await result.current.verifyJira();
+    });
+
+    const emailFiled = result.current.fields.find((field) => field.key === 'Email');
+    expect(emailFiled?.verifiedError).toBe('Email is incorrect!');
+
+    await act(async () => {
+      await result.current.updateField('Email', 'fake@qq.com');
+    });
+    const emailText = result.current.fields.find((field) => field.key === 'Email');
+    expect(emailText?.verifiedError).toBe('');
+  });
+
   it('when call verify function given a invalid site then should got site field error message', async () => {
     const mockedError = new NotFoundException('site is incorrect', HttpStatusCode.NotFound, 'site is incorrect');
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
