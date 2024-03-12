@@ -60,6 +60,7 @@ public class KanbanService {
 			.targetFields(jiraBoardSetting.getTargetFields())
 			.overrideFields(jiraBoardSetting.getOverrideFields())
 			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock())
+			.reworkTimesSetting(jiraBoardSetting.getReworkTimesSetting())
 			.build();
 	}
 
