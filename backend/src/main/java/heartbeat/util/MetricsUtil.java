@@ -7,7 +7,8 @@ import java.util.stream.Stream;
 
 public interface MetricsUtil {
 
-	List<String> kanbanMetrics = Stream.of(MetricEnum.VELOCITY, MetricEnum.CYCLE_TIME, MetricEnum.CLASSIFICATION)
+	List<String> kanbanMetrics = Stream
+		.of(MetricEnum.VELOCITY, MetricEnum.CYCLE_TIME, MetricEnum.CLASSIFICATION, MetricEnum.REWORK)
 		.map(MetricEnum::getValue)
 		.toList();
 
