@@ -1,4 +1,4 @@
-import { BoardRequestDTO } from '@src/clients/board/dto/request';
+import { IBoardConfigData } from '@src/containers/ConfigStep/Board/schema';
 import { HttpClient } from '@src/clients/HttpClient';
 import { HttpStatusCode } from 'axios';
 
@@ -7,7 +7,7 @@ export class BoardClient extends HttpClient {
   haveDoneCard = true;
   response = {};
 
-  getVerifyBoard = async (params: BoardRequestDTO) => {
+  getVerifyBoard = async (params: IBoardConfigData) => {
     this.isBoardVerify = false;
     this.haveDoneCard = true;
     this.response = {};

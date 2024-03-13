@@ -1,20 +1,20 @@
-import { selectBoard, selectDateRange, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
+import { selectBoard, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
 import { BOARD_TYPES, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { findCaseInsensitiveType, getJiraBoardToken } from '@src/utils/util';
+import { IBoardConfigData } from '@src/containers/ConfigStep/Board/schema';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
 import { IHeartBeatException } from '@src/exceptions/ExceptionType';
-import { BoardRequestDTO } from '@src/clients/board/dto/request';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { isHeartBeatException } from '@src/exceptions';
 import { REGEX } from '@src/constants/regex';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
-import dayjs from 'dayjs';
 
 export interface Field {
   key: string;
+  name: 'boardId' | 'email' | 'site' | 'token' | 'type';
   value: string;
   validateRule?: (value: string) => boolean;
   validatedError: string;
@@ -23,11 +23,9 @@ export interface Field {
 }
 
 export interface useVerifyBoardStateInterface {
-  verifyJira: () => Promise<void>;
+  verifyJira: (data: IBoardConfigData) => Promise<void>;
   isLoading: boolean;
   fields: Field[];
-  updateField: (key: string, value: string) => void;
-  validateField: (key: string) => void;
   resetFields: () => void;
 }
 
@@ -62,12 +60,12 @@ const getValidatedError = (key: string, value: string, validateRule?: (value: st
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const boardFields = useAppSelector(selectBoard);
-  const dateRange = useAppSelector(selectDateRange);
   const dispatch = useAppDispatch();
   const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
   const [fields, setFields] = useState<Field[]>([
     {
       key: KEYS.BOARD,
+      name: 'type',
       value: type,
       validatedError: '',
       verifiedError: '',
@@ -75,6 +73,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     },
     {
       key: KEYS.BOARD_ID,
+      name: 'boardId',
       value: boardFields.boardId,
       validatedError: '',
       verifiedError: '',
@@ -82,6 +81,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     },
     {
       key: KEYS.EMAIL,
+      name: 'email',
       value: boardFields.email,
       validateRule: VALIDATOR.EMAIL,
       validatedError: boardFields.email ? getValidatedError(KEYS.EMAIL, boardFields.email, VALIDATOR.EMAIL) : '',
@@ -90,6 +90,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     },
     {
       key: KEYS.SITE,
+      name: 'site',
       value: boardFields.site,
       validatedError: '',
       verifiedError: '',
@@ -97,6 +98,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     },
     {
       key: KEYS.TOKEN,
+      name: 'token',
       value: boardFields.token,
       validateRule: VALIDATOR.TOKEN,
       validatedError: boardFields.token ? getValidatedError(KEYS.TOKEN, boardFields.token, VALIDATOR.TOKEN) : '',
@@ -130,39 +132,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     handleUpdate(newFields);
   };
 
-  const getFieldsWithNoVerifiedError = (fields: Field[]) =>
-    fields.map((field) => ({
-      ...field,
-      verifiedError: '',
-    }));
-
-  const updateField = (key: string, value: string) => {
-    const shouldClearVerifiedError = !!fields.find((field) => field.key === key)?.verifiedError;
-    const fieldsWithError = shouldClearVerifiedError ? getFieldsWithNoVerifiedError(fields) : fields;
-    const newFields = fieldsWithError.map((field) =>
-      field.key === key
-        ? {
-            ...field,
-            value: value.trim(),
-            validatedError: getValidatedError(field.key, value.trim(), field.validateRule),
-          }
-        : field,
-    );
-    handleUpdate(newFields);
-  };
-
-  const validateField = (key: string) => {
-    const newFields = fields.map((field) =>
-      field.key === key
-        ? {
-            ...field,
-            validatedError: getValidatedError(field.key, field.value, field.validateRule),
-          }
-        : field,
-    );
-    setFields(newFields);
-  };
-
   const setVerifiedError = (keys: string[], messages: string[]) => {
     setFields(
       fields.map((field) => {
@@ -177,20 +146,17 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     );
   };
 
-  const verifyJira = async () => {
+  const verifyJira = async (data: IBoardConfigData) => {
     setIsLoading(true);
     dispatch(updateTreatFlagCardAsBlock(true));
-    const boardInfo = getBoardInfo(fields) as BoardRequestDTO;
     try {
       const res: { response: Record<string, string> } = await boardClient.getVerifyBoard({
-        ...boardInfo,
-        startTime: dayjs(dateRange.startDate).valueOf(),
-        endTime: dayjs(dateRange.endDate).valueOf(),
-        token: getJiraBoardToken(boardInfo.token, boardInfo.email),
+        ...data,
+        token: getJiraBoardToken(data.token, data.email),
       });
       if (res?.response) {
         dispatch(updateBoardVerifyState(true));
-        dispatch(updateBoard({ ...boardInfo, projectKey: res.response.projectKey }));
+        dispatch(updateBoard({ ...data, projectKey: res.response.projectKey }));
       }
     } catch (e) {
       if (isHeartBeatException(e)) {
@@ -216,8 +182,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     verifyJira,
     isLoading,
     fields,
-    updateField,
-    validateField,
     resetFields,
   };
 };
