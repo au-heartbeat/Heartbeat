@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class ReworkTimesInfo {
 
 	private CardStepsEnum state;
