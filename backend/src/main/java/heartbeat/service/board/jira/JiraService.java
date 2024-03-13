@@ -591,6 +591,7 @@ public class JiraService {
 					.reworkTimesInfos(getReworkTimesInfo(cardHistoryResponseDTO, request.getReworkTimesSetting(),
 							request.isTreatFlagCardAsBlock(), boardColumns))
 					.build();
+				jiraCardDTO.calculateTotalReworkTimes();
 				realDoneCards.add(jiraCardDTO);
 			}
 		});
