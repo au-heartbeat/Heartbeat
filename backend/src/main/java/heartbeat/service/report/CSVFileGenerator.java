@@ -540,13 +540,13 @@ public class CSVFileGenerator {
 		List<String[]> rows = new ArrayList<>();
 		List<ChangeFailureRateOfPipeline> changeFailureRateOfPipelines = changeFailureRate
 			.getChangeFailureRateOfPipelines();
-		changeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Change failure rate",
-				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Failure rate",
+		changeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Dev change failure rate",
+				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev change failure rate",
 				DecimalUtil.formatDecimalTwo(pipeline.getFailureRate() * 100) }));
 
 		AvgChangeFailureRate avgChangeFailureRate = changeFailureRate.getAvgChangeFailureRate();
 		if (changeFailureRateOfPipelines.size() > 1)
-			rows.add(new String[] { "Change failure rate", avgChangeFailureRate.getName() + " / Failure rate",
+			rows.add(new String[] { "Dev change failure rate", avgChangeFailureRate.getName() + " / Dev change failure rate",
 					DecimalUtil.formatDecimalTwo(avgChangeFailureRate.getFailureRate() * 100) });
 
 		return rows;
@@ -556,15 +556,15 @@ public class CSVFileGenerator {
 		List<String[]> rows = new ArrayList<>();
 		List<MeanTimeToRecoveryOfPipeline> meanTimeRecoveryPipelines = meanTimeToRecovery
 			.getMeanTimeRecoveryPipelines();
-		meanTimeRecoveryPipelines.forEach(pipeline -> rows.add(new String[] { "Mean Time To Recovery",
-				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Mean Time To Recovery",
+		meanTimeRecoveryPipelines.forEach(pipeline -> rows.add(new String[] { "Dev mean Time To Recovery",
+				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev mean Time To Recovery",
 				DecimalUtil
 					.formatDecimalTwo(TimeUtils.millisToUnit(pipeline.getTimeToRecovery().doubleValue(), HOURS)) }));
 
 		AvgMeanTimeToRecovery avgMeanTimeToRecovery = meanTimeToRecovery.getAvgMeanTimeToRecovery();
 		if (meanTimeRecoveryPipelines.size() > 1)
-			rows.add(new String[] { "Mean Time To Recovery",
-					avgMeanTimeToRecovery.getName() + " / Mean Time To Recovery", DecimalUtil.formatDecimalTwo(
+			rows.add(new String[] { "Dev mean Time To Recovery",
+					avgMeanTimeToRecovery.getName() + " / Dev mean Time To Recovery", DecimalUtil.formatDecimalTwo(
 							TimeUtils.millisToUnit(avgMeanTimeToRecovery.getTimeToRecovery().doubleValue(), HOURS)) });
 
 		return rows;
