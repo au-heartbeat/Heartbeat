@@ -1,4 +1,4 @@
-import { BOARD_TYPES, HEARTBEAT_EXCEPTION_CODE, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
+import { BOARD_TYPES, AXIOS_REQUEST_ERROR_CODE, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { selectBoard, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { findCaseInsensitiveType, getJiraBoardToken } from '@src/utils/util';
@@ -207,7 +207,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
           setVerifiedError([KEYS.SITE], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setVerifiedError([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
-        } else if (code === HEARTBEAT_EXCEPTION_CODE.TIMEOUT) {
+        } else if (code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
           setIsVerifyTimeOut(true);
           setIsShowAlert(true);
         } else {

@@ -5,7 +5,7 @@ import {
 } from '../fixtures';
 import { useVerifyPipelineToolEffect } from '@src/hooks/useVerifyPipelineToolEffect';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
-import { HEARTBEAT_EXCEPTION_CODE } from '@src/constants/resources';
+import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { HttpStatusCode } from 'axios';
 
@@ -68,7 +68,7 @@ describe('use verify pipelineTool state', () => {
   });
 
   it('should set timeout is true when verify api is timeout', async () => {
-    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: HEARTBEAT_EXCEPTION_CODE.TIMEOUT });
+    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT });
 
     const { result } = renderHook(() => useVerifyPipelineToolEffect());
     await act(() => {

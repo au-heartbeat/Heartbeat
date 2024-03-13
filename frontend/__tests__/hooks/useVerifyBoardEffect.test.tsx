@@ -7,7 +7,7 @@ import { InternalServerException } from '@src/exceptions/InternalServerException
 import { UnauthorizedException } from '@src/exceptions/UnauthorizedException';
 import { NotFoundException } from '@src/exceptions/NotFoundException';
 import { TimeoutException } from '@src/exceptions/TimeoutException';
-import { HEARTBEAT_EXCEPTION_CODE } from '@src/constants/resources';
+import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { BOARD_TYPES } from '@test/fixtures';
 
@@ -145,7 +145,7 @@ describe('use verify board state', () => {
   });
 
   it('should set timeout is true given getVerifyBoard api is timeout', async () => {
-    const mockedError = new TimeoutException('', HEARTBEAT_EXCEPTION_CODE.TIMEOUT);
+    const mockedError = new TimeoutException('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     const { result } = renderHook(() => useVerifyBoardEffect());

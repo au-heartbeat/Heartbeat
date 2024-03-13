@@ -2,7 +2,7 @@ import { MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT, MOCK_SOURCE_CONTROL_VERIFY_
 import { useVerifySourceControlTokenEffect } from '@src/hooks/useVerifySourceControlTokenEffect';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { ContextProvider } from '@src/hooks/useMetricsStepValidationCheckContext';
-import { HEARTBEAT_EXCEPTION_CODE } from '@src/constants/resources';
+import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { setupStore } from '../utils/setupStoreUtil';
 import { Provider } from 'react-redux';
@@ -80,7 +80,7 @@ describe('use verify sourceControl token', () => {
 
   it('should isVerifyTimeOut and isShowAlert is true  when api timeout', async () => {
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: HEARTBEAT_EXCEPTION_CODE.TIMEOUT,
+      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
     });
     const { result } = setup();
 
