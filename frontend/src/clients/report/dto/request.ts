@@ -44,6 +44,10 @@ export interface ReportRequestDTO {
     assigneeFilter: string;
     targetFields: { key: string; name: string; flag: boolean }[];
     overrideFields: { key: string; name: string; flag: boolean }[];
+    reworkTimesSetting: {
+      reworkState?: string | null;
+      excludedStates?: string[];
+    };
     doneColumn: string[];
   };
   csvTimeStamp?: number;
