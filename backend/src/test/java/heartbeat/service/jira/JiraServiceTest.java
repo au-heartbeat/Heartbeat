@@ -1568,10 +1568,9 @@ class JiraServiceTest {
 		String assigneeFilter = "lastAssignee";
 
 		// request param
-		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD()
-			.treatFlagCardAsBlock(false)
-			.build();
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 		StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
+			.treatFlagCardAsBlock(false)
 			.reworkTimesSetting(ReworkTimesSetting.builder()
 				.reworkState(CardStepsEnum.DEVELOPMENT)
 				.excludeStates(List.of())
@@ -1616,10 +1615,9 @@ class JiraServiceTest {
 		String assigneeFilter = "lastAssignee";
 
 		// request param
-		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD()
-			.treatFlagCardAsBlock(true)
-			.build();
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 		StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
+			.treatFlagCardAsBlock(true)
 			.reworkTimesSetting(ReworkTimesSetting.builder()
 				.reworkState(CardStepsEnum.DEVELOPMENT)
 				.excludeStates(List.of())
