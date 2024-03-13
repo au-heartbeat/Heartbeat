@@ -84,6 +84,9 @@ public class JiraBoardConfigDTOFixture {
 	public static final long TIMESTAMP_6 = 1676856350001L;
 
 	public static final String JIRA_CARD_WITH_TWO_SPRINT = "{\"startAt\":0,\"total\":5,\"issues\":[{\"key\":\"TS-1\",\"fields\":{\"assignee\":{\"displayName\":\"Zhang San\"},\"customfield_10020\":[{\"name\":\"TS Sprint 1\",\"completeDate\":\"2024-02-08T03:52:22.395Z\"},{\"name\":\"TS Sprint 2\",\"completeDate\":\"2024-02-07T04:21:14.512Z\"}]}}]}";
+	public static final long TIMESTAMP_7 = 1676656350001L;
+	public static final long TIMESTAMP_8 = 1676708799000L;
+	public static final long TIMESTAMP_9 = 1676808799000L;
 
 	public static JiraBoardConfigDTO.JiraBoardConfigDTOBuilder JIRA_BOARD_CONFIG_RESPONSE_BUILDER() {
 
@@ -747,6 +750,26 @@ public class JiraBoardConfigDTOFixture {
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
 					new HistoryDetail(TIMESTAMP_6, "status", new Status(IN_DEV), new Status(REVIEW),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null)));
+	}
+
+	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD1_HISTORY_FOR_MULTIPLE_STATUSES_WITH_FLAG() {
+		return CardHistoryResponseDTO.builder()
+			.isLast(true)
+			.items(List.of(
+					new HistoryDetail(TIMESTAMP_1, "status", new Status(IN_DEV), new Status(ANALYSE),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_2, "status", new Status(TESTING), new Status(IN_DEV),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_4, "status", new Status(IN_DEV), new Status(TESTING),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_5, "customfield_10021", new Status("Impediment"), new Status(null),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged"),
+					new HistoryDetail(TIMESTAMP_7, "customfield_10021", new Status(null), new Status("Impediment"),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged"),
+					new HistoryDetail(TIMESTAMP_8, "customfield_10021", new Status("Impediment"), new Status(null),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged"),
+					new HistoryDetail(TIMESTAMP_9, "customfield_10021", new Status(null), new Status("Impediment"),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged")));
 	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD2_HISTORY_FOR_MULTIPLE_STATUSES() {
