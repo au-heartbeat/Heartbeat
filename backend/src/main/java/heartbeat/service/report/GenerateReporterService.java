@@ -21,6 +21,7 @@ import heartbeat.service.report.calculator.CycleTimeCalculator;
 import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
 import heartbeat.service.report.calculator.LeadTimeForChangesCalculator;
 import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
+import heartbeat.service.report.calculator.ReworkCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.report.calculator.model.FetchedData.BuildKiteData;
@@ -67,6 +68,8 @@ public class GenerateReporterService {
 	private final CSVFileGenerator csvFileGenerator;
 
 	private final LeadTimeForChangesCalculator leadTimeForChangesCalculator;
+
+	private final ReworkCalculator reworkCalculator;
 
 	private final AsyncReportRequestHandler asyncReportRequestHandler;
 
@@ -205,6 +208,9 @@ public class GenerateReporterService {
 				case "classification" -> reportResponse
 					.setClassificationList(classificationCalculator.calculate(jiraBoardSetting.getTargetFields(),
 							fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
+				case "rework" -> reportResponse.setRework(reworkCalculator.calculateRework(
+						fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
+						request.getJiraBoardSetting().getReworkTimesSetting().getReworkState()));
 				default -> {
 					// TODO
 				}
