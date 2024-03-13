@@ -34,7 +34,7 @@ public class KanbanService {
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = buildStoryPointsAndCycleTimeRequest(
 				jiraBoardSetting, request.getStartTime(), request.getEndTime());
-		return jiraService.getStoryPointsAndCycleTimeForDoneCards(storyPointsAndCycleTimeRequest,
+		return jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
 				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers(), jiraBoardSetting.getAssigneeFilter());
 	}
 

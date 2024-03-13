@@ -11,8 +11,16 @@ import java.util.List;
 @Builder
 public class ReworkTimesSetting {
 
-	private CardStepsEnum reworkState;
+	private String reworkState;
 
-	private List<CardStepsEnum> excludeStates;
+	private List<String> excludeStates;
+
+	public CardStepsEnum getEnumReworkState() {
+		return CardStepsEnum.fromValue(reworkState);
+	}
+
+	public List<CardStepsEnum> getEnumExcludeStates() {
+		return excludeStates.stream().map(CardStepsEnum::fromValue).toList();
+	}
 
 }
