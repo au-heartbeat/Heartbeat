@@ -1,6 +1,6 @@
-import { useVerifyBoardEffect, useVerifyBoardStateInterface } from '@src/hooks/useVerifyBoardEffect';
-import { MOCK_BOARD_URL_FOR_JIRA, FAKE_TOKEN } from '@test/fixtures';
+import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { MOCK_BOARD_URL_FOR_JIRA } from '@test/fixtures';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 
@@ -20,11 +20,12 @@ jest.mock('@src/hooks/useAppDispatch', () => ({
 
 const server = setupServer();
 
-const updateFields = (result: { current: useVerifyBoardStateInterface }) => {
-  result.current.updateField('Board Id', '1');
-  result.current.updateField('Email', 'fake@qq.com');
-  result.current.updateField('Site', 'fake');
-  result.current.updateField('Token', FAKE_TOKEN);
+const mockData = {
+  type: 'Jira',
+  boardId: '',
+  site: '',
+  email: '',
+  token: '',
 };
 
 describe('use verify board state', () => {
@@ -49,8 +50,7 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      updateFields(result);
-      result.current.verifyJira();
+      result.current.verifyJira(mockData);
     });
 
     const emailFiled = result.current.fields.find((field) => field.key === 'Email');
@@ -75,8 +75,7 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      updateFields(result);
-      result.current.verifyJira();
+      result.current.verifyJira(mockData);
     });
 
     await waitFor(() => {
@@ -100,8 +99,7 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      updateFields(result);
-      result.current.verifyJira();
+      result.current.verifyJira(mockData);
     });
 
     await waitFor(() => {
@@ -119,8 +117,7 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      updateFields(result);
-      result.current.verifyJira();
+      result.current.verifyJira(mockData);
     });
 
     const tokenField = result.current.fields.find((field) => field.key === 'Token');
@@ -136,11 +133,7 @@ describe('use verify board state', () => {
 
     const { result } = renderHook(() => useVerifyBoardEffect());
     await act(() => {
-      updateFields(result);
-      result.current.verifyJira();
-    });
-    await waitFor(() => {
-      result.current.updateField('Token', 'fake-token-new');
+      result.current.verifyJira(mockData);
     });
 
     const emailFiled = result.current.fields.find((field) => field.key === 'Email');

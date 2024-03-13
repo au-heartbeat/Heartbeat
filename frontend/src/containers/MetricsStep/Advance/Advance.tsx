@@ -4,10 +4,18 @@ import { AdvancedContainer, AdvancedForm, AdvancedTitleContainer } from './style
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { IconButton, Link, TextField } from '@mui/material';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { Field } from '@src/hooks/useVerifyBoardEffect';
 import { TIPS } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks';
 import { useState } from 'react';
+
+type Field = {
+  key: string;
+  value: string;
+  validateRule?: (value: string) => boolean;
+  validatedError: string;
+  verifiedError: string;
+  col: number;
+};
 
 export const Advance = () => {
   const url = 'https://github.com/au-heartbeat/Heartbeat/blob/main/README.md#323-setting-advanced-setting';
