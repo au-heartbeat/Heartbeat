@@ -44,13 +44,15 @@ export interface ReportRequestDTO {
     assigneeFilter: string;
     targetFields: { key: string; name: string; flag: boolean }[];
     overrideFields: { key: string; name: string; flag: boolean }[];
-    reworkTimesSetting: {
-      reworkState?: string | null;
-      excludedStates?: string[];
-    };
+    reworkTimesSetting: ReworkSettingsRequest;
     doneColumn: string[];
   };
   csvTimeStamp?: number;
+}
+
+interface ReworkSettingsRequest {
+  reworkState?: string | null;
+  excludedStates?: string[];
 }
 
 export interface BoardReportRequestDTO {
@@ -70,10 +72,7 @@ export interface BoardReportRequestDTO {
     assigneeFilter: string;
     targetFields: { key: string; name: string; flag: boolean }[];
     overrideFields: { key: string; name: string; flag: boolean }[];
-    reworkTimesSetting: {
-      reworkState?: string | null;
-      excludedStates?: string[];
-    };
+    reworkTimesSetting: ReworkSettingsRequest;
     doneColumn: string[];
   };
   csvTimeStamp?: number;
