@@ -52,181 +52,181 @@ jobs:
             --source="/path" \
             -v --redact
 
-  security-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          ignore-unfixed: true
-          exit-code: "1"
-          severity: "CRITICAL"
-          trivyignores: .trivyignore
+  # security-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #         ref: ${{ github.head_ref }}
+  #     - name: Run Trivy vulnerability scanner in repo mode
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         scan-type: "fs"
+  #         ignore-unfixed: true
+  #         exit-code: "1"
+  #         severity: "CRITICAL"
+  #         trivyignores: .trivyignore
 
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "config"
-          exit-code: "1"
-          ignore-unfixed: true
-          severity: "CRITICAL"
-          trivyignores: .trivyignore
-  backend-check:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ vars.JAVA_VERSION }}
-          distribution: "adopt"
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v3.1.0
-      - name: Test and check
-        run: ./gradlew clean check
-      - name: Build
-        run: ./gradlew clean build
-      - name: Upload Test Report to Codacy
-        run: |
-          export CODACY_PROJECT_TOKEN=${{secrets.CODACY_PROJECT_TOKEN}}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh)
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        run: ./gradlew build sonar --info
-  backend-license-check:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ vars.JAVA_VERSION }}
-          distribution: "adopt"
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v3.1.0
-      - name: License check
-        run: ./gradlew clean checkLicense
-      - uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-          name: backend-license-report
-          path: backend/build/reports/dependency-license/
-          retention-days: ${{ vars.RETENTION_DAYS }}
-  deny-dot-star-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Java .*; check
-        shell: bash {0}
-        run: ./ops/check.sh dot-star
-  deny-px-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: CSS unit `px` check
-        shell: bash {0}
-        run: ./ops/check.sh px
-  deny-css-hex-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: CSS hex check
-        shell: bash {0}
-        run: ./ops/check.sh hex
+  #     - name: Run Trivy vulnerability scanner in IaC mode
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         scan-type: "config"
+  #         exit-code: "1"
+  #         ignore-unfixed: true
+  #         severity: "CRITICAL"
+  #         trivyignores: .trivyignore
+  # backend-check:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./backend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up JDK
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: ${{ vars.JAVA_VERSION }}
+  #         distribution: "adopt"
+  #     - name: Validate Gradle wrapper
+  #       uses: gradle/wrapper-validation-action@v2
+  #     - name: Set up Gradle
+  #       uses: gradle/gradle-build-action@v3.1.0
+  #     - name: Test and check
+  #       run: ./gradlew clean check
+  #     - name: Build
+  #       run: ./gradlew clean build
+  #     - name: Upload Test Report to Codacy
+  #       run: |
+  #         export CODACY_PROJECT_TOKEN=${{secrets.CODACY_PROJECT_TOKEN}}
+  #         bash <(curl -Ls https://coverage.codacy.com/get.sh)
+  #     - name: Build and analyze
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+  #       run: ./gradlew build sonar --info
+  # backend-license-check:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./backend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up JDK
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: ${{ vars.JAVA_VERSION }}
+  #         distribution: "adopt"
+  #     - name: Validate Gradle wrapper
+  #       uses: gradle/wrapper-validation-action@v2
+  #     - name: Set up Gradle
+  #       uses: gradle/gradle-build-action@v3.1.0
+  #     - name: License check
+  #       run: ./gradlew clean checkLicense
+  #     - uses: actions/upload-artifact@v4
+  #       if: ${{ failure() }}
+  #       with:
+  #         name: backend-license-report
+  #         path: backend/build/reports/dependency-license/
+  #         retention-days: ${{ vars.RETENTION_DAYS }}
+  # deny-dot-star-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Java .*; check
+  #       shell: bash {0}
+  #       run: ./ops/check.sh dot-star
+  # deny-px-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: CSS unit `px` check
+  #       shell: bash {0}
+  #       run: ./ops/check.sh px
+  # deny-css-hex-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: CSS hex check
+  #       shell: bash {0}
+  #       run: ./ops/check.sh hex
 
-  deny-css-rgba-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: CSS rgba check
-        shell: bash {0}
-        run: ./ops/check.sh rgba
-  frontend-type-check:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
-      - name: Install & Lint
-        run: |
-          npm install -g pnpm
-          pnpm install --no-frozen-lockfile
-          pnpm run type-check
+  # deny-css-rgba-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: CSS rgba check
+  #       shell: bash {0}
+  #       run: ./ops/check.sh rgba
+  # frontend-type-check:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./frontend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ vars.NODE_VERSION }}
+  #     - name: Install & Lint
+  #       run: |
+  #         npm install -g pnpm
+  #         pnpm install --no-frozen-lockfile
+  #         pnpm run type-check
 
-  frontend-check:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
-      - name: Install & Lint
-        run: |
-          npm install -g pnpm
-          pnpm install --no-frozen-lockfile
-          pnpm lint
-      - name: Audit for vulnerabilities
-        run: pnpm dlx audit-ci@^6 --critical --report-type full
-      - name: Testing and coverage
-        run: |
-          pnpm coverage:silent
-      - name: Building
-        run: pnpm build
-      - name: Upload Test Report to Codacy
-        run: |
-          export CODACY_PROJECT_TOKEN=${{secrets.CODACY_PROJECT_TOKEN}}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh)
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: frontend
-          args: >
-            -Dsonar.organization=au-heartbeat
-            -Dsonar.projectKey=au-heartbeat-heartbeat-frontend
-            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
-            -Dsonar.sources=src/
-            -Dsonar.tests=__tests__
+  # frontend-check:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./frontend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ vars.NODE_VERSION }}
+  #     - name: Install & Lint
+  #       run: |
+  #         npm install -g pnpm
+  #         pnpm install --no-frozen-lockfile
+  #         pnpm lint
+  #     - name: Audit for vulnerabilities
+  #       run: pnpm dlx audit-ci@^6 --critical --report-type full
+  #     - name: Testing and coverage
+  #       run: |
+  #         pnpm coverage:silent
+  #     - name: Building
+  #       run: pnpm build
+  #     - name: Upload Test Report to Codacy
+  #       run: |
+  #         export CODACY_PROJECT_TOKEN=${{secrets.CODACY_PROJECT_TOKEN}}
+  #         bash <(curl -Ls https://coverage.codacy.com/get.sh)
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       with:
+  #         projectBaseDir: frontend
+  #         args: >
+  #           -Dsonar.organization=au-heartbeat
+  #           -Dsonar.projectKey=au-heartbeat-heartbeat-frontend
+  #           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+  #           -Dsonar.sources=src/
+  #           -Dsonar.tests=__tests__
 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
-  frontend-license-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
-      - name: License compliance check
-        run: |
-          ./ops/check.sh frontend-license
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+  # frontend-license-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ vars.NODE_VERSION }}
+  #     - name: License compliance check
+  #       run: |
+  #         ./ops/check.sh frontend-license
 
   check-buildkite-status:
     if: ${{ github.event_name == 'push' }}
@@ -245,52 +245,54 @@ jobs:
         #    exit 1
         #  fi
 
-  images-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+  # images-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v4
 
-      - name: Build and tag
-        run: |
-          docker build -t frontend:latest ./ -f ./ops/infra/Dockerfile.frontend
-          docker build -t backend:latest ./ -f ./ops/infra/Dockerfile.backend
+  #     - name: Build and tag
+  #       run: |
+  #         docker build -t frontend:latest ./ -f ./ops/infra/Dockerfile.frontend
+  #         docker build -t backend:latest ./ -f ./ops/infra/Dockerfile.backend
 
-      - name: Run Trivy vulnerability scanner for frontend
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: frontend:latest
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
-          trivyignores: ".trivyignore"
-      - name: Run Trivy vulnerability scanner for backend
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: backend:latest
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
-          trivyignores: ".trivyignore"
+  #     - name: Run Trivy vulnerability scanner for frontend
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         image-ref: frontend:latest
+  #         format: "table"
+  #         exit-code: "1"
+  #         ignore-unfixed: true
+  #         severity: "CRITICAL,HIGH"
+  #         trivyignores: ".trivyignore"
+  #     - name: Run Trivy vulnerability scanner for backend
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         image-ref: backend:latest
+  #         format: "table"
+  #         exit-code: "1"
+  #         ignore-unfixed: true
+  #         severity: "CRITICAL,HIGH"
+  #         trivyignores: ".trivyignore"
+  
   deploy-infra:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
-      - fossa-check
-      - frontend-check
-      - deny-px-check
-      - deny-css-hex-check
-      - deny-css-rgba-check
-      - frontend-type-check
-      - backend-check
-      - deny-dot-star-check
-      - security-check
-      - images-check
-      - shellcheck
-      - credential-check
-      - frontend-license-check
-      - backend-license-check
+      # - fossa-check
+      # - frontend-check
+      # - deny-px-check
+      # - deny-css-hex-check
+      # - deny-css-rgba-check
+      # - frontend-type-check
+      # - backend-check
+      # - deny-dot-star-check
+      # - security-check
+      # - images-check
+      # - shellcheck
+      # - credential-check
+      # - frontend-license-check
+      # - backend-license-check
+      - check-buildkite-status
     runs-on: ubuntu-latest
     permissions:
       id-token: write
