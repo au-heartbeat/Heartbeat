@@ -76,8 +76,8 @@ describe('use verify pipelineTool state', () => {
     });
 
     await waitFor(() => {
-      const isHBTimeOut = result.current.isHBTimeOut;
-      expect(isHBTimeOut).toBe(true);
+      const isVerifyTimeOut = result.current.isVerifyTimeOut;
+      expect(isVerifyTimeOut).toBe(true);
     });
   });
 });

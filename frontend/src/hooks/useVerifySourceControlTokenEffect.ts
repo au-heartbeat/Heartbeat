@@ -10,15 +10,15 @@ export const useVerifySourceControlTokenEffect = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [verifiedError, setVerifiedError] = useState<string>();
-  const [isHBTimeOut, setIsHBTimeOut] = useState(false);
+  const [isVerifyTimeOut, setIsVerifyTimeOut] = useState(false);
   const [isShowAlert, setIsShowAlert] = useState(false);
   const verifyToken = async (params: SourceControlVerifyRequestDTO) => {
     setIsLoading(true);
-    const response = await sourceControlClient.verifyToken(params, setIsHBTimeOut, setIsShowAlert);
+    const response = await sourceControlClient.verifyToken(params, setIsVerifyTimeOut, setIsShowAlert);
     if (response.code === HttpStatusCode.NoContent) {
       dispatch(updateSourceControlVerifyState(true));
     } else if (response.code === HEARTBEAT_EXCEPTION_CODE.TIMEOUT) {
-      setIsHBTimeOut(true);
+      setIsVerifyTimeOut(true);
       setIsShowAlert(true);
     } else {
       dispatch(updateSourceControlVerifyState(false));
@@ -37,7 +37,7 @@ export const useVerifySourceControlTokenEffect = () => {
     isLoading,
     verifiedError,
     clearVerifiedError,
-    isHBTimeOut,
+    isVerifyTimeOut,
     isShowAlert,
     setIsShowAlert,
   };

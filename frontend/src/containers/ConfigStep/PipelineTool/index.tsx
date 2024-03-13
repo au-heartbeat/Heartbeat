@@ -43,8 +43,15 @@ export const PipelineTool = () => {
   const dispatch = useAppDispatch();
   const pipelineToolFields = useAppSelector(selectPipelineTool);
   const isVerified = useAppSelector(isPipelineToolVerified);
-  const { verifyPipelineTool, isLoading, verifiedError, clearVerifiedError, isHBTimeOut, isShowAlert, setIsShowAlert } =
-    useVerifyPipelineToolEffect();
+  const {
+    verifyPipelineTool,
+    isLoading,
+    verifiedError,
+    clearVerifiedError,
+    isVerifyTimeOut,
+    isShowAlert,
+    setIsShowAlert,
+  } = useVerifyPipelineToolEffect();
   const type = findCaseInsensitiveType(Object.values(PIPELINE_TOOL_TYPES), pipelineToolFields.type);
   const [fields, setFields] = useState([
     {
@@ -122,7 +129,7 @@ export const PipelineTool = () => {
     <>
       <TimeoutAlert
         isShowAlert={isShowAlert}
-        isHBTimeOut={isHBTimeOut}
+        isVerifyTimeOut={isVerifyTimeOut}
         setIsShowAlert={setIsShowAlert}
         moduleType={'PipelineTool'}
       />
@@ -160,7 +167,7 @@ export const PipelineTool = () => {
             helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
           />
           <ConfigButtonGrop
-            isHBTimeOut={isHBTimeOut}
+            isVerifyTimeOut={isVerifyTimeOut}
             isVerified={isVerified}
             isDisableVerifyButton={isDisableVerifyButton}
             isLoading={isLoading}

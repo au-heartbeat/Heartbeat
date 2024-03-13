@@ -22,7 +22,7 @@ export interface Field {
 }
 
 export interface useVerifyBoardStateInterface {
-  isHBTimeOut: boolean;
+  isVerifyTimeOut: boolean;
   verifyJira: () => Promise<void>;
   isLoading: boolean;
   fields: Field[];
@@ -63,7 +63,7 @@ const getValidatedError = (key: string, value: string, validateRule?: (value: st
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isHBTimeOut, setIsHBTimeOut] = useState(false);
+  const [isVerifyTimeOut, setIsVerifyTimeOut] = useState(false);
   const [isShowAlert, setIsShowAlert] = useState(false);
   const boardFields = useAppSelector(selectBoard);
   const dispatch = useAppDispatch();
@@ -191,7 +191,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       });
       if (res?.response) {
         setIsShowAlert(false);
-        setIsHBTimeOut(false);
+        setIsVerifyTimeOut(false);
         dispatch(updateBoardVerifyState(true));
         dispatch(updateBoard({ ...boardInfo, projectKey: res.response.projectKey }));
       }
@@ -208,7 +208,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setVerifiedError([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
         } else if (code === HEARTBEAT_EXCEPTION_CODE.TIMEOUT) {
-          setIsHBTimeOut(true);
+          setIsVerifyTimeOut(true);
           setIsShowAlert(true);
         } else {
           setVerifiedError([KEYS.TOKEN], [UNKNOWN_ERROR_TITLE]);
@@ -225,7 +225,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     updateField,
     validateField,
     resetFields,
-    isHBTimeOut,
+    isVerifyTimeOut,
     isShowAlert,
     setIsShowAlert,
   };

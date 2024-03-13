@@ -43,7 +43,7 @@ export const SourceControl = () => {
   const dispatch = useAppDispatch();
   const sourceControlFields = useAppSelector(selectSourceControl);
   const isVerified = useAppSelector(isSourceControlVerified);
-  const { verifyToken, isLoading, verifiedError, clearVerifiedError, isHBTimeOut, isShowAlert, setIsShowAlert } =
+  const { verifyToken, isLoading, verifiedError, clearVerifiedError, isVerifyTimeOut, isShowAlert, setIsShowAlert } =
     useVerifySourceControlTokenEffect();
   const type = findCaseInsensitiveType(Object.values(SOURCE_CONTROL_TYPES), sourceControlFields.type);
   const [fields, setFields] = useState([
@@ -114,7 +114,7 @@ export const SourceControl = () => {
     <>
       <TimeoutAlert
         isShowAlert={isShowAlert}
-        isHBTimeOut={isHBTimeOut}
+        isVerifyTimeOut={isVerifyTimeOut}
         setIsShowAlert={setIsShowAlert}
         moduleType={'Source Control'}
       />
@@ -147,7 +147,7 @@ export const SourceControl = () => {
             helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
           />
           <ConfigButtonGrop
-            isHBTimeOut={isHBTimeOut}
+            isVerifyTimeOut={isVerifyTimeOut}
             isVerified={isVerified}
             isDisableVerifyButton={isDisableVerifyButton}
             isLoading={isLoading}

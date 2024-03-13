@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 describe('ConfigButtonGroup', () => {
-  const setup = (isVerified: boolean, isLoading: boolean, isHBTimeOut: boolean, isDisableVerifyButton: boolean) => {
+  const setup = (isVerified: boolean, isLoading: boolean, isVerifyTimeOut: boolean, isDisableVerifyButton: boolean) => {
     return render(
       <ConfigButtonGrop
-        isHBTimeOut={isHBTimeOut}
+        isVerifyTimeOut={isVerifyTimeOut}
         isVerified={isVerified}
         isLoading={isLoading}
         isDisableVerifyButton={isDisableVerifyButton}
@@ -14,14 +14,14 @@ describe('ConfigButtonGroup', () => {
     );
   };
 
-  it('should render a disabled VerifyButton with "Verified" text when isVerified is true and isLoading is false', () => {
+  it('should render a verified and rest button  when isVerified is true and isLoading is false', () => {
     setup(true, false, false, false);
 
     expect(screen.getByText('Verified')).toBeInTheDocument();
     expect(screen.getByText('Reset')).toBeInTheDocument();
     expect(screen.getByText('Verified')).toBeDisabled();
   });
-  it('should render a VerifyButton with "Reverify" text when isHBTimeOut is true', () => {
+  it('should render a Reverify button when isVerifyTimeOut is true', () => {
     setup(false, false, true, false);
 
     expect(screen.getByText('Reverify')).toBeInTheDocument();

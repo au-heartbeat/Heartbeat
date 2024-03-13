@@ -11,16 +11,16 @@ export const useVerifyPipelineToolEffect = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [verifiedError, setVerifiedError] = useState('');
   const dispatch = useAppDispatch();
-  const [isHBTimeOut, setIsHBTimeOut] = useState(false);
+  const [isVerifyTimeOut, setIsVerifyTimeOut] = useState(false);
   const [isShowAlert, setIsShowAlert] = useState(false);
   const verifyPipelineTool = async (params: IPipelineVerifyRequestDTO): Promise<void> => {
     setIsLoading(true);
-    const response = await pipelineToolClient.verify(params, setIsHBTimeOut, setIsShowAlert);
+    const response = await pipelineToolClient.verify(params, setIsVerifyTimeOut, setIsShowAlert);
     if (response.code === HttpStatusCode.NoContent) {
       dispatch(updatePipelineToolVerifyState(true));
       dispatch(initDeploymentFrequencySettings());
     } else if (response.code === HEARTBEAT_EXCEPTION_CODE.TIMEOUT) {
-      setIsHBTimeOut(true);
+      setIsVerifyTimeOut(true);
       setIsShowAlert(true);
     } else {
       setVerifiedError(response.errorTitle);
@@ -37,7 +37,7 @@ export const useVerifyPipelineToolEffect = () => {
     isLoading,
     verifiedError,
     clearVerifiedError,
-    isHBTimeOut,
+    isVerifyTimeOut,
     isShowAlert,
     setIsShowAlert,
   };

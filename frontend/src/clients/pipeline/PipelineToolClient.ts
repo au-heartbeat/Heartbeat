@@ -27,7 +27,7 @@ export class PipelineToolClient extends HttpClient {
   verify = async (
     params: IPipelineVerifyRequestDTO,
     setIsShowAlert: (value: boolean) => void,
-    setIsHBTimeOut: (value: boolean) => void,
+    setIsVerifyTimeOut: (value: boolean) => void,
   ): Promise<IVerifyPipelineToolResult> => {
     const result: IVerifyPipelineToolResult = {
       code: null,
@@ -37,7 +37,7 @@ export class PipelineToolClient extends HttpClient {
       const response = await this.axiosInstance.post(`/pipelines/${params.type.toLowerCase()}/verify`, params);
       result.code = response.status;
       setIsShowAlert(false);
-      setIsHBTimeOut(false);
+      setIsVerifyTimeOut(false);
     } catch (e) {
       if (isHeartBeatException(e)) {
         const exception = e as IHeartBeatException;

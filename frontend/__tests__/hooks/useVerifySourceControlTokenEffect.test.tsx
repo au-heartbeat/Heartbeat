@@ -78,7 +78,7 @@ describe('use verify sourceControl token', () => {
     });
   });
 
-  it('should isHBTimeOut and isShowAlert is true  when api timeout', async () => {
+  it('should isVerifyTimeOut and isShowAlert is true  when api timeout', async () => {
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
       code: HEARTBEAT_EXCEPTION_CODE.TIMEOUT,
     });
@@ -87,7 +87,7 @@ describe('use verify sourceControl token', () => {
     await act(() => result.current.verifyToken(MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS));
 
     await waitFor(() => {
-      expect(result.current.isHBTimeOut).toEqual(true);
+      expect(result.current.isVerifyTimeOut).toEqual(true);
       expect(result.current.isShowAlert).toEqual(true);
     });
   });

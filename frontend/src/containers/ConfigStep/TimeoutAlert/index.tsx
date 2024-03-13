@@ -1,15 +1,15 @@
 import { StyledAlert, StyledTypography } from '@src/containers/ConfigStep/TimeoutAlert/style';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 interface PropsInterface {
-  isHBTimeOut: boolean;
+  isVerifyTimeOut: boolean;
   isShowAlert: boolean;
   setIsShowAlert: (value: boolean) => void;
   moduleType: string;
 }
-export const TimeoutAlert = ({ isHBTimeOut, isShowAlert, setIsShowAlert, moduleType }: PropsInterface) => {
+export const TimeoutAlert = ({ isVerifyTimeOut, isShowAlert, setIsShowAlert, moduleType }: PropsInterface) => {
   return (
     <>
-      {isHBTimeOut && isShowAlert && (
+      {isVerifyTimeOut && isShowAlert && (
         <StyledAlert
           icon={<HighlightOffIcon fontSize='inherit' />}
           severity='error'

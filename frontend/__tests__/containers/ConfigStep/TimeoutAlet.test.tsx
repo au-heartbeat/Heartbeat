@@ -8,26 +8,26 @@ describe('TimeoutAlert', () => {
   const setup = (
     setIsShowAlert: (value: boolean) => void,
     isShowAlert: boolean,
-    isHBTimeOut: boolean,
+    isVerifyTimeOut: boolean,
     moduleType: string,
   ) => {
     return render(
       <TimeoutAlert
         setIsShowAlert={setIsShowAlert}
         isShowAlert={isShowAlert}
-        isHBTimeOut={isHBTimeOut}
+        isVerifyTimeOut={isVerifyTimeOut}
         moduleType={moduleType}
       />,
     );
   };
 
-  it('should render the correct message when given the moduleType', () => {
+  it('should render board message when moduleType is board', () => {
     setup(setIsShowAlert, true, true, 'Board');
     const message = screen.getByText('Board');
 
     expect(message).toBeInTheDocument();
   });
-  it('should not render the alert when isHBTimeOut or isShowAlert is false', () => {
+  it('should not render the alert when isVerifyTimeOut or isShowAlert is false', () => {
     setup(setIsShowAlert, false, true, 'Board');
 
     expect(screen.queryByText('Board')).not.toBeInTheDocument();

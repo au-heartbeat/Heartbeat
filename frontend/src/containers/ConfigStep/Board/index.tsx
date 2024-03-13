@@ -27,7 +27,7 @@ export const Board = () => {
     setIsShowAlert,
     validateField,
     resetFields,
-    isHBTimeOut,
+    isVerifyTimeOut,
   } = useVerifyBoardEffect();
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -45,7 +45,7 @@ export const Board = () => {
     <>
       <TimeoutAlert
         isShowAlert={isShowAlert}
-        isHBTimeOut={isHBTimeOut}
+        isVerifyTimeOut={isVerifyTimeOut}
         setIsShowAlert={setIsShowAlert}
         moduleType={'Board'}
       />
@@ -83,7 +83,7 @@ export const Board = () => {
             ),
           )}
           <ConfigButtonGrop
-            isHBTimeOut={isHBTimeOut}
+            isVerifyTimeOut={isVerifyTimeOut}
             isVerified={isVerified}
             isDisableVerifyButton={isDisableVerifyButton}
             isLoading={isLoading}
