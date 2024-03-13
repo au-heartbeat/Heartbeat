@@ -14,14 +14,14 @@ describe('ConfigButtonGroup', () => {
     );
   };
 
-  it('should render a verified and rest button  when isVerified is true and isLoading is false', () => {
+  it('should render a verified and rest button  given isVerified is true and isLoading is false', () => {
     setup(true, false, false, false);
 
     expect(screen.getByText('Verified')).toBeInTheDocument();
     expect(screen.getByText('Reset')).toBeInTheDocument();
     expect(screen.getByText('Verified')).toBeDisabled();
   });
-  it('should render a Reverify button when isVerifyTimeOut is true', () => {
+  it('should render a Reverify button given isVerifyTimeOut is true', () => {
     setup(false, false, true, false);
 
     expect(screen.getByText('Reverify')).toBeInTheDocument();

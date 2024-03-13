@@ -21,13 +21,13 @@ describe('TimeoutAlert', () => {
     );
   };
 
-  it('should render board message when moduleType is board', () => {
+  it('should render board message given moduleType is board', () => {
     setup(setIsShowAlert, true, true, 'Board');
     const message = screen.getByText('Board');
 
     expect(message).toBeInTheDocument();
   });
-  it('should not render the alert when isVerifyTimeOut or isShowAlert is false', () => {
+  it('should not render the alert given isVerifyTimeOut or isShowAlert is false', () => {
     setup(setIsShowAlert, false, true, 'Board');
 
     expect(screen.queryByText('Board')).not.toBeInTheDocument();
@@ -37,7 +37,7 @@ describe('TimeoutAlert', () => {
     expect(screen.queryByText('Board')).not.toBeInTheDocument();
   });
 
-  it('should call setIsShowAlert with false when click the close icon', async () => {
+  it('should call setIsShowAlert with false when click the close icon given init value', async () => {
     setup(setIsShowAlert, true, true, 'any');
     const closeIcon = screen.getByTestId('CloseIcon');
 

@@ -58,7 +58,7 @@ describe('use verify board state', () => {
     );
   });
 
-  it('should clear email validatedError when updateField by Email', async () => {
+  it('should clear email validatedError when updateField by Email given fetch error ', async () => {
     const mockedError = new UnauthorizedException('', HttpStatusCode.Unauthorized, '');
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
@@ -144,7 +144,7 @@ describe('use verify board state', () => {
     expect(tokenField?.verifiedError).toBe('');
   });
 
-  it('should set timeout is true when getVerifyBoard api is timeout', async () => {
+  it('should set timeout is true given getVerifyBoard api is timeout', async () => {
     const mockedError = new TimeoutException('', HEARTBEAT_EXCEPTION_CODE.TIMEOUT);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
