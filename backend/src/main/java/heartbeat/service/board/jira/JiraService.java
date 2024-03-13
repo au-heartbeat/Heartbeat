@@ -260,13 +260,13 @@ public class JiraService {
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
 
-		int reworkCardNumber = realDoneCards.stream()
-			.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
-			.toList()
-			.size();
-		double reworkRatio = BigDecimal.valueOf(reworkCardNumber)
-			.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
-			.doubleValue();
+			int reworkCardNumber = realDoneCards.stream()
+				.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
+				.toList()
+				.size();
+			double reworkRatio = realDoneCards.size() > 0 ? BigDecimal.valueOf(reworkCardNumber)
+				.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
+				.doubleValue() : 0;
 
 		return CardCollection.builder()
 			.storyPointSum(storyPointSum)
@@ -600,6 +600,9 @@ public class JiraService {
 	private List<ReworkTimesInfo> getReworkTimesInfo(CardHistoryResponseDTO jiraCardHistory,
 			ReworkTimesSetting reworkTimesSetting, boolean considerFlagAsBlock,
 			List<RequestJiraBoardColumnSetting> boardColumns) {
+		if (Objects.isNull(reworkTimesSetting)) {
+			return List.of();
+		}
 		Map<String, String> stateMap = buildStateMap(boardColumns);
 		if (considerFlagAsBlock) {
 			return getReworkTimesInfoWhenConsiderFlagAsBlock(jiraCardHistory, reworkTimesSetting.getReworkState(),
