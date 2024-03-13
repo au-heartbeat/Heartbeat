@@ -51,6 +51,7 @@ export enum METRICS_TITLE {
   VELOCITY = 'Velocity',
   CYCLE_TIME = 'Cycle Time',
   CLASSIFICATION = 'Classification',
+  REWORK_TIMES = 'Rework times',
   LEAD_TIME_FOR_CHANGES = 'Lead Time For Changes',
   DEPLOYMENT_FREQUENCY = 'Deployment Frequency',
   CHANGE_FAILURE_RATE = 'Change Failure Rate',
@@ -85,7 +86,12 @@ export const DORA_METRICS: string[] = [
   REQUIRED_DATA.MEAN_TIME_TO_RECOVERY,
 ];
 
-export const BOARD_METRICS: string[] = [REQUIRED_DATA.VELOCITY, REQUIRED_DATA.CYCLE_TIME, REQUIRED_DATA.CLASSIFICATION];
+export const BOARD_METRICS: string[] = [
+  REQUIRED_DATA.VELOCITY,
+  REQUIRED_DATA.CYCLE_TIME,
+  REQUIRED_DATA.CLASSIFICATION,
+  REQUIRED_DATA.REWORK_TIMES,
+];
 
 export enum CONFIG_TITLE {
   BOARD = 'Board',
