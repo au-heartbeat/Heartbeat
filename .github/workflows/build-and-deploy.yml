@@ -241,6 +241,7 @@ jobs:
 
          if [ "$buildkite_status" != "passed" ]; then
            echo "BuildKite build failed. Cannot merge the PR."
+           echo "$buildkite_status"
            exit 1
          fi
 
@@ -487,7 +488,7 @@ jobs:
         # uses: actions/checkout@v4
         run: echo "This is an empty step"
       # - name: Update docker-compose.yaml
-      #   run: |
+      #   run: |◊
       #     sed -i -e 's/heartbeat_backend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_backend:hb${{ github.run_number }}/g' ops/infra/docker-compose.yml
       #     sed -i -e 's/heartbeat_frontend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_frontend:hb${{ github.run_number }}/g' ops/infra/docker-compose.yml
 
