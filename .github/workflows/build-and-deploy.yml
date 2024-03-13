@@ -237,7 +237,7 @@ jobs:
 
       - name: Check BuildKite status
         run: |
-         buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
+         buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.state')
 
          if [ "$buildkite_status" != "passed" ]; then
            echo "BuildKite build failed. Cannot merge the PR."
