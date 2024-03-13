@@ -634,9 +634,7 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "project key", token))
 			.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
-		Throwable thrown = catchThrowable(() -> {
-			jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam);
-		});
+		Throwable thrown = catchThrowable(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam));
 		assertThat(thrown).isInstanceOf(InternalServerErrorException.class)
 			.hasMessageContaining("Failed to call Jira to get board config, cause is");
 	}
@@ -1569,7 +1567,9 @@ class JiraServiceTest {
 		String assigneeFilter = "lastAssignee";
 
 		// request param
-		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().treatFlagCardAsBlock(false).build();
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD()
+			.treatFlagCardAsBlock(false)
+			.build();
 		StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
 			.reworkTimesSetting(ReworkTimesSetting.builder()
 				.reworkState(CardStepsEnum.DEVELOPMENT)
@@ -1598,6 +1598,7 @@ class JiraServiceTest {
 
 		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 		assertThat(cardCollection.getReworkRatio()).isEqualTo(1);
+		assertThat(cardCollection.getJiraCardDTOList().get(0).getTotalReworkTimes()).isEqualTo(2);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(0).getState())
 			.isEqualTo(CardStepsEnum.TESTING);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(0).getTimes()).isEqualTo(1);
