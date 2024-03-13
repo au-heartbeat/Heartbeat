@@ -1,11 +1,11 @@
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-import { MeanTimeToRecoveryResponse } from '@src/clients/report/dto/response';
+import { DevMeanTimeToRecoveryResponse } from '@src/clients/report/dto/response';
 import { DEV_MEAN_TIME_TO_RECOVERY_NAME } from '@src/constants/resources';
 
-export const meanTimeToRecoveryMapper = ({
-  avgMeanTimeToRecovery,
-  meanTimeRecoveryPipelines,
-}: MeanTimeToRecoveryResponse) => {
+export const devMeanTimeToRecoveryMapper = ({
+  avgDevMeanTimeToRecovery,
+  devMeanTimeRecoveryPipelines,
+}: DevMeanTimeToRecoveryResponse) => {
   const minutesPerHour = 60;
   const milliscondMinute = 60000;
   const formatDuration = (duration: number) => {
@@ -13,10 +13,10 @@ export const meanTimeToRecoveryMapper = ({
     return (minutesDuration / minutesPerHour).toFixed(2);
   };
 
-  const mappedMeanTimeToRecoveryValue: ReportDataWithThreeColumns[] = [];
+  const mappedDevMeanTimeToRecoveryValue: ReportDataWithThreeColumns[] = [];
 
-  meanTimeRecoveryPipelines.map((item, index) => {
-    const meanTimeToRecoveryValue: ReportDataWithThreeColumns = {
+  devMeanTimeRecoveryPipelines.map((item, index) => {
+    const devMeanTimeToRecoveryValue: ReportDataWithThreeColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
       valuesList: [
@@ -26,18 +26,18 @@ export const meanTimeToRecoveryMapper = ({
         },
       ],
     };
-    mappedMeanTimeToRecoveryValue.push(meanTimeToRecoveryValue);
+    mappedDevMeanTimeToRecoveryValue.push(devMeanTimeToRecoveryValue);
   });
-  mappedMeanTimeToRecoveryValue.push({
-    id: mappedMeanTimeToRecoveryValue.length,
-    name: avgMeanTimeToRecovery.name,
+  mappedDevMeanTimeToRecoveryValue.push({
+    id: mappedDevMeanTimeToRecoveryValue.length,
+    name: avgDevMeanTimeToRecovery.name,
     valuesList: [
       {
         name: DEV_MEAN_TIME_TO_RECOVERY_NAME,
-        value: formatDuration(avgMeanTimeToRecovery.timeToRecovery),
+        value: formatDuration(avgDevMeanTimeToRecovery.timeToRecovery),
       },
     ],
   });
 
-  return mappedMeanTimeToRecoveryValue;
+  return mappedDevMeanTimeToRecoveryValue;
 };

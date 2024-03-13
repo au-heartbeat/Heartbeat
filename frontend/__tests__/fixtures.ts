@@ -440,12 +440,12 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
       },
     ],
   },
-  meanTimeToRecovery: {
-    avgMeanTimeToRecovery: {
+  devMeanTimeToRecovery: {
+    avgDevMeanTimeToRecovery: {
       name: 'Average',
       timeToRecovery: 14396108.777777776,
     },
-    meanTimeRecoveryPipelines: [
+    devMeanTimeRecoveryPipelines: [
       {
         name: 'Heartbeat',
         step: ':react: Build Frontend',
@@ -480,14 +480,14 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
       totalDelayTime: 5989.22,
     },
   },
-  changeFailureRate: {
-    avgChangeFailureRate: {
+  devChangeFailureRate: {
+    avgDevChangeFailureRate: {
       name: 'Average',
       totalTimes: 6,
       totalFailedTimes: 0,
       failureRate: 0.0,
     },
-    changeFailureRateOfPipelines: [
+    devChangeFailureRateOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
@@ -577,7 +577,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
   ],
-  meanTimeToRecoveryList: [
+  devMeanTimeToRecoveryList: [
     {
       id: 0,
       name: 'Heartbeat/:react: Build Frontend',
@@ -639,7 +639,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
   ],
-  changeFailureRateList: [
+  devChangeFailureRateList: [
     {
       id: 0,
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
@@ -670,8 +670,8 @@ export const EMPTY_REPORT_VALUES: ReportResponseDTO = {
   cycleTime: null,
   rework: null,
   deploymentFrequency: null,
-  changeFailureRate: null,
-  meanTimeToRecovery: null,
+  devChangeFailureRate: null,
+  devMeanTimeToRecovery: null,
   leadTimeForChanges: null,
   exportValidityTime: null,
   boardMetricsCompleted: false,

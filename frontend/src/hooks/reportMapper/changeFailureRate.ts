@@ -1,15 +1,15 @@
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-import { ChangeFailureRateResponse } from '@src/clients/report/dto/response';
+import { DevChangeFailureRateResponse } from '@src/clients/report/dto/response';
 import { DEV_FAILURE_RATE_NAME } from '@src/constants/resources';
 
-export const changeFailureRateMapper = ({
-  avgChangeFailureRate,
-  changeFailureRateOfPipelines,
-}: ChangeFailureRateResponse) => {
-  const mappedChangeFailureRateValue: ReportDataWithThreeColumns[] = [];
+export const devChangeFailureRateMapper = ({
+  avgDevChangeFailureRate,
+  devChangeFailureRateOfPipelines,
+}: DevChangeFailureRateResponse) => {
+  const mappedDevChangeFailureRateValue: ReportDataWithThreeColumns[] = [];
 
-  changeFailureRateOfPipelines.map((item, index) => {
-    const deploymentFrequencyValue: ReportDataWithThreeColumns = {
+  devChangeFailureRateOfPipelines.map((item, index) => {
+    const devChangeFailureRateValue: ReportDataWithThreeColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
       valuesList: [
@@ -19,20 +19,20 @@ export const changeFailureRateMapper = ({
         },
       ],
     };
-    mappedChangeFailureRateValue.push(deploymentFrequencyValue);
+    mappedDevChangeFailureRateValue.push(devChangeFailureRateValue);
   });
-  mappedChangeFailureRateValue.push({
-    id: mappedChangeFailureRateValue.length,
-    name: avgChangeFailureRate.name,
+  mappedDevChangeFailureRateValue.push({
+    id: mappedDevChangeFailureRateValue.length,
+    name: avgDevChangeFailureRate.name,
     valuesList: [
       {
         name: DEV_FAILURE_RATE_NAME,
-        value: `${(avgChangeFailureRate.failureRate * 100).toFixed(2)}%(${avgChangeFailureRate.totalFailedTimes}/${
-          avgChangeFailureRate.totalTimes
+        value: `${(avgDevChangeFailureRate.failureRate * 100).toFixed(2)}%(${avgDevChangeFailureRate.totalFailedTimes}/${
+          avgDevChangeFailureRate.totalTimes
         })`,
       },
     ],
   });
 
-  return mappedChangeFailureRateValue;
+  return mappedDevChangeFailureRateValue;
 };
