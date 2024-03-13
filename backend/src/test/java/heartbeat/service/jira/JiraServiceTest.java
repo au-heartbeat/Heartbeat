@@ -15,6 +15,8 @@ import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.BoardType;
 import heartbeat.controller.board.dto.request.BoardVerifyRequestParam;
+import heartbeat.controller.board.dto.request.CardStepsEnum;
+import heartbeat.controller.board.dto.request.ReworkTimesSetting;
 import heartbeat.controller.board.dto.request.StoryPointsAndCycleTimeRequest;
 import heartbeat.controller.board.dto.response.BoardConfigDTO;
 import heartbeat.controller.board.dto.response.CardCollection;
@@ -1558,4 +1560,50 @@ class JiraServiceTest {
 
 		assertThat(cardCollection.getCardsNumber()).isZero();
 	}
+
+	@Test
+	void shouldGetRealDoneCardsReworkTimesGivenNotConsiderFlagIsBlock() throws JsonProcessingException {
+
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		String token = "token";
+		String assigneeFilter = "lastAssignee";
+
+		// request param
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().treatFlagCardAsBlock(false).build();
+		StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
+			.reworkTimesSetting(ReworkTimesSetting.builder()
+				.reworkState(CardStepsEnum.DEVELOPMENT)
+				.excludeStates(List.of())
+				.build())
+			.build();
+
+		// return value
+		String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_MULTIPLE_STATUS().build())
+			.replaceAll("sprint", "customfield_10020")
+			.replaceAll("partner", "customfield_10037")
+			.replaceAll("flagged", "customfield_10021")
+			.replaceAll("development", "customfield_10000");
+
+		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
+		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-475", 0, 100, token))
+			.thenReturn(CARD1_HISTORY_FOR_MULTIPLE_STATUSES().build());
+		when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-524", 0, 100, token))
+			.thenReturn(CARD2_HISTORY_FOR_MULTIPLE_STATUSES().build());
+		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
+
+		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeForDoneCards(request,
+				jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE),
+				assigneeFilter);
+
+		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
+		assertThat(cardCollection.getReworkRatio()).isEqualTo(1);
+		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(0).getState())
+			.isEqualTo(CardStepsEnum.TESTING);
+		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(0).getTimes()).isEqualTo(1);
+		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(1).getState())
+			.isEqualTo(CardStepsEnum.REVIEW);
+		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(1).getTimes()).isEqualTo(1);
+	}
+
 }

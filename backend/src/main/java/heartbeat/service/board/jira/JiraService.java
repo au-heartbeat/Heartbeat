@@ -260,13 +260,13 @@ public class JiraService {
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
 
-			int reworkCardNumber = realDoneCards.stream()
-				.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
-				.toList()
-				.size();
-			double reworkRatio = realDoneCards.size() > 0 ? BigDecimal.valueOf(reworkCardNumber)
-				.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
-				.doubleValue() : 0;
+		int reworkCardNumber = realDoneCards.stream()
+			.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
+			.toList()
+			.size();
+		double reworkRatio = realDoneCards.size() > 0 ? BigDecimal.valueOf(reworkCardNumber)
+			.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
+			.doubleValue() : 0;
 
 		return CardCollection.builder()
 			.storyPointSum(storyPointSum)
@@ -660,7 +660,7 @@ public class JiraService {
 	}
 
 	private CardStepsEnum convertState(String value, Map<String, String> stateMap) {
-		return CardStepsEnum.valueOf(stateMap.get(value));
+		return CardStepsEnum.fromValue(stateMap.get(value));
 	}
 
 	private List<ReworkTimesInfo> getReworkTimesInfoWhenNotConsiderFlagAsBlock(CardHistoryResponseDTO jiraCardHistory,

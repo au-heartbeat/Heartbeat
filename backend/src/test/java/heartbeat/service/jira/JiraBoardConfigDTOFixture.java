@@ -77,6 +77,12 @@ public class JiraBoardConfigDTOFixture {
 
 	public static final long TIMESTAMP_3 = 1673556350001L;
 
+	public static final long TIMESTAMP_4 = 1675556350001L;
+
+	public static final long TIMESTAMP_5 = 1676556350001L;
+
+	public static final long TIMESTAMP_6 = 1676856350001L;
+
 	public static final String JIRA_CARD_WITH_TWO_SPRINT = "{\"startAt\":0,\"total\":5,\"issues\":[{\"key\":\"TS-1\",\"fields\":{\"assignee\":{\"displayName\":\"Zhang San\"},\"customfield_10020\":[{\"name\":\"TS Sprint 1\",\"completeDate\":\"2024-02-08T03:52:22.395Z\"},{\"name\":\"TS Sprint 2\",\"completeDate\":\"2024-02-07T04:21:14.512Z\"}]}}]}";
 
 	public static JiraBoardConfigDTO.JiraBoardConfigDTOBuilder JIRA_BOARD_CONFIG_RESPONSE_BUILDER() {
@@ -235,7 +241,8 @@ public class JiraBoardConfigDTOFixture {
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_REAL_DONE_RESPONSE_BUILDER() {
 		return CardHistoryResponseDTO.builder()
 			.isLast(true)
-			.items(List.of(new HistoryDetail(1672556350002L, "status", new Status("In Dev"), new Status("To do"), null, null),
+			.items(List.of(
+					new HistoryDetail(1672556350002L, "status", new Status("In Dev"), new Status("To do"), null, null),
 					new HistoryDetail(1672556350003L, "status", new Status(REVIEW), new Status("In Dev"), null, null),
 					new HistoryDetail(1672556350004L, "status", new Status(WAITING_FOR_TESTING), new Status(REVIEW),
 							null, null),
@@ -282,8 +289,10 @@ public class JiraBoardConfigDTOFixture {
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_MULTI_REAL_DONE_RESPONSE_BUILDER() {
 		return CardHistoryResponseDTO.builder()
 			.isLast(true)
-			.items(List.of(new HistoryDetail(1672642730000L, "status", new Status("To do"), new Status(BLOCK), null, null),
-					new HistoryDetail(1672642730000L, "assignee", new Status("In Dev"), new Status("To do"), null, null),
+			.items(List.of(
+					new HistoryDetail(1672642730000L, "status", new Status("To do"), new Status(BLOCK), null, null),
+					new HistoryDetail(1672642730000L, "assignee", new Status("In Dev"), new Status("To do"), null,
+							null),
 					new HistoryDetail(1672642730000L, "status", new Status(REVIEW), new Status("In Dev"), null, null),
 					new HistoryDetail(1672642730000L, "status", new Status(WAITING_FOR_TESTING), new Status(REVIEW),
 							null, null),
@@ -594,7 +603,8 @@ public class JiraBoardConfigDTOFixture {
 	public static JiraBoardSetting.JiraBoardSettingBuilder JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD() {
 		return JiraBoardSetting.builder()
 			.boardId(BOARD_ID)
-			.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name(IN_DEV).value(IN_DEV).build(),
+			.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name(ANALYSE).value(ANALYSE).build(),
+					RequestJiraBoardColumnSetting.builder().name(IN_DEV).value(IN_DEV).build(),
 					RequestJiraBoardColumnSetting.builder()
 						.name(WAITING_FOR_TESTING)
 						.value(WAITING_FOR_TESTING)
@@ -725,8 +735,18 @@ public class JiraBoardConfigDTOFixture {
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD1_HISTORY_FOR_MULTIPLE_STATUSES() {
 		return CardHistoryResponseDTO.builder()
-			.items(List.of(new HistoryDetail(TIMESTAMP_1, "status", new Status(IN_DEV), new Status(ANALYSE),
-					new HistoryDetail.Actor(DISPLAY_NAME_ONE), null)));
+			.isLast(true)
+			.items(List.of(
+					new HistoryDetail(TIMESTAMP_1, "status", new Status(IN_DEV), new Status(ANALYSE),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_2, "status", new Status(TESTING), new Status(IN_DEV),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_4, "status", new Status(IN_DEV), new Status(TESTING),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_5, "status", new Status(REVIEW), new Status(IN_DEV),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_6, "status", new Status(IN_DEV), new Status(REVIEW),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null)));
 	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD2_HISTORY_FOR_MULTIPLE_STATUSES() {
@@ -740,8 +760,8 @@ public class JiraBoardConfigDTOFixture {
 			.items(List.of(new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do"), null, null),
 					new HistoryDetail(TIMESTAMP_1, "customfield_10021", new Status("Impediment"), new Status(FLAG),
 							null, null),
-					new HistoryDetail(TIMESTAMP_2, "flagged", new Status("Impediment"), new Status("removeFlag"),
-							null, null)));
+					new HistoryDetail(TIMESTAMP_2, "flagged", new Status("Impediment"), new Status("removeFlag"), null,
+							null)));
 	}
 
 }
