@@ -145,7 +145,7 @@ export interface AvgDevMeanTimeToRecovery {
 
 export interface DevMeanTimeToRecoveryResponse {
   avgDevMeanTimeToRecovery: AvgDevMeanTimeToRecovery;
-  devMeanTimeRecoveryPipelines: DevMeanTimeToRecoveryOfPipeline[];
+  devMeanTimeToRecoveryOfPipelines: DevMeanTimeToRecoveryOfPipeline[];
 }
 
 export interface ClassificationNameValuePair {

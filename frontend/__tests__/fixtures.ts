@@ -445,7 +445,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
       name: 'Average',
       timeToRecovery: 14396108.777777776,
     },
-    devMeanTimeRecoveryPipelines: [
+    devMeanTimeToRecoveryOfPipelines: [
       {
         name: 'Heartbeat',
         step: ':react: Build Frontend',

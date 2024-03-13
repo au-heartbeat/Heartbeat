@@ -4,7 +4,7 @@ import { DEV_MEAN_TIME_TO_RECOVERY_NAME } from '@src/constants/resources';
 
 export const devMeanTimeToRecoveryMapper = ({
   avgDevMeanTimeToRecovery,
-  devMeanTimeRecoveryPipelines,
+  devMeanTimeToRecoveryOfPipelines,
 }: DevMeanTimeToRecoveryResponse) => {
   const minutesPerHour = 60;
   const milliscondMinute = 60000;
@@ -15,7 +15,7 @@ export const devMeanTimeToRecoveryMapper = ({
 
   const mappedDevMeanTimeToRecoveryValue: ReportDataWithThreeColumns[] = [];
 
-  devMeanTimeRecoveryPipelines.map((item, index) => {
+  devMeanTimeToRecoveryOfPipelines.map((item, index) => {
     const devMeanTimeToRecoveryValue: ReportDataWithThreeColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
