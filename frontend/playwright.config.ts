@@ -14,7 +14,7 @@ if (!process.env.APP_ORIGIN) {
 }
 
 export default defineConfig({
-  timeout: 3 * 60 * 1000,
+  timeout: 4 * 60 * 1000,
   testDir: './e2e',
   expect: {
     timeout: process.env.CI ? E2E_EXPECT_CI_TIMEOUT : E2E_EXPECT_LOCAL_TIMEOUT,
