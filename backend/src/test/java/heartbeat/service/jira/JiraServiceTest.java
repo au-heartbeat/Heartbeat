@@ -1591,7 +1591,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE, JiraBoardConfigDTOFixture.DISPLAY_NAME_TWO),
+				jiraBoardSetting.getBoardColumns(),
+				List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE, JiraBoardConfigDTOFixture.DISPLAY_NAME_TWO),
 				assigneeFilter);
 
 		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
@@ -1606,7 +1607,7 @@ class JiraServiceTest {
 	}
 
 	@Test
-	void shouldGetRealDoneCardsReworkTimesGivenConsiderFlagAsBlock() throws JsonProcessingException {
+	void shouldGetRealDoneCardsReworkTimesToInDevGivenConsiderFlagAsBlock() throws JsonProcessingException {
 
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
@@ -1640,13 +1641,12 @@ class JiraServiceTest {
 
 		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 		assertThat(cardCollection.getReworkRatio()).isEqualTo(1);
-		assertThat(cardCollection.getJiraCardDTOList().get(0).getTotalReworkTimes()).isEqualTo(3);
+		assertThat(cardCollection.getJiraCardDTOList().get(0).getTotalReworkTimes()).isEqualTo(2);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(0).getState())
 			.isEqualTo(CardStepsEnum.BLOCK);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(0).getTimes()).isEqualTo(2);
-		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(1).getState())
-			.isEqualTo(CardStepsEnum.TESTING);
-		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(1).getTimes()).isEqualTo(1);
+		assertThat(cardCollection.getJiraCardDTOList().get(0).getReworkTimesInfos().get(0).getState())
+			.isEqualTo(CardStepsEnum.BLOCK);
 	}
 
 }

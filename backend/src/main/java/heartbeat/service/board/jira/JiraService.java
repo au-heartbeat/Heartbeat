@@ -634,13 +634,13 @@ public class JiraService {
 								stateMap);
 					}
 				}
-				else if (jiraCardHistoryItem.getFieldDisplayName().equalsIgnoreCase(FLAGGED)) {
+				else {
 					if (IMPEDIMENT.equalsIgnoreCase(jiraCardHistoryItem.getTo().getDisplayName())) {
 						hasFlag.set(true);
 						CardStepsEnum from = Objects.requireNonNull(currentState).get();
 						calculateTimes(reworkState, excludedStates, reworkTimesMap, from, CardStepsEnum.BLOCK);
 					}
-					else if (IMPEDIMENT.equalsIgnoreCase(jiraCardHistoryItem.getFrom().getDisplayName())) {
+					else {
 						hasFlag.set(false);
 						CardStepsEnum to = Objects.requireNonNull(currentState).get();
 						calculateTimes(reworkState, excludedStates, reworkTimesMap, CardStepsEnum.BLOCK, to);

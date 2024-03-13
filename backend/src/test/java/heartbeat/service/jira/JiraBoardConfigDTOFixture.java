@@ -763,18 +763,20 @@ public class JiraBoardConfigDTOFixture {
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
 					new HistoryDetail(TIMESTAMP_2, "status", new Status(TESTING), new Status(IN_DEV),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
-					new HistoryDetail(TIMESTAMP_4, "status", new Status(IN_DEV), new Status(TESTING),
-							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
-					new HistoryDetail(TIMESTAMP_5, "customfield_10021", new Status("Impediment"), new Status(null),
+					new HistoryDetail(TIMESTAMP_4, "customfield_10021", new Status("Impediment"), new Status(null),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged"),
+					new HistoryDetail(TIMESTAMP_5, "status", new Status(IN_DEV), new Status(TESTING),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
 					new HistoryDetail(TIMESTAMP_7, "customfield_10021", new Status(null), new Status("Impediment"),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged"),
 					new HistoryDetail(TIMESTAMP_8, "customfield_10021", new Status("Impediment"), new Status(null),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged"),
+					new HistoryDetail(TIMESTAMP_8, "customfield_10020", new Status("Impediment"), new Status(null),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "story"),
 					new HistoryDetail(TIMESTAMP_9, "customfield_10021", new Status(null), new Status("Impediment"),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged")));
-	}
 
+	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD2_HISTORY_FOR_MULTIPLE_STATUSES() {
 		return CardHistoryResponseDTO.builder()
@@ -785,7 +787,7 @@ public class JiraBoardConfigDTOFixture {
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD3_HISTORY_FOR_MULTIPLE_STATUSES() {
 		return CardHistoryResponseDTO.builder()
 			.items(List.of(new HistoryDetail(TIMESTAMP_1, "status", new Status(IN_DEV), new Status(ANALYSE),
-				new HistoryDetail.Actor(DISPLAY_NAME_ONE), null)));
+					new HistoryDetail.Actor(DISPLAY_NAME_ONE), null)));
 	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_WITH_NO_STATUS_FIELD() {
