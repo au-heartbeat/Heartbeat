@@ -1,4 +1,4 @@
-import { ResetButton, VerifyButton } from '@src/components/Common/Buttons';
+import { ResetButton, ReverifyButton, VerifyButton } from '@src/components/Common/Buttons';
 import { StyledButtonGroup } from '@src/components/Common/ConfigForms';
 
 interface PropsInterface {
@@ -17,7 +17,7 @@ export const ConfigButtonGrop = ({ isVerified, isLoading, isHBTimeOut, isDisable
     if (isVerified && !isLoading) {
       return <VerifyButton disabled>Verified</VerifyButton>;
     } else if (isHBTimeOut) {
-      return <VerifyButton type='submit'>Reverify</VerifyButton>;
+      return <ReverifyButton type='submit'>Reverify</ReverifyButton>;
     } else {
       return (
         <VerifyButton type='submit' disabled={isDisableVerifyButton}>
