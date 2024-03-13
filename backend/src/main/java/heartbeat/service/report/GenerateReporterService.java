@@ -210,7 +210,7 @@ public class GenerateReporterService {
 							fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
 				case "rework" -> reportResponse.setRework(reworkCalculator.calculateRework(
 						fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
-						request.getJiraBoardSetting().getReworkTimesSetting().getReworkState()));
+						request.getJiraBoardSetting().getReworkTimesSetting().getEnumReworkState()));
 				default -> {
 					// TODO
 				}
