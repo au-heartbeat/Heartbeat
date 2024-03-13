@@ -1558,5 +1558,4 @@ class JiraServiceTest {
 
 		assertThat(cardCollection.getCardsNumber()).isZero();
 	}
-
 }
