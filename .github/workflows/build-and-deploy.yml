@@ -259,6 +259,11 @@ jobs:
               email: commit.data.commit.committer.email
             }
 
+      - name: Print Committer Name and Email
+        run: |
+          echo "Committer Name: ${{ steps.committer-info.outputs.name }}"
+          echo "Committer Email: ${{ steps.committer-info.outputs.email }}"
+          
   # images-check:
   #   runs-on: ubuntu-latest
   #   steps:
