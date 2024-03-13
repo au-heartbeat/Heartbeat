@@ -1,9 +1,9 @@
 import { Checkbox, FormHelperText, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { RequireDataSelections } from '@src/containers/ConfigStep/BasicInfo/RequiredMetrics/style';
 import { selectMetrics, updateMetrics } from '@src/context/config/configSlice';
-import { REQUIRED_DATA, REQUIRED_DATA_TITLE } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { SELECTED_VALUE_SEPARATOR } from '@src/constants/commons';
+import { REQUIRED_DATA } from '@src/constants/resources';
 import { useMemo, useCallback } from 'react';
 
 const ALL = 'All';
@@ -51,7 +51,7 @@ export const RequiredMetrics = () => {
           {ALL_REQUIRED_DATA.map((data) => (
             <MenuItem key={data} value={data}>
               <Checkbox checked={metrics.indexOf(data) > -1} />
-              <ListItemText primary={REQUIRED_DATA_TITLE[data]} />
+              <ListItemText primary={data} />
             </MenuItem>
           ))}
         </Select>

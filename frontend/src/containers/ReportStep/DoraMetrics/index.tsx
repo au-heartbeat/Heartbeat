@@ -148,10 +148,10 @@ const DoraMetrics = ({
         ]
       : [];
 
-    const meanTimeToRecoveryList = metrics.includes(REQUIRED_DATA.MEAN_TIME_TO_RECOVERY)
+    const meanTimeToRecoveryList = metrics.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY)
       ? [
           {
-            title: METRICS_TITLE.MEAN_TIME_TO_RECOVERY,
+            title: METRICS_TITLE.DEV_MEAN_TIME_TO_RECOVERY,
             items: meanTimeToRecovery && [
               {
                 value: formatMillisecondsToHours(meanTimeToRecovery.avgMeanTimeToRecovery.timeToRecovery),
@@ -162,10 +162,10 @@ const DoraMetrics = ({
         ]
       : [];
 
-    const changeFailureRateList = metrics.includes(REQUIRED_DATA.CHANGE_FAILURE_RATE)
+    const changeFailureRateList = metrics.includes(REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE)
       ? [
           {
-            title: METRICS_TITLE.CHANGE_FAILURE_RATE,
+            title: METRICS_TITLE.DEV_CHANGE_FAILURE_RATE,
             items: changeFailureRate && [
               {
                 value: changeFailureRate.avgChangeFailureRate.failureRate * 100,

@@ -1,6 +1,6 @@
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { MeanTimeToRecoveryResponse } from '@src/clients/report/dto/response';
-import { MEAN_TIME_TO_RECOVERY_NAME } from '@src/constants/resources';
+import { DEV_MEAN_TIME_TO_RECOVERY_NAME } from '@src/constants/resources';
 
 export const meanTimeToRecoveryMapper = ({
   avgMeanTimeToRecovery,
@@ -21,7 +21,7 @@ export const meanTimeToRecoveryMapper = ({
       name: `${item.name}/${item.step}`,
       valuesList: [
         {
-          name: MEAN_TIME_TO_RECOVERY_NAME,
+          name: DEV_MEAN_TIME_TO_RECOVERY_NAME,
           value: formatDuration(item.timeToRecovery),
         },
       ],
@@ -33,7 +33,7 @@ export const meanTimeToRecoveryMapper = ({
     name: avgMeanTimeToRecovery.name,
     valuesList: [
       {
-        name: MEAN_TIME_TO_RECOVERY_NAME,
+        name: DEV_MEAN_TIME_TO_RECOVERY_NAME,
         value: formatDuration(avgMeanTimeToRecovery.timeToRecovery),
       },
     ],
