@@ -237,13 +237,12 @@ jobs:
 
       - name: Check BuildKite status
         run: |
-          echo "Hello world"
-        #  buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/thoughtworks-Heartbeat/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
+         buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/thoughtworks-Heartbeat/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
 
-        #  if [ "$buildkite_status" != "passed" ]; then
-        #    echo "BuildKite build failed. Cannot merge the PR."
-        #    exit 1
-        #  fi
+         if [ "$buildkite_status" != "passed" ]; then
+           echo "BuildKite build failed. Cannot merge the PR."
+           exit 1
+         fi
 
   # images-check:
   #   runs-on: ubuntu-latest
