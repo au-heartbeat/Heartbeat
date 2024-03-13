@@ -1,4 +1,8 @@
-export interface ReportRequestDTO extends IBasicReportRequestDTO {
+export interface ReportRequestDTO {
+  metrics: string[];
+  startTime: string | null;
+  endTime: string | null;
+  considerHoliday: boolean;
   buildKiteSetting?: {
     type: string;
     token: string;
@@ -28,6 +32,22 @@ export interface ReportRequestDTO extends IBasicReportRequestDTO {
       branches: string[];
     }[];
   };
+  jiraBoardSetting?: {
+    token: string;
+    type: string;
+    site: string;
+    projectKey: string;
+    boardId: string;
+    boardColumns: { name: string; value: string }[];
+    treatFlagCardAsBlock: boolean;
+    users: string[];
+    assigneeFilter: string;
+    targetFields: { key: string; name: string; flag: boolean }[];
+    overrideFields: { key: string; name: string; flag: boolean }[];
+    reworkTimesSetting: ReworkSettingsRequest;
+    doneColumn: string[];
+  };
+  csvTimeStamp?: number;
 }
 
 interface ReworkSettingsRequest {
@@ -35,7 +55,7 @@ interface ReworkSettingsRequest {
   excludedStates?: string[];
 }
 
-export interface IBasicReportRequestDTO {
+export interface BoardReportRequestDTO {
   considerHoliday: boolean;
   startTime: string | null;
   endTime: string | null;
