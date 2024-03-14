@@ -348,6 +348,7 @@ public class GenerateReporterService {
 			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
 			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
 			.cycleTime(getValueOrNull(boardReportResponse, ReportResponse::getCycleTime))
+			.rework(getValueOrNull(boardReportResponse, ReportResponse::getRework))
 			.exportValidityTime(EXPORT_CSV_VALIDITY_TIME)
 			.deploymentFrequency(getValueOrNull(pipleineReportResponse, ReportResponse::getDeploymentFrequency))
 			.changeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getChangeFailureRate))
