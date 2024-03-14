@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
-import { StyledTitleWrapper } from '@src/containers/ConfigStep/style';
+import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { DEFAULT_HELPER_TEXT } from '@src/constants/commons';
 import { findCaseInsensitiveType } from '@src/utils/util';
 import { FormEvent, useMemo, useState } from 'react';
@@ -114,15 +114,15 @@ export const SourceControl = () => {
   return (
     <ConfigSectionContainer aria-label='Source Control Config'>
       {isLoading && <Loading />}
-      <StyledTitleWrapper>
-        <ConfigSelectionTitle>{CONFIG_TITLE.SOURCE_CONTROL}</ConfigSelectionTitle>
+      <ConfigSelectionTitle>{CONFIG_TITLE.SOURCE_CONTROL}</ConfigSelectionTitle>
+      <StyledAlterWrapper>
         <TimeoutAlert
           isShowAlert={isShowAlert}
           isVerifyTimeOut={isVerifyTimeOut}
           setIsShowAlert={setIsShowAlert}
           moduleType={'Source Control'}
         />
-      </StyledTitleWrapper>
+      </StyledAlterWrapper>
       <StyledForm onSubmit={onSubmit} onReset={onReset}>
         <StyledTypeSelections variant='standard' required>
           <InputLabel id='sourceControl-type-checkbox-label'>Source Control</InputLabel>

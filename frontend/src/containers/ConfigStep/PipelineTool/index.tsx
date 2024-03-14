@@ -19,7 +19,7 @@ import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
-import { StyledTitleWrapper } from '@src/containers/ConfigStep/style';
+import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { findCaseInsensitiveType } from '@src/utils/util';
 import { FormEvent, useMemo, useState } from 'react';
 import { Loading } from '@src/components/Loading';
@@ -129,15 +129,15 @@ export const PipelineTool = () => {
   return (
     <ConfigSectionContainer aria-label='Pipeline Tool Config'>
       {isLoading && <Loading />}
-      <StyledTitleWrapper>
-        <ConfigSelectionTitle>{CONFIG_TITLE.PIPELINE_TOOL}</ConfigSelectionTitle>
+      <ConfigSelectionTitle>{CONFIG_TITLE.PIPELINE_TOOL}</ConfigSelectionTitle>
+      <StyledAlterWrapper>
         <TimeoutAlert
           isShowAlert={isShowAlert}
           isVerifyTimeOut={isVerifyTimeOut}
           setIsShowAlert={setIsShowAlert}
           moduleType={'PipelineTool'}
         />
-      </StyledTitleWrapper>
+      </StyledAlterWrapper>
       <StyledForm onSubmit={onSubmit} onReset={onReset}>
         <StyledTypeSelections variant='standard' required>
           <InputLabel id='pipelineTool-type-checkbox-label'>Pipeline Tool</InputLabel>

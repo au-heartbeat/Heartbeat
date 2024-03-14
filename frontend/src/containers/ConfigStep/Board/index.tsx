@@ -12,7 +12,7 @@ import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { selectIsBoardVerified } from '@src/context/config/configSlice';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
-import { StyledTitleWrapper } from '@src/containers/ConfigStep/style';
+import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { FormEvent, useMemo } from 'react';
@@ -45,15 +45,15 @@ export const Board = () => {
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       {isLoading && <Loading />}
-      <StyledTitleWrapper>
-        <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
+      <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
+      <StyledAlterWrapper>
         <TimeoutAlert
           isShowAlert={isShowAlert}
           isVerifyTimeOut={isVerifyTimeOut}
           setIsShowAlert={setIsShowAlert}
           moduleType={'Board'}
         />
-      </StyledTitleWrapper>
+      </StyledAlterWrapper>
       <StyledForm onSubmit={onSubmit} onReset={resetFields}>
         {fields.map(({ key, value, validatedError, verifiedError, col }, index) =>
           !index ? (

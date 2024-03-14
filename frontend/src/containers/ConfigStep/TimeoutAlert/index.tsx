@@ -1,4 +1,5 @@
 import { StyledAlert, StyledTypography } from '@src/containers/ConfigStep/TimeoutAlert/style';
+import EllipsisText from '@src/components/Common/EllipsisText';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 interface PropsInterface {
@@ -19,7 +20,9 @@ export const TimeoutAlert = ({ isVerifyTimeOut, isShowAlert, setIsShowAlert, mod
           }}
         >
           <StyledTypography>
-            Submission timeout on <span>{moduleType}</span> , please reverify!
+            <EllipsisText fitContent>
+              Submission timeout on <span>{moduleType}</span> , please reverify!
+            </EllipsisText>
           </StyledTypography>
         </StyledAlert>
       )}
