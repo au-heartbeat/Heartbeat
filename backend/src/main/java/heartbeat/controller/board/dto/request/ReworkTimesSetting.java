@@ -13,14 +13,13 @@ public class ReworkTimesSetting {
 
 	private String reworkState;
 
-	private List<String> excludeStates;
+	private List<String> excludedStates;
 
 	public CardStepsEnum getEnumReworkState() {
 		return CardStepsEnum.fromValue(reworkState);
 	}
 
 	public List<CardStepsEnum> getEnumExcludeStates() {
-		return excludeStates.stream().map(CardStepsEnum::fromValue).toList();
+		return excludedStates.stream().map(CardStepsEnum::fromValue).toList();
 	}
-
 }

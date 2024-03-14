@@ -1572,7 +1572,7 @@ class JiraServiceTest {
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 		StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
 			.treatFlagCardAsBlock(false)
-			.reworkTimesSetting(ReworkTimesSetting.builder().reworkState("In Dev").excludeStates(List.of()).build())
+			.reworkTimesSetting(ReworkTimesSetting.builder().reworkState("In Dev").excludedStates(List.of()).build())
 			.build();
 
 		// return value
@@ -1617,7 +1617,7 @@ class JiraServiceTest {
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 		StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
 			.treatFlagCardAsBlock(true)
-			.reworkTimesSetting(ReworkTimesSetting.builder().reworkState("In Dev").excludeStates(List.of()).build())
+			.reworkTimesSetting(ReworkTimesSetting.builder().reworkState("In Dev").excludedStates(List.of()).build())
 			.build();
 
 		// return value
