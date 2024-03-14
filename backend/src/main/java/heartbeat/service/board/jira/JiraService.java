@@ -261,22 +261,26 @@ public class JiraService {
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
 
-		int reworkCardNumber = realDoneCards.stream()
-			.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
-			.toList()
-			.size();
-		double reworkRatio = realDoneCards.isEmpty() ? 0
-				: BigDecimal.valueOf(reworkCardNumber)
-					.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
-					.doubleValue();
-
-		return CardCollection.builder()
+		CardCollection cardCollection = CardCollection.builder()
 			.storyPointSum(storyPointSum)
 			.cardsNumber(realDoneCards.size())
 			.jiraCardDTOList(realDoneCards)
-			.reworkCardNumber(reworkCardNumber)
-			.reworkRatio(reworkRatio)
 			.build();
+
+		if (request.getBoardMetrics().contains(MetricEnum.REWORK_TIMES.getValue())) {
+			int reworkCardNumber = realDoneCards.stream()
+				.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
+				.toList()
+				.size();
+			double reworkRatio = realDoneCards.isEmpty() ? 0
+					: BigDecimal.valueOf(reworkCardNumber)
+						.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
+						.doubleValue();
+			cardCollection.setReworkCardNumber(reworkCardNumber);
+			cardCollection.setReworkRatio(reworkRatio);
+		}
+
+		return cardCollection;
 	}
 
 	private CompletableFuture<JiraColumnResult> getJiraColumnsAsync(BoardRequestParam boardRequestParam, URI baseUrl,
