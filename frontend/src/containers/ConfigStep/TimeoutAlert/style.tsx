@@ -1,5 +1,5 @@
-import { Alert, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Alert } from '@mui/material';
 import { theme } from '@src/theme';
 
 export const StyledAlert = styled(Alert)({
@@ -17,9 +17,7 @@ export const StyledAlert = styled(Alert)({
     },
   },
 });
-export const StyledTypography = styled(Typography)({
-  '& span': {
-    color: theme.main.secondColor,
-    fontWeight: 600,
-  },
+export const StyledModuleType = styled('span')({
+  color: theme.main.secondColor,
+  fontWeight: 600,
 });
