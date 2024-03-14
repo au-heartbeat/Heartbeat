@@ -56,17 +56,17 @@ class MeanToRecoveryCalculatorTest {
 		Assertions.assertEquals(3, meanTimeRecoveryPipelines.size());
 
 		MeanTimeToRecoveryOfPipeline deploy1Result = meanTimeRecoveryPipelines.get(0);
-		Assertions.assertEquals("Pipeline 1", deploy1Result.getPipelineName());
+		Assertions.assertEquals("Pipeline 1", deploy1Result.getName());
 		Assertions.assertEquals("Step 1", deploy1Result.getStep());
 		Assertions.assertEquals(0, deploy1Result.getTimeToRecovery().compareTo(BigDecimal.valueOf(180000)));
 
 		MeanTimeToRecoveryOfPipeline deploy2Result = meanTimeRecoveryPipelines.get(1);
-		Assertions.assertEquals("Pipeline 2", deploy2Result.getPipelineName());
+		Assertions.assertEquals("Pipeline 2", deploy2Result.getName());
 		Assertions.assertEquals("Step 2", deploy2Result.getStep());
 		Assertions.assertEquals(0, deploy2Result.getTimeToRecovery().compareTo(BigDecimal.valueOf(120000)));
 
 		MeanTimeToRecoveryOfPipeline deploy3Result = meanTimeRecoveryPipelines.get(2);
-		Assertions.assertEquals("Pipeline 3", deploy3Result.getPipelineName());
+		Assertions.assertEquals("Pipeline 3", deploy3Result.getName());
 		Assertions.assertEquals("Step 3", deploy3Result.getStep());
 		Assertions.assertEquals(BigDecimal.ZERO, deploy3Result.getTimeToRecovery());
 	}
@@ -95,17 +95,17 @@ class MeanToRecoveryCalculatorTest {
 		Assertions.assertEquals(3, meanTimeRecoveryPipelines.size());
 
 		MeanTimeToRecoveryOfPipeline deploy1Result = meanTimeRecoveryPipelines.get(0);
-		Assertions.assertEquals("Pipeline 1", deploy1Result.getPipelineName());
+		Assertions.assertEquals("Pipeline 1", deploy1Result.getName());
 		Assertions.assertEquals("Step 1", deploy1Result.getStep());
 		Assertions.assertEquals(0, deploy1Result.getTimeToRecovery().compareTo(BigDecimal.valueOf(240000)));
 
 		MeanTimeToRecoveryOfPipeline deploy2Result = meanTimeRecoveryPipelines.get(1);
-		Assertions.assertEquals("Pipeline 2", deploy2Result.getPipelineName());
+		Assertions.assertEquals("Pipeline 2", deploy2Result.getName());
 		Assertions.assertEquals("Step 2", deploy2Result.getStep());
 		Assertions.assertEquals(BigDecimal.ZERO, deploy2Result.getTimeToRecovery());
 
 		MeanTimeToRecoveryOfPipeline deploy3Result = meanTimeRecoveryPipelines.get(2);
-		Assertions.assertEquals("Pipeline 3", deploy3Result.getPipelineName());
+		Assertions.assertEquals("Pipeline 3", deploy3Result.getName());
 		Assertions.assertEquals("Step 3", deploy3Result.getStep());
 		Assertions.assertEquals(BigDecimal.ZERO, deploy3Result.getTimeToRecovery());
 	}

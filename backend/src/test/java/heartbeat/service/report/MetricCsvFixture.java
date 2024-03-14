@@ -116,12 +116,12 @@ public class MetricCsvFixture {
 				.meanTimeRecoveryPipelines(List.of(
 						MeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
-							.pipelineName("Heartbeat")
+							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
 							.build(),
 						MeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
-							.pipelineName("Heartbeat")
+							.name("Heartbeat")
 							.step(":mag: Check Frontend License")
 							.build()))
 				.build())
@@ -186,7 +186,7 @@ public class MetricCsvFixture {
 				.avgMeanTimeToRecovery(AvgMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
 				.meanTimeRecoveryPipelines(List.of(MeanTimeToRecoveryOfPipeline.builder()
 					.timeToRecovery(BigDecimal.valueOf(0))
-					.pipelineName("Heartbeat")
+					.name("Heartbeat")
 					.step(":rocket: Deploy prod")
 					.build()))
 				.build())

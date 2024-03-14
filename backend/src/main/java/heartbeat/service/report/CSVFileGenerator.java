@@ -557,7 +557,7 @@ public class CSVFileGenerator {
 		List<MeanTimeToRecoveryOfPipeline> meanTimeRecoveryPipelines = meanTimeToRecovery
 			.getMeanTimeRecoveryPipelines();
 		meanTimeRecoveryPipelines.forEach(pipeline -> rows.add(new String[] { "Mean Time To Recovery",
-				pipeline.getPipelineName() + " / " + extractPipelineStep(pipeline.getStep())
+				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
 						+ " / Mean Time To Recovery",
 				DecimalUtil
 					.formatDecimalTwo(TimeUtils.millisToUnit(pipeline.getTimeToRecovery().doubleValue(), HOURS)) }));
