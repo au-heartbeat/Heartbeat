@@ -250,7 +250,7 @@ jobs:
         run: |
           # 获取PR最后一次提交的GitHub用户名
           PR_LAST_COMMIT_AUTHOR=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits?per_page=1" | jq -r '.[-1].author.login')
+          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits?per_page=1" | jq -r '.[0].author.login')
           
           # 获取PR合并者的GitHub用户名
           PR_MERGER="${{ github.event.pull_request.merged_by.login }}"
