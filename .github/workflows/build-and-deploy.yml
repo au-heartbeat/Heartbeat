@@ -244,26 +244,32 @@ jobs:
            exit 1
          fi
 
-      - name: Get the last committer name
+      - name: Print Committer Name and Compare
         run: |
-          LAST_COMMITTER_NAME=$(git log -2 --pretty=format:"%cn" | tail -n 1)
-          echo "Last committer name: $LAST_COMMITTER_NAME"
-          echo "LAST_COMMITTER_NAME=${LAST_COMMITTER_NAME}" >> $GITHUB_ENV
+          # 检查是否至少有一个提交（至少需要一个提交来得到上一次提交的作者）
+          if git rev-parse HEAD >/dev/null 2>&1; then
+            # 根据仓库的提交数量选择合适的参考提交
+            # 如果仅有一个提交，使用HEAD；如果有一个以上，使用HEAD^
+            if [ $(git rev-list --count HEAD) -gt 1 ]; then
+              LAST_COMMITTER_NAME=$(git log -1 --pretty=format:'%an' HEAD^)
+            else
+              LAST_COMMITTER_NAME=$(git log -1 --pretty=format:'%an' HEAD)
+            fi
+            
+            CURRENT_COMMITTER_NAME="${{ github.actor }}"  # 或者使用 github.event.pusher.name，取决于情景
 
-      - name: Print Committer Name
-        run: |
-          LAST_COMMITTER_NAME=$(git log -1 --pretty=format:'%an' HEAD^)
-          CURRENT_COMMITTER_NAME="${{ github.actor }}"  # 或者使用 github.event.pusher.name，取决于情景
+            echo "Last Committer Name: $LAST_COMMITTER_NAME"
+            echo "Current Committer Name: $CURRENT_COMMITTER_NAME"
 
-          echo "Last Committer Name: $LAST_COMMITTER_NAME"
-          echo "Current Committer Name: $CURRENT_COMMITTER_NAME"
-
-          if [ "$CURRENT_COMMITTER_NAME" != "$LAST_COMMITTER_NAME" ]; then
-            echo "No match"
-            echo "Last Commit was made by: $LAST_COMMITTER_NAME"
+            if [ "$CURRENT_COMMITTER_NAME" != "$LAST_COMMITTER_NAME" ]; then
+              echo "No match"
+              echo "The last commit was made by: $LAST_COMMITTER_NAME"
+            else
+              echo "Match"
+              echo "Both commits were made by: $CURRENT_COMMITTER_NAME"
+            fi
           else
-            echo "Match"
-            echo "Both commits were made by: $CURRENT_COMMITTER_NAME"
+            echo "This repository does not have any commits yet."
           fi
 
   # images-check:
