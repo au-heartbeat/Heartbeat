@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import heartbeat.util.IdUtil;
 import heartbeat.util.MetricsUtil;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,7 @@ public class GenerateReportRequest {
 
 	private List<String> metrics;
 
+	@Valid
 	private JiraBoardSetting jiraBoardSetting;
 
 	private BuildKiteSetting buildKiteSetting;
