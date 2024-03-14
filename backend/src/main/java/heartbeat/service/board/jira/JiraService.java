@@ -653,17 +653,18 @@ public class JiraService {
 			.toList();
 	}
 
-	private Map<String, CardStepsEnum> buildBoardStateMapToHeartBeatState(List<RequestJiraBoardColumnSetting> boardColumns) {
+	private Map<String, CardStepsEnum> buildBoardStateMapToHeartBeatState(
+			List<RequestJiraBoardColumnSetting> boardColumns) {
 		return boardColumns.stream()
 			.collect(Collectors.toMap(boardColumn -> boardColumn.getName().toUpperCase(),
-				boardColumn -> CardStepsEnum.fromValue(boardColumn.getValue())));
+					boardColumn -> CardStepsEnum.fromValue(boardColumn.getValue())));
 	}
 
 	private boolean isRework(CardStepsEnum from, CardStepsEnum to, Set<CardStepsEnum> excludedStates) {
 		return !excludedStates.contains(from) && reworkJudgmentMap.get(to).contains(from);
 	}
 
-	private CardStepsEnum convertBoardStateToHeartBeatState(String value, Map<String,CardStepsEnum> stateMap) {
+	private CardStepsEnum convertBoardStateToHeartBeatState(String value, Map<String, CardStepsEnum> stateMap) {
 		return stateMap.get(value.toUpperCase());
 	}
 

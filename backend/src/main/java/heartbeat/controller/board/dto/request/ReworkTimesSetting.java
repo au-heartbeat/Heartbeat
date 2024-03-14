@@ -22,4 +22,5 @@ public class ReworkTimesSetting {
 	public List<CardStepsEnum> getEnumExcludeStates() {
 		return excludedStates.stream().map(CardStepsEnum::fromValue).toList();
 	}
+
 }
