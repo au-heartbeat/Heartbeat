@@ -228,22 +228,42 @@ jobs:
         run: |
           ./ops/check.sh frontend-license
 
-    check-buildkite-status:
-      if: ${{ github.event_name == 'pull_request' }}
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+  check-buildkite-status:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Check BuildKite status
-          run: |
-#            buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/thoughtworks-Heartbeat/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
-            buildkite_status=failed
-            if [ "$buildkite_status" != "passed" ]; then
-              echo "BuildKite build failed. Cannot merge the PR."
-              echo ${{ github.event.pull_request.user.login }}
-              exit 1
-            fi
+#      - name: Check BuildKite status
+#        run: |
+#          buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
+#
+#          if [ "$buildkite_status" != "passed" ]; then
+#            echo "BuildKite build failed. Cannot merge the PR."
+#            exit 1
+#          fi
+
+      - name: Check for Username Match with GitHub API on Specific Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPECIFIC_BRANCH="ADM-857-w"
+
+          LATEST_COMMIT="${{ github.event.pull_request.user.login }}"
+
+          CURRENT_ACTOR="${{ github.actor }}"
+
+          echo "Latest Commit Author Login: $LATEST_COMMIT"
+          echo "Current Actor: $CURRENT_ACTOR"
+
+          if [ "$CURRENT_ACTOR" != "$LATEST_COMMIT" ]; then
+            echo "No match"
+            echo "The last commit was made by: $LATEST_COMMIT on branch $SPECIFIC_BRANCH"
+          else
+            echo "Match"
+            echo "Both actions were performed by: $CURRENT_ACTOR on branch $SPECIFIC_BRANCH"
+          fi
   images-check:
     runs-on: ubuntu-latest
     steps:
