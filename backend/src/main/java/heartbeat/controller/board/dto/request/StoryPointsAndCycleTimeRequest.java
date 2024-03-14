@@ -38,4 +38,6 @@ public class StoryPointsAndCycleTimeRequest {
 
 	private ReworkTimesSetting reworkTimesSetting;
 
+	private List<String> boardMetrics;
+
 }
