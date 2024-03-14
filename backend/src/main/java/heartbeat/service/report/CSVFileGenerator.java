@@ -433,24 +433,25 @@ public class CSVFileGenerator {
 	}
 
 	private List<String[]> getRowsFromCycleTime(CycleTime cycleTime) {
+		String cycleTimeTitle = "Cycle time";
 		List<String[]> rows = new ArrayList<>();
 		List<String[]> rowsForSelectedStepItemAverageTime = new ArrayList<>();
-		rows.add(new String[] { "Cycle time", "Average cycle time(days/storyPoint)",
+		rows.add(new String[] { cycleTimeTitle, "Average cycle time(days/storyPoint)",
 				String.valueOf(cycleTime.getAverageCycleTimePerSP()) });
-		rows.add(new String[] { "Cycle time", "Average cycle time(days/card)",
+		rows.add(new String[] { cycleTimeTitle, "Average cycle time(days/card)",
 				String.valueOf(cycleTime.getAverageCycleTimePerCard()) });
 		List<CycleTimeForSelectedStepItem> swimlaneList = cycleTime.getSwimlaneList();
 
 		swimlaneList.forEach(cycleTimeForSelectedStepItem -> {
-			String StepName = formatStepName(cycleTimeForSelectedStepItem);
+			String stepName = formatStepName(cycleTimeForSelectedStepItem);
 			double proportion = cycleTimeForSelectedStepItem.getTotalTime() / cycleTime.getTotalTimeForCards();
-			rows.add(new String[] { "Cycle time", "Total " + StepName + " time / Total cycle time",
+			rows.add(new String[] { cycleTimeTitle, "Total " + stepName + " time / Total cycle time",
 					DecimalUtil.formatDecimalTwo(proportion * 100) });
 			rowsForSelectedStepItemAverageTime
-				.add(new String[] { "Cycle time", "Average " + StepName + " time(days/storyPoint)",
+				.add(new String[] { cycleTimeTitle, "Average " + stepName + " time(days/storyPoint)",
 						DecimalUtil.formatDecimalTwo(cycleTimeForSelectedStepItem.getAverageTimeForSP()) });
 			rowsForSelectedStepItemAverageTime
-				.add(new String[] { "Cycle time", "Average " + StepName + " time(days/card)",
+				.add(new String[] { cycleTimeTitle, "Average " + stepName + " time(days/card)",
 						DecimalUtil.formatDecimalTwo(cycleTimeForSelectedStepItem.getAverageTimeForCards()) });
 		});
 		rows.addAll(rowsForSelectedStepItemAverageTime);
@@ -498,30 +499,32 @@ public class CSVFileGenerator {
 
 	private List<String[]> getRowsFromLeadTimeForChanges(LeadTimeForChanges leadTimeForChanges) {
 		List<String[]> rows = new ArrayList<>();
+
 		List<LeadTimeForChangesOfPipelines> leadTimeForChangesOfPipelines = leadTimeForChanges
 			.getLeadTimeForChangesOfPipelines();
+		String leadTimeForChangesTitle = "Lead time for changes";
 		leadTimeForChangesOfPipelines.forEach(pipeline -> {
 			String pipelineStep = pipeline.getStep().replaceAll(":\\w+: ", "");
-			rows.add(new String[] { "Lead time for changes",
+			rows.add(new String[] { leadTimeForChangesTitle,
 					pipeline.getName() + " / " + pipelineStep + " / PR Lead Time",
 					DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(pipeline.getPrLeadTime(), HOURS)) });
-			rows.add(new String[] { "Lead time for changes",
+			rows.add(new String[] { leadTimeForChangesTitle,
 					pipeline.getName() + " / " + pipelineStep + " / Pipeline Lead Time",
 					DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(pipeline.getPipelineLeadTime(), HOURS)) });
-			rows.add(new String[] { "Lead time for changes",
+			rows.add(new String[] { leadTimeForChangesTitle,
 					pipeline.getName() + " / " + pipelineStep + " / Total Lead Time",
 					DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(pipeline.getTotalDelayTime(), HOURS)) });
 		});
 
 		AvgLeadTimeForChanges avgLeadTimeForChanges = leadTimeForChanges.getAvgLeadTimeForChanges();
 		if (leadTimeForChangesOfPipelines.size() > 1) {
-			rows.add(new String[] { "Lead time for changes", avgLeadTimeForChanges.getName() + " / PR Lead Time",
+			rows.add(new String[] { leadTimeForChangesTitle, avgLeadTimeForChanges.getName() + " / PR Lead Time",
 					DecimalUtil
 						.formatDecimalTwo(TimeUtils.minutesToUnit(avgLeadTimeForChanges.getPrLeadTime(), HOURS)) });
-			rows.add(new String[] { "Lead time for changes", avgLeadTimeForChanges.getName() + " / Pipeline Lead Time",
+			rows.add(new String[] { leadTimeForChangesTitle, avgLeadTimeForChanges.getName() + " / Pipeline Lead Time",
 					DecimalUtil.formatDecimalTwo(
 							TimeUtils.minutesToUnit(avgLeadTimeForChanges.getPipelineLeadTime(), HOURS)) });
-			rows.add(new String[] { "Lead time for changes", avgLeadTimeForChanges.getName() + " / Total Lead Time",
+			rows.add(new String[] { leadTimeForChangesTitle, avgLeadTimeForChanges.getName() + " / Total Lead Time",
 					DecimalUtil
 						.formatDecimalTwo(TimeUtils.minutesToUnit(avgLeadTimeForChanges.getTotalDelayTime(), HOURS)) });
 		}
