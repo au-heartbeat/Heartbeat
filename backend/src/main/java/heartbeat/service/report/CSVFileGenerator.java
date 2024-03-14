@@ -140,12 +140,12 @@ public class CSVFileGenerator {
 				}
 			}
 			catch (IOException e) {
-				log.error("Failed to write file", e);
+				log.error("Failed to write pipeline file", e);
 				throw new FileIOException(e);
 			}
 		}
 		else {
-			throw new GenerateReportException("Failed to generate csv file,invalid csvTimestamp");
+			throw new GenerateReportException("Failed to generate pipeline csv file, invalid csvTimestamp");
 		}
 	}
 
@@ -192,12 +192,12 @@ public class CSVFileGenerator {
 
 			}
 			catch (IOException e) {
-				log.error("Failed to write file", e);
+				log.error("Failed to write board file", e);
 				throw new FileIOException(e);
 			}
 		}
 		else {
-			throw new GenerateReportException("Failed to generate csv file,invalid csvTimestamp");
+			throw new GenerateReportException("Failed to generate board csv file, invalid csvTimestamp");
 		}
 	}
 
@@ -381,12 +381,12 @@ public class CSVFileGenerator {
 				csvWriter.writeAll(convertReportResponseToCSVRows(reportResponse));
 			}
 			catch (IOException e) {
-				log.error("Failed to write file", e);
+				log.error("Failed to write metric file", e);
 				throw new FileIOException(e);
 			}
 		}
 		else {
-			throw new GenerateReportException("Failed to generate csv file,invalid csvTimestamp");
+			throw new GenerateReportException("Failed to generate metric csv file, invalid csvTimestamp");
 		}
 	}
 
