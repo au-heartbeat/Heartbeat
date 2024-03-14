@@ -19,6 +19,7 @@ import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
+import { StyledTitleWrapper } from '@src/containers/ConfigStep/style';
 import { findCaseInsensitiveType } from '@src/utils/util';
 import { FormEvent, useMemo, useState } from 'react';
 import { Loading } from '@src/components/Loading';
@@ -126,54 +127,54 @@ export const PipelineTool = () => {
   );
 
   return (
-    <>
-      <TimeoutAlert
-        isShowAlert={isShowAlert}
-        isVerifyTimeOut={isVerifyTimeOut}
-        setIsShowAlert={setIsShowAlert}
-        moduleType={'PipelineTool'}
-      />
-      <ConfigSectionContainer aria-label='Pipeline Tool Config'>
-        {isLoading && <Loading />}
+    <ConfigSectionContainer aria-label='Pipeline Tool Config'>
+      {isLoading && <Loading />}
+      <StyledTitleWrapper>
         <ConfigSelectionTitle>{CONFIG_TITLE.PIPELINE_TOOL}</ConfigSelectionTitle>
-        <StyledForm onSubmit={onSubmit} onReset={onReset}>
-          <StyledTypeSelections variant='standard' required>
-            <InputLabel id='pipelineTool-type-checkbox-label'>Pipeline Tool</InputLabel>
-            <Select
-              labelId='pipelineTool-type-checkbox-label'
-              aria-label='Pipeline Tool type select'
-              value={fields[FIELD_KEY.TYPE].value}
-              onChange={(e) => onSelectUpdate(e.target.value)}
-            >
-              {Object.values(PIPELINE_TOOL_TYPES).map((toolType) => (
-                <MenuItem key={toolType} value={toolType}>
-                  <ListItemText primary={toolType} />
-                </MenuItem>
-              ))}
-            </Select>
-          </StyledTypeSelections>
-          <StyledTextField
-            data-testid='pipelineToolTextField'
-            key={fields[FIELD_KEY.TOKEN].key}
-            required
-            label={fields[FIELD_KEY.TOKEN].key}
-            variant='standard'
-            type='password'
-            inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
-            value={fields[FIELD_KEY.TOKEN].value}
-            onFocus={(e) => onInputFocus(e.target.value)}
-            onChange={(e) => onInputUpdate(e.target.value)}
-            error={!!fields[FIELD_KEY.TOKEN].validatedError || !!verifiedError}
-            helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
-          />
-          <ConfigButtonGrop
-            isVerifyTimeOut={isVerifyTimeOut}
-            isVerified={isVerified}
-            isDisableVerifyButton={isDisableVerifyButton}
-            isLoading={isLoading}
-          />
-        </StyledForm>
-      </ConfigSectionContainer>
-    </>
+        <TimeoutAlert
+          isShowAlert={isShowAlert}
+          isVerifyTimeOut={isVerifyTimeOut}
+          setIsShowAlert={setIsShowAlert}
+          moduleType={'PipelineTool'}
+        />
+      </StyledTitleWrapper>
+      <StyledForm onSubmit={onSubmit} onReset={onReset}>
+        <StyledTypeSelections variant='standard' required>
+          <InputLabel id='pipelineTool-type-checkbox-label'>Pipeline Tool</InputLabel>
+          <Select
+            labelId='pipelineTool-type-checkbox-label'
+            aria-label='Pipeline Tool type select'
+            value={fields[FIELD_KEY.TYPE].value}
+            onChange={(e) => onSelectUpdate(e.target.value)}
+          >
+            {Object.values(PIPELINE_TOOL_TYPES).map((toolType) => (
+              <MenuItem key={toolType} value={toolType}>
+                <ListItemText primary={toolType} />
+              </MenuItem>
+            ))}
+          </Select>
+        </StyledTypeSelections>
+        <StyledTextField
+          data-testid='pipelineToolTextField'
+          key={fields[FIELD_KEY.TOKEN].key}
+          required
+          label={fields[FIELD_KEY.TOKEN].key}
+          variant='standard'
+          type='password'
+          inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
+          value={fields[FIELD_KEY.TOKEN].value}
+          onFocus={(e) => onInputFocus(e.target.value)}
+          onChange={(e) => onInputUpdate(e.target.value)}
+          error={!!fields[FIELD_KEY.TOKEN].validatedError || !!verifiedError}
+          helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
+        />
+        <ConfigButtonGrop
+          isVerifyTimeOut={isVerifyTimeOut}
+          isVerified={isVerified}
+          isDisableVerifyButton={isDisableVerifyButton}
+          isLoading={isLoading}
+        />
+      </StyledForm>
+    </ConfigSectionContainer>
   );
 };

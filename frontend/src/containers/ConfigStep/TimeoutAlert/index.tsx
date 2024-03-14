@@ -1,5 +1,6 @@
 import { StyledAlert, StyledTypography } from '@src/containers/ConfigStep/TimeoutAlert/style';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 interface PropsInterface {
   isVerifyTimeOut: boolean;
   isShowAlert: boolean;
@@ -11,7 +12,7 @@ export const TimeoutAlert = ({ isVerifyTimeOut, isShowAlert, setIsShowAlert, mod
     <>
       {isVerifyTimeOut && isShowAlert && (
         <StyledAlert
-          icon={<HighlightOffIcon fontSize='inherit' />}
+          icon={<CancelIcon fontSize='inherit' />}
           severity='error'
           onClose={() => {
             setIsShowAlert(false);

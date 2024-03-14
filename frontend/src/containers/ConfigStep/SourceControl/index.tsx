@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
+import { StyledTitleWrapper } from '@src/containers/ConfigStep/style';
 import { DEFAULT_HELPER_TEXT } from '@src/constants/commons';
 import { findCaseInsensitiveType } from '@src/utils/util';
 import { FormEvent, useMemo, useState } from 'react';
@@ -111,49 +112,49 @@ export const SourceControl = () => {
   );
 
   return (
-    <>
-      <TimeoutAlert
-        isShowAlert={isShowAlert}
-        isVerifyTimeOut={isVerifyTimeOut}
-        setIsShowAlert={setIsShowAlert}
-        moduleType={'Source Control'}
-      />
-      <ConfigSectionContainer aria-label='Source Control Config'>
-        {isLoading && <Loading />}
+    <ConfigSectionContainer aria-label='Source Control Config'>
+      {isLoading && <Loading />}
+      <StyledTitleWrapper>
         <ConfigSelectionTitle>{CONFIG_TITLE.SOURCE_CONTROL}</ConfigSelectionTitle>
-        <StyledForm onSubmit={onSubmit} onReset={onReset}>
-          <StyledTypeSelections variant='standard' required>
-            <InputLabel id='sourceControl-type-checkbox-label'>Source Control</InputLabel>
-            <Select labelId='sourceControl-type-checkbox-label' value={fields[FIELD_KEY.TYPE].value}>
-              {Object.values(SOURCE_CONTROL_TYPES).map((toolType) => (
-                <MenuItem key={toolType} value={toolType}>
-                  <ListItemText primary={toolType} />
-                </MenuItem>
-              ))}
-            </Select>
-          </StyledTypeSelections>
-          <StyledTextField
-            data-testid='sourceControlTextField'
-            key={fields[FIELD_KEY.TOKEN].key}
-            required
-            label={fields[FIELD_KEY.TOKEN].key}
-            variant='standard'
-            type='password'
-            inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
-            value={fields[FIELD_KEY.TOKEN].value}
-            onFocus={(e) => onInputFocus(e.target.value)}
-            onChange={(e) => onInputChange(e.target.value)}
-            error={!!fields[FIELD_KEY.TOKEN].validatedError || !!verifiedError}
-            helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
-          />
-          <ConfigButtonGrop
-            isVerifyTimeOut={isVerifyTimeOut}
-            isVerified={isVerified}
-            isDisableVerifyButton={isDisableVerifyButton}
-            isLoading={isLoading}
-          />
-        </StyledForm>
-      </ConfigSectionContainer>
-    </>
+        <TimeoutAlert
+          isShowAlert={isShowAlert}
+          isVerifyTimeOut={isVerifyTimeOut}
+          setIsShowAlert={setIsShowAlert}
+          moduleType={'Source Control'}
+        />
+      </StyledTitleWrapper>
+      <StyledForm onSubmit={onSubmit} onReset={onReset}>
+        <StyledTypeSelections variant='standard' required>
+          <InputLabel id='sourceControl-type-checkbox-label'>Source Control</InputLabel>
+          <Select labelId='sourceControl-type-checkbox-label' value={fields[FIELD_KEY.TYPE].value}>
+            {Object.values(SOURCE_CONTROL_TYPES).map((toolType) => (
+              <MenuItem key={toolType} value={toolType}>
+                <ListItemText primary={toolType} />
+              </MenuItem>
+            ))}
+          </Select>
+        </StyledTypeSelections>
+        <StyledTextField
+          data-testid='sourceControlTextField'
+          key={fields[FIELD_KEY.TOKEN].key}
+          required
+          label={fields[FIELD_KEY.TOKEN].key}
+          variant='standard'
+          type='password'
+          inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
+          value={fields[FIELD_KEY.TOKEN].value}
+          onFocus={(e) => onInputFocus(e.target.value)}
+          onChange={(e) => onInputChange(e.target.value)}
+          error={!!fields[FIELD_KEY.TOKEN].validatedError || !!verifiedError}
+          helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
+        />
+        <ConfigButtonGrop
+          isVerifyTimeOut={isVerifyTimeOut}
+          isVerified={isVerified}
+          isDisableVerifyButton={isDisableVerifyButton}
+          isLoading={isLoading}
+        />
+      </StyledForm>
+    </ConfigSectionContainer>
   );
 };
