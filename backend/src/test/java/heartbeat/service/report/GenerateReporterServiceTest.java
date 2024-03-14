@@ -501,7 +501,7 @@ class GenerateReporterServiceTest {
 				.considerHoliday(false)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(List.of("deployment frequency", "change failure rate", "mean time to recovery"))
+				.metrics(List.of("deployment frequency", "dev change failure rate", "dev mean time to recovery"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
 				.build();
@@ -544,7 +544,7 @@ class GenerateReporterServiceTest {
 				.considerHoliday(false)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(List.of("change failure rate"))
+				.metrics(List.of("dev change failure rate"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
 				.build();

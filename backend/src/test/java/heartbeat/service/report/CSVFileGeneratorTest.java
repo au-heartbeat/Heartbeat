@@ -461,12 +461,12 @@ class CSVFileGeneratorTest {
 						"Lead time for changes","Average / PR Lead Time","0"
 						"Lead time for changes","Average / Pipeline Lead Time","0.05"
 						"Lead time for changes","Average / Total Lead Time","0.05"
-						"Change failure rate","Heartbeat / Deploy prod / Failure rate","0"
-						"Change failure rate","Heartbeat / Check Frontend License / Failure rate","0"
-						"Change failure rate","Average / Failure rate","0"
-						"Mean Time To Recovery","Heartbeat / Deploy prod / Mean Time To Recovery","0"
-						"Mean Time To Recovery","Heartbeat / Check Frontend License / Mean Time To Recovery","0"
-						"Mean Time To Recovery","Average / Mean Time To Recovery","0\"""");
+						"Dev change failure rate","Heartbeat / Deploy prod / Dev change failure rate","0"
+						"Dev change failure rate","Heartbeat / Check Frontend License / Dev change failure rate","0"
+						"Dev change failure rate","Average / Dev change failure rate","0"
+						"Dev mean time to recovery","Heartbeat / Deploy prod / Dev mean time to recovery","0"
+						"Dev mean time to recovery","Heartbeat / Check Frontend License / Dev mean time to recovery","0"
+						"Dev mean time to recovery","Average / Dev mean time to recovery","0\"""");
 
 		String fileName = CSVFileNameEnum.METRIC.getValue() + "-" + mockTimeStamp + ".csv";
 		Files.deleteIfExists(Path.of(fileName));
@@ -507,8 +507,8 @@ class CSVFileGeneratorTest {
 				"Lead time for changes","Heartbeat / Deploy prod / PR Lead Time","0"
 				"Lead time for changes","Heartbeat / Deploy prod / Pipeline Lead Time","0.02"
 				"Lead time for changes","Heartbeat / Deploy prod / Total Lead Time","0.02"
-				"Change failure rate","Heartbeat / Deploy prod / Failure rate","0"
-				"Mean Time To Recovery","Heartbeat / Deploy prod / Mean Time To Recovery","0\"""");
+				"Dev change failure rate","Heartbeat / Deploy prod / Dev change failure rate","0"
+				"Dev mean time to recovery","Heartbeat / Deploy prod / Dev mean time to recovery","0\"""");
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
 		Files.deleteIfExists(Path.of(fileName));
