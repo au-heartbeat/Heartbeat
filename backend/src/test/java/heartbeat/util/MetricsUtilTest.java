@@ -10,9 +10,9 @@ class MetricsUtilTest {
 
 	@Test
 	void shouldGetRelatedPartMetrics() {
-		List<String> kanbanMetrics = MetricsUtil.KANBAN_METRICS;
-		List<String> buildKiteMetrics = MetricsUtil.BUILDKITE_METRICS;
-		List<String> codebaseMetrics = MetricsUtil.CODEBASE_METRICS;
+		List<String> kanbanMetrics = MetricsUtil.KANBAN_METRICS.getValue();
+		List<String> buildKiteMetrics = MetricsUtil.BUILDKITE_METRICS.getValue();
+		List<String> codebaseMetrics = MetricsUtil.CODEBASE_METRICS.getValue();
 
 		List<String> expectedKanbanMetrics = List.of(MetricEnum.VELOCITY.getValue(), MetricEnum.CYCLE_TIME.getValue(),
 				MetricEnum.CLASSIFICATION.getValue());
