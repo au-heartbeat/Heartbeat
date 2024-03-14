@@ -1,12 +1,12 @@
 import { devMeanTimeToRecoveryMapper } from '@src/hooks/reportMapper/devMeanTimeToRecovery';
 
-describe('mean time to recovery data mapper', () => {
+describe('dev mean time to recovery data mapper', () => {
   const mockDevMeanTimeToRecovery = {
     avgDevMeanTimeToRecovery: {
       name: 'Average',
       timeToRecovery: 162120031.8,
     },
-    meanTimeRecoveryPipelines: [
+    devMeanTimeToRecoveryOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
@@ -14,14 +14,14 @@ describe('mean time to recovery data mapper', () => {
       },
     ],
   };
-  it('maps response change failure rate values to ui display value', () => {
+  it('maps response dev change failure rate values to ui display value', () => {
     const expectedDevMeanTimeToRecovery = [
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
         valuesList: [
           {
-            name: 'Mean Time To Recovery',
+            name: 'Dev mean time to recovery',
             value: '45.03',
           },
         ],
@@ -31,7 +31,7 @@ describe('mean time to recovery data mapper', () => {
         name: 'Average',
         valuesList: [
           {
-            name: 'Mean Time To Recovery',
+            name: 'Dev mean time to recovery',
             value: '45.03',
           },
         ],
@@ -48,7 +48,7 @@ describe('mean time to recovery data mapper', () => {
         name: 'Average',
         timeToRecovery: 0.32,
       },
-      meanTimeRecoveryPipelines: [
+      devMeanTimeToRecoveryOfPipelines: [
         {
           name: 'fs-platform-onboarding',
           step: ' :shipit: deploy to PROD',
@@ -62,7 +62,7 @@ describe('mean time to recovery data mapper', () => {
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
         valuesList: [
           {
-            name: 'Mean Time To Recovery',
+            name: 'Dev mean time to recovery',
             value: '0.00',
           },
         ],
@@ -72,7 +72,7 @@ describe('mean time to recovery data mapper', () => {
         name: 'Average',
         valuesList: [
           {
-            name: 'Mean Time To Recovery',
+            name: 'Dev mean time to recovery',
             value: '0.00',
           },
         ],
@@ -89,7 +89,7 @@ describe('mean time to recovery data mapper', () => {
         name: 'Average',
         timeToRecovery: 0,
       },
-      meanTimeRecoveryPipelines: [
+      devMeanTimeToRecoveryOfPipelines: [
         {
           name: 'fs-platform-onboarding',
           step: ' :shipit: deploy to PROD',
@@ -103,7 +103,7 @@ describe('mean time to recovery data mapper', () => {
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
         valuesList: [
           {
-            name: 'Mean Time To Recovery',
+            name: 'Dev mean time to recovery',
             value: '0.00',
           },
         ],
@@ -113,7 +113,7 @@ describe('mean time to recovery data mapper', () => {
         name: 'Average',
         valuesList: [
           {
-            name: 'Mean Time To Recovery',
+            name: 'Dev mean time to recovery',
             value: '0.00',
           },
         ],

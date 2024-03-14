@@ -1,6 +1,6 @@
 import { devChangeFailureRateMapper } from '@src/hooks/reportMapper/devChangeFailureRate';
 
-describe('change failure rate data mapper', () => {
+describe('dev change failure rate data mapper', () => {
   const mockDevChangeFailureRateRes = {
     avgDevChangeFailureRate: {
       name: 'Average',
@@ -18,14 +18,14 @@ describe('change failure rate data mapper', () => {
       },
     ],
   };
-  it('maps response change failure rate values to ui display value', () => {
+  it('maps response dev change failure rate values to ui display value', () => {
     const expectedDevChangeFailureRateValues = [
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
         valuesList: [
           {
-            name: 'Failure rate',
+            name: 'Dev change failure rate',
             value: '0.00%(0/3)',
           },
         ],
@@ -35,7 +35,7 @@ describe('change failure rate data mapper', () => {
         name: 'Average',
         valuesList: [
           {
-            name: 'Failure rate',
+            name: 'Dev change failure rate',
             value: '0.00%(0/12)',
           },
         ],

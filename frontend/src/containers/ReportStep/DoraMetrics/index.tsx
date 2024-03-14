@@ -155,7 +155,7 @@ const DoraMetrics = ({
             items: devMeanTimeToRecovery && [
               {
                 value: formatMillisecondsToHours(devMeanTimeToRecovery.avgDevMeanTimeToRecovery.timeToRecovery),
-                subtitle: METRICS_SUBTITLE.MEAN_TIME_TO_RECOVERY_HOURS,
+                subtitle: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
               },
             ],
           },

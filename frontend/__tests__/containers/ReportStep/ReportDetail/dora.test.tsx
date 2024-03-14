@@ -59,14 +59,14 @@ describe('DoraDetail', () => {
     });
   });
 
-  describe('Change Failure Rate', () => {
+  describe('Dev Change Failure Rate', () => {
     it('should show devChangeFailureRateList when devChangeFailureRateList data is existing', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         devChangeFailureRateList: [{ id: 0, name: 'name1', valuesList: [{ name: 'test1', value: 1 }] }],
       });
       render(<DoraDetail data={data} onBack={jest.fn()} />);
-      const devChangeFailureRateTable = screen.getByTestId('Change Failure Rate');
-      expect(screen.getByText('Change Failure Rate')).toBeInTheDocument();
+      const devChangeFailureRateTable = screen.getByTestId('Dev Change Failure Rate');
+      expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
       expect(devChangeFailureRateTable).toBeInTheDocument();
       expect(within(devChangeFailureRateTable).queryAllByTestId('tr').length).toBe(2);
     });
@@ -76,18 +76,18 @@ describe('DoraDetail', () => {
         devChangeFailureRateList: null,
       });
       render(<DoraDetail data={data} onBack={jest.fn()} />);
-      expect(screen.queryAllByText('Change Failure Rate').length).toEqual(0);
+      expect(screen.queryAllByText('Dev Change Failure Rate').length).toEqual(0);
     });
   });
 
-  describe('Mean Time To Recovery', () => {
+  describe('Dev Mean Time To Recovery', () => {
     it('should show devMeanTimeToRecoveryList when devMeanTimeToRecoveryList data is existing', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         devMeanTimeToRecoveryList: [{ id: 0, name: 'name1', valuesList: [{ name: 'test1', value: 1 }] }],
       });
       render(<DoraDetail data={data} onBack={jest.fn()} />);
-      const devMeanTimeToRecoveryTable = screen.getByTestId('Mean Time To Recovery');
-      expect(screen.getByText('Mean Time To Recovery')).toBeInTheDocument();
+      const devMeanTimeToRecoveryTable = screen.getByTestId('Dev Mean Time To Recovery');
+      expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
       expect(devMeanTimeToRecoveryTable).toBeInTheDocument();
       expect(within(devMeanTimeToRecoveryTable).queryAllByTestId('tr').length).toBe(2);
     });
@@ -97,7 +97,7 @@ describe('DoraDetail', () => {
         devMeanTimeToRecoveryList: null,
       });
       render(<DoraDetail data={data} onBack={jest.fn()} />);
-      expect(screen.queryAllByText('Mean Time To Recovery').length).toEqual(0);
+      expect(screen.queryAllByText('Dev Mean Time To Recovery').length).toEqual(0);
     });
   });
 });

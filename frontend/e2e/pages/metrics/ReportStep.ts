@@ -47,9 +47,9 @@ export class ReportStep {
     this.deploymentFrequency = this.page.locator(
       '[data-test-id="Deployment Frequency"] [data-test-id="report-section"]',
     );
-    this.failureRate = this.page.locator('[data-test-id="Change Failure Rate"] [data-test-id="report-section"]');
+    this.failureRate = this.page.locator('[data-test-id="Dev Change Failure Rate"] [data-test-id="report-section"]');
     this.devMeanTimeToRecovery = this.page.locator(
-      '[data-test-id="Mean Time To Recovery"] [data-test-id="report-section"]',
+      '[data-test-id="Dev Mean Time To Recovery"] [data-test-id="report-section"]',
     );
     this.showMoreLinks = this.page.getByText('show more >');
     this.previousButton = page.getByRole('button', { name: 'Previous' });
@@ -62,8 +62,8 @@ export class ReportStep {
     this.cycleTimeRows = this.page.getByTestId('Cycle Time').locator('tbody').getByRole('row');
     this.classificationRows = this.page.getByTestId('Classification').locator('tbody').getByRole('row');
     this.leadTimeForChangesRows = this.page.getByTestId('Lead Time For Changes').getByRole('row');
-    this.devChangeFailureRateRows = this.page.getByTestId('Change Failure Rate').getByRole('row');
-    this.devMeanTimeToRecoveryRows = this.page.getByTestId('Mean Time To Recovery').getByRole('row');
+    this.devChangeFailureRateRows = this.page.getByTestId('Dev Change Failure Rate').getByRole('row');
+    this.devMeanTimeToRecoveryRows = this.page.getByTestId('Dev Mean Time To Recovery').getByRole('row');
   }
   combineStrings(arr: string[]): string {
     return arr.join('');
@@ -89,7 +89,7 @@ export class ReportStep {
     );
 
     await expect(this.devMeanTimeToRecoveryRows.nth(2)).toContainText(
-      this.combineStrings(['Mean Time To Recovery', '1.90']),
+      this.combineStrings(['Dev Mean Time To Recovery', '1.90']),
     );
   }
 
@@ -251,7 +251,7 @@ export class ReportStep {
     await expect(this.totalLeadTime).toContainText(`${totalLeadTime}Total Lead Time(Hours)`);
     await expect(this.deploymentFrequency).toContainText(`${deploymentFrequency}Deployment Frequency(Deployments/Day)`);
     await expect(this.failureRate).toContainText(`${failureRate}Failure Rate`);
-    await expect(this.devMeanTimeToRecovery).toContainText(`${devMeanTimeToRecovery}Mean Time To Recovery(Hours)`);
+    await expect(this.devMeanTimeToRecovery).toContainText(`${devMeanTimeToRecovery}Dev Mean Time To Recovery(Hours)`);
   }
 
   async checkMetricDownloadData() {
