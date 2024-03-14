@@ -250,11 +250,20 @@ jobs:
           echo "Last committer name: $LAST_COMMITTER_NAME"
           echo "LAST_COMMITTER_NAME=${LAST_COMMITTER_NAME}" >> $GITHUB_ENV
 
-      - name: Print Committer Name and Email
+      - name: Print Committer Name
         run: |
-          if [ "${{ github.event.pusher.name }}" != "$LAST_COMMITTER_NAME" ]; then
-            echo "no match"
-            echo "$LAST_COMMITTER_NAME"
+          LAST_COMMITTER_NAME=$(git log -1 --pretty=format:'%an' HEAD^)
+          CURRENT_COMMITTER_NAME="${{ github.actor }}"  # 或者使用 github.event.pusher.name，取决于情景
+
+          echo "Last Committer Name: $LAST_COMMITTER_NAME"
+          echo "Current Committer Name: $CURRENT_COMMITTER_NAME"
+
+          if [ "$CURRENT_COMMITTER_NAME" != "$LAST_COMMITTER_NAME" ]; then
+            echo "No match"
+            echo "Last Commit was made by: $LAST_COMMITTER_NAME"
+          else
+            echo "Match"
+            echo "Both commits were made by: $CURRENT_COMMITTER_NAME"
           fi
 
   # images-check:
