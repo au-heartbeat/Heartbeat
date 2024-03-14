@@ -262,6 +262,7 @@ jobs:
           if [ "$CURRENT_ACTOR" != "$LATEST_COMMIT" ]; then
             echo "No match"
             echo "The last commit was made by: $LATEST_COMMIT"
+            exit 1
           else
             echo "Match"
             echo "Both actions were performed by: $CURRENT_ACTOR"
