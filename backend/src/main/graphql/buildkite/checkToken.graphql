@@ -1,9 +1,0 @@
-query Organization($slug: ID, $first: Int) {
-  organization(slug: $slug) {
-    apiAccessTokens(first: $first) {
-      nodes {
-        scopes
-      }
-    }
-  }
-}
