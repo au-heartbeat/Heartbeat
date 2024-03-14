@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AvgDevMeanTimeToRecovery {
 
-	private final String name = "Average";
+	public static final String NAME = "Average";
 
 	private BigDecimal timeToRecovery;
 

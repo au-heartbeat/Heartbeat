@@ -33,7 +33,7 @@ class CalculateDevChangeFailureRateTest {
 	private DevChangeFailureRateCalculator devChangeFailureRate;
 
 	@Test
-	public void testCalculateDevChangeFailureRate() {
+	void testCalculateDevChangeFailureRate() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
 			.withPassed(List.of(DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build(),
 					DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build()))
@@ -48,7 +48,7 @@ class CalculateDevChangeFailureRateTest {
 	}
 
 	@Test
-	public void testCalculateDevChangeFailureRateWhenTotalDeployInfosTimesIsZero() {
+	void testCalculateDevChangeFailureRateWhenTotalDeployInfosTimesIsZero() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
 			.withPassed(Collections.emptyList())
 			.withFailed(Collections.emptyList())
@@ -57,12 +57,12 @@ class CalculateDevChangeFailureRateTest {
 		DevChangeFailureRate devChangeFailureRate = this.devChangeFailureRate.calculate(List.of(mockedDeployTimes));
 
 		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getFailureRate()).isEqualTo(0.0F);
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalFailedTimes()).isEqualTo(0);
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalTimes()).isEqualTo(0);
+		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalFailedTimes()).isZero();
+		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalTimes()).isZero();
 	}
 
 	@Test
-	public void testCalculateDevChangeFailureRateWhenHavePassedDeployInfoWhoseJobNameIsNotEqualToPipelineStep() {
+	void testCalculateDevChangeFailureRateWhenHavePassedDeployInfoWhoseJobNameIsNotEqualToPipelineStep() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
 			.withPassed(List.of(DeployInfoBuilder.withDefault()
 				.withJobName(OTHER_JOB_NAME)

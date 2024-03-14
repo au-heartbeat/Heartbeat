@@ -557,15 +557,15 @@ public class CSVFileGenerator {
 		List<String[]> rows = new ArrayList<>();
 		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = devMeanTimeToRecovery
 			.getDevMeanTimeToRecoveryOfPipelines();
-		devMeanTimeToRecoveryOfPipelines.forEach(pipeline -> rows.add(new String[] { "Dev mean Time To Recovery",
-				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev mean Time To Recovery",
+		devMeanTimeToRecoveryOfPipelines.forEach(pipeline -> rows.add(new String[] { "Dev mean time to recovery",
+				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev mean time to recovery",
 				DecimalUtil
 					.formatDecimalTwo(TimeUtils.millisToUnit(pipeline.getTimeToRecovery().doubleValue(), HOURS)) }));
 
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = devMeanTimeToRecovery.getAvgDevMeanTimeToRecovery();
 		if (devMeanTimeToRecoveryOfPipelines.size() > 1)
 			rows.add(new String[] { "Dev mean time to recovery",
-					avgDevMeanTimeToRecovery.getName() + " / Dev mean time to recovery",
+					AvgDevMeanTimeToRecovery.NAME + " / Dev mean time to recovery",
 					DecimalUtil.formatDecimalTwo(TimeUtils
 						.millisToUnit(avgDevMeanTimeToRecovery.getTimeToRecovery().doubleValue(), HOURS)) });
 
