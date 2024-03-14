@@ -16,6 +16,7 @@ import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.BoardType;
 import heartbeat.controller.board.dto.request.BoardVerifyRequestParam;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
+import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
 import heartbeat.controller.board.dto.request.ReworkTimesSetting;
 import heartbeat.controller.board.dto.request.StoryPointsAndCycleTimeRequest;
 import heartbeat.controller.board.dto.response.BoardConfigDTO;
@@ -1116,8 +1117,10 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = INCORRECT_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
 			.build();
 
+		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
+		List<String> users = List.of("Zhang San");
 		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), null))
+				storyPointsAndCycleTimeRequest, boardColumns, users, null))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Board type does not find!");
 	}
@@ -1192,8 +1195,10 @@ class JiraServiceTest {
 			.thenReturn(allDoneCards);
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(FIELD_RESPONSE_BUILDER().build());
 
+		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
+		List<String> users = List.of("Zhang San");
 		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), null))
+				storyPointsAndCycleTimeRequest, boardColumns, users, null))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Type does not find!");
 	}
