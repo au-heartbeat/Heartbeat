@@ -658,8 +658,7 @@ public class JiraService {
 			.toList();
 	}
 
-	private Map<String, CardStepsEnum> buildBoardStateMap(
-			List<RequestJiraBoardColumnSetting> boardColumns) {
+	private Map<String, CardStepsEnum> buildBoardStateMap(List<RequestJiraBoardColumnSetting> boardColumns) {
 		return boardColumns.stream()
 			.collect(Collectors.toMap(boardColumn -> boardColumn.getName().toUpperCase(),
 					boardColumn -> CardStepsEnum.fromValue(boardColumn.getValue())));
@@ -690,8 +689,7 @@ public class JiraService {
 	private void calculateReworkTimesMap(CardStepsEnum reworkState, Set<CardStepsEnum> excludedStates,
 			Map<CardStepsEnum, Integer> reworkTimesMap, HistoryDetail jiraCardHistoryItem,
 			Map<String, CardStepsEnum> stateMap) {
-		CardStepsEnum from = convertBoardStateToEnumState(jiraCardHistoryItem.getFrom().getDisplayName(),
-				stateMap);
+		CardStepsEnum from = convertBoardStateToEnumState(jiraCardHistoryItem.getFrom().getDisplayName(), stateMap);
 		CardStepsEnum to = convertBoardStateToEnumState(jiraCardHistoryItem.getTo().getDisplayName(), stateMap);
 		calculateTimes(reworkState, excludedStates, reworkTimesMap, from, to);
 	}
