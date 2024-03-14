@@ -30,11 +30,6 @@ export interface ReportRequestDTO extends IBasicReportRequestDTO {
   };
 }
 
-interface ReworkSettingsRequest {
-  reworkState?: string | null;
-  excludedStates?: string[];
-}
-
 export interface IBasicReportRequestDTO {
   considerHoliday: boolean;
   startTime: string | null;
