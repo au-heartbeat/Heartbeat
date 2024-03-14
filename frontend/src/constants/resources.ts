@@ -40,6 +40,7 @@ export enum REQUIRED_DATA {
   VELOCITY = 'Velocity',
   CYCLE_TIME = 'Cycle time',
   CLASSIFICATION = 'Classification',
+  REWORK_TIMES = 'Rework times',
   LEAD_TIME_FOR_CHANGES = 'Lead time for changes',
   DEPLOYMENT_FREQUENCY = 'Deployment frequency',
   CHANGE_FAILURE_RATE = 'Change failure rate',
@@ -144,6 +145,16 @@ export const CYCLE_TIME_LIST = [
   METRICS_CONSTANTS.testingValue,
   METRICS_CONSTANTS.reviewValue,
   METRICS_CONSTANTS.doneValue,
+];
+
+export const REWORK_TIME_LIST = [
+  METRICS_CONSTANTS.todoValue,
+  METRICS_CONSTANTS.analysisValue,
+  METRICS_CONSTANTS.inDevValue,
+  METRICS_CONSTANTS.blockValue,
+  METRICS_CONSTANTS.waitingValue,
+  METRICS_CONSTANTS.testingValue,
+  METRICS_CONSTANTS.reviewValue,
 ];
 
 export const TOKEN_HELPER_TEXT = {
