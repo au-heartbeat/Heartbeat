@@ -264,6 +264,8 @@ jobs:
                 echo "But The Committer Match, So Let Go"
                 echo "Both actions were performed by: $CURRENT_ACTOR"
               fi
+            else
+              echo "BuildKite build was successful, feel free to merge!"
             fi
 
   images-check:
