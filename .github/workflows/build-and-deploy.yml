@@ -244,16 +244,13 @@ jobs:
            exit 1
          fi
 
-      - name: Check for Username Match with GitHub API on Specific Branch
+      - name: Check for Username Match with GitHub API
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 替换 YOUR_BRANCH_NAME 为你需要检查的分支名
-          SPECIFIC_BRANCH="ADM-857-w"
-          
-          # 使用GitHub API获取特定分支的最近的commit信息
+          # 使用GitHub API获取最近的commit信息
           LATEST_COMMIT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/${{ github.repository }}/commits?sha=${SPECIFIC_BRANCH}&per_page=1" | jq -r '.[0].author.login')
+          "https://api.github.com/repos/${{ github.repository }}/commits?per_page=1" | jq -r '.[0].author.login')
           
           # 获取当前trigger的GitHub用户名
           CURRENT_ACTOR="${{ github.actor }}"
@@ -264,11 +261,13 @@ jobs:
           # 比较用户名
           if [ "$CURRENT_ACTOR" != "$LATEST_COMMIT" ]; then
             echo "No match"
-            echo "The last commit was made by: $LATEST_COMMIT on branch $SPECIFIC_BRANCH"
+            echo "The last commit was made by: $LATEST_COMMIT"
           else
             echo "Match"
-            echo "Both actions were performed by: $CURRENT_ACTOR on branch $SPECIFIC_BRANCH"
+            echo "Both actions were performed by: $CURRENT_ACTOR"
           fi
+
+
 
   # images-check:
   #   runs-on: ubuntu-latest
