@@ -158,7 +158,7 @@ class GenerateReporterServiceTest {
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder()
 					.reworkTimesSetting(
-							ReworkTimesSetting.builder().reworkState("In Dev").excludeStates(List.of()).build())
+							ReworkTimesSetting.builder().reworkState("In Dev").excludedStates(List.of()).build())
 					.build())
 				.csvTimeStamp(TIMESTAMP)
 				.build();
