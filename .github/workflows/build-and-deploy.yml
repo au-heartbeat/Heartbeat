@@ -250,7 +250,7 @@ jobs:
         run: |
           SPECIFIC_BRANCH="ADM-857-w"
 
-          LATEST_COMMIT="${{ github.event.pull_request.user.login }}"
+          LATEST_COMMIT="${{ github.event.commits[0].author.name }}"
 
           CURRENT_ACTOR="${{ github.actor }}"
 
