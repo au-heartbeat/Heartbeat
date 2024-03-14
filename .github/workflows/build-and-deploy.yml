@@ -248,9 +248,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # 定义GitHub API的URL和头信息
+          API_URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits?per_page=1"
+          AUTH_HEADER="Authorization: token $GITHUB_TOKEN"
+          
           # 获取PR最后一次提交的GitHub用户名
-          PR_LAST_COMMIT_AUTHOR=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits?per_page=1" | jq -r '.[0].author.login')
+          PR_LAST_COMMIT_RESPONSE=$(curl -s -H "$AUTH_HEADER" "$API_URL")
+          PR_LAST_COMMIT_AUTHOR=$(echo "$PR_LAST_COMMIT_RESPONSE" | jq -r '.[0].author.login')
+
+          if [[ "$PR_LAST_COMMIT_AUTHOR" == "null" || -z "$PR_LAST_COMMIT_AUTHOR" ]]; then
+            echo "Error: Unable to fetch the last commit author."
+            exit 1
+          fi
           
           # 获取PR合并者的GitHub用户名
           PR_MERGER="${{ github.event.pull_request.merged_by.login }}"
