@@ -23,7 +23,6 @@ import heartbeat.exception.PermissionDenyException;
 import heartbeat.util.TimeUtil;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
