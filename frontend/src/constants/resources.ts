@@ -27,6 +27,7 @@ export const BOARD_METRICS_MAPPING: Record<string, string> = {
   'Cycle time': 'cycleTime',
   Velocity: 'velocity',
   Classification: 'classificationList',
+  'Rework times': 'rework',
 };
 
 export const DORA_METRICS_MAPPING: Record<string, string> = {
