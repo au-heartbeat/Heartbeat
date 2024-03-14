@@ -244,34 +244,9 @@ jobs:
            exit 1
          fi
 
-      - name: Get Committer Info
-        id: committer-info
-        uses: actions/github-script@v5
-        with:
-          script: |
-            try {
-              const commit = await github.rest.repos.getCommit({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: context.sha
-              });
-              console.log(commit);
-              return {
-                name: commit.data.commit.committer.name,
-                email: commit.data.commit.committer.email
-              }
-            } catch (error) {
-              console.error(error);
-              return {
-                name: '',
-                email: ''
-              };
-            }
-
       - name: Print Committer Name and Email
         run: |
-          echo "Committer Name: ${{ steps.committer-info.outputs.name }}"
-          echo "Committer Email: ${{ steps.committer-info.outputs.email }}"
+          echo "Committer Name: ${{ github.actor }}"
     
   # images-check:
   #   runs-on: ubuntu-latest
