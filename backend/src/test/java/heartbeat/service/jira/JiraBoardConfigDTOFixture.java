@@ -565,6 +565,7 @@ public class JiraBoardConfigDTOFixture {
 			.startTime(START_TIME)
 			.endTime(END_TIME)
 			.targetFields(jiraBoardSetting.getTargetFields())
+			.boardMetrics(List.of("cycle time", "rework times"))
 			.treatFlagCardAsBlock(jiraBoardSetting.getTreatFlagCardAsBlock());
 	}
 
@@ -756,6 +757,8 @@ public class JiraBoardConfigDTOFixture {
 					new HistoryDetail(TIMESTAMP_5, "status", new Status(REVIEW), new Status(IN_DEV),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
 					new HistoryDetail(TIMESTAMP_6, "status", new Status(IN_DEV), new Status(REVIEW),
+							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null),
+					new HistoryDetail(TIMESTAMP_7, "status", new Status(IN_DEV), new Status(BLOCK),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), null)));
 	}
 
