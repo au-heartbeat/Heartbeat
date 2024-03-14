@@ -43,6 +43,7 @@ import heartbeat.controller.board.dto.response.ReworkTimesInfo;
 import heartbeat.controller.board.dto.response.StatusChangedItem;
 import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.board.dto.response.TargetField;
+import heartbeat.controller.report.dto.request.MetricEnum;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
@@ -578,20 +579,24 @@ public class JiraService {
 		jiraCards.forEach(doneCard -> {
 			CardHistoryResponseDTO cardHistoryResponseDTO = getJiraCardHistory(baseUrl, doneCard.getKey(), 0,
 					request.getToken());
-			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(cardHistoryResponseDTO, request.isTreatFlagCardAsBlock(),
-					keyFlagged, request.getStatus());
+
 			List<String> assigneeSet = getAssigneeSet(cardHistoryResponseDTO, filterMethod, doneCard);
 			if (users.stream().anyMatch(assigneeSet::contains)) {
-				JiraCardDTO jiraCardDTO = JiraCardDTO.builder()
-					.baseInfo(doneCard)
-					.cycleTime(cycleTimeInfoDTO.getCycleTimeInfos())
-					.originCycleTime(cycleTimeInfoDTO.getOriginCycleTimeInfos())
-					.cardCycleTime(calculateCardCycleTime(doneCard.getKey(), cycleTimeInfoDTO.getCycleTimeInfos(),
-							boardColumns))
-					.reworkTimesInfos(getReworkTimesInfo(cardHistoryResponseDTO, request.getReworkTimesSetting(),
-							request.isTreatFlagCardAsBlock(), boardColumns))
-					.build();
-				jiraCardDTO.calculateTotalReworkTimes();
+				CycleTimeInfoDTO cycleTimeInfoDTO;
+				JiraCardDTO jiraCardDTO = JiraCardDTO.builder().baseInfo(doneCard).build();
+				if (request.getBoardMetrics().contains(MetricEnum.CYCLE_TIME.getValue())) {
+					cycleTimeInfoDTO = getCycleTime(cardHistoryResponseDTO, request.isTreatFlagCardAsBlock(),
+							keyFlagged, request.getStatus());
+					jiraCardDTO.setCycleTime(cycleTimeInfoDTO.getCycleTimeInfos());
+					jiraCardDTO.setOriginCycleTime(cycleTimeInfoDTO.getOriginCycleTimeInfos());
+					jiraCardDTO.setCardCycleTime(calculateCardCycleTime(doneCard.getKey(),
+							cycleTimeInfoDTO.getCycleTimeInfos(), boardColumns));
+				}
+				if (request.getBoardMetrics().contains(MetricEnum.REWORK_TIMES.getValue())) {
+					jiraCardDTO.setReworkTimesInfos(getReworkTimesInfo(cardHistoryResponseDTO,
+							request.getReworkTimesSetting(), request.isTreatFlagCardAsBlock(), boardColumns));
+					jiraCardDTO.calculateTotalReworkTimes();
+				}
 				realDoneCards.add(jiraCardDTO);
 			}
 		});
@@ -604,7 +609,7 @@ public class JiraService {
 		if (Objects.isNull(reworkTimesSetting)) {
 			return List.of();
 		}
-		Map<String, CardStepsEnum> stateMap = buildBoardStateMapToHeartBeatState(boardColumns);
+		Map<String, CardStepsEnum> stateMap = buildBoardStateMap(boardColumns);
 		if (considerFlagAsBlock) {
 			return getReworkTimesInfoWhenConsiderFlagAsBlock(jiraCardHistory, reworkTimesSetting.getEnumReworkState(),
 					new HashSet<>(reworkTimesSetting.getEnumExcludeStates()), stateMap);
@@ -628,7 +633,7 @@ public class JiraService {
 			.forEach(jiraCardHistoryItem -> {
 				if (STATUS_FIELD_ID.equalsIgnoreCase(jiraCardHistoryItem.getFieldId())) {
 					currentState
-						.set(convertBoardStateToHeartBeatState(jiraCardHistoryItem.getTo().getDisplayName(), stateMap));
+						.set(convertBoardStateToEnumState(jiraCardHistoryItem.getTo().getDisplayName(), stateMap));
 					if (!hasFlag.get()) {
 						calculateReworkTimesMap(reworkState, excludedStates, reworkTimesMap, jiraCardHistoryItem,
 								stateMap);
@@ -653,7 +658,7 @@ public class JiraService {
 			.toList();
 	}
 
-	private Map<String, CardStepsEnum> buildBoardStateMapToHeartBeatState(
+	private Map<String, CardStepsEnum> buildBoardStateMap(
 			List<RequestJiraBoardColumnSetting> boardColumns) {
 		return boardColumns.stream()
 			.collect(Collectors.toMap(boardColumn -> boardColumn.getName().toUpperCase(),
@@ -664,7 +669,7 @@ public class JiraService {
 		return !excludedStates.contains(from) && reworkJudgmentMap.get(to).contains(from);
 	}
 
-	private CardStepsEnum convertBoardStateToHeartBeatState(String value, Map<String, CardStepsEnum> stateMap) {
+	private CardStepsEnum convertBoardStateToEnumState(String value, Map<String, CardStepsEnum> stateMap) {
 		return stateMap.get(value.toUpperCase());
 	}
 
@@ -685,9 +690,9 @@ public class JiraService {
 	private void calculateReworkTimesMap(CardStepsEnum reworkState, Set<CardStepsEnum> excludedStates,
 			Map<CardStepsEnum, Integer> reworkTimesMap, HistoryDetail jiraCardHistoryItem,
 			Map<String, CardStepsEnum> stateMap) {
-		CardStepsEnum from = convertBoardStateToHeartBeatState(jiraCardHistoryItem.getFrom().getDisplayName(),
+		CardStepsEnum from = convertBoardStateToEnumState(jiraCardHistoryItem.getFrom().getDisplayName(),
 				stateMap);
-		CardStepsEnum to = convertBoardStateToHeartBeatState(jiraCardHistoryItem.getTo().getDisplayName(), stateMap);
+		CardStepsEnum to = convertBoardStateToEnumState(jiraCardHistoryItem.getTo().getDisplayName(), stateMap);
 		calculateTimes(reworkState, excludedStates, reworkTimesMap, from, to);
 	}
 
