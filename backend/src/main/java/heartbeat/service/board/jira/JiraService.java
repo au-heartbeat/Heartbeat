@@ -265,9 +265,10 @@ public class JiraService {
 			.filter(realDoneCard -> !realDoneCard.getReworkTimesInfos().isEmpty())
 			.toList()
 			.size();
-		double reworkRatio = realDoneCards.isEmpty() ? 0 : BigDecimal.valueOf(reworkCardNumber)
-			.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
-			.doubleValue();
+		double reworkRatio = realDoneCards.isEmpty() ? 0
+				: BigDecimal.valueOf(reworkCardNumber)
+					.divide(BigDecimal.valueOf(realDoneCards.size()), 2, RoundingMode.HALF_UP)
+					.doubleValue();
 
 		return CardCollection.builder()
 			.storyPointSum(storyPointSum)
