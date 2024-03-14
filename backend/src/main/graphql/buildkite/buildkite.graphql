@@ -1,0 +1,18 @@
+query getPipelineInfo($slug: ID, $first: Int) {
+  organization(slug: $slug) {
+    pipelines(first: $first) {
+      edges {
+        node {
+          slug
+          name
+          repository {
+            url
+          }
+          steps {
+            yaml
+          }
+        }
+      }
+    }
+  }
+}

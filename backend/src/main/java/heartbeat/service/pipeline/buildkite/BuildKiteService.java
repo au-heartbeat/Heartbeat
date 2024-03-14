@@ -8,6 +8,7 @@ import heartbeat.client.dto.pipeline.buildkite.BuildKiteTokenInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
+import heartbeat.client.graphql.GraphQLClient;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.pipeline.dto.request.PipelineStepsParam;
 import heartbeat.controller.pipeline.dto.request.TokenParam;
@@ -274,9 +275,9 @@ public class BuildKiteService {
 
 			log.info("Start to query BuildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
-				.flatMap(org -> buildKiteFeignClient.getPipelineInfo(buildKiteToken, org.getSlug(), "1", "100")
+				.flatMap(org -> GraphQLClient.getInstance().fetchListOfPipeLineInfo(buildKiteToken, org.getSlug(), 100)
 					.stream()
-					.map(pipeline -> PipelineTransformer.fromBuildKitePipelineDto(pipeline, org.getSlug(),
+					.map(pipeline -> PipelineTransformer.fromBuildKiteGraphQLQueryNode(pipeline, org.getSlug(),
 							org.getName())))
 				.toList();
 			log.info("Successfully get BuildKite pipelineInfo, slug:{}, pipelineInfoList size:{}",
