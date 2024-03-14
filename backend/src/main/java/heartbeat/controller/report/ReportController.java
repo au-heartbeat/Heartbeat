@@ -9,7 +9,6 @@ import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +66,7 @@ public class ReportController {
 	public ResponseEntity<CallbackResponse> generateReport(
 			@Schema(type = "string", allowableValues = { "board", "dora" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable MetricType metricType,
-			@Valid @RequestBody GenerateReportRequest request) {
+			@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report_metricType: {}", metricType);
 		reportService.generateReportByType(request, metricType);
 		String callbackUrl = "/reports/" + request.getCsvTimeStamp();

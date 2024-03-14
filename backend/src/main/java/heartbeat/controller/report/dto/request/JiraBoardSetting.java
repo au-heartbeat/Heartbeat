@@ -3,7 +3,6 @@ package heartbeat.controller.report.dto.request;
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
 import heartbeat.controller.board.dto.request.ReworkTimesSetting;
 import heartbeat.controller.board.dto.response.TargetField;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +40,6 @@ public class JiraBoardSetting {
 
 	private List<TargetField> overrideFields;
 
-	@Valid
 	private ReworkTimesSetting reworkTimesSetting;
 
 }
