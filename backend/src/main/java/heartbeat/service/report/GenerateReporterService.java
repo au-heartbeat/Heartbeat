@@ -208,7 +208,7 @@ public class GenerateReporterService {
 				case "classification" -> reportResponse
 					.setClassificationList(classificationCalculator.calculate(jiraBoardSetting.getTargetFields(),
 							fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
-				case "rework" -> reportResponse.setRework(reworkCalculator.calculateRework(
+				case "rework times" -> reportResponse.setRework(reworkCalculator.calculateRework(
 						fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
 						request.getJiraBoardSetting().getReworkTimesSetting().getEnumReworkState()));
 				default -> {

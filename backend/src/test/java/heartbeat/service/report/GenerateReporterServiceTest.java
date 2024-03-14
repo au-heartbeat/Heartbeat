@@ -154,7 +154,7 @@ class GenerateReporterServiceTest {
 		void shouldSaveReportResponseWithReworkInfoWhenReworkInfoTimesIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
-				.metrics(List.of("rework"))
+				.metrics(List.of("rework times"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder()
 					.reworkTimesSetting(
