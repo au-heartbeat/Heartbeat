@@ -314,6 +314,7 @@ jobs:
       - credential-check
       - frontend-license-check
       - backend-license-check
+      - check-buildkite-status
     runs-on: ubuntu-latest
     permissions:
       id-token: write
