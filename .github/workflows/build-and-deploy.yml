@@ -252,7 +252,7 @@ jobs:
 
       - name: Print Committer Name and Email
         run: |
-          if [ "${{ github.event.pusher.name }}" != LAST_COMMITTER_NAME ]; then
+          if [ "${{ github.event.pusher.name }}" != ${{ LAST_COMMITTER_NAME }} ]; then
             echo "yes"
           fi
 
