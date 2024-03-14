@@ -1,6 +1,5 @@
 package heartbeat.controller.board.dto.request;
 
-import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,16 +28,13 @@ public enum CardStepsEnum {
 		throw new IllegalArgumentException("Type does not find!");
 	}
 
-	public static final Map<CardStepsEnum, Set<CardStepsEnum>> reworkJudgmentMap = new EnumMap<>(CardStepsEnum.class);
-
-	static {
-		reworkJudgmentMap.put(ANALYSE, Set.of(TODO, DEVELOPMENT, BLOCK, REVIEW, WAITING, TESTING, DONE));
-		reworkJudgmentMap.put(TODO, Set.of(DEVELOPMENT, BLOCK, REVIEW, WAITING, TESTING, DONE));
-		reworkJudgmentMap.put(DEVELOPMENT, Set.of(BLOCK, REVIEW, WAITING, TESTING, DONE));
-		reworkJudgmentMap.put(BLOCK, Set.of(REVIEW, WAITING, TESTING, DONE));
-		reworkJudgmentMap.put(REVIEW, Set.of(WAITING, TESTING, DONE));
-		reworkJudgmentMap.put(WAITING, Set.of(TESTING, DONE));
-		reworkJudgmentMap.put(TESTING, Set.of(DONE));
-	}
+	public static final Map<CardStepsEnum, Set<CardStepsEnum>> reworkJudgmentMap = Map.of(
+		ANALYSE, Set.of(TODO, DEVELOPMENT, BLOCK, REVIEW, WAITING, TESTING, DONE),
+		TODO, Set.of(DEVELOPMENT, BLOCK, REVIEW, WAITING, TESTING, DONE),
+		DEVELOPMENT, Set.of(BLOCK, REVIEW, WAITING, TESTING, DONE),
+		BLOCK, Set.of(REVIEW, WAITING, TESTING, DONE),
+		REVIEW, Set.of(WAITING, TESTING, DONE),
+		WAITING, Set.of(TESTING, DONE),
+		TESTING, Set.of(DONE));
 
 }
