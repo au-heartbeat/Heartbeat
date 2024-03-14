@@ -239,7 +239,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN_TEST }}" "https://api.buildkite.com/v2/organizations/Thoughtworks-Heartbeat/pipelines/Heartbeat/builds?branch=main"| jq -r '.[0].state')
+          buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN_TEST }}" "https://api.buildkite.com/v2/organizations/thoughtworks-Heartbeat/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
 
           if [ "$buildkite_status" != "passed" ]; then
 
