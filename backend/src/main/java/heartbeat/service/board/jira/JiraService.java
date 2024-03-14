@@ -623,10 +623,10 @@ public class JiraService {
 		AtomicBoolean hasFlag = new AtomicBoolean(false);
 		jiraCardHistory.getItems()
 			.stream()
-			.filter(jiraCardHistoryItem -> jiraCardHistoryItem.getFieldId().equalsIgnoreCase(STATUS_FIELD_ID)
-					|| jiraCardHistoryItem.getFieldDisplayName().equalsIgnoreCase(FLAGGED))
+			.filter(jiraCardHistoryItem -> STATUS_FIELD_ID.equalsIgnoreCase(jiraCardHistoryItem.getFieldId())
+					|| FLAGGED.equalsIgnoreCase(jiraCardHistoryItem.getFieldDisplayName()))
 			.forEach(jiraCardHistoryItem -> {
-				if (jiraCardHistoryItem.getFieldId().equalsIgnoreCase(STATUS_FIELD_ID)) {
+				if (STATUS_FIELD_ID.equalsIgnoreCase(jiraCardHistoryItem.getFieldId())) {
 					currentState
 						.set(convertBoardStateToHeartBeatState(jiraCardHistoryItem.getTo().getDisplayName(), stateMap));
 					if (!hasFlag.get()) {
@@ -671,7 +671,7 @@ public class JiraService {
 		Map<CardStepsEnum, Integer> reworkTimesMap = new EnumMap<>(CardStepsEnum.class);
 		jiraCardHistory.getItems()
 			.stream()
-			.filter(jiraCardHistoryItem -> jiraCardHistoryItem.getFieldId().equalsIgnoreCase(STATUS_FIELD_ID))
+			.filter(jiraCardHistoryItem -> STATUS_FIELD_ID.equalsIgnoreCase(jiraCardHistoryItem.getFieldId()))
 			.forEach(jiraCardHistoryItem -> calculateReworkTimesMap(reworkState, excludedStates, reworkTimesMap,
 					jiraCardHistoryItem, stateMap));
 		return reworkTimesMap.entrySet()
