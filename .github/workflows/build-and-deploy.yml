@@ -244,10 +244,18 @@ jobs:
            exit 1
          fi
 
+      - name: Get the last committer name
+        run: |
+          LAST_COMMITTER_NAME=$(git log -2 --pretty=format:"%cn" | tail -n 1)
+          echo "Last committer name: $LAST_COMMITTER_NAME"
+          echo "LAST_COMMITTER_NAME=${LAST_COMMITTER_NAME}" >> $GITHUB_ENV
+
       - name: Print Committer Name and Email
         run: |
-          echo "Committer Name: ${{ github.actor }}"
-    
+          if [ "${{ github.event.pusher.name }}" != LAST_COMMITTER_NAME ]; then
+            echo "yes"
+          fi
+
   # images-check:
   #   runs-on: ubuntu-latest
   #   steps:
