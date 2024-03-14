@@ -135,7 +135,7 @@ export const PipelineTool = () => {
           isShowAlert={isShowAlert}
           isVerifyTimeOut={isVerifyTimeOut}
           setIsShowAlert={setIsShowAlert}
-          moduleType={'PipelineTool'}
+          moduleType={'Pipeline Tool'}
         />
       </StyledAlterWrapper>
       <StyledForm onSubmit={onSubmit} onReset={onReset}>
