@@ -606,8 +606,8 @@ class GenerateReporterServiceTest {
 				.considerHoliday(false)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(
-						List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue(), MetricEnum.DEV_CHANGE_FAILURE_RATE.getValue()))
+				.metrics(List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue(),
+						MetricEnum.DEV_CHANGE_FAILURE_RATE.getValue()))
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)

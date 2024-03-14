@@ -112,7 +112,8 @@ public class MetricCsvFixture {
 							.build()))
 				.build())
 			.devMeanTimeToRecovery(DevMeanTimeToRecovery.builder()
-				.avgDevMeanTimeToRecovery(AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+				.avgDevMeanTimeToRecovery(
+						AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
 				.devMeanTimeToRecoveryOfPipelines(List.of(
 						DevMeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
@@ -183,7 +184,8 @@ public class MetricCsvFixture {
 					.build()))
 				.build())
 			.devMeanTimeToRecovery(DevMeanTimeToRecovery.builder()
-				.avgDevMeanTimeToRecovery(AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+				.avgDevMeanTimeToRecovery(
+						AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
 				.devMeanTimeToRecoveryOfPipelines(List.of(DevMeanTimeToRecoveryOfPipeline.builder()
 					.timeToRecovery(BigDecimal.valueOf(0))
 					.name("Heartbeat")

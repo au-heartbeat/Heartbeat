@@ -546,7 +546,8 @@ public class CSVFileGenerator {
 
 		AvgDevChangeFailureRate avgDevChangeFailureRate = devChangeFailureRate.getAvgDevChangeFailureRate();
 		if (devChangeFailureRateOfPipelines.size() > 1)
-			rows.add(new String[] { "Dev change failure rate", avgDevChangeFailureRate.getName() + " / Dev change failure rate",
+			rows.add(new String[] { "Dev change failure rate",
+					avgDevChangeFailureRate.getName() + " / Dev change failure rate",
 					DecimalUtil.formatDecimalTwo(avgDevChangeFailureRate.getFailureRate() * 100) });
 
 		return rows;
@@ -564,8 +565,9 @@ public class CSVFileGenerator {
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = devMeanTimeToRecovery.getAvgDevMeanTimeToRecovery();
 		if (devMeanTimeToRecoveryOfPipelines.size() > 1)
 			rows.add(new String[] { "Dev mean time to recovery",
-					avgDevMeanTimeToRecovery.getName() + " / Dev mean time to recovery", DecimalUtil.formatDecimalTwo(
-							TimeUtils.millisToUnit(avgDevMeanTimeToRecovery.getTimeToRecovery().doubleValue(), HOURS)) });
+					avgDevMeanTimeToRecovery.getName() + " / Dev mean time to recovery",
+					DecimalUtil.formatDecimalTwo(TimeUtils
+						.millisToUnit(avgDevMeanTimeToRecovery.getTimeToRecovery().doubleValue(), HOURS)) });
 
 		return rows;
 	}

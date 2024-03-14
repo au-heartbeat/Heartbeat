@@ -52,7 +52,8 @@ class MeanToRecoveryCalculatorTest {
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = result.getAvgDevMeanTimeToRecovery();
 		Assertions.assertEquals(0, avgDevMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(100000)));
 
-		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = result.getDevMeanTimeToRecoveryOfPipelines();
+		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = result
+			.getDevMeanTimeToRecoveryOfPipelines();
 		Assertions.assertEquals(3, devMeanTimeToRecoveryOfPipelines.size());
 
 		DevMeanTimeToRecoveryOfPipeline deploy1Result = devMeanTimeToRecoveryOfPipelines.get(0);
@@ -91,7 +92,8 @@ class MeanToRecoveryCalculatorTest {
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = result.getAvgDevMeanTimeToRecovery();
 		Assertions.assertEquals(0, avgDevMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(80000)));
 
-		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = result.getDevMeanTimeToRecoveryOfPipelines();
+		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = result
+			.getDevMeanTimeToRecoveryOfPipelines();
 		Assertions.assertEquals(3, devMeanTimeToRecoveryOfPipelines.size());
 
 		DevMeanTimeToRecoveryOfPipeline deploy1Result = devMeanTimeToRecoveryOfPipelines.get(0);
