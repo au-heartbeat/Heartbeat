@@ -1,13 +1,13 @@
+import { BOARD_TYPES, AXIOS_REQUEST_ERROR_CODE, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { selectBoard, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
-import { BOARD_TYPES, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { findCaseInsensitiveType, getJiraBoardToken } from '@src/utils/util';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
-import { IHeartBeatException } from '@src/exceptions/ExceptionType';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
 import { boardClient } from '@src/clients/board/BoardClient';
-import { isHeartBeatException } from '@src/exceptions';
+import { IHeartBeatError } from '@src/errors/ErrorType';
+import { isHeartBeatException } from '@src/errors';
 import { REGEX } from '@src/constants/regex';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
@@ -22,12 +22,15 @@ export interface Field {
 }
 
 export interface useVerifyBoardStateInterface {
+  isVerifyTimeOut: boolean;
   verifyJira: () => Promise<void>;
   isLoading: boolean;
   fields: Field[];
   updateField: (key: string, value: string) => void;
   validateField: (key: string) => void;
   resetFields: () => void;
+  setIsShowAlert: (value: boolean) => void;
+  isShowAlert: boolean;
 }
 
 const ERROR_INFO = {
@@ -60,6 +63,8 @@ const getValidatedError = (key: string, value: string, validateRule?: (value: st
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifyTimeOut, setIsVerifyTimeOut] = useState(false);
+  const [isShowAlert, setIsShowAlert] = useState(false);
   const boardFields = useAppSelector(selectBoard);
   const dispatch = useAppDispatch();
   const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
@@ -126,6 +131,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
           },
     );
     handleUpdate(newFields);
+    setIsShowAlert(false);
   };
 
   const getFieldsWithNoVerifiedError = (fields: Field[]) =>
@@ -185,12 +191,14 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         token: getJiraBoardToken(boardInfo.token, boardInfo.email),
       });
       if (res?.response) {
+        setIsShowAlert(false);
+        setIsVerifyTimeOut(false);
         dispatch(updateBoardVerifyState(true));
         dispatch(updateBoard({ ...boardInfo, projectKey: res.response.projectKey }));
       }
     } catch (e) {
       if (isHeartBeatException(e)) {
-        const { description, code } = e as IHeartBeatException;
+        const { description, code } = e as IHeartBeatError;
         if (code === HttpStatusCode.Unauthorized) {
           setVerifiedError(
             [KEYS.EMAIL, KEYS.TOKEN],
@@ -200,6 +208,9 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
           setVerifiedError([KEYS.SITE], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setVerifiedError([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
+        } else if (code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
+          setIsVerifyTimeOut(true);
+          setIsShowAlert(true);
         } else {
           setVerifiedError([KEYS.TOKEN], [UNKNOWN_ERROR_TITLE]);
         }
@@ -215,5 +226,8 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     updateField,
     validateField,
     resetFields,
+    isVerifyTimeOut,
+    isShowAlert,
+    setIsShowAlert,
   };
 };

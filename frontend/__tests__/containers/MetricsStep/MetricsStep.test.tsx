@@ -330,7 +330,7 @@ describe('MetricsStep', () => {
     it('should show retry button when call get info timeout', async () => {
       server.use(
         rest.post(MOCK_BOARD_INFO_URL, (_, res) => {
-          return res.networkError('HB_TIMEOUT');
+          return res.networkError('NETWORK_TIMEOUT');
         }),
       );
       setup();

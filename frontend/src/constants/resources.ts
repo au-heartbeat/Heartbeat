@@ -291,8 +291,8 @@ export const AXIOS_NETWORK_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ET
 
 export const NO_PIPELINE_STEP_ERROR = 'No steps for this pipeline!';
 
-export enum HEARTBEAT_EXCEPTION_CODE {
-  TIMEOUT = 'HB_TIMEOUT',
+export enum AXIOS_REQUEST_ERROR_CODE {
+  TIMEOUT = 'NETWORK_TIMEOUT',
 }
 
 export const BOARD_CONFIG_INFO_TITLE = {
