@@ -51,7 +51,7 @@ public class CachePageService {
 			return 1;
 		}
 		String beforeLastRel = lastLink.substring(0, lastIndex);
-		Matcher matcher = Pattern.compile("page=(\\d+)[^>]*>").matcher(beforeLastRel);
+		Matcher matcher = Pattern.compile("page=(\\d+)").matcher(beforeLastRel);
 
 		String lastNumber = null;
 		while (matcher.find()) {
@@ -59,7 +59,8 @@ public class CachePageService {
 		}
 		if (lastNumber != null) {
 			return Integer.parseInt(lastNumber);
-		} else {
+		}
+		else {
 			return 1;
 		}
 	}

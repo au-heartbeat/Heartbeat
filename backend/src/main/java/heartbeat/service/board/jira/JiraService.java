@@ -458,20 +458,42 @@ public class JiraService {
 		resultMap.forEach((customFieldKey, customFieldValue) -> {
 			if (jsonElement.has(customFieldKey)) {
 				JsonElement fieldValue = jsonElement.get(customFieldKey);
-				switch (customFieldValue) {
-					case "Sprint" -> Optional.ofNullable(getSprint(fieldValue))
-						.ifPresentOrElse(it -> sprintMap.put(element.getAsJsonObject().get("key").getAsString(), it),
-								() -> {
-								});
-					case "Story point estimate" -> fieldValue = setStoryPointEstimate(fieldValue);
-					case "Flagged" -> fieldValue = setFlagged(fieldValue);
-					default -> {
-					}
-				}
+				fieldValue = mapFieldValue(element, sprintMap, customFieldValue, fieldValue);
 				customFieldMap.put(customFieldKey, fieldValue);
 			}
 		});
 		return customFieldMap;
+	}
+
+	private JsonElement mapFieldValue(JsonElement element, Map<String, Sprint> sprintMap, String customFieldValue,
+			JsonElement fieldValue) {
+		switch (customFieldValue) {
+			case "Sprint" -> Optional.ofNullable(getSprint(fieldValue))
+				.ifPresentOrElse(it -> sprintMap.put(element.getAsJsonObject().get("key").getAsString(), it), () -> {
+				});
+			case "Story point estimate" -> {
+				if (!fieldValue.isJsonNull() && fieldValue.isJsonPrimitive()) {
+					JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
+					if (jsonPrimitive.isNumber()) {
+						Number numberValue = jsonPrimitive.getAsNumber();
+						double doubleValue = numberValue.doubleValue();
+						fieldValue = new JsonPrimitive(doubleValue);
+					}
+				}
+			}
+			case "Flagged" -> {
+				if (!fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
+					JsonArray jsonArray = fieldValue.getAsJsonArray();
+					if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+						JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
+						fieldValue = targetField.getAsJsonObject().get("value");
+					}
+				}
+			}
+			default -> {
+			}
+		}
+		return fieldValue;
 	}
 
 	private Sprint getSprint(JsonElement fieldValue) {
@@ -487,29 +509,6 @@ public class JiraService {
 			}
 		}
 		return null;
-	}
-
-	private JsonElement setStoryPointEstimate(JsonElement fieldValue) {
-		if (!fieldValue.isJsonNull() && fieldValue.isJsonPrimitive()) {
-			JsonPrimitive jsonPrimitive = fieldValue.getAsJsonPrimitive();
-			if (jsonPrimitive.isNumber()) {
-				Number numberValue = jsonPrimitive.getAsNumber();
-				double doubleValue = numberValue.doubleValue();
-				return new JsonPrimitive(doubleValue);
-			}
-		}
-		return fieldValue;
-	}
-
-	private JsonElement setFlagged(JsonElement fieldValue) {
-		if (!fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
-			JsonArray jsonArray = fieldValue.getAsJsonArray();
-			if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
-				JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
-				return targetField.getAsJsonObject().get("value");
-			}
-		}
-		return fieldValue;
 	}
 
 	private String parseJiraJql(BoardType boardType, List<String> doneColumns, BoardRequestParam boardRequestParam) {
