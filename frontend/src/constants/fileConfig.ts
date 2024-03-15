@@ -1,5 +1,5 @@
+import { CALENDAR, REWORK_TIME_LIST } from '@src/constants/resources';
 import { IReworkConfig } from '@src/context/Metrics/metricsSlice';
-import { CALENDAR } from '@src/constants/resources';
 
 export interface OldFileConfig {
   projectName: string;
@@ -92,6 +92,13 @@ export interface NewFileConfig {
   reworkTimesSettings: IReworkConfig;
 }
 
+const filterExcludeReworkStatus = (reworkTimesSettings: IReworkConfig) => {
+  reworkTimesSettings.excludeStates = reworkTimesSettings.excludeStates.filter((value) => {
+    return REWORK_TIME_LIST.includes(value);
+  });
+  return reworkTimesSettings;
+};
+
 export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig): NewFileConfig => {
   if ('considerHoliday' in fileConfig) {
     const {
@@ -138,7 +145,7 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       pipelineCrews,
       cycleTime,
       doneStatus,
-      reworkTimesSettings,
+      reworkTimesSettings: filterExcludeReworkStatus(reworkTimesSettings),
       classification: classifications,
       deployment: deployment?.map((item, index) => ({
         id: index,
@@ -149,5 +156,5 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       })),
     };
   }
-  return fileConfig;
+  return { ...fileConfig, reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings) };
 };
