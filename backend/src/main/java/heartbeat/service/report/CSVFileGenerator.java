@@ -289,33 +289,7 @@ public class CSVFileGenerator {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
 
 			if (cardDTO.getBaseInfo().getFields() != null) {
-				rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
-				rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
-				rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
-				if (cardDTO.getBaseInfo().getFields().getLastStatusChangeDate() != null) {
-					rowData[4] = convertToSimpleISOFormat(cardDTO.getBaseInfo().getFields().getLastStatusChangeDate());
-				}
-				rowData[5] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
-				if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
-					rowData[6] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
-				}
-				if (cardDTO.getBaseInfo().getFields().getReporter() != null) {
-					rowData[7] = cardDTO.getBaseInfo().getFields().getReporter().getDisplayName();
-				}
-
-				rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getKey();
-				rowData[9] = cardDTO.getBaseInfo().getFields().getProject().getName();
-				rowData[10] = cardDTO.getBaseInfo().getFields().getPriority().getName();
-
-				if (cardDTO.getBaseInfo().getFields().getParent() != null) {
-					rowData[11] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
-				}
-
-				if (cardDTO.getBaseInfo().getFields().getSprint() != null) {
-					rowData[12] = cardDTO.getBaseInfo().getFields().getSprint().getName();
-				}
-
-				rowData[13] = String.join(",", cardDTO.getBaseInfo().getFields().getLabels());
+				fixDataWithFields(cardDTO, rowData);
 			}
 
 		}
@@ -330,6 +304,36 @@ public class CSVFileGenerator {
 			rowData[21] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
 		}
 		return rowData;
+	}
+
+	private void fixDataWithFields(JiraCardDTO cardDTO, String[] rowData) {
+		rowData[1] = cardDTO.getBaseInfo().getFields().getSummary();
+		rowData[2] = cardDTO.getBaseInfo().getFields().getIssuetype().getName();
+		rowData[3] = cardDTO.getBaseInfo().getFields().getStatus().getName();
+		if (cardDTO.getBaseInfo().getFields().getLastStatusChangeDate() != null) {
+			rowData[4] = convertToSimpleISOFormat(cardDTO.getBaseInfo().getFields().getLastStatusChangeDate());
+		}
+		rowData[5] = String.valueOf(cardDTO.getBaseInfo().getFields().getStoryPoints());
+		if (cardDTO.getBaseInfo().getFields().getAssignee() != null) {
+			rowData[6] = cardDTO.getBaseInfo().getFields().getAssignee().getDisplayName();
+		}
+		if (cardDTO.getBaseInfo().getFields().getReporter() != null) {
+			rowData[7] = cardDTO.getBaseInfo().getFields().getReporter().getDisplayName();
+		}
+
+		rowData[8] = cardDTO.getBaseInfo().getFields().getProject().getKey();
+		rowData[9] = cardDTO.getBaseInfo().getFields().getProject().getName();
+		rowData[10] = cardDTO.getBaseInfo().getFields().getPriority().getName();
+
+		if (cardDTO.getBaseInfo().getFields().getParent() != null) {
+			rowData[11] = cardDTO.getBaseInfo().getFields().getParent().getFields().getSummary();
+		}
+
+		if (cardDTO.getBaseInfo().getFields().getSprint() != null) {
+			rowData[12] = cardDTO.getBaseInfo().getFields().getSprint().getName();
+		}
+
+		rowData[13] = String.join(",", cardDTO.getBaseInfo().getFields().getLabels());
 	}
 
 	private String getExtraDataPerRow(Object object, BoardCSVConfig extraField) {
