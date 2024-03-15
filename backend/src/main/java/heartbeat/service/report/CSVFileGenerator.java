@@ -101,43 +101,7 @@ public class CSVFileGenerator {
 
 				csvWriter.writeNext(headers);
 
-				for (PipelineCSVInfo csvInfo : leadTimeData) {
-					String committerName = null;
-					String commitDate = null;
-					String creatorName = null;
-					String organization = csvInfo.getOrganizationName();
-					String pipelineName = csvInfo.getPipeLineName();
-					String stepName = csvInfo.getStepName();
-					String valid = String.valueOf(csvInfo.getValid()).toLowerCase();
-					String buildNumber = String.valueOf(csvInfo.getBuildInfo().getNumber());
-					String state = csvInfo.getPiplineStatus().equals(CANCELED_STATUS) ? CANCELED_STATUS
-							: csvInfo.getDeployInfo().getState();
-					String branch = csvInfo.getBuildInfo().getBranch();
-					if (csvInfo.getCommitInfo() != null) {
-						committerName = csvInfo.getCommitInfo().getCommit().getAuthor().getName();
-						commitDate = csvInfo.getCommitInfo().getCommit().getAuthor().getDate();
-					}
-
-					if (csvInfo.getBuildInfo().getCreator() != null
-							&& csvInfo.getBuildInfo().getCreator().getName() != null) {
-						creatorName = csvInfo.getBuildInfo().getCreator().getName();
-					}
-
-					LeadTimeInfo leadTimeInfo = csvInfo.getLeadTimeInfo();
-					String firstCommitTimeInPr = leadTimeInfo.getFirstCommitTimeInPr();
-					String prCreatedTime = leadTimeInfo.getPrCreatedTime();
-					String prMergedTime = leadTimeInfo.getPrMergedTime();
-					String jobFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
-					String totalTime = leadTimeInfo.getTotalTime();
-					String prLeadTime = leadTimeInfo.getPrLeadTime();
-					String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
-
-					String[] rowData = { organization, pipelineName, stepName, valid, buildNumber, committerName,
-							creatorName, firstCommitTimeInPr, commitDate, prCreatedTime, prMergedTime, jobFinishTime,
-							totalTime, prLeadTime, pipelineLeadTime, state, branch };
-
-					csvWriter.writeNext(rowData);
-				}
+				leadTimeData.stream().map(this::getRowData).forEach(csvWriter::writeNext);
 			}
 			catch (IOException e) {
 				log.error("Failed to write pipeline file", e);
@@ -147,6 +111,42 @@ public class CSVFileGenerator {
 		else {
 			throw new GenerateReportException("Failed to generate pipeline csv file, invalid csvTimestamp");
 		}
+	}
+
+	private String[] getRowData(PipelineCSVInfo csvInfo) {
+		String committerName = null;
+		String commitDate = null;
+		if (csvInfo.getCommitInfo() != null) {
+			committerName = csvInfo.getCommitInfo().getCommit().getAuthor().getName();
+			commitDate = csvInfo.getCommitInfo().getCommit().getAuthor().getDate();
+		}
+
+		String creatorName = null;
+		if (csvInfo.getBuildInfo().getCreator() != null && csvInfo.getBuildInfo().getCreator().getName() != null) {
+			creatorName = csvInfo.getBuildInfo().getCreator().getName();
+		}
+
+		String organization = csvInfo.getOrganizationName();
+		String pipelineName = csvInfo.getPipeLineName();
+		String stepName = csvInfo.getStepName();
+		String valid = String.valueOf(csvInfo.getValid()).toLowerCase();
+		String buildNumber = String.valueOf(csvInfo.getBuildInfo().getNumber());
+		String state = csvInfo.getPiplineStatus().equals(CANCELED_STATUS) ? CANCELED_STATUS
+				: csvInfo.getDeployInfo().getState();
+		String branch = csvInfo.getBuildInfo().getBranch();
+
+		LeadTimeInfo leadTimeInfo = csvInfo.getLeadTimeInfo();
+		String firstCommitTimeInPr = leadTimeInfo.getFirstCommitTimeInPr();
+		String prCreatedTime = leadTimeInfo.getPrCreatedTime();
+		String prMergedTime = leadTimeInfo.getPrMergedTime();
+		String jobFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
+		String totalTime = leadTimeInfo.getTotalTime();
+		String prLeadTime = leadTimeInfo.getPrLeadTime();
+		String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
+
+		return new String[] { organization, pipelineName, stepName, valid, buildNumber, committerName, creatorName,
+				firstCommitTimeInPr, commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime, prLeadTime,
+				pipelineLeadTime, state, branch };
 	}
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, long csvTimeStamp) {
