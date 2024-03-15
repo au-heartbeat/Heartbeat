@@ -25,7 +25,9 @@ public class MeanToRecoveryCalculator {
 
 	public DevMeanTimeToRecovery calculate(List<DeployTimes> deployTimes) {
 		if (deployTimes.isEmpty()) {
-			return new DevMeanTimeToRecovery(new AvgDevMeanTimeToRecovery(BigDecimal.ZERO), Collections.emptyList());
+			return new DevMeanTimeToRecovery(
+					AvgDevMeanTimeToRecovery.builder().timeToRecovery(stripTrailingZeros(BigDecimal.ZERO)).build(),
+					Collections.emptyList());
 		}
 		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = deployTimes.stream()
 			.map(this::convertToDevMeanTimeToRecoveryOfPipeline)
@@ -35,8 +37,9 @@ public class MeanToRecoveryCalculator {
 			.map(DevMeanTimeToRecoveryOfPipeline::getTimeToRecovery)
 			.reduce(BigDecimal.ZERO, BigDecimal::add)
 			.divide(BigDecimal.valueOf(devMeanTimeToRecoveryOfPipelines.size()), 8, RoundingMode.HALF_UP);
-		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecoveryObj = new AvgDevMeanTimeToRecovery(
-				stripTrailingZeros(avgDevMeanTimeToRecovery));
+		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecoveryObj = AvgDevMeanTimeToRecovery.builder()
+			.timeToRecovery(stripTrailingZeros(avgDevMeanTimeToRecovery))
+			.build();
 
 		return new DevMeanTimeToRecovery(avgDevMeanTimeToRecoveryObj, devMeanTimeToRecoveryOfPipelines);
 	}
