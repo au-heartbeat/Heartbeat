@@ -192,7 +192,7 @@ e2e_check() {
 }
 
 buildkite_status_check() {
-  if [[ "$EVENT_NAME" == "pull_request" && "$CURRENT_BRANCH_NAME" != "main" ]]; then
+  if [[ "$EVENT_NAME" == "pull_request" && "$CURRENT_BRANCH_NAME" != "refs/heads/main" ]]; then
     if echo "$PULL_REQUEST_TITLE" | grep -iq "revert"; then
       echo "PR contains revert. Skipping the action."
     else
