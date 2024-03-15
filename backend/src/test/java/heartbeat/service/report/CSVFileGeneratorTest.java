@@ -134,6 +134,30 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
+	void shouldConvertPipelineDataToCsvWithoutCreatorName() throws IOException {
+		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR_NAME();
+		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		File file = new File(fileName);
+
+		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		FileInputStream fileInputStream = new FileInputStream(file);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
+		String headers = reader.readLine();
+		String firstLine = reader.readLine();
+
+		assertTrue(file.exists());
+		assertEquals(
+				"\"Organization\",\"Pipeline Name\",\"Pipeline Step\",\"Valid\",\"Build Number\",\"Code Committer\",\"Pipeline Creator\",\"First Code Committed Time In PR\",\"Code Committed Time\",\"PR Created Time\",\"PR Merged Time\",\"Deployment Completed Time\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\"",
+				headers);
+		assertEquals(
+				"\"Thoughtworks-Heartbeat\",\"Heartbeat\",\":rocket: Deploy prod\",\"null\",\"880\",\"XXXX\",,\"2023-05-08T07:18:18Z\",\"2023-05-10T06:43:02.653Z\",\"168369327000\",\"1683793037000\",\"1684793037000\",\"8379303\",\"16837\",\"653037000\",\"passed\",\"branch\"",
+				firstLine);
+		reader.close();
+		fileInputStream.close();
+		file.delete();
+	}
+
+	@Test
 	void shouldConvertPipelineDataToCsvGivenNullCommitInfo() throws IOException {
 
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO();
