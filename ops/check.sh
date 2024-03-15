@@ -192,16 +192,16 @@ e2e_check() {
 }
 
 buildkite_status_check() {
-  buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
+  buildkite_status=$(curl -H "Authorization: Bearer $BUILDKITE_TOKEN" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
 
   if [ "$buildkite_status" != "passed" ]; then
 
     # 使用GitHub API获取最近的commit信息
     LATEST_COMMIT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    "https://api.github.com/repos/${{ github.repository }}/commits?per_page=1" | jq -r '.[0].author.login')
+    "https://api.github.com/repos/$GITHUB_REPOSITORY/commits?per_page=1" | jq -r '.[0].author.login')
 
     # 获取当前trigger的GitHub用户名
-    CURRENT_ACTOR="${{ github.actor }}"
+    CURRENT_ACTOR="$GITHUB_ACTOR"
 
     echo "Latest commit author login: $LATEST_COMMIT"
     echo "Current actor: $CURRENT_ACTOR"

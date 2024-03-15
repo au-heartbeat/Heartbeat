@@ -237,7 +237,10 @@ jobs:
 
       - name: Check BuildKite status
         env:
+          BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
         run: |
           ./ops/check.sh buildkite_status_check
 
