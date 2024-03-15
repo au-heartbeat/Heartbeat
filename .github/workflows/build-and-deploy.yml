@@ -240,7 +240,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           CURRENT_ACTOR: ${{ github.actor }}
           EVENT_NAME: ${{ github.event_name }}
-          BRANCURRENT_BRANCH_NAMECH_NAME: ${{ github.ref }}
+          CURRENT_BRANCH_NAME: ${{ github.ref }}
           PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
         run: |
           ./ops/check.sh buildkite-status
