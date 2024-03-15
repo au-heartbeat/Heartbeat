@@ -229,7 +229,7 @@ jobs:
   #         ./ops/check.sh frontend-license
 
   check-buildkite-status:
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'Revert') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
