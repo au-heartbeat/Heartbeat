@@ -85,11 +85,11 @@ export class ReportStep {
     await expect(this.leadTimeForChangesRows.nth(4)).toContainText(this.combineStrings(['Total Lead Time', '6.62']));
 
     await expect(this.devChangeFailureRateRows.nth(2)).toContainText(
-      this.combineStrings(['Failure rate', '17.50%(7/40)']),
+      this.combineStrings(['Dev change failure rate', '17.50%(7/40)']),
     );
 
     await expect(this.devMeanTimeToRecoveryRows.nth(2)).toContainText(
-      this.combineStrings(['Dev Mean Time To Recovery', '1.90']),
+      this.combineStrings(['Dev mean time to recovery', '1.90']),
     );
   }
 
@@ -249,9 +249,9 @@ export class ReportStep {
     await expect(this.prLeadTime).toContainText(`${prLeadTime}PR Lead Time(Hours)`);
     await expect(this.pipelineLeadTime).toContainText(`${pipelineLeadTime}Pipeline Lead Time(Hours)`);
     await expect(this.totalLeadTime).toContainText(`${totalLeadTime}Total Lead Time(Hours)`);
-    await expect(this.deploymentFrequency).toContainText(`${deploymentFrequency}Deployment Frequency(Deployments/Day)`);
-    await expect(this.failureRate).toContainText(`${failureRate}Failure Rate`);
-    await expect(this.devMeanTimeToRecovery).toContainText(`${devMeanTimeToRecovery}Dev Mean Time To Recovery(Hours)`);
+    await expect(this.deploymentFrequency).toContainText(`${deploymentFrequency}(Deployments/Days)`);
+    await expect(this.failureRate).toContainText(failureRate);
+    await expect(this.devMeanTimeToRecovery).toContainText(`${devMeanTimeToRecovery}(Hours)`);
   }
 
   async checkMetricDownloadData() {
