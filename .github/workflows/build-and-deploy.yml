@@ -255,7 +255,7 @@ jobs:
 
             # 比较用户名
             if [ "$CURRENT_ACTOR" != "$LATEST_COMMIT" ]; then
-              echo "BuildKite build failed. Cannot merge the PR！！！！!!!!!!"
+              echo "BuildKite build failed. Cannot merge the PR！！！！!!!"
               echo "And The Committer Not match"
               echo "The last commit was made by: $LATEST_COMMIT"
               exit 1
