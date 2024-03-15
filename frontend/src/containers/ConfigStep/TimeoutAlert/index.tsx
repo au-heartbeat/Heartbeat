@@ -21,7 +21,7 @@ export const TimeoutAlert = ({ isVerifyTimeOut, isShowAlert, setIsShowAlert, mod
           }}
         >
           <EllipsisText fitContent>
-            Submission timeout on <StyledModuleType>{moduleType}</StyledModuleType> , please reverify!
+            Submission timeout on <StyledModuleType>{moduleType}</StyledModuleType>, please reverify!
           </EllipsisText>
         </StyledAlert>
       )}
