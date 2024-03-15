@@ -37,6 +37,8 @@ let store = null;
 
 const server = setupServer(rest.post(MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL, (req, res, ctx) => res(ctx.status(204))));
 
+const originalVerifyToken = sourceControlClient.verifyToken;
+
 jest.mock('@src/context/Metrics/metricsSlice', () => ({
   ...jest.requireActual('@src/context/Metrics/metricsSlice'),
   updateShouldGetPipelineConfig: jest.fn().mockReturnValue({ type: 'SHOULD_UPDATE_PIPELINE_CONFIG' }),
@@ -57,6 +59,7 @@ describe('SourceControl', () => {
   };
   afterEach(() => {
     store = null;
+    sourceControlClient.verifyToken = originalVerifyToken;
   });
 
   it('should show sourceControl title and fields when render sourceControl component', () => {
@@ -92,6 +95,21 @@ describe('SourceControl', () => {
     expect(screen.getByText(SOURCE_CONTROL_TYPES.GITHUB)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: RESET })).not.toBeTruthy();
     expect(screen.getByRole('button', { name: VERIFY })).toBeDisabled();
+  });
+
+  it('should hidden timeout alert when click reset button', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillSourceControlFieldsInformation();
+    sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
+      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+    });
+
+    await userEvent.click(screen.getByText(VERIFY));
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: RESET }));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 
   it('should enable verify button when all fields checked correctly given disable verify button', () => {
@@ -187,20 +205,5 @@ describe('SourceControl', () => {
     await waitFor(() => {
       expect(screen.getByText(MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT)).toBeInTheDocument();
     });
-  });
-
-  it('should hidden timeout alert when click reset button', async () => {
-    const { getByTestId, queryByTestId } = setup();
-    await fillSourceControlFieldsInformation();
-    sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
-    });
-
-    await userEvent.click(screen.getByText(VERIFY));
-    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 });

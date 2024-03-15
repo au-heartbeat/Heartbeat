@@ -34,6 +34,8 @@ let store = null;
 
 const server = setupServer(rest.post(MOCK_PIPELINE_VERIFY_URL, (req, res, ctx) => res(ctx.status(204))));
 
+const originalVerify = pipelineToolClient.verify;
+
 describe('PipelineTool', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());
@@ -48,6 +50,7 @@ describe('PipelineTool', () => {
   };
   afterEach(() => {
     store = null;
+    pipelineToolClient.verify = originalVerify;
   });
 
   it('should show pipelineTool title and fields when render pipelineTool component ', () => {
@@ -103,6 +106,20 @@ describe('PipelineTool', () => {
     expect(getByText(PIPELINE_TOOL_TYPES.BUILD_KITE)).toBeInTheDocument();
     expect(queryByRole('button', { name: RESET })).not.toBeInTheDocument();
     expect(queryByRole('button', { name: VERIFY })).toBeDisabled();
+  });
+
+  it('should hidden timeout alert when click reset button', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillPipelineToolFieldsInformation();
+    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT });
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: RESET }));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 
   it('should show detail options when click pipelineTool fields', async () => {
@@ -208,19 +225,5 @@ describe('PipelineTool', () => {
     await waitFor(() => {
       expect(getByText('Token is incorrect!')).toBeInTheDocument();
     });
-  });
-
-  it('should hidden timeout alert when click reset button', async () => {
-    const { getByTestId, queryByTestId } = setup();
-    await fillPipelineToolFieldsInformation();
-    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT });
-
-    await userEvent.click(screen.getByText(VERIFY));
-
-    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 });

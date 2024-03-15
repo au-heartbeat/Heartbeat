@@ -45,6 +45,8 @@ const mockVerifySuccess = (delay = 0) => {
   );
 };
 
+const originalGetVerifyBoard = boardClient.getVerifyBoard;
+
 describe('Board', () => {
   beforeAll(() => {
     server.listen();
@@ -63,6 +65,7 @@ describe('Board', () => {
 
   afterEach(() => {
     store = null;
+    boardClient.getVerifyBoard = originalGetVerifyBoard;
   });
 
   it('should show board title and fields when render board component ', () => {
@@ -170,6 +173,21 @@ describe('Board', () => {
     });
   });
 
+  it('should hidden timeout alert when click reset button', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillBoardFieldsInformation();
+    const mockedError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: RESET }));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
+  });
+
   it('should show reset button and verified button when verify succeed ', async () => {
     mockVerifySuccess();
     setup();
@@ -218,20 +236,5 @@ describe('Board', () => {
         screen.getByText(/Token is invalid, please change your token with correct access permission!/i),
       ).toBeInTheDocument();
     });
-  });
-
-  it('should hidden timeout alert when click reset button', async () => {
-    const { getByTestId, queryByTestId } = setup();
-    await fillBoardFieldsInformation();
-    const mockedError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
-    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
-
-    await userEvent.click(screen.getByText(VERIFY));
-
-    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 });
