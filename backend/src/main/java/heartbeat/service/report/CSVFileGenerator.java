@@ -565,7 +565,7 @@ public class CSVFileGenerator {
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = devMeanTimeToRecovery.getAvgDevMeanTimeToRecovery();
 		if (devMeanTimeToRecoveryOfPipelines.size() > 1)
 			rows.add(new String[] { "Dev mean time to recovery",
-					AvgDevMeanTimeToRecovery.NAME + " / Dev mean time to recovery",
+					avgDevMeanTimeToRecovery.getName() + " / Dev mean time to recovery",
 					DecimalUtil.formatDecimalTwo(TimeUtils
 						.millisToUnit(avgDevMeanTimeToRecovery.getTimeToRecovery().doubleValue(), HOURS)) });
 

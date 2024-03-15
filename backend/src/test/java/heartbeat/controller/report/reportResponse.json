@@ -115,6 +115,7 @@
   },
   "devMeanTimeToRecovery": {
     "avgDevMeanTimeToRecovery": {
+      "name": "Average",
       "timeToRecovery": 0
     },
     "devMeanTimeToRecoveryOfPipelines": [
