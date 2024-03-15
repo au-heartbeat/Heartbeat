@@ -15,6 +15,8 @@ export const useVerifySourceControlTokenEffect = () => {
   const verifyToken = async (params: SourceControlVerifyRequestDTO) => {
     setIsLoading(true);
     const response = await sourceControlClient.verifyToken(params, setIsShowAlert, setIsVerifyTimeOut);
+    setIsVerifyTimeOut(false);
+    setIsShowAlert(false);
     if (response.code === HttpStatusCode.NoContent) {
       dispatch(updateSourceControlVerifyState(true));
     } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
