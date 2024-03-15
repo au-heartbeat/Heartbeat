@@ -862,6 +862,21 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
+		void shouldDeleteTempFailWhenDeleteFile() {
+			File mockFile = mock(File.class);
+			when(mockFile.getName()).thenReturn("board-1683734399999.tmp");
+			when(mockFile.delete()).thenReturn(true);
+			when(mockFile.exists()).thenReturn(false);
+			File[] mockFiles = new File[] { mockFile };
+			File directory = mock(File.class);
+			when(directory.listFiles()).thenReturn(mockFiles);
+
+			Boolean deleteStatus = generateReporterService.deleteExpireCSV(System.currentTimeMillis(), directory);
+
+			assertTrue(deleteStatus);
+		}
+
+		@Test
 		void shouldDoConvertMetricDataToCSVWhenCallGenerateCSVForMetrics() throws IOException {
 			String timeStamp = TIMESTAMP;
 			ObjectMapper mapper = new ObjectMapper();
