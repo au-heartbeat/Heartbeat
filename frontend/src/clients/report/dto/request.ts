@@ -47,7 +47,6 @@ export interface IBasicReportRequestDTO {
     assigneeFilter: string;
     targetFields: { key: string; name: string; flag: boolean }[];
     overrideFields: { key: string; name: string; flag: boolean }[];
-    reworkTimesSetting: ReworkSettingsRequest;
     doneColumn: string[];
   };
   csvTimeStamp?: number;
