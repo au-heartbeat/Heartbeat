@@ -495,7 +495,7 @@ public class JiraService {
 			if (jsonPrimitive.isNumber()) {
 				Number numberValue = jsonPrimitive.getAsNumber();
 				double doubleValue = numberValue.doubleValue();
-				fieldValue = new JsonPrimitive(doubleValue);
+				return new JsonPrimitive(doubleValue);
 			}
 		}
 		return fieldValue;
@@ -506,7 +506,7 @@ public class JiraService {
 			JsonArray jsonArray = fieldValue.getAsJsonArray();
 			if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
 				JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
-				fieldValue = targetField.getAsJsonObject().get("value");
+				return targetField.getAsJsonObject().get("value");
 			}
 		}
 		return fieldValue;
