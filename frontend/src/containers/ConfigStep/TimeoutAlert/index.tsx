@@ -13,6 +13,7 @@ export const TimeoutAlert = ({ isVerifyTimeOut, isShowAlert, setIsShowAlert, mod
     <>
       {isVerifyTimeOut && isShowAlert && (
         <StyledAlert
+          data-testid='timeoutAlert'
           icon={<CancelIcon fontSize='inherit' />}
           severity='error'
           onClose={() => {

@@ -10,9 +10,10 @@ import {
   VERIFY,
 } from '../../fixtures';
 import { initDeploymentFrequencySettings, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
+import { AXIOS_REQUEST_ERROR_CODE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
-import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -186,5 +187,20 @@ describe('SourceControl', () => {
     await waitFor(() => {
       expect(screen.getByText(MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT)).toBeInTheDocument();
     });
+  });
+
+  it('should hidden timeout alert when click reset button', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillSourceControlFieldsInformation();
+    sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
+      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+    });
+
+    await userEvent.click(screen.getByText(VERIFY));
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: RESET }));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 });

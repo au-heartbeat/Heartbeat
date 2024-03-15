@@ -11,7 +11,9 @@ import {
   FAKE_PIPELINE_TOKEN,
 } from '../../fixtures';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
+import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -206,5 +208,19 @@ describe('PipelineTool', () => {
     await waitFor(() => {
       expect(getByText('Token is incorrect!')).toBeInTheDocument();
     });
+  });
+
+  it('should hidden timeout alert when click reset button', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillPipelineToolFieldsInformation();
+    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT });
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: RESET }));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 });

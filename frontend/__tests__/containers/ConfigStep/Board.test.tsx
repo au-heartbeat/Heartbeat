@@ -10,8 +10,11 @@ import {
   FAKE_TOKEN,
 } from '../../fixtures';
 import { render, screen, waitFor, within } from '@testing-library/react';
+import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { boardClient } from '@src/clients/board/BoardClient';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { TimeoutError } from '@src/errors/TimeoutError';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
@@ -215,5 +218,20 @@ describe('Board', () => {
         screen.getByText(/Token is invalid, please change your token with correct access permission!/i),
       ).toBeInTheDocument();
     });
+  });
+
+  it('should hidden timeout alert when click reset button', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillBoardFieldsInformation();
+    const mockedError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: RESET }));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 });
