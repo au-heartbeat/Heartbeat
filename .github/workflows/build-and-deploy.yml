@@ -236,38 +236,36 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check BuildKite status
+        run: |
+         buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN }}" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
+
+         if [ "$buildkite_status" != "passed" ]; then
+           echo "BuildKite build failed. Cannot merge the PR."
+           exit 1
+         fi
+
+      - name: Check for Username Match with GitHub API
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          buildkite_status=$(curl -H "Authorization: Bearer ${{ secrets.BUILDKITE_TOKEN_TEST }}" "https://api.buildkite.com/v2/organizations/thoughtworks-Heartbeat/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
+          # 使用GitHub API获取最近的commit信息
+          LATEST_COMMIT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/commits?per_page=1" | jq -r '.[0].author.login')
+          
+          # 获取当前trigger的GitHub用户名
+          CURRENT_ACTOR="${{ github.actor }}"
 
-          if [ "$buildkite_status" != "passed" ]; then
+          echo "Latest Commit Author Login: $LATEST_COMMIT"
+          echo "Current Actor: $CURRENT_ACTOR"
 
-            # 使用GitHub API获取最近的commit信息
-            LATEST_COMMIT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/commits?per_page=1" | jq -r '.[0].author.login')
-
-            # 获取当前trigger的GitHub用户名
-            CURRENT_ACTOR="${{ github.actor }}"
-
-            echo "Latest Commit Author Login: $LATEST_COMMIT"
-            echo "Current Actor: $CURRENT_ACTOR"
-
-            # 比较用户名
-            if [ "$CURRENT_ACTOR" != "$LATEST_COMMIT" ]; then
-              echo "BuildKite build failed. Cannot merge the PR."
-              echo "And The Committer Not match"
-              echo "The last commit was made by: $LATEST_COMMIT"
-              exit 1
-            else
-              echo "BuildKite build failed. Cannot merge the PR."
-              echo "But The Committer Match, So Let Go"
-              echo "Both actions were performed by: $CURRENT_ACTOR"
-            fi
+          # 比较用户名
+          if [ "$CURRENT_ACTOR" != "$LATEST_COMMIT" ]; then
+            echo "No match"
+            echo "The last commit was made by: $LATEST_COMMIT"
           else
-            echo "BuildKite build was successful, feel free to merge!"
+            echo "Match"
+            echo "Both actions were performed by: $CURRENT_ACTOR"
           fi
-
 
 
 
@@ -300,7 +298,7 @@ jobs:
   #         ignore-unfixed: true
   #         severity: "CRITICAL,HIGH"
   #         trivyignores: ".trivyignore"
-
+  
   deploy-infra:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
