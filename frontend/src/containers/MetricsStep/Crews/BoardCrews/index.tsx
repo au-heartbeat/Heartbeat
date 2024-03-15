@@ -13,57 +13,49 @@ interface crewsProps {
   options: string[];
   title: string;
   label: string;
-  type?: string;
+  name: string;
 }
 
-export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => {
-  const isBoardCrews = type === 'board';
-  const { users, pipelineCrews } = useAppSelector(selectMetricsContent);
+export const BoardCrews = ({ options, title, label, name }: crewsProps) => {
+  const { users } = useAppSelector(selectMetricsContent);
 
   const formikProps = useFormikContext<IMetricsInitialValues>();
-  console.log('formikProps', formikProps);
-  const selectedUsers = isBoardCrews ? formikProps.values.board.crews : formikProps.values.pipeline.crews;
-  const errors = formikProps.errors;
-  console.log('errors', errors);
-  console.log('selectedUsers', selectedUsers);
+  console.log('[<BoardCrews /> formikProps', formikProps);
+  const selectedUsers = formikProps.values.board.crews;
+  console.log('[<BoardCrews /> selectedUsers', selectedUsers);
   const isEmptyCrewData = selectedUsers.length === 0;
   const isAllSelected = options.length > 0 && formikProps.values.board.crews.length === options.length;
 
   const handleCrewChange = (_: React.SyntheticEvent, value: string[]) => {
-    console.log('[<Crews />] handleCrewChange value =>', value);
     if (value[value.length - 1] === 'All') {
-      formikProps.setFieldValue('board.crews', value.length === options.length + 1 ? [] : [...options]);
+      formikProps.setFieldValue(name, value.length === options.length + 1 ? [] : [...options]);
       return;
     }
-    formikProps.setFieldValue('board.crews', [...value]);
+    formikProps.setFieldValue(name, [...value]);
   };
 
   useEffect(() => {
-    formikProps.setFieldValue('board.crews', users);
-  }, [formikProps, users]);
-
-  useEffect(() => {
-    formikProps.setFieldValue('pipeline.crews', pipelineCrews);
-  }, [formikProps, pipelineCrews]);
+    formikProps.setFieldValue(name, users);
+  }, [users, formikProps, name]);
 
   return (
     <>
       <MetricsSettingTitle title={title} />
       <Field
-        name='board.crews'
+        name={name}
         component={MultiAutoComplete}
-        ariaLabel='Included Crews multiple select'
+        ariaLabel='Board Included Crews multiple select'
         optionList={options}
-        isError={isEmptyCrewData && isBoardCrews}
+        isError={isEmptyCrewData}
         isSelectAll={isAllSelected}
         onChangeHandler={handleCrewChange}
         selectedOption={selectedUsers}
         textFieldLabel={label}
-        isBoardCrews={isBoardCrews}
+        isBoardCrews={true}
       />
-      {isBoardCrews && <AssigneeFilter />}
+      {<AssigneeFilter />}
       <FormHelperText>
-        {isEmptyCrewData && isBoardCrews && (
+        {isEmptyCrewData && (
           <WarningMessage>
             {label} is <strong>required</strong>
           </WarningMessage>

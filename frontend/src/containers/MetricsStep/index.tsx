@@ -29,7 +29,9 @@ import {
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
+import { IMetricsInitialValues } from '@src/containers/MetricsStep/form/types';
 import { Classification } from '@src/containers/MetricsStep/Classification';
+import { BoardCrews } from '@src/containers/MetricsStep/Crews/BoardCrews';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { HEARTBEAT_EXCEPTION_CODE } from '@src/constants/resources';
@@ -38,9 +40,9 @@ import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import EmptyContent from '@src/components/Common/EmptyContent';
 import { useAppSelector, useAppDispatch } from '@src/hooks';
-import { Crews } from '@src/containers/MetricsStep/Crews';
 import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
+import { useFormik, Formik, Form } from 'formik';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
@@ -93,71 +95,90 @@ const MetricsStep = () => {
     getInfo();
   }, [shouldLoad, isShowCrewsAndRealDone, shouldGetBoardConfig, dispatch, getInfo]);
 
+  const formik = useFormik<IMetricsInitialValues>({
+    initialValues: {
+      board: {
+        crews: [],
+      },
+      pipeline: {
+        crews: [],
+      },
+    },
+    onSubmit(values) {
+      console.log('values', values);
+    },
+  });
+
+  console.log('formik', formik);
   return (
     <>
-      {startDate && endDate && (
-        <MetricSelectionHeader>
-          <DateRangeViewer startDate={startDate} endDate={endDate} />
-        </MetricSelectionHeader>
-      )}
+      <Formik initialValues={formik.initialValues} onSubmit={() => formik.handleSubmit()}>
+        <Form>
+          {startDate && endDate && (
+            <MetricSelectionHeader>
+              <DateRangeViewer startDate={startDate} endDate={endDate} />
+            </MetricSelectionHeader>
+          )}
 
-      {isShowCrewsAndRealDone && (
-        <MetricSelectionWrapper>
-          {isLoading && <Loading />}
-          <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
-          {isEmpty(errorMessage) ? (
-            <>
-              <Crews options={users} title={'Crew settings'} label={'Included Crews'} />
+          {isShowCrewsAndRealDone && (
+            <MetricSelectionWrapper>
+              {isLoading && <Loading />}
+              <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
+              {isEmpty(errorMessage) ? (
+                <>
+                  <BoardCrews name={'board.crews'} options={users} title={'Crew settings'} label={'Included Crews'} />
 
-              <CycleTime />
+                  <CycleTime />
 
-              {isShowRealDone && (
-                <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
-              )}
+                  {isShowRealDone && (
+                    <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
+                  )}
 
-              {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
-                <Classification
-                  targetFields={targetFields}
-                  title={'Classification setting'}
-                  label={'Distinguished By'}
+                  {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
+                    <Classification
+                      targetFields={targetFields}
+                      title={'Classification setting'}
+                      label={'Distinguished By'}
+                    />
+                  )}
+                  <Advance />
+                </>
+              ) : (
+                <EmptyContent
+                  title={errorMessage.title}
+                  message={
+                    errorMessage.code !== HEARTBEAT_EXCEPTION_CODE.TIMEOUT ? (
+                      errorMessage.message
+                    ) : (
+                      <>
+                        <StyledErrorMessage>{errorMessage.message}</StyledErrorMessage>
+                        {<StyledRetryButton onClick={getInfo}>try again</StyledRetryButton>}
+                      </>
+                    )
+                  }
                 />
               )}
-              <Advance />
-            </>
-          ) : (
-            <EmptyContent
-              title={errorMessage.title}
-              message={
-                errorMessage.code !== HEARTBEAT_EXCEPTION_CODE.TIMEOUT ? (
-                  errorMessage.message
-                ) : (
-                  <>
-                    <StyledErrorMessage>{errorMessage.message}</StyledErrorMessage>
-                    {<StyledRetryButton onClick={getInfo}>try again</StyledRetryButton>}
-                  </>
-                )
-              }
-            />
+            </MetricSelectionWrapper>
           )}
-        </MetricSelectionWrapper>
-      )}
 
-      {(requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
-        requiredData.includes(REQUIRED_DATA.CHANGE_FAILURE_RATE) ||
-        requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
-        requiredData.includes(REQUIRED_DATA.MEAN_TIME_TO_RECOVERY)) && (
-        <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
-          <MetricsSelectionTitle>Pipeline configuration</MetricsSelectionTitle>
-          {isFutureTime ? (
-            <EmptyContent
-              title={PipelineConfigInfoTitle.NO_CONTENT}
-              message={PIPELINE_TOOL_GET_INFO_NO_CONTENT_ERROR_MESSAGE}
-            />
-          ) : (
-            <DeploymentFrequencySettings />
+          {(requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
+            requiredData.includes(REQUIRED_DATA.CHANGE_FAILURE_RATE) ||
+            requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
+            requiredData.includes(REQUIRED_DATA.MEAN_TIME_TO_RECOVERY)) && (
+            <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
+              <MetricsSelectionTitle>Pipeline configuration</MetricsSelectionTitle>
+              {isFutureTime ? (
+                <EmptyContent
+                  title={PipelineConfigInfoTitle.NO_CONTENT}
+                  message={PIPELINE_TOOL_GET_INFO_NO_CONTENT_ERROR_MESSAGE}
+                />
+              ) : (
+                <DeploymentFrequencySettings />
+              )}
+            </MetricSelectionWrapper>
           )}
-        </MetricSelectionWrapper>
-      )}
+        </Form>
+      </Formik>
     </>
   );
 };

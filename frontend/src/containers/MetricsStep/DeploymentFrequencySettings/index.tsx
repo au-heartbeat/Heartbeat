@@ -9,12 +9,12 @@ import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepV
 import { useGetPipelineToolInfoEffect } from '@src/hooks/useGetPipelineToolInfoEffect';
 import { MetricsSettingAddButton } from '@src/components/Common/MetricsSettingButton';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
+import { PipelineCrews } from '@src/containers/MetricsStep/Crews/PipelineCrews';
 import { deleteMetricsPipelineFormMeta } from '@src/context/meta/metaSlice';
 import { selectPipelineCrews } from '@src/context/config/configSlice';
 import { PipelineMetricSelection } from './PipelineMetricSelection';
 import { PIPELINE_SETTING_TYPES } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
-import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
 import { HttpStatusCode } from 'axios';
 import isEmpty from 'lodash/isEmpty';
@@ -63,11 +63,11 @@ export const DeploymentFrequencySettings = () => {
           ))}
           <MetricsSettingAddButton onAddPipeline={handleAddPipeline} />
           {!isEmpty(pipelineCrews) && (
-            <Crews
+            <PipelineCrews
+              name={'pipeline.crews'}
               options={pipelineCrews}
               title={'Crew setting (optional)'}
               label={'Included Crews'}
-              type={'pipeline'}
             />
           )}
         </>

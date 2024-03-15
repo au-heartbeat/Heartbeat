@@ -26,6 +26,7 @@ const MultiAutoComplete = ({
   ariaLabel = '',
 }: Props) => {
   const filter = createFilterOptions();
+  console.log('MultiAutoComplete value', selectedOption);
 
   return (
     <StyledAutocompleted
@@ -35,6 +36,7 @@ const MultiAutoComplete = ({
       options={optionList}
       disableCloseOnSelect
       value={selectedOption}
+      isOptionEqualToValue={(option, value) => option === value}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
         return ['All', ...filtered];
