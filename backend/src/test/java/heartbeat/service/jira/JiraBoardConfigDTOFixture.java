@@ -337,10 +337,12 @@ public class JiraBoardConfigDTOFixture {
 		IssueField storyPointIssueField = new IssueField("customfield_10016", "Story point estimate");
 		IssueField sprintIssueField = new IssueField("customfield_10020", "Sprint");
 		IssueField flaggedIssueField = new IssueField("customfield_10021", "Flagged");
+		IssueField summaryIssueField = new IssueField("summary", "customfield_10029");
 		HashMap<String, IssueField> issueFieldMap = new HashMap<>();
 		issueFieldMap.put("customfield_10016", storyPointIssueField);
 		issueFieldMap.put("customfield_10020", sprintIssueField);
 		issueFieldMap.put("customfield_10021", flaggedIssueField);
+		issueFieldMap.put("customfield_10029", summaryIssueField);
 
 		return FieldResponseDTO.builder().projects(List.of(new Project(List.of(new Issuetype(issueFieldMap)))));
 	}
