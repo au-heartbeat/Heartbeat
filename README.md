@@ -179,7 +179,7 @@ After inputting the details info, users need to click the `Verify` button to ver
 ![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/5.png)\
 _Image 3-5, Crews/Cycle Time config_
 
-**Crew Settings:** You could select your team members from a list get from board source. The list will include the assignees for those tickets that finished in the time period selected in the last step.
+**Crew Settings:** You could select  your team members from a list get from board source. The list will include the assignees for those tickets that finished in the time period selected in the last step.
 
 **Cycle Time:** It will list all columns for the current active jira board. Then users need to map the each column to the supported columns. Like, if your board have “in progress” column, it means developer doing this ticket, so it should be mapping with “In Dev” for the list we provide.
 
