@@ -78,7 +78,7 @@ devDependencies:
     version: 2.3.10
   '@types/html-escaper':
     specifier: ^3.0.0
-    version: 3.0.0
+    version: 3.0.2
   '@types/mdast':
     specifier: ^3.0.10
     version: 3.0.10
@@ -2231,8 +2231,8 @@ packages:
       '@types/unist': 3.0.2
     dev: true
 
-  /@types/html-escaper@3.0.0:
-    resolution: {integrity: sha512-OcJcvP3Yk8mjYwf/IdXZtTE1tb/u0WF0qa29ER07ZHCYUBZXSN29Z1mBS+/96+kNMGTFUAbSz9X+pHmHpZrTCw==}
+  /@types/html-escaper@3.0.2:
+    resolution: {integrity: sha512-A8vk09eyYzk8J/lFO4OUMKCmRN0rRzfZf4n3Olwapgox/PtTiU8zPYlL1UEkJ/WeHvV6v9Xnj3o/705PKz9r4Q==}
     dev: true
 
   /@types/json-schema@7.0.11:
