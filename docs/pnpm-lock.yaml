@@ -138,7 +138,7 @@ devDependencies:
     version: 4.0.3
   hast-util-from-html:
     specifier: ^1.0.0
-    version: 1.0.0
+    version: 1.0.2
   hast-util-to-html:
     specifier: ^8.0.4
     version: 8.0.4
@@ -4743,13 +4743,14 @@ packages:
       web-namespaces: 2.0.1
     dev: true
 
-  /hast-util-from-html@1.0.0:
-    resolution: {integrity: sha512-tXYPhk28aMtDjGb4xNDaxtGKqlyZAEPGjN12jPCjczWppdLSrG/0r604a3FMvrd+9nV1HclILQiVqMnuPxN0WQ==}
+  /hast-util-from-html@1.0.2:
+    resolution: {integrity: sha512-LhrTA2gfCbLOGJq2u/asp4kwuG0y6NhWTXiPKP+n0qNukKy7hc10whqqCFfyvIA1Q5U5d0sp9HhNim9gglEH4A==}
     dependencies:
       '@types/hast': 2.3.10
-      hast-util-from-parse5: 7.1.0
+      hast-util-from-parse5: 7.1.2
       parse5: 7.1.2
       vfile: 5.3.6
+      vfile-message: 3.1.4
     dev: true
 
   /hast-util-from-html@2.0.1:
@@ -4763,27 +4764,14 @@ packages:
       vfile-message: 4.0.2
     dev: true
 
-  /hast-util-from-parse5@7.1.0:
-    resolution: {integrity: sha512-m8yhANIAccpU4K6+121KpPP55sSl9/samzQSQGpb0mTExcNh2WlvjtMwSWFhg6uqD4Rr6Nfa8N6TMypQM51rzQ==}
-    dependencies:
-      '@types/hast': 2.3.10
-      '@types/parse5': 6.0.3
-      '@types/unist': 2.0.10
-      hastscript: 7.0.2
-      property-information: 6.1.1
-      vfile: 5.3.6
-      vfile-location: 4.0.1
-      web-namespaces: 2.0.1
-    dev: true
-
   /hast-util-from-parse5@7.1.2:
     resolution: {integrity: sha512-Nz7FfPBuljzsN3tCQ4kCBKqdNhQE2l0Tn+X1ubgKBPRoiDIu1mL08Cfw4k7q71+Duyaw7DXDN+VTAp4Vh3oCOw==}
     dependencies:
       '@types/hast': 2.3.10
       '@types/unist': 2.0.10
-      hastscript: 7.2.0
-      property-information: 6.2.0
-      vfile: 5.3.7
+      hastscript: 7.0.2
+      property-information: 6.4.1
+      vfile: 5.3.6
       vfile-location: 4.1.0
       web-namespaces: 2.0.1
     dev: true
@@ -4795,7 +4783,7 @@ packages:
       '@types/unist': 3.0.2
       devlop: 1.1.0
       hastscript: 8.0.0
-      property-information: 6.2.0
+      property-information: 6.4.1
       vfile: 6.0.1
       vfile-location: 5.0.2
       web-namespaces: 2.0.1
@@ -4841,7 +4829,7 @@ packages:
     dependencies:
       '@types/hast': 2.3.10
       '@types/parse5': 6.0.3
-      hast-util-from-parse5: 7.1.0
+      hast-util-from-parse5: 7.1.2
       hast-util-to-parse5: 7.0.0
       html-void-elements: 2.0.1
       parse5: 6.0.1
@@ -4863,7 +4851,7 @@ packages:
       parse5: 6.0.1
       unist-util-position: 4.0.4
       unist-util-visit: 4.1.2
-      vfile: 5.3.7
+      vfile: 5.3.6
       web-namespaces: 2.0.1
       zwitch: 2.0.4
     dev: true
@@ -4899,7 +4887,7 @@ packages:
       hast-util-whitespace: 2.0.1
       mdast-util-mdx-expression: 1.3.2
       mdast-util-mdxjs-esm: 1.3.1
-      property-information: 6.2.0
+      property-information: 6.4.1
       space-separated-tokens: 2.0.2
       style-to-object: 0.4.1
       unist-util-position: 4.0.4
@@ -4935,7 +4923,7 @@ packages:
       hast-util-whitespace: 3.0.0
       html-void-elements: 3.0.0
       mdast-util-to-hast: 13.0.2
-      property-information: 6.2.0
+      property-information: 6.4.1
       space-separated-tokens: 2.0.2
       stringify-entities: 4.0.3
       zwitch: 2.0.4
@@ -4957,7 +4945,7 @@ packages:
     dependencies:
       '@types/hast': 2.3.10
       comma-separated-tokens: 2.0.3
-      property-information: 6.2.0
+      property-information: 6.4.1
       space-separated-tokens: 2.0.2
       web-namespaces: 2.0.1
       zwitch: 2.0.4
@@ -4969,7 +4957,7 @@ packages:
       '@types/hast': 3.0.4
       comma-separated-tokens: 2.0.3
       devlop: 1.1.0
-      property-information: 6.2.0
+      property-information: 6.4.1
       space-separated-tokens: 2.0.2
       web-namespaces: 2.0.1
       zwitch: 2.0.4
@@ -5010,7 +4998,7 @@ packages:
       '@types/hast': 2.3.10
       comma-separated-tokens: 2.0.3
       hast-util-parse-selector: 3.1.1
-      property-information: 6.2.0
+      property-information: 6.4.1
       space-separated-tokens: 2.0.2
     dev: true
 
@@ -5020,7 +5008,7 @@ packages:
       '@types/hast': 3.0.4
       comma-separated-tokens: 2.0.3
       hast-util-parse-selector: 4.0.0
-      property-information: 6.2.0
+      property-information: 6.4.1
       space-separated-tokens: 2.0.2
     dev: true
 
@@ -7485,8 +7473,8 @@ packages:
     resolution: {integrity: sha512-hrzC564QIl0r0vy4l6MvRLhafmUowhO/O3KgVSoXIbbA2Sz4j8HGpJc6T2cubRVwMwpdiG/vKGfhT4IixmKN9w==}
     dev: true
 
-  /property-information@6.2.0:
-    resolution: {integrity: sha512-kma4U7AFCTwpqq5twzC1YVIDXSqg6qQK6JN0smOw8fgRy1OkMi0CYSzFmsy6dnqSenamAtj0CyXMUJ1Mf6oROg==}
+  /property-information@6.4.1:
+    resolution: {integrity: sha512-OHYtXfu5aI2sS2LWFSN5rgJjrQ4pCy8i1jubJLe2QvMF8JJ++HXTUIVWFLfXJoaOfvYYjk2SN8J2wFUWIGXT4w==}
     dev: true
 
   /pseudomap@1.0.2:
@@ -7581,7 +7569,7 @@ packages:
     resolution: {integrity: sha512-MJJKONunHjoTh4kc3dsM1v3C9kGrrxvA3U8PxZlP2SjH8RNUSrb+lF7Y0KVaUDnGH2QZ5vAn7ulkiajM9ifuqg==}
     dependencies:
       '@types/hast': 2.3.10
-      hast-util-from-parse5: 7.1.0
+      hast-util-from-parse5: 7.1.2
       parse5: 6.0.1
       unified: 10.1.2
     dev: true
@@ -8937,18 +8925,11 @@ packages:
       sade: 1.8.1
     dev: true
 
-  /vfile-location@4.0.1:
-    resolution: {integrity: sha512-JDxPlTbZrZCQXogGheBHjbRWjESSPEak770XwWPfw5mTc1v1nWGLB/apzZxsx8a0SJVfF8HK8ql8RD308vXRUw==}
-    dependencies:
-      '@types/unist': 2.0.10
-      vfile: 5.3.6
-    dev: true
-
   /vfile-location@4.1.0:
     resolution: {integrity: sha512-YF23YMyASIIJXpktBa4vIGLJ5Gs88UB/XePgqPmTa7cDA+JeO3yclbpheQYCHjVHBn/yePzrXuygIL+xbvRYHw==}
     dependencies:
       '@types/unist': 2.0.10
-      vfile: 5.3.7
+      vfile: 5.3.6
     dev: true
 
   /vfile-location@5.0.2:
