@@ -63,6 +63,7 @@
     - [7.1.2 Multiple instance deployment](#712-multiple-instance-deployment)
   - [7.2 K8S](#72-k8s)
     - [7.2.1 Multiple instance deployment](#721-multiple-instance-deployment)
+- [How to contribute](#how-to-contribute)
 
 # News
 
@@ -660,3 +661,26 @@ kubectl apply -f k8s-heartbeat.yml
 ### 7.2.1 Multiple instance deployment
 
 You also can deploy Heartbeats in multiple instances using K8S through the following [documentation](https://au-heartbeat.github.io/Heartbeat/en/devops/how-to-deploy-heartbeat-in-multiple-instances-by-k8s/).
+
+# How to contribute
+
+## Kick-off
+
+- GitHub issue: Raise a GitHub issue, describe what you want to develop; you can start to write code after discussing and we have an agreement with your requirement.
+- Road map: Need show what will you do in different phase, it's better to draw a image and paste it in the GitHub issue.
+- Deadline: When your development work will be done.
+- ...
+
+## Coding
+
+- 100% Code coverage: whatever you code is about the frontend or backend
+- e2e: Write e2e case for your Code Biz logic what defined in the Jira card
+- Swagger: Keep swagger avaliable for any changes
+- ...
+
+## Pull Request
+
+- Pipelines: Must keep the pipelines(both GitHub Actions and BuildKite) green before ask others to review
+- Reviewers: Code must be reviewed by 2 team members at least
+- ...
+
