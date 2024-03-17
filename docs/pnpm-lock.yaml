@@ -13,7 +13,7 @@ dependencies:
     version: 0.2.0(prettier-plugin-astro@0.11.1)(prettier@3.0.2)(typescript@5.0.2)
   '@fontsource/ibm-plex-mono':
     specifier: ^4.5.10
-    version: 4.5.10
+    version: 4.5.13
   '@nanostores/preact':
     specifier: ^0.1.3
     version: 0.1.3(nanostores@0.5.13)(preact@10.16.0)
@@ -1797,8 +1797,8 @@ packages:
       unist-util-visit-parents: 5.1.3
     dev: true
 
-  /@fontsource/ibm-plex-mono@4.5.10:
-    resolution: {integrity: sha512-YmyewD+qHgo4ylcNSg6T9zpneRS34HhFd8cpF2TrJMbM3iKOW59XwmZqzdKyctzU0UQoHUFzjAAzDJ4THElFRA==}
+  /@fontsource/ibm-plex-mono@4.5.13:
+    resolution: {integrity: sha512-KAE7X2LgCV4X6p7vj1h2phRnhPX4YUa8FBAB0Jj9xW7Q+p+k2ce4HEAMJJ2RFHI075ClgQx+KZuDBNuiKgp5yw==}
     dev: false
 
   /@humanwhocodes/config-array@0.11.7:
