@@ -671,6 +671,10 @@ You also can deploy Heartbeats in multiple instances using K8S through the follo
 - Deadline: When your development work will be done.
 - ...
 
+## Setup
+
+Ref to [6 Run Heartbeat](#6-run-heartbeat) to setup project.
+
 ## Coding
 
 - 100% Code coverage: whatever you code is about the frontend or backend
