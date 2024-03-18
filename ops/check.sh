@@ -4,20 +4,21 @@ set -euo pipefail
 display_help() {
   echo "Usage: $0 {shell|security|frontend|backend|backend-license|frontend-license|e2e|buildkite-status}" >&2
   echo
-  echo "   shell                run shell check for the whole project"
-  echo "   security             run security check for the whole project"
-  echo "   frontend             run check for the frontend"
-  echo "   frontned-type-check  run typescript check for the frontend"
-  echo "   px                   run css px check for the frontend"
-  echo "   backend              run check for the backend"
-  echo "   dot-star             run .* check for the backend"
-  echo "   rgba                 run css rgba check to deny it"
-  echo "   hex                  run css hex check to deny it"
-  echo "   backend-license      check license for the backend"
-  echo "   frontend-license     check license for the frontend"
-  echo "   e2e                  run e2e for the frontend"
-  echo "   e2e-container        run e2e for the frontend in container"
-  echo "   buildkite-status     run status check for the buildkite"
+  echo "   shell                    run shell check for the whole project"
+  echo "   security                 run security check for the whole project"
+  echo "   frontend                 run check for the frontend"
+  echo "   frontned-type-check      run typescript check for the frontend"
+  echo "   px                       run css px check for the frontend"
+  echo "   backend                  run check for the backend"
+  echo "   dot-star                 run .* check for the backend"
+  echo "   rgba                     run css rgba check to deny it"
+  echo "   hex                      run css hex check to deny it"
+  echo "   backend-license          check license for the backend"
+  echo "   frontend-license         check license for the frontend"
+  echo "   e2e                      run e2e for the frontend"
+  echo "   e2e-container            run e2e for the frontend in container"
+  echo "   buildkite-status         run status check for the buildkite"
+  echo "   buildkite-e2e-deployed   check whether the the app has been deployed into e2e env successfully"
   echo
   exit 1
 }
@@ -117,6 +118,48 @@ rgba_check() {
   fi
 }
 
+buildkite_e2e_deployed_check() {
+  #!/bin/bash
+
+  MAX_ATTEMPTS="${MAX_ATTEMPTS:-40}"
+  SLEEP_DURATION_SECONDS="${SLEEP_DURATION_SECONDS:-30}"
+  BRANCH="${BRANCH:-"main"}"
+  BUILDKITE_TOKEN="${BUILDKITE_TOKEN:-empty BuildKite token}"
+  COMMIT_SHA="${COMMIT_SHA:-empty commit sha}"
+
+  attempt_count=0
+  echo "The git commit id is $COMMIT_SHA"
+
+  while [ $attempt_count -lt "$MAX_ATTEMPTS" ]; do
+    ((attempt_count += 1))
+    echo "Start to get deployment status, attempt count is $attempt_count"
+
+    response=$(curl -H "Authorization: Bearer $BUILDKITE_TOKEN" -X GET "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=$BRANCH&commit=$COMMIT_SHA")
+    echo "The current build response: ${response:0:50}"
+    is_empty=$(echo "$response" | jq 'length == 0')
+    if [ "$is_empty" == "true" ]; then
+      echo "The current BuildKite build has not deployed into e2e env"
+      sleep "$SLEEP_DURATION_SECONDS"
+      continue
+    fi
+
+    value=$(echo "$response" | jq '.[0].jobs[] | select(.name == ":rocket: Deploy e2e" and .state == "passed") | . != null')
+
+    if [ "$value" == "true" ]; then
+      echo "Successfully deploy to E2E"
+      break
+    else
+      echo "WIP..."
+      sleep "$SLEEP_DURATION_SECONDS"
+    fi
+  done
+
+  if [ $attempt_count -eq "$MAX_ATTEMPTS" ]; then
+    echo "❌ Failed to wait for E2E deployment with Maximum attempts reached. Exiting..."
+    exit 1
+  fi
+}
+
 hex_check() {
   cd frontend
   local result
@@ -192,33 +235,31 @@ e2e_check() {
 }
 
 buildkite_status_check() {
-  buildkite_status=$(curl -H "Authorization: Bearer $BUILDKITE_TOKEN" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
-
-  if [ "$buildkite_status" != "passed" ]; then
-
-    # 使用GitHub API获取最近的commit信息
-    LATEST_COMMIT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    "https://api.github.com/repos/$GITHUB_REPOSITORY/commits?per_page=1" | jq -r '.[0].author.login')
-
-    # 获取当前trigger的GitHub用户名
-    CURRENT_ACTOR="$GITHUB_ACTOR"
-
-    echo "Latest commit author login: $LATEST_COMMIT"
-    echo "Current actor: $CURRENT_ACTOR"
-
-    # 比较用户名
-    if [ "$CURRENT_ACTOR" != "$LATEST_COMMIT" ]; then
-      echo "BuildKite build failed. Cannot merge the PR."
-      echo "And the committer not match"
-      echo "The last commit was made by: $LATEST_COMMIT"
-      exit 1
+  if [[ "$EVENT_NAME" == "pull_request" && "$CURRENT_BRANCH_NAME" != "refs/heads/main" ]]; then
+    if echo "$PULL_REQUEST_TITLE" | grep -iq "revert"; then
+      echo "PR contains revert. Skipping the action."
     else
-      echo "BuildKite build failed. Cannot merge the PR."
-      echo "But the committer match, So let go"
-      echo "Both actions were performed by: $CURRENT_ACTOR"
+      echo "Start to check the latest BuildKite build status"
+      buildkite_status=$(curl -H "Authorization: Bearer $BUILDKITE_TOKEN" "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=main"| jq -r '.[0].state')
+      if [ "$buildkite_status" != "passed" ]; then
+        latest_commiter=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/commits?per_page=1" | jq -r '.[0].author.login')
+        echo "The latest commit author is $latest_commiter, the current author is $CURRENT_ACTOR"
+        if [ "$CURRENT_ACTOR" != "$latest_commiter" ]; then
+          echo "❌ BuildKite build failed. Cannot merge this PR."
+          echo "And the committer does not match"
+          echo "The last commit was made by: $latest_commiter, not you."
+          exit 1
+        else
+          echo "🎉 The last build of BuildKite is failed."
+          echo "But the committer is matched, So let go"
+          echo "Both actions were performed by: $CURRENT_ACTOR"
+        fi
+      else
+        echo "🎉 The latest build of BuildKite is passed, feel free to merge."
+      fi
     fi
   else
-    echo "BuildKite build was successful, feel free to merge!"
+    echo "🎉 Not a pull request or not in a non-main branch. Skipping the action."
   fi
 }
 
@@ -243,6 +284,7 @@ while [[ "$#" -gt 0 ]]; do
   "backend-license") backend_license_check ;;
   "frontend-license") frontend_license_check ;;
   "buildkite-status") buildkite_status_check ;;
+  "buildkite-e2e-deployed") buildkite_e2e_deployed_check ;;
   *) echo "Unknown parameter passed: $1" ;;
   esac
   shift
