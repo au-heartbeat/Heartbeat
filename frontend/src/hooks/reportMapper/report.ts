@@ -5,6 +5,7 @@ import { leadTimeForChangesMapper } from '@src/hooks/reportMapper/leadTimeForCha
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { classificationMapper } from '@src/hooks/reportMapper/classification';
+import reworkTimeMapper from '@src/hooks/reportMapper/reworkTimeMapper';
 import { cycleTimeMapper } from '@src/hooks/reportMapper/cycleTime';
 import { velocityMapper } from '@src/hooks/reportMapper/velocity';
 
@@ -17,10 +18,13 @@ export const reportMapper = ({
   leadTimeForChanges,
   devChangeFailureRate,
   exportValidityTime,
+  rework,
 }: ReportResponseDTO): ReportResponse => {
   const velocityList = velocity && velocityMapper(velocity);
 
   const cycleTimeList = cycleTime && cycleTimeMapper(cycleTime);
+
+  const reworkTimeList = rework && reworkTimeMapper(rework);
 
   const classification = classificationList && classificationMapper(classificationList);
 
@@ -37,6 +41,7 @@ export const reportMapper = ({
   return {
     velocityList,
     cycleTimeList,
+    reworkList: reworkTimeList,
     classification,
     deploymentFrequencyList,
     devMeanTimeToRecoveryList: devMeanTimeToRecoveryList,

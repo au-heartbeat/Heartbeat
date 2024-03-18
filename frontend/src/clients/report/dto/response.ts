@@ -161,6 +161,7 @@ export interface ReportCallbackResponse {
 export interface ReportResponse {
   velocityList?: ReportDataWithTwoColumns[] | null;
   cycleTimeList?: ReportDataWithTwoColumns[] | null;
+  reworkList?: ReportDataWithTwoColumns[] | null;
   classification?: ReportDataWithThreeColumns[] | null;
   deploymentFrequencyList?: ReportDataWithThreeColumns[] | null;
   devMeanTimeToRecoveryList?: ReportDataWithThreeColumns[] | null;
