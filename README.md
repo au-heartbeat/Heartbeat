@@ -53,7 +53,7 @@
   - [6.1.1 How to build and local preview](#611-how-to-build-and-local-preview)
   - [6.1.2 How to run unit tests](#612-how-to-run-unit-tests)
   - [6.1.3 How to generate a test report](#613-how-to-generate-a-test-report)
-  - [6.1.4 How to run e2e tests locally](#614-how-to-run-e2e-tests-locally)
+  - [6.1.4 How to run E2E tests locally](#614-how-to-run-e2e-tests-locally)
 - [7 How to trigger BuildKite Pipeline](#7-how-to-trigger-buildkite-pipeline)
   - [Release](#release)
     - [Release command in main branch](#release-command-in-main-branch)
@@ -64,6 +64,10 @@
   - [7.2 K8S](#72-k8s)
     - [7.2.1 Multiple instance deployment](#721-multiple-instance-deployment)
 - [How to contribute](#how-to-contribute)
+  - [Kick-off](#kick-off)
+  - [Setup](#setup)
+  - [Coding](#coding)
+  - [Pull Request](#pull-request)
 
 # News
 
@@ -450,7 +454,7 @@ pnpm test
 pnpm coverage
 ```
 
-## 6.1.4 How to run e2e tests locally
+## 6.1.4 How to run E2E tests locally
 
 2. Start the backend service
 
@@ -466,11 +470,11 @@ cd HearBeat/frontend
 pnpm start
 ```
 
-4. Run the e2e tests
+4. Run the E2E tests
 
 ```
 cd HearBeat/frontend
-pnpm e2e
+pnpm run E2E:headed
 ```
 
 # 7 How to trigger BuildKite Pipeline
@@ -678,13 +682,16 @@ Ref to [6 Run Heartbeat](#6-run-heartbeat) to setup project.
 ## Coding
 
 - 100% Code coverage: whatever you code is about the frontend or backend
-- e2e: Write e2e case for your Code Biz logic what defined in the Jira card
-- Swagger: Keep swagger avaliable for any changes
+- E2E: Write E2E case for your Code Biz logic what defined in the Jira card
+- Swagger: Keep swagger available for any changes
+- Small PR: Submit small PR, if we can't repair within 1 hour we will revert it
+- Commit message: format should be`[GitHub Issue][number][backend/frontend]: commit message`, e.g. `[GitHub Issue][1135][frontend]: Support for GitHub Actions pipelines`
 - ...
 
 ## Pull Request
 
-- Pipelines: Must keep the pipelines(both GitHub Actions and BuildKite) green before ask others to review
+- Pipelines: Must keep the pipelines(both GitHub Actions and BuildKite) green before asking others to review
 - Reviewers: Code must be reviewed by 2 team members at least
+- E2E screenshot: Upload the latest E2E result screenshot on the PR.
 - ...
 
