@@ -1,5 +1,3 @@
-import io.spring.javaformat.gradle.tasks.CheckFormat
-
 plugins {
   id 'java'
   id 'jacoco'

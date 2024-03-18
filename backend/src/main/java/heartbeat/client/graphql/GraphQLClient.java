@@ -55,7 +55,7 @@ public class GraphQLClient {
 		return apolloClient;
 	}
 
-	private <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token,
+	public <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token,
 			GraphQLServer server) {
 		ApolloCall<D> queryCall = this.getApolloClient(token, server).query(query);
 		CompletableFuture<ApolloResponse<D>> responseCompletableFuture = new CompletableFuture<>();
@@ -89,8 +89,8 @@ public class GraphQLClient {
 				Optional.present(perPage));
 
 		try {
-			ApolloResponse<GetPipelineInfoQuery.Data> listCompletableFuture = GraphQLClient.getInstance()
-				.callWithQuery(query, token, GraphQLServer.BUILDKITE)
+			ApolloResponse<GetPipelineInfoQuery.Data> listCompletableFuture = callWithQuery(query, token,
+					GraphQLServer.BUILDKITE)
 				.get();
 			if (listCompletableFuture.data != null) {
 				list = listCompletableFuture.data.organization.pipelines.edges.stream().map(edge -> edge.node).toList();

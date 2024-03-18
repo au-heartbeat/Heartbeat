@@ -1,6 +1,8 @@
 package heartbeat.service.pipeline.buildkite;
 
+import com.buildkite.GetPipelineInfoQuery;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
+import heartbeat.client.graphql.GraphQLClient;
 import heartbeat.controller.pipeline.dto.request.TokenParam;
 import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
 import heartbeat.exception.InternalServerErrorException;
@@ -99,6 +101,9 @@ class BuildKiteServiceTest {
 	@Mock
 	CachePageService cachePageService;
 
+	@Mock
+	GraphQLClient graphQLClient;
+
 	BuildKiteService buildKiteService;
 
 	ThreadPoolTaskExecutor executor;
@@ -106,6 +111,7 @@ class BuildKiteServiceTest {
 	@BeforeEach
 	public void setUp() {
 		buildKiteService = new BuildKiteService(cachePageService, executor = getTaskExecutor(), buildKiteFeignClient);
+		buildKiteService.setGraphQLClient(graphQLClient);
 	}
 
 	public ThreadPoolTaskExecutor getTaskExecutor() {
@@ -492,29 +498,36 @@ class BuildKiteServiceTest {
 	}
 
 	@Test
-	void shouldReturnBuildKiteResponseWhenGetBuildKiteInfo() throws IOException {
+	void shouldReturnBuildKiteResponseWhenGetBuildKiteInfo() {
 		TokenParam tokenParam = TokenParam.builder().token(MOCK_TOKEN).build();
 		ObjectMapper mapper = new ObjectMapper();
-		List<BuildKitePipelineDTO> pipelineDTOS = mapper.readValue(
-				new File("src/test/java/heartbeat/controller/pipeline/buildKitePipelineInfoData.json"),
-				new TypeReference<>() {
-				});
 		when(buildKiteFeignClient.getBuildKiteOrganizationsInfo(any()))
 			.thenReturn(List.of(BuildKiteOrganizationsInfo.builder().name(TEST_ORG_NAME).slug(TEST_ORG_ID).build()));
-		when(buildKiteFeignClient.getPipelineInfo("Bearer mock_token", TEST_ORG_ID, "1", "100"))
-			.thenReturn(pipelineDTOS);
+		GetPipelineInfoQuery.Node node = new GetPipelineInfoQuery.Node("MOCK_PIPELINE_ID", "MOCK_PIPELINE_NAME",
+				new GetPipelineInfoQuery.Repository("https://github.com/XXXX-fs/fs-platform-payment-selector-ui.git"),
+				new GetPipelineInfoQuery.Steps("steps:\n" + "  - label: \":step1\"\n" + "    command: |\n"
+						+ "      if [[ \"${BUILDKITE_BRANCH}\" == \"main\" ]]; then\n"
+						+ "        buildkite-agent pipeline upload\n" + "      else\n"
+						+ "        echo \"Skipping pipeline upload for branch ${BUILDKITE_BRANCH}\"\n" + "      fi\n"
+						+ "  - label: \":step2\"\n" + "    command: |\n"
+						+ "      if [[ \"${BUILDKITE_BRANCH}\" == \"main\" ]]; then\n"
+						+ "        buildkite-agent pipeline upload\n" + "      else\n"
+						+ "        echo \"Skipping pipeline upload for branch ${BUILDKITE_BRANCH}\"\n" + "      fi\n"));
+		when(graphQLClient.fetchListOfPipeLineInfo("Bearer mock_token", TEST_ORG_ID, 100)).thenReturn(List.of(node));
 
 		BuildKiteResponseDTO buildKiteResponseDTO = buildKiteService.getBuildKiteInfo(tokenParam);
 
 		assertThat(buildKiteResponseDTO.getPipelineList().size()).isEqualTo(1);
 		Pipeline pipeline = buildKiteResponseDTO.getPipelineList().get(0);
-		assertThat(pipeline.getId()).isEqualTo("payment-selector-ui");
-		assertThat(pipeline.getName()).isEqualTo("payment-selector-ui");
+		assertThat(pipeline.getId()).isEqualTo("MOCK_PIPELINE_ID");
+		assertThat(pipeline.getName()).isEqualTo("MOCK_PIPELINE_NAME");
 		assertThat(pipeline.getOrgId()).isEqualTo(TEST_ORG_ID);
 		assertThat(pipeline.getOrgName()).isEqualTo(TEST_ORG_NAME);
 		assertThat(pipeline.getRepository())
 			.isEqualTo("https://github.com/XXXX-fs/fs-platform-payment-selector-ui.git");
-		assertThat(pipeline.getSteps().size()).isEqualTo(1);
+		assertThat(pipeline.getSteps().size()).isEqualTo(2);
+		assertEquals(pipeline.getSteps().get(0), ":step1");
+		assertEquals(pipeline.getSteps().get(1), ":step2");
 	}
 
 	@Test

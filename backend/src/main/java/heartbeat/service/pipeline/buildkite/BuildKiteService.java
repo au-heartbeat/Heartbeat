@@ -23,6 +23,7 @@ import heartbeat.exception.PermissionDenyException;
 import heartbeat.util.TimeUtil;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,9 @@ public class BuildKiteService {
 	private final ThreadPoolTaskExecutor customTaskExecutor;
 
 	private final BuildKiteFeignClient buildKiteFeignClient;
+
+	@Setter
+	private GraphQLClient graphQLClient = GraphQLClient.getInstance();
 
 	@PreDestroy
 	public void shutdownExecutor() {
@@ -275,8 +279,7 @@ public class BuildKiteService {
 
 			log.info("Start to query BuildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
-				.flatMap(org -> GraphQLClient.getInstance()
-					.fetchListOfPipeLineInfo(buildKiteToken, org.getSlug(), 100)
+				.flatMap(org -> graphQLClient.fetchListOfPipeLineInfo(buildKiteToken, org.getSlug(), 100)
 					.stream()
 					.map(pipeline -> PipelineTransformer.fromBuildKiteGraphQLQueryNode(pipeline, org.getSlug(),
 							org.getName())))
