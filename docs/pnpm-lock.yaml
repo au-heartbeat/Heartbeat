@@ -66,7 +66,7 @@ devDependencies:
     version: 7.18.10
   '@docsearch/css':
     specifier: ^3.5.1
-    version: 3.5.1
+    version: 3.6.0
   '@docsearch/react':
     specifier: ^3.5.1
     version: 3.5.1(@algolia/client-search@4.22.1)(search-insights@2.13.0)
@@ -1293,6 +1293,10 @@ packages:
 
   /@docsearch/css@3.5.1:
     resolution: {integrity: sha512-2Pu9HDg/uP/IT10rbQ+4OrTQuxIWdKVUEdcw9/w7kZJv9NeHS6skJx1xuRiFyoGKwAzcHXnLp7csE99sj+O1YA==}
+    dev: true
+
+  /@docsearch/css@3.6.0:
+    resolution: {integrity: sha512-+sbxb71sWre+PwDK7X2T8+bhS6clcVMLwBPznX45Qu6opJcgRjAp7gYSDzVFp187J+feSj5dNBN1mJoi6ckkUQ==}
     dev: true
 
   /@docsearch/react@3.5.1(@algolia/client-search@4.22.1)(search-insights@2.13.0):
