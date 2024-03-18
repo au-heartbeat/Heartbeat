@@ -1,3 +1,5 @@
+import io.spring.javaformat.gradle.tasks.CheckFormat
+
 plugins {
   id 'java'
   id 'jacoco'
@@ -150,4 +152,9 @@ apollo {
     packageName.set("com.buildkite")
     generateKotlinModels.set(false)
   }
+}
+
+tasks.named("checkFormatMain") {
+  def generatedSources = fileTree("build/generated/source")
+  exclude { candidate -> generatedSources.contains(candidate.file) }
 }

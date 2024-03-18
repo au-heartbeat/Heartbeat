@@ -21,29 +21,32 @@ import java.util.concurrent.ExecutionException;
 
 @Log4j2
 public class GraphQLClient {
+
 	@Getter
 	private enum GraphQLServer {
-		BUILDKITE("https://graphql.buildkite.com/v1"),
-		GITHUB("https://api.github.com/graphql");
+
+		BUILDKITE("https://graphql.buildkite.com/v1"), GITHUB("https://api.github.com/graphql");
 
 		private final String url;
 
 		GraphQLServer(String url) {
 			this.url = url;
 		}
+
 	}
 
 	@Getter
 	private static final GraphQLClient instance = new GraphQLClient();
+
 	private ApolloClient apolloClient;
 
 	private ApolloClient getApolloClient(String token, GraphQLServer server) {
 		if (apolloClient == null) {
-			this.apolloClient = new ApolloClient.Builder()
-				.addHttpHeader("Authorization",  token)
+			this.apolloClient = new ApolloClient.Builder().addHttpHeader("Authorization", token)
 				.serverUrl(server.url)
 				.build();
-		} else {
+		}
+		else {
 			this.apolloClient = apolloClient.newBuilder()
 				.serverUrl(server.url)
 				.addHttpHeader("Authorization", token)
@@ -52,9 +55,9 @@ public class GraphQLClient {
 		return apolloClient;
 	}
 
-	private <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token, GraphQLServer server) {
-		ApolloCall<D> queryCall = this.getApolloClient(token, server)
-			.query(query);
+	private <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token,
+			GraphQLServer server) {
+		ApolloCall<D> queryCall = this.getApolloClient(token, server).query(query);
 		CompletableFuture<ApolloResponse<D>> responseCompletableFuture = new CompletableFuture<>();
 		getApolloClient(token, server).query(query).execute(new Continuation<>() {
 			@NotNull
@@ -82,18 +85,21 @@ public class GraphQLClient {
 	public List<GetPipelineInfoQuery.Node> fetchListOfPipeLineInfo(String token, String slug, int perPage) {
 		CompletableFuture<List<GetPipelineInfoQuery.Node>> nodeListFuture = new CompletableFuture<>();
 		List<GetPipelineInfoQuery.Node> list = null;
-		Query<GetPipelineInfoQuery.Data> query = new GetPipelineInfoQuery(
-			Optional.present(slug),
-			Optional.present(perPage));
+		Query<GetPipelineInfoQuery.Data> query = new GetPipelineInfoQuery(Optional.present(slug),
+				Optional.present(perPage));
 
 		try {
-			ApolloResponse<GetPipelineInfoQuery.Data> listCompletableFuture = GraphQLClient.getInstance().callWithQuery(query, token, GraphQLServer.BUILDKITE).get();
+			ApolloResponse<GetPipelineInfoQuery.Data> listCompletableFuture = GraphQLClient.getInstance()
+				.callWithQuery(query, token, GraphQLServer.BUILDKITE)
+				.get();
 			if (listCompletableFuture.data != null) {
 				list = listCompletableFuture.data.organization.pipelines.edges.stream().map(edge -> edge.node).toList();
 			}
-		} catch (ExecutionException | InterruptedException | ApolloHttpException e) {
+		}
+		catch (ExecutionException | InterruptedException | ApolloHttpException e) {
 			// TODO handle ApolloHttpException
 		}
 		return list;
 	}
+
 }

@@ -275,7 +275,8 @@ public class BuildKiteService {
 
 			log.info("Start to query BuildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
-				.flatMap(org -> GraphQLClient.getInstance().fetchListOfPipeLineInfo(buildKiteToken, org.getSlug(), 100)
+				.flatMap(org -> GraphQLClient.getInstance()
+					.fetchListOfPipeLineInfo(buildKiteToken, org.getSlug(), 100)
 					.stream()
 					.map(pipeline -> PipelineTransformer.fromBuildKiteGraphQLQueryNode(pipeline, org.getSlug(),
 							org.getName())))
