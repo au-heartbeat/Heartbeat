@@ -22,17 +22,18 @@ export const PipelineCrews = ({ options, title, label, name }: crewsProps) => {
   console.log('[<PipelineCrews />] selectedUsers', selectedUsers);
   const isAllSelected = options.length > 0 && formikProps.values.pipeline.crews.length === options.length;
 
+  const fieldSetter = formikProps.setFieldValue;
   const handleCrewChange = (_: React.SyntheticEvent, value: string[]) => {
     if (value[value.length - 1] === 'All') {
-      formikProps.setFieldValue(name, value.length === options.length + 1 ? [] : [...options]);
+      fieldSetter(name, value.length === options.length + 1 ? [] : [...options]);
       return;
     }
-    formikProps.setFieldValue(name, [...value]);
+    fieldSetter(name, [...value]);
   };
 
   useEffect(() => {
-    formikProps.setFieldValue(name, pipelineCrews);
-  }, [pipelineCrews, formikProps, name]);
+    fieldSetter(name, pipelineCrews);
+  }, [fieldSetter, pipelineCrews, name]);
 
   return (
     <>

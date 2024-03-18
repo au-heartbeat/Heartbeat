@@ -29,8 +29,8 @@ import {
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
-import { IMetricsInitialValues } from '@src/containers/MetricsStep/form/types';
 import { Classification } from '@src/containers/MetricsStep/Classification';
+import { metricsSchema } from '@src/containers/MetricsStep/form/validator';
 import { BoardCrews } from '@src/containers/MetricsStep/Crews/BoardCrews';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
@@ -42,8 +42,8 @@ import EmptyContent from '@src/components/Common/EmptyContent';
 import { useAppSelector, useAppDispatch } from '@src/hooks';
 import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
-import { useFormik, Formik, Form } from 'formik';
 import { Advance } from './Advance/Advance';
+import { Formik, Form } from 'formik';
 import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
 import dayjs from 'dayjs';
@@ -95,24 +95,23 @@ const MetricsStep = () => {
     getInfo();
   }, [shouldLoad, isShowCrewsAndRealDone, shouldGetBoardConfig, dispatch, getInfo]);
 
-  const formik = useFormik<IMetricsInitialValues>({
-    initialValues: {
-      board: {
-        crews: [],
-      },
-      pipeline: {
-        crews: [],
-      },
-    },
-    onSubmit(values) {
-      console.log('values', values);
-    },
-  });
-
-  console.log('formik', formik);
   return (
     <>
-      <Formik initialValues={formik.initialValues} onSubmit={() => formik.handleSubmit()}>
+      <Formik
+        initialValues={{
+          board: {
+            crews: [],
+          },
+          pipeline: {
+            crews: [],
+          },
+        }}
+        onSubmit={async (values, helpers) => {
+          helpers.validateForm();
+          console.log('values', values);
+        }}
+        validationSchema={metricsSchema}
+      >
         <Form>
           {startDate && endDate && (
             <MetricSelectionHeader>
