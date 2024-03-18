@@ -36,7 +36,7 @@ export interface OldFileConfig {
   deployment?: OldConfigSetting[];
   leadTime?: OldConfigSetting[];
   pipelineCrews?: string[];
-  reworkTimesSettings: IReworkConfig;
+  reworkTimesSettings?: IReworkConfig;
 }
 
 interface OldConfigSetting {
@@ -89,11 +89,12 @@ export interface NewFileConfig {
   deployment?: NewConfigSetting[];
   leadTime?: NewConfigSetting[];
   pipelineCrews?: string[];
-  reworkTimesSettings: IReworkConfig;
+  reworkTimesSettings?: IReworkConfig;
 }
 
-const filterExcludeReworkStatus = (reworkTimesSettings: IReworkConfig) => {
-  reworkTimesSettings.excludeStates = reworkTimesSettings.excludeStates.filter((value) => {
+const filterExcludeReworkStatus = (reworkTimesSettings: IReworkConfig | undefined) => {
+  if (!reworkTimesSettings) return;
+  reworkTimesSettings.excludeStates = reworkTimesSettings?.excludeStates.filter((value) => {
     return REWORK_TIME_LIST.includes(value);
   });
   return reworkTimesSettings;
