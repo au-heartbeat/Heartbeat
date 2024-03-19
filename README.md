@@ -136,9 +136,7 @@ _Image 3-3，Metrics Data_
 
 ##### 3.1.2.1 Date picker validation rules
 
-User can not select future time in calendar (both start time & end time).
-
-The max date interval between start time and end time is 31 days (e.g. 01/01/2024 - 01/31/2024).
+User can not select future time in calendar (both start time & end time). The max date interval between start time and end time is 31 days (e.g. 01/01/2024 - 01/31/2024).
 
 Invalid dates may be, e.g. future dates, interval between start time and end time is more than 31 days, end time is before start time, etc.
 
