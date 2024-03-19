@@ -55,6 +55,7 @@ export const DateRangePicker = () => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <StyledDateRangePickerContainer>
         <StyledDateRangePicker
+          disableFuture
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={(newValue) => changeStartDate(newValue as unknown as Dayjs)}
@@ -71,6 +72,7 @@ export const DateRangePicker = () => {
           }}
         />
         <StyledDateRangePicker
+          disableFuture
           label='To *'
           value={endDate ? dayjs(endDate) : null}
           minDate={dayjs(startDate)}
