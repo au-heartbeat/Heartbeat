@@ -107,8 +107,8 @@ devDependencies:
     specifier: ^0.20.0
     version: 0.20.0(astro@4.5.6)
   astro-og-canvas:
-    specifier: ^0.3.2
-    version: 0.3.2(astro@4.5.6)
+    specifier: ^0.4.0
+    version: 0.4.2(astro@4.5.6)
   bcp-47-normalize:
     specifier: ^2.3.0
     version: 2.3.0
@@ -2419,11 +2419,11 @@ packages:
       remark-expressive-code: 0.20.0
     dev: true
 
-  /astro-og-canvas@0.3.2(astro@4.5.6):
-    resolution: {integrity: sha512-MCQ7CetIqlpqMw4WwQUC41NzHA92p1hmVT8BIPpg61tyB89pkjvEOK5G8dBZqIMKL27QgOmez/p5BowYhqOI6w==}
+  /astro-og-canvas@0.4.2(astro@4.5.6):
+    resolution: {integrity: sha512-OQsH6Gr2HX9ZRHdVy2OcXVBIPI65WvEtLG/60krnphh8d3ldhuAFunymYaNGcrdSZcYgXkHWejbPt//3qaRidA==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
-      astro: ^3.0.0
+      astro: ^3.0.0 || ^4.0.0
     dependencies:
       astro: 4.5.6(@types/node@18.19.26)(sass@1.72.0)(typescript@5.4.2)
       canvaskit-wasm: 0.37.2

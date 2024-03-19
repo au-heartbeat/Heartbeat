@@ -53,7 +53,7 @@
     "astro-auto-import": "^0.3.2",
     "astro-eslint-parser": "^0.9.5",
     "astro-expressive-code": "^0.20.0",
-    "astro-og-canvas": "^0.3.2",
+    "astro-og-canvas": "^0.4.0",
     "bcp-47-normalize": "^2.3.0",
     "canvaskit-wasm": "^0.37.2",
     "dedent-js": "^1.0.1",
