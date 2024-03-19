@@ -69,8 +69,9 @@ public class GraphQLClient {
 			@Override
 			@SuppressWarnings("unchecked")
 			public void resumeWith(@NotNull Object responseObject) {
+				log.info("****resumeWith**{}", responseObject);
 				if (responseObject instanceof ApolloResponse) {
-					log.info("****resumeWithResponse**{}", responseObject);
+					log.info("****resumeWithApolloResponse**{}", responseObject);
 					responseCompletableFuture.complete((ApolloResponse<D>) responseObject);
 				}
 				if (responseObject instanceof Result.Failure) {

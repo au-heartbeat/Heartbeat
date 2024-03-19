@@ -1,5 +1,6 @@
 package heartbeat.service.pipeline.buildkite;
 
+import com.apollographql.apollo3.ApolloClient;
 import com.buildkite.GetPipelineInfoQuery;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.graphql.GraphQLClient;
@@ -22,13 +23,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.client.BuildKiteFeignClient;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteOrganizationsInfo;
-import heartbeat.client.dto.pipeline.buildkite.BuildKitePipelineDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteTokenInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
@@ -44,8 +43,6 @@ import heartbeat.service.pipeline.buildkite.builder.DeployInfoBuilder;
 import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
 import heartbeat.service.pipeline.buildkite.builder.DeploymentEnvironmentBuilder;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
