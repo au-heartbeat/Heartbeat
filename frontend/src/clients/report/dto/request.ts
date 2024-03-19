@@ -56,6 +56,7 @@ export interface IBasicReportRequestDTO {
     doneColumn: string[];
   };
   csvTimeStamp?: number;
+  metricTypes: string[];
 }
 
 export interface CSVReportRequestDTO {

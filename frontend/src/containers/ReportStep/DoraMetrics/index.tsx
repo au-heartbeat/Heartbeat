@@ -23,7 +23,7 @@ import { selectConfig } from '@src/context/config/configSlice';
 import { StyledRetry } from '../BoardMetrics/BoardMetrics';
 import { Nullable } from '@src/utils/types';
 import { useAppSelector } from '@src/hooks';
-import React, { useEffect } from 'react';
+import React from 'react';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 
@@ -39,7 +39,6 @@ interface DoraMetricsProps {
 }
 
 const DoraMetrics = ({
-  isBackFromDetail,
   startToRequestDoraData,
   onShowDetail,
   doraReport,
@@ -81,6 +80,7 @@ const DoraMetrics = ({
         leadTime: getPipelineConfig(leadTimeForChanges),
       },
       csvTimeStamp: csvTimeStamp,
+      metricTypes: ['dora'],
     };
   };
 
@@ -207,11 +207,6 @@ const DoraMetrics = ({
   const handleRetry = () => {
     startToRequestDoraData(getDoraReportRequestBody());
   };
-
-  useEffect(() => {
-    !isBackFromDetail && startToRequestDoraData(getDoraReportRequestBody());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>

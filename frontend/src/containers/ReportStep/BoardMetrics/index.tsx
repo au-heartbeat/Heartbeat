@@ -31,7 +31,7 @@ import { selectConfig } from '@src/context/config/configSlice';
 import { Loading } from '@src/components/Loading';
 import { Nullable } from '@src/utils/types';
 import { useAppSelector } from '@src/hooks';
-import React, { useEffect } from 'react';
+import React from 'react';
 import dayjs from 'dayjs';
 
 interface BoardMetricsProps {
@@ -46,7 +46,6 @@ interface BoardMetricsProps {
 }
 
 const BoardMetrics = ({
-  isBackFromDetail,
   startToRequestBoardData,
   onShowDetail,
   boardReport,
@@ -115,6 +114,7 @@ const BoardMetrics = ({
         ],
       },
       csvTimeStamp: csvTimeStamp,
+      metricTypes: ['board'],
     };
   };
 
@@ -198,11 +198,6 @@ const BoardMetrics = ({
     boardMetrics[0] === REQUIRED_DATA.CLASSIFICATION &&
     !errorMessage &&
     !boardReport?.boardMetricsCompleted;
-
-  useEffect(() => {
-    !isBackFromDetail && startToRequestBoardData(getBoardReportRequestBody());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>
