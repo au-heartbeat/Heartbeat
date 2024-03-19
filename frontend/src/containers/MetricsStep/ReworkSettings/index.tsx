@@ -24,6 +24,8 @@ function ReworkSettings() {
   }, [cycleTimeSettings]);
 
   const boardingMappingHasDoneStatus = boardingMappingStatus.includes(METRICS_CONSTANTS.doneValue);
+  const allStateIsEmpty = boardingMappingStatus.every((value) => value === METRICS_CONSTANTS.cycleTimeEmptyStr);
+  const onlyDoneStateSelected = boardingMappingHasDoneStatus && boardingMappingStatus.length === 2;
   const singleOptions = boardingMappingStatus
     .filter((item) => item !== METRICS_CONSTANTS.doneValue && item !== METRICS_CONSTANTS.cycleTimeEmptyStr)
     .sort((a, b) => {
@@ -60,28 +62,32 @@ function ReworkSettings() {
           How to setup
         </StyledLink>
       </ReworkHeaderWrapper>
-      <ReworkSettingsWrapper>
-        <SingleSelection
-          options={singleOptions}
-          label={'Rework to which state'}
-          value={reworkTimesSettings.rework2State}
-          onValueChange={(newValue: string) =>
-            dispatch(updateReworkTimesSettings({ excludeStates: [], rework2State: newValue }))
-          }
-        />
-        <MultiAutoComplete
-          testId='rework-settings-exclude-selection'
-          ariaLabel='Exclude which states (optional)'
-          disabled={!reworkTimesSettings.rework2State}
-          optionList={multiOptions}
-          isError={false}
-          isSelectAll={isAllSelected}
-          onChangeHandler={handleReworkSettingsChange}
-          selectedOption={reworkTimesSettings.excludeStates}
-          textFieldLabel={'Exclude which states (optional)'}
-          isBoardCrews={false}
-        />
-      </ReworkSettingsWrapper>
+      {allStateIsEmpty || onlyDoneStateSelected ? (
+        <></>
+      ) : (
+        <ReworkSettingsWrapper>
+          <SingleSelection
+            options={singleOptions}
+            label={'Rework to which state'}
+            value={reworkTimesSettings.rework2State}
+            onValueChange={(newValue: string) =>
+              dispatch(updateReworkTimesSettings({ excludeStates: [], rework2State: newValue }))
+            }
+          />
+          <MultiAutoComplete
+            testId='rework-settings-exclude-selection'
+            ariaLabel='Exclude which states (optional)'
+            disabled={!reworkTimesSettings.rework2State}
+            optionList={multiOptions}
+            isError={false}
+            isSelectAll={isAllSelected}
+            onChangeHandler={handleReworkSettingsChange}
+            selectedOption={reworkTimesSettings.excludeStates}
+            textFieldLabel={'Exclude which states (optional)'}
+            isBoardCrews={false}
+          />
+        </ReworkSettingsWrapper>
+      )}
     </>
   );
 }
