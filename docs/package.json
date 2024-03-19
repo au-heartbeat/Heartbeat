@@ -51,7 +51,7 @@
     "algoliasearch": "^4.22.1",
     "astro": "^4.5.6",
     "astro-auto-import": "^0.3.2",
-    "astro-eslint-parser": "^0.9.5",
+    "astro-eslint-parser": "^0.16.0",
     "astro-expressive-code": "^0.20.0",
     "astro-og-canvas": "^0.3.2",
     "bcp-47-normalize": "^2.3.0",
