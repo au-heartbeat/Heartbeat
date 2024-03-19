@@ -14,7 +14,7 @@ import { Z_INDEX } from '@src/constants/commons';
 import { Nullable } from '@src/utils/types';
 import dayjs, { Dayjs } from 'dayjs';
 import isNull from 'lodash/isNull';
-import moment from 'moment';
+import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS } from "@src/constants/resources";
 
 export const DateRangePicker = () => {
   const dispatch = useAppDispatch();
@@ -27,12 +27,12 @@ export const DateRangePicker = () => {
   };
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
-    let daysAddToEndDate = 13;
+    let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
     if (value) {
-      const currentDate = moment(new Date());
+      const currentDate = dayjs(new Date());
       const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-      const daysBetweenCurrentAndStartDate = currentDate.diff(moment(valueToStartDate), 'days');
-      daysAddToEndDate = daysBetweenCurrentAndStartDate >= 13 ? 13 : daysBetweenCurrentAndStartDate;
+      const daysBetweenCurrentAndStartDate = currentDate.diff(valueToStartDate, 'days');
+      daysAddToEndDate = daysBetweenCurrentAndStartDate >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS ? DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS : daysBetweenCurrentAndStartDate;
     }
     dispatch(
       updateDateRange(
