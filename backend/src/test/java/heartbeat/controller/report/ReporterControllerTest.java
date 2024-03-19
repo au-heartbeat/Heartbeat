@@ -3,7 +3,6 @@ package heartbeat.controller.report;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
-import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.service.report.GenerateReporterService;
@@ -111,7 +110,7 @@ class ReporterControllerTest {
 
 	@Test
 	void shouldReturnWhenExportCsv() throws Exception {
-		Long csvTimeStamp = 1685010080107L;
+		long csvTimeStamp = 1685010080107L;
 		String expectedResponse = "csv data";
 
 		when(reporterService.exportCsv(ReportType.PIPELINE, csvTimeStamp))
@@ -134,10 +133,10 @@ class ReporterControllerTest {
 		String currentTimeStamp = "1685010080107";
 		request.setCsvTimeStamp(currentTimeStamp);
 
-		doAnswer(invocation -> null).when(reporterService).generateReportByType(request, MetricType.DORA);
+		doAnswer(invocation -> null).when(reporterService).generateReportByType(request);
 
 		mockMvc
-			.perform(post("/reports/{metricType}", MetricType.DORA.metricType).contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/reports").contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(request)))
 			.andExpect(status().isAccepted())
 			.andExpect(jsonPath("$.callbackUrl").value("/reports/" + currentTimeStamp))
@@ -145,7 +144,7 @@ class ReporterControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(reporterService, times(1)).generateReportByType(request, MetricType.DORA);
+		verify(reporterService, times(1)).generateReportByType(request);
 	}
 
 }
