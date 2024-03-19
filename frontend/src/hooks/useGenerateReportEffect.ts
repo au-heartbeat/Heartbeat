@@ -35,7 +35,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const startToRequestBoardData = (boardParams: ReportRequestDTO) => {
     setTimeout4Board('');
     reportClient
-      .retrieveByUrl(boardParams, `${reportPath}/${METRIC_TYPES.BOARD}`)
+      .retrieveByUrl(boardParams, `${reportPath}`)
       .then((res) => {
         if (hasPollingStarted) return;
         hasPollingStarted = true;
