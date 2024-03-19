@@ -27,11 +27,13 @@ export const DateRangePicker = () => {
   };
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
-    const currentDate = moment(new Date());
-    const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-    const daysBetweenCurrentAndStartDate = currentDate.diff(moment(valueToStartDate), 'days');
-    const daysAddToEndDate = daysBetweenCurrentAndStartDate >= 13 ? 13 : daysBetweenCurrentAndStartDate;
-
+    let daysAddToEndDate = 13;
+    if (value) {
+      const currentDate = moment(new Date());
+      const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+      const daysBetweenCurrentAndStartDate = currentDate.diff(moment(valueToStartDate), 'days');
+      daysAddToEndDate = daysBetweenCurrentAndStartDate >= 13 ? 13 : daysBetweenCurrentAndStartDate;
+    }
     dispatch(
       updateDateRange(
         isNull(value)
