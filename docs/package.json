@@ -55,7 +55,7 @@
     "astro-expressive-code": "^0.20.0",
     "astro-og-canvas": "^0.3.2",
     "bcp-47-normalize": "^2.3.0",
-    "canvaskit-wasm": "^0.37.2",
+    "canvaskit-wasm": "^0.39.0",
     "dedent-js": "^1.0.1",
     "domhandler": "^4.3.1",
     "eslint": "^8.57.0",
