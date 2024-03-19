@@ -725,10 +725,8 @@ public class JiraService {
 		if (!to.equals(reworkState)) {
 			return;
 		}
-		if (isRework(from, to, excludedStates)) {
-			if (reworkTimesMap.containsKey(from)) {
-				reworkTimesMap.put(from, reworkTimesMap.get(from) + 1);
-			}
+		if (isRework(from, to, excludedStates) && reworkTimesMap.containsKey(from)) {
+			reworkTimesMap.put(from, reworkTimesMap.get(from) + 1);
 		}
 	}
 
