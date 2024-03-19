@@ -6,17 +6,19 @@ Thank you for your interest in contributing to Heartbeat!
 
 We welcome contributions to:
 
-1. Add a new feature to the library (guidance below).
-2. Improve our documentation and add examples to make it clear how to leverage the Heartbeat.
-3. Report bugs and issues in the project.
-4. Submit a request for a new feature.
-5. Improve our test coverage.
+- Add a new feature to the library (guidance below).
+- Improve our documentation and add examples to make it clear how to leverage the Heartbeat.
+- Report bugs and issues in the project.
+- Submit a request for a new feature.
+- Improve our test coverage.
 
 ### Contributing Features ✨
+
 Heartbeat is designed to provide generic delivery tool to solve problems. Thus, we focus on contributions that can have an impact on a wide range of projects.
 Before you contribute a new feature, please submitting an Issue to discuss the feature so that we can weigh in and assist. 
 
 ## How to contribute Changes
+
 ### Kick-off
 
 - GitHub issue: Raise a GitHub issue, describe what you want to develop; Or find existing issues; And we will follow up with you and label the issue you are contributing.
@@ -26,8 +28,11 @@ Before you contribute a new feature, please submitting an Issue to discuss the f
 ### Setup
 
 #### Local run
+
 Refer to [Run Heartbeat](README.md#6-run-heartbeat) to setup and run project locally.
+
 #### Local E2E
+
 Refer to [Setup E2E locally](https://au-heartbeat.github.io/Heartbeat/en/designs/e2e-testing/) to setup and run E2E locally.
 
 ### Coding Standard
@@ -46,8 +51,7 @@ Make sure below item passed:
 - Local [frontend](README.md#612-how-to-run-unit-tests) / [backend](backend/README.md#3-how-to-run-all-tests) UT
 - Reviewers: Code must be reviewed by 2 team members at least
 - Local E2E screenshot: Upload the latest E2E result screenshot on the PR. 
-- Github actions 
-  - Github actions will be executed automatically once you create a PR.
+- Github actions: Github actions will be executed automatically once you create a PR.
 
 
 ### After PR merged
@@ -56,4 +60,5 @@ Make sure below item passed:
 - Revert: We will revert your Pull Request if pipeline failed and we could not fix within 1 hour. We will let you know in details.
 
 ## License
+
 By contributing, you agree that your contributions will be licensed under an [MIT license](https://opensource.org/licenses/MIT).

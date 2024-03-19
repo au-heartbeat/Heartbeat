@@ -54,6 +54,7 @@
   - [6.1.2 How to run unit tests](#612-how-to-run-unit-tests)
   - [6.1.3 How to generate a test report](#613-how-to-generate-a-test-report)
   - [6.1.4 How to run E2E tests locally](#614-how-to-run-e2e-tests-locally)
+  - [6.2 How to run backend](#62-how-to-run-backend)
 - [7 How to trigger BuildKite Pipeline](#7-how-to-trigger-buildkite-pipeline)
   - [Release](#release)
     - [Release command in main branch](#release-command-in-main-branch)
@@ -63,7 +64,7 @@
     - [7.1.2 Multiple instance deployment](#712-multiple-instance-deployment)
   - [7.2 K8S](#72-k8s)
     - [7.2.1 Multiple instance deployment](#721-multiple-instance-deployment)
-- [8 Contribution](#8-contribution)
+- [8. Contribution](#8-contribution)
 
 # News
 
@@ -470,7 +471,7 @@ pnpm start
 
 ```
 cd HearBeat/frontend
-pnpm run E2E:headed
+pnpm run e2e:headed
 ```
 ## 6.2 How to run backend
 Refer to [run backend](backend/README.md#1-how-to-start-backend-application)
