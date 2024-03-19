@@ -27,10 +27,10 @@ export const DateRangePicker = () => {
   };
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
-    const currentDate = moment(new Date())
-    const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ')
-    const daysBetweenCurrentAndStartDate = currentDate.diff(moment(valueToStartDate), 'days')
-    const daysAddToEndDate = daysBetweenCurrentAndStartDate >= 13 ? 13 : daysBetweenCurrentAndStartDate
+    const currentDate = moment(new Date());
+    const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const daysBetweenCurrentAndStartDate = currentDate.diff(moment(valueToStartDate), 'days');
+    const daysAddToEndDate = daysBetweenCurrentAndStartDate >= 13 ? 13 : daysBetweenCurrentAndStartDate;
 
     dispatch(
       updateDateRange(
@@ -41,9 +41,7 @@ export const DateRangePicker = () => {
             }
           : {
               startDate: value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-              endDate: value.endOf('date')
-                .add(daysAddToEndDate, 'day')
-                .format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+              endDate: value.endOf('date').add(daysAddToEndDate, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
             },
       ),
     );
