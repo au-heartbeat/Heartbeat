@@ -14,6 +14,7 @@ import { Z_INDEX } from '@src/constants/commons';
 import { Nullable } from '@src/utils/types';
 import dayjs, { Dayjs } from 'dayjs';
 import isNull from 'lodash/isNull';
+import moment from 'moment';
 
 export const DateRangePicker = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,13 @@ export const DateRangePicker = () => {
     dispatch(initDeploymentFrequencySettings());
     dispatch(saveUsers([]));
   };
+
   const changeStartDate = (value: Nullable<Dayjs>) => {
+    const currentDate = moment(new Date())
+    const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+    const daysBetweenCurrentAndStartDate = currentDate.diff(moment(valueToStartDate), 'days')
+    const daysAddToEndDate = daysBetweenCurrentAndStartDate >= 13 ? 13 : daysBetweenCurrentAndStartDate
+
     dispatch(
       updateDateRange(
         isNull(value)
@@ -34,7 +41,9 @@ export const DateRangePicker = () => {
             }
           : {
               startDate: value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-              endDate: value.endOf('date').add(13, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+              endDate: value.endOf('date')
+                .add(daysAddToEndDate, 'day')
+                .format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
             },
       ),
     );
