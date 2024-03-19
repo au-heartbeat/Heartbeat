@@ -7,6 +7,7 @@ import {
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StyledDateRangePicker, StyledDateRangePickerContainer } from './style';
+import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -14,7 +15,6 @@ import { Z_INDEX } from '@src/constants/commons';
 import { Nullable } from '@src/utils/types';
 import dayjs, { Dayjs } from 'dayjs';
 import isNull from 'lodash/isNull';
-import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS } from "@src/constants/resources";
 
 export const DateRangePicker = () => {
   const dispatch = useAppDispatch();
@@ -32,7 +32,10 @@ export const DateRangePicker = () => {
       const currentDate = dayjs(new Date());
       const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
       const daysBetweenCurrentAndStartDate = currentDate.diff(valueToStartDate, 'days');
-      daysAddToEndDate = daysBetweenCurrentAndStartDate >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS ? DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS : daysBetweenCurrentAndStartDate;
+      daysAddToEndDate =
+        daysBetweenCurrentAndStartDate >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
+          ? DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
+          : daysBetweenCurrentAndStartDate;
     }
     dispatch(
       updateDateRange(
