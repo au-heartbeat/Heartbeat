@@ -2,7 +2,6 @@ package heartbeat.controller.report;
 
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
-import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.service.report.GenerateReporterService;
@@ -62,15 +61,13 @@ public class ReportController {
 		return ResponseEntity.status(HttpStatus.OK).body(reportResponse);
 	}
 
-	@PostMapping("{metricType}")
+	@PostMapping
 	public ResponseEntity<CallbackResponse> generateReport(
-			@Schema(type = "string", allowableValues = { "board", "dora" },
-					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable MetricType metricType,
 			@RequestBody GenerateReportRequest request) {
-		log.info("Start to generate report_metricType: {}", metricType);
-		reportService.generateReportByType(request, metricType);
+		log.info("Start to generate report");
+		reportService.generateReportByType(request);
 		String callbackUrl = "/reports/" + request.getCsvTimeStamp();
-		log.info("Successfully generate report_metricsType: {}", metricType);
+		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());
 	}
