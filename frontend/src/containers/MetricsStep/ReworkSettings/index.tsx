@@ -11,7 +11,7 @@ import { ReworkHeaderWrapper, ReworkSettingsWrapper } from './style';
 import { StyledLink } from '@src/containers/MetricsStep/style';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { SingleSelection } from './SingleSelection';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 const url = 'XXX';
 
@@ -48,10 +48,6 @@ function ReworkSettings() {
     }
     dispatch(updateReworkTimesSettings({ ...reworkTimesSettings, excludeStates: selectValue }));
   };
-
-  useEffect(() => {
-    dispatch(updateReworkTimesSettings({ excludeStates: [], rework2State: null }));
-  }, [boardingMappingStatus, dispatch]);
 
   return (
     <>

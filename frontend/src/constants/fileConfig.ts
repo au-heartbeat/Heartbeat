@@ -94,10 +94,16 @@ export interface NewFileConfig {
 
 const filterExcludeReworkStatus = (reworkTimesSettings: IReworkConfig | undefined) => {
   if (!reworkTimesSettings) return;
-  reworkTimesSettings.excludeStates = reworkTimesSettings?.excludeStates.filter((value) => {
+  const rework2State = REWORK_TIME_LIST.includes(reworkTimesSettings?.rework2State as string)
+    ? reworkTimesSettings.rework2State
+    : null;
+  const excludeStates = reworkTimesSettings?.excludeStates.filter((value) => {
     return REWORK_TIME_LIST.includes(value);
   });
-  return reworkTimesSettings;
+  return {
+    rework2State,
+    excludeStates: rework2State ? excludeStates : [],
+  };
 };
 
 export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig): NewFileConfig => {
