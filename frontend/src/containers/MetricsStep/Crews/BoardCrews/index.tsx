@@ -42,7 +42,6 @@ export const BoardCrews = ({ options, title, label, name }: crewsProps) => {
   }, [fieldSetter, users, name]);
 
   const validateForm = async () => {
-    console.log('validateForm');
     await formikProps.validateForm();
   };
 

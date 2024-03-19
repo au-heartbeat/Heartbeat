@@ -1,7 +1,5 @@
 import {
   selectConfig,
-  selectMetrics,
-  selectPipelineList,
   updateBoard,
   updateBoardVerifyState,
   updatePipelineTool,
@@ -12,10 +10,8 @@ import {
 import {
   BOARD_TYPES,
   CYCLE_TIME_SETTINGS_TYPES,
-  DONE,
   METRICS_CONSTANTS,
   PIPELINE_TOOL_TYPES,
-  REQUIRED_DATA,
   SOURCE_CONTROL_TYPES,
   TIPS,
 } from '@src/constants/resources';
@@ -29,26 +25,17 @@ import {
   StyledStepLabel,
   StyledStepper,
 } from './style';
-import {
-  ICycleTimeSetting,
-  savedMetricsSettingState,
-  selectCycleTimeSettings,
-  selectMetricsContent,
-} from '@src/context/Metrics/metricsSlice';
+import { ICycleTimeSetting, savedMetricsSettingState, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
-import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
 import { ConfirmDialog } from '@src/containers/MetricsStepper/ConfirmDialog';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
-import { getFormMeta } from '@src/context/meta/metaSlice';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { exportToJsonFile } from '@src/utils/util';
+import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTE } from '@src/constants/router';
 import { Tooltip } from '@mui/material';
-import isEmpty from 'lodash/isEmpty';
-import every from 'lodash/every';
 import omit from 'lodash/omit';
 
 const ConfigStep = lazy(() => import('@src/containers/ConfigStep'));
@@ -61,106 +48,12 @@ const MetricsStepper = () => {
   const dispatch = useAppDispatch();
   const activeStep = useAppSelector(selectStepNumber);
   const [isDialogShowing, setIsDialogShowing] = useState(false);
-  const requiredData = useAppSelector(selectMetrics);
   const config = useAppSelector(selectConfig);
   const metricsConfig = useAppSelector(selectMetricsContent);
-  const cycleTimeSettings = useAppSelector(selectCycleTimeSettings);
-  const [isDisableNextButton, setIsDisableNextButton] = useState(true);
-  const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
-  const formMeta = useAppSelector(getFormMeta);
-  const pipelineList = useAppSelector(selectPipelineList);
 
   const { isShow: isShowBoard, isVerified: isBoardVerified } = config.board;
   const { isShow: isShowPipeline, isVerified: isPipelineToolVerified } = config.pipelineTool;
   const { isShow: isShowSourceControl, isVerified: isSourceControlVerified } = config.sourceControl;
-  const isShowCycleTimeSettings =
-    requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
-    requiredData.includes(REQUIRED_DATA.CLASSIFICATION) ||
-    requiredData.includes(REQUIRED_DATA.VELOCITY);
-  const isCycleTimeSettingsVerified = cycleTimeSettings.some((e) => e.value === DONE);
-  const isShowClassificationSetting = requiredData.includes(REQUIRED_DATA.CLASSIFICATION);
-  const isClassificationSettingVerified = metricsConfig.targetFields.some((item) => item.flag);
-  const { metrics, projectName, dateRange } = config.basic;
-
-  const isShowRealDone =
-    isShowBoard &&
-    metricsConfig.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
-    metricsConfig.cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).length > 1;
-  const isShowDeploymentFrequency =
-    requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
-    requiredData.includes(REQUIRED_DATA.CHANGE_FAILURE_RATE) ||
-    requiredData.includes(REQUIRED_DATA.MEAN_TIME_TO_RECOVERY);
-  const isCrewsSettingValid = metricsConfig.users.length > 0;
-  const isRealDoneValid = metricsConfig.doneColumn.length > 0;
-
-  const isDeploymentFrequencyValid = useMemo(() => {
-    const pipelines = metricsConfig.deploymentFrequencySettings;
-    const pipelinesFormMeta = formMeta.metrics.pipelines;
-    const selectedPipelines = pipelineList.filter((pipeline) => {
-      const selectedPipelineName = pipelines.map((item) => item.pipelineName);
-      const selectedPipelineOrgName = pipelines.map((item) => item.organization);
-      return selectedPipelineName.includes(pipeline.name) && selectedPipelineOrgName.includes(pipeline.orgName);
-    });
-
-    return (
-      !isEmpty(selectedPipelines) &&
-      pipelines.every(({ step }) => !isEmpty(step)) &&
-      pipelines.every(({ branches }) => !isEmpty(branches)) &&
-      selectedPipelines.every(({ steps }) => !isEmpty(steps)) &&
-      selectedPipelines.every(({ branches }) => !isEmpty(branches)) &&
-      getDuplicatedPipeLineIds(pipelines).length === 0 &&
-      every(pipelinesFormMeta, (item) => every(item.branches, (branch) => !branch.error && !branch.needVerify))
-    );
-  }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
-
-  useEffect(() => {
-    if (activeStep === METRICS_STEPS.CONFIG) {
-      const nextButtonValidityOptions = [
-        { isShow: isShowBoard, isValid: isBoardVerified },
-        { isShow: isShowPipeline, isValid: isPipelineToolVerified },
-        { isShow: isShowSourceControl, isValid: isSourceControlVerified },
-      ];
-      const activeNextButtonValidityOptions = nextButtonValidityOptions.filter(({ isShow }) => isShow);
-      projectName && dateRange.startDate && dateRange.endDate && metrics.length
-        ? setIsDisableNextButton(!activeNextButtonValidityOptions.every(({ isValid }) => isValid))
-        : setIsDisableNextButton(true);
-    }
-
-    if (activeStep === METRICS_STEPS.METRICS) {
-      const nextButtonValidityOptions = [
-        { isShow: isShowBoard, isValid: isCrewsSettingValid },
-        { isShow: isShowRealDone, isValid: isRealDoneValid },
-        { isShow: isShowDeploymentFrequency, isValid: isDeploymentFrequencyValid },
-        { isShow: isShowCycleTimeSettings, isValid: isCycleTimeSettingsVerified },
-        { isShow: isShowClassificationSetting, isValid: isClassificationSettingVerified },
-      ];
-      const activeNextButtonValidityOptions = nextButtonValidityOptions.filter(({ isShow }) => isShow);
-      activeNextButtonValidityOptions.every(({ isValid }) => isValid)
-        ? setIsDisableNextButton(false)
-        : setIsDisableNextButton(true);
-    }
-  }, [
-    activeStep,
-    isBoardVerified,
-    isPipelineToolVerified,
-    isShowBoard,
-    isShowSourceControl,
-    isShowPipeline,
-    isSourceControlVerified,
-    metrics,
-    projectName,
-    dateRange,
-    metricsConfig,
-    isCrewsSettingValid,
-    isShowRealDone,
-    isRealDoneValid,
-    isShowDeploymentFrequency,
-    isDeploymentFrequencyValid,
-    isShowCycleTimeSettings,
-    isCycleTimeSettingsVerified,
-    isShowClassificationSetting,
-    isClassificationSettingVerified,
-  ]);
 
   const filterMetricsConfig = (metricsConfig: savedMetricsSettingState) => {
     return Object.fromEntries(
@@ -297,6 +190,8 @@ const MetricsStepper = () => {
     isShowBoard ? dispatch(updateBoardVerifyState(isBoardVerified)) : dispatch(updateBoardVerifyState(false));
   };
 
+  const [nextDisabled, setNextDisabled] = useState(false);
+
   return (
     <>
       <StyledStepper activeStep={activeStep}>
@@ -309,7 +204,7 @@ const MetricsStepper = () => {
       <MetricsStepperContent>
         <Suspense>
           {activeStep === METRICS_STEPS.CONFIG && <ConfigStep />}
-          {activeStep === METRICS_STEPS.METRICS && <MetricsStep />}
+          {activeStep === METRICS_STEPS.METRICS && <MetricsStep setNextDisabled={setNextDisabled} />}
           {activeStep === METRICS_STEPS.REPORT && <ReportStep handleSave={handleSave} />}
         </Suspense>
       </MetricsStepperContent>
@@ -325,7 +220,7 @@ const MetricsStepper = () => {
               <BackButton variant='outlined' onClick={handleBack}>
                 {COMMON_BUTTONS.BACK}
               </BackButton>
-              <NextButton onClick={handleNext} disabled={isDisableNextButton}>
+              <NextButton onClick={handleNext} disabled={nextDisabled}>
                 {COMMON_BUTTONS.NEXT}
               </NextButton>
             </div>
