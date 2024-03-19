@@ -391,17 +391,14 @@ describe('MetricsStepper', () => {
       cycleTime: {
         jiraColumns: [
           {
-           Testing: 'Done',
+            Testing: 'Done',
           },
         ],
         treatFlagCardAsBlock: false,
-        type: "byColumn",
+        type: 'byColumn',
       },
       deployment: undefined,
-      doneStatus: [
-        "Done",
-        "Canceled",
-      ],
+      doneStatus: ['Done', 'Canceled'],
       leadTime: undefined,
       reworkTimesSettings: {
         rework2State: null,
