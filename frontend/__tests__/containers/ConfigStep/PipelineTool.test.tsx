@@ -9,6 +9,7 @@ import {
   VERIFY,
   MOCK_PIPELINE_VERIFY_URL,
   FAKE_PIPELINE_TOKEN,
+  REVERIFY,
 } from '../../fixtures';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
@@ -81,7 +82,7 @@ describe('PipelineTool', () => {
     ) as HTMLInputElement;
 
     await fillPipelineToolFieldsInformation();
-    await userEvent.click(screen.getByRole('button', { name: 'Pipeline Tool' }));
+    await userEvent.click(screen.getByRole('combobox', { name: 'Pipeline Tool' }));
 
     const requireDateSelection = within(getByLabelText('Pipeline Tool type select'));
     await userEvent.click(requireDateSelection.getByText(PIPELINE_TOOL_TYPES.BUILD_KITE));
@@ -122,9 +123,25 @@ describe('PipelineTool', () => {
     expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 
+  it('should hidden timeout alert when the error type of api call becomes other', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillPipelineToolFieldsInformation();
+    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT });
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: HttpStatusCode.Unauthorized });
+
+    await userEvent.click(screen.getByText(REVERIFY));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
+  });
+
   it('should show detail options when click pipelineTool fields', async () => {
     const { getByRole } = setup();
-    await userEvent.click(screen.getByRole('button', { name: 'Pipeline Tool' }));
+    await userEvent.click(screen.getByRole('combobox', { name: 'Pipeline Tool' }));
     const listBox = within(getByRole('listbox'));
     const options = listBox.getAllByRole('option');
     const optionValue = options.map((li) => li.getAttribute('data-value'));

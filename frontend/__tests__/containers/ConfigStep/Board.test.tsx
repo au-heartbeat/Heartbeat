@@ -8,6 +8,7 @@ import {
   VERIFIED,
   VERIFY,
   FAKE_TOKEN,
+  REVERIFY,
 } from '../../fixtures';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
@@ -78,7 +79,7 @@ describe('Board', () => {
 
   it('should show default value jira when init board component', () => {
     setup();
-    const boardType = screen.getByRole('button', {
+    const boardType = screen.getByRole('combobox', {
       name: /board/i,
     });
 
@@ -87,7 +88,7 @@ describe('Board', () => {
 
   it('should show detail options when click board field', async () => {
     setup();
-    await userEvent.click(screen.getByRole('button', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('combobox', { name: CONFIG_TITLE.BOARD }));
     const listBox = within(screen.getByRole('listbox'));
     const options = listBox.getAllByRole('option');
     const optionValue = options.map((li) => li.getAttribute('data-value'));
@@ -97,7 +98,7 @@ describe('Board', () => {
 
   it('should show board type when select board field value ', async () => {
     setup();
-    await userEvent.click(screen.getByRole('button', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('combobox', { name: CONFIG_TITLE.BOARD }));
 
     await waitFor(() => {
       expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
@@ -107,7 +108,7 @@ describe('Board', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', {
+        screen.getByRole('combobox', {
           name: /board/i,
         }),
       ).toBeInTheDocument();
@@ -161,16 +162,12 @@ describe('Board', () => {
     expect(screen.getByLabelText(/site/i)).not.toHaveValue();
     expect(screen.getByLabelText(/token/i)).not.toHaveValue();
 
-    await userEvent.click(screen.getByRole('button', { name: /board/i }));
+    await userEvent.click(screen.getByRole('combobox', { name: /board/i }));
 
     await waitFor(() => {
       expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
     });
     await userEvent.click(screen.getByRole('option', { name: /jira/i }));
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: CONFIG_TITLE.BOARD })).toBeInTheDocument();
-    });
   });
 
   it('should hidden timeout alert when click reset button', async () => {
@@ -184,6 +181,24 @@ describe('Board', () => {
     expect(getByTestId('timeoutAlert')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: RESET }));
+
+    expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
+  });
+
+  it('should hidden timeout alert when the error type of api call becomes other', async () => {
+    const { getByTestId, queryByTestId } = setup();
+    await fillBoardFieldsInformation();
+    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(timeoutError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    const mockedError = new TimeoutError('', HttpStatusCode.Unauthorized);
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(REVERIFY));
 
     expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
