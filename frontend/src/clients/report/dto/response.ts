@@ -44,13 +44,13 @@ export interface CycleTimeResponse {
 export interface ReworkTimeResponse {
   totalReworkTimes: number;
   reworkState: string;
-  fromToDo: number;
-  fromInDev: number;
-  fromBlock: number;
-  fromWaitingForTesting: number;
-  fromTesting: number;
-  fromReview: number;
-  fromDone: number;
+  fromToDo: number | null;
+  fromInDev: number | null;
+  fromBlock: number | null;
+  fromWaitingForTesting: number | null;
+  fromTesting: number | null;
+  fromReview: number | null;
+  fromDone: number | null;
   totalReworkCards: number;
   reworkCardsRatio: number;
 }

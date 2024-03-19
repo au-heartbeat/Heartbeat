@@ -225,8 +225,7 @@ export enum REWORK_TIME_METRICS_NAME {
   reworkCardsRatio = 'Rework cards ratio',
 }
 
-export const HAVE_UNIT_REWORK_TIMES: string[] = [
-  REWORK_TIME_METRICS_NAME.totalReworkTimes,
+export const BOARD_COLUMN_STATE: string[] = [
   REWORK_TIME_METRICS_NAME.fromToDo,
   REWORK_TIME_METRICS_NAME.fromInDev,
   REWORK_TIME_METRICS_NAME.fromBlock,
