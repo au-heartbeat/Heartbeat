@@ -360,3 +360,10 @@ export const ALL_OPTION_META: Record<string, string> = {
   label: 'All',
   key: 'all',
 };
+
+export const REWORK_STEPS = {
+  REWORK_TO_WHICH_STATE: 0,
+  EXCLUDE_WHICH_STATES: 1,
+};
+
+export const REWORK_STEPS_NAME = ['Rework to which state', 'Exclude which states'];

@@ -8,6 +8,7 @@ import { StyledLink } from '@src/containers/MetricsStep/style';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { SingleSelection } from './SingleSelection';
 import React from 'react';
+import { ReworkDialog } from "@src/containers/MetricsStep/ReworkSettings/ReworkDialog";
 
 const url = 'XXX';
 
@@ -34,9 +35,10 @@ function ReworkSettings() {
 
   return (
     <>
+      <ReworkDialog />
       <ReworkHeaderWrapper>
         <MetricsSettingTitle title='Rework times settings' />
-        <StyledLink underline='none' href={url} target='_blank' rel='noopener'>
+        <StyledLink>
           <HelpOutlineOutlinedIcon fontSize='small' />
           How to setup
         </StyledLink>
