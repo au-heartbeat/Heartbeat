@@ -63,11 +63,7 @@
     - [7.1.2 Multiple instance deployment](#712-multiple-instance-deployment)
   - [7.2 K8S](#72-k8s)
     - [7.2.1 Multiple instance deployment](#721-multiple-instance-deployment)
-- [How to contribute](#how-to-contribute)
-  - [Kick-off](#kick-off)
-  - [Setup](#setup)
-  - [Coding](#coding)
-  - [Pull Request](#pull-request)
+- [8 Contribution](#8-contribution)
 
 # News
 
@@ -476,6 +472,8 @@ pnpm start
 cd HearBeat/frontend
 pnpm run E2E:headed
 ```
+## 6.2 How to run backend
+Refer to [run backend](backend/README.md#1-how-to-start-backend-application)
 
 # 7 How to trigger BuildKite Pipeline
 
@@ -666,32 +664,7 @@ kubectl apply -f k8s-heartbeat.yml
 
 You also can deploy Heartbeats in multiple instances using K8S through the following [documentation](https://au-heartbeat.github.io/Heartbeat/en/devops/how-to-deploy-heartbeat-in-multiple-instances-by-k8s/).
 
-# How to contribute
+# 8. Contribution
 
-## Kick-off
-
-- GitHub issue: Raise a GitHub issue, describe what you want to develop; you can start to write code after discussing and we have an agreement with your requirement.
-- Road map: Need show what will you do in different phase, it's better to draw a image and paste it in the GitHub issue.
-- Deadline: When your development work will be done.
-- ...
-
-## Setup
-
-Ref to [6 Run Heartbeat](#6-run-heartbeat) to setup project.
-
-## Coding
-
-- 100% Code coverage: whatever you code is about the frontend or backend
-- E2E: Write E2E case for your Code Biz logic what defined in the Jira card
-- Swagger: Keep swagger available for any changes
-- Small PR: Submit small PR, if we can't repair within 1 hour we will revert it
-- Commit message: format should be`[GitHub Issue][number][backend/frontend]: commit message`, e.g. `[GitHub Issue][1135][frontend]: Support for GitHub Actions pipelines`
-- ...
-
-## Pull Request
-
-- Pipelines: Must keep the pipelines(both GitHub Actions and BuildKite) green before asking others to review
-- Reviewers: Code must be reviewed by 2 team members at least
-- E2E screenshot: Upload the latest E2E result screenshot on the PR.
-- ...
+We love your input! Please see our [contributing guide](contribution.md) to get started. Thank you 🙏 to all our contributors!
 
