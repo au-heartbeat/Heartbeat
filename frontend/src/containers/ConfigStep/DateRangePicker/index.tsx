@@ -84,6 +84,7 @@ export const DateRangePicker = () => {
           disableFuture
           label='To *'
           value={endDate ? dayjs(endDate) : null}
+          maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
           onChange={(newValue) => changeEndDate(newValue as unknown as Dayjs)}
           slots={{
