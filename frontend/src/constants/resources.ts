@@ -362,3 +362,5 @@ export const ALL_OPTION_META: Record<string, string> = {
 };
 
 export const DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS = 13;
+
+export const DEFAULT_MONTH_INTERVAL_DAYS = 30;
