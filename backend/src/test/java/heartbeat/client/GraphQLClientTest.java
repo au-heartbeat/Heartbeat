@@ -1,6 +1,5 @@
 package heartbeat.client;
 
-import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.api.Optional;
 import com.apollographql.apollo3.api.Query;
 import com.buildkite.GetPipelineInfoQuery;
@@ -83,18 +82,6 @@ public class GraphQLClientTest {
 
 		Thread.sleep(100);
 
-	}
-
-	private GetPipelineInfoQuery.Data mockData() {
-		GetPipelineInfoQuery.Repository repository = new GetPipelineInfoQuery.Repository(
-				"git@github.com:au-heartbeat/Heartbeat.git");
-		GetPipelineInfoQuery.Steps steps = new GetPipelineInfoQuery.Steps(
-				"steps:\n  - label: \":pipeline: Upload pipeline.yml\"\n    command: |\n      if [[ \"${BUILDKITE_BRANCH}\" == \"main\" ]]; then\n        buildkite-agent pipeline upload\n      else\n        echo \"Skipping pipeline upload for branch ${BUILDKITE_BRANCH}\"\n      fi\n");
-		GetPipelineInfoQuery.Node node = new GetPipelineInfoQuery.Node("heartbeat", "Heartbeat", repository, steps);
-		GetPipelineInfoQuery.Edge edge = new GetPipelineInfoQuery.Edge(node);
-		GetPipelineInfoQuery.Pipelines pipelines = new GetPipelineInfoQuery.Pipelines(List.of(edge));
-		GetPipelineInfoQuery.Organization organization = new GetPipelineInfoQuery.Organization(pipelines);
-		return new GetPipelineInfoQuery.Data(organization);
 	}
 
 }
