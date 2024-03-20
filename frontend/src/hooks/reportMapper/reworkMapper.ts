@@ -3,15 +3,9 @@ import { BOARD_COLUMN_STATE, REWORK_TIME_METRICS_NAME } from '@src/constants/res
 import { ReworkTimeResponse } from '@src/clients/report/dto/response';
 
 const getUnit = (value: string) => {
-  if (
-    [
-      ...BOARD_COLUMN_STATE,
-      REWORK_TIME_METRICS_NAME.totalReworkTimes,
-      REWORK_TIME_METRICS_NAME.totalReworkCards,
-    ].includes(value)
-  )
-    return ' (times)';
+  if ([...BOARD_COLUMN_STATE, REWORK_TIME_METRICS_NAME.totalReworkTimes].includes(value)) return ' (times)';
   if (value === REWORK_TIME_METRICS_NAME.reworkCardsRatio) return ' (rework card/throughput)';
+  if (value === REWORK_TIME_METRICS_NAME.totalReworkCards) return ' (cards)';
 };
 
 const reworkMapper = (reworkTimeResponse: ReworkTimeResponse) => {
