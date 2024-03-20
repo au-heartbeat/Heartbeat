@@ -24,7 +24,7 @@ export class HttpClient {
       (error) => {
         const { code, response } = error;
         if (some(AXIOS_NETWORK_ERROR_CODES, (predefinedCode) => predefinedCode === code)) {
-          throw new TimeoutError(error?.message || 'TIMEOUT', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+          throw new TimeoutError(error?.message, AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
         } else if (response && response.status && response.status > 0) {
           const { status, data, statusText } = response;
           const errorMessage = data?.hintInfo ?? statusText;
