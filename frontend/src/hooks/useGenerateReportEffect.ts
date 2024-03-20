@@ -50,17 +50,17 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   const handleError = (error: Error, source: string) => {
     if (error instanceof TimeoutError) {
-      if (source === 'Board') {
+      if (source === 'board') {
         setTimeout4Board(DATA_LOADING_FAILED);
-      } else if (source === 'Dora') {
+      } else if (source === 'dora') {
         setTimeout4Dora(DATA_LOADING_FAILED);
       } else {
         setTimeout4Report(DATA_LOADING_FAILED);
       }
     } else {
-      if (source === 'Board') {
+      if (source === 'board') {
         setGeneralError4Board(DATA_LOADING_FAILED);
-      } else if (source === 'Dora') {
+      } else if (source === 'dora') {
         setGeneralError4Dora(DATA_LOADING_FAILED);
       } else {
         setGeneralError4Report(DATA_LOADING_FAILED);
@@ -78,7 +78,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         pollingReport(res.response.callbackUrl, res.response.interval);
       })
       .catch((e) => {
-        handleError(e, 'Dora');
+        handleError(e, 'dora');
       });
   };
 
@@ -96,7 +96,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         }
       })
       .catch((e) => {
-        handleError(e, 'All');
+        handleError(e, 'all');
         stopPollingReports();
       });
   };
