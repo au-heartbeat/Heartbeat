@@ -35,8 +35,7 @@ export interface ReportStepProps {
 const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const {
-    startToRequestBoardData,
-    startToRequestDoraData,
+    startToRequestData,
     reportData,
     stopPollingReports,
     timeout4Board,
@@ -321,7 +320,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [generalError4Report]);
 
   useEffect(() => {
-    !isBackFromDetail && startToRequestBoardData(getReportRequestBody());
+    !isBackFromDetail && startToRequestData(getReportRequestBody());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -347,7 +346,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           isBackFromDetail={isBackFromDetail}
           startDate={startDate}
           endDate={endDate}
-          startToRequestBoardData={startToRequestBoardData}
+          startToRequestBoardData={startToRequestData}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={reportData}
           csvTimeStamp={csvTimeStamp}
@@ -359,7 +358,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           isBackFromDetail={isBackFromDetail}
           startDate={startDate}
           endDate={endDate}
-          startToRequestDoraData={startToRequestDoraData}
+          startToRequestDoraData={startToRequestData}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={reportData}
           csvTimeStamp={csvTimeStamp}

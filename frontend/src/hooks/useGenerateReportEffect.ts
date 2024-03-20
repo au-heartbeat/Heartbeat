@@ -8,7 +8,7 @@ import { METRIC_TYPES } from '@src/constants/commons';
 import { useRef, useState } from 'react';
 
 export interface useGenerateReportEffectInterface {
-  startToRequestBoardData: (boardParams: IBasicReportRequestDTO) => void;
+  startToRequestData: (boardParams: IBasicReportRequestDTO) => void;
   startToRequestDoraData: (doraParams: ReportRequestDTO) => void;
   stopPollingReports: () => void;
   timeout4Board: string;
@@ -32,7 +32,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const timerIdRef = useRef<number>();
   let hasPollingStarted = false;
 
-  const startToRequestBoardData = (boardParams: ReportRequestDTO) => {
+  const startToRequestData = (boardParams: ReportRequestDTO) => {
+    const { metricTypes } = boardParams;
     setTimeout4Board('');
     reportClient
       .retrieveByUrl(boardParams, `${reportPath}`)
@@ -42,7 +43,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         pollingReport(res.response.callbackUrl, res.response.interval);
       })
       .catch((e) => {
-        handleError(e, 'Board');
+        const source = metricTypes.length === 2 ? 'all' : metricTypes[0];
+        handleError(e, source);
       });
   };
 
@@ -69,7 +71,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const startToRequestDoraData = (doraParams: ReportRequestDTO) => {
     setTimeout4Dora('');
     reportClient
-      .retrieveByUrl(doraParams, `${reportPath}/${METRIC_TYPES.DORA}`)
+      .retrieveByUrl(doraParams, `${reportPath}`)
       .then((res) => {
         if (hasPollingStarted) return;
         hasPollingStarted = true;
@@ -110,7 +112,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   };
 
   return {
-    startToRequestBoardData,
+    startToRequestData,
     startToRequestDoraData,
     stopPollingReports,
     reportData,
