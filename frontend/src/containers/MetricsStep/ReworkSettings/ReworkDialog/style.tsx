@@ -1,6 +1,6 @@
-import { Step, StepLabel, Stepper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
+import { Stepper } from '@mui/material';
 import { theme } from '@src/theme';
 
 export const StyledDialogContainer = styled('div')({
@@ -40,29 +40,7 @@ export const StyledStepper = styled(Stepper)({
   },
 });
 
-export const StyledStep = styled(Step)({
-  svg: {
-    width: '2rem',
-    height: '2rem',
-  },
-  [theme.breakpoints.down('md')]: {
-    padding: '0.25rem 0',
-  },
-});
-
-export const StyledStepLabel = styled(StepLabel)({
-  width: 'max-content',
-  padding: '0 1rem',
-  span: {
-    fontSize: '1rem',
-    lineHeight: '1.5rem',
-  },
-  [theme.breakpoints.down('sm')]: {
-    fontSize: '0.5rem',
-  },
-});
-
-export const StyledStepOfReword = styled('div')({
+export const StyledStepOfRework = styled('div')({
   width: '100%',
   margin: '1rem auto',
 });
