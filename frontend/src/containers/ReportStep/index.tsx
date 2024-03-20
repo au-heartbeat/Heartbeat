@@ -335,7 +335,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       jiraBoardSetting: shouldShowBoardMetrics ? getJiraBoardSetting() : undefined,
       ...(shouldShowDoraMetrics ? getDoraSetting() : {}),
       csvTimeStamp: csvTimeStamp,
-      metricTypes: [shouldShowBoardMetrics && 'board', shouldShowDoraMetrics && 'dora'].filter(Boolean),
+      metricTypes: [shouldShowBoardMetrics && 'board', shouldShowDoraMetrics && 'dora'].filter(value => !!value) as string[],
     };
   };
 
