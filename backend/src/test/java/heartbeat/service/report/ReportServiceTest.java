@@ -1,7 +1,6 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
-import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.NotFoundException;
@@ -25,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static heartbeat.controller.report.dto.request.MetricEnum.LEAD_TIME_FOR_CHANGES;
-import static heartbeat.controller.report.dto.request.MetricEnum.VELOCITY;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,15 +78,19 @@ public class ReportServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.csvTimeStamp(timeStamp)
 			.metrics(new ArrayList<>())
+			.metricTypes(List.of("board"))
 			.build();
 
 		@Test
-		void shouldCallGenerateBoardReportWhenMetricTypeIsBoard() throws InterruptedException {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder().boardMetricsCompleted(false).build();
+		void shouldCallGenerateBoardReportWhenMetricTypesListOnlyHasBoardElement() throws InterruptedException {
+			MetricsDataCompleted expected = MetricsDataCompleted.builder()
+				.boardMetricsCompleted(true)
+				.allMetricsCompleted(true)
+				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 
-			reportService.generateReportByType(request, MetricType.BOARD);
+			reportService.generateReportByType(request);
 			Thread.sleep(100);
 
 			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getBoardReportId(), expected);
@@ -98,54 +99,18 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportWhenMetricTypeIsDora() throws InterruptedException {
+		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraElement() throws InterruptedException {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder().doraMetricsCompleted(false).build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
+			request.setMetricTypes(List.of("dora"));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 
-			reportService.generateReportByType(request, MetricType.DORA);
+			reportService.generateReportByType(request);
 			Thread.sleep(100);
 
 			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getDoraReportId(), expected);
 			verify(generateReporterService).generateDoraReport(request);
 			verify(generateReporterService, never()).generateBoardReport(request);
-		}
-
-	}
-
-	@Nested
-	class InitializeMetricsDataCompletedInHandler {
-
-		String timeStamp = "1683734399999";
-
-		GenerateReportRequest request = GenerateReportRequest.builder()
-			.csvTimeStamp(timeStamp)
-			.metrics(List.of(VELOCITY.getValue(), LEAD_TIME_FOR_CHANGES.getValue()))
-			.build();
-
-		@Test
-		void shouldInitializeBoardMetricsCompletedFalseWhenPreviousIsNull() {
-			MetricsDataCompleted expectMetricsDataResult = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(false)
-				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-
-			reportService.initializeMetricsDataCompletedInHandler(timeStamp, MetricType.BOARD);
-
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getBoardReportId(),
-					expectMetricsDataResult);
-		}
-
-		@Test
-		void shouldInitializeDoraMetricsCompletedFalseWhenPreviousIsNull() {
-			MetricsDataCompleted expectMetricsDataResult = MetricsDataCompleted.builder()
-				.doraMetricsCompleted(false)
-				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-
-			reportService.initializeMetricsDataCompletedInHandler(timeStamp, MetricType.DORA);
-
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getDoraReportId(), expectMetricsDataResult);
 		}
 
 	}

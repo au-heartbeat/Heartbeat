@@ -53,17 +53,11 @@ public class ReportController {
 	public ResponseEntity<ReportResponse> generateReport(@PathVariable String reportId) {
 		log.info("Start to generate report_reportId: {}", reportId);
 		ReportResponse reportResponse = generateReporterService.getComposedReportResponse(reportId);
-		if (reportResponse.isAllMetricsCompleted()) {
-			log.info("Successfully generate Report_reportId: {}, reports: {}", reportId, reportResponse);
-			generateReporterService.generateCSVForMetric(reportResponse, reportId);
-			return ResponseEntity.status(HttpStatus.CREATED).body(reportResponse);
-		}
 		return ResponseEntity.status(HttpStatus.OK).body(reportResponse);
 	}
 
 	@PostMapping
-	public ResponseEntity<CallbackResponse> generateReport(
-			@RequestBody GenerateReportRequest request) {
+	public ResponseEntity<CallbackResponse> generateReport(@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
 		reportService.generateReportByType(request);
 		String callbackUrl = "/reports/" + request.getCsvTimeStamp();

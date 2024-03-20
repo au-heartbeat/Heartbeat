@@ -17,12 +17,18 @@ public class MetricsDataCompleted {
 
 	private Boolean doraMetricsCompleted;
 
+	private Boolean allMetricsCompleted;
+
 	public Boolean boardMetricsCompleted() {
 		return boardMetricsCompleted;
 	}
 
 	public Boolean doraMetricsCompleted() {
 		return doraMetricsCompleted;
+	}
+
+	public Boolean allMetricsCompleted() {
+		return allMetricsCompleted;
 	}
 
 }

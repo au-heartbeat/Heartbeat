@@ -5,6 +5,7 @@ import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.ErrorInfo;
+import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
@@ -89,7 +90,7 @@ public class GenerateReporterService {
 				boardReportId);
 		try {
 			saveReporterInHandler(generateBoardReporter(request), boardReportId);
-			asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(boardReportId, BOARD);
+			asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), BOARD);
 			log.info(
 					"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 					request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
@@ -115,7 +116,7 @@ public class GenerateReporterService {
 			generateSourceControlReport(sourceControlRequest, fetchedData);
 		}
 		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
-		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getDoraReportId(), DORA);
+		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), DORA);
 	}
 
 	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
@@ -352,15 +353,15 @@ public class GenerateReporterService {
 		return asyncReportRequestHandler.getReport(reportId);
 	}
 
-	public MetricsDataDTO checkReportReadyStatus(String reportTimeStamp) {
+	public MetricsDataCompleted checkReportReadyStatus(String reportTimeStamp) {
 		if (validateExpire(System.currentTimeMillis(), Long.parseLong(reportTimeStamp))) {
 			throw new GenerateReportException("Failed to get report due to report time expires");
 		}
-		return asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(reportTimeStamp);
+		return asyncMetricsDataHandler.getMetricsDataCompleted(reportTimeStamp);
 	}
 
 	public ReportResponse getComposedReportResponse(String reportId) {
-		MetricsDataDTO reportReadyStatus = checkReportReadyStatus(reportId);
+		MetricsDataCompleted reportReadyStatus = checkReportReadyStatus(reportId);
 
 		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
 		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
@@ -377,10 +378,29 @@ public class GenerateReporterService {
 			.devChangeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getDevChangeFailureRate))
 			.devMeanTimeToRecovery(getValueOrNull(pipleineReportResponse, ReportResponse::getDevMeanTimeToRecovery))
 			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
-			.boardMetricsCompleted(reportReadyStatus.isBoardReady)
-			.doraMetricsCompleted(reportReadyStatus.isDoraReady)
-			.allMetricsCompleted(reportReadyStatus.isAllMetricsReady)
+			.boardMetricsCompleted(reportReadyStatus.boardMetricsCompleted())
+			.doraMetricsCompleted(reportReadyStatus.doraMetricsCompleted())
+			.allMetricsCompleted(reportReadyStatus.allMetricsCompleted())
 			.reportMetricsError(reportMetricsError)
+			.build();
+	}
+
+	public ReportResponse getComposedReportResponseFrom(String reportId) {
+
+		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
+		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
+		ReportResponse sourceControlReportResponse = getReportFromHandler(IdUtil.getSourceControlReportId(reportId));
+
+		return ReportResponse.builder()
+			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
+			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
+			.cycleTime(getValueOrNull(boardReportResponse, ReportResponse::getCycleTime))
+			.rework(getValueOrNull(boardReportResponse, ReportResponse::getRework))
+			.exportValidityTime(EXPORT_CSV_VALIDITY_TIME)
+			.deploymentFrequency(getValueOrNull(pipleineReportResponse, ReportResponse::getDeploymentFrequency))
+			.devChangeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getDevChangeFailureRate))
+			.devMeanTimeToRecovery(getValueOrNull(pipleineReportResponse, ReportResponse::getDevMeanTimeToRecovery))
+			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
 			.build();
 	}
 
