@@ -212,18 +212,18 @@ export enum CYCLE_TIME_METRICS_NAME {
   AVERAGE_TESTING_TIME = 'Average testing time',
 }
 
-export enum REWORK_TIME_METRICS_NAME {
-  totalReworkTimes = 'Total rework',
-  fromToDo = 'From todo to',
-  fromInDev = 'From in dev to',
-  fromBlock = 'From block to',
-  fromWaitingForTesting = 'From waiting for testing to',
-  fromTesting = 'From testing to',
-  fromReview = 'From review to',
-  fromDone = 'From done to',
-  totalReworkCards = 'Total rework cards',
-  reworkCardsRatio = 'Rework cards ratio',
-}
+export const REWORK_TIME_METRICS_NAME = {
+  totalReworkTimes: 'Total rework',
+  fromToDo: 'From todo to',
+  fromInDev: 'From in dev to',
+  fromBlock: 'From block to',
+  fromWaitingForTesting: 'From waiting for testing to',
+  fromTesting: 'From testing to',
+  fromReview: 'From review to',
+  fromDone: 'From done to',
+  totalReworkCards: 'Total rework cards',
+  reworkCardsRatio: 'Rework cards ratio',
+};
 
 export const BOARD_COLUMN_STATE: string[] = [
   REWORK_TIME_METRICS_NAME.fromToDo,
