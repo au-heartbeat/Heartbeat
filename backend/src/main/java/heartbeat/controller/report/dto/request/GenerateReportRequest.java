@@ -28,6 +28,7 @@ public class GenerateReportRequest {
 	private String endTime;
 
 	private List<String> metrics;
+
 	private List<String> metricTypes;
 
 	private JiraBoardSetting jiraBoardSetting;

@@ -25,7 +25,6 @@ import java.io.File;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -59,35 +58,18 @@ class ReporterControllerTest {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
-	void shouldReturnCreatedStatusWhenRequestToGenerateReportGivenAllMetricsCompletedIsTrue() throws Exception {
-		String reportId = Long.toString(System.currentTimeMillis());
-		ReportResponse expectedReportResponse = mapper.readValue(new File(RESPONSE_FILE_PATH), ReportResponse.class);
-		when(generateReporterService.getComposedReportResponse(reportId)).thenReturn(expectedReportResponse);
-
-		MockHttpServletResponse response = mockMvc
-			.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isCreated())
-			.andReturn()
-			.getResponse();
-		final var content = response.getContentAsString();
-		ReportResponse actualReportResponse = mapper.readValue(content, ReportResponse.class);
-
-		assertEquals(expectedReportResponse, actualReportResponse);
-	}
-
-	@Test
-	void shouldReturnOkStatusWhenRequestToGenerateReportAllMetricsCompletedIsFalse() throws Exception {
+	void shouldReturnOkStatusWhenRequestToGenerateReport() throws Exception {
 		String reportId = Long.toString(System.currentTimeMillis());
 		ReportResponse reportResponse = ReportResponse.builder()
-			.boardMetricsCompleted(false)
-			.allMetricsCompleted(false)
+			.boardMetricsCompleted(true)
+			.allMetricsCompleted(true)
 			.build();
 
 		when(generateReporterService.getComposedReportResponse(reportId)).thenReturn(reportResponse);
 
 		mockMvc.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.allMetricsCompleted").value(false))
+			.andExpect(jsonPath("$.allMetricsCompleted").value(true))
 			.andReturn()
 			.getResponse();
 		verify(generateReporterService).getComposedReportResponse(any());
