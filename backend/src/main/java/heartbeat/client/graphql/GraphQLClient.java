@@ -12,18 +12,22 @@ import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+@Setter
+@Component
 @Log4j2
 public class GraphQLClient {
 
 	@Getter
-	private enum GraphQLServer {
+	public enum GraphQLServer {
 
 		BUILDKITE("https://graphql.buildkite.com/v1"), GITHUB("https://api.github.com/graphql");
 
@@ -35,20 +39,17 @@ public class GraphQLClient {
 
 	}
 
-	@Getter
-	private static final GraphQLClient instance = new GraphQLClient();
-
-	private ApolloClient apolloClient;
+	public ApolloClient apolloClient;
 
 	private ApolloClient getApolloClient(String token, GraphQLServer server) {
 		if (apolloClient == null) {
 			this.apolloClient = new ApolloClient.Builder().addHttpHeader("Authorization", token)
-				.serverUrl(server.url)
+				.serverUrl(server.getUrl())
 				.build();
 		}
 		else {
 			this.apolloClient = apolloClient.newBuilder()
-				.serverUrl(server.url)
+				.serverUrl(server.getUrl())
 				.addHttpHeader("Authorization", token)
 				.build();
 		}
@@ -83,15 +84,15 @@ public class GraphQLClient {
 		return responseCompletableFuture;
 	}
 
-	public List<GetPipelineInfoQuery.Node> fetchListOfPipeLineInfo(String token, String slug, int perPage) {
+	public List<GetPipelineInfoQuery.Node> fetchListOfPipeLineInfo(GraphQLServer serverType, String token, String slug,
+			int perPage) {
 		CompletableFuture<List<GetPipelineInfoQuery.Node>> nodeListFuture = new CompletableFuture<>();
 		List<GetPipelineInfoQuery.Node> list = null;
 		Query<GetPipelineInfoQuery.Data> query = new GetPipelineInfoQuery(Optional.present(slug),
 				Optional.present(perPage));
 
 		try {
-			ApolloResponse<GetPipelineInfoQuery.Data> listCompletableFuture = callWithQuery(query, token,
-					GraphQLServer.BUILDKITE)
+			ApolloResponse<GetPipelineInfoQuery.Data> listCompletableFuture = callWithQuery(query, token, serverType)
 				.get();
 			if (listCompletableFuture.data != null) {
 				list = listCompletableFuture.data.organization.pipelines.edges.stream().map(edge -> edge.node).toList();

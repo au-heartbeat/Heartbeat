@@ -107,8 +107,8 @@ class BuildKiteServiceTest {
 
 	@BeforeEach
 	public void setUp() {
-		buildKiteService = new BuildKiteService(cachePageService, executor = getTaskExecutor(), buildKiteFeignClient);
-		buildKiteService.setGraphQLClient(graphQLClient);
+		buildKiteService = new BuildKiteService(cachePageService, executor = getTaskExecutor(), buildKiteFeignClient,
+				graphQLClient);
 	}
 
 	public ThreadPoolTaskExecutor getTaskExecutor() {
@@ -510,7 +510,9 @@ class BuildKiteServiceTest {
 						+ "      if [[ \"${BUILDKITE_BRANCH}\" == \"main\" ]]; then\n"
 						+ "        buildkite-agent pipeline upload\n" + "      else\n"
 						+ "        echo \"Skipping pipeline upload for branch ${BUILDKITE_BRANCH}\"\n" + "      fi\n"));
-		when(graphQLClient.fetchListOfPipeLineInfo("Bearer mock_token", TEST_ORG_ID, 100)).thenReturn(List.of(node));
+		when(graphQLClient.fetchListOfPipeLineInfo(GraphQLClient.GraphQLServer.BUILDKITE, "Bearer mock_token",
+				TEST_ORG_ID, 100))
+			.thenReturn(List.of(node));
 
 		BuildKiteResponseDTO buildKiteResponseDTO = buildKiteService.getBuildKiteInfo(tokenParam);
 

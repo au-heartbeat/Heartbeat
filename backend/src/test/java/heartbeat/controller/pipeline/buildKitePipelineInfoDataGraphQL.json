@@ -1,0 +1,22 @@
+{
+  "data": {
+    "organization": {
+      "pipelines": {
+        "edges": [
+          {
+            "node": {
+              "slug": "heartbeat",
+              "name": "Heartbeat",
+              "repository": {
+                "url": "git@github.com:au-heartbeat/Heartbeat.git"
+              },
+              "steps": {
+                "yaml": "steps:\n  - label: \":pipeline: Upload pipeline.yml\"\n    command: |\n      if [[ \"${BUILDKITE_BRANCH}\" == \"main\" ]]; then\n        buildkite-agent pipeline upload\n      else\n        echo \"Skipping pipeline upload for branch ${BUILDKITE_BRANCH}\"\n      fi\n"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

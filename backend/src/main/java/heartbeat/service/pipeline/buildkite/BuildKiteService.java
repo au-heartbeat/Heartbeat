@@ -55,8 +55,7 @@ public class BuildKiteService {
 
 	private final BuildKiteFeignClient buildKiteFeignClient;
 
-	@Setter
-	private GraphQLClient graphQLClient = GraphQLClient.getInstance();
+	private final GraphQLClient graphQLClient;
 
 	@PreDestroy
 	public void shutdownExecutor() {
@@ -279,7 +278,8 @@ public class BuildKiteService {
 
 			log.info("Start to query BuildKite pipelineInfo by organizations slug: {}", buildKiteOrganizationsInfo);
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
-				.flatMap(org -> graphQLClient.fetchListOfPipeLineInfo(buildKiteToken, org.getSlug(), 100)
+				.flatMap(org -> graphQLClient
+					.fetchListOfPipeLineInfo(GraphQLClient.GraphQLServer.BUILDKITE, buildKiteToken, org.getSlug(), 100)
 					.stream()
 					.map(pipeline -> PipelineTransformer.fromBuildKiteGraphQLQueryNode(pipeline, org.getSlug(),
 							org.getName())))
