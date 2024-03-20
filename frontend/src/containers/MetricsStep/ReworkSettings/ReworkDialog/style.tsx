@@ -18,6 +18,7 @@ export const StyledDialogTitle = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+  fontSize: '1.125rem',
 });
 
 export const StyledDialogContent = styled('div')({
@@ -68,19 +69,19 @@ export const StyledStepOfReword = styled('div')({
 
 export const StyledImg = styled('img')({
   width: '100%',
-  margin: '1rem 0',
+  margin: '0.5rem 0',
 });
 
 export const StyledNote = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   lineHeight: '1.25rem',
-  marginBottom: '1rem',
+  margin: '1.5rem 0 1.5rem',
 });
 
 export const StyledNoteTitle = styled('p')({
   fontSize: '0.875rem',
-  fontWeight: '700',
+  fontWeight: '800',
   color: theme.main.note,
 });
 
@@ -93,6 +94,7 @@ export const StyledNoteText = styled('p')({
 
 export const StyledButtonGroup = styled('div')({
   width: '100%',
+  marginTop: '1rem',
   display: 'flex',
   alignItems: 'flex-end',
   justifyContent: 'flex-end',
