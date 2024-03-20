@@ -386,3 +386,5 @@ export const ALL_OPTION_META: Record<string, string> = {
   label: 'All',
   key: 'all',
 };
+
+export const DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS = 13;
