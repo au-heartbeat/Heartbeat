@@ -44,7 +44,7 @@ export interface CycleTimeResponse {
 export interface ReworkTimeResponse {
   totalReworkTimes: number;
   reworkState: string;
-  fromToDo: number | null;
+  fromAnalysis: number | null;
   fromInDev: number | null;
   fromBlock: number | null;
   fromWaitingForTesting: number | null;

@@ -413,7 +413,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
   rework: {
     totalReworkTimes: 111,
     reworkState: 'In Dev',
-    fromToDo: null,
+    fromAnalysis: null,
     fromInDev: 111,
     fromBlock: 111,
     fromWaitingForTesting: 111,

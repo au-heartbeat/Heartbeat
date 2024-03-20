@@ -214,7 +214,7 @@ export enum CYCLE_TIME_METRICS_NAME {
 
 export const REWORK_TIME_METRICS_NAME = {
   totalReworkTimes: 'Total rework',
-  fromToDo: 'From todo to',
+  fromAnalysis: 'From analysis to',
   fromInDev: 'From in dev to',
   fromBlock: 'From block to',
   fromWaitingForTesting: 'From waiting for testing to',
@@ -226,7 +226,7 @@ export const REWORK_TIME_METRICS_NAME = {
 };
 
 export const BOARD_COLUMN_STATE: string[] = [
-  REWORK_TIME_METRICS_NAME.fromToDo,
+  REWORK_TIME_METRICS_NAME.fromAnalysis,
   REWORK_TIME_METRICS_NAME.fromInDev,
   REWORK_TIME_METRICS_NAME.fromBlock,
   REWORK_TIME_METRICS_NAME.fromWaitingForTesting,
