@@ -726,17 +726,6 @@ class GenerateReporterServiceTest {
 			}
 		}
 
-		@Test
-		void shouldReturnMetricStatus() {
-			String timeStamp = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 200);
-			MetricsDataDTO metricsDataDTO = new MetricsDataDTO(true, true, true);
-			when(asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(timeStamp)).thenReturn(metricsDataDTO);
-
-			MetricsDataDTO readyStatus = generateReporterService.checkReportReadyStatus(timeStamp);
-
-			assertEquals(metricsDataDTO, readyStatus);
-		}
-
 	}
 
 	@Nested
@@ -744,13 +733,12 @@ class GenerateReporterServiceTest {
 
 		String reportId = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 200);
 
-		MetricsDataDTO metricsDataDTO = new MetricsDataDTO(false, true, false);
 
 		@Test
 		void shouldGetDataFromCache() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(reportId))
-				.thenReturn(metricsDataDTO);
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(null);
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(reportId);
@@ -765,8 +753,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldReturnErrorDataWhenExceptionIs404Or403Or401() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(reportId))
-				.thenReturn(metricsDataDTO);
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new NotFoundException("error")));
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(reportId);
@@ -779,8 +767,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowGenerateReportExceptionWhenErrorIs500() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(reportId))
-				.thenReturn(metricsDataDTO);
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new GenerateReportException("errorMessage")));
 
 			try {
@@ -796,8 +784,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowServiceUnavailableExceptionWhenErrorIs503() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(reportId))
-				.thenReturn(metricsDataDTO);
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new ServiceUnavailableException("errorMessage")));
 
 			try {
@@ -813,9 +801,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowRequestFailedExceptionWhenErrorIsDefault() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getReportReadyStatusByTimeStamp(reportId))
-				.thenReturn(metricsDataDTO);
-			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new BadRequestException("error")));
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new BadRequestException("error")));
 
 			try {
 				generateReporterService.getComposedReportResponse(reportId);
