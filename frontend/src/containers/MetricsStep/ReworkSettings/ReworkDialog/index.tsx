@@ -14,10 +14,10 @@ import {
   StyledStepButton,
 } from '@src/containers/MetricsStep/ReworkSettings/ReworkDialog/style';
 import { REWORK_DIALOG_NOTE, REWORK_STEPS, REWORK_STEPS_NAME } from '@src/constants/resources';
-import ReworkSelectedWaitingForTest from '@src/assets/ReworkSelectedWaitingForTest.png';
-import ReworkSelectedInDev from '@src/assets/ReworkSelectedInDev.png';
-import StepOfExcludeJira from '@src/assets/StepOfExcludeJira.png';
-import StepOfReworkJira from '@src/assets/StepOfReworkJira.png';
+import ReworkSelectedWaitingForTest from '@src/assets/ReworkSelectedWaitingForTest.svg';
+import ReworkSelectedInDev from '@src/assets/ReworkSelectedInDev.svg';
+import StepOfExcludeJira from '@src/assets/StepOfExcludeJira.svg';
+import StepOfReworkJira from '@src/assets/StepOfReworkJira.svg';
 import { COMMON_BUTTONS } from '@src/constants/commons';
 import CloseIcon from '@mui/icons-material/Close';
 import React, { Suspense, useState } from 'react';
