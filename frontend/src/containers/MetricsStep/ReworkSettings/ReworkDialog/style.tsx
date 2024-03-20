@@ -5,6 +5,11 @@ import { theme } from '@src/theme';
 
 export const StyledDialogContainer = styled('div')({
   padding: '2rem',
+  width: '47rem',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 export const StyledDialogTitle = styled('div')({
@@ -15,17 +20,18 @@ export const StyledDialogTitle = styled('div')({
 });
 
 export const StyledDialogContent = styled('div')({
+  width: '100%',
   display: 'flex',
-});
-
-export const StyledReworkStepper = styled('div')({
-  margin: '1rem 2rem',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  margin: '1rem 0',
 });
 
 export const StyledStepper = styled(Stepper)({
   display: 'flex',
   width: '40rem',
-  margin: '1rem auto',
+  margin: '1rem 0',
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
     fontSize: '0.5rem',
@@ -59,9 +65,16 @@ export const StyledStepOfReword = styled('div')({
   margin: '1rem auto',
 });
 
+export const StyledImg = styled('img')({
+  width: '100%',
+  margin: '1rem 0',
+});
+
 export const StyledNote = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  lineHeight: '1.25rem',
+  marginBottom: '1rem',
 });
 
 export const StyledNoteTitle = styled('p')({
@@ -74,7 +87,7 @@ export const StyledNoteText = styled('p')({
   fontSize: '0.875rem',
   fontWeight: '400',
   color: theme.main.note,
-  lineHeight: '1rem',
+  lineHeight: '1.25rem',
 });
 
 export const YesButton = styled(Button)({
