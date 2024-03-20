@@ -4,20 +4,29 @@ import {
   isSelectDoraMetrics,
   selectConfig,
 } from '@src/context/config/configSlice';
+import {
+  filterAndMapCycleTimeSettings,
+  formatDuplicatedNameWithSuffix,
+  getJiraBoardToken,
+  getRealDoneStatus,
+} from '@src/utils/util';
 import { addNotification, closeAllNotifications, Notification } from '@src/context/notification/NotificationSlice';
+import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { CALENDAR, MESSAGE, REPORT_PAGE_TYPE } from '@src/constants/resources';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
+import { IBasicReportRequestDTO } from '@src/clients/report/dto/request';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { MESSAGE, REPORT_PAGE_TYPE } from '@src/constants/resources';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import { useAppSelector } from '@src/hooks';
+import dayjs from 'dayjs';
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -46,6 +55,19 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const configData = useAppSelector(selectConfig);
   const csvTimeStamp = useAppSelector(selectTimeStamp);
+  const {
+    cycleTimeSettingsType,
+    cycleTimeSettings,
+    treatFlagCardAsBlock,
+    users,
+    targetFields,
+    doneColumn,
+    assigneeFilter,
+    importedData: { importedAdvancedSettings, reworkTimesSettings },
+    pipelineCrews,
+    deploymentFrequencySettings,
+    leadTimeForChanges,
+  } = useAppSelector(selectMetricsContent);
 
   const startDate = configData.basic.dateRange.startDate ?? '';
   const endDate = configData.basic.dateRange.endDate ?? '';
@@ -61,6 +83,80 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     }
     return timeout4Board || timeout4Report || generalError4Board || generalError4Report;
   };
+
+  const getJiraBoardSetting = () => {
+    const { token, type, site, projectKey, boardId, email } = configData.board.config;
+    const jiraToken = getJiraBoardToken(token, email);
+
+    return {
+      token: jiraToken,
+      type: type.toLowerCase().replace(' ', '-'),
+      site,
+      projectKey,
+      boardId,
+      boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings),
+      treatFlagCardAsBlock,
+      users,
+      assigneeFilter,
+      targetFields: formatDuplicatedNameWithSuffix(targetFields),
+      doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
+      reworkTimesSetting: {
+        reworkState: reworkTimesSettings.rework2State,
+        excludedStates: reworkTimesSettings.excludeStates,
+      },
+      overrideFields: [
+        {
+          name: 'Story Points',
+          key: importedAdvancedSettings?.storyPoint ?? '',
+          flag: true,
+        },
+        {
+          name: 'Flagged',
+          key: importedAdvancedSettings?.flag ?? '',
+          flag: true,
+        },
+      ],
+    };
+  };
+
+  const getDoraSetting = () => {
+    const { pipelineTool, sourceControl } = configData;
+
+    return {
+      buildKiteSetting: {
+        pipelineCrews,
+        ...pipelineTool.config,
+        deploymentEnvList: getPipelineConfig(deploymentFrequencySettings),
+      },
+      codebaseSetting: {
+        type: sourceControl.config.type,
+        token: sourceControl.config.token,
+        leadTime: getPipelineConfig(leadTimeForChanges),
+      },
+    };
+  };
+
+  const getPipelineConfig = (pipelineConfigs: IPipelineConfig[]) =>
+    pipelineConfigs.flatMap(({ organization, pipelineName, step, branches }) => {
+      const pipelineConfigFromPipelineList = configData.pipelineTool.verifiedResponse.pipelineList.find(
+        (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization,
+      );
+      if (pipelineConfigFromPipelineList) {
+        const { orgName, orgId, name, id, repository } = pipelineConfigFromPipelineList;
+        return [
+          {
+            orgId,
+            orgName,
+            id,
+            name,
+            step,
+            repository,
+            branches,
+          },
+        ];
+      }
+      return [];
+    });
 
   useEffect(() => {
     setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
@@ -223,6 +319,26 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
   }, [generalError4Report]);
+
+  useEffect(() => {
+    !isBackFromDetail && startToRequestBoardData(getReportRequestBody());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getReportRequestBody = (): IBasicReportRequestDTO => {
+    const { metrics, calendarType } = configData.basic;
+
+    return {
+      metrics: metrics,
+      startTime: dayjs(startDate).valueOf().toString(),
+      endTime: dayjs(endDate).valueOf().toString(),
+      considerHoliday: calendarType === CALENDAR.CHINA,
+      jiraBoardSetting: shouldShowBoardMetrics ? getJiraBoardSetting() : undefined,
+      ...(shouldShowDoraMetrics ? getDoraSetting() : {}),
+      csvTimeStamp: csvTimeStamp,
+      metricTypes: [shouldShowBoardMetrics && 'board', shouldShowDoraMetrics && 'dora'].filter(Boolean),
+    };
+  };
 
   const showSummary = () => (
     <>
