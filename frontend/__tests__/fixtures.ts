@@ -216,6 +216,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
       excludedStates: [],
     },
   },
+  metricTypes: ['board', 'dora'],
 };
 
 export const IMPORTED_NEW_CONFIG_FIXTURE = {
