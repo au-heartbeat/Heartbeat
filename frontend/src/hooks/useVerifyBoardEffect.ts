@@ -1,15 +1,12 @@
-import { selectBoard, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
-import { BOARD_TYPES, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { findCaseInsensitiveType, getJiraBoardToken } from '@src/utils/util';
 import { IBoardConfigData } from '@src/containers/ConfigStep/Board/schema';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
-import { IHeartBeatException } from '@src/exceptions/ExceptionType';
+import { selectBoard } from '@src/context/config/configSlice';
 import { boardClient } from '@src/clients/board/BoardClient';
-import { isHeartBeatException } from '@src/exceptions';
+import { DEFAULT_HELPER_TEXT } from '@src/constants/commons';
+import { BOARD_TYPES } from '@src/constants/resources';
 import { REGEX } from '@src/constants/regex';
-import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
 export interface Field {
@@ -23,16 +20,11 @@ export interface Field {
 }
 
 export interface useVerifyBoardStateInterface {
-  verifyJira: (data: IBoardConfigData) => Promise<void>;
-  isLoading: boolean;
+  verifyJira: (
+    data: IBoardConfigData,
+  ) => Promise<{ response: Record<string, number | string | boolean>; isBoardVerify: boolean; haveDoneCard: boolean }>;
   fields: Field[];
-  resetFields: () => void;
 }
-
-const ERROR_INFO = {
-  SITE_NOT_FOUND: 'site is incorrect',
-  BOARD_NOT_FOUND: 'boardId is incorrect',
-};
 
 const VALIDATOR = {
   EMAIL: (value: string) => REGEX.EMAIL.test(value),
@@ -58,11 +50,10 @@ const getValidatedError = (key: string, value: string, validateRule?: (value: st
 };
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
-  const [isLoading, setIsLoading] = useState(false);
   const boardFields = useAppSelector(selectBoard);
   const dispatch = useAppDispatch();
   const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
-  const [fields, setFields] = useState<Field[]>([
+  const [fields] = useState<Field[]>([
     {
       key: KEYS.BOARD,
       name: 'type',
@@ -107,81 +98,16 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     },
   ]);
 
-  const getBoardInfo = (fields: Field[]) => {
-    const keys = ['type', 'boardId', 'email', 'site', 'token'];
-    return keys.reduce((board, key, index) => ({ ...board, [key]: fields[index].value }), {});
-  };
-
-  const handleUpdate = (fields: Field[]) => {
-    setFields(fields);
-    dispatch(updateBoardVerifyState(false));
-    dispatch(updateBoard(getBoardInfo(fields)));
-  };
-
-  const resetFields = () => {
-    const newFields = fields.map((field) =>
-      field.key === KEYS.BOARD
-        ? field
-        : {
-            ...field,
-            value: EMPTY_STRING,
-            validatedError: '',
-            verifiedError: '',
-          },
-    );
-    handleUpdate(newFields);
-  };
-
-  const setVerifiedError = (keys: string[], messages: string[]) => {
-    setFields(
-      fields.map((field) => {
-        return keys.includes(field.key)
-          ? {
-              ...field,
-              validatedError: '',
-              verifiedError: messages[keys.findIndex((key) => key === field.key)],
-            }
-          : field;
-      }),
-    );
-  };
-
-  const verifyJira = async (data: IBoardConfigData) => {
-    setIsLoading(true);
+  const verifyJira = (data: IBoardConfigData) => {
     dispatch(updateTreatFlagCardAsBlock(true));
-    try {
-      const res: { response: Record<string, string> } = await boardClient.getVerifyBoard({
-        ...data,
-        token: getJiraBoardToken(data.token, data.email),
-      });
-      if (res?.response) {
-        dispatch(updateBoardVerifyState(true));
-        dispatch(updateBoard({ ...data, projectKey: res.response.projectKey }));
-      }
-    } catch (e) {
-      if (isHeartBeatException(e)) {
-        const { description, code } = e as IHeartBeatException;
-        if (code === HttpStatusCode.Unauthorized) {
-          setVerifiedError(
-            [KEYS.EMAIL, KEYS.TOKEN],
-            [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR],
-          );
-        } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.SITE_NOT_FOUND) {
-          setVerifiedError([KEYS.SITE], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
-        } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
-          setVerifiedError([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
-        } else {
-          setVerifiedError([KEYS.TOKEN], [UNKNOWN_ERROR_TITLE]);
-        }
-      }
-    }
-    setIsLoading(false);
+    return boardClient.getVerifyBoard({
+      ...data,
+      token: getJiraBoardToken(data.token, data.email),
+    });
   };
 
   return {
     verifyJira,
-    isLoading,
     fields,
-    resetFields,
   };
 };

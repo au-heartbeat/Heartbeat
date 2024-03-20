@@ -93,7 +93,7 @@ export enum CONFIG_TITLE {
 }
 
 export const BOARD_TYPES = {
-  JIRA: 'Jira',
+  JIRA: 'jira',
 };
 
 export const PIPELINE_TOOL_TYPES = {
@@ -334,4 +334,9 @@ export const SOURCE_CONTROL_BRANCH_INVALID_TEXT = 'The codebase branch marked in
 export const ALL_OPTION_META: Record<string, string> = {
   label: 'All',
   key: 'all',
+};
+
+export const BOARD_ERROR_INFO = {
+  SITE_NOT_FOUND: 'site is incorrect',
+  BOARD_NOT_FOUND: 'boardId is incorrect',
 };

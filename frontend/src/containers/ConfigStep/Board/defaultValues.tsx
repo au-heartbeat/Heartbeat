@@ -1,5 +1,5 @@
 export const boardConfigDefaultValues = {
-  type: 'Jira',
+  type: 'jira',
   boardId: '',
   email: '',
   site: '',
