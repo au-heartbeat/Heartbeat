@@ -6,10 +6,11 @@ import { theme } from '@src/theme';
 export const StyledDialogContainer = styled('div')({
   padding: '2rem',
   width: '47rem',
+  height: '45rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
 });
 
 export const StyledDialogTitle = styled('div')({
@@ -90,7 +91,7 @@ export const StyledNoteText = styled('p')({
   lineHeight: '1.25rem',
 });
 
-export const StyledButtonGroup = styled(Button)({
+export const StyledButtonGroup = styled('div')({
   width: '100%',
   display: 'flex',
   alignItems: 'flex-end',

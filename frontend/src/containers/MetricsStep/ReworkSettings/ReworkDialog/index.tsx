@@ -18,6 +18,7 @@ import ReworkSelectedWaitingForTest from '@src/assets/ReworkSelectedWaitingForTe
 import ReworkSelectedInDev from '@src/assets/ReworkSelectedInDev.png';
 import StepOfExcludeJira from '@src/assets/StepOfExcludeJira.png';
 import StepOfReworkJira from '@src/assets/StepOfReworkJira.png';
+import { COMMON_BUTTONS } from '@src/constants/commons';
 import CloseIcon from '@mui/icons-material/Close';
 import React, { Suspense, useState } from 'react';
 import Button from '@mui/material/Button';
@@ -50,10 +51,10 @@ export const ReworkDialog = (props: { isShowDialog: boolean; hiddenDialog: () =>
         </StyledNote>
         <StyledButtonGroup>
           <StyledStepButton variant='outlined' onClick={handleStep}>
-            {activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE ? 'Next' : 'Previous'}
+            {activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE ? COMMON_BUTTONS.NEXT : COMMON_BUTTONS.BACK}
           </StyledStepButton>
           <Button variant='contained' onClick={hiddenDialog}>
-            Confirm
+            {COMMON_BUTTONS.CONFIRM}
           </Button>
         </StyledButtonGroup>
       </StyledStepOfReword>
