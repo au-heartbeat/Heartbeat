@@ -90,17 +90,13 @@ export const StyledNoteText = styled('p')({
   lineHeight: '1.25rem',
 });
 
-export const YesButton = styled(Button)({
-  boxShadow: theme.main.boxShadow,
-  padding: '0 1rem',
-  margin: '0 1rem',
-  color: theme.main.color,
-  backgroundColor: theme.main.backgroundColor,
-  '&:hover': {
-    backgroundColor: theme.main.backgroundColor,
-  },
+export const StyledButtonGroup = styled(Button)({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'flex-end',
+  justifyContent: 'flex-end',
 });
 
-export const CancelButton = styled(Button)({
-  color: theme.main.secondColor,
+export const StyledStepButton = styled(Button)({
+  marginRight: '1rem',
 });

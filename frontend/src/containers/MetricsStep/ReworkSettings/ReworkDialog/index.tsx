@@ -10,6 +10,8 @@ import {
   StyledNoteTitle,
   StyledNoteText,
   StyledImg,
+  StyledButtonGroup,
+  StyledStepButton,
 } from '@src/containers/MetricsStep/ReworkSettings/ReworkDialog/style';
 import { REWORK_DIALOG_NOTE, REWORK_STEPS, REWORK_STEPS_NAME } from '@src/constants/resources';
 import ReworkSelectedWaitingForTest from '@src/assets/ReworkSelectedWaitingForTest.png';
@@ -18,10 +20,20 @@ import StepOfExcludeJira from '@src/assets/StepOfExcludeJira.png';
 import StepOfReworkJira from '@src/assets/StepOfReworkJira.png';
 import CloseIcon from '@mui/icons-material/Close';
 import React, { Suspense, useState } from 'react';
+import Button from '@mui/material/Button';
 import { Dialog } from '@mui/material';
 
-export const ReworkDialog = () => {
+export const ReworkDialog = (props: { isShowDialog: boolean; hiddenDialog: () => void }): JSX.Element => {
   const [activeStep, setActiveStep] = useState(REWORK_STEPS.REWORK_TO_WHICH_STATE);
+  const { isShowDialog, hiddenDialog } = props;
+
+  const handleStep = () => {
+    if (activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE) {
+      setActiveStep(REWORK_STEPS.EXCLUDE_WHICH_STATES);
+    } else {
+      setActiveStep(REWORK_STEPS.REWORK_TO_WHICH_STATE);
+    }
+  };
 
   const renderContent = (selectedImg: string, jiraImg: string, explanationText: string, noteText: string) => {
     return (
@@ -36,16 +48,24 @@ export const ReworkDialog = () => {
           <StyledNoteTitle>Note: </StyledNoteTitle>
           <StyledNoteText>{noteText}</StyledNoteText>
         </StyledNote>
+        <StyledButtonGroup>
+          <StyledStepButton variant='outlined' onClick={handleStep}>
+            {activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE ? 'Next' : 'Previous'}
+          </StyledStepButton>
+          <Button variant='contained' onClick={hiddenDialog}>
+            Confirm
+          </Button>
+        </StyledButtonGroup>
       </StyledStepOfReword>
     );
   };
 
   return (
-    <Dialog open={true} maxWidth={'md'}>
+    <Dialog open={isShowDialog} maxWidth={'md'}>
       <StyledDialogContainer>
         <StyledDialogTitle>
           <p>How to setup? </p>
-          <CloseIcon />
+          <CloseIcon onClick={hiddenDialog} />
         </StyledDialogTitle>
         <StyledDialogContent>
           <StyledStepper activeStep={activeStep}>
