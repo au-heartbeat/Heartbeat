@@ -11,11 +11,10 @@ import {
   StyledNoteTitle,
   StyledNoteText,
 } from '@src/containers/MetricsStep/ReworkSettings/ReworkDialog/style';
+import { REWORK_DIALOG_NOTE, REWORK_STEPS, REWORK_STEPS_NAME } from '@src/constants/resources';
 import ReworkSelectedWaitingForTest from '@src/assets/ReworkSelectedWaitingForTest.png';
-import { REWORK_STEPS, REWORK_STEPS_NAME } from '@src/constants/resources';
-// import StpeOfExcludeJira from '@src/assets/StpeOfExcludeJira.png.png';
-// import ReworkSelectedInDev from '@src/assets/ReworkSelectedInDev.png';
-// import StepOfRework from '@src/assets/StepOfRework.png';
+import ReworkSelectedInDev from '@src/assets/ReworkSelectedInDev.png';
+import StepOfExcludeJira from '@src/assets/StepOfExcludeJira.png';
 import StepOfReworkJira from '@src/assets/StepOfReworkJira.png';
 import CloseIcon from '@mui/icons-material/Close';
 import React, { Suspense, useState } from 'react';
@@ -24,16 +23,18 @@ import { Dialog } from '@mui/material';
 export const ReworkDialog = () => {
   const [activeStep, setActiveStep] = useState(REWORK_STEPS.REWORK_TO_WHICH_STATE);
 
-  const renderContent = () => {
+  const renderContent = (selectedImg: string, jiraImg: string, explanationText: string, noteText: string) => {
     return (
       <StyledStepOfReword>
-        <img src={ReworkSelectedWaitingForTest} alt='selected' />
-        <img src={StepOfReworkJira} alt='jira' />
+        <img src={selectedImg} alt='selected' />
+        <img src={jiraImg} alt='jira' />
         <StyledNote>
           <StyledNoteTitle>Explanation: </StyledNoteTitle>
-          <StyledNoteText>
-            Rework to which state means going back to the selected state from any state after the selected state.
-          </StyledNoteText>
+          <StyledNoteText>{explanationText}</StyledNoteText>
+        </StyledNote>
+        <StyledNote>
+          <StyledNoteTitle>Note: </StyledNoteTitle>
+          <StyledNoteText>{noteText}</StyledNoteText>
         </StyledNote>
       </StyledStepOfReword>
     );
@@ -56,8 +57,20 @@ export const ReworkDialog = () => {
               ))}
             </StyledStepper>
             <Suspense>
-              {activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE && renderContent()}
-              {activeStep === REWORK_STEPS.EXCLUDE_WHICH_STATES && renderContent()}
+              {activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE &&
+                renderContent(
+                  ReworkSelectedInDev,
+                  StepOfReworkJira,
+                  REWORK_DIALOG_NOTE.REWORK_EXPLANATION,
+                  REWORK_DIALOG_NOTE.REWORK_NOTE,
+                )}
+              {activeStep === REWORK_STEPS.EXCLUDE_WHICH_STATES &&
+                renderContent(
+                  ReworkSelectedWaitingForTest,
+                  StepOfExcludeJira,
+                  REWORK_DIALOG_NOTE.EXCLUDE_EXPLANATION,
+                  REWORK_DIALOG_NOTE.EXCLUDE_NOTE,
+                )}
             </Suspense>
           </StyledReworkStepper>
         </StyledDialogContent>
