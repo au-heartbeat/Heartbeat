@@ -8,7 +8,6 @@ import { NotFoundError } from '@src/errors/NotFoundError';
 import { UnknownError } from '@src/errors/UnknownError';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { ROUTE } from '@src/constants/router';
-import { some } from 'lodash';
 
 export class HttpClient {
   protected httpTimeout = 300000;
@@ -23,7 +22,7 @@ export class HttpClient {
       (res) => res,
       (error) => {
         const { code, response } = error;
-        if (some(AXIOS_NETWORK_ERROR_CODES, (predefinedCode) => predefinedCode === code)) {
+        if (AXIOS_NETWORK_ERROR_CODES.some((predefinedCode) => predefinedCode === code)) {
           throw new TimeoutError(error?.message, AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
         } else if (response && response.status && response.status > 0) {
           const { status, data, statusText } = response;
