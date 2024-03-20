@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import heartbeat.client.graphql.GraphQLClient;
 import lombok.extern.log4j.Log4j2;
-import lombok.val;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -58,7 +57,7 @@ public class GraphQLClientTest {
 	}
 
 	@Test
-	public void callWithQueryReturnsExpectedResult() throws Exception {
+	public void callWithFetchListOfPipeLineInfoExpectedResult() throws Exception {
 		JsonReader reader = new JsonReader(
 				new FileReader("src/test/java/heartbeat/controller/pipeline/buildKitePipelineInfoDataGraphQL.json"));
 		Gson gson = new Gson();
@@ -71,16 +70,16 @@ public class GraphQLClientTest {
 		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
 		when(mockedEnum.getUrl()).thenReturn(httpUrl);
 
-		ApolloClient apolloClient = new ApolloClient.Builder().serverUrl(httpUrl).build();
-		GraphQLClient qlClient = new GraphQLClient();
-		qlClient.setApolloClient(apolloClient);
-
+		GraphQLClient mockGraphQLClient = new GraphQLClient();
 		Query<GetPipelineInfoQuery.Data> mockQuery = new GetPipelineInfoQuery(Optional.present("slug"),
 				Optional.present(10));
 
-		List<GetPipelineInfoQuery.Node> response = qlClient.fetchListOfPipeLineInfo(mockedEnum, "token", "slug", 100);
+		List<GetPipelineInfoQuery.Node> response = mockGraphQLClient.fetchListOfPipeLineInfo(mockedEnum, "token",
+				"slug", 100);
 		assertEquals(1, response.size());
 		assertEquals("Heartbeat", response.get(0).name);
+		assertEquals("heartbeat", response.get(0).slug);
+		assertEquals("git@github.com:au-heartbeat/Heartbeat.git", response.get(0).repository.url);
 
 		Thread.sleep(100);
 

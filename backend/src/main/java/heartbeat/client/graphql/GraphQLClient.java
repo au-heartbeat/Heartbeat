@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@Setter
 @Component
 @Log4j2
 public class GraphQLClient {
@@ -39,7 +38,7 @@ public class GraphQLClient {
 
 	}
 
-	public ApolloClient apolloClient;
+	private ApolloClient apolloClient;
 
 	private ApolloClient getApolloClient(String token, GraphQLServer server) {
 		if (apolloClient == null) {
@@ -56,7 +55,7 @@ public class GraphQLClient {
 		return apolloClient;
 	}
 
-	public <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token,
+	private <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token,
 			GraphQLServer server) {
 		ApolloCall<D> queryCall = this.getApolloClient(token, server).query(query);
 		CompletableFuture<ApolloResponse<D>> responseCompletableFuture = new CompletableFuture<>();
