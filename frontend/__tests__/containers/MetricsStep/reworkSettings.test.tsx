@@ -20,7 +20,7 @@ jest.mock('@src/hooks/useAppDispatch', () => ({
 }));
 
 const store = setupStore();
-const mockCycleTimeSettings = [
+const mockCycleTimeSettings1 = [
   {
     column: 'TODO',
     status: 'TODO',
@@ -42,6 +42,7 @@ const mockCycleTimeSettings = [
     value: 'Done',
   },
 ];
+const mockCycleTimeSettings2 = mockCycleTimeSettings1.filter((item) => item.value !== 'Done');
 
 describe('reworkSetting', () => {
   const setup = () =>
@@ -52,7 +53,7 @@ describe('reworkSetting', () => {
     );
 
   beforeEach(() => {
-    store.dispatch(updateCycleTimeSettings(mockCycleTimeSettings));
+    store.dispatch(updateCycleTimeSettings(mockCycleTimeSettings1));
   });
 
   afterEach(() => {
@@ -101,7 +102,7 @@ describe('reworkSetting', () => {
       await userEvent.click(stepsListBox2.getByText(ALL));
     });
     await waitFor(async () => {
-      [...new Set(mockCycleTimeSettings.map((item) => item.value))].slice(1).forEach((value) => {
+      [...new Set(mockCycleTimeSettings1.map((item) => item.value))].slice(1).forEach((value) => {
         expect(getByRole('button', { name: value })).toBeInTheDocument();
       });
     });
@@ -110,7 +111,7 @@ describe('reworkSetting', () => {
       await userEvent.click(stepsListBox2.getByText(ALL));
     });
     await waitFor(() => {
-      [...new Set(mockCycleTimeSettings.map((item) => item.value))].slice(1).forEach((value) => {
+      [...new Set(mockCycleTimeSettings1.map((item) => item.value))].slice(1).forEach((value) => {
         expect(queryByRole('button', { name: value })).not.toBeInTheDocument();
       });
     });
@@ -120,6 +121,31 @@ describe('reworkSetting', () => {
     });
     await waitFor(async () => {
       expect(getByRole('button', { name: REWORK_TIME_LIST[3] })).toBeInTheDocument();
+    });
+  });
+
+  it('should get correct value when board mappings have not done value', async () => {
+    store.dispatch(updateCycleTimeSettings(mockCycleTimeSettings2));
+    const { getByRole, getAllByRole } = setup();
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
+    });
+    const stepsListBox1 = within(getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(stepsListBox1.getByText(METRICS_CONSTANTS.todoValue));
+    });
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[1]);
+    });
+    const stepsListBox2 = within(getByRole('listbox'));
+
+    await act(async () => {
+      await userEvent.click(stepsListBox2.getByText(ALL));
+    });
+    await waitFor(async () => {
+      [...new Set(mockCycleTimeSettings2.map((item) => item.value))].slice(1).forEach((value) => {
+        expect(getByRole('button', { name: value })).toBeInTheDocument();
+      });
     });
   });
 });
