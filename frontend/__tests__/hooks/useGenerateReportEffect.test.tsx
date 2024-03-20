@@ -26,12 +26,12 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.timeout4Board).toEqual('Data loading failed');
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.timeout4Report).toEqual('Data loading failed');
     });
   });
 
-  it('should call polling report and setTimeout when calling startToRequestBoardData given pollingReport response return 204 ', async () => {
+  it('should call polling report and setTimeout when calling startToRequestData given pollingReport response return 204 ', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -42,7 +42,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
     });
 
     jest.runOnlyPendingTimers();
@@ -64,7 +64,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
     });
     act(() => {
       jest.advanceTimersByTime(10000);
@@ -75,7 +75,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report only once when calling startToRequestBoardData but startToRequestDoraData called before', async () => {
+  it('should call polling report only once when calling startToRequestData but startToRequestDoraData called before', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -87,7 +87,7 @@ describe('use generate report effect', () => {
 
     await waitFor(() => {
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
     });
 
     jest.runOnlyPendingTimers();
@@ -147,7 +147,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report only once when calling startToRequestDoraData but startToRequestBoardData called before', async () => {
+  it('should call polling report only once when calling startToRequestDoraData but startToRequestData called before', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -159,7 +159,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
       result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
     });
 
@@ -170,14 +170,14 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set generalError4Board is "Data loading failed" when startToRequestBoardData given UnknownException', async () => {
+  it('should set generalError4Board is "Data loading failed" when startToRequestData given UnknownException', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestBoardData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.generalError4Board).toEqual('Data loading failed');
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.generalError4Report).toEqual('Data loading failed');
     });
   });
 

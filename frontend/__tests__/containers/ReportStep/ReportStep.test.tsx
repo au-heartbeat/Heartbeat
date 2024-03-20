@@ -53,7 +53,7 @@ jest.mock('@src/hooks/useExportCsvEffect', () => ({
 
 jest.mock('@src/hooks/useGenerateReportEffect', () => ({
   useGenerateReportEffect: jest.fn().mockReturnValue({
-    startToRequestBoardData: jest.fn(),
+    startToRequestData: jest.fn(),
     startToRequestDoraData: jest.fn(),
     stopPollingReports: jest.fn(),
     isServerError: false,
@@ -82,7 +82,7 @@ describe('Report Step', () => {
     resetReportHook();
   });
   const resetReportHook = async () => {
-    reportHook.current.startToRequestBoardData = jest.fn();
+    reportHook.current.startToRequestData = jest.fn();
     reportHook.current.startToRequestDoraData = jest.fn();
     reportHook.current.stopPollingReports = jest.fn();
     reportHook.current.reportData = { ...MOCK_REPORT_RESPONSE, exportValidityTime: 30 };
