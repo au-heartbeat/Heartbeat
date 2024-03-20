@@ -731,7 +731,7 @@ export const EXPECTED_REPORT_VALUES = {
       valueList: [
         {
           value: 111,
-          unit: ' (times)',
+          unit: ' (cards)',
         },
       ],
     },
