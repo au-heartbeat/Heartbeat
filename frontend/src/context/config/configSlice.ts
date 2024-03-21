@@ -23,7 +23,7 @@ export interface BasicConfigState {
     dateRange: {
       startDate: string | null;
       endDate: string | null;
-    };
+    }[];
     metrics: string[];
   };
   board: IBoardState;
@@ -37,10 +37,12 @@ export const initialBasicConfigState: BasicConfigState = {
   basic: {
     projectName: '',
     calendarType: CALENDAR.REGULAR,
-    dateRange: {
-      startDate: null,
-      endDate: null,
-    },
+    dateRange: [
+      {
+        startDate: null,
+        endDate: null,
+      },
+    ],
     metrics: [],
   },
   board: initialBoardState,
@@ -91,8 +93,7 @@ export const configSlice = createSlice({
       state.basic.calendarType = action.payload;
     },
     updateDateRange: (state, action) => {
-      const { startDate, endDate } = action.payload;
-      state.basic.dateRange = { startDate, endDate };
+      state.basic.dateRange = action.payload;
     },
     updateMetrics: (state, action) => {
       const { metrics, shouldBoardShow, shouldPipelineToolShow, shouldSourceControlShow } = getMetricsInfo(
@@ -114,8 +115,9 @@ export const configSlice = createSlice({
       state.sourceControl.isShow = shouldSourceControlShow;
       const { projectName, dateRange } = state.basic;
       if (!state.isProjectCreated) {
+        // todo run validation including future check / selected check / conflicts check
         state.warningMessage =
-          projectName && dateRange.startDate && dateRange.endDate && metrics.length > 0
+          projectName && dateRange && dateRange.length && metrics.length > 0
             ? null
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
@@ -240,7 +242,9 @@ export const selectStepsParams = (state: RootState, organizationName: string, pi
   const pipeline = state.config.pipelineTool.verifiedResponse.pipelineList.find(
     (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organizationName,
   );
-  const { startDate, endDate } = state.config.basic.dateRange;
+
+  // todo refactor this to adapt new getInfo api design
+  const { startDate, endDate } = state.config.basic.dateRange[0];
   const pipelineType = state.config.pipelineTool.config.type;
   const token = state.config.pipelineTool.config.token;
 
