@@ -70,9 +70,7 @@
     ],
     "treatFlagCardAsBlock": true
   },
-  "doneStatus": [
-    "DONE"
-  ],
+  "doneStatus": ["DONE"],
   "classification": [
     "issuetype",
     "parent",
@@ -97,9 +95,7 @@
       "organization": "Thoughtworks-Heartbeat",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
-      "branches": [
-        "main"
-      ]
+      "branches": ["main"]
     }
   ],
   "reworkTimesSettings": {

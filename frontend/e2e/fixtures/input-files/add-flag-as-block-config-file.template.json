@@ -5,12 +5,7 @@
     "endDate": "2024-02-01T23:59:59.999+08:00"
   },
   "calendarType": "Calendar with Chinese Holiday",
-  "metrics": [
-    "Velocity",
-    "Cycle time",
-    "Classification",
-    "Rework times"
-  ],
+  "metrics": ["Velocity", "Cycle time", "Classification", "Rework times"],
   "board": {
     "type": "Jira",
     "boardId": "1",
@@ -19,9 +14,7 @@
     "site": "ywt-testing",
     "token": "<E2E_TOKEN_FLAG_AS_BLOCK_JIRA>"
   },
-  "crews": [
-    "Wenting Yan"
-  ],
+  "crews": ["Wenting Yan"],
   "assigneeFilter": "lastAssignee",
   "cycleTime": {
     "type": "byColumn",
