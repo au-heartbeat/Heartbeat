@@ -1,15 +1,13 @@
-import { IBasicReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { reportClient } from '@src/clients/report/ReportClient';
 import { DATA_LOADING_FAILED } from '@src/constants/resources';
 import { TimeoutError } from '@src/errors/TimeoutError';
-import { METRIC_TYPES } from '@src/constants/commons';
 import { useRef, useState } from 'react';
 
 export interface useGenerateReportEffectInterface {
-  startToRequestData: (boardParams: IBasicReportRequestDTO) => void;
-  startToRequestDoraData: (doraParams: ReportRequestDTO) => void;
+  startToRequestData: (params: ReportRequestDTO) => void;
   stopPollingReports: () => void;
   timeout4Board: string;
   timeout4Dora: string;
@@ -32,11 +30,11 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const timerIdRef = useRef<number>();
   let hasPollingStarted = false;
 
-  const startToRequestData = (boardParams: ReportRequestDTO) => {
-    const { metricTypes } = boardParams;
-    setTimeout4Board('');
+  const startToRequestData = (params: ReportRequestDTO) => {
+    const { metricTypes } = params;
+    resetTimeoutMessage(metricTypes);
     reportClient
-      .retrieveByUrl(boardParams, `${reportPath}`)
+      .retrieveByUrl(params, `${reportPath}`)
       .then((res) => {
         if (hasPollingStarted) return;
         hasPollingStarted = true;
@@ -46,6 +44,16 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         const source = metricTypes.length === 2 ? 'all' : metricTypes[0];
         handleError(e, source);
       });
+  };
+
+  const resetTimeoutMessage = (metricTypes: string[]) => {
+    if (metricTypes.length === 2) {
+      setTimeout4Report('');
+    } else if (metricTypes.includes('board')) {
+      setTimeout4Board('');
+    } else {
+      setTimeout4Dora('');
+    }
   };
 
   const handleError = (error: Error, source: string) => {
@@ -66,20 +74,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         setGeneralError4Report(DATA_LOADING_FAILED);
       }
     }
-  };
-
-  const startToRequestDoraData = (doraParams: ReportRequestDTO) => {
-    setTimeout4Dora('');
-    reportClient
-      .retrieveByUrl(doraParams, `${reportPath}`)
-      .then((res) => {
-        if (hasPollingStarted) return;
-        hasPollingStarted = true;
-        pollingReport(res.response.callbackUrl, res.response.interval);
-      })
-      .catch((e) => {
-        handleError(e, 'dora');
-      });
   };
 
   const pollingReport = (url: string, interval: number) => {
@@ -113,7 +107,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   return {
     startToRequestData,
-    startToRequestDoraData,
     stopPollingReports,
     reportData,
     timeout4Board,
