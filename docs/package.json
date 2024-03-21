@@ -121,7 +121,7 @@
   "lint-staged": {
     "**/*": "npm run fix"
   },
-  "packageManager": "pnpm@8.10.0",
+  "packageManager": "pnpm@8.15.5",
   "pnpm": {
     "peerDependencyRules": {
       "ignoreMissing": [
