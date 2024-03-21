@@ -35,6 +35,8 @@ export const DORA_METRICS_MAPPING: Record<string, string> = {
   'Deployment frequency': 'deploymentFrequency',
   'Dev change failure rate': 'devChangeFailureRate',
   'Dev mean time to recovery': 'devMeanTimeToRecovery',
+  'Dev change failure rate': 'devChangeFailureRate',
+  'Dev mean time to recovery': 'devMeanTimeToRecovery',
 };
 
 export enum REQUIRED_DATA {
@@ -44,6 +46,22 @@ export enum REQUIRED_DATA {
   REWORK_TIMES = 'Rework times',
   LEAD_TIME_FOR_CHANGES = 'Lead time for changes',
   DEPLOYMENT_FREQUENCY = 'Deployment frequency',
+  DEV_CHANGE_FAILURE_RATE = 'Dev change failure rate',
+  DEV_MEAN_TIME_TO_RECOVERY = 'Dev mean time to recovery',
+}
+
+export const IMPORT_METRICS_MAPPING: Record<string, string> = {
+  Velocity: 'Velocity',
+  'Cycle time': 'Cycle time',
+  Classification: 'Classification',
+  'Rework times': 'Rework times',
+  'Lead time for changes': 'Lead time for changes',
+  'Deployment frequency': 'Deployment frequency',
+  'Dev change failure rate': 'Dev change failure rate',
+  'Dev mean time to recovery': 'Dev mean time to recovery',
+  'Change failure rate': 'Dev change failure rate',
+  'Mean time to recovery': 'Dev mean time to recovery',
+};
   DEV_CHANGE_FAILURE_RATE = 'Dev change failure rate',
   DEV_MEAN_TIME_TO_RECOVERY = 'Dev mean time to recovery',
 }
@@ -70,12 +88,17 @@ export enum METRICS_TITLE {
   DEPLOYMENT_FREQUENCY = 'Deployment Frequency',
   DEV_CHANGE_FAILURE_RATE = 'Dev Change Failure Rate',
   DEV_MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
+  DEV_CHANGE_FAILURE_RATE = 'Dev Change Failure Rate',
+  DEV_MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
 }
 
 export enum METRICS_SUBTITLE {
   PR_LEAD_TIME = 'PR Lead Time(Hours)',
   PIPELINE_LEAD_TIME = 'Pipeline Lead Time(Hours)',
   TOTAL_DELAY_TIME = 'Total Lead Time(Hours)',
+  DEPLOYMENT_FREQUENCY = '(Deployments/Days)',
+  DEV_MEAN_TIME_TO_RECOVERY_HOURS = '(Hours)',
+  FAILURE_RATE = '',
   DEPLOYMENT_FREQUENCY = '(Deployments/Days)',
   DEV_MEAN_TIME_TO_RECOVERY_HOURS = '(Hours)',
   FAILURE_RATE = '',
@@ -91,11 +114,15 @@ export const PIPELINE_METRICS: string[] = [
   REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
   REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
   REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+  REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
+  REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
 ];
 
 export const DORA_METRICS: string[] = [
   REQUIRED_DATA.LEAD_TIME_FOR_CHANGES,
   REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
+  REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
+  REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
   REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
   REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
 ];
@@ -161,9 +188,9 @@ export const CYCLE_TIME_LIST = [
   METRICS_CONSTANTS.analysisValue,
   METRICS_CONSTANTS.inDevValue,
   METRICS_CONSTANTS.blockValue,
+  METRICS_CONSTANTS.reviewValue,
   METRICS_CONSTANTS.waitingValue,
   METRICS_CONSTANTS.testingValue,
-  METRICS_CONSTANTS.reviewValue,
   METRICS_CONSTANTS.doneValue,
 ];
 
@@ -212,7 +239,9 @@ export enum CYCLE_TIME_METRICS_NAME {
 export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment frequency';
 
 export const DEV_FAILURE_RATE_NAME = 'Dev change failure rate';
+export const DEV_FAILURE_RATE_NAME = 'Dev change failure rate';
 
+export const DEV_MEAN_TIME_TO_RECOVERY_NAME = 'Dev mean time to recovery';
 export const DEV_MEAN_TIME_TO_RECOVERY_NAME = 'Dev mean time to recovery';
 
 export const PIPELINE_STEP = 'Pipeline/step';
