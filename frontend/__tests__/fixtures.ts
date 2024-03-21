@@ -679,7 +679,7 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 2,
-      name: 'From in dev to In Dev ',
+      name: 'From in dev to in dev ',
       valueList: [
         {
           value: 111,
@@ -689,7 +689,7 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 3,
-      name: 'From block to In Dev ',
+      name: 'From block to in dev ',
       valueList: [
         {
           value: 111,
@@ -699,7 +699,7 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 4,
-      name: 'From waiting for testing to In Dev ',
+      name: 'From waiting for testing to in dev ',
       valueList: [
         {
           value: 111,
@@ -709,7 +709,7 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 6,
-      name: 'From review to In Dev ',
+      name: 'From review to in dev ',
       valueList: [
         {
           value: 111,
@@ -719,7 +719,7 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 7,
-      name: 'From done to In Dev ',
+      name: 'From done to in dev ',
       valueList: [
         {
           value: 111,
@@ -743,7 +743,7 @@ export const EXPECTED_REPORT_VALUES = {
       valueList: [
         {
           value: 111,
-          unit: ' (rework card/throughput)',
+          unit: ' (rework cards/throughput)',
         },
       ],
     },

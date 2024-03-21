@@ -5,13 +5,13 @@ import { ReworkTimeResponse } from '@src/clients/report/dto/response';
 const getUnit = (value: string) => {
   const UNIT_TIME = [...BOARD_COLUMN_STATE, REWORK_TIME_METRICS_NAME.totalReworkTimes];
   if (UNIT_TIME.includes(value)) return ' (times)';
-  if (value === REWORK_TIME_METRICS_NAME.reworkCardsRatio) return ' (rework card/throughput)';
+  if (value === REWORK_TIME_METRICS_NAME.reworkCardsRatio) return ' (rework cards/throughput)';
   if (value === REWORK_TIME_METRICS_NAME.totalReworkCards) return ' (cards)';
 };
 
 const reworkMapper = (reworkTimeResponse: ReworkTimeResponse) => {
   const result: ReportDataWithTwoColumns[] = [];
-  const reworkState = reworkTimeResponse.reworkState;
+  const reworkState = reworkTimeResponse.reworkState.toLowerCase();
 
   Object.entries(REWORK_TIME_METRICS_NAME).map(([key, value], index) => {
     reworkTimeResponse[key as keyof ReworkTimeResponse] !== null &&

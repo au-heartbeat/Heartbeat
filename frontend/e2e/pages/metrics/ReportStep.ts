@@ -236,7 +236,7 @@ export class ReportStep {
       '6 (cards)',
     );
     await expect(this.reworkRows.filter({ hasText: 'Rework cards ratio' }).getByRole('cell').nth(1)).toContainText(
-      '0.67 (rework card/throughput)',
+      '0.67 (rework cards/throughput)',
     );
   }
 

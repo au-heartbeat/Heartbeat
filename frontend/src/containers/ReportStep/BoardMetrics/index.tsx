@@ -169,13 +169,16 @@ const BoardMetrics = ({
               {
                 value: rework.totalReworkTimes,
                 subtitle: METRICS_SUBTITLE.TOTAL_REWORK_TIMES,
+                isToFixed: false,
               },
               {
                 value: rework.totalReworkCards,
                 subtitle: METRICS_SUBTITLE.TOTAL_REWORK_CARDS,
+                isToFixed: false,
               },
               {
                 value: rework.reworkCardsRatio,
+                extraValue: '2/13',
                 subtitle: METRICS_SUBTITLE.REWORK_CARDS_RATIO,
               },
             ],
