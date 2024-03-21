@@ -192,6 +192,8 @@ export const TIPS = {
   CYCLE_TIME: 'The report page will sum all the status in the column for cycletime calculation',
   ADVANCE:
     'If the story point and block related values in the board data are 0 due to token permissions or other reasons, please manually enter the corresponding customized field key.Otherwise, please ignore it.',
+  TIME_RANGE_PICKER:
+    'Please note: 1. not allowed to choose future time; 2. the span of each time range cannot exceed 31 days at most; 3.If two adjacent time ranges are not connected, then the disconnected time cannot be selected; 4.you can add up to 6 time ranges currently',
 };
 
 export enum VELOCITY_METRICS_NAME {
@@ -420,3 +422,4 @@ export const AUTHORIZE_ORGANIZATION_LINK =
   'https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file#3134-authorize-github-token-with-correct-organization';
 
 export const DEFAULT_MONTH_INTERVAL_DAYS = 30;
+export const TIME_RANGE_TITLE = 'Time range settings';

@@ -5,11 +5,13 @@ import {
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
 import { DEFAULT_MONTH_INTERVAL_DAYS, DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS } from '@src/constants/resources';
+import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StyledDateRangePicker, StyledDateRangePickerContainer } from './style';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Z_INDEX } from '@src/constants/commons';
 import { Nullable } from '@src/utils/types';
@@ -66,45 +68,54 @@ export const DateRangePicker = () => {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <StyledDateRangePickerContainer>
-        <StyledDateRangePicker
-          disableFuture
-          label='From *'
-          value={startDate ? dayjs(startDate) : null}
-          onChange={(newValue) => changeStartDate(newValue as unknown as Dayjs)}
-          slots={{
-            openPickerIcon: CalendarTodayIcon,
-          }}
-          slotProps={{
-            textField: {
-              variant: 'standard',
-            },
-            popper: {
-              sx: { zIndex: Z_INDEX.DROPDOWN },
-            },
-          }}
-        />
-        <StyledDateRangePicker
-          disableFuture
-          label='To *'
-          value={endDate ? dayjs(endDate) : null}
-          maxDate={dayjs(startDate).add(DEFAULT_MONTH_INTERVAL_DAYS, 'day')}
-          minDate={dayjs(startDate)}
-          onChange={(newValue) => changeEndDate(newValue as unknown as Dayjs)}
-          slots={{
-            openPickerIcon: CalendarTodayIcon,
-          }}
-          slotProps={{
-            textField: {
-              variant: 'standard',
-            },
-            popper: {
-              sx: { zIndex: Z_INDEX.DROPDOWN },
-            },
-          }}
-        />
-      </StyledDateRangePickerContainer>
-    </LocalizationProvider>
+    <>
+      <SectionTitleWithTooltip
+        title={TIME_RANGE_TITLE}
+        tooltipText={TIPS.TIME_RANGE_PICKER}
+        titleStyle={{
+          margin: 0,
+        }}
+      />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <StyledDateRangePickerContainer>
+          <StyledDateRangePicker
+            disableFuture
+            label='From *'
+            value={startDate ? dayjs(startDate) : null}
+            onChange={(newValue) => changeStartDate(newValue as unknown as Dayjs)}
+            slots={{
+              openPickerIcon: CalendarTodayIcon,
+            }}
+            slotProps={{
+              textField: {
+                variant: 'standard',
+              },
+              popper: {
+                sx: { zIndex: Z_INDEX.DROPDOWN },
+              },
+            }}
+          />
+          <StyledDateRangePicker
+            disableFuture
+            label='To *'
+            value={endDate ? dayjs(endDate) : null}
+            maxDate={dayjs(startDate).add(30, 'day')}
+            minDate={dayjs(startDate)}
+            onChange={(newValue) => changeEndDate(newValue as unknown as Dayjs)}
+            slots={{
+              openPickerIcon: CalendarTodayIcon,
+            }}
+            slotProps={{
+              textField: {
+                variant: 'standard',
+              },
+              popper: {
+                sx: { zIndex: Z_INDEX.DROPDOWN },
+              },
+            }}
+          />
+        </StyledDateRangePickerContainer>
+      </LocalizationProvider>
+    </>
   );
 };
