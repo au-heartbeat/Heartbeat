@@ -8,6 +8,15 @@ import { HttpStatusCode } from 'axios';
 import clearAllMocks = jest.clearAllMocks;
 import resetAllMocks = jest.resetAllMocks;
 
+const MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE = {
+  ...MOCK_GENERATE_REPORT_REQUEST_PARAMS,
+  metricTypes: ['board'],
+};
+const MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE = {
+  ...MOCK_GENERATE_REPORT_REQUEST_PARAMS,
+  metricTypes: ['dora'],
+};
+
 describe('use generate report effect', () => {
   afterAll(() => {
     clearAllMocks();
@@ -20,14 +29,14 @@ describe('use generate report effect', () => {
     jest.useRealTimers();
   });
 
-  it('should set timeout4Board is "Data loading failed" when timeout', async () => {
+  it('should set timeout4Board is "Data loading failed" when timeout and metricTypes is board', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.timeout4Report).toEqual('Data loading failed');
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+      expect(result.current.timeout4Board).toEqual('Data loading failed');
     });
   });
 
@@ -75,7 +84,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report only once when calling startToRequestData but startToRequestDoraData called before', async () => {
+  it('should call polling report only once when calling startToRequestData which metricType is board but startToRequestData which metricType is Dora called before', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -86,8 +95,8 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
     });
 
     jest.runOnlyPendingTimers();
@@ -103,7 +112,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
       expect(result.current.timeout4Dora).toEqual('Data loading failed');
     });
   });
@@ -120,7 +129,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
       expect(result.current.timeout4Report).toEqual('Data loading failed');
     });
   });
@@ -137,7 +146,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
     });
 
     jest.runOnlyPendingTimers();
@@ -147,7 +156,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report only once when calling startToRequestDoraData but startToRequestData called before', async () => {
+  it('should call polling report only once when calling startToRequestData which metricType is dora but startToRequestData which metricType is board called before', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -159,8 +168,8 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
     });
 
     jest.runOnlyPendingTimers();
@@ -170,24 +179,24 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set generalError4Board is "Data loading failed" when startToRequestData given UnknownException', async () => {
+  it('should set generalError4Board is "Data loading failed" when startToRequestData which metricType is Board given UnknownException', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.generalError4Report).toEqual('Data loading failed');
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+      expect(result.current.generalError4Board).toEqual('Data loading failed');
     });
   });
 
-  it('should set generalError4Dora is "Data loading failed" when startToRequestDoraData given UnknownException', async () => {
+  it('should set generalError4Dora is "Data loading failed" when startToRequestData which metricType is dora given UnknownException', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
       expect(result.current.generalError4Dora).toEqual('Data loading failed');
     });
   });
@@ -201,7 +210,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestDoraData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
       expect(result.current.generalError4Report).toEqual('Data loading failed');
     });
   });
