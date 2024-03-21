@@ -1,7 +1,6 @@
 import {
   BOARD_METRICS,
   BOARD_METRICS_MAPPING,
-  CALENDAR,
   METRICS_SUBTITLE,
   METRICS_TITLE,
   REPORT_PAGE,
@@ -23,63 +22,42 @@ import {
   StyledShowMore,
   StyledTitleWrapper,
 } from '@src/containers/ReportStep/BoardMetrics/BoardMetrics';
+<<<<<<< HEAD
 import { IBasicReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
+=======
+>>>>>>> cbcfdc9c5 (ADM-873: [frontend]refactor: extract getReportRequestBody from BoardMetrics and DoraMetrics)
 import { GridContainer } from '@src/containers/ReportStep/BoardMetrics/style';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { selectConfig } from '@src/context/config/configSlice';
 import { Loading } from '@src/components/Loading';
-import { Nullable } from '@src/utils/types';
 import { useAppSelector } from '@src/hooks';
 import React from 'react';
-import dayjs from 'dayjs';
 
 interface BoardMetricsProps {
-  startToRequestBoardData: (request: ReportRequestDTO) => void;
+  startToRequestBoardData: () => void;
   onShowDetail: () => void;
   boardReport?: ReportResponseDTO;
-  csvTimeStamp: number;
-  startDate: Nullable<string>;
-  endDate: Nullable<string>;
-  isBackFromDetail: boolean;
   errorMessage: string;
 }
 
-const BoardMetrics = ({
-  startToRequestBoardData,
-  onShowDetail,
-  boardReport,
-  csvTimeStamp,
-  startDate,
-  endDate,
-  errorMessage,
-}: BoardMetricsProps) => {
+const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, errorMessage }: BoardMetricsProps) => {
   const configData = useAppSelector(selectConfig);
-  const {
-    cycleTimeSettingsType,
-    cycleTimeSettings,
-    treatFlagCardAsBlock,
-    users,
-    targetFields,
-    doneColumn,
-    assigneeFilter,
-    importedData: { importedAdvancedSettings, reworkTimesSettings },
-  } = useAppSelector(selectMetricsContent);
 
-  const { metrics, calendarType } = configData.basic;
-  const { board } = configData;
-  const { token, type, site, projectKey, boardId, email } = board.config;
-  const jiraToken = getJiraBoardToken(token, email);
+  const { metrics } = configData.basic;
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
+<<<<<<< HEAD
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
   const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
+=======
+>>>>>>> cbcfdc9c5 (ADM-873: [frontend]refactor: extract getReportRequestBody from BoardMetrics and DoraMetrics)
   const boardMetricsCompleted = boardMetrics
     .map((metric) => BOARD_METRICS_MAPPING[metric])
     .every((metric) => boardReport?.[metric] ?? false);
 
+<<<<<<< HEAD
   const getBoardReportRequestBody = (): IBasicReportRequestDTO => {
     return {
       metrics: boardMetrics,
@@ -123,6 +101,8 @@ const BoardMetrics = ({
     };
   };
 
+=======
+>>>>>>> cbcfdc9c5 (ADM-873: [frontend]refactor: extract getReportRequestBody from BoardMetrics and DoraMetrics)
   const getBoardItems = () => {
     const velocity = boardReport?.velocity;
     const cycleTime = boardReport?.cycleTime;
@@ -199,7 +179,7 @@ const BoardMetrics = ({
   };
 
   const handleRetry = () => {
-    startToRequestBoardData(getBoardReportRequestBody());
+    startToRequestBoardData();
   };
 
   const isShowMoreLoadingDisplay = () =>
