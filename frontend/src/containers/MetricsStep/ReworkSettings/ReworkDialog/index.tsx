@@ -71,8 +71,12 @@ export const ReworkDialog = (props: { isShowDialog: boolean; hiddenDialog: () =>
         </StyledDialogTitle>
         <StyledDialogContent>
           <StyledStepper activeStep={activeStep}>
-            {REWORK_STEPS_NAME.map((label) => (
-              <StyledStep key={label}>
+            {REWORK_STEPS_NAME.map((label, index) => (
+              <StyledStep
+                key={label}
+                completed={false}
+                active={activeStep === index || activeStep === REWORK_STEPS.EXCLUDE_WHICH_STATES}
+              >
                 <StyledStepLabel>{label}</StyledStepLabel>
               </StyledStep>
             ))}
