@@ -7,7 +7,7 @@ export const boardConfigSchema = object().shape({
   email: string().required().email(),
   site: string().required(),
   token: string()
-    .test('token', 'Invalid token', (value) => !value || REGEX.BOARD_TOKEN.test(value))
+    .test('token valid', 'Invalid token', (value) => !value || REGEX.BOARD_TOKEN.test(value))
     .required(),
 });
 

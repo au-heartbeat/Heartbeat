@@ -41,7 +41,7 @@ export const Board = () => {
   const methods = useForm<IBoardConfigData>({
     defaultValues,
     resolver: yupResolver(boardConfigSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
   });
 
   const {
