@@ -178,7 +178,7 @@ const BoardMetrics = ({
               },
               {
                 value: rework.reworkCardsRatio,
-                extraValue: '2/13',
+                extraValue: `% (${rework.totalReworkCards}/${rework.throughput})`,
                 subtitle: METRICS_SUBTITLE.REWORK_CARDS_RATIO,
               },
             ],

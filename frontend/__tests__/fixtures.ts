@@ -424,6 +424,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
     fromDone: 111,
     totalReworkCards: 111,
     reworkCardsRatio: 111,
+    throughput: 1110,
   },
   deploymentFrequency: {
     avgDeploymentFrequency: {

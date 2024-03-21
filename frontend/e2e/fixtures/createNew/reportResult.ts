@@ -6,6 +6,7 @@ export const BOARD_METRICS_RESULT = {
   totalReworkTimes: '11',
   totalReworkCards: '6',
   reworkCardsRatio: '0.67',
+  throughput: '9',
 };
 
 export const FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT = {
@@ -16,6 +17,7 @@ export const FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT = {
   totalReworkTimes: '3',
   totalReworkCards: '3',
   reworkCardsRatio: '0.60',
+  throughput: '5',
 };
 
 export const DORA_METRICS_RESULT = {

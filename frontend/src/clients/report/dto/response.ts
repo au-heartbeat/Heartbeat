@@ -53,6 +53,7 @@ export interface ReworkTimeResponse {
   fromDone: number | null;
   totalReworkCards: number;
   reworkCardsRatio: number;
+  throughput: number;
 }
 
 export interface ClassificationResponse {
