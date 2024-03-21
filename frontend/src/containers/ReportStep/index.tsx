@@ -10,9 +10,16 @@ import {
   getJiraBoardToken,
   getRealDoneStatus,
 } from '@src/utils/util';
+import {
+  BOARD_METRICS,
+  CALENDAR,
+  DORA_METRICS,
+  MESSAGE,
+  REPORT_PAGE_TYPE,
+  REQUIRED_DATA,
+} from '@src/constants/resources';
 import { addNotification, closeAllNotifications, Notification } from '@src/context/notification/NotificationSlice';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { CALENDAR, MESSAGE, REPORT_PAGE_TYPE } from '@src/constants/resources';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
@@ -70,6 +77,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const startDate = configData.basic.dateRange.startDate ?? '';
   const endDate = configData.basic.dateRange.endDate ?? '';
+  const { metrics, calendarType } = configData.basic;
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
@@ -85,10 +93,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const getJiraBoardSetting = () => {
     const { token, type, site, projectKey, boardId, email } = configData.board.config;
-    const jiraToken = getJiraBoardToken(token, email);
 
     return {
-      token: jiraToken,
+      token: getJiraBoardToken(token, email),
       type: type.toLowerCase().replace(' ', '-'),
       site,
       projectKey,
@@ -99,10 +106,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       assigneeFilter,
       targetFields: formatDuplicatedNameWithSuffix(targetFields),
       doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
-      reworkTimesSetting: {
-        reworkState: reworkTimesSettings.rework2State,
-        excludedStates: reworkTimesSettings.excludeStates,
-      },
+      reworkTimesSetting: metrics.includes(REQUIRED_DATA.REWORK_TIMES)
+        ? {
+            reworkState: reworkTimesSettings.rework2State,
+            excludedStates: reworkTimesSettings.excludeStates,
+          }
+        : null,
       overrideFields: [
         {
           name: 'Story Points',
@@ -320,48 +329,49 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [generalError4Report]);
 
   useEffect(() => {
-    !isBackFromDetail && startToRequestData(getReportRequestBody());
+    !isBackFromDetail && startToRequestData(getReportRequestBody(shouldShowBoardMetrics, shouldShowDoraMetrics));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getReportRequestBody = (): IBasicReportRequestDTO => {
-    const { metrics, calendarType } = configData.basic;
-
+  const getReportRequestBody = (
+    shouldFetchBoardMetrics: boolean,
+    shouldFetchDoraMetrics: boolean,
+  ): IBasicReportRequestDTO => {
     return {
-      metrics: metrics,
+      metrics: filterMetrics(shouldFetchBoardMetrics, shouldFetchDoraMetrics),
       startTime: dayjs(startDate).valueOf().toString(),
       endTime: dayjs(endDate).valueOf().toString(),
       considerHoliday: calendarType === CALENDAR.CHINA,
-      jiraBoardSetting: shouldShowBoardMetrics ? getJiraBoardSetting() : undefined,
-      ...(shouldShowDoraMetrics ? getDoraSetting() : {}),
+      jiraBoardSetting: shouldFetchBoardMetrics ? getJiraBoardSetting() : undefined,
+      ...(shouldFetchDoraMetrics ? getDoraSetting() : {}),
       csvTimeStamp: csvTimeStamp,
-      metricTypes: [shouldShowBoardMetrics && 'board', shouldShowDoraMetrics && 'dora'].filter(value => !!value) as string[],
+      metricTypes: [shouldFetchBoardMetrics && 'board', shouldFetchDoraMetrics && 'dora'].filter(
+        (value) => !!value,
+      ) as string[],
     };
+  };
+
+  const filterMetrics = (shouldFetchBoardMetrics: boolean, shouldFetchDoraMetrics: boolean): string[] => {
+    if (shouldFetchBoardMetrics && shouldFetchDoraMetrics) return metrics;
+    if (shouldFetchBoardMetrics) return metrics.filter((metric) => BOARD_METRICS.includes(metric));
+    if (shouldFetchDoraMetrics) return metrics.filter((metric) => DORA_METRICS.includes(metric));
   };
 
   const showSummary = () => (
     <>
       {shouldShowBoardMetrics && (
         <BoardMetrics
-          isBackFromDetail={isBackFromDetail}
-          startDate={startDate}
-          endDate={endDate}
-          startToRequestBoardData={startToRequestData}
+          startToRequestBoardData={() => startToRequestData(getReportRequestBody(true, false))}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={reportData}
-          csvTimeStamp={csvTimeStamp}
           errorMessage={getErrorMessage4Board()}
         />
       )}
       {shouldShowDoraMetrics && (
         <DoraMetrics
-          isBackFromDetail={isBackFromDetail}
-          startDate={startDate}
-          endDate={endDate}
-          startToRequestDoraData={startToRequestData}
+          startToRequestDoraData={() => startToRequestData(getReportRequestBody(false, true))}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={reportData}
-          csvTimeStamp={csvTimeStamp}
           errorMessage={timeout4Dora || timeout4Report || generalError4Dora || generalError4Report}
         />
       )}

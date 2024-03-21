@@ -1,7 +1,6 @@
 import {
   BOARD_METRICS,
   BOARD_METRICS_MAPPING,
-  CALENDAR,
   METRICS_SUBTITLE,
   METRICS_TITLE,
   REPORT_PAGE,
@@ -16,107 +15,29 @@ import {
   StyledShowMore,
   StyledTitleWrapper,
 } from '@src/containers/ReportStep/BoardMetrics/BoardMetrics';
-import {
-  filterAndMapCycleTimeSettings,
-  formatDuplicatedNameWithSuffix,
-  getJiraBoardToken,
-  getRealDoneStatus,
-} from '@src/utils/util';
-import { IBasicReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
-import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { selectConfig } from '@src/context/config/configSlice';
 import { Loading } from '@src/components/Loading';
-import { Nullable } from '@src/utils/types';
 import { useAppSelector } from '@src/hooks';
 import React from 'react';
-import dayjs from 'dayjs';
 
 interface BoardMetricsProps {
-  startToRequestBoardData: (request: ReportRequestDTO) => void;
+  startToRequestBoardData: () => void;
   onShowDetail: () => void;
   boardReport?: ReportResponseDTO;
-  csvTimeStamp: number;
-  startDate: Nullable<string>;
-  endDate: Nullable<string>;
-  isBackFromDetail: boolean;
   errorMessage: string;
 }
 
-const BoardMetrics = ({
-  startToRequestBoardData,
-  onShowDetail,
-  boardReport,
-  csvTimeStamp,
-  startDate,
-  endDate,
-  errorMessage,
-}: BoardMetricsProps) => {
+const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, errorMessage }: BoardMetricsProps) => {
   const configData = useAppSelector(selectConfig);
-  const {
-    cycleTimeSettingsType,
-    cycleTimeSettings,
-    treatFlagCardAsBlock,
-    users,
-    targetFields,
-    doneColumn,
-    assigneeFilter,
-    importedData: { importedAdvancedSettings, reworkTimesSettings },
-  } = useAppSelector(selectMetricsContent);
 
-  const { metrics, calendarType } = configData.basic;
-  const { board } = configData;
-  const { token, type, site, projectKey, boardId, email } = board.config;
-  const jiraToken = getJiraBoardToken(token, email);
+  const { metrics } = configData.basic;
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
-  const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
   const boardMetricsCompleted = boardMetrics
     .map((metric) => BOARD_METRICS_MAPPING[metric])
     .every((metric) => boardReport?.[metric] ?? false);
-
-  const getBoardReportRequestBody = (): IBasicReportRequestDTO => {
-    return {
-      metrics: boardMetrics,
-      startTime: dayjs(startDate).valueOf().toString(),
-      endTime: dayjs(endDate).valueOf().toString(),
-      considerHoliday: calendarType === CALENDAR.CHINA,
-      jiraBoardSetting: {
-        token: jiraToken,
-        type: type.toLowerCase().replace(' ', '-'),
-        site,
-        projectKey,
-        boardId,
-        boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings),
-        treatFlagCardAsBlock,
-        users,
-        assigneeFilter,
-        targetFields: formatDuplicatedNameWithSuffix(targetFields),
-        doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
-        reworkTimesSetting: includeRework
-          ? {
-              reworkState: reworkTimesSettings.reworkState,
-              excludedStates: reworkTimesSettings.excludeStates,
-            }
-          : null,
-        overrideFields: [
-          {
-            name: 'Story Points',
-            key: importedAdvancedSettings?.storyPoint ?? '',
-            flag: true,
-          },
-          {
-            name: 'Flagged',
-            key: importedAdvancedSettings?.flag ?? '',
-            flag: true,
-          },
-        ],
-      },
-      csvTimeStamp: csvTimeStamp,
-      metricTypes: ['board'],
-    };
-  };
 
   const getBoardItems = () => {
     const velocity = boardReport?.velocity;
@@ -190,7 +111,7 @@ const BoardMetrics = ({
   };
 
   const handleRetry = () => {
-    startToRequestBoardData(getBoardReportRequestBody());
+    startToRequestBoardData();
   };
 
   const isShowMoreLoadingDisplay = () =>
