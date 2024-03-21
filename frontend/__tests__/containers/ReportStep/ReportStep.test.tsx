@@ -83,7 +83,6 @@ describe('Report Step', () => {
   });
   const resetReportHook = async () => {
     reportHook.current.startToRequestData = jest.fn();
-    reportHook.current.startToRequestDoraData = jest.fn();
     reportHook.current.stopPollingReports = jest.fn();
     reportHook.current.reportData = { ...MOCK_REPORT_RESPONSE, exportValidityTime: 30 };
   };
