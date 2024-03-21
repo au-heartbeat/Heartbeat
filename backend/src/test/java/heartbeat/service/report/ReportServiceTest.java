@@ -82,10 +82,11 @@ public class ReportServiceTest {
 			.build();
 
 		@Test
-		void shouldCallGenerateBoardReportWhenMetricTypesListOnlyHasBoardElement() throws InterruptedException {
+		void shouldCallGenerateBoardReportAndInitializeMetricDataWhenMetricTypesListOnlyHasBoardElement()
+				throws InterruptedException {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(true)
-				.allMetricsCompleted(true)
+				.boardMetricsCompleted(false)
+				.allMetricsCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
@@ -93,14 +94,19 @@ public class ReportServiceTest {
 			reportService.generateReportByType(request);
 			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getBoardReportId(), expected);
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
 			verify(generateReporterService).generateBoardReport(request);
 			verify(generateReporterService, never()).generateDoraReport(request);
+			verify(generateReporterService).getComposedReportResponseFrom(request.getCsvTimeStamp());
+			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
 		}
 
 		@Test
 		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraElement() throws InterruptedException {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder().doraMetricsCompleted(false).build();
+			MetricsDataCompleted expected = MetricsDataCompleted.builder()
+				.doraMetricsCompleted(false)
+				.allMetricsCompleted(false)
+				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of("dora"));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
@@ -108,9 +114,11 @@ public class ReportServiceTest {
 			reportService.generateReportByType(request);
 			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getDoraReportId(), expected);
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
 			verify(generateReporterService).generateDoraReport(request);
 			verify(generateReporterService, never()).generateBoardReport(request);
+			verify(generateReporterService).getComposedReportResponseFrom(request.getCsvTimeStamp());
+			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
 		}
 
 	}
