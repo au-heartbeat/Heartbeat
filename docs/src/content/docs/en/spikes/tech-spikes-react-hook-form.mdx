@@ -147,7 +147,7 @@ There are two ways to bind form controls:
 
 ```
 
-1. Use the Controller tag to wrap a custom component.
+2. Use the Controller tag to wrap a custom component.
 
 ```jsx
 //...
@@ -235,7 +235,7 @@ In such scenarios, how do we easily access the parent component scope within Chi
 react-hook-form provides the useFormContext syntax for accessing the nearest parent form scope.
 
 ```jsx
-export default const ChildA = () => {
+export const ChildA = () => {
 	const { setError, getValues } = useFormContext();
 	// do something
 }
@@ -245,7 +245,7 @@ export default const ChildA = () => {
 Through this access method, we can encapsulate some custom form components around react-hook-form, and even combine a series of components into a complex business component, triggering validation and form behavior through manual onChange event.
 
 ```jsx
-export default const FormTextField = ({name}) => {
+export const FormTextField = ({name}) => {
 	const { control } = useFormContext();
 	return <Controller
 		name={name}
