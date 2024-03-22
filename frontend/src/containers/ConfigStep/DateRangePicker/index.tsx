@@ -9,7 +9,7 @@ export const DateRangePickerSection = () => {
         title={TIME_RANGE_TITLE}
         tooltipText={TIPS.TIME_RANGE_PICKER}
         titleStyle={{
-          margin: '0.5rem 0',
+          margin: '1rem 0',
         }}
       />
       <DateRangePickerGroup />

@@ -1,24 +1,32 @@
 import {
+  StyledFeaturedRangePickerContainer,
+  StyledDateRangePickerContainer,
+  StyledDateRangePicker,
+  RemoveButton,
+  RemoveButtonContainer,
+} from '@src/containers/ConfigStep/DateRangePicker/style';
+import {
   initDeploymentFrequencySettings,
   saveUsers,
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
+import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS, REMOVE_BUTTON_TEXT } from '@src/constants/resources';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { StyledDateRangePicker, StyledDateRangePickerContainer } from './style';
-import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS } from '@src/constants/resources';
+import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
+import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { updateDateRange } from '@src/context/config/configSlice';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { Z_INDEX } from '@src/constants/commons';
 import { Nullable } from '@src/utils/types';
 import dayjs, { Dayjs } from 'dayjs';
+import { useCallback } from 'react';
 import isNull from 'lodash/isNull';
 
 export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps) => {
   const dispatch = useAppDispatch();
+  const dateRangeGroup = useAppSelector(selectDateRange);
+  const isShowRemoveButton = dateRangeGroup.length > 1;
+
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
@@ -63,9 +71,14 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
     dispatchUpdateConfig();
   };
 
+  const removeSelfHandler = useCallback(() => {
+    const newDateRangeGroup = dateRangeGroup.filter((_, idx) => idx !== index);
+    dispatch(updateDateRange(newDateRangeGroup));
+  }, [dateRangeGroup]);
+
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <StyledDateRangePickerContainer>
+    <StyledFeaturedRangePickerContainer>
+      <StyledDateRangePickerContainer className='range-picker-row'>
         <StyledDateRangePicker
           disableFuture
           label='From *'
@@ -103,6 +116,11 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
           }}
         />
       </StyledDateRangePickerContainer>
-    </LocalizationProvider>
+      {isShowRemoveButton && (
+        <RemoveButtonContainer>
+          <RemoveButton onClick={removeSelfHandler}>{REMOVE_BUTTON_TEXT}</RemoveButton>
+        </RemoveButtonContainer>
+      )}
+    </StyledFeaturedRangePickerContainer>
   );
 };
