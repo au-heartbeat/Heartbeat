@@ -409,4 +409,6 @@ export const REWORK_STEPS_NAME = ['Rework to which state', 'Exclude which states
 
 export const DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS = 13;
 
+export const README_LINK = 'https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file#313-config-project-account';
+
 export const DEFAULT_MONTH_INTERVAL_DAYS = 30;
