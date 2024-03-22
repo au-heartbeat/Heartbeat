@@ -80,9 +80,6 @@ export const metaSlice = createSlice({
       const formData = state.form.metrics.pipelines;
       state.form.metrics.pipelines = omit(formData, deleteId);
     },
-    updateTokenAccessError: (state, action: PayloadAction<boolean>) => {
-      state.form.metrics.isTokenAccessError = action.payload;
-    },
   },
 });
 
@@ -93,13 +90,12 @@ export const {
   initMetricsPipelineFormMeta,
   deleteMetricsPipelineFormMeta,
   updateMetricsPipelineBranchFormMeta,
-  updateTokenAccessError,
 } = metaSlice.actions;
 
 export const getVersion = (state: RootState) => state.meta.version;
 
 export const getFormMeta = (state: RootState) => state.meta.form;
 
-export const getIsTokenAccess = (state: RootState) => state.meta.form.metrics.isTokenAccessError;
+export const getIsTokenAccess = (state: RootState) => Object.values(state.meta.form.metrics.pipelines).some(({branches}) => branches.some(({error}) => error));
 
 export default metaSlice.reducer;

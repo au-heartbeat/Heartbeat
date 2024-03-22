@@ -4,7 +4,6 @@ import {
   initMetricsPipelineFormMeta,
   updateFormMeta,
   updateMetricsPipelineBranchFormMeta,
-  updateTokenAccessError,
 } from '@src/context/meta/metaSlice';
 import { BranchSelectionWrapper } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
 import BranchChip from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection/BranchChip';
@@ -101,7 +100,6 @@ export const BranchSelection = (props: BranchSelectionProps) => {
   };
 
   const isInputError = useMemo(() => Object.values(branchesFormData).some((item) => item.error), [branchesFormData]);
-  dispatch(updateTokenAccessError(isInputError));
 
   useEffect(() => {
     dispatch(initMetricsPipelineFormMeta(id));
