@@ -97,7 +97,7 @@ public class ReportServiceTest {
 			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
 			verify(generateReporterService).generateBoardReport(request);
 			verify(generateReporterService, never()).generateDoraReport(request);
-			verify(generateReporterService).getComposedReportResponseFrom(request.getCsvTimeStamp());
+			verify(generateReporterService).getComposedReportResponseWithRequiredCsvField(request.getCsvTimeStamp());
 			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
 		}
 
@@ -117,7 +117,30 @@ public class ReportServiceTest {
 			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
 			verify(generateReporterService).generateDoraReport(request);
 			verify(generateReporterService, never()).generateBoardReport(request);
-			verify(generateReporterService).getComposedReportResponseFrom(request.getCsvTimeStamp());
+			verify(generateReporterService).getComposedReportResponseWithRequiredCsvField(request.getCsvTimeStamp());
+			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
+		}
+
+		@Test
+		void shouldCallGenerateDoraReportAndBoardReportWhenMetricTypesListHasDoraElementAndBoardElement()
+				throws InterruptedException {
+			MetricsDataCompleted expected = MetricsDataCompleted.builder()
+				.boardMetricsCompleted(false)
+				.doraMetricsCompleted(false)
+				.allMetricsCompleted(false)
+				.build();
+			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
+			request.setMetricTypes(List.of("dora", "board"));
+			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
+			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
+
+			reportService.generateReportByType(request);
+			Thread.sleep(100);
+
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
+			verify(generateReporterService).generateDoraReport(request);
+			verify(generateReporterService).generateBoardReport(request);
+			verify(generateReporterService).getComposedReportResponseWithRequiredCsvField(request.getCsvTimeStamp());
 			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
 		}
 

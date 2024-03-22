@@ -58,7 +58,8 @@ public class ReportService {
 			thread.join();
 		}
 
-		ReportResponse reportResponse = generateReporterService.getComposedReportResponseFrom(timeStamp);
+		ReportResponse reportResponse = generateReporterService
+			.getComposedReportResponseWithRequiredCsvField(timeStamp);
 		generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
 		asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(timeStamp);
 	}

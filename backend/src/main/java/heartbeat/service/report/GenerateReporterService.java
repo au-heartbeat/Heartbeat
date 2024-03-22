@@ -385,7 +385,7 @@ public class GenerateReporterService {
 			.build();
 	}
 
-	public ReportResponse getComposedReportResponseFrom(String reportId) {
+	public ReportResponse getComposedReportResponseWithRequiredCsvField(String reportId) {
 
 		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
 		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
