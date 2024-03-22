@@ -26,6 +26,7 @@ const reworkMapper = (reworkTimeResponse: ReworkTimeResponse) => {
   const result: ReportDataWithTwoColumns[] = [];
   Object.entries(REWORK_TIME_MAPPING).map(([key, value], index) => {
     reworkTimeResponse[key as keyof ReworkTimeResponse] !== null &&
+      reworkTimeResponse[key as keyof ReworkTimeResponse] !== undefined &&
       result.push({
         id: index,
         name: getRowName(value, reworkTimeResponse.reworkState),
