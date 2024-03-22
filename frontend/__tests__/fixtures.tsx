@@ -685,7 +685,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 3,
       name: (
         <React.Fragment>
-          From <StyledSpan>'block'</StyledSpan> to <StyledSpan>'in dev'</StyledSpan>
+          From <StyledSpan>&apos;block&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
         </React.Fragment>
       ),
       valueList: [
@@ -699,7 +699,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 5,
       name: (
         <React.Fragment>
-          From <StyledSpan>'review'</StyledSpan> to <StyledSpan>'in dev'</StyledSpan>
+          From <StyledSpan>&apos;review&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
         </React.Fragment>
       ),
       valueList: [
@@ -713,7 +713,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 6,
       name: (
         <React.Fragment>
-          From <StyledSpan>'waiting for testing'</StyledSpan> to <StyledSpan>'in dev'</StyledSpan>
+          From <StyledSpan>&apos;waiting for testing&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
         </React.Fragment>
       ),
       valueList: [
@@ -727,7 +727,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 8,
       name: (
         <React.Fragment>
-          From <StyledSpan>'done'</StyledSpan> to <StyledSpan>'in dev'</StyledSpan>
+          From <StyledSpan>&apos;done&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
         </React.Fragment>
       ),
       valueList: [
