@@ -1,6 +1,6 @@
-import { ReportResponseDTO, ReworkTimeResponse } from '@src/clients/report/dto/response';
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { StyledSpan } from '@src/containers/ReportStep/ReportDetail/style';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import React from 'react';
 
