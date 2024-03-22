@@ -50,14 +50,6 @@ export const ReworkDialog = (props: { isShowDialog: boolean; hiddenDialog: () =>
           <StyledNoteTitle>Note: </StyledNoteTitle>
           <StyledNoteText>{noteText}</StyledNoteText>
         </StyledNote>
-        <StyledButtonGroup>
-          <StyledStepButton variant='outlined' onClick={handleStep}>
-            {activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE ? COMMON_BUTTONS.NEXT : COMMON_BUTTONS.BACK}
-          </StyledStepButton>
-          <Button variant='contained' onClick={hiddenDialog}>
-            {COMMON_BUTTONS.CONFIRM}
-          </Button>
-        </StyledButtonGroup>
       </StyledStepOfRework>
     );
   };
@@ -98,6 +90,14 @@ export const ReworkDialog = (props: { isShowDialog: boolean; hiddenDialog: () =>
               )}
           </Suspense>
         </StyledDialogContent>
+        <StyledButtonGroup>
+          <StyledStepButton variant='outlined' onClick={handleStep}>
+            {activeStep === REWORK_STEPS.REWORK_TO_WHICH_STATE ? COMMON_BUTTONS.NEXT : COMMON_BUTTONS.BACK}
+          </StyledStepButton>
+          <Button variant='contained' onClick={hiddenDialog}>
+            {COMMON_BUTTONS.CONFIRM}
+          </Button>
+        </StyledButtonGroup>
       </StyledDialogContainer>
     </Dialog>
   );
