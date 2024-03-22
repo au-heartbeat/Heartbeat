@@ -29,7 +29,7 @@ describe('use generate report effect', () => {
     jest.useRealTimers();
   });
 
-  it('should set timeout4Board is "Data loading failed" when timeout and metricTypes is board', async () => {
+  it('should set timeout4Board is "Data loading failed" when startToRequestData timeout and metricTypes is board', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -106,7 +106,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set timeout4Dora is "Data loading failed" when startToRequestDoraData timeout', async () => {
+  it('should set timeout4Dora is "Data loading failed" when startToRequestData timeout and metricTypes is dora', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -212,6 +212,17 @@ describe('use generate report effect', () => {
     await waitFor(() => {
       result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
       expect(result.current.generalError4Report).toEqual('Data loading failed');
+    });
+  });
+
+  it('should set timeout4Report is "Data loading failed" when startToRequestData timeout and metricTypes is board and dora', async () => {
+    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
+
+    const { result } = renderHook(() => useGenerateReportEffect());
+
+    await waitFor(() => {
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      expect(result.current.timeout4Report).toEqual('Data loading failed');
     });
   });
 });
