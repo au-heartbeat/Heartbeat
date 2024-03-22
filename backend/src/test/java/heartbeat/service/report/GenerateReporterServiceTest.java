@@ -38,8 +38,10 @@ import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.ReworkCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
+import heartbeat.util.IdUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +60,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -732,7 +735,12 @@ class GenerateReporterServiceTest {
 	@Nested
 	class GetComposedReportResponse {
 
-		String reportId = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 200);
+		String reportId;
+
+		@BeforeEach
+		void setUp() {
+			reportId = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 200);
+		}
 
 		@Test
 		void shouldGetDataFromCache() {
@@ -812,6 +820,43 @@ class GenerateReporterServiceTest {
 				assertEquals("Request failed with status statusCode 400, error: error", e.getMessage());
 				assertEquals(400, e.getStatus());
 			}
+		}
+
+	}
+
+	@Nested
+	class GetComposedReportResponseWithRequiredCsvField {
+
+		String reportId = String.valueOf(System.currentTimeMillis());
+
+		@Test
+		void shouldGetComposedReportResponseWithRelevantFieldNullGivenBoardAndPipelineAndSourceControlReportResponseWithNullField() {
+
+			ReportResponse expectedResult = ReportResponse.builder()
+				.exportValidityTime(EXPORT_CSV_VALIDITY_TIME)
+				.build();
+			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
+
+			ReportResponse res = generateReporterService.getComposedReportResponseWithRequiredCsvField(reportId);
+
+			assertEquals(expectedResult, res);
+		}
+
+		@Test
+		void shouldGetComposedReportResponseGivenBoardAndPipelineAndSourceControlReportResponse() {
+
+			ReportResponse expectedResult = MetricCsvFixture.MOCK_COMPOSED_REPORT_RESPONSE();
+
+			when(asyncReportRequestHandler.getReport(IdUtil.getBoardReportId(reportId)))
+				.thenReturn(MetricCsvFixture.MOCK_BOARD_REPORT_RESPONSE());
+			when(asyncReportRequestHandler.getReport(IdUtil.getPipelineReportId(reportId)))
+				.thenReturn(MetricCsvFixture.MOCK_PIPELINE_REPORT_RESPONSE());
+			when(asyncReportRequestHandler.getReport(IdUtil.getSourceControlReportId(reportId)))
+				.thenReturn(MetricCsvFixture.MOCK_SOURCE_CONTROL_REPORT_RESPONSE());
+
+			ReportResponse res = generateReporterService.getComposedReportResponseWithRequiredCsvField(reportId);
+
+			assertThat(res).usingRecursiveComparison().isEqualTo(expectedResult);
 		}
 
 	}
