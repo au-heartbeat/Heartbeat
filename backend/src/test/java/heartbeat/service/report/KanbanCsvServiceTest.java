@@ -619,7 +619,8 @@ class KanbanCsvServiceTest {
 	}
 
 	@Test
-	void shouldAddReworkFieldsWhenGenerateSheetGivenReworkStateAndExcludedStatesAndConsiderFlagAsBlock() throws URISyntaxException {
+	void shouldAddReworkFieldsWhenGenerateSheetGivenReworkStateAndExcludedStatesAndConsiderFlagAsBlock()
+			throws URISyntaxException {
 		URI uri = new URI("site-uri");
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
@@ -689,7 +690,8 @@ class KanbanCsvServiceTest {
 	}
 
 	@Test
-	void shouldAddReworkFieldsWhenGenerateSheetGivenReworkStateAndExcludedStatesAndNotConsiderFlagAsBlock() throws URISyntaxException {
+	void shouldAddReworkFieldsWhenGenerateSheetGivenReworkStateAndExcludedStatesAndNotConsiderFlagAsBlock()
+			throws URISyntaxException {
 		URI uri = new URI("site-uri");
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
@@ -701,16 +703,16 @@ class KanbanCsvServiceTest {
 		JiraCard jiraCard2 = JiraCard.builder().fields(MOCK_JIRA_CARD()).build();
 		jiraCard2.getFields().setLastStatusChangeDate(1701251323000L);
 		List<JiraCardDTO> jiraCardDTOS = new ArrayList<>(List.of(
-			JiraCardDTO.builder()
-				.baseInfo(jiraCard)
-				.reworkTimesInfos(MOCK_REWORK_TIMES_INFO_LIST())
-				.totalReworkTimes(3)
-				.build(),
-			JiraCardDTO.builder()
-				.baseInfo(jiraCard2)
-				.reworkTimesInfos(MOCK_REWORK_TIMES_INFO_LIST())
-				.totalReworkTimes(3)
-				.build()));
+				JiraCardDTO.builder()
+					.baseInfo(jiraCard)
+					.reworkTimesInfos(MOCK_REWORK_TIMES_INFO_LIST())
+					.totalReworkTimes(3)
+					.build(),
+				JiraCardDTO.builder()
+					.baseInfo(jiraCard2)
+					.reworkTimesInfos(MOCK_REWORK_TIMES_INFO_LIST())
+					.totalReworkTimes(3)
+					.build()));
 		JiraCardDTO blockedJiraCard = JiraCardDTO.builder()
 			.baseInfo(JiraCard.builder().fields(MOCK_JIRA_CARD()).build())
 			.build();
@@ -722,23 +724,23 @@ class KanbanCsvServiceTest {
 		String[][] fakeSringArray = new String[][] { { "cycle time" }, { "1" }, { "2" }, { "3" }, { "4" } };
 		when(csvFileGenerator.assembleBoardData(anyList(), anyList(), anyList())).thenReturn(fakeSringArray);
 		kanbanCsvService.generateCsvInfo(
-			GenerateReportRequest.builder()
-				.jiraBoardSetting(JiraBoardSetting.builder()
-					.targetFields(List.of(
-						TargetField.builder().name("assignee").flag(true).key("key-assignee").build(),
-						TargetField.builder().name("fake-target1").flag(true).key("key-target1").build(),
-						TargetField.builder().name("fake-target2").flag(false).key("key-target2").build()))
-					.reworkTimesSetting(ReworkTimesSetting.builder()
-						.reworkState("In Dev")
-						.excludedStates(List.of("Review"))
+				GenerateReportRequest.builder()
+					.jiraBoardSetting(JiraBoardSetting.builder()
+						.targetFields(List.of(
+								TargetField.builder().name("assignee").flag(true).key("key-assignee").build(),
+								TargetField.builder().name("fake-target1").flag(true).key("key-target1").build(),
+								TargetField.builder().name("fake-target2").flag(false).key("key-target2").build()))
+						.reworkTimesSetting(ReworkTimesSetting.builder()
+							.reworkState("In Dev")
+							.excludedStates(List.of("Review"))
+							.build())
+						.boardColumns(MOCK_JIRA_BOARD_COLUMN_SETTING_LIST())
+						.treatFlagCardAsBlock(Boolean.FALSE)
 						.build())
-					.boardColumns(MOCK_JIRA_BOARD_COLUMN_SETTING_LIST())
-					.treatFlagCardAsBlock(Boolean.FALSE)
-					.build())
-				.csvTimeStamp("2022-01-01 00:00:00")
-				.build(),
-			CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
-			CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+					.csvTimeStamp("2022-01-01 00:00:00")
+					.build(),
+				CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
+				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
 		verify(csvFileGenerator).writeDataToCSV(anyString(), csvSheetCaptor.capture());
