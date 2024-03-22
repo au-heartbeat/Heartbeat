@@ -183,6 +183,42 @@ class AsyncMetricsDataHandlerTest {
 
 	}
 
+	@Nested
+	class UpdateAllMetricsCompletedInHandler {
+
+		@Test
+		void shouldThrowGenerateReportExceptionWhenPreviousMetricsCompletedIsNull() {
+			long currentTimeMillis = System.currentTimeMillis();
+			String currentTime = Long.toString(currentTimeMillis);
+
+			GenerateReportException exception = assertThrows(GenerateReportException.class,
+					() -> asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(currentTime));
+
+			assertEquals("Failed to update metrics data completed through this timestamp.", exception.getMessage());
+		}
+
+		@Test
+		void shouldUpdateAllMetricDataWhenPreviousMetricsStatusIsNotNull() throws IOException {
+			long currentTimeMillis = System.currentTimeMillis();
+			String currentTime = Long.toString(currentTimeMillis);
+			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
+				.boardMetricsCompleted(true)
+				.allMetricsCompleted(false)
+				.build();
+			asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
+
+			asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(currentTime);
+
+			MetricsDataCompleted completed = asyncMetricsDataHandler.getMetricsDataCompleted(currentTime);
+			assertTrue(completed.boardMetricsCompleted());
+			assertNull(completed.doraMetricsCompleted());
+			assertTrue(completed.allMetricsCompleted());
+			Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
+			assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
+		}
+
+	}
+
 	private void createLockFile(String currentTime) throws IOException {
 		String fileName = APP_OUTPUT_METRICS + "/" + currentTime + ".lock";
 		File file = new File(fileName);
