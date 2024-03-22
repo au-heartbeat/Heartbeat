@@ -24,7 +24,6 @@ import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
-import { IBasicReportRequestDTO } from '@src/clients/report/dto/request';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -83,6 +82,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
+  const { pipelineTool, sourceControl } = configData;
 
   const getErrorMessage4Board = () => {
     if (reportData?.reportMetricsError.boardMetricsError) {
@@ -124,23 +124,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           flag: true,
         },
       ],
-    };
-  };
-
-  const getDoraSetting = () => {
-    const { pipelineTool, sourceControl } = configData;
-
-    return {
-      buildKiteSetting: {
-        pipelineCrews,
-        ...pipelineTool.config,
-        deploymentEnvList: getPipelineConfig(deploymentFrequencySettings),
-      },
-      codebaseSetting: {
-        type: sourceControl.config.type,
-        token: sourceControl.config.token,
-        leadTime: getPipelineConfig(leadTimeForChanges),
-      },
     };
   };
 
@@ -329,39 +312,52 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [generalError4Report]);
 
   useEffect(() => {
-    !isBackFromDetail && startToRequestData(getReportRequestBody(shouldShowBoardMetrics, shouldShowDoraMetrics));
+    !isBackFromDetail && startToRequestData(basicReportRequestBody);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getReportRequestBody = (
-    shouldFetchBoardMetrics: boolean,
-    shouldFetchDoraMetrics: boolean,
-  ): IBasicReportRequestDTO => {
-    return {
-      metrics: filterMetrics(shouldFetchBoardMetrics, shouldFetchDoraMetrics),
-      startTime: dayjs(startDate).valueOf().toString(),
-      endTime: dayjs(endDate).valueOf().toString(),
-      considerHoliday: calendarType === CALENDAR.CHINA,
-      jiraBoardSetting: shouldFetchBoardMetrics ? getJiraBoardSetting() : undefined,
-      ...(shouldFetchDoraMetrics ? getDoraSetting() : {}),
-      csvTimeStamp: csvTimeStamp,
-      metricTypes: [shouldFetchBoardMetrics && 'board', shouldFetchDoraMetrics && 'dora'].filter(
-        (value) => !!value,
-      ) as string[],
-    };
+  const basicReportRequestBody = {
+    startTime: dayjs(startDate).valueOf().toString(),
+    endTime: dayjs(endDate).valueOf().toString(),
+    considerHoliday: calendarType === CALENDAR.CHINA,
+    csvTimeStamp,
+    metrics,
+    metricTypes: [shouldShowBoardMetrics && 'board', shouldShowDoraMetrics && 'dora'].filter(
+      (value) => !!value,
+    ) as string[],
+    jiraBoardSetting: getJiraBoardSetting(),
+    buildKiteSetting: {
+      pipelineCrews,
+      ...pipelineTool.config,
+      deploymentEnvList: getPipelineConfig(deploymentFrequencySettings),
+    },
+    codebaseSetting: {
+      type: sourceControl.config.type,
+      token: sourceControl.config.token,
+      leadTime: getPipelineConfig(leadTimeForChanges),
+    },
   };
 
-  const filterMetrics = (shouldFetchBoardMetrics: boolean, shouldFetchDoraMetrics: boolean): string[] => {
-    if (shouldFetchBoardMetrics && shouldFetchDoraMetrics) return metrics;
-    if (shouldFetchBoardMetrics) return metrics.filter((metric) => BOARD_METRICS.includes(metric));
-    if (shouldFetchDoraMetrics) return metrics.filter((metric) => DORA_METRICS.includes(metric));
+  const boardRequestBody = {
+    ...basicReportRequestBody,
+    metrics: metrics.filter((metric) => BOARD_METRICS.includes(metric)),
+    metricTypes: ['board'],
+    buildKiteSetting: undefined,
+    codebaseSetting: undefined,
+  };
+
+  const doraRequestBody = {
+    ...basicReportRequestBody,
+    metrics: metrics.filter((metric) => DORA_METRICS.includes(metric)),
+    metricTypes: ['dora'],
+    jiraBoardSetting: undefined,
   };
 
   const showSummary = () => (
     <>
       {shouldShowBoardMetrics && (
         <BoardMetrics
-          startToRequestBoardData={() => startToRequestData(getReportRequestBody(true, false))}
+          startToRequestBoardData={() => startToRequestData(boardRequestBody)}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={reportData}
           errorMessage={getErrorMessage4Board()}
@@ -369,7 +365,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       )}
       {shouldShowDoraMetrics && (
         <DoraMetrics
-          startToRequestDoraData={() => startToRequestData(getReportRequestBody(false, true))}
+          startToRequestDoraData={() => startToRequestData(doraRequestBody)}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={reportData}
           errorMessage={timeout4Dora || timeout4Report || generalError4Dora || generalError4Report}
