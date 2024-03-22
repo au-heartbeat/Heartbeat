@@ -13,7 +13,7 @@ public class Rework {
 
 	private String reworkState;
 
-	private Integer fromToDo;
+	private Integer fromAnalysis;
 
 	private Integer fromInDev;
 
@@ -28,6 +28,8 @@ public class Rework {
 	private Integer fromDone;
 
 	private Integer totalReworkCards;
+
+	private Integer throughput;
 
 	private Double reworkCardsRatio;
 

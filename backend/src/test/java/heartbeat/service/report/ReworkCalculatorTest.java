@@ -12,7 +12,7 @@ import org.mockito.quality.Strictness;
 
 import static heartbeat.controller.board.dto.request.CardStepsEnum.DEVELOPMENT;
 import static heartbeat.service.report.ReworkFixture.MOCK_CARD_COLLECTION;
-import static heartbeat.service.report.ReworkFixture.MOCK_CARD_COLLECTION_WITH_ANALYSE;
+import static heartbeat.service.report.ReworkFixture.MOCK_CARD_COLLECTION_WITH_TODO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,20 +30,21 @@ class ReworkCalculatorTest {
 		assertEquals(DEVELOPMENT.getValue(), rework.getReworkState());
 		assertEquals(1, rework.getReworkCardsRatio());
 		assertEquals(2, rework.getTotalReworkCards());
-		assertEquals(2, rework.getFromToDo());
+		assertEquals(2, rework.getFromAnalysis());
 		assertEquals(2, rework.getFromInDev());
 		assertEquals(2, rework.getFromBlock());
 		assertEquals(2, rework.getFromWaitingForTesting());
 		assertEquals(2, rework.getFromTesting());
 		assertEquals(2, rework.getFromReview());
 		assertEquals(2, rework.getFromDone());
+		assertEquals(2, rework.getThroughput());
 	}
 
 	@Test
 	void shouldThrowExceptionWhenCallCalculateReworkGivenCardCollectionHasAnalyseStateReworkTimesInfo() {
-		CardCollection cardCollection = MOCK_CARD_COLLECTION_WITH_ANALYSE();
+		CardCollection cardCollection = MOCK_CARD_COLLECTION_WITH_TODO();
 		assertThrows(IllegalStateException.class, () -> reworkCalculator.calculateRework(cardCollection, DEVELOPMENT),
-				"Unexpected value: ANALYSE");
+				"Unexpected value: TODO");
 	}
 
 }

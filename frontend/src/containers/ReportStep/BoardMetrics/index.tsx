@@ -72,6 +72,7 @@ const BoardMetrics = ({
   const { token, type, site, projectKey, boardId, email } = board.config;
   const jiraToken = getJiraBoardToken(token, email);
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
+  const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
   const boardMetricsCompleted = boardMetrics
     .map((metric) => BOARD_METRICS_MAPPING[metric])
     .every((metric) => boardReport?.[metric] ?? false);
@@ -94,10 +95,12 @@ const BoardMetrics = ({
         assigneeFilter,
         targetFields: formatDuplicatedNameWithSuffix(targetFields),
         doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
-        reworkTimesSetting: {
-          reworkState: reworkTimesSettings.rework2State,
-          excludedStates: reworkTimesSettings.excludeStates,
-        },
+        reworkTimesSetting: includeRework
+          ? {
+              reworkState: reworkTimesSettings.rework2State,
+              excludedStates: reworkTimesSettings.excludeStates,
+            }
+          : null,
         overrideFields: [
           {
             name: 'Story Points',
@@ -118,6 +121,8 @@ const BoardMetrics = ({
   const getBoardItems = () => {
     const velocity = boardReport?.velocity;
     const cycleTime = boardReport?.cycleTime;
+    const rework = boardReport?.rework;
+
     const velocityItems = boardMetrics.includes(REQUIRED_DATA.VELOCITY)
       ? [
           {
@@ -156,7 +161,32 @@ const BoardMetrics = ({
         ]
       : [];
 
-    return [...velocityItems, ...cycleTimeItems];
+    const reworkItems = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES)
+      ? [
+          {
+            title: METRICS_TITLE.REWORK,
+            items: rework && [
+              {
+                value: rework.totalReworkTimes,
+                subtitle: METRICS_SUBTITLE.TOTAL_REWORK_TIMES,
+                isToFixed: false,
+              },
+              {
+                value: rework.totalReworkCards,
+                subtitle: METRICS_SUBTITLE.TOTAL_REWORK_CARDS,
+                isToFixed: false,
+              },
+              {
+                value: rework.reworkCardsRatio,
+                extraValue: `% (${rework.totalReworkCards}/${rework.throughput})`,
+                subtitle: METRICS_SUBTITLE.REWORK_CARDS_RATIO,
+              },
+            ],
+          },
+        ]
+      : [];
+
+    return [...velocityItems, ...cycleTimeItems, ...reworkItems];
   };
 
   const handleRetry = () => {
@@ -189,7 +219,7 @@ const BoardMetrics = ({
           )}
           {errorMessage && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
-        <ReportGrid reportDetails={getBoardItems()} errorMessage={errorMessage} />
+        <ReportGrid reportDetails={getBoardItems()} errorMessage={errorMessage} lastGrid={true} />
       </StyledMetricsSection>
     </>
   );

@@ -65,7 +65,7 @@ export enum METRICS_TITLE {
   VELOCITY = 'Velocity',
   CYCLE_TIME = 'Cycle Time',
   CLASSIFICATION = 'Classification',
-  REWORK_TIMES = 'Rework times',
+  REWORK = 'Rework',
   LEAD_TIME_FOR_CHANGES = 'Lead Time For Changes',
   DEPLOYMENT_FREQUENCY = 'Deployment Frequency',
   DEV_CHANGE_FAILURE_RATE = 'Dev Change Failure Rate',
@@ -83,6 +83,9 @@ export enum METRICS_SUBTITLE {
   AVERAGE_CYCLE_TIME_PRE_CARD = 'Average Cycle Time(Days/Card)',
   THROUGHPUT = 'Throughput(Cards Count)',
   VELOCITY = 'Velocity(Story Point)',
+  TOTAL_REWORK_TIMES = 'Total rework times',
+  TOTAL_REWORK_CARDS = 'Total rework cards',
+  REWORK_CARDS_RATIO = 'Rework cards ratio',
 }
 
 export const SOURCE_CONTROL_METRICS: string[] = [REQUIRED_DATA.LEAD_TIME_FOR_CHANGES];
@@ -161,9 +164,9 @@ export const CYCLE_TIME_LIST = [
   METRICS_CONSTANTS.analysisValue,
   METRICS_CONSTANTS.inDevValue,
   METRICS_CONSTANTS.blockValue,
+  METRICS_CONSTANTS.reviewValue,
   METRICS_CONSTANTS.waitingValue,
   METRICS_CONSTANTS.testingValue,
-  METRICS_CONSTANTS.reviewValue,
   METRICS_CONSTANTS.doneValue,
 ];
 
@@ -208,6 +211,29 @@ export enum CYCLE_TIME_METRICS_NAME {
   AVERAGE_REVIEW_TIME = 'Average review time',
   AVERAGE_TESTING_TIME = 'Average testing time',
 }
+
+export const REWORK_TIME_METRICS_NAME = {
+  totalReworkTimes: 'Total rework',
+  fromAnalysis: 'From analysis to',
+  fromInDev: 'From in dev to',
+  fromBlock: 'From block to',
+  fromWaitingForTesting: 'From waiting for testing to',
+  fromTesting: 'From testing to',
+  fromReview: 'From review to',
+  fromDone: 'From done to',
+  totalReworkCards: 'Total rework cards',
+  reworkCardsRatio: 'Rework cards ratio',
+};
+
+export const BOARD_COLUMN_STATE: string[] = [
+  REWORK_TIME_METRICS_NAME.fromAnalysis,
+  REWORK_TIME_METRICS_NAME.fromInDev,
+  REWORK_TIME_METRICS_NAME.fromBlock,
+  REWORK_TIME_METRICS_NAME.fromWaitingForTesting,
+  REWORK_TIME_METRICS_NAME.fromTesting,
+  REWORK_TIME_METRICS_NAME.fromReview,
+  REWORK_TIME_METRICS_NAME.fromDone,
+];
 
 export const DEPLOYMENT_FREQUENCY_NAME = 'Deployment frequency';
 
@@ -360,6 +386,24 @@ export const ALL_OPTION_META: Record<string, string> = {
   label: 'All',
   key: 'all',
 };
+
+export const REWORK_DIALOG_NOTE = {
+  REWORK_EXPLANATION:
+    'Rework to which state means going back to the selected state from any state after the selected state.',
+  REWORK_NOTE:
+    'The selectable states in the "rework to which state" drop-down list are the heartbeat states you matched in the board mapping.',
+  EXCLUDE_EXPLANATION:
+    'Exclude which states means going back to the 1st selected state from any state after the 1st selected state except the selected state.',
+  EXCLUDE_NOTE:
+    'The selectable states in the "Exclude which states(optional)" drop-down list are all states after the state selected in "rework to which state".',
+};
+
+export const REWORK_STEPS = {
+  REWORK_TO_WHICH_STATE: 0,
+  EXCLUDE_WHICH_STATES: 1,
+};
+
+export const REWORK_STEPS_NAME = ['Rework to which state', 'Exclude which states'];
 
 export const DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS = 13;
 
