@@ -422,6 +422,7 @@ export const AUTHORIZE_ORGANIZATION_LINK =
   'https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file#3134-authorize-github-token-with-correct-organization';
 
 export const DEFAULT_MONTH_INTERVAL_DAYS = 30;
+export const DATE_RANGE_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 export const TIME_RANGE_TITLE = 'Time range settings';
 export const ADD_TIME_RANGE_BUTTON_TEXT = 'New time range';
 export const REMOVE_BUTTON_TEXT = 'Remove';

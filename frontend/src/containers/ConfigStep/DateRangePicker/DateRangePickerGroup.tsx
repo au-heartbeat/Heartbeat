@@ -12,7 +12,7 @@ export const DateRangePickerGroup = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
   const addRangeHandler = () => {
-    const newDateRangeGroup = dateRangeGroup.map((range) => ({ ...range })).concat({ startDate: null, endDate: null });
+    const newDateRangeGroup = [...dateRangeGroup, { startDate: null, endDate: null }];
     dispatch(updateDateRange(newDateRangeGroup));
   };
   return (

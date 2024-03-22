@@ -11,7 +11,7 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
-import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS, REMOVE_BUTTON_TEXT } from '@src/constants/resources';
+import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS, REMOVE_BUTTON_TEXT, DATE_RANGE_FORMAT } from '@src/constants/resources';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
@@ -38,36 +38,47 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
     if (value) {
       const currentDate = dayjs(new Date());
-      const valueToStartDate = value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+      const valueToStartDate = value.startOf('date').format(DATE_RANGE_FORMAT);
       const daysBetweenCurrentAndStartDate = currentDate.diff(valueToStartDate, 'days');
       daysAddToEndDate =
         daysBetweenCurrentAndStartDate >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
           ? DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
           : daysBetweenCurrentAndStartDate;
     }
-    dispatch(
-      updateDateRange(
-        isNull(value)
+    const newDateRangeGroup = dateRangeGroup.map(({ startDate, endDate }, idx) => {
+      if (idx === index) {
+        return isNull(value)
           ? {
               startDate: null,
               endDate: null,
             }
           : {
-              startDate: value.startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-              endDate: value.endOf('date').add(daysAddToEndDate, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-            },
-      ),
-    );
+              startDate: value.startOf('date').format(DATE_RANGE_FORMAT),
+              endDate: value.endOf('date').add(daysAddToEndDate, 'day').format(DATE_RANGE_FORMAT),
+            };
+      }
+
+      return {
+        startDate,
+        endDate,
+      };
+    });
+    dispatch(updateDateRange(newDateRangeGroup));
     dispatchUpdateConfig();
   };
 
   const changeEndDate = (value: Dayjs) => {
-    dispatch(
-      updateDateRange({
-        startDate: startDate,
-        endDate: !isNull(value) ? value.endOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ') : null,
-      }),
-    );
+    const newDateRangeGroup = dateRangeGroup.map(({ startDate, endDate }, idx) => {
+      if (idx === index) {
+        return {
+          startDate: startDate,
+          endDate: !isNull(value) ? value.endOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ') : null,
+        };
+      }
+
+      return { startDate, endDate };
+    });
+    dispatch(updateDateRange(newDateRangeGroup));
     dispatchUpdateConfig();
   };
 
