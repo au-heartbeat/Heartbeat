@@ -3,7 +3,7 @@ env:
 
 steps:
   - label: ":cloudformation: Deploy infra"
-    if: build.branch == "buildkite-github" && build.message =~ /(?i)\[infra\]/
+    if: build.branch == "main" && build.message =~ /(?i)\[infra\]/
     key: "deploy-infra"
     env:
       AWSHost: "$AWS_HOST"
@@ -12,7 +12,7 @@ steps:
     command: ./ops/deploy.sh infra
 
   - label: ":white_check_mark: GitHub Basic Check"
-    if: build.branch == "buildkite-github"
+    if: build.branch == "main"
     key: "check-github-basic"
     command: ./ops/check.sh github-basic-passed
     env:
@@ -23,21 +23,21 @@ steps:
       - "deploy-infra"
 
   - label: ":react: Build Frontend"
-    if: build.branch == "buildkite-github" && build.message =~ /(?i)\[frontend\]/
+    if: build.branch == "main" && build.message =~ /(?i)\[frontend\]/
     key: "build-frontend"
     depends_on:
       - "check-github-basic"
     command: ./ops/build.sh frontend
 
   - label: ":java: Build Backend"
-    if: build.branch == "buildkite-github" && build.message =~ /(?i)\[backend\]/
+    if: build.branch == "main" && build.message =~ /(?i)\[backend\]/
     key: "build-backend"
     depends_on:
       - "check-github-basic"
     command: ./ops/build.sh backend
 
   - label: ":rocket: Deploy e2e"
-    if: build.branch == "buildkite-github"
+    if: build.branch == "main"
     key: "deploy-e2e"
     depends_on:
       - "build-frontend"
@@ -46,7 +46,7 @@ steps:
     command: ./ops/deploy.sh e2e
 
   - label: ":rocket: Run e2e"
-    if: build.branch == "buildkite-github"
+    if: build.branch == "main"
     key: "check-e2e"
     depends_on:
       - "deploy-e2e"
@@ -57,7 +57,7 @@ steps:
           expire_in: "${RETENTION_DAYS} days"
 
   - label: ":rocket: Deploy prod"
-    if: build.branch == "buildkite-github" && (build.message =~ /(?i)\[frontend\]/ || build.message =~ /(?i)\[backend\]/)
+    if: build.branch == "main" && (build.message =~ /(?i)\[frontend\]/ || build.message =~ /(?i)\[backend\]/)
     depends_on:
       - "check-e2e"
     command: ./ops/deploy.sh prod
