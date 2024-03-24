@@ -42,6 +42,7 @@ steps:
     depends_on:
       - "build-frontend"
       - "build-backend"
+      - "check-github-basic"
     command: ./ops/deploy.sh e2e
 
   - label: ":rocket: Run e2e"
@@ -49,6 +50,7 @@ steps:
     key: "check-e2e"
     depends_on:
       - "deploy-e2e"
+      - "check-github-basic"
     command: ./ops/check.sh e2e-container
     plugins:
       - artifacts#v1.9.3:
@@ -59,4 +61,5 @@ steps:
     if: build.branch == "main" && (build.message =~ /(?i)\[frontend\]/ || build.message =~ /(?i)\[backend\]/)
     depends_on:
       - "check-e2e"
+      - "check-github-basic"
     command: ./ops/deploy.sh prod
