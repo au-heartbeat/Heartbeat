@@ -16,6 +16,7 @@ steps:
     command: ./ops/check.sh github-basic-passed
     env:
       COMMIT_SHA: "$BUILDKITE_COMMIT"
+      GITHUB_TOKEN: "$E2E_TOKEN_GITHUB"
     depends_on:
       - deploy-infra
 
