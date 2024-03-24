@@ -194,14 +194,24 @@ github_actions_passed_check() {
       sleep "$SLEEP_DURATION_SECONDS"
       continue
     fi
-    deploy_infra_result=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-                                  -H "Accept: application/vnd.github.v3+json" \
-                                  "$jobs_url"\
-                          | jq -r ".jobs[] | select(.name == \"$JOB_ID_NAME\") | .status"
-                        )
-    if [ "$deploy_infra_result" = "completed" ]; then
-        echo "🎉 The GitHub basic check($JOB_ID_NAME) job is completed"
-        exit 0
+
+    job_response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                           -H "Accept: application/vnd.github.v3+json" \
+                           "$jobs_url")
+
+    deploy_infra_status=$(echo "$job_response" | jq -r ".jobs[] | select(.name == \"$JOB_ID_NAME\") | .status")
+    deploy_infra_conclusion=$(echo "$job_response" | jq -r ".jobs[] | select(.name == \"$JOB_ID_NAME\") | .conclusion")
+
+    echo "$deploy_infra_conclusion"
+    if [ "$deploy_infra_status" = "completed" ]; then
+        echo "🍗 The GitHub basic check($JOB_ID_NAME) job is completed"
+        if [ "$deploy_infra_conclusion" = "success" ]; then
+          echo "🎉 The GitHub basic check($JOB_ID_NAME) job is successful"
+          exit 0
+        else
+          echo "❌ Error: The GitHub basic check($JOB_ID_NAME) job did complete but failed or skipped"
+          exit 2
+        fi
     else
         echo "🍗 The GitHub basic check($JOB_ID_NAME) job is not completed yet. Waiting for $SLEEP_DURATION_SECONDS seconds..."
         sleep "$SLEEP_DURATION_SECONDS"
