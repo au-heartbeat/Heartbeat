@@ -17,6 +17,7 @@ steps:
     env:
       COMMIT_SHA: "$BUILDKITE_COMMIT"
       GITHUB_TOKEN: "$E2E_TOKEN_GITHUB"
+      BRANCH: "$BUILDKITE_BRANCH"
     depends_on:
       - deploy-infra
 
@@ -28,14 +29,14 @@ steps:
     command: ./ops/build.sh frontend
 
   - label: ":java: Build Backend"
-    if: build.branch == "main" && build.message =~ /(?i)\[backend\]/
+    if: build.branch == "buildkite-github" && build.message =~ /(?i)\[backend\]/
     key: "build-backend"
     depends_on:
       - check-github-basic
     command: ./ops/build.sh backend
 
   - label: ":rocket: Deploy e2e"
-    if: build.branch == "main"
+    if: build.branch == "buildkite-github"
     key: "deploy-e2e"
     depends_on:
       - build-frontend

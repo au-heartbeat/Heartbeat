@@ -174,7 +174,7 @@ github_actions_passed_check() {
 
   response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
                     -H "Accept: application/vnd.github.v3+json" \
-                    "https://api.github.com/repos/${GITHUB_REPO_NAME}/actions/runs?event=push&branch=main")
+                    "https://api.github.com/repos/${GITHUB_REPO_NAME}/actions/runs?event=push&branch=$BRANCH")
    echo "The current build response: ${response:0:100}"
 
   while [ $attempt -le "$MAX_ATTEMPTS" ]; do
