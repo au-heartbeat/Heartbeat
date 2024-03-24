@@ -166,44 +166,50 @@ github_actions_passed_check() {
   BRANCH="${BRANCH:-"main"}"
   GITHUB_TOKEN="${GITHUB_TOKEN:-empty GitHub token}"
   COMMIT_SHA="${COMMIT_SHA:-empty commit sha}"
+  WORKFLOW_RUN_NAME="${WORKFLOW_RUN_NAME:-Build and Deploy}"
   JOB_ID_NAME="${JOB_ID_NAME:-deploy-infra}"
   GITHUB_REPO_NAME="${GITHUB_REPO_NAME:-au-heartbeat/Heartbeat}"
 
   attempt=1
 
-  jobs_url=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+  response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
                     -H "Accept: application/vnd.github.v3+json" \
-                    "https://api.github.com/repos/${GITHUB_REPO_NAME}/actions/runs?event=push&branch=main" \
-                    | jq -r ".workflow_runs[] | select(.head_sha == \"$COMMIT_SHA\" and .name == \"Build and Deploy\") | .jobs_url")
-  echo "The jobs URL is: $jobs_url"
+                    "https://api.github.com/repos/${GITHUB_REPO_NAME}/actions/runs?event=push&branch=main")
+   echo "The current build response: ${response:0:100}"
 
   while [ $attempt -le "$MAX_ATTEMPTS" ]; do
-      echo "🍗 Attempt $attempt: Checking if the GitHub job basic check(deploy-infra) is completed..."
+    is_empty=$(echo "$response" | jq 'length == 0')
+    if [ "$is_empty" == "true" ]; then
+      echo "🍗 The current GitHub actions job basic check($JOB_ID_NAME) has not been executed"
+      sleep "$SLEEP_DURATION_SECONDS"
+      continue
+    fi
 
+    jobs_url=$(echo "$response"| jq -r ".workflow_runs[] | select(.head_sha == \"$COMMIT_SHA\" and .name == \"$WORKFLOW_RUN_NAME\") | .jobs_url")
+    echo "The jobs URL is: $jobs_url"
 
-      if [ -z "$jobs_url" ]; then
-        echo "🍗 The current GitHub Actions baisc check(deploy-infra) has not been created"
+    echo "🍗 Attempt $attempt: Checking if the GitHub job basic check($JOB_ID_NAME) is completed..."
+    if [ -z "$jobs_url" ]; then
+      echo "🍗 The current GitHub Actions baisc check($JOB_ID_NAME) has not been created"
+      sleep "$SLEEP_DURATION_SECONDS"
+      continue
+    fi
+    deploy_infra_result=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                                  -H "Accept: application/vnd.github.v3+json" \
+                                  "$jobs_url"\
+                          | jq -r ".jobs[] | select(.name == \"$JOB_ID_NAME\") | .status"
+                        )
+    if [ "$deploy_infra_result" = "completed" ]; then
+        echo "🎉 The GitHub basic check($JOB_ID_NAME) job is completed"
+        exit 0
+    else
+        echo "🍗 The GitHub basic check($JOB_ID_NAME) job is not completed yet. Waiting for $SLEEP_DURATION_SECONDS seconds..."
         sleep "$SLEEP_DURATION_SECONDS"
-        continue
-      fi
-
-      deploy_infra_result=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-                                    -H "Accept: application/vnd.github.v3+json" \
-                                    "https://api.github.com/repos/au-heartbeat/Heartbeat/actions/runs/8402368469/jobs"\
-                            | jq -r ".jobs[] | select(.name == \"deploy-infra\") | .status"
-                          )
-      echo "$deploy_infra_result"
-      if [ "$deploy_infra_result" = "completed" ]; then
-          echo "🎉 The GitHub basic check(deploy-infra) job is completed"
-          exit 0
-      else
-          echo "🍗 The GitHub basic check(deploy-infra) job is not completed yet. Waiting for $SLEEP_DURATION_SECONDS seconds..."
-          sleep "$SLEEP_DURATION_SECONDS"
-          ((attempt++))
-      fi
+        ((attempt++))
+    fi
   done
 
-  echo "❌ Error: The GitHub basic check(deploy-infra) job did not complete within the specified number of attempts."
+  echo "❌ Error: The GitHub basic check($JOB_ID_NAME) job did not complete within the specified number of attempts."
   exit 1
 }
 
