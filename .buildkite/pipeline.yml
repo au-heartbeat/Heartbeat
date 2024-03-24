@@ -46,11 +46,10 @@ steps:
     command: ./ops/deploy.sh e2e
 
   - label: ":rocket: Run e2e"
-    branches: main
+    if: build.branch == "buildkite-github"
     key: "check-e2e"
     depends_on:
       - "deploy-e2e"
-      - "check-github-basic"
     command: ./ops/check.sh e2e-container
     plugins:
       - artifacts#v1.9.3:
@@ -58,8 +57,7 @@ steps:
           expire_in: "${RETENTION_DAYS} days"
 
   - label: ":rocket: Deploy prod"
-    if: build.branch == "main" && (build.message =~ /(?i)\[frontend\]/ || build.message =~ /(?i)\[backend\]/)
+    if: build.branch == "buildkite-github" && (build.message =~ /(?i)\[frontend\]/ || build.message =~ /(?i)\[backend\]/)
     depends_on:
       - "check-e2e"
-      - "check-github-basic"
     command: ./ops/deploy.sh prod
