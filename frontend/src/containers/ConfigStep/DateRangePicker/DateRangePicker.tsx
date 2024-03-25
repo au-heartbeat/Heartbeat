@@ -11,21 +11,31 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
+import {
+  calculateDateRangeIntersection,
+  calculateDateIsAvailable,
+} from '@src/containers/ConfigStep/DateRangePicker/validation';
 import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS, REMOVE_BUTTON_TEXT, DATE_RANGE_FORMAT } from '@src/constants/resources';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { Z_INDEX } from '@src/constants/commons';
+import { useCallback, useMemo } from 'react';
 import { Nullable } from '@src/utils/types';
 import dayjs, { Dayjs } from 'dayjs';
-import { useCallback } from 'react';
 import isNull from 'lodash/isNull';
 
 export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isShowRemoveButton = dateRangeGroup.length > 1;
+  const dateRangeGroupExcludeSelf = useMemo(
+    () => dateRangeGroup.filter((_, idx) => idx !== index),
+    [dateRangeGroup, index],
+  );
+  const disabledDateRange = calculateDateRangeIntersection(dateRangeGroupExcludeSelf);
+  const shouldDisableDate = calculateDateIsAvailable.bind(null, disabledDateRange);
 
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
@@ -92,6 +102,7 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
       <StyledDateRangePickerContainer className='range-picker-row'>
         <StyledDateRangePicker
           disableFuture
+          shouldDisableDate={(date) => shouldDisableDate(date as Dayjs)}
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={(newValue) => changeStartDate(newValue as unknown as Dayjs)}
