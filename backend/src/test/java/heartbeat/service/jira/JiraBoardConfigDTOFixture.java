@@ -91,13 +91,11 @@ public class JiraBoardConfigDTOFixture {
 
 	public static final long TIMESTAMP_9 = 1676808799000L;
 
-	public static final long TIMESTAMP_10 = 1676816350001L;
+	public static final long TIMESTAMP_10 = 167682799000L;
 
-	public static final long TIMESTAMP_11 = 167682799000L;
+	public static final long TIMESTAMP_11 = 1676838799000L;
 
-	public static final long TIMESTAMP_12 = 1676838799000L;
-
-	public static final long TIMESTAMP_13 = 1676846350001L;
+	public static final long TIMESTAMP_12 = 1676846350001L;
 
 	public static JiraBoardConfigDTO.JiraBoardConfigDTOBuilder JIRA_BOARD_CONFIG_RESPONSE_BUILDER() {
 
@@ -789,10 +787,10 @@ public class JiraBoardConfigDTOFixture {
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "story"),
 					new HistoryDetail(TIMESTAMP_9, "customfield_10021", new Status(null), new Status("Impediment"),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged"),
-					new HistoryDetail(TIMESTAMP_11, "status", new Status(TESTING), new Status(IN_DEV), null, null),
-					new HistoryDetail(TIMESTAMP_12, "customfield_10020", new Status("Impediment"), new Status(null),
+					new HistoryDetail(TIMESTAMP_10, "status", new Status(TESTING), new Status(IN_DEV), null, null),
+					new HistoryDetail(TIMESTAMP_11, "customfield_10020", new Status("Impediment"), new Status(null),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "story"),
-					new HistoryDetail(TIMESTAMP_13, "customfield_10021", new Status(null), new Status("Impediment"),
+					new HistoryDetail(TIMESTAMP_12, "customfield_10021", new Status(null), new Status("Impediment"),
 							new HistoryDetail.Actor(DISPLAY_NAME_ONE), "Flagged")));
 
 	}

@@ -1741,8 +1741,8 @@ class JiraServiceTest {
 				jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE),
 				assigneeFilter);
 
-		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(0);
-		assertThat(cardCollection.getReworkRatio()).isEqualTo(0);
+		assertThat(cardCollection.getReworkCardNumber()).isZero();
+		assertThat(cardCollection.getReworkRatio()).isZero();
 	}
 
 }
