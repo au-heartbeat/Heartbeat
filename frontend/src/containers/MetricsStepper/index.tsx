@@ -172,6 +172,7 @@ const MetricsStepper = () => {
     isreworkStateSelected,
     isShowReworkSettings,
     onlyDoneStateSelected,
+    onlyIncludeReworkMetrics,
   ]);
 
   const filterMetricsConfig = (metricsConfig: savedMetricsSettingState) => {
