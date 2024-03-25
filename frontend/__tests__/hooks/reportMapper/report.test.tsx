@@ -1,5 +1,5 @@
 import { MOCK_REPORT_RESPONSE, PIPELINE_LEAD_TIME, PR_LEAD_TIME, TOTAL_DELAY_TIME } from '../../fixtures';
-import { StyledSpan } from '@src/containers/ReportStep/ReportDetail/style';
+import { StyledBoldText } from '@src/containers/ConfigStep/TimeoutAlert/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import React from 'react';
 
@@ -160,7 +160,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 3,
       name: (
         <React.Fragment>
-          From <StyledSpan>&apos;block&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
+          From <StyledBoldText>&apos;block&apos;</StyledBoldText> to <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -174,7 +174,8 @@ export const EXPECTED_REPORT_VALUES = {
       id: 5,
       name: (
         <React.Fragment>
-          From <StyledSpan>&apos;review&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
+          From <StyledBoldText>&apos;review&apos;</StyledBoldText> to{' '}
+          <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -188,7 +189,8 @@ export const EXPECTED_REPORT_VALUES = {
       id: 6,
       name: (
         <React.Fragment>
-          From <StyledSpan>&apos;waiting for testing&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
+          From <StyledBoldText>&apos;waiting for testing&apos;</StyledBoldText> to{' '}
+          <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -202,7 +204,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 8,
       name: (
         <React.Fragment>
-          From <StyledSpan>&apos;done&apos;</StyledSpan> to <StyledSpan>&apos;in dev&apos;</StyledSpan>
+          From <StyledBoldText>&apos;done&apos;</StyledBoldText> to <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
