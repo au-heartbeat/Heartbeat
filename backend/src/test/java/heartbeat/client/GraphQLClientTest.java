@@ -6,6 +6,7 @@ import com.buildkite.GetPipelineInfoQuery;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import heartbeat.client.graphql.GraphQLClient;
+import heartbeat.exception.PermissionDenyException;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -22,7 +23,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,6 +55,50 @@ public class GraphQLClientTest {
 		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
 		when(mockedEnum.getUrl()).thenReturn(httpUrl);
 		assertEquals(httpUrl, mockedEnum.getUrl());
+	}
+
+	@Test
+	void shouldThrowPermissionDenyExceptionGivenOtherPermissionWhenTokenLimited() {
+		mockServer.enqueue(
+				new MockResponse()
+					.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
+							+ "      \"message\": \"Your access token doesn't have the graphql scope\"\n" + "    }\n"
+							+ "  ]\n" + "}")
+					.setResponseCode(403));
+
+		String httpUrl = mockServer.url("/").toString();
+		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
+		when(mockedEnum.getUrl()).thenReturn(httpUrl);
+
+		GraphQLClient mockGraphQLClient = new GraphQLClient();
+		Query<GetPipelineInfoQuery.Data> mockQuery = new GetPipelineInfoQuery(Optional.present("slug"),
+				Optional.present(10));
+
+		assertThatThrownBy(() -> mockGraphQLClient.fetchListOfPipeLineInfo(mockedEnum, "mock token", "mock slug", 1))
+			.isInstanceOf(PermissionDenyException.class)
+			.hasMessageContaining("Your access token doesn't have the graphql scope");
+	}
+
+	@Test
+	void shouldReturnNullWhenApolloResponseDataIsNull() throws InterruptedException {
+		mockServer.enqueue(
+				new MockResponse()
+					.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
+							+ "      \"message\": \"Your access token doesn't have the graphql scope\"\n" + "    }\n"
+							+ "  ]\n" + "}")
+					.setResponseCode(200));
+
+		String httpUrl = mockServer.url("/").toString();
+		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
+		when(mockedEnum.getUrl()).thenReturn(httpUrl);
+
+		GraphQLClient mockGraphQLClient = new GraphQLClient();
+		Query<GetPipelineInfoQuery.Data> mockQuery = new GetPipelineInfoQuery(Optional.present("slug"),
+				Optional.present(10));
+
+		GetPipelineInfoQuery.Data data = mockGraphQLClient.wrapAndThrowExceptionWith(mockQuery, "token", mockedEnum);
+		assertNull(data);
+
 	}
 
 	@Test

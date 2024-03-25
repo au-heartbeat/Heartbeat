@@ -7,16 +7,17 @@ import com.apollographql.apollo3.api.Optional;
 import com.apollographql.apollo3.api.Query;
 import com.apollographql.apollo3.exception.ApolloHttpException;
 import com.buildkite.GetPipelineInfoQuery;
+import heartbeat.exception.PermissionDenyException;
 import kotlin.Result;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -74,31 +75,43 @@ public class GraphQLClient {
 					log.info("****resumeWithApolloResponse**{}", responseObject);
 					responseCompletableFuture.complete((ApolloResponse<D>) responseObject);
 				}
-				if (responseObject instanceof Result.Failure) {
-					log.info("****resumeWithFailure**", ((Result.Failure) responseObject).exception);
-					responseCompletableFuture.completeExceptionally(((Result.Failure) responseObject).exception);
+				if (responseObject instanceof Result.Failure response) {
+					log.info("****resumeWithFailure**", response.exception);
+					responseCompletableFuture.completeExceptionally(response.exception);
 				}
 			}
 		});
 		return responseCompletableFuture;
 	}
 
-	public List<GetPipelineInfoQuery.Node> fetchListOfPipeLineInfo(GraphQLServer serverType, String token, String slug,
-			int perPage) {
-		CompletableFuture<List<GetPipelineInfoQuery.Node>> nodeListFuture = new CompletableFuture<>();
-		List<GetPipelineInfoQuery.Node> list = null;
-		Query<GetPipelineInfoQuery.Data> query = new GetPipelineInfoQuery(Optional.present(slug),
-				Optional.present(perPage));
-
+	public <D extends Query.Data> D wrapAndThrowExceptionWith(Query<D> query, String token, GraphQLServer server) {
 		try {
-			ApolloResponse<GetPipelineInfoQuery.Data> listCompletableFuture = callWithQuery(query, token, serverType)
-				.get();
+			ApolloResponse<D> listCompletableFuture = callWithQuery(query, token, server).get();
 			if (listCompletableFuture.data != null) {
-				list = listCompletableFuture.data.organization.pipelines.edges.stream().map(edge -> edge.node).toList();
+				log.info("GetGraphQLData{}", listCompletableFuture.data);
+				return listCompletableFuture.data;
 			}
 		}
-		catch (ExecutionException | InterruptedException | ApolloHttpException e) {
-			// TODO handle ApolloHttpException
+		catch (InterruptedException | ApolloHttpException | ExecutionException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ApolloHttpException httpException) {
+				log.error("ApolloHttpException: ", httpException);
+				if (httpException.getStatusCode() == 403) {
+					throw new PermissionDenyException("Your access token doesn't have the graphql scope");
+				}
+			}
+		}
+		return null;
+	}
+
+	public List<GetPipelineInfoQuery.Node> fetchListOfPipeLineInfo(GraphQLServer serverType, String token, String slug,
+			int perPage) {
+		List<GetPipelineInfoQuery.Node> list = Collections.emptyList();
+		Query<GetPipelineInfoQuery.Data> query = new GetPipelineInfoQuery(Optional.present(slug),
+				Optional.present(perPage));
+		GetPipelineInfoQuery.Data data = wrapAndThrowExceptionWith(query, token, serverType);
+		if (data != null && data.organization != null && data.organization.pipelines != null) {
+			list = data.organization.pipelines.edges.stream().map(edge -> edge.node).toList();
 		}
 		return list;
 	}
