@@ -160,7 +160,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 3,
       name: (
         <React.Fragment>
-          From <StyledBoldText>&apos;block&apos;</StyledBoldText> to <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
+          From <StyledBoldText>block</StyledBoldText> to<StyledBoldText> in dev</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -174,8 +174,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 5,
       name: (
         <React.Fragment>
-          From <StyledBoldText>&apos;review&apos;</StyledBoldText> to{' '}
-          <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
+          From <StyledBoldText>review</StyledBoldText> to<StyledBoldText> in dev</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -189,8 +188,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 6,
       name: (
         <React.Fragment>
-          From <StyledBoldText>&apos;waiting for testing&apos;</StyledBoldText> to{' '}
-          <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
+          From <StyledBoldText>waiting for testing</StyledBoldText> to<StyledBoldText> in dev</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -204,7 +202,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 8,
       name: (
         <React.Fragment>
-          From <StyledBoldText>&apos;done&apos;</StyledBoldText> to <StyledBoldText>&apos;in dev&apos;</StyledBoldText>
+          From <StyledBoldText>done</StyledBoldText> to<StyledBoldText> in dev</StyledBoldText>
         </React.Fragment>
       ),
       valueList: [
