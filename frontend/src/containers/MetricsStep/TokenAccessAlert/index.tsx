@@ -8,20 +8,18 @@ interface PropsInterface {
 }
 export const TokenAccessAlert = ({ isPermissionDeny }: PropsInterface) => {
   return (
-    <>
-      {isPermissionDeny && (
-        <StyledAlert data-testid='tokenAccessAlert' icon={<CancelIcon fontSize='inherit' />} severity='error'>
-          <EllipsisText fitContent>
-            <StyledText>
-              <StyledBoldText>Limited access token:</StyledBoldText> please change your{' '}
-              <StyledBoldText>Github</StyledBoldText> token with{' '}
-              <a href={README_LINK} target='_blank' rel='noreferrer'>
-                correct access permission
-              </a>
-            </StyledText>
-          </EllipsisText>
-        </StyledAlert>
-      )}
-    </>
+    isPermissionDeny && (
+      <StyledAlert aria-label='alert for token access error' icon={<CancelIcon fontSize='inherit' />} severity='error'>
+        <EllipsisText fitContent>
+          <StyledText>
+            <StyledBoldText>Limited access token:</StyledBoldText> please change your{' '}
+            <StyledBoldText>Github</StyledBoldText> token with{' '}
+            <a href={README_LINK} target='_blank' rel='noreferrer'>
+              correct access permission
+            </a>
+          </StyledText>
+        </EllipsisText>
+      </StyledAlert>
+    )
   );
 };
