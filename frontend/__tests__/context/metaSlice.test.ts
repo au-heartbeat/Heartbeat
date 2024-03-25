@@ -25,7 +25,11 @@ const MOCK_STATE: MetaState = {
     metrics: {
       pipelines: {
         1: {
-          branches: [],
+          branches: [
+            {
+              value: 'value',
+            },
+          ],
         },
         2: {
           branches: [],
@@ -105,11 +109,30 @@ describe('meta reducer', () => {
   });
 
   it('should update a branch when updateMetricsPipelineBranchFormMeta', () => {
-    const meta = metaReducer(MOCK_STATE, updateMetricsPipelineBranchFormMeta({ id: 1, data: { value: 'val' } }));
+    const meta = metaReducer(
+      MOCK_STATE,
+      updateMetricsPipelineBranchFormMeta({ id: 1, data: { value: 'value', error: true } }),
+    );
 
     expect(meta.form.metrics.pipelines).toMatchObject({
       1: {
-        branches: [{ value: 'val' }],
+        branches: [{ value: 'value', error: true }],
+      },
+      2: {
+        branches: [],
+      },
+    });
+  });
+
+  it('should add a branch when are not editing old data', () => {
+    const meta = metaReducer(
+      MOCK_STATE,
+      updateMetricsPipelineBranchFormMeta({ id: 1, data: { value: 'new value', error: true } }),
+    );
+
+    expect(meta.form.metrics.pipelines).toMatchObject({
+      1: {
+        branches: [{ value: 'value' }, { value: 'new value', error: true }],
       },
       2: {
         branches: [],
