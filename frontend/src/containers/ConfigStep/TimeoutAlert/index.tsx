@@ -1,5 +1,6 @@
-import { StyledAlert, StyledBoldText } from '@src/containers/ConfigStep/TimeoutAlert/style';
+import { StyledAlert } from '@src/containers/ConfigStep/TimeoutAlert/style';
 import EllipsisText from '@src/components/Common/EllipsisText';
+import { StyledBoldText } from '@src/containers/style';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 interface PropsInterface {

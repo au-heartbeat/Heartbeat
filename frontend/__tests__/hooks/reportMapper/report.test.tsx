@@ -1,6 +1,6 @@
 import { MOCK_REPORT_RESPONSE, PIPELINE_LEAD_TIME, PR_LEAD_TIME, TOTAL_DELAY_TIME } from '../../fixtures';
-import { StyledBoldText } from '@src/containers/ConfigStep/TimeoutAlert/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
+import { StyledBoldText } from '@src/containers/style';
 import React from 'react';
 
 export const EXPECTED_REPORT_VALUES = {
