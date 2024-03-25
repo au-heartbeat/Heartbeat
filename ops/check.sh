@@ -120,8 +120,6 @@ rgba_check() {
 }
 
 buildkite_e2e_deployed_check() {
-  #!/bin/bash
-
   MAX_ATTEMPTS="${MAX_ATTEMPTS:-40}"
   SLEEP_DURATION_SECONDS="${SLEEP_DURATION_SECONDS:-30}"
   BRANCH="${BRANCH:-"main"}"
@@ -133,13 +131,13 @@ buildkite_e2e_deployed_check() {
 
   while [ $attempt_count -lt "$MAX_ATTEMPTS" ]; do
     ((attempt_count += 1))
-    echo "Start to get deployment status, attempt count is $attempt_count"
+    echo "🍗 Start to get deployment status, attempt count is $attempt_count"
 
     response=$(curl -H "Authorization: Bearer $BUILDKITE_TOKEN" -X GET "https://api.buildkite.com/v2/organizations/heartbeat-backup/pipelines/heartbeat/builds?branch=$BRANCH&commit=$COMMIT_SHA")
     echo "The current build response: ${response:0:50}"
     is_empty=$(echo "$response" | jq 'length == 0')
     if [ "$is_empty" == "true" ]; then
-      echo "The current BuildKite build has not deployed into e2e env"
+      echo "🍗 The current BuildKite build has not deployed into e2e env"
       sleep "$SLEEP_DURATION_SECONDS"
       continue
     fi
@@ -147,10 +145,10 @@ buildkite_e2e_deployed_check() {
     value=$(echo "$response" | jq '.[0].jobs[] | select(.name == ":rocket: Deploy e2e" and .state == "passed") | . != null')
 
     if [ "$value" == "true" ]; then
-      echo "Successfully deploy to E2E"
+      echo "🎉 Successfully deploy to E2E"
       break
     else
-      echo "WIP..."
+      echo "🍗 WIP..."
       sleep "$SLEEP_DURATION_SECONDS"
     fi
   done
@@ -159,6 +157,70 @@ buildkite_e2e_deployed_check() {
     echo "❌ Failed to wait for E2E deployment with Maximum attempts reached. Exiting..."
     exit 1
   fi
+}
+
+github_actions_passed_check() {
+
+  MAX_ATTEMPTS="${MAX_ATTEMPTS:-80}"
+  SLEEP_DURATION_SECONDS="${SLEEP_DURATION_SECONDS:-30}"
+  BRANCH="${BRANCH:-"main"}"
+  GITHUB_TOKEN="${GITHUB_TOKEN:-empty GitHub token}"
+  COMMIT_SHA="${COMMIT_SHA:-empty commit sha}"
+  WORKFLOW_RUN_NAME="${WORKFLOW_RUN_NAME:-Build and Deploy}"
+  JOB_ID_NAME="${JOB_ID_NAME:-deploy-infra}"
+  GITHUB_REPO_NAME="${GITHUB_REPO_NAME:-au-heartbeat/Heartbeat}"
+
+  attempt=1
+
+  response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    "https://api.github.com/repos/${GITHUB_REPO_NAME}/actions/runs?event=push&branch=$BRANCH")
+   echo "The current build response: ${response:0:100}"
+
+  while [ $attempt -le "$MAX_ATTEMPTS" ]; do
+    is_empty=$(echo "$response" | jq 'length == 0')
+    if [ "$is_empty" == "true" ]; then
+      echo "🍗 The current GitHub actions job basic check($JOB_ID_NAME) has not been executed"
+      sleep "$SLEEP_DURATION_SECONDS"
+      continue
+    fi
+
+    jobs_url=$(echo "$response"| jq -r ".workflow_runs[] | select(.head_sha == \"$COMMIT_SHA\" and .name == \"$WORKFLOW_RUN_NAME\") | .jobs_url")
+    echo "The jobs URL is: $jobs_url"
+
+    echo "🍗 Attempt $attempt: Checking if the GitHub job basic check($JOB_ID_NAME) is completed..."
+    if [ -z "$jobs_url" ]; then
+      echo "🍗 The current GitHub Actions baisc check($JOB_ID_NAME) has not been created"
+      sleep "$SLEEP_DURATION_SECONDS"
+      continue
+    fi
+
+    job_response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                           -H "Accept: application/vnd.github.v3+json" \
+                           "$jobs_url")
+
+    deploy_infra_status=$(echo "$job_response" | jq -r ".jobs[] | select(.name == \"$JOB_ID_NAME\") | .status")
+    deploy_infra_conclusion=$(echo "$job_response" | jq -r ".jobs[] | select(.name == \"$JOB_ID_NAME\") | .conclusion")
+
+    echo "$deploy_infra_conclusion"
+    if [ "$deploy_infra_status" = "completed" ]; then
+        echo "🍗 The GitHub basic check($JOB_ID_NAME) job is completed"
+        if [ "$deploy_infra_conclusion" = "success" ]; then
+          echo "🎉 The GitHub basic check($JOB_ID_NAME) job is successful"
+          exit 0
+        else
+          echo "❌ Error: The GitHub basic check($JOB_ID_NAME) job did complete but failed or skipped"
+          exit 2
+        fi
+    else
+        echo "🍗 The GitHub basic check($JOB_ID_NAME) job is not completed yet. Waiting for $SLEEP_DURATION_SECONDS seconds..."
+        sleep "$SLEEP_DURATION_SECONDS"
+        ((attempt++))
+    fi
+  done
+
+  echo "❌ Error: The GitHub basic check($JOB_ID_NAME) job did not complete within the specified number of attempts."
+  exit 1
 }
 
 hex_check() {
@@ -286,6 +348,7 @@ while [[ "$#" -gt 0 ]]; do
   "frontend-license") frontend_license_check ;;
   "buildkite-status") buildkite_status_check ;;
   "buildkite-e2e-deployed") buildkite_e2e_deployed_check ;;
+  "github-basic-passed") github_actions_passed_check ;;
   *) echo "Unknown parameter passed: $1" ;;
   esac
   shift

@@ -20,6 +20,7 @@
   - [3.1 Config project info](#31-config-project-info)
     - [3.1.1 Config Board/Pipeline/Source data](#311-config-boardpipelinesource-data)
       - [3.1.2 Config search data](#312-config-search-data)
+        - [3.1.2.1 Date picker validation rules](#3121-date-picker-validation-rules)
       - [3.1.3 Config project account](#313-config-project-account)
     - [3.2 Config Metrics data](#32-config-metrics-data)
       - [3.2.1 Config Crews/Cycle Time](#321-config-crewscycle-time)
@@ -58,13 +59,14 @@
 - [7 How to trigger BuildKite Pipeline](#7-how-to-trigger-buildkite-pipeline)
   - [Release](#release)
     - [Release command in main branch](#release-command-in-main-branch)
-- [7 How to use](#7-how-to-use)
-  - [7.1 Docker-compose](#71-docker-compose)
-    - [7.1.1 Customize story point field in Jira](#711-customize-story-point-field-in-jira)
-    - [7.1.2 Multiple instance deployment](#712-multiple-instance-deployment)
-  - [7.2 K8S](#72-k8s)
-    - [7.2.1 Multiple instance deployment](#721-multiple-instance-deployment)
-- [8. Contribution](#8-contribution)
+- [8 How to use](#8-how-to-use)
+  - [8.1 Docker-compose](#81-docker-compose)
+    - [8.1.1 Customize story point field in Jira](#811-customize-story-point-field-in-jira)
+    - [8.1.2 Multiple instance deployment](#812-multiple-instance-deployment)
+  - [8.2 K8S](#82-k8s)
+    - [8.2.1 Multiple instance deployment](#821-multiple-instance-deployment)
+- [9 Contribution](#9-contribution)
+- [10 Pipeline Strategy](#10-pipeline-strategy)
 
 # News
 
@@ -82,7 +84,7 @@ Heartbeat is a tool for tracking project delivery metrics that can help you get 
 
 State of DevOps Report is launching in 2019. In this webinar, The 4 key metrics research team and Google Cloud share key metrics to measure DevOps performance, measure the effectiveness of development and delivery practices. They searching about six years, developed four metrics that provide a high-level systems view of software delivery and performance.
 
-**Here are the four Key meterics:**
+**Here are the four Key metrics:**
 
 1.  Deployment Frequency (DF)
 2.  Lead Time for changes (LTC)
@@ -509,9 +511,9 @@ git tag -d {tag name}
 git push origin :refs/tags/{tag name}
 ```
 
-# 7 How to use
+# 8 How to use
 
-## 7.1 Docker-compose
+## 8.1 Docker-compose
 
 First, create a `docker-compose.yml` file, and copy below code into the file.
 
@@ -541,7 +543,7 @@ Then, execute this command
 docker-compose up -d frontend
 ```
 
-### 7.1.1 Customize story point field in Jira
+### 8.1.1 Customize story point field in Jira
 
 Specifically, story point field can be indicated in `docker-compose.yml`. You can do it as below.
 
@@ -566,7 +568,7 @@ services:
     restart: always
 ```
 
-### 7.1.2 Multiple instance deployment
+### 8.1.2 Multiple instance deployment
 
 Specifically, if you want to run with multiple instances. You can do it with below docker compose file.
 
@@ -597,7 +599,7 @@ volumes:
   file_volume:
 ```
 
-## 7.2 K8S
+## 8.2 K8S
 
 First, create a `k8s-heartbeat.yml` file, and copy below code into the file.
 
@@ -652,7 +654,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: **frontend**
 spec:
   selector:
     app: frontend
@@ -669,11 +671,50 @@ Then, execute this command
 kubectl apply -f k8s-heartbeat.yml
 ```
 
-### 7.2.1 Multiple instance deployment
+### 8.2.1 Multiple instance deployment
 
 You also can deploy Heartbeats in multiple instances using K8S through the following [documentation](https://au-heartbeat.github.io/Heartbeat/en/devops/how-to-deploy-heartbeat-in-multiple-instances-by-k8s/).
 
-# 8. Contribution
+# 9 Contribution
 
 We love your input! Please see our [contributing guide](contribution.md) to get started. Thank you 🙏 to all our contributors!
 
+# 10 Pipeline Strategy
+
+Now, Heartbeat uses `GitHub Actions` and `BuildKite` to build and deploy Heartbeat application. 
+
+But there is some constrains, like some pipeline dependency. 
+
+So, committer should pay attention to this flow when there is some pipeline issues. 
+
+```mermaid
+	sequenceDiagram
+  actor Committer
+  participant GitHub_Actions as GitHub Actions
+  participant BuildKite
+
+	Committer ->> GitHub_Actions : Push code
+	Committer ->> BuildKite : Push code
+  loop 30s/40 times
+    BuildKite->> GitHub_Actions: Check the basic check(all check before 'deploy-infra' job) has been passed
+    GitHub_Actions -->> BuildKite: Basic check has passed?
+    alt Yes
+      BuildKite ->> BuildKite: Build and deploy e2e env
+      Note over BuildKite, GitHub_Actions: Some times passed
+      loop 30s/60 times
+        GitHub_Actions ->> BuildKite: Request to check if the e2e has been deployed
+        BuildKite -->> GitHub_Actions: e2e deployment status, if the e2e has been deployed?
+        alt Yes
+          GitHub_Actions ->> GitHub_Actions: Run e2e check on GitHub actions
+          Note over BuildKite, GitHub_Actions: Some times passed
+          GitHub_Actions -->> Committer: Response the pipeline result to committer
+          BuildKite -->> Committer: Response the pipeline result to committer
+        else No
+          GitHub_Actions -->> Committer: Break the pipeline 
+        end
+      end
+    else No
+      BuildKite -->> Committer: Break the pipeline
+    end
+  end
+```
