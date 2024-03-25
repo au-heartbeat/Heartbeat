@@ -40,10 +40,10 @@ import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepV
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
 import { ConfirmDialog } from '@src/containers/MetricsStepper/ConfirmDialog';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
+import { exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { getFormMeta } from '@src/context/meta/metaSlice';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import { exportToJsonFile } from '@src/utils/util';
 import { useNavigate } from 'react-router-dom';
 import { ROUTE } from '@src/constants/router';
 import { Tooltip } from '@mui/material';
@@ -79,12 +79,12 @@ const MetricsStepper = () => {
     requiredData.includes(REQUIRED_DATA.VELOCITY);
   const isCycleTimeSettingsVerified = cycleTimeSettings.some((e) => e.value === DONE);
   const boardingMappingStatus = [...new Set(cycleTimeSettings.map((item) => item.value))];
-  const onlyDoneStateSelected = isCycleTimeSettingsVerified && boardingMappingStatus.length === 2;
+  const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStatus);
   const onlyIncludeReworkMetrics = requiredData.includes(REQUIRED_DATA.REWORK_TIMES) && requiredData.length === 1;
   const isShowClassificationSetting = requiredData.includes(REQUIRED_DATA.CLASSIFICATION);
   const isShowReworkSettings = requiredData.includes(REQUIRED_DATA.REWORK_TIMES);
   const isClassificationSettingVerified = metricsConfig.targetFields.some((item) => item.flag);
-  const isreworkStateSelected = !!metricsConfig.importedData.reworkTimesSettings.reworkState;
+  const isReworkStateSelected = !!metricsConfig.importedData.reworkTimesSettings.reworkState;
   const { metrics, projectName, dateRange } = config.basic;
 
   const isShowRealDone =
@@ -140,7 +140,7 @@ const MetricsStepper = () => {
         { isShow: isShowClassificationSetting, isValid: isClassificationSettingVerified },
         {
           isShow: isShowReworkSettings,
-          isValid: isreworkStateSelected || (onlyDoneStateSelected && !onlyIncludeReworkMetrics),
+          isValid: isReworkStateSelected || (isOnlyEmptyAndDoneState && !onlyIncludeReworkMetrics),
         },
       ];
       const activeNextButtonValidityOptions = nextButtonValidityOptions.filter(({ isShow }) => isShow);
@@ -169,9 +169,9 @@ const MetricsStepper = () => {
     isCycleTimeSettingsVerified,
     isShowClassificationSetting,
     isClassificationSettingVerified,
-    isreworkStateSelected,
+    isReworkStateSelected,
     isShowReworkSettings,
-    onlyDoneStateSelected,
+    isOnlyEmptyAndDoneState,
     onlyIncludeReworkMetrics,
   ]);
 

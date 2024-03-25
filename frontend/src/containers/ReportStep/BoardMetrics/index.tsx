@@ -11,18 +11,19 @@ import {
   SHOW_MORE,
 } from '@src/constants/resources';
 import {
+  filterAndMapCycleTimeSettings,
+  formatDuplicatedNameWithSuffix,
+  getJiraBoardToken,
+  getRealDoneStatus,
+  onlyEmptyAndDoneState,
+} from '@src/utils/util';
+import {
   StyledLoading,
   StyledMetricsSection,
   StyledRetry,
   StyledShowMore,
   StyledTitleWrapper,
 } from '@src/containers/ReportStep/BoardMetrics/BoardMetrics';
-import {
-  filterAndMapCycleTimeSettings,
-  formatDuplicatedNameWithSuffix,
-  getJiraBoardToken,
-  getRealDoneStatus,
-} from '@src/utils/util';
 import { IBasicReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { GridContainer } from '@src/containers/ReportStep/BoardMetrics/style';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
@@ -75,8 +76,7 @@ const BoardMetrics = ({
   const jiraToken = getJiraBoardToken(token, email);
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
-  const onlyDoneStateSelected =
-    boardingMappingStates.includes(METRICS_CONSTANTS.doneValue) && boardingMappingStates.length === 2;
+  const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
   const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
   const boardMetricsCompleted = boardMetrics
     .map((metric) => BOARD_METRICS_MAPPING[metric])
@@ -101,7 +101,7 @@ const BoardMetrics = ({
         targetFields: formatDuplicatedNameWithSuffix(targetFields),
         doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
         reworkTimesSetting:
-          includeRework && !onlyDoneStateSelected
+          includeRework && !isOnlyEmptyAndDoneState
             ? {
                 reworkState: reworkTimesSettings.reworkState,
                 excludedStates: reworkTimesSettings.excludeStates,
