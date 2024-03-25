@@ -7,8 +7,8 @@ import {
 } from '@src/context/config/configSlice';
 import { pipelineToolClient, IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
 import { selectShouldGetPipelineConfig, updatePipelineSettings } from '@src/context/Metrics/metricsSlice';
-import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { clearMetricsPipelineFormMeta } from '@src/context/meta/metaSlice';
+import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 
@@ -65,7 +65,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     if (!apiTouchedRef.current && !isLoading && shouldLoad && shouldGetPipelineConfig) {
       apiTouchedRef.current = true;
       getPipelineToolInfo();
-      dispatch(clearMetricsPipelineFormMeta())
+      dispatch(clearMetricsPipelineFormMeta());
     }
   }, [dispatch, getPipelineToolInfo, isLoading, shouldLoad, shouldGetPipelineConfig]);
 
