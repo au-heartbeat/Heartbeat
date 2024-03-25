@@ -7,8 +7,10 @@ import metaReducer, {
   updateFormMeta,
   updateMetricsPipelineBranchFormMeta,
   clearMetricsPipelineFormMeta,
+  getIsTokenAccess,
 } from '@src/context/meta/metaSlice';
 import { VERSION_RESPONSE } from '../fixtures';
+import { RootState } from '@src/store';
 
 const MOCK_EMPTY_STATE: MetaState = {
   version: '',
@@ -113,5 +115,49 @@ describe('meta reducer', () => {
         branches: [],
       },
     });
+  });
+
+  it('should return false If all pipeline branches have no errors', () => {
+    expect(
+      getIsTokenAccess({
+        meta: {
+          ...MOCK_STATE,
+          form: {
+            metrics: {
+              pipelines: {
+                1: {
+                  branches: [{ value: 'val' }],
+                },
+                2: {
+                  branches: [],
+                },
+              },
+            },
+          },
+        },
+      } as unknown as RootState),
+    ).toBeFalsy();
+  });
+
+  it('should return true If there is an error in a pipeline branch', () => {
+    expect(
+      getIsTokenAccess({
+        meta: {
+          ...MOCK_STATE,
+          form: {
+            metrics: {
+              pipelines: {
+                1: {
+                  branches: [{ value: 'val', error: true }],
+                },
+                2: {
+                  branches: [],
+                },
+              },
+            },
+          },
+        },
+      } as unknown as RootState),
+    ).toBeTruthy();
   });
 });
