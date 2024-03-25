@@ -20,7 +20,6 @@ export interface MetaState {
   form: {
     metrics: {
       pipelines: Record<string, FormMetaMetricsPipeline>;
-      isTokenAccessError: boolean;
     };
   };
 }
@@ -28,7 +27,6 @@ export interface MetaState {
 const initialFormMetaState = {
   metrics: {
     pipelines: {},
-    isTokenAccessError: false,
   },
 };
 
@@ -60,9 +58,9 @@ export const metaSlice = createSlice({
         state.form.metrics.pipelines[id] = {
           branches: [],
         };
-      state.form.metrics.pipelines[id].branches.forEach((branch) => {
-        branch.error = false;
-      });
+    },
+    clearMetricsPipelineFormMeta: (state) => {
+      state.form.metrics.pipelines = {}
     },
     updateMetricsPipelineBranchFormMeta: (state, action: PayloadAction<{ id: number; data: FormFieldWithMeta }>) => {
       const { id, data } = action.payload;
@@ -90,6 +88,7 @@ export const {
   initMetricsPipelineFormMeta,
   deleteMetricsPipelineFormMeta,
   updateMetricsPipelineBranchFormMeta,
+  clearMetricsPipelineFormMeta
 } = metaSlice.actions;
 
 export const getVersion = (state: RootState) => state.meta.version;
