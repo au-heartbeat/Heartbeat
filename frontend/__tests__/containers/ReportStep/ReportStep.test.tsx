@@ -6,16 +6,19 @@ import {
   EXPORT_BOARD_DATA,
   EXPORT_METRIC_DATA,
   EXPORT_PIPELINE_DATA,
+  IMPORTED_NEW_CONFIG_FIXTURE,
   LEAD_TIME_FOR_CHANGES,
   MOCK_DATE_RANGE,
   MOCK_JIRA_VERIFY_RESPONSE,
   MOCK_REPORT_RESPONSE,
   PREVIOUS,
   REQUIRED_DATA_LIST,
+  RETRY,
   SAVE,
   SHOW_MORE,
 } from '../../fixtures';
 import {
+  updateBasicConfigState,
   updateDateRange,
   updateJiraVerifyResponse,
   updateMetrics,
@@ -97,6 +100,7 @@ describe('Report Step', () => {
         users: MOCK_JIRA_VERIFY_RESPONSE.users,
       }),
     );
+    store.dispatch(updateBasicConfigState(IMPORTED_NEW_CONFIG_FIXTURE));
     store.dispatch(updateMetrics(params));
     store.dispatch(addADeploymentFrequencySetting());
     store.dispatch(
@@ -542,6 +546,28 @@ describe('Report Step', () => {
       expect(addNotification).toBeCalledWith({
         message: MESSAGE.FAILED_TO_REQUEST,
         type: 'error',
+      });
+    });
+
+    it('should retry startToRequestData when click the retry button in Board Metrics', async () => {
+      reportHook.current.generalError4Report = error;
+      setup(REQUIRED_DATA_LIST);
+
+      await userEvent.click(screen.getAllByText(RETRY)[0]);
+
+      await waitFor(() => {
+        expect(useGenerateReportEffect().startToRequestData).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    it('should retry startToRequestData when click the retry button in Dora Metrics', async () => {
+      reportHook.current.generalError4Report = error;
+      setup(REQUIRED_DATA_LIST);
+
+      await userEvent.click(screen.getAllByText(RETRY)[0]);
+
+      await waitFor(() => {
+        expect(useGenerateReportEffect().startToRequestData).toHaveBeenCalledTimes(2);
       });
     });
   });

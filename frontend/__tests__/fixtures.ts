@@ -24,6 +24,8 @@ export const SAVE = 'Save';
 
 export const SHOW_MORE = 'show more >';
 
+export const RETRY = 'retry';
+
 export const BACK = 'Back';
 
 export const BOARD_METRICS_TITLE = 'Board Metrics';
