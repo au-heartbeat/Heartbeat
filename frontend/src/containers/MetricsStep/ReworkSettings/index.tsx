@@ -26,7 +26,7 @@ function ReworkSettings() {
 
   const boardingMappingHasDoneStatus = boardingMappingStatus.includes(METRICS_CONSTANTS.doneValue);
   const allStateIsEmpty = boardingMappingStatus.every((value) => value === METRICS_CONSTANTS.cycleTimeEmptyStr);
-  const isOnlyDoneStateSelected = onlyEmptyAndDoneState(boardingMappingStatus);
+  const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStatus);
   const singleOptions = boardingMappingStatus
     .filter((item) => item !== METRICS_CONSTANTS.doneValue && item !== METRICS_CONSTANTS.cycleTimeEmptyStr)
     .sort((a, b) => {
@@ -68,7 +68,7 @@ function ReworkSettings() {
           How to setup
         </StyledLink>
       </ReworkHeaderWrapper>
-      {allStateIsEmpty || isOnlyDoneStateSelected ? (
+      {allStateIsEmpty || isOnlyEmptyAndDoneState ? (
         <></>
       ) : (
         <ReworkSettingsWrapper>
