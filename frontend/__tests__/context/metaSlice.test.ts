@@ -6,6 +6,7 @@ import metaReducer, {
   saveVersion,
   updateFormMeta,
   updateMetricsPipelineBranchFormMeta,
+  clearMetricsPipelineFormMeta,
 } from '@src/context/meta/metaSlice';
 import { VERSION_RESPONSE } from '../fixtures';
 
@@ -63,6 +64,16 @@ describe('meta reducer', () => {
         data: { pipelines: {} },
       }),
     );
+
+    expect(meta.form).toMatchObject({
+      metrics: {
+        pipelines: {},
+      },
+    });
+  });
+
+  it('should clear pipelines when call clearMetricsPipelineFormMeta', () => {
+    const meta = metaReducer(MOCK_STATE, clearMetricsPipelineFormMeta());
 
     expect(meta.form).toMatchObject({
       metrics: {
