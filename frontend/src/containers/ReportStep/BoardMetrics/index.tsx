@@ -2,6 +2,7 @@ import {
   BOARD_METRICS,
   BOARD_METRICS_MAPPING,
   CALENDAR,
+  METRICS_CONSTANTS,
   METRICS_SUBTITLE,
   METRICS_TITLE,
   REPORT_PAGE,
@@ -73,6 +74,9 @@ const BoardMetrics = ({
   const { token, type, site, projectKey, boardId, email } = board.config;
   const jiraToken = getJiraBoardToken(token, email);
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
+  const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
+  const onlyDoneStateSelected =
+    boardingMappingStates.includes(METRICS_CONSTANTS.doneValue) && boardingMappingStates.length === 2;
   const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
   const boardMetricsCompleted = boardMetrics
     .map((metric) => BOARD_METRICS_MAPPING[metric])
@@ -96,12 +100,13 @@ const BoardMetrics = ({
         assigneeFilter,
         targetFields: formatDuplicatedNameWithSuffix(targetFields),
         doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
-        reworkTimesSetting: includeRework
-          ? {
-              reworkState: reworkTimesSettings.reworkState,
-              excludedStates: reworkTimesSettings.excludeStates,
-            }
-          : null,
+        reworkTimesSetting:
+          includeRework && !onlyDoneStateSelected
+            ? {
+                reworkState: reworkTimesSettings.reworkState,
+                excludedStates: reworkTimesSettings.excludeStates,
+              }
+            : null,
         overrideFields: [
           {
             name: 'Story Points',
