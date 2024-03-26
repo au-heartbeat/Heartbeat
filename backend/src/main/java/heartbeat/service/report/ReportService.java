@@ -55,14 +55,17 @@ public class ReportService {
 			});
 			threadList.add(metricTypeThread);
 		}
-		for (CompletableFuture<Void> thread : threadList) {
-			thread.join();
-		}
 
-		ReportResponse reportResponse = generateReporterService
-			.getComposedReportResponseWithRequiredCsvField(timeStamp);
-		generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
-		asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
+		CompletableFuture.runAsync(() -> {
+			for (CompletableFuture<Void> thread : threadList) {
+				thread.join();
+			}
+
+			ReportResponse reportResponse = generateReporterService
+				.getComposedReportResponseWithRequiredCsvField(timeStamp);
+			generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
+			asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
+		});
 	}
 
 	private void initializeMetricsDataCompletedInHandler(List<String> metricTypes, String timeStamp) {
