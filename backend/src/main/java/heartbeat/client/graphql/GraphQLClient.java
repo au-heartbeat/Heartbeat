@@ -5,9 +5,11 @@ import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.api.ApolloResponse;
 import com.apollographql.apollo3.api.Optional;
 import com.apollographql.apollo3.api.Query;
+import com.apollographql.apollo3.api.http.HttpHeader;
 import com.apollographql.apollo3.exception.ApolloHttpException;
 import com.buildkite.GetPipelineInfoQuery;
 import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.UnauthorizedException;
 import kotlin.Result;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
@@ -43,14 +45,14 @@ public class GraphQLClient {
 
 	private ApolloClient getApolloClient(String token, GraphQLServer server) {
 		if (apolloClient == null) {
-			this.apolloClient = new ApolloClient.Builder().addHttpHeader("Authorization", token)
+			this.apolloClient = new ApolloClient.Builder().httpHeaders(List.of(new HttpHeader("Authorization", token)))
 				.serverUrl(server.getUrl())
 				.build();
 		}
 		else {
 			this.apolloClient = apolloClient.newBuilder()
 				.serverUrl(server.getUrl())
-				.addHttpHeader("Authorization", token)
+				.httpHeaders(List.of(new HttpHeader("Authorization", token)))
 				.build();
 		}
 		return apolloClient;
@@ -96,8 +98,13 @@ public class GraphQLClient {
 			Throwable cause = e.getCause();
 			if (cause instanceof ApolloHttpException httpException) {
 				log.error("ApolloHttpException: ", httpException);
-				if (httpException.getStatusCode() == 403) {
-					throw new PermissionDenyException("Your access token doesn't have the graphql scope");
+				switch (httpException.getStatusCode()) {
+					case 403:
+						throw new PermissionDenyException("Your access token doesn't have the graphql scope");
+					case 401:
+						throw new UnauthorizedException("Please supply a valid API Access Token");
+					default:
+						break;
 				}
 			}
 		}
