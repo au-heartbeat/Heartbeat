@@ -6,8 +6,8 @@ import {
 } from '@src/constants/resources';
 import { IPipelineVerifyRequestDTO, PipelineInfoRequestDTO } from '@src/clients/pipeline/dto/request';
 import { IPipelineInfoResponseDTO } from '@src/clients/pipeline/dto/response';
-import { IAppError } from '@src/errors/ErrorType';
 import { HttpClient } from '@src/clients/HttpClient';
+import { IAppError } from '@src/errors/ErrorType';
 import { isAppError } from '@src/errors';
 import { HttpStatusCode } from 'axios';
 

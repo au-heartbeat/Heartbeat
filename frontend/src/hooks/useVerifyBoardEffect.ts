@@ -7,8 +7,8 @@ import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { IAppError } from '@src/errors/ErrorType';
-import { isAppError } from '@src/errors';
 import { REGEX } from '@src/constants/regex';
+import { isAppError } from '@src/errors';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 

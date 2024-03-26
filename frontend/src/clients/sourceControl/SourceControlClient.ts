@@ -1,7 +1,7 @@
 import { SourceControlInfoRequestDTO, SourceControlVerifyRequestDTO } from '@src/clients/sourceControl/dto/request';
 import { SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
-import { IAppError } from '@src/errors/ErrorType';
 import { HttpClient } from '@src/clients/HttpClient';
+import { IAppError } from '@src/errors/ErrorType';
 import { isAppError } from '@src/errors';
 
 export interface SourceControlResult {

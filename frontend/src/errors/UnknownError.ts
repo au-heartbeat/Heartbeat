@@ -1,5 +1,5 @@
-import { IAppError } from '@src/errors/ErrorType';
 import { MESSAGE } from '@src/constants/resources';
+import { IAppError } from '@src/errors/ErrorType';
 
 export class UnknownError extends Error implements IAppError {
   constructor() {
