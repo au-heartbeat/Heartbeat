@@ -38,7 +38,7 @@ public class ReportService {
 		return timeStamp < System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME;
 	}
 
-	public void generateReportByType(GenerateReportRequest request) {
+	public void generateReport(GenerateReportRequest request) {
 		List<String> metricTypes = request.getMetricTypes();
 		String timeStamp = request.getCsvTimeStamp();
 		initializeMetricsDataCompletedInHandler(metricTypes, timeStamp);
