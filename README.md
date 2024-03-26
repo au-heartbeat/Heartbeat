@@ -270,6 +270,7 @@ When user first use this tool, need to create a project, and do some config. To 
 ![Image 3-14](https://user-images.githubusercontent.com/995849/89784710-b4c41180-db4b-11ea-9bc4-db14ce98ef69.png)\
 _Image 3-14, Config Json file_
 
+
 ### 3.3.2 Import Config Json File
 
 When user already saved config file before, then you don’t need to create a new project. In the home page, can click Import Project from File button(Image 3-1) to select the config file. If your config file is too old, and the tool already have some new feature change, then if you import the config file, it will get some warning info(Image 3-9). You need to re-select some info, then go to the next page.
