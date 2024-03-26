@@ -10,6 +10,8 @@ public interface IdUtil {
 
 	String SOURCE_CONTROL_PREFIX = "sourceControl-";
 
+	String DATA_COMPLETED_PREFIX = "dataCompleted-";
+
 	static String getBoardReportId(String timeStamp) {
 		return BOARD_REPORT_PREFIX + timeStamp;
 	}
@@ -24,6 +26,10 @@ public interface IdUtil {
 
 	static String getSourceControlReportId(String timeStamp) {
 		return SOURCE_CONTROL_PREFIX + timeStamp;
+	}
+
+	static String getDataCompletedPrefix(String timeStamp) {
+		return DATA_COMPLETED_PREFIX + timeStamp;
 	}
 
 }
