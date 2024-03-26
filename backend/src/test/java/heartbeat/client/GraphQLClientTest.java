@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import heartbeat.client.graphql.GraphQLClient;
 import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.UnauthorizedException;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -78,6 +79,28 @@ public class GraphQLClientTest {
 		assertThatThrownBy(() -> mockGraphQLClient.fetchListOfPipeLineInfo(mockedEnum, "mock token", "mock slug", 1))
 			.isInstanceOf(PermissionDenyException.class)
 			.hasMessageContaining("Your access token doesn't have the graphql scope");
+	}
+
+	@Test
+	void shouldThrowUnauthorizedExceptionWhenTokenInvalid() {
+		mockServer.enqueue(
+			new MockResponse()
+				.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
+					+ "      \"message\": \"Please supply a valid API Access Token\"\n" + "    }\n"
+					+ "  ]\n" + "}")
+				.setResponseCode(401));
+
+		String httpUrl = mockServer.url("/").toString();
+		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
+		when(mockedEnum.getUrl()).thenReturn(httpUrl);
+
+		GraphQLClient mockGraphQLClient = new GraphQLClient();
+		Query<GetPipelineInfoQuery.Data> mockQuery = new GetPipelineInfoQuery(Optional.present("slug"),
+			Optional.present(10));
+
+		assertThatThrownBy(() -> mockGraphQLClient.fetchListOfPipeLineInfo(mockedEnum, "mock token", "mock slug", 1))
+			.isInstanceOf(UnauthorizedException.class)
+			.hasMessageContaining("Please supply a valid API Access Token");
 	}
 
 	@Test
