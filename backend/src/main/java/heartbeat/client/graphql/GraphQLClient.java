@@ -56,9 +56,9 @@ public class GraphQLClient {
 		return apolloClient;
 	}
 
-	private <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token, GraphQLServer server) {
-		ApolloCall<D> queryCall = this.getApolloClient(token, server)
-			.query(query);
+	private <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token,
+			GraphQLServer server) {
+		ApolloCall<D> queryCall = this.getApolloClient(token, server).query(query);
 		CompletableFuture<ApolloResponse<D>> responseCompletableFuture = new CompletableFuture<>();
 		getApolloClient(token, server).query(query).execute(new Continuation<>() {
 			@NotNull
