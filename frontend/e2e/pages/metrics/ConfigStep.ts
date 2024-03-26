@@ -42,6 +42,13 @@ export class ConfigStep {
   readonly previousModalCancelButton: Locator;
   readonly requiredMetricsLabel: Locator;
   readonly requiredMetricsAllOption: Locator;
+  readonly requiredMetricsVelocityOption: Locator;
+  readonly requiredMetricsCycleTimeOption: Locator;
+  readonly requiredMetricsClassificationOption: Locator;
+  readonly requiredMetricsLeadTimeForChangesOption: Locator;
+  readonly requiredMetricsDeploymentFrequencyOption: Locator;
+  readonly requiredMetricsChangeFailureRateOption: Locator;
+  readonly requiredMetricsMeanTimeToRecoveryOption: Locator;
   readonly boardContainer: Locator;
   readonly boardTypeSelect: Locator;
   readonly boardIdInput: Locator;
@@ -99,6 +106,13 @@ export class ConfigStep {
 
     this.requiredMetricsLabel = page.getByLabel('Required metrics *');
     this.requiredMetricsAllOption = page.getByRole('option', { name: 'All' });
+    this.requiredMetricsVelocityOption = page.getByRole('option', { name: 'Velocity' });
+    this.requiredMetricsCycleTimeOption = page.getByRole('option', { name: 'Cycle time' });
+    this.requiredMetricsClassificationOption = page.getByRole('option', { name: 'Classification' });
+    this.requiredMetricsLeadTimeForChangesOption = page.getByRole('option', { name: 'Lead time for changes' });
+    this.requiredMetricsDeploymentFrequencyOption = page.getByRole('option', { name: 'Deployment frequency' });
+    this.requiredMetricsChangeFailureRateOption = page.getByRole('option', { name: 'Change failure rate' });
+    this.requiredMetricsMeanTimeToRecoveryOption = page.getByRole('option', { name: 'Mean time to recovery' });
 
     this.boardContainer = page.getByLabel('Board Config');
     this.boardTypeSelect = this.boardContainer.getByLabel('Board *');
@@ -214,6 +228,48 @@ export class ConfigStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async selectVelocityRequiredMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsVelocityOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectCycleTimeRequiredMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsCycleTimeOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectClassificationRequiredMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsClassificationOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectLeadTimeForChangesMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsLeadTimeForChangesOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectDeploymentFrequencyMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsDeploymentFrequencyOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectChangeFailureRateMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsChangeFailureRateOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectMeanTimeToRecoveryMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsMeanTimeToRecoveryOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
   async checkBoardFormVisible() {
     await expect(this.boardContainer).toBeVisible();
     await expect(this.boardTypeSelect).toBeVisible();
@@ -223,16 +279,37 @@ export class ConfigStep {
     await expect(this.boardTokenInput).toBeVisible();
   }
 
+  async checkBoardFormInvisible() {
+    await expect(this.boardContainer).toBeHidden();
+    await expect(this.boardTypeSelect).toBeHidden();
+    await expect(this.boardIdInput).toBeHidden();
+    await expect(this.boardEmailInput).toBeHidden();
+    await expect(this.boardSiteInput).toBeHidden();
+    await expect(this.boardTokenInput).toBeHidden();
+  }
+
   async checkPipelineToolFormVisible() {
     await expect(this.pipelineToolContainer).toBeVisible();
     await expect(this.pipelineToolTypeSelect).toBeVisible();
     await expect(this.pipelineToolTokenInput).toBeVisible();
   }
 
+  async checkPipelineToolFormInvisible() {
+    await expect(this.pipelineToolContainer).toBeHidden();
+    await expect(this.pipelineToolTypeSelect).toBeHidden();
+    await expect(this.pipelineToolTokenInput).toBeHidden();
+  }
+
   async checkSourceControlFormVisible() {
     await expect(this.sourceControlContainer).toBeVisible();
     await expect(this.sourceControlTypeSelect).toBeVisible();
     await expect(this.sourceControlTokenInput).toBeVisible();
+  }
+
+  async checkSourceControlFormInvisible() {
+    await expect(this.sourceControlContainer).toBeHidden();
+    await expect(this.sourceControlTypeSelect).toBeHidden();
+    await expect(this.sourceControlTokenInput).toBeHidden();
   }
 
   async fillBoardConfigForm({ boardId, email, site, token }: IBoardData) {

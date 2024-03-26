@@ -161,8 +161,16 @@ export class MetricsStep {
     await expect(this.boardConfigurationTitle).toBeVisible();
   }
 
+  async checkBoardConfigurationInvisible() {
+    await expect(this.boardConfigurationTitle).toBeHidden();
+  }
+
   async checkPipelineConfigurationVisible() {
     await expect(this.pipelineConfigurationTitle).toBeVisible();
+  }
+
+  async checkPipelineConfigurationInvisible() {
+    await expect(this.pipelineConfigurationTitle).toBeHidden();
   }
 
   async checkLastAssigneeCrewFilterChecked() {
@@ -251,6 +259,14 @@ export class MetricsStep {
 
   async waitForHiddenLoading() {
     await expect(this.loadings.first()).toBeHidden();
+  }
+
+  async checkClassificationSettingVisible() {
+    await expect(this.boardClassificationLabel).toBeVisible();
+  }
+
+  async checkClassificationSettingInvisible() {
+    await expect(this.boardClassificationLabel).toBeHidden();
   }
 
   async selectHistoricalAssigneeCrewFilter() {
