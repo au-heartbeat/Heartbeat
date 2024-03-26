@@ -768,9 +768,9 @@ class GenerateReporterServiceTest {
 			ReportResponse res = generateReporterService.getComposedReportResponse(reportId);
 
 			assertEquals(EXPORT_CSV_VALIDITY_TIME, res.getExportValidityTime());
-			assertFalse(res.isBoardMetricsCompleted());
-			assertTrue(res.isDoraMetricsCompleted());
-			assertFalse(res.isAllMetricsCompleted());
+			assertFalse(res.getBoardMetricsCompleted());
+			assertTrue(res.getDoraMetricsCompleted());
+			assertFalse(res.getAllMetricsCompleted());
 			assertNull(res.getReportMetricsError().getBoardMetricsError());
 		}
 
@@ -784,7 +784,7 @@ class GenerateReporterServiceTest {
 			ReportResponse res = generateReporterService.getComposedReportResponse(reportId);
 
 			assertEquals(EXPORT_CSV_VALIDITY_TIME, res.getExportValidityTime());
-			assertFalse(res.isAllMetricsCompleted());
+			assertFalse(res.getAllMetricsCompleted());
 			assertEquals(404, res.getReportMetricsError().getBoardMetricsError().getStatus());
 		}
 
