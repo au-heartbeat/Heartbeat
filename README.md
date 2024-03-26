@@ -287,12 +287,23 @@ You could find the drill down from `show more >` link from dashboard.
 ### 3.4.1 Velocity
 
 In Velocity Report, it will list the corresponding data by Story Point and the number of story tickets. (image 3-10)
+- `Velocity` : includes how many story points and cards we have completed within selected time period.
+- Definition for 'Velocity(Story Point)‘: how many story point we have completed within selected time period.
+- Formula for 'Velocity(Story Point): sum of story points for done cards in selected time period
+- Definition for 'Throughput(Cards Count): how many story cards we have completed within selected time period.
+- Formula for 'Throughput(Cards Count): sum of cards count for done cards in selected time period
+  
 ![Image 3-16](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/9.png)\
 _Image 3-16，Velocity Report_
 
 ### 3.4.2 Cycle Time
 
 The calculation process data and final result of Cycle Time are calculated by rounding method, and two digits are kept after the decimal point. Such as: 3.567... Is 3.56; 3.564... Is 3.56.
+- `Cycle time`: the time it take for each card start ‘to do’ until move to ‘done’.
+- Definition for ‘Average Cycle Time(Days/SP)’: how many days does it take on average to complete a point?
+- Formula for ‘Average Cycle Time(Days/SP)’: sum of cycle time for done cards/done cards story points
+- Definition for ‘Average Cycle Time(Days/Card)’: how many days does it take on average to complete a card?
+- Formula for ‘Average Cycle Time(Days/Card)’: sum of cycle time for done cards/done cards count
 
 ![Image 3-17](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/10.png)\
 _Image 3-17，Cycle Time Report_
@@ -300,28 +311,45 @@ _Image 3-17，Cycle Time Report_
 ### 3.4.3 Classification
 
 It will show the classification data of Board based on your selection on `Classification Settings` in metrics page.
-
 The percentage value represent the count of that type tickets vs total count of tickets.
+- `Classification`: provide different dimensions to view how much efforts team spent within selected time period.
+- for example: spike cards account for 17.65% of the total completed cards
 
 ![Image 3-18](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/11.png)\
 _Image 3-18，Classification Report_
 
 ### 3.4.4 Deployment Frequency
-
+- Definition for ‘Deployment Frequency': this metrics records how often you deploy code to production on a daily basis.
+- Formula for ‘Deployment Frequency': the umber of build for（Status = passed & Valid = true）/working days
+![Image 3-24](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/export/export-pipline-data.png)\
+_Image 3-24，export pipline data_
 ![Image 3-19](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/12.png)\
 _Image 3-19，Deployment Frequency Report_
 
 ### 3.4.5 Lead time for changes Data
+- Definition for ‘Lead time for changes': this metrics records the time from first code commit to code successfully running in production.
+- Formula for ‘PR lead time':
+-- if PR merge not null: PR lead time = PR merged time - code committed time
+-- if PR merge is null: PR lead time = PR created time - code committed time
+-- if no PR merge: PR lead time = 0
+- Formula for ‘Pipeline lead time':
+-- if PR merge not null: Pipeline lead time = Deployment Completed Time - PR merged time
+-- if PR merge is null: Pipeline lead time = Deployment Completed Time - PR created time
+-- if no PR merge: Pipeline lead time = 0
 
 ![Image 3-20](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/13.png)\
 _Image 3-20，Lead time for changes Report_
 
-### 3.4.6 Change Failure Rate
+### 3.4.6 Dev Change Failure Rate
+- Definition for ‘Dev Change Failure Rate': this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on development，which is the percentage of failed pipelines in the total pipelines, and you chan select different pipeline as your final step,and this value is lower means failed pipeline is fewer.
+- Formula for ‘Dev Change Failure Rate': the number of build for (Status = failed)/the number of build for [（Status = passed & Valid = true）+ the number of build for (status=failed)]
 
 ![Image 3-21](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/14.png)\
 _Image 3-21，Change Failure Rate Report_
 
-### 3.4.7 Mean time to recovery
+### 3.4.7 Dev Mean time to recovery
+- Definition for ‘Dev Mean time to recovery': this metrics alse defined based on development, it records how long it generally takes to restore when pipeline failed, and If this value is less than 8 hours, it means ‘red does not last overnight’, which means our repair speed is relatively good.
+- Formula for ‘Dev Mean time to recovery': sum[he time difference from the first fail to the first pass for deployment completed time]/ the number of repairs
 
 ![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15.png)\
 _Image 3-22，mean time to recovery 
