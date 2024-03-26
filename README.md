@@ -25,8 +25,9 @@
     - [3.2 Config Metrics data](#32-config-metrics-data)
       - [3.2.1 Config Crews/Cycle Time](#321-config-crewscycle-time)
       - [3.2.2 Setting Classification](#322-setting-classification)
-      - [3.2.3 Setting advanced Setting](#323-setting-advanced-setting)
-      - [3.2.4 Pipeline configuration](#324-pipeline-configuration)
+      - [3.2.3 Rework times Setting](#323-rework-times-setting)
+      - [3.2.4 Setting advanced Setting](#324-setting-advanced-setting)
+      - [3.2.5 Pipeline configuration](#325-pipeline-configuration)
   - [3.3 Export and import config info](#33-export-and-import-config-info)
     - [3.3.1 Export Config Json File](#331-export-config-json-file)
     - [3.3.2 Import Config Json File](#332-import-config-json-file)
@@ -34,10 +35,11 @@
     - [3.4.1 Velocity](#341-velocity)
     - [3.4.2 Cycle Time](#342-cycle-time)
     - [3.4.3 Classification](#343-classification)
-    - [3.4.4 Deployment Frequency](#344-deployment-frequency)
-    - [3.4.5 Lead time for changes Data](#345-lead-time-for-changes-data)
-    - [3.4.6 Change Failure Rate](#346-change-failure-rate)
-    - [3.4.7 Mean time to recovery](#347-mean-time-to-recovery)
+    - [3.4.4 Rework](#344-rework)
+    - [3.4.5 Deployment Frequency](#345-deployment-frequency)
+    - [3.4.6 Lead time for changes Data](#346-lead-time-for-changes-data)
+    - [3.4.7 Dev Change Failure Rate](#347-dev-change-failure-rate)
+    - [3.4.8 Dev Mean time to recovery](#348-dev-mean-time-to-recovery)
   - [3.5 Export original data](#35-export-original-data)
     - [3.5.1 Export board data](#351-export-board-data)
       - [3.5.1.1 Done card exporting](#3511-done-card-exporting)
@@ -157,6 +159,7 @@ According to your selected required data, you need to input account settings for
 | Velocity              | Board          |
 | Cycle time            | Board          |
 | Classification        | Board          |
+| Rework times          | Board          |
 | Lead time for changes | Repo，Pipeline |
 | Deployment frequency  | Pipeline       |
 | Change failure rate   | Pipeline       |
@@ -219,7 +222,13 @@ _Image 3-6，Classification Settings_
 
 In classification settings, it will list all Context fields for your jira board. Users can select anyone to get the data for them. And according to your selection, in the export page, you will see the classification report to provide more insight with your board data.
 
-#### 3.2.3 Setting advanced Setting
+#### 3.2.3 Rework times Setting
+![Image 3-7](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/rework-setting-image/rework-times-settings.png)\
+_Image 3-7，Rework times Settings_
+
+In Rework times settings, it contains Rework to which state Input and Exclude which states(optional) Input. The options in the Rework to which state Input are all from Board mappings, the options are ordered, and when an option is selected, the rework information of the option and all subsequent options will be counted in the report page and export file. The Exclude which states(optional) Input can help you exclude certain subsequent options.
+
+#### 3.2.4 Setting advanced Setting
 
 ![Image 3-7](https://jsd.cdn.zzko.cn/gh/au-heartbeat/data-hosting@main/advanced-setting-image/advance-settings.png)\
 _Image 3-7，advanced Settings_
@@ -248,7 +257,7 @@ _Image 3-12，flagged-custom-field_
 3. at that time, user can see one api call which headers request URL is https://xxx.atlassian.net/rest/gira/1/ . 
 4. then go to review part, find fieldDisplayName which show Flagged and story point estimate and get the fieldId as the custom-field that user need to input in advanced settings. from image 3-11 and 3-12 we can find that  flagged custom field is customfield_10021, story points custom field is customfield_10016. 
 
-#### 3.2.4 Pipeline configuration
+#### 3.2.5 Pipeline configuration
 
 ![Image 3-13](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/7.png)\
 _Image 3-13，Settings for Pipeline_
@@ -318,7 +327,16 @@ The percentage value represent the count of that type tickets vs total count of 
 ![Image 3-18](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/11.png)\
 _Image 3-18，Classification Report_
 
-### 3.4.4 Deployment Frequency
+### 3.4.4 Rework
+
+It will show the rework data of board on your selection on `Rework times settins` in metrics page.
+
+If "In dev" is selected in the "Rework to which column", we will count the number of times the subsequent options in the options are reworked back to the "In dev" state.
+
+![Image 3-18](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/rework-setting-image/rework-detail.png)\
+_Image 3-19，Rework Report_
+
+### 3.4.5 Deployment Frequency
 - Definition for ‘Deployment Frequency': this metrics records how often you deploy code to production on a daily basis.
 - Formula for ‘Deployment Frequency': the umber of build for（Status = passed & Valid = true）/working days
 ![Image 3-24](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/export/export-pipline-data.png)\
@@ -326,7 +344,7 @@ _Image 3-24，export pipline data_
 ![Image 3-19](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/12.png)\
 _Image 3-19，Deployment Frequency Report_
 
-### 3.4.5 Lead time for changes Data
+### 3.4.6 Lead time for changes Data
 - Definition for ‘Lead time for changes': this metrics records the time from first code commit to code successfully running in production.
 - Formula for ‘PR lead time':
 -- if PR merge not null: PR lead time = PR merged time - code committed time
@@ -340,14 +358,14 @@ _Image 3-19，Deployment Frequency Report_
 ![Image 3-20](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/13.png)\
 _Image 3-20，Lead time for changes Report_
 
-### 3.4.6 Dev Change Failure Rate
+### 3.4.7 Dev Change Failure Rate
 - Definition for ‘Dev Change Failure Rate': this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on development，which is the percentage of failed pipelines in the total pipelines, and you chan select different pipeline as your final step,and this value is lower means failed pipeline is fewer.
 - Formula for ‘Dev Change Failure Rate': the number of build for (Status = failed)/the number of build for [（Status = passed & Valid = true）+ the number of build for (status=failed)]
 
 ![Image 3-21](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/14.png)\
 _Image 3-21，Change Failure Rate Report_
 
-### 3.4.7 Dev Mean time to recovery
+### 3.4.8 Dev Mean time to recovery
 - Definition for ‘Dev Mean time to recovery': this metrics alse defined based on development, it records how long it generally takes to restore when pipeline failed, and If this value is less than 8 hours, it means ‘red does not last overnight’, which means our repair speed is relatively good.
 - Formula for ‘Dev Mean time to recovery': sum[he time difference from the first fail to the first pass for deployment completed time]/ the number of repairs
 
@@ -398,7 +416,8 @@ _Image 3-22，Exported Board Data_
 |Block Days|Blocked days for each ticket|
 |Review Days|--|
 |Original Cycle Time: {Column Name}|The data for Jira board original data |
-
+|Rework: total - {rework status} | The total number of rework times |
+|Rework: from {subsequent status} | The number of rework times |
 ### 3.5.2 Export pipeline data
 
 It will export a csv file for pipeline data (image 3-17).
