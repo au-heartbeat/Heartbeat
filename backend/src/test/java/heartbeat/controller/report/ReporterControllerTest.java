@@ -115,7 +115,7 @@ class ReporterControllerTest {
 		String currentTimeStamp = "1685010080107";
 		request.setCsvTimeStamp(currentTimeStamp);
 
-		doAnswer(invocation -> null).when(reporterService).generateReportByType(request);
+		doAnswer(invocation -> null).when(reporterService).generateReport(request);
 
 		mockMvc
 			.perform(post("/reports").contentType(MediaType.APPLICATION_JSON)
@@ -126,7 +126,7 @@ class ReporterControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(reporterService, times(1)).generateReportByType(request);
+		verify(reporterService, times(1)).generateReport(request);
 	}
 
 }
