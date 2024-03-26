@@ -59,7 +59,7 @@ public class ReportController {
 	@PostMapping
 	public ResponseEntity<CallbackResponse> generateReport(@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
-		reportService.generateReportByType(request);
+		reportService.generateReport(request);
 		String callbackUrl = "/reports/" + request.getCsvTimeStamp();
 		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)

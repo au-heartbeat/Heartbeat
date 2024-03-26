@@ -92,7 +92,7 @@ public class ReportServiceTest {
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 
-			reportService.generateReportByType(request);
+			reportService.generateReport(request);
 			Thread.sleep(100);
 
 			verify(asyncMetricsDataHandler)
@@ -114,7 +114,7 @@ public class ReportServiceTest {
 			request.setMetricTypes(List.of("dora"));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 
-			reportService.generateReportByType(request);
+			reportService.generateReport(request);
 			Thread.sleep(100);
 
 			verify(asyncMetricsDataHandler)
@@ -139,7 +139,7 @@ public class ReportServiceTest {
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 
-			reportService.generateReportByType(request);
+			reportService.generateReport(request);
 			Thread.sleep(100);
 
 			verify(asyncMetricsDataHandler)
