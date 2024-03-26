@@ -163,13 +163,13 @@ loop until (metricTypes list final element)
             deactivate Backend
         end
     end
+   end
      
      Backend --> Backend: wait for threadList element all execute completed
      Backend --> Backend: generate metricCsv
      note left
      update allMetricsCompleted as true and write it on the file
      end note
-end 
     deactivate Backend
 end 
 
