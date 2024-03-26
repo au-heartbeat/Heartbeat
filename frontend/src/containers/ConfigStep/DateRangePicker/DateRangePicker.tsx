@@ -6,36 +6,42 @@ import {
   RemoveButtonContainer,
 } from '@src/containers/ConfigStep/DateRangePicker/style';
 import {
+  calculateDateRangeIntersection,
+  calculateStartDateShouldDisable,
+  calculateEndDateShouldDisable,
+} from '@src/containers/ConfigStep/DateRangePicker/validation';
+import {
   initDeploymentFrequencySettings,
   saveUsers,
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
-import {
-  calculateDateRangeIntersection,
-  calculateDateIsAvailable,
-} from '@src/containers/ConfigStep/DateRangePicker/validation';
 import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS, REMOVE_BUTTON_TEXT, DATE_RANGE_FORMAT } from '@src/constants/resources';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { Z_INDEX } from '@src/constants/commons';
-import { useCallback, useMemo } from 'react';
 import { Nullable } from '@src/utils/types';
 import dayjs, { Dayjs } from 'dayjs';
+import { useCallback } from 'react';
 import isNull from 'lodash/isNull';
 
 export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isShowRemoveButton = dateRangeGroup.length > 1;
-  const dateRangeGroupExcludeSelf = useMemo(
-    () => dateRangeGroup.filter((_, idx) => idx !== index),
-    [dateRangeGroup, index],
+  const dateRangeGroupExcludeSelf = dateRangeGroup.filter((_, idx) => idx !== index);
+  const shouldStartDateDisableDate = calculateStartDateShouldDisable.bind(
+    null,
+    dayjs(endDate),
+    dateRangeGroupExcludeSelf,
   );
-  const disabledDateRange = calculateDateRangeIntersection(dateRangeGroupExcludeSelf);
-  const shouldDisableDate = calculateDateIsAvailable.bind(null, disabledDateRange);
+  const shouldEndDateDisableDate = calculateEndDateShouldDisable.bind(
+    null,
+    dayjs(startDate),
+    dateRangeGroupExcludeSelf,
+  );
 
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
@@ -46,14 +52,19 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
+    const [earliest, latest] = calculateDateRangeIntersection(dateRangeGroupExcludeSelf);
     if (value) {
       const currentDate = dayjs(new Date());
-      const valueToStartDate = value.startOf('date').format(DATE_RANGE_FORMAT);
-      const daysBetweenCurrentAndStartDate = currentDate.diff(valueToStartDate, 'days');
+      let lastAvailableDate: Dayjs = currentDate;
+      let draftDaysAddition: number;
+      if (earliest.isValid() && latest.isValid()) {
+        lastAvailableDate = value.isBefore(earliest) ? earliest.subtract(1, 'day') : currentDate;
+      }
+      draftDaysAddition = lastAvailableDate.diff(value, 'days');
       daysAddToEndDate =
-        daysBetweenCurrentAndStartDate >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
+        draftDaysAddition >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
           ? DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
-          : daysBetweenCurrentAndStartDate;
+          : draftDaysAddition;
     }
     const newDateRangeGroup = dateRangeGroup.map(({ startDate, endDate }, idx) => {
       if (idx === index) {
@@ -102,10 +113,15 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
       <StyledDateRangePickerContainer className='range-picker-row'>
         <StyledDateRangePicker
           disableFuture
-          shouldDisableDate={(date) => shouldDisableDate(date as Dayjs)}
+          // todo typescript optimization
+          shouldDisableDate={(date) => shouldStartDateDisableDate(date as Dayjs)}
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={(newValue) => changeStartDate(newValue as unknown as Dayjs)}
+          onError={(error, value) => {
+            console.log('error', error);
+            console.log('value', value);
+          }}
           slots={{
             openPickerIcon: CalendarTodayIcon,
           }}
@@ -121,6 +137,8 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
         <StyledDateRangePicker
           disableFuture
           label='To *'
+          // todo typescript optimization
+          shouldDisableDate={(date) => shouldEndDateDisableDate(date as Dayjs)}
           value={endDate ? dayjs(endDate) : null}
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}

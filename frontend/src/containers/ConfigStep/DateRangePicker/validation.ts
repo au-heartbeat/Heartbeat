@@ -1,33 +1,72 @@
 import { BasicConfigState } from '@src/context/config/configSlice';
+import dayjsSameOrBeforePlugin from 'dayjs/plugin/isSameOrBefore';
+import dayjsSameOrAfterPlugin from 'dayjs/plugin/isSameOrAfter';
 import dayjs, { Dayjs } from 'dayjs';
 
-type IDateRange = Dayjs[];
+dayjs.extend(dayjsSameOrBeforePlugin);
+dayjs.extend(dayjsSameOrAfterPlugin);
+
+// some SIGNIFICANT prerequisites :
+// dayjs(undefined).isValid() true
+// dayjs(null).isValid() false
+// dayjs('').isValid() false
+// if dayjsA or dayjsB either is invalid
+// all comparisons e.g. dayjsA.isBefore(dayjsB) always return false
+
+type TDateRange = Dayjs[];
 
 export const calculateDateRangeIntersection = (dateRangeGroup: BasicConfigState['basic']['dateRange']) => {
-  let result = [dayjs(null), dayjs(null)];
+  let earliest = dayjs(dateRangeGroup[0]?.startDate || null);
+  let latest = dayjs(dateRangeGroup[0]?.endDate || null);
+  let result = [earliest, latest];
 
-  try {
-    let earliest = dayjs(dateRangeGroup[0].startDate);
-    let latest = dayjs(dateRangeGroup[0].startDate);
-
-    for (let { startDate, endDate } of dateRangeGroup) {
-      const startDayjsObj = dayjs(startDate);
-      const endDayjsObj = dayjs(endDate);
-      if (startDayjsObj.isBefore(earliest)) {
-        earliest = startDayjsObj;
-      }
-      if (endDayjsObj.isAfter(latest)) {
-        latest = endDayjsObj;
-      }
+  for (let { startDate, endDate } of dateRangeGroup) {
+    const startDayjsObj = dayjs(startDate);
+    const endDayjsObj = dayjs(endDate);
+    if (!earliest.isValid()) {
+      earliest = startDayjsObj;
+    } else if (startDayjsObj.isBefore(earliest)) {
+      earliest = startDayjsObj;
     }
 
-    result = [earliest, latest];
-  } catch (e) {
-    console.error('[calculateDateRangeIntersection] error', e);
+    if (!latest.isValid()) {
+      latest = endDayjsObj;
+    } else if (endDayjsObj.isAfter(latest)) {
+      latest = endDayjsObj;
+    }
   }
+  result = [earliest, latest];
+  console.log('calculateDateRangeIntersection result', result);
 
   return result;
 };
 
-export const calculateDateIsAvailable = ([earliest, latest]: IDateRange, date: dayjs.Dayjs) =>
-  date.isBefore(earliest) || date.isAfter(latest);
+export const calculateStartDateShouldDisable = (
+  selfEndDate: Dayjs,
+  coveredRange: BasicConfigState['basic']['dateRange'],
+  date: Dayjs,
+) => {
+  const [earliest, latest] = calculateDateRangeIntersection(coveredRange);
+  let isDateInCovredRange: boolean;
+  if (!earliest.isValid() || !latest.isValid()) {
+    isDateInCovredRange = false;
+  } else {
+    isDateInCovredRange = date.isSameOrAfter(earliest, 'date') && date.isSameOrBefore(latest, 'date');
+  }
+  return isDateInCovredRange || date.isAfter(selfEndDate);
+};
+
+export const calculateEndDateShouldDisable = (
+  selfStartDate: Dayjs,
+  coveredRange: BasicConfigState['basic']['dateRange'],
+  date: Dayjs,
+) => {
+  const [earliest, latest] = calculateDateRangeIntersection(coveredRange);
+  let isDateInCovredRange: boolean;
+  if (!earliest.isValid() || !latest.isValid()) {
+    isDateInCovredRange = false;
+  } else {
+    isDateInCovredRange = date.isSameOrAfter(earliest, 'date') && date.isSameOrBefore(latest, 'date');
+  }
+  return isDateInCovredRange || date.isBefore(selfStartDate);
+};
