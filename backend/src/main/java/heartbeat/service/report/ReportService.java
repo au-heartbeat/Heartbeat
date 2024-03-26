@@ -6,6 +6,7 @@ import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.util.IdUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
@@ -61,11 +62,11 @@ public class ReportService {
 		ReportResponse reportResponse = generateReporterService
 			.getComposedReportResponseWithRequiredCsvField(timeStamp);
 		generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
-		asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(timeStamp);
+		asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
 	}
 
 	private void initializeMetricsDataCompletedInHandler(List<String> metricTypes, String timeStamp) {
-		asyncMetricsDataHandler.putMetricsDataCompleted(timeStamp,
+		asyncMetricsDataHandler.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp),
 				MetricsDataCompleted.builder()
 					.boardMetricsCompleted(metricTypes.contains("board") ? false : null)
 					.doraMetricsCompleted(metricTypes.contains("dora") ? false : null)

@@ -90,7 +90,8 @@ public class GenerateReporterService {
 				boardReportId);
 		try {
 			saveReporterInHandler(generateBoardReporter(request), boardReportId);
-			asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), BOARD);
+			asyncMetricsDataHandler
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
 			log.info(
 					"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 					request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
@@ -99,7 +100,8 @@ public class GenerateReporterService {
 		catch (BaseException e) {
 			asyncExceptionHandler.put(boardReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
-				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(boardReportId, BOARD);
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
 		}
 	}
 
@@ -116,7 +118,8 @@ public class GenerateReporterService {
 			generateSourceControlReport(sourceControlRequest, fetchedData);
 		}
 		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
-		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), DORA);
+		asyncMetricsDataHandler
+			.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 	}
 
 	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
@@ -136,7 +139,8 @@ public class GenerateReporterService {
 		catch (BaseException e) {
 			asyncExceptionHandler.put(pipelineReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
-				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getDoraReportId(), DORA);
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 			if (Objects.equals(400, e.getStatus())) {
 				throw e;
 			}
@@ -160,7 +164,8 @@ public class GenerateReporterService {
 		catch (BaseException e) {
 			asyncExceptionHandler.put(sourceControlReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
-				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(request.getDoraReportId(), DORA);
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 			if (Objects.equals(400, e.getStatus())) {
 				throw e;
 			}
@@ -357,7 +362,7 @@ public class GenerateReporterService {
 		if (validateExpire(System.currentTimeMillis(), Long.parseLong(reportTimeStamp))) {
 			throw new GenerateReportException("Failed to get report due to report time expires");
 		}
-		return asyncMetricsDataHandler.getMetricsDataCompleted(reportTimeStamp);
+		return asyncMetricsDataHandler.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(reportTimeStamp));
 	}
 
 	public ReportResponse getComposedReportResponse(String reportId) {
