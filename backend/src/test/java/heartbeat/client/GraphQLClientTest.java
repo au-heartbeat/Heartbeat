@@ -83,12 +83,10 @@ public class GraphQLClientTest {
 
 	@Test
 	void shouldThrowUnauthorizedExceptionWhenTokenInvalid() {
-		mockServer.enqueue(
-			new MockResponse()
-				.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
-					+ "      \"message\": \"Please supply a valid API Access Token\"\n" + "    }\n"
-					+ "  ]\n" + "}")
-				.setResponseCode(401));
+		mockServer.enqueue(new MockResponse()
+			.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
+					+ "      \"message\": \"Please supply a valid API Access Token\"\n" + "    }\n" + "  ]\n" + "}")
+			.setResponseCode(401));
 
 		String httpUrl = mockServer.url("/").toString();
 		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
@@ -96,7 +94,7 @@ public class GraphQLClientTest {
 
 		GraphQLClient mockGraphQLClient = new GraphQLClient();
 		Query<GetPipelineInfoQuery.Data> mockQuery = new GetPipelineInfoQuery(Optional.present("slug"),
-			Optional.present(10));
+				Optional.present(10));
 
 		assertThatThrownBy(() -> mockGraphQLClient.fetchListOfPipeLineInfo(mockedEnum, "mock token", "mock slug", 1))
 			.isInstanceOf(UnauthorizedException.class)
