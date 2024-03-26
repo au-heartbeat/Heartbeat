@@ -168,7 +168,8 @@ class GenerateReporterServiceTest {
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler)
-				.updateMetricsDataCompletedInHandler(TIMESTAMP, MetricType.BOARD);
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
+						MetricType.BOARD);
 			when(kanbanService.fetchDataFromKanban(request)).thenReturn(FetchedData.CardCollectionInfo.builder()
 				.realDoneCardCollection(CardCollection.builder().build())
 				.build());
@@ -196,7 +197,8 @@ class GenerateReporterServiceTest {
 			assertEquals(4, response.getRework().getTotalReworkTimes());
 			assertEquals(2, response.getRework().getTotalReworkCards());
 			assertNull(response.getRework().getFromDone());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()), any());
+			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -210,7 +212,8 @@ class GenerateReporterServiceTest {
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler)
-				.updateMetricsDataCompletedInHandler(TIMESTAMP, MetricType.BOARD);
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
+						MetricType.BOARD);
 			generateReporterService.generateBoardReport(request);
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
@@ -223,7 +226,8 @@ class GenerateReporterServiceTest {
 			assertNull(response.getCycleTime());
 			assertNull(response.getVelocity());
 			assertNull(response.getClassificationList());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()), any());
+			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -238,7 +242,8 @@ class GenerateReporterServiceTest {
 			doAnswer(invocation -> null).when(asyncReportRequestHandler).putReport(any(), any());
 			doThrow(new GenerateReportException("Failed to update metrics data completed through this timestamp."))
 				.when(asyncMetricsDataHandler)
-				.updateMetricsDataCompletedInHandler(request.getCsvTimeStamp(), MetricType.BOARD);
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
+						MetricType.BOARD);
 
 			generateReporterService.generateBoardReport(request);
 
@@ -254,8 +259,8 @@ class GenerateReporterServiceTest {
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(1800000L, response.getExportValidityTime());
 			assertNull(response.getCycleTime());
-			// verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getBoardReportId()),
-			// any());
+			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -269,7 +274,8 @@ class GenerateReporterServiceTest {
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler)
-				.updateMetricsDataCompletedInHandler(TIMESTAMP, MetricType.BOARD);
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
+						MetricType.BOARD);
 
 			generateReporterService.generateBoardReport(request);
 
@@ -280,8 +286,8 @@ class GenerateReporterServiceTest {
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler, never()).putReport(eq(request.getBoardReportId()), any());
-			verify(asyncMetricsDataHandler, never()).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()),
-					any());
+			verify(asyncMetricsDataHandler, never()).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -296,7 +302,8 @@ class GenerateReporterServiceTest {
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler)
-				.updateMetricsDataCompletedInHandler(TIMESTAMP, MetricType.BOARD);
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
+						MetricType.BOARD);
 			when(velocityCalculator.calculateVelocity(any()))
 				.thenReturn(Velocity.builder().velocityForSP(10).velocityForCards(20).build());
 			when(kanbanService.fetchDataFromKanban(request)).thenReturn(FetchedData.CardCollectionInfo.builder()
@@ -315,7 +322,8 @@ class GenerateReporterServiceTest {
 			assertEquals(1800000L, response.getExportValidityTime());
 			assertEquals(10, response.getVelocity().getVelocityForSP());
 			assertEquals(20, response.getVelocity().getVelocityForCards());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()), any());
+			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -352,7 +360,8 @@ class GenerateReporterServiceTest {
 			assertEquals(10, response.getCycleTime().getAverageCycleTimePerSP());
 			assertEquals(20, response.getCycleTime().getAverageCycleTimePerCard());
 			assertEquals(15, response.getCycleTime().getTotalTimeForCards());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()), any());
+			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -367,7 +376,8 @@ class GenerateReporterServiceTest {
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler)
-				.updateMetricsDataCompletedInHandler(TIMESTAMP, MetricType.BOARD);
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
+						MetricType.BOARD);
 			List<Classification> classifications = List.of(Classification.builder().build());
 			when(classificationCalculator.calculate(any(), any())).thenReturn(classifications);
 			when(kanbanService.fetchDataFromKanban(request)).thenReturn(FetchedData.CardCollectionInfo.builder()
@@ -384,7 +394,8 @@ class GenerateReporterServiceTest {
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(1800000L, response.getExportValidityTime());
 			assertEquals(classifications, response.getClassificationList());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()), any());
+			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -400,12 +411,14 @@ class GenerateReporterServiceTest {
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler)
-				.updateMetricsDataCompletedInHandler(TIMESTAMP, MetricType.BOARD);
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
+						MetricType.BOARD);
 
 			generateReporterService.generateBoardReport(request);
 
 			verify(asyncExceptionHandler).put(eq(request.getBoardReportId()), any());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getBoardReportId()), any());
+			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 	}
@@ -566,8 +579,8 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateDoraReport(request);
 
 			verify(asyncExceptionHandler).put(eq(request.getPipelineReportId()), any());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getDoraReportId()), any());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()), any());
+			verify(asyncMetricsDataHandler, times(2)).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 		@Test
@@ -666,8 +679,8 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateDoraReport(request);
 
 			verify(asyncExceptionHandler).put(eq(request.getSourceControlReportId()), any());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getDoraReportId()), any());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getCsvTimeStamp()), any());
+			verify(asyncMetricsDataHandler, times(2)).updateMetricsDataCompletedInHandler(
+					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 	}
@@ -708,15 +721,18 @@ class GenerateReporterServiceTest {
 
 		String reportId;
 
+		String dataCompletedId;
+
 		@BeforeEach
 		void setUp() {
 			reportId = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 200);
+			dataCompletedId = IdUtil.getDataCompletedPrefix(reportId);
 		}
 
 		@Test
 		void shouldGetDataFromCache() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(dataCompletedId))
 				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(null);
 
@@ -732,7 +748,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldReturnErrorDataWhenExceptionIs404Or403Or401() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(dataCompletedId))
 				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new NotFoundException("error")));
 
@@ -746,7 +762,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowGenerateReportExceptionWhenErrorIs500() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(dataCompletedId))
 				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new GenerateReportException("errorMessage")));
 
@@ -763,7 +779,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowServiceUnavailableExceptionWhenErrorIs503() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(dataCompletedId))
 				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());
 			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new ServiceUnavailableException("errorMessage")));
 
@@ -780,7 +796,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowRequestFailedExceptionWhenErrorIsDefault() {
 			when(asyncReportRequestHandler.getReport(any())).thenReturn(ReportResponse.builder().build());
-			when(asyncMetricsDataHandler.getMetricsDataCompleted(reportId))
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(dataCompletedId))
 				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(false).doraMetricsCompleted(true).allMetricsCompleted(false).build());			when(asyncExceptionHandler.get(any())).thenReturn(new AsyncExceptionDTO(new BadRequestException("error")));
 
 			try {

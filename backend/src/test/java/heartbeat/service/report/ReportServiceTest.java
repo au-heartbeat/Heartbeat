@@ -5,6 +5,7 @@ import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.util.IdUtil;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,11 +95,13 @@ public class ReportServiceTest {
 			reportService.generateReportByType(request);
 			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
+			verify(asyncMetricsDataHandler)
+				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 			verify(generateReporterService).generateBoardReport(request);
 			verify(generateReporterService, never()).generateDoraReport(request);
 			verify(generateReporterService).getComposedReportResponseWithRequiredCsvField(request.getCsvTimeStamp());
-			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
+			verify(asyncMetricsDataHandler)
+				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 		}
 
 		@Test
@@ -114,11 +117,13 @@ public class ReportServiceTest {
 			reportService.generateReportByType(request);
 			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
+			verify(asyncMetricsDataHandler)
+				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 			verify(generateReporterService).generateDoraReport(request);
 			verify(generateReporterService, never()).generateBoardReport(request);
 			verify(generateReporterService).getComposedReportResponseWithRequiredCsvField(request.getCsvTimeStamp());
-			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
+			verify(asyncMetricsDataHandler)
+				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 		}
 
 		@Test
@@ -137,11 +142,13 @@ public class ReportServiceTest {
 			reportService.generateReportByType(request);
 			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(request.getCsvTimeStamp(), expected);
+			verify(asyncMetricsDataHandler)
+				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 			verify(generateReporterService).generateDoraReport(request);
 			verify(generateReporterService).generateBoardReport(request);
 			verify(generateReporterService).getComposedReportResponseWithRequiredCsvField(request.getCsvTimeStamp());
-			verify(asyncMetricsDataHandler).updateAllMetricsCompletedInHandler(request.getCsvTimeStamp());
+			verify(asyncMetricsDataHandler)
+				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 		}
 
 	}
