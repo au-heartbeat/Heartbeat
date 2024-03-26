@@ -14,11 +14,13 @@ export class MetricsStep {
   readonly loadings: Locator;
   readonly saveAsButton: Locator;
 
+  readonly boardNocardReminder: Locator;
   readonly boardCrewSettingsLabel: Locator;
   readonly boardCrewSettingChipsContainer: Locator;
   readonly boardCrewSettingSelectedChips: Locator;
   readonly boardLastAssigneeRadioBox: Locator;
   readonly boardHistoricalAssigneeRadioBox: Locator;
+  readonly boardNoCrewsErrorMessage: Locator;
   readonly boardCycleTimeSection: Locator;
   readonly boardByColumnRadioBox: Locator;
   readonly boardByStatusRadioBox: Locator;
@@ -50,7 +52,9 @@ export class MetricsStep {
   readonly pipelineDefaultBranchSelectContainer: Locator;
   readonly pipelineDefaultSelectedBranchChips: Locator;
   readonly pipelineBranchSelectIndicator: Locator;
+  readonly pipelineStepsErrorMessage: Locator;
   readonly pipelineBranchesErrorMessage: Locator;
+  readonly pipelineNewPipelineButton: Locator;
   readonly pipelineCrewSettingsLabel: Locator;
   readonly pipelineCrewSettingChipsContainer: Locator;
   readonly pipelineCrewSettingSelectedChips: Locator;
@@ -66,6 +70,7 @@ export class MetricsStep {
     this.pipelineConfigurationTitle = page.getByText('Pipeline configuration');
     this.loadings = page.getByTestId('loading');
 
+    this.boardNocardReminder = page.getByText('No card within selected date range!');
     this.boardCrewSettingsLabel = page.getByLabel('Included Crews *');
     this.boardCrewSettingChipsContainer = page.getByLabel('Included Crews multiple select').first();
     this.boardCrewSettingSelectedChips = this.boardCrewSettingChipsContainer
@@ -73,6 +78,7 @@ export class MetricsStep {
       .filter({ hasText: /.+/ });
     this.boardLastAssigneeRadioBox = page.getByLabel('Last assignee');
     this.boardHistoricalAssigneeRadioBox = page.getByLabel('Historical assignee');
+    this.boardNoCrewsErrorMessage = page.getByText('Included Crews is required');
     this.boardCycleTimeSection = page.getByLabel('Cycle time settings section');
     this.boardReworkTimeSettingSingleInput = page.getByTestId('rework-single-selection-rework-to-which-state');
     this.boardByColumnRadioBox = this.boardCycleTimeSection.getByLabel('By Column');
@@ -135,8 +141,10 @@ export class MetricsStep {
     this.pipelineDefaultSelectedBranchChips = this.pipelineDefaultBranchSelectContainer
       .getByRole('button')
       .filter({ hasText: /.+/ });
+    this.pipelineStepsErrorMessage = page.getByText('No steps for this pipeline!');
     this.pipelineBranchesErrorMessage = page.getByText('The codebase branch marked in red is invalid!');
     this.pipelineBranchSelectIndicator = page.getByRole('progressbar');
+    this.pipelineNewPipelineButton = page.getByRole('button', { name: 'New Pipeline' });
     this.pipelineCrewSettingsLabel = this.pipelineSettingSection
       .getByLabel('Included Crews multiple select')
       .getByLabel('Included Crews');
@@ -187,6 +195,10 @@ export class MetricsStep {
     await expect(this.boardByColumnRadioBox).toBeChecked();
   }
 
+  async checkBoardNoCard() {
+    await expect(this.boardNocardReminder).toBeVisible();
+  }
+
   async selectCrews(crews: string[]) {
     await this.boardCrewSettingsLabel.click();
     const options = this.page.getByRole('option');
@@ -222,6 +234,10 @@ export class MetricsStep {
       await expect(this.boardCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
     });
     await this.page.keyboard.press('Escape');
+  }
+
+  async checkNoCrewsReminder() {
+    await expect(this.boardNoCrewsErrorMessage).toBeVisible();
   }
 
   async selectClassifications(classificationKeys: string[]) {
@@ -348,6 +364,11 @@ export class MetricsStep {
     );
   }
 
+  async selectDoneHeartbeatState(doneOption: string) {
+    await this.boardCycleTimeInputForDone.click();
+    await this.page.getByRole('option', { name: doneOption }).click();
+  }
+
   async selectModifiedHeartbeatState([todoOption, doingOption, blockOption, testingOption, doneOption]: string[]) {
     await this.boardCycleTimeSelectForTODO.click();
     await this.page.getByRole('option', { name: todoOption }).click();
@@ -414,8 +435,61 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async deselectBranch(branch: string) {
+    await this.pipelineDefaultBranchSelectContainer.click();
+    await this.page.getByRole('option', { name: branch }).getByRole('checkbox').uncheck();
+  }
+
+  async addNewPipelineAndSelectSamePipeline(pipelineSettings: typeof metricsStepData.deployment) {
+    const firstPipelineConfig = pipelineSettings[0];
+    await this.pipelineNewPipelineButton.click();
+    await this.pipelineSettingSection
+      .locator('div')
+      .filter({ hasText: 'Organization *Remove' })
+      .getByLabel('Open')
+      .click();
+    await this.page.getByRole('option', { name: firstPipelineConfig.organization }).click();
+    const newOrganizationSelection = this.pipelineSettingSection
+      .locator('div')
+      .filter({ hasText: 'Organization *Pipeline Name *Remove' })
+      .getByLabel('Organization *');
+    await expect(newOrganizationSelection).toHaveAttribute('value', firstPipelineConfig.organization);
+
+    await this.pipelineSettingSection
+      .locator('div')
+      .filter({ hasText: 'Organization *Pipeline Name *Remove' })
+      .getByLabel('Open')
+      .nth(1)
+      .click();
+    await expect(this.page.getByRole('option', { name: firstPipelineConfig.pipelineName })).not.toBeEnabled();
+  }
+
+  async RemoveNewPipeline() {
+    await this.pipelineSettingSection
+      .locator('div')
+      .filter({ hasText: 'Organization *Pipeline Name *Remove' })
+      .locator('[data-test-id="remove-button"]')
+      .click();
+  }
+
+  async checkPipelineFillNoStep(pipelineSettings: typeof metricsStepData.deployment) {
+    const firstPipelineConfig = pipelineSettings[0];
+    await expect(this.page.getByRole('alert')).toContainText(
+      'There is no step during this period for this pipeline! Please change the search time in the Config page!',
+    );
+    await expect(this.pipelineOrganizationSelect).toHaveValue(firstPipelineConfig.organization);
+    await expect(this.pipelineNameSelect).toHaveValue(firstPipelineConfig.pipelineName);
+    await expect(this.pipelineStepSelect).toHaveValue('');
+    await expect(this.pipelineStepsErrorMessage).toBeVisible();
+    await expect(this.pipelineBranchSelect).toHaveValue('');
+  }
+
   async checkBranch(branches: string[]) {
     await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
+  }
+
+  async checkBranchIsInvalid() {
+    await expect(this.pipelineBranchesErrorMessage).toBeVisible();
   }
 
   async selectDefaultGivenPipelineSetting(

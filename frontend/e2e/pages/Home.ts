@@ -1,5 +1,9 @@
+import { importMultipleDoneProjectFromFile } from '../fixtures/importFile/multiple-done-config-file';
+import { importFlagAsBlockFile } from '../fixtures/importFile/add-flag-as-block-config-file';
+import { importInputWrongProjectFromFile } from '../fixtures/importFile/unhappy-path-file';
+import { importProjectFromFile } from '../fixtures/hb-e2e-for-importing-file';
+
 import { expect, Locator, Page } from '@playwright/test';
-import path from 'path';
 export class HomePage {
   readonly page: Page;
   readonly importProjectFromFileButton: Locator;
@@ -23,11 +27,36 @@ export class HomePage {
   async createANewProject() {
     await this.createANewProjectButton.click();
   }
-  async importProjectFromFile(jsonPath: string) {
-    const fileChooserPromise = this.page.waitForEvent('filechooser');
-    await this.importProjectFromFileButton.click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname, jsonPath));
+  async importProjectFromFile() {
+    await this.importProjectFromFileInput.setInputFiles({
+      name: 'hb-e2e-test',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(JSON.stringify(importProjectFromFile)),
+    });
+  }
+
+  async importFlagAsBlockProjectFromFile() {
+    await this.importProjectFromFileInput.setInputFiles({
+      name: 'hb-e2e-test',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(JSON.stringify(importFlagAsBlockFile)),
+    });
+  }
+
+  async importMultipleDoneProjectFromFile() {
+    await this.importProjectFromFileInput.setInputFiles({
+      name: 'hb-e2e-test',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(JSON.stringify(importMultipleDoneProjectFromFile)),
+    });
+  }
+
+  async importInputWrongProjectFromFile() {
+    await this.importProjectFromFileInput.setInputFiles({
+      name: 'hb-e2e-test',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(JSON.stringify(importInputWrongProjectFromFile)),
+    });
   }
 
   async waitForShown() {

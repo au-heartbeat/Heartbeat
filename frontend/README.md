@@ -25,25 +25,32 @@ open index.html
 
 ## 3. How to run e2e test
 
-1. Start the backend service
+1. Start the mock server
+
+```
+cd HearBeat/stubs
+docker-compose up -d
+```
+
+2. Start the backend service
 
 ```
 cd HearBeat/backend
-./gradlew bootRun --args='--spring.profiles.active=local'
+./gradlew bootRun --args='--spring.profiles.active=local --MOCK_SERVER_URL=http://localhost:4323'
 ```
 
-2. Start the frontend service
+3. Start the frontend service
 
 ```
 cd HearBeat/frontend
 pnpm start
 ```
 
-3. Run the e2e tests
+4. Run the e2e tests
 
 ```
 cd HearBeat/frontend
-pnpm e2e:local
+pnpm e2e / pnpm cypress open
 ```
 
 ## 4. Code development specification
