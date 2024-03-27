@@ -228,7 +228,6 @@ class GenerateReporterServiceTest {
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertNull(response.getRework());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(eq(request.getBoardReportId()), any());
 		}
 
 		@Test
@@ -257,42 +256,6 @@ class GenerateReporterServiceTest {
 			assertNull(response.getVelocity());
 			assertNull(response.getClassificationList());
 		}
-
-		// @Test
-		// void shouldThrowErrorWhenGetMetricDataCompletedIsNull() throws
-		// InterruptedException {
-		// GenerateReportRequest request = GenerateReportRequest.builder()
-		// .considerHoliday(false)
-		// .metrics(List.of())
-		// .buildKiteSetting(BuildKiteSetting.builder().build())
-		// .csvTimeStamp(TIMESTAMP)
-		// .build();
-		// when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(null);
-		// doAnswer(invocation -> null).when(asyncReportRequestHandler).putReport(any(),
-		// any());
-		//// doThrow(new GenerateReportException("Failed to update metrics data completed
-		// through this timestamp."))
-		//// .when(asyncMetricsDataHandler)
-		//// .updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
-		//// MetricType.BOARD);
-		//
-		// generateReporterService.generateBoardReport(request);
-		//
-		// verify(asyncExceptionHandler).remove(eq(request.getBoardReportId()));
-		//// verify(asyncExceptionHandler).put(eq(request.getBoardReportId()),
-		// exceptionCaptor.capture());
-		//// assertEquals("Failed to update metrics data completed through this
-		// timestamp.",
-		//// exceptionCaptor.getValue().getMessage());
-		// assertEquals(500, exceptionCaptor.getValue().getStatus());
-		// verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-		// verify(workDay).changeConsiderHolidayMode(false);
-		// verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportId()),
-		// responseArgumentCaptor.capture());
-		// ReportResponse response = responseArgumentCaptor.getValue();
-		// assertEquals(1800000L, response.getExportValidityTime());
-		// assertNull(response.getCycleTime());
-		// }
 
 		@Test
 		void shouldThrowErrorWhenJiraBoardSettingIsNull() {
