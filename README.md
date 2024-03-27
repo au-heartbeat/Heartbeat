@@ -331,8 +331,13 @@ _Image 3-18，Classification Report_
 
 It will show the rework data of board on your selection on `Rework times settins` in metrics page.
 
-If "In dev" is selected in the "Rework to which column", we will count the number of times the subsequent options in the options are reworked back to the "In dev" state.
+If "to do" is selected in the "Rework to which column", we will count the number of times the subsequent options in the options are reworked back to the "to do" state.
 
+- Definition for ‘Rework': cards roll back from a later state to a previous state, for example, one card move from 'testing' state to 'in dev' state, which means this card is reworked.
+- Formula for 'Total rework times': the total number of rework times in all done cards
+- Formula for 'Total rework cards': the total number of rework cards in all done cards
+- Formula for 'Rework cards ratio': total rework cards/throughput
+  
 ![Image 3-18](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/rework-setting-image/rework-detail.png)\
 _Image 3-19，Rework Report_
 
