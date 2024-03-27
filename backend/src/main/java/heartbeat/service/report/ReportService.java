@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
@@ -69,12 +70,16 @@ public class ReportService {
 	}
 
 	private void initializeMetricsDataCompletedInHandler(List<String> metricTypes, String timeStamp) {
-		asyncMetricsDataHandler.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp),
-				MetricsDataCompleted.builder()
-					.boardMetricsCompleted(metricTypes.contains("board") ? false : null)
-					.doraMetricsCompleted(metricTypes.contains("dora") ? false : null)
-					.allMetricsCompleted(false)
-					.build());
+		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler
+			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp));
+		if (Objects.isNull(previousMetricsCompleted)) {
+			asyncMetricsDataHandler.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp),
+					MetricsDataCompleted.builder()
+						.boardMetricsCompleted(metricTypes.contains("board") ? false : null)
+						.doraMetricsCompleted(metricTypes.contains("dora") ? false : null)
+						.allMetricsCompleted(false)
+						.build());
+		}
 	}
 
 }
