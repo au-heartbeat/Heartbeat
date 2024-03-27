@@ -4,7 +4,7 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
-import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker';
+import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { ERROR_DATE } from '../../fixtures';
@@ -30,12 +30,12 @@ const setup = () => {
   store = setupStore();
   return render(
     <Provider store={store}>
-      <DateRangePicker />
+      <DateRangePickerSection />
     </Provider>,
   );
 };
 
-describe('DateRangePicker', () => {
+describe('DateRangePickerSection', () => {
   const expectDate = (inputDate: HTMLInputElement) => {
     expect(inputDate.value).toEqual(expect.stringContaining(TODAY.date().toString()));
     expect(inputDate.value).toEqual(expect.stringContaining((TODAY.month() + 1).toString()));

@@ -27,10 +27,10 @@ import { selectDateRange, updateDateRange } from '@src/context/config/configSlic
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { Z_INDEX } from '@src/constants/commons';
-import { useCallback, useState } from 'react';
 import { Nullable } from '@src/utils/types';
 import { TextField } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
+import { useCallback } from 'react';
 import isNull from 'lodash/isNull';
 
 export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps) => {

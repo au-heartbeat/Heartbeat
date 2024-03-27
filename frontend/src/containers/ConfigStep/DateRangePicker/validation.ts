@@ -35,10 +35,8 @@ export const calculateDateRangeIntersection = (dateRangeGroup: BasicConfigState[
       latest = endDayjsObj;
     }
   }
-  result = [earliest, latest];
-  console.log('calculateDateRangeIntersection result', result);
 
-  return result;
+  return [earliest, latest];
 };
 
 export const calculateStartDateShouldDisable = (
