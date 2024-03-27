@@ -96,9 +96,6 @@ public class GenerateReporterService {
 		}
 		catch (BaseException e) {
 			asyncExceptionHandler.put(boardReportId, e);
-			if (List.of(401, 403, 404).contains(e.getStatus()))
-				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
 		}
 	}
 
@@ -126,7 +123,7 @@ public class GenerateReporterService {
 				request.getPipelineMetrics(), request.getConsiderHoliday(), request.getStartTime(),
 				request.getEndTime(), pipelineReportId);
 		try {
-			fetchOriginalData(request, fetchedData);
+			fetchBuildKiteData(request, fetchedData);
 			saveReporterInHandler(generatePipelineReporter(request, fetchedData), pipelineReportId);
 			log.info(
 					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
@@ -135,9 +132,6 @@ public class GenerateReporterService {
 		}
 		catch (BaseException e) {
 			asyncExceptionHandler.put(pipelineReportId, e);
-			if (List.of(401, 403, 404).contains(e.getStatus()))
-				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 			if (Objects.equals(400, e.getStatus())) {
 				throw e;
 			}
@@ -151,7 +145,7 @@ public class GenerateReporterService {
 				request.getSourceControlMetrics(), request.getConsiderHoliday(), request.getStartTime(),
 				request.getEndTime(), sourceControlReportId);
 		try {
-			fetchOriginalData(request, fetchedData);
+			fetchGitHubData(request, fetchedData);
 			saveReporterInHandler(generateSourceControlReporter(request, fetchedData), sourceControlReportId);
 			log.info(
 					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
@@ -160,9 +154,6 @@ public class GenerateReporterService {
 		}
 		catch (BaseException e) {
 			asyncExceptionHandler.put(sourceControlReportId, e);
-			if (List.of(401, 403, 404).contains(e.getStatus()))
-				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 			if (Objects.equals(400, e.getStatus())) {
 				throw e;
 			}
@@ -199,7 +190,7 @@ public class GenerateReporterService {
 
 	private synchronized ReportResponse generateBoardReporter(GenerateReportRequest request) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
-		FetchedData fetchedData = fetchOriginalData(request, new FetchedData());
+		FetchedData fetchedData = fetchJiraBoardData(request, new FetchedData());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
@@ -245,25 +236,28 @@ public class GenerateReporterService {
 		return reportResponse;
 	}
 
-	private FetchedData fetchOriginalData(GenerateReportRequest request, FetchedData fetchedData) {
-		if (CollectionUtils.isNotEmpty(request.getBoardMetrics())) {
-			if (request.getJiraBoardSetting() == null)
-				throw new BadRequestException("Failed to fetch Jira info due to Jira board setting is null.");
-			fetchedData.setCardCollectionInfo(kanbanService.fetchDataFromKanban(request));
-		}
-
-		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
-			if (request.getCodebaseSetting() == null)
-				throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
-			fetchedData.setBuildKiteData(pipelineService.fetchGithubData(request));
-		}
-
+	private void fetchBuildKiteData(GenerateReportRequest request, FetchedData fetchedData) {
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
 			if (request.getBuildKiteSetting() == null)
 				throw new BadRequestException("Failed to fetch BuildKite info due to BuildKite setting is null.");
 			fetchedData.setBuildKiteData(pipelineService.fetchBuildKiteInfo(request));
 		}
+	}
 
+	private void fetchGitHubData(GenerateReportRequest request, FetchedData fetchedData) {
+		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
+			if (request.getCodebaseSetting() == null)
+				throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
+			fetchedData.setBuildKiteData(pipelineService.fetchGithubData(request));
+		}
+	}
+
+	private FetchedData fetchJiraBoardData(GenerateReportRequest request, FetchedData fetchedData) {
+		if (CollectionUtils.isNotEmpty(request.getBoardMetrics())) {
+			if (request.getJiraBoardSetting() == null)
+				throw new BadRequestException("Failed to fetch Jira info due to Jira board setting is null.");
+			fetchedData.setCardCollectionInfo(kanbanService.fetchDataFromKanban(request));
+		}
 		return fetchedData;
 	}
 

@@ -417,8 +417,6 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateBoardReport(request);
 
 			verify(asyncExceptionHandler).put(eq(request.getBoardReportId()), any());
-			verify(asyncMetricsDataHandler).updateMetricsDataCompletedInHandler(
-					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
 	}
@@ -579,7 +577,7 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateDoraReport(request);
 
 			verify(asyncExceptionHandler).put(eq(request.getPipelineReportId()), any());
-			verify(asyncMetricsDataHandler, times(2)).updateMetricsDataCompletedInHandler(
+			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(
 					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
@@ -679,7 +677,7 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateDoraReport(request);
 
 			verify(asyncExceptionHandler).put(eq(request.getSourceControlReportId()), any());
-			verify(asyncMetricsDataHandler, times(2)).updateMetricsDataCompletedInHandler(
+			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(
 					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
 		}
 
