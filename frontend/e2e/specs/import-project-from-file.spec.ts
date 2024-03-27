@@ -3,6 +3,9 @@ import { importMultipleDoneProjectFromFile } from '../fixtures/importFile/multip
 import { ProjectCreationType } from 'e2e/pages/metrics/ReportStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import { clearTempDir } from 'e2e/utils/clearTempDir';
+import {
+  config as metricsStepData,
+} from "../fixtures/createNew/metricsStep";
 
 test.beforeAll(async () => {
   await clearTempDir();
@@ -10,6 +13,10 @@ test.beforeAll(async () => {
 
 test('Import project from file', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const hbStateData = importMultipleDoneProjectFromFile.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+
+  const hbStateDataEmptyByStatus = importMultipleDoneProjectFromFile.cycleTime.jiraColumnsEmptyByStatus.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
@@ -25,7 +32,18 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkCrewsAreChanged(importMultipleDoneProjectFromFile.crews);
   await metricsStep.checkLastAssigneeCrewFilterChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
-  await metricsStep.checkHeartbeatStateIsSet(hbStateData);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+
+  await metricsStep.clickCycleTimeSettingByStatus();
+  await metricsStep.checkCycleTimeSettingIsByStatus();
+  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
+  await metricsStep.clickCycleTimeSettingByColumn();
+  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
+
+  await metricsStep.selectHeartbeatState(hbStateData);
+
+  await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
+
   await metricsStep.checkClassifications(importMultipleDoneProjectFromFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
 

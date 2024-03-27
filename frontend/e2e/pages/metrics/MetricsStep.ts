@@ -198,6 +198,18 @@ export class MetricsStep {
     await expect(this.boardByColumnRadioBox).toBeChecked();
   }
 
+  async checkCycleTimeSettingIsByStatus() {
+    await expect(this.boardByStatusRadioBox).toBeChecked();
+  }
+
+  async clickCycleTimeSettingByColumn() {
+    await this.boardByColumnRadioBox.click();
+  }
+
+  async clickCycleTimeSettingByStatus() {
+    await this.boardByStatusRadioBox.click();
+  }
+
   async selectCrews(crews: string[]) {
     await this.boardCrewSettingsLabel.click();
     const options = this.page.getByRole('option');
@@ -340,7 +352,7 @@ export class MetricsStep {
     forReadyOption,
     testingOption,
     doneOption,
-  ]: string[]) {
+  ]: string[], isByColumn: boolean) {
     await expect(this.boardCycleTimeSection.getByLabel('Cycle time select for TODO').getByRole('combobox')).toHaveValue(
       todoOption,
     );
@@ -353,9 +365,10 @@ export class MetricsStep {
     await expect(
       this.boardCycleTimeSection.getByLabel('Cycle time select for Review').getByRole('combobox'),
     ).toHaveValue(reviewOption);
-    await expect(
-      this.boardCycleTimeSection.getByLabel('Cycle time select for READY FOR TESTING').getByRole('combobox'),
-    ).toHaveValue(forReadyOption);
+    if (isByColumn)
+      await expect(
+        this.boardCycleTimeSection.getByLabel('Cycle time select for READY FOR TESTING').getByRole('combobox'),
+      ).toHaveValue(forReadyOption);
     await expect(
       this.boardCycleTimeSection.getByLabel('Cycle time select for Testing').getByRole('combobox'),
     ).toHaveValue(testingOption);
