@@ -260,7 +260,7 @@ export class MetricsStep {
     await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
   }
 
-  async checkReworkSettings(reworkTimesSettings) {
+  async checkReworkSettings(reworkTimesSettings: typeof metricsStepData.reworkTimesSettings) {
     await expect(this.boardReworkTimeSettingSingleSelected).toHaveAttribute('value', reworkTimesSettings.reworkState);
     await expect(this.boardReworkTimeSettingExcludeSelectOptions).toHaveCount(reworkTimesSettings.excludeStates.length);
   }
