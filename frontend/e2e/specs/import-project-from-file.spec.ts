@@ -16,7 +16,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
-  const hbStateDataEmptyByStatus = importMultipleDoneProjectFromFile.cycleTime.jiraColumnsEmptyByStatus.map(
+  const hbStateDataEmptyByStatus = importMultipleDoneProjectFromFile.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
@@ -34,13 +34,15 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
 
-  await metricsStep.clickCycleTimeSettingByStatus();
-  await metricsStep.checkCycleTimeSettingIsByStatus();
-  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
-  await metricsStep.clickCycleTimeSettingByColumn();
+  await metricsStep.selectCycleTimeSettingsType(importMultipleDoneProjectFromFile.cycleTimeByStatus.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
 
+  await metricsStep.selectCycleTimeSettingsType(importMultipleDoneProjectFromFile.cycleTime.type);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
+
+  await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
 
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
 

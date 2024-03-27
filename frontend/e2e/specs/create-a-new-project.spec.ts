@@ -5,6 +5,7 @@ import { ProjectCreationType } from 'e2e/pages/metrics/ReportStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import { clearTempDir } from 'e2e/utils/clearTempDir';
 import { format } from 'e2e/utils/dateTime';
+import { importMultipleDoneProjectFromFile } from "../fixtures/importFile/multiple-done-config-file";
 
 test.beforeAll(async () => {
   await clearTempDir();
@@ -16,6 +17,9 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
     endDate: format(configStepData.dateRange.endDate),
   };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+  const hbStateDataEmptyByStatus = importMultipleDoneProjectFromFile.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
@@ -50,8 +54,17 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.waitForHiddenLoading();
   await metricsStep.selectCrews(metricsStepData.crews);
+
+  await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
+
+  await metricsStep.selectCycleTimeSettingsType('byStatus');
+  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
+
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+
   await metricsStep.selectClassifications(metricsStepData.classification);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
