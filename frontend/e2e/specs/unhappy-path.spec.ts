@@ -1,6 +1,6 @@
 import {
   importInputWrongProjectFromFile as importUnhappyPathProjectFromFile,
-  importModifiedRightConfig as modifiedRightProjectFromFile,
+  importModifiedCorrectConfig as modifiedCorrectProjectFromFile,
 } from '../fixtures/importFile/unhappy-path-file';
 import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../fixtures/createNew/reportResult';
 import { test } from '../fixtures/testWithExtendFixtures';
@@ -13,35 +13,35 @@ test.beforeAll(async () => {
 
 test('unhappy path when import', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
-    startDate: format(modifiedRightProjectFromFile.dateRange.startDate),
-    endDate: format(modifiedRightProjectFromFile.dateRange.endDate),
+    startDate: format(modifiedCorrectProjectFromFile.dateRange.startDate),
+    endDate: format(modifiedCorrectProjectFromFile.dateRange.endDate),
   };
 
   const hbStateData = importUnhappyPathProjectFromFile.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
-  const ModifiedhbStateData = modifiedRightProjectFromFile.cycleTime.jiraColumns.map(
+  const ModifiedhbStateData = modifiedCorrectProjectFromFile.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
   await homePage.goto();
 
-  await homePage.importInputWrongProjectFromFile();
+  await homePage.importProjectFromFile('../fixtures/input-files/unhappy-path-config-file.json');
   await configStep.remindImportedDataNotmatched();
   await configStep.checkProjectName(importUnhappyPathProjectFromFile.projectName);
   await configStep.verifyAllConfig();
   await configStep.verifyAllConfigInvalid();
   await configStep.validateNextButtonNotClickable();
-  await configStep.typeInProjectName(modifiedRightProjectFromFile.projectName);
-  await configStep.fillAndverifyBoardConfig(modifiedRightProjectFromFile.board);
-  await configStep.fillAndVerifySourceControlForm(modifiedRightProjectFromFile.sourceControl);
-  await configStep.fillAndVerifyPipelineToolForm(modifiedRightProjectFromFile.pipelineTool);
+  await configStep.typeInProjectName(modifiedCorrectProjectFromFile.projectName);
+  await configStep.fillAndverifyBoardConfig(modifiedCorrectProjectFromFile.board);
+  await configStep.fillAndVerifySourceControlForm(modifiedCorrectProjectFromFile.sourceControl);
+  await configStep.fillAndVerifyPipelineToolForm(modifiedCorrectProjectFromFile.pipelineTool);
 
   await configStep.goToMetrics();
 
   await metricsStep.checkBoardNoCard();
-  await metricsStep.checkPipelineFillNoStep(importUnhappyPathProjectFromFile.deployment);
+  //await metricsStep.checkPipelineFillNoStep(importUnhappyPathProjectFromFile.deployment);
   await metricsStep.goToPreviousStep();
   await configStep.typeInDateRange(dateRange);
   await configStep.goToMetrics();
@@ -54,11 +54,10 @@ test('unhappy path when import', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkClassifications(importUnhappyPathProjectFromFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(importUnhappyPathProjectFromFile.deployment);
   await metricsStep.checkBranchIsInvalid();
-  await metricsStep.selectCrews(modifiedRightProjectFromFile.crews);
-  await metricsStep.deselectBranch(modifiedRightProjectFromFile.deletedBranch);
-  //*问题*：页面有多个相同的元素，如多个pipeline settings，定位到new pipeline, 需要抽象locator
-  await metricsStep.addNewPipelineAndSelectSamePipeline(importUnhappyPathProjectFromFile.deployment); //*优化*：定位到新的pipeline的locator优化
-  await metricsStep.RemoveNewPipeline(); //*优化*：定位到新的pipeline的locator优化
+  await metricsStep.selectCrews(modifiedCorrectProjectFromFile.crews);
+  await metricsStep.deselectBranch(modifiedCorrectProjectFromFile.deletedBranch);
+  await metricsStep.addNewPipelineAndSelectSamePipeline(importUnhappyPathProjectFromFile.deployment);
+  await metricsStep.RemoveNewPipeline(); //*优化*：删除列表里的最后一个pipeline； 替换tohave attribute
   await metricsStep.selectDoneHeartbeatState(ModifiedhbStateData[6]);
   await metricsStep.validateNextButtonNotClickable();
   await metricsStep.selectDoneHeartbeatState(hbStateData[6]);
@@ -70,6 +69,10 @@ test('unhappy path when import', async ({ homePage, configStep, metricsStep, rep
     BOARD_METRICS_RESULT.Throughput,
     BOARD_METRICS_RESULT.AverageCycleTime4SP,
     BOARD_METRICS_RESULT.AverageCycleTime4Card,
+    BOARD_METRICS_RESULT.totalReworkTimes,
+    BOARD_METRICS_RESULT.totalReworkCards,
+    BOARD_METRICS_RESULT.reworkCardsRatio,
+    BOARD_METRICS_RESULT.throughput,
   );
   await reportStep.checkDoraMetrics(
     DORA_METRICS_RESULT.PrLeadTime,

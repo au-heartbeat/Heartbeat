@@ -443,21 +443,11 @@ export class MetricsStep {
   async addNewPipelineAndSelectSamePipeline(pipelineSettings: typeof metricsStepData.deployment) {
     const firstPipelineConfig = pipelineSettings[0];
     await this.pipelineNewPipelineButton.click();
-    await this.pipelineSettingSection
-      .locator('div')
-      .filter({ hasText: 'Organization *Remove' })
-      .getByLabel('Open')
-      .click();
+    await this.pipelineSettingSection.getByText('Organization *Remove').getByLabel('Open').click();
     await this.page.getByRole('option', { name: firstPipelineConfig.organization }).click();
-    const newOrganizationSelection = this.pipelineSettingSection
-      .locator('div')
-      .filter({ hasText: 'Organization *Pipeline Name *Remove' })
-      .getByLabel('Organization *');
-    await expect(newOrganizationSelection).toHaveAttribute('value', firstPipelineConfig.organization);
-
+    await expect(this.pipelineOrganizationSelect.nth(1)).toHaveAttribute('value', firstPipelineConfig.organization);
     await this.pipelineSettingSection
-      .locator('div')
-      .filter({ hasText: 'Organization *Pipeline Name *Remove' })
+      .getByText('Organization *Pipeline Name *Remove')
       .getByLabel('Open')
       .nth(1)
       .click();
@@ -466,9 +456,8 @@ export class MetricsStep {
 
   async RemoveNewPipeline() {
     await this.pipelineSettingSection
-      .locator('div')
-      .filter({ hasText: 'Organization *Pipeline Name *Remove' })
-      .locator('[data-test-id="remove-button"]')
+      .getByText('Organization *Pipeline Name *Remove')
+      .getByRole('button', { name: 'remove' })
       .click();
   }
 

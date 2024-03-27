@@ -15,7 +15,7 @@ export const importInputWrongProjectFromFile = {
     'Mean time to recovery',
   ],
   board: {
-    type: 'Jira',
+    type: 'Classic Jira',
     boardId: '2',
     email: 'heartbeatuser2023@gmail.com',
     projectKey: 'ADM',
@@ -90,7 +90,7 @@ export const importInputWrongProjectFromFile = {
   ],
 };
 
-export const importModifiedRightConfig = {
+export const importModifiedCorrectConfig = {
   projectName: 'Heartbeat Metrics',
   deletedBranch: 'ADM-747',
   dateRange: {
