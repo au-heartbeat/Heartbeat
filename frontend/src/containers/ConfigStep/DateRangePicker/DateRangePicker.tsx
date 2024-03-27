@@ -6,6 +6,13 @@ import {
   RemoveButtonContainer,
 } from '@src/containers/ConfigStep/DateRangePicker/style';
 import {
+  DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS,
+  REMOVE_BUTTON_TEXT,
+  DATE_RANGE_FORMAT,
+  START_DATE_INVALID_TEXT,
+  END_DATE_INVALID_TEXT,
+} from '@src/constants/resources';
+import {
   calculateDateRangeIntersection,
   calculateStartDateShouldDisable,
   calculateEndDateShouldDisable,
@@ -16,15 +23,15 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
-import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS, REMOVE_BUTTON_TEXT, DATE_RANGE_FORMAT } from '@src/constants/resources';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { Z_INDEX } from '@src/constants/commons';
+import { useCallback, useState } from 'react';
 import { Nullable } from '@src/utils/types';
+import { TextField } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
-import { useCallback } from 'react';
 import isNull from 'lodash/isNull';
 
 export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps) => {
@@ -118,17 +125,13 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={(newValue) => changeStartDate(newValue as unknown as Dayjs)}
-          onError={(error, value) => {
-            console.log('error', error);
-            console.log('value', value);
-          }}
           slots={{
             openPickerIcon: CalendarTodayIcon,
+            textField: (props) => (
+              <TextField {...props} variant='standard' helperText={props.error ? START_DATE_INVALID_TEXT : ''} />
+            ),
           }}
           slotProps={{
-            textField: {
-              variant: 'standard',
-            },
             popper: {
               sx: { zIndex: Z_INDEX.DROPDOWN },
             },
@@ -145,11 +148,11 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
           onChange={(newValue) => changeEndDate(newValue as unknown as Dayjs)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
+            textField: (props) => (
+              <TextField {...props} variant='standard' helperText={props.error ? END_DATE_INVALID_TEXT : ''} />
+            ),
           }}
           slotProps={{
-            textField: {
-              variant: 'standard',
-            },
             popper: {
               sx: { zIndex: Z_INDEX.DROPDOWN },
             },
