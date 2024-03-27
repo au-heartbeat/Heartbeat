@@ -3,7 +3,6 @@ import {
   StyledDateRangePickerContainer,
   StyledDateRangePicker,
   RemoveButton,
-  RemoveButtonContainer,
 } from '@src/containers/ConfigStep/DateRangePicker/style';
 import {
   DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS,
@@ -158,12 +157,8 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
             },
           }}
         />
+        {isShowRemoveButton && <RemoveButton onClick={removeSelfHandler}>{REMOVE_BUTTON_TEXT}</RemoveButton>}
       </StyledDateRangePickerContainer>
-      {isShowRemoveButton && (
-        <RemoveButtonContainer>
-          <RemoveButton onClick={removeSelfHandler}>{REMOVE_BUTTON_TEXT}</RemoveButton>
-        </RemoveButtonContainer>
-      )}
     </StyledFeaturedRangePickerContainer>
   );
 };

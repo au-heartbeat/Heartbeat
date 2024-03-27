@@ -30,6 +30,8 @@ export const StyledDateRangePickerContainer = styled('div')({
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
   },
+  position: 'relative',
+  paddingBottom: '2.5rem',
 });
 
 export const StyledDateRangePicker = styled(DatePicker)({
@@ -43,10 +45,6 @@ export const StyledDateRangePicker = styled(DatePicker)({
   },
 });
 
-export const RemoveButtonContainer = styled('div')({
-  textAlign: 'right',
-});
-
 export const AddButton = styled(Button)({
   width: '100%',
   display: 'flex',
@@ -58,4 +56,7 @@ export const AddButton = styled(Button)({
 
 export const RemoveButton = styled(BasicButton)({
   fontFamily: theme.main.font.secondary,
+  position: 'absolute',
+  right: 0,
+  top: '3rem',
 });
