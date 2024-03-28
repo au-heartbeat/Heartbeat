@@ -7,6 +7,7 @@ import com.apollographql.apollo3.api.Optional;
 import com.apollographql.apollo3.api.Query;
 import com.apollographql.apollo3.api.http.HttpHeader;
 import com.apollographql.apollo3.exception.ApolloHttpException;
+import com.buildkite.GetPipelineBuildsQuery;
 import com.buildkite.GetPipelineInfoQuery;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
@@ -16,6 +17,7 @@ import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -60,6 +62,7 @@ public class GraphQLClient {
 
 	private <D extends Query.Data> CompletableFuture<ApolloResponse<D>> callWithQuery(Query<D> query, String token,
 			GraphQLServer server) {
+		log.info("**callWithQuery{}", token);
 		ApolloCall<D> queryCall = this.getApolloClient(token, server).query(query);
 		CompletableFuture<ApolloResponse<D>> responseCompletableFuture = new CompletableFuture<>();
 		getApolloClient(token, server).query(query).execute(new Continuation<>() {
@@ -103,6 +106,8 @@ public class GraphQLClient {
 						throw new PermissionDenyException("Your access token doesn't have the graphql scope");
 					case 401:
 						throw new UnauthorizedException("Please supply a valid API Access Token");
+					case 429:
+						log.error("ApolloHttpExceptionMessage: {}", httpException.getMessage());
 					default:
 						break;
 				}
@@ -121,6 +126,20 @@ public class GraphQLClient {
 			list = data.organization.pipelines.edges.stream().map(edge -> edge.node).toList();
 		}
 		return list;
+	}
+
+	public GetPipelineBuildsQuery.Builds fetchListOfBuildsWith(GraphQLServer serverType, String token, String slug,
+			String from, String to, List<String> branch, int perPage) {
+		int defaultJobCount = 30;
+		val getPipelineBuildsQuery = new GetPipelineBuildsQuery(Optional.present(slug), Optional.present(perPage), null,
+				Optional.present(from), Optional.present(to), Optional.present(branch),
+				Optional.present(defaultJobCount));
+
+		val data = wrapAndThrowExceptionWith(getPipelineBuildsQuery, token, serverType);
+		if (data != null && data.pipeline.builds != null) {
+			return data.pipeline.builds;
+		}
+		return null;
 	}
 
 }

@@ -2,6 +2,7 @@ package heartbeat.client;
 
 import com.apollographql.apollo3.api.Optional;
 import com.apollographql.apollo3.api.Query;
+import com.buildkite.GetPipelineBuildsQuery;
 import com.buildkite.GetPipelineInfoQuery;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -9,6 +10,7 @@ import heartbeat.client.graphql.GraphQLClient;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -147,6 +149,32 @@ public class GraphQLClientTest {
 		assertEquals("Heartbeat", response.get(0).name);
 		assertEquals("heartbeat", response.get(0).slug);
 		assertEquals("git@github.com:au-heartbeat/Heartbeat.git", response.get(0).repository.url);
+
+		Thread.sleep(100);
+
+	}
+
+	@Test
+	public void callWithFetchListOfBuildsInfoExpectedResult() throws Exception {
+		JsonReader reader = new JsonReader(
+				new FileReader("src/test/java/heartbeat/controller/pipeline/buildKiteBuildsDataGraphQL.json"));
+		Gson gson = new Gson();
+		Object obj = gson.fromJson(reader, Object.class);
+		reader.close();
+		String json = gson.toJson(obj);
+		mockServer.enqueue(new MockResponse().setBody(json).setResponseCode(200));
+
+		String httpUrl = mockServer.url("/").toString();
+		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
+		when(mockedEnum.getUrl()).thenReturn(httpUrl);
+
+		GraphQLClient mockGraphQLClient = new GraphQLClient();
+		String mockJobStartTime = "2022-09-09T03:57:09.545Z";
+		String mockJobFinishTime = "2022-09-09T04:57:09.545Z";
+		GetPipelineBuildsQuery.Builds builds = mockGraphQLClient.fetchListOfBuildsWith(mockedEnum, "token", "slug",
+				mockJobStartTime, mockJobFinishTime, List.of("branch_main"), 1);
+
+		assertEquals(389, builds.count);
 
 		Thread.sleep(100);
 

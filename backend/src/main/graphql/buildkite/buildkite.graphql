@@ -16,3 +16,48 @@ query getPipelineInfo($slug: ID, $first: Int) {
     }
   }
 }
+
+query pipelineBuildCountForPeriod($slug: ID, $createdAtFrom: DateTime, $createdAtTo: DateTime, $branch: [String!]) {
+  pipeline(slug: $slug) {
+    builds(createdAtFrom: $createdAtFrom, createdAtTo: $createdAtTo, branch: $branch) {
+      count
+    }
+  }
+}
+
+query getPipelineBuilds($slug: ID, $first: Int, $after: String, $createdAtFrom: DateTime, $createdAtTo: DateTime, $branch: [String!], $jobsFirst: Int) {
+  pipeline(slug: $slug) {
+    builds(first: $first, after: $after, createdAtFrom: $createdAtFrom, createdAtTo: $createdAtTo, branch: $branch) {
+      count
+      pageInfo {
+        hasNextPage
+        endCursor
+        startCursor
+      }
+      edges {
+        node {
+          branch
+          createdAt
+          createdBy {
+            ... on User {
+              userName: name
+            }
+            ... on UnregisteredUser {
+              unregisteredUserName: name
+            }
+          }
+          jobs(first: $jobsFirst) {
+            count
+            edges {
+              node {
+                ... on JobTypeCommand {
+                  label
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

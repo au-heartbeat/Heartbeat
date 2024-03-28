@@ -1,0 +1,15 @@
+{
+  "data": {
+    "pipeline": {
+      "builds": {
+        "count": 389,
+        "pageInfo": {
+          "hasNextPage": true,
+          "endCursor": "kaQzNjA3",
+          "startCursor": "kaQzNjA4"
+        },
+        "edges": []
+      }
+    }
+  }
+}
