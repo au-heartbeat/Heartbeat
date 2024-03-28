@@ -83,7 +83,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       .then((res: { status: number; response: ReportResponseDTO }) => {
         const response = res.response;
         handleAndUpdateData(response);
-        if (response.allMetricsCompleted || !hasPollingStarted) {
+        if (areAllMetricsCompleted(response) || !hasPollingStarted) {
           stopPollingReports();
         } else {
           timerIdRef.current = window.setTimeout(() => pollingReport(url, interval), interval * 1000);
@@ -94,6 +94,15 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         stopPollingReports();
       });
   };
+
+  const areAllMetricsCompleted = (response: ReportResponseDTO) => {
+    const { boardMetricsCompleted,doraMetricsCompleted,reportMetricsError } = response;
+    const {boardMetricsError,pipelineMetricsError,sourceControlMetricsError} = reportMetricsError;
+
+    const isBoardMetricsLoading = !boardMetricsCompleted && boardMetricsError === null && sourceControlMetricsError === null;
+    const isDoraMetricsLoading = !doraMetricsCompleted && pipelineMetricsError === null && sourceControlMetricsError === null;
+    return !isBoardMetricsLoading && !isDoraMetricsLoading;
+  }
 
   const stopPollingReports = () => {
     window.clearTimeout(timerIdRef.current);
