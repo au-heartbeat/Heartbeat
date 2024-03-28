@@ -19,6 +19,8 @@ import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 @RequiredArgsConstructor
 public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
+	private final String generateReportError = "Failed to update metrics data completed through this timestamp.";
+
 	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
 		try {
 			acquireLock(METRICS_DATA_COMPLETED, timeStamp);
@@ -41,8 +43,8 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 	public void updateMetricsDataCompletedInHandler(String metricDataFileId, MetricType metricType) {
 		MetricsDataCompleted previousMetricsCompleted = getMetricsDataCompleted(metricDataFileId);
 		if (previousMetricsCompleted == null) {
-			log.error("Failed to update metrics data completed through this timestamp.");
-			throw new GenerateReportException("Failed to update metrics data completed through this timestamp.");
+			log.error(generateReportError);
+			throw new GenerateReportException(generateReportError);
 		}
 		switch (metricType) {
 			case BOARD -> previousMetricsCompleted.setBoardMetricsCompleted(true);
@@ -56,8 +58,8 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 	public void updateAllMetricsCompletedInHandler(String metricDataFileId) {
 		MetricsDataCompleted previousMetricsCompleted = getMetricsDataCompleted(metricDataFileId);
 		if (previousMetricsCompleted == null) {
-			log.error("Failed to update metrics data completed through this timestamp.");
-			throw new GenerateReportException("Failed to update metrics data completed through this timestamp.");
+			log.error(generateReportError);
+			throw new GenerateReportException(generateReportError);
 		}
 		previousMetricsCompleted.setAllMetricsCompleted(true);
 		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);

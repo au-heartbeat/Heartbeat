@@ -270,19 +270,15 @@ public class GenerateReporterService {
 	}
 
 	private void fetchBuildKiteData(GenerateReportRequest request, FetchedData fetchedData) {
-		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
-			if (request.getBuildKiteSetting() == null)
-				throw new BadRequestException("Failed to fetch BuildKite info due to BuildKite setting is null.");
-			fetchedData.setBuildKiteData(pipelineService.fetchBuildKiteInfo(request));
-		}
+		if (request.getBuildKiteSetting() == null)
+			throw new BadRequestException("Failed to fetch BuildKite info due to BuildKite setting is null.");
+		fetchedData.setBuildKiteData(pipelineService.fetchBuildKiteInfo(request));
 	}
 
 	private void fetchGitHubData(GenerateReportRequest request, FetchedData fetchedData) {
-		if (CollectionUtils.isNotEmpty(request.getSourceControlMetrics())) {
-			if (request.getCodebaseSetting() == null)
-				throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
-			fetchedData.setBuildKiteData(pipelineService.fetchGithubData(request));
-		}
+		if (request.getCodebaseSetting() == null)
+			throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
+		fetchedData.setBuildKiteData(pipelineService.fetchGithubData(request));
 	}
 
 	private FetchedData fetchJiraBoardData(GenerateReportRequest request, FetchedData fetchedData) {

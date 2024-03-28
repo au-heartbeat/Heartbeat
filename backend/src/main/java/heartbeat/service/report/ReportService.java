@@ -71,7 +71,7 @@ public class ReportService {
 		});
 	}
 
-	public Boolean isNotExistError(ReportMetricsError reportMetricsError) {
+	private Boolean isNotExistError(ReportMetricsError reportMetricsError) {
 		return Objects.isNull(reportMetricsError.getBoardMetricsError())
 				&& Objects.isNull(reportMetricsError.getSourceControlMetricsError())
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());

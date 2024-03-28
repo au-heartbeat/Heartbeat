@@ -9,6 +9,7 @@ import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.util.IdUtil;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
@@ -86,8 +88,7 @@ public class ReportServiceTest {
 			.build();
 
 		@Test
-		void shouldCallGenerateBoardReportAndInitializeMetricDataWhenMetricTypesListOnlyHasBoardElement()
-				throws InterruptedException {
+		void shouldCallGenerateBoardReportAndInitializeMetricDataWhenMetricTypesListOnlyHasBoardElement() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.allMetricsCompleted(false)
@@ -98,19 +99,19 @@ public class ReportServiceTest {
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
 
 			reportService.generateReport(request);
-			Thread.sleep(100);
-
-			verify(asyncMetricsDataHandler)
-				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
-			verify(generateReporterService).generateBoardReport(request);
-			verify(generateReporterService, never()).generateDoraReport(request);
-			verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-			verify(asyncMetricsDataHandler)
-				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(asyncMetricsDataHandler)
+					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
+				verify(generateReporterService).generateBoardReport(request);
+				verify(generateReporterService, never()).generateDoraReport(request);
+				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
+				verify(asyncMetricsDataHandler)
+					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			});
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraElement() throws InterruptedException {
+		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraElement() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(false)
 				.allMetricsCompleted(false)
@@ -122,20 +123,20 @@ public class ReportServiceTest {
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
 
 			reportService.generateReport(request);
-			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler)
-				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
-			verify(generateReporterService).generateDoraReport(request);
-			verify(generateReporterService, never()).generateBoardReport(request);
-			verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-			verify(asyncMetricsDataHandler)
-				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(asyncMetricsDataHandler)
+					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
+				verify(generateReporterService).generateDoraReport(request);
+				verify(generateReporterService, never()).generateBoardReport(request);
+				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
+				verify(asyncMetricsDataHandler)
+					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			});
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportWhenMetricTypesListHasDoraElementAndBoardElement()
-				throws InterruptedException {
+		void shouldCallGenerateDoraReportAndBoardReportWhenMetricTypesListHasDoraElementAndBoardElement() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -149,19 +150,20 @@ public class ReportServiceTest {
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
 
 			reportService.generateReport(request);
-			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler)
-				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
-			verify(generateReporterService).generateDoraReport(request);
-			verify(generateReporterService).generateBoardReport(request);
-			verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-			verify(asyncMetricsDataHandler)
-				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(asyncMetricsDataHandler)
+					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
+				verify(generateReporterService).generateDoraReport(request);
+				verify(generateReporterService).generateBoardReport(request);
+				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
+				verify(asyncMetricsDataHandler)
+					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			});
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportBoardWhenBoardMetricsHasError() throws InterruptedException {
+		void shouldCallGenerateDoraReportAndBoardReportBoardWhenBoardMetricsHasError() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -176,20 +178,21 @@ public class ReportServiceTest {
 				.build());
 
 			reportService.generateReport(request);
-			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler)
-				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
-			verify(generateReporterService).generateDoraReport(request);
-			verify(generateReporterService).generateBoardReport(request);
-			verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-			verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-			verify(asyncMetricsDataHandler, never())
-				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(asyncMetricsDataHandler)
+					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
+				verify(generateReporterService).generateDoraReport(request);
+				verify(generateReporterService).generateBoardReport(request);
+				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
+				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
+				verify(asyncMetricsDataHandler, never())
+					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			});
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportWhenPiplineMetricsErrorHasError() throws InterruptedException {
+		void shouldCallGenerateDoraReportAndBoardReportWhenPiplineMetricsErrorHasError() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -205,21 +208,21 @@ public class ReportServiceTest {
 				.build());
 
 			reportService.generateReport(request);
-			Thread.sleep(100);
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
 
-			verify(asyncMetricsDataHandler)
-				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
-			verify(generateReporterService).generateDoraReport(request);
-			verify(generateReporterService).generateBoardReport(request);
-			verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-			verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-			verify(asyncMetricsDataHandler, never())
-				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+				verify(asyncMetricsDataHandler)
+					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
+				verify(generateReporterService).generateDoraReport(request);
+				verify(generateReporterService).generateBoardReport(request);
+				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
+				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
+				verify(asyncMetricsDataHandler, never())
+					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			});
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportWhenSourceControlMetricsErrorHasError()
-				throws InterruptedException {
+		void shouldCallGenerateDoraReportAndBoardReportWhenSourceControlMetricsErrorHasError() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -235,16 +238,17 @@ public class ReportServiceTest {
 				.build());
 
 			reportService.generateReport(request);
-			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler)
-				.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
-			verify(generateReporterService).generateDoraReport(request);
-			verify(generateReporterService).generateBoardReport(request);
-			verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-			verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-			verify(asyncMetricsDataHandler, never())
-				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(asyncMetricsDataHandler)
+					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
+				verify(generateReporterService).generateDoraReport(request);
+				verify(generateReporterService).generateBoardReport(request);
+				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
+				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
+				verify(asyncMetricsDataHandler, never())
+					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			});
 		}
 
 		@Test
@@ -256,7 +260,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldGenerateDoraReportAndBoardReportNotInitializeWhenMetricsCompleted() throws InterruptedException {
+		void shouldGenerateDoraReportAndBoardReportNotInitializeWhenMetricsCompleted() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -274,15 +278,16 @@ public class ReportServiceTest {
 				.thenReturn(expected);
 
 			reportService.generateReport(request);
-			Thread.sleep(100);
 
-			verify(asyncMetricsDataHandler, never()).putMetricsDataCompleted(any(), any());
-			verify(generateReporterService).generateDoraReport(request);
-			verify(generateReporterService).generateBoardReport(request);
-			verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-			verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-			verify(asyncMetricsDataHandler, never())
-				.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(asyncMetricsDataHandler, never()).putMetricsDataCompleted(any(), any());
+				verify(generateReporterService).generateDoraReport(request);
+				verify(generateReporterService).generateBoardReport(request);
+				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
+				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
+				verify(asyncMetricsDataHandler, never())
+					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			});
 		}
 
 	}

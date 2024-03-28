@@ -9,12 +9,12 @@ import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.request.MetricEnum;
 import heartbeat.controller.report.dto.request.MetricType;
-import heartbeat.controller.report.dto.response.DevChangeFailureRate;
 import heartbeat.controller.report.dto.response.Classification;
 import heartbeat.controller.report.dto.response.CycleTime;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
-import heartbeat.controller.report.dto.response.LeadTimeForChanges;
+import heartbeat.controller.report.dto.response.DevChangeFailureRate;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
@@ -29,16 +29,17 @@ import heartbeat.handler.AsyncExceptionHandler;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.handler.AsyncReportRequestHandler;
 import heartbeat.handler.base.AsyncExceptionDTO;
-import heartbeat.service.report.calculator.DevChangeFailureRateCalculator;
 import heartbeat.service.report.calculator.ClassificationCalculator;
 import heartbeat.service.report.calculator.CycleTimeCalculator;
 import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
+import heartbeat.service.report.calculator.DevChangeFailureRateCalculator;
 import heartbeat.service.report.calculator.LeadTimeForChangesCalculator;
 import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.ReworkCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.util.IdUtil;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +59,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -385,7 +387,7 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
-		void shouldUpdateMetricCompletedWhenExceptionStart4() throws InterruptedException {
+		void shouldUpdateMetricCompletedWhenExceptionStart4() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
 				.metrics(List.of("classification"))
@@ -401,13 +403,14 @@ class GenerateReporterServiceTest {
 						MetricType.BOARD);
 
 			generateReporterService.generateBoardReport(request);
-			Thread.sleep(100);
 
-			verify(asyncExceptionHandler).put(eq(request.getBoardReportId()), any());
+			Awaitility.await()
+				.atMost(5, TimeUnit.SECONDS)
+				.untilAsserted(() -> verify(asyncExceptionHandler).put(eq(request.getBoardReportId()), any()));
 		}
 
 		@Test
-		void shouldUpdateMetricCompletedAndGenerateCsvWhenFetchRight() throws InterruptedException {
+		void shouldUpdateMetricCompletedAndGenerateCsvWhenFetchRight() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
 				.metrics(List.of("classification"))
@@ -426,9 +429,10 @@ class GenerateReporterServiceTest {
 						MetricType.BOARD);
 
 			generateReporterService.generateBoardReport(request);
-			Thread.sleep(100);
 
-			verify(kanbanCsvService, times(1)).generateCsvInfo(any(), any(), any());
+			Awaitility.await()
+				.atMost(5, TimeUnit.SECONDS)
+				.untilAsserted(() -> verify(kanbanCsvService, times(1)).generateCsvInfo(any(), any(), any()));
 		}
 
 	}
@@ -437,7 +441,7 @@ class GenerateReporterServiceTest {
 	class GenerateDoraReport {
 
 		@Test
-		void shouldGenerateCsvFile() throws InterruptedException {
+		void shouldGenerateCsvFile() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
 				.metrics(List.of())
@@ -453,12 +457,14 @@ class GenerateReporterServiceTest {
 				.thenReturn(pipelineCSVInfos);
 
 			generateReporterService.generateDoraReport(request);
-			Thread.sleep(10);
 
 			verify(asyncExceptionHandler).remove(request.getPipelineReportId());
 			verify(asyncExceptionHandler).remove(request.getSourceControlReportId());
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(csvFileGenerator).convertPipelineDataToCSV(eq(pipelineCSVInfos), eq(request.getCsvTimeStamp()));
+			Awaitility.await()
+				.atMost(5, TimeUnit.SECONDS)
+				.untilAsserted(() -> verify(csvFileGenerator).convertPipelineDataToCSV(eq(pipelineCSVInfos),
+						eq(request.getCsvTimeStamp())));
 		}
 
 		@Test
@@ -524,7 +530,7 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
-		void shouldGenerateCsvWithPipelineReportWhenPipeLineMetricIsNotEmpty() throws InterruptedException {
+		void shouldGenerateCsvWithPipelineReportWhenPipeLineMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
 				.startTime("10000")
@@ -550,7 +556,6 @@ class GenerateReporterServiceTest {
 			when(meanToRecoveryCalculator.calculate(any())).thenReturn(fakeMeantime);
 
 			generateReporterService.generateDoraReport(request);
-			Thread.sleep(10);
 
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getPipelineReportId()),
@@ -568,7 +573,7 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
-		void shouldUpdateMetricCompletedWhenGenerateCsvWithPipelineReportFailed() throws InterruptedException {
+		void shouldUpdateMetricCompletedWhenGenerateCsvWithPipelineReportFailed() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
 				.startTime("10000")
@@ -589,15 +594,17 @@ class GenerateReporterServiceTest {
 			when(devChangeFailureRate.calculate(any())).thenThrow(new NotFoundException(""));
 
 			generateReporterService.generateDoraReport(request);
-			Thread.sleep(10);
 
 			verify(asyncExceptionHandler).put(eq(request.getPipelineReportId()), any());
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(
-					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
+
+			Awaitility.await()
+				.atMost(5, TimeUnit.SECONDS)
+				.untilAsserted(() -> verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(
+						eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any()));
 		}
 
 		@Test
-		void shouldGenerateCsvWithSourceControlReportWhenSourceControlMetricIsNotEmpty() throws InterruptedException {
+		void shouldGenerateCsvWithSourceControlReportWhenSourceControlMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
 				.startTime("10000")
@@ -620,7 +627,6 @@ class GenerateReporterServiceTest {
 			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
 
 			generateReporterService.generateDoraReport(request);
-			Thread.sleep(10);
 
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getSourceControlReportId()),
@@ -628,7 +634,11 @@ class GenerateReporterServiceTest {
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(1800000L, response.getExportValidityTime());
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
-			verify(csvFileGenerator).convertPipelineDataToCSV(eq(pipelineCSVInfos), eq(request.getCsvTimeStamp()));
+			Awaitility.await()
+				.atMost(5, TimeUnit.SECONDS)
+				.untilAsserted(() -> verify(csvFileGenerator).convertPipelineDataToCSV(eq(pipelineCSVInfos),
+						eq(request.getCsvTimeStamp())));
+
 		}
 
 		@Test
@@ -669,7 +679,7 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
-		void shouldUpdateMetricCompletedWhenGenerateCsvWithSourceControlReportFailed() throws InterruptedException {
+		void shouldUpdateMetricCompletedWhenGenerateCsvWithSourceControlReportFailed() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
 				.startTime("10000")
@@ -691,11 +701,12 @@ class GenerateReporterServiceTest {
 			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any());
 
 			generateReporterService.generateDoraReport(request);
-			Thread.sleep(10);
 
 			verify(asyncExceptionHandler).put(eq(request.getSourceControlReportId()), any());
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(
-					eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any());
+			Awaitility.await()
+				.atMost(5, TimeUnit.SECONDS)
+				.untilAsserted(() -> verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(
+						eq(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())), any()));
 		}
 
 	}
