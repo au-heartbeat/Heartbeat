@@ -19,7 +19,7 @@ import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 @RequiredArgsConstructor
 public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
-	private final String generateReportError = "Failed to update metrics data completed through this timestamp.";
+	private final static String generateReportError = "Failed to update metrics data completed through this timestamp.";
 
 	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
 		try {

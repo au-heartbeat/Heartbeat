@@ -64,14 +64,14 @@ public class ReportService {
 			}
 
 			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp);
-			if (isNotExistError(reportResponse.getReportMetricsError())) {
+			if (isHasNoError(reportResponse.getReportMetricsError())) {
 				generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
 				asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
 			}
 		});
 	}
 
-	private Boolean isNotExistError(ReportMetricsError reportMetricsError) {
+	private boolean isHasNoError(ReportMetricsError reportMetricsError) {
 		return Objects.isNull(reportMetricsError.getBoardMetricsError())
 				&& Objects.isNull(reportMetricsError.getSourceControlMetricsError())
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
