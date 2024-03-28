@@ -111,7 +111,7 @@ describe('DateRangePickerSection', () => {
     });
   });
 
-  describe.only('Multiple range amount behaviors', () => {
+  describe('Multiple range amount behaviors', () => {
     it('should not show remove button when there is only one range by default', () => {
       setup();
       const removeButton = screen.queryByRole('button', { name: 'Remove' });
@@ -123,25 +123,24 @@ describe('DateRangePickerSection', () => {
 
     it('should allow user to add up to 6 ranges', () => {
       setup();
-
       const addButton = screen.getByLabelText('Button for adding date range');
       const defaultRanges = screen.getAllByLabelText('Range picker row');
+
       expect(defaultRanges).toHaveLength(1);
 
       new Array(5).fill(true).forEach(() => fireEvent.click(addButton));
-
       const ranges = screen.getAllByLabelText('Range picker row');
+
       expect(ranges).toHaveLength(6);
       expect(addButton).toBeDisabled();
     });
 
     it('should show remove button when ranges are more than 1 and user is able to remove the range itself by remove button within that row', () => {
       setup();
-
       const addButton = screen.getByLabelText('Button for adding date range');
       fireEvent.click(addButton);
-      const ranges = screen.getAllByLabelText('Range picker row');
 
+      const ranges = screen.getAllByLabelText('Range picker row');
       expect(ranges).toHaveLength(2);
       ranges.forEach((range) => {
         const removeButtonForThisRange = within(range).queryByRole('button', { name: 'Remove' });
@@ -154,5 +153,38 @@ describe('DateRangePickerSection', () => {
       const currentRanges = screen.getAllByLabelText('Range picker row');
       expect(currentRanges).toHaveLength(1);
     });
+  });
+
+  describe('Multiple ranges date interactions', () => {
+    it('should disable the unselected dates between 2 selected date ranges', () => {
+      setup();
+      const addButton = screen.getByLabelText('Button for adding date range');
+      fireEvent.click(addButton);
+      const rangeDate1 = ['03/01/2024', '03/10/2024'];
+      const rangeDate2 = ['03/12/2024', '03/25/2024'];
+
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(startDate1Input, { target: { value: rangeDate1[0] } });
+      fireEvent.change(endDate1Input, { target: { value: rangeDate1[1] } });
+      fireEvent.change(startDate2Input, { target: { value: rangeDate2[0] } });
+      fireEvent.change(endDate12nput, { target: { value: rangeDate2[1] } });
+      fireEvent.click(addButton);
+      const range3 = screen.getAllByLabelText('Range picker row')[2];
+      const range3StartDateCalendarIcon = within(range3).getAllByTestId('CalendarTodayIcon')[0];
+      fireEvent.click(range3StartDateCalendarIcon);
+      const targetGappedDate = screen
+        .getAllByRole('gridcell')
+        .filter((gridcell) => gridcell.innerHTML === '11')[0] as HTMLButtonElement;
+
+      expect(targetGappedDate).toBeDisabled();
+    });
+
+    // it('should auto fill end date when change star date by cloeset earliest date of other ranges', () => {});
+
+    // it('should display error message for start-date and end-date respectively when time ranges conflict', () => {});
   });
 });
