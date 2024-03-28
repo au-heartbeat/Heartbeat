@@ -1,3 +1,4 @@
+import { ResponsiveLine } from '@nivo/line';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box } from '@mui/material';
 
@@ -104,7 +105,7 @@ const NivoDemo = () => {
         ]}
         role='application'
         ariaLabel='Nivo bar chart demo'
-      ></ResponsiveBar>
+      />
     </Box>
   );
 };
