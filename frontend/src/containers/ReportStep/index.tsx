@@ -56,7 +56,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
-  const [isBackFromDetail, setIsBackFromDetail] = useState<boolean>(false);
   const [allMetricsCompleted, setAllMetricsCompleted] = useState<boolean>(false);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
 
@@ -362,7 +361,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [generalError4Report]);
 
   useEffect(() => {
-    !isBackFromDetail && startToRequestData(basicReportRequestBody);
+    startToRequestData(basicReportRequestBody);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -397,7 +396,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const backToSummaryPage = () => {
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
-    setIsBackFromDetail(true);
   };
 
   return (
