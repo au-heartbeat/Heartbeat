@@ -454,11 +454,10 @@ export class MetricsStep {
     await expect(this.page.getByRole('option', { name: firstPipelineConfig.pipelineName })).not.toBeEnabled();
   }
 
-  async RemoveNewPipeline() {
-    await this.pipelineSettingSection
-      .getByText('Organization *Pipeline Name *Remove')
-      .getByRole('button', { name: 'remove' })
-      .click();
+  async RemoveFirstNewPipeline() {
+    const pipelineList = this.pipelineSettingSection.getByText('Organization *Pipeline Name *Remove');
+
+    await pipelineList.nth(0).getByRole('button', { name: 'remove' }).click();
   }
 
   async checkPipelineFillNoStep(pipelineSettings: typeof metricsStepData.deployment) {

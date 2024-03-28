@@ -34,14 +34,14 @@ test('unhappy path when import', async ({ homePage, configStep, metricsStep, rep
   await configStep.verifyAllConfigInvalid();
   await configStep.validateNextButtonNotClickable();
   await configStep.typeInProjectName(modifiedCorrectProjectFromFile.projectName);
-  await configStep.fillAndverifyBoardConfig(modifiedCorrectProjectFromFile.board);
+  await configStep.fillAndverifyBoardTokenConfig(modifiedCorrectProjectFromFile.board.token);
   await configStep.fillAndVerifySourceControlForm(modifiedCorrectProjectFromFile.sourceControl);
   await configStep.fillAndVerifyPipelineToolForm(modifiedCorrectProjectFromFile.pipelineTool);
 
   await configStep.goToMetrics();
 
   await metricsStep.checkBoardNoCard();
-  //await metricsStep.checkPipelineFillNoStep(importUnhappyPathProjectFromFile.deployment);
+  await metricsStep.checkPipelineFillNoStep(importUnhappyPathProjectFromFile.deployment);
   await metricsStep.goToPreviousStep();
   await configStep.typeInDateRange(dateRange);
   await configStep.goToMetrics();
@@ -57,10 +57,11 @@ test('unhappy path when import', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.selectCrews(modifiedCorrectProjectFromFile.crews);
   await metricsStep.deselectBranch(modifiedCorrectProjectFromFile.deletedBranch);
   await metricsStep.addNewPipelineAndSelectSamePipeline(importUnhappyPathProjectFromFile.deployment);
-  await metricsStep.RemoveNewPipeline(); //*优化*：删除列表里的最后一个pipeline； 替换tohave attribute
+  await metricsStep.RemoveFirstNewPipeline(); //*优化*：删除列表里的最后一个pipeline； 替换tohave attribute
   await metricsStep.selectDoneHeartbeatState(ModifiedhbStateData[6]);
   await metricsStep.validateNextButtonNotClickable();
   await metricsStep.selectDoneHeartbeatState(hbStateData[6]);
+  await metricsStep.selectReworkSettings(modifiedCorrectProjectFromFile.reworkTimesSettings);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();

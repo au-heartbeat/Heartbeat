@@ -160,4 +160,8 @@ export const importModifiedCorrectConfig = {
       branches: ['main'],
     },
   ],
+  reworkTimesSettings: {
+    excludeStates: [],
+    reworkState: 'In Dev',
+  },
 };

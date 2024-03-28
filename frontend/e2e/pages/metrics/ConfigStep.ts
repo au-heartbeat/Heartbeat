@@ -270,7 +270,7 @@ export class ConfigStep {
     await expect(this.boardVerifiedButton).toBeVisible();
   }
 
-  async fillAndverifyBoardConfig({ token }: IBoardData) {
+  async fillAndverifyBoardTokenConfig(token: string) {
     await this.boardTokenInput.fill(token);
 
     await expect(this.boardVerifyButton).toBeEnabled();
