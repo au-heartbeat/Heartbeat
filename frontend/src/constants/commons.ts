@@ -62,6 +62,7 @@ export enum REPORT_TYPES {
 }
 
 export enum METRIC_TYPES {
+  ALL = 'all',
   BOARD = 'board',
   DORA = 'dora',
 }

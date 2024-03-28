@@ -1,5 +1,6 @@
 import {
   filterAndMapCycleTimeSettings,
+  formatDateToTimestampString,
   formatDuplicatedNameWithSuffix,
   getJiraBoardToken,
   getRealDoneStatus,
@@ -32,8 +33,8 @@ import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
+import { METRIC_TYPES } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks';
-import dayjs from 'dayjs';
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -80,7 +81,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const { metrics, calendarType } = configData.basic;
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
-  const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
+  const includeRework = metrics.includes(REQUIRED_DATA.REWORK_TIMES);
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
@@ -171,12 +172,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     });
 
   const basicReportRequestBody = {
-    startTime: dayjs(startDate).valueOf().toString(),
-    endTime: dayjs(endDate).valueOf().toString(),
+    startTime: formatDateToTimestampString(startDate),
+    endTime: formatDateToTimestampString(endDate),
     considerHoliday: calendarType === CALENDAR.CHINA,
     csvTimeStamp,
     metrics,
-    metricTypes: [shouldShowBoardMetrics && 'board', shouldShowDoraMetrics && 'dora'].filter(
+    metricTypes: [shouldShowBoardMetrics && METRIC_TYPES.BOARD, shouldShowDoraMetrics && METRIC_TYPES.DORA].filter(
       (value) => !!value,
     ) as string[],
     jiraBoardSetting: shouldShowBoardMetrics ? getJiraBoardSetting() : undefined,
@@ -186,7 +187,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const boardReportRequestBody = {
     ...basicReportRequestBody,
     metrics: metrics.filter((metric) => BOARD_METRICS.includes(metric)),
-    metricTypes: ['board'],
+    metricTypes: [METRIC_TYPES.BOARD],
     buildKiteSetting: undefined,
     codebaseSetting: undefined,
   };
@@ -194,7 +195,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const doraReportRequestBody = {
     ...basicReportRequestBody,
     metrics: metrics.filter((metric) => DORA_METRICS.includes(metric)),
-    metricTypes: ['dora'],
+    metricTypes: [METRIC_TYPES.DORA],
     jiraBoardSetting: undefined,
   };
 

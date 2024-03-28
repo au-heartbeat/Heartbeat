@@ -1,6 +1,7 @@
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { METRIC_TYPES } from '@src/constants/commons';
 
 export const PROJECT_NAME = 'Heartbeat';
 export const PROJECT_DESCRIPTION =
@@ -218,7 +219,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
       excludedStates: [],
     },
   },
-  metricTypes: ['board', 'dora'],
+  metricTypes: [METRIC_TYPES.BOARD, METRIC_TYPES.DORA],
 };
 
 export const IMPORTED_NEW_CONFIG_FIXTURE = {

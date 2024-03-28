@@ -6,7 +6,6 @@ import {
   EXPORT_BOARD_DATA,
   EXPORT_METRIC_DATA,
   EXPORT_PIPELINE_DATA,
-  IMPORTED_NEW_CONFIG_FIXTURE,
   LEAD_TIME_FOR_CHANGES,
   MOCK_DATE_RANGE,
   MOCK_JIRA_VERIFY_RESPONSE,
@@ -18,7 +17,6 @@ import {
   SHOW_MORE,
 } from '../../fixtures';
 import {
-  updateBasicConfigState,
   updateDateRange,
   updateJiraVerifyResponse,
   updateMetrics,
@@ -100,7 +98,6 @@ describe('Report Step', () => {
         users: MOCK_JIRA_VERIFY_RESPONSE.users,
       }),
     );
-    store.dispatch(updateBasicConfigState(IMPORTED_NEW_CONFIG_FIXTURE));
     store.dispatch(updateMetrics(params));
     store.dispatch(addADeploymentFrequencySetting());
     store.dispatch(
@@ -564,7 +561,7 @@ describe('Report Step', () => {
       reportHook.current.generalError4Report = error;
       setup(REQUIRED_DATA_LIST);
 
-      await userEvent.click(screen.getAllByText(RETRY)[0]);
+      await userEvent.click(screen.getAllByText(RETRY)[1]);
 
       await waitFor(() => {
         expect(useGenerateReportEffect().startToRequestData).toHaveBeenCalledTimes(2);

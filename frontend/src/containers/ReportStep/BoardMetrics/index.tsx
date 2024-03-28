@@ -17,6 +17,7 @@ import {
 } from '@src/containers/ReportStep/BoardMetrics/BoardMetrics';
 import { GridContainer } from '@src/containers/ReportStep/BoardMetrics/style';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
+import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { selectConfig } from '@src/context/config/configSlice';
@@ -34,6 +35,7 @@ interface BoardMetricsProps {
 
 const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, errorMessage }: BoardMetricsProps) => {
   const configData = useAppSelector(selectConfig);
+  const { cycleTimeSettings } = useAppSelector(selectMetricsContent);
 
   const { metrics } = configData.basic;
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));

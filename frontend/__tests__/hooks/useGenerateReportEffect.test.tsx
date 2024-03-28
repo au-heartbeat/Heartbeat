@@ -7,14 +7,15 @@ import { UnknownError } from '@src/errors/UnknownError';
 import { HttpStatusCode } from 'axios';
 import clearAllMocks = jest.clearAllMocks;
 import resetAllMocks = jest.resetAllMocks;
+import { METRIC_TYPES } from '@src/constants/commons';
 
 const MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE = {
   ...MOCK_GENERATE_REPORT_REQUEST_PARAMS,
-  metricTypes: ['board'],
+  metricTypes: [METRIC_TYPES.BOARD],
 };
 const MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE = {
   ...MOCK_GENERATE_REPORT_REQUEST_PARAMS,
-  metricTypes: ['dora'],
+  metricTypes: [METRIC_TYPES.DORA],
 };
 
 describe('use generate report effect', () => {
@@ -61,10 +62,33 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report more than one time when allMetricsReady field in response is false', async () => {
+  it('should call polling report more than one time when boardMetrics is loading', async () => {
     reportClient.polling = jest.fn().mockImplementation(async () => ({
       status: HttpStatusCode.NoContent,
-      response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: false },
+      response: { ...MOCK_REPORT_RESPONSE, boardMetricsCompleted: false, allMetricsCompleted: false },
+    }));
+    reportClient.retrieveByUrl = jest
+      .fn()
+      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
+
+    const { result } = renderHook(() => useGenerateReportEffect());
+
+    await waitFor(() => {
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+    });
+    act(() => {
+      jest.advanceTimersByTime(10000);
+    });
+
+    await waitFor(() => {
+      expect(reportClient.polling).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should call polling report more than one time when doraMetrics is loading', async () => {
+    reportClient.polling = jest.fn().mockImplementation(async () => ({
+      status: HttpStatusCode.NoContent,
+      response: { ...MOCK_REPORT_RESPONSE, doraMetricsCompleted: false, allMetricsCompleted: false },
     }));
     reportClient.retrieveByUrl = jest
       .fn()
