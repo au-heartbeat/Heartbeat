@@ -100,7 +100,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     const { boardMetricsError, pipelineMetricsError, sourceControlMetricsError } = reportMetricsError;
 
     const isBoardMetricsLoading =
-      boardMetricsCompleted === false && boardMetricsError === null && sourceControlMetricsError === null;
+      boardMetricsCompleted === false && boardMetricsError === null;
     const isDoraMetricsLoading =
       doraMetricsCompleted === false && pipelineMetricsError === null && sourceControlMetricsError === null;
     return isBoardMetricsLoading || isDoraMetricsLoading;
