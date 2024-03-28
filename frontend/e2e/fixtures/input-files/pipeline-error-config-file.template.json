@@ -26,7 +26,7 @@
   },
   "pipelineTool": {
     "type": "BuildKite",
-    "token": "<E2E_TOKEN_Pipeline_Error_Config_BUILD_KITE>"
+    "token": "<E2E_TOKEN_PIPELINE_ERROR_CONFIG_BUILD_KITE>"
   },
   "sourceControl": {
     "type": "GitHub",
