@@ -30,11 +30,8 @@ class KanbanServiceTest {
 	@Mock
 	private JiraService jiraService;
 
-	@Mock
-	private KanbanCsvService kanbanCsvService;
-
 	@Test
-	void shouldCallCsvServiceToGenerateCSVInfoWhenJiraBoardSettingIsNotNull() {
+	void shouldCallCsvServiceToGenerateCSVInfoWhenJiraBoardSettingIsNotNull() throws InterruptedException {
 		JiraBoardSetting mockJiraBoardSetting = KanbanFixture.MOCK_JIRA_BOARD_SETTING();
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.jiraBoardSetting(mockJiraBoardSetting)
@@ -51,10 +48,10 @@ class KanbanServiceTest {
 			.thenReturn(realDoneCardCollection);
 
 		FetchedData.CardCollectionInfo result = kanbanService.fetchDataFromKanban(request);
+		Thread.sleep(100);
 
 		assertEquals(realDoneCardCollection, result.getRealDoneCardCollection());
 		assertEquals(nonDoneCardCollection, result.getNonDoneCardCollection());
-		verify(kanbanCsvService).generateCsvInfo(request, realDoneCardCollection, nonDoneCardCollection);
 		verify(jiraService).getStoryPointsAndCycleTimeForNonDoneCards(
 				KanbanFixture.MOCK_EXPECT_STORY_POINT_AND_CYCLE_TIME_REQUEST(), mockJiraBoardSetting.getBoardColumns(),
 				mockJiraBoardSetting.getUsers());

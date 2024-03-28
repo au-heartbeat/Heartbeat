@@ -3,6 +3,7 @@ package heartbeat.service.report;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
+import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
@@ -62,11 +63,18 @@ public class ReportService {
 				thread.join();
 			}
 
-			ReportResponse reportResponse = generateReporterService
-				.getComposedReportResponseWithRequiredCsvField(timeStamp);
-			generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
-			asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
+			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp);
+			if (isNotExistError(reportResponse.getReportMetricsError())) {
+				generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
+				asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
+			}
 		});
+	}
+
+	public Boolean isNotExistError(ReportMetricsError reportMetricsError) {
+		return Objects.isNull(reportMetricsError.getBoardMetricsError())
+				&& Objects.isNull(reportMetricsError.getSourceControlMetricsError())
+				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
 	}
 
 	private void initializeMetricsDataCompletedInHandler(List<String> metricTypes, String timeStamp) {
