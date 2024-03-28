@@ -139,9 +139,6 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
             popper: {
               sx: { zIndex: Z_INDEX.DROPDOWN },
             },
-            textField: {
-              variant: 'standard',
-            },
           }}
         />
         <StyledDateRangePicker
