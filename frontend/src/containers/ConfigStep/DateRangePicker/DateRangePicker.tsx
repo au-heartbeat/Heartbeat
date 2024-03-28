@@ -124,7 +124,7 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
 
   return (
     <StyledFeaturedRangePickerContainer>
-      <StyledDateRangePickerContainer className='range-picker-row'>
+      <StyledDateRangePickerContainer className='range-picker-row' aria-label='Range picker row'>
         <StyledDateRangePicker
           disableFuture
           shouldDisableDate={shouldStartDateDisableDate}

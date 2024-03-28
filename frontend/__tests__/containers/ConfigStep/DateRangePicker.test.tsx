@@ -5,7 +5,7 @@ import {
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { ERROR_DATE } from '../../fixtures';
 import { Provider } from 'react-redux';
@@ -36,76 +36,123 @@ const setup = () => {
 };
 
 describe('DateRangePickerSection', () => {
-  const expectDate = (inputDate: HTMLInputElement) => {
-    expect(inputDate.value).toEqual(expect.stringContaining(TODAY.date().toString()));
-    expect(inputDate.value).toEqual(expect.stringContaining((TODAY.month() + 1).toString()));
-    expect(inputDate.value).toEqual(expect.stringContaining(TODAY.year().toString()));
-  };
+  describe('Single range behaviors', () => {
+    const expectDate = (inputDate: HTMLInputElement) => {
+      expect(inputDate.value).toEqual(expect.stringContaining(TODAY.date().toString()));
+      expect(inputDate.value).toEqual(expect.stringContaining((TODAY.month() + 1).toString()));
+      expect(inputDate.value).toEqual(expect.stringContaining(TODAY.year().toString()));
+    };
 
-  it('should render DateRangePicker', () => {
-    setup();
+    it('should render DateRangePicker', () => {
+      setup();
 
-    expect(screen.queryAllByText(START_DATE_LABEL)).toHaveLength(1);
-    expect(screen.queryAllByText(END_DATE_LABEL)).toHaveLength(1);
+      expect(screen.queryAllByText(START_DATE_LABEL)).toHaveLength(1);
+      expect(screen.queryAllByText(END_DATE_LABEL)).toHaveLength(1);
+    });
+
+    it('should show right start date when input a valid date given init start date is null ', () => {
+      setup();
+      const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(startDateInput, { target: { value: INPUT_DATE_VALUE } });
+
+      expectDate(startDateInput);
+    });
+
+    it('should show right end date when input a valid date given init end date is null ', () => {
+      setup();
+      const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+
+      fireEvent.change(endDateInput, { target: { value: INPUT_DATE_VALUE } });
+      expectDate(endDateInput);
+    });
+
+    it('should Auto-fill endDate which is after startDate 13 days when fill right startDate ', () => {
+      setup();
+      const endDate = TODAY.add(13, 'day');
+      const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+
+      fireEvent.change(startDateInput, { target: { value: INPUT_DATE_VALUE } });
+
+      expect(endDateInput.value).toEqual(expect.stringContaining(endDate.date().toString()));
+      expect(endDateInput.value).toEqual(expect.stringContaining((endDate.month() + 1).toString()));
+      expect(endDateInput.value).toEqual(expect.stringContaining(endDate.year().toString()));
+    });
+
+    it('should not Auto-fill endDate which is after startDate 14 days when fill wrong format startDate ', () => {
+      setup();
+      const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+
+      fireEvent.change(startDateInput, { target: { value: ERROR_DATE } });
+
+      expect(startDateInput.valueAsDate).toEqual(null);
+      expect(endDateInput.valueAsDate).toEqual(null);
+    });
+
+    it('should dispatch update configuration when change startDate', () => {
+      setup();
+      const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(startDateInput, { target: { value: INPUT_DATE_VALUE } });
+      expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
+      expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
+      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
+      expect(saveUsers).toHaveBeenCalledWith([]);
+    });
+
+    it('should dispatch update configuration when change endDate', () => {
+      setup();
+      const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(endDateInput, { target: { value: INPUT_DATE_VALUE } });
+      expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
+      expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
+      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
+      expect(saveUsers).toHaveBeenCalledWith([]);
+    });
   });
 
-  it('should show right start date when input a valid date given init start date is null ', () => {
-    setup();
-    const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    fireEvent.change(startDateInput, { target: { value: INPUT_DATE_VALUE } });
+  describe.only('Multiple range amount behaviors', () => {
+    it('should not show remove button when there is only one range by default', () => {
+      setup();
+      const removeButton = screen.queryByRole('button', { name: 'Remove' });
+      const ranges = screen.getAllByLabelText('Range picker row');
 
-    expectDate(startDateInput);
-  });
+      expect(removeButton).not.toBeInTheDocument();
+      expect(ranges).toHaveLength(1);
+    });
 
-  it('should show right end date when input a valid date given init end date is null ', () => {
-    setup();
-    const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+    it('should allow user to add up to 6 ranges', () => {
+      setup();
 
-    fireEvent.change(endDateInput, { target: { value: INPUT_DATE_VALUE } });
-    expectDate(endDateInput);
-  });
+      const addButton = screen.getByLabelText('Button for adding date range');
+      const defaultRanges = screen.getAllByLabelText('Range picker row');
+      expect(defaultRanges).toHaveLength(1);
 
-  it('should Auto-fill endDate which is after startDate 13 days when fill right startDate ', () => {
-    setup();
-    const endDate = TODAY.add(13, 'day');
-    const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      new Array(5).fill(true).forEach(() => fireEvent.click(addButton));
 
-    fireEvent.change(startDateInput, { target: { value: INPUT_DATE_VALUE } });
+      const ranges = screen.getAllByLabelText('Range picker row');
+      expect(ranges).toHaveLength(6);
+      expect(addButton).toBeDisabled();
+    });
 
-    expect(endDateInput.value).toEqual(expect.stringContaining(endDate.date().toString()));
-    expect(endDateInput.value).toEqual(expect.stringContaining((endDate.month() + 1).toString()));
-    expect(endDateInput.value).toEqual(expect.stringContaining(endDate.year().toString()));
-  });
+    it('should show remove button when ranges are more than 1 and user is able to remove the range itself by remove button within that row', () => {
+      setup();
 
-  it('should not Auto-fill endDate which is after startDate 14 days when fill wrong format startDate ', () => {
-    setup();
-    const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      const addButton = screen.getByLabelText('Button for adding date range');
+      fireEvent.click(addButton);
+      const ranges = screen.getAllByLabelText('Range picker row');
 
-    fireEvent.change(startDateInput, { target: { value: ERROR_DATE } });
+      expect(ranges).toHaveLength(2);
+      ranges.forEach((range) => {
+        const removeButtonForThisRange = within(range).queryByRole('button', { name: 'Remove' });
+        expect(removeButtonForThisRange).toBeVisible();
+      });
 
-    expect(startDateInput.valueAsDate).toEqual(null);
-    expect(endDateInput.valueAsDate).toEqual(null);
-  });
+      const firstRemoveButton = within(ranges[0]).queryByRole('button', { name: 'Remove' }) as HTMLButtonElement;
+      fireEvent.click(firstRemoveButton);
 
-  it('should dispatch update configuration when change startDate', () => {
-    setup();
-    const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    fireEvent.change(startDateInput, { target: { value: INPUT_DATE_VALUE } });
-    expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
-    expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-    expect(initDeploymentFrequencySettings).toHaveBeenCalled();
-    expect(saveUsers).toHaveBeenCalledWith([]);
-  });
-
-  it('should dispatch update configuration when change endDate', () => {
-    setup();
-    const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-    fireEvent.change(endDateInput, { target: { value: INPUT_DATE_VALUE } });
-    expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
-    expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-    expect(initDeploymentFrequencySettings).toHaveBeenCalled();
-    expect(saveUsers).toHaveBeenCalledWith([]);
+      const currentRanges = screen.getAllByLabelText('Range picker row');
+      expect(currentRanges).toHaveLength(1);
+    });
   });
 });

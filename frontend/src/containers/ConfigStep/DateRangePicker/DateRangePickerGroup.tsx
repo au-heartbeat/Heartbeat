@@ -21,7 +21,12 @@ export const DateRangePickerGroup = () => {
         {dateRangeGroup.map(({ startDate, endDate }, index) => (
           <DateRangePicker startDate={startDate} endDate={endDate} index={index} key={index} />
         ))}
-        <AddButton disabled={isAddButtonDisabled} startIcon={<Add />} onClick={addRangeHandler}>
+        <AddButton
+          aria-label='Button for adding date range'
+          disabled={isAddButtonDisabled}
+          startIcon={<Add />}
+          onClick={addRangeHandler}
+        >
           {ADD_TIME_RANGE_BUTTON_TEXT}
         </AddButton>
       </LocalizationProvider>
