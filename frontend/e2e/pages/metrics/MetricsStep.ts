@@ -590,4 +590,13 @@ export class MetricsStep {
     await expect(this.pipelineNameSelect).toHaveValue(firstPipelineConfig.pipelineName);
     await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(size(firstPipelineConfig.branches));
   }
+
+  async checkErrorMessageForPipelineSettings() {
+    await expect(this.pipelineSettingSection.getByLabel('Error UI for pipeline settings')).toContainText(
+      'No pipeline!',
+    );
+    await expect(this.pipelineSettingSection.getByLabel('Error UI for pipeline settings')).toContainText(
+      'Please go back to the previous page and change your pipeline token with correct access permission.',
+    );
+  }
 }
