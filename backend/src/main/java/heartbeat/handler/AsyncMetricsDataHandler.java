@@ -59,10 +59,8 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 			log.error("Failed to update metrics data completed through this timestamp.");
 			throw new GenerateReportException("Failed to update metrics data completed through this timestamp.");
 		}
-		if (previousMetricsCompleted.isAllCompleted()) {
-			previousMetricsCompleted.setAllMetricsCompleted(true);
-			putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
-		}
+		previousMetricsCompleted.setAllMetricsCompleted(true);
+		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
 	}
 
 }

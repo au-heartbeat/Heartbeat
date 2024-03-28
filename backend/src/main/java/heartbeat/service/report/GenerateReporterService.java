@@ -39,6 +39,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
@@ -52,6 +53,8 @@ import static java.util.Objects.isNull;
 public class GenerateReporterService {
 
 	private final KanbanService kanbanService;
+
+	private final KanbanCsvService kanbanCsvService;
 
 	private final PipelineService pipelineService;
 
@@ -90,8 +93,6 @@ public class GenerateReporterService {
 				boardReportId);
 		try {
 			saveReporterInHandler(generateBoardReporter(request), boardReportId);
-			asyncMetricsDataHandler
-				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
 			log.info(
 					"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
 					request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
@@ -114,9 +115,11 @@ public class GenerateReporterService {
 			GenerateReportRequest sourceControlRequest = request.toSourceControlRequest();
 			generateSourceControlReport(sourceControlRequest, fetchedData);
 		}
-		generateCSVForPipeline(request, fetchedData.getBuildKiteData());
-		asyncMetricsDataHandler
-			.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
+		CompletableFuture.runAsync(() -> {
+			generateCSVForPipeline(request, fetchedData.getBuildKiteData());
+			asyncMetricsDataHandler
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
+		});
 	}
 
 	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
@@ -194,6 +197,13 @@ public class GenerateReporterService {
 	private synchronized ReportResponse generateBoardReporter(GenerateReportRequest request) {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
 		FetchedData fetchedData = fetchJiraBoardData(request, new FetchedData());
+
+		CompletableFuture.runAsync(() -> {
+			kanbanCsvService.generateCsvInfo(request, fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
+					fetchedData.getCardCollectionInfo().getNonDoneCardCollection());
+			asyncMetricsDataHandler
+				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
+		});
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
