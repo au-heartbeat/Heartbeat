@@ -58,6 +58,7 @@ export class ConfigStep {
   readonly boardVerifyButton: Locator;
   readonly boardVerifiedButton: Locator;
   readonly boardResetButton: Locator;
+  readonly boardTokenErrorMessage: Locator;
   readonly pipelineToolContainer: Locator;
   readonly pipelineToolTypeSelect: Locator;
   readonly pipelineToolTypeBuildKiteOption: Locator;
@@ -65,12 +66,14 @@ export class ConfigStep {
   readonly pipelineToolVerifyButton: Locator;
   readonly pipelineToolVerifiedButton: Locator;
   readonly pipelineToolResetButton: Locator;
+  readonly pipelineTokenErrorMessage: Locator;
   readonly sourceControlContainer: Locator;
   readonly sourceControlTypeSelect: Locator;
   readonly sourceControlTokenInput: Locator;
   readonly sourceControlVerifyButton: Locator;
   readonly sourceControlVerifiedButton: Locator;
   readonly sourceControlResetButton: Locator;
+  readonly sourceControlTokenErrorMessage: Locator;
   readonly saveAsButton: Locator;
 
   constructor(page: Page) {
@@ -123,6 +126,9 @@ export class ConfigStep {
     this.boardVerifyButton = this.boardContainer.getByRole('button', { name: 'Verify' });
     this.boardVerifiedButton = this.boardContainer.getByRole('button', { name: 'Verified' });
     this.boardResetButton = this.boardContainer.getByRole('button', { name: 'Reset' });
+    this.boardTokenErrorMessage = this.boardContainer.getByText(
+      'Token is invalid, please change your token with correct access permission!',
+    );
 
     this.pipelineToolContainer = page.getByLabel('Pipeline Tool Config');
     this.pipelineToolTypeSelect = this.pipelineToolContainer.getByLabel('Pipeline Tool *');
@@ -131,6 +137,7 @@ export class ConfigStep {
     this.pipelineToolVerifyButton = this.pipelineToolContainer.getByRole('button', { name: 'Verify' });
     this.pipelineToolVerifiedButton = this.pipelineToolContainer.getByRole('button', { name: 'Verified' });
     this.pipelineToolResetButton = this.pipelineToolContainer.getByRole('button', { name: 'Reset' });
+    this.pipelineTokenErrorMessage = this.pipelineToolContainer.getByText('Token is incorrect!');
 
     this.sourceControlContainer = page.getByLabel('Source Control Config');
     this.sourceControlTypeSelect = this.sourceControlContainer.getByLabel('Source Control *');
@@ -138,12 +145,23 @@ export class ConfigStep {
     this.sourceControlVerifyButton = this.sourceControlContainer.getByRole('button', { name: 'Verify' });
     this.sourceControlVerifiedButton = this.sourceControlContainer.getByRole('button', { name: 'Verified' });
     this.sourceControlResetButton = this.sourceControlContainer.getByRole('button', { name: 'Reset' });
+    this.sourceControlTokenErrorMessage = this.sourceControlContainer.getByText('Token is incorrect!');
 
     this.saveAsButton = page.getByRole('button', { name: 'Save' });
   }
 
   async waitForShown() {
     await expect(this.stepTitle).toHaveClass(/Mui-active/);
+  }
+
+  async remindImportedDataNotmatched() {
+    await expect(this.page.getByRole('alert')).toContainText(
+      'Imported data is not perfectly matched. Please review carefully before going next!',
+    );
+  }
+
+  async checkProjectName(projectName: string) {
+    await expect(this.projectNameInput).toHaveValue(projectName);
   }
 
   async typeInProjectName(projectName: string) {
@@ -329,6 +347,16 @@ export class ConfigStep {
     await expect(this.boardVerifiedButton).toBeVisible();
   }
 
+  async fillAndverifyBoardTokenConfig(token: string) {
+    await this.boardTokenInput.fill(token);
+
+    await expect(this.boardVerifyButton).toBeEnabled();
+
+    await this.boardVerifyButton.click();
+
+    await expect(this.boardVerifiedButton).toBeVisible();
+  }
+
   async resetBoardConfig() {
     await expect(this.boardResetButton).toBeEnabled();
 
@@ -398,6 +426,12 @@ export class ConfigStep {
 
   async verifyBoardConfig() {
     await this.boardVerifyButton.click();
+  }
+
+  async verifyAllConfigInvalid() {
+    await expect(this.boardTokenErrorMessage).toBeVisible();
+    await expect(this.pipelineTokenErrorMessage).toBeVisible();
+    await expect(this.sourceControlTokenErrorMessage).toBeVisible();
   }
 }
 
