@@ -101,9 +101,8 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
     dispatch(updateDateRange(newDateRangeGroup));
     dispatchUpdateConfig();
   };
-  console.log('render');
 
-  const changeEndDate = (value: Dayjs) => {
+  const changeEndDate = (value: Nullable<Dayjs>) => {
     const newDateRangeGroup = dateRangeGroup.map(({ startDate, endDate }, idx) => {
       if (idx === index) {
         return {
@@ -128,8 +127,7 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
       <StyledDateRangePickerContainer className='range-picker-row'>
         <StyledDateRangePicker
           disableFuture
-          // todo typescript optimization
-          shouldDisableDate={(date) => shouldStartDateDisableDate(date as Dayjs)}
+          shouldDisableDate={shouldStartDateDisableDate}
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={changeStartDate}
@@ -149,12 +147,11 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
         <StyledDateRangePicker
           disableFuture
           label='To *'
-          // todo typescript optimization
-          shouldDisableDate={(date) => shouldEndDateDisableDate(date as Dayjs)}
+          shouldDisableDate={shouldEndDateDisableDate}
           value={endDate ? dayjs(endDate) : null}
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
-          onChange={(newValue) => changeEndDate(newValue as unknown as Dayjs)}
+          onChange={changeEndDate}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForEndDate,
