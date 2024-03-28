@@ -11,7 +11,7 @@ test.beforeAll(async () => {
   await clearTempDir();
 });
 
-test('unhappy path when import', async ({ homePage, configStep, metricsStep, reportStep }) => {
+test('unhappy path when import file', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
     startDate: format(modifiedCorrectProjectFromFile.dateRange.startDate),
     endDate: format(modifiedCorrectProjectFromFile.dateRange.endDate),
