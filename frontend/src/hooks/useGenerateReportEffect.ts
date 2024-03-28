@@ -96,13 +96,15 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   };
 
   const areAllMetricsCompleted = (response: ReportResponseDTO) => {
-    const { boardMetricsCompleted,doraMetricsCompleted,reportMetricsError } = response;
-    const {boardMetricsError,pipelineMetricsError,sourceControlMetricsError} = reportMetricsError;
+    const { boardMetricsCompleted, doraMetricsCompleted, reportMetricsError } = response;
+    const { boardMetricsError, pipelineMetricsError, sourceControlMetricsError } = reportMetricsError;
 
-    const isBoardMetricsLoading = !boardMetricsCompleted && boardMetricsError === null && sourceControlMetricsError === null;
-    const isDoraMetricsLoading = !doraMetricsCompleted && pipelineMetricsError === null && sourceControlMetricsError === null;
+    const isBoardMetricsLoading =
+      boardMetricsCompleted === false && boardMetricsError === null && sourceControlMetricsError === null;
+    const isDoraMetricsLoading =
+      doraMetricsCompleted === false && pipelineMetricsError === null && sourceControlMetricsError === null;
     return !isBoardMetricsLoading && !isDoraMetricsLoading;
-  }
+  };
 
   const stopPollingReports = () => {
     window.clearTimeout(timerIdRef.current);
