@@ -8,7 +8,7 @@ test.beforeAll(async () => {
   await clearTempDir();
 });
 
-test('Only select velocity option on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
+test('Only select velocity metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
     startDate: format(configStepData.dateRange.startDate),
     endDate: format(configStepData.dateRange.endDate),
@@ -46,7 +46,7 @@ test('Only select velocity option on config page', async ({ homePage, configStep
   await reportStep.checkOnlyVelocityPartVisible();
 });
 
-test('Only select cycle time option on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
+test('Only select cycle time metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
     startDate: format(configStepData.dateRange.startDate),
     endDate: format(configStepData.dateRange.endDate),
@@ -84,7 +84,7 @@ test('Only select cycle time option on config page', async ({ homePage, configSt
   await reportStep.checkOnlyCycleTimePartVisible();
 });
 
-test('Only select classification option on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
+test('Only select classification metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
     startDate: format(configStepData.dateRange.startDate),
     endDate: format(configStepData.dateRange.endDate),
@@ -121,7 +121,7 @@ test('Only select classification option on config page', async ({ homePage, conf
   await reportStep.checkOnlyClassificationPartVisible();
 });
 
-test('Only select lead time for changes option on config page', async ({
+test('Only select lead time for changes metrics on config page', async ({
   homePage,
   configStep,
   metricsStep,
@@ -157,7 +157,7 @@ test('Only select lead time for changes option on config page', async ({
   await reportStep.checkExportPipelineDataButtonClickable();
 });
 
-test('Only select deployment frequency option on config page', async ({
+test('Only select deployment frequency metrics on config page', async ({
   homePage,
   configStep,
   metricsStep,
@@ -192,7 +192,7 @@ test('Only select deployment frequency option on config page', async ({
   await reportStep.checkExportPipelineDataButtonClickable();
 });
 
-test('Only select change failure rate option on config page', async ({
+test('Only select change failure rate metrics on config page', async ({
   homePage,
   configStep,
   metricsStep,
@@ -227,7 +227,7 @@ test('Only select change failure rate option on config page', async ({
   await reportStep.checkExportPipelineDataButtonClickable();
 });
 
-test('Only select mean time to recovery option on config page', async ({
+test('Only select mean time to recovery metrics on config page', async ({
   homePage,
   configStep,
   metricsStep,
