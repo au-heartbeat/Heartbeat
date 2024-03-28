@@ -1,4 +1,4 @@
-export const importMultipleDoneProjectFromFile = {
+export const testFixtureFile = {
   projectName: 'Heartbeat Metrics',
   dateRange: {
     startDate: '2024-01-15T00:00:00.000+08:00',
@@ -66,6 +66,56 @@ export const importMultipleDoneProjectFromFile = {
       },
       {
         Done: 'Done',
+      },
+    ],
+    treatFlagCardAsBlock: true,
+  },
+  cycleTimeByStatus: {
+    type: 'byStatus',
+    jiraColumns: [
+      {
+        TODO: 'To do',
+      },
+      {
+        Doing: 'In Dev',
+      },
+      {
+        Blocked: 'Block',
+      },
+      {
+        Review: 'Review',
+      },
+      {
+        'READY FOR TESTING': 'Waiting for testing',
+      },
+      {
+        Testing: 'Testing',
+      },
+      {
+        Done: 'Done',
+      },
+    ],
+    jiraColumnsEmptyByStatus: [
+      {
+        TODO: '----',
+      },
+      {
+        Doing: '----',
+      },
+      {
+        Blocked: '----',
+      },
+      {
+        Review: '----',
+      },
+      {
+        'WAIT FOR TEST': '----',
+      },
+      {
+        Testing: '----',
+      },
+      {
+        Done: '----',
       },
     ],
     treatFlagCardAsBlock: true,

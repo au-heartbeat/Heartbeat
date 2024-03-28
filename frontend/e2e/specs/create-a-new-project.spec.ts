@@ -5,7 +5,7 @@ import { ProjectCreationType } from 'e2e/pages/metrics/ReportStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import { clearTempDir } from 'e2e/utils/clearTempDir';
 import { format } from 'e2e/utils/dateTime';
-import { importMultipleDoneProjectFromFile } from "../fixtures/importFile/multiple-done-config-file";
+import { testFixtureFile } from "../fixtures/testFixtureFile/test-fixture-file";
 
 test.beforeAll(async () => {
   await clearTempDir();
@@ -19,7 +19,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
-  const hbStateDataEmptyByStatus = importMultipleDoneProjectFromFile.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
+  const hbStateDataEmptyByStatus = testFixtureFile.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 

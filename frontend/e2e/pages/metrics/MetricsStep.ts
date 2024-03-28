@@ -344,15 +344,10 @@ export class MetricsStep {
     await this.page.getByRole('option', { name: doneOption }).click();
   }
 
-  async checkHeartbeatStateIsSet([
-    todoOption,
-    doingOption,
-    blockOption,
-    reviewOption,
-    forReadyOption,
-    testingOption,
-    doneOption,
-  ]: string[], isByColumn: boolean) {
+  async checkHeartbeatStateIsSet(
+    [todoOption, doingOption, blockOption, reviewOption, forReadyOption, testingOption, doneOption]: string[],
+    isByColumn: boolean,
+  ) {
     await expect(this.boardCycleTimeSection.getByLabel('Cycle time select for TODO').getByRole('combobox')).toHaveValue(
       todoOption,
     );
