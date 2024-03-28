@@ -180,4 +180,29 @@ public class GraphQLClientTest {
 
 	}
 
+	@Test
+	public void callWithFetchListOfBuildsInfoExpectedNull() throws Exception {
+		mockServer.enqueue(
+			new MockResponse()
+				.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
+					+ "      \"message\": \"Your access token doesn't have the graphql scope\"\n" + "    }\n"
+					+ "  ]\n" + "}")
+				.setResponseCode(200));
+
+		String httpUrl = mockServer.url("/").toString();
+		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
+		when(mockedEnum.getUrl()).thenReturn(httpUrl);
+
+		GraphQLClient mockGraphQLClient = new GraphQLClient();
+		String mockJobStartTime = "2022-09-09T03:57:09.545Z";
+		String mockJobFinishTime = "2022-09-09T04:57:09.545Z";
+		GetPipelineBuildsQuery.Builds builds = mockGraphQLClient.fetchListOfBuildsWith(mockedEnum, "token", "slug",
+			mockJobStartTime, mockJobFinishTime, List.of("branch_main"), 1);
+
+        assertNull(builds);
+
+		Thread.sleep(100);
+
+	}
+
 }
