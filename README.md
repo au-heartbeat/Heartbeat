@@ -22,6 +22,10 @@
       - [3.1.2 Config search data](#312-config-search-data)
         - [3.1.2.1 Date picker validation rules](#3121-date-picker-validation-rules)
       - [3.1.3 Config project account](#313-config-project-account)
+        - [3.1.3.1 Guideline for generating Jira token](#3131-guideline-for-generating-jira-token)
+        - [3.1.3.2 Guideline for generating Buildkite token](#3132-guideline-for-generating-buildkite-token)
+        - [3.1.3.3 Guideline for generating GitHub token](#3133-guideline-for-generating-github-token)
+        - [3.1.3.4 Authorize GitHub token with correct organization](#3134-authorize-github-token-with-correct-organization)
     - [3.2 Config Metrics data](#32-config-metrics-data)
       - [3.2.1 Config Crews/Cycle Time](#321-config-crewscycle-time)
       - [3.2.2 Setting Classification](#322-setting-classification)
@@ -177,27 +181,39 @@ Image 3-4，Project config
 |Site|Site is the domain for your jira board, like below URL, `dorametrics` is the site <br/> https://dorametrics.atlassian.net/jira/software/projects/ADM/boards/2 |
 |Email|The email can access to the Jira board |
 |Token|Generate a new token with below link, https://id.atlassian.com/manage-profile/security/api-tokens |
+##### 3.1.3.1 Guideline for generating Jira token
+![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/guideline-for-generating-token/generate-jira-token.png)
+_Image 3-5, create Jira token_
 
 **The details for Pipeline:**
 |Items|Description|
 |---|---|
 |PipelineTool| The pipeline tool you team use, currently heartbeat only support buildkite|
 |Token|Generate buildkite token with below link, https://buildkite.com/user/api-access-tokens|
+##### 3.1.3.2 Guideline for generating Buildkite token
+Choose "Read Builds","Read Organizations" and "Read Pipelines".
+![Image 3-6](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/guideline-for-generating-token/generate-buildkite-token.png)
+_Image 3-6, generate Buildkite token_
 
 **The details for SourceControl:**
 |Items|Description|
 |---|---|
 |SourceControl|The source control tool you team use, currently heartbeat only support Github|
 |Token|Generate Github token with below link(classic one), https://github.com/settings/tokens|
-
+##### 3.1.3.3 Guideline for generating GitHub token
+![Image 3-7](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/guideline-for-generating-token/generate-github-token.png)
+_Image 3-7, generate classic GitHub token_
+##### 3.1.3.4 Authorize GitHub token with correct organization
+![Image 3-8](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/guideline-for-generating-token/unauthorized.png)
+_Image 3-8, authorize GitHub token with correct organization_
 ### 3.2 Config Metrics data
 
 After inputting the details info, users need to click the `Verify` button to verify if can access to these tool. Once verified, they could click the `Next` button go to next page -- Config Metrics page(Image 3-5，Image 3-6，Image 3-7)
 
 #### 3.2.1 Config Crews/Cycle Time
 
-![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/5.png)\
-_Image 3-5, Crews/Cycle Time config_
+![Image 3-9](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/5.png)\
+_Image 3-9, Crews/Cycle Time config_
 
 **Crew Settings:** You could select your team members from a list get from board source. The list will include the assignees for those tickets that finished in the time period selected in the last step.
 
@@ -217,8 +233,8 @@ _Image 3-5, Crews/Cycle Time config_
 
 #### 3.2.2 Setting Classification
 
-![Image 3-6](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/6.png)\
-_Image 3-6，Classification Settings_
+![Image 3-10](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/6.png)\
+_Image 3-10，Classification Settings_
 
 In classification settings, it will list all Context fields for your jira board. Users can select anyone to get the data for them. And according to your selection, in the export page, you will see the classification report to provide more insight with your board data.
 
