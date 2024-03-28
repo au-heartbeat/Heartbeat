@@ -246,26 +246,26 @@ In Rework times settings, it contains Rework to which state Input and Exclude wh
 
 #### 3.2.4 Setting advanced Setting
 
-![Image 3-12](https://jsd.cdn.zzko.cn/gh/au-heartbeat/data-hosting@main/advanced-setting-image/advance-settings.png)\
+![Image 3-12](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/advanced-setting-image/advance-settings.png)\
 _Image 3-12，advanced Settings_
 
 In advanced settings, it contains story points Input and Flagged Input. Users can input story points and Flagged custom-field on their own when the jira board has permission restriction . And according to these input, in the export page, user can get correct story points and block days
 
 how to find the story points and Flagged custom-field?
 
-![Image 3-13](https://jsd.cdn.zzko.cn/gh/au-heartbeat/data-hosting@main/advanced-setting-image/devtool-network.png)\
+![Image 3-13](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/advanced-setting-image/devtool-network.png)\
 _Image 3-13，devTool-network-part_
 
-![Image 3-14](https://jsd.cdn.zzko.cn/gh/au-heartbeat/data-hosting@main/advanced-setting-image/card-history.png)\
+![Image 3-14](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/advanced-setting-image/card-history.png)\
 _Image 3-14，card-history_
 
-![Image 3-15](https://jsd.cdn.zzko.cn/gh/au-heartbeat/data-hosting@main/advanced-setting-image/find-custom-field-api.png)\
+![Image 3-15](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/advanced-setting-image/find-custom-field-api.png)\
 _Image 3-15，find-custom-field-api_
 
-![Image 3-16](https://jsd.cdn.zzko.cn/gh/au-heartbeat/data-hosting@main/advanced-setting-image/story-point-custom-field.png)\
+![Image 3-16](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/advanced-setting-image/story-point-custom-field.png)\
 _Image 3-16，story-point-custom-field_
 
-![Image 3-17](https://jsd.cdn.zzko.cn/gh/au-heartbeat/data-hosting@main/advanced-setting-image/flagged-custom-field.png)\
+![Image 3-17](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/advanced-setting-image/flagged-custom-field.png)\
 _Image 3-17，flagged-custom-field_
 
 1. user need to go to the jira board and click one card , then open dev tool switch to network part. 
