@@ -1,0 +1,37 @@
+
+markdown
+Copy code
+---
+title: Spike Chart Tool
+description: Seeking Suitable Chart Components for Heartbeat
+---
+
+
+## Background
+In order to meet new business requirements and future feature iterations, there is a need to find charting tools that align with the business needs.
+
+## Expectations
+1. Identifying suitable charting tools.
+2. Supporting responsive design.
+3. Ability to filter through legends.
+4. Customizable tooltips.
+5. Incorporating multiple y-axes and mixed charts.
+
+## Solution
+The decision is to utilize Recharts as the charting tool for Heartbeat.
+
+### 1. Decision Rationale
+Recharts offers several advantages:
+   - It satisfies both current and foreseeable business requirements.
+   - It stands out as one of the most React-friendly charting libraries.
+   - The documentation is comprehensive, with easy-to-understand content (including Chinese translations).
+   - It boasts an active community and provides extensive examples.
+   - Configuration is straightforward, and declaring chart structures using JSX tags enhances readability.
+
+### 2. Comparison with Other Solutions
+   Nivo:
+      Nivo's configuration is more complex compared to Recharts, with a steeper learning curve and less compatibility with React.
+   Victory:
+      Victory requires completely manual chart construction, resulting in high implementation costs.
+   React-vis:
+      React-vis offers relatively fewer charting options compared to Recharts.
