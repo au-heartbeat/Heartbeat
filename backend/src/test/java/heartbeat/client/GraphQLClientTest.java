@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import heartbeat.client.graphql.GraphQLClient;
 import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.RateLimitException;
 import heartbeat.exception.UnauthorizedException;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -104,6 +105,27 @@ public class GraphQLClientTest {
 	}
 
 	@Test
+	void shouldRateLimitExceptionWhenTokenInvalid() {
+		mockServer
+			.enqueue(new MockResponse()
+				.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
+						+ "      \"message\": \"RateLimit, Please try later\"\n" + "    }\n" + "  ]\n" + "}")
+				.setResponseCode(429));
+
+		String httpUrl = mockServer.url("/").toString();
+		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
+		when(mockedEnum.getUrl()).thenReturn(httpUrl);
+
+		GraphQLClient mockGraphQLClient = new GraphQLClient();
+		Query<GetPipelineInfoQuery.Data> mockQuery = new GetPipelineInfoQuery(Optional.present("slug"),
+				Optional.present(10));
+
+		assertThatThrownBy(() -> mockGraphQLClient.fetchListOfPipeLineInfo(mockedEnum, "mock token", "mock slug", 1))
+			.isInstanceOf(RateLimitException.class)
+			.hasMessageContaining("RateLimit, Please try later");
+	}
+
+	@Test
 	void shouldReturnNullWhenApolloResponseDataIsNull() throws InterruptedException {
 		mockServer.enqueue(
 				new MockResponse()
@@ -183,11 +205,11 @@ public class GraphQLClientTest {
 	@Test
 	public void callWithFetchListOfBuildsInfoExpectedNull() throws Exception {
 		mockServer.enqueue(
-			new MockResponse()
-				.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
-					+ "      \"message\": \"Your access token doesn't have the graphql scope\"\n" + "    }\n"
-					+ "  ]\n" + "}")
-				.setResponseCode(200));
+				new MockResponse()
+					.setBody("{\n" + "  \"errors\": [\n" + "    {\n"
+							+ "      \"message\": \"Your access token doesn't have the graphql scope\"\n" + "    }\n"
+							+ "  ]\n" + "}")
+					.setResponseCode(200));
 
 		String httpUrl = mockServer.url("/").toString();
 		GraphQLClient.GraphQLServer mockedEnum = mock(GraphQLClient.GraphQLServer.class);
@@ -197,9 +219,9 @@ public class GraphQLClientTest {
 		String mockJobStartTime = "2022-09-09T03:57:09.545Z";
 		String mockJobFinishTime = "2022-09-09T04:57:09.545Z";
 		GetPipelineBuildsQuery.Builds builds = mockGraphQLClient.fetchListOfBuildsWith(mockedEnum, "token", "slug",
-			mockJobStartTime, mockJobFinishTime, List.of("branch_main"), 1);
+				mockJobStartTime, mockJobFinishTime, List.of("branch_main"), 1);
 
-        assertNull(builds);
+		assertNull(builds);
 
 		Thread.sleep(100);
 

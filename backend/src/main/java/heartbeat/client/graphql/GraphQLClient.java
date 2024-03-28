@@ -10,6 +10,7 @@ import com.apollographql.apollo3.exception.ApolloHttpException;
 import com.buildkite.GetPipelineBuildsQuery;
 import com.buildkite.GetPipelineInfoQuery;
 import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.RateLimitException;
 import heartbeat.exception.UnauthorizedException;
 import kotlin.Result;
 import kotlin.coroutines.Continuation;
@@ -107,7 +108,7 @@ public class GraphQLClient {
 					case 401:
 						throw new UnauthorizedException("Please supply a valid API Access Token");
 					case 429:
-						log.error("ApolloHttpExceptionMessage: {}", httpException.getMessage());
+						throw new RateLimitException("RateLimit, Please try later");
 					default:
 						break;
 				}
