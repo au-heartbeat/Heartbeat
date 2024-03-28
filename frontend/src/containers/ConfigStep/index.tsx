@@ -3,6 +3,7 @@ import { closeAllNotifications } from '@src/context/notification/NotificationSli
 import BasicInfo from '@src/containers/ConfigStep/BasicInfo';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { ConfigStepWrapper } from './style';
+import Charts from '../ReportStep/Chart';
 import { useLayoutEffect } from 'react';
 
 const ConfigStep = () => {
@@ -16,6 +17,7 @@ const ConfigStep = () => {
   return (
     <ConfigStepWrapper>
       <BasicInfo />
+      <Charts />
       <MetricsTypeCheckbox />
     </ConfigStepWrapper>
   );

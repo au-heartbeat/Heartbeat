@@ -60,7 +60,14 @@
     "react-router-dom": "^6.22.3",
     "typescript": "^5.4.2",
     "vite": "^5.2.2",
-    "vite-plugin-pwa": "^0.19.5"
+    "vite-plugin-pwa": "^0.19.5",
+    "@nivo/bar": "^0.85.1",
+    "@nivo/core": "^0.85.1",
+    "@nivo/legends": "^0.85.1",
+    "@nivo/line": "^0.85.1",
+    "@nivo/tooltip": "^0.85.1",
+    "recharts": "^2.12.3",
+    "victory": "^37.0.0"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^0.26.0",

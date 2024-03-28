@@ -18,6 +18,7 @@ import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import { useAppSelector } from '@src/hooks';
+import Chart from './Chart';
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -279,6 +280,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         : pageType === REPORT_PAGE_TYPE.BOARD
           ? showBoardDetail(reportData)
           : !!reportData && showDoraDetail(reportData)}
+
       <ReportButtonGroup
         isShowSave={isSummaryPage}
         isShowExportMetrics={isSummaryPage}
