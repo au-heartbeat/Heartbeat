@@ -32,16 +32,7 @@ export const testFixtureFile = {
     type: 'GitHub',
     token: process.env.E2E_TOKEN_GITHUB,
   },
-  crews: [
-    'heartbeat user',
-    'Weiran Sun',
-    'Yufan Wang',
-    'Chao Wang',
-    'Xinyi Wang',
-    'Xuebing Li',
-    'Junbo Dai',
-    'Yunsong Yang',
-  ],
+  crews: ['heartbeat user', 'Chao Wang', 'Junbo Dai'],
   assigneeFilter: 'lastAssignee',
   cycleTime: {
     type: 'byColumn',
@@ -86,7 +77,7 @@ export const testFixtureFile = {
         Review: 'Review',
       },
       {
-        'READY FOR TESTING': 'Waiting for testing',
+        'WAIT FOR TEST': 'Waiting for testing',
       },
       {
         Testing: 'Testing',

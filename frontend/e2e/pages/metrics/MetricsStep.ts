@@ -27,6 +27,7 @@ export class MetricsStep {
   readonly boardCycleTimeSelectForBlocked: Locator;
   readonly boardCycleTimeSelectForReview: Locator;
   readonly boardCycleTimeSelectForREADY: Locator;
+  readonly boardCycleTimeSelectForWAITFORTESTING: Locator;
   readonly boardCycleTimeSelectForTesting: Locator;
   readonly boardCycleTimeSelectForDone: Locator;
   readonly boardCycleTimeInputForTODO: Locator;
@@ -102,6 +103,9 @@ export class MetricsStep {
       .getByLabel('Open');
     this.boardCycleTimeSelectForREADY = this.boardCycleTimeSection
       .getByLabel('Cycle time select for READY FOR TESTING')
+      .getByLabel('Open');
+    this.boardCycleTimeSelectForWAITFORTESTING = this.boardCycleTimeSection
+      .getByLabel('Cycle time select for WAIT FOR TEST')
       .getByLabel('Open');
     this.boardCycleTimeSelectForTesting = this.boardCycleTimeSection
       .getByLabel('Cycle time select for Testing')
@@ -313,15 +317,10 @@ export class MetricsStep {
     await expect(this.boardCycleTimeInputForDone).toHaveAttribute('value', doneOption);
   }
 
-  async selectHeartbeatState([
-    todoOption,
-    doingOption,
-    blockOption,
-    reviewOption,
-    forReadyOption,
-    testingOption,
-    doneOption,
-  ]: string[]) {
+  async selectHeartbeatState(
+    [todoOption, doingOption, blockOption, reviewOption, forReadyOption, testingOption, doneOption]: string[],
+    isByColumn: boolean,
+  ) {
     await this.boardCycleTimeSelectForTODO.click();
     await this.page.getByRole('option', { name: todoOption }).click();
 
@@ -334,8 +333,13 @@ export class MetricsStep {
     await this.boardCycleTimeSelectForReview.click();
     await this.page.getByRole('option', { name: reviewOption }).click();
 
-    await this.boardCycleTimeSelectForREADY.click();
-    await this.page.getByRole('option', { name: forReadyOption }).click();
+    if (isByColumn) {
+      await this.boardCycleTimeSelectForREADY.click();
+      await this.page.getByRole('option', { name: forReadyOption }).click();
+    } else {
+      await this.boardCycleTimeSelectForWAITFORTESTING.click();
+      await this.page.getByRole('option', { name: forReadyOption }).click();
+    }
 
     await this.boardCycleTimeSelectForTesting.click();
     await this.page.getByRole('option', { name: testingOption, exact: true }).click();

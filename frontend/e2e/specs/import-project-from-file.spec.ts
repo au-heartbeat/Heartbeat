@@ -1,10 +1,10 @@
 import { BOARD_METRICS_RESULT, FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT } from '../fixtures/createNew/reportResult';
 import { importMultipleDoneProjectFromFile } from '../fixtures/importFile/multiple-done-config-file';
+import { testFixtureFile } from '../fixtures/testFixtureFile/test-fixture-file';
 import { config as metricsStepData } from '../fixtures/createNew/metricsStep';
 import { ProjectCreationType } from 'e2e/pages/metrics/ReportStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import { clearTempDir } from 'e2e/utils/clearTempDir';
-import { testFixtureFile } from "../fixtures/testFixtureFile/test-fixture-file";
 
 test.beforeAll(async () => {
   await clearTempDir();
@@ -35,12 +35,12 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
 
   await metricsStep.selectCycleTimeSettingsType(testFixtureFile.cycleTimeByStatus.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
+  await metricsStep.selectHeartbeatState(hbStateData, false);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, false);
 
   await metricsStep.selectCycleTimeSettingsType(importMultipleDoneProjectFromFile.cycleTime.type);
-  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
-
-  await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
-  await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, true);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
 
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
