@@ -57,7 +57,7 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
   await metricsStep.selectCrews(modifiedCorrectProjectFromFile.crews);
   await metricsStep.deselectBranch(modifiedCorrectProjectFromFile.deletedBranch);
   await metricsStep.addNewPipelineAndSelectSamePipeline(importUnhappyPathProjectFromFile.deployment);
-  await metricsStep.RemoveFirstNewPipeline(); //*优化*：删除列表里的最后一个pipeline； 替换tohave attribute
+  await metricsStep.RemoveFirstNewPipeline();
   await metricsStep.selectDoneHeartbeatState(ModifiedhbStateData[6]);
   await metricsStep.validateNextButtonNotClickable();
   await metricsStep.selectDoneHeartbeatState(hbStateData[6]);
