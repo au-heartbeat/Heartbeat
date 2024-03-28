@@ -99,10 +99,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     const { boardMetricsCompleted, doraMetricsCompleted, reportMetricsError } = response;
     const { boardMetricsError, pipelineMetricsError, sourceControlMetricsError } = reportMetricsError;
 
-    const isBoardMetricsLoading =
-      boardMetricsCompleted === false && !boardMetricsError;
-    const isDoraMetricsLoading =
-      doraMetricsCompleted === false && !pipelineMetricsError && !sourceControlMetricsError;
+    const isBoardMetricsLoading = boardMetricsCompleted === false && !boardMetricsError;
+    const isDoraMetricsLoading = doraMetricsCompleted === false && !pipelineMetricsError && !sourceControlMetricsError;
     return isBoardMetricsLoading || isDoraMetricsLoading;
   };
 

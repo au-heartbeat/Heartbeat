@@ -1,15 +1,16 @@
 import {
+  filterAndMapCycleTimeSettings,
+  formatDuplicatedNameWithSuffix,
+  getJiraBoardToken,
+  getRealDoneStatus,
+  onlyEmptyAndDoneState,
+} from '@src/utils/util';
+import {
   isOnlySelectClassification,
   isSelectBoardMetrics,
   isSelectDoraMetrics,
   selectConfig,
 } from '@src/context/config/configSlice';
-import {
-  filterAndMapCycleTimeSettings,
-  formatDuplicatedNameWithSuffix,
-  getJiraBoardToken,
-  getRealDoneStatus,
-} from '@src/utils/util';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -77,6 +78,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const startDate = configData.basic.dateRange.startDate ?? '';
   const endDate = configData.basic.dateRange.endDate ?? '';
   const { metrics, calendarType } = configData.basic;
+  const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
+  const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
+  const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
 
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
@@ -105,12 +109,13 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       assigneeFilter,
       targetFields: formatDuplicatedNameWithSuffix(targetFields),
       doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
-      reworkTimesSetting: metrics.includes(REQUIRED_DATA.REWORK_TIMES)
-        ? {
-            reworkState: reworkTimesSettings.reworkState,
-            excludedStates: reworkTimesSettings.excludeStates,
-          }
-        : null,
+      reworkTimesSetting:
+        includeRework && !isOnlyEmptyAndDoneState
+          ? {
+              reworkState: reworkTimesSettings.reworkState,
+              excludedStates: reworkTimesSettings.excludeStates,
+            }
+          : null,
       overrideFields: [
         {
           name: 'Story Points',

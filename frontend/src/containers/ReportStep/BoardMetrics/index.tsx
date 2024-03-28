@@ -9,28 +9,18 @@ import {
   SHOW_MORE,
 } from '@src/constants/resources';
 import {
-  filterAndMapCycleTimeSettings,
-  formatDuplicatedNameWithSuffix,
-  getJiraBoardToken,
-  getRealDoneStatus,
-  onlyEmptyAndDoneState,
-} from '@src/utils/util';
-import {
   StyledLoading,
   StyledMetricsSection,
   StyledRetry,
   StyledShowMore,
   StyledTitleWrapper,
 } from '@src/containers/ReportStep/BoardMetrics/BoardMetrics';
-<<<<<<< HEAD
-import { IBasicReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
-=======
->>>>>>> cbcfdc9c5 (ADM-873: [frontend]refactor: extract getReportRequestBody from BoardMetrics and DoraMetrics)
 import { GridContainer } from '@src/containers/ReportStep/BoardMetrics/style';
 import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
 import { selectConfig } from '@src/context/config/configSlice';
+import { onlyEmptyAndDoneState } from '@src/utils/util';
 import { Loading } from '@src/components/Loading';
 import { useAppSelector } from '@src/hooks';
 import React from 'react';
@@ -47,62 +37,12 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
 
   const { metrics } = configData.basic;
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
-<<<<<<< HEAD
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
-  const includeRework = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES);
-=======
->>>>>>> cbcfdc9c5 (ADM-873: [frontend]refactor: extract getReportRequestBody from BoardMetrics and DoraMetrics)
   const boardMetricsCompleted = boardMetrics
     .map((metric) => BOARD_METRICS_MAPPING[metric])
     .every((metric) => boardReport?.[metric] ?? false);
 
-<<<<<<< HEAD
-  const getBoardReportRequestBody = (): IBasicReportRequestDTO => {
-    return {
-      metrics: boardMetrics,
-      startTime: dayjs(startDate).valueOf().toString(),
-      endTime: dayjs(endDate).valueOf().toString(),
-      considerHoliday: calendarType === CALENDAR.CHINA,
-      jiraBoardSetting: {
-        token: jiraToken,
-        type: type.toLowerCase().replace(' ', '-'),
-        site,
-        projectKey,
-        boardId,
-        boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings),
-        treatFlagCardAsBlock,
-        users,
-        assigneeFilter,
-        targetFields: formatDuplicatedNameWithSuffix(targetFields),
-        doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
-        reworkTimesSetting:
-          includeRework && !isOnlyEmptyAndDoneState
-            ? {
-                reworkState: reworkTimesSettings.reworkState,
-                excludedStates: reworkTimesSettings.excludeStates,
-              }
-            : null,
-        overrideFields: [
-          {
-            name: 'Story Points',
-            key: importedAdvancedSettings?.storyPoint ?? '',
-            flag: true,
-          },
-          {
-            name: 'Flagged',
-            key: importedAdvancedSettings?.flag ?? '',
-            flag: true,
-          },
-        ],
-      },
-      csvTimeStamp: csvTimeStamp,
-      metricTypes: ['board'],
-    };
-  };
-
-=======
->>>>>>> cbcfdc9c5 (ADM-873: [frontend]refactor: extract getReportRequestBody from BoardMetrics and DoraMetrics)
   const getBoardItems = () => {
     const velocity = boardReport?.velocity;
     const cycleTime = boardReport?.cycleTime;
