@@ -19,6 +19,7 @@ export const config = {
     type: 'Jira',
     boardId: '2',
     email: 'heartbeatuser2023@gmail.com',
+    projectKey: 'ADM',
     site: 'dorametrics',
     token: process.env.E2E_TOKEN_JIRA as string,
   },
