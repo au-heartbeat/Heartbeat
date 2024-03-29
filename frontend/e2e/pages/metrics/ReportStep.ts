@@ -1,4 +1,4 @@
-import { checkDownloadReport, downloadFileAndCheck } from 'e2e/utils/download';
+import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
 import { expect, Locator, Page } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
 import path from 'path';
@@ -290,10 +290,49 @@ export class ReportStep {
     });
   }
 
+  async checkMetricDownloadDataByStatus() {
+    await downloadFileAndCheck(
+      this.page,
+      this.exportMetricData,
+      'metricDataByStatusDownload.csv',
+      async (fileDataString) => {
+        const localCsvFile = fs.readFileSync(
+          path.resolve(__dirname, '../../fixtures/cycleTimeByStatus/metricDataByStatus.csv'),
+        );
+        const localCsv = parse(localCsvFile);
+        const downloadCsv = parse(fileDataString);
+
+        expect(localCsv).toStrictEqual(downloadCsv);
+      },
+    );
+  }
+
+  async checkMetricDownloadDataByColumn() {
+    await downloadFileAndCheck(
+      this.page,
+      this.exportMetricData,
+      'metricDataByColumnDownload.csv',
+      async (fileDataString) => {
+        const localCsvFile = fs.readFileSync(
+          path.resolve(__dirname, '../../fixtures/cycleTimeByStatus/metricDataByStatus.csv'),
+        );
+        const localCsv = parse(localCsvFile);
+        const downloadCsv = parse(fileDataString);
+
+        expect(localCsv).toStrictEqual(downloadCsv);
+      },
+    );
+  }
+
   async checkDownloadReports() {
     await checkDownloadReport(this.page, this.exportMetricData, 'metricReport.csv');
     // await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
     await checkDownloadReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
+  }
+
+  async checkDownloadReportsCycleTimeByStatus() {
+    await checkDownloadReportCycleTimeByStatus(this.page, this.exportMetricData, 'metricReport.csv');
+    await checkDownloadReportCycleTimeByStatus(this.page, this.exportBoardData, 'boardReport.csv');
   }
 
   async clickHomeIconThenBackToHomepage() {

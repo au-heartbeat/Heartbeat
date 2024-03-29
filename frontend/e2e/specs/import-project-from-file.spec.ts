@@ -1,6 +1,6 @@
 import { BOARD_METRICS_RESULT, FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT } from '../fixtures/createNew/reportResult';
 import { importMultipleDoneProjectFromFile } from '../fixtures/importFile/multiple-done-config-file';
-import { testFixtureFile } from '../fixtures/testFixtureFile/test-fixture-file';
+import { cycleTimeByStatusFixture } from '../fixtures/cycleTimeByStatus/cycleTimeByStatusFixture';
 import { config as metricsStepData } from '../fixtures/createNew/metricsStep';
 import { ProjectCreationType } from 'e2e/pages/metrics/ReportStep';
 import { test } from '../fixtures/testWithExtendFixtures';
@@ -15,7 +15,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
-  const hbStateDataEmptyByStatus = testFixtureFile.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
+  const hbStateDataEmptyByStatus = cycleTimeByStatusFixture.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
@@ -33,7 +33,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
 
-  await metricsStep.selectCycleTimeSettingsType(testFixtureFile.cycleTimeByStatus.type);
+  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTimeByStatus.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
   await metricsStep.selectHeartbeatState(hbStateData, false);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, false);

@@ -1,8 +1,8 @@
-export const testFixtureFile = {
+export const cycleTimeByStatusFixture = {
   projectName: 'Heartbeat Metrics',
   dateRange: {
-    startDate: '2024-01-15T00:00:00.000+08:00',
-    endDate: '2024-01-19T23:59:59.999+08:00',
+    startDate: '2024-03-27T00:00:00.000+08:00',
+    endDate: '2024-03-29T23:59:59.999+08:00',
   },
   calendarType: 'Calendar with Chinese Holiday',
   metrics: [
@@ -18,7 +18,7 @@ export const testFixtureFile = {
   ],
   board: {
     type: 'Jira',
-    boardId: '2',
+    boardId: '31',
     email: 'heartbeatuser2023@gmail.com',
     projectKey: 'ADM',
     site: 'dorametrics',
@@ -28,6 +28,7 @@ export const testFixtureFile = {
     type: 'BuildKite',
     token: process.env.E2E_TOKEN_BUILD_KITE,
   },
+  pipelineCrews: ['heartbeat-user', 'Unknown'],
   sourceControl: {
     type: 'GitHub',
     token: process.env.E2E_TOKEN_GITHUB,
@@ -115,25 +116,19 @@ export const testFixtureFile = {
   classification: [
     'issuetype',
     'parent',
-    'customfield_10061',
-    'customfield_10020',
+    'customfield_10064',
     'project',
     'customfield_10021',
-    'fixVersions',
-    'priority',
-    'customfield_10037',
+    'reporter',
     'labels',
-    'timetracking',
     'customfield_10016',
-    'customfield_10038',
     'assignee',
-    'customfield_10027',
-    'customfield_10060',
+    'customfield_10062',
   ],
   deployment: [
     {
       id: 0,
-      organization: 'Thoughtworks-Heartbeat',
+      organization: 'Heartbeat-backup',
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
       branches: ['main'],
