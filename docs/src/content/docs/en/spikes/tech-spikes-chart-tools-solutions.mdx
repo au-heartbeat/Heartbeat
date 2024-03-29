@@ -1,37 +1,56 @@
 
-markdown
-Copy code
 ---
 title: Spike Chart Tool
 description: Seeking Suitable Chart Components for Heartbeat
 ---
 
+### Summary
 
-## Background
-In order to meet new business requirements and future feature iterations, there is a need to find charting tools that align with the business needs.
+Currently, no chart library has been introduced into the project.
 
-## Expectations
-1. Identifying suitable charting tools.
-2. Supporting responsive design.
-3. Ability to filter through legends.
-4. Customizable tooltips.
-5. Incorporating multiple y-axes and mixed charts.
+### Context
 
-## Solution
-The decision is to utilize Recharts as the charting tool for Heartbeat.
+According to the new business requirements and the roadmap, there is a need to introduce a general-purpose chart library to support corresponding development needs. Based on business requirements, there are several requirements for charts:
 
-### 1. Decision Rationale
-Recharts offers several advantages:
-   - It satisfies both current and foreseeable business requirements.
-   - It stands out as one of the most React-friendly charting libraries.
-   - The documentation is comprehensive, with easy-to-understand content (including Chinese translations).
-   - It boasts an active community and provides extensive examples.
-   - Configuration is straightforward, and declaring chart structures using JSX tags enhances readability.
+- Responsive support
+- Support for multiple y-axes and composite charts
+- Support for custom tooltips
+- Support for filtering charts through legends
 
-### 2. Comparison with Other Solutions
-   Nivo:
-      Nivo's configuration is more complex compared to Recharts, with a steeper learning curve and less compatibility with React.
-   Victory:
-      Victory requires completely manual chart construction, resulting in high implementation costs.
-   React-vis:
-      React-vis offers relatively fewer charting options compared to Recharts.
+### Scope
+
+Frontend
+
+### Current Status
+
+None chart tools
+
+### Options
+
+|  | Recharts | Nivo | Victory |
+| --- | --- | --- | --- |
+| Description | Currently the most common React lightweight chart library, supports interactive building using JSX | Heavyweight chart library supporting a wide range of chart types, allowing for custom charts | Completely custom, interactive chart library with customization options |
+| Pros | 1. Implemented based on D3.
+2. Supports responsive layout and is friendly to React, with comprehensive documentation and examples.
+3. Simple configuration, allowing mixed chart implementation through nesting, and supports custom tooltip rendering.
+4. Filtering charts can be achieved through custom legends. | 1. Implemented based on D3.
+2. Supports responsive layout.
+3. Supports on-demand importing of charts.
+4. Offers a wide range of configurable options, supporting custom composite charts.
+5. Supports custom tooltips.
+6. Documentation is readily available, and demo code can be generated through configuration. | 1. Completely implemented based on customization and personalization for charts.
+2. Friendly to React, allowing chart construction using JSX nodes. |
+| Cons |  | 1. High configuration cost.
+2. Manually implement legend filtering.
+3. Manually implement custom tooltips. | 1. High configuration cost.
+2. Fully customized chart implementation.
+3. High learning cost. |
+| Security Risk | LOW | LOW | LOW |
+| Implementation Effort | MEDIUM | HIGH | HIGH |
+| Maintenance Effort | LOW | MEDIUM | HIGH |
+| Recommendation | RECOMMEND | CONSIDER | DECLINE |
+| Architectural State |  |  |  |
+
+### Decision
+
+Choosing to use Recharts as the new charting library.
