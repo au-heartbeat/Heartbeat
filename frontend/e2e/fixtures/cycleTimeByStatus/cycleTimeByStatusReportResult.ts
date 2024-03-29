@@ -1,19 +1,19 @@
 export const BOARD_METRICS_RESULT = {
-  Velocity: '4',
-  Throughput: '2',
-  AverageCycleTime4SP: '0.49',
-  AverageCycleTime4Card: '0.99',
-  totalReworkTimes: '1',
-  totalReworkCards: '1',
-  reworkCardsRatio: '0.5',
+  Velocity: '7',
+  Throughput: '3',
+  AverageCycleTime4SP: '0.45',
+  AverageCycleTime4Card: '1.05',
+  totalReworkTimes: '2',
+  totalReworkCards: '2',
+  reworkCardsRatio: '0.6667',
   throughput: '2',
 };
 
 export const DORA_METRICS_RESULT = {
-  PrLeadTime: '4.64',
-  PipelineLeadTime: '1.50',
-  TotalLeadTime: '6.14',
-  DeploymentFrequency: '1.00',
-  FailureRate: '20.00% (1/5)',
+  PrLeadTime: '3.74',
+  PipelineLeadTime: '1.26',
+  TotalLeadTime: '5.01',
+  DeploymentFrequency: '1.25',
+  FailureRate: '16.67% (1/6)',
   DevMeanTimeToRecovery: '1.52',
 };

@@ -125,6 +125,18 @@ export class ReportStep {
     );
   }
 
+  async checkBoardMetricsWithoutRework(
+    velocity: string,
+    throughPut: string,
+    averageCycleTimeForSP: string,
+    averageCycleTimeForCard: string,
+  ) {
+    await expect(this.velocityPart).toContainText(`${velocity}Velocity(Story Point)`);
+    await expect(this.velocityPart).toContainText(`${throughPut}Throughput(Cards Count)`);
+    await expect(this.averageCycleTimeForSP).toContainText(`${averageCycleTimeForSP}Average Cycle Time(Days/SP)`);
+    await expect(this.averageCycleTimeForCard).toContainText(`${averageCycleTimeForCard}Average Cycle Time(Days/Card)`);
+  }
+
   async checkBoardMetrics(
     velocity: string,
     throughPut: string,

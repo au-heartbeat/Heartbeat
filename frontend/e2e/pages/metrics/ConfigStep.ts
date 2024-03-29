@@ -33,6 +33,7 @@ export class ConfigStep {
   readonly toDateInputValueSelect: (toDay: Dayjs) => Locator;
   readonly requireDataButton: Locator;
   readonly velocityCheckbox: Locator;
+  readonly cycleTimeCheckbox: Locator;
   readonly classificationCheckbox: Locator;
   readonly requiredDataErrorMessage: Locator;
   readonly previousButton: Locator;
@@ -89,6 +90,7 @@ export class ConfigStep {
 
     this.requireDataButton = page.getByRole('button', { name: 'Required Data' });
     this.velocityCheckbox = page.getByRole('option', { name: 'Velocity' }).getByRole('checkbox');
+    this.cycleTimeCheckbox = page.getByRole('option', { name: 'Cycle Time' }).getByRole('checkbox');
     this.classificationCheckbox = page.getByRole('option', { name: 'Classification' }).getByRole('checkbox');
     this.requiredDataErrorMessage = page.getByText('Metrics is required');
     this.previousButton = page.getByRole('button', { name: 'Previous' });
@@ -211,6 +213,14 @@ export class ConfigStep {
   async selectAllRequiredMetrics() {
     await this.requiredMetricsLabel.click();
     await this.requiredMetricsAllOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectBoardMetricsOnly() {
+    await this.requiredMetricsLabel.click();
+    await this.velocityCheckbox.click();
+    await this.classificationCheckbox.click();
+    await this.cycleTimeCheckbox.click();
     await this.page.keyboard.press('Escape');
   }
 
