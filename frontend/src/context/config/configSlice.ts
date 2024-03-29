@@ -5,6 +5,7 @@ import {
   IMPORT_METRICS_MAPPING,
   MESSAGE,
   REQUIRED_DATA,
+  MAX_TIME_RANGE_AMOUNT,
 } from '@src/constants/resources';
 import { initialPipelineToolState, IPipelineToolState } from '@src/context/config/pipelineTool/pipelineToolSlice';
 import { initialSourceControlState, ISourceControl } from '@src/context/config/sourceControl/sourceControlSlice';
@@ -109,6 +110,11 @@ export const configSlice = createSlice({
       const { metrics, shouldBoardShow, shouldPipelineToolShow, shouldSourceControlShow } = getMetricsInfo(
         action.payload.metrics,
       );
+      const importedDateRanges = action.payload.dateRange;
+      state.basic.dateRange =
+        Array.isArray(importedDateRanges) && importedDateRanges.length > MAX_TIME_RANGE_AMOUNT
+          ? importedDateRanges.slice(0, MAX_TIME_RANGE_AMOUNT)
+          : importedDateRanges;
       state.basic.metrics = metrics;
       state.board.isShow = shouldBoardShow;
       state.pipelineTool.isShow = shouldPipelineToolShow;
