@@ -95,7 +95,9 @@ export const getVersion = (state: RootState) => state.meta.version;
 
 export const getFormMeta = (state: RootState) => state.meta.form;
 
-export const getIsTokenAccess = (state: RootState) =>
-  Object.values(state.meta.form.metrics.pipelines).some(({ branches }) => branches.some(({ error }) => error));
+export const getErrorDetail = (state: RootState) =>
+  Object.values(state.meta.form.metrics.pipelines)
+    .flatMap(({ branches }) => branches)
+    .find(({ error }) => error)?.errorDetail;
 
 export default metaSlice.reducer;

@@ -7,7 +7,7 @@ import metaReducer, {
   updateFormMeta,
   updateMetricsPipelineBranchFormMeta,
   clearMetricsPipelineFormMeta,
-  getIsTokenAccess,
+  getErrorDetail,
 } from '@src/context/meta/metaSlice';
 import { VERSION_RESPONSE } from '../fixtures';
 import { RootState } from '@src/store';
@@ -140,38 +140,38 @@ describe('meta reducer', () => {
     });
   });
 
-  it('should return false If all pipeline branches have no errors', () => {
+  it('should return undefined If no errorDetail in any branch', () => {
     expect(
-      getIsTokenAccess({
+      getErrorDetail({
         meta: {
           ...MOCK_STATE,
           form: {
             metrics: {
               pipelines: {
                 1: {
-                  branches: [{ value: 'val' }],
+                  branches: [{ value: 'branch1', error: false }],
                 },
                 2: {
-                  branches: [],
+                  branches: [{ value: 'branch2', error: false }],
                 },
               },
             },
           },
         },
       } as unknown as RootState),
-    ).toBeFalsy();
+    ).toBeUndefined();
   });
 
-  it('should return true If there is an error in a pipeline branch', () => {
+  it('should return errorDetail If there is an error in a pipeline branch', () => {
     expect(
-      getIsTokenAccess({
+      getErrorDetail({
         meta: {
           ...MOCK_STATE,
           form: {
             metrics: {
               pipelines: {
                 1: {
-                  branches: [{ value: 'val', error: true }],
+                  branches: [{ value: 'val', error: true, errorDetail: 404 }],
                 },
                 2: {
                   branches: [],
@@ -181,6 +181,6 @@ describe('meta reducer', () => {
           },
         },
       } as unknown as RootState),
-    ).toBeTruthy();
+    ).toEqual(404);
   });
 });

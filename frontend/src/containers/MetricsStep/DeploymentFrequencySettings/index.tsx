@@ -6,7 +6,7 @@ import {
 } from '@src/context/Metrics/metricsSlice';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
-import { deleteMetricsPipelineFormMeta, getIsTokenAccess } from '@src/context/meta/metaSlice';
+import { deleteMetricsPipelineFormMeta, getErrorDetail } from '@src/context/meta/metaSlice';
 import { useGetPipelineToolInfoEffect } from '@src/hooks/useGetPipelineToolInfoEffect';
 import { MetricsSettingAddButton } from '@src/components/Common/MetricsSettingButton';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
@@ -27,7 +27,7 @@ export const DeploymentFrequencySettings = () => {
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
   const pipelineCrews = useAppSelector(selectPipelineCrews);
-  const isTokenAccessError = useAppSelector(getIsTokenAccess);
+  const errorDetail = useAppSelector(getErrorDetail) as number;
 
   const handleAddPipeline = () => {
     dispatch(addADeploymentFrequencySetting());
@@ -51,7 +51,7 @@ export const DeploymentFrequencySettings = () => {
         <>
           <MetricsSettingTitle title={'Pipeline settings'} />
           <StyledAlertWrapper>
-            <TokenAccessAlert isPermissionDeny={isTokenAccessError} />
+            <TokenAccessAlert errorDetail={errorDetail} />
           </StyledAlertWrapper>
           {deploymentFrequencySettings.map((deploymentFrequencySetting) => (
             <PipelineMetricSelection
