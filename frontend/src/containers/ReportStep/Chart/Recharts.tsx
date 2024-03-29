@@ -118,7 +118,7 @@ const RechartsDemo = () => {
             margin={{
               top: 30,
               right: 20,
-              left: 20,
+              left: 10,
               bottom: 5,
             }}
           >
@@ -147,28 +147,28 @@ const RechartsDemo = () => {
                 );
               }}
             />
-            {legendStatus.velocity.isActive && (
-              <Area
-                type='monotone'
-                dataKey='velocity'
-                stroke='#F2617A'
-                fill='#F2617A'
-                strokeWidth={3}
-                dot={{ stroke: '#F2617A' }}
-                yAxisId='velocity'
-              />
-            )}
-            {legendStatus.throughput.isActive && (
-              <Area
-                type='monotone'
-                dataKey='throughput'
-                stroke='#003D4F'
-                fill='#003D4F'
-                strokeWidth={3}
-                dot={{ stroke: '#003D4F' }}
-                yAxisId='throughput'
-              />
-            )}
+
+            <Area
+              type='monotone'
+              dataKey={legendStatus.throughput.isActive ? 'throughput' : ''}
+              stroke='#003D4F'
+              fill='#003D4F'
+              strokeWidth={3}
+              dot={{ stroke: '#003D4F' }}
+              yAxisId='throughput'
+            />
+
+            <Area
+              type='monotone'
+              dataKey={legendStatus.velocity.isActive ? 'velocity' : ''}
+              stroke='#F2617A'
+              fill='#F2617A'
+              strokeWidth={3}
+              dot={{ stroke: '#F2617A' }}
+              yAxisId='velocity'
+            />
+
+
           </ComposedChart>
         </ResponsiveContainer>
       </Box>
@@ -188,7 +188,7 @@ const RechartsDemo = () => {
             <YAxis yAxisId='totalReworkCards' />
             <Bar dataKey='totalReworkTimes' barSize={20} fill='#003D4F' yAxisId='totalReworkCards' />
             <Bar dataKey='totalReworkCards' barSize={20} fill='#47A1AD' yAxisId='totalReworkCards' />
-
+            <Tooltip />
             <YAxis orientation='right' yAxisId='reworkCardsRatio' />
             <Line
               dataKey='reworkCardsRatio'
