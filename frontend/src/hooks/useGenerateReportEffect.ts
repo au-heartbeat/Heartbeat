@@ -84,7 +84,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       .then((res: { status: number; response: ReportResponseDTO }) => {
         const response = res.response;
         handleAndUpdateData(response);
-        if (!areMetricsLoading(response) || !hasPollingStarted) {
+        if (response.allMetricsCompleted || !hasPollingStarted) {
           stopPollingReports();
         } else {
           timerIdRef.current = window.setTimeout(() => pollingReport(url, interval), interval * 1000);
@@ -94,16 +94,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         handleError(e, METRIC_TYPES.ALL);
         stopPollingReports();
       });
-  };
-
-  const areMetricsLoading = (response: ReportResponseDTO) => {
-    const { boardMetricsCompleted, doraMetricsCompleted, reportMetricsError } = response;
-    const { boardMetricsError, pipelineMetricsError, sourceControlMetricsError } = reportMetricsError;
-
-    const isBoardMetricsLoading = boardMetricsCompleted === false && boardMetricsError === null;
-    const isDoraMetricsLoading =
-      doraMetricsCompleted === false && pipelineMetricsError === null && sourceControlMetricsError == null;
-    return isBoardMetricsLoading || isDoraMetricsLoading;
   };
 
   const stopPollingReports = () => {

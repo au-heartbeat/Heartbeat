@@ -75,7 +75,7 @@ export const ReportButtonGroup = ({
           </BackButton>
           {isShowExportMetrics && (
             <StyledExportButton
-              disabled={!(reportData?.allMetricsCompleted && !isReportHasError)}
+              disabled={!(reportData?.overallMetricsCompleted && !isReportHasError)}
               onClick={() => handleDownload(REPORT_TYPES.METRICS, startDate, endDate)}
             >
               {COMMON_BUTTONS.EXPORT_METRIC_DATA}
