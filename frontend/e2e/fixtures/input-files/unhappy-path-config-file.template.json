@@ -20,15 +20,15 @@
     "boardId": "2",
     "email": "heartbeatuser2023@gmail.com",
     "site": "dorametrics",
-    "token": "<E2E_WRONG_TOKEN_JIRA>"
+    "token": "<E2E_TOKEN_JIRA>"
   },
   "pipelineTool": {
     "type": "BuildKite",
-    "token": "<E2E_WRONG_TOKEN_BUILD_KITE>"
+    "token": "<E2E_TOKEN_BUILD_KITE>"
   },
   "sourceControl": {
     "type": "GitHub",
-    "token": "<E2E_WRONG_TOKEN_GITHUB>"
+    "token": "<E2E_TOKEN_GITHUB>"
   },
   "crews": [],
   "assigneeFilter": "lastAssignee",
