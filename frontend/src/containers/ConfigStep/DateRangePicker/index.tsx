@@ -25,7 +25,6 @@ export const DateRangePicker = () => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
     dispatch(initDeploymentFrequencySettings());
-    dispatch(saveUsers([]));
   };
 
   const changeStartDate = (value: Nullable<Dayjs>) => {

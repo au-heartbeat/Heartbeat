@@ -31,7 +31,7 @@ import {
 } from './style';
 import {
   ICycleTimeSetting,
-  savedMetricsSettingState,
+  ISavedMetricsSettingState,
   selectCycleTimeSettings,
   selectMetricsContent,
 } from '@src/context/Metrics/metricsSlice';
@@ -176,7 +176,7 @@ const MetricsStepper = () => {
     onlyIncludeReworkMetrics,
   ]);
 
-  const filterMetricsConfig = (metricsConfig: savedMetricsSettingState) => {
+  const filterMetricsConfig = (metricsConfig: ISavedMetricsSettingState) => {
     return Object.fromEntries(
       Object.entries(metricsConfig).filter(([, value]) => {
         /* istanbul ignore next */

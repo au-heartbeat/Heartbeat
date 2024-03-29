@@ -37,7 +37,7 @@ export interface ICycleTimeSetting {
   value: string;
 }
 
-export interface savedMetricsSettingState {
+export interface ISavedMetricsSettingState {
   shouldGetBoardConfig: boolean;
   shouldGetPipeLineConfig: boolean;
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[];
@@ -51,6 +51,7 @@ export interface savedMetricsSettingState {
   leadTimeForChanges: IPipelineConfig[];
   treatFlagCardAsBlock: boolean;
   assigneeFilter: string;
+  firstTimeRoadMetricData: boolean;
   importedData: {
     importedCrews: string[];
     importedAssigneeFilter: string;
@@ -71,7 +72,7 @@ export interface savedMetricsSettingState {
   deploymentWarningMessage: IPipelineWarningMessageConfig[];
 }
 
-const initialState: savedMetricsSettingState = {
+const initialState: ISavedMetricsSettingState = {
   shouldGetBoardConfig: false,
   shouldGetPipeLineConfig: false,
   jiraColumns: [],
@@ -85,6 +86,7 @@ const initialState: savedMetricsSettingState = {
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   treatFlagCardAsBlock: true,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
+  firstTimeRoadMetricData: true,
   importedData: {
     importedCrews: [],
     importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
@@ -140,8 +142,21 @@ const findKeyByValues = (arrayA: { [key: string]: string }[], arrayB: string[]):
   return `The value of ${matchingKeys} in imported json is not in dropdown list now. Please select a value for it!`;
 };
 
-const setSelectUsers = (users: string[], importedCrews: string[]) =>
-  users.filter((item: string) => importedCrews?.includes(item));
+const setImportSelectUsers = (metricsState: ISavedMetricsSettingState, users: string[], importedCrews: string[]) => {
+  if (metricsState.firstTimeRoadMetricData) {
+    return users.filter((item: string) => importedCrews?.includes(item));
+  } else {
+    return users.filter((item: string) => metricsState.users?.includes(item));
+  }
+};
+
+const setCreateSelectUsers = (metricsState: ISavedMetricsSettingState, users: string[]) => {
+  if (metricsState.firstTimeRoadMetricData) {
+    return users;
+  } else {
+    return users.filter((item: string) => metricsState.users?.includes(item));
+  }
+};
 
 const setPipelineCrews = (isProjectCreated: boolean, pipelineCrews: string[], importedPipelineCrews: string[]) => {
   if (_.isEmpty(pipelineCrews)) {
@@ -293,7 +308,9 @@ export const metricsSlice = createSlice({
       const { targetFields, users, jiraColumns, isProjectCreated, ignoredTargetFields } = action.payload;
       const { importedCrews, importedClassification, importedCycleTime, importedDoneStatus, importedAssigneeFilter } =
         state.importedData;
-      state.users = isProjectCreated ? users : setSelectUsers(users, importedCrews);
+      state.users = isProjectCreated
+        ? setCreateSelectUsers(state, users)
+        : setImportSelectUsers(state, users, importedCrews);
       state.targetFields = isProjectCreated
         ? targetFields
         : setSelectTargetFields(targetFields, importedClassification);
@@ -501,6 +518,10 @@ export const metricsSlice = createSlice({
     updateReworkTimesSettings: (state, action) => {
       state.importedData.reworkTimesSettings = action.payload;
     },
+
+    updateFirstTimeRoadMetricsBoardData: (state, action) => {
+      state.firstTimeRoadMetricData = action.payload;
+    },
   },
 });
 
@@ -526,6 +547,7 @@ export const {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
   updateReworkTimesSettings,
+  updateFirstTimeRoadMetricsBoardData,
 } = metricsSlice.actions;
 
 export const selectShouldGetBoardConfig = (state: RootState) => state.metrics.shouldGetBoardConfig;
@@ -556,6 +578,10 @@ export const selectPipelineNameWarningMessage = (state: RootState, id: number) =
 export const selectStepWarningMessage = (state: RootState, id: number) => {
   const { deploymentWarningMessage } = state.metrics;
   return deploymentWarningMessage.find((item) => item.id === id)?.step;
+};
+
+export const selectFirstTimeRoadBoardData = (state: RootState) => {
+  return state.metrics.firstTimeRoadMetricData;
 };
 
 export default metricsSlice.reducer;
