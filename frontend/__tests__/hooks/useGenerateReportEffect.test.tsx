@@ -30,7 +30,7 @@ describe('use generate report effect', () => {
     jest.useRealTimers();
   });
 
-  it('should set timeout4Board is "Data loading failed" when startToRequestData timeout and metricTypes is board', async () => {
+  it('should set timeout4Board is "Data loading failed" when board data retrieval times out', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -41,7 +41,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report and setTimeout when calling startToRequestData given pollingReport response return 204 ', async () => {
+  it('should call polling report and setTimeout when request board data given pollingReport response return 204', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -52,7 +52,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
     });
 
     jest.runOnlyPendingTimers();
@@ -62,10 +62,10 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report more than one time when boardMetrics is loading', async () => {
+  it('should call polling report more than one time when metrics is loading', async () => {
     reportClient.polling = jest.fn().mockImplementation(async () => ({
       status: HttpStatusCode.NoContent,
-      response: { ...MOCK_REPORT_RESPONSE, boardMetricsCompleted: false, allMetricsCompleted: false },
+      response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: false },
     }));
     reportClient.retrieveByUrl = jest
       .fn()
@@ -85,30 +85,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report more than one time when doraMetrics is loading', async () => {
-    reportClient.polling = jest.fn().mockImplementation(async () => ({
-      status: HttpStatusCode.NoContent,
-      response: { ...MOCK_REPORT_RESPONSE, doraMetricsCompleted: false, allMetricsCompleted: false },
-    }));
-    reportClient.retrieveByUrl = jest
-      .fn()
-      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-    });
-    act(() => {
-      jest.advanceTimersByTime(10000);
-    });
-
-    await waitFor(() => {
-      expect(reportClient.polling).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  it('should call polling report only once when calling startToRequestData which metricType is board but startToRequestData which metricType is Dora called before', async () => {
+  it('should call polling report only once when request board data given dora data retrieval is called before', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -130,7 +107,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set timeout4Dora is "Data loading failed" when startToRequestData timeout and metricTypes is dora', async () => {
+  it('should set timeout4Dora is "Data loading failed" when dora data retrieval times out', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -141,7 +118,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set timeout4Report is "Data loading failed" when polling timeout', async () => {
+  it('should set timeout4Report is "Data loading failed" when board data retrieval times out', async () => {
     reportClient.polling = jest.fn().mockImplementation(async () => {
       throw new TimeoutError('5xx error', 503);
     });
@@ -158,7 +135,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report and setTimeout when calling startToRequestDoraData given pollingReport response return 204 ', async () => {
+  it('should call polling report and setTimeout when request dora data given pollingReport response return 204', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -170,7 +147,7 @@ describe('use generate report effect', () => {
     const { result } = renderHook(() => useGenerateReportEffect());
 
     await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
     });
 
     jest.runOnlyPendingTimers();
@@ -180,7 +157,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should call polling report only once when calling startToRequestData which metricType is dora but startToRequestData which metricType is board called before', async () => {
+  it('should call polling report only once when request dora data given board data retrieval is called before', async () => {
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
@@ -203,7 +180,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set generalError4Board is "Data loading failed" when startToRequestData which metricType is Board given UnknownException', async () => {
+  it('should set generalError4Board is "Data loading failed" when request board data given UnknownException', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -214,7 +191,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set generalError4Dora is "Data loading failed" when startToRequestData which metricType is dora given UnknownException', async () => {
+  it('should set generalError4Dora is "Data loading failed" when request dora data given UnknownException', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
     const { result } = renderHook(() => useGenerateReportEffect());
@@ -239,7 +216,7 @@ describe('use generate report effect', () => {
     });
   });
 
-  it('should set timeout4Report is "Data loading failed" when startToRequestData timeout and metricTypes is board and dora', async () => {
+  it('should set timeout4Report is "Data loading failed" when request board and dora data', async () => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
 
     const { result } = renderHook(() => useGenerateReportEffect());
