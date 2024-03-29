@@ -662,3 +662,8 @@ export const REWORK_DIALOG_NOTE = {
   EXCLUDE_NOTE:
     'The selectable states in the "Exclude which states(optional)" drop-down list are all states after the state selected in "rework to which state".',
 };
+
+export const TIME_RANGE_ERROR_MESSAGE = {
+  START_DATE_INVALID_TEXT: 'Start date is invalid',
+  END_DATE_INVALID_TEXT: 'End date is invalid',
+};

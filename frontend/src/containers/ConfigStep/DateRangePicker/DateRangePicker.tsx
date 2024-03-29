@@ -68,13 +68,14 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
     const [earliest, latest] = calculateDateRangeIntersection(dateRangeGroupExcludeSelf);
     if (value) {
+      const valueDate = dayjs(value).startOf('day').format(DATE_RANGE_FORMAT);
       const currentDate = dayjs(new Date());
       let lastAvailableDate: Dayjs = currentDate;
       let draftDaysAddition: number;
       if (earliest.isValid() && latest.isValid()) {
         lastAvailableDate = value.isBefore(earliest) ? earliest.subtract(1, 'day') : currentDate;
       }
-      draftDaysAddition = lastAvailableDate.diff(value, 'days');
+      draftDaysAddition = lastAvailableDate.diff(valueDate, 'days');
       daysAddToEndDate =
         draftDaysAddition >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
           ? DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS

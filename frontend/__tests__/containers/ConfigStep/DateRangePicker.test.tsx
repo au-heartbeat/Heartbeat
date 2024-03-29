@@ -6,8 +6,8 @@ import {
 } from '@src/context/Metrics/metricsSlice';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { ERROR_DATE, TIME_RANGE_ERROR_MESSAGE } from '../../fixtures';
 import { setupStore } from '../../utils/setupStoreUtil';
-import { ERROR_DATE } from '../../fixtures';
 import { Provider } from 'react-redux';
 import React from 'react';
 import dayjs from 'dayjs';
@@ -183,8 +183,47 @@ describe('DateRangePickerSection', () => {
       expect(targetGappedDate).toBeDisabled();
     });
 
-    // it('should auto fill end date when change star date by cloeset earliest date of other ranges', () => {});
+    it('should auto fill end date when change star date by cloeset earliest date of other ranges', () => {
+      setup();
+      const addButton = screen.getByLabelText('Button for adding date range');
+      fireEvent.click(addButton);
+      const rangeDate1 = ['03/12/2024', '03/25/2024'];
+      const rangeDate2 = ['03/08/2024'];
 
-    // it('should display error message for start-date and end-date respectively when time ranges conflict', () => {});
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(startDate1Input, { target: { value: rangeDate1[0] } });
+      fireEvent.change(endDate1Input, { target: { value: rangeDate1[1] } });
+      fireEvent.click(addButton);
+      const range2 = screen.getAllByLabelText('Range picker row')[1];
+      const startDate2Input = within(range2).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(startDate2Input, { target: { value: rangeDate2[0] } });
+      const endDate2Input = within(range2).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+
+      expect(endDate2Input.value).toEqual('03/11/2024');
+    });
+
+    it('should display error message for start-date and end-date respectively when time ranges conflict', () => {
+      setup();
+      const addButton = screen.getByLabelText('Button for adding date range');
+      const rangeDate1 = ['03/12/2024', '03/25/2024'];
+      const rangeDate2 = ['03/08/2024', '03/26/2024'];
+      fireEvent.click(addButton);
+      fireEvent.click(addButton);
+
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(startDate1Input, { target: { value: rangeDate1[0] } });
+      fireEvent.change(endDate1Input, { target: { value: rangeDate1[1] } });
+      fireEvent.change(startDate2Input, { target: { value: rangeDate2[0] } });
+      fireEvent.change(endDate12nput, { target: { value: rangeDate2[1] } });
+
+      expect(screen.getByText(TIME_RANGE_ERROR_MESSAGE.START_DATE_INVALID_TEXT)).toBeVisible();
+      expect(screen.getByText(TIME_RANGE_ERROR_MESSAGE.END_DATE_INVALID_TEXT)).toBeVisible();
+    });
   });
 });
