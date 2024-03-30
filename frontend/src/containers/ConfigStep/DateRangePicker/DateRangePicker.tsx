@@ -12,9 +12,9 @@ import {
   END_DATE_INVALID_TEXT,
 } from '@src/constants/resources';
 import {
-  calculateDateRangeIntersection,
   calculateStartDateShouldDisable,
   calculateEndDateShouldDisable,
+  calculateLastAvailableDate,
 } from '@src/containers/ConfigStep/DateRangePicker/validation';
 import {
   initDeploymentFrequencySettings,
@@ -66,15 +66,10 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
-    const [earliest, latest] = calculateDateRangeIntersection(dateRangeGroupExcludeSelf);
     if (value) {
       const valueDate = dayjs(value).startOf('day').format(DATE_RANGE_FORMAT);
-      const currentDate = dayjs(new Date());
-      let lastAvailableDate: Dayjs = currentDate;
+      const lastAvailableDate = calculateLastAvailableDate(value, dateRangeGroupExcludeSelf);
       let draftDaysAddition: number;
-      if (earliest.isValid() && latest.isValid()) {
-        lastAvailableDate = value.isBefore(earliest) ? earliest.subtract(1, 'day') : currentDate;
-      }
       draftDaysAddition = lastAvailableDate.diff(valueDate, 'days');
       daysAddToEndDate =
         draftDaysAddition >= DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS

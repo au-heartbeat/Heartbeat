@@ -13,30 +13,22 @@ dayjs.extend(dayjsSameOrAfterPlugin);
 // if dayjsA or dayjsB either is invalid
 // all comparisons e.g. dayjsA.isBefore(dayjsB) always return false
 
-type TDateRange = Dayjs[];
+export const calculateLastAvailableDate = (date: Dayjs, coveredRange: BasicConfigState['basic']['dateRange']) => {
+  let lastAvailableDate = dayjs(new Date());
+  let minimumDiffDays = lastAvailableDate.diff(date, 'days');
 
-export const calculateDateRangeIntersection = (dateRangeGroup: BasicConfigState['basic']['dateRange']) => {
-  let earliest = dayjs(dateRangeGroup[0]?.startDate || null);
-  let latest = dayjs(dateRangeGroup[0]?.endDate || null);
-  let result = [earliest, latest];
-
-  for (let { startDate, endDate } of dateRangeGroup) {
-    const startDayjsObj = dayjs(startDate);
-    const endDayjsObj = dayjs(endDate);
-    if (!earliest.isValid()) {
-      earliest = startDayjsObj;
-    } else if (startDayjsObj.isBefore(earliest)) {
-      earliest = startDayjsObj;
-    }
-
-    if (!latest.isValid()) {
-      latest = endDayjsObj;
-    } else if (endDayjsObj.isAfter(latest)) {
-      latest = endDayjsObj;
+  for (let { startDate } of coveredRange) {
+    const startDateDayjsObj = dayjs(startDate);
+    if (startDateDayjsObj.isValid()) {
+      const diffDays = startDateDayjsObj.diff(date, 'days');
+      if (startDateDayjsObj.isSameOrAfter(date) && diffDays < minimumDiffDays) {
+        lastAvailableDate = startDateDayjsObj.subtract(1, 'day');
+        minimumDiffDays = diffDays;
+      }
     }
   }
 
-  return [earliest, latest];
+  return lastAvailableDate;
 };
 
 export const calculateStartDateShouldDisable = (
@@ -44,13 +36,9 @@ export const calculateStartDateShouldDisable = (
   coveredRange: BasicConfigState['basic']['dateRange'],
   date: Dayjs,
 ) => {
-  const [earliest, latest] = calculateDateRangeIntersection(coveredRange);
-  let isDateInCovredRange: boolean;
-  if (!earliest.isValid() || !latest.isValid()) {
-    isDateInCovredRange = false;
-  } else {
-    isDateInCovredRange = date.isSameOrAfter(earliest, 'date') && date.isSameOrBefore(latest, 'date');
-  }
+  const isDateInCovredRange = coveredRange.some(
+    ({ startDate, endDate }) => date.isSameOrAfter(startDate, 'date') && date.isSameOrBefore(endDate, 'date'),
+  );
   return isDateInCovredRange || date.isAfter(selfEndDate);
 };
 
@@ -59,12 +47,8 @@ export const calculateEndDateShouldDisable = (
   coveredRange: BasicConfigState['basic']['dateRange'],
   date: Dayjs,
 ) => {
-  const [earliest, latest] = calculateDateRangeIntersection(coveredRange);
-  let isDateInCovredRange: boolean;
-  if (!earliest.isValid() || !latest.isValid()) {
-    isDateInCovredRange = false;
-  } else {
-    isDateInCovredRange = date.isSameOrAfter(earliest, 'date') && date.isSameOrBefore(latest, 'date');
-  }
+  const isDateInCovredRange = coveredRange.some(
+    ({ startDate, endDate }) => date.isSameOrAfter(startDate, 'date') && date.isSameOrBefore(endDate, 'date'),
+  );
   return isDateInCovredRange || date.isBefore(selfStartDate);
 };
