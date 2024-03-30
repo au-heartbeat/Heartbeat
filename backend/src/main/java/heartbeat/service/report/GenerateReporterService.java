@@ -100,6 +100,10 @@ public class GenerateReporterService {
 		}
 		catch (BaseException e) {
 			asyncExceptionHandler.put(boardReportId, e);
+			if (List.of(401, 403, 404).contains(e.getStatus()))
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
+
 		}
 	}
 
@@ -115,11 +119,12 @@ public class GenerateReporterService {
 			GenerateReportRequest sourceControlRequest = request.toSourceControlRequest();
 			generateSourceControlReport(sourceControlRequest, fetchedData);
 		}
-		CompletableFuture.runAsync(() -> {
-			generateCSVForPipeline(request, fetchedData.getBuildKiteData());
-			asyncMetricsDataHandler
-				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
-		});
+
+		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler
+			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+		if (!previousMetricsCompleted.doraMetricsCompleted()) {
+			CompletableFuture.runAsync(() -> generateCSVForPipeline(request, fetchedData.getBuildKiteData()));
+		}
 	}
 
 	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
@@ -138,9 +143,9 @@ public class GenerateReporterService {
 		}
 		catch (BaseException e) {
 			asyncExceptionHandler.put(pipelineReportId, e);
-			if (Objects.equals(400, e.getStatus())) {
-				throw e;
-			}
+			if (List.of(401, 403, 404).contains(e.getStatus()))
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 		}
 	}
 
@@ -160,9 +165,9 @@ public class GenerateReporterService {
 		}
 		catch (BaseException e) {
 			asyncExceptionHandler.put(sourceControlReportId, e);
-			if (Objects.equals(400, e.getStatus())) {
-				throw e;
-			}
+			if (List.of(401, 403, 404).contains(e.getStatus()))
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 		}
 	}
 
@@ -198,13 +203,6 @@ public class GenerateReporterService {
 		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
 		FetchedData fetchedData = fetchJiraBoardData(request, new FetchedData());
 
-		CompletableFuture.runAsync(() -> {
-			kanbanCsvService.generateCsvInfo(request, fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
-					fetchedData.getCardCollectionInfo().getNonDoneCardCollection());
-			asyncMetricsDataHandler
-				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
-		});
-
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 
@@ -220,7 +218,15 @@ public class GenerateReporterService {
 			}
 		});
 
+		CompletableFuture.runAsync(() -> generateCsvForBoard(request, fetchedData));
 		return reportResponse;
+	}
+
+	private void generateCsvForBoard(GenerateReportRequest request, FetchedData fetchedData) {
+		kanbanCsvService.generateCsvInfo(request, fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
+				fetchedData.getCardCollectionInfo().getNonDoneCardCollection());
+		asyncMetricsDataHandler
+			.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD);
 	}
 
 	private void assembleVelocity(FetchedData fetchedData, ReportResponse reportResponse) {
@@ -296,6 +302,8 @@ public class GenerateReporterService {
 				request.getBuildKiteSetting().getDeploymentEnvList());
 
 		csvFileGenerator.convertPipelineDataToCSV(pipelineData, request.getCsvTimeStamp());
+		asyncMetricsDataHandler
+			.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA);
 	}
 
 	public void generateCSVForMetric(ReportResponse reportContent, String csvTimeStamp) {
@@ -385,27 +393,9 @@ public class GenerateReporterService {
 			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
 			.boardMetricsCompleted(reportReadyStatus.boardMetricsCompleted())
 			.doraMetricsCompleted(reportReadyStatus.doraMetricsCompleted())
+			.overallMetricsCompleted(reportReadyStatus.overallMetricCompleted())
 			.allMetricsCompleted(reportReadyStatus.allMetricsCompleted())
 			.reportMetricsError(reportMetricsError)
-			.build();
-	}
-
-	public ReportResponse getComposedReportResponseWithRequiredCsvField(String reportId) {
-
-		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
-		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
-		ReportResponse sourceControlReportResponse = getReportFromHandler(IdUtil.getSourceControlReportId(reportId));
-
-		return ReportResponse.builder()
-			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
-			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
-			.cycleTime(getValueOrNull(boardReportResponse, ReportResponse::getCycleTime))
-			.rework(getValueOrNull(boardReportResponse, ReportResponse::getRework))
-			.exportValidityTime(EXPORT_CSV_VALIDITY_TIME)
-			.deploymentFrequency(getValueOrNull(pipleineReportResponse, ReportResponse::getDeploymentFrequency))
-			.devChangeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getDevChangeFailureRate))
-			.devMeanTimeToRecovery(getValueOrNull(pipleineReportResponse, ReportResponse::getDevMeanTimeToRecovery))
-			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
 			.build();
 	}
 

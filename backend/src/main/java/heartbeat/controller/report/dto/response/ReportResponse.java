@@ -37,6 +37,8 @@ public class ReportResponse {
 
 	private Boolean doraMetricsCompleted;
 
+	private Boolean overallMetricsCompleted;
+
 	private Boolean allMetricsCompleted;
 
 	public ReportResponse(Long exportValidityTime) {

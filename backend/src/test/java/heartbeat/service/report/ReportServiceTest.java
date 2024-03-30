@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -91,7 +92,7 @@ public class ReportServiceTest {
 		void shouldCallGenerateBoardReportAndInitializeMetricDataWhenMetricTypesListOnlyHasBoardElement() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
@@ -106,7 +107,7 @@ public class ReportServiceTest {
 				verify(generateReporterService, never()).generateDoraReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
 				verify(asyncMetricsDataHandler)
-					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 			});
 		}
 
@@ -114,7 +115,7 @@ public class ReportServiceTest {
 		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraElement() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(false)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of("dora"));
@@ -131,7 +132,7 @@ public class ReportServiceTest {
 				verify(generateReporterService, never()).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
 				verify(asyncMetricsDataHandler)
-					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 			});
 		}
 
@@ -140,7 +141,7 @@ public class ReportServiceTest {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of("dora", "board"));
@@ -158,7 +159,7 @@ public class ReportServiceTest {
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
 				verify(asyncMetricsDataHandler)
-					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 			});
 		}
 
@@ -167,7 +168,7 @@ public class ReportServiceTest {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of("dora", "board"));
@@ -186,8 +187,8 @@ public class ReportServiceTest {
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
 				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, never())
-					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+				verify(asyncMetricsDataHandler, times(1))
+					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 			});
 		}
 
@@ -196,7 +197,7 @@ public class ReportServiceTest {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of("dora", "board"));
@@ -216,8 +217,8 @@ public class ReportServiceTest {
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
 				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, never())
-					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+				verify(asyncMetricsDataHandler, times(1))
+					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 			});
 		}
 
@@ -226,7 +227,7 @@ public class ReportServiceTest {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of("dora", "board"));
@@ -246,8 +247,8 @@ public class ReportServiceTest {
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
 				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, never())
-					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+				verify(asyncMetricsDataHandler, times(1))
+					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 			});
 		}
 
@@ -260,33 +261,34 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldGenerateDoraReportAndBoardReportNotInitializeWhenMetricsCompleted() {
+		void shouldGenerateDoraReportGivenBoardReportHasBeenGeneratedWhenRetryGenerateDoraReport() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(false)
+				.boardMetricsCompleted(true)
 				.doraMetricsCompleted(false)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
-			request.setMetricTypes(List.of("dora", "board"));
-			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
-			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
-			when(generateReporterService.getComposedReportResponse(any())).thenReturn(ReportResponse.builder()
-				.reportMetricsError(
-						ReportMetricsError.builder().sourceControlMetricsError(ErrorInfo.builder().build()).build())
+			when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(MetricsDataCompleted.builder()
+				.boardMetricsCompleted(true)
+				.doraMetricsCompleted(true)
+				.overallMetricCompleted(true)
 				.build());
-			when(asyncMetricsDataHandler
-				.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp())))
-				.thenReturn(expected);
+			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
+			request.setMetricTypes(List.of("dora"));
+			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
+			when(generateReporterService.getComposedReportResponse(any()))
+				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
 
 			reportService.generateReport(request);
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(asyncMetricsDataHandler, never()).putMetricsDataCompleted(any(), any());
+				verify(asyncMetricsDataHandler)
+					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 				verify(generateReporterService).generateDoraReport(request);
-				verify(generateReporterService).generateBoardReport(request);
+				verify(generateReporterService, never()).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
-				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, never())
-					.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+				verify(generateReporterService).generateCSVForMetric(any(), any());
+				verify(asyncMetricsDataHandler, times(1))
+					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
 			});
 		}
 

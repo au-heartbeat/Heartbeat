@@ -66,8 +66,8 @@ public class ReportService {
 			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp);
 			if (isHasNoError(reportResponse.getReportMetricsError())) {
 				generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
-				asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
 			}
+			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
 		});
 	}
 
@@ -78,16 +78,20 @@ public class ReportService {
 	}
 
 	private void initializeMetricsDataCompletedInHandler(List<String> metricTypes, String timeStamp) {
-		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler
+		MetricsDataCompleted previousMetricsDataCompleted = asyncMetricsDataHandler
 			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp));
-		if (Objects.isNull(previousMetricsCompleted)) {
-			asyncMetricsDataHandler.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp),
-					MetricsDataCompleted.builder()
-						.boardMetricsCompleted(metricTypes.contains("board") ? false : null)
-						.doraMetricsCompleted(metricTypes.contains("dora") ? false : null)
-						.allMetricsCompleted(false)
-						.build());
+		Boolean initializeBoardMetricsCompleted = null;
+		Boolean initializeDoraMetricsCompleted = null;
+		if (!Objects.isNull(previousMetricsDataCompleted)) {
+			initializeBoardMetricsCompleted = previousMetricsDataCompleted.boardMetricsCompleted();
+			initializeDoraMetricsCompleted = previousMetricsDataCompleted.doraMetricsCompleted();
 		}
+		asyncMetricsDataHandler
+			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp), MetricsDataCompleted.builder()
+				.boardMetricsCompleted(metricTypes.contains("board") ? Boolean.FALSE : initializeBoardMetricsCompleted)
+				.doraMetricsCompleted(metricTypes.contains("dora") ? Boolean.FALSE : initializeDoraMetricsCompleted)
+				.overallMetricCompleted(Boolean.FALSE)
+				.build());
 	}
 
 }

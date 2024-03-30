@@ -55,13 +55,13 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
 	}
 
-	public void updateAllMetricsCompletedInHandler(String metricDataFileId) {
+	public void updateOverallMetricsCompletedInHandler(String metricDataFileId) {
 		MetricsDataCompleted previousMetricsCompleted = getMetricsDataCompleted(metricDataFileId);
 		if (previousMetricsCompleted == null) {
 			log.error(GENERATE_REPORT_ERROR);
 			throw new GenerateReportException(GENERATE_REPORT_ERROR);
 		}
-		previousMetricsCompleted.setAllMetricsCompleted(true);
+		previousMetricsCompleted.setOverallMetricCompleted(true);
 		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
 	}
 

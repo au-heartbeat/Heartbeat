@@ -192,7 +192,7 @@ class AsyncMetricsDataHandlerTest {
 			String currentTime = Long.toString(currentTimeMillis);
 
 			GenerateReportException exception = assertThrows(GenerateReportException.class,
-					() -> asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(currentTime));
+					() -> asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(currentTime));
 
 			assertEquals("Failed to update metrics data completed through this timestamp.", exception.getMessage());
 		}
@@ -203,11 +203,11 @@ class AsyncMetricsDataHandlerTest {
 			String currentTime = Long.toString(currentTimeMillis);
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(true)
-				.allMetricsCompleted(false)
+				.overallMetricCompleted(false)
 				.build();
 			asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
 
-			asyncMetricsDataHandler.updateAllMetricsCompletedInHandler(currentTime);
+			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(currentTime);
 
 			MetricsDataCompleted completed = asyncMetricsDataHandler.getMetricsDataCompleted(currentTime);
 			assertTrue(completed.boardMetricsCompleted());
