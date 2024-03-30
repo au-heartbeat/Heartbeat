@@ -36,8 +36,8 @@ public class MetricsDataCompleted {
 	public Boolean allMetricsCompleted() {
 		Optional<Boolean> boardMetricsCompletedOptional = Optional.ofNullable(boardMetricsCompleted);
 		Optional<Boolean> doraMetricsCompletedOptional = Optional.ofNullable(doraMetricsCompleted);
-		return (boardMetricsCompletedOptional.isPresent() ? boardMetricsCompleted : true)
-				&& (doraMetricsCompletedOptional.isPresent() ? doraMetricsCompleted : true) && overallMetricCompleted;
+		return (boardMetricsCompletedOptional.isEmpty() || boardMetricsCompleted)
+				&& (doraMetricsCompletedOptional.isEmpty() || doraMetricsCompleted) && overallMetricCompleted;
 	}
 
 }

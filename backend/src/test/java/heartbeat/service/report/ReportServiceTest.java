@@ -101,6 +101,7 @@ public class ReportServiceTest {
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
 
 			reportService.generateReport(request);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
 				verify(asyncMetricsDataHandler)
 					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
