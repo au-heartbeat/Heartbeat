@@ -187,7 +187,7 @@ class AsyncMetricsDataHandlerTest {
 	class UpdateAllMetricsCompletedInHandler {
 
 		@Test
-		void shouldThrowGenerateReportExceptionWhenPreviousMetricsCompletedIsNull() {
+		void shouldThrowGenerateReportExceptionGivenPreviousMetricsCompletedIsNull() {
 			long currentTimeMillis = System.currentTimeMillis();
 			String currentTime = Long.toString(currentTimeMillis);
 

@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
+import java.util.Optional;
 
 @Builder
 @NoArgsConstructor
@@ -34,8 +34,10 @@ public class MetricsDataCompleted {
 	}
 
 	public Boolean allMetricsCompleted() {
-		return (Objects.isNull(boardMetricsCompleted) || boardMetricsCompleted)
-				&& (Objects.isNull(doraMetricsCompleted) || doraMetricsCompleted) && overallMetricCompleted;
+		Optional<Boolean> boardMetricsCompletedOptional = Optional.ofNullable(boardMetricsCompleted);
+		Optional<Boolean> doraMetricsCompletedOptional = Optional.ofNullable(doraMetricsCompleted);
+		return (boardMetricsCompletedOptional.isPresent() ? boardMetricsCompleted : true)
+				&& (doraMetricsCompletedOptional.isPresent() ? doraMetricsCompleted : true) && overallMetricCompleted;
 	}
 
 }

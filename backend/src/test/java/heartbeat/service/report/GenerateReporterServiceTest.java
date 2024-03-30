@@ -247,7 +247,7 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateBoardReport(request);
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(pipelineService, never()).fetchGithubData(any());
+			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportId()),
 					responseArgumentCaptor.capture());
@@ -306,7 +306,7 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateBoardReport(request);
 
 			verify(asyncExceptionHandler).remove(request.getBoardReportId());
-			verify(pipelineService, never()).fetchGithubData(any());
+			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportId()),
@@ -341,7 +341,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateBoardReport(request);
 
-			verify(pipelineService, never()).fetchGithubData(any());
+			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportId()),
@@ -375,7 +375,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateBoardReport(request);
 
-			verify(pipelineService, never()).fetchGithubData(any());
+			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
 			verify(workDay).changeConsiderHolidayMode(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportId()),
@@ -568,8 +568,8 @@ class GenerateReporterServiceTest {
 
 			Awaitility.await()
 				.atMost(5, TimeUnit.SECONDS)
-				.untilAsserted(() -> verify(csvFileGenerator).convertPipelineDataToCSV(eq(pipelineCSVInfos),
-						eq(request.getCsvTimeStamp())));
+				.untilAsserted(() -> verify(csvFileGenerator).convertPipelineDataToCSV(pipelineCSVInfos,
+						request.getCsvTimeStamp()));
 		}
 
 		@Test
@@ -619,7 +619,7 @@ class GenerateReporterServiceTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
 			when(pipelineService.generateCSVForPipelineWithCodebase(any(), any(), any(), any(), any()))
 				.thenReturn(pipelineCSVInfos);
-			when(pipelineService.fetchGithubData(request))
+			when(pipelineService.fetchGitHubData(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
 			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
@@ -658,7 +658,7 @@ class GenerateReporterServiceTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
 			when(pipelineService.generateCSVForPipelineWithCodebase(any(), any(), any(), any(), any()))
 				.thenReturn(pipelineCSVInfos);
-			when(pipelineService.fetchGithubData(any()))
+			when(pipelineService.fetchGitHubData(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			when(pipelineService.fetchBuildKiteInfo(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
@@ -694,7 +694,7 @@ class GenerateReporterServiceTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
 			when(pipelineService.generateCSVForPipelineWithCodebase(any(), any(), any(), any(), any()))
 				.thenReturn(pipelineCSVInfos);
-			when(pipelineService.fetchGithubData(request)).thenReturn(
+			when(pipelineService.fetchGitHubData(request)).thenReturn(
 					FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).buildInfosList(List.of()).build());
 			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any());
 

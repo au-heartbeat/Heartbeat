@@ -122,7 +122,7 @@ public class GenerateReporterService {
 
 		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler
 			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
-		if (!previousMetricsCompleted.doraMetricsCompleted()) {
+		if (Boolean.FALSE.equals(previousMetricsCompleted.doraMetricsCompleted())) {
 			CompletableFuture.runAsync(() -> generateCSVForPipeline(request, fetchedData.getBuildKiteData()));
 		}
 	}
@@ -284,7 +284,7 @@ public class GenerateReporterService {
 	private void fetchGitHubData(GenerateReportRequest request, FetchedData fetchedData) {
 		if (request.getCodebaseSetting() == null)
 			throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
-		fetchedData.setBuildKiteData(pipelineService.fetchGithubData(request));
+		fetchedData.setBuildKiteData(pipelineService.fetchGitHubData(request));
 	}
 
 	private FetchedData fetchJiraBoardData(GenerateReportRequest request, FetchedData fetchedData) {

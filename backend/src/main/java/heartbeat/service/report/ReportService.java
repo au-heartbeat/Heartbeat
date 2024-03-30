@@ -50,9 +50,7 @@ public class ReportService {
 				switch (metricType) {
 					case "board" -> generateReporterService.generateBoardReport(request);
 					case "dora" -> generateReporterService.generateDoraReport(request);
-					default -> {
-						// TODO
-					}
+					default -> throw new IllegalArgumentException("Metric type does not find!");
 				}
 			});
 			threadList.add(metricTypeThread);
@@ -64,14 +62,14 @@ public class ReportService {
 			}
 
 			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp);
-			if (isHasNoError(reportResponse.getReportMetricsError())) {
+			if (isNotGenerateMetricError(reportResponse.getReportMetricsError())) {
 				generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
 			}
 			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
 		});
 	}
 
-	private boolean isHasNoError(ReportMetricsError reportMetricsError) {
+	private boolean isNotGenerateMetricError(ReportMetricsError reportMetricsError) {
 		return Objects.isNull(reportMetricsError.getBoardMetricsError())
 				&& Objects.isNull(reportMetricsError.getSourceControlMetricsError())
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());

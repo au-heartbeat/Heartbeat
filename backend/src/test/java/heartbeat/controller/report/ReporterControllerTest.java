@@ -1,5 +1,6 @@
 package heartbeat.controller.report;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
@@ -7,6 +8,7 @@ import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
+import heartbeat.tools.TimeUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,7 @@ import java.io.File;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -44,8 +47,6 @@ class ReporterControllerTest {
 
 	private static final String REQUEST_FILE_PATH = "src/test/java/heartbeat/controller/report/request.json";
 
-	private static final String RESPONSE_FILE_PATH = "src/test/java/heartbeat/controller/report/reportResponse.json";
-
 	@MockBean
 	private GenerateReporterService generateReporterService;
 
@@ -58,21 +59,27 @@ class ReporterControllerTest {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
-	void shouldReturnOkStatusWhenRequestToGenerateReport() throws Exception {
+	void shouldGetSuccessDataGivenReportId() throws Exception {
 		String reportId = Long.toString(System.currentTimeMillis());
-		ReportResponse reportResponse = ReportResponse.builder()
+		ReportResponse MockReportResponse = ReportResponse.builder()
 			.boardMetricsCompleted(true)
 			.allMetricsCompleted(true)
 			.build();
 
-		when(generateReporterService.getComposedReportResponse(reportId)).thenReturn(reportResponse);
+		when(generateReporterService.getComposedReportResponse(reportId)).thenReturn(MockReportResponse);
 
-		mockMvc.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
+		String reportResponseString = mockMvc
+			.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.allMetricsCompleted").value(true))
 			.andReturn()
-			.getResponse();
+			.getResponse()
+			.getContentAsString();
+		ReportResponse response = mapper.readValue(reportResponseString, new TypeReference<>() {
+		});
 		verify(generateReporterService).getComposedReportResponse(any());
+		assertEquals(true, response.getBoardMetricsCompleted());
+		assertEquals(true, response.getAllMetricsCompleted());
 	}
 
 	@Test
@@ -92,7 +99,7 @@ class ReporterControllerTest {
 
 	@Test
 	void shouldReturnWhenExportCsv() throws Exception {
-		long csvTimeStamp = 1685010080107L;
+		long csvTimeStamp = TimeUtils.mockTimeStamp(2023, 5, 25, 18, 21, 20);
 		String expectedResponse = "csv data";
 
 		when(reporterService.exportCsv(ReportType.PIPELINE, csvTimeStamp))

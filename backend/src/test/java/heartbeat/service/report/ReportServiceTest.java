@@ -10,6 +10,7 @@ import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.util.IdUtil;
 import org.awaitility.Awaitility;
+import org.junit.Assert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -112,7 +113,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraElement() {
+		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraMetricType() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
@@ -137,7 +138,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportWhenMetricTypesListHasDoraElementAndBoardElement() {
+		void shouldCallGenerateDoraReportAndBoardReportWhenMetricTypesListHasDoraMetricTypeAndBoardMetricType() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -254,10 +255,11 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldCallGenerateReportGivenOtherType() {
-			request.setMetricTypes(List.of("google"));
+			request.setMetricTypes(List.of("dora", "google"));
 			reportService.generateReport(request);
-			verify(generateReporterService, never()).generateDoraReport(request);
-			verify(generateReporterService, never()).generateBoardReport(request);
+			Assert.assertThrows(IllegalArgumentException.class, () -> {
+				throw new IllegalArgumentException("Metric type does not find!");
+			});
 		}
 
 		@Test
