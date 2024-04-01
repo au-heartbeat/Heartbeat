@@ -1,11 +1,11 @@
 import {
   importInputWrongProjectFromFile as importUnhappyPathProjectFromFile,
   importModifiedCorrectConfig as modifiedCorrectProjectFromFile,
-} from '../fixtures/importFile/unhappy-path-file';
-import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../fixtures/createNew/reportResult';
-import { test } from '../fixtures/testWithExtendFixtures';
-import { clearTempDir } from 'e2e/utils/clearTempDir';
-import { format } from '../utils/dateTime';
+} from '../../fixtures/importFile/unhappy-path-file';
+import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../../fixtures/createNew/reportResult';
+import { test } from '../../fixtures/testWithExtendFixtures';
+import { clearTempDir } from '../../utils/clearTempDir';
+import { format } from '../../utils/dateTime';
 
 test.beforeAll(async () => {
   await clearTempDir();

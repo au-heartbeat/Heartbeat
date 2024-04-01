@@ -1,8 +1,8 @@
-import { config as metricsStepData } from '../fixtures/createNew/metricsStep';
-import { config as configStepData } from '../fixtures/createNew/configStep';
-import { test } from '../fixtures/testWithExtendFixtures';
-import { clearTempDir } from 'e2e/utils/clearTempDir';
-import { format } from '../utils/dateTime';
+import { config as metricsStepData } from '../../fixtures/createNew/metricsStep';
+import { config as configStepData } from '../../fixtures/createNew/configStep';
+import { test } from '../../fixtures/testWithExtendFixtures';
+import { clearTempDir } from '../../utils/clearTempDir';
+import { format } from '../../utils/dateTime';
 
 test.beforeAll(async () => {
   await clearTempDir();

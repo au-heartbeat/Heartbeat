@@ -1,8 +1,11 @@
-import { BOARD_METRICS_RESULT, FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT } from '../fixtures/createNew/reportResult';
-import { importMultipleDoneProjectFromFile } from '../fixtures/importFile/multiple-done-config-file';
-import { ProjectCreationType } from 'e2e/pages/metrics/ReportStep';
-import { test } from '../fixtures/testWithExtendFixtures';
-import { clearTempDir } from 'e2e/utils/clearTempDir';
+import {
+  BOARD_METRICS_RESULT,
+  FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT,
+} from '../../fixtures/createNew/reportResult';
+import { importMultipleDoneProjectFromFile } from '../../fixtures/importFile/multiple-done-config-file';
+import { ProjectCreationType } from '../../pages/metrics/ReportStep';
+import { test } from '../../fixtures/testWithExtendFixtures';
+import { clearTempDir } from '../../utils/clearTempDir';
 
 test.beforeAll(async () => {
   await clearTempDir();
