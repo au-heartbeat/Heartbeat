@@ -15,6 +15,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
 import union from 'lodash/union';
 import merge from 'lodash/merge';
+import { isArray } from 'lodash';
 import dayjs from 'dayjs';
 export interface BasicConfigState {
   isProjectCreated: boolean;
@@ -123,7 +124,11 @@ export const configSlice = createSlice({
       if (!state.isProjectCreated) {
         // todo run validation including future check / selected check / conflicts check
         state.warningMessage =
-          projectName && dateRange && dateRange.length && metrics.length > 0
+          projectName &&
+          isArray(importedDateRanges) &&
+          importedDateRanges.length > 0 &&
+          importedDateRanges.length <= 6 &&
+          metrics.length > 0
             ? null
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
