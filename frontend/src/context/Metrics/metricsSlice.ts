@@ -169,13 +169,60 @@ const setPipelineCrews = (isProjectCreated: boolean, pipelineCrews: string[], im
 };
 
 const setSelectTargetFields = (
+  state: ISavedMetricsSettingState,
   targetFields: { name: string; key: string; flag: boolean }[],
-  importedClassification: string[],
-) =>
-  targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
+  isProjectCreated: boolean,
+) => {
+  if (isProjectCreated) {
+    return setCreateSelectTargetFields(state, targetFields);
+  } else {
+    return setImportSelectTargetFields(state, targetFields);
+  }
+};
+
+const setImportSelectTargetFields = (
+  state: ISavedMetricsSettingState,
+  targetFields: { name: string; key: string; flag: boolean }[],
+) => {
+  if (state.firstTimeRoadMetricData) {
+    return targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
+      ...item,
+      flag: state.importedData.importedClassification.includes(item.key),
+    }));
+  } else {
+    return getTargetFieldsIntersection(state, targetFields);
+  }
+};
+
+const setCreateSelectTargetFields = (
+  state: ISavedMetricsSettingState,
+  targetFields: {
+    name: string;
+    key: string;
+    flag: boolean;
+  }[],
+) => {
+  if (state.firstTimeRoadMetricData) {
+    return targetFields;
+  } else {
+    return getTargetFieldsIntersection(state, targetFields);
+  }
+};
+
+const getTargetFieldsIntersection = (
+  state: ISavedMetricsSettingState,
+  targetFields: {
+    name: string;
+    key: string;
+    flag: boolean;
+  }[],
+) => {
+  const selectedFields = state.targetFields.filter((value) => value.flag).map((value) => value.key);
+  return targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
     ...item,
-    flag: importedClassification?.includes(item.key),
+    flag: selectedFields.includes(item.key),
   }));
+};
 
 const getCycleTimeSettingsByColumn = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
@@ -311,9 +358,7 @@ export const metricsSlice = createSlice({
       state.users = isProjectCreated
         ? setCreateSelectUsers(state, users)
         : setImportSelectUsers(state, users, importedCrews);
-      state.targetFields = isProjectCreated
-        ? targetFields
-        : setSelectTargetFields(targetFields, importedClassification);
+      state.targetFields = setSelectTargetFields(state, targetFields, isProjectCreated);
 
       if (!isProjectCreated && importedCycleTime?.importedCycleTimeSettings?.length > 0) {
         const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
