@@ -115,7 +115,7 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
   const removeSelfHandler = useCallback(() => {
     const newDateRangeGroup = dateRangeGroup.filter((_, idx) => idx !== index);
     dispatch(updateDateRange(newDateRangeGroup));
-  }, [dateRangeGroup]);
+  }, [dateRangeGroup, dispatch, index]);
 
   return (
     <StyledFeaturedRangePickerContainer>
