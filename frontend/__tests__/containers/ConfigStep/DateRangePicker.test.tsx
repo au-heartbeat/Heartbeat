@@ -79,6 +79,37 @@ describe('DateRangePickerSection', () => {
       expect(endDateInput.value).toEqual(expect.stringContaining(endDate.year().toString()));
     });
 
+    it('should Auto-clear endDate when its corresponding startDate is cleared ', () => {
+      setup();
+      const addButton = screen.getByLabelText('Button for adding date range');
+      fireEvent.click(addButton);
+      const rangeDate1 = ['03/01/2024', '03/10/2024'];
+
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDate1Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate1Input = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      fireEvent.change(startDate1Input, { target: { value: rangeDate1[0] } });
+      fireEvent.change(endDate1Input, { target: { value: rangeDate1[1] } });
+      expect(endDate1Input.value).toEqual('03/10/2024');
+      fireEvent.change(startDate1Input, { target: { value: '' } });
+
+      expect(endDate1Input.value).toEqual('');
+    });
+
+    it('should not auto change startDate when its corresponding endDate changes ', () => {
+      setup();
+      const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      const startDate = dayjs('2024-03-20').format('MM/DD/YYYY');
+      const endDate = dayjs('2024-03-21').format('MM/DD/YYYY');
+
+      fireEvent.change(startDateInput, { target: { value: startDate } });
+      fireEvent.change(endDateInput, { target: { value: endDate } });
+      fireEvent.change(endDateInput, { target: { value: null } });
+
+      expect(startDateInput.value).toEqual('03/20/2024');
+    });
+
     it('should not Auto-fill endDate which is after startDate 14 days when fill wrong format startDate ', () => {
       setup();
       const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
