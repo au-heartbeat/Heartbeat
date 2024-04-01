@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static heartbeat.controller.report.dto.request.MetricType.BOARD;
+import static heartbeat.controller.report.dto.request.MetricType.DORA;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 
 @Service
@@ -48,10 +50,11 @@ public class ReportService {
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
 		for (MetricType metricType : metricTypes) {
 			CompletableFuture<Void> metricTypeThread = CompletableFuture.runAsync(() -> {
-				switch (metricType) {
-					case BOARD -> generateReporterService.generateBoardReport(request);
-					case DORA -> generateReporterService.generateDoraReport(request);
-					default -> throw new IllegalArgumentException("Metric type does not find!");
+				if (BOARD.equals(metricType)) {
+					generateReporterService.generateBoardReport(request);
+				}
+				if (DORA.equals(metricType)) {
+					generateReporterService.generateDoraReport(request);
 				}
 			});
 			threadList.add(metricTypeThread);
@@ -85,14 +88,13 @@ public class ReportService {
 			initializeBoardMetricsCompleted = previousMetricsDataCompleted.boardMetricsCompleted();
 			initializeDoraMetricsCompleted = previousMetricsDataCompleted.doraMetricsCompleted();
 		}
-		asyncMetricsDataHandler.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp),
-				MetricsDataCompleted.builder()
-					.boardMetricsCompleted(
-							metricTypes.contains(MetricType.BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
-					.doraMetricsCompleted(
-							metricTypes.contains(MetricType.DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
-					.overallMetricCompleted(Boolean.FALSE)
-					.build());
+		asyncMetricsDataHandler
+			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp), MetricsDataCompleted.builder()
+				.boardMetricsCompleted(metricTypes.contains(BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
+				.doraMetricsCompleted(
+						metricTypes.contains(MetricType.DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
+				.overallMetricCompleted(Boolean.FALSE)
+				.build());
 	}
 
 }

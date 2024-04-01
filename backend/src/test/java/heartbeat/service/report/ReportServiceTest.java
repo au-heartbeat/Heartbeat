@@ -11,7 +11,6 @@ import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.util.IdUtil;
 import org.awaitility.Awaitility;
-import org.junit.Assert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -252,15 +251,6 @@ public class ReportServiceTest {
 				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
 				verify(asyncMetricsDataHandler, times(1))
 					.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
-			});
-		}
-
-		@Test
-		void shouldCallGenerateReportGivenOtherType() {
-			request.setMetricTypes(List.of(MetricType.BOARD, MetricType.DORA));
-			reportService.generateReport(request);
-			Assert.assertThrows(IllegalArgumentException.class, () -> {
-				throw new IllegalArgumentException("Metric type does not find!");
 			});
 		}
 
