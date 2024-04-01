@@ -87,3 +87,68 @@ test('Create a new project with cycle time by status', async ({ homePage, config
   await reportStep.checkMetricDownloadDataByStatus();
   await reportStep.checkDownloadReportsCycleTimeByStatus();
 });
+
+test('Import project from file with cycle time by status', async ({ homePage, configStep, metricsStep, reportStep }) => {
+  const hbStateDataByStatus = cycleTimeByStatusFixture.cycleTimeByStatus.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+  const hbStateData = cycleTimeByStatusFixture.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+  await homePage.goto();
+
+  await homePage.importProjectFromFile('../fixtures/input-files/cycle-time-by-status-config-file.json');
+  await configStep.verifyBoardConfig();
+  await configStep.goToMetrics();
+  await metricsStep.waitForShown();
+
+  await metricsStep.checkCrewsAreChanged(cycleTimeByStatusFixture.crews);
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+
+  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTimeByStatus.type);
+  await metricsStep.checkCycleTimeSettingIsByStatus();
+  await metricsStep.selectHeartbeatStateByStatus(hbStateDataByStatus, false);
+
+  await metricsStep.checkClassifications(cycleTimeByStatusFixture.classification);
+
+  await metricsStep.goToReportPage();
+  await reportStep.confirmGeneratedReport();
+  await reportStep.checkBoardMetricsWithoutRework(
+    BOARD_METRICS_RESULT.Velocity,
+    BOARD_METRICS_RESULT.Throughput,
+    BOARD_METRICS_RESULT.AverageCycleTime4SP,
+    BOARD_METRICS_RESULT.AverageCycleTime4Card,
+  );
+  await reportStep.checkDownloadReportsCycleTimeByStatus();
+
+
+  // Test in by column flow
+  await homePage.goto();
+
+  await homePage.importProjectFromFile('../fixtures/input-files/cycle-time-by-status-config-file.json');
+  await configStep.verifyBoardConfig();
+  await configStep.goToMetrics();
+  await metricsStep.waitForShown();
+
+  await metricsStep.checkCrewsAreChanged(cycleTimeByStatusFixture.crews);
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+
+  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTime.type);
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+  await metricsStep.selectHeartbeatStateByStatus(hbStateData, true);
+
+  await metricsStep.checkClassifications(cycleTimeByStatusFixture.classification);
+
+  await metricsStep.goToReportPage();
+  await reportStep.confirmGeneratedReport();
+  await reportStep.checkBoardMetricsWithoutRework(
+    BOARD_METRICS_RESULT.Velocity,
+    BOARD_METRICS_RESULT.Throughput,
+    BOARD_METRICS_RESULT.AverageCycleTime4SP,
+    BOARD_METRICS_RESULT.AverageCycleTime4Card,
+  );
+  await reportStep.checkDownloadReportsCycleTimeByStatus();
+});
+
