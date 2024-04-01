@@ -91,8 +91,7 @@ public class ReportService {
 		asyncMetricsDataHandler
 			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp), MetricsDataCompleted.builder()
 				.boardMetricsCompleted(metricTypes.contains(BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
-				.doraMetricsCompleted(
-						metricTypes.contains(MetricType.DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
+				.doraMetricsCompleted(metricTypes.contains(DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
 				.overallMetricCompleted(Boolean.FALSE)
 				.build());
 	}

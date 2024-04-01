@@ -409,26 +409,32 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
-		void shouldUpdateMetricCompletedAndGenerateCsvWhenFetchRight() {
+		void shouldAsyncToGenerateCsvAndGenerateReportWhenFetchRight() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.considerHoliday(false)
-				.metrics(List.of("classification"))
+				.metrics(List.of("rework times"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
-				.jiraBoardSetting(JiraBoardSetting.builder().build())
+				.jiraBoardSetting(JiraBoardSetting.builder()
+					.reworkTimesSetting(
+							ReworkTimesSetting.builder().reworkState("To do").excludedStates(List.of("block")).build())
+					.build())
 				.csvTimeStamp(TIMESTAMP)
 				.build();
 			when(kanbanService.fetchDataFromKanban(request)).thenReturn(FetchedData.CardCollectionInfo.builder()
-				.realDoneCardCollection(CardCollection.builder().build())
+				.realDoneCardCollection(CardCollection.builder().reworkCardNumber(2).build())
 				.nonDoneCardCollection(CardCollection.builder().build())
 				.build());
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
+			when(reworkCalculator.calculateRework(any(), any()))
+				.thenReturn(Rework.builder().totalReworkCards(2).build());
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler)
 				.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()),
 						MetricType.BOARD);
 
 			generateReporterService.generateBoardReport(request);
-
+			verify(asyncReportRequestHandler).putReport(any(), responseArgumentCaptor.capture());
+			assertEquals(2, responseArgumentCaptor.getValue().getRework().getTotalReworkCards());
 			Awaitility.await()
 				.atMost(5, TimeUnit.SECONDS)
 				.untilAsserted(() -> verify(kanbanCsvService, times(1)).generateCsvInfo(any(), any(), any()));

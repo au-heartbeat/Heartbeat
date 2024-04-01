@@ -14,6 +14,8 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,6 +58,9 @@ public class ReportServiceTest {
 
 	@Mock
 	GenerateReporterService generateReporterService;
+
+	@Captor
+	ArgumentCaptor<MetricsDataCompleted> metricsDataCompletedArgumentCaptor;
 
 	@Test
 	void exportCsvShouldCallCsvFileGeneratorToGotTheStreamWhenTimestampIsValid() throws IOException {
@@ -102,9 +107,11 @@ public class ReportServiceTest {
 
 			reportService.generateReport(request);
 
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
+					metricsDataCompletedArgumentCaptor.capture());
+			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
+			assertEquals(metricsDataCompleted, expected);
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(asyncMetricsDataHandler)
-					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService, never()).generateDoraReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
@@ -127,9 +134,11 @@ public class ReportServiceTest {
 
 			reportService.generateReport(request);
 
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
+					metricsDataCompletedArgumentCaptor.capture());
+			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
+			assertEquals(metricsDataCompleted, expected);
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(asyncMetricsDataHandler)
-					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 				verify(generateReporterService).generateDoraReport(request);
 				verify(generateReporterService, never()).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
@@ -154,9 +163,11 @@ public class ReportServiceTest {
 
 			reportService.generateReport(request);
 
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
+					metricsDataCompletedArgumentCaptor.capture());
+			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
+			assertEquals(metricsDataCompleted, expected);
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(asyncMetricsDataHandler)
-					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 				verify(generateReporterService).generateDoraReport(request);
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
@@ -182,9 +193,11 @@ public class ReportServiceTest {
 
 			reportService.generateReport(request);
 
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
+					metricsDataCompletedArgumentCaptor.capture());
+			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
+			assertEquals(metricsDataCompleted, expected);
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(asyncMetricsDataHandler)
-					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 				verify(generateReporterService).generateDoraReport(request);
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
@@ -211,10 +224,12 @@ public class ReportServiceTest {
 				.build());
 
 			reportService.generateReport(request);
-			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
 
-				verify(asyncMetricsDataHandler)
-					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
+					metricsDataCompletedArgumentCaptor.capture());
+			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
+			assertEquals(metricsDataCompleted, expected);
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
 				verify(generateReporterService).generateDoraReport(request);
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
@@ -242,9 +257,11 @@ public class ReportServiceTest {
 
 			reportService.generateReport(request);
 
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
+					metricsDataCompletedArgumentCaptor.capture());
+			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
+			assertEquals(metricsDataCompleted, expected);
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(asyncMetricsDataHandler)
-					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 				verify(generateReporterService).generateDoraReport(request);
 				verify(generateReporterService).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
@@ -274,9 +291,11 @@ public class ReportServiceTest {
 
 			reportService.generateReport(request);
 
+			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
+					metricsDataCompletedArgumentCaptor.capture());
+			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
+			assertEquals(metricsDataCompleted, expected);
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(asyncMetricsDataHandler)
-					.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), expected);
 				verify(generateReporterService).generateDoraReport(request);
 				verify(generateReporterService, never()).generateBoardReport(request);
 				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp());
