@@ -14,14 +14,14 @@ dayjs.extend(dayjsSameOrAfterPlugin);
 // all comparisons e.g. dayjsA.isBefore(dayjsB) always return false
 
 export const calculateLastAvailableDate = (date: Dayjs, coveredRange: BasicConfigState['basic']['dateRange']) => {
-  let lastAvailableDate = dayjs(new Date());
+  let lastAvailableDate = dayjs(new Date()).startOf('date');
   let minimumDiffDays = lastAvailableDate.diff(date, 'days');
 
   for (let { startDate } of coveredRange) {
     const startDateDayjsObj = dayjs(startDate);
     if (startDateDayjsObj.isValid()) {
       const diffDays = startDateDayjsObj.diff(date, 'days');
-      if (startDateDayjsObj.isSameOrAfter(date) && diffDays < minimumDiffDays) {
+      if (startDateDayjsObj.isSameOrAfter(date) && diffDays <= minimumDiffDays) {
         lastAvailableDate = startDateDayjsObj.subtract(1, 'day');
         minimumDiffDays = diffDays;
       }
