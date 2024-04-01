@@ -88,7 +88,12 @@ test('Create a new project with cycle time by status', async ({ homePage, config
   await reportStep.checkDownloadReportsCycleTimeByStatus();
 });
 
-test('Import project from file with cycle time by status', async ({ homePage, configStep, metricsStep, reportStep }) => {
+test('Import project from file with cycle time by status', async ({
+  homePage,
+  configStep,
+  metricsStep,
+  reportStep,
+}) => {
   const hbStateDataByStatus = cycleTimeByStatusFixture.cycleTimeByStatus.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
@@ -122,7 +127,6 @@ test('Import project from file with cycle time by status', async ({ homePage, co
   );
   await reportStep.checkDownloadReportsCycleTimeByStatus();
 
-
   // Test in by column flow
   await homePage.goto();
 
@@ -151,4 +155,3 @@ test('Import project from file with cycle time by status', async ({ homePage, co
   );
   await reportStep.checkDownloadReportsCycleTimeByStatus();
 });
-
