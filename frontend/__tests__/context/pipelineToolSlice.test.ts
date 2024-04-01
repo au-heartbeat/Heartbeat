@@ -49,10 +49,12 @@ describe('pipelineTool reducer', () => {
     ],
   };
 
-  const MOCK_DATE_RANGE = {
-    startDate: '2023-04-04T00:00:00+08:00',
-    endDate: '2023-04-18T00:00:00+08:00',
-  };
+  const MOCK_DATE_RANGE = [
+    {
+      startDate: '2023-04-04T00:00:00+08:00',
+      endDate: '2023-04-18T00:00:00+08:00',
+    },
+  ];
 
   it('should set isPipelineToolVerified false when handle initial state', () => {
     const result = configReducer(undefined, { type: 'unknown' });
