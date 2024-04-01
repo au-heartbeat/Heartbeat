@@ -6,6 +6,7 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
@@ -268,6 +269,15 @@ const getSelectedDoneStatus = (
   return status.filter((item: string) => importedDoneStatus.includes(item));
 };
 
+function resetReworkTimeSettingWhenMappingModified(preJiraColumnsValue: string[], state: ISavedMetricsSettingState) {
+  if (!_.isEqual(preJiraColumnsValue, getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings))) {
+    state.importedData.reworkTimesSettings = {
+      reworkState: null,
+      excludeStates: [],
+    };
+  }
+}
+
 export const metricsSlice = createSlice({
   name: 'metrics',
   initialState,
@@ -411,13 +421,15 @@ export const metricsSlice = createSlice({
       } else {
         state.classificationWarningMessage = null;
       }
-
+      const preJiraColumnsValue = getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings);
       if (jiraColumns) {
         state.cycleTimeSettings =
           state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
             ? getCycleTimeSettingsByColumn(jiraColumns, importedCycleTime.importedCycleTimeSettings)
             : getCycleTimeSettingsByStatus(jiraColumns, importedCycleTime.importedCycleTimeSettings);
       }
+
+      resetReworkTimeSettingWhenMappingModified(preJiraColumnsValue, state);
 
       if (!isProjectCreated && importedDoneStatus.length > 0) {
         const selectedDoneStatus = getSelectedDoneStatus(jiraColumns, state.cycleTimeSettings, importedDoneStatus);
