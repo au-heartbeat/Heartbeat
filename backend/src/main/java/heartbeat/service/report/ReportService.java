@@ -1,6 +1,7 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
@@ -41,15 +42,15 @@ public class ReportService {
 	}
 
 	public void generateReport(GenerateReportRequest request) {
-		List<String> metricTypes = request.getMetricTypes();
+		List<MetricType> metricTypes = request.getMetricTypes();
 		String timeStamp = request.getCsvTimeStamp();
 		initializeMetricsDataCompletedInHandler(metricTypes, timeStamp);
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
-		for (String metricType : metricTypes) {
+		for (MetricType metricType : metricTypes) {
 			CompletableFuture<Void> metricTypeThread = CompletableFuture.runAsync(() -> {
 				switch (metricType) {
-					case "board" -> generateReporterService.generateBoardReport(request);
-					case "dora" -> generateReporterService.generateDoraReport(request);
+					case BOARD -> generateReporterService.generateBoardReport(request);
+					case DORA -> generateReporterService.generateDoraReport(request);
 					default -> throw new IllegalArgumentException("Metric type does not find!");
 				}
 			});
@@ -75,7 +76,7 @@ public class ReportService {
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
 	}
 
-	private void initializeMetricsDataCompletedInHandler(List<String> metricTypes, String timeStamp) {
+	private void initializeMetricsDataCompletedInHandler(List<MetricType> metricTypes, String timeStamp) {
 		MetricsDataCompleted previousMetricsDataCompleted = asyncMetricsDataHandler
 			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp));
 		Boolean initializeBoardMetricsCompleted = null;
@@ -84,12 +85,14 @@ public class ReportService {
 			initializeBoardMetricsCompleted = previousMetricsDataCompleted.boardMetricsCompleted();
 			initializeDoraMetricsCompleted = previousMetricsDataCompleted.doraMetricsCompleted();
 		}
-		asyncMetricsDataHandler
-			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp), MetricsDataCompleted.builder()
-				.boardMetricsCompleted(metricTypes.contains("board") ? Boolean.FALSE : initializeBoardMetricsCompleted)
-				.doraMetricsCompleted(metricTypes.contains("dora") ? Boolean.FALSE : initializeDoraMetricsCompleted)
-				.overallMetricCompleted(Boolean.FALSE)
-				.build());
+		asyncMetricsDataHandler.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp),
+				MetricsDataCompleted.builder()
+					.boardMetricsCompleted(
+							metricTypes.contains(MetricType.BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
+					.doraMetricsCompleted(
+							metricTypes.contains(MetricType.DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
+					.overallMetricCompleted(Boolean.FALSE)
+					.build());
 	}
 
 }

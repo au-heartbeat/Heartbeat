@@ -29,7 +29,7 @@ public class GenerateReportRequest {
 
 	private List<String> metrics;
 
-	private List<String> metricTypes;
+	private List<MetricType> metricTypes;
 
 	private JiraBoardSetting jiraBoardSetting;
 
