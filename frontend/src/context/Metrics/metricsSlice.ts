@@ -9,7 +9,7 @@ import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
-import _ from 'lodash';
+import _, { cloneDeep } from 'lodash';
 
 export interface IPipelineConfig {
   id: number;
@@ -378,9 +378,9 @@ export const metricsSlice = createSlice({
     },
 
     updatePipelineSettings: (state, action) => {
+      //pipelineCrews貌似永远不会有
       const { pipelineList, isProjectCreated, pipelineCrews } = action.payload;
       const { importedDeployment, importedPipelineCrews } = state.importedData;
-
       if (pipelineCrews) {
         state.pipelineCrews = setPipelineCrews(isProjectCreated, pipelineCrews, importedPipelineCrews);
       }
@@ -391,15 +391,26 @@ export const metricsSlice = createSlice({
           .map((item: pipeline) => item.name);
       const getValidPipelines = (pipelines: IPipelineConfig[]) => {
         const hasPipeline = pipelines.filter(({ id }) => id !== undefined).length;
-        return pipelines.length && hasPipeline
-          ? pipelines.map(({ id, organization, pipelineName, step, branches }) => ({
-              id,
-              organization: orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '',
-              pipelineName: filteredPipelineNames(organization).includes(pipelineName) ? pipelineName : '',
-              step: step || '',
-              branches: branches || [],
-            }))
-          : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
+        const res =
+          pipelines.length && hasPipeline
+            ? pipelines.map(({ id, organization, pipelineName, step, branches }) => {
+                const matchedOrganization =
+                  orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '';
+                const matchedPipelineName = filteredPipelineNames(organization).includes(pipelineName)
+                  ? pipelineName
+                  : '';
+                console.log('matchedPipelineName', cloneDeep(matchedPipelineName));
+                return {
+                  id,
+                  organization: matchedOrganization,
+                  pipelineName: matchedPipelineName,
+                  step: matchedPipelineName ? step : '',
+                  branches: matchedPipelineName ? branches : [],
+                };
+              })
+            : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
+        console.log('res222', res);
+        return res;
       };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
         const orgWarning = orgNames.some((i) => (i as string).toLowerCase() === organization.toLowerCase())
@@ -435,9 +446,7 @@ export const metricsSlice = createSlice({
 
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload;
-      const { importedDeployment, importedPipelineCrews } = state.importedData;
-      const updatedImportedPipelineStep = importedDeployment.find((pipeline) => pipeline.id === id)?.step ?? '';
-      const updatedImportedPipelineBranches = importedDeployment.find((pipeline) => pipeline.id === id)?.branches ?? [];
+      const { importedPipelineCrews } = state.importedData;
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
       state.pipelineCrews = _.filter(pipelineCrews, (crew) => importedPipelineCrews.includes(crew));
       const stepWarningMessage = (selectedStep: string) => (steps.includes(selectedStep) ? null : MESSAGE.STEP_WARNING);
@@ -447,25 +456,25 @@ export const metricsSlice = createSlice({
       const validBranches = (selectedBranches: string[]): string[] =>
         _.filter(branches, (branch) => selectedBranches.includes(branch));
 
-      const getPipelineSettings = (pipelines: IPipelineConfig[]) =>
-        pipelines.map((pipeline) =>
-          pipeline.id === id
+      const getPipelineSettings = (pipelines: IPipelineConfig[]) => {
+        return pipelines.map((pipeline) => {
+          const matchedStep = validStep(pipeline.step);
+          return pipeline.id === id
             ? {
                 ...pipeline,
-                step: validStep(pipeline.step || updatedImportedPipelineStep),
-                branches: validBranches(
-                  pipeline.branches.length > 0 ? pipeline.branches : updatedImportedPipelineBranches,
-                ),
+                step: matchedStep,
+                branches: matchedStep ? validBranches(pipeline.branches.length > 0 ? pipeline.branches : []) : [],
               }
-            : pipeline,
-        );
+            : pipeline;
+        });
+      };
 
       const getStepWarningMessage = (pipelines: IPipelineWarningMessageConfig[]) => {
         return pipelines.map((pipeline) =>
           pipeline?.id === id
             ? {
                 ...pipeline,
-                step: stepWarningMessage(selectedPipelineStep || updatedImportedPipelineStep),
+                step: stepWarningMessage(selectedPipelineStep),
               }
             : pipeline,
         );

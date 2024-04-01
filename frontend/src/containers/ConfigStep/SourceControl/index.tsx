@@ -71,7 +71,6 @@ export const SourceControl = () => {
       }),
     );
     dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(initDeploymentFrequencySettings());
   };
 
   const getNewFields = (value: string) =>

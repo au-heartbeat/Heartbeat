@@ -12,7 +12,6 @@ import { IBoardState, initialBoardState } from '@src/context/config/board/boardS
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
-import union from 'lodash/union';
 import merge from 'lodash/merge';
 import dayjs from 'dayjs';
 export interface BasicConfigState {
@@ -164,11 +163,7 @@ export const configSlice = createSlice({
               }
             : pipeline,
       );
-
-      state.pipelineTool.verifiedResponse.pipelineCrews = union(
-        state.pipelineTool.verifiedResponse.pipelineCrews,
-        pipelineCrews,
-      );
+      state.pipelineTool.verifiedResponse.pipelineCrews = pipelineCrews;
     },
     updateSourceControlVerifyState: (state, action) => {
       state.sourceControl.isVerified = action.payload;

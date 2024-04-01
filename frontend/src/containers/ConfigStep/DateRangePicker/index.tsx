@@ -24,7 +24,6 @@ export const DateRangePicker = () => {
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(initDeploymentFrequencySettings());
     dispatch(saveUsers([]));
   };
 

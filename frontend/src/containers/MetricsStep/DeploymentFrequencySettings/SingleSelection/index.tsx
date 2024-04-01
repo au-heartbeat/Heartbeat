@@ -4,6 +4,8 @@ import { Autocomplete, Box, ListItemText, TextField } from '@mui/material';
 import { getDisabledOptions, sortDisabledOptions } from '@src/utils/util';
 import { EmojiWrap, StyledAvatar } from '@src/constants/emojis/style';
 import { DEFAULT_HELPER_TEXT, Z_INDEX } from '@src/constants/commons';
+import { resetFormMeta } from '@src/context/meta/metaSlice';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { FormControlWrapper } from './style';
 import { useAppSelector } from '@src/hooks';
 import React, { useState } from 'react';
@@ -32,11 +34,13 @@ export const SingleSelection = ({
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
   const [inputValue, setInputValue] = useState<string>(value);
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
+  const dispatch = useAppDispatch();
 
   const handleSelectedOptionsChange = (value: string) => {
     if (onGetSteps) {
       onUpDatePipeline(id, 'Step', '');
       onGetSteps(value);
+      dispatch(resetFormMeta());
     }
     onUpDatePipeline(id, label, value);
   };
