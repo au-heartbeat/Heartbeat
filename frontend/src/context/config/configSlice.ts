@@ -122,7 +122,6 @@ export const configSlice = createSlice({
       state.sourceControl.isShow = shouldSourceControlShow;
       const { projectName } = state.basic;
       if (!state.isProjectCreated) {
-        // todo run validation including future check / selected check / conflicts check
         state.warningMessage =
           projectName &&
           isArray(importedDateRanges) &&

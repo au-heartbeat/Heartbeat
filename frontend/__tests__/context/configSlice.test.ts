@@ -13,10 +13,12 @@ import initialConfigState from '../initialConfigState';
 
 const MockBasicState = {
   projectName: 'Test Project',
-  dateRange: {
-    startDate: new Date(),
-    endDate: new Date(),
-  },
+  dateRange: [
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+    },
+  ],
   metrics: ['Velocity', 'Cycle time'],
 };
 describe('config reducer', () => {
@@ -42,10 +44,10 @@ describe('config reducer', () => {
 
   it('should update date range when change date', () => {
     const today = new Date().getMilliseconds();
-    const config = configReducer(initialConfigState, updateDateRange({ startDate: today, endDate: '' })).basic;
+    const config = configReducer(initialConfigState, updateDateRange([{ startDate: today, endDate: '' }])).basic;
 
-    expect(config.dateRange.startDate).toEqual(today);
-    expect(config.dateRange.endDate).toEqual('');
+    expect(config.dateRange[0].startDate).toEqual(today);
+    expect(config.dateRange[0].endDate).toEqual('');
   });
 
   it('should isProjectCreated is false when import file', () => {

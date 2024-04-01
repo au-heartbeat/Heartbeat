@@ -7,8 +7,9 @@ describe('Collection Duration', () => {
   const setup = () =>
     render(
       <CollectionDuration
-        startDate={IMPORTED_NEW_CONFIG_FIXTURE.dateRange.startDate}
-        endDate={IMPORTED_NEW_CONFIG_FIXTURE.dateRange.endDate}
+        // todo refactor this to ensure this doesn't break current UI behavior
+        startDate={IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].startDate}
+        endDate={IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].endDate}
       />,
     );
   it('should render the start and end text correctly', () => {
