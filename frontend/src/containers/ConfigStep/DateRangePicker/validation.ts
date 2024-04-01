@@ -17,7 +17,7 @@ export const calculateLastAvailableDate = (date: Dayjs, coveredRange: BasicConfi
   let lastAvailableDate = dayjs(new Date()).startOf('date');
   let minimumDiffDays = lastAvailableDate.diff(date, 'days');
 
-  for (let { startDate } of coveredRange) {
+  for (const { startDate } of coveredRange) {
     const startDateDayjsObj = dayjs(startDate);
     if (startDateDayjsObj.isValid()) {
       const diffDays = startDateDayjsObj.diff(date, 'days');

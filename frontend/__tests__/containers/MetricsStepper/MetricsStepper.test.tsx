@@ -47,7 +47,6 @@ import React from 'react';
 const START_DATE_LABEL = 'From *';
 const TODAY = dayjs();
 const INPUT_DATE_VALUE = TODAY.format('MM/DD/YYYY');
-const END_DATE_LABEL = 'To *';
 const YES = 'Yes';
 const CANCEL = 'Cancel';
 const METRICS = 'Metrics';

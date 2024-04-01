@@ -57,8 +57,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     isProjectCreated,
     pipelineToolVerified,
     // refactor this to adjust new API design
-    dateRange[0]?.startDate,
-    dateRange[0]?.endDate,
+    dateRange,
     restoredPipelineTool.type,
     restoredPipelineTool.token,
   ]);
