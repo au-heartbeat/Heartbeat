@@ -120,7 +120,7 @@ export const configSlice = createSlice({
       state.board.isShow = shouldBoardShow;
       state.pipelineTool.isShow = shouldPipelineToolShow;
       state.sourceControl.isShow = shouldSourceControlShow;
-      const { projectName, dateRange } = state.basic;
+      const { projectName } = state.basic;
       if (!state.isProjectCreated) {
         // todo run validation including future check / selected check / conflicts check
         state.warningMessage =

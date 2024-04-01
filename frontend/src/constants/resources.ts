@@ -192,8 +192,7 @@ export const TIPS = {
   CYCLE_TIME: 'The report page will sum all the status in the column for cycletime calculation',
   ADVANCE:
     'If the story point and block related values in the board data are 0 due to token permissions or other reasons, please manually enter the corresponding customized field key.Otherwise, please ignore it.',
-  TIME_RANGE_PICKER:
-    'Please note: 1. not allowed to choose future time; 2. the span of each time range cannot exceed 31 days at most; 3.If two adjacent time ranges are not connected, then the disconnected time cannot be selected; 4.you can add up to 6 time ranges currently',
+  TIME_RANGE_PICKER: 'The report page will generate charts to compare metrics data over multiple time ranges',
 };
 
 export enum VELOCITY_METRICS_NAME {
