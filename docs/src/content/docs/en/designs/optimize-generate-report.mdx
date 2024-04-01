@@ -185,7 +185,7 @@ end
 loop until (response code is 201 and body.allMetricsCompleted==true) or (response code is 5xx)
     Frontend -> Backend: Polling the report
     activate Backend
-    Backend --> Backend: allMetricsCompleted == boardMetricsCompleted && doraMetricsCompleted && overallMetricsCompleted
+    Backend --> Backend: allMetricsCompleted == (boardMetricsCompleted is null || boardMetricsCompleted) && (doraMetricsCompleted is null || doraMetricsCompleted) && overallMetricsCompleted
     alt report is not ready
         Backend --> Frontend: response 200
     else report is ready
