@@ -93,7 +93,7 @@ describe('DateRangePickerSection', () => {
       await userEvent.type(endDateInput, rangeDate1[1]);
       await userEvent.clear(endDateInput);
 
-      expect(endDateInput.value).toEqual('');
+      expect(endDateInput.value).toEqual('MM/DD/YYYY');
     });
 
     it('should not auto change startDate when its corresponding endDate changes ', async () => {
