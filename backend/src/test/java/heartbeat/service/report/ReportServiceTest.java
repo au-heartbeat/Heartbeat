@@ -95,7 +95,7 @@ public class ReportServiceTest {
 			.build();
 
 		@Test
-		void shouldCallGenerateBoardReportAndInitializeMetricDataWhenMetricTypesListOnlyHasBoardElement() {
+		void shouldSuccessfulGenerateBoardReportAndInitializeMetricDataWhenMetricTypesListOnlyHasBoardElement() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.overallMetricCompleted(false)
@@ -121,7 +121,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportWhenMetricTypesListOnlyHasDoraMetricType() {
+		void shouldSuccessfulGenerateDoraReportWhenMetricTypesListOnlyHasDoraMetricType() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
@@ -148,7 +148,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportWhenMetricTypesListHasDoraMetricTypeAndBoardMetricType() {
+		void shouldSuccessfulGenerateDoraReportAndBoardReportGivenMetricTypesListHasDoraMetricTypeAndBoardMetricType() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -177,7 +177,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportBoardWhenBoardMetricsHasError() {
+		void shouldNotGenerateMetricCsvWhenBoardMetricsHasError() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -208,7 +208,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportWhenPiplineMetricsErrorHasError() {
+		void shouldNotGenerateMetricCsvWhenPiplineMetricsErrorHasError() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -240,7 +240,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldCallGenerateDoraReportAndBoardReportWhenSourceControlMetricsErrorHasError() {
+		void shouldNotGenerateMetricCsvWhenSourceControlMetricsErrorHasError() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
@@ -272,7 +272,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldGenerateDoraReportGivenBoardReportHasBeenGeneratedWhenRetryGenerateDoraReport() {
+		void shouldSuccessfulGenerateDoraReportGivenBoardReportHasBeenGeneratedWhenRetryGenerateDoraReport() {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(true)
 				.doraMetricsCompleted(false)

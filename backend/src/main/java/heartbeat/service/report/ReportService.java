@@ -8,6 +8,7 @@ import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.util.IdUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -15,8 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
@@ -47,16 +50,10 @@ public class ReportService {
 		List<MetricType> metricTypes = request.getMetricTypes();
 		String timeStamp = request.getCsvTimeStamp();
 		initializeMetricsDataCompletedInHandler(metricTypes, timeStamp);
+		Map<MetricType, Consumer<GenerateReportRequest>> reportGenerator = ReportGenerator.getReportGenerator(generateReporterService);
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
 		for (MetricType metricType : metricTypes) {
-			CompletableFuture<Void> metricTypeThread = CompletableFuture.runAsync(() -> {
-				if (BOARD.equals(metricType)) {
-					generateReporterService.generateBoardReport(request);
-				}
-				if (DORA.equals(metricType)) {
-					generateReporterService.generateDoraReport(request);
-				}
-			});
+			CompletableFuture<Void> metricTypeThread = CompletableFuture.runAsync(() -> reportGenerator.get(metricType).accept(request));
 			threadList.add(metricTypeThread);
 		}
 
