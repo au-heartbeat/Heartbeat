@@ -172,4 +172,26 @@ describe('config reducer', () => {
 
     expect(config.basic.dateRange.length).toEqual(6);
   });
+
+  it('should be compatible with old version date range', () => {
+    const initialState = {
+      ...initialConfigState,
+      isProjectCreated: true,
+    };
+    const mockDateRange = {
+      startDate: '2024-01-15T00:00:00.000+08:00',
+      endDate: '2024-01-16T00:00:00.000+08:00',
+    };
+    const action = {
+      type: 'config/updateBasicConfigState',
+      payload: {
+        ...MockBasicState,
+        dateRange: mockDateRange,
+      },
+    };
+
+    const config = configReducer(initialState, action);
+
+    expect(config.basic.dateRange[0]).toEqual(mockDateRange);
+  });
 });

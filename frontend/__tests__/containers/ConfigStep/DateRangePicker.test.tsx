@@ -53,6 +53,7 @@ describe('DateRangePickerSection', () => {
 
     it('should show right start date when input a valid date given init start date is null ', async () => {
       setup();
+
       const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
       await userEvent.type(startDateInput, INPUT_DATE_VALUE);
 
@@ -61,6 +62,7 @@ describe('DateRangePickerSection', () => {
 
     it('should show right end date when input a valid date given init end date is null ', async () => {
       setup();
+
       const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
 
       await userEvent.type(endDateInput, INPUT_DATE_VALUE);
@@ -69,10 +71,10 @@ describe('DateRangePickerSection', () => {
 
     it('should Auto-fill endDate which is after startDate 13 days when fill right startDate ', async () => {
       setup();
+
       const endDate = TODAY.add(13, 'day');
       const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
       const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-
       await userEvent.type(startDateInput, INPUT_DATE_VALUE);
 
       expect(endDateInput.value).toEqual(expect.stringContaining(endDate.date().toString()));
@@ -82,22 +84,23 @@ describe('DateRangePickerSection', () => {
 
     it('should Auto-clear endDate when its corresponding startDate is cleared ', async () => {
       setup();
+
       const addButton = screen.getByLabelText('Button for adding date range');
       await userEvent.click(addButton);
       const rangeDate1 = ['03/01/2024', '03/10/2024'];
-
       const ranges = screen.getAllByLabelText('Range picker row');
       const startDateInput = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
       const endDateInput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
       await userEvent.type(startDateInput, rangeDate1[0]);
       await userEvent.type(endDateInput, rangeDate1[1]);
-      await userEvent.clear(endDateInput);
+      await userEvent.clear(startDateInput);
 
-      expect(endDateInput.value).toEqual('MM/DD/YYYY');
+      expect(endDateInput.value).toEqual('');
     });
 
     it('should not auto change startDate when its corresponding endDate changes ', async () => {
       setup();
+
       const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
       const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
       const startDate = dayjs('2024-03-20').format('MM/DD/YYYY');
@@ -112,9 +115,9 @@ describe('DateRangePickerSection', () => {
 
     it('should not Auto-fill endDate which is after startDate 14 days when fill wrong format startDate ', async () => {
       setup();
+
       const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
       const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-
       await userEvent.type(startDateInput, ERROR_DATE);
 
       expect(startDateInput.valueAsDate).toEqual(null);
