@@ -17,15 +17,18 @@ import union from 'lodash/union';
 import merge from 'lodash/merge';
 import { isArray } from 'lodash';
 import dayjs from 'dayjs';
+
+export type TDateRange = {
+  startDate: string | null;
+  endDate: string | null;
+}[];
+
 export interface BasicConfigState {
   isProjectCreated: boolean;
   basic: {
     projectName: string;
     calendarType: string;
-    dateRange: {
-      startDate: string | null;
-      endDate: string | null;
-    }[];
+    dateRange: TDateRange;
     metrics: string[];
   };
   board: IBoardState;

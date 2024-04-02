@@ -51,8 +51,8 @@ describe('pipelineTool reducer', () => {
 
   const MOCK_DATE_RANGE = [
     {
-      startDate: '2023-04-04T00:00:00+08:00',
-      endDate: '2023-04-18T00:00:00+08:00',
+      startDate: '2023-03-04T00:00:00+08:00',
+      endDate: '2023-03-18T00:00:00+08:00',
     },
   ];
 

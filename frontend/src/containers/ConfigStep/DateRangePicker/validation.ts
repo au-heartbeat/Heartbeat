@@ -1,6 +1,6 @@
-import { BasicConfigState } from '@src/context/config/configSlice';
 import dayjsSameOrBeforePlugin from 'dayjs/plugin/isSameOrBefore';
 import dayjsSameOrAfterPlugin from 'dayjs/plugin/isSameOrAfter';
+import { TDateRange } from '@src/context/config/configSlice';
 import dayjs, { Dayjs } from 'dayjs';
 
 dayjs.extend(dayjsSameOrBeforePlugin);
@@ -13,7 +13,7 @@ dayjs.extend(dayjsSameOrAfterPlugin);
 // if dayjsA or dayjsB either is invalid
 // all comparisons e.g. dayjsA.isBefore(dayjsB) always return false
 
-export const calculateLastAvailableDate = (date: Dayjs, coveredRange: BasicConfigState['basic']['dateRange']) => {
+export const calculateLastAvailableDate = (date: Dayjs, coveredRange: TDateRange) => {
   let lastAvailableDate = dayjs(new Date()).startOf('date');
   let minimumDiffDays = lastAvailableDate.diff(date, 'days');
 
@@ -31,22 +31,14 @@ export const calculateLastAvailableDate = (date: Dayjs, coveredRange: BasicConfi
   return lastAvailableDate;
 };
 
-export const calculateStartDateShouldDisable = (
-  selfEndDate: Dayjs,
-  coveredRange: BasicConfigState['basic']['dateRange'],
-  date: Dayjs,
-) => {
+export const isStartDateDisabled = (selfEndDate: Dayjs, coveredRange: TDateRange, date: Dayjs) => {
   const isDateInCovredRange = coveredRange.some(
     ({ startDate, endDate }) => date.isSameOrAfter(startDate, 'date') && date.isSameOrBefore(endDate, 'date'),
   );
   return isDateInCovredRange || date.isAfter(selfEndDate);
 };
 
-export const calculateEndDateShouldDisable = (
-  selfStartDate: Dayjs,
-  coveredRange: BasicConfigState['basic']['dateRange'],
-  date: Dayjs,
-) => {
+export const isEndDateDisabled = (selfStartDate: Dayjs, coveredRange: TDateRange, date: Dayjs) => {
   const isDateInCovredRange = coveredRange.some(
     ({ startDate, endDate }) => date.isSameOrAfter(startDate, 'date') && date.isSameOrBefore(endDate, 'date'),
   );
