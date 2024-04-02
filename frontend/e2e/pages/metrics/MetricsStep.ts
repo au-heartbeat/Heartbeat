@@ -153,7 +153,7 @@ export class MetricsStep {
       .getByRole('button')
       .filter({ hasText: /.+/ });
     this.pipelineStepsErrorMessage = page.getByText('No steps for this pipeline!');
-    this.pipelineBranchesErrorMessage = page.getByText('The codebase branch marked in red is invalid!');
+    this.pipelineBranchesErrorMessage = page.getByText('The branch has been deleted!');
     this.pipelineBranchSelectIndicator = page.getByRole('progressbar');
     this.pipelineNewPipelineButton = page.getByRole('button', { name: 'New Pipeline' });
     this.pipelineCrewSettingsLabel = this.pipelineSettingSection
