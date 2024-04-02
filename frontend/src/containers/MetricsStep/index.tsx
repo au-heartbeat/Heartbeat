@@ -49,7 +49,6 @@ const MetricsStep = () => {
   const jiraColumns = useAppSelector(selectJiraColumns);
   const targetFields = useAppSelector(selectMetricsContent).targetFields;
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
-  // todo refactor this to adjust new time range design
   const dateRange = useAppSelector(selectDateRange);
   const { startDate, endDate } = dateRange[0];
   const isShowCrewsAndRealDone =

@@ -260,7 +260,6 @@ export const selectStepsParams = (state: RootState, organizationName: string, pi
     (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organizationName,
   );
 
-  // todo refactor this to adapt new getInfo api design
   const { startDate, endDate } = state.config.basic.dateRange[0];
   const pipelineType = state.config.pipelineTool.config.type;
   const token = state.config.pipelineTool.config.token;

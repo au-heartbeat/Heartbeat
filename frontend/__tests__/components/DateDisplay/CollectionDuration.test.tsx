@@ -7,7 +7,6 @@ describe('Collection Duration', () => {
   const setup = () =>
     render(
       <CollectionDuration
-        // todo refactor this to ensure this doesn't break current UI behavior
         startDate={IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].startDate}
         endDate={IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].endDate}
       />,
