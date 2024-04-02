@@ -132,3 +132,19 @@ export const onlyEmptyAndDoneState = (boardingMappingStates: string[]) =>
   isEqual(boardingMappingStates, [METRICS_CONSTANTS.doneValue]) ||
   isEqual(boardingMappingStates, [METRICS_CONSTANTS.cycleTimeEmptyStr, METRICS_CONSTANTS.doneValue]) ||
   isEqual(boardingMappingStates, [METRICS_CONSTANTS.doneValue, METRICS_CONSTANTS.cycleTimeEmptyStr]);
+
+export function convertCycleTimeSettings(
+  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
+  cycleTimeSettings: ICycleTimeSetting[],
+) {
+  if (cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN) {
+    return ([...new Set(cycleTimeSettings.map(({ column }: ICycleTimeSetting) => column))] as string[]).map(
+      (uniqueColumn) => ({
+        [uniqueColumn]:
+          cycleTimeSettings.find(({ column }: ICycleTimeSetting) => column === uniqueColumn)?.value ||
+          METRICS_CONSTANTS.cycleTimeEmptyStr,
+      }),
+    );
+  }
+  return cycleTimeSettings?.map(({ status, value }: ICycleTimeSetting) => ({ [status]: value }));
+}

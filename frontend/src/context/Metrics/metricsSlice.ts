@@ -5,8 +5,8 @@ import {
   MESSAGE,
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
+import { convertCycleTimeSettings, getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
-import { getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
@@ -226,11 +226,14 @@ const getTargetFieldsIntersection = (
 };
 
 const getCycleTimeSettingsByColumn = (
+  state: ISavedMetricsSettingState,
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
-  importedCycleTimeSettings: { [key: string]: string }[],
-) =>
-  jiraColumns.flatMap(({ value: { name, statuses } }) => {
-    const importItem = importedCycleTimeSettings.find((i) => Object.keys(i).includes(name));
+) => {
+  const preCycleTimeSettings = state.firstTimeRoadMetricData
+    ? state.importedData.importedCycleTime.importedCycleTimeSettings
+    : convertCycleTimeSettings(state.cycleTimeSettingsType, state.cycleTimeSettings);
+  return jiraColumns.flatMap(({ value: { name, statuses } }) => {
+    const importItem = preCycleTimeSettings.find((i) => Object.keys(i).includes(name));
     const isValidValue = importItem && CYCLE_TIME_LIST.includes(Object.values(importItem)[0]);
     return statuses.map((status) => ({
       column: name,
@@ -238,14 +241,18 @@ const getCycleTimeSettingsByColumn = (
       value: isValidValue ? (Object.values(importItem)[0] as string) : METRICS_CONSTANTS.cycleTimeEmptyStr,
     }));
   });
+};
 
 const getCycleTimeSettingsByStatus = (
+  state: ISavedMetricsSettingState,
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
-  importedCycleTimeSettings: { [key: string]: string }[],
-) =>
-  jiraColumns.flatMap(({ value: { name, statuses } }) =>
+) => {
+  const preCycleTimeSettings = state.firstTimeRoadMetricData
+    ? state.importedData.importedCycleTime.importedCycleTimeSettings
+    : convertCycleTimeSettings(state.cycleTimeSettingsType, state.cycleTimeSettings);
+  return jiraColumns.flatMap(({ value: { name, statuses } }) =>
     statuses.map((status) => {
-      const importItem = importedCycleTimeSettings.find((i) => Object.keys(i).includes(status));
+      const importItem = preCycleTimeSettings.find((i) => Object.keys(i).includes(status));
       const isValidValue = importItem && CYCLE_TIME_LIST.includes(Object.values(importItem)[0]);
       return {
         column: name,
@@ -254,6 +261,7 @@ const getCycleTimeSettingsByStatus = (
       };
     }),
   );
+};
 
 const getSelectedDoneStatus = (
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[],
@@ -425,8 +433,8 @@ export const metricsSlice = createSlice({
       if (jiraColumns) {
         state.cycleTimeSettings =
           state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
-            ? getCycleTimeSettingsByColumn(jiraColumns, importedCycleTime.importedCycleTimeSettings)
-            : getCycleTimeSettingsByStatus(jiraColumns, importedCycleTime.importedCycleTimeSettings);
+            ? getCycleTimeSettingsByColumn(state, jiraColumns)
+            : getCycleTimeSettingsByStatus(state, jiraColumns);
       }
 
       resetReworkTimeSettingWhenMappingModified(preJiraColumnsValue, state);

@@ -81,6 +81,7 @@ const initState = {
   realDoneWarningMessage: null,
   deploymentWarningMessage: [],
   leadTimeWarningMessage: [],
+  firstTimeRoadMetricData: true,
 };
 
 const mockJiraResponse = {
