@@ -6,7 +6,6 @@ import { Dayjs } from 'dayjs';
 
 interface IBoardData {
   type: string;
-  projectKey: string;
   boardId: string;
   email: string;
   site: string;
