@@ -50,10 +50,12 @@ public class ReportService {
 		List<MetricType> metricTypes = request.getMetricTypes();
 		String timeStamp = request.getCsvTimeStamp();
 		initializeMetricsDataCompletedInHandler(metricTypes, timeStamp);
-		Map<MetricType, Consumer<GenerateReportRequest>> reportGenerator = ReportGenerator.getReportGenerator(generateReporterService);
+		Map<MetricType, Consumer<GenerateReportRequest>> reportGenerator = ReportGenerator
+			.getReportGenerator(generateReporterService);
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
 		for (MetricType metricType : metricTypes) {
-			CompletableFuture<Void> metricTypeThread = CompletableFuture.runAsync(() -> reportGenerator.get(metricType).accept(request));
+			CompletableFuture<Void> metricTypeThread = CompletableFuture
+				.runAsync(() -> reportGenerator.get(metricType).accept(request));
 			threadList.add(metricTypeThread);
 		}
 
