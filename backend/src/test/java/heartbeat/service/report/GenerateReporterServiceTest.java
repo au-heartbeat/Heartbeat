@@ -681,8 +681,8 @@ class GenerateReporterServiceTest {
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
 			Awaitility.await()
 				.atMost(5, TimeUnit.SECONDS)
-				.untilAsserted(() -> verify(csvFileGenerator).convertPipelineDataToCSV(eq(pipelineCSVInfos),
-						eq(request.getCsvTimeStamp())));
+				.untilAsserted(() -> verify(csvFileGenerator).convertPipelineDataToCSV(pipelineCSVInfos,
+						request.getCsvTimeStamp()));
 		}
 
 		@Test
