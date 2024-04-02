@@ -1,7 +1,6 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
-import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ErrorInfo;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
@@ -197,7 +196,7 @@ public class ReportServiceTest {
 				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(MetricType.BOARD, MetricType.DORA));
+			request.setMetricTypes(List.of(BOARD, DORA));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 			when(generateReporterService.getComposedReportResponse(any())).thenReturn(ReportResponse.builder()
@@ -230,7 +229,7 @@ public class ReportServiceTest {
 				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(MetricType.BOARD, MetricType.DORA));
+			request.setMetricTypes(List.of(BOARD, DORA));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 			when(generateReporterService.getComposedReportResponse(any())).thenReturn(ReportResponse.builder()
@@ -264,7 +263,7 @@ public class ReportServiceTest {
 				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(MetricType.BOARD, MetricType.DORA));
+			request.setMetricTypes(List.of(BOARD, DORA));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 			when(generateReporterService.getComposedReportResponse(any())).thenReturn(ReportResponse.builder()
@@ -305,7 +304,7 @@ public class ReportServiceTest {
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(MetricType.DORA));
+			request.setMetricTypes(List.of(DORA));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			when(generateReporterService.getComposedReportResponse(any()))
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());

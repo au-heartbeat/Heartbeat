@@ -27,7 +27,7 @@ class ReportGeneratorTest {
 	private GenerateReporterService generateReporterService;
 
 	@Test
-	public void shouldSuccessGetReportGeneratorMapWhenCallGetReportGenerator() {
+	void shouldSuccessGetReportGeneratorMapWhenCallGetReportGenerator() {
 
 		Map<MetricType, Consumer<GenerateReportRequest>> generator = reportGenerator
 			.getReportGenerator(generateReporterService);
