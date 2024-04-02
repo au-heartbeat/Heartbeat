@@ -137,11 +137,25 @@ public class JiraService {
 		verifyBoardTypeIsJira(boardType);
 
 		try {
+			jiraFeignClient.getDomain(baseUrl);
+		}
+		catch (NotFoundException e) {
+			System.out.println(e);
+		}
+
+		try {
+			System.out.println(boardVerifyRequestParam.getBoardId());
+			System.out.println(boardVerifyRequestParam.getToken());
+
 			JiraBoardVerifyDTO jiraBoardVerifyDTO = jiraFeignClient.getBoard(baseUrl,
 					boardVerifyRequestParam.getBoardId(), boardVerifyRequestParam.getToken());
+
+
+
 			return jiraBoardVerifyDTO.getLocation().getProjectKey();
 		}
 		catch (NotFoundException e) {
+			System.out.println(e);
 			log.error("Failed to call Jira to verify board url, url: {}", baseUrl);
 			throw new NotFoundException("boardId is incorrect");
 		}

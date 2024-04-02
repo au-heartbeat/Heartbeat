@@ -51,4 +51,6 @@ public interface JiraFeignClient {
 	@GetMapping(path = "rest/api/2/project/{projectIdOrKey}")
 	JiraBoardProject getProject(URI baseUrl, @PathVariable String projectIdOrKey, @RequestHeader String authorization);
 
+	@GetMapping(path = "/")
+	void getDomain(URI baseUrl);
 }
