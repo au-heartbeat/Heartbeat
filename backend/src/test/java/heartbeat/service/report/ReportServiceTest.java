@@ -98,7 +98,7 @@ public class ReportServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.csvTimeStamp(timeStamp)
 			.metrics(new ArrayList<>())
-			.metricTypes(List.of(MetricType.BOARD))
+			.metricTypes(List.of(BOARD))
 			.build();
 
 		@Test
@@ -136,7 +136,7 @@ public class ReportServiceTest {
 				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(MetricType.DORA));
+			request.setMetricTypes(List.of(DORA));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			when(generateReporterService.getComposedReportResponse(any()))
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
@@ -166,7 +166,7 @@ public class ReportServiceTest {
 				.overallMetricCompleted(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(MetricType.BOARD, MetricType.DORA));
+			request.setMetricTypes(List.of(BOARD, DORA));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 			when(generateReporterService.getComposedReportResponse(any()))
