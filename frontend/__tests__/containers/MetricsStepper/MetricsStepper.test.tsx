@@ -224,31 +224,6 @@ describe('MetricsStepper', () => {
     expect(screen.getByText(NEXT)).toBeDisabled();
   });
 
-  // todo refactor this when form management Config page refactored
-  // it('should disable next when dataRange is empty ', async () => {
-  //   setup();
-  //   await fillConfigPageData();
-
-  //   const startDateInput = screen.getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-  //   const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-
-  //   await userEvent.clear(startDateInput);
-  //   await userEvent.clear(endDateInput);
-
-  //   expect(screen.getByText(NEXT)).toBeDisabled();
-  // }, 50000);
-
-  // it('should disable next when endDate is empty ', async () => {
-  //   setup();
-  //   await fillConfigPageData();
-
-  //   const endDateInput = screen.getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-
-  //   await userEvent.clear(endDateInput);
-
-  //   expect(screen.getByText(NEXT)).toBeDisabled();
-  // });
-
   it('should enable next when every selected component is show and verified', async () => {
     setup();
     await fillConfigPageData();

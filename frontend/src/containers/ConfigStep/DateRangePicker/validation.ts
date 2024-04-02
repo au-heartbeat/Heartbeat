@@ -6,13 +6,6 @@ import dayjs, { Dayjs } from 'dayjs';
 dayjs.extend(dayjsSameOrBeforePlugin);
 dayjs.extend(dayjsSameOrAfterPlugin);
 
-// some SIGNIFICANT prerequisites :
-// dayjs(undefined).isValid() true
-// dayjs(null).isValid() false
-// dayjs('').isValid() false
-// if dayjsA or dayjsB either is invalid
-// all comparisons e.g. dayjsA.isBefore(dayjsB) always return false
-
 export const calculateLastAvailableDate = (date: Dayjs, coveredRange: TDateRange) => {
   let lastAvailableDate = dayjs(new Date()).startOf('date');
   let minimumDiffDays = lastAvailableDate.diff(date, 'days');
