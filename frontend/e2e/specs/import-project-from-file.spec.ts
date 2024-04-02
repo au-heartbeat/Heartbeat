@@ -15,7 +15,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
-  const hbStateDataEmptyByStatus = cycleTimeByStatusFixture.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
+  const hbStateDataEmptyByStatus = cycleTimeByStatusFixture.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
@@ -33,7 +33,7 @@ test('Import project from file', async ({ homePage, configStep, metricsStep, rep
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
 
-  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTimeByStatus.type);
+  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTime.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
   await metricsStep.selectHeartbeatState(hbStateData, false);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, false);

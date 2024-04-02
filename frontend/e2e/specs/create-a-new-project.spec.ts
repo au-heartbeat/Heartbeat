@@ -19,7 +19,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
-  const hbStateDataEmptyByStatus = cycleTimeByStatusFixture.cycleTimeByStatus.jiraColumnsEmptyByStatus.map(
+  const hbStateDataEmptyByStatus = cycleTimeByStatusFixture.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
 
@@ -58,7 +58,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, true);
 
-  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTimeByStatus.type);
+  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTime.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
   await metricsStep.selectHeartbeatState(hbStateData, false);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, false);

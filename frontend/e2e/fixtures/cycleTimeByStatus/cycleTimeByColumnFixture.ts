@@ -1,4 +1,4 @@
-export const cycleTimeByStatusFixture = {
+export const cycleTimeByColumnFixture = {
   projectName: 'Heartbeat Metrics',
   dateRange: {
     startDate: '2024-03-27T00:00:00.000+08:00',
@@ -36,28 +36,28 @@ export const cycleTimeByStatusFixture = {
   crews: ['heartbeat user', 'Chao Wang', 'Junbo Dai'],
   assigneeFilter: 'lastAssignee',
   cycleTime: {
-    type: 'byStatus',
+    type: 'byColumn',
     jiraColumns: [
       {
-        TODO: '----',
+        TODO: 'To do',
       },
       {
-        Doing: '----',
+        Doing: 'In Dev',
       },
       {
-        Blocked: '----',
+        Blocked: 'Block',
       },
       {
-        Review: '----',
+        Review: 'Review',
       },
       {
-        'WAIT FOR TEST': '----',
+        'READY FOR TESTING': 'Waiting for testing',
       },
       {
-        Testing: '----',
+        Testing: 'Testing',
       },
       {
-        Done: '----',
+        Done: 'Done',
       },
     ],
     treatFlagCardAsBlock: true,
