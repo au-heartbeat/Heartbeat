@@ -1,4 +1,4 @@
-import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS, REWORK_TIME_LIST } from '@src/constants/resources';
+import { CYCLE_TIME_LIST, CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
@@ -124,7 +124,7 @@ export const formatDuplicatedNameWithSuffix = (data: ITargetFieldType[]) => {
 
 export const getSortedAndDeduplicationBoardingMapping = (boardMapping: ICycleTimeSetting[]) => {
   return [...new Set(boardMapping.map((item) => item.value))].sort((a, b) => {
-    return REWORK_TIME_LIST.indexOf(a) - REWORK_TIME_LIST.indexOf(b);
+    return CYCLE_TIME_LIST.indexOf(a) - CYCLE_TIME_LIST.indexOf(b);
   });
 };
 

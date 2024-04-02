@@ -373,6 +373,7 @@ export const metricsSlice = createSlice({
       const { targetFields, users, jiraColumns, isProjectCreated, ignoredTargetFields } = action.payload;
       const { importedCrews, importedClassification, importedCycleTime, importedDoneStatus, importedAssigneeFilter } =
         state.importedData;
+      const preJiraColumnsValue = getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings);
       state.users = isProjectCreated
         ? setCreateSelectUsers(state, users)
         : setImportSelectUsers(state, users, importedCrews);
@@ -429,14 +430,12 @@ export const metricsSlice = createSlice({
       } else {
         state.classificationWarningMessage = null;
       }
-      const preJiraColumnsValue = getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings);
       if (jiraColumns) {
         state.cycleTimeSettings =
           state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
             ? getCycleTimeSettingsByColumn(state, jiraColumns)
             : getCycleTimeSettingsByStatus(state, jiraColumns);
       }
-
       resetReworkTimeSettingWhenMappingModified(preJiraColumnsValue, state);
 
       if (!isProjectCreated && importedDoneStatus.length > 0) {
