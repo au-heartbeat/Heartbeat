@@ -39,7 +39,6 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     const params = {
       type: restoredPipelineTool.type,
       token: restoredPipelineTool.token,
-      // refactor this to adjust new API design
       startTime: dateRange[0]?.startDate,
       endTime: dateRange[0]?.endDate,
     };
@@ -56,7 +55,6 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     dispatch,
     isProjectCreated,
     pipelineToolVerified,
-    // refactor this to adjust new API design
     dateRange,
     restoredPipelineTool.type,
     restoredPipelineTool.token,
