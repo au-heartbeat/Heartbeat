@@ -101,8 +101,8 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
     const newDateRangeGroup = dateRangeGroup.map(({ startDate, endDate }, idx) => {
       if (idx === index) {
         return {
-          startDate: startDate,
-          endDate: !isNull(value) ? value.endOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ') : null,
+          startDate,
+          endDate: !isNull(value) ? value.endOf('date').format(DATE_RANGE_FORMAT) : null,
         };
       }
 
