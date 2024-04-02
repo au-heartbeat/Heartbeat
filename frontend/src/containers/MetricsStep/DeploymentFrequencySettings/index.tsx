@@ -2,6 +2,7 @@ import {
   addADeploymentFrequencySetting,
   deleteADeploymentFrequencySetting,
   selectDeploymentFrequencySettings,
+  selectMetricsContent,
   updateDeploymentFrequencySettings,
 } from '@src/context/Metrics/metricsSlice';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
@@ -25,7 +26,8 @@ export const DeploymentFrequencySettings = () => {
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
   const pipelineCrews = useAppSelector(selectPipelineCrews);
-
+  const { pipelineCrews: selectedCrews } = useAppSelector(selectMetricsContent);
+  console.log('selectedCrews', selectedCrews);
   const handleAddPipeline = () => {
     dispatch(addADeploymentFrequencySetting());
   };
@@ -41,7 +43,7 @@ export const DeploymentFrequencySettings = () => {
 
   return (
     <>
-      {isLoading && <Loading />}
+      {isLoading && <Loading message={'pipeline loading'} />}
       {pipelineInfoResult?.code !== HttpStatusCode.Ok ? (
         <PresentationForErrorCases {...pipelineInfoResult} isLoading={isLoading} retry={apiCallFunc} />
       ) : (

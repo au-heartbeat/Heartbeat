@@ -6,10 +6,10 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import _, { cloneDeep, intersection } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
-import _, { cloneDeep } from 'lodash';
 
 export interface IPipelineConfig {
   id: number;
@@ -143,14 +143,14 @@ const findKeyByValues = (arrayA: { [key: string]: string }[], arrayB: string[]):
 const setSelectUsers = (users: string[], importedCrews: string[]) =>
   users.filter((item: string) => importedCrews?.includes(item));
 
-const setPipelineCrews = (isProjectCreated: boolean, pipelineCrews: string[], importedPipelineCrews: string[]) => {
+const setPipelineCrews = (isProjectCreated: boolean, pipelineCrews: string[], currentCrews: string[]) => {
   if (_.isEmpty(pipelineCrews)) {
     return [];
   }
   if (isProjectCreated) {
     return pipelineCrews;
   }
-  return pipelineCrews.filter((item: string) => importedPipelineCrews?.includes(item));
+  return intersection(pipelineCrews, currentCrews);
 };
 
 const setSelectTargetFields = (
@@ -220,6 +220,7 @@ export const metricsSlice = createSlice({
       state.users = action.payload;
     },
     savePipelineCrews: (state, action) => {
+      console.log('savePipelineCrews', action.payload);
       state.pipelineCrews = action.payload;
     },
     updateCycleTimeSettings: (state, action) => {
@@ -263,6 +264,7 @@ export const metricsSlice = createSlice({
     },
 
     updateMetricsImportedData: (state, action) => {
+      console.log(234);
       const {
         crews,
         cycleTime,
@@ -277,6 +279,7 @@ export const metricsSlice = createSlice({
       } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
+      state.pipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
       state.importedData.importedCycleTime.importedCycleTimeSettings =
         cycleTime?.jiraColumns || state.importedData.importedCycleTime.importedCycleTimeSettings;
       state.importedData.importedCycleTime.importedTreatFlagCardAsBlock =
@@ -378,11 +381,10 @@ export const metricsSlice = createSlice({
     },
 
     updatePipelineSettings: (state, action) => {
-      //pipelineCrews貌似永远不会有
       const { pipelineList, isProjectCreated, pipelineCrews } = action.payload;
-      const { importedDeployment, importedPipelineCrews } = state.importedData;
+      const { importedDeployment } = state.importedData;
       if (pipelineCrews) {
-        state.pipelineCrews = setPipelineCrews(isProjectCreated, pipelineCrews, importedPipelineCrews);
+        state.pipelineCrews = setPipelineCrews(isProjectCreated, pipelineCrews, state.pipelineCrews);
       }
       const orgNames: Array<string> = _.uniq(pipelineList.map((item: pipeline) => item.orgName));
       const filteredPipelineNames = (organization: string) =>
@@ -443,12 +445,12 @@ export const metricsSlice = createSlice({
       state.deploymentFrequencySettings = getValidPipelines(deploymentSettings);
       state.deploymentWarningMessage = getPipelinesWarningMessage(deploymentSettings);
     },
-
+    //  取回来的step和branchs
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload;
       const { importedPipelineCrews } = state.importedData;
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
-      state.pipelineCrews = _.filter(pipelineCrews, (crew) => importedPipelineCrews.includes(crew));
+      state.pipelineCrews = intersection(pipelineCrews, state.pipelineCrews);
       const stepWarningMessage = (selectedStep: string) => (steps.includes(selectedStep) ? null : MESSAGE.STEP_WARNING);
 
       const validStep = (selectedStep: string): string => (steps.includes(selectedStep) ? selectedStep : '');
