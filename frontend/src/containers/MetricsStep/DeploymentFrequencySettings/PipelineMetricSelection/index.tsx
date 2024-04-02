@@ -142,7 +142,9 @@ export const PipelineMetricSelection = ({
           onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
       )}
-      {organization && pipelineName && <BranchSelection {...pipelineSetting} onUpdatePipeline={onUpdatePipeline} />}
+      {organization && pipelineName && (
+        <BranchSelection {...pipelineSetting} onUpdatePipeline={onUpdatePipeline} isStepLoading={isLoading} />
+      )}
       <ButtonWrapper>
         {isShowRemoveButton && (
           <RemoveButton data-test-id={'remove-button'} onClick={handleRemoveClick}>
