@@ -42,7 +42,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         pollingReport(res.response.callbackUrl, res.response.interval);
       })
       .catch((e) => {
-        const source = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
+        const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
         handleError(e, source);
       });
   };
@@ -57,24 +57,22 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     }
   };
 
-  const handleError = (error: Error, source: string) => {
-    if (error instanceof TimeoutError) {
-      if (source === METRIC_TYPES.BOARD) {
-        setTimeout4Board(DATA_LOADING_FAILED);
-      } else if (source === METRIC_TYPES.DORA) {
-        setTimeout4Dora(DATA_LOADING_FAILED);
-      } else {
-        setTimeout4Report(DATA_LOADING_FAILED);
-      }
-    } else {
-      if (source === METRIC_TYPES.BOARD) {
-        setGeneralError4Board(DATA_LOADING_FAILED);
-      } else if (source === METRIC_TYPES.DORA) {
-        setGeneralError4Dora(DATA_LOADING_FAILED);
-      } else {
-        setGeneralError4Report(DATA_LOADING_FAILED);
-      }
-    }
+  const handleTimeoutError = {
+    [METRIC_TYPES.BOARD]: setTimeout4Board,
+    [METRIC_TYPES.DORA]: setTimeout4Dora,
+    [METRIC_TYPES.ALL]: setTimeout4Report,
+  };
+
+  const handleGeneralError = {
+    [METRIC_TYPES.BOARD]: setGeneralError4Board,
+    [METRIC_TYPES.DORA]: setGeneralError4Dora,
+    [METRIC_TYPES.ALL]: setGeneralError4Report,
+  };
+
+  const handleError = (error: Error, source: METRIC_TYPES) => {
+    return error instanceof TimeoutError
+      ? handleTimeoutError[source](DATA_LOADING_FAILED)
+      : handleGeneralError[source](DATA_LOADING_FAILED);
   };
 
   const pollingReport = (url: string, interval: number) => {

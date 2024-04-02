@@ -176,9 +176,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     considerHoliday: calendarType === CALENDAR.CHINA,
     csvTimeStamp,
     metrics,
-    metricTypes: [shouldShowBoardMetrics && METRIC_TYPES.BOARD, shouldShowDoraMetrics && METRIC_TYPES.DORA].filter(
-      (value) => !!value,
-    ) as string[],
+    metricTypes: [
+      ...(shouldShowBoardMetrics ? [METRIC_TYPES.BOARD] : []),
+      ...(shouldShowDoraMetrics ? [METRIC_TYPES.DORA] : []),
+    ],
     jiraBoardSetting: shouldShowBoardMetrics ? getJiraBoardSetting() : undefined,
     ...(shouldShowDoraMetrics ? getDoraSetting() : {}),
   };
