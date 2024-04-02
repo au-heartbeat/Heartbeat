@@ -9,6 +9,7 @@ import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.util.IdUtil;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Nested;
@@ -30,9 +31,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static heartbeat.controller.report.dto.request.MetricType.BOARD;
+import static heartbeat.controller.report.dto.request.MetricType.DORA;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -58,6 +62,9 @@ public class ReportServiceTest {
 
 	@Mock
 	GenerateReporterService generateReporterService;
+
+	@Mock
+	ReportGenerator reportGenerator;
 
 	@Captor
 	ArgumentCaptor<MetricsDataCompleted> metricsDataCompletedArgumentCaptor;
@@ -104,6 +111,8 @@ public class ReportServiceTest {
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 			when(generateReporterService.getComposedReportResponse(any()))
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
+			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
+					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
 			reportService.generateReport(request);
 
@@ -131,6 +140,8 @@ public class ReportServiceTest {
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
 			when(generateReporterService.getComposedReportResponse(any()))
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
+			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
+					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
 			reportService.generateReport(request);
 
@@ -160,6 +171,8 @@ public class ReportServiceTest {
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
 			when(generateReporterService.getComposedReportResponse(any()))
 				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
+			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
+					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
 			reportService.generateReport(request);
 
@@ -190,6 +203,8 @@ public class ReportServiceTest {
 			when(generateReporterService.getComposedReportResponse(any())).thenReturn(ReportResponse.builder()
 				.reportMetricsError(ReportMetricsError.builder().boardMetricsError(ErrorInfo.builder().build()).build())
 				.build());
+			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
+					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
 			reportService.generateReport(request);
 
@@ -222,6 +237,8 @@ public class ReportServiceTest {
 				.reportMetricsError(
 						ReportMetricsError.builder().pipelineMetricsError(ErrorInfo.builder().build()).build())
 				.build());
+			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
+					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
 			reportService.generateReport(request);
 
@@ -254,6 +271,8 @@ public class ReportServiceTest {
 				.reportMetricsError(
 						ReportMetricsError.builder().sourceControlMetricsError(ErrorInfo.builder().build()).build())
 				.build());
+			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
+					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
 			reportService.generateReport(request);
 
@@ -283,6 +302,8 @@ public class ReportServiceTest {
 				.doraMetricsCompleted(true)
 				.overallMetricCompleted(true)
 				.build());
+			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
+					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of(MetricType.DORA));
 			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);

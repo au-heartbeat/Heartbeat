@@ -16,7 +16,7 @@ import static heartbeat.controller.report.dto.request.MetricType.DORA;
 @Component
 public class ReportGenerator {
 
-	public static Map<MetricType, Consumer<GenerateReportRequest>> getReportGenerator(
+	public Map<MetricType, Consumer<GenerateReportRequest>> getReportGenerator(
 			GenerateReporterService generateReporterService) {
 		return Map.of(BOARD, generateReporterService::generateBoardReport, DORA,
 				generateReporterService::generateDoraReport);

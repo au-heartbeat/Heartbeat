@@ -35,6 +35,8 @@ public class ReportService {
 
 	private final GenerateReporterService generateReporterService;
 
+	private final ReportGenerator reportGenerator;
+
 	public InputStreamResource exportCsv(ReportType reportDataType, long csvTimestamp) {
 		if (isExpiredTimeStamp(csvTimestamp)) {
 			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
@@ -50,12 +52,12 @@ public class ReportService {
 		List<MetricType> metricTypes = request.getMetricTypes();
 		String timeStamp = request.getCsvTimeStamp();
 		initializeMetricsDataCompletedInHandler(metricTypes, timeStamp);
-		Map<MetricType, Consumer<GenerateReportRequest>> reportGenerator = ReportGenerator
+		Map<MetricType, Consumer<GenerateReportRequest>> reportGeneratorMap = reportGenerator
 			.getReportGenerator(generateReporterService);
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
 		for (MetricType metricType : metricTypes) {
 			CompletableFuture<Void> metricTypeThread = CompletableFuture
-				.runAsync(() -> reportGenerator.get(metricType).accept(request));
+				.runAsync(() -> reportGeneratorMap.get(metricType).accept(request));
 			threadList.add(metricTypeThread);
 		}
 
