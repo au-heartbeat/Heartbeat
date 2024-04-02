@@ -114,7 +114,11 @@ export const configSlice = createSlice({
       const { metrics, shouldBoardShow, shouldPipelineToolShow, shouldSourceControlShow } = getMetricsInfo(
         action.payload.metrics,
       );
-      const importedDateRanges = action.payload.dateRange;
+      let importedDateRanges = action.payload.dateRange;
+      importedDateRanges =
+        importedDateRanges && importedDateRanges?.startDate && importedDateRanges?.endDate
+          ? [importedDateRanges]
+          : importedDateRanges;
       state.basic.dateRange =
         Array.isArray(importedDateRanges) && importedDateRanges.length > MAX_TIME_RANGE_AMOUNT
           ? importedDateRanges.slice(0, MAX_TIME_RANGE_AMOUNT)
