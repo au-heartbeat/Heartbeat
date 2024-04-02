@@ -2,7 +2,6 @@ import {
   addADeploymentFrequencySetting,
   deleteADeploymentFrequencySetting,
   selectDeploymentFrequencySettings,
-  selectMetricsContent,
   updateDeploymentFrequencySettings,
 } from '@src/context/Metrics/metricsSlice';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
@@ -19,6 +18,7 @@ import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
 import { HttpStatusCode } from 'axios';
 import isEmpty from 'lodash/isEmpty';
+import { useMemo } from 'react';
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch();
@@ -26,12 +26,13 @@ export const DeploymentFrequencySettings = () => {
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
   const pipelineCrews = useAppSelector(selectPipelineCrews);
-  const { pipelineCrews: selectedCrews } = useAppSelector(selectMetricsContent);
-  console.log('selectedCrews', selectedCrews);
   const handleAddPipeline = () => {
     dispatch(addADeploymentFrequencySetting());
   };
-
+  const realDeploymentFrequencySettings = useMemo(
+    () => (isLoading ? [] : deploymentFrequencySettings),
+    [isLoading, deploymentFrequencySettings],
+  );
   const handleRemovePipeline = (id: number) => {
     dispatch(deleteADeploymentFrequencySetting(id));
     dispatch(deleteMetricsPipelineFormMeta(id));
@@ -49,7 +50,7 @@ export const DeploymentFrequencySettings = () => {
       ) : (
         <>
           <MetricsSettingTitle title={'Pipeline settings'} />
-          {deploymentFrequencySettings.map((deploymentFrequencySetting) => (
+          {realDeploymentFrequencySettings.map((deploymentFrequencySetting) => (
             <PipelineMetricSelection
               isInfoLoading={isLoading}
               key={deploymentFrequencySetting.id}
