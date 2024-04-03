@@ -16,7 +16,7 @@ export interface ReportResponseDTO {
   overallMetricsCompleted: boolean;
   allMetricsCompleted: boolean;
   reportMetricsError: AllErrorResponse;
-  hasCsvFileCreateSuccessful: boolean;
+  isSuccessfulCreateCsvFile: boolean;
   [key: string]: unknown;
 }
 
