@@ -10,8 +10,8 @@ test.beforeAll(async () => {
 
 test('Only select velocity metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
@@ -48,8 +48,8 @@ test('Only select velocity metrics on config page', async ({ homePage, configSte
 
 test('Only select cycle time metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
@@ -86,8 +86,8 @@ test('Only select cycle time metrics on config page', async ({ homePage, configS
 
 test('Only select classification metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
@@ -128,8 +128,8 @@ test('Only select lead time for changes metrics on config page', async ({
   reportStep,
 }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
 
   await homePage.goto();
@@ -164,8 +164,8 @@ test('Only select deployment frequency metrics on config page', async ({
   reportStep,
 }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
 
   await homePage.goto();
@@ -199,8 +199,8 @@ test('Only select change failure rate metrics on config page', async ({
   reportStep,
 }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
 
   await homePage.goto();
@@ -234,8 +234,8 @@ test('Only select mean time to recovery metrics on config page', async ({
   reportStep,
 }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
 
   await homePage.goto();
