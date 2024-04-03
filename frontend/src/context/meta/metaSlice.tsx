@@ -42,16 +42,14 @@ export const metaSlice = createSlice({
     saveVersion: (state, action: PayloadAction<string>) => {
       state.version = action.payload;
     },
-    //singleSection/index && Header.tsx
     resetFormMeta: (state) => {
       state.form = initialFormMetaState;
     },
-    //BranchSection/index
     updateFormMeta: (state, action: PayloadAction<{ path: string; data: object | string | number }>) => {
       const { path, data } = action.payload;
+
       set(state, `form.${path}`, data);
     },
-    //BranchSection/index
     initMetricsPipelineFormMeta: (state, action: PayloadAction<number>) => {
       const id = action.payload;
       const branchesFormData = state.form.metrics.pipelines[id];
@@ -61,7 +59,9 @@ export const metaSlice = createSlice({
           branches: [],
         };
     },
-    //BranchSection
+    clearMetricsPipelineFormMeta: (state) => {
+      state.form.metrics.pipelines = {};
+    },
     updateMetricsPipelineBranchFormMeta: (state, action: PayloadAction<{ id: number; data: FormFieldWithMeta }>) => {
       const { id, data } = action.payload;
       const branchesFormData = state.form.metrics.pipelines[id].branches;
@@ -73,7 +73,6 @@ export const metaSlice = createSlice({
         state.form.metrics.pipelines[id].branches.push(data);
       }
     },
-    //DeploymentFrequencySettings/index
     deleteMetricsPipelineFormMeta: (state, action: PayloadAction<number>) => {
       const deleteId = action.payload;
       const formData = state.form.metrics.pipelines;
@@ -89,10 +88,16 @@ export const {
   initMetricsPipelineFormMeta,
   deleteMetricsPipelineFormMeta,
   updateMetricsPipelineBranchFormMeta,
+  clearMetricsPipelineFormMeta,
 } = metaSlice.actions;
 
 export const getVersion = (state: RootState) => state.meta.version;
 
 export const getFormMeta = (state: RootState) => state.meta.form;
+
+export const getErrorDetail = (state: RootState) =>
+  Object.values(state.meta.form.metrics.pipelines)
+    .flatMap(({ branches }) => branches)
+    .find(({ error }) => error)?.errorDetail;
 
 export default metaSlice.reducer;

@@ -101,6 +101,10 @@ export const BranchSelection = (props: BranchSelectionProps) => {
   };
 
   const isInputError = useMemo(() => Object.values(branchesFormData).some((item) => item.error), [branchesFormData]);
+  const errorDetail = useMemo(
+    () => Object.values(branchesFormData).find((item) => item.errorDetail !== undefined)?.errorDetail,
+    [branchesFormData],
+  );
 
   useEffect(() => {
     dispatch(initMetricsPipelineFormMeta(id));
@@ -132,7 +136,7 @@ export const BranchSelection = (props: BranchSelectionProps) => {
             error={!isStepLoading && isInputError}
             variant='standard'
             label='Branches'
-            helperText={!isStepLoading && isInputError ? SOURCE_CONTROL_BRANCH_INVALID_TEXT : ''}
+            helperText={!isStepLoading && isInputError ? SOURCE_CONTROL_BRANCH_INVALID_TEXT[errorDetail as string] : ''}
           />
         )}
         renderTags={(selectedOptions, getTagProps) =>
