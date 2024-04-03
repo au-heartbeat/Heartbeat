@@ -36,7 +36,7 @@ test('Only select velocity metrics on config page', async ({ homePage, configSte
   await metricsStep.checkClassificationSettingInvisible();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
-  await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
@@ -74,7 +74,7 @@ test('Only select cycle time metrics on config page', async ({ homePage, configS
   await metricsStep.checkClassificationSettingInvisible();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
-  await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
@@ -112,7 +112,7 @@ test('Only select classification metrics on config page', async ({ homePage, con
   await metricsStep.checkClassificationSettingVisible();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
-  await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.selectClassifications(metricsStepData.classification);
   await metricsStep.goToReportPage();
 

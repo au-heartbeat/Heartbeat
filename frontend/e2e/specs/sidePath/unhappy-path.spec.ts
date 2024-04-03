@@ -61,7 +61,7 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
   await metricsStep.checkNoCrewsReminder();
   await metricsStep.checkLastAssigneeCrewFilterChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
-  await metricsStep.checkHeartbeatStateIsSet(hbStateData);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
   await metricsStep.checkClassifications(importUnhappyPathProjectFromFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(importUnhappyPathProjectFromFile.deployment);
   await metricsStep.checkBranchIsInvalid();
