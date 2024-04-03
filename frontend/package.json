@@ -61,7 +61,7 @@
     "react-redux": "^9.0.0",
     "react-router-dom": "^6.22.3",
     "typescript": "^5.4.2",
-    "vite": "^5.2.2",
+    "vite": "^5.2.6",
     "vite-plugin-pwa": "^0.19.5"
   },
   "devDependencies": {
