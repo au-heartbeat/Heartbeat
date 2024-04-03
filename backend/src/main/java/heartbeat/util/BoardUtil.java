@@ -20,10 +20,12 @@ public class BoardUtil {
 
 	private final WorkDay workDay;
 
-	public List<CycleTimeInfo> getOriginCycleTimeInfos(List<StatusChangedItem> statusChangedArray) {
+	public List<CycleTimeInfo> getOriginCycleTimeInfos(List<StatusChangedItem> statusChangedArray,
+			Boolean treatFlagCardAsBlock) {
 		List<StatusTimeStamp> flagTimeStamp = getFlagTimeStamps(statusChangedArray);
 		List<StatusTimeStamp> columnTimeStamp = getColumnTimeStamps(statusChangedArray);
-		List<CycleTimeInfo> originCycleTimeInfos = calculateOriginCycleTime(flagTimeStamp, columnTimeStamp);
+		List<CycleTimeInfo> originCycleTimeInfos = calculateOriginCycleTime(flagTimeStamp, columnTimeStamp,
+				treatFlagCardAsBlock);
 		return getCollectRemovedDuplicates(originCycleTimeInfos);
 	}
 
@@ -50,7 +52,7 @@ public class BoardUtil {
 	}
 
 	private List<CycleTimeInfo> calculateOriginCycleTime(List<StatusTimeStamp> flagTimeStamp,
-			List<StatusTimeStamp> columnTimeStamp) {
+			List<StatusTimeStamp> columnTimeStamp, Boolean treatFlagCardAsBlock) {
 		List<CycleTimeInfo> originCycleTimeInfos = new ArrayList<>();
 
 		for (StatusTimeStamp columnTimeStampItem : columnTimeStamp) {
@@ -62,9 +64,11 @@ public class BoardUtil {
 				.build());
 		}
 
-		double totalFlagTimeInDays = calculateTotalFlagCycleTime(flagTimeStamp);
-		originCycleTimeInfos
-			.add(CycleTimeInfo.builder().day(totalFlagTimeInDays).column(CardStepsEnum.FLAG.getValue()).build());
+		if (treatFlagCardAsBlock) {
+			double totalFlagTimeInDays = calculateTotalFlagCycleTime(flagTimeStamp);
+			originCycleTimeInfos
+				.add(CycleTimeInfo.builder().day(totalFlagTimeInDays).column(CardStepsEnum.FLAG.getValue()).build());
+		}
 
 		return originCycleTimeInfos;
 	}
