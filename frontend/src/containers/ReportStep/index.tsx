@@ -54,9 +54,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     generalError4Report,
   } = useGenerateReportEffect();
 
-  const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
-  const [allMetricsCompleted, setAllMetricsCompleted] = useState<boolean>(false);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
 
   const configData = useAppSelector(selectConfig);
@@ -208,64 +206,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, []);
 
   useLayoutEffect(() => {
-    exportValidityTimeMin &&
-      allMetricsCompleted &&
-      dispatch(
-        addNotification({
-          message: MESSAGE.EXPIRE_INFORMATION(exportValidityTimeMin),
-        }),
-      );
-  }, [dispatch, exportValidityTimeMin, allMetricsCompleted]);
-
-  useLayoutEffect(() => {
-    if (exportValidityTimeMin && allMetricsCompleted) {
-      const startTime = Date.now();
-      const timer = setInterval(() => {
-        const currentTime = Date.now();
-        const elapsedTime = currentTime - startTime;
-
-        const remainingExpireTime = 5 * 60 * 1000;
-        const remainingTime = exportValidityTimeMin * 60 * 1000 - elapsedTime;
-        if (remainingTime <= remainingExpireTime) {
-          dispatch(
-            addNotification({
-              message: MESSAGE.EXPIRE_INFORMATION(5),
-            }),
-          );
-          clearInterval(timer);
-        }
-      }, 1000);
-
-      return () => {
-        clearInterval(timer);
-      };
-    }
-  }, [dispatch, exportValidityTimeMin, allMetricsCompleted]);
-
-  useLayoutEffect(() => {
     dispatch(closeAllNotifications());
   }, [dispatch, pageType]);
-
-  useEffect(() => {
-    const isReportHasError =
-      !!reportData?.reportMetricsError.boardMetricsError ||
-      !!reportData?.reportMetricsError.pipelineMetricsError ||
-      !!reportData?.reportMetricsError.sourceControlMetricsError;
-    const pipelineButtonDisabled =
-      !reportData ||
-      reportData.doraMetricsCompleted === false ||
-      reportData?.reportMetricsError?.pipelineMetricsError ||
-      reportData?.reportMetricsError?.sourceControlMetricsError;
-    const enableExportMetricData = !!(reportData?.overallMetricsCompleted && !isReportHasError);
-    const enableExportBoardData = !!(
-      reportData?.boardMetricsCompleted && !reportData?.reportMetricsError?.boardMetricsError
-    );
-    const enableExportPipelineData = !pipelineButtonDisabled;
-
-    setExportValidityTimeMin(reportData?.exportValidityTime);
-    reportData?.allMetricsCompleted &&
-      setAllMetricsCompleted(enableExportMetricData || enableExportBoardData || enableExportPipelineData);
-  }, [dispatch, reportData]);
 
   useEffect(() => {
     if (isSummaryPage && notifications4SummaryPage.length > 0) {
