@@ -343,7 +343,7 @@ describe('convertCycleTimeSettings function', () => {
     {
       column: 'Done',
       status: 'DONE',
-      value: 'Done',
+      value: '',
     },
   ];
   it('convert cycle time settings correctly by status', () => {
@@ -367,7 +367,7 @@ describe('convertCycleTimeSettings function', () => {
         TESTING: 'Testing',
       },
       {
-        DONE: 'Done',
+        DONE: '',
       },
     ];
     const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, mockCycleTime);
@@ -394,7 +394,7 @@ describe('convertCycleTimeSettings function', () => {
         Testing: 'Testing',
       },
       {
-        Done: 'Done',
+        Done: '----',
       },
     ];
     const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, mockCycleTime);

@@ -1036,117 +1036,120 @@ describe('saveMetricsSetting reducer', () => {
       'The column of ToDo is a deleted column, which means this column existed the time you saved config, but was deleted. Please confirm!',
     );
   });
-  it.each([{ isProjectCreated: false }, { isProjectCreated: true }])(
-    'should update classification correctly when reload metrics page',
-    (mockData) => {
-      const savedMetricsSetting = saveMetricsSettingReducer(
-        {
-          ...initState,
-          firstTimeRoadMetricData: false,
-          targetFields: [
-            { key: 'issuetype', name: 'Issue Type', flag: false },
-            { key: 'parent', name: 'Parent', flag: true },
-          ],
-        },
-        updateMetricsState({
-          ...mockJiraResponse,
-          ...mockData,
-          targetFields: [
-            {
-              key: 'parent',
-              name: 'Parent',
-              flag: false,
-            },
-            {
-              key: 'customfield_10061',
-              name: 'Story testing',
-              flag: false,
-            },
-          ],
-        }),
-      );
-      expect(savedMetricsSetting.targetFields).toEqual([
-        { key: 'parent', name: 'Parent', flag: true },
-        { key: 'customfield_10061', name: 'Story testing', flag: false },
-      ]);
-    },
-  );
 
-  it.each([{ isProjectCreated: true }, { isProjectCreated: false }])(
-    'should update board crews user correctly when reload metrics page',
-    (mockData) => {
-      const savedMetricsSetting = saveMetricsSettingReducer(
-        {
-          ...initState,
-          firstTimeRoadMetricData: false,
-          users: ['User A', 'User B', 'C'],
-        },
-        updateMetricsState({ ...mockJiraResponse, ...mockData }),
-      );
-      expect(savedMetricsSetting.users).toEqual(['User A', 'User B']);
-    },
-  );
+  describe('should update metrics when reload metric page', () => {
+    it.each([{ isProjectCreated: false }, { isProjectCreated: true }])(
+      'should update classification correctly when reload metrics page',
+      (mockData) => {
+        const savedMetricsSetting = saveMetricsSettingReducer(
+          {
+            ...initState,
+            firstTimeRoadMetricData: false,
+            targetFields: [
+              { key: 'issuetype', name: 'Issue Type', flag: false },
+              { key: 'parent', name: 'Parent', flag: true },
+            ],
+          },
+          updateMetricsState({
+            ...mockJiraResponse,
+            ...mockData,
+            targetFields: [
+              {
+                key: 'parent',
+                name: 'Parent',
+                flag: false,
+              },
+              {
+                key: 'customfield_10061',
+                name: 'Story testing',
+                flag: false,
+              },
+            ],
+          }),
+        );
+        expect(savedMetricsSetting.targetFields).toEqual([
+          { key: 'parent', name: 'Parent', flag: true },
+          { key: 'customfield_10061', name: 'Story testing', flag: false },
+        ]);
+      },
+    );
 
-  it.each([CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS])(
-    'should update cycle time settings correctly when reload metrics page',
-    (cycleTimeSettingsType) => {
-      const savedMetricsSetting = saveMetricsSettingReducer(
-        {
-          ...initState,
-          firstTimeRoadMetricData: false,
-          cycleTimeSettingsType,
-          cycleTimeSettings: [
-            {
-              column: 'TODO',
-              status: 'TODO',
-              value: 'To do',
-            },
-            {
-              column: 'Doing',
-              status: 'DOING',
-              value: 'In Dev',
-            },
-            {
-              column: 'Blocked',
-              status: 'BLOCKED',
-              value: 'Block',
-            },
-          ],
-        },
-        updateMetricsState({
-          ...mockJiraResponse,
-          jiraColumns: [
-            {
-              key: 'To Do',
-              value: {
-                name: 'TODO',
-                statuses: ['TODO'],
+    it.each([{ isProjectCreated: true }, { isProjectCreated: false }])(
+      'should update board crews user correctly when reload metrics page',
+      (mockData) => {
+        const savedMetricsSetting = saveMetricsSettingReducer(
+          {
+            ...initState,
+            firstTimeRoadMetricData: false,
+            users: ['User A', 'User B', 'C'],
+          },
+          updateMetricsState({ ...mockJiraResponse, ...mockData }),
+        );
+        expect(savedMetricsSetting.users).toEqual(['User A', 'User B']);
+      },
+    );
+
+    it.each([CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS])(
+      'should update cycle time settings correctly when reload metrics page',
+      (cycleTimeSettingsType) => {
+        const savedMetricsSetting = saveMetricsSettingReducer(
+          {
+            ...initState,
+            firstTimeRoadMetricData: false,
+            cycleTimeSettingsType,
+            cycleTimeSettings: [
+              {
+                column: 'TODO',
+                status: 'TODO',
+                value: 'To do',
               },
-            },
-            {
-              key: 'In Progress',
-              value: {
-                name: 'Doing',
-                statuses: ['DOING'],
+              {
+                column: 'Doing',
+                status: 'DOING',
+                value: 'In Dev',
               },
-            },
-          ],
-        }),
-      );
-      expect(savedMetricsSetting.cycleTimeSettings).toEqual([
-        {
-          column: 'TODO',
-          status: 'TODO',
-          value: 'To do',
-        },
-        {
-          column: 'Doing',
-          status: 'DOING',
-          value: 'In Dev',
-        },
-      ]);
-    },
-  );
+              {
+                column: 'Blocked',
+                status: 'BLOCKED',
+                value: 'Block',
+              },
+            ],
+          },
+          updateMetricsState({
+            ...mockJiraResponse,
+            jiraColumns: [
+              {
+                key: 'To Do',
+                value: {
+                  name: 'TODO',
+                  statuses: ['TODO'],
+                },
+              },
+              {
+                key: 'In Progress',
+                value: {
+                  name: 'Doing',
+                  statuses: ['DOING'],
+                },
+              },
+            ],
+          }),
+        );
+        expect(savedMetricsSetting.cycleTimeSettings).toEqual([
+          {
+            column: 'TODO',
+            status: 'TODO',
+            value: 'To do',
+          },
+          {
+            column: 'Doing',
+            status: 'DOING',
+            value: 'In Dev',
+          },
+        ]);
+      },
+    );
+  });
 
   it('should set warningMessage have value when the values in the import file are less than those in the response', () => {
     const mockUpdateMetricsStateArguments = {

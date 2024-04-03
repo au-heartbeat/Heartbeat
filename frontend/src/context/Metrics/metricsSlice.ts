@@ -278,7 +278,10 @@ const getSelectedDoneStatus = (
 };
 
 function resetReworkTimeSettingWhenMappingModified(preJiraColumnsValue: string[], state: ISavedMetricsSettingState) {
-  if (!_.isEqual(preJiraColumnsValue, getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings))) {
+  if (
+    !state.firstTimeRoadMetricData &&
+    !_.isEqual(preJiraColumnsValue, getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings))
+  ) {
     state.importedData.reworkTimesSettings = {
       reworkState: null,
       excludeStates: [],
