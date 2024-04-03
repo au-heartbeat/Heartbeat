@@ -247,8 +247,24 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [dispatch, pageType]);
 
   useEffect(() => {
+    const isReportHasError =
+      !!reportData?.reportMetricsError.boardMetricsError ||
+      !!reportData?.reportMetricsError.pipelineMetricsError ||
+      !!reportData?.reportMetricsError.sourceControlMetricsError;
+    const pipelineButtonDisabled =
+      !reportData ||
+      reportData.doraMetricsCompleted === false ||
+      reportData?.reportMetricsError?.pipelineMetricsError ||
+      reportData?.reportMetricsError?.sourceControlMetricsError;
+    const enableExportMetricData = !!(reportData?.overallMetricsCompleted && !isReportHasError);
+    const enableExportBoardData = !!(
+      reportData?.boardMetricsCompleted && !reportData?.reportMetricsError?.boardMetricsError
+    );
+    const enableExportPipelineData = !pipelineButtonDisabled;
+
     setExportValidityTimeMin(reportData?.exportValidityTime);
-    reportData && setAllMetricsCompleted(reportData.allMetricsCompleted);
+    reportData?.allMetricsCompleted &&
+      setAllMetricsCompleted(enableExportMetricData || enableExportBoardData || enableExportPipelineData);
   }, [dispatch, reportData]);
 
   useEffect(() => {
