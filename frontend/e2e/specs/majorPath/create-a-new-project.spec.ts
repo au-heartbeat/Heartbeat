@@ -1,4 +1,4 @@
-import { cycleTimeByStatusFixture } from '../fixtures/cycleTimeByStatus/cycleTimeByStatusFixture';
+import { cycleTimeByStatusFixture } from '../../fixtures/cycleTimeByStatus/cycleTimeByStatusFixture';
 import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../../fixtures/createNew/reportResult';
 import { config as metricsStepData } from '../../fixtures/createNew/metricsStep';
 import { config as configStepData } from '../../fixtures/createNew/configStep';
