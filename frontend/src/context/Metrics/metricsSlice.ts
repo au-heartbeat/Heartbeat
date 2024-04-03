@@ -644,8 +644,4 @@ export const selectStepWarningMessage = (state: RootState, id: number) => {
   return deploymentWarningMessage.find((item) => item.id === id)?.step;
 };
 
-export const selectFirstTimeRoadBoardData = (state: RootState) => {
-  return state.metrics.firstTimeRoadMetricData;
-};
-
 export default metricsSlice.reducer;

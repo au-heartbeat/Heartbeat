@@ -309,7 +309,7 @@ describe('getSortedAndDeduplicationBoardingMapping function', () => {
 });
 
 describe('convertCycleTimeSettings function', () => {
-  const cycleTimeByColumn = [
+  const mockCycleTime = [
     {
       column: 'TODO',
       status: 'TODO',
@@ -370,7 +370,7 @@ describe('convertCycleTimeSettings function', () => {
         DONE: 'Done',
       },
     ];
-    const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, cycleTimeByColumn);
+    const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, mockCycleTime);
     expect(result).toStrictEqual(expectResult);
   });
   it('convert cycle time settings correctly by column', () => {
@@ -397,7 +397,7 @@ describe('convertCycleTimeSettings function', () => {
         Done: 'Done',
       },
     ];
-    const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, cycleTimeByColumn);
+    const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, mockCycleTime);
     expect(result).toStrictEqual(expectResult);
   });
 });
