@@ -20,11 +20,10 @@ import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
 import { HttpStatusCode } from 'axios';
 import isEmpty from 'lodash/isEmpty';
-import { useMemo } from 'react';
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch();
-  const { isLoading, result: pipelineInfoResult, apiCallFunc } = useGetPipelineToolInfoEffect();
+  const { isLoading, result: pipelineInfoResult, apiCallFunc, isFirstFetch } = useGetPipelineToolInfoEffect();
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
   const pipelineCrews = useAppSelector(selectPipelineCrews);
@@ -33,10 +32,7 @@ export const DeploymentFrequencySettings = () => {
   const handleAddPipeline = () => {
     dispatch(addADeploymentFrequencySetting());
   };
-  const realDeploymentFrequencySettings = useMemo(
-    () => (isLoading ? [] : deploymentFrequencySettings),
-    [isLoading, deploymentFrequencySettings],
-  );
+  const realDeploymentFrequencySettings = isFirstFetch ? [] : deploymentFrequencySettings;
   const handleRemovePipeline = (id: number) => {
     dispatch(deleteADeploymentFrequencySetting(id));
     dispatch(deleteMetricsPipelineFormMeta(id));
@@ -63,10 +59,10 @@ export const DeploymentFrequencySettings = () => {
               key={deploymentFrequencySetting.id}
               type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
               pipelineSetting={deploymentFrequencySetting}
-              isShowRemoveButton={deploymentFrequencySettings.length > 1}
+              isShowRemoveButton={realDeploymentFrequencySettings.length > 1}
               onRemovePipeline={(id) => handleRemovePipeline(id)}
               onUpdatePipeline={(id, label, value) => handleUpdatePipeline(id, label, value)}
-              isDuplicated={getDuplicatedPipeLineIds(deploymentFrequencySettings).includes(
+              isDuplicated={getDuplicatedPipeLineIds(realDeploymentFrequencySettings).includes(
                 deploymentFrequencySetting.id,
               )}
             />

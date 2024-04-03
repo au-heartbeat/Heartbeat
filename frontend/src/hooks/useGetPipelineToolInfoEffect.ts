@@ -16,6 +16,7 @@ export interface IUseVerifyPipeLineToolStateInterface {
   result: IGetPipelineToolInfoResult;
   isLoading: boolean;
   apiCallFunc: () => void;
+  isFirstFetch: boolean;
 }
 
 export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInterface => {
@@ -26,6 +27,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   };
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFirstFetch, setIsFirstFetch] = useState(true);
   const apiTouchedRef = useRef(false);
   const [info, setInfo] = useState<IGetPipelineToolInfoResult>(defaultInfoStructure);
   const pipelineToolVerified = useAppSelector(isPipelineToolVerified);
@@ -50,6 +52,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
       pipelineToolVerified && dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
     } finally {
       setIsLoading(false);
+      setIsFirstFetch(false);
     }
   }, [
     dispatch,
@@ -72,6 +75,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   return {
     result: info,
     isLoading,
+    isFirstFetch,
     apiCallFunc: getPipelineToolInfo,
   };
 };
