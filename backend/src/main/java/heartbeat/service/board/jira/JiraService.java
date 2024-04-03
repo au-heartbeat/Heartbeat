@@ -137,15 +137,17 @@ public class JiraService {
 		verifyBoardTypeIsJira(boardType);
 
 		try {
-			jiraFeignClient.getDomain(baseUrl);
+			String test = jiraFeignClient.getDashboard(baseUrl, boardVerifyRequestParam.getToken());
+			System.out.println(test);
+			System.out.println("asdfasdfasdfasdfasdfasdfasdf");
 		}
 		catch (NotFoundException e) {
 			System.out.println(e);
+			System.out.println("===============================================");
+			throw new NotFoundException("site is incorrect");
 		}
 
 		try {
-			System.out.println(boardVerifyRequestParam.getBoardId());
-			System.out.println(boardVerifyRequestParam.getToken());
 
 			JiraBoardVerifyDTO jiraBoardVerifyDTO = jiraFeignClient.getBoard(baseUrl,
 					boardVerifyRequestParam.getBoardId(), boardVerifyRequestParam.getToken());
