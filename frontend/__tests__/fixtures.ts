@@ -668,3 +668,5 @@ export const TIME_RANGE_ERROR_MESSAGE = {
   START_DATE_INVALID_TEXT: 'Start date is invalid',
   END_DATE_INVALID_TEXT: 'End date is invalid',
 };
+
+export const COMMON_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';

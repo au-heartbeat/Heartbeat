@@ -12,6 +12,7 @@ import {
   STEPPER,
   TEST_PROJECT_NAME,
   VELOCITY,
+  COMMON_TIME_FORMAT,
 } from '../../fixtures';
 import {
   updateBoard,
@@ -324,8 +325,8 @@ describe('MetricsStepper', () => {
       calendarType: 'Regular Calendar(Weekend Considered)',
       dateRange: [
         {
-          endDate: dayjs().endOf('date').add(0, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          startDate: dayjs().startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          endDate: dayjs().endOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
+          startDate: dayjs().startOf('date').format(COMMON_TIME_FORMAT),
         },
       ],
       metrics: ['Velocity'],
@@ -359,8 +360,8 @@ describe('MetricsStepper', () => {
       calendarType: 'Regular Calendar(Weekend Considered)',
       dateRange: [
         {
-          endDate: dayjs().endOf('date').add(0, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          startDate: dayjs().startOf('date').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          endDate: dayjs().endOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
+          startDate: dayjs().startOf('date').format(COMMON_TIME_FORMAT),
         },
       ],
       metrics: ['Velocity'],
