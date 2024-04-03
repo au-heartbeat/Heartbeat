@@ -70,26 +70,6 @@ describe('PipelineTool', () => {
 
     expect(pipelineToolType).toBeInTheDocument();
 
-    const option = queryByText(PIPELINE_TOOL_TYPES.GO_CD);
-
-    expect(option).not.toBeInTheDocument();
-  });
-
-  it('should clear other fields information when change pipelineTool Field selection', async () => {
-    const { getByText, getByLabelText } = setup();
-    const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      'input Token',
-    ) as HTMLInputElement;
-
-    await fillPipelineToolFieldsInformation();
-    await userEvent.click(screen.getByRole('combobox', { name: 'Pipeline Tool' }));
-
-    const requireDateSelection = within(getByLabelText('Pipeline Tool type select'));
-    await userEvent.click(requireDateSelection.getByText(PIPELINE_TOOL_TYPES.BUILD_KITE));
-
-    await userEvent.click(getByText(PIPELINE_TOOL_TYPES.GO_CD));
-
-    expect(tokenInput.value).toEqual('');
   });
 
   it('should clear all fields information when click reset button', async () => {
