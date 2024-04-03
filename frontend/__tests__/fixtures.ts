@@ -523,6 +523,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
   doraMetricsCompleted: true,
   overallMetricsCompleted: true,
   allMetricsCompleted: true,
+  hasCsvFileCreateSuccessful: true,
   reportMetricsError,
 };
 
@@ -545,6 +546,7 @@ export const EMPTY_REPORT_VALUES: ReportResponseDTO = {
   doraMetricsCompleted: false,
   overallMetricsCompleted: false,
   allMetricsCompleted: false,
+  hasCsvFileCreateSuccessful: false,
   reportMetricsError,
 };
 
