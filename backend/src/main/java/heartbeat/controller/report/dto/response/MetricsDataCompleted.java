@@ -21,7 +21,7 @@ public class MetricsDataCompleted {
 
 	private Boolean overallMetricCompleted;
 
-	private Boolean hasCsvFileCreateSuccessful;
+	private Boolean isSuccessfulCreateCsvFile;
 
 	public Boolean boardMetricsCompleted() {
 		return boardMetricsCompleted;
@@ -35,8 +35,8 @@ public class MetricsDataCompleted {
 		return overallMetricCompleted;
 	}
 
-	public Boolean hasCsvFileCreateSuccessful() {
-		return hasCsvFileCreateSuccessful;
+	public Boolean isSuccessfulCreateCsvFile() {
+		return isSuccessfulCreateCsvFile;
 	}
 
 	public Boolean allMetricsCompleted() {

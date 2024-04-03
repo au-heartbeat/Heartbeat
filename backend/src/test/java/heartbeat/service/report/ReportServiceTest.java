@@ -105,7 +105,7 @@ public class ReportServiceTest {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.overallMetricCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
@@ -134,7 +134,7 @@ public class ReportServiceTest {
 			MetricsDataCompleted expected = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of(DORA));
@@ -165,7 +165,7 @@ public class ReportServiceTest {
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of(BOARD, DORA));
@@ -197,7 +197,7 @@ public class ReportServiceTest {
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of(BOARD, DORA));
@@ -231,7 +231,7 @@ public class ReportServiceTest {
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of(BOARD, DORA));
@@ -266,7 +266,7 @@ public class ReportServiceTest {
 				.boardMetricsCompleted(false)
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
 			request.setMetricTypes(List.of(BOARD, DORA));
@@ -301,7 +301,7 @@ public class ReportServiceTest {
 				.boardMetricsCompleted(true)
 				.doraMetricsCompleted(false)
 				.overallMetricCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(MetricsDataCompleted.builder()
 				.boardMetricsCompleted(true)

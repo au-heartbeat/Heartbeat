@@ -189,7 +189,7 @@ class AsyncMetricsDataHandlerTest {
 			String currentTime = Long.toString(currentTimeMillis);
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(false)
-				.hasCsvFileCreateSuccessful(false)
+				.isSuccessfulCreateCsvFile(false)
 				.build();
 			asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
 
@@ -197,7 +197,7 @@ class AsyncMetricsDataHandlerTest {
 
 			MetricsDataCompleted completed = asyncMetricsDataHandler.getMetricsDataCompleted(currentTime);
 			assertTrue(completed.doraMetricsCompleted());
-			assertFalse(completed.hasCsvFileCreateSuccessful());
+			assertFalse(completed.isSuccessfulCreateCsvFile());
 			Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
 			assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
 		}

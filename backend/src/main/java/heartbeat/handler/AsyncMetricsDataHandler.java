@@ -48,7 +48,7 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 			throw new GenerateReportException(GENERATE_REPORT_ERROR);
 		}
 		if (isCreateCsvSuccess) {
-			previousMetricsCompleted.setHasCsvFileCreateSuccessful(true);
+			previousMetricsCompleted.setIsSuccessfulCreateCsvFile(true);
 		}
 		switch (metricType) {
 			case BOARD -> previousMetricsCompleted.setBoardMetricsCompleted(true);

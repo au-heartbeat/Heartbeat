@@ -395,7 +395,7 @@ public class GenerateReporterService {
 			.doraMetricsCompleted(reportReadyStatus.doraMetricsCompleted())
 			.overallMetricsCompleted(reportReadyStatus.overallMetricCompleted())
 			.allMetricsCompleted(reportReadyStatus.allMetricsCompleted())
-			.hasCsvFileCreateSuccessful(reportReadyStatus.hasCsvFileCreateSuccessful())
+			.isSuccessfulCreateCsvFile(reportReadyStatus.isSuccessfulCreateCsvFile())
 			.reportMetricsError(reportMetricsError)
 			.build();
 	}
