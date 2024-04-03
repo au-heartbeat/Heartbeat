@@ -248,7 +248,7 @@ export const metricsSlice = createSlice({
         return deploymentFrequencySetting.id === updateId
           ? {
               ...deploymentFrequencySetting,
-              [label === 'Steps' ? 'step' : camelCase(label)]: value,
+              [label === 'Step' ? 'step' : camelCase(label)]: value,
             }
           : deploymentFrequencySetting;
       });
@@ -263,7 +263,6 @@ export const metricsSlice = createSlice({
     },
 
     updateMetricsImportedData: (state, action) => {
-      console.log(234);
       const {
         crews,
         cycleTime,
@@ -400,7 +399,6 @@ export const metricsSlice = createSlice({
                 const matchedPipelineName = filteredPipelineNames(organization).includes(pipelineName)
                   ? pipelineName
                   : '';
-                console.log('matchedPipelineName', cloneDeep(matchedPipelineName));
                 return {
                   id,
                   organization: matchedOrganization,
