@@ -220,7 +220,6 @@ export const metricsSlice = createSlice({
       state.users = action.payload;
     },
     savePipelineCrews: (state, action) => {
-      console.log('savePipelineCrews', action.payload);
       state.pipelineCrews = action.payload;
     },
     updateCycleTimeSettings: (state, action) => {
@@ -411,7 +410,6 @@ export const metricsSlice = createSlice({
                 };
               })
             : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
-        console.log('res222', res);
         return res;
       };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
@@ -460,12 +458,12 @@ export const metricsSlice = createSlice({
 
       const getPipelineSettings = (pipelines: IPipelineConfig[]) => {
         return pipelines.map((pipeline) => {
-          const matchedStep = validStep(pipeline.step);
+          const filterValidStep = validStep(pipeline.step);
           return pipeline.id === id
             ? {
                 ...pipeline,
-                step: matchedStep,
-                branches: matchedStep ? validBranches(pipeline.branches.length > 0 ? pipeline.branches : []) : [],
+                step: filterValidStep,
+                branches: validBranches(pipeline.branches.length > 0 ? pipeline.branches : []),
               }
             : pipeline;
         });
