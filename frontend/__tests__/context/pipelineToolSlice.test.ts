@@ -13,6 +13,7 @@ import { MOCK_BUILD_KITE_VERIFY_RESPONSE, PIPELINE_TOOL_TYPES } from '../fixture
 import configReducer from '@src/context/config/configSlice';
 import initialConfigState from '../initialConfigState';
 import { setupStore } from '../utils/setupStoreUtil';
+import dayjs from 'dayjs';
 
 describe('pipelineTool reducer', () => {
   const MOCK_PIPElINE_TOOL_VERIFY_RESPONSE = {
@@ -238,11 +239,11 @@ describe('pipelineTool reducer', () => {
         buildId: 'mockId',
         organizationId: 'mockOrgId',
         params: {
-          endTime: 1679155199999,
+          endTime: dayjs(MOCK_DATE_RANGE[0].endDate).endOf('date').valueOf(),
           orgName: 'mockOrgName',
           pipelineName: 'mockName',
           repository: 'mockRepository',
-          startTime: 1677859200000,
+          startTime: dayjs(MOCK_DATE_RANGE[0].startDate).startOf('date').valueOf(),
         },
         pipelineType: 'BuildKite',
         token: '',
@@ -254,11 +255,11 @@ describe('pipelineTool reducer', () => {
         buildId: '',
         organizationId: '',
         params: {
-          endTime: 1679155199999,
+          endTime: dayjs(MOCK_DATE_RANGE[0].endDate).endOf('date').valueOf(),
           orgName: '',
           pipelineName: '',
           repository: '',
-          startTime: 1677859200000,
+          startTime: dayjs(MOCK_DATE_RANGE[0].startDate).startOf('date').valueOf(),
         },
         pipelineType: 'BuildKite',
         token: '',

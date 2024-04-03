@@ -1,11 +1,11 @@
-import { DateRangePickerGroupContainer, AddButton } from '@src/containers/ConfigStep/DateRangePicker/style';
+import { DateRangePickerGroupContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker/DateRangePicker';
 import { ADD_TIME_RANGE_BUTTON_TEXT, MAX_TIME_RANGE_AMOUNT } from '@src/constants/resources';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
+import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Add } from '@mui/icons-material';
 
 export const DateRangePickerGroup = () => {
   const dispatch = useAppDispatch();
@@ -22,13 +22,14 @@ export const DateRangePickerGroup = () => {
           <DateRangePicker startDate={startDate} endDate={endDate} index={index} key={index} />
         ))}
         <AddButton
-          aria-label='Button for adding date range'
           disabled={isAddButtonDisabled}
-          startIcon={<Add />}
+          aria-label='Button for adding date range'
           onClick={addRangeHandler}
-        >
-          {ADD_TIME_RANGE_BUTTON_TEXT}
-        </AddButton>
+          text={ADD_TIME_RANGE_BUTTON_TEXT}
+          sx={{
+            mt: '1.5rem',
+          }}
+        />
       </LocalizationProvider>
     </DateRangePickerGroupContainer>
   );
