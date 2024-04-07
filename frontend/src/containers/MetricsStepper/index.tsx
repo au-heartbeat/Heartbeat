@@ -1,25 +1,4 @@
 import {
-  selectConfig,
-  selectMetrics,
-  selectPipelineList,
-  updateBoard,
-  updateBoardVerifyState,
-  updatePipelineTool,
-  updatePipelineToolVerifyState,
-  updateSourceControl,
-  updateSourceControlVerifyState,
-} from '@src/context/config/configSlice';
-import {
-  BOARD_TYPES,
-  CYCLE_TIME_SETTINGS_TYPES,
-  DONE,
-  METRICS_CONSTANTS,
-  PIPELINE_TOOL_TYPES,
-  REQUIRED_DATA,
-  SOURCE_CONTROL_TYPES,
-  TIPS,
-} from '@src/constants/resources';
-import {
   BackButton,
   ButtonContainer,
   MetricsStepperContent,
@@ -34,9 +13,11 @@ import {
   selectCycleTimeSettings,
   selectMetricsContent,
 } from '@src/context/Metrics/metricsSlice';
+import { CYCLE_TIME_SETTINGS_TYPES, DONE, METRICS_CONSTANTS, REQUIRED_DATA, TIPS } from '@src/constants/resources';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
+import { selectConfig, selectMetrics, selectPipelineList } from '@src/context/config/configSlice';
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
 import { ConfirmDialog } from '@src/containers/MetricsStepper/ConfirmDialog';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
