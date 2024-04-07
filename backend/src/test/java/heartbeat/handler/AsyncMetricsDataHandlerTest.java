@@ -183,8 +183,7 @@ class AsyncMetricsDataHandlerTest {
 		}
 
 		@Test
-		void shouldUpdateDoraMetricDataWhenMetricIsDoraAndCreateCsvFileUnsuccessfully()
-				throws IOException {
+		void shouldUpdateDoraMetricDataWhenMetricIsDoraAndCreateCsvFileUnsuccessfully() throws IOException {
 			long currentTimeMillis = System.currentTimeMillis();
 			String currentTime = Long.toString(currentTimeMillis);
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
