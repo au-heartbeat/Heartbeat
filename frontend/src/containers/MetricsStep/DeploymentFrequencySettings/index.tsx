@@ -42,8 +42,6 @@ export const DeploymentFrequencySettings = () => {
     dispatch(updateDeploymentFrequencySettings({ updateId: id, label, value }));
   };
 
-  console.log('realDeploymentFrequencySettings', realDeploymentFrequencySettings)
-
   return (
     <>
       {isLoading && <Loading message={'pipeline loading'} />}

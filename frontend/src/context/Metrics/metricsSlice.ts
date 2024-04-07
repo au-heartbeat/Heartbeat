@@ -10,6 +10,7 @@ import _, { omit, uniqWith, isEqual, intersection } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
+import { every } from 'lodash/every';
 
 export interface IPipelineConfig {
   id: number;
@@ -395,8 +396,12 @@ export const metricsSlice = createSlice({
           res.map((value) => omit(value, ['id'])),
           isEqual,
         );
-        return itemsOmitId.length < res.length
-          ? itemsOmitId.map((item, index) => {
+        let removeEmpty = itemsOmitId;
+        if (itemsOmitId.length > 1) {
+          removeEmpty = itemsOmitId.filter((item) => !Object.values(item).every((value) => value === '' || !value?.length));
+        }
+        return removeEmpty.length < res.length
+          ? removeEmpty.map((item, index) => {
               return {
                 id: index,
                 ...item,
