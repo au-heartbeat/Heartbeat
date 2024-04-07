@@ -7,6 +7,7 @@ import {
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import CycleTimeTable from '@src/containers/MetricsStep/CycleTime/Table';
+import { CYCLE_TIME_SETTINGS_TYPES, TIPS } from '@src/constants/resources';
 import FlagCard from '@src/containers/MetricsStep/CycleTime/FlagCard';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { MESSAGE, TIPS } from '@src/constants/resources';
