@@ -9,7 +9,7 @@ interface IBoardData {
   boardId: string;
   email: string;
   site: string;
-  token: string;
+  token: string | undefined;
 }
 
 interface IPipelineToolData {

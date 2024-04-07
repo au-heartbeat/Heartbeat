@@ -5,25 +5,25 @@ import com.google.gson.JsonElement;
 import com.opencsv.CSVWriter;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.request.ReportType;
-import heartbeat.controller.report.dto.response.AvgDevChangeFailureRate;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
-import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
+import heartbeat.controller.report.dto.response.AvgDevChangeFailureRate;
 import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
-import heartbeat.controller.report.dto.response.DevChangeFailureRate;
-import heartbeat.controller.report.dto.response.DevChangeFailureRateOfPipeline;
 import heartbeat.controller.report.dto.response.Classification;
 import heartbeat.controller.report.dto.response.ClassificationNameValuePair;
 import heartbeat.controller.report.dto.response.CycleTime;
 import heartbeat.controller.report.dto.response.CycleTimeForSelectedStepItem;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequencyOfPipeline;
+import heartbeat.controller.report.dto.response.DevChangeFailureRate;
+import heartbeat.controller.report.dto.response.DevChangeFailureRateOfPipeline;
+import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
 import heartbeat.controller.report.dto.response.LeadTimeInfo;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Rework;
@@ -43,6 +43,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +52,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
+import static heartbeat.util.DecimalUtil.formatDecimalFour;
 import static heartbeat.util.TimeUtil.convertToSimpleISOFormat;
 import static java.util.concurrent.TimeUnit.HOURS;
 
@@ -483,7 +486,7 @@ public class CSVFileGenerator {
 		rows.add(new String[] { REWORK_FIELD, "Total rework times", String.valueOf(rework.getTotalReworkTimes()) });
 		rows.add(new String[] { REWORK_FIELD, "Total rework cards", String.valueOf(rework.getTotalReworkCards()) });
 		rows.add(new String[] { REWORK_FIELD, "Rework cards ratio(Total rework cards/Throughput)",
-				String.valueOf(DecimalUtil.formatDecimalTwo(rework.getReworkCardsRatio() * 100)) });
+				formatDecimalFour(rework.getReworkCardsRatio()) });
 		return rows;
 	}
 
@@ -570,7 +573,7 @@ public class CSVFileGenerator {
 			.getDevChangeFailureRateOfPipelines();
 		devChangeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Dev change failure rate",
 				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev change failure rate",
-				DecimalUtil.formatDecimalTwo(pipeline.getFailureRate() * 100) }));
+				DecimalUtil.formatDecimalFour(pipeline.getFailureRate()) }));
 
 		AvgDevChangeFailureRate avgDevChangeFailureRate = devChangeFailureRate.getAvgDevChangeFailureRate();
 		if (devChangeFailureRateOfPipelines.size() > 1)
