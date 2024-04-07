@@ -27,7 +27,6 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   };
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [isFirstFetch, setIsFirstFetch] = useState(true);
   const apiTouchedRef = useRef(false);
   const [info, setInfo] = useState<IGetPipelineToolInfoResult>(defaultInfoStructure);
   const pipelineToolVerified = useAppSelector(isPipelineToolVerified);
@@ -36,6 +35,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   const dateRange = useAppSelector(selectDateRange);
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetPipelineConfig = useAppSelector(selectShouldGetPipelineConfig);
+  const [isFirstFetch, setIsFirstFetch] = useState(shouldLoad);
 
   const getPipelineToolInfo = useCallback(async () => {
     const params = {
