@@ -43,6 +43,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -571,7 +573,7 @@ public class CSVFileGenerator {
 			.getDevChangeFailureRateOfPipelines();
 		devChangeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Dev change failure rate",
 				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev change failure rate",
-				formatDecimalFour(pipeline.getFailureRate()) }));
+				DecimalUtil.formatDecimalFour(pipeline.getFailureRate()) }));
 
 		AvgDevChangeFailureRate avgDevChangeFailureRate = devChangeFailureRate.getAvgDevChangeFailureRate();
 		if (devChangeFailureRateOfPipelines.size() > 1)
