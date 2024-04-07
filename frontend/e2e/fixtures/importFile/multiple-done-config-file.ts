@@ -68,29 +68,6 @@ export const importMultipleDoneProjectFromFile = {
         Done: 'Done',
       },
     ],
-    jiraColumnsEmptyByStatus: [
-      {
-        TODO: '----',
-      },
-      {
-        Doing: '----',
-      },
-      {
-        Blocked: '----',
-      },
-      {
-        Review: '----',
-      },
-      {
-        'WAIT FOR TEST': '----',
-      },
-      {
-        Testing: '----',
-      },
-      {
-        Done: '----',
-      },
-    ],
     treatFlagCardAsBlock: true,
   },
   doneStatus: ['DONE'],

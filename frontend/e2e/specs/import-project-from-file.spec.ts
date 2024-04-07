@@ -5,9 +5,6 @@ import { config as metricsStepData } from '../fixtures/createNew/metricsStep';
 import { ProjectCreationType } from 'e2e/pages/metrics/ReportStep';
 import { test } from '../fixtures/testWithExtendFixtures';
 import { clearTempDir } from 'e2e/utils/clearTempDir';
-import {
-  config as metricsStepData,
-} from "../fixtures/createNew/metricsStep";
 
 test.beforeAll(async () => {
   await clearTempDir();
