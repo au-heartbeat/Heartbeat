@@ -13,7 +13,6 @@ import {
 } from '@src/constants/resources';
 import {
   initDeploymentFrequencySettings,
-  saveUsers,
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
