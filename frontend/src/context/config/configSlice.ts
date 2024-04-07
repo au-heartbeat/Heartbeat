@@ -13,8 +13,8 @@ import { IBoardState, initialBoardState } from '@src/context/config/board/boardS
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
+import { isArray, uniq } from 'lodash';
 import merge from 'lodash/merge';
-import { isArray } from 'lodash';
 import dayjs from 'dayjs';
 
 export type TDateRange = {
@@ -179,10 +179,11 @@ export const configSlice = createSlice({
                 ...pipeline,
                 branches: branches,
                 steps: steps,
+                crews: pipelineCrews,
               }
             : pipeline,
       );
-      state.pipelineTool.verifiedResponse.pipelineCrews = pipelineCrews;
+      // state.pipelineTool.verifiedResponse.pipelineCrews = pipelineCrews;
     },
     updateSourceControlVerifyState: (state, action) => {
       state.sourceControl.isVerified = action.payload;
@@ -281,6 +282,7 @@ export const selectSteps = (state: RootState, organizationName: string, pipeline
     (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organizationName,
   )?.steps ?? [];
 
-export const selectPipelineCrews = (state: RootState) => state.config.pipelineTool.verifiedResponse.pipelineCrews;
+export const selectPipelineCrews = (state: RootState) =>
+  uniq(state.config.pipelineTool.verifiedResponse.pipelineList.map((i) => i.crews).flat());
 
 export default configSlice.reducer;
