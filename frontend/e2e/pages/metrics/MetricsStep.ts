@@ -61,6 +61,7 @@ export class MetricsStep {
   readonly pipelineBranchSelectIndicator: Locator;
   readonly pipelineStepsErrorMessage: Locator;
   readonly pipelineBranchesErrorMessage: Locator;
+  readonly pipelineTokenWithNoOrgErrorMessage: Locator;
   readonly pipelineNewPipelineButton: Locator;
   readonly pipelineCrewSettingsLabel: Locator;
   readonly pipelineCrewSettingChipsContainer: Locator;
@@ -170,6 +171,7 @@ export class MetricsStep {
       .filter({ hasText: /.+/ });
     this.pipelineStepsErrorMessage = page.getByText('No steps for this pipeline!');
     this.pipelineBranchesErrorMessage = page.getByText('The branch has been deleted!');
+    this.pipelineTokenWithNoOrgErrorMessage = this.pipelineSettingSection.getByLabel('Error UI for pipeline settings');
     this.pipelineBranchSelectIndicator = page.getByRole('progressbar');
     this.pipelineNewPipelineButton = page.getByRole('button', { name: 'New Pipeline' });
     this.pipelineCrewSettingsLabel = this.pipelineSettingSection
@@ -712,10 +714,8 @@ export class MetricsStep {
   }
 
   async checkErrorMessageForPipelineSettings() {
-    await expect(this.pipelineSettingSection.getByLabel('Error UI for pipeline settings')).toContainText(
-      'No pipeline!',
-    );
-    await expect(this.pipelineSettingSection.getByLabel('Error UI for pipeline settings')).toContainText(
+    await expect(this.pipelineTokenWithNoOrgErrorMessage).toContainText('No pipeline!');
+    await expect(this.pipelineTokenWithNoOrgErrorMessage).toContainText(
       'Please go back to the previous page and change your pipeline token with correct access permission.',
     );
   }

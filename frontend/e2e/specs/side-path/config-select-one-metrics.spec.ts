@@ -27,7 +27,7 @@ test('Only select velocity metrics on config page', async ({ homePage, configSte
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
   await configStep.checkSourceControlFormInvisible();
-  await configStep.fillAndverifyBoardConfig(configStepData.board);
+  await configStep.fillAndVerifyBoardConfig(configStepData.board);
   await configStep.validateNextButtonClickable();
   await configStep.goToMetrics();
 
@@ -65,7 +65,7 @@ test('Only select cycle time metrics on config page', async ({ homePage, configS
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
   await configStep.checkSourceControlFormInvisible();
-  await configStep.fillAndverifyBoardConfig(configStepData.board);
+  await configStep.fillAndVerifyBoardConfig(configStepData.board);
   await configStep.validateNextButtonClickable();
   await configStep.goToMetrics();
 
@@ -103,7 +103,7 @@ test('Only select classification metrics on config page', async ({ homePage, con
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
   await configStep.checkSourceControlFormInvisible();
-  await configStep.fillAndverifyBoardConfig(configStepData.board);
+  await configStep.fillAndVerifyBoardConfig(configStepData.board);
   await configStep.validateNextButtonClickable();
   await configStep.goToMetrics();
 

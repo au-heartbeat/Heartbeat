@@ -157,7 +157,7 @@ export class ConfigStep {
     await expect(this.stepTitle).toHaveClass(/Mui-active/);
   }
 
-  async remindImportedDataNotmatched() {
+  async checkRemindImportedDataNotMatched() {
     await expect(this.page.getByRole('alert')).toContainText(
       'Imported data is not perfectly matched. Please review carefully before going next!',
     );
@@ -348,7 +348,7 @@ export class ConfigStep {
     await this.boardTokenInput.fill(token!);
   }
 
-  async fillAndverifyBoardConfig(boardData: IBoardData) {
+  async fillAndVerifyBoardConfig(boardData: IBoardData) {
     await this.fillBoardConfigForm(boardData);
 
     await expect(this.boardVerifyButton).toBeEnabled();
@@ -358,7 +358,7 @@ export class ConfigStep {
     await expect(this.boardVerifiedButton).toBeVisible();
   }
 
-  async fillAndverifyBoardTokenConfig(token: string) {
+  async fillAndVerifyBoardTokenConfig(token: string) {
     await this.boardTokenInput.fill(token);
 
     await expect(this.boardVerifyButton).toBeEnabled();
@@ -439,7 +439,7 @@ export class ConfigStep {
     await this.boardVerifyButton.click();
   }
 
-  async verifyAllConfigInvalid() {
+  async checkAllConfigInvalid() {
     await expect(this.boardTokenErrorMessage).toBeVisible();
     await expect(this.pipelineTokenErrorMessage).toBeVisible();
     await expect(this.sourceControlTokenErrorMessage).toBeVisible();

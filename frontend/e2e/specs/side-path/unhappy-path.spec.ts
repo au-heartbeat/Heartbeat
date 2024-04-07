@@ -11,7 +11,11 @@ test.beforeAll(async () => {
   await clearTempDir();
 });
 
-test('Check error UI for pipeline with no org config', async ({ homePage, configStep, metricsStep }) => {
+test('Error UI should be pipeline with no org config when pipeline token without org', async ({
+  homePage,
+  configStep,
+  metricsStep,
+}) => {
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/pipeline-no-org-config-file.json');
@@ -39,13 +43,13 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/unhappy-path-config-file.json');
-  await configStep.remindImportedDataNotmatched();
+  await configStep.checkRemindImportedDataNotMatched();
   await configStep.checkProjectName(importUnhappyPathProjectFromFile.projectName);
   await configStep.verifyAllConfig();
-  await configStep.verifyAllConfigInvalid();
+  await configStep.checkAllConfigInvalid();
   await configStep.validateNextButtonNotClickable();
   await configStep.typeInProjectName(modifiedCorrectProjectFromFile.projectName);
-  await configStep.fillAndverifyBoardTokenConfig(modifiedCorrectProjectFromFile.board.token);
+  await configStep.fillAndVerifyBoardTokenConfig(modifiedCorrectProjectFromFile.board.token);
   await configStep.fillAndVerifySourceControlForm(modifiedCorrectProjectFromFile.sourceControl);
   await configStep.fillAndVerifyPipelineToolForm(modifiedCorrectProjectFromFile.pipelineTool);
 
