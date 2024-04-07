@@ -6,7 +6,7 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
-import _, { cloneDeep, intersection } from 'lodash';
+import _, { omit, uniqWith, isEqual, intersection } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
@@ -389,6 +389,22 @@ export const metricsSlice = createSlice({
         pipelineList
           .filter((pipeline: pipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase())
           .map((item: pipeline) => item.name);
+
+      const uniqueResponse = (res: IPipelineConfig[]) => {
+        const itemsOmitId = uniqWith(
+          res.map((value) => omit(value, ['id'])),
+          isEqual,
+        );
+        return itemsOmitId.length < res.length
+          ? itemsOmitId.map((item, index) => {
+              return {
+                id: index,
+                ...item,
+              };
+            })
+          : res;
+      };
+
       const getValidPipelines = (pipelines: IPipelineConfig[]) => {
         const hasPipeline = pipelines.filter(({ id }) => id !== undefined).length;
         const res =
@@ -408,7 +424,7 @@ export const metricsSlice = createSlice({
                 };
               })
             : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
-        return res;
+        return uniqueResponse(res);
       };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
         const orgWarning = orgNames.some((i) => (i as string).toLowerCase() === organization.toLowerCase())
