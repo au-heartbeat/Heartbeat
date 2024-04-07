@@ -8,13 +8,15 @@ import { useAppSelector } from '@src/hooks';
 
 export const CycleTime = () => {
   const warningMessage = useAppSelector(selectCycleTimeWarningMessage);
+  const { cycleTimeSettings } = useAppSelector(selectMetricsContent);
+  const hasBlockColumn = cycleTimeSettings.some(({ column }) => column === 'Blocked');
 
   return (
     <div aria-label='Cycle time settings section'>
       <SectionTitleWithTooltip title='Board mappings' tooltipText={TIPS.CYCLE_TIME} />
       {warningMessage && <WarningNotification message={warningMessage} />}
       <CycleTimeTable />
-      <FlagCard />
+      {hasBlockColumn || <FlagCard />}
     </div>
   );
 };
