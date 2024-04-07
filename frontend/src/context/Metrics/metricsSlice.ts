@@ -278,15 +278,16 @@ const getSelectedDoneStatus = (
 };
 
 function resetReworkTimeSettingWhenMappingModified(preJiraColumnsValue: string[], state: ISavedMetricsSettingState) {
-  if (
-    !state.firstTimeRoadMetricData &&
-    !_.isEqual(preJiraColumnsValue, getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings))
-  ) {
-    state.importedData.reworkTimesSettings = {
-      reworkState: null,
-      excludeStates: [],
-    };
+  const boardingMapping = getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings).filter(
+    (item) => item !== METRICS_CONSTANTS.cycleTimeEmptyStr,
+  );
+  if (state.firstTimeRoadMetricData || _.isEqual(preJiraColumnsValue, boardingMapping)) {
+    return;
   }
+  state.importedData.reworkTimesSettings = {
+    reworkState: null,
+    excludeStates: [],
+  };
 }
 
 export const metricsSlice = createSlice({
@@ -376,7 +377,9 @@ export const metricsSlice = createSlice({
       const { targetFields, users, jiraColumns, isProjectCreated, ignoredTargetFields } = action.payload;
       const { importedCrews, importedClassification, importedCycleTime, importedDoneStatus, importedAssigneeFilter } =
         state.importedData;
-      const preJiraColumnsValue = getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings);
+      const preJiraColumnsValue = getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings).filter(
+        (item) => item !== METRICS_CONSTANTS.cycleTimeEmptyStr,
+      );
       state.users = isProjectCreated
         ? setCreateSelectUsers(state, users)
         : setImportSelectUsers(state, users, importedCrews);
