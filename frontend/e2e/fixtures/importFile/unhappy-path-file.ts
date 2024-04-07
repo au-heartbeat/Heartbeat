@@ -1,5 +1,5 @@
 export const importInputWrongProjectFromFile = {
-  projectName: 'Heartbeat Metrics',
+  projectName: '',
   dateRange: {
     startDate: '2024-02-12T00:00:00.000+08:00',
     endDate: '2024-02-16T23:59:59.999+08:00',

@@ -18,7 +18,7 @@
     "coverage:silent": "jest --env=jsdom --watchAll=false --coverage --silent",
     "pre-e2e": "./scripts/generate-config-files.sh",
     "e2e": "pnpm exec playwright test",
-    "e2e:major": "pnpm run pre-e2e && pnpm exec playwright test /majorPath --project='Google Chrome'",
+    "e2e:major": "pnpm run pre-e2e && pnpm exec playwright test /major-path --project='Google Chrome'",
     "e2e:ci": "pnpm run env:ci pnpm run pre-e2e && pnpm run env:ci pnpm run e2e",
     "e2e:major-ci": "pnpm run env:ci pnpm run e2e:major",
     "e2e:with-server": "pnpm run pre-e2e && ts-node --project tsconfig.scripts.json ./scripts/runE2eWithServer.ts 'pnpm run e2e:local'",
