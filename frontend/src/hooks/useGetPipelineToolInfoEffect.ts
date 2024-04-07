@@ -41,8 +41,8 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     const params = {
       type: restoredPipelineTool.type,
       token: restoredPipelineTool.token,
-      startTime: dateRange.startDate,
-      endTime: dateRange.endDate,
+      startTime: dateRange[0]?.startDate,
+      endTime: dateRange[0]?.endDate,
     };
     setIsLoading(true);
     try {
@@ -58,8 +58,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     dispatch,
     isProjectCreated,
     pipelineToolVerified,
-    dateRange.startDate,
-    dateRange.endDate,
+    dateRange,
     restoredPipelineTool.type,
     restoredPipelineTool.token,
   ]);
