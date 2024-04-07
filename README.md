@@ -355,10 +355,6 @@ _Image 3-25，Classification Report_
 
 ### 3.4.4 Rework
 
-It will show the rework data of board on your selection on `Rework times settins` in metrics page (image 3-22).
-
-If "to do" is selected in the "Rework to which column", we will count the number of times the subsequent options in the options are reworked back to the "to do" state.
-
 - Definition for ‘Rework': cards roll back from a later state to a previous state, for example, one card move from 'testing' state to 'in dev' state, which means this card is reworked.
 - Formula for 'Total rework times': the total number of rework times in all done cards
 - Formula for 'Total rework cards': the total number of rework cards in all done cards
