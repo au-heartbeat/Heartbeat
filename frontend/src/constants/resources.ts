@@ -269,6 +269,7 @@ export const MESSAGE = {
   HOME_VERIFY_IMPORT_WARNING: 'The content of the imported JSON file is empty. Please confirm carefully',
   CONFIG_PAGE_VERIFY_IMPORT_ERROR: 'Imported data is not perfectly matched. Please review carefully before going next!',
   CLASSIFICATION_WARNING: 'Some classifications in import data might be removed.',
+  FLAG_CARD_DROPPED_WARNING: 'Please note: ’consider the “Flag” as “Block” ‘ has been dropped!',
   REAL_DONE_WARNING: 'Some selected doneStatus in import data might be removed',
   ORGANIZATION_WARNING: 'This organization in import data might be removed',
   PIPELINE_NAME_WARNING: 'This Pipeline in import data might be removed',
