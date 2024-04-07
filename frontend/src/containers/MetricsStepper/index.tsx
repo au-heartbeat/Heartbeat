@@ -250,11 +250,6 @@ const MetricsStepper = () => {
     if (activeStep === METRICS_STEPS.METRICS) {
       dispatch(updateTimeStamp(new Date().getTime()));
     }
-    if (activeStep === METRICS_STEPS.CONFIG) {
-      cleanBoardState();
-      cleanPipelineToolConfiguration();
-      cleanSourceControlState();
-    }
     dispatch(nextStep());
   };
 
@@ -271,35 +266,6 @@ const MetricsStepper = () => {
 
   const CancelDialog = () => {
     setIsDialogShowing(false);
-  };
-
-  const cleanPipelineToolConfiguration = () => {
-    !isShowPipeline && dispatch(updatePipelineTool({ type: PIPELINE_TOOL_TYPES.BUILD_KITE, token: '' }));
-    isShowPipeline
-      ? dispatch(updatePipelineToolVerifyState(isPipelineToolVerified))
-      : dispatch(updatePipelineToolVerifyState(false));
-  };
-
-  const cleanSourceControlState = () => {
-    !isShowSourceControl && dispatch(updateSourceControl({ type: SOURCE_CONTROL_TYPES.GITHUB, token: '' }));
-    isShowSourceControl
-      ? dispatch(updateSourceControlVerifyState(isSourceControlVerified))
-      : dispatch(updateSourceControlVerifyState(false));
-  };
-
-  const cleanBoardState = () => {
-    !isShowBoard &&
-      dispatch(
-        updateBoard({
-          type: BOARD_TYPES.JIRA,
-          boardId: '',
-          email: '',
-          projectKey: '',
-          site: '',
-          token: '',
-        }),
-      );
-    isShowBoard ? dispatch(updateBoardVerifyState(isBoardVerified)) : dispatch(updateBoardVerifyState(false));
   };
 
   return (

@@ -407,24 +407,4 @@ describe('MetricsStepper', () => {
       expect(exportToJsonFile).toHaveBeenCalledWith(expectedFileName, expectedJson);
     });
   }, 25000);
-
-  it('should clean the config information that is hidden when click next button', async () => {
-    setup();
-
-    await fillConfigPageData();
-    await userEvent.click(screen.getByText(NEXT));
-
-    expect(updateBoard).not.toHaveBeenCalledWith({
-      type: BOARD_TYPES.JIRA,
-      boardId: '',
-      email: '',
-      projectKey: '',
-      site: '',
-      token: '',
-      startTime: 0,
-      endTime: 0,
-    });
-    expect(updateSourceControl).toHaveBeenCalledWith({ type: SOURCE_CONTROL_TYPES.GITHUB, token: '' });
-    expect(updatePipelineTool).toHaveBeenCalledWith({ type: PIPELINE_TOOL_TYPES.BUILD_KITE, token: '' });
-  }, 50000);
 });

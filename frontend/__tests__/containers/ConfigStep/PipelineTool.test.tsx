@@ -69,7 +69,6 @@ describe('PipelineTool', () => {
     const pipelineToolType = getByText(PIPELINE_TOOL_TYPES.BUILD_KITE);
 
     expect(pipelineToolType).toBeInTheDocument();
-
   });
 
   it('should clear all fields information when click reset button', async () => {
