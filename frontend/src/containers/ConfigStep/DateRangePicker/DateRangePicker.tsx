@@ -12,15 +12,14 @@ import {
   END_DATE_INVALID_TEXT,
 } from '@src/constants/resources';
 import {
+  updateShouldGetBoardConfig,
+  updateShouldGetPipelineConfig,
+} from '@src/context/Metrics/metricsSlice';
+import {
   isStartDateDisabled,
   isEndDateDisabled,
   calculateLastAvailableDate,
 } from '@src/containers/ConfigStep/DateRangePicker/validation';
-import {
-  saveUsers,
-  updateShouldGetBoardConfig,
-  updateShouldGetPipelineConfig,
-} from '@src/context/Metrics/metricsSlice';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
@@ -51,7 +50,6 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(saveUsers([]));
   };
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
