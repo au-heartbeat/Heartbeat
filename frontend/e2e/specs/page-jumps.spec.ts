@@ -60,8 +60,8 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
 
 test('Page jump for create', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {
-    startDate: format(configStepData.dateRange.startDate),
-    endDate: format(configStepData.dateRange.endDate),
+    startDate: format(configStepData.dateRange[0].startDate),
+    endDate: format(configStepData.dateRange[0].endDate),
   };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
@@ -86,7 +86,7 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.waitForHiddenLoading();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
-  await metricsStep.selectHeartbeatState(hbStateData);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.selectClassifications(metricsStepData.classification);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
