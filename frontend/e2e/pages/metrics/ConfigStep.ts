@@ -9,7 +9,7 @@ interface IBoardData {
   boardId: string;
   email: string;
   site: string;
-  token: string | undefined;
+  token: string;
 }
 
 interface IPipelineToolData {
@@ -253,7 +253,7 @@ export class ConfigStep {
     await this.boardTokenInput.fill(token!);
   }
 
-  async fillAndverifyBoardConfig(boardData: IBoardData) {
+  async fillAndVerifyBoardConfig(boardData: IBoardData) {
     await this.fillBoardConfigForm(boardData);
 
     await expect(this.boardVerifyButton).toBeEnabled();
