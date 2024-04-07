@@ -81,7 +81,9 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       key: KEYS.BOARD_ID,
       value: boardFields.boardId,
       validateRule: VALIDATOR.BOARD_ID,
-      validatedError: boardFields.boardId ? getValidatedError(KEYS.BOARD_ID, boardFields.boardId, VALIDATOR.BOARD_ID) : '',
+      validatedError: boardFields.boardId
+        ? getValidatedError(KEYS.BOARD_ID, boardFields.boardId, VALIDATOR.BOARD_ID)
+        : '',
       verifiedError: '',
       col: 1,
     },
