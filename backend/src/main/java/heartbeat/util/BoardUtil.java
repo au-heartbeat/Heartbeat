@@ -105,10 +105,8 @@ public class BoardUtil {
 		}
 		if (!isBlockColumnExisted(columnTimeStamp) && totalFlagTimeInDays > 0) {
 			double blockDays = totalFlagTimeInDays - totalFlagAndRealDoneOverlapTime;
-			cycleTimeInfos.add(CycleTimeInfo.builder()
-				.day(blockDays)
-				.column(CardStepsEnum.BLOCK.getValue().toUpperCase())
-				.build());
+			cycleTimeInfos.add(
+					CycleTimeInfo.builder().day(blockDays).column(CardStepsEnum.FLAG.getValue().toUpperCase()).build());
 		}
 
 		return cycleTimeInfos;
