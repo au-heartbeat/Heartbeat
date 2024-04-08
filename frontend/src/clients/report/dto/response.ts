@@ -48,7 +48,6 @@ export interface ReworkTimeResponse {
   fromAnalysis: number | null;
   fromInDev: number | null;
   fromBlock: number | null;
-  fromFlag: number | null;
   fromWaitingForTesting: number | null;
   fromTesting: number | null;
   fromReview: number | null;

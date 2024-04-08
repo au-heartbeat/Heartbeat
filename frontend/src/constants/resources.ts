@@ -231,7 +231,6 @@ export const REWORK_BOARD_STATUS: string[] = [
   REWORK_TIME_MAPPING.fromAnalysis,
   REWORK_TIME_MAPPING.fromInDev,
   REWORK_TIME_MAPPING.fromBlock,
-  REWORK_TIME_MAPPING.fromFlag,
   REWORK_TIME_MAPPING.fromWaitingForTesting,
   REWORK_TIME_MAPPING.fromTesting,
   REWORK_TIME_MAPPING.fromReview,
