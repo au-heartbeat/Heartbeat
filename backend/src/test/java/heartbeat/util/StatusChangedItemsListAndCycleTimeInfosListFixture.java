@@ -79,4 +79,10 @@ public class StatusChangedItemsListAndCycleTimeInfosListFixture {
 				CycleTimeInfo.builder().column("FLAG").day(EXPECT_DAYS).build());
 	}
 
+	public static List<CycleTimeInfo> CYCLE_TIME_INFOS_LIST_OF_ORIGIN_WITHOUT_FLAG() {
+		return List.of(CycleTimeInfo.builder().column("DONE").day(EXPECT_DAYS).build(),
+			CycleTimeInfo.builder().column("BLOCK").day(EXPECT_DAYS).build(),
+			CycleTimeInfo.builder().column("IN PROGRESS").day(EXPECT_DAYS).build());
+	}
+
 }
