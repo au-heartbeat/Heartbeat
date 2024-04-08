@@ -22,8 +22,8 @@ import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { MESSAGE, NO_PIPELINE_STEP_ERROR } from '@src/constants/resources';
 import { ErrorNotification } from '@src/components/ErrorNotification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
-import { useEffect, useMemo, useState } from 'react';
 import { Loading } from '@src/components/Loading';
 import { store } from '@src/store';
 
@@ -41,6 +41,8 @@ interface pipelineMetricSelectionProps {
   onRemovePipeline: (id: number) => void;
   onUpdatePipeline: (id: number, label: string, value: string | StringConstructor[] | unknown) => void;
   isDuplicated: boolean;
+  setLoadingCompletedNumber: (updateFunction: (prevValue: number) => number) => void;
+  totalPipelineNumber: number;
 }
 
 export const PipelineMetricSelection = ({
@@ -51,6 +53,8 @@ export const PipelineMetricSelection = ({
   onUpdatePipeline,
   isDuplicated,
   isInfoLoading,
+  setLoadingCompletedNumber,
+  totalPipelineNumber,
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting;
   const dispatch = useAppDispatch();
@@ -64,17 +68,26 @@ export const PipelineMetricSelection = ({
   const [isShowNoStepWarning, setIsShowNoStepWarning] = useState(false);
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetPipelineConfig = useAppSelector(selectShouldGetPipelineConfig);
+  const isLoadingRef = useRef(false);
 
   const validStepValue = useMemo<string>(() => (stepsOptions.includes(step) ? step : ''), [step, stepsOptions]);
 
   const handleRemoveClick = () => {
     onRemovePipeline(id);
+    setLoadingCompletedNumber((value) => value - 1);
   };
 
   useEffect(() => {
     !isInfoLoading && shouldLoad && shouldGetPipelineConfig && pipelineName && handleGetPipelineData(pipelineName);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldLoad, pipelineName, isInfoLoading, shouldGetPipelineConfig]);
+
+  useEffect(() => {
+    if (isLoadingRef.current && !isLoading) {
+      setLoadingCompletedNumber((value) => totalPipelineNumber > value ? value + 1 : value);
+    }
+    isLoadingRef.current = isLoading;
+  }, [isLoading, setLoadingCompletedNumber]);
 
   const handleGetPipelineData = (_pipelineName: string) => {
     const { params, buildId, organizationId, pipelineType, token } = selectStepsParams(

@@ -32,8 +32,6 @@ export const BranchSelection = (props: BranchSelectionProps) => {
   const sourceControlFields = useAppSelector(selectSourceControl);
 
   const pipeCrews = useAppSelector(selectPipelineCrews);
-  console.log('pipeCrews111', pipeCrews);
-  console.log('pipelineList222', pipelineList);
 
   const currentPipeline = useMemo(
     () => pipelineList.find((pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization),
