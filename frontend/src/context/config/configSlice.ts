@@ -195,6 +195,18 @@ export const configSlice = createSlice({
       const { githubRepos } = action.payload;
       state.sourceControl.verifiedResponse.repoList = githubRepos;
     },
+    deletePipelineToolVerifyResponseCrews: (state, action) => {
+      const { organization, pipelineName } = action.payload;
+      state.pipelineTool.verifiedResponse.pipelineList = state.pipelineTool.verifiedResponse.pipelineList.map(
+        (pipeline) =>
+          pipeline.name === pipelineName && pipeline.orgName === organization
+            ? {
+                ...pipeline,
+                crews: [],
+              }
+            : pipeline,
+      );
+    },
     resetImportedData: () => initialBasicConfigState,
   },
 });
@@ -216,6 +228,7 @@ export const {
   updateSourceControlVerifiedResponse,
   updatePipelineToolVerifyResponseSteps,
   resetImportedData,
+  deletePipelineToolVerifyResponseCrews,
 } = configSlice.actions;
 
 export const selectProjectName = (state: RootState) => state.config.basic.projectName;

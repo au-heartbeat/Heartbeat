@@ -7,6 +7,7 @@ import {
   selectShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
 import {
+  deletePipelineToolVerifyResponseCrews,
   selectPipelineNames,
   selectPipelineOrganizations,
   selectSteps,
@@ -74,6 +75,7 @@ export const PipelineMetricSelection = ({
 
   const handleRemoveClick = () => {
     onRemovePipeline(id);
+    dispatch(deletePipelineToolVerifyResponseCrews({ organization, pipelineName }));
     setLoadingCompletedNumber((value) => value - 1);
   };
 
@@ -84,10 +86,10 @@ export const PipelineMetricSelection = ({
 
   useEffect(() => {
     if (isLoadingRef.current && !isLoading) {
-      setLoadingCompletedNumber((value) => totalPipelineNumber > value ? value + 1 : value);
+      setLoadingCompletedNumber((value) => (totalPipelineNumber > value ? value + 1 : value));
     }
     isLoadingRef.current = isLoading;
-  }, [isLoading, setLoadingCompletedNumber]);
+  }, [isLoading, setLoadingCompletedNumber, totalPipelineNumber]);
 
   const handleGetPipelineData = (_pipelineName: string) => {
     const { params, buildId, organizationId, pipelineType, token } = selectStepsParams(
