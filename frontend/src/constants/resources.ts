@@ -219,7 +219,6 @@ export const REWORK_TIME_MAPPING = {
   fromAnalysis: 'analysis',
   fromInDev: 'in dev',
   fromBlock: 'block',
-  fromFlag: 'flag',
   fromReview: 'review',
   fromWaitingForTesting: 'waiting for testing',
   fromTesting: 'testing',
