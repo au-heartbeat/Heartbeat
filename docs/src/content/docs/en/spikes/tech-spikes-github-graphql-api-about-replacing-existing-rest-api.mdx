@@ -664,3 +664,67 @@ You can get response, the cost is every query count.
 	}
 }
 ```
+
+#### 6.3. What can we do when the speed limit is reached
+
+`You can switch Rest api to replace graph ql`
+
+#### 6.3. Bottlenecks for daily use
+
+The following is a flow chart of the program that interacts with the GitHub API
+
+We define
+
+| variable |  meaning                                                                 |
+|----------|--------------------------------------------------------------------------|
+| V        | verify token cost                                                        |
+| B        | verify branch cost                                                       | 
+| I        | Get a commit info cost                                                   |
+| T        | Get all Commits under PullRequest cost                                   |
+| P        | Get the list of PullRequest where the commit is located cost             |
+| N        | Number of reports generated simultaneously                               |
+| R        | Number of pipelines selected                                             |
+| C        | Number of successful commits to the selected repo during the time period |
+| D        | Number of build commits to the selected repo during the time period      |
+
+![getDataFromGithubFlowChart.png](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/how-to-get-data-from-github/how-to-get-data-from-github.png)
+
+We can get
+
+```
+Verify stage:（ V + B ）
++
+Compute data stage: N * R *（ C * (P +（I + T）)）
++
+Report generation stage：N * R * ( D * I )
+=
+（ V + B ）+ N * R *（ C * (P +（I + T）)）+  N * R * ( D * I ) < 5000
+```
+
+And then introduce some constants
+
+| variable |  meaning                                                     | cost |
+|----------|--------------------------------------------------------------|------|
+| V        | verify token cost                                            | 1    |
+| B        | verify branch cost                                           | 1    |
+| I        | Get a commit info cost                                       | 1    |
+| T        | Get all Commits under PullRequest cost                       | 1    |
+| P        | Get the list of PullRequest where the commit is located cost | 1    |
+
+```
+1 + 1 + N * R * ( C * (1 + (1 + 1) ) + N * R * ( D * 1) < 5000
+NR * (3C + D) ~ 4NRD < 4998
+NRD < 1249
+```
+
+We can get some combination
+
+| N | R | D    | cost |
+|---|---|------|------|
+| 1 | 1 | 1249 | 1249 |
+| 3 | 2 | 208  | 1248 |
+| 4 | 3 | 104  | 1248 |
+| 5 | 3 | 83   | 1245 |
+| 5 | 4 | 62   | 1240 |
+| 7 | 4 | 44   | 1232 |
+| 9 | 5 | 27   | 1249 |
