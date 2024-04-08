@@ -42,7 +42,7 @@ interface pipelineMetricSelectionProps {
   onRemovePipeline: (id: number) => void;
   onUpdatePipeline: (id: number, label: string, value: string | StringConstructor[] | unknown) => void;
   isDuplicated: boolean;
-  setLoadingCompletedNumber: (updateFunction: (prevValue: number) => number) => void;
+  setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
   totalPipelineNumber: number;
 }
 
@@ -87,9 +87,11 @@ export const PipelineMetricSelection = ({
   useEffect(() => {
     if (isLoadingRef.current && !isLoading) {
       setLoadingCompletedNumber((value) => (totalPipelineNumber > value ? value + 1 : value));
+    } else if (!shouldGetPipelineConfig) {
+      setLoadingCompletedNumber(totalPipelineNumber);
     }
     isLoadingRef.current = isLoading;
-  }, [isLoading, setLoadingCompletedNumber, totalPipelineNumber]);
+  }, [isLoading, setLoadingCompletedNumber, totalPipelineNumber, shouldGetPipelineConfig]);
 
   const handleGetPipelineData = (_pipelineName: string) => {
     const { params, buildId, organizationId, pipelineType, token } = selectStepsParams(
