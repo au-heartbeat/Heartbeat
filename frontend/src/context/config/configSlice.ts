@@ -282,7 +282,9 @@ export const selectSteps = (state: RootState, organizationName: string, pipeline
     (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organizationName,
   )?.steps ?? [];
 
-export const selectPipelineCrews = (state: RootState) =>
-  uniq(state.config.pipelineTool.verifiedResponse.pipelineList.map((i) => i.crews).flat());
+export const selectPipelineCrews = (state: RootState) => {
+  const { pipelineList } = state.config.pipelineTool.verifiedResponse;
+  return uniq(pipelineList.flatMap(({ crews }) => crews)).filter((crew) => crew !== undefined);
+};
 
 export default configSlice.reducer;
