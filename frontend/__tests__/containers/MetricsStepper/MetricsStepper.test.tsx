@@ -26,7 +26,7 @@ import {
   updatePipelineToolVerifyState,
   updateSourceControlVerifyState,
 } from '@src/context/config/configSlice';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { ASSIGNEE_FILTER_TYPES } from '@src/constants/resources';
 import MetricsStepper from '@src/containers/MetricsStepper';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -106,9 +106,9 @@ Object.defineProperty(window, 'location', { value: mockLocation });
 let store = setupStore();
 const fillConfigPageData = async () => {
   const projectNameInput = await screen.findByRole('textbox', { name: PROJECT_NAME_LABEL });
-  fireEvent.change(projectNameInput, { target: { value: TEST_PROJECT_NAME } });
+  await userEvent.type(projectNameInput, TEST_PROJECT_NAME);
   const startDateInput = (await screen.findByRole('textbox', { name: START_DATE_LABEL })) as HTMLInputElement;
-  fireEvent.change(startDateInput, { target: { value: INPUT_DATE_VALUE } });
+  await userEvent.type(startDateInput, INPUT_DATE_VALUE);
 
   act(() => {
     store.dispatch(updateMetrics([VELOCITY]));
@@ -241,7 +241,7 @@ describe('MetricsStepper', () => {
     setup();
 
     await fillConfigPageData();
-    fireEvent.click(screen.getByText(NEXT));
+    await userEvent.click(screen.getByText(NEXT));
 
     expect(screen.getByText(METRICS)).toHaveStyle(`color:${stepperColor}`);
   });

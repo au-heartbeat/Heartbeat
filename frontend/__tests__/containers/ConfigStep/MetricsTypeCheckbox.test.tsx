@@ -13,7 +13,7 @@ import {
   VELOCITY,
 } from '../../fixtures';
 import { MetricsTypeCheckbox } from '@src/containers/ConfigStep/MetricsTypeCheckbox';
-import { fireEvent, render, waitFor, within, screen } from '@testing-library/react';
+import { render, waitFor, within, screen } from '@testing-library/react';
 import { SELECTED_VALUE_SEPARATOR } from '@src/constants/commons';
 import BasicInfo from '@src/containers/ConfigStep/BasicInfo';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -104,7 +104,7 @@ describe('MetricsTypeCheckbox', () => {
       listBox.getByRole('option', { name: DEV_CHANGE_FAILURE_RATE }),
       listBox.getByRole('option', { name: DEV_MEAN_TIME_TO_RECOVERY }),
     ];
-    await Promise.all(optionsToClick.map((opt) => fireEvent.click(opt)));
+    await Promise.all(optionsToClick.map((opt) => userEvent.click(opt)));
 
     expect(within(listBox.getByRole('option', { name: ALL })).getByTestId('CheckBoxIcon')).toBeTruthy();
   });
