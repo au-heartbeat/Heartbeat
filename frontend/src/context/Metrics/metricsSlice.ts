@@ -465,6 +465,10 @@ export const metricsSlice = createSlice({
           : true;
     },
 
+    updatePiplineCrews: (state, action) => {
+      state.pipelineCrews = intersection(state.pipelineCrews, action.payload);
+    },
+
     updatePipelineSettings: (state, action) => {
       const { pipelineList, isProjectCreated, pipelineCrews } = action.payload;
       const { importedDeployment } = state.importedData;
@@ -639,6 +643,7 @@ export const {
   updateAssigneeFilter,
   updateMetricsState,
   updatePipelineSettings,
+  updatePiplineCrews,
   updatePipelineStep,
   setCycleTimeSettingsType,
   resetMetricData,

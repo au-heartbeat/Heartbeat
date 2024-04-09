@@ -74,14 +74,15 @@ export const DeploymentFrequencySettings = () => {
             />
           ))}
           <AddButton onClick={handleAddPipeline} text={'New Pipeline'} />
-          {loadingCompletedNumber === totalPipelineNumber && !isFirstFetch && (
-            <Crews
-              options={pipelineCrews}
-              title={'Crew setting (optional)'}
-              label={'Included Crews'}
-              type={'pipeline'}
-            />
-          )}
+          {(loadingCompletedNumber !== 0 && totalPipelineNumber !== 0) &&
+            (loadingCompletedNumber === totalPipelineNumber && (
+              <Crews
+                options={pipelineCrews}
+                title={'Crew setting (optional)'}
+                label={'Included Crews'}
+                type={'pipeline'}
+              />
+            ))}
         </>
       )}
     </>

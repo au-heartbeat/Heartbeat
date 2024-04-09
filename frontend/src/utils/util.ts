@@ -2,8 +2,9 @@ import { CYCLE_TIME_LIST, CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
+import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
-import { includes, isEqual, sortBy } from 'lodash';
+import { includes, isEqual, sortBy, uniq } from 'lodash';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 
@@ -133,10 +134,10 @@ export const onlyEmptyAndDoneState = (boardingMappingStates: string[]) =>
   isEqual(boardingMappingStates, [METRICS_CONSTANTS.cycleTimeEmptyStr, METRICS_CONSTANTS.doneValue]) ||
   isEqual(boardingMappingStates, [METRICS_CONSTANTS.doneValue, METRICS_CONSTANTS.cycleTimeEmptyStr]);
 
-export function convertCycleTimeSettings(
+export const convertCycleTimeSettings = (
   cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
   cycleTimeSettings: ICycleTimeSetting[],
-) {
+) => {
   if (cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN) {
     return ([...new Set(cycleTimeSettings.map(({ column }: ICycleTimeSetting) => column))] as string[]).map(
       (uniqueColumn) => ({
@@ -147,4 +148,18 @@ export function convertCycleTimeSettings(
     );
   }
   return cycleTimeSettings?.map(({ status, value }: ICycleTimeSetting) => ({ [status]: value }));
-}
+};
+
+export const updateResponseCrews = (organization: string, pipelineName: string, pipelineList: pipeline[]) => {
+  return pipelineList.map((pipeline) =>
+    pipeline.name === pipelineName && pipeline.orgName === organization
+      ? {
+          ...pipeline,
+          crews: [],
+        }
+      : pipeline,
+  );
+};
+
+export const uniqPipelineListCrews = (pipelineList: pipeline[]) =>
+  uniq(pipelineList.flatMap(({ crews }) => crews)).filter((crew) => crew !== undefined);

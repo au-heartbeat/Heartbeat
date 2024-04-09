@@ -5,14 +5,16 @@ import {
   updatePipelineStep,
   updateShouldGetPipelineConfig,
   selectShouldGetPipelineConfig,
+  updatePiplineCrews,
 } from '@src/context/Metrics/metricsSlice';
 import {
-  deletePipelineToolVerifyResponseCrews,
+  updatePipelineToolVerifyResponseCrews,
   selectPipelineNames,
   selectPipelineOrganizations,
   selectSteps,
   selectStepsParams,
   updatePipelineToolVerifyResponseSteps,
+  selectPipelineList,
 } from '@src/context/config/configSlice';
 
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
@@ -25,6 +27,7 @@ import { ErrorNotification } from '@src/components/ErrorNotification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
+import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
 import { Loading } from '@src/components/Loading';
 import { store } from '@src/store';
 
@@ -68,14 +71,17 @@ export const PipelineMetricSelection = ({
   const stepWarningMessage = selectStepWarningMessage(store.getState(), id);
   const [isShowNoStepWarning, setIsShowNoStepWarning] = useState(false);
   const shouldLoad = useAppSelector(shouldMetricsLoad);
+  const pipelineList = useAppSelector(selectPipelineList);
   const shouldGetPipelineConfig = useAppSelector(selectShouldGetPipelineConfig);
   const isLoadingRef = useRef(false);
 
   const validStepValue = useMemo<string>(() => (stepsOptions.includes(step) ? step : ''), [step, stepsOptions]);
 
   const handleRemoveClick = () => {
+    const newCrews = uniqPipelineListCrews(updateResponseCrews(organization, pipelineName, pipelineList));
+    dispatch(updatePipelineToolVerifyResponseCrews({ organization, pipelineName }));
+    dispatch(updatePiplineCrews(newCrews));
     onRemovePipeline(id);
-    dispatch(deletePipelineToolVerifyResponseCrews({ organization, pipelineName }));
     setLoadingCompletedNumber((value) => value - 1);
   };
 

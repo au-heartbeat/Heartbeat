@@ -11,6 +11,7 @@ import { initialPipelineToolState, IPipelineToolState } from '@src/context/confi
 import { initialSourceControlState, ISourceControl } from '@src/context/config/sourceControl/sourceControlSlice';
 import { IBoardState, initialBoardState } from '@src/context/config/board/boardSlice';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
 import { isArray, uniq } from 'lodash';
@@ -183,7 +184,6 @@ export const configSlice = createSlice({
               }
             : pipeline,
       );
-      // state.pipelineTool.verifiedResponse.pipelineCrews = pipelineCrews;
     },
     updateSourceControlVerifyState: (state, action) => {
       state.sourceControl.isVerified = action.payload;
@@ -195,16 +195,12 @@ export const configSlice = createSlice({
       const { githubRepos } = action.payload;
       state.sourceControl.verifiedResponse.repoList = githubRepos;
     },
-    deletePipelineToolVerifyResponseCrews: (state, action) => {
+    updatePipelineToolVerifyResponseCrews: (state, action) => {
       const { organization, pipelineName } = action.payload;
-      state.pipelineTool.verifiedResponse.pipelineList = state.pipelineTool.verifiedResponse.pipelineList.map(
-        (pipeline) =>
-          pipeline.name === pipelineName && pipeline.orgName === organization
-            ? {
-                ...pipeline,
-                crews: [],
-              }
-            : pipeline,
+      state.pipelineTool.verifiedResponse.pipelineList = updateResponseCrews(
+        organization,
+        pipelineName,
+        state.pipelineTool.verifiedResponse.pipelineList,
       );
     },
     resetImportedData: () => initialBasicConfigState,
@@ -228,7 +224,7 @@ export const {
   updateSourceControlVerifiedResponse,
   updatePipelineToolVerifyResponseSteps,
   resetImportedData,
-  deletePipelineToolVerifyResponseCrews,
+  updatePipelineToolVerifyResponseCrews,
 } = configSlice.actions;
 
 export const selectProjectName = (state: RootState) => state.config.basic.projectName;
@@ -297,7 +293,7 @@ export const selectSteps = (state: RootState, organizationName: string, pipeline
 
 export const selectPipelineCrews = (state: RootState) => {
   const { pipelineList } = state.config.pipelineTool.verifiedResponse;
-  return uniq(pipelineList.flatMap(({ crews }) => crews)).filter((crew) => crew !== undefined);
+  return uniqPipelineListCrews(pipelineList);
 };
 
 export default configSlice.reducer;
