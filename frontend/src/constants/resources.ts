@@ -430,7 +430,7 @@ export const START_DATE_INVALID_TEXT = 'Start date is invalid';
 export const END_DATE_INVALID_TEXT = 'End date is invalid';
 
 export const SORT_DATE_RANGE_TEXT: Record<string, string> = {
-  DEFAULT: 'Default',
+  DEFAULT: 'Default sort',
   ASCENDING: 'Ascending',
   DESCENDING: 'Descending',
 };

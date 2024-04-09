@@ -2,9 +2,25 @@ import { DateRangePickerGroup } from '@src/containers/ConfigStep/DateRangePicker
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
+import { selectDateRange } from '@src/context/config/configSlice';
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
+import { useAppSelector } from '@src/hooks/useAppDispatch';
+import { useMemo } from 'react';
 
 export const DateRangePickerSection = () => {
+  const dateRangeGroup = useAppSelector(selectDateRange);
+  const isDateRangeValid = useMemo(() => {
+    return dateRangeGroup.every((dateRange) => {
+      return (
+        dateRange.startDate !== null &&
+        dateRange.endDate !== null &&
+        dateRange.startDate !== 'Invalid Date' &&
+        dateRange.endDate !== 'Invalid Date'
+        // !isNaN(Date.parse(dateRange.startDate as string)) && !isNaN(Date.parse(dateRange.endDate as string))
+      );
+    });
+  }, [dateRangeGroup]);
+
   return (
     <div aria-label='Time range section'>
       <TitleContainer>
@@ -15,7 +31,7 @@ export const DateRangePickerSection = () => {
             margin: '1rem 0',
           }}
         />
-        <SortDateRange />
+        {dateRangeGroup.length > 1 && isDateRangeValid && <SortDateRange />}
       </TitleContainer>
       <DateRangePickerGroup />
     </div>
