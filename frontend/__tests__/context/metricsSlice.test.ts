@@ -59,7 +59,7 @@ const initState = {
   deploymentFrequencySettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   classification: [],
-  treatFlagCardAsBlock: true,
+  treatFlagCardAsBlock: false,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
   importedData: {
     importedCrews: [],
@@ -67,7 +67,7 @@ const initState = {
     importedPipelineCrews: [],
     importedCycleTime: {
       importedCycleTimeSettings: [],
-      importedTreatFlagCardAsBlock: true,
+      importedTreatFlagCardAsBlock: false,
     },
     importedDoneStatus: [],
     importedClassification: [],
@@ -123,14 +123,14 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.doneColumn).toEqual([]);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([]);
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
-    expect(savedMetricsSetting.treatFlagCardAsBlock).toBe(true);
+    expect(savedMetricsSetting.treatFlagCardAsBlock).toBe(false);
     expect(savedMetricsSetting.assigneeFilter).toBe(ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE);
     expect(savedMetricsSetting.importedData).toEqual({
       importedCrews: [],
       importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
       importedCycleTime: {
         importedCycleTimeSettings: [],
-        importedTreatFlagCardAsBlock: true,
+        importedTreatFlagCardAsBlock: false,
       },
       importedDoneStatus: [],
       importedClassification: [],
@@ -267,7 +267,7 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.jiraColumns).toEqual([]);
     expect(savedMetricsSetting.doneColumn).toEqual([]);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([]);
-    expect(savedMetricsSetting.treatFlagCardAsBlock).toEqual(true);
+    expect(savedMetricsSetting.treatFlagCardAsBlock).toEqual(false);
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
   });
 
