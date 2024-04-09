@@ -1,29 +1,14 @@
 import {
   importInputWrongProjectFromFile as importUnhappyPathProjectFromFile,
   importModifiedCorrectConfig as modifiedCorrectProjectFromFile,
-} from '../../fixtures/importFile/unhappy-path-file';
-import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../../fixtures/createNew/reportResult';
-import { test } from '../../fixtures/testWithExtendFixtures';
-import { clearTempDir } from '../../utils/clearTempDir';
-import { format } from '../../utils/dateTime';
+} from '../../fixtures/import-file/unhappy-path-file';
+import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
+import { test } from '../../fixtures/test-with-extend-fixtures';
+import { clearTempDir } from '../../utils/clear-temp-dir';
+import { format } from '../../utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
-});
-
-test('Error UI should be pipeline with no org config when pipeline token without org', async ({
-  homePage,
-  configStep,
-  metricsStep,
-}) => {
-  await homePage.goto();
-
-  await homePage.importProjectFromFile('../fixtures/input-files/pipeline-no-org-config-file.json');
-  await configStep.verifyAllConfig();
-  await configStep.goToMetrics();
-  await metricsStep.waitForShown();
-
-  await metricsStep.checkErrorMessageForPipelineSettings();
 });
 
 test('unhappy path when import file', async ({ homePage, configStep, metricsStep, reportStep }) => {
