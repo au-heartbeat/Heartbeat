@@ -68,20 +68,21 @@ const MetricsStep = () => {
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
 
   const getInfo = useCallback(
-    () =>
-      getBoardInfo({
-        ...boardConfig,
-        startTime: dayjs(startDate).valueOf().toString(),
-        endTime: dayjs(endDate).valueOf().toString(),
-      }).then((res) => {
-        if (res.data) {
-          dispatch(updateBoardVerifyState(true));
-          dispatch(updateJiraVerifyResponse(res.data));
-          dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
-          dispatch(updateShouldGetBoardConfig(false));
-          dispatch(updateFirstTimeRoadMetricsBoardData(false));
-        }
-      }),
+    () => {
+      const fetchData = async (range: { startDate: string | null; endDate: string | null }) => {
+        const startTime = dayjs(range.startDate).valueOf().toString();
+        const endTime = dayjs(range.endDate).valueOf().toString();
+
+        const res = await getBoardInfo({
+          ...boardConfig,
+          startTime,
+          endTime,
+        });
+        return res.data;
+      };
+
+      return Promise.all(dateRange.map(fetchData));
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -90,7 +91,25 @@ const MetricsStep = () => {
     if (!shouldLoad) return;
     dispatch(closeAllNotifications());
     if (!isShowCrewsAndRealDone || !shouldGetBoardConfig) return;
-    getInfo();
+    getInfo().then((results) => {
+      if (results) {
+        const allUsers = [...new Set(results.flatMap(result => result.users))];
+        const allTargetFields = [...new Set(results.flatMap(result => result.targetFields))];
+        const allJiraColumns = [...new Set(results.flatMap(result => result.jiraColumns))];
+        const allIgnoredTargetFields = [...new Set(results.flatMap(result => result.ignoredTargetFields))];
+        const commonPayload = {
+          users: allUsers,
+          targetFields: allTargetFields,
+          ignoredTargetFields: allIgnoredTargetFields,
+          jiraColumns: allJiraColumns,
+        };
+        dispatch(updateBoardVerifyState(true));
+        dispatch(updateJiraVerifyResponse(commonPayload));
+        dispatch(updateMetricsState(merge(commonPayload, {isProjectCreated: isProjectCreated})));
+        dispatch(updateShouldGetBoardConfig(false));
+        dispatch(updateFirstTimeRoadMetricsBoardData(false));
+      }
+    });
   }, [shouldLoad, isShowCrewsAndRealDone, shouldGetBoardConfig, dispatch, getInfo]);
 
   return (

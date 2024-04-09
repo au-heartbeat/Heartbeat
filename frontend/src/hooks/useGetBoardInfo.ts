@@ -12,6 +12,7 @@ export type Users = string[];
 export interface BoardInfoResponse {
   jiraColumns: JiraColumns;
   targetFields: TargetFields;
+  ignoredTargetFields: TargetFields;
   users: Users;
 }
 export interface useGetBoardInfoInterface {
