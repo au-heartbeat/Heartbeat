@@ -57,7 +57,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
-  const [allMetricsCompleted, setAllMetricsCompleted] = useState<boolean>(false);
+  const [isSuccessfulCreateCsvFile, setIsSuccessfulCreateCsvFile] = useState<boolean>(false);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
 
   const configData = useAppSelector(selectConfig);
@@ -210,16 +210,16 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useLayoutEffect(() => {
     exportValidityTimeMin &&
-      allMetricsCompleted &&
+      isSuccessfulCreateCsvFile &&
       dispatch(
         addNotification({
           message: MESSAGE.EXPIRE_INFORMATION(exportValidityTimeMin),
         }),
       );
-  }, [dispatch, exportValidityTimeMin, allMetricsCompleted]);
+  }, [dispatch, exportValidityTimeMin, isSuccessfulCreateCsvFile]);
 
   useLayoutEffect(() => {
-    if (exportValidityTimeMin && allMetricsCompleted) {
+    if (exportValidityTimeMin && isSuccessfulCreateCsvFile) {
       const startTime = Date.now();
       const timer = setInterval(() => {
         const currentTime = Date.now();
@@ -241,7 +241,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         clearInterval(timer);
       };
     }
-  }, [dispatch, exportValidityTimeMin, allMetricsCompleted]);
+  }, [dispatch, exportValidityTimeMin, isSuccessfulCreateCsvFile]);
 
   useLayoutEffect(() => {
     dispatch(closeAllNotifications());
@@ -249,7 +249,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     setExportValidityTimeMin(reportData?.exportValidityTime);
-    reportData && setAllMetricsCompleted(reportData.allMetricsCompleted);
+    reportData && setIsSuccessfulCreateCsvFile(reportData.isSuccessfulCreateCsvFile);
   }, [dispatch, reportData]);
 
   useEffect(() => {

@@ -85,7 +85,6 @@ export const BOARD_TYPES = {
 
 export const PIPELINE_TOOL_TYPES = {
   BUILD_KITE: 'BuildKite',
-  GO_CD: 'GoCD',
 };
 
 export enum CONFIG_TITLE {
@@ -527,6 +526,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
   doraMetricsCompleted: true,
   overallMetricsCompleted: true,
   allMetricsCompleted: true,
+  isSuccessfulCreateCsvFile: true,
   reportMetricsError,
 };
 
@@ -549,6 +549,7 @@ export const EMPTY_REPORT_VALUES: ReportResponseDTO = {
   doraMetricsCompleted: false,
   overallMetricsCompleted: false,
   allMetricsCompleted: false,
+  isSuccessfulCreateCsvFile: false,
   reportMetricsError,
 };
 
