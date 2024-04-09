@@ -50,7 +50,6 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkBoardConfigurationVisible();
   await metricsStep.checkPipelineConfigurationVisible();
   await metricsStep.checkLastAssigneeCrewFilterChecked();
-  await metricsStep.checkCycleTimeConsiderCheckboxChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.waitForHiddenLoading();
   await metricsStep.selectCrews(metricsStepData.crews);

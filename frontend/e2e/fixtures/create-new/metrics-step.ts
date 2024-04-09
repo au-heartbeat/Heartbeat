@@ -73,7 +73,7 @@ export const config = {
         Done: 'Done',
       },
     ],
-    treatFlagCardAsBlock: true,
+    treatFlagCardAsBlock: false,
   },
   doneStatus: ['DONE'],
   classification: [
