@@ -20,8 +20,8 @@ export const CycleTime = () => {
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
   const hasBlockColumn =
     cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
-      ? cycleTimeSettings.some(({ column }) => column.toUpperCase() === 'BLOCKED')
-      : cycleTimeSettings.some(({ status }) => status.toUpperCase() === 'BLOCKED');
+      ? cycleTimeSettings.some(({ column }) => column.toUpperCase() === 'BLOCKED' || column.toUpperCase() === 'BLOCK')
+      : cycleTimeSettings.some(({ status }) => status.toUpperCase() === 'BLOCKED' || status.toUpperCase() === 'BLOCK');
   const [shouldShowConflictMessage, setShouldShowConflictMessage] = useState(false);
 
   useEffect(() => {
