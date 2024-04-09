@@ -28,7 +28,7 @@ export const DateRangeExpandContainer = styled.div({
   flexDirection: 'column',
   gap: '0.0625rem',
   borderRadius: '0.25rem',
-  filter: 'drop-shadow(0 0 0.25rem #0000001A)',
+  filter: 'drop-shadow(0 0 0.25rem #dcdcdc)',
   backgroundColor: theme.palette.common.white,
   zIndex: Z_INDEX.POPOVER,
   padding: '0.25rem 0',
