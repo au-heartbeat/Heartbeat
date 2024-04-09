@@ -11,8 +11,8 @@ import {
   FAKE_PIPELINE_TOKEN,
   REVERIFY,
 } from '../../fixtures';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -159,10 +159,10 @@ describe('PipelineTool', () => {
     expect(screen.queryByText(TOKEN_ERROR_MESSAGE[1])).not.toBeInTheDocument();
   });
 
-  it('should show error message when focus on field given an empty value', () => {
+  it('should show error message when focus on field given an empty value', async () => {
     setup();
 
-    fireEvent.focus(screen.getByLabelText('input Token'));
+    await userEvent.click(screen.getByLabelText('input Token'));
 
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
@@ -203,12 +203,14 @@ describe('PipelineTool', () => {
   });
 
   it('should check loading animation when click verify button', async () => {
+    server.use(
+      rest.post(MOCK_PIPELINE_VERIFY_URL, (_, res, ctx) => res(ctx.delay(300), ctx.status(HttpStatusCode.Ok))),
+    );
     const { container } = setup();
     await fillPipelineToolFieldsInformation();
-    fireEvent.click(screen.getByRole('button', { name: VERIFY }));
-    await waitFor(() => {
-      expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar');
-    });
+    await userEvent.click(screen.getByRole('button', { name: VERIFY }));
+
+    expect(container.getElementsByTagName('span')[0].getAttribute('role')).toEqual('progressbar');
   });
 
   it('should check error text appear when pipelineTool verify response status is 401', async () => {
