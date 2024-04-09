@@ -24,12 +24,7 @@ export const calculateLastAvailableDate = (date: Dayjs, coveredRange: TDateRange
   return lastAvailableDate;
 };
 
-export const isStartDateDisabled = (coveredRange: TDateRange, date: Dayjs) =>
-  coveredRange.some(
-    ({ startDate, endDate }) => date.isSameOrAfter(startDate, 'date') && date.isSameOrBefore(endDate, 'date'),
-  );
-
-export const isEndDateDisabled = (coveredRange: TDateRange, date: Dayjs) =>
+export const isDateDisabled = (coveredRange: TDateRange, date: Dayjs) =>
   coveredRange.some(
     ({ startDate, endDate }) => date.isSameOrAfter(startDate, 'date') && date.isSameOrBefore(endDate, 'date'),
   );
