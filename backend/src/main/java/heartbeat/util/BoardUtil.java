@@ -64,7 +64,7 @@ public class BoardUtil {
 				.build());
 		}
 
-		if (treatFlagCardAsBlock) {
+		if (Boolean.TRUE.equals(treatFlagCardAsBlock)) {
 			double totalFlagTimeInDays = calculateTotalFlagCycleTime(flagTimeStamp);
 			originCycleTimeInfos
 				.add(CycleTimeInfo.builder().day(totalFlagTimeInDays).column(CardStepsEnum.FLAG.getValue()).build());
