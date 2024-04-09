@@ -23,23 +23,23 @@ export interface useGetBoardInfoInterface {
 const codeMapping = (code: string | number) => {
   const codes = {
     [HttpStatusCode.BadRequest]: {
-      title: BOARD_CONFIG_INFO_TITLE.INVALID_INPUT,
-      message: BOARD_CONFIG_INFO_ERROR.NOT_FOUND,
+      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
+      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
       code: HttpStatusCode.BadRequest,
     },
     [HttpStatusCode.Unauthorized]: {
-      title: BOARD_CONFIG_INFO_TITLE.UNAUTHORIZED_REQUEST,
-      message: BOARD_CONFIG_INFO_ERROR.NOT_FOUND,
+      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
+      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
       code: HttpStatusCode.Unauthorized,
     },
     [HttpStatusCode.Forbidden]: {
-      title: BOARD_CONFIG_INFO_TITLE.FORBIDDEN_REQUEST,
-      message: BOARD_CONFIG_INFO_ERROR.FORBIDDEN,
+      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
+      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
       code: HttpStatusCode.Forbidden,
     },
     [HttpStatusCode.NotFound]: {
-      title: BOARD_CONFIG_INFO_TITLE.NOT_FOUND,
-      message: BOARD_CONFIG_INFO_ERROR.NOT_FOUND,
+      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
+      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
       code: HttpStatusCode.NotFound,
     },
     [AXIOS_REQUEST_ERROR_CODE.TIMEOUT]: {
