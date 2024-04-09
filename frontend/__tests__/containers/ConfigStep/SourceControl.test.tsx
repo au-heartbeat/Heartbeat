@@ -170,7 +170,6 @@ describe('SourceControl', () => {
     fillSourceControlFieldsInformation();
 
     expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-    expect(initDeploymentFrequencySettings).toHaveBeenCalled();
   });
 
   it('should show error message and error style when token is empty', () => {

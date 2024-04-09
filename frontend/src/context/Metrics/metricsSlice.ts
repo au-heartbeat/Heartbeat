@@ -557,7 +557,6 @@ export const metricsSlice = createSlice({
     //  取回来的step和branchs
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload;
-      const { importedPipelineCrews } = state.importedData;
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
       state.pipelineCrews = intersection(pipelineCrews, state.pipelineCrews);
       const stepWarningMessage = (selectedStep: string) => (steps.includes(selectedStep) ? null : MESSAGE.STEP_WARNING);

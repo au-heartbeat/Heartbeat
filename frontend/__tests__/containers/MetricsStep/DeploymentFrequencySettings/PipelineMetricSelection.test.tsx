@@ -87,6 +87,7 @@ describe('PipelineMetricSelection', () => {
   };
   const mockHandleClickRemoveButton = jest.fn();
   const mockUpdatePipeline = jest.fn();
+  const mockSetLoadingCompletedNumber = jest.fn();
 
   const setup = async (
     deploymentFrequencySetting: IPipelineConfig,
@@ -104,6 +105,8 @@ describe('PipelineMetricSelection', () => {
           onUpdatePipeline={mockUpdatePipeline}
           isDuplicated={isDuplicated}
           isInfoLoading={false}
+          totalPipelineNumber={2}
+          setLoadingCompletedNumber={mockSetLoadingCompletedNumber}
         />
       </Provider>,
     );
@@ -180,7 +183,7 @@ describe('PipelineMetricSelection', () => {
     await waitFor(() => {
       expect(getByText('Failed to get BuildKite steps: error message')).toBeInTheDocument();
     });
-    expect(mockUpdatePipeline).toHaveBeenCalledTimes(2);
+    expect(mockUpdatePipeline).toHaveBeenCalledTimes(3);
   });
   it('should show no steps warning message when getSteps succeed but get no steps', async () => {
     metricsClient.getSteps = jest.fn().mockReturnValue({ response: [], haveStep: false });

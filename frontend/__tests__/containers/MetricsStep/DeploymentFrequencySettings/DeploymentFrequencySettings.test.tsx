@@ -53,6 +53,7 @@ jest.mock('@src/hooks/useMetricsStepValidationCheckContext', () => ({
 }));
 
 const mockGetPipelineToolInfoOkResponse = {
+  isFirstFetch: false,
   isLoading: false,
   apiCallFunc: jest.fn(),
   result: {
@@ -67,6 +68,7 @@ const mockGetPipelineToolInfoOkResponse = {
           repository: 'git@github.com:au-heartbeat/Heartbeat.git',
           steps: [':pipeline: Upload pipeline.yml'],
           branches: [],
+          crews: [],
         },
       ],
     },
@@ -130,6 +132,7 @@ describe('DeploymentFrequencySettings', () => {
 
   it('should display error UI when get pipeline info client returns non-200 code', () => {
     mockGetPipelineToolInfoSpy = {
+      isFirstFetch: false,
       isLoading: false,
       apiCallFunc: jest.fn(),
       result: {
@@ -145,6 +148,7 @@ describe('DeploymentFrequencySettings', () => {
 
   it('should show loading when get pipeline info client pending', () => {
     mockGetPipelineToolInfoSpy = {
+      isFirstFetch: false,
       isLoading: true,
       apiCallFunc: jest.fn(),
       result: {

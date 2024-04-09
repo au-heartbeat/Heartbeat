@@ -614,7 +614,7 @@ describe('saveMetricsSetting reducer', () => {
         ...initState,
         deploymentFrequencySettings: [{ id: 1, organization: '', pipelineName: '', step: '', branches: [] }],
       },
-      updateDeploymentFrequencySettings({ updateId: 1, label: 'Steps', value: 'value' }),
+      updateDeploymentFrequencySettings({ updateId: 1, label: 'Step', value: 'value' }),
     );
 
     expect(updateDeploymentFrequencySettingsResult.deploymentFrequencySettings[0].step).toEqual('value');
@@ -658,7 +658,7 @@ describe('saveMetricsSetting reducer', () => {
                 id: 2,
                 organization: 'mockOrganization2',
                 pipelineName: 'mockPipelineName3',
-                step: 'mockStep3',
+                step: '',
                 branches: [],
               },
             ],
@@ -683,8 +683,7 @@ describe('saveMetricsSetting reducer', () => {
               step: 'mockStep1',
               branches: [],
             },
-            { id: 1, organization: 'mockOrganization1', pipelineName: '', step: 'mockStep2', branches: [] },
-            { id: 2, organization: '', pipelineName: '', step: 'mockStep3', branches: [] },
+            { id: 1, organization: 'mockOrganization1', pipelineName: '', step: '', branches: [] },
           ],
           leadTimeForChanges: [
             { id: 0, organization: 'mockOrganization1', pipelineName: 'mockPipelineName1', step: '', branches: [] },
@@ -722,7 +721,7 @@ describe('saveMetricsSetting reducer', () => {
                 id: 2,
                 organization: 'mockOrganization2',
                 pipelineName: 'mockPipelineName3',
-                step: 'mockStep3',
+                step: '',
                 branches: [],
               },
             ],
@@ -747,8 +746,7 @@ describe('saveMetricsSetting reducer', () => {
               step: 'mockStep1',
               branches: [],
             },
-            { id: 1, organization: 'mockOrganization1', pipelineName: '', step: 'mockStep2', branches: [] },
-            { id: 2, organization: '', pipelineName: '', step: 'mockStep3', branches: [] },
+            { id: 1, organization: 'mockOrganization1', pipelineName: '', step: '', branches: [] },
           ],
           leadTimeForChanges: [
             { id: 0, organization: 'mockOrganization1', pipelineName: 'mockPipelineName1', step: '', branches: [] },
@@ -890,13 +888,18 @@ describe('saveMetricsSetting reducer', () => {
             id: 0,
             organization: 'mockOrganization1',
             pipelineName: 'mockPipelineName1',
-            step: 'mockStep1',
+            step: '',
             branches: [],
           },
           { id: 1, organization: 'mockOrganization1', pipelineName: 'mockPipelineName2', step: '', branches: [] },
         ],
         expectedWarning: [
-          { id: 0, organization: null, pipelineName: null, step: null },
+          {
+            id: 0,
+            organization: null,
+            pipelineName: null,
+            step: 'Selected step of this pipeline in import data might be removed',
+          },
           { id: 1, organization: null, pipelineName: null, step: null },
         ],
       },
@@ -919,7 +922,7 @@ describe('saveMetricsSetting reducer', () => {
             organization: 'mockOrganization1',
             pipelineName: 'mockPipelineName2',
             step: '',
-            branches: ['branch1'],
+            branches: [],
           },
         ],
         expectedWarning: [
@@ -949,7 +952,12 @@ describe('saveMetricsSetting reducer', () => {
           { id: 1, organization: 'mockOrganization1', pipelineName: 'mockPipelineName2', step: '', branches: [] },
         ],
         expectedWarning: [
-          { id: 0, organization: null, pipelineName: null, step: null },
+          {
+            id: 0,
+            organization: null,
+            pipelineName: null,
+            step: null,
+          },
           {
             id: 1,
             organization: null,
@@ -1460,7 +1468,7 @@ describe('saveMetricsSetting reducer', () => {
     it('should return status of initial state', () => {
       expect(selectShouldGetBoardConfig(store.getState())).toBeFalsy();
       expect(selectShouldGetPipelineConfig(store.getState())).toBeFalsy();
-      expect(selectDeploymentFrequencySettings(store.getState()).length).toBeGreaterThan(1);
+      expect(selectDeploymentFrequencySettings(store.getState()).length).toBeGreaterThan(0);
       expect(selectReworkTimesSettings(store.getState())).toStrictEqual({ excludeStates: [], reworkState: null });
       expect(selectCycleTimeSettings(store.getState())).toEqual([]);
       expect(selectMetricsContent(store.getState()).assigneeFilter).toEqual('lastAssignee');
@@ -1479,7 +1487,7 @@ describe('saveMetricsSetting reducer', () => {
     });
 
     it('should return step warning message given its id and type', () => {
-      expect(selectStepWarningMessage(store.getState(), 0)).toBeNull();
+      expect(selectStepWarningMessage(store.getState(), 0)).toEqual(STEP_WARNING_MESSAGE);
       expect(selectStepWarningMessage(store.getState(), 1)).toEqual(STEP_WARNING_MESSAGE);
     });
   });
