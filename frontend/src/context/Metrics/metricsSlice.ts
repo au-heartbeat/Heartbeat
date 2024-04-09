@@ -94,7 +94,7 @@ const initialState: ISavedMetricsSettingState = {
     importedPipelineCrews: [],
     importedCycleTime: {
       importedCycleTimeSettings: [],
-      importedTreatFlagCardAsBlock: true,
+      importedTreatFlagCardAsBlock: false,
     },
     importedDoneStatus: [],
     importedClassification: [],
