@@ -46,9 +46,9 @@ const DateRangeViewer = ({
         {dateRanges.map((dateRange, index) => {
           return (
             <SingleDateRange key={index} color={expandColor} backgroundColor={expandBackgroundColor}>
-              {formatDate(dateRange.startDate ?? '')}
+              {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
-              {formatDate(dateRange.endDate ?? '')}
+              {formatDate(dateRange.endDate as string)}
             </SingleDateRange>
           );
         })}
@@ -58,12 +58,12 @@ const DateRangeViewer = ({
 
   return (
     <DateRangeContainer data-test-id={'date-range'}>
-      {formatDate(datePick.startDate ?? '')}
+      {formatDate(datePick.startDate as string)}
       <StyledArrowForward />
-      {formatDate(datePick.endDate ?? '')}
+      {formatDate(datePick.endDate as string)}
       <StyledCalendarToday />
       <StyledDivider orientation='vertical' />
-      <StyledExpandMoreIcon onClick={() => setShowMoreDateRange(true)} />
+      <StyledExpandMoreIcon aria-label='expandMore' onClick={() => setShowMoreDateRange(true)} />
       {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
     </DateRangeContainer>
   );
