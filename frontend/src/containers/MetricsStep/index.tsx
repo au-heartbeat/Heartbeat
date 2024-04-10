@@ -1,37 +1,38 @@
 import {
+  selectBoard,
   selectDateRange,
   selectIsProjectCreated,
-  selectMetrics,
-  updateBoardVerifyState,
-  selectBoard,
-  updateJiraVerifyResponse,
-  selectUsers,
   selectJiraColumns,
+  selectMetrics,
+  selectUsers,
+  updateBoardVerifyState,
+  updateJiraVerifyResponse,
 } from '@src/context/config/configSlice';
 import {
   selectMetricsContent,
-  updateMetricsState,
   selectShouldGetBoardConfig,
-  updateShouldGetBoardConfig,
   updateFirstTimeRoadMetricsBoardData,
+  updateMetricsState,
+  updateShouldGetBoardConfig,
 } from '@src/context/Metrics/metricsSlice';
 import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
   MetricsSelectionTitle,
+  StyledErrorMessage,
+  StyledRetryButton,
 } from '@src/containers/MetricsStep/style';
-import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA, AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AXIOS_REQUEST_ERROR_CODE, CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
+import { BoardInfoResponse, useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
-import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
-import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
+import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
-import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import EmptyContent from '@src/components/Common/EmptyContent';
-import { useAppSelector, useAppDispatch } from '@src/hooks';
+import { RealDone } from '@src/containers/MetricsStep/RealDone';
+import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
@@ -69,7 +70,7 @@ const MetricsStep = () => {
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
 
   const getInfo = useCallback(
-    () => {
+    async () => {
       const fetchData = async (range: { startDate: string | null; endDate: string | null }) => {
         const startTime = dayjs(range.startDate).valueOf().toString();
         const endTime = dayjs(range.endDate).valueOf().toString();
@@ -88,34 +89,38 @@ const MetricsStep = () => {
     [],
   );
 
+  const combineBoardInfo = (results: BoardInfoResponse[]): any => {
+    if (results) {
+      const allUsers = [...new Set(results.flatMap((result) => result.users))];
+      const allTargetFields = uniqBy(
+        results.flatMap((result) => result.targetFields),
+        (elem) => [elem.key, elem.name, elem.flag].join(),
+      );
+      const allJiraColumns = results[results.length - 1].jiraColumns;
+      const allIgnoredTargetFields = uniqBy(
+        results.flatMap((result) => result.ignoredTargetFields),
+        (elem) => [elem.key, elem.name, elem.flag].join(),
+      );
+      return {
+        users: allUsers,
+        targetFields: allTargetFields,
+        ignoredTargetFields: allIgnoredTargetFields,
+        jiraColumns: allJiraColumns,
+      };
+    }
+  };
+
   useLayoutEffect(() => {
     if (!shouldLoad) return;
     dispatch(closeAllNotifications());
     if (!isShowCrewsAndRealDone || !shouldGetBoardConfig) return;
     getInfo().then((results) => {
-      if (results) {
-        const allUsers = [...new Set(results.flatMap((result) => result.users))];
-        const allTargetFields = uniqBy(
-          results.flatMap((result) => result.targetFields),
-          (elem) => [elem.key, elem.name, elem.flag].join(),
-        );
-        const allJiraColumns = results[results.length - 1].jiraColumns;
-        const allIgnoredTargetFields = uniqBy(
-          results.flatMap((result) => result.ignoredTargetFields),
-          (elem) => [elem.key, elem.name, elem.flag].join(),
-        );
-        const commonPayload = {
-          users: allUsers,
-          targetFields: allTargetFields,
-          ignoredTargetFields: allIgnoredTargetFields,
-          jiraColumns: allJiraColumns,
-        };
-        dispatch(updateBoardVerifyState(true));
-        dispatch(updateJiraVerifyResponse(commonPayload));
-        dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
-        dispatch(updateShouldGetBoardConfig(false));
-        dispatch(updateFirstTimeRoadMetricsBoardData(false));
-      }
+      const commonPayload = combineBoardInfo(results);
+      dispatch(updateBoardVerifyState(true));
+      dispatch(updateJiraVerifyResponse(commonPayload));
+      dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
+      dispatch(updateShouldGetBoardConfig(false));
+      dispatch(updateFirstTimeRoadMetricsBoardData(false));
     });
   }, [shouldLoad, isShowCrewsAndRealDone, shouldGetBoardConfig, dispatch, getInfo]);
 
