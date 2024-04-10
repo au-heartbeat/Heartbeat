@@ -10,7 +10,7 @@ import { TokenAccessAlert } from '@src/containers/MetricsStep/TokenAccessAlert';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { store } from '@src/store';
+import { setupStore } from '@test/utils/setupStoreUtil';
 
 jest.mock('@src/hooks', () => ({
   ...jest.requireActual('@src/hooks'),
@@ -82,12 +82,15 @@ jest.mock('@src/hooks/useGetPipelineToolInfoEffect', () => ({
   useGetPipelineToolInfoEffect: () => mockGetPipelineToolInfoSpy,
 }));
 describe('DeploymentFrequencySettings', () => {
-  const setup = () =>
-    render(
+  let store = null;
+  const setup = () => {
+    store = setupStore();
+    return render(
       <Provider store={store}>
         <DeploymentFrequencySettings />
       </Provider>,
     );
+  };
   afterEach(() => {
     jest.clearAllMocks();
   });
