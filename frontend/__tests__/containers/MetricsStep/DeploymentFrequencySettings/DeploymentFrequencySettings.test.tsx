@@ -166,6 +166,15 @@ describe('DeploymentFrequencySettings', () => {
     expect(screen.getByTestId(LOADING)).toBeInTheDocument();
   });
 
+  it('should not show show crews part given isFirstFetch is true', async () => {
+    mockGetPipelineToolInfoSpy = {
+      ...mockGetPipelineToolInfoOkResponse,
+      isFirstFetch: true,
+    };
+    setup();
+    expect(screen.queryByText('Crews Setting')).toBeNull();
+  });
+
   it('renders without error when errorDetail is provided', () => {
     const { queryByLabelText } = render(<TokenAccessAlert errorDetail={401} />);
     expect(queryByLabelText('alert for token access error')).toBeInTheDocument();
