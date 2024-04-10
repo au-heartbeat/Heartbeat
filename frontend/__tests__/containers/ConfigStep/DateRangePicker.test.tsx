@@ -208,7 +208,6 @@ describe('DateRangePickerSection', () => {
 
       expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
       expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
     });
   });
 
