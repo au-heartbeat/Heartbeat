@@ -1,9 +1,9 @@
 import {
   selectCycleTimeWarningMessage,
-  selectDisplayFlagCardAsBlock,
+  selectDisplayFlagCardDropWarning,
   selectMetricsContent,
   selectTreatFlagCardAsBlock,
-  updateDisplayFlagCardAsBlock,
+  updateDisplayFlagCardDropWarning,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
@@ -19,7 +19,7 @@ import { useAppSelector } from '@src/hooks';
 export const CycleTime = () => {
   const dispatch = useAppDispatch();
   const flagCardAsBlock = useAppSelector(selectTreatFlagCardAsBlock);
-  const displayFlagCardAsBlock = useAppSelector(selectDisplayFlagCardAsBlock);
+  const displayFlagCardDropWarning = useAppSelector(selectDisplayFlagCardDropWarning);
   const warningMessage = useAppSelector(selectCycleTimeWarningMessage);
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
   const hasBlockColumn = useMemo(() => {
@@ -28,15 +28,15 @@ export const CycleTime = () => {
   const [shouldShowConflictMessage, setShouldShowConflictMessage] = useState(false);
 
   useEffect(() => {
-    if (hasBlockColumn && flagCardAsBlock && displayFlagCardAsBlock) {
+    if (hasBlockColumn && flagCardAsBlock && displayFlagCardDropWarning) {
       setShouldShowConflictMessage(true);
-      dispatch(updateDisplayFlagCardAsBlock(false));
+      dispatch(updateDisplayFlagCardDropWarning(false));
     }
 
     if (hasBlockColumn && flagCardAsBlock) {
       dispatch(updateTreatFlagCardAsBlock(false));
     }
-  }, [dispatch, cycleTimeSettings, flagCardAsBlock, displayFlagCardAsBlock, hasBlockColumn]);
+  }, [dispatch, cycleTimeSettings, flagCardAsBlock, displayFlagCardDropWarning, hasBlockColumn]);
 
   return (
     <div aria-label='Cycle time settings section'>
