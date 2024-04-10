@@ -37,14 +37,7 @@
     ],
     "treatFlagCardAsBlock": true
   },
-  "classification": [
-    "issuetype",
-    "parent",
-    "project",
-    "reporter",
-    "labels",
-    "assignee"
-  ],
+  "classification": ["issuetype", "parent", "project", "reporter", "labels", "assignee"],
   "reworkTimesSettings": {
     "reworkState": "In Dev",
     "excludeStates": []
