@@ -156,3 +156,12 @@ export function convertCycleTimeSettings(
   }
   return cycleTimeSettings?.map(({ status, value }: ICycleTimeSetting) => ({ [status]: value }));
 }
+
+export function existBlockColumn(
+  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
+  cycleTimeSettings: ICycleTimeSetting[],
+) {
+  return cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+    ? cycleTimeSettings.some(({ column }) => column.toUpperCase() === 'BLOCKED' || column.toUpperCase() === 'BLOCK')
+    : cycleTimeSettings.some(({ status }) => status.toUpperCase() === 'BLOCKED' || status.toUpperCase() === 'BLOCK');
+}

@@ -1,15 +1,18 @@
 import {
-  selectCycleTimeWarningMessage, selectDisplayFlagCardAsBlock,
+  selectCycleTimeWarningMessage,
+  selectDisplayFlagCardAsBlock,
   selectMetricsContent,
-  selectTreatFlagCardAsBlock, updateDisplayFlagCardAsBlock,
+  selectTreatFlagCardAsBlock,
+  updateDisplayFlagCardAsBlock,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
-import { CYCLE_TIME_SETTINGS_TYPES, MESSAGE, TIPS } from '@src/constants/resources';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import CycleTimeTable from '@src/containers/MetricsStep/CycleTime/Table';
 import FlagCard from '@src/containers/MetricsStep/CycleTime/FlagCard';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { MESSAGE, TIPS } from '@src/constants/resources';
+import { existBlockColumn } from '@src/utils/util';
 import { useAppSelector } from '@src/hooks';
 import { useEffect, useState } from 'react';
 
@@ -19,24 +22,18 @@ export const CycleTime = () => {
   const displayFlagCardAsBlock = useAppSelector(selectDisplayFlagCardAsBlock);
   const warningMessage = useAppSelector(selectCycleTimeWarningMessage);
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
-  const hasBlockColumn =
-    cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
-      ? cycleTimeSettings.some(({ column }) => column.toUpperCase() === 'BLOCKED' || column.toUpperCase() === 'BLOCK')
-      : cycleTimeSettings.some(({ status }) => status.toUpperCase() === 'BLOCKED' || status.toUpperCase() === 'BLOCK');
+  const hasBlockColumn = existBlockColumn(cycleTimeSettingsType, cycleTimeSettings);
   const [shouldShowConflictMessage, setShouldShowConflictMessage] = useState(false);
+
+  if (hasBlockColumn && flagCardAsBlock) {
+    dispatch(updateTreatFlagCardAsBlock(false));
+  }
 
   useEffect(() => {
     if (hasBlockColumn && flagCardAsBlock && displayFlagCardAsBlock) {
       setShouldShowConflictMessage(true);
-      dispatch(updateTreatFlagCardAsBlock(false));
       dispatch(updateDisplayFlagCardAsBlock(false));
     }
-    // if(hasBlockColumn && displayFlagCardAsBlock) {
-    //
-    // }
-    // if(!hasBlockColumn) {
-    //   dispatch(updateTreatFlagCardAsBlock(true));
-    // }
   }, [dispatch, cycleTimeSettings, flagCardAsBlock]);
 
   return (
