@@ -28,7 +28,7 @@ export const CycleTime = () => {
   const [shouldShowConflictMessage, setShouldShowConflictMessage] = useState(false);
 
   useEffect(() => {
-    if (hasBlockColumn && flagCardAsBlock && displayFlagCardDropWarning) {
+    if (hasBlockColumn && displayFlagCardDropWarning) {
       setShouldShowConflictMessage(true);
       dispatch(updateDisplayFlagCardDropWarning(false));
     }
@@ -36,7 +36,7 @@ export const CycleTime = () => {
     if (hasBlockColumn && flagCardAsBlock) {
       dispatch(updateTreatFlagCardAsBlock(false));
     }
-  }, [dispatch, cycleTimeSettings, flagCardAsBlock, displayFlagCardDropWarning, hasBlockColumn]);
+  }, [dispatch, flagCardAsBlock, displayFlagCardDropWarning, hasBlockColumn]);
 
   return (
     <div aria-label='Cycle time settings section'>
