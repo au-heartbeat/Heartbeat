@@ -83,7 +83,15 @@ const MetricsStep = () => {
         return res.data;
       };
 
-      return Promise.all(dateRange.map(fetchData));
+      const results = await Promise.all(dateRange.map(fetchData));
+      if (results) {
+        const commonPayload = combineBoardInfo(results);
+        dispatch(updateBoardVerifyState(true));
+        dispatch(updateJiraVerifyResponse(commonPayload));
+        dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
+        dispatch(updateShouldGetBoardConfig(false));
+        dispatch(updateFirstTimeRoadMetricsBoardData(false));
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -114,14 +122,7 @@ const MetricsStep = () => {
     if (!shouldLoad) return;
     dispatch(closeAllNotifications());
     if (!isShowCrewsAndRealDone || !shouldGetBoardConfig) return;
-    getInfo().then((results) => {
-      const commonPayload = combineBoardInfo(results);
-      dispatch(updateBoardVerifyState(true));
-      dispatch(updateJiraVerifyResponse(commonPayload));
-      dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
-      dispatch(updateShouldGetBoardConfig(false));
-      dispatch(updateFirstTimeRoadMetricsBoardData(false));
-    });
+    getInfo();
   }, [shouldLoad, isShowCrewsAndRealDone, shouldGetBoardConfig, dispatch, getInfo]);
 
   return (
