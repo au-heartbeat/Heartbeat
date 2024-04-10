@@ -399,7 +399,8 @@ export const metricsSlice = createSlice({
       const preHasBlockColumn = existBlockColumn(state.cycleTimeSettingsType, state.cycleTimeSettings);
       const preTreatFlagCardAsBlock = state.treatFlagCardAsBlock;
 
-      state.displayFlagCardAsBlock = state.displayFlagCardAsBlock && importedCycleTime.importedTreatFlagCardAsBlock;
+      state.displayFlagCardAsBlock =
+        !isProjectCreated && state.displayFlagCardAsBlock && importedCycleTime.importedTreatFlagCardAsBlock;
       state.users = isProjectCreated
         ? setCreateSelectUsers(state, users)
         : setImportSelectUsers(state, users, importedCrews);

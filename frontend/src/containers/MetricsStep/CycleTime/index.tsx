@@ -12,9 +12,9 @@ import CycleTimeTable from '@src/containers/MetricsStep/CycleTime/Table';
 import FlagCard from '@src/containers/MetricsStep/CycleTime/FlagCard';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { MESSAGE, TIPS } from '@src/constants/resources';
+import { useEffect, useMemo, useState } from 'react';
 import { existBlockColumn } from '@src/utils/util';
 import { useAppSelector } from '@src/hooks';
-import { useEffect, useState } from 'react';
 
 export const CycleTime = () => {
   const dispatch = useAppDispatch();
@@ -22,19 +22,21 @@ export const CycleTime = () => {
   const displayFlagCardAsBlock = useAppSelector(selectDisplayFlagCardAsBlock);
   const warningMessage = useAppSelector(selectCycleTimeWarningMessage);
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
-  const hasBlockColumn = existBlockColumn(cycleTimeSettingsType, cycleTimeSettings);
+  const hasBlockColumn = useMemo(() => {
+    return existBlockColumn(cycleTimeSettingsType, cycleTimeSettings);
+  }, [cycleTimeSettingsType, cycleTimeSettings]);
   const [shouldShowConflictMessage, setShouldShowConflictMessage] = useState(false);
-
-  if (hasBlockColumn && flagCardAsBlock) {
-    dispatch(updateTreatFlagCardAsBlock(false));
-  }
 
   useEffect(() => {
     if (hasBlockColumn && flagCardAsBlock && displayFlagCardAsBlock) {
       setShouldShowConflictMessage(true);
       dispatch(updateDisplayFlagCardAsBlock(false));
     }
-  }, [dispatch, cycleTimeSettings, flagCardAsBlock]);
+
+    if (hasBlockColumn && flagCardAsBlock) {
+      dispatch(updateTreatFlagCardAsBlock(false));
+    }
+  }, [dispatch, cycleTimeSettings, flagCardAsBlock, displayFlagCardAsBlock, hasBlockColumn]);
 
   return (
     <div aria-label='Cycle time settings section'>
