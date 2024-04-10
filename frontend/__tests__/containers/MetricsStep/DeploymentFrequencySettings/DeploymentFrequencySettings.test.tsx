@@ -10,6 +10,7 @@ import { TokenAccessAlert } from '@src/containers/MetricsStep/TokenAccessAlert';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
+
 import { setupStore } from '@test/utils/setupStoreUtil';
 
 jest.mock('@src/hooks', () => ({
