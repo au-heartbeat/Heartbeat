@@ -12,38 +12,48 @@ import { WarningNotification } from '@src/components/Common/WarningNotification'
 import { ConfigSectionContainer } from '@src/components/Common/ConfigForms';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
-import { DEFAULT_HELPER_TEXT } from '@src/constants/commons';
+import { ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
+import { Controller, useFormContext } from 'react-hook-form';
 import { CALENDAR } from '@src/constants/resources';
 import { Radio, RadioGroup } from '@mui/material';
-import { useState } from 'react';
 
 const BasicInfo = () => {
   const dispatch = useAppDispatch();
-  const projectName = useAppSelector(selectProjectName);
   const calendarType = useAppSelector(selectCalendarType);
   const warningMessage = useAppSelector(selectWarningMessage);
-  const [isEmptyProjectName, setIsEmptyProjectName] = useState<boolean>(false);
+  const { setError, control } = useFormContext();
 
   return (
     <>
       {warningMessage && <WarningNotification message={warningMessage} />}
       <ConfigSectionContainer aria-label='Basic information'>
         <ConfigSelectionTitle>Basic information</ConfigSelectionTitle>
-        <ProjectNameInput
-          required
-          label='Project name'
-          variant='standard'
-          value={projectName}
-          onFocus={(e) => {
-            setIsEmptyProjectName(e.target.value === '');
+        <Controller
+          name={'projectName'}
+          control={control}
+          render={({ field, fieldState }) => {
+            return (
+              <ProjectNameInput
+                required
+                label='Project name'
+                variant='standard'
+                {...field}
+                onChange={(e) => {
+                  dispatch(updateProjectName(e.target.value));
+                  field.onChange(e.target.value);
+                }}
+                onFocus={() => {
+                  if (field.value === '') {
+                    setError('projectName', { message: ERROR_MESSAGE.projectName });
+                  }
+                }}
+                error={fieldState.invalid}
+                helperText={fieldState.error?.message || ''}
+              />
+            );
           }}
-          onChange={(e) => {
-            dispatch(updateProjectName(e.target.value));
-            setIsEmptyProjectName(e.target.value === '');
-          }}
-          error={isEmptyProjectName}
-          helperText={isEmptyProjectName ? 'Project name is required' : DEFAULT_HELPER_TEXT}
         />
+
         <CollectionDateLabel>Collection Date</CollectionDateLabel>
         <RadioGroup
           value={calendarType}

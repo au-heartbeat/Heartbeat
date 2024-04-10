@@ -1,23 +1,16 @@
+import {
+  CALENDAR_TYPE_LITERAL,
+  METRICS_LITERAL,
+  BOARD_TYPE_LITERAL,
+  PIPELINE_TOOL_TYPE_LITERAL,
+  SOURCE_CONTROL_TYPE_LITERAL,
+  ERROR_MESSAGE,
+} from '@src/containers/ConfigStep/Form/literal';
 import { object, string, mixed, InferType, array } from 'yup';
 import { REGEX } from '@src/constants/regex';
 
-const CALENDAR_TYPE_LITERAL = ['Regular Calendar(Weekend Considered)', 'Calendar with Chinese Holiday'];
-const METRICS_LITERAL = [
-  'Velocity',
-  'Cycle time',
-  'Classification',
-  'Rework times',
-  'Lead time for changes',
-  'Deployment frequency',
-  'Dev change failure rate',
-  'Dev mean time to recovery',
-];
-const BOARD_TYPE_LITERAL = ['Jira'];
-const PIPELINE_TOOL_TYPE_LITERAL = ['BuildKite'];
-const SOURCE_CONTROL_TYPE_LITERAL = ['GitHub'];
-
 export const basicInfoSchema = object().shape({
-  projectName: string().required(),
+  projectName: string().required(ERROR_MESSAGE.projectName),
   dateRange: array().of(string()).required(),
   calendarType: mixed().oneOf(CALENDAR_TYPE_LITERAL),
   metrics: mixed().oneOf(METRICS_LITERAL),
