@@ -1,11 +1,11 @@
 import {
   config as metricsStepData,
   modifiedConfig as modifiedMetricsStepData,
-} from '../fixtures/createNew/metricsStep';
-import { config as configStepData } from '../fixtures/createNew/configStep';
-import { test } from '../fixtures/testWithExtendFixtures';
-import { clearTempDir } from 'e2e/utils/clearTempDir';
-import { format } from 'e2e/utils/dateTime';
+} from '../../fixtures/create-new/metrics-step';
+import { config as configStepData } from '../../fixtures/create-new/config-step';
+import { test } from '../../fixtures/test-with-extend-fixtures';
+import { clearTempDir } from 'e2e/utils/clear-temp-dir';
+import { format } from 'e2e/utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
@@ -77,7 +77,7 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await configStep.selectRegularCalendar(configStepData.calendarType);
   await configStep.typeInDateRange(dateRange);
   await configStep.selectAllRequiredMetrics();
-  await configStep.fillAndverifyBoardConfig(configStepData.board);
+  await configStep.fillAndVerifyBoardConfig(configStepData.board);
   await configStep.fillAndVerifyPipelineToolForm(configStepData.pipelineTool);
   await configStep.fillAndVerifySourceControlForm(configStepData.sourceControl);
   await configStep.goToMetrics();

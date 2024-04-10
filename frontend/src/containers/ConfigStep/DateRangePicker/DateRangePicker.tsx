@@ -15,11 +15,7 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
-import {
-  isStartDateDisabled,
-  isEndDateDisabled,
-  calculateLastAvailableDate,
-} from '@src/containers/ConfigStep/DateRangePicker/validation';
+import { isDateDisabled, calculateLastAvailableDate } from '@src/containers/ConfigStep/DateRangePicker/validation';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
@@ -44,13 +40,13 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isShowRemoveButton = dateRangeGroup.length > 1;
   const dateRangeGroupExcludeSelf = dateRangeGroup.filter((_, idx) => idx !== index);
-  const shouldStartDateDisableDate = isStartDateDisabled.bind(null, dayjs(endDate), dateRangeGroupExcludeSelf);
-  const shouldEndDateDisableDate = isEndDateDisabled.bind(null, dayjs(startDate), dateRangeGroupExcludeSelf);
+  const shouldStartDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
+  const shouldEndDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
 
-  const dispatchUpdateConfig = () => {
+  const dispatchUpdateConfig = useCallback(() => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
-  };
+  }, [dispatch]);
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
@@ -103,7 +99,8 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
   const removeSelfHandler = useCallback(() => {
     const newDateRangeGroup = dateRangeGroup.filter((_, idx) => idx !== index);
     dispatch(updateDateRange(newDateRangeGroup));
-  }, [dateRangeGroup, dispatch, index]);
+    dispatchUpdateConfig();
+  }, [dateRangeGroup, dispatch, index, dispatchUpdateConfig]);
 
   return (
     <StyledFeaturedRangePickerContainer>

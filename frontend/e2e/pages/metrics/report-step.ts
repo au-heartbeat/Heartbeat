@@ -16,6 +16,9 @@ export class ReportStep {
   readonly averageCycleTimeForSP: Locator;
   readonly averageCycleTimeForCard: Locator;
   readonly boardMetricRework: Locator;
+  readonly boardMetricsDetailVelocityPart: Locator;
+  readonly boardMetricsDetailCycleTimePart: Locator;
+  readonly boardMetricsDetaiClassificationPart: Locator;
   readonly prLeadTime: Locator;
   readonly pipelineLeadTime: Locator;
   readonly totalLeadTime: Locator;
@@ -44,6 +47,9 @@ export class ReportStep {
     this.averageCycleTimeForSP = this.page.locator('[data-test-id="Cycle Time"] [data-test-id="report-section"]');
     this.averageCycleTimeForCard = this.page.locator('[data-test-id="Cycle Time"] [data-test-id="report-section"]');
     this.boardMetricRework = this.page.locator('[data-test-id="Rework"] [data-test-id="report-section"]');
+    this.boardMetricsDetailVelocityPart = this.page.locator('[data-test-id="Velocity"]');
+    this.boardMetricsDetailCycleTimePart = this.page.locator('[data-test-id="Cycle Time"]');
+    this.boardMetricsDetaiClassificationPart = this.page.locator('[data-test-id="Classification"]');
 
     this.prLeadTime = this.page.locator('[data-test-id="Lead Time For Changes"] [data-test-id="report-section"]');
     this.pipelineLeadTime = this.page.locator('[data-test-id="Lead Time For Changes"] [data-test-id="report-section"]');
@@ -72,6 +78,10 @@ export class ReportStep {
   }
   combineStrings(arr: string[]): string {
     return arr.join('');
+  }
+
+  async clickShowMoreLink() {
+    await this.showMoreLinks.click();
   }
 
   async goToPreviousStep() {
@@ -109,7 +119,7 @@ export class ReportStep {
       throw Error('The board detail type is not correct, please give a correct one.');
     }
     await downloadFileAndCheck(this.page, this.exportPipelineDataButton, 'pipelineData.csv', async (fileDataString) => {
-      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/pipelineData.csv'));
+      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new/pipeline-data.csv'));
       const localCsv = parse(localCsvFile);
       const downloadCsv = parse(fileDataString);
 
@@ -255,6 +265,64 @@ export class ReportStep {
     );
   }
 
+  async checkOnlyVelocityPartVisible() {
+    await expect(this.boardMetricsDetailVelocityPart).toBeVisible();
+    await expect(this.boardMetricsDetailCycleTimePart).toBeHidden();
+    await expect(this.boardMetricsDetaiClassificationPart).toBeHidden();
+  }
+
+  async checkOnlyCycleTimePartVisible() {
+    await expect(this.boardMetricsDetailVelocityPart).toBeHidden();
+    await expect(this.boardMetricsDetailCycleTimePart).toBeVisible();
+    await expect(this.boardMetricsDetaiClassificationPart).toBeHidden();
+  }
+
+  async checkOnlyClassificationPartVisible() {
+    await expect(this.boardMetricsDetailVelocityPart).toBeHidden();
+    await expect(this.boardMetricsDetailCycleTimePart).toBeHidden();
+    await expect(this.boardMetricsDetaiClassificationPart).toBeVisible();
+  }
+
+  async checkOnlyLeadTimeForChangesPartVisible() {
+    await expect(this.totalLeadTime).toBeVisible();
+    await expect(this.deploymentFrequency).toBeHidden();
+    await expect(this.failureRate).toBeHidden();
+    await expect(this.devMeanTimeToRecovery).toBeHidden();
+  }
+
+  async checkOnlyDeploymentFrequencyPartVisible() {
+    await expect(this.totalLeadTime).toBeHidden();
+    await expect(this.deploymentFrequency).toBeVisible();
+    await expect(this.failureRate).toBeHidden();
+    await expect(this.devMeanTimeToRecovery).toBeHidden();
+  }
+
+  async checkOnlyChangeFailureRatePartVisible() {
+    await expect(this.totalLeadTime).toBeHidden();
+    await expect(this.deploymentFrequency).toBeHidden();
+    await expect(this.failureRate).toBeVisible();
+    await expect(this.devMeanTimeToRecovery).toBeHidden();
+  }
+
+  async checkOnlyMeanTimeToRecoveryPartVisible() {
+    await expect(this.totalLeadTime).toBeHidden();
+    await expect(this.deploymentFrequency).toBeHidden();
+    await expect(this.failureRate).toBeHidden();
+    await expect(this.devMeanTimeToRecovery).toBeVisible();
+  }
+
+  async checkExportMetricDataButtonClickable() {
+    await expect(this.exportMetricData).toBeEnabled();
+  }
+
+  async checkExportBoardDataButtonClickable() {
+    await expect(this.exportBoardData).toBeEnabled();
+  }
+
+  async checkExportPipelineDataButtonClickable() {
+    await expect(this.exportPipelineDataButton).toBeEnabled();
+  }
+
   async checkBoardMetricsDetails(boardDetailType: ProjectCreationType, csvCompareLines: number) {
     await this.showMoreLinks.first().click();
     if (
@@ -267,7 +335,7 @@ export class ReportStep {
     }
 
     await downloadFileAndCheck(this.page, this.exportBoardData, 'boardData.csv', async (fileDataString) => {
-      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/boardData.csv'));
+      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new/board-data.csv'));
       const localCsv = parse(localCsvFile, { to: csvCompareLines });
       const downloadCsv = parse(fileDataString, { to: csvCompareLines });
 
@@ -294,7 +362,7 @@ export class ReportStep {
 
   async checkMetricDownloadData() {
     await downloadFileAndCheck(this.page, this.exportMetricData, 'metricData.csv', async (fileDataString) => {
-      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/createNew/metricData.csv'));
+      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new/metric-data.csv'));
       const localCsv = parse(localCsvFile);
       const downloadCsv = parse(fileDataString);
 
@@ -309,7 +377,7 @@ export class ReportStep {
       'metricDataByStatusDownload.csv',
       async (fileDataString) => {
         const localCsvFile = fs.readFileSync(
-          path.resolve(__dirname, '../../fixtures/cycleTimeByStatus/metricDataByStatus.csv'),
+          path.resolve(__dirname, '../../fixtures/cycle-time-by-status/metric-data-by-status.csv'),
         );
         const localCsv = parse(localCsvFile);
         const downloadCsv = parse(fileDataString);
@@ -326,7 +394,7 @@ export class ReportStep {
       'metricDataByColumnDownload.csv',
       async (fileDataString) => {
         const localCsvFile = fs.readFileSync(
-          path.resolve(__dirname, '../../fixtures/cycleTimeByStatus/metricDataByStatus.csv'),
+          path.resolve(__dirname, '../../fixtures/cycle-time-by-status/metric-data-by-status.csv'),
         );
         const localCsv = parse(localCsvFile);
         const downloadCsv = parse(fileDataString);

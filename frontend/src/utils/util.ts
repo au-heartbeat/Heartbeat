@@ -5,6 +5,8 @@ import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/style
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import { includes, isEqual, sortBy, uniq } from 'lodash';
+import { TDateRange } from '@src/context/config/configSlice';
+
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 
@@ -99,6 +101,13 @@ export const formatMillisecondsToHours = (duration: number) => {
 
 export const formatDateToTimestampString = (date: string) => {
   return dayjs(date).valueOf().toString();
+};
+
+export const sortDateRanges = (dateRanges: TDateRange, descending = true) => {
+  const result = [...dateRanges].sort((a, b) => {
+    return dayjs(b.startDate as string).diff(dayjs(a.startDate as string));
+  });
+  return descending ? result : result.reverse();
 };
 
 export const formatDuplicatedNameWithSuffix = (data: ITargetFieldType[]) => {
