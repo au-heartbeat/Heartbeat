@@ -1,4 +1,4 @@
-import { DateRangePickerGroup } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { DateRangePickerGroup, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
@@ -9,7 +9,7 @@ import { useMemo, useState } from 'react';
 
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
-  const [sortStatus, setSortStatus] = useState('DEFAULT');
+  const [sortStatus, setSortStatus] = useState<SortType>(SortType.DEFAULT);
   const isDateRangeValid = useMemo(() => {
     return dateRangeGroup.every((dateRange) => {
       return (
@@ -22,7 +22,7 @@ export const DateRangePickerSection = () => {
     });
   }, [dateRangeGroup]);
 
-  const handleChange = (type: any) => {
+  const handleChange = (type: SortType) => {
     setSortStatus(type);
   };
 

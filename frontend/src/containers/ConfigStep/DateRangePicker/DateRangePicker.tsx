@@ -13,9 +13,9 @@ import {
 } from '@src/constants/resources';
 import { isDateDisabled, calculateLastAvailableDate } from '@src/containers/ConfigStep/DateRangePicker/validation';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
-import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { selectDateRange } from '@src/context/config/configSlice';
+import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { DateValidationError } from '@mui/x-date-pickers';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Z_INDEX } from '@src/constants/commons';
@@ -33,7 +33,6 @@ const HelperTextForEndDate = (props: TextFieldProps) => (
 );
 
 export const DateRangePicker = ({ startDate, endDate, index, onError, onChange }: IRangePickerProps) => {
-  const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isShowRemoveButton = dateRangeGroup.length > 1;
   const dateRangeGroupExcludeSelf = dateRangeGroup.filter((_, idx) => idx !== index);
@@ -89,8 +88,7 @@ export const DateRangePicker = ({ startDate, endDate, index, onError, onChange }
   const removeSelfHandler = useCallback(() => {
     const newDateRangeGroup = dateRangeGroup.filter((_, idx) => idx !== index);
     onChange?.(newDateRangeGroup, index);
-    dispatchUpdateConfig();
-  }, [dateRangeGroup, dispatch, index, dispatchUpdateConfig]);
+  }, [dateRangeGroup, index, onChange]);
 
   const handleError = (err: DateValidationError, index: number) => {
     onError?.(err, index);

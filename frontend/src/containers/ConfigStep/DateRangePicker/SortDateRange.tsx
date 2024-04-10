@@ -5,6 +5,7 @@ import {
   SortButtonContainer,
   SortTextButton,
 } from '@src/containers/ConfigStep/DateRangePicker/style';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { selectDateRange } from '@src/context/config/configSlice';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { SORT_DATE_RANGE_TEXT } from '@src/constants/resources';
@@ -13,7 +14,7 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 
 type IProps = {
-  onChange: (type: string) => void;
+  onChange: (type: SortType) => void;
 };
 
 const sortStates: Record<string, string> = {
@@ -29,7 +30,7 @@ export const SortDateRange = ({ onChange }: IProps) => {
 
   const handleChangeSort = () => {
     setSortOrder(sortStates[sortOrder]);
-    onChange?.(sortStates[sortOrder]);
+    onChange?.(sortStates[sortOrder] as SortType);
   };
 
   return (

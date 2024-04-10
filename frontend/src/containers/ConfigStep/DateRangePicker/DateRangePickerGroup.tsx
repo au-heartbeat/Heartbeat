@@ -17,7 +17,7 @@ import { useState } from 'react';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
-enum SortType {
+export enum SortType {
   DESCENDING = 'DESCENDING',
   ASCENDING = 'ASCENDING',
   DEFAULT = 'DEFAULT',
@@ -32,8 +32,8 @@ type SortDateRange = {
 
 const sortFn = {
   DEFAULT: ({ sortIndex }: SortDateRange) => sortIndex,
-  DESCENDING: ({ startDate }: SortDateRange) => dayjs(startDate).unix(),
-  ASCENDING: ({ endDate }: SortDateRange) => dayjs(endDate).unix(),
+  DESCENDING: ({ startDate }: SortDateRange) => -dayjs(startDate).unix(),
+  ASCENDING: ({ startDate }: SortDateRange) => dayjs(startDate).unix(),
 };
 
 type IProps = {
