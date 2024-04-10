@@ -27,11 +27,11 @@ import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/Deploym
 import { BoardInfoResponse, useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
-import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
+import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
-import EmptyContent from '@src/components/Common/EmptyContent';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
+import EmptyContent from '@src/components/Common/EmptyContent';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { useCallback, useLayoutEffect } from 'react';
@@ -83,7 +83,9 @@ const MetricsStep = () => {
         return res.data;
       };
 
-      const results = await Promise.all(dateRange.map(fetchData));
+      let dateRangeCopy = Array.from(dateRange);
+      dateRangeCopy.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
+      const results = await Promise.all(dateRangeCopy.map(fetchData));
       if (results) {
         const commonPayload = combineBoardInfo(results);
         dispatch(updateBoardVerifyState(true));
