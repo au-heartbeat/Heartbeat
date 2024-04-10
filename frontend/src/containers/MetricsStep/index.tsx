@@ -99,11 +99,7 @@ const MetricsStep = () => {
           results.flatMap((result) => result.targetFields),
           (elem) => [elem.key, elem.name, elem.flag].join(),
         );
-        const allJiraColumns = uniqBy(
-          results.flatMap((result) => result.jiraColumns),
-          // @ts-ignore: ignore the lodash handle javascript object property name error
-          (elem) => [elem.key, elem.value.name, ...elem.value.statuses].join(),
-        );
+        const allJiraColumns = results[results.length - 1].jiraColumns;
         const allIgnoredTargetFields = uniqBy(
           results.flatMap((result) => result.ignoredTargetFields),
           (elem) => [elem.key, elem.name, elem.flag].join(),
