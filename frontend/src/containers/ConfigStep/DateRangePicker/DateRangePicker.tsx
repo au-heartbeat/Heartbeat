@@ -11,16 +11,12 @@ import {
   START_DATE_INVALID_TEXT,
   END_DATE_INVALID_TEXT,
 } from '@src/constants/resources';
-import {
-  initDeploymentFrequencySettings,
-  updateShouldGetBoardConfig,
-  updateShouldGetPipelineConfig,
-} from '@src/context/Metrics/metricsSlice';
 import { isDateDisabled, calculateLastAvailableDate } from '@src/containers/ConfigStep/DateRangePicker/validation';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { DateValidationError } from '@mui/x-date-pickers';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Z_INDEX } from '@src/constants/commons';
 import { Nullable } from '@src/utils/types';
@@ -36,19 +32,13 @@ const HelperTextForEndDate = (props: TextFieldProps) => (
   <TextField {...props} variant='standard' helperText={props.error ? END_DATE_INVALID_TEXT : ''} />
 );
 
-export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps) => {
+export const DateRangePicker = ({ startDate, endDate, index, onError, onChange }: IRangePickerProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isShowRemoveButton = dateRangeGroup.length > 1;
   const dateRangeGroupExcludeSelf = dateRangeGroup.filter((_, idx) => idx !== index);
   const shouldStartDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
   const shouldEndDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
-
-  const dispatchUpdateConfig = useCallback(() => {
-    dispatch(updateShouldGetBoardConfig(true));
-    dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(initDeploymentFrequencySettings());
-  }, [dispatch]);
 
   const changeStartDate = (value: Nullable<Dayjs>) => {
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
@@ -79,8 +69,7 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
         endDate,
       };
     });
-    dispatch(updateDateRange(newDateRangeGroup));
-    dispatchUpdateConfig();
+    onChange?.(newDateRangeGroup, index);
   };
 
   const changeEndDate = (value: Nullable<Dayjs>) => {
@@ -94,15 +83,18 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
 
       return { startDate, endDate };
     });
-    dispatch(updateDateRange(newDateRangeGroup));
-    dispatchUpdateConfig();
+    onChange?.(newDateRangeGroup, index);
   };
 
   const removeSelfHandler = useCallback(() => {
     const newDateRangeGroup = dateRangeGroup.filter((_, idx) => idx !== index);
-    dispatch(updateDateRange(newDateRangeGroup));
+    onChange?.(newDateRangeGroup, index);
     dispatchUpdateConfig();
   }, [dateRangeGroup, dispatch, index, dispatchUpdateConfig]);
+
+  const handleError = (err: DateValidationError, index: number) => {
+    onError?.(err, index);
+  };
 
   return (
     <StyledFeaturedRangePickerContainer>
@@ -113,6 +105,7 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={changeStartDate}
+          onError={(err: DateValidationError) => handleError(err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForStartDate,
@@ -131,6 +124,7 @@ export const DateRangePicker = ({ startDate, endDate, index }: IRangePickerProps
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
           onChange={changeEndDate}
+          onError={(err: DateValidationError) => handleError(err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForEndDate,
