@@ -5,10 +5,11 @@ import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style
 import { selectDateRange } from '@src/context/config/configSlice';
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
+  const [sortStatus, setSortStatus] = useState('DEFAULT');
   const isDateRangeValid = useMemo(() => {
     return dateRangeGroup.every((dateRange) => {
       return (
@@ -21,6 +22,10 @@ export const DateRangePickerSection = () => {
     });
   }, [dateRangeGroup]);
 
+  const handleChange = (type: any) => {
+    setSortStatus(type);
+  };
+
   return (
     <div aria-label='Time range section'>
       <TitleContainer>
@@ -31,9 +36,9 @@ export const DateRangePickerSection = () => {
             margin: '1rem 0',
           }}
         />
-        {dateRangeGroup.length > 1 && isDateRangeValid && <SortDateRange />}
+        {dateRangeGroup.length > 1 && isDateRangeValid && <SortDateRange onChange={handleChange} />}
       </TitleContainer>
-      <DateRangePickerGroup />
+      <DateRangePickerGroup sortStatus={sortStatus} />
     </div>
   );
 };

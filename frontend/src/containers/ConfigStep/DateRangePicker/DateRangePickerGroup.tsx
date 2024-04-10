@@ -12,7 +12,16 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateValidationError } from '@mui/x-date-pickers';
+import sortBy from 'lodash/sortBy';
 import { useState } from 'react';
+import get from 'lodash/get';
+import dayjs from 'dayjs';
+
+enum SortType {
+  DESCENDING = 'DESCENDING',
+  ASCENDING = 'ASCENDING',
+  DEFAULT = 'DEFAULT',
+}
 
 type SortDateRange = {
   startDate: string | null;
@@ -21,7 +30,17 @@ type SortDateRange = {
   error: DateValidationError | null;
 };
 
-export const DateRangePickerGroup = () => {
+const sortFn = {
+  DEFAULT: ({ sortIndex }: SortDateRange) => sortIndex,
+  DESCENDING: ({ startDate }: SortDateRange) => dayjs(startDate).unix(),
+  ASCENDING: ({ endDate }: SortDateRange) => dayjs(endDate).unix(),
+};
+
+type IProps = {
+  sortStatus: SortType;
+};
+
+export const DateRangePickerGroup = ({ sortStatus }: IProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
@@ -56,7 +75,7 @@ export const DateRangePickerGroup = () => {
   return (
     <DateRangePickerGroupContainer>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {sortDateRangeGroup.map(({ startDate, endDate, sortIndex }, index) => (
+        {sortBy(sortDateRangeGroup, get(sortFn, sortStatus)).map(({ startDate, endDate, sortIndex }, index) => (
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
