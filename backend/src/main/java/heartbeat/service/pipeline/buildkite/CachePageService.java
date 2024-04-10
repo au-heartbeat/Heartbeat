@@ -42,6 +42,7 @@ public class CachePageService {
 		return PageStepsInfoDto.builder().firstPageStepsInfo(firstPageStepsInfo).totalPage(totalPage).build();
 	}
 
+	@Cacheable(cacheNames = "pagePipelineInfo", key = "#buildKiteToken+'-'+#orgSlug+'-'+#page+'-'+#perPage")
 	public PageBuildKitePipelineInfoDTO getPipelineInfoList(String orgSlug, String buildKiteToken, String page,
 			String perPage) {
 		var pipelineInfoResponse = buildKiteFeignClient.getPipelineInfo(buildKiteToken, orgSlug, page, perPage);

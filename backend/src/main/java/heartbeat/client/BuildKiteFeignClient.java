@@ -31,7 +31,6 @@ public interface BuildKiteFeignClient {
 	@ResponseStatus(HttpStatus.OK)
 	List<BuildKiteOrganizationsInfo> getBuildKiteOrganizationsInfo(@RequestHeader("Authorization") String token);
 
-	@Cacheable(cacheNames = "pipelineInfo", key = "#token+'-'+#organizationId+'-'+#page+'-'+#perPage")
 	@GetMapping(path = "v2/organizations/{organizationId}/pipelines?page={page}&per_page={perPage}")
 	@ResponseStatus(HttpStatus.OK)
 	ResponseEntity<List<BuildKitePipelineDTO>> getPipelineInfo(@RequestHeader("Authorization") String token,
