@@ -187,7 +187,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
 
   const verifyJira = async () => {
     setIsLoading(true);
-    dispatch(updateTreatFlagCardAsBlock(true));
+    // dispatch(updateTreatFlagCardAsBlock(true));
     const boardInfo = getBoardInfo(fields) as BoardRequestDTO;
     try {
       const res: { response: Record<string, string> } = await boardClient.getVerifyBoard({

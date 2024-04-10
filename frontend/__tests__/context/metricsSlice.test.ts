@@ -123,7 +123,7 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.doneColumn).toEqual([]);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([]);
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
-    expect(savedMetricsSetting.treatFlagCardAsBlock).toBe(false);
+    expect(savedMetricsSetting.treatFlagCardAsBlock).toBe(true);
     expect(savedMetricsSetting.assigneeFilter).toBe(ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE);
     expect(savedMetricsSetting.importedData).toEqual({
       importedCrews: [],

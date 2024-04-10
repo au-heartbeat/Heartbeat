@@ -51,6 +51,7 @@ export interface ISavedMetricsSettingState {
   deploymentFrequencySettings: IPipelineConfig[];
   leadTimeForChanges: IPipelineConfig[];
   treatFlagCardAsBlock: boolean;
+  displayFlagCardAsBlock: boolean;
   assigneeFilter: string;
   firstTimeRoadMetricData: boolean;
   importedData: {
@@ -86,6 +87,7 @@ const initialState: ISavedMetricsSettingState = {
   deploymentFrequencySettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   treatFlagCardAsBlock: true,
+  displayFlagCardAsBlock: true,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
   firstTimeRoadMetricData: true,
   importedData: {
@@ -94,7 +96,7 @@ const initialState: ISavedMetricsSettingState = {
     importedPipelineCrews: [],
     importedCycleTime: {
       importedCycleTimeSettings: [],
-      importedTreatFlagCardAsBlock: false,
+      importedTreatFlagCardAsBlock: true,
     },
     importedDoneStatus: [],
     importedClassification: [],
@@ -364,7 +366,7 @@ export const metricsSlice = createSlice({
       state.importedData.importedCycleTime.importedCycleTimeSettings =
         cycleTime?.jiraColumns || state.importedData.importedCycleTime.importedCycleTimeSettings;
       state.importedData.importedCycleTime.importedTreatFlagCardAsBlock =
-        cycleTime?.treatFlagCardAsBlock || state.importedData.importedCycleTime.importedTreatFlagCardAsBlock;
+        cycleTime?.treatFlagCardAsBlock && state.importedData.importedCycleTime.importedTreatFlagCardAsBlock;
       state.importedData.importedAssigneeFilter = assigneeFilter || state.importedData.importedAssigneeFilter;
       state.importedData.importedDoneStatus = doneStatus || state.importedData.importedDoneStatus;
       state.importedData.importedClassification = classification || state.importedData.importedClassification;
@@ -380,6 +382,7 @@ export const metricsSlice = createSlice({
       const preJiraColumnsValue = getSortedAndDeduplicationBoardingMapping(state.cycleTimeSettings).filter(
         (item) => item !== METRICS_CONSTANTS.cycleTimeEmptyStr,
       );
+      state.displayFlagCardAsBlock = state.displayFlagCardAsBlock && importedCycleTime.importedTreatFlagCardAsBlock;
       state.users = isProjectCreated
         ? setCreateSelectUsers(state, users)
         : setImportSelectUsers(state, users, importedCrews);
@@ -461,7 +464,7 @@ export const metricsSlice = createSlice({
       state.treatFlagCardAsBlock =
         typeof importedCycleTime.importedTreatFlagCardAsBlock === 'boolean'
           ? importedCycleTime.importedTreatFlagCardAsBlock
-          : true;
+          : false;
     },
 
     updatePipelineSettings: (state, action) => {
@@ -575,6 +578,10 @@ export const metricsSlice = createSlice({
       state.treatFlagCardAsBlock = action.payload;
     },
 
+    updateDisplayFlagCardAsBlock: (state, action) => {
+      state.displayFlagCardAsBlock = action.payload;
+    },
+
     updateAssigneeFilter: (state, action) => {
       state.assigneeFilter = action.payload;
     },
@@ -607,6 +614,7 @@ export const {
   updateMetricsImportedData,
   initDeploymentFrequencySettings,
   updateTreatFlagCardAsBlock,
+  updateDisplayFlagCardAsBlock,
   updateAssigneeFilter,
   updateMetricsState,
   updatePipelineSettings,
@@ -630,6 +638,7 @@ export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycle
 export const selectMetricsContent = (state: RootState) => state.metrics;
 export const selectAdvancedSettings = (state: RootState) => state.metrics.importedData.importedAdvancedSettings;
 export const selectTreatFlagCardAsBlock = (state: RootState) => state.metrics.treatFlagCardAsBlock;
+export const selectDisplayFlagCardAsBlock = (state: RootState) => state.metrics.displayFlagCardAsBlock;
 export const selectAssigneeFilter = (state: RootState) => state.metrics.assigneeFilter;
 export const selectCycleTimeWarningMessage = (state: RootState) => state.metrics.cycleTimeWarningMessage;
 export const selectClassificationWarningMessage = (state: RootState) => state.metrics.classificationWarningMessage;
