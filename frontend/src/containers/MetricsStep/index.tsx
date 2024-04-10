@@ -41,6 +41,7 @@ import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import { theme } from '@src/theme';
 import merge from 'lodash/merge';
+import { uniqBy } from 'lodash';
 import dayjs from 'dayjs';
 
 const MetricsStep = () => {
@@ -93,10 +94,20 @@ const MetricsStep = () => {
     if (!isShowCrewsAndRealDone || !shouldGetBoardConfig) return;
     getInfo().then((results) => {
       if (results) {
-        const allUsers = [...new Set(results.flatMap(result => result.users))];
-        const allTargetFields = [...new Set(results.flatMap(result => result.targetFields))];
-        const allJiraColumns = [...new Set(results.flatMap(result => result.jiraColumns))];
-        const allIgnoredTargetFields = [...new Set(results.flatMap(result => result.ignoredTargetFields))];
+        const allUsers = [...new Set(results.flatMap((result) => result.users))];
+        const allTargetFields = uniqBy(
+          results.flatMap((result) => result.targetFields),
+          (elem) => [elem.key, elem.name, elem.flag].join(),
+        );
+        const allJiraColumns = uniqBy(
+          results.flatMap((result) => result.jiraColumns),
+          // @ts-ignore: ignore the lodash handle javascript object property name error
+          (elem) => [elem.key, elem.value.name, ...elem.value.statuses].join(),
+        );
+        const allIgnoredTargetFields = uniqBy(
+          results.flatMap((result) => result.ignoredTargetFields),
+          (elem) => [elem.key, elem.name, elem.flag].join(),
+        );
         const commonPayload = {
           users: allUsers,
           targetFields: allTargetFields,
@@ -105,7 +116,7 @@ const MetricsStep = () => {
         };
         dispatch(updateBoardVerifyState(true));
         dispatch(updateJiraVerifyResponse(commonPayload));
-        dispatch(updateMetricsState(merge(commonPayload, {isProjectCreated: isProjectCreated})));
+        dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
         dispatch(updateShouldGetBoardConfig(false));
         dispatch(updateFirstTimeRoadMetricsBoardData(false));
       }
