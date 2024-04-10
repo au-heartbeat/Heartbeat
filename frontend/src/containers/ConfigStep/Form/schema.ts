@@ -16,35 +16,40 @@ const BOARD_TYPE_LITERAL = ['Jira'];
 const PIPELINE_TOOL_TYPE_LITERAL = ['BuildKite'];
 const SOURCE_CONTROL_TYPE_LITERAL = ['GitHub'];
 
-export const boardConfigSchema = object().shape({
+export const basicInfoSchema = object().shape({
   projectName: string().required(),
-  // todo define date range group validation
   dateRange: array().of(string()).required(),
   calendarType: mixed().oneOf(CALENDAR_TYPE_LITERAL),
   metrics: mixed().oneOf(METRICS_LITERAL),
-  board: object().shape({
-    type: mixed().oneOf(BOARD_TYPE_LITERAL),
-    boardId: string().required(),
-    email: string().required().email(),
-    site: string().required(),
-    token: string()
-      .test('token valid', 'Invalid token', (value) => !value || REGEX.BOARD_TOKEN.test(value))
-      .required(),
-  }),
-  pipelineTool: object().shape({
-    type: mixed().oneOf(PIPELINE_TOOL_TYPE_LITERAL),
-    token: string().when(PIPELINE_TOOL_TYPE_LITERAL, {
-      is: true,
-      then: () => string().matches(REGEX.BUILDKITE_TOKEN),
-    }),
-  }),
-  sourceControl: object().shape({
-    type: mixed().oneOf(SOURCE_CONTROL_TYPE_LITERAL),
-    token: string().when(SOURCE_CONTROL_TYPE_LITERAL, {
-      is: true,
-      then: () => string().matches(REGEX.GITHUB_TOKEN),
-    }),
+});
+
+export const boardConfigSchema = object().shape({
+  type: mixed().oneOf(BOARD_TYPE_LITERAL),
+  boardId: string().required(),
+  email: string().required().email(),
+  site: string().required(),
+  token: string()
+    .test('token valid', 'Invalid token', (value) => !value || REGEX.BOARD_TOKEN.test(value))
+    .required(),
+});
+
+export const pipelineToolSchema = object().shape({
+  type: mixed().oneOf(PIPELINE_TOOL_TYPE_LITERAL),
+  token: string().when(PIPELINE_TOOL_TYPE_LITERAL, {
+    is: true,
+    then: () => string().matches(REGEX.BUILDKITE_TOKEN),
   }),
 });
 
+export const sourceControlSchema = object().shape({
+  type: mixed().oneOf(SOURCE_CONTROL_TYPE_LITERAL),
+  token: string().when(SOURCE_CONTROL_TYPE_LITERAL, {
+    is: true,
+    then: () => string().matches(REGEX.GITHUB_TOKEN),
+  }),
+});
+
+export type IBasicInfoData = InferType<typeof basicInfoSchema>;
 export type IBoardConfigData = InferType<typeof boardConfigSchema>;
+export type IPipelineToolData = InferType<typeof pipelineToolSchema>;
+export type ISourceControlData = InferType<typeof sourceControlSchema>;
