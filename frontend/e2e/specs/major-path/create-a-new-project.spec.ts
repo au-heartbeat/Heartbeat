@@ -139,5 +139,5 @@ test('Create a new project without block column in boarding mapping', async ({
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardDownloadDataWithoutBlock();
+  await reportStep.checkBoardDownloadDataWithoutBlock('../../fixtures/create-new/board-data-without-block-column.csv');
 });
