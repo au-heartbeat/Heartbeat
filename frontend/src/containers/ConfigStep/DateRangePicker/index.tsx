@@ -6,7 +6,8 @@ import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { useMemo, useState } from 'react';
-import { DateValidationError } from '@mui/x-date-pickers';
+import { SortDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+
 
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
@@ -31,7 +32,7 @@ export const DateRangePickerSection = () => {
     setSortStatus(type);
   };
 
-  const handleError = (err: DateValidationError[]) => {
+  const handleError = (err: SortDateRangeType[]) => {
     setHasError(!!err.length)
   }
 

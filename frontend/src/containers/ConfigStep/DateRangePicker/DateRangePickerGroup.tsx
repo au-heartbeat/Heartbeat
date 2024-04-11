@@ -15,7 +15,6 @@ import { DateValidationError } from '@mui/x-date-pickers';
 import sortBy from 'lodash/sortBy';
 import { useState, useEffect } from 'react';
 import get from 'lodash/get';
-import isNull from 'lodash/isNull'
 import dayjs from 'dayjs';
 
 export enum SortType {
@@ -24,37 +23,36 @@ export enum SortType {
   DEFAULT = 'DEFAULT',
 }
 
-type SortDateRange = {
+export type SortDateRangeType= {
   startDate: string | null;
   endDate: string | null;
   sortIndex: number;
-  error: DateValidationError | null;
 };
 
 const sortFn = {
-  DEFAULT: ({ sortIndex }: SortDateRange) => sortIndex,
-  DESCENDING: ({ startDate }: SortDateRange) => -dayjs(startDate).unix(),
-  ASCENDING: ({ startDate }: SortDateRange) => dayjs(startDate).unix(),
+  DEFAULT: ({ sortIndex }: SortDateRangeType) => sortIndex,
+  DESCENDING: ({ startDate }: SortDateRangeType) => -dayjs(startDate).unix(),
+  ASCENDING: ({ startDate }: SortDateRangeType) => dayjs(startDate).unix(),
 };
 
 type IProps = {
   sortStatus: SortType;
-  onError?: (data: DateValidationError[]) => void
+  onError?: (data: SortDateRangeType[]) => void
 };
+
+const fillDateRangeGroup = <T,>(item: T, index: number) => ({ ...item, sortIndex: index})
 
 export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
-  const [sortDateRangeGroup, setSortDateRangeGroup] = useState<SortDateRange[]>(
-    dateRangeGroup.map((item, index) => ({ ...item, error: null, sortIndex: index })),
+  const [sortDateRangeGroup, setSortDateRangeGroup] = useState<SortDateRangeType[]>(
+    dateRangeGroup.map(fillDateRangeGroup),
   );
 
   useEffect(() => {
-    const errors = sortDateRangeGroup.filter(({error}) => !isNull(error)).map(({error}) => error)
-    if(errors.length) {
-      onError?.(errors)
-    }
+    const errors = sortDateRangeGroup.filter(({startDate, endDate}) => startDate === 'Invalid Date' || endDate === 'Invalid Date')
+    onError?.(errors)
   }, [sortDateRangeGroup])
 
   const dispatchUpdateConfig = () => {
@@ -63,18 +61,10 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
     dispatch(initDeploymentFrequencySettings());
   };
 
-  const fillDateRangeGroup = <T,>(item: T, index: number) => ({ ...item, error: null, sortIndex: index})
-
   const addRangeHandler = () => {
     const newDateRangeGroup = [...dateRangeGroup, { startDate: null, endDate: null }];
     setSortDateRangeGroup(newDateRangeGroup.map(fillDateRangeGroup));
     dispatch(updateDateRange(newDateRangeGroup));
-  };
-
-  const handleError = async (error: DateValidationError, index: number) => {
-    await setSortDateRangeGroup(
-      sortDateRangeGroup.map((item) => ({ ...item, error: item.sortIndex === index ? error : null })),
-    );
   };
 
   const handleChange = (data: { startDate: string | null; endDate: string | null }[]) => {
@@ -92,7 +82,6 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
             endDate={endDate}
             index={sortIndex}
             key={index}
-            onError={handleError}
             onChange={handleChange}
           />
         ))}
