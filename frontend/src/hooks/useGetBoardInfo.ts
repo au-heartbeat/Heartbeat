@@ -17,7 +17,7 @@ export interface BoardInfoResponse {
   users: Users;
 }
 export interface useGetBoardInfoInterface {
-  getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<void>[]>;
+  getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<any>[] | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
 }
@@ -60,38 +60,41 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
     setErrorMessage({});
-    let dateRangeCopy = Array.from(data.dateRange);
-    dateRangeCopy.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
 
-    const allBoardData = dateRangeCopy.map((info) => {
-      const { dateRange, ...needInfoRequest } = data;
-      const boardInfoRequest = {
-        ...needInfoRequest,
-        startTime: dayjs(info.startDate).valueOf().toString(),
-        endTime: dayjs(info.endDate).valueOf().toString(),
-      };
+    if (data.dateRange) {
+      let dateRangeCopy = Array.from(data.dateRange);
+      dateRangeCopy.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
+      const allBoardData = dateRangeCopy.map((info) => {
+        const { dateRange, ...needInfoRequest } = data;
+        const boardInfoRequest = {
+          ...needInfoRequest,
+          startTime: dayjs(info.startDate).valueOf().toString(),
+          endTime: dayjs(info.endDate).valueOf().toString(),
+        };
 
-      return boardInfoClient
-        .getBoardInfo(boardInfoRequest)
-        .then((res) => {
-          if (!res.data) {
-            setErrorMessage({
-              title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
-              message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
-              code: HttpStatusCode.NoContent,
-            });
-          }
-          return res.data;
-        })
-        .catch((err) => {
-          const { code } = err;
-          setErrorMessage(codeMapping(code));
-          return err;
-        })
-        .finally(() => setIsLoading(false));
-    });
+        return boardInfoClient
+          .getBoardInfo(boardInfoRequest)
+          .then((res) => {
+            if (!res.data) {
+              setErrorMessage({
+                title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
+                message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
+                code: HttpStatusCode.NoContent,
+              });
+            }
+            return res;
+          })
+          .catch((err) => {
+            const { code } = err;
+            setErrorMessage(codeMapping(code));
+            // todo handle return type
+            return err;
+          })
+          .finally(() => setIsLoading(false));
+      });
 
-    return Promise.all(allBoardData);
+      return Promise.all(allBoardData);
+    }
   };
   return {
     getBoardInfo,

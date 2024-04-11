@@ -75,14 +75,16 @@ const MetricsStep = () => {
         ...boardConfig,
         dateRange,
       }).then((res) => {
-        console.log(res);
-        if (res) {
-          const commonPayload = combineBoardInfo(res);
-          dispatch(updateBoardVerifyState(true));
-          dispatch(updateJiraVerifyResponse(commonPayload));
-          dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
-          dispatch(updateShouldGetBoardConfig(false));
-          dispatch(updateFirstTimeRoadMetricsBoardData(false));
+        if(res) {
+          if (res[0].data) {
+            const boardInfo = res?.map((r) => r.data)
+            const commonPayload = combineBoardInfo(boardInfo!);
+            dispatch(updateBoardVerifyState(true));
+            dispatch(updateJiraVerifyResponse(commonPayload));
+            dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
+            dispatch(updateShouldGetBoardConfig(false));
+            dispatch(updateFirstTimeRoadMetricsBoardData(false));
+          }
         }
       });
     },
@@ -92,7 +94,6 @@ const MetricsStep = () => {
 
   const combineBoardInfo = (results: BoardInfoResponse[]): any => {
     if (results) {
-      console.log(results);
       const allUsers = [...new Set(results.flatMap((result) => result.users))];
       const allTargetFields = uniqBy(
         results.flatMap((result) => result.targetFields),
