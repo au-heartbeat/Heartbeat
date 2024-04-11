@@ -217,6 +217,7 @@ public class GitHubService {
 			.commitId(deployInfo.getCommitId())
 			.pipelineCreateTime(pipelineCreateTime)
 			.jobFinishTime(jobFinishTime)
+			.firstCommitTime(firstCommitTime)
 			.pipelineLeadTime(jobFinishTime - firstCommitTime)
 			.totalTime(jobFinishTime - firstCommitTime)
 			.prLeadTime(prLeadTime)
@@ -243,16 +244,11 @@ public class GitHubService {
 		long pipelineLeadTime = jobFinishTime - prMergedTime;
 		long prLeadTime;
 		long totalTime;
-		if (commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert")) {
+		if (isRevert(commitInfo) || isNoFirstCommitTimeInPr(firstCommitTimeInPr)) {
 			prLeadTime = 0;
 		}
 		else {
-			if (firstCommitTimeInPr > 0) {
-				prLeadTime = prMergedTime - firstCommitTimeInPr;
-			}
-			else {
-				prLeadTime = prMergedTime - prCreatedTime;
-			}
+			prLeadTime = prMergedTime - firstCommitTimeInPr;
 		}
 		totalTime = prLeadTime + pipelineLeadTime;
 
@@ -265,8 +261,17 @@ public class GitHubService {
 			.prCreatedTime(prCreatedTime)
 			.commitId(deployInfo.getCommitId())
 			.jobFinishTime(jobFinishTime)
+			.firstCommitTime(prMergedTime)
 			.pipelineCreateTime(pipelineCreateTime)
 			.build();
+	}
+
+	private static boolean isNoFirstCommitTimeInPr(long firstCommitTimeInPr) {
+		return firstCommitTimeInPr == 0;
+	}
+
+	private static boolean isRevert(CommitInfo commitInfo) {
+		return commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
 	}
 
 	public CommitInfo fetchCommitInfo(String commitId, String repositoryId, String token) {

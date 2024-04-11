@@ -25,6 +25,9 @@ public class LeadTime {
 
 	private long jobFinishTime;
 
+	@Nullable
+	private Long firstCommitTime;
+
 	private long pipelineCreateTime;
 
 	@Nullable

@@ -25,6 +25,8 @@ public class LeadTimeInfo {
 
 	private String jobFinishTime;
 
+	private String firstCommitTime;
+
 	@Nullable
 	private String prLeadTime;
 
@@ -49,6 +51,10 @@ public class LeadTimeInfo {
 			}
 
 			this.jobFinishTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getJobFinishTime()));
+
+			if (leadTime.getFirstCommitTime() != null) {
+				this.firstCommitTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getFirstCommitTime()));
+			}
 
 			this.pipelineLeadTime = TimeUtil.msToHMS(leadTime.getPipelineLeadTime());
 

@@ -132,6 +132,7 @@ class GithubServiceTest {
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(60000L)
 				.pipelineLeadTime(120000)
+				.firstCommitTime(1658549040000L)
 				.totalTime(180000)
 				.build()))
 			.build());
@@ -272,6 +273,7 @@ class GithubServiceTest {
 			.pipelineCreateTime(1658549100000L)
 			.prLeadTime(60000L)
 			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
 			.totalTime(180000)
 			.build();
 
@@ -291,9 +293,10 @@ class GithubServiceTest {
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
-			.prLeadTime(60000L)
+			.prLeadTime(0L)
 			.pipelineLeadTime(120000)
-			.totalTime(180000)
+			.firstCommitTime(1658549040000L)
+			.totalTime(120000)
 			.build();
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
@@ -314,6 +317,7 @@ class GithubServiceTest {
 			.pipelineCreateTime(1658549100000L)
 			.prLeadTime(0L)
 			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
 			.totalTime(120000)
 			.build();
 
@@ -335,6 +339,7 @@ class GithubServiceTest {
 			.pipelineCreateTime(1658549100000L)
 			.prLeadTime(0L)
 			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
 			.totalTime(120000)
 			.build();
 
@@ -354,9 +359,10 @@ class GithubServiceTest {
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
-			.prLeadTime(60000L)
+			.prLeadTime(0L)
 			.pipelineLeadTime(120000)
-			.totalTime(180000L)
+			.firstCommitTime(1658549040000L)
+			.totalTime(120000L)
 			.build();
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
@@ -402,6 +408,7 @@ class GithubServiceTest {
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
 				.pipelineLeadTime(180000)
+				.firstCommitTime(1658548980000L)
 				.totalTime(180000)
 				.build()))
 			.build());
@@ -435,6 +442,7 @@ class GithubServiceTest {
 				.prLeadTime(0L)
 				.pipelineLeadTime(120000)
 				.totalTime(120000)
+				.firstCommitTime(1658549040000L)
 				.build()))
 			.build());
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of());
@@ -458,6 +466,7 @@ class GithubServiceTest {
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
 				.pipelineLeadTime(120000)
+				.firstCommitTime(1658549040000L)
 				.totalTime(120000)
 				.build()))
 			.build());
@@ -483,6 +492,7 @@ class GithubServiceTest {
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
 				.pipelineLeadTime(120000)
+				.firstCommitTime(1658549040000L)
 				.totalTime(120000)
 				.build()))
 			.build());
@@ -596,6 +606,7 @@ class GithubServiceTest {
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
 				.pipelineLeadTime(120000)
+				.firstCommitTime(1658549040000L)
 				.totalTime(120000)
 				.build()))
 			.build());

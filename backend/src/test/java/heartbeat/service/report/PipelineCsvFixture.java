@@ -4,8 +4,6 @@ import heartbeat.client.dto.codebase.github.Author;
 import heartbeat.client.dto.codebase.github.Commit;
 import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.Committer;
-import heartbeat.client.dto.codebase.github.LeadTime;
-import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
@@ -36,6 +34,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("XXXX").build())
 				.build())
 			.commitInfo(CommitInfo.builder()
 				.commit(Commit.builder()
@@ -58,6 +57,7 @@ public class PipelineCsvFixture {
 				.prLeadTime("16837")
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
+				.firstCommitTime("168369327000")
 				.pipelineLeadTime("653037000")
 				.build())
 			.deployInfo(DeployInfo.builder()
@@ -88,6 +88,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("XXXX").build())
 				.build())
 			.commitInfo(CommitInfo.builder()
 				.commit(Commit.builder()
@@ -111,6 +112,7 @@ public class PipelineCsvFixture {
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
 				.pipelineLeadTime("653037000")
+				.firstCommitTime("168369327000")
 				.build())
 			.deployInfo(DeployInfo.builder()
 				.state("passed")
@@ -140,6 +142,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("XXXX").build())
 				.build())
 			.commitInfo(CommitInfo.builder()
 				.commit(Commit.builder()
@@ -162,6 +165,7 @@ public class PipelineCsvFixture {
 				.prLeadTime("16837")
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
+				.firstCommitTime("168369327000")
 				.pipelineLeadTime("653037000")
 				.build())
 			.deployInfo(DeployInfo.builder()
@@ -193,6 +197,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("XXXX").build())
 				.build())
 			.commitInfo(CommitInfo.builder()
 				.commit(Commit.builder()
@@ -215,6 +220,7 @@ public class PipelineCsvFixture {
 				.prLeadTime("16837")
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
+				.firstCommitTime("168369327000")
 				.pipelineLeadTime("653037000")
 				.build())
 			.deployInfo(DeployInfo.builder()
@@ -245,6 +251,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("XXXX").build())
 				.build())
 			.leadTimeInfo(LeadTimeInfo.builder()
 				.firstCommitTimeInPr("2023-05-08T07:18:18Z")
@@ -253,6 +260,7 @@ public class PipelineCsvFixture {
 				.prLeadTime("16837")
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
+				.firstCommitTime("168369327000")
 				.pipelineLeadTime("653037000")
 				.build())
 			.deployInfo(DeployInfo.builder()
@@ -262,25 +270,6 @@ public class PipelineCsvFixture {
 				.build())
 			.build();
 		return List.of(pipelineCsvInfo);
-	}
-
-	public static PipelineLeadTime MOCK_PIPELINE_LEAD_TIME_DATA() {
-		return PipelineLeadTime.builder()
-			.pipelineStep("xx")
-			.pipelineName("xx")
-			.leadTimes(List.of(LeadTime.builder()
-				.commitId("xx")
-				.prCreatedTime(1658549100000L)
-				.prMergedTime(1658549160000L)
-				.firstCommitTimeInPr(1658549100000L)
-				.jobFinishTime(1658549160000L)
-				.pipelineCreateTime(1658549100000L)
-				.prLeadTime(60000L)
-				.pipelineLeadTime(60000)
-				.totalTime(120000)
-				.build()))
-			.build();
-
 	}
 
 	public static List<PipelineCSVInfo> MOCK_TWO_ORGANIZATIONS_PIPELINE_CSV_DATA() {
@@ -303,6 +292,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("yulong").build())
 				.build())
 			.commitInfo(CommitInfo.builder()
 				.commit(Commit.builder()
@@ -325,6 +315,7 @@ public class PipelineCsvFixture {
 				.prLeadTime("16837")
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
+				.firstCommitTime("168369327000")
 				.pipelineLeadTime("653037000")
 				.build())
 			.deployInfo(DeployInfo.builder()
@@ -352,6 +343,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("yulong").build())
 				.build())
 			.commitInfo(CommitInfo.builder()
 				.commit(Commit.builder()
@@ -374,6 +366,7 @@ public class PipelineCsvFixture {
 				.prLeadTime("16837")
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
+				.firstCommitTime("168369327000")
 				.pipelineLeadTime("653037000")
 				.build())
 			.deployInfo(DeployInfo.builder()
@@ -401,6 +394,7 @@ public class PipelineCsvFixture {
 					.finishedAt("2023-05-10T06:43:02.653Z")
 					.build()))
 				.branch("branch")
+				.author(BuildKiteBuildInfo.Author.builder().name("yulong").build())
 				.build())
 			.commitInfo(CommitInfo.builder()
 				.commit(Commit.builder()
@@ -423,6 +417,7 @@ public class PipelineCsvFixture {
 				.prLeadTime("16837")
 				.prCreatedTime("168369327000")
 				.jobFinishTime("1684793037000")
+				.firstCommitTime("168369327000")
 				.pipelineLeadTime("653037000")
 				.build())
 			.deployInfo(DeployInfo.builder()

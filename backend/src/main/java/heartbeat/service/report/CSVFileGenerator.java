@@ -43,8 +43,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -101,8 +99,8 @@ public class CSVFileGenerator {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
 				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
-						"Code Committer", "Pipeline Creator", "First Code Committed Time In PR", "Code Committed Time",
-						"PR Created Time", "PR Merged Time", "Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
+						"Code Committer", "Pipeline Creator", "First Code Committed Time In PR", "PR Created Time",
+						"PR Merged Time", "First Committed Time", "Job Completed Time", "Total Lead Time (HH:mm:ss)",
 						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch" };
 
 				csvWriter.writeNext(headers);
@@ -120,13 +118,6 @@ public class CSVFileGenerator {
 	}
 
 	private String[] getRowData(PipelineCSVInfo csvInfo) {
-		String committerName = null;
-		String commitDate = null;
-		if (csvInfo.getCommitInfo() != null) {
-			committerName = csvInfo.getCommitInfo().getCommit().getAuthor().getName();
-			commitDate = csvInfo.getCommitInfo().getCommit().getAuthor().getDate();
-		}
-
 		String creatorName = null;
 		if (csvInfo.getBuildInfo().getCreator() != null && csvInfo.getBuildInfo().getCreator().getName() != null) {
 			creatorName = csvInfo.getBuildInfo().getCreator().getName();
@@ -137,6 +128,7 @@ public class CSVFileGenerator {
 		String stepName = csvInfo.getStepName();
 		String valid = String.valueOf(csvInfo.getValid()).toLowerCase();
 		String buildNumber = String.valueOf(csvInfo.getBuildInfo().getNumber());
+		String committerName = String.valueOf(csvInfo.getBuildInfo().getAuthor().getName());
 		String state = csvInfo.getPiplineStatus().equals(CANCELED_STATUS) ? CANCELED_STATUS
 				: csvInfo.getDeployInfo().getState();
 		String branch = csvInfo.getBuildInfo().getBranch();
@@ -146,13 +138,14 @@ public class CSVFileGenerator {
 		String prCreatedTime = leadTimeInfo.getPrCreatedTime();
 		String prMergedTime = leadTimeInfo.getPrMergedTime();
 		String jobFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
+		String firstCommitTimeInPipeline = leadTimeInfo.getFirstCommitTime();
 		String totalTime = leadTimeInfo.getTotalTime();
 		String prLeadTime = leadTimeInfo.getPrLeadTime();
 		String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
 
 		return new String[] { organization, pipelineName, stepName, valid, buildNumber, committerName, creatorName,
-				firstCommitTimeInPr, commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime, prLeadTime,
-				pipelineLeadTime, state, branch };
+				firstCommitTimeInPr, prCreatedTime, prMergedTime, firstCommitTimeInPipeline, jobFinishTime, totalTime,
+				prLeadTime, pipelineLeadTime, state, branch };
 	}
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, long csvTimeStamp) {
