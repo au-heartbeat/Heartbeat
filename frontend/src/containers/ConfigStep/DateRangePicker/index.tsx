@@ -32,8 +32,9 @@ export const DateRangePickerSection = () => {
     setSortStatus(type);
   };
 
-  const handleDateRangeChange = (err: SortDateRangeType[]) => {
-    setHasError(!!err.length)
+  const handleDateRangeChange = (data: SortDateRangeType[]) => {
+    const errors = data.filter(({startDate, endDate}) => startDate === 'Invalid Date' || endDate === 'Invalid Date')
+    setHasError(!!errors.length)
   }
 
   return (

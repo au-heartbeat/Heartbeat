@@ -51,8 +51,7 @@ export const DateRangePickerGroup = ({ sortStatus, onChange }: IProps) => {
   );
 
   useEffect(() => {
-    const errors = sortDateRangeGroup.filter(({startDate, endDate}) => startDate === 'Invalid Date' || endDate === 'Invalid Date')
-    onChange?.(errors)
+    onChange?.(sortDateRangeGroup)
   }, [sortDateRangeGroup])
 
   const dispatchUpdateConfig = () => {
