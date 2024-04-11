@@ -1,3 +1,4 @@
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import {
   IMPORTED_NEW_CONFIG_FIXTURE,
   BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
@@ -10,6 +11,7 @@ import { convertToNewFileConfig } from '@src/constants/fileConfig';
 describe('#fileConfig', () => {
   const BASIC_NEW_CONFIG = {
     projectName: 'ConfigFileForImporting',
+    sortStatus: SortType.DEFAULT,
     dateRange: [
       {
         startDate: '2023-03-16T00:00:00.000+08:00',

@@ -50,7 +50,7 @@ export const initialBasicConfigState: BasicConfigState = {
         endDate: null,
       },
     ],
-    sortStatus: SortType.DEFAULT,
+    sortStatus: SortType?.DEFAULT,
     metrics: [],
   },
   board: initialBoardState,

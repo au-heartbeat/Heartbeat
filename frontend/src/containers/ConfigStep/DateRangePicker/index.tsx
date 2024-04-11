@@ -6,6 +6,7 @@ import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { useMemo, useState } from 'react';
+import { DateValidationError } from '@mui/x-date-pickers';
 
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
@@ -13,6 +14,8 @@ export const DateRangePickerSection = () => {
   const [sortStatus, setSortStatus] = useState<SortType>(
     dateRangeGroupSortStatus ? dateRangeGroupSortStatus : SortType.DEFAULT,
   );
+
+  const [hasError, setHasError] = useState(false)
   const isDateRangeValid = useMemo(() => {
     return dateRangeGroup.every((dateRange) => {
       return (
@@ -20,7 +23,6 @@ export const DateRangePickerSection = () => {
         dateRange.endDate !== null &&
         dateRange.startDate !== 'Invalid Date' &&
         dateRange.endDate !== 'Invalid Date'
-        // !isNaN(Date.parse(dateRange.startDate as string)) && !isNaN(Date.parse(dateRange.endDate as string))
       );
     });
   }, [dateRangeGroup]);
@@ -28,6 +30,10 @@ export const DateRangePickerSection = () => {
   const handleChange = (type: SortType) => {
     setSortStatus(type);
   };
+
+  const handleError = (err: DateValidationError[]) => {
+    setHasError(!!err.length)
+  }
 
   return (
     <div aria-label='Time range section'>
@@ -39,11 +45,11 @@ export const DateRangePickerSection = () => {
             margin: '1rem 0',
           }}
         />
-        {dateRangeGroup.length > 1 && isDateRangeValid && (
+        {dateRangeGroup.length > 1 && isDateRangeValid && !hasError && (
           <SortDateRange onChange={handleChange} sortStatus={sortStatus} />
         )}
       </TitleContainer>
-      <DateRangePickerGroup sortStatus={sortStatus} />
+      <DateRangePickerGroup sortStatus={sortStatus} onError={handleError}/>
     </div>
   );
 };

@@ -13,8 +13,9 @@ import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateValidationError } from '@mui/x-date-pickers';
 import sortBy from 'lodash/sortBy';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import get from 'lodash/get';
+import isNull from 'lodash/isNull'
 import dayjs from 'dayjs';
 
 export enum SortType {
@@ -38,9 +39,10 @@ const sortFn = {
 
 type IProps = {
   sortStatus: SortType;
+  onError?: (data: DateValidationError[]) => void
 };
 
-export const DateRangePickerGroup = ({ sortStatus }: IProps) => {
+export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
@@ -48,15 +50,24 @@ export const DateRangePickerGroup = ({ sortStatus }: IProps) => {
     dateRangeGroup.map((item, index) => ({ ...item, error: null, sortIndex: index })),
   );
 
+  useEffect(() => {
+    const errors = sortDateRangeGroup.filter(({error}) => !isNull(error)).map(({error}) => error)
+    if(errors.length) {
+      onError?.(errors)
+    }
+  }, [sortDateRangeGroup])
+
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
     dispatch(initDeploymentFrequencySettings());
   };
 
+  const fillDateRangeGroup = <T,>(item: T, index: number) => ({ ...item, error: null, sortIndex: index})
+
   const addRangeHandler = () => {
     const newDateRangeGroup = [...dateRangeGroup, { startDate: null, endDate: null }];
-    setSortDateRangeGroup(newDateRangeGroup.map((item, index) => ({ ...item, error: null, sortIndex: index })));
+    setSortDateRangeGroup(newDateRangeGroup.map(fillDateRangeGroup));
     dispatch(updateDateRange(newDateRangeGroup));
   };
 
@@ -67,7 +78,7 @@ export const DateRangePickerGroup = ({ sortStatus }: IProps) => {
   };
 
   const handleChange = (data: { startDate: string | null; endDate: string | null }[]) => {
-    setSortDateRangeGroup(data.map((item, index) => ({ ...item, error: null, sortIndex: index })));
+    setSortDateRangeGroup(data.map(fillDateRangeGroup));
     dispatchUpdateConfig();
     dispatch(updateDateRange(data));
   };
