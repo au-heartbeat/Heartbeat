@@ -344,6 +344,23 @@ export class ReportStep {
     await this.backButton.click();
   }
 
+  async checkBoardDownloadDataWithoutBlock() {
+    await downloadFileAndCheck(
+      this.page,
+      this.exportBoardData,
+      'board-data-without-block-column.csv',
+      async (fileDataString) => {
+        const localCsvFile = fs.readFileSync(
+          path.resolve(__dirname, `../../fixtures/create-new/board-data-without-block-column.csv`),
+        );
+        const localCsv = parse(localCsvFile);
+        const downloadCsv = parse(fileDataString);
+
+        expect(localCsv).toStrictEqual(downloadCsv);
+      },
+    );
+  }
+
   async checkDoraMetrics(
     prLeadTime: string,
     pipelineLeadTime: string,

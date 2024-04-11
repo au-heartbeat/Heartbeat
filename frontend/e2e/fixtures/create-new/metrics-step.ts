@@ -177,3 +177,25 @@ export const modifiedConfig = {
     },
   ],
 };
+
+export const configWithoutBlockColumn = {
+  crews: ['Shiqi Yuan'],
+  cycleTime: {
+    type: 'byColumn',
+    jiraColumns: [
+      {
+        'TO DO': 'To do',
+      },
+      {
+        'IN DEV': 'In Dev',
+      },
+      {
+        'WAITING FOR TESTING': 'Waiting for testing',
+      },
+      {
+        Done: 'Done',
+      },
+    ],
+  },
+  reworkTimesSettings: { excludeStates: [], reworkState: 'In Dev' },
+};
