@@ -71,29 +71,20 @@ const MetricsStep = () => {
 
   const getInfo = useCallback(
     async () => {
-      const fetchData = async (range: { startDate: string | null; endDate: string | null }) => {
-        const startTime = dayjs(range.startDate).valueOf().toString();
-        const endTime = dayjs(range.endDate).valueOf().toString();
-
-        const res = await getBoardInfo({
-          ...boardConfig,
-          startTime,
-          endTime,
-        });
-        return res.data;
-      };
-
-      let dateRangeCopy = Array.from(dateRange);
-      dateRangeCopy.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
-      const results = await Promise.all(dateRangeCopy.map(fetchData));
-      if (results) {
-        const commonPayload = combineBoardInfo(results);
-        dispatch(updateBoardVerifyState(true));
-        dispatch(updateJiraVerifyResponse(commonPayload));
-        dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
-        dispatch(updateShouldGetBoardConfig(false));
-        dispatch(updateFirstTimeRoadMetricsBoardData(false));
-      }
+      getBoardInfo({
+        ...boardConfig,
+        dateRange,
+      }).then((res) => {
+        console.log(res);
+        if (res) {
+          const commonPayload = combineBoardInfo(res);
+          dispatch(updateBoardVerifyState(true));
+          dispatch(updateJiraVerifyResponse(commonPayload));
+          dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
+          dispatch(updateShouldGetBoardConfig(false));
+          dispatch(updateFirstTimeRoadMetricsBoardData(false));
+        }
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -101,6 +92,7 @@ const MetricsStep = () => {
 
   const combineBoardInfo = (results: BoardInfoResponse[]): any => {
     if (results) {
+      console.log(results);
       const allUsers = [...new Set(results.flatMap((result) => result.users))];
       const allTargetFields = uniqBy(
         results.flatMap((result) => result.targetFields),

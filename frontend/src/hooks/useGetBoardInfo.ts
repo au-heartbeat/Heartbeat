@@ -1,10 +1,11 @@
 import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
+import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
-import { BoardInfoRequestDTO } from '@src/clients/board/dto/request';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
-import { AxiosResponse, HttpStatusCode } from 'axios';
+import { HttpStatusCode } from 'axios';
 import { ReactNode, useState } from 'react';
 import get from 'lodash/get';
+import dayjs from 'dayjs';
 
 export type JiraColumns = Record<string, string>[];
 export type TargetFields = Record<string, string>[];
@@ -16,7 +17,7 @@ export interface BoardInfoResponse {
   users: Users;
 }
 export interface useGetBoardInfoInterface {
-  getBoardInfo: (data: BoardInfoRequestDTO) => Promise<AxiosResponse<BoardInfoResponse>>;
+  getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<void>[]>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
 }
@@ -56,27 +57,41 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
 
-  const getBoardInfo = (data: BoardInfoRequestDTO) => {
+  const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
     setErrorMessage({});
-    return boardInfoClient
-      .getBoardInfo(data)
-      .then((res) => {
-        if (!res.data) {
-          setErrorMessage({
-            title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
-            message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
-            code: HttpStatusCode.NoContent,
-          });
-        }
-        return res;
-      })
-      .catch((err) => {
-        const { code } = err;
-        setErrorMessage(codeMapping(code));
-        return err;
-      })
-      .finally(() => setIsLoading(false));
+    let dateRangeCopy = Array.from(data.dateRange);
+    dateRangeCopy.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
+
+    const allBoardData = dateRangeCopy.map((info) => {
+      const { dateRange, ...needInfoRequest } = data;
+      const boardInfoRequest = {
+        ...needInfoRequest,
+        startTime: dayjs(info.startDate).valueOf().toString(),
+        endTime: dayjs(info.endDate).valueOf().toString(),
+      };
+
+      return boardInfoClient
+        .getBoardInfo(boardInfoRequest)
+        .then((res) => {
+          if (!res.data) {
+            setErrorMessage({
+              title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
+              message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
+              code: HttpStatusCode.NoContent,
+            });
+          }
+          return res.data;
+        })
+        .catch((err) => {
+          const { code } = err;
+          setErrorMessage(codeMapping(code));
+          return err;
+        })
+        .finally(() => setIsLoading(false));
+    });
+
+    return Promise.all(allBoardData);
   };
   return {
     getBoardInfo,
