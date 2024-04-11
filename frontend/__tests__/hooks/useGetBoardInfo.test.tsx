@@ -14,7 +14,7 @@ const mockBoardConfig = {
   site: 'fake',
   email: 'fake@fake.com',
   token: FAKE_TOKEN,
-  dateRange: [
+  dateRanges: [
     {
       startDate: null,
       endDate: null,
@@ -40,7 +40,11 @@ describe('use get board info', () => {
       'No card within selected date range!',
       'Please go back to the previous page and change your collection date, or check your board info!',
     ],
-    [HttpStatusCode.BadRequest, 'Failed to get Board configuration!', 'Please go back to the previous page to check your board info, or change your time range!'],
+    [
+      HttpStatusCode.BadRequest,
+      'Failed to get Board configuration!',
+      'Please go back to the previous page to check your board info, or change your time range!',
+    ],
     [
       HttpStatusCode.Unauthorized,
       'Failed to get Board configuration!',
@@ -51,7 +55,11 @@ describe('use get board info', () => {
       'Failed to get Board configuration!',
       'Please go back to the previous page to check your board info, or change your time range!',
     ],
-    [HttpStatusCode.NotFound, 'Failed to get Board configuration!', 'Please go back to the previous page to check your board info, or change your time range!'],
+    [
+      HttpStatusCode.NotFound,
+      'Failed to get Board configuration!',
+      'Please go back to the previous page to check your board info, or change your time range!',
+    ],
   ])('should got error message when got code is %s', async (code, title, message) => {
     server.use(
       rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {

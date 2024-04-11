@@ -43,7 +43,6 @@ import isEmpty from 'lodash/isEmpty';
 import { theme } from '@src/theme';
 import merge from 'lodash/merge';
 import { uniqBy } from 'lodash';
-import dayjs from 'dayjs';
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
@@ -73,11 +72,11 @@ const MetricsStep = () => {
     async () => {
       getBoardInfo({
         ...boardConfig,
-        dateRange,
+        dateRanges,
       }).then((res) => {
-        if(res) {
+        if (res) {
           if (res[0].data) {
-            const boardInfo = res?.map((r) => r.data)
+            const boardInfo = res?.map((r) => r.data);
             const commonPayload = combineBoardInfo(boardInfo!);
             dispatch(updateBoardVerifyState(true));
             dispatch(updateJiraVerifyResponse(commonPayload));

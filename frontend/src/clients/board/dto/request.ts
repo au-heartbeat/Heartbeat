@@ -24,7 +24,7 @@ export interface BoardInfoConfigDTO {
   type: string;
   site: string;
   email: string;
-  dateRange: TDateRange | null;
+  dateRanges: TDateRange | null;
   boardId: string;
   projectKey: string;
 }

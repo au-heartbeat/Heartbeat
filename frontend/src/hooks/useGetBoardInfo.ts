@@ -1,9 +1,9 @@
 import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
-import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
+import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
-import { HttpStatusCode } from 'axios';
 import { ReactNode, useState } from 'react';
+import { HttpStatusCode } from 'axios';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
@@ -61,11 +61,11 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
     setIsLoading(true);
     setErrorMessage({});
 
-    if (data.dateRange) {
-      let dateRangeCopy = Array.from(data.dateRange);
+    if (data.dateRanges) {
+      let dateRangeCopy = Array.from(data.dateRanges);
       dateRangeCopy.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
       const allBoardData = dateRangeCopy.map((info) => {
-        const { dateRange, ...needInfoRequest } = data;
+        const { dateRanges, ...needInfoRequest } = data;
         const boardInfoRequest = {
           ...needInfoRequest,
           startTime: dayjs(info.startDate).valueOf().toString(),
