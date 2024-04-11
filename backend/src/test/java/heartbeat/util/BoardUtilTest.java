@@ -89,6 +89,7 @@ class BoardUtilTest {
 
 		when(workDay.calculateWorkDaysBy24Hours(anyLong(), anyLong()))
 			.thenReturn(StatusChangedItemsListAndCycleTimeInfosListFixture.EXPECT_DAYS);
+
 		List<CycleTimeInfo> result = boardUtil.getOriginCycleTimeInfos(statusChangedItems, Boolean.TRUE);
 		Assertions.assertEquals(statusChangedItemsExpect, result);
 	}
