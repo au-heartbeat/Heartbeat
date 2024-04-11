@@ -1,15 +1,18 @@
 import { DateRangePickerGroup, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { selectDateRange, selectDateRangeSortStatus } from '@src/context/config/configSlice';
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
-import { selectDateRange } from '@src/context/config/configSlice';
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { useMemo, useState } from 'react';
 
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
-  const [sortStatus, setSortStatus] = useState<SortType>(SortType.DEFAULT);
+  const dateRangeGroupSortStatus = useAppSelector(selectDateRangeSortStatus);
+  const [sortStatus, setSortStatus] = useState<SortType>(
+    dateRangeGroupSortStatus ? dateRangeGroupSortStatus : SortType.DEFAULT,
+  );
   const isDateRangeValid = useMemo(() => {
     return dateRangeGroup.every((dateRange) => {
       return (
@@ -36,7 +39,9 @@ export const DateRangePickerSection = () => {
             margin: '1rem 0',
           }}
         />
-        {dateRangeGroup.length > 1 && isDateRangeValid && <SortDateRange onChange={handleChange} />}
+        {dateRangeGroup.length > 1 && isDateRangeValid && (
+          <SortDateRange onChange={handleChange} sortStatus={sortStatus} />
+        )}
       </TitleContainer>
       <DateRangePickerGroup sortStatus={sortStatus} />
     </div>
