@@ -1,10 +1,4 @@
-import {
-  selectCalendarType,
-  selectProjectName,
-  selectWarningMessage,
-  updateCalendarType,
-  updateProjectName,
-} from '@src/context/config/configSlice';
+import { selectWarningMessage, updateCalendarType, updateProjectName } from '@src/context/config/configSlice';
 import { CollectionDateLabel, ProjectNameInput, StyledFormControlLabel } from './style';
 import { RequiredMetrics } from '@src/containers/ConfigStep/BasicInfo/RequiredMetrics';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
@@ -19,7 +13,6 @@ import { Radio, RadioGroup } from '@mui/material';
 
 const BasicInfo = () => {
   const dispatch = useAppDispatch();
-  const calendarType = useAppSelector(selectCalendarType);
   const warningMessage = useAppSelector(selectWarningMessage);
   const { setError, control } = useFormContext();
 
@@ -31,39 +24,46 @@ const BasicInfo = () => {
         <Controller
           name={'projectName'}
           control={control}
-          render={({ field, fieldState }) => {
-            return (
-              <ProjectNameInput
-                required
-                label='Project name'
-                variant='standard'
-                {...field}
-                onChange={(e) => {
-                  dispatch(updateProjectName(e.target.value));
-                  field.onChange(e.target.value);
-                }}
-                onFocus={() => {
-                  if (field.value === '') {
-                    setError('projectName', { message: ERROR_MESSAGE.projectName });
-                  }
-                }}
-                error={fieldState.invalid}
-                helperText={fieldState.error?.message || ''}
-              />
-            );
-          }}
+          render={({ field, fieldState }) => (
+            <ProjectNameInput
+              required
+              label='Project name'
+              variant='standard'
+              {...field}
+              onChange={(e) => {
+                dispatch(updateProjectName(e.target.value));
+                field.onChange(e.target.value);
+              }}
+              onFocus={() => {
+                if (field.value === '') {
+                  setError('projectName', { message: ERROR_MESSAGE.projectName });
+                }
+              }}
+              error={fieldState.invalid}
+              helperText={fieldState.error?.message || ''}
+            />
+          )}
         />
 
         <CollectionDateLabel>Collection Date</CollectionDateLabel>
-        <RadioGroup
-          value={calendarType}
-          onChange={(e) => {
-            dispatch(updateCalendarType(e.target.value));
+        <Controller
+          name={'calendarType'}
+          control={control}
+          render={({ field }) => {
+            return (
+              <RadioGroup
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  dispatch(updateCalendarType(e.target.value));
+                }}
+              >
+                <StyledFormControlLabel value={CALENDAR.REGULAR} control={<Radio />} label={CALENDAR.REGULAR} />
+                <StyledFormControlLabel value={CALENDAR.CHINA} control={<Radio />} label={CALENDAR.CHINA} />
+              </RadioGroup>
+            );
           }}
-        >
-          <StyledFormControlLabel value={CALENDAR.REGULAR} control={<Radio />} label={CALENDAR.REGULAR} />
-          <StyledFormControlLabel value={CALENDAR.CHINA} control={<Radio />} label={CALENDAR.CHINA} />
-        </RadioGroup>
+        />
         <DateRangePickerSection />
         <RequiredMetrics />
       </ConfigSectionContainer>

@@ -10,7 +10,7 @@ import {
   IPipelineToolData,
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
-import { selectProjectName } from '@src/context/config/configSlice';
+import { selectProjectName, selectCalendarType, selectMetrics } from '@src/context/config/configSlice';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 
 export const basicInfoDefaultValues: IBasicInfoData = {
@@ -40,10 +40,14 @@ export const sourceControlDefaultValues: ISourceControlData = {
 
 export const useDefaultValues = () => {
   const projectName = useAppSelector(selectProjectName);
+  const calendarType = useAppSelector(selectCalendarType);
+  const metrics = useAppSelector(selectMetrics);
 
   const basicInfoWithImport: IBasicInfoData = {
     ...basicInfoDefaultValues,
     projectName,
+    calendarType,
+    metrics: [...metrics],
   };
 
   const boardConfigWithImport: IBoardConfigData = {
