@@ -28,11 +28,11 @@ export const DateRangePickerSection = () => {
     });
   }, [dateRangeGroup]);
 
-  const handleChange = (type: SortType) => {
+  const handleSortStatusChange = (type: SortType) => {
     setSortStatus(type);
   };
 
-  const handleError = (err: SortDateRangeType[]) => {
+  const handleDateRangeChange = (err: SortDateRangeType[]) => {
     setHasError(!!err.length)
   }
 
@@ -47,10 +47,10 @@ export const DateRangePickerSection = () => {
           }}
         />
         {dateRangeGroup.length > 1 && isDateRangeValid && !hasError && (
-          <SortDateRange onChange={handleChange} sortStatus={sortStatus} />
+          <SortDateRange onChange={handleSortStatusChange} sortStatus={sortStatus} />
         )}
       </TitleContainer>
-      <DateRangePickerGroup sortStatus={sortStatus} onError={handleError}/>
+      <DateRangePickerGroup sortStatus={sortStatus} onChange={handleDateRangeChange}/>
     </div>
   );
 };

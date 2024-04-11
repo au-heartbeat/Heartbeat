@@ -37,12 +37,12 @@ const sortFn = {
 
 type IProps = {
   sortStatus: SortType;
-  onError?: (data: SortDateRangeType[]) => void
+  onChange?: (data: SortDateRangeType[]) => void
 };
 
 const fillDateRangeGroup = <T,>(item: T, index: number) => ({ ...item, sortIndex: index})
 
-export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
+export const DateRangePickerGroup = ({ sortStatus, onChange }: IProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
@@ -52,7 +52,7 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
 
   useEffect(() => {
     const errors = sortDateRangeGroup.filter(({startDate, endDate}) => startDate === 'Invalid Date' || endDate === 'Invalid Date')
-    onError?.(errors)
+    onChange?.(errors)
   }, [sortDateRangeGroup])
 
   const dispatchUpdateConfig = () => {
