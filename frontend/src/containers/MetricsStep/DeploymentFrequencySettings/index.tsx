@@ -32,7 +32,6 @@ export const DeploymentFrequencySettings = () => {
 
   const handleAddPipeline = () => {
     dispatch(addADeploymentFrequencySetting());
-    setLoadingCompletedNumber((value) => value + 1);
   };
   const realDeploymentFrequencySettings = isFirstFetch ? [] : deploymentFrequencySettings;
   const handleRemovePipeline = (id: number) => {

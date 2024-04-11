@@ -13,6 +13,8 @@ import { Provider } from 'react-redux';
 
 import { setupStore } from '@test/utils/setupStoreUtil';
 
+let mockSelectShouldGetPipelineConfig = true;
+
 jest.mock('@src/hooks', () => ({
   ...jest.requireActual('@src/hooks'),
   useAppDispatch: () => jest.fn(),
@@ -31,7 +33,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   selectPipelineNameWarningMessage: jest.fn().mockReturnValue(null),
   selectStepWarningMessage: jest.fn().mockReturnValue(null),
   selectMetricsContent: jest.fn().mockReturnValue({ pipelineCrews: [], users: [] }),
-  selectShouldGetPipelineConfig: jest.fn().mockReturnValue(true),
+  selectShouldGetPipelineConfig: jest.fn().mockImplementation(() => mockSelectShouldGetPipelineConfig),
 }));
 
 jest.mock('@src/context/config/configSlice', () => ({
@@ -95,6 +97,10 @@ describe('DeploymentFrequencySettings', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+  beforeEach(() => {
+    mockSelectShouldGetPipelineConfig = true;
+    mockGetPipelineToolInfoSpy = mockGetPipelineToolInfoOkResponse;
+  });
 
   it('should render DeploymentFrequencySettings component', () => {
     const { getByText, getAllByText } = setup();
@@ -132,6 +138,12 @@ describe('DeploymentFrequencySettings', () => {
     });
 
     expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(1);
+  });
+
+  it('show render crews component when totalPipelineNumber is equal loadingCompletedNumber', () => {
+    mockSelectShouldGetPipelineConfig = false;
+    setup();
+    expect(screen.getByText('Crew setting (optional)')).toBeInTheDocument();
   });
 
   it('should display error UI when get pipeline info client returns non-200 code', () => {
