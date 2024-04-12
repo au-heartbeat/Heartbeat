@@ -47,7 +47,7 @@ export const DeploymentFrequencySettings = () => {
 
   return (
     <>
-      {isLoading && <Loading message={'pipeline loading'} />}
+      {isLoading && <Loading />}
       {pipelineInfoResult?.code !== HttpStatusCode.Ok ? (
         <PresentationForErrorCases {...pipelineInfoResult} isLoading={isLoading} retry={apiCallFunc} />
       ) : (

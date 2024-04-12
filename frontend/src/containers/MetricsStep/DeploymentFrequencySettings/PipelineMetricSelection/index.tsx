@@ -134,7 +134,7 @@ export const PipelineMetricSelection = ({
       {pipelineNameWarningMessage && <WarningNotification message={pipelineNameWarningMessage} />}
       {stepWarningMessage && <WarningNotification message={stepWarningMessage} />}
       {isShowNoStepWarning && <WarningNotification message={MESSAGE.NO_STEP_WARNING} />}
-      {isLoading && <Loading message={'step loading'} />}
+      {isLoading && <Loading />}
       {isDuplicated && <WarningMessage>This pipeline is the same as another one!</WarningMessage>}
       {errorMessage && <ErrorNotification message={errorMessage} />}
       <SingleSelection
