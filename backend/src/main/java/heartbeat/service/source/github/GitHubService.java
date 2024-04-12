@@ -290,14 +290,6 @@ public class GitHubService {
 		return firstCommitTimeInPr == 0;
 	}
 
-	// private Boolean isRevert(CommitInfo commitInfo) {
-	// if (commitInfo.getCommit() != null && commitInfo.getCommit().getMessage() != null)
-	// {
-	// return commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
-	// }
-	// return null;
-	// }
-
 	public CommitInfo fetchCommitInfo(String commitId, String repositoryId, String token) {
 		try {
 			String realToken = BEARER_TITLE + token;
