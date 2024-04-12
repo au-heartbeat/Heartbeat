@@ -134,6 +134,7 @@ class GithubServiceTest {
 				.pipelineLeadTime(120000)
 				.firstCommitTime(1658549040000L)
 				.totalTime(180000)
+					.isRevert(Boolean.FALSE)
 				.build()))
 			.build());
 
@@ -275,6 +276,7 @@ class GithubServiceTest {
 			.pipelineLeadTime(120000)
 			.firstCommitTime(1658549040000L)
 			.totalTime(180000)
+			.isRevert(Boolean.FALSE)
 			.build();
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
@@ -297,6 +299,7 @@ class GithubServiceTest {
 			.pipelineLeadTime(120000)
 			.firstCommitTime(1658549040000L)
 			.totalTime(120000)
+			.isRevert(Boolean.FALSE)
 			.build();
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
@@ -319,6 +322,7 @@ class GithubServiceTest {
 			.pipelineLeadTime(120000)
 			.firstCommitTime(1658549040000L)
 			.totalTime(120000)
+			.isRevert(Boolean.TRUE)
 			.build();
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
@@ -340,7 +344,54 @@ class GithubServiceTest {
 			.prLeadTime(0L)
 			.pipelineLeadTime(120000)
 			.firstCommitTime(1658549040000L)
+			.isRevert(Boolean.TRUE)
 			.totalTime(120000)
+			.build();
+
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+
+		assertEquals(expect, result);
+	}
+
+	@Test
+	void shouldReturnIsRevertIsNullWhenCommitInfoCommitIsNull() {
+		commitInfo = CommitInfo.builder().build();
+		LeadTime expect = LeadTime.builder()
+			.commitId("111")
+			.prCreatedTime(1658548980000L)
+			.prMergedTime(1658549040000L)
+			.firstCommitTimeInPr(0L)
+			.jobFinishTime(1658549160000L)
+			.pipelineLeadTime(1658549100000L)
+			.pipelineCreateTime(1658549100000L)
+			.prLeadTime(0L)
+			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
+			.totalTime(120000L)
+			.isRevert(null)
+			.build();
+
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+
+		assertEquals(expect, result);
+	}
+
+	@Test
+	void shouldReturnIsRevertIsNullWhenCommitInfoCommitMessageIsNull() {
+		commitInfo = CommitInfo.builder().commit(Commit.builder().build()).build();
+		LeadTime expect = LeadTime.builder()
+			.commitId("111")
+			.prCreatedTime(1658548980000L)
+			.prMergedTime(1658549040000L)
+			.firstCommitTimeInPr(0L)
+			.jobFinishTime(1658549160000L)
+			.pipelineLeadTime(1658549100000L)
+			.pipelineCreateTime(1658549100000L)
+			.prLeadTime(0L)
+			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
+			.totalTime(120000L)
+			.isRevert(null)
 			.build();
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
@@ -363,6 +414,7 @@ class GithubServiceTest {
 			.pipelineLeadTime(120000)
 			.firstCommitTime(1658549040000L)
 			.totalTime(120000L)
+			.isRevert(Boolean.FALSE)
 			.build();
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
@@ -410,6 +462,7 @@ class GithubServiceTest {
 				.pipelineLeadTime(180000)
 				.firstCommitTime(1658548980000L)
 				.totalTime(180000)
+				.isRevert(Boolean.FALSE)
 				.build()))
 			.build());
 		var pullRequestInfoWithDifferentSha = PullRequestInfo.builder()
@@ -443,6 +496,7 @@ class GithubServiceTest {
 				.pipelineLeadTime(120000)
 				.totalTime(120000)
 				.firstCommitTime(1658549040000L)
+				.isRevert(null)
 				.build()))
 			.build());
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of());
@@ -468,11 +522,12 @@ class GithubServiceTest {
 				.pipelineLeadTime(120000)
 				.firstCommitTime(1658549040000L)
 				.totalTime(120000)
+				.isRevert(Boolean.FALSE)
 				.build()))
 			.build());
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenThrow(new NotFoundException(""));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(new CommitInfo());
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(CommitInfo.builder().commit(Commit.builder().message("").build()).build());
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 
@@ -494,6 +549,7 @@ class GithubServiceTest {
 				.pipelineLeadTime(120000)
 				.firstCommitTime(1658549040000L)
 				.totalTime(120000)
+				.isRevert(null)
 				.build()))
 			.build());
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
@@ -608,6 +664,7 @@ class GithubServiceTest {
 				.pipelineLeadTime(120000)
 				.firstCommitTime(1658549040000L)
 				.totalTime(120000)
+				.isRevert(null)
 				.build()))
 			.build());
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));

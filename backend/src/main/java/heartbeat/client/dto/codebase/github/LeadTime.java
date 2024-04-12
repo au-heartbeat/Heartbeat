@@ -30,6 +30,8 @@ public class LeadTime {
 
 	private long pipelineCreateTime;
 
+	private Boolean isRevert;
+
 	@Nullable
 	private Long prLeadTime;
 

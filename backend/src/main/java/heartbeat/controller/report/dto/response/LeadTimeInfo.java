@@ -35,6 +35,8 @@ public class LeadTimeInfo {
 	@Nullable
 	private String totalTime;
 
+	private Boolean isRevert;
+
 	public LeadTimeInfo(LeadTime leadTime) {
 		if (leadTime != null) {
 			if (leadTime.getFirstCommitTimeInPr() != null) {
@@ -64,6 +66,9 @@ public class LeadTimeInfo {
 
 			if (leadTime.getTotalTime() != 0) {
 				this.totalTime = TimeUtil.msToHMS(leadTime.getTotalTime());
+			}
+			if (leadTime.getIsRevert() != null) {
+				this.isRevert = leadTime.getIsRevert();
 			}
 		}
 	}

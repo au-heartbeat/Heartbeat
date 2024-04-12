@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
@@ -100,8 +101,8 @@ public class CSVFileGenerator {
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
 				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
 						"Code Committer", "Pipeline Creator", "First Code Committed Time In PR", "PR Created Time",
-						"PR Merged Time", "First Committed Time", "Job Completed Time", "Total Lead Time (HH:mm:ss)",
-						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch" };
+						"PR Merged Time", "First Committed Time In Pipeline", "Job Completed Time", "Total Lead Time (HH:mm:ss)",
+						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
 
 				csvWriter.writeNext(headers);
 
@@ -142,10 +143,11 @@ public class CSVFileGenerator {
 		String totalTime = leadTimeInfo.getTotalTime();
 		String prLeadTime = leadTimeInfo.getPrLeadTime();
 		String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
+		String isRevert = leadTimeInfo.getIsRevert() == null ? "" : String.valueOf(leadTimeInfo.getIsRevert());
 
 		return new String[] { organization, pipelineName, stepName, valid, buildNumber, committerName, creatorName,
 				firstCommitTimeInPr, prCreatedTime, prMergedTime, firstCommitTimeInPipeline, jobFinishTime, totalTime,
-				prLeadTime, pipelineLeadTime, state, branch };
+				prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, long csvTimeStamp) {
