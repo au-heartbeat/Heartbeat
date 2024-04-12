@@ -407,37 +407,22 @@ describe('CycleTime', () => {
     });
   });
 
-  it('should show warning message when both mapping block column and add flag as block Given mapping relationship by status', () => {
-    (selectMetricsContent as jest.Mock).mockReturnValue({
-      cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_STATUS,
-      cycleTimeSettings: [
-        ...cycleTimeSettings,
-        {
-          column: 'Blocked',
-          status: 'BLOCKED',
-          value: 'Block',
-        },
-      ],
+   [CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN].forEach((cycleTimeSettingsType) =>{
+    it('should show warning message given both mapping block column and add flag as block', () => {
+      (selectMetricsContent as jest.Mock).mockReturnValue({
+        cycleTimeSettingsType,
+        cycleTimeSettings: [
+          ...cycleTimeSettings,
+          {
+            column: 'Blocked',
+            status: 'BLOCKED',
+            value: 'Block',
+          },
+        ],
+      });
+      setup();
+
+      expect(screen.getByText(MESSAGE.FLAG_CARD_DROPPED_WARNING)).toBeVisible();
     });
-    setup();
-
-    expect(screen.getByText(MESSAGE.FLAG_CARD_DROPPED_WARNING)).toBeVisible();
-  });
-
-  it('should show warning message when both mapping block column and add flag as block Given mapping relationship by column', () => {
-    (selectMetricsContent as jest.Mock).mockReturnValue({
-      cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
-      cycleTimeSettings: [
-        ...cycleTimeSettings,
-        {
-          column: 'Blocked',
-          status: 'BLOCKED',
-          value: 'Block',
-        },
-      ],
-    });
-    setup();
-
-    expect(screen.getByText(MESSAGE.FLAG_CARD_DROPPED_WARNING)).toBeVisible();
-  });
+   })
 });
