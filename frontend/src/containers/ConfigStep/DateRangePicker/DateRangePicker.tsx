@@ -90,7 +90,7 @@ export const DateRangePicker = ({
           shouldDisableDate={shouldStartDateDisableDate}
           label='From *'
           value={startDate ? dayjs(startDate) : null}
-          onChange={changeStartDate}
+          onAccept={changeStartDate}
           onError={(err: DateValidationError) => onError?.('startDateError', err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
@@ -109,7 +109,7 @@ export const DateRangePicker = ({
           value={endDate ? dayjs(endDate) : null}
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
-          onChange={changeEndDate}
+          onAccept={changeEndDate}
           onError={(err: DateValidationError) => onError?.('startDateError', err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
