@@ -27,7 +27,6 @@ const sortStates: Record<string, string> = {
 export const SortDateRange = ({ onChange, sortStatus }: IProps) => {
   const dispatch = useAppDispatch();
   const [sortOrder, setSortOrder] = useState(sortStatus);
-  console.log('sortOrder', sortOrder);
 
   const handleChangeSort = () => {
     setSortOrder(sortStates[sortOrder] as SortType);

@@ -11,9 +11,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateValidationError } from '@mui/x-date-pickers';
-import sortBy from 'lodash/sortBy';
 import { useState, useEffect } from 'react';
+import sortBy from 'lodash/sortBy';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
@@ -23,7 +22,7 @@ export enum SortType {
   DEFAULT = 'DEFAULT',
 }
 
-export type SortDateRangeType= {
+export type SortDateRangeType = {
   startDate: string | null;
   endDate: string | null;
   sortIndex: number;
@@ -37,10 +36,10 @@ const sortFn = {
 
 type IProps = {
   sortStatus: SortType;
-  onChange?: (data: SortDateRangeType[]) => void
+  onChange?: (data: SortDateRangeType[]) => void;
 };
 
-const fillDateRangeGroup = <T,>(item: T, index: number) => ({ ...item, sortIndex: index})
+const fillDateRangeGroup = <T,>(item: T, index: number) => ({ ...item, sortIndex: index });
 
 export const DateRangePickerGroup = ({ sortStatus, onChange }: IProps) => {
   const dispatch = useAppDispatch();
@@ -51,8 +50,8 @@ export const DateRangePickerGroup = ({ sortStatus, onChange }: IProps) => {
   );
 
   useEffect(() => {
-    onChange?.(sortDateRangeGroup)
-  }, [sortDateRangeGroup])
+    onChange?.(sortDateRangeGroup);
+  }, [onChange, sortDateRangeGroup]);
 
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));

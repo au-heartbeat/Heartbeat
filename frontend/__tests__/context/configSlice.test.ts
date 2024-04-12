@@ -3,11 +3,13 @@ import configReducer, {
   selectSteps,
   updateCalendarType,
   updateDateRange,
+  updateDateRangeSortStatus,
   updateMetrics,
   updateProjectCreatedState,
   updateProjectName,
 } from '@src/context/config/configSlice';
 import { CHINA_CALENDAR, CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, REGULAR_CALENDAR, VELOCITY } from '../fixtures';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import initialConfigState from '../initialConfigState';
 
@@ -48,6 +50,13 @@ describe('config reducer', () => {
 
     expect(config.dateRange[0].startDate).toEqual(today);
     expect(config.dateRange[0].endDate).toEqual('');
+  });
+
+  it('should update sort status in basic state', () => {
+    const newSortStatus = SortType.DEFAULT;
+    const config = configReducer(initialConfigState, updateDateRangeSortStatus(newSortStatus)).basic;
+
+    expect(config.sortStatus).toEqual(newSortStatus);
   });
 
   it('should isProjectCreated is false when import file', () => {
