@@ -1,3 +1,4 @@
+import { IBoardConfigErrorMessage, BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { BOARD_TYPES, AXIOS_REQUEST_ERROR_CODE, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { selectBoard, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
@@ -13,7 +14,7 @@ import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
 export interface Field {
-  key: string;
+  key: keyof IBoardConfigErrorMessage | 'type';
   value: string;
   validateRule?: (value: string) => boolean;
   validatedError: string;
@@ -44,14 +45,13 @@ const VALIDATOR = {
   BOARD_ID: (value: string) => REGEX.BOARD_ID.test(value),
 };
 
-export const KEYS = {
-  BOARD: 'Board',
-  BOARD_ID: 'Board Id',
-  EMAIL: 'Email',
-  SITE: 'Site',
-  TOKEN: 'Token',
+export const KEYS: { [key: string]: keyof IBoardConfigErrorMessage | 'type' } = {
+  BOARD: 'type',
+  BOARD_ID: 'boardId',
+  EMAIL: 'email',
+  SITE: 'site',
+  TOKEN: 'token',
 };
-
 const getValidatedError = (key: string, value: string, validateRule?: (value: string) => boolean) => {
   if (!value) {
     return `${key} is required!`;

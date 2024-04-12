@@ -4,13 +4,14 @@ import {
   BOARD_TYPE_LITERAL,
   PIPELINE_TOOL_TYPE_LITERAL,
   SOURCE_CONTROL_TYPE_LITERAL,
-  ERROR_MESSAGE,
+  BASIC_INFO_ERROR_MESSAGE,
+  BOARD_CONFIG_ERROR_MESSAGE,
 } from '@src/containers/ConfigStep/Form/literal';
 import { object, string, mixed, InferType, array } from 'yup';
 import { REGEX } from '@src/constants/regex';
 
 export const basicInfoSchema = object().shape({
-  projectName: string().required(ERROR_MESSAGE.projectName),
+  projectName: string().required(BASIC_INFO_ERROR_MESSAGE.projectName),
   dateRange: array().of(string()).required(),
   calendarType: mixed().oneOf(CALENDAR_TYPE_LITERAL),
   metrics: mixed().oneOf(METRICS_LITERAL),
@@ -18,12 +19,16 @@ export const basicInfoSchema = object().shape({
 
 export const boardConfigSchema = object().shape({
   type: mixed().oneOf(BOARD_TYPE_LITERAL),
-  boardId: string().required(),
-  email: string().required().email(),
-  site: string().required(),
+  boardId: string()
+    .required(BOARD_CONFIG_ERROR_MESSAGE.boardId.required)
+    .matches(REGEX.BOARD_ID, { message: BOARD_CONFIG_ERROR_MESSAGE.boardId.invalid }),
+  email: string()
+    .required(BOARD_CONFIG_ERROR_MESSAGE.email.required)
+    .matches(REGEX.EMAIL, { message: BOARD_CONFIG_ERROR_MESSAGE.email.invalid }),
+  site: string().required(BOARD_CONFIG_ERROR_MESSAGE.site.required),
   token: string()
-    .test('token valid', 'Invalid token', (value) => !value || REGEX.BOARD_TOKEN.test(value))
-    .required(),
+    .required(BOARD_CONFIG_ERROR_MESSAGE.token.invalid)
+    .matches(REGEX.BOARD_TOKEN, { message: BOARD_CONFIG_ERROR_MESSAGE.token.invalid }),
 });
 
 export const pipelineToolSchema = object().shape({

@@ -4,11 +4,13 @@ import {
   StyledTextField,
   StyledTypeSelections,
 } from '@src/components/Common/ConfigForms';
+import { FormTextField } from '@src/containers/ConfigStep/Board/FormTextField';
 import { updateShouldGetBoardConfig } from '@src/context/Metrics/metricsSlice';
 import { KEYS, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
+import { FormSelect } from '@src/containers/ConfigStep/Board/FormSelect';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { selectIsBoardVerified } from '@src/context/config/configSlice';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
@@ -16,6 +18,7 @@ import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { FormEvent, useMemo } from 'react';
+
 export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);
@@ -56,33 +59,7 @@ export const Board = () => {
       </StyledAlterWrapper>
       <StyledForm onSubmit={onSubmit} onReset={resetFields}>
         {fields.map(({ key, value, validatedError, verifiedError, col }, index) =>
-          !index ? (
-            <StyledTypeSelections variant='standard' required key={index}>
-              <InputLabel id='board-type-checkbox-label'>Board</InputLabel>
-              <Select labelId='board-type-checkbox-label' value={value}>
-                {Object.values(BOARD_TYPES).map((data) => (
-                  <MenuItem key={data} value={data}>
-                    <ListItemText primary={data} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </StyledTypeSelections>
-          ) : (
-            <StyledTextField
-              data-testid={key}
-              key={index}
-              required
-              label={key}
-              variant='standard'
-              value={value}
-              onFocus={() => validateField(key)}
-              onChange={(e) => updateField(key, e.target.value)}
-              error={!!validatedError || !!verifiedError}
-              type={key === KEYS.TOKEN ? 'password' : 'text'}
-              helperText={validatedError || verifiedError}
-              sx={{ gridColumn: `span ${col}` }}
-            />
-          ),
+          key === 'type' ? <FormSelect name={key} key={key} /> : <FormTextField name={key} key={key} col={col} />,
         )}
         <ConfigButtonGrop
           isVerifyTimeOut={isVerifyTimeOut}

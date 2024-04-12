@@ -2,11 +2,11 @@ import { selectWarningMessage, updateCalendarType, updateProjectName } from '@sr
 import { CollectionDateLabel, ProjectNameInput, StyledFormControlLabel } from './style';
 import { RequiredMetrics } from '@src/containers/ConfigStep/BasicInfo/RequiredMetrics';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
+import { BASIC_INFO_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { ConfigSectionContainer } from '@src/components/Common/ConfigForms';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
-import { ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { Controller, useFormContext } from 'react-hook-form';
 import { CALENDAR } from '@src/constants/resources';
 import { Radio, RadioGroup } from '@mui/material';
@@ -36,7 +36,7 @@ const BasicInfo = () => {
               }}
               onFocus={() => {
                 if (field.value === '') {
-                  setError('projectName', { message: ERROR_MESSAGE.projectName });
+                  setError('projectName', { message: BASIC_INFO_ERROR_MESSAGE.projectName });
                 }
               }}
               error={fieldState.invalid}
