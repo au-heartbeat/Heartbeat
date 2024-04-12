@@ -407,7 +407,7 @@ describe('CycleTime', () => {
     });
   });
 
-   [CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN].forEach((cycleTimeSettingsType) =>{
+  [CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN].forEach((cycleTimeSettingsType) => {
     it('should show warning message given both mapping block column and add flag as block', () => {
       (selectMetricsContent as jest.Mock).mockReturnValue({
         cycleTimeSettingsType,
@@ -424,5 +424,5 @@ describe('CycleTime', () => {
 
       expect(screen.getByText(MESSAGE.FLAG_CARD_DROPPED_WARNING)).toBeVisible();
     });
-   })
+  });
 });
