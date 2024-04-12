@@ -66,7 +66,6 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   }, [onError, sortDateRangeGroup]);
 
   const handleError = (type: string, error: DateValidationError, index: number) => {
-    console.log(type, error)
     setSortDateRangeGroup(
       sortDateRangeGroup.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })),
     );
@@ -85,7 +84,7 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   };
 
   const handleChange = ({startDate, endDate}: { startDate: string | null; endDate: string | null }, index: number) => {
-    const result = sortDateRangeGroup.map(item => (item.sortIndex === index ? { ...item, startDate, endDate } : item))
+    const result = sortDateRangeGroup.map(item => (item.sortIndex === index ? { ...item, startDate, endDate, startDateError: null, endDateError: null } : item))
     setSortDateRangeGroup(result);
     dispatchUpdateConfig();
     dispatch(updateDateRange(result.map(({startDate, endDate}) => ({startDate, endDate}))));

@@ -21,7 +21,6 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { Z_INDEX } from '@src/constants/commons';
 import { Nullable } from '@src/utils/types';
 import dayjs, { Dayjs } from 'dayjs';
-import { useCallback } from 'react';
 import isNull from 'lodash/isNull';
 
 const HelperTextForStartDate = (props: TextFieldProps) => (
@@ -46,7 +45,7 @@ export const DateRangePicker = ({
   const shouldStartDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
   const shouldEndDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
 
-  const changeStartDate = (value: Nullable<Dayjs>) => {
+  const changeStartDate = (value: Nullable<Dayjs>,  { validationError }: { validationError: DateValidationError }) => {
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
     if (value) {
       const valueDate = dayjs(value).startOf('day').format(DATE_RANGE_FORMAT);
@@ -68,11 +67,11 @@ export const DateRangePicker = ({
         endDate: value.endOf('date').add(daysAddToEndDate, 'day').format(DATE_RANGE_FORMAT),
       }
 
-    onChange?.(result, index);
+      isNull(validationError) ? onChange?.(result, index):onError?.('startDateError', validationError, index);
   };
 
-  const changeEndDate = (value: Nullable<Dayjs>) => {
-    onChange?.({
+  const changeEndDate = (value: Nullable<Dayjs>,  { validationError }: { validationError: DateValidationError }) => {
+    isNull(validationError) ? onError?.('endDateError', validationError, index) : onChange?.({
       startDate,
       endDate: !isNull(value) ? value.endOf('date').format(DATE_RANGE_FORMAT) : null,
     }, index);
@@ -90,8 +89,7 @@ export const DateRangePicker = ({
           shouldDisableDate={shouldStartDateDisableDate}
           label='From *'
           value={startDate ? dayjs(startDate) : null}
-          onAccept={changeStartDate}
-          onError={(err: DateValidationError) => onError?.('startDateError', err, index)}
+          onChange={changeStartDate}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForStartDate,
@@ -109,8 +107,7 @@ export const DateRangePicker = ({
           value={endDate ? dayjs(endDate) : null}
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
-          onAccept={changeEndDate}
-          onError={(err: DateValidationError) => onError?.('startDateError', err, index)}
+          onChange={changeEndDate}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForEndDate,
