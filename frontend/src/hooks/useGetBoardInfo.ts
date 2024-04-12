@@ -89,10 +89,13 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
             setErrorMessage(codeMapping(code));
             return err;
           })
-          .finally(() => setIsLoading(false));
       });
 
-      return Promise.all(allBoardData);
+      return await Promise.all(allBoardData).then((res) => {
+          setIsLoading(false);
+          return res;
+        }
+      );
     }
   };
   return {
