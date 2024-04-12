@@ -91,7 +91,7 @@ const MetricsStep = () => {
     [],
   );
 
-  const combineBoardInfo = (results: BoardInfoResponse[]): any => {
+  const combineBoardInfo = (results: BoardInfoResponse[]) => {
     if (results) {
       const allUsers = [...new Set(results.flatMap((result) => result.users))];
       const allTargetFields = uniqBy(

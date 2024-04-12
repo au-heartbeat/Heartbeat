@@ -2,8 +2,8 @@ import { BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AxiosResponse, HttpStatusCode } from 'axios';
 import { ReactNode, useState } from 'react';
-import { HttpStatusCode } from 'axios';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
@@ -17,7 +17,7 @@ export interface BoardInfoResponse {
   users: Users;
 }
 export interface useGetBoardInfoInterface {
-  getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<any>[] | undefined>;
+  getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<AxiosResponse<BoardInfoResponse>[]> | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
 }
@@ -62,12 +62,19 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
     setErrorMessage({});
 
     if (data.dateRanges) {
-      let dateRangeCopy = Array.from(data.dateRanges);
+      const dateRangeCopy = Array.from(data.dateRanges);
       dateRangeCopy.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
       const allBoardData = dateRangeCopy.map((info) => {
-        const { dateRanges, ...needInfoRequest } = data;
+        const request = {
+          token: data.token,
+          type: data.type,
+          site: data.site,
+          email: data.email,
+          boardId: data.boardId,
+          projectKey: data.projectKey,
+        };
         const boardInfoRequest = {
-          ...needInfoRequest,
+          ...request,
           startTime: dayjs(info.startDate).valueOf().toString(),
           endTime: dayjs(info.endDate).valueOf().toString(),
         };
@@ -88,14 +95,13 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
             const { code } = err;
             setErrorMessage(codeMapping(code));
             return err;
-          })
+          });
       });
 
       return await Promise.all(allBoardData).then((res) => {
-          setIsLoading(false);
-          return res;
-        }
-      );
+        setIsLoading(false);
+        return res;
+      });
     }
   };
   return {
