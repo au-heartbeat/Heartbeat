@@ -215,7 +215,6 @@ public class GitHubService {
 			firstCommitTime = jobStartTime;
 		}
 
-
 		return LeadTime.builder()
 			.commitId(deployInfo.getCommitId())
 			.pipelineCreateTime(pipelineCreateTime)
