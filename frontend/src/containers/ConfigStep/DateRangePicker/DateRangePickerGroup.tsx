@@ -16,6 +16,8 @@ import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
+import remove from 'lodash/remove';
+import update from 'lodash/update'
 
 export enum SortType {
   DESCENDING = 'DESCENDING',
@@ -63,15 +65,10 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
     onError?.(errors);
   }, [onError, sortDateRangeGroup]);
 
-  const handleStartDateError = async (error: DateValidationError, index: number) => {
-    await setSortDateRangeGroup(
-      sortDateRangeGroup.map((item) => ({ ...item, startDateError: item.sortIndex === index ? error : null })),
-    );
-  };
-
-  const handleEndDateError = async (error: DateValidationError, index: number) => {
-    await setSortDateRangeGroup(
-      sortDateRangeGroup.map((item) => ({ ...item, endDateError: item.sortIndex === index ? error : null })),
+  const handleError = (type: string, error: DateValidationError, index: number) => {
+    console.log(type, error)
+    setSortDateRangeGroup(
+      sortDateRangeGroup.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })),
     );
   };
 
@@ -82,16 +79,25 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   };
 
   const addRangeHandler = () => {
-    const newDateRangeGroup = [...dateRangeGroup, { startDate: null, endDate: null }];
-    setSortDateRangeGroup(newDateRangeGroup.map(fillDateRangeGroup));
-    dispatch(updateDateRange(newDateRangeGroup));
+    const result = [...sortDateRangeGroup, { startDate: null, endDate: null }];
+    setSortDateRangeGroup(result.map(fillDateRangeGroup));
+    dispatch(updateDateRange(result.map(({startDate, endDate}) => ({startDate, endDate}))));
   };
 
-  const handleChange = (data: { startDate: string | null; endDate: string | null }[]) => {
-    setSortDateRangeGroup(data.map(fillDateRangeGroup));
+  const handleChange = ({startDate, endDate}: { startDate: string | null; endDate: string | null }, index: number) => {
+    const result = sortDateRangeGroup.map(item => (item.sortIndex === index ? { ...item, startDate, endDate } : item))
+    setSortDateRangeGroup(result);
     dispatchUpdateConfig();
-    dispatch(updateDateRange(data));
+    dispatch(updateDateRange(result.map(({startDate, endDate}) => ({startDate, endDate}))));
   };
+
+  const handleRemove = (index: number) => {
+    const result = [...sortDateRangeGroup]
+    remove(result, ({sortIndex}) => sortIndex === index)
+    setSortDateRangeGroup(result);
+    dispatchUpdateConfig();
+    dispatch(updateDateRange(result.map(({startDate, endDate}) => ({startDate, endDate}))));
+  }
 
   return (
     <DateRangePickerGroupContainer>
@@ -103,8 +109,8 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
             index={sortIndex}
             key={index}
             onChange={handleChange}
-            onStartDateError={handleStartDateError}
-            onEndDateError={handleEndDateError}
+            onError={handleError}
+            onRemove={handleRemove}
           />
         ))}
         <AddButton

@@ -32,7 +32,6 @@ export const DateRangePickerSection = () => {
   };
 
   const handleError = (err: SortDateRangeType[]) => {
-    console.log('6666666', err);
     setHasError(!!err.length);
   };
 

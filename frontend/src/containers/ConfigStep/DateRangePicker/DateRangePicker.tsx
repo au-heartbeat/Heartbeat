@@ -36,9 +36,9 @@ export const DateRangePicker = ({
   startDate,
   endDate,
   index,
-  onStartDateError,
-  onEndDateError,
+  onError,
   onChange,
+  onRemove,
 }: IRangePickerProps) => {
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isShowRemoveButton = dateRangeGroup.length > 1;
@@ -57,54 +57,29 @@ export const DateRangePicker = ({
           ? DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS
           : draftDaysAddition;
     }
-    const newDateRangeGroup = dateRangeGroup.map(({ startDate, endDate }, idx) => {
-      if (idx === index) {
-        return isNull(value)
-          ? {
-              startDate: null,
-              endDate: null,
-            }
-          : {
-              startDate: value.startOf('date').format(DATE_RANGE_FORMAT),
-              endDate: value.endOf('date').add(daysAddToEndDate, 'day').format(DATE_RANGE_FORMAT),
-            };
+
+    const result = isNull(value)
+    ? {
+        startDate: null,
+        endDate: null,
+      }
+    : {
+        startDate: value.startOf('date').format(DATE_RANGE_FORMAT),
+        endDate: value.endOf('date').add(daysAddToEndDate, 'day').format(DATE_RANGE_FORMAT),
       }
 
-      return {
-        startDate,
-        endDate,
-      };
-    });
-    onChange?.(newDateRangeGroup, index);
+    onChange?.(result, index);
   };
 
   const changeEndDate = (value: Nullable<Dayjs>) => {
-    const newDateRangeGroup = dateRangeGroup.map(({ startDate, endDate }, idx) => {
-      if (idx === index) {
-        return {
-          startDate,
-          endDate: !isNull(value) ? value.endOf('date').format(DATE_RANGE_FORMAT) : null,
-        };
-      }
-
-      return { startDate, endDate };
-    });
-    onChange?.(newDateRangeGroup, index);
+    onChange?.({
+      startDate,
+      endDate: !isNull(value) ? value.endOf('date').format(DATE_RANGE_FORMAT) : null,
+    }, index);
   };
 
-  const removeSelfHandler = useCallback(() => {
-    const newDateRangeGroup = dateRangeGroup.filter((_, idx) => idx !== index);
-    onChange?.(newDateRangeGroup, index);
-  }, [dateRangeGroup, index, onChange]);
-
-  const handleStartDateError = (err: DateValidationError, index: number) => {
-    console.log('111111', err);
-    onStartDateError?.(err, index);
-  };
-
-  const handleEndDateError = (err: DateValidationError, index: number) => {
-    console.log('22222', err);
-    onEndDateError?.(err, index);
+  const removeSelfHandler = () => {
+    onRemove?.(index);
   };
 
   return (
@@ -116,7 +91,7 @@ export const DateRangePicker = ({
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={changeStartDate}
-          onError={(err: DateValidationError) => handleStartDateError(err, index)}
+          onError={(err: DateValidationError) => onError?.('startDateError', err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForStartDate,
@@ -135,7 +110,7 @@ export const DateRangePicker = ({
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
           onChange={changeEndDate}
-          onError={(err: DateValidationError) => handleEndDateError(err, index)}
+          onError={(err: DateValidationError) => onError?.('startDateError', err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForEndDate,
