@@ -27,6 +27,7 @@ public class LeadTime {
 
 	private long jobStartTime;
 
+	@Nullable
 	private Long noPRCommitTime;
 
 	@Nullable
@@ -34,6 +35,7 @@ public class LeadTime {
 
 	private long pipelineCreateTime;
 
+	@Nullable
 	private Boolean isRevert;
 
 	@Nullable
