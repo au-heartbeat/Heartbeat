@@ -215,8 +215,6 @@ public class GitHubService {
 			firstCommitTime = jobStartTime;
 		}
 
-		Boolean isRevert = null;
-		isRevert = isRevert(commitInfo, isRevert);
 
 		return LeadTime.builder()
 			.commitId(deployInfo.getCommitId())
@@ -228,11 +226,12 @@ public class GitHubService {
 			.pipelineLeadTime(jobFinishTime - firstCommitTime)
 			.totalTime(jobFinishTime - firstCommitTime)
 			.prLeadTime(prLeadTime)
-			.isRevert(isRevert)
+			.isRevert(isRevert(commitInfo))
 			.build();
 	}
 
-	private Boolean isRevert(CommitInfo commitInfo, Boolean isRevert) {
+	private Boolean isRevert(CommitInfo commitInfo) {
+		Boolean isRevert = null;
 		if (commitInfo.getCommit() != null && commitInfo.getCommit().getMessage() != null) {
 			isRevert = commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
 		}
@@ -260,8 +259,7 @@ public class GitHubService {
 		long pipelineLeadTime = jobFinishTime - prMergedTime;
 		long prLeadTime;
 		long totalTime;
-		Boolean isRevert = null;
-		isRevert = isRevert(commitInfo, isRevert);
+		Boolean isRevert = isRevert(commitInfo);
 		if (Boolean.TRUE.equals(isRevert) || isNoFirstCommitTimeInPr(firstCommitTimeInPr)) {
 			prLeadTime = 0;
 		}
