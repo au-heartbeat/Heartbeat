@@ -87,7 +87,6 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           .catch((err) => {
             const { code } = err;
             setErrorMessage(codeMapping(code));
-            // todo handle return type
             return err;
           })
           .finally(() => setIsLoading(false));
