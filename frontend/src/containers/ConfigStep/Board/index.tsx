@@ -1,38 +1,24 @@
-import {
-  ConfigSectionContainer,
-  StyledForm,
-  StyledTextField,
-  StyledTypeSelections,
-} from '@src/components/Common/ConfigForms';
+import { ConfigSectionContainer, StyledForm } from '@src/components/Common/ConfigForms';
 import { FormTextField } from '@src/containers/ConfigStep/Board/FormTextField';
 import { updateShouldGetBoardConfig } from '@src/context/Metrics/metricsSlice';
-import { KEYS, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
-import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { FormSelect } from '@src/containers/ConfigStep/Board/FormSelect';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { selectIsBoardVerified } from '@src/context/config/configSlice';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
+import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
-import { BOARD_TYPES, CONFIG_TITLE } from '@src/constants/resources';
+import { CONFIG_TITLE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
-import { FormEvent, useMemo } from 'react';
+import { useFormState } from 'react-hook-form';
+import { FormEvent } from 'react';
 
 export const Board = () => {
   const dispatch = useAppDispatch();
   const isVerified = useAppSelector(selectIsBoardVerified);
-  const {
-    verifyJira,
-    isLoading,
-    fields,
-    updateField,
-    isShowAlert,
-    setIsShowAlert,
-    validateField,
-    resetFields,
-    isVerifyTimeOut,
-  } = useVerifyBoardEffect();
+  const { verifyJira, isLoading, fields, isShowAlert, setIsShowAlert, resetFields, isVerifyTimeOut } =
+    useVerifyBoardEffect();
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,10 +26,9 @@ export const Board = () => {
     dispatch(updateShouldGetBoardConfig(true));
   };
 
-  const isDisableVerifyButton = useMemo(
-    () => isLoading || fields.some((field) => !field.value || field.validatedError || field.verifiedError),
-    [fields, isLoading],
-  );
+  const { isValid, isSubmitted } = useFormState();
+  console.log('isValid', isValid);
+  console.log('isSubmitted', isSubmitted);
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>
@@ -58,13 +43,13 @@ export const Board = () => {
         />
       </StyledAlterWrapper>
       <StyledForm onSubmit={onSubmit} onReset={resetFields}>
-        {fields.map(({ key, value, validatedError, verifiedError, col }, index) =>
+        {fields.map(({ key, col }) =>
           key === 'type' ? <FormSelect name={key} key={key} /> : <FormTextField name={key} key={key} col={col} />,
         )}
         <ConfigButtonGrop
           isVerifyTimeOut={isVerifyTimeOut}
           isVerified={isVerified}
-          isDisableVerifyButton={isDisableVerifyButton}
+          isDisableVerifyButton={!isValid}
           isLoading={isLoading}
         />
       </StyledForm>
