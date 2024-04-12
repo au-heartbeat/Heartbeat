@@ -127,6 +127,7 @@ class GithubServiceTest {
 				.prCreatedTime(1658548980000L)
 				.prMergedTime(1658549040000L)
 				.firstCommitTimeInPr(1658548980000L)
+				.jobStartTime(1658549040000L)
 				.jobFinishTime(1658549160000L)
 				.pipelineLeadTime(1658549100000L)
 				.pipelineCreateTime(1658549100000L)
@@ -134,7 +135,7 @@ class GithubServiceTest {
 				.pipelineLeadTime(120000)
 				.firstCommitTime(1658549040000L)
 				.totalTime(180000)
-					.isRevert(Boolean.FALSE)
+				.isRevert(Boolean.FALSE)
 				.build()))
 			.build());
 
@@ -269,6 +270,7 @@ class GithubServiceTest {
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(1658548980000L)
+			.jobStartTime(1658549040000L)
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
@@ -292,6 +294,7 @@ class GithubServiceTest {
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
+			.jobStartTime(1658549040000L)
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
@@ -315,6 +318,7 @@ class GithubServiceTest {
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
+			.jobStartTime(1658549040000L)
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
@@ -338,6 +342,7 @@ class GithubServiceTest {
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
+			.jobStartTime(1658549040000L)
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
@@ -361,6 +366,7 @@ class GithubServiceTest {
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
+			.jobStartTime(1658549040000L)
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
@@ -384,6 +390,7 @@ class GithubServiceTest {
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
+			.jobStartTime(1658549040000L)
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
@@ -407,6 +414,7 @@ class GithubServiceTest {
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
+			.jobStartTime(1658549040000L)
 			.jobFinishTime(1658549160000L)
 			.pipelineLeadTime(1658549100000L)
 			.pipelineCreateTime(1658549100000L)
@@ -456,6 +464,8 @@ class GithubServiceTest {
 			.pipelineName("Name")
 			.leadTimes(List.of(LeadTime.builder()
 				.commitId("111")
+				.noPRCommitTime(1658548980000L)
+				.jobStartTime(1658549040000L)
 				.jobFinishTime(1658549160000L)
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
@@ -490,6 +500,7 @@ class GithubServiceTest {
 			.pipelineName("Name")
 			.leadTimes(List.of(LeadTime.builder()
 				.commitId("111")
+				.jobStartTime(1658549040000L)
 				.jobFinishTime(1658549160000L)
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
@@ -516,6 +527,7 @@ class GithubServiceTest {
 			.pipelineName("Name")
 			.leadTimes(List.of(LeadTime.builder()
 				.commitId("111")
+				.jobStartTime(1658549040000L)
 				.jobFinishTime(1658549160000L)
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
@@ -527,7 +539,8 @@ class GithubServiceTest {
 			.build());
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenThrow(new NotFoundException(""));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(CommitInfo.builder().commit(Commit.builder().message("").build()).build());
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
+			.thenReturn(CommitInfo.builder().commit(Commit.builder().message("").build()).build());
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 
@@ -543,6 +556,7 @@ class GithubServiceTest {
 			.pipelineName("Name")
 			.leadTimes(List.of(LeadTime.builder()
 				.commitId("111")
+				.jobStartTime(1658549040000L)
 				.jobFinishTime(1658549160000L)
 				.pipelineCreateTime(1658549100000L)
 				.prLeadTime(0L)
@@ -657,6 +671,7 @@ class GithubServiceTest {
 			.pipelineStep(PIPELINE_STEP)
 			.leadTimes(List.of(LeadTime.builder()
 				.commitId("111")
+				.jobStartTime(1658549040000L)
 				.jobFinishTime(1658549160000L)
 				.pipelineLeadTime(1658549100000L)
 				.pipelineCreateTime(1658549100000L)

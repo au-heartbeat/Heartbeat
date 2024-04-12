@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
@@ -101,8 +100,9 @@ public class CSVFileGenerator {
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
 				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
 						"Code Committer", "Pipeline Creator", "First Code Committed Time In PR", "PR Created Time",
-						"PR Merged Time", "First Committed Time In Pipeline", "Job Completed Time", "Total Lead Time (HH:mm:ss)",
-						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
+						"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
+						"Pipeline Finish Time", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
 
 				csvWriter.writeNext(headers);
 
@@ -123,13 +123,17 @@ public class CSVFileGenerator {
 		if (csvInfo.getBuildInfo().getCreator() != null && csvInfo.getBuildInfo().getCreator().getName() != null) {
 			creatorName = csvInfo.getBuildInfo().getCreator().getName();
 		}
+		String committerName = null;
+		if (csvInfo.getBuildInfo().getAuthor() != null && csvInfo.getBuildInfo().getAuthor().getName() != null) {
+			committerName = String.valueOf(csvInfo.getBuildInfo().getAuthor().getName());
+		}
 
 		String organization = csvInfo.getOrganizationName();
 		String pipelineName = csvInfo.getPipeLineName();
 		String stepName = csvInfo.getStepName();
 		String valid = String.valueOf(csvInfo.getValid()).toLowerCase();
 		String buildNumber = String.valueOf(csvInfo.getBuildInfo().getNumber());
-		String committerName = String.valueOf(csvInfo.getBuildInfo().getAuthor().getName());
+
 		String state = csvInfo.getPiplineStatus().equals(CANCELED_STATUS) ? CANCELED_STATUS
 				: csvInfo.getDeployInfo().getState();
 		String branch = csvInfo.getBuildInfo().getBranch();
@@ -138,16 +142,18 @@ public class CSVFileGenerator {
 		String firstCommitTimeInPr = leadTimeInfo.getFirstCommitTimeInPr();
 		String prCreatedTime = leadTimeInfo.getPrCreatedTime();
 		String prMergedTime = leadTimeInfo.getPrMergedTime();
-		String jobFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
-		String firstCommitTimeInPipeline = leadTimeInfo.getFirstCommitTime();
+		String noPRCommitTime = leadTimeInfo.getNoPRCommitTime();
+		String jobStartTime = leadTimeInfo.getJobStartTime();
+		String pipelineStartTime = leadTimeInfo.getFirstCommitTime();
+		String pipelineFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
 		String totalTime = leadTimeInfo.getTotalTime();
 		String prLeadTime = leadTimeInfo.getPrLeadTime();
 		String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
 		String isRevert = leadTimeInfo.getIsRevert() == null ? "" : String.valueOf(leadTimeInfo.getIsRevert());
 
 		return new String[] { organization, pipelineName, stepName, valid, buildNumber, committerName, creatorName,
-				firstCommitTimeInPr, prCreatedTime, prMergedTime, firstCommitTimeInPipeline, jobFinishTime, totalTime,
-				prLeadTime, pipelineLeadTime, state, branch, isRevert };
+				firstCommitTimeInPr, prCreatedTime, prMergedTime, noPRCommitTime, jobStartTime, pipelineStartTime,
+				pipelineFinishTime, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, long csvTimeStamp) {

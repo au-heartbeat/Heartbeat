@@ -25,6 +25,10 @@ public class LeadTime {
 
 	private long jobFinishTime;
 
+	private long jobStartTime;
+
+	private Long noPRCommitTime;
+
 	@Nullable
 	private Long firstCommitTime;
 

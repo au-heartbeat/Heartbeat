@@ -205,9 +205,11 @@ public class GitHubService {
 					deployInfo.getCommitId(), e.getMessage());
 		}
 
+		Long noPRCommitTime = null;
 		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
 				&& commitInfo.getCommit().getCommitter().getDate() != null) {
-			firstCommitTime = Instant.parse(commitInfo.getCommit().getCommitter().getDate()).toEpochMilli();
+			noPRCommitTime = Instant.parse(commitInfo.getCommit().getCommitter().getDate()).toEpochMilli();
+			firstCommitTime = noPRCommitTime;
 		}
 		else {
 			firstCommitTime = jobStartTime;
@@ -217,6 +219,8 @@ public class GitHubService {
 			.commitId(deployInfo.getCommitId())
 			.pipelineCreateTime(pipelineCreateTime)
 			.jobFinishTime(jobFinishTime)
+			.jobStartTime(jobStartTime)
+			.noPRCommitTime(noPRCommitTime)
 			.firstCommitTime(firstCommitTime)
 			.pipelineLeadTime(jobFinishTime - firstCommitTime)
 			.totalTime(jobFinishTime - firstCommitTime)
@@ -232,6 +236,7 @@ public class GitHubService {
 		long prCreatedTime = Instant.parse(pullRequestInfo.getCreatedAt()).toEpochMilli();
 		long prMergedTime = Instant.parse(pullRequestInfo.getMergedAt()).toEpochMilli();
 		long jobFinishTime = Instant.parse(deployInfo.getJobFinishTime()).toEpochMilli();
+		long jobStartTime = Instant.parse(deployInfo.getJobStartTime()).toEpochMilli();
 		long pipelineCreateTime = Instant.parse(deployInfo.getPipelineCreateTime()).toEpochMilli();
 		long firstCommitTimeInPr;
 		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
@@ -263,6 +268,7 @@ public class GitHubService {
 			.prCreatedTime(prCreatedTime)
 			.commitId(deployInfo.getCommitId())
 			.jobFinishTime(jobFinishTime)
+			.jobStartTime(jobStartTime)
 			.firstCommitTime(prMergedTime)
 			.pipelineCreateTime(pipelineCreateTime)
 			.isRevert(isRevert)
@@ -274,7 +280,7 @@ public class GitHubService {
 	}
 
 	private Boolean isRevert(CommitInfo commitInfo) {
-		if (commitInfo.getCommit() !=null && commitInfo.getCommit().getMessage()!=null) {
+		if (commitInfo.getCommit() != null && commitInfo.getCommit().getMessage() != null) {
 			return commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
 		}
 		return null;

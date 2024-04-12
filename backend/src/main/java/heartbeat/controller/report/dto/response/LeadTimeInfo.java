@@ -25,6 +25,10 @@ public class LeadTimeInfo {
 
 	private String jobFinishTime;
 
+	private String jobStartTime;
+
+	private String noPRCommitTime;
+
 	private String firstCommitTime;
 
 	@Nullable
@@ -54,6 +58,8 @@ public class LeadTimeInfo {
 
 			this.jobFinishTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getJobFinishTime()));
 
+			this.jobStartTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getJobStartTime()));
+
 			if (leadTime.getFirstCommitTime() != null) {
 				this.firstCommitTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getFirstCommitTime()));
 			}
@@ -67,8 +73,13 @@ public class LeadTimeInfo {
 			if (leadTime.getTotalTime() != 0) {
 				this.totalTime = TimeUtil.msToHMS(leadTime.getTotalTime());
 			}
+
 			if (leadTime.getIsRevert() != null) {
 				this.isRevert = leadTime.getIsRevert();
+			}
+
+			if (leadTime.getNoPRCommitTime() != null) {
+				this.noPRCommitTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getNoPRCommitTime()));
 			}
 		}
 	}

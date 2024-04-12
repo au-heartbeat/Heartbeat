@@ -15,6 +15,7 @@ public class LeadTimeInfoTest {
 			.prCreatedTime(1706067997L)
 			.prMergedTime(1706067997L)
 			.firstCommitTime(1706067997L)
+			.noPRCommitTime(1706067997L)
 			.totalTime(57255635L)
 			.isRevert(Boolean.FALSE)
 			.build());
@@ -24,6 +25,7 @@ public class LeadTimeInfoTest {
 		assertEquals("1970-01-20T17:54:27Z", info.getPrMergedTime());
 		assertEquals("1970-01-20T17:54:27Z", info.getPrCreatedTime());
 		assertEquals("1970-01-20T17:54:27Z", info.getFirstCommitTime());
+		assertEquals("1970-01-20T17:54:27Z", info.getNoPRCommitTime());
 		assertEquals("15:54:15", info.getTotalTime());
 		assertEquals(Boolean.FALSE, info.getIsRevert());
 	}
