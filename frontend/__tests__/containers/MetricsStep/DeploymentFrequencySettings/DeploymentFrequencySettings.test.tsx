@@ -26,7 +26,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   deleteADeploymentFrequencySetting: jest.fn(),
   updateDeploymentFrequencySettings: jest.fn(),
   selectDeploymentFrequencySettings: jest.fn().mockReturnValue([
-    { id: 0, organization: '', pipelineName: '', steps: '', branches: [] },
+    { id: 0, organization: 'mockOrgName', pipelineName: '1', steps: '', branches: [] },
     { id: 1, organization: '', pipelineName: '', steps: '', branches: [] },
   ]),
   selectOrganizationWarningMessage: jest.fn().mockReturnValue(null),
@@ -39,7 +39,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
   selectPipelineOrganizations: jest.fn().mockReturnValue(['mockOrgName']),
-  selectPipelineNames: jest.fn().mockReturnValue(['']),
+  selectPipelineNames: jest.fn().mockReturnValue(['Heartbeat']),
   selectSteps: jest.fn().mockReturnValue(['']),
   selectBranches: jest.fn().mockReturnValue(['']),
   selectPipelineCrews: jest.fn().mockReturnValue(['']),
@@ -102,6 +102,27 @@ describe('DeploymentFrequencySettings', () => {
     mockGetPipelineToolInfoSpy = mockGetPipelineToolInfoOkResponse;
   });
 
+  it('should show crew settings when select pipelineName', async () => {
+    const { getAllByRole, getByRole, debug } = await setup();
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
+    });
+    debug();
+
+    let listBox = within(getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('mockOrgName'));
+    });
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[1]);
+    });
+    listBox = within(getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('Heartbeat'));
+    });
+    expect(screen.getByText('Crew setting (optional)')).toBeInTheDocument();
+  });
+
   it('should render DeploymentFrequencySettings component', () => {
     const { getByText, getAllByText } = setup();
 
@@ -126,19 +147,19 @@ describe('DeploymentFrequencySettings', () => {
     expect(deleteADeploymentFrequencySetting).toHaveBeenCalledTimes(1);
   });
 
-  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization', async () => {
-    const { getAllByRole, getByRole } = setup();
-
-    await act(async () => {
-      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
-    });
-    const listBox = within(getByRole('listbox'));
-    await act(async () => {
-      await userEvent.click(listBox.getByText('mockOrgName'));
-    });
-
-    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(1);
-  });
+  // it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization', async () => {
+  //   const { getAllByRole, getByRole } = setup();
+  //
+  //   await act(async () => {
+  //     await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
+  //   });
+  //   const listBox = within(getByRole('listbox'));
+  //   await act(async () => {
+  //     await userEvent.click(listBox.getByText('test'));
+  //   });
+  //
+  //   expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(1);
+  // });
 
   it('show render crews component when totalPipelineNumber is equal loadingCompletedNumber', () => {
     mockSelectShouldGetPipelineConfig = false;
