@@ -215,6 +215,9 @@ public class GitHubService {
 			firstCommitTime = jobStartTime;
 		}
 
+		Boolean isRevert = null;
+		isRevert = isRevert(commitInfo, isRevert);
+
 		return LeadTime.builder()
 			.commitId(deployInfo.getCommitId())
 			.pipelineCreateTime(pipelineCreateTime)
@@ -225,8 +228,15 @@ public class GitHubService {
 			.pipelineLeadTime(jobFinishTime - firstCommitTime)
 			.totalTime(jobFinishTime - firstCommitTime)
 			.prLeadTime(prLeadTime)
-			.isRevert(isRevert(commitInfo))
+			.isRevert(isRevert)
 			.build();
+	}
+
+	private Boolean isRevert(CommitInfo commitInfo, Boolean isRevert) {
+		if (commitInfo.getCommit() != null && commitInfo.getCommit().getMessage() != null) {
+			isRevert = commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
+		}
+		return isRevert;
 	}
 
 	public LeadTime mapLeadTimeWithInfo(PullRequestInfo pullRequestInfo, DeployInfo deployInfo, CommitInfo commitInfo) {
@@ -250,7 +260,8 @@ public class GitHubService {
 		long pipelineLeadTime = jobFinishTime - prMergedTime;
 		long prLeadTime;
 		long totalTime;
-		Boolean isRevert = isRevert(commitInfo);
+		Boolean isRevert = null;
+		isRevert = isRevert(commitInfo, isRevert);
 		if (Boolean.TRUE.equals(isRevert) || isNoFirstCommitTimeInPr(firstCommitTimeInPr)) {
 			prLeadTime = 0;
 		}
@@ -279,12 +290,13 @@ public class GitHubService {
 		return firstCommitTimeInPr == 0;
 	}
 
-	private Boolean isRevert(CommitInfo commitInfo) {
-		if (commitInfo.getCommit() != null && commitInfo.getCommit().getMessage() != null) {
-			return commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
-		}
-		return null;
-	}
+	// private Boolean isRevert(CommitInfo commitInfo) {
+	// if (commitInfo.getCommit() != null && commitInfo.getCommit().getMessage() != null)
+	// {
+	// return commitInfo.getCommit().getMessage().toLowerCase().startsWith("revert");
+	// }
+	// return null;
+	// }
 
 	public CommitInfo fetchCommitInfo(String commitId, String repositoryId, String token) {
 		try {

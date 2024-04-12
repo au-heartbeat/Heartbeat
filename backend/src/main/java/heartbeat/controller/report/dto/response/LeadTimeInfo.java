@@ -42,46 +42,31 @@ public class LeadTimeInfo {
 	private Boolean isRevert;
 
 	public LeadTimeInfo(LeadTime leadTime) {
-		if (leadTime != null) {
-			if (leadTime.getFirstCommitTimeInPr() != null) {
-				this.firstCommitTimeInPr = TimeUtil
-					.convertToISOFormat(String.valueOf(leadTime.getFirstCommitTimeInPr()));
-			}
-
-			if (leadTime.getPrCreatedTime() != null) {
-				this.prCreatedTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getPrCreatedTime()));
-			}
-
-			if (leadTime.getPrMergedTime() != null) {
-				this.prMergedTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getPrMergedTime()));
-			}
-
-			this.jobFinishTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getJobFinishTime()));
-
-			this.jobStartTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getJobStartTime()));
-
-			if (leadTime.getFirstCommitTime() != null) {
-				this.firstCommitTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getFirstCommitTime()));
-			}
-
-			this.pipelineLeadTime = TimeUtil.msToHMS(leadTime.getPipelineLeadTime());
-
-			if (leadTime.getPrLeadTime() != null) {
-				this.prLeadTime = TimeUtil.msToHMS(leadTime.getPrLeadTime());
-			}
-
-			if (leadTime.getTotalTime() != 0) {
-				this.totalTime = TimeUtil.msToHMS(leadTime.getTotalTime());
-			}
-
-			if (leadTime.getIsRevert() != null) {
-				this.isRevert = leadTime.getIsRevert();
-			}
-
-			if (leadTime.getNoPRCommitTime() != null) {
-				this.noPRCommitTime = TimeUtil.convertToISOFormat(String.valueOf(leadTime.getNoPRCommitTime()));
-			}
+		if (leadTime == null) {
+			return;
 		}
+		this.firstCommitTimeInPr = convertToISOFormat(leadTime.getFirstCommitTimeInPr());
+		this.prCreatedTime = convertToISOFormat(leadTime.getPrCreatedTime());
+		this.prMergedTime = convertToISOFormat(leadTime.getPrMergedTime());
+		this.jobFinishTime = convertToISOFormat(leadTime.getJobFinishTime());
+		this.jobStartTime = convertToISOFormat(leadTime.getJobStartTime());
+		this.firstCommitTime = convertToISOFormat(leadTime.getFirstCommitTime());
+		this.noPRCommitTime = convertToISOFormat(leadTime.getNoPRCommitTime());
+
+		this.pipelineLeadTime = TimeUtil.msToHMS(leadTime.getPipelineLeadTime());
+		this.isRevert = leadTime.getIsRevert();
+
+		if (leadTime.getPrLeadTime() != null) {
+			this.prLeadTime = TimeUtil.msToHMS(leadTime.getPrLeadTime());
+		}
+
+		if (leadTime.getTotalTime() != 0) {
+			this.totalTime = TimeUtil.msToHMS(leadTime.getTotalTime());
+		}
+	}
+
+	private String convertToISOFormat(Long time) {
+		return time != null ? TimeUtil.convertToISOFormat(String.valueOf(time)) : null;
 	}
 
 }
