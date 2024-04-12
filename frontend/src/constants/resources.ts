@@ -426,3 +426,5 @@ export const REMOVE_BUTTON_TEXT = 'Remove';
 export const MAX_TIME_RANGE_AMOUNT = 6;
 export const START_DATE_INVALID_TEXT = 'Start date is invalid';
 export const END_DATE_INVALID_TEXT = 'End date is invalid';
+
+export const BLOCK_COLUMN_NAME = ['BLOCKED', 'BLOCK'];
