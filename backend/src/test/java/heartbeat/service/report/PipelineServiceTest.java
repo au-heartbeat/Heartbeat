@@ -537,9 +537,9 @@ public class PipelineServiceTest {
 				.commit("commit")
 				.author(BuildKiteBuildInfo.Author.builder().name("xxxx").build())
 				.build());
-			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
+			when(buildKiteService.getPipelineStepNames(kiteBuildInfos)).thenReturn(List.of("check"));
 			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
-			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
+			when(buildKiteService.getBuildKiteJob(any(), any(), any(), MOCK_START_TIME, MOCK_END_TIME))
 				.thenReturn(BuildKiteJob.builder().build());
 			DeployInfo fakeDeploy = DeployInfo.builder().commitId("commitId").jobName("test").build();
 			when(buildKiteService.mapToDeployInfo(any(), any(), any(), any(), any())).thenReturn(fakeDeploy);
