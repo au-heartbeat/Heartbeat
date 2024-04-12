@@ -110,6 +110,7 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
             onChange={handleChange}
             onError={handleError}
             onRemove={handleRemove}
+            allRange={sortDateRangeGroup}
           />
         ))}
         <AddButton
