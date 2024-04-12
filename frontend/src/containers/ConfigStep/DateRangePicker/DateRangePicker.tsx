@@ -32,7 +32,14 @@ const HelperTextForEndDate = (props: TextFieldProps) => (
   <TextField {...props} variant='standard' helperText={props.error ? END_DATE_INVALID_TEXT : ''} />
 );
 
-export const DateRangePicker = ({ startDate, endDate, index, onError, onChange }: IRangePickerProps) => {
+export const DateRangePicker = ({
+  startDate,
+  endDate,
+  index,
+  onStartDateError,
+  onEndDateError,
+  onChange,
+}: IRangePickerProps) => {
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isShowRemoveButton = dateRangeGroup.length > 1;
   const dateRangeGroupExcludeSelf = dateRangeGroup.filter((_, idx) => idx !== index);
@@ -90,8 +97,14 @@ export const DateRangePicker = ({ startDate, endDate, index, onError, onChange }
     onChange?.(newDateRangeGroup, index);
   }, [dateRangeGroup, index, onChange]);
 
-  const handleError = (err: DateValidationError, index: number) => {
-    onError?.(err, index);
+  const handleStartDateError = (err: DateValidationError, index: number) => {
+    console.log('111111', err);
+    onStartDateError?.(err, index);
+  };
+
+  const handleEndDateError = (err: DateValidationError, index: number) => {
+    console.log('22222', err);
+    onEndDateError?.(err, index);
   };
 
   return (
@@ -103,7 +116,7 @@ export const DateRangePicker = ({ startDate, endDate, index, onError, onChange }
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={changeStartDate}
-          onError={(err: DateValidationError) => handleError(err, index)}
+          onError={(err: DateValidationError) => handleStartDateError(err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForStartDate,
@@ -122,7 +135,7 @@ export const DateRangePicker = ({ startDate, endDate, index, onError, onChange }
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
           onChange={changeEndDate}
-          onError={(err: DateValidationError) => handleError(err, index)}
+          onError={(err: DateValidationError) => handleEndDateError(err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForEndDate,

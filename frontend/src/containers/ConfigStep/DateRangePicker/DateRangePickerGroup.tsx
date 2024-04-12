@@ -11,6 +11,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateValidationError } from '@mui/x-date-pickers';
 import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
 import get from 'lodash/get';
@@ -26,6 +27,8 @@ export type SortDateRangeType = {
   startDate: string | null;
   endDate: string | null;
   sortIndex: number;
+  startDateError: DateValidationError | null;
+  endDateError: DateValidationError | null;
 };
 
 const sortFn = {
@@ -37,11 +40,17 @@ const sortFn = {
 type IProps = {
   sortStatus: SortType;
   onChange?: (data: SortDateRangeType[]) => void;
+  onError?: (data: SortDateRangeType[]) => void;
 };
 
-const fillDateRangeGroup = <T,>(item: T, index: number) => ({ ...item, sortIndex: index });
+const fillDateRangeGroup = <T,>(item: T, index: number) => ({
+  ...item,
+  startDateError: null,
+  endDateError: null,
+  sortIndex: index,
+});
 
-export const DateRangePickerGroup = ({ sortStatus, onChange }: IProps) => {
+export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
@@ -50,8 +59,21 @@ export const DateRangePickerGroup = ({ sortStatus, onChange }: IProps) => {
   );
 
   useEffect(() => {
-    onChange?.(sortDateRangeGroup);
-  }, [onChange, sortDateRangeGroup]);
+    const errors = sortDateRangeGroup.filter(({ startDateError, endDateError }) => startDateError || endDateError);
+    onError?.(errors);
+  }, [onError, sortDateRangeGroup]);
+
+  const handleStartDateError = async (error: DateValidationError, index: number) => {
+    await setSortDateRangeGroup(
+      sortDateRangeGroup.map((item) => ({ ...item, startDateError: item.sortIndex === index ? error : null })),
+    );
+  };
+
+  const handleEndDateError = async (error: DateValidationError, index: number) => {
+    await setSortDateRangeGroup(
+      sortDateRangeGroup.map((item) => ({ ...item, endDateError: item.sortIndex === index ? error : null })),
+    );
+  };
 
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
@@ -81,6 +103,8 @@ export const DateRangePickerGroup = ({ sortStatus, onChange }: IProps) => {
             index={sortIndex}
             key={index}
             onChange={handleChange}
+            onStartDateError={handleStartDateError}
+            onEndDateError={handleEndDateError}
           />
         ))}
         <AddButton

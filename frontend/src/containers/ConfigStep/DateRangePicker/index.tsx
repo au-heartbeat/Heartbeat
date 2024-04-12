@@ -31,9 +31,9 @@ export const DateRangePickerSection = () => {
     setSortStatus(type);
   };
 
-  const handleDateRangeChange = (data: SortDateRangeType[]) => {
-    const errors = data.filter(({ startDate, endDate }) => startDate === 'Invalid Date' || endDate === 'Invalid Date');
-    setHasError(!!errors.length);
+  const handleError = (err: SortDateRangeType[]) => {
+    console.log('6666666', err);
+    setHasError(!!err.length);
   };
 
   return (
@@ -50,7 +50,7 @@ export const DateRangePickerSection = () => {
           <SortDateRange onChange={handleSortStatusChange} sortStatus={sortStatus} />
         )}
       </TitleContainer>
-      <DateRangePickerGroup sortStatus={sortStatus} onChange={handleDateRangeChange} />
+      <DateRangePickerGroup sortStatus={sortStatus} onError={handleError} />
     </div>
   );
 };
