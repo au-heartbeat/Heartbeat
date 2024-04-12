@@ -116,7 +116,7 @@ test('Create a new project without block column in boarding mapping', async ({
   await configStep.typeInProjectName(configWithoutBlockColumnData.projectName);
   await configStep.selectRegularCalendar(configWithoutBlockColumnData.calendarType);
   await configStep.typeInDateRange(dateRange);
-  await configStep.selectReworkTimesMetrics();
+  await configStep.selectReworkTimesRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
   await configStep.checkSourceControlFormInvisible();

@@ -47,7 +47,6 @@ export class ConfigStep {
   readonly requiredMetricsVelocityOption: Locator;
   readonly requiredMetricsCycleTimeOption: Locator;
   readonly requiredMetricsClassificationOption: Locator;
-  readonly requiredMetricsReworkTimesOption: Locator;
   readonly requiredMetricsLeadTimeForChangesOption: Locator;
   readonly requiredMetricsDeploymentFrequencyOption: Locator;
   readonly requiredMetricsChangeFailureRateOption: Locator;
