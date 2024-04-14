@@ -14,10 +14,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateValidationError } from '@mui/x-date-pickers';
 import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
+import remove from 'lodash/remove';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
-import remove from 'lodash/remove';
-import update from 'lodash/update'
 
 export enum SortType {
   DESCENDING = 'DESCENDING',
@@ -80,23 +79,28 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   const addRangeHandler = () => {
     const result = [...sortDateRangeGroup, { startDate: null, endDate: null }];
     setSortDateRangeGroup(result.map(fillDateRangeGroup));
-    dispatch(updateDateRange(result.map(({startDate, endDate}) => ({startDate, endDate}))));
+    dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
 
-  const handleChange = ({startDate, endDate}: { startDate: string | null; endDate: string | null }, index: number) => {
-    const result = sortDateRangeGroup.map(item => (item.sortIndex === index ? { ...item, startDate, endDate, startDateError: null, endDateError: null } : item))
+  const handleChange = (
+    { startDate, endDate }: { startDate: string | null; endDate: string | null },
+    index: number,
+  ) => {
+    const result = sortDateRangeGroup.map((item) =>
+      item.sortIndex === index ? { ...item, startDate, endDate, startDateError: null, endDateError: null } : item,
+    );
     setSortDateRangeGroup(result);
     dispatchUpdateConfig();
-    dispatch(updateDateRange(result.map(({startDate, endDate}) => ({startDate, endDate}))));
+    dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
 
   const handleRemove = (index: number) => {
-    const result = [...sortDateRangeGroup]
-    remove(result, ({sortIndex}) => sortIndex === index)
+    const result = [...sortDateRangeGroup];
+    remove(result, ({ sortIndex }) => sortIndex === index);
     setSortDateRangeGroup(result);
     dispatchUpdateConfig();
-    dispatch(updateDateRange(result.map(({startDate, endDate}) => ({startDate, endDate}))));
-  }
+    dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
+  };
 
   return (
     <DateRangePickerGroupContainer>

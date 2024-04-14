@@ -14,8 +14,6 @@ import {
 import { isDateDisabled, calculateLastAvailableDate } from '@src/containers/ConfigStep/DateRangePicker/validation';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { selectDateRange } from '@src/context/config/configSlice';
-import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { DateValidationError } from '@mui/x-date-pickers';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Z_INDEX } from '@src/constants/commons';
@@ -41,11 +39,11 @@ export const DateRangePicker = ({
   allRange,
 }: IRangePickerProps) => {
   const isShowRemoveButton = allRange.length > 1;
-  const dateRangeGroupExcludeSelf = allRange.filter(({sortIndex},) => sortIndex !== index);
+  const dateRangeGroupExcludeSelf = allRange.filter(({ sortIndex }: { sortIndex: number }) => sortIndex !== index);
   const shouldStartDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
   const shouldEndDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
 
-  const changeStartDate = (value: Nullable<Dayjs>,  { validationError }: { validationError: DateValidationError }) => {
+  const changeStartDate = (value: Nullable<Dayjs>, { validationError }: { validationError: DateValidationError }) => {
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
     if (value) {
       const valueDate = dayjs(value).startOf('day').format(DATE_RANGE_FORMAT);
@@ -58,23 +56,31 @@ export const DateRangePicker = ({
     }
 
     const result = isNull(value)
-    ? {
-        startDate: null,
-        endDate: null,
-      }
-    : {
-        startDate: value.startOf('date').format(DATE_RANGE_FORMAT),
-        endDate: value.endOf('date').add(daysAddToEndDate, 'day').format(DATE_RANGE_FORMAT),
-      }
+      ? {
+          startDate: null,
+          endDate: null,
+        }
+      : {
+          startDate: value.startOf('date').format(DATE_RANGE_FORMAT),
+          endDate: value.endOf('date').add(daysAddToEndDate, 'day').format(DATE_RANGE_FORMAT),
+        };
 
-      isNull(validationError) ? onChange?.(result, index):onError?.('startDateError', validationError, index);
+    isNull(validationError) ? onChange?.(result, index) : onError?.('startDateError', validationError, index);
   };
 
-  const changeEndDate = (value: Nullable<Dayjs>,  { validationError }: { validationError: DateValidationError }) => {
-    isNull(validationError) ? onError?.('endDateError', validationError, index) : onChange?.({
-      startDate,
-      endDate: !isNull(value) ? value.endOf('date').format(DATE_RANGE_FORMAT) : null,
-    }, index);
+  const changeEndDate = (value: Nullable<Dayjs>, { validationError }: { validationError: DateValidationError }) => {
+    if (!isNull(value)) {
+      const endDateValue = value.endOf('date').format(DATE_RANGE_FORMAT);
+      onChange?.(
+        {
+          startDate,
+          endDate: endDateValue,
+        },
+        index,
+      );
+    } else {
+      onError?.('endDateError', validationError, index);
+    }
   };
 
   const removeSelfHandler = () => {
