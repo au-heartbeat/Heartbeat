@@ -69,18 +69,16 @@ export const DateRangePicker = ({
   };
 
   const changeEndDate = (value: Nullable<Dayjs>, { validationError }: { validationError: DateValidationError }) => {
-    if (!isNull(value)) {
-      const endDateValue = value.endOf('date').format(DATE_RANGE_FORMAT);
-      onChange?.(
-        {
+    const result = isNull(value)
+      ? {
           startDate,
-          endDate: endDateValue,
-        },
-        index,
-      );
-    } else {
-      onError?.('endDateError', validationError, index);
-    }
+          endDate: null,
+        }
+      : {
+          startDate,
+          endDate: value.endOf('date').format(DATE_RANGE_FORMAT),
+        };
+    isNull(validationError) ? onChange?.(result, index) : onError?.('endDateError', validationError, index);
   };
 
   const removeSelfHandler = () => {
