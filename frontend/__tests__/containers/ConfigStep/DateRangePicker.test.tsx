@@ -173,8 +173,6 @@ describe('DateRangePickerSection', () => {
     });
 
     it('should dispatch update configuration when remove the range', async () => {
-      setup();
-
       const addButton = screen.getByLabelText('Button for adding date range');
       await userEvent.click(addButton);
       const ranges = screen.getAllByLabelText('Range picker row');
