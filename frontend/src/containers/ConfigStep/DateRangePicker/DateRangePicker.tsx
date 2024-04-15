@@ -85,7 +85,6 @@ export const DateRangePicker = ({
     onRemove?.(index);
   };
 
-
   return (
     <StyledFeaturedRangePickerContainer>
       <StyledDateRangePickerContainer className='range-picker-row' aria-label='Range picker row'>

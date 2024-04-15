@@ -1,7 +1,7 @@
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { BOARD_TYPES, PIPELINE_TOOL_TYPES, REGULAR_CALENDAR } from './fixtures';
 import { BasicConfigState } from '@src/context/config/configSlice';
 import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
-import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 
 const initialConfigState: BasicConfigState = {
   isProjectCreated: true,
