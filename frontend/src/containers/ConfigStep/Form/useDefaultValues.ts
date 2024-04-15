@@ -10,7 +10,7 @@ import {
   IPipelineToolData,
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
-import { selectProjectName, selectCalendarType, selectMetrics } from '@src/context/config/configSlice';
+import { selectBasicInfo, selectBoard } from '@src/context/config/configSlice';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 
 export const basicInfoDefaultValues: IBasicInfoData = {
@@ -39,19 +39,21 @@ export const sourceControlDefaultValues: ISourceControlData = {
 };
 
 export const useDefaultValues = () => {
-  const projectName = useAppSelector(selectProjectName);
-  const calendarType = useAppSelector(selectCalendarType);
-  const metrics = useAppSelector(selectMetrics);
+  const basicInfo = useAppSelector(selectBasicInfo);
+  const boardConfig = useAppSelector(selectBoard);
 
   const basicInfoWithImport: IBasicInfoData = {
     ...basicInfoDefaultValues,
-    projectName,
-    calendarType,
-    metrics: [...metrics],
+    ...basicInfo,
   };
 
   const boardConfigWithImport: IBoardConfigData = {
     ...boardConfigDefaultValues,
+    type: boardConfig.type,
+    boardId: boardConfig.boardId,
+    email: boardConfig.email,
+    site: boardConfig.site,
+    token: boardConfig.token,
   };
 
   const pipelineToolWithImport: IPipelineToolData = {
@@ -63,9 +65,13 @@ export const useDefaultValues = () => {
   };
 
   return {
-    basicInfo: basicInfoWithImport,
-    boardConfig: boardConfigWithImport,
-    pipelineTool: pipelineToolWithImport,
-    sourceControl: sourceControlWithImport,
+    basicInfoOriginal: basicInfoDefaultValues,
+    basicInfoWithImport,
+    boardConfigOriginal: boardConfigDefaultValues,
+    boardConfigWithImport,
+    pipelineToolOriginal: sourceControlDefaultValues,
+    pipelineToolWithImport,
+    sourceControlOriginal: sourceControlWithImport,
+    sourceControlWithImport,
   };
 };

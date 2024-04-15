@@ -1,34 +1,31 @@
-import { IBoardConfigErrorMessage, BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
-import { BOARD_TYPES, AXIOS_REQUEST_ERROR_CODE, MESSAGE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
-import { selectBoard, updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
+import { TBoardFieldKeys, BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
+import { AXIOS_REQUEST_ERROR_CODE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
+import { updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
+import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
-import { findCaseInsensitiveType, getJiraBoardToken } from '@src/utils/util';
-import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { DEFAULT_HELPER_TEXT, EMPTY_STRING } from '@src/constants/commons';
+import { updateShouldGetBoardConfig } from '@src/context/Metrics/metricsSlice';
+import { IBoardConfigData } from '@src/containers/ConfigStep/Form/schema';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
 import { boardClient } from '@src/clients/board/BoardClient';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { getJiraBoardToken } from '@src/utils/util';
 import { IAppError } from '@src/errors/ErrorType';
-import { REGEX } from '@src/constants/regex';
+import { useFormContext } from 'react-hook-form';
 import { isAppError } from '@src/errors';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export interface Field {
-  key: keyof IBoardConfigErrorMessage | 'type';
-  value: string;
-  validateRule?: (value: string) => boolean;
-  validatedError: string;
-  verifiedError: string;
+export interface IField {
+  key: TBoardFieldKeys;
   col: number;
+  defaultValue: IBoardConfigData[keyof IBoardConfigData];
 }
 
 export interface useVerifyBoardStateInterface {
   isVerifyTimeOut: boolean;
   verifyJira: () => Promise<void>;
   isLoading: boolean;
-  fields: Field[];
-  updateField: (key: string, value: string) => void;
-  validateField: (key: string) => void;
+  fields: IField[];
   resetFields: () => void;
   setIsShowAlert: (value: boolean) => void;
   isShowAlert: boolean;
@@ -39,156 +36,65 @@ const ERROR_INFO = {
   BOARD_NOT_FOUND: 'boardId is incorrect',
 };
 
-const VALIDATOR = {
-  EMAIL: (value: string) => REGEX.EMAIL.test(value),
-  TOKEN: (value: string) => REGEX.BOARD_TOKEN.test(value),
-  BOARD_ID: (value: string) => REGEX.BOARD_ID.test(value),
-};
-
-export const KEYS: { [key: string]: keyof IBoardConfigErrorMessage | 'type' } = {
+export const KEYS: { [key: string]: TBoardFieldKeys } = {
   BOARD: 'type',
   BOARD_ID: 'boardId',
   EMAIL: 'email',
   SITE: 'site',
   TOKEN: 'token',
 };
-const getValidatedError = (key: string, value: string, validateRule?: (value: string) => boolean) => {
-  if (!value) {
-    return `${key} is required!`;
-  }
-  if (validateRule && !validateRule(value)) {
-    return `${key} is invalid!`;
-  }
-  return DEFAULT_HELPER_TEXT;
-};
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifyTimeOut, setIsVerifyTimeOut] = useState(false);
   const [isShowAlert, setIsShowAlert] = useState(false);
-  const boardFields = useAppSelector(selectBoard);
   const dispatch = useAppDispatch();
-  const type = findCaseInsensitiveType(Object.values(BOARD_TYPES), boardFields.type);
-  const [fields, setFields] = useState<Field[]>([
+  const { boardConfigOriginal, boardConfigWithImport } = useDefaultValues();
+  const { reset, setError, getValues } = useFormContext();
+
+  const originalFields: IField[] = [
     {
       key: KEYS.BOARD,
-      value: type,
-      validatedError: '',
-      verifiedError: '',
       col: 1,
+      defaultValue: boardConfigWithImport.type,
     },
     {
       key: KEYS.BOARD_ID,
-      value: boardFields.boardId,
-      validateRule: VALIDATOR.BOARD_ID,
-      validatedError: boardFields.boardId
-        ? getValidatedError(KEYS.BOARD_ID, boardFields.boardId, VALIDATOR.BOARD_ID)
-        : '',
-      verifiedError: '',
       col: 1,
+      defaultValue: boardConfigWithImport.boardId,
     },
     {
       key: KEYS.EMAIL,
-      value: boardFields.email,
-      validateRule: VALIDATOR.EMAIL,
-      validatedError: boardFields.email ? getValidatedError(KEYS.EMAIL, boardFields.email, VALIDATOR.EMAIL) : '',
-      verifiedError: '',
       col: 1,
+      defaultValue: boardConfigWithImport.email,
     },
     {
       key: KEYS.SITE,
-      value: boardFields.site,
-      validatedError: '',
-      verifiedError: '',
       col: 1,
+      defaultValue: boardConfigWithImport.site,
     },
     {
       key: KEYS.TOKEN,
-      value: boardFields.token,
-      validateRule: VALIDATOR.TOKEN,
-      validatedError: boardFields.token ? getValidatedError(KEYS.TOKEN, boardFields.token, VALIDATOR.TOKEN) : '',
-      verifiedError: '',
       col: 2,
+      defaultValue: boardConfigWithImport.token,
     },
-  ]);
+  ];
 
-  const getBoardInfo = (fields: Field[]) => {
-    const keys = ['type', 'boardId', 'email', 'site', 'token'];
-    return keys.reduce((board, key, index) => ({ ...board, [key]: fields[index].value }), {});
-  };
-
-  const handleUpdate = (fields: Field[]) => {
-    setFields(fields);
-    dispatch(updateBoardVerifyState(false));
-    dispatch(updateBoard(getBoardInfo(fields)));
+  const persistReduxData = (verifyState: boolean, boardInfo: IBoardConfigData & { projectKey?: string }) => {
+    dispatch(updateBoardVerifyState(verifyState));
+    dispatch(updateBoard(boardInfo));
   };
 
   const resetFields = () => {
-    const newFields = fields.map((field) =>
-      field.key === KEYS.BOARD
-        ? field
-        : {
-            ...field,
-            value: EMPTY_STRING,
-            validatedError: '',
-            verifiedError: '',
-          },
-    );
-    handleUpdate(newFields);
+    reset(boardConfigOriginal);
+    persistReduxData(false, boardConfigOriginal);
     setIsShowAlert(false);
-  };
-
-  const getFieldsWithNoVerifiedError = (fields: Field[]) =>
-    fields.map((field) => ({
-      ...field,
-      verifiedError: '',
-    }));
-
-  const updateField = (key: string, value: string) => {
-    const shouldClearVerifiedError = !!fields.find((field) => field.key === key)?.verifiedError;
-    const fieldsWithError = shouldClearVerifiedError ? getFieldsWithNoVerifiedError(fields) : fields;
-    const newFields = fieldsWithError.map((field) =>
-      field.key === key
-        ? {
-            ...field,
-            value: value.trim(),
-            validatedError: getValidatedError(field.key, value.trim(), field.validateRule),
-          }
-        : field,
-    );
-    handleUpdate(newFields);
-  };
-
-  const validateField = (key: string) => {
-    const newFields = fields.map((field) =>
-      field.key === key
-        ? {
-            ...field,
-            validatedError: getValidatedError(field.key, field.value, field.validateRule),
-          }
-        : field,
-    );
-    setFields(newFields);
-  };
-
-  const setVerifiedError = (keys: string[], messages: string[]) => {
-    setFields(
-      fields.map((field) => {
-        return keys.includes(field.key)
-          ? {
-              ...field,
-              validatedError: '',
-              verifiedError: messages[keys.findIndex((key) => key === field.key)],
-            }
-          : field;
-      }),
-    );
   };
 
   const verifyJira = async () => {
     setIsLoading(true);
     dispatch(updateTreatFlagCardAsBlock(true));
-    const boardInfo = getBoardInfo(fields) as BoardRequestDTO;
+    const boardInfo = getValues() as BoardRequestDTO;
     try {
       const res: { response: Record<string, string> } = await boardClient.getVerifyBoard({
         ...boardInfo,
@@ -197,28 +103,26 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       if (res?.response) {
         setIsShowAlert(false);
         setIsVerifyTimeOut(false);
-        dispatch(updateBoardVerifyState(true));
-        dispatch(updateBoard({ ...boardInfo, projectKey: res.response.projectKey }));
+        dispatch(updateShouldGetBoardConfig(true));
+        persistReduxData(true, { ...boardInfo, projectKey: res.response.projectKey });
       }
     } catch (e) {
       if (isAppError(e)) {
         const { description, code } = e as IAppError;
-        setIsVerifyTimeOut(false);
         setIsShowAlert(false);
+        setIsVerifyTimeOut(false);
         if (code === HttpStatusCode.Unauthorized) {
-          setVerifiedError(
-            [KEYS.EMAIL, KEYS.TOKEN],
-            [MESSAGE.VERIFY_MAIL_FAILED_ERROR, MESSAGE.VERIFY_TOKEN_FAILED_ERROR],
-          );
+          setError(KEYS.EMAIL, { message: BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed });
+          setError(KEYS.TOKEN, { message: BOARD_CONFIG_ERROR_MESSAGE.token.verifyFailed });
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.SITE_NOT_FOUND) {
-          setVerifiedError([KEYS.SITE], [MESSAGE.VERIFY_SITE_FAILED_ERROR]);
+          setError(KEYS.SITE, { message: BOARD_CONFIG_ERROR_MESSAGE.site.verifyFailed });
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
-          setVerifiedError([KEYS.BOARD_ID], [MESSAGE.VERIFY_BOARD_FAILED_ERROR]);
+          setError(KEYS.BOARD_ID, { message: BOARD_CONFIG_ERROR_MESSAGE.boardId.verifyFailed });
         } else if (code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
           setIsVerifyTimeOut(true);
           setIsShowAlert(true);
         } else {
-          setVerifiedError([KEYS.TOKEN], [UNKNOWN_ERROR_TITLE]);
+          setError(KEYS.TOKEN, { message: UNKNOWN_ERROR_TITLE });
         }
       }
     }
@@ -228,9 +132,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   return {
     verifyJira,
     isLoading,
-    fields,
-    updateField,
-    validateField,
+    fields: originalFields,
     resetFields,
     isVerifyTimeOut,
     isShowAlert,

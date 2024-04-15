@@ -138,7 +138,7 @@ export const configSlice = createSlice({
             ? null
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
-      state.board.config = merge(action.payload.board, { type: 'jira' });
+      state.board.config = merge(action.payload.board, { type: 'Jira' });
       state.pipelineTool.config = action.payload.pipelineTool || state.pipelineTool.config;
       state.sourceControl.config = action.payload.sourceControl || state.sourceControl.config;
     },
@@ -222,8 +222,7 @@ export const {
   resetImportedData,
 } = configSlice.actions;
 
-export const selectProjectName = (state: RootState) => state.config.basic.projectName;
-export const selectCalendarType = (state: RootState) => state.config.basic.calendarType;
+export const selectBasicInfo = (state: RootState) => state.config.basic;
 export const selectDateRange = (state: RootState) => state.config.basic.dateRange;
 export const selectMetrics = (state: RootState) => state.config.basic.metrics;
 export const isSelectBoardMetrics = (state: RootState) =>

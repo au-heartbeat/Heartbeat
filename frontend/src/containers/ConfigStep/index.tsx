@@ -36,25 +36,25 @@ const ConfigStep = () => {
   const defaultValues = useDefaultValues();
 
   const basicInfoMethods = useForm<IBasicInfoData>({
-    defaultValues: defaultValues.basicInfo,
+    defaultValues: defaultValues.basicInfoWithImport,
     resolver: yupResolver(basicInfoSchema),
     mode: 'onChange',
   });
 
   const boardConfigMethods = useForm<IBoardConfigData>({
-    defaultValues: defaultValues.boardConfig,
+    defaultValues: defaultValues.boardConfigWithImport,
     resolver: yupResolver(boardConfigSchema),
     mode: 'onChange',
   });
 
   const pipelineToolMethods = useForm<IPipelineToolData>({
-    defaultValues: defaultValues.pipelineTool,
+    defaultValues: defaultValues.pipelineToolWithImport,
     resolver: yupResolver(pipelineToolSchema),
     mode: 'onChange',
   });
 
   const sourceControlMethods = useForm<ISourceControlData>({
-    defaultValues: defaultValues.sourceControl,
+    defaultValues: defaultValues.sourceControlWithImport,
     resolver: yupResolver(sourceControlSchema),
     mode: 'onChange',
   });

@@ -12,7 +12,14 @@ import { REGEX } from '@src/constants/regex';
 
 export const basicInfoSchema = object().shape({
   projectName: string().required(BASIC_INFO_ERROR_MESSAGE.projectName),
-  dateRange: array().of(string()).required(),
+  dateRange: array()
+    .of(
+      object().shape({
+        startDate: string().nullable(),
+        endDate: string().nullable(),
+      }),
+    )
+    .required(),
   calendarType: mixed().oneOf(CALENDAR_TYPE_LITERAL),
   metrics: mixed().oneOf(METRICS_LITERAL),
 });
