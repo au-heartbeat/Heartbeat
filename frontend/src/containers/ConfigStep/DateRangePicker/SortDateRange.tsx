@@ -38,7 +38,7 @@ export const SortDateRange = ({ onChange, sortStatus }: IProps) => {
     <Box aria-label='Time range sort'>
       <SortButtonContainer>
         <SortTextButton disableRipple>{SORT_DATE_RANGE_TEXT[sortOrder]}</SortTextButton>
-        <SortButton onClick={handleChangeSort}>
+        <SortButton aria-label='sort button' onClick={handleChangeSort}>
           {sortOrder === 'ASCENDING' ? <AscendingIcon fontSize='inherit' /> : <ArrowDropUp fontSize='inherit' />}
           {sortOrder === 'DESCENDING' ? <DescendingIcon fontSize='inherit' /> : <ArrowDropDown fontSize='inherit' />}
         </SortButton>
