@@ -29,6 +29,7 @@ import { closeAllNotifications } from '@src/context/notification/NotificationSli
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
+import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import EmptyContent from '@src/components/Common/EmptyContent';
@@ -36,7 +37,6 @@ import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
-import { sortDateRanges } from '@src/utils/util';
 import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
@@ -90,27 +90,6 @@ const MetricsStep = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-
-  const combineBoardInfo = (results: BoardInfoResponse[]) => {
-    if (results) {
-      const allUsers = [...new Set(results.flatMap((result) => result.users))];
-      const allTargetFields = uniqBy(
-        results.flatMap((result) => result.targetFields),
-        (elem) => [elem.key, elem.name, elem.flag].join(),
-      );
-      const allJiraColumns = results[results.length - 1].jiraColumns;
-      const allIgnoredTargetFields = uniqBy(
-        results.flatMap((result) => result.ignoredTargetFields),
-        (elem) => [elem.key, elem.name, elem.flag].join(),
-      );
-      return {
-        users: allUsers,
-        targetFields: allTargetFields,
-        ignoredTargetFields: allIgnoredTargetFields,
-        jiraColumns: allJiraColumns,
-      };
-    }
-  };
 
   useLayoutEffect(() => {
     if (!shouldLoad) return;

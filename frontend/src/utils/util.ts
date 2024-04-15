@@ -7,9 +7,10 @@ import {
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
+import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import { TDateRange } from '@src/context/config/configSlice';
-import { includes, isEqual, sortBy } from 'lodash';
+import { includes, isEqual, sortBy, uniqBy } from 'lodash';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 
@@ -169,4 +170,25 @@ export function existBlockColumn(
   return cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
     ? cycleTimeSettings.some(({ column }) => BLOCK_COLUMN_NAME.includes(column.toUpperCase()))
     : cycleTimeSettings.some(({ status }) => BLOCK_COLUMN_NAME.includes(status.toUpperCase()));
+}
+
+export function combineBoardInfo(results: BoardInfoResponse[]) {
+  if (results) {
+    const allUsers = [...new Set(results.flatMap((result) => result.users))];
+    const allTargetFields = uniqBy(
+      results.flatMap((result) => result.targetFields),
+      (elem) => [elem.key, elem.name, elem.flag].join(),
+    );
+    const allJiraColumns = results[results.length - 1].jiraColumns;
+    const allIgnoredTargetFields = uniqBy(
+      results.flatMap((result) => result.ignoredTargetFields),
+      (elem) => [elem.key, elem.name, elem.flag].join(),
+    );
+    return {
+      users: allUsers,
+      targetFields: allTargetFields,
+      ignoredTargetFields: allIgnoredTargetFields,
+      jiraColumns: allJiraColumns,
+    };
+  }
 }

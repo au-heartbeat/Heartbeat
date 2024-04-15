@@ -46,22 +46,22 @@ describe('use get board info', () => {
     ],
     [
       HttpStatusCode.BadRequest,
-      'Failed to get Board configuration!',
+      'Failed to get the board configuration!',
       'Please go back to the previous page to check your board info, or change your time range!',
     ],
     [
       HttpStatusCode.Unauthorized,
-      'Failed to get Board configuration!',
+      'Failed to get the board configuration!',
       'Please go back to the previous page to check your board info, or change your time range!',
     ],
     [
       HttpStatusCode.Forbidden,
-      'Failed to get Board configuration!',
+      'Failed to get the board configuration!',
       'Please go back to the previous page to check your board info, or change your time range!',
     ],
     [
       HttpStatusCode.NotFound,
-      'Failed to get Board configuration!',
+      'Failed to get the board configuration!',
       'Please go back to the previous page to check your board info, or change your time range!',
     ],
   ])('should got error message when got code is %s', async (code, title, message) => {

@@ -342,7 +342,7 @@ export const BOARD_CONFIG_INFO_TITLE = {
   UNAUTHORIZED_REQUEST: 'Unauthorized request!',
   NOT_FOUND: 'Not found!',
   NO_CONTENT: 'No card within selected date range!',
-  GENERAL_ERROR: 'Failed to get Board configuration!',
+  GENERAL_ERROR: 'Failed to get the board configuration!',
   EMPTY: '',
 };
 
