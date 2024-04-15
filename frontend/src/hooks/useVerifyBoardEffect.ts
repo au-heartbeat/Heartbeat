@@ -18,7 +18,6 @@ import { useState } from 'react';
 export interface IField {
   key: TBoardFieldKeys;
   col: number;
-  defaultValue: IBoardConfigData[keyof IBoardConfigData];
 }
 
 export interface useVerifyBoardStateInterface {
@@ -49,34 +48,29 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isVerifyTimeOut, setIsVerifyTimeOut] = useState(false);
   const [isShowAlert, setIsShowAlert] = useState(false);
   const dispatch = useAppDispatch();
-  const { boardConfigOriginal, boardConfigWithImport } = useDefaultValues();
+  const { boardConfigOriginal } = useDefaultValues();
   const { reset, setError, getValues } = useFormContext();
 
   const originalFields: IField[] = [
     {
       key: KEYS.BOARD,
       col: 1,
-      defaultValue: boardConfigWithImport.type,
     },
     {
       key: KEYS.BOARD_ID,
       col: 1,
-      defaultValue: boardConfigWithImport.boardId,
     },
     {
       key: KEYS.EMAIL,
       col: 1,
-      defaultValue: boardConfigWithImport.email,
     },
     {
       key: KEYS.SITE,
       col: 1,
-      defaultValue: boardConfigWithImport.site,
     },
     {
       key: KEYS.TOKEN,
       col: 2,
-      defaultValue: boardConfigWithImport.token,
     },
   ];
 
