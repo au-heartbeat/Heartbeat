@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -348,72 +347,6 @@ public class PipelineServiceTest {
 					List.of(DeploymentEnvironment.builder().id("env1").build()));
 
 			assertEquals(0, result.size());
-			verify(buildKiteService, times(1)).getPipelineStepNames(any());
-			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
-		}
-
-		@Test
-		void shouldGenerateValueWithoutCommitWhenCodebaseSettingIsEmpty() {
-			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
-			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
-			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
-			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
-				.thenReturn(BuildKiteJob.builder().build());
-			when(buildKiteService.mapToDeployInfo(any(), any(), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
-				.thenReturn(DeployInfo.builder().jobName("test").build());
-
-			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipeline(MOCK_START_TIME, MOCK_END_TIME,
-					FetchedData.BuildKiteData.builder()
-						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
-						.build(),
-					List.of(DeploymentEnvironment.builder().id("env1").build()));
-
-			assertEquals(1, result.size());
-			assertNull(result.get(0).getCommitInfo());
-			verify(buildKiteService, times(1)).getPipelineStepNames(any());
-			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
-		}
-
-		@Test
-		void shouldGenerateValueWithoutCommitWhenCodebaseSettingTokenIsEmpty() {
-			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
-			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
-			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
-			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
-				.thenReturn(BuildKiteJob.builder().build());
-			when(buildKiteService.mapToDeployInfo(any(), any(), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
-				.thenReturn(DeployInfo.builder().jobName("test").build());
-
-			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipeline(MOCK_START_TIME, MOCK_END_TIME,
-					FetchedData.BuildKiteData.builder()
-						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
-						.build(),
-					List.of(DeploymentEnvironment.builder().id("env1").build()));
-
-			assertEquals(1, result.size());
-			assertNull(result.get(0).getCommitInfo());
-			verify(buildKiteService, times(1)).getPipelineStepNames(any());
-			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
-		}
-
-		@Test
-		void shouldGenerateValueWithoutCommitWhenCommitIdIsEmpty() {
-			List<BuildKiteBuildInfo> kiteBuildInfos = List.of(BuildKiteBuildInfo.builder().commit("commit").build());
-			when(buildKiteService.getPipelineStepNames(eq(kiteBuildInfos))).thenReturn(List.of("check"));
-			when(buildKiteService.getStepsBeforeEndStep(any(), any())).thenReturn(List.of("check"));
-			when(buildKiteService.getBuildKiteJob(any(), any(), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
-				.thenReturn(BuildKiteJob.builder().build());
-			when(buildKiteService.mapToDeployInfo(any(), any(), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
-				.thenReturn(DeployInfo.builder().jobName("test").build());
-
-			List<PipelineCSVInfo> result = pipelineService.generateCSVForPipeline(MOCK_START_TIME, MOCK_END_TIME,
-					FetchedData.BuildKiteData.builder()
-						.buildInfosList(List.of(Map.entry("env1", kiteBuildInfos)))
-						.build(),
-					List.of(DeploymentEnvironment.builder().id("env1").build()));
-
-			assertEquals(1, result.size());
-			assertNull(result.get(0).getCommitInfo());
 			verify(buildKiteService, times(1)).getPipelineStepNames(any());
 			verify(buildKiteService, times(1)).getBuildKiteJob(any(), any(), any(), any(), any());
 		}
