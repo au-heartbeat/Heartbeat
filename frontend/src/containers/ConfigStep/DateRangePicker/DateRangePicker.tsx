@@ -38,8 +38,8 @@ export const DateRangePicker = ({
   onRemove,
   allRange,
 }: IRangePickerProps) => {
-  const isShowRemoveButton = allRange.length > 1;
-  const dateRangeGroupExcludeSelf = allRange.filter(({ sortIndex }: { sortIndex: number }) => sortIndex !== index);
+  const isShowRemoveButton = allRange && allRange.length > 1;
+  const dateRangeGroupExcludeSelf = allRange!.filter(({ sortIndex }: { sortIndex: number }) => sortIndex !== index);
   const shouldStartDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
   const shouldEndDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
 
