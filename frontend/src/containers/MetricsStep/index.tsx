@@ -24,11 +24,11 @@ import {
 } from '@src/containers/MetricsStep/style';
 import { AXIOS_REQUEST_ERROR_CODE, CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import { BoardInfoResponse, useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
+import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
@@ -42,7 +42,6 @@ import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import { theme } from '@src/theme';
 import merge from 'lodash/merge';
-import { uniqBy } from 'lodash';
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
@@ -74,16 +73,14 @@ const MetricsStep = () => {
         ...boardConfig,
         dateRanges,
       }).then((res) => {
-        if (res) {
-          if (res[0].data) {
-            const boardInfo = res?.map((r) => r.data);
-            const commonPayload = combineBoardInfo(boardInfo!);
-            dispatch(updateBoardVerifyState(true));
-            dispatch(updateJiraVerifyResponse(commonPayload));
-            dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
-            dispatch(updateShouldGetBoardConfig(false));
-            dispatch(updateFirstTimeRoadMetricsBoardData(false));
-          }
+        if (res && res[0].data) {
+          const boardInfo = res?.map((r) => r.data);
+          const commonPayload = combineBoardInfo(boardInfo!);
+          dispatch(updateBoardVerifyState(true));
+          dispatch(updateJiraVerifyResponse(commonPayload));
+          dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
+          dispatch(updateShouldGetBoardConfig(false));
+          dispatch(updateFirstTimeRoadMetricsBoardData(false));
         }
       });
     },

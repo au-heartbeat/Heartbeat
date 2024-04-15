@@ -19,12 +19,7 @@ export interface BoardInfoRequestDTO {
   projectKey: string;
 }
 
-export interface BoardInfoConfigDTO {
-  token: string;
-  type: string;
-  site: string;
-  email: string;
+export interface BoardInfoConfigDTO extends BoardRequestDTO {
   dateRanges: TDateRange | null;
-  boardId: string;
   projectKey: string;
 }

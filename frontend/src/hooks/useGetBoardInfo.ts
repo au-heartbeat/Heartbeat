@@ -98,10 +98,11 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           });
       });
 
-      return await Promise.all(allBoardData).then((res) => {
-        setIsLoading(false);
-        return res;
-      });
+      return Promise.all(allBoardData)
+        .then((res) => {
+          return res;
+        })
+        .finally(() => setIsLoading(false));
     }
   };
   return {

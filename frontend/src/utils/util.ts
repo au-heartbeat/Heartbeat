@@ -172,16 +172,16 @@ export function existBlockColumn(
     : cycleTimeSettings.some(({ status }) => BLOCK_COLUMN_NAME.includes(status.toUpperCase()));
 }
 
-export function combineBoardInfo(results: BoardInfoResponse[]) {
-  if (results) {
-    const allUsers = [...new Set(results.flatMap((result) => result.users))];
+export function combineBoardInfo(boardInfoResponses: BoardInfoResponse[]) {
+  if (boardInfoResponses) {
+    const allUsers = [...new Set(boardInfoResponses.flatMap((result) => result.users))];
     const allTargetFields = uniqBy(
-      results.flatMap((result) => result.targetFields),
+      boardInfoResponses.flatMap((result) => result.targetFields),
       (elem) => [elem.key, elem.name, elem.flag].join(),
     );
-    const allJiraColumns = results[results.length - 1].jiraColumns;
+    const allJiraColumns = boardInfoResponses[boardInfoResponses.length - 1].jiraColumns;
     const allIgnoredTargetFields = uniqBy(
-      results.flatMap((result) => result.ignoredTargetFields),
+      boardInfoResponses.flatMap((result) => result.ignoredTargetFields),
       (elem) => [elem.key, elem.name, elem.flag].join(),
     );
     return {
