@@ -1,6 +1,6 @@
+import { MOCK_BOARD_INFO_URL, FAKE_TOKEN, FAKE_DATE_EARLIER, FAKE_DATE_LATER } from '@test/fixtures';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { MOCK_BOARD_INFO_URL, FAKE_TOKEN } from '@test/fixtures';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 import { rest } from 'msw';
@@ -16,8 +16,12 @@ const mockBoardConfig = {
   token: FAKE_TOKEN,
   dateRanges: [
     {
-      startDate: null,
-      endDate: null,
+      startDate: FAKE_DATE_LATER.startDate,
+      endDate: FAKE_DATE_LATER.endDate,
+    },
+    {
+      startDate: FAKE_DATE_EARLIER.startDate,
+      endDate: FAKE_DATE_EARLIER.endDate,
     },
   ],
 };
