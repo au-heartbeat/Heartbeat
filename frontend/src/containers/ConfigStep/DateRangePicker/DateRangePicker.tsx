@@ -64,7 +64,6 @@ export const DateRangePicker = ({
           startDate: value.startOf('date').format(DATE_RANGE_FORMAT),
           endDate: value.endOf('date').add(daysAddToEndDate, 'day').format(DATE_RANGE_FORMAT),
         };
-
     isNull(validationError) ? onChange?.(result, index) : onError?.('startDateError', validationError, index);
   };
 
@@ -78,12 +77,14 @@ export const DateRangePicker = ({
           startDate,
           endDate: value.endOf('date').format(DATE_RANGE_FORMAT),
         };
+
     isNull(validationError) ? onChange?.(result, index) : onError?.('endDateError', validationError, index);
   };
 
   const removeSelfHandler = () => {
     onRemove?.(index);
   };
+
 
   return (
     <StyledFeaturedRangePickerContainer>
@@ -94,6 +95,7 @@ export const DateRangePicker = ({
           label='From *'
           value={startDate ? dayjs(startDate) : null}
           onChange={changeStartDate}
+          onError={(err) => onError?.('startDateError', err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForStartDate,
@@ -112,6 +114,7 @@ export const DateRangePicker = ({
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
           onChange={changeEndDate}
+          onError={(err) => onError?.('endDateError', err, index)}
           slots={{
             openPickerIcon: CalendarTodayIcon,
             textField: HelperTextForEndDate,

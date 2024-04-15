@@ -267,26 +267,25 @@ describe('DateRangePickerSection', () => {
     });
   });
 
-  // it('should show sort button when more than one time range', async () => {
-  //   setup();
-  //   const rangeDate1 = ['03/15/2024', '03/25/2024'];
-  //   const rangeDate2 = ['03/08/2024', '03/11/2024'];
-  //
-  //   const addButton = screen.getByLabelText('Button for adding date range');
-  //   await userEvent.click(addButton);
-  //   await userEvent.click(addButton);
-  //   const ranges = screen.getAllByLabelText('Range picker row');
-  //   const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-  //   const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-  //   const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-  //   const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-  //   await userEvent.type(startDate1Input, rangeDate1[0]);
-  //   await userEvent.type(endDate1Input, rangeDate1[1]);
-  //   await userEvent.type(startDate2Input, rangeDate2[0]);
-  //   await userEvent.type(endDate12nput, rangeDate2[1]);
-  //   const sortButton = screen.getByLabelText('Time range sort');
-  //   expect(sortButton).toBeInTheDocument();
-  // });
+  it('should show sort button when more than one time range', async () => {
+    setup();
+    const rangeDate1 = ['03/15/2024', '03/25/2024'];
+    const rangeDate2 = ['03/08/2024', '03/11/2024'];
+
+    const addButton = screen.getByLabelText('Button for adding date range');
+    await userEvent.click(addButton);
+    const ranges = screen.getAllByLabelText('Range picker row');
+    const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+    const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+    const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+    const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+    await userEvent.type(startDate1Input, rangeDate1[0]);
+    await userEvent.type(endDate1Input, rangeDate1[1]);
+    await userEvent.type(startDate2Input, rangeDate2[0]);
+    await userEvent.type(endDate12nput, rangeDate2[1]);
+    const sortButton = screen.getByLabelText('Time range sort');
+    expect(sortButton).toBeInTheDocument();
+  });
 
   it('should not show sort button when exist errors in date range', async () => {
     setup();
