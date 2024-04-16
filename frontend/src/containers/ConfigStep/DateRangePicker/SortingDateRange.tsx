@@ -18,7 +18,7 @@ type Props = {
   sortType: SortType;
 };
 
-export const SortDateRange = ({ onChange, sortType }: Props) => {
+export const SortingDateRange = ({ onChange, sortType }: Props) => {
   const dispatch = useAppDispatch();
   const [dateRangeSortType, setDateRangeSortType] = useState(sortType);
 

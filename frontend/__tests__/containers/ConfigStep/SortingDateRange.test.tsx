@@ -1,5 +1,5 @@
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
-import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
+import { SortingDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortingDateRange';
 import { updateDateRangeSortType } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { render, screen } from '@testing-library/react';
@@ -12,7 +12,7 @@ const setup = () => {
   store = setupStore();
   return render(
     <Provider store={store}>
-      <SortDateRange onChange={() => {}} sortType={SortType.DEFAULT} />
+      <SortingDateRange onChange={() => {}} sortType={SortType.DEFAULT} />
     </Provider>,
   );
 };

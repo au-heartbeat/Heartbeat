@@ -1,7 +1,7 @@
 import { DateRangePickerGroup, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { ISortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { selectDateRange, selectDateRangeSortType } from '@src/context/config/configSlice';
-import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
+import { SortingDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortingDateRange';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
@@ -41,7 +41,7 @@ export const DateRangePickerSection = () => {
           }}
         />
         {dateRangeGroup.length > 1 && isDateRangeValid && !hasError && (
-          <SortDateRange onChange={handleSortTypeChange} sortType={sortType} />
+          <SortingDateRange onChange={handleSortTypeChange} sortType={sortType} />
         )}
       </TitleContainer>
       <DateRangePickerGroup sortType={sortType} onError={handleError} />
