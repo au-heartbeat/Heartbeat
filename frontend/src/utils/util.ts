@@ -4,8 +4,8 @@ import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metrics
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
-import { includes, isEqual, sortBy, uniq } from 'lodash';
 import { TDateRange } from '@src/context/config/configSlice';
+import { includes, isEqual, sortBy, uniq } from 'lodash';
 
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';

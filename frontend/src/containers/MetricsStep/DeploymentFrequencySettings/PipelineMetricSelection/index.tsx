@@ -99,7 +99,7 @@ export const PipelineMetricSelection = ({
     isLoadingRef.current = isLoading;
   }, [isLoading, setLoadingCompletedNumber, totalPipelineNumber, shouldGetPipelineConfig]);
 
-  const handleGetPipelineData = (_pipelineName: string) => {
+  const handleGetPipelineData = (_pipelineName: string, flag = false) => {
     const { params, buildId, organizationId, pipelineType, token } = selectStepsParams(
       store.getState(),
       organization,
@@ -121,7 +121,7 @@ export const PipelineMetricSelection = ({
             pipelineCrews,
           }),
         );
-        res?.haveStep && dispatch(updatePipelineStep({ steps, id, type, branches, pipelineCrews }));
+        res?.haveStep && dispatch(updatePipelineStep({ steps, id, type, branches, pipelineCrews, flag }));
         dispatch(updateShouldGetPipelineConfig(false));
       }
       res && setIsShowNoStepWarning(!res.haveStep);

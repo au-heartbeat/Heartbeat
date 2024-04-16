@@ -555,10 +555,12 @@ export const metricsSlice = createSlice({
       state.deploymentWarningMessage = getPipelinesWarningMessage(deploymentSettings);
     },
     updatePipelineStep: (state, action) => {
-      const { steps, id, branches, pipelineCrews } = action.payload;
+      const { steps, id, branches, pipelineCrews, flag } = action.payload;
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
+
       state.pipelineCrews = intersection(pipelineCrews, state.pipelineCrews);
-      const stepWarningMessage = (selectedStep: string) => (steps.includes(selectedStep) ? null : MESSAGE.STEP_WARNING);
+      const stepWarningMessage = (selectedStep: string) =>
+        steps.includes(selectedStep) || flag || selectedStep === '' ? null : MESSAGE.STEP_WARNING;
 
       const validStep = (selectedStep: string): string => (steps.includes(selectedStep) ? selectedStep : '');
 

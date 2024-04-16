@@ -6,8 +6,8 @@ import {
   updateMetricsPipelineBranchFormMeta,
 } from '@src/context/meta/metaSlice';
 import { BranchSelectionWrapper } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
-import { selectPipelineCrews, selectPipelineList, selectSourceControl } from '@src/context/config/configSlice';
 import BranchChip from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection/BranchChip';
+import { selectPipelineList, selectSourceControl } from '@src/context/config/configSlice';
 import { SOURCE_CONTROL_BRANCH_INVALID_TEXT } from '@src/constants/resources';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
 import React, { useCallback, useEffect, useMemo } from 'react';
@@ -30,9 +30,6 @@ export const BranchSelection = (props: BranchSelectionProps) => {
   const formMeta = useAppSelector(getFormMeta);
   const pipelineList = useAppSelector(selectPipelineList);
   const sourceControlFields = useAppSelector(selectSourceControl);
-
-  const pipeCrews = useAppSelector(selectPipelineCrews);
-
   const currentPipeline = useMemo(
     () => pipelineList.find((pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization),
     [organization, pipelineList, pipelineName],

@@ -1,8 +1,4 @@
-import {
-  initDeploymentFrequencySettings,
-  updateShouldGetBoardConfig,
-  updateShouldGetPipelineConfig,
-} from '@src/context/Metrics/metricsSlice';
+import { updateShouldGetBoardConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
 import { ERROR_DATE, TIME_RANGE_ERROR_MESSAGE } from '../../fixtures';
 import { render, screen, within } from '@testing-library/react';

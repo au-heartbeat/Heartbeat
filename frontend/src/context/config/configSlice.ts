@@ -14,8 +14,8 @@ import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
-import { isArray, uniq } from 'lodash';
 import merge from 'lodash/merge';
+import { isArray } from 'lodash';
 import dayjs from 'dayjs';
 
 export type TDateRange = {
