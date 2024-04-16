@@ -99,7 +99,7 @@ export const PipelineMetricSelection = ({
             pipelineCrews,
           }),
         );
-        dispatch(updatePipelineStep({ steps, id, type, branches, pipelineCrews }));
+        res?.haveStep && dispatch(updatePipelineStep({ steps, id, type, branches, pipelineCrews }));
         dispatch(updateShouldGetPipelineConfig(false));
       }
       res && setIsShowNoStepWarning(!res.haveStep);

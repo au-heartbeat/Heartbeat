@@ -1,11 +1,11 @@
-import { getStepsParams, metricsClient } from '@src/clients/MetricsClient';
+import { IStepsParams, IStepsRes, metricsClient } from '@src/clients/MetricsClient';
 import { MESSAGE } from '@src/constants/resources';
 import { DURATION } from '@src/constants/commons';
 import { useState } from 'react';
 
 export interface useGetMetricsStepsEffectInterface {
   getSteps: (
-    params: getStepsParams,
+    params: IStepsParams[],
     organizationId: string,
     buildId: string,
     pipelineType: string,
@@ -28,7 +28,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
   const [errorMessage, setErrorMessage] = useState('');
 
   const getSteps = async (
-    params: getStepsParams,
+    params: IStepsParams[],
     organizationId: string,
     buildId: string,
     pipelineType: string,
@@ -36,7 +36,27 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
   ) => {
     setIsLoading(true);
     try {
-      return await metricsClient.getSteps(params, organizationId, buildId, pipelineType, token);
+      const allStepsInfo = await Promise.all(
+        params.map((param) => {
+          return metricsClient.getSteps(param, organizationId, buildId, pipelineType, token);
+        }),
+      );
+      return allStepsInfo.reduce(
+        (accumulator, currentValue) => {
+          return {
+            response: Array.from(new Set([...accumulator.response, ...currentValue.response])),
+            haveStep: accumulator.haveStep || currentValue.haveStep,
+            branches: Array.from(new Set([...accumulator.branches, ...currentValue.branches])),
+            pipelineCrews: Array.from(new Set([...accumulator.pipelineCrews, ...currentValue.pipelineCrews])),
+          };
+        },
+        {
+          response: [],
+          haveStep: false,
+          branches: [],
+          pipelineCrews: [],
+        } as IStepsRes,
+      );
     } catch (e) {
       const err = e as Error;
       setErrorMessage(`${MESSAGE.GET_STEPS_FAILED} ${pipelineType} steps: ${err.message}`);
