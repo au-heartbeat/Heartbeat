@@ -561,7 +561,7 @@ export const metricsSlice = createSlice({
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
 
       state.pipelineCrews = intersection(pipelineCrews, state.pipelineCrews);
-      const stepWarningMessage = (selectedStep: string, isStepSelected = false) =>
+      const stepWarningMessage = (selectedStep: string, isStepSelected: boolean) =>
         steps.includes(selectedStep) || isStepSelected ? null : MESSAGE.STEP_WARNING;
 
       const validStep = (pipeline: IPipelineConfig): string => {
