@@ -36,36 +36,47 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
   ) => {
     setIsLoading(true);
     try {
-      const allStepsInfo = await Promise.all(
+      const allStepsInfo = await Promise.allSettled<IStepsRes>(
         params.map((param) => {
           return metricsClient.getSteps(param, organizationId, buildId, pipelineType, token);
         }),
       );
-      return allStepsInfo.reduce(
-        (accumulator, currentValue) => {
-          return {
-            response: Array.from(new Set([...accumulator.response, ...currentValue.response])),
-            haveStep: accumulator.haveStep || currentValue.haveStep,
-            branches: Array.from(new Set([...accumulator.branches, ...currentValue.branches])),
-            pipelineCrews: Array.from(new Set([...accumulator.pipelineCrews, ...currentValue.pipelineCrews])),
-          };
-        },
-        {
-          response: [],
-          haveStep: false,
-          branches: [],
-          pipelineCrews: [],
-        } as IStepsRes,
-      );
+      if (allStepsInfo.every((stepInfo) => stepInfo.status === 'rejected')) {
+        setErrorMessageAndTime(pipelineType);
+        return;
+      }
+
+      return allStepsInfo
+        .filter((stepInfo) => stepInfo.status === 'fulfilled')
+        .map((stepInfo) => (stepInfo as PromiseFulfilledResult<IStepsRes>).value)
+        .reduce(
+          (accumulator, currentValue) => {
+            return {
+              response: Array.from(new Set([...accumulator.response, ...currentValue.response])),
+              haveStep: accumulator.haveStep || currentValue.haveStep,
+              branches: Array.from(new Set([...accumulator.branches, ...currentValue.branches])),
+              pipelineCrews: Array.from(new Set([...accumulator.pipelineCrews, ...currentValue.pipelineCrews])),
+            };
+          },
+          {
+            response: [],
+            haveStep: false,
+            branches: [],
+            pipelineCrews: [],
+          } as IStepsRes,
+        );
     } catch (e) {
-      const err = e as Error;
-      setErrorMessage(`${MESSAGE.GET_STEPS_FAILED} ${pipelineType} steps: ${err.message}`);
-      setTimeout(() => {
-        setErrorMessage('');
-      }, DURATION.ERROR_MESSAGE_TIME);
+      setErrorMessageAndTime(pipelineType);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const setErrorMessageAndTime = (pipelineType: string) => {
+    setErrorMessage(`${MESSAGE.GET_STEPS_FAILED} ${pipelineType} steps`);
+    setTimeout(() => {
+      setErrorMessage('');
+    }, DURATION.ERROR_MESSAGE_TIME);
   };
 
   return { isLoading, getSteps, errorMessage };
