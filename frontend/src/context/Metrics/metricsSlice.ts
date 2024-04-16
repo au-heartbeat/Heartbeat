@@ -515,7 +515,7 @@ export const metricsSlice = createSlice({
                   : '';
                 return {
                   id,
-                  isStepSelected: isStepSelected ? isStepSelected : false,
+                  isStepSelected: isStepSelected || false,
                   organization: matchedOrganization,
                   pipelineName: matchedPipelineName,
                   step: matchedPipelineName ? step : '',
@@ -597,7 +597,7 @@ export const metricsSlice = createSlice({
           return pipeline?.id === id
             ? {
                 ...pipeline,
-                step: stepWarningMessage(selectedPipelineStep, matchedPipeline.isStepSelected),
+                step: stepWarningMessage(selectedPipelineStep, matchedPipeline?.isStepSelected || false),
               }
             : pipeline;
         });

@@ -44,6 +44,8 @@ export const DeploymentFrequencySettings = () => {
   };
 
   const totalPipelineNumber = realDeploymentFrequencySettings.length;
+  const shouldShowCrews =
+    loadingCompletedNumber !== 0 && totalPipelineNumber !== 0 && loadingCompletedNumber === totalPipelineNumber;
 
   return (
     <>
@@ -73,16 +75,14 @@ export const DeploymentFrequencySettings = () => {
             />
           ))}
           <AddButton onClick={handleAddPipeline} text={'New Pipeline'} />
-          {loadingCompletedNumber !== 0 &&
-            totalPipelineNumber !== 0 &&
-            loadingCompletedNumber === totalPipelineNumber && (
-              <Crews
-                options={pipelineCrews}
-                title={'Crew setting (optional)'}
-                label={'Included Crews'}
-                type={'pipeline'}
-              />
-            )}
+          {shouldShowCrews && (
+            <Crews
+              options={pipelineCrews}
+              title={'Crew setting (optional)'}
+              label={'Included Crews'}
+              type={'pipeline'}
+            />
+          )}
         </>
       )}
     </>
