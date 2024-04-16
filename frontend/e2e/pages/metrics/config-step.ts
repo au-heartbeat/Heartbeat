@@ -51,6 +51,7 @@ export class ConfigStep {
   readonly requiredMetricsDeploymentFrequencyOption: Locator;
   readonly requiredMetricsChangeFailureRateOption: Locator;
   readonly requiredMetricsMeanTimeToRecoveryOption: Locator;
+  readonly requiredMetricsReworkTimesOption: Locator;
   readonly boardContainer: Locator;
   readonly boardTypeSelect: Locator;
   readonly boardIdInput: Locator;
@@ -115,10 +116,12 @@ export class ConfigStep {
     this.requiredMetricsVelocityOption = page.getByRole('option', { name: 'Velocity' });
     this.requiredMetricsCycleTimeOption = page.getByRole('option', { name: 'Cycle time' });
     this.requiredMetricsClassificationOption = page.getByRole('option', { name: 'Classification' });
+    this.requiredMetricsReworkTimesOption = page.getByRole('option', { name: 'Rework times' });
     this.requiredMetricsLeadTimeForChangesOption = page.getByRole('option', { name: 'Lead time for changes' });
     this.requiredMetricsDeploymentFrequencyOption = page.getByRole('option', { name: 'Deployment frequency' });
     this.requiredMetricsChangeFailureRateOption = page.getByRole('option', { name: 'Change failure rate' });
     this.requiredMetricsMeanTimeToRecoveryOption = page.getByRole('option', { name: 'Mean time to recovery' });
+    this.requiredMetricsReworkTimesOption = page.getByRole('option', { name: 'Rework times' });
 
     this.boardContainer = page.getByLabel('Board Config');
     this.boardTypeSelect = this.boardContainer.getByLabel('Board *');
@@ -272,6 +275,12 @@ export class ConfigStep {
   async selectClassificationRequiredMetrics() {
     await this.requiredMetricsLabel.click();
     await this.requiredMetricsClassificationOption.click();
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectReworkTimesRequiredMetrics() {
+    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsReworkTimesOption.click();
     await this.page.keyboard.press('Escape');
   }
 

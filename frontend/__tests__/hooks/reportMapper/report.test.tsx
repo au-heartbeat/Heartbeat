@@ -42,20 +42,9 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 0,
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
-      valuesList: [
+      valueList: [
         {
-          name: 'Deployment frequency',
           value: '0.30',
-        },
-      ],
-    },
-    {
-      id: 1,
-      name: 'Average',
-      valuesList: [
-        {
-          name: 'Deployment frequency',
-          value: '0.40',
         },
       ],
     },
@@ -64,9 +53,8 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 0,
       name: 'Heartbeat/:react: Build Frontend',
-      valuesList: [
+      valueList: [
         {
-          name: 'Dev mean time to recovery',
           value: '4.32',
         },
       ],
@@ -74,9 +62,8 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 1,
       name: 'Heartbeat/:cloudformation: Deploy infra',
-      valuesList: [
+      valueList: [
         {
-          name: 'Dev mean time to recovery',
           value: '0.00',
         },
       ],
@@ -84,20 +71,9 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 2,
       name: 'Heartbeat/:rocket: Run e2e',
-      valuesList: [
+      valueList: [
         {
-          name: 'Dev mean time to recovery',
           value: '7.67',
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: 'Average',
-      valuesList: [
-        {
-          name: 'Dev mean time to recovery',
-          value: '4.00',
         },
       ],
     },
@@ -126,20 +102,9 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 0,
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
-      valuesList: [
+      valueList: [
         {
-          name: 'Dev change failure rate',
           value: '0.00%(0/2)',
-        },
-      ],
-    },
-    {
-      id: 1,
-      name: 'Average',
-      valuesList: [
-        {
-          name: 'Dev change failure rate',
-          value: '0.00%(0/6)',
         },
       ],
     },
@@ -171,7 +136,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 5,
+      id: 4,
       name: (
         <React.Fragment>
           From <BoldText>review</BoldText> to<BoldText> in dev</BoldText>
@@ -185,7 +150,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 6,
+      id: 5,
       name: (
         <React.Fragment>
           From <BoldText>waiting for testing</BoldText> to<BoldText> in dev</BoldText>
@@ -199,7 +164,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 8,
+      id: 7,
       name: (
         <React.Fragment>
           From <BoldText>done</BoldText> to<BoldText> in dev</BoldText>
@@ -213,7 +178,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 9,
+      id: 8,
       name: <React.Fragment>Total rework cards</React.Fragment>,
       valueList: [
         {
@@ -223,7 +188,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 10,
+      id: 9,
       name: <React.Fragment>Rework cards ratio</React.Fragment>,
       valueList: [
         {

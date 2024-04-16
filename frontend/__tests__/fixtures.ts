@@ -467,7 +467,6 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
     fromAnalysis: null,
     fromInDev: null,
     fromBlock: 111,
-    fromFlag: null,
     fromReview: 111,
     fromWaitingForTesting: 111,
     fromTesting: null,
@@ -642,6 +641,16 @@ export const MOCK_PIPELINE_VERIFY_FORBIDDEN_ERROR_TEXT =
   'Forbidden request, please change your token with correct access permission.';
 
 export const FAKE_TOKEN = 'fake-token';
+
+export const FAKE_DATE_EARLIER = {
+  startDate: '2024-02-01T00:00:00.000+08:00',
+  endDate: '2024-02-14T23:59:59.999+08:00',
+};
+
+export const FAKE_DATE_LATER = {
+  startDate: '2024-03-01T00:00:00.000+08:00',
+  endDate: '2024-03-14T23:59:59.999+08:00',
+};
 
 export const FAKE_PIPELINE_TOKEN = 'bkua_mockTokenMockTokenMockTokenMockToken1234';
 

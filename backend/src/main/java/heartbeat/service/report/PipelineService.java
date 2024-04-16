@@ -1,6 +1,5 @@
 package heartbeat.service.report;
 
-import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
@@ -8,14 +7,12 @@ import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
-import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.response.LeadTimeInfo;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.service.pipeline.buildkite.BuildKiteService;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.source.github.GitHubService;
-import heartbeat.util.GithubUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -56,7 +53,7 @@ public class PipelineService {
 		String endTime = request.getEndTime();
 		FetchedData.BuildKiteData result = new FetchedData.BuildKiteData();
 
-		request.getBuildKiteSetting().getDeploymentEnvList().stream().forEach(deploymentEnvironment -> {
+		request.getBuildKiteSetting().getDeploymentEnvList().forEach(deploymentEnvironment -> {
 			List<BuildKiteBuildInfo> buildKiteBuildInfo = getBuildKiteBuildInfo(startTime, endTime,
 					deploymentEnvironment, request.getBuildKiteSetting().getToken(),
 					request.getBuildKiteSetting().getPipelineCrews());
@@ -68,9 +65,8 @@ public class PipelineService {
 		return result;
 	}
 
-	public List<PipelineCSVInfo> generateCSVForPipelineWithCodebase(CodebaseSetting codebaseSetting, String startTime,
-			String endTime, FetchedData.BuildKiteData buildKiteData,
-			List<DeploymentEnvironment> deploymentEnvironments) {
+	public List<PipelineCSVInfo> generateCSVForPipeline(String startTime, String endTime,
+			FetchedData.BuildKiteData buildKiteData, List<DeploymentEnvironment> deploymentEnvironments) {
 		List<PipelineCSVInfo> pipelineCSVInfos = new ArrayList<>();
 		deploymentEnvironments.parallelStream().forEach(deploymentEnvironment -> {
 			List<BuildKiteBuildInfo> buildInfos = getBuildInfos(buildKiteData.getBuildInfosList(),
@@ -82,8 +78,8 @@ public class PipelineService {
 							pipelineSteps);
 					List<PipelineCSVInfo> pipelineCSVInfoList = buildInfos.stream()
 						.filter(buildInfo -> isValidBuildInfo(buildInfo, validSteps, startTime, endTime))
-						.map(buildInfo -> getPipelineCSVInfo(codebaseSetting, startTime, endTime, buildKiteData,
-								deploymentEnvironment, buildInfo, validSteps))
+						.map(buildInfo -> getPipelineCSVInfo(startTime, endTime, buildKiteData, deploymentEnvironment,
+								buildInfo, validSteps))
 						.toList();
 					pipelineCSVInfos.addAll(pipelineCSVInfoList);
 				}
@@ -92,17 +88,12 @@ public class PipelineService {
 		return pipelineCSVInfos;
 	}
 
-	private PipelineCSVInfo getPipelineCSVInfo(CodebaseSetting codebaseSetting, String startTime, String endTime,
+	private PipelineCSVInfo getPipelineCSVInfo(String startTime, String endTime,
 			FetchedData.BuildKiteData buildKiteData, DeploymentEnvironment deploymentEnvironment,
 			BuildKiteBuildInfo buildInfo, List<String> pipelineSteps) {
 		DeployInfo deployInfo = buildKiteService.mapToDeployInfo(buildInfo, pipelineSteps, REQUIRED_STATES, startTime,
 				endTime);
-		CommitInfo commitInfo = null;
-		if (Objects.nonNull(codebaseSetting) && StringUtils.hasLength(codebaseSetting.getToken())
-				&& Objects.nonNull(deployInfo.getCommitId())) {
-			commitInfo = gitHubService.fetchCommitInfo(deployInfo.getCommitId(),
-					GithubUtil.getGithubUrlFullName(deploymentEnvironment.getRepository()), codebaseSetting.getToken());
-		}
+
 		return PipelineCSVInfo.builder()
 			.organizationName(deploymentEnvironment.getOrgName())
 			.pipeLineName(deploymentEnvironment.getName())
@@ -111,7 +102,6 @@ public class PipelineService {
 			.piplineStatus(buildInfo.getState())
 			.buildInfo(buildInfo)
 			.deployInfo(deployInfo)
-			.commitInfo(commitInfo)
 			.leadTimeInfo(new LeadTimeInfo(filterLeadTime(buildKiteData, deploymentEnvironment, deployInfo)))
 			.build();
 	}
