@@ -17,7 +17,7 @@ interface Props {
   id: number;
   isError?: boolean;
   errorText?: string;
-  onGetSteps?: (pipelineName: string, flag: boolean) => void;
+  onGetSteps?: (pipelineName: string) => void;
   onUpDatePipeline: (id: number, label: string, value: string | []) => void;
 }
 
@@ -40,7 +40,7 @@ export const SingleSelection = ({
     if (onGetSteps) {
       onUpDatePipeline(id, 'Step', '');
       onUpDatePipeline(id, 'Branches', []);
-      onGetSteps(value, true);
+      onGetSteps(value);
       dispatch(initSinglePipelineListBranches(id));
     }
     onUpDatePipeline(id, label, value);

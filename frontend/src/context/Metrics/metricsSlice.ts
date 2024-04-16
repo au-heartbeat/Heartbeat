@@ -18,6 +18,7 @@ export interface IPipelineConfig {
   pipelineName: string;
   step: string;
   branches: string[];
+  isStepSelected?: boolean;
 }
 
 export interface IReworkConfig {
@@ -30,6 +31,7 @@ export interface IPipelineWarningMessageConfig {
   organization: string | null;
   pipelineName: string | null;
   step: string | null;
+  isStepSelected?: boolean;
 }
 
 export interface ICycleTimeSetting {
@@ -483,7 +485,7 @@ export const metricsSlice = createSlice({
 
       const uniqueResponse = (res: IPipelineConfig[]) => {
         const itemsOmitId = uniqWith(
-          res.map((value) => omit(value, ['id'])),
+          res.map((value) => omit(value, ['id', 'isStepSelected'])),
           isEqual,
         );
         let removeEmpty = itemsOmitId;
@@ -506,7 +508,7 @@ export const metricsSlice = createSlice({
         const hasPipeline = pipelines.filter(({ id }) => id !== undefined).length;
         const res =
           pipelines.length && hasPipeline
-            ? pipelines.map(({ id, organization, pipelineName, step, branches }) => {
+            ? pipelines.map(({ id, organization, pipelineName, step, branches, isStepSelected }) => {
                 const matchedOrganization =
                   orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '';
                 const matchedPipelineName = filteredPipelineNames(organization).includes(pipelineName)
@@ -514,13 +516,14 @@ export const metricsSlice = createSlice({
                   : '';
                 return {
                   id,
+                  isStepSelected: isStepSelected ? isStepSelected : false,
                   organization: matchedOrganization,
                   pipelineName: matchedPipelineName,
                   step: matchedPipelineName ? step : '',
                   branches: matchedPipelineName ? branches : [],
                 };
               })
-            : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }];
+            : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [], isStepSelected: false }];
         return uniqueResponse(res);
       };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
@@ -555,21 +558,27 @@ export const metricsSlice = createSlice({
       state.deploymentWarningMessage = getPipelinesWarningMessage(deploymentSettings);
     },
     updatePipelineStep: (state, action) => {
-      const { steps, id, branches, pipelineCrews, flag } = action.payload;
+      const { steps, id, branches, pipelineCrews } = action.payload;
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
 
       state.pipelineCrews = intersection(pipelineCrews, state.pipelineCrews);
-      const stepWarningMessage = (selectedStep: string) =>
-        steps.includes(selectedStep) || flag || selectedStep === '' ? null : MESSAGE.STEP_WARNING;
+      const stepWarningMessage = (selectedStep: string, isStepSelected = false) =>
+        steps.includes(selectedStep) || isStepSelected ? null : MESSAGE.STEP_WARNING;
 
-      const validStep = (selectedStep: string): string => (steps.includes(selectedStep) ? selectedStep : '');
+      const validStep = (pipeline: IPipelineConfig): string => {
+        const selectedStep = pipeline.step;
+        if (!selectedStep) {
+          pipeline.isStepSelected = true;
+        }
+        return steps.includes(selectedStep) ? selectedStep : '';
+      };
 
       const validBranches = (selectedBranches: string[]): string[] =>
         _.filter(branches, (branch) => selectedBranches.includes(branch));
 
       const getPipelineSettings = (pipelines: IPipelineConfig[]) => {
         return pipelines.map((pipeline) => {
-          const filterValidStep = validStep(pipeline.step);
+          const filterValidStep = validStep(pipeline);
           return pipeline.id === id
             ? {
                 ...pipeline,
@@ -580,19 +589,26 @@ export const metricsSlice = createSlice({
         });
       };
 
-      const getStepWarningMessage = (pipelines: IPipelineWarningMessageConfig[]) => {
-        return pipelines.map((pipeline) =>
-          pipeline?.id === id
+      const getStepWarningMessage = (
+        pipelinesWarning: IPipelineWarningMessageConfig[],
+        pipelinesValue: IPipelineConfig[],
+      ) => {
+        return pipelinesWarning.map((pipeline) => {
+          const matchedPipeline = pipelinesValue.filter((pipeline) => pipeline.id === id)[0];
+          return pipeline?.id === id
             ? {
                 ...pipeline,
-                step: stepWarningMessage(selectedPipelineStep),
+                step: stepWarningMessage(selectedPipelineStep, matchedPipeline.isStepSelected),
               }
-            : pipeline,
-        );
+            : pipeline;
+        });
       };
 
+      state.deploymentWarningMessage = getStepWarningMessage(
+        state.deploymentWarningMessage,
+        state.deploymentFrequencySettings,
+      );
       state.deploymentFrequencySettings = getPipelineSettings(state.deploymentFrequencySettings);
-      state.deploymentWarningMessage = getStepWarningMessage(state.deploymentWarningMessage);
     },
 
     deleteADeploymentFrequencySetting: (state, action) => {
