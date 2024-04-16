@@ -24,7 +24,7 @@ export enum SortType {
   DEFAULT = 'DEFAULT',
 }
 
-export type ISortedDateRangeType = {
+export type SortedDateRangeType = {
   startDate: string | null;
   endDate: string | null;
   sortIndex: number;
@@ -33,15 +33,15 @@ export type ISortedDateRangeType = {
 };
 
 const sortFn = {
-  DEFAULT: ({ sortIndex }: ISortedDateRangeType) => sortIndex,
-  DESCENDING: ({ startDate }: ISortedDateRangeType) => -dayjs(startDate).unix(),
-  ASCENDING: ({ startDate }: ISortedDateRangeType) => dayjs(startDate).unix(),
+  DEFAULT: ({ sortIndex }: SortedDateRangeType) => sortIndex,
+  DESCENDING: ({ startDate }: SortedDateRangeType) => -dayjs(startDate).unix(),
+  ASCENDING: ({ startDate }: SortedDateRangeType) => dayjs(startDate).unix(),
 };
 
 type Props = {
   sortType: SortType;
-  onChange?: (data: ISortedDateRangeType[]) => void;
-  onError?: (data: ISortedDateRangeType[]) => void;
+  onChange?: (data: SortedDateRangeType[]) => void;
+  onError?: (data: SortedDateRangeType[]) => void;
 };
 
 const fillDateRangeGroup = <T,>(item: T, index: number) => ({
@@ -55,7 +55,7 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
-  const [sortedDateRangeList, setSortedDateRangeList] = useState<ISortedDateRangeType[]>(
+  const [sortedDateRangeList, setSortedDateRangeList] = useState<SortedDateRangeType[]>(
     dateRangeGroup.map(fillDateRangeGroup),
   );
 

@@ -1,5 +1,5 @@
 import { DateRangePickerGroup, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
-import { ISortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { SortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { SortingDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortingDateRange';
 import { selectDateRange, selectDateRangeSortType } from '@src/context/config/configSlice';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
@@ -26,7 +26,7 @@ export const DateRangePickerSection = () => {
     setSortType(type);
   };
 
-  const handleError = (err: ISortedDateRangeType[]) => {
+  const handleError = (err: SortedDateRangeType[]) => {
     setHasError(!!err.length);
   };
 
