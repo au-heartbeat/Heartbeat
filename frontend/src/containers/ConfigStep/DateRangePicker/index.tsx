@@ -1,5 +1,5 @@
 import { DateRangePickerGroup, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
-import { SortDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { ISortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { selectDateRange, selectDateRangeSortStatus } from '@src/context/config/configSlice';
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
   const dateRangeGroupSortStatus = useAppSelector(selectDateRangeSortStatus);
-  const [sortStatus, setSortStatus] = useState<SortType>(
+  const [sortType, setSortType] = useState<SortType>(
     dateRangeGroupSortStatus ? dateRangeGroupSortStatus : SortType.DEFAULT,
   );
 
@@ -28,10 +28,10 @@ export const DateRangePickerSection = () => {
   }, [dateRangeGroup]);
 
   const handleSortStatusChange = (type: SortType) => {
-    setSortStatus(type);
+    setSortType(type);
   };
 
-  const handleError = (err: SortDateRangeType[]) => {
+  const handleError = (err: ISortedDateRangeType[]) => {
     setHasError(!!err.length);
   };
 
@@ -46,10 +46,10 @@ export const DateRangePickerSection = () => {
           }}
         />
         {dateRangeGroup.length > 1 && isDateRangeValid && !hasError && (
-          <SortDateRange onChange={handleSortStatusChange} sortStatus={sortStatus} />
+          <SortDateRange onChange={handleSortStatusChange} sortType={sortType} />
         )}
       </TitleContainer>
-      <DateRangePickerGroup sortStatus={sortStatus} onError={handleError} />
+      <DateRangePickerGroup sortType={sortType} onError={handleError} />
     </div>
   );
 };

@@ -225,7 +225,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
 export const IMPORTED_NEW_CONFIG_FIXTURE = {
   projectName: 'ConfigFileForImporting',
   metrics: ['Velocity', 'Cycle time', 'Classification', 'Lead time for changes'],
-  sortStatus: SortType.DEFAULT,
+  sortType: SortType.DEFAULT,
   dateRange: [
     {
       startDate: '2023-03-16T00:00:00.000+08:00',

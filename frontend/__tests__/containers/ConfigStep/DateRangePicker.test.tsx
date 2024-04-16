@@ -235,7 +235,7 @@ describe('DateRangePickerSection', () => {
   });
 
   describe('Sort date range behaviors', () => {
-    it('should not show sort button when there is only one date range', async () => {
+    it('should not show sort button given only one date range', async () => {
       const rangeDate1 = ['03/15/2024', '03/25/2024'];
       const ranges = screen.getAllByLabelText('Range picker row');
       const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
@@ -247,7 +247,7 @@ describe('DateRangePickerSection', () => {
     });
   });
 
-  it('should show sort button when more than one time range', async () => {
+  it('should show sort button given more than one time range', async () => {
     const rangeDate1 = ['03/15/2024', '03/25/2024'];
     const rangeDate2 = ['03/08/2024', '03/11/2024'];
 
@@ -266,7 +266,7 @@ describe('DateRangePickerSection', () => {
     expect(sortButton).toBeInTheDocument();
   });
 
-  it('should not show sort button when exist errors in date range', async () => {
+  it('should not show sort button given exist errors in date range', async () => {
     const rangeDate1 = ['03/12/2024', '03/25/2024'];
     const rangeDate2 = ['03/08/2024', '03/26/2024'];
 

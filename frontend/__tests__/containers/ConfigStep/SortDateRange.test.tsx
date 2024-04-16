@@ -12,7 +12,7 @@ const setup = () => {
   store = setupStore();
   return render(
     <Provider store={store}>
-      <SortDateRange onChange={() => {}} sortStatus={SortType.DEFAULT} />
+      <SortDateRange onChange={() => {}} sortType={SortType.DEFAULT} />
     </Provider>,
   );
 };
@@ -21,8 +21,8 @@ jest.mock('@src/context/config/configSlice', () => ({
   updateDateRangeSortStatus: jest.fn().mockReturnValue({ type: 'SHOULD_UPDATE_SORT_STATUS' }),
 }));
 
-describe('SortDateRange', () => {
-  it('should toggle sort order when SortButton is clicked', () => {
+describe('SortDateRange button behaviors', () => {
+  it('should show sort time rang button', () => {
     setup();
     const sortButtonContainer = screen.getByLabelText('Time range sort');
     expect(sortButtonContainer).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('SortDateRange', () => {
     expect(sortButton).toBeInTheDocument();
   });
 
-  it('should toggle sort order when SortButton is clicked', async () => {
+  it('should change sort order given SortButton is clicked', async () => {
     setup();
     const sortButtonContainer = screen.getByLabelText('Time range sort');
     expect(sortButtonContainer).toBeInTheDocument();

@@ -11,7 +11,7 @@ import { convertToNewFileConfig } from '@src/constants/fileConfig';
 describe('#fileConfig', () => {
   const BASIC_NEW_CONFIG = {
     projectName: 'ConfigFileForImporting',
-    sortStatus: SortType.DEFAULT,
+    sortType: SortType.DEFAULT,
     dateRange: [
       {
         startDate: '2023-03-16T00:00:00.000+08:00',

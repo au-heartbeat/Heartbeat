@@ -24,7 +24,7 @@ export enum SortType {
   DEFAULT = 'DEFAULT',
 }
 
-export type SortDateRangeType = {
+export type ISortedDateRangeType = {
   startDate: string | null;
   endDate: string | null;
   sortIndex: number;
@@ -33,15 +33,15 @@ export type SortDateRangeType = {
 };
 
 const sortFn = {
-  DEFAULT: ({ sortIndex }: SortDateRangeType) => sortIndex,
-  DESCENDING: ({ startDate }: SortDateRangeType) => -dayjs(startDate).unix(),
-  ASCENDING: ({ startDate }: SortDateRangeType) => dayjs(startDate).unix(),
+  DEFAULT: ({ sortIndex }: ISortedDateRangeType) => sortIndex,
+  DESCENDING: ({ startDate }: ISortedDateRangeType) => -dayjs(startDate).unix(),
+  ASCENDING: ({ startDate }: ISortedDateRangeType) => dayjs(startDate).unix(),
 };
 
 type IProps = {
-  sortStatus: SortType;
-  onChange?: (data: SortDateRangeType[]) => void;
-  onError?: (data: SortDateRangeType[]) => void;
+  sortType: SortType;
+  onChange?: (data: ISortedDateRangeType[]) => void;
+  onError?: (data: ISortedDateRangeType[]) => void;
 };
 
 const fillDateRangeGroup = <T,>(item: T, index: number) => ({
@@ -51,11 +51,11 @@ const fillDateRangeGroup = <T,>(item: T, index: number) => ({
   sortIndex: index,
 });
 
-export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
+export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
-  const [sortDateRangeGroup, setSortDateRangeGroup] = useState<SortDateRangeType[]>(
+  const [sortDateRangeGroup, setSortDateRangeGroup] = useState<ISortedDateRangeType[]>(
     dateRangeGroup.map(fillDateRangeGroup),
   );
 
@@ -105,7 +105,7 @@ export const DateRangePickerGroup = ({ sortStatus, onError }: IProps) => {
   return (
     <DateRangePickerGroupContainer>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {sortBy(sortDateRangeGroup, get(sortFn, sortStatus)).map(({ startDate, endDate, sortIndex }, index) => (
+        {sortBy(sortDateRangeGroup, get(sortFn, sortType)).map(({ startDate, endDate, sortIndex }, index) => (
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}

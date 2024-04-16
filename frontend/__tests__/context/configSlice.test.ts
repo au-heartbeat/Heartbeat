@@ -52,7 +52,7 @@ describe('config reducer', () => {
     expect(config.dateRange[0].endDate).toEqual('');
   });
 
-  it('should update sort status in basic state', () => {
+  it('should update date range sort status with given sort status', () => {
     const newSortStatus = SortType.DEFAULT;
     const config = configReducer(initialConfigState, updateDateRangeSortStatus(newSortStatus)).basic;
 

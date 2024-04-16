@@ -15,23 +15,22 @@ import { useState } from 'react';
 
 type IProps = {
   onChange: (type: SortType) => void;
-  sortStatus: SortType;
+  sortType: SortType;
 };
 
-const sortStates: Record<string, string> = {
-  DEFAULT: 'DESCENDING',
-  DESCENDING: 'ASCENDING',
-  ASCENDING: 'DEFAULT',
-};
-
-export const SortDateRange = ({ onChange, sortStatus }: IProps) => {
+export const SortDateRange = ({ onChange, sortType }: IProps) => {
   const dispatch = useAppDispatch();
-  const [sortOrder, setSortOrder] = useState(sortStatus);
+  const [sortOrder, setSortOrder] = useState(sortType);
 
   const handleChangeSort = () => {
-    setSortOrder(sortStates[sortOrder] as SortType);
-    dispatch(updateDateRangeSortStatus(sortStates[sortOrder]));
-    onChange?.(sortStates[sortOrder] as SortType);
+    const totalSortTypes = Object.values(SortType).length;
+    const currentIndex = Object.values(SortType).indexOf(sortOrder);
+    const newIndex = (currentIndex + 1) % totalSortTypes;
+    const newSortType = Object.values(SortType)[newIndex];
+
+    setSortOrder(newSortType);
+    dispatch(updateDateRangeSortStatus(newSortType));
+    onChange?.(newSortType);
   };
 
   return (
@@ -39,8 +38,12 @@ export const SortDateRange = ({ onChange, sortStatus }: IProps) => {
       <SortButtonContainer>
         <SortTextButton disableRipple>{SORT_DATE_RANGE_TEXT[sortOrder]}</SortTextButton>
         <SortButton aria-label='sort button' onClick={handleChangeSort}>
-          {sortOrder === 'ASCENDING' ? <AscendingIcon fontSize='inherit' /> : <ArrowDropUp fontSize='inherit' />}
-          {sortOrder === 'DESCENDING' ? <DescendingIcon fontSize='inherit' /> : <ArrowDropDown fontSize='inherit' />}
+          {sortOrder === SortType.ASCENDING ? <AscendingIcon fontSize='inherit' /> : <ArrowDropUp fontSize='inherit' />}
+          {sortOrder === SortType.DESCENDING ? (
+            <DescendingIcon fontSize='inherit' />
+          ) : (
+            <ArrowDropDown fontSize='inherit' />
+          )}
         </SortButton>
       </SortButtonContainer>
     </Box>
