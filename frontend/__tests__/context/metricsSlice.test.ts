@@ -716,6 +716,7 @@ describe('saveMetricsSetting reducer', () => {
                 pipelineName: 'mockPipelineName2',
                 step: 'mockStep2',
                 branches: [],
+                isStepSelected: false,
               },
               {
                 id: 2,
@@ -746,7 +747,13 @@ describe('saveMetricsSetting reducer', () => {
               step: 'mockStep1',
               branches: [],
             },
-            { id: 1, organization: 'mockOrganization1', pipelineName: '', step: '', branches: [] },
+            {
+              id: 1,
+              organization: 'mockOrganization1',
+              pipelineName: '',
+              step: '',
+              branches: [],
+            },
           ],
           leadTimeForChanges: [
             { id: 0, organization: 'mockOrganization1', pipelineName: 'mockPipelineName1', step: '', branches: [] },
@@ -767,7 +774,9 @@ describe('saveMetricsSetting reducer', () => {
         },
         pipelineCrews: [],
         expectSetting: {
-          deploymentFrequencySettings: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
+          deploymentFrequencySettings: [
+            { id: 0, organization: '', pipelineName: '', step: '', branches: [], isStepSelected: false },
+          ],
           leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
           deploymentWarningMessage: [],
           leadTimeWarningMessage: [],
@@ -786,7 +795,9 @@ describe('saveMetricsSetting reducer', () => {
         },
         pipelineCrews: [],
         expectSetting: {
-          deploymentFrequencySettings: [{ id: 1, organization: '', pipelineName: '', step: '', branches: [] }],
+          deploymentFrequencySettings: [
+            { id: 1, organization: '', pipelineName: '', step: '', branches: [], isStepSelected: false },
+          ],
           leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
           deploymentWarningMessage: [],
           leadTimeWarningMessage: [],
@@ -891,7 +902,14 @@ describe('saveMetricsSetting reducer', () => {
             step: 'mockStep1',
             branches: [],
           },
-          { id: 1, organization: 'mockOrganization1', pipelineName: 'mockPipelineName2', step: '', branches: [] },
+          {
+            id: 1,
+            organization: 'mockOrganization1',
+            pipelineName: 'mockPipelineName2',
+            step: '',
+            branches: [],
+            isStepSelected: true,
+          },
         ],
         expectedWarning: [
           {
@@ -923,6 +941,7 @@ describe('saveMetricsSetting reducer', () => {
             pipelineName: 'mockPipelineName2',
             step: '',
             branches: [],
+            isStepSelected: true,
           },
         ],
         expectedWarning: [
@@ -949,7 +968,14 @@ describe('saveMetricsSetting reducer', () => {
             step: 'mockStep1',
             branches: ['branch1'],
           },
-          { id: 1, organization: 'mockOrganization1', pipelineName: 'mockPipelineName2', step: '', branches: [] },
+          {
+            id: 1,
+            organization: 'mockOrganization1',
+            pipelineName: 'mockPipelineName2',
+            step: '',
+            branches: [],
+            isStepSelected: true,
+          },
         ],
         expectedWarning: [
           {
@@ -980,7 +1006,14 @@ describe('saveMetricsSetting reducer', () => {
             step: 'mockStep1',
             branches: ['branch1'],
           },
-          { id: 1, organization: 'mockOrganization1', pipelineName: 'mockPipelineName2', step: '', branches: [] },
+          {
+            id: 1,
+            organization: 'mockOrganization1',
+            pipelineName: 'mockPipelineName2',
+            step: '',
+            branches: [],
+            isStepSelected: true,
+          },
         ],
         expectedWarning: [
           { id: 0, organization: null, pipelineName: null, step: null },
@@ -1430,6 +1463,7 @@ describe('saveMetricsSetting reducer', () => {
         orgName: 'mockOrganization1',
         repository: 'mockRepository1',
         steps: ['mock step 1', 'mock step 2'],
+        isStepSelected: false,
       },
     ];
     const mockSteps = ['mockStep'];

@@ -31,7 +31,6 @@ export interface IPipelineWarningMessageConfig {
   organization: string | null;
   pipelineName: string | null;
   step: string | null;
-  isStepSelected?: boolean;
 }
 
 export interface ICycleTimeSetting {
