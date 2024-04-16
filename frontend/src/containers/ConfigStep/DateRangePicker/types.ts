@@ -9,5 +9,5 @@ export interface IRangePickerProps {
   onError?: (type: string, error: DateValidationError, index: number) => void;
   onChange?: (data: { startDate: string | null; endDate: string | null }, index: number) => void;
   onRemove?: (index: number) => void;
-  allRange?: ISortedDateRangeType[];
+  rangeList?: ISortedDateRangeType[];
 }

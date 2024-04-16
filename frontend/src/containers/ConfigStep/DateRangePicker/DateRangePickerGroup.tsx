@@ -18,7 +18,7 @@ import remove from 'lodash/remove';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
-export enum ISortType {
+export enum SortType {
   DESCENDING = 'DESCENDING',
   ASCENDING = 'ASCENDING',
   DEFAULT = 'DEFAULT',
@@ -38,8 +38,8 @@ const sortFn = {
   ASCENDING: ({ startDate }: ISortedDateRangeType) => dayjs(startDate).unix(),
 };
 
-type IProps = {
-  sortType: ISortType;
+type Props = {
+  sortType: SortType;
   onChange?: (data: ISortedDateRangeType[]) => void;
   onError?: (data: ISortedDateRangeType[]) => void;
 };
@@ -51,21 +51,23 @@ const fillDateRangeGroup = <T,>(item: T, index: number) => ({
   sortIndex: index,
 });
 
-export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
+export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
-  const [sortedDateRange, setSortedDateRange] = useState<ISortedDateRangeType[]>(
+  const [sortedDateRangeList, setSortedDateRangeList] = useState<ISortedDateRangeType[]>(
     dateRangeGroup.map(fillDateRangeGroup),
   );
 
   useEffect(() => {
-    const errors = sortedDateRange.filter(({ startDateError, endDateError }) => startDateError || endDateError);
+    const errors = sortedDateRangeList.filter(({ startDateError, endDateError }) => startDateError || endDateError);
     onError?.(errors);
-  }, [onError, sortedDateRange]);
+  }, [onError, sortedDateRangeList]);
 
   const handleError = (type: string, error: DateValidationError, index: number) => {
-    setSortedDateRange(sortedDateRange.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })));
+    setSortedDateRangeList(
+      sortedDateRangeList.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })),
+    );
   };
 
   const dispatchUpdateConfig = () => {
@@ -75,8 +77,8 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
   };
 
   const addRangeHandler = () => {
-    const result = [...sortedDateRange, { startDate: null, endDate: null }];
-    setSortedDateRange(result.map(fillDateRangeGroup));
+    const result = [...sortedDateRangeList, { startDate: null, endDate: null }];
+    setSortedDateRangeList(result.map(fillDateRangeGroup));
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
 
@@ -84,18 +86,18 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
     { startDate, endDate }: { startDate: string | null; endDate: string | null },
     index: number,
   ) => {
-    const result = sortedDateRange.map((item) =>
+    const result = sortedDateRangeList.map((item) =>
       item.sortIndex === index ? { ...item, startDate, endDate, startDateError: null, endDateError: null } : item,
     );
-    setSortedDateRange(result);
+    setSortedDateRangeList(result);
     dispatchUpdateConfig();
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
 
   const handleRemove = (index: number) => {
-    const result = [...sortedDateRange];
+    const result = [...sortedDateRangeList];
     remove(result, ({ sortIndex }) => sortIndex === index);
-    setSortedDateRange(result);
+    setSortedDateRangeList(result);
     dispatchUpdateConfig();
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
@@ -103,7 +105,7 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
   return (
     <DateRangePickerGroupContainer>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {sortBy(sortedDateRange, get(sortFn, sortType)).map(({ startDate, endDate, sortIndex }, index) => (
+        {sortBy(sortedDateRangeList, get(sortFn, sortType)).map(({ startDate, endDate, sortIndex }, index) => (
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
@@ -112,7 +114,7 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
             onChange={handleChange}
             onError={handleError}
             onRemove={handleRemove}
-            allRange={sortedDateRange}
+            rangeList={sortedDateRangeList}
           />
         ))}
         <AddButton

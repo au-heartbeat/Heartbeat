@@ -63,7 +63,7 @@ export const RemoveButton = styled(BasicButton)({
   top: '3rem',
 });
 
-export const SortTextButton = styled(Button)({
+export const SortingTextButton = styled(Button)({
   cursor: 'default',
   backgroundColor: theme.main.button.disabled.color,
   '&:hover': {
@@ -72,7 +72,7 @@ export const SortTextButton = styled(Button)({
   color: theme.main.color,
 });
 
-export const SortButton = styled(IconButton)({
+export const SortingButton = styled(IconButton)({
   display: 'flex',
   flexDirection: 'column',
   padding: 0,
@@ -84,7 +84,7 @@ export const SortButton = styled(IconButton)({
   color: theme.main.button.disabled.color,
 });
 
-export const SortButtonContainer = styled('div')({
+export const SortingButtoningContainer = styled('div')({
   display: 'flex',
 });
 

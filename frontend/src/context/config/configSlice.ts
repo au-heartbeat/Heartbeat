@@ -9,7 +9,7 @@ import {
 } from '@src/constants/resources';
 import { initialPipelineToolState, IPipelineToolState } from '@src/context/config/pipelineTool/pipelineToolSlice';
 import { initialSourceControlState, ISourceControl } from '@src/context/config/sourceControl/sourceControlSlice';
-import { ISortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { IBoardState, initialBoardState } from '@src/context/config/board/boardSlice';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { createSlice } from '@reduxjs/toolkit';
@@ -30,7 +30,7 @@ export interface BasicConfigState {
     projectName: string;
     calendarType: string;
     dateRange: DateRange;
-    sortType: ISortType;
+    sortType: SortType;
     metrics: string[];
   };
   board: IBoardState;
@@ -50,7 +50,7 @@ export const initialBasicConfigState: BasicConfigState = {
         endDate: null,
       },
     ],
-    sortType: ISortType?.DEFAULT,
+    sortType: SortType?.DEFAULT,
     metrics: [],
   },
   board: initialBoardState,
