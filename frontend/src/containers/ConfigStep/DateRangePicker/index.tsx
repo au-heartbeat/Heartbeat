@@ -1,4 +1,4 @@
-import { DateRangePickerGroup, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { DateRangePickerGroup, ISortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { ISortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { selectDateRange, selectDateRangeSortType } from '@src/context/config/configSlice';
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
@@ -11,8 +11,8 @@ import { useMemo, useState } from 'react';
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
   const dateRangeGroupSortType = useAppSelector(selectDateRangeSortType);
-  const [sortType, setSortType] = useState<SortType>(
-    dateRangeGroupSortType ? dateRangeGroupSortType : SortType.DEFAULT,
+  const [sortType, setSortType] = useState<ISortType>(
+    dateRangeGroupSortType ? dateRangeGroupSortType : ISortType.DEFAULT,
   );
 
   const [hasError, setHasError] = useState(false);
@@ -22,7 +22,7 @@ export const DateRangePickerSection = () => {
     });
   }, [dateRangeGroup]);
 
-  const handleSortTypeChange = (type: SortType) => {
+  const handleSortTypeChange = (type: ISortType) => {
     setSortType(type);
   };
 

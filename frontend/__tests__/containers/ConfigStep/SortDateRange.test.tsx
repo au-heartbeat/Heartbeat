@@ -1,4 +1,4 @@
-import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { ISortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
 import { updateDateRangeSortType } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
@@ -12,7 +12,7 @@ const setup = () => {
   store = setupStore();
   return render(
     <Provider store={store}>
-      <SortDateRange onChange={() => {}} sortType={SortType.DEFAULT} />
+      <SortDateRange onChange={() => {}} sortType={ISortType.DEFAULT} />
     </Provider>,
   );
 };
@@ -47,7 +47,7 @@ describe('SortDateRange button behaviors', () => {
     await userEvent.click(sortButton);
 
     expect(updateDateRangeSortType).toHaveBeenCalledTimes(1);
-    expect(updateDateRangeSortType).toHaveBeenCalledWith(SortType.DESCENDING);
+    expect(updateDateRangeSortType).toHaveBeenCalledWith(ISortType.DESCENDING);
   });
 
   it('should render right icon with sort status', async () => {

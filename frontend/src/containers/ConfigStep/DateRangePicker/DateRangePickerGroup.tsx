@@ -18,7 +18,7 @@ import remove from 'lodash/remove';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
-export enum SortType {
+export enum ISortType {
   DESCENDING = 'DESCENDING',
   ASCENDING = 'ASCENDING',
   DEFAULT = 'DEFAULT',
@@ -39,7 +39,7 @@ const sortFn = {
 };
 
 type IProps = {
-  sortType: SortType;
+  sortType: ISortType;
   onChange?: (data: ISortedDateRangeType[]) => void;
   onError?: (data: ISortedDateRangeType[]) => void;
 };
@@ -65,9 +65,7 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
   }, [onError, sortedDateRange]);
 
   const handleError = (type: string, error: DateValidationError, index: number) => {
-    setSortedDateRange(
-      sortedDateRange.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })),
-    );
+    setSortedDateRange(sortedDateRange.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })));
   };
 
   const dispatchUpdateConfig = () => {
