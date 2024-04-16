@@ -6,6 +6,8 @@ import {
   SOURCE_CONTROL_TYPE_LITERAL,
   BASIC_INFO_ERROR_MESSAGE,
   BOARD_CONFIG_ERROR_MESSAGE,
+  PIPELINE_TOOL_ERROR_MESSAGE,
+  SOURCE_CONTROL_ERROR_MESSAGE,
 } from '@src/containers/ConfigStep/Form/literal';
 import { object, string, mixed, InferType, array } from 'yup';
 import { REGEX } from '@src/constants/regex';
@@ -40,18 +42,16 @@ export const boardConfigSchema = object().shape({
 
 export const pipelineToolSchema = object().shape({
   type: mixed().oneOf(PIPELINE_TOOL_TYPE_LITERAL),
-  token: string().when(PIPELINE_TOOL_TYPE_LITERAL, {
-    is: true,
-    then: () => string().matches(REGEX.BUILDKITE_TOKEN),
-  }),
+  token: string()
+    .required(PIPELINE_TOOL_ERROR_MESSAGE.token.required)
+    .matches(REGEX.BUILDKITE_TOKEN, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.invalid }),
 });
 
 export const sourceControlSchema = object().shape({
   type: mixed().oneOf(SOURCE_CONTROL_TYPE_LITERAL),
-  token: string().when(SOURCE_CONTROL_TYPE_LITERAL, {
-    is: true,
-    then: () => string().matches(REGEX.GITHUB_TOKEN),
-  }),
+  token: string()
+    .required(SOURCE_CONTROL_ERROR_MESSAGE.token.required)
+    .matches(REGEX.BUILDKITE_TOKEN, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.invalid }),
 });
 
 export type IBasicInfoData = InferType<typeof basicInfoSchema>;

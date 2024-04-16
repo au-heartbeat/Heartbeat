@@ -1,3 +1,9 @@
+import {
+  IBoardConfigErrorMessage,
+  IPipelineToolErrorMessage,
+  ISourceControlErrorMessage,
+} from '@src/containers/ConfigStep/Form/type';
+
 export const CALENDAR_TYPE_LITERAL = ['Regular Calendar(Weekend Considered)', 'Calendar with Chinese Holiday'];
 export const METRICS_LITERAL = [
   'Velocity',
@@ -13,28 +19,6 @@ export const BOARD_TYPE_LITERAL = ['Jira'];
 export const PIPELINE_TOOL_TYPE_LITERAL = ['BuildKite'];
 export const SOURCE_CONTROL_TYPE_LITERAL = ['GitHub'];
 
-export type TBoardFieldKeys = 'type' | 'boardId' | 'email' | 'site' | 'token';
-export interface IBoardConfigErrorMessage extends Record<Exclude<TBoardFieldKeys, 'type'>, Record<string, string>> {
-  boardId: {
-    required: string;
-    invalid: string;
-    verifyFailed: string;
-  };
-  email: {
-    required: string;
-    invalid: string;
-    verifyFailed: string;
-  };
-  site: {
-    required: string;
-    verifyFailed: string;
-  };
-  token: {
-    required: string;
-    invalid: string;
-    verifyFailed: string;
-  };
-}
 export const BASIC_INFO_ERROR_MESSAGE = {
   projectName: 'Project name is required',
 };
@@ -57,5 +41,23 @@ export const BOARD_CONFIG_ERROR_MESSAGE: IBoardConfigErrorMessage = {
     required: 'Token is required!',
     invalid: 'Token is invalid!',
     verifyFailed: 'Token is invalid, please change your token with correct access permission!',
+    timeout: 'Timeout!',
+  },
+};
+// todo remove duplicated declarations
+export const PIPELINE_TOOL_ERROR_MESSAGE: IPipelineToolErrorMessage = {
+  token: {
+    required: 'Token is required!',
+    invalid: 'Token is invalid!',
+    unauthorized: 'Token is incorrect!',
+    forbidden: 'Forbidden request, please change your token with correct access permission.',
+    timeout: 'Timeout!',
+  },
+};
+
+export const SOURCE_CONTROL_ERROR_MESSAGE: ISourceControlErrorMessage = {
+  token: {
+    required: 'Token is required!',
+    invalid: 'Token is invalid!',
   },
 };

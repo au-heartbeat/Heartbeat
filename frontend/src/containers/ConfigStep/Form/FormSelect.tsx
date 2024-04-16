@@ -1,13 +1,24 @@
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { StyledTypeSelections } from '@src/components/Common/ConfigForms';
 import { Controller, useFormContext } from 'react-hook-form';
-import { BOARD_TYPES } from '@src/constants/resources';
 
-interface IFormSelect {
+interface IFormSingleSelect {
   name: string;
+  options: string[];
+  labelText: string;
+  labelId?: string;
+  selectLabelId?: string;
+  selectAriaLabel?: string;
 }
 
-export const FormSelect = ({ name }: IFormSelect) => {
+export const FormSingleSelect = ({
+  name,
+  options,
+  labelText,
+  labelId,
+  selectLabelId,
+  selectAriaLabel,
+}: IFormSingleSelect) => {
   const { control } = useFormContext();
   return (
     <Controller
@@ -16,9 +27,9 @@ export const FormSelect = ({ name }: IFormSelect) => {
       render={({ field }) => {
         return (
           <StyledTypeSelections variant='standard' required>
-            <InputLabel id='board-type-checkbox-label'>Board</InputLabel>
-            <Select {...field} labelId='board-type-checkbox-label'>
-              {Object.values(BOARD_TYPES).map((data) => (
+            <InputLabel id={labelId}>{labelText}</InputLabel>
+            <Select {...field} labelId={selectLabelId} aria-label={selectAriaLabel}>
+              {options.map((data) => (
                 <MenuItem key={data} value={data}>
                   <ListItemText primary={data} />
                 </MenuItem>

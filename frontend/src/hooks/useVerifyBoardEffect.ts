@@ -1,10 +1,11 @@
-import { TBoardFieldKeys, BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { AXIOS_REQUEST_ERROR_CODE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
+import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
 import { updateShouldGetBoardConfig } from '@src/context/Metrics/metricsSlice';
 import { IBoardConfigData } from '@src/containers/ConfigStep/Form/schema';
+import { TBoardFieldKeys } from '@src/containers/ConfigStep/Form/type';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
@@ -15,19 +16,24 @@ import { isAppError } from '@src/errors';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
+export enum FIELD_KEY {
+  TYPE = 0,
+  BOARD_ID = 1,
+  EMAIL = 2,
+  SITE = 3,
+  TOKEN = 4,
+}
+
 export interface IField {
   key: TBoardFieldKeys;
   col: number;
 }
 
 export interface useVerifyBoardStateInterface {
-  isVerifyTimeOut: boolean;
   verifyJira: () => Promise<void>;
   isLoading: boolean;
   fields: IField[];
   resetFields: () => void;
-  setIsShowAlert: (value: boolean) => void;
-  isShowAlert: boolean;
 }
 
 const ERROR_INFO = {
@@ -45,8 +51,6 @@ export const KEYS: { [key: string]: TBoardFieldKeys } = {
 
 export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isVerifyTimeOut, setIsVerifyTimeOut] = useState(false);
-  const [isShowAlert, setIsShowAlert] = useState(false);
   const dispatch = useAppDispatch();
   const { boardConfigOriginal } = useDefaultValues();
   const { reset, setError, getValues } = useFormContext();
@@ -82,7 +86,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
   const resetFields = () => {
     reset(boardConfigOriginal);
     persistReduxData(false, boardConfigOriginal);
-    setIsShowAlert(false);
   };
 
   const verifyJira = async () => {
@@ -95,16 +98,12 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         token: getJiraBoardToken(boardInfo.token, boardInfo.email),
       });
       if (res?.response) {
-        setIsShowAlert(false);
-        setIsVerifyTimeOut(false);
         dispatch(updateShouldGetBoardConfig(true));
         persistReduxData(true, { ...boardInfo, projectKey: res.response.projectKey });
       }
     } catch (e) {
       if (isAppError(e)) {
         const { description, code } = e as IAppError;
-        setIsShowAlert(false);
-        setIsVerifyTimeOut(false);
         if (code === HttpStatusCode.Unauthorized) {
           setError(KEYS.EMAIL, { message: BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed });
           setError(KEYS.TOKEN, { message: BOARD_CONFIG_ERROR_MESSAGE.token.verifyFailed });
@@ -113,8 +112,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setError(KEYS.BOARD_ID, { message: BOARD_CONFIG_ERROR_MESSAGE.boardId.verifyFailed });
         } else if (code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
-          setIsVerifyTimeOut(true);
-          setIsShowAlert(true);
+          setError(KEYS.TOKEN, { message: BOARD_CONFIG_ERROR_MESSAGE.token.timeout });
         } else {
           setError(KEYS.TOKEN, { message: UNKNOWN_ERROR_TITLE });
         }
@@ -128,8 +126,5 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     isLoading,
     fields: originalFields,
     resetFields,
-    isVerifyTimeOut,
-    isShowAlert,
-    setIsShowAlert,
   };
 };

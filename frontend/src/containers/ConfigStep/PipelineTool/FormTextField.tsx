@@ -1,16 +1,16 @@
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
-import { TBoardFieldKeys } from '@src/containers/ConfigStep/Form/type';
+import { IBoardConfigErrorMessage } from '@src/containers/ConfigStep/Form/type';
 import { StyledTextField } from '@src/components/Common/ConfigForms';
 import { Controller, useFormContext } from 'react-hook-form';
 import { KEYS } from '@src/hooks/useVerifyBoardEffect';
 
 interface IFormTextField {
-  name: Exclude<TBoardFieldKeys, 'type'>;
+  name: keyof IBoardConfigErrorMessage;
   col: number;
 }
 
 export const FormTextField = ({ name, col }: IFormTextField) => {
-  const { control, setError, reset } = useFormContext();
+  const { control, setError } = useFormContext();
   return (
     <Controller
       name={name}
@@ -29,16 +29,8 @@ export const FormTextField = ({ name, col }: IFormTextField) => {
                 setError(name, { message: BOARD_CONFIG_ERROR_MESSAGE[name].required });
               }
             }}
-            onChange={(e) => {
-              field.onChange(e.target.value);
-              reset(undefined, { keepValues: true, keepDirty: true, keepTouched: true });
-            }}
-            error={fieldState.invalid && fieldState.error?.message !== BOARD_CONFIG_ERROR_MESSAGE.token.timeout}
-            helperText={
-              fieldState.error?.message && fieldState.error?.message !== BOARD_CONFIG_ERROR_MESSAGE.token.timeout
-                ? fieldState.error?.message
-                : ''
-            }
+            error={fieldState.invalid}
+            helperText={fieldState.error?.message || ''}
             sx={{ gridColumn: `span ${col}` }}
           />
         );

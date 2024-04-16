@@ -1,45 +1,49 @@
 import { ConfigSectionContainer, StyledForm } from '@src/components/Common/ConfigForms';
+import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
+import { FIELD_KEY, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { FormTextField } from '@src/containers/ConfigStep/Board/FormTextField';
+import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
-import { FormSelect } from '@src/containers/ConfigStep/Board/FormSelect';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
-import { selectIsBoardVerified } from '@src/context/config/configSlice';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
-import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
-import { useAppSelector } from '@src/hooks/useAppDispatch';
-import { CONFIG_TITLE } from '@src/constants/resources';
+import { CONFIG_TITLE, BOARD_TYPES } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
-import { useFormState } from 'react-hook-form';
-import { FormEvent } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export const Board = () => {
-  const isVerified = useAppSelector(selectIsBoardVerified);
-  const { verifyJira, isLoading, fields, isShowAlert, setIsShowAlert, resetFields, isVerifyTimeOut } =
-    useVerifyBoardEffect();
-
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await verifyJira();
-  };
-
-  const { isValid, isSubmitted } = useFormState();
+  const {
+    clearErrors,
+    formState: { isValid, isSubmitSuccessful, errors },
+    handleSubmit,
+  } = useFormContext();
+  const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
+  const onSubmit = async () => await verifyJira();
+  const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
+  const isVerified = isValid && isSubmitSuccessful;
+  const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledAlterWrapper>
-        <TimeoutAlert
-          isShowAlert={isShowAlert}
-          isVerifyTimeOut={isVerifyTimeOut}
-          setIsShowAlert={setIsShowAlert}
-          moduleType={'Board'}
-        />
+        <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeTimeoutAlert} moduleType={'Board'} />
       </StyledAlterWrapper>
-      <StyledForm onSubmit={onSubmit} onReset={resetFields}>
+      <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         {fields.map(({ key, col }) =>
-          key === 'type' ? <FormSelect name={key} key={key} /> : <FormTextField name={key} key={key} col={col} />,
+          key === 'type' ? (
+            <FormSingleSelect
+              key={key}
+              name={key}
+              options={Object.values(BOARD_TYPES)}
+              labelText='Board'
+              labelId='board-type-checkbox-label'
+              selectLabelId='board-type-checkbox-label'
+            />
+          ) : (
+            <FormTextField name={key} key={key} col={col} />
+          ),
         )}
         <ConfigButtonGrop
           isVerifyTimeOut={isVerifyTimeOut}
