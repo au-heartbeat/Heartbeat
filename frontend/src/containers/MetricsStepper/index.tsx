@@ -175,13 +175,13 @@ const MetricsStepper = () => {
 
   /* istanbul ignore next */
   const handleSave = () => {
-    const { projectName, dateRange, calendarType, metrics, sortStatus } = config.basic;
+    const { projectName, dateRange, calendarType, metrics, sortType } = config.basic;
     const configData = {
       projectName,
       dateRange,
       calendarType,
       metrics,
-      sortStatus,
+      sortType,
 
       board: isShowBoard ? omit(config.board.config, ['projectKey']) : undefined,
       /* istanbul ignore next */

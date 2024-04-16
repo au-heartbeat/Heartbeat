@@ -30,7 +30,7 @@ export interface BasicConfigState {
     projectName: string;
     calendarType: string;
     dateRange: DateRange;
-    sortStatus: SortType;
+    sortType: SortType;
     metrics: string[];
   };
   board: IBoardState;
@@ -50,7 +50,7 @@ export const initialBasicConfigState: BasicConfigState = {
         endDate: null,
       },
     ],
-    sortStatus: SortType?.DEFAULT,
+    sortType: SortType?.DEFAULT,
     metrics: [],
   },
   board: initialBoardState,
@@ -103,8 +103,8 @@ export const configSlice = createSlice({
     updateDateRange: (state, action) => {
       state.basic.dateRange = action.payload;
     },
-    updateDateRangeSortStatus: (state, action) => {
-      state.basic.sortStatus = action.payload;
+    updateDateRangeSortType: (state, action) => {
+      state.basic.sortType = action.payload;
     },
     updateMetrics: (state, action) => {
       const { metrics, shouldBoardShow, shouldPipelineToolShow, shouldSourceControlShow } = getMetricsInfo(
@@ -213,7 +213,7 @@ export const {
   updateProjectName,
   updateCalendarType,
   updateDateRange,
-  updateDateRangeSortStatus,
+  updateDateRangeSortType,
   updateMetrics,
   updateBoard,
   updateBoardVerifyState,
@@ -232,7 +232,7 @@ export const {
 export const selectProjectName = (state: RootState) => state.config.basic.projectName;
 export const selectCalendarType = (state: RootState) => state.config.basic.calendarType;
 export const selectDateRange = (state: RootState) => state.config.basic.dateRange;
-export const selectDateRangeSortStatus = (state: RootState) => state.config.basic.sortStatus;
+export const selectDateRangeSortType = (state: RootState) => state.config.basic.sortType;
 export const selectMetrics = (state: RootState) => state.config.basic.metrics;
 export const isSelectBoardMetrics = (state: RootState) =>
   state.config.basic.metrics.some((metric) => BOARD_METRICS.includes(metric));

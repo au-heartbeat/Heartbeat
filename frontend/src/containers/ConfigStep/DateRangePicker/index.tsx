@@ -1,6 +1,6 @@
 import { DateRangePickerGroup, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { ISortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
-import { selectDateRange, selectDateRangeSortStatus } from '@src/context/config/configSlice';
+import { selectDateRange, selectDateRangeSortType } from '@src/context/config/configSlice';
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
@@ -10,24 +10,19 @@ import { useMemo, useState } from 'react';
 
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
-  const dateRangeGroupSortStatus = useAppSelector(selectDateRangeSortStatus);
+  const dateRangeGroupSortType = useAppSelector(selectDateRangeSortType);
   const [sortType, setSortType] = useState<SortType>(
-    dateRangeGroupSortStatus ? dateRangeGroupSortStatus : SortType.DEFAULT,
+    dateRangeGroupSortType ? dateRangeGroupSortType : SortType.DEFAULT,
   );
 
   const [hasError, setHasError] = useState(false);
   const isDateRangeValid = useMemo(() => {
     return dateRangeGroup.every((dateRange) => {
-      return (
-        dateRange.startDate !== null &&
-        dateRange.endDate !== null &&
-        dateRange.startDate !== 'Invalid Date' &&
-        dateRange.endDate !== 'Invalid Date'
-      );
+      return dateRange.startDate && dateRange.endDate;
     });
   }, [dateRangeGroup]);
 
-  const handleSortStatusChange = (type: SortType) => {
+  const handleSortTypeChange = (type: SortType) => {
     setSortType(type);
   };
 
@@ -46,7 +41,7 @@ export const DateRangePickerSection = () => {
           }}
         />
         {dateRangeGroup.length > 1 && isDateRangeValid && !hasError && (
-          <SortDateRange onChange={handleSortStatusChange} sortType={sortType} />
+          <SortDateRange onChange={handleSortTypeChange} sortType={sortType} />
         )}
       </TitleContainer>
       <DateRangePickerGroup sortType={sortType} onError={handleError} />

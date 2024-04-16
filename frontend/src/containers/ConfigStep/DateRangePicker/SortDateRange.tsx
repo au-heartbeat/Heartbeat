@@ -6,7 +6,7 @@ import {
   SortTextButton,
 } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
-import { updateDateRangeSortStatus } from '@src/context/config/configSlice';
+import { updateDateRangeSortType } from '@src/context/config/configSlice';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { SORT_DATE_RANGE_TEXT } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
@@ -20,26 +20,30 @@ type IProps = {
 
 export const SortDateRange = ({ onChange, sortType }: IProps) => {
   const dispatch = useAppDispatch();
-  const [sortOrder, setSortOrder] = useState(sortType);
+  const [dateRangeSortType, setDateRangeSortType] = useState(sortType);
 
   const handleChangeSort = () => {
     const totalSortTypes = Object.values(SortType).length;
-    const currentIndex = Object.values(SortType).indexOf(sortOrder);
+    const currentIndex = Object.values(SortType).indexOf(dateRangeSortType);
     const newIndex = (currentIndex + 1) % totalSortTypes;
     const newSortType = Object.values(SortType)[newIndex];
 
-    setSortOrder(newSortType);
-    dispatch(updateDateRangeSortStatus(newSortType));
+    setDateRangeSortType(newSortType);
+    dispatch(updateDateRangeSortType(newSortType));
     onChange?.(newSortType);
   };
 
   return (
-    <Box aria-label='Time range sort'>
+    <Box aria-label='Sorting date range'>
       <SortButtonContainer>
-        <SortTextButton disableRipple>{SORT_DATE_RANGE_TEXT[sortOrder]}</SortTextButton>
+        <SortTextButton disableRipple>{SORT_DATE_RANGE_TEXT[dateRangeSortType]}</SortTextButton>
         <SortButton aria-label='sort button' onClick={handleChangeSort}>
-          {sortOrder === SortType.ASCENDING ? <AscendingIcon fontSize='inherit' /> : <ArrowDropUp fontSize='inherit' />}
-          {sortOrder === SortType.DESCENDING ? (
+          {dateRangeSortType === SortType.ASCENDING ? (
+            <AscendingIcon fontSize='inherit' />
+          ) : (
+            <ArrowDropUp fontSize='inherit' />
+          )}
+          {dateRangeSortType === SortType.DESCENDING ? (
             <DescendingIcon fontSize='inherit' />
           ) : (
             <ArrowDropDown fontSize='inherit' />

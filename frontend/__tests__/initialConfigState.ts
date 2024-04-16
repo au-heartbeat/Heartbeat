@@ -14,7 +14,7 @@ const initialConfigState: BasicConfigState = {
         endDate: null,
       },
     ],
-    sortStatus: SortType.DEFAULT,
+    sortType: SortType.DEFAULT,
     metrics: [],
   },
   board: {

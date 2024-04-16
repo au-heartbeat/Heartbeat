@@ -55,18 +55,18 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
-  const [sortDateRangeGroup, setSortDateRangeGroup] = useState<ISortedDateRangeType[]>(
+  const [sortedDateRange, setSortedDateRange] = useState<ISortedDateRangeType[]>(
     dateRangeGroup.map(fillDateRangeGroup),
   );
 
   useEffect(() => {
-    const errors = sortDateRangeGroup.filter(({ startDateError, endDateError }) => startDateError || endDateError);
+    const errors = sortedDateRange.filter(({ startDateError, endDateError }) => startDateError || endDateError);
     onError?.(errors);
-  }, [onError, sortDateRangeGroup]);
+  }, [onError, sortedDateRange]);
 
   const handleError = (type: string, error: DateValidationError, index: number) => {
-    setSortDateRangeGroup(
-      sortDateRangeGroup.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })),
+    setSortedDateRange(
+      sortedDateRange.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })),
     );
   };
 
@@ -77,8 +77,8 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
   };
 
   const addRangeHandler = () => {
-    const result = [...sortDateRangeGroup, { startDate: null, endDate: null }];
-    setSortDateRangeGroup(result.map(fillDateRangeGroup));
+    const result = [...sortedDateRange, { startDate: null, endDate: null }];
+    setSortedDateRange(result.map(fillDateRangeGroup));
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
 
@@ -86,18 +86,18 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
     { startDate, endDate }: { startDate: string | null; endDate: string | null },
     index: number,
   ) => {
-    const result = sortDateRangeGroup.map((item) =>
+    const result = sortedDateRange.map((item) =>
       item.sortIndex === index ? { ...item, startDate, endDate, startDateError: null, endDateError: null } : item,
     );
-    setSortDateRangeGroup(result);
+    setSortedDateRange(result);
     dispatchUpdateConfig();
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
 
   const handleRemove = (index: number) => {
-    const result = [...sortDateRangeGroup];
+    const result = [...sortedDateRange];
     remove(result, ({ sortIndex }) => sortIndex === index);
-    setSortDateRangeGroup(result);
+    setSortedDateRange(result);
     dispatchUpdateConfig();
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
@@ -105,7 +105,7 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
   return (
     <DateRangePickerGroupContainer>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {sortBy(sortDateRangeGroup, get(sortFn, sortType)).map(({ startDate, endDate, sortIndex }, index) => (
+        {sortBy(sortedDateRange, get(sortFn, sortType)).map(({ startDate, endDate, sortIndex }, index) => (
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
@@ -114,7 +114,7 @@ export const DateRangePickerGroup = ({ sortType, onError }: IProps) => {
             onChange={handleChange}
             onError={handleError}
             onRemove={handleRemove}
-            allRange={sortDateRangeGroup}
+            allRange={sortedDateRange}
           />
         ))}
         <AddButton

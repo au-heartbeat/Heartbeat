@@ -1,6 +1,6 @@
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { SortDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortDateRange';
-import { updateDateRangeSortStatus } from '@src/context/config/configSlice';
+import { updateDateRangeSortType } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -18,13 +18,13 @@ const setup = () => {
 };
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
-  updateDateRangeSortStatus: jest.fn().mockReturnValue({ type: 'SHOULD_UPDATE_SORT_STATUS' }),
+  updateDateRangeSortType: jest.fn().mockReturnValue({ type: 'SHOULD_UPDATE_SORT_STATUS' }),
 }));
 
 describe('SortDateRange button behaviors', () => {
   it('should show sort time rang button', () => {
     setup();
-    const sortButtonContainer = screen.getByLabelText('Time range sort');
+    const sortButtonContainer = screen.getByLabelText('Sorting date range');
     expect(sortButtonContainer).toBeInTheDocument();
 
     const sortTextButton = screen.getByText('Default sort');
@@ -36,7 +36,7 @@ describe('SortDateRange button behaviors', () => {
 
   it('should change sort order given SortButton is clicked', async () => {
     setup();
-    const sortButtonContainer = screen.getByLabelText('Time range sort');
+    const sortButtonContainer = screen.getByLabelText('Sorting date range');
     expect(sortButtonContainer).toBeInTheDocument();
 
     const sortTextButton = screen.getByText('Default sort');
@@ -46,8 +46,8 @@ describe('SortDateRange button behaviors', () => {
     const sortButton = screen.getByLabelText('sort button');
     await userEvent.click(sortButton);
 
-    expect(updateDateRangeSortStatus).toHaveBeenCalledTimes(1);
-    expect(updateDateRangeSortStatus).toHaveBeenCalledWith(SortType.DESCENDING);
+    expect(updateDateRangeSortType).toHaveBeenCalledTimes(1);
+    expect(updateDateRangeSortType).toHaveBeenCalledWith(SortType.DESCENDING);
   });
 
   it('should render right icon with sort status', async () => {

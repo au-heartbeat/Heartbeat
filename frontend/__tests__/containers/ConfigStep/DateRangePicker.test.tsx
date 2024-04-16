@@ -286,7 +286,7 @@ describe('DateRangePickerSection', () => {
     expect(sortButtonContainer).toBeNull();
   });
 
-  it('should update sort status when handleSortStatusChange is called', async () => {
+  it('should update sort status when handleSortTypeChange is called', async () => {
     const rangeDate1 = ['03/15/2024', '03/25/2024'];
     const rangeDate2 = ['03/08/2024', '03/11/2024'];
 

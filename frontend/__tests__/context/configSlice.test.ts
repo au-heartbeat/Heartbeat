@@ -3,7 +3,7 @@ import configReducer, {
   selectSteps,
   updateCalendarType,
   updateDateRange,
-  updateDateRangeSortStatus,
+  updateDateRangeSortType,
   updateMetrics,
   updateProjectCreatedState,
   updateProjectName,
@@ -52,11 +52,11 @@ describe('config reducer', () => {
     expect(config.dateRange[0].endDate).toEqual('');
   });
 
-  it('should update date range sort status with given sort status', () => {
-    const newSortStatus = SortType.DEFAULT;
-    const config = configReducer(initialConfigState, updateDateRangeSortStatus(newSortStatus)).basic;
+  it('should update date range sort type with given sort type', () => {
+    const newSortType = SortType.DEFAULT;
+    const config = configReducer(initialConfigState, updateDateRangeSortType(newSortType)).basic;
 
-    expect(config.sortStatus).toEqual(newSortStatus);
+    expect(config.sortType).toEqual(newSortType);
   });
 
   it('should isProjectCreated is false when import file', () => {
