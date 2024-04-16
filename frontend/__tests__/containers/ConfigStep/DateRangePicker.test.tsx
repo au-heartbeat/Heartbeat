@@ -242,7 +242,7 @@ describe('DateRangePickerSection', () => {
       const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
       await userEvent.type(startDate1Input, rangeDate1[0]);
       await userEvent.type(endDate1Input, rangeDate1[1]);
-      const sortButtonContainer = screen.queryByLabelText('Time range sort');
+      const sortButtonContainer = screen.queryByLabelText('Sorting date range');
       expect(sortButtonContainer).toBeNull();
     });
   });
@@ -262,7 +262,7 @@ describe('DateRangePickerSection', () => {
     await userEvent.type(endDate1Input, rangeDate1[1]);
     await userEvent.type(startDate2Input, rangeDate2[0]);
     await userEvent.type(endDate12nput, rangeDate2[1]);
-    const sortButton = screen.getByLabelText('Time range sort');
+    const sortButton = screen.getByLabelText('Sorting date range');
     expect(sortButton).toBeInTheDocument();
   });
 
@@ -282,7 +282,7 @@ describe('DateRangePickerSection', () => {
     await userEvent.type(endDate1Input, rangeDate1[1]);
     await userEvent.type(startDate2Input, rangeDate2[0]);
     await userEvent.type(endDate12nput, rangeDate2[1]);
-    const sortButtonContainer = screen.queryByLabelText('Time range sort');
+    const sortButtonContainer = screen.queryByLabelText('Sorting date range');
     expect(sortButtonContainer).toBeNull();
   });
 
