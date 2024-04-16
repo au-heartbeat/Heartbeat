@@ -8,6 +8,7 @@ import {
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { EmojiWrap, StyledAvatar, StyledTypography } from '@src/constants/emojis/style';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
+import { METRICS_TITLE, REPORT_SUFFIX_UNITS } from '@src/constants/resources';
 import { ReportSelectionTitle } from '@src/containers/MetricsStep/style';
 import { Table, TableBody, TableHead, TableRow } from '@mui/material';
 import React, { Fragment } from 'react';
@@ -65,7 +66,7 @@ export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) =
           <TableHead>
             <TableRow id={title}>
               <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell>Value</StyledTableCell>
+              <StyledTableCell>{`Value${getTitleUnit(title)}`}</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody key={title}>{renderRows()}</TableBody>
@@ -73,6 +74,17 @@ export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) =
       </Container>
     </>
   );
+};
+
+const getTitleUnit = (title: string) => {
+  switch (title) {
+    case METRICS_TITLE.DEV_MEAN_TIME_TO_RECOVERY:
+      return REPORT_SUFFIX_UNITS.HOURS;
+    case METRICS_TITLE.DEPLOYMENT_FREQUENCY:
+      return REPORT_SUFFIX_UNITS.DEPLOYMENTS_DAY;
+    default:
+      return '';
+  }
 };
 
 export default ReportForTwoColumns;
