@@ -7,8 +7,8 @@ import {
 } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { updateDateRangeSortType } from '@src/context/config/configSlice';
+import { SORTING_DATE_RANGE_TEXT } from '@src/constants/resources';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { SORT_DATE_RANGE_TEXT } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { Box } from '@mui/material';
 import { useState } from 'react';
@@ -36,7 +36,7 @@ export const SortingDateRange = ({ onChange, sortType }: Props) => {
   return (
     <Box aria-label='Sorting date range'>
       <SortingButtoningContainer>
-        <SortingTextButton disableRipple>{SORT_DATE_RANGE_TEXT[dateRangeSortType]}</SortingTextButton>
+        <SortingTextButton disableRipple>{SORTING_DATE_RANGE_TEXT[dateRangeSortType]}</SortingTextButton>
         <SortingButton aria-label='sort button' onClick={handleChangeSort}>
           {dateRangeSortType === SortType.ASCENDING ? (
             <AscendingIcon fontSize='inherit' />
