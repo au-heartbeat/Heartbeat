@@ -10,20 +10,20 @@ public interface IdUtil {
 
 	String DATA_COMPLETED_PREFIX = "dataCompleted-";
 
-	static String getBoardReportId(String timeStamp) {
-		return BOARD_REPORT_PREFIX + timeStamp;
+	static String getBoardReportFileId(String timeRangeTimeStamp) {
+		return BOARD_REPORT_PREFIX + timeRangeTimeStamp;
 	}
 
-	static String getPipelineReportId(String timeStamp) {
-		return PIPELINE_REPORT_PREFIX + timeStamp;
+	static String getPipelineReportFileId(String timeRangeTimeStamp) {
+		return PIPELINE_REPORT_PREFIX + timeRangeTimeStamp;
 	}
 
-	static String getSourceControlReportId(String timeStamp) {
-		return SOURCE_CONTROL_PREFIX + timeStamp;
+	static String getSourceControlReportFileId(String timeRangeTimeStamp) {
+		return SOURCE_CONTROL_PREFIX + timeRangeTimeStamp;
 	}
 
-	static String getDataCompletedPrefix(String timeStamp) {
-		return DATA_COMPLETED_PREFIX + timeStamp;
+	static String getDataCompletedPrefix(String timeRangeTimeStamp) {
+		return DATA_COMPLETED_PREFIX + timeRangeTimeStamp;
 	}
 
 }

@@ -157,14 +157,14 @@ public class CSVFileGenerator {
 				pipelineFinishTime, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
-	public InputStreamResource getDataFromCSV(ReportType reportDataType, long csvTimeStamp) {
+	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeTimeStamp) {
 		return switch (reportDataType) {
 			case METRIC -> readStringFromCsvFile(
-					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
+					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
 			case PIPELINE -> readStringFromCsvFile(
-					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
+					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
 			default -> readStringFromCsvFile(
-					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
+					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
 		};
 	}
 
@@ -182,10 +182,10 @@ public class CSVFileGenerator {
 		writeDataToCSV(csvTimeStamp, mergedArrays);
 	}
 
-	public void writeDataToCSV(String csvTimeStamp, String[][] mergedArrays) {
+	public void writeDataToCSV(String csvTimeRangeTimeStamp, String[][] mergedArrays) {
 		createCsvDirToConvertData();
 
-		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
+		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeRangeTimeStamp + CSV_EXTENSION;
 		if (!fileName.contains("..") && fileName.startsWith(FILE_LOCAL_PATH)) {
 			try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
 				writer.writeAll(Arrays.asList(mergedArrays));

@@ -31,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -102,11 +102,13 @@ class ReporterControllerTest {
 		long csvTimeStamp = TimeUtils.mockTimeStamp(2023, 5, 25, 18, 21, 20);
 		String expectedResponse = "csv data";
 
-		when(reporterService.exportCsv(ReportType.PIPELINE, csvTimeStamp))
+		when(reporterService.exportCsv(ReportType.PIPELINE, String.valueOf(csvTimeStamp), "20230409", "20230509"))
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream(expectedResponse.getBytes())));
 
 		MockHttpServletResponse response = mockMvc
-			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportType.PIPELINE.getValue(), csvTimeStamp))
+			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportType.PIPELINE.getValue(), csvTimeStamp)
+				.param("startDate", "20230409")
+				.param("endDate", "20230509"))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
@@ -120,6 +122,7 @@ class ReporterControllerTest {
 		GenerateReportRequest request = mapper.readValue(new File(REQUEST_FILE_PATH), GenerateReportRequest.class);
 
 		String currentTimeStamp = "1685010080107";
+		String expectTimeRangeTimeStamp = "20220829-20220909-1685010080107";
 		request.setCsvTimeStamp(currentTimeStamp);
 
 		doAnswer(invocation -> null).when(reporterService).generateReport(request);
@@ -128,7 +131,7 @@ class ReporterControllerTest {
 			.perform(post("/reports").contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(request)))
 			.andExpect(status().isAccepted())
-			.andExpect(jsonPath("$.callbackUrl").value("/reports/" + currentTimeStamp))
+			.andExpect(jsonPath("$.callbackUrl").value("/reports/" + expectTimeRangeTimeStamp))
 			.andExpect(jsonPath("$.interval").value("10"))
 			.andReturn()
 			.getResponse();

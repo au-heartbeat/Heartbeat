@@ -37,11 +37,13 @@ public class ReportService {
 
 	private final ReportGenerator reportGenerator;
 
-	public InputStreamResource exportCsv(ReportType reportDataType, long csvTimestamp) {
-		if (isExpiredTimeStamp(csvTimestamp)) {
+	public InputStreamResource exportCsv(ReportType reportDataType, String csvTimestamp, String startDate,
+			String endDate) {
+		String timeRangeTimeStamp = startDate + "-" + endDate + "-" + csvTimestamp;
+		if (isExpiredTimeStamp(Long.parseLong(csvTimestamp))) {
 			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
 		}
-		return csvFileGenerator.getDataFromCSV(reportDataType, csvTimestamp);
+		return csvFileGenerator.getDataFromCSV(reportDataType, timeRangeTimeStamp);
 	}
 
 	private boolean isExpiredTimeStamp(long timeStamp) {
@@ -50,8 +52,8 @@ public class ReportService {
 
 	public void generateReport(GenerateReportRequest request) {
 		List<MetricType> metricTypes = request.getMetricTypes();
-		String timeStamp = request.getCsvTimeStamp();
-		initializeMetricsDataCompletedInHandler(metricTypes, timeStamp);
+		String timeRangeTimeStamp = request.getTimeRangeTimeStamp();
+		initializeMetricsDataCompletedInHandler(metricTypes, timeRangeTimeStamp);
 		Map<MetricType, Consumer<GenerateReportRequest>> reportGeneratorMap = reportGenerator
 			.getReportGenerator(generateReporterService);
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
@@ -66,11 +68,13 @@ public class ReportService {
 				thread.join();
 			}
 
-			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp);
+			ReportResponse reportResponse = generateReporterService
+				.getComposedReportResponse(request.getTimeRangeTimeStamp());
 			if (isNotGenerateMetricError(reportResponse.getReportMetricsError())) {
-				generateReporterService.generateCSVForMetric(reportResponse, timeStamp);
+				generateReporterService.generateCSVForMetric(reportResponse, request.getTimeRangeTimeStamp());
 			}
-			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(timeStamp));
+			asyncMetricsDataHandler
+				.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()));
 		});
 	}
 
@@ -80,9 +84,9 @@ public class ReportService {
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
 	}
 
-	private void initializeMetricsDataCompletedInHandler(List<MetricType> metricTypes, String timeStamp) {
+	private void initializeMetricsDataCompletedInHandler(List<MetricType> metricTypes, String timeRangeTimeStamp) {
 		MetricsDataCompleted previousMetricsDataCompleted = asyncMetricsDataHandler
-			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp));
+			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeTimeStamp));
 		Boolean initializeBoardMetricsCompleted = null;
 		Boolean initializeDoraMetricsCompleted = null;
 		if (!Objects.isNull(previousMetricsDataCompleted)) {
@@ -90,7 +94,7 @@ public class ReportService {
 			initializeDoraMetricsCompleted = previousMetricsDataCompleted.doraMetricsCompleted();
 		}
 		asyncMetricsDataHandler
-			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeStamp), MetricsDataCompleted.builder()
+			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeTimeStamp), MetricsDataCompleted.builder()
 				.boardMetricsCompleted(metricTypes.contains(BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
 				.doraMetricsCompleted(metricTypes.contains(DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
 				.overallMetricCompleted(Boolean.FALSE)

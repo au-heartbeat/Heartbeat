@@ -6,6 +6,7 @@ import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,12 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,15 +38,15 @@ public class ReportController {
 	@Value("${callback.interval}")
 	private Integer interval;
 
-	@GetMapping("/{reportType}/{filename}")
+	@GetMapping("/{reportType}/{timeStamp}")
 	public InputStreamResource exportCSV(
 			@Schema(type = "string", allowableValues = { "metric", "pipeline", "board" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable() ReportType reportType,
-			@PathVariable String filename) {
-		log.info("Start to export CSV file_reportType: {}, filename: {}", reportType.getValue(), filename);
-		InputStreamResource result = reportService.exportCsv(reportType, Long.parseLong(filename));
-		log.info("Successfully get CSV file_reportType: {}, filename: {}, _result: {}", reportType.getValue(), filename,
-				result);
+			@PathVariable String timeStamp, @Parameter String startDate, @Parameter String endDate) {
+		log.info("Start to export CSV file_reportType: {}, filename: {}", reportType.getValue(), timeStamp);
+		InputStreamResource result = reportService.exportCsv(reportType, timeStamp, startDate, endDate);
+		log.info("Successfully get CSV file_reportType: {}, filename: {}, _result: {}", reportType.getValue(),
+				timeStamp, result);
 		return result;
 	}
 
@@ -60,7 +61,7 @@ public class ReportController {
 	public ResponseEntity<CallbackResponse> generateReport(@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
 		reportService.generateReport(request);
-		String callbackUrl = "/reports/" + request.getCsvTimeStamp();
+		String callbackUrl = "/reports/" + request.getTimeRangeTimeStamp();
 		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());

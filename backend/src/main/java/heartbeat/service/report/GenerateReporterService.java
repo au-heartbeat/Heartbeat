@@ -85,7 +85,7 @@ public class GenerateReporterService {
 	private final AsyncExceptionHandler asyncExceptionHandler;
 
 	public void generateBoardReport(GenerateReportRequest request) {
-		String boardReportId = request.getBoardReportId();
+		String boardReportId = request.getBoardReportFileId();
 		removePreviousAsyncException(boardReportId);
 		log.info(
 				"Start to generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
@@ -102,14 +102,14 @@ public class GenerateReporterService {
 			asyncExceptionHandler.put(boardReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD, false);
+						IdUtil.getDataCompletedPrefix(request.getBoardReportFileId()), BOARD, false);
 
 		}
 	}
 
 	public void generateDoraReport(GenerateReportRequest request) {
-		removePreviousAsyncException(request.getPipelineReportId());
-		removePreviousAsyncException(request.getSourceControlReportId());
+		removePreviousAsyncException(request.getPipelineReportFileId());
+		removePreviousAsyncException(request.getSourceControlReportFileId());
 		FetchedData fetchedData = new FetchedData();
 		if (CollectionUtils.isNotEmpty(request.getPipelineMetrics())) {
 			GenerateReportRequest pipelineRequest = request.toPipelineRequest();
@@ -121,14 +121,14 @@ public class GenerateReporterService {
 		}
 
 		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler
-			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()));
+			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()));
 		if (Boolean.FALSE.equals(previousMetricsCompleted.doraMetricsCompleted())) {
 			CompletableFuture.runAsync(() -> generateCSVForPipeline(request, fetchedData.getBuildKiteData()));
 		}
 	}
 
 	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
-		String pipelineReportId = request.getPipelineReportId();
+		String pipelineReportId = request.getPipelineReportFileId();
 		log.info(
 				"Start to generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
 				request.getPipelineMetrics(), request.getConsiderHoliday(), request.getStartTime(),
@@ -145,12 +145,12 @@ public class GenerateReporterService {
 			asyncExceptionHandler.put(pipelineReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA, false);
+						IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), DORA, false);
 		}
 	}
 
 	private void generateSourceControlReport(GenerateReportRequest request, FetchedData fetchedData) {
-		String sourceControlReportId = request.getSourceControlReportId();
+		String sourceControlReportId = request.getSourceControlReportFileId();
 		log.info(
 				"Start to generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
 				request.getSourceControlMetrics(), request.getConsiderHoliday(), request.getStartTime(),
@@ -167,7 +167,7 @@ public class GenerateReporterService {
 			asyncExceptionHandler.put(sourceControlReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA, false);
+						IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), DORA, false);
 		}
 	}
 
@@ -225,8 +225,8 @@ public class GenerateReporterService {
 	private void generateCsvForBoard(GenerateReportRequest request, FetchedData fetchedData) {
 		kanbanCsvService.generateCsvInfo(request, fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
 				fetchedData.getCardCollectionInfo().getNonDoneCardCollection());
-		asyncMetricsDataHandler
-			.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), BOARD, true);
+		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+				IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), BOARD, true);
 	}
 
 	private void assembleVelocity(FetchedData fetchedData, ReportResponse reportResponse) {
@@ -300,13 +300,13 @@ public class GenerateReporterService {
 		List<PipelineCSVInfo> pipelineData = pipelineService.generateCSVForPipeline(request.getStartTime(),
 				request.getEndTime(), buildKiteData, request.getBuildKiteSetting().getDeploymentEnvList());
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineData, request.getCsvTimeStamp());
-		asyncMetricsDataHandler
-			.updateMetricsDataCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getCsvTimeStamp()), DORA, true);
+		csvFileGenerator.convertPipelineDataToCSV(pipelineData, request.getTimeRangeTimeStamp());
+		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
+				IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), DORA, true);
 	}
 
-	public void generateCSVForMetric(ReportResponse reportContent, String csvTimeStamp) {
-		csvFileGenerator.convertMetricDataToCSV(reportContent, csvTimeStamp);
+	public void generateCSVForMetric(ReportResponse reportContent, String csvTimeRangeTimeStamp) {
+		csvFileGenerator.convertMetricDataToCSV(reportContent, csvTimeRangeTimeStamp);
 	}
 
 	private void saveReporterInHandler(ReportResponse reportContent, String reportId) {
@@ -365,30 +365,33 @@ public class GenerateReporterService {
 		return asyncReportRequestHandler.getReport(reportId);
 	}
 
-	public MetricsDataCompleted checkReportReadyStatus(String reportTimeStamp) {
-		if (validateExpire(System.currentTimeMillis(), Long.parseLong(reportTimeStamp))) {
+	public MetricsDataCompleted checkReportReadyStatus(String timeRangeTimeStamp) {
+		String timeStamp = timeRangeTimeStamp.substring(timeRangeTimeStamp.lastIndexOf("-") + 1);
+		if (validateExpire(System.currentTimeMillis(), Long.parseLong(timeStamp))) {
 			throw new GenerateReportException("Failed to get report due to report time expires");
 		}
-		return asyncMetricsDataHandler.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(reportTimeStamp));
+		return asyncMetricsDataHandler.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeTimeStamp));
 	}
 
-	public ReportResponse getComposedReportResponse(String reportId) {
-		MetricsDataCompleted reportReadyStatus = checkReportReadyStatus(reportId);
+	public ReportResponse getComposedReportResponse(String timeRangeTimeStamp) {
+		MetricsDataCompleted reportReadyStatus = checkReportReadyStatus(timeRangeTimeStamp);
 
-		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportId(reportId));
-		ReportResponse pipleineReportResponse = getReportFromHandler(IdUtil.getPipelineReportId(reportId));
-		ReportResponse sourceControlReportResponse = getReportFromHandler(IdUtil.getSourceControlReportId(reportId));
+		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportFileId(timeRangeTimeStamp));
+		ReportResponse pipelineReportResponse = getReportFromHandler(
+				IdUtil.getPipelineReportFileId(timeRangeTimeStamp));
+		ReportResponse sourceControlReportResponse = getReportFromHandler(
+				IdUtil.getSourceControlReportFileId(timeRangeTimeStamp));
 
-		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(reportId);
+		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(timeRangeTimeStamp);
 		return ReportResponse.builder()
 			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
 			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
 			.cycleTime(getValueOrNull(boardReportResponse, ReportResponse::getCycleTime))
 			.rework(getValueOrNull(boardReportResponse, ReportResponse::getRework))
 			.exportValidityTime(EXPORT_CSV_VALIDITY_TIME)
-			.deploymentFrequency(getValueOrNull(pipleineReportResponse, ReportResponse::getDeploymentFrequency))
-			.devChangeFailureRate(getValueOrNull(pipleineReportResponse, ReportResponse::getDevChangeFailureRate))
-			.devMeanTimeToRecovery(getValueOrNull(pipleineReportResponse, ReportResponse::getDevMeanTimeToRecovery))
+			.deploymentFrequency(getValueOrNull(pipelineReportResponse, ReportResponse::getDeploymentFrequency))
+			.devChangeFailureRate(getValueOrNull(pipelineReportResponse, ReportResponse::getDevChangeFailureRate))
+			.devMeanTimeToRecovery(getValueOrNull(pipelineReportResponse, ReportResponse::getDevMeanTimeToRecovery))
 			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
 			.boardMetricsCompleted(reportReadyStatus.boardMetricsCompleted())
 			.doraMetricsCompleted(reportReadyStatus.doraMetricsCompleted())
@@ -400,9 +403,10 @@ public class GenerateReporterService {
 	}
 
 	private ReportMetricsError getReportErrorAndHandleAsyncException(String reportId) {
-		AsyncExceptionDTO boardException = asyncExceptionHandler.get(IdUtil.getBoardReportId(reportId));
-		AsyncExceptionDTO pipelineException = asyncExceptionHandler.get(IdUtil.getPipelineReportId(reportId));
-		AsyncExceptionDTO sourceControlException = asyncExceptionHandler.get(IdUtil.getSourceControlReportId(reportId));
+		AsyncExceptionDTO boardException = asyncExceptionHandler.get(IdUtil.getBoardReportFileId(reportId));
+		AsyncExceptionDTO pipelineException = asyncExceptionHandler.get(IdUtil.getPipelineReportFileId(reportId));
+		AsyncExceptionDTO sourceControlException = asyncExceptionHandler
+			.get(IdUtil.getSourceControlReportFileId(reportId));
 		return ReportMetricsError.builder()
 			.boardMetricsError(handleAsyncExceptionAndGetErrorInfo(boardException))
 			.pipelineMetricsError(handleAsyncExceptionAndGetErrorInfo(pipelineException))
