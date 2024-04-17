@@ -364,7 +364,6 @@ export const metricsSlice = createSlice({
       } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
-      // state.pipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
       state.importedData.importedCycleTime.importedCycleTimeSettings =
         cycleTime?.jiraColumns || state.importedData.importedCycleTime.importedCycleTimeSettings;
       state.importedData.importedCycleTime.importedTreatFlagCardAsBlock =
