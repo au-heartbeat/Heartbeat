@@ -22,9 +22,15 @@ import {
   StyledErrorMessage,
   StyledRetryButton,
 } from '@src/containers/MetricsStep/style';
-import { AXIOS_REQUEST_ERROR_CODE, CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
+import {
+  AXIOS_REQUEST_ERROR_CODE,
+  CYCLE_TIME_SETTINGS_TYPES,
+  DONE,
+  MESSAGE,
+  REQUIRED_DATA,
+} from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
+import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
@@ -78,8 +84,15 @@ const MetricsStep = () => {
         if (res) {
           const errorRequests = res.filter((data) => !data.data);
           if (errorRequests.length == res.length) setAllFailed(true);
-          else if (errorRequests.length > 0) setPartialFailed(true);
-          else {
+          else if (errorRequests.length > 0) {
+            setPartialFailed(true);
+            dispatch(
+              addNotification({
+                type: 'warning',
+                message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED,
+              }),
+            );
+          } else {
             setAllFailed(false);
             setPartialFailed(false);
           }

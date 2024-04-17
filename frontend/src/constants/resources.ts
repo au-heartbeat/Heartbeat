@@ -282,6 +282,8 @@ export const MESSAGE = {
     'Failed to get Classification data, please go back to previous page and try again!',
   FAILED_TO_EXPORT_CSV: 'Failed to export csv.',
   FAILED_TO_REQUEST: 'Failed to request!',
+  BOARD_INFO_REQUEST_PARTIAL_FAILED:
+    'Failed to get partial Board configuration, please click "Retry", or click "Next" button to go to Report page.',
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN = [
