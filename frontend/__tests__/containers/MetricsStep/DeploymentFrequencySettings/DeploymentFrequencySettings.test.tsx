@@ -14,6 +14,7 @@ import { Provider } from 'react-redux';
 import { setupStore } from '@test/utils/setupStoreUtil';
 
 let mockSelectShouldGetPipelineConfig = true;
+let mockSelectPipelineNames: string[] = [];
 
 jest.mock('@src/hooks', () => ({
   ...jest.requireActual('@src/hooks'),
@@ -39,7 +40,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
   selectPipelineOrganizations: jest.fn().mockReturnValue(['mockOrgName', 'mockOrgName2']),
-  selectPipelineNames: jest.fn().mockReturnValue(['Heartbeat']),
+  selectPipelineNames: jest.fn().mockImplementation(() => mockSelectPipelineNames),
   selectSteps: jest.fn().mockReturnValue(['']),
   selectBranches: jest.fn().mockReturnValue(['']),
   selectPipelineCrews: jest.fn().mockReturnValue(['']),
@@ -99,10 +100,12 @@ describe('DeploymentFrequencySettings', () => {
   });
   beforeEach(() => {
     mockSelectShouldGetPipelineConfig = true;
+    mockSelectPipelineNames = [];
     mockGetPipelineToolInfoSpy = mockGetPipelineToolInfoOkResponse;
   });
 
   it('should show crew settings when select pipelineName', async () => {
+    mockSelectPipelineNames = ['Heartbeat'];
     const { getAllByRole, getByRole, debug } = await setup();
     await act(async () => {
       await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
