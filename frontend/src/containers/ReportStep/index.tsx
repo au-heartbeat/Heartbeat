@@ -36,17 +36,21 @@ import {
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
+import { addNotification, closeAllNotifications, Notification } from '@src/context/notification/NotificationSlice';
+import { ListChartButtonContainer, StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
-import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import React, { useEffect, useMemo, useState } from 'react';
+import { ChartListButton } from '@src/components/Common/Buttons';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
@@ -462,6 +466,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <>
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
+          <ListChartButtonContainer>
+            <ChartListButton startIcon={<FormatListBulletedIcon />}>List</ChartListButton>
+            <ChartListButton startIcon={<BarChartIcon />}>Chart</ChartListButton>
+          </ListChartButtonContainer>
           <DateRangeViewer
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}

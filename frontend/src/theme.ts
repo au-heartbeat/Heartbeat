@@ -22,6 +22,7 @@ declare module '@mui/material/styles' {
         secondary: string;
       };
       button: {
+        border: string;
         disabled: {
           backgroundColor: string;
           color: string;
@@ -109,6 +110,7 @@ export const theme = createTheme({
       secondary: 'sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Arial',
     },
     button: {
+      border: '#D9D9D9',
       disabled: {
         backgroundColor: '#E0E0E0',
         color: '#929292',

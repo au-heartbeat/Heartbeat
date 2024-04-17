@@ -22,3 +22,8 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
   marginBottom: props.isSummaryPage ? '-3.5rem' : '-2rem',
   zIndex: Z_INDEX.DROPDOWN,
 }));
+
+export const ListChartButtonContainer = styled('div')({
+  display: 'flex',
+  marginRight: '1rem',
+});
