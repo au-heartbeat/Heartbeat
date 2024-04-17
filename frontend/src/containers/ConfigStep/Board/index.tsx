@@ -12,15 +12,17 @@ import { Loading } from '@src/components/Loading';
 import { useFormContext } from 'react-hook-form';
 
 export const Board = () => {
+  const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
   const {
     clearErrors,
-    formState: { isValid, isSubmitSuccessful, errors },
+    formState: { isSubmitSuccessful, errors },
     handleSubmit,
   } = useFormContext();
-  const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
-  const onSubmit = async () => await verifyJira();
+  const isValid = Object.entries(errors).length === 0;
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
+
+  const onSubmit = async () => await verifyJira();
   const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
 
   return (

@@ -1,158 +1,86 @@
-import {
-  isSourceControlVerified,
-  selectSourceControl,
-  updateSourceControl,
-  updateSourceControlVerifyState,
-} from '@src/context/config/configSlice';
-import {
-  ConfigSectionContainer,
-  StyledForm,
-  StyledTextField,
-  StyledTypeSelections,
-} from '@src/components/Common/ConfigForms';
-import { initDeploymentFrequencySettings, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
-import { useVerifySourceControlTokenEffect } from '@src/hooks/useVerifySourceControlTokenEffect';
-import { CONFIG_TITLE, SOURCE_CONTROL_TYPES, TOKEN_HELPER_TEXT } from '@src/constants/resources';
+import { FIELD_KEY, useVerifySourceControlTokenEffect } from '@src/hooks/useVerifySourceControlTokenEffect';
+import { ConfigSectionContainer, StyledForm, StyledTextField } from '@src/components/Common/ConfigForms';
+import { SOURCE_CONTROL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
+import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
+import { CONFIG_TITLE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
-import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
-import { DEFAULT_HELPER_TEXT } from '@src/constants/commons';
-import { findCaseInsensitiveType } from '@src/utils/util';
-import { FormEvent, useMemo, useState } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 import { Loading } from '@src/components/Loading';
-import { REGEX } from '@src/constants/regex';
-
-enum FIELD_KEY {
-  TYPE = 0,
-  TOKEN = 1,
-}
-
-const getErrorMessage = (value: string) => {
-  if (!value) {
-    return TOKEN_HELPER_TEXT.RequiredTokenText;
-  }
-  if (!REGEX.GITHUB_TOKEN.test(value.trim())) {
-    return TOKEN_HELPER_TEXT.InvalidTokenText;
-  }
-  return DEFAULT_HELPER_TEXT;
-};
 
 export const SourceControl = () => {
-  const dispatch = useAppDispatch();
-  const sourceControlFields = useAppSelector(selectSourceControl);
-  const isVerified = useAppSelector(isSourceControlVerified);
-  const { verifyToken, isLoading, verifiedError, clearVerifiedError, isVerifyTimeOut, isShowAlert, setIsShowAlert } =
-    useVerifySourceControlTokenEffect();
-  const type = findCaseInsensitiveType(Object.values(SOURCE_CONTROL_TYPES), sourceControlFields.type);
-  const [fields, setFields] = useState([
-    {
-      key: 'SourceControl',
-      value: type,
-      validatedError: '',
-    },
-    {
-      key: 'Token',
-      value: sourceControlFields.token,
-      validatedError: sourceControlFields.token ? getErrorMessage(sourceControlFields.token) : '',
-    },
-  ]);
+  const { fields, verifyToken, isLoading, resetFields } = useVerifySourceControlTokenEffect();
+  const {
+    control,
+    setError,
+    clearErrors,
+    formState: { isSubmitSuccessful, errors },
+    handleSubmit,
+    reset,
+  } = useFormContext();
+  const isValid = Object.entries(errors).length === 0;
+  const isVerifyTimeOut = errors.token?.message === SOURCE_CONTROL_ERROR_MESSAGE.token.timeout;
+  const isVerified = isValid && isSubmitSuccessful;
 
-  const handleUpdate = (fields: { key: string; value: string; validatedError: string }[]) => {
-    clearVerifiedError();
-    setFields(fields);
-    dispatch(updateSourceControlVerifyState(false));
-    dispatch(
-      updateSourceControl({
-        type: fields[FIELD_KEY.TYPE].value,
-        token: fields[FIELD_KEY.TOKEN].value,
-      }),
-    );
-    dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(initDeploymentFrequencySettings());
-  };
-
-  const getNewFields = (value: string) =>
-    fields.map((field, index) =>
-      index === FIELD_KEY.TOKEN
-        ? {
-            key: field.key,
-            value: value.trim(),
-            validatedError: getErrorMessage(value.trim()),
-          }
-        : field,
-    );
-
-  const onInputChange = (value: string) => handleUpdate(getNewFields(value));
-
-  const onInputFocus = (value: string) => setFields(getNewFields(value));
-
-  const onReset = () => {
-    const newFields = fields.map(({ key }, index) => ({
-      key,
-      value: index === FIELD_KEY.TOKEN ? '' : SOURCE_CONTROL_TYPES.GITHUB,
-      validatedError: '',
-    }));
-    handleUpdate(newFields);
-    setIsShowAlert(false);
-  };
-
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await verifyToken({
-      type: fields[FIELD_KEY.TYPE].value as SOURCE_CONTROL_TYPES,
-      token: fields[FIELD_KEY.TOKEN].value,
-    });
-  };
-
-  const isDisableVerifyButton = useMemo(
-    () => isLoading || fields.some((field) => !field.value || field.validatedError) || !!verifiedError,
-    [verifiedError, fields, isLoading],
-  );
-
+  const onSubmit = async () => await verifyToken();
+  const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
   return (
     <ConfigSectionContainer aria-label='Source Control Config'>
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.SOURCE_CONTROL}</ConfigSelectionTitle>
       <StyledAlterWrapper>
-        <TimeoutAlert
-          isShowAlert={isShowAlert}
-          isVerifyTimeOut={isVerifyTimeOut}
-          setIsShowAlert={setIsShowAlert}
-          moduleType={'Source Control'}
-        />
+        <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeTimeoutAlert} moduleType={'Source Control'} />
       </StyledAlterWrapper>
-      <StyledForm onSubmit={onSubmit} onReset={onReset}>
-        <StyledTypeSelections variant='standard' required>
-          <InputLabel id='sourceControl-type-checkbox-label'>Source Control</InputLabel>
-          <Select labelId='sourceControl-type-checkbox-label' value={fields[FIELD_KEY.TYPE].value}>
-            {Object.values(SOURCE_CONTROL_TYPES).map((toolType) => (
-              <MenuItem key={toolType} value={toolType}>
-                <ListItemText primary={toolType} />
-              </MenuItem>
-            ))}
-          </Select>
-        </StyledTypeSelections>
-        <StyledTextField
-          data-testid='sourceControlTextField'
-          key={fields[FIELD_KEY.TOKEN].key}
-          required
-          label={fields[FIELD_KEY.TOKEN].key}
-          variant='standard'
-          type='password'
-          inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
-          value={fields[FIELD_KEY.TOKEN].value}
-          onFocus={(e) => onInputFocus(e.target.value)}
-          onChange={(e) => onInputChange(e.target.value)}
-          error={!!fields[FIELD_KEY.TOKEN].validatedError || !!verifiedError}
-          helperText={fields[FIELD_KEY.TOKEN].validatedError || verifiedError}
+      <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
+        <FormSingleSelect
+          key={fields[FIELD_KEY.TYPE].key}
+          name={fields[FIELD_KEY.TYPE].key}
+          options={Object.values(SOURCE_CONTROL_TYPES)}
+          labelText='Source Control'
+          labelId='sourceControl-type-checkbox-label'
+          selectLabelId='sourceControl-type-checkbox-label'
+        />
+        <Controller
+          name={fields[FIELD_KEY.TOKEN].key}
+          control={control}
+          render={({ field, fieldState }) => {
+            return (
+              <StyledTextField
+                {...field}
+                data-testid='sourceControlTextField'
+                key={fields[FIELD_KEY.TOKEN].key}
+                required
+                label={fields[FIELD_KEY.TOKEN].key}
+                variant='standard'
+                type='password'
+                inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
+                onFocus={() => {
+                  if (field.value === '') {
+                    setError(fields[FIELD_KEY.TOKEN].key, {
+                      message: SOURCE_CONTROL_ERROR_MESSAGE.token.required,
+                    });
+                  }
+                }}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  reset(undefined, { keepValues: true, keepDirty: true, keepTouched: true });
+                }}
+                error={fieldState.invalid && fieldState.error?.message !== SOURCE_CONTROL_ERROR_MESSAGE.token.timeout}
+                helperText={
+                  fieldState.error?.message && fieldState.error?.message !== SOURCE_CONTROL_ERROR_MESSAGE.token.timeout
+                    ? fieldState.error?.message
+                    : ''
+                }
+              />
+            );
+          }}
         />
         <ConfigButtonGrop
           isVerifyTimeOut={isVerifyTimeOut}
           isVerified={isVerified}
-          isDisableVerifyButton={isDisableVerifyButton}
+          isDisableVerifyButton={!isValid}
           isLoading={isLoading}
         />
       </StyledForm>

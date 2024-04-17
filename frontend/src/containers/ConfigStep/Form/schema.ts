@@ -51,7 +51,7 @@ export const sourceControlSchema = object().shape({
   type: mixed().oneOf(SOURCE_CONTROL_TYPE_LITERAL),
   token: string()
     .required(SOURCE_CONTROL_ERROR_MESSAGE.token.required)
-    .matches(REGEX.BUILDKITE_TOKEN, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.invalid }),
+    .matches(REGEX.GITHUB_TOKEN, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.invalid }),
 });
 
 export type IBasicInfoData = InferType<typeof basicInfoSchema>;

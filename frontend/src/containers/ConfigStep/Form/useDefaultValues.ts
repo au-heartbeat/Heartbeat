@@ -10,7 +10,7 @@ import {
   IPipelineToolData,
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
-import { selectBasicInfo, selectBoard, selectPipelineTool } from '@src/context/config/configSlice';
+import { selectBasicInfo, selectBoard, selectPipelineTool, selectSourceControl } from '@src/context/config/configSlice';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 
 export const basicInfoDefaultValues: IBasicInfoData = {
@@ -42,6 +42,7 @@ export const useDefaultValues = () => {
   const basicInfo = useAppSelector(selectBasicInfo);
   const boardConfig = useAppSelector(selectBoard);
   const pipelineTool = useAppSelector(selectPipelineTool);
+  const sourceControl = useAppSelector(selectSourceControl);
 
   const basicInfoWithImport: IBasicInfoData = {
     ...basicInfoDefaultValues,
@@ -64,6 +65,7 @@ export const useDefaultValues = () => {
 
   const sourceControlWithImport: ISourceControlData = {
     ...sourceControlDefaultValues,
+    ...sourceControl,
   };
 
   return {
@@ -73,7 +75,7 @@ export const useDefaultValues = () => {
     boardConfigWithImport,
     pipelineToolOriginal: pipelineToolDefaultValues,
     pipelineToolWithImport,
-    sourceControlOriginal: sourceControlWithImport,
+    sourceControlOriginal: sourceControlDefaultValues,
     sourceControlWithImport,
   };
 };

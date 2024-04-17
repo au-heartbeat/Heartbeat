@@ -78,14 +78,19 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     },
   ];
 
-  const persistReduxData = (verifyState: boolean, boardInfo: IBoardConfigData & { projectKey?: string }) => {
+  const persistReduxData = (
+    verifyState: boolean,
+    shouldGetBoardConfig: boolean,
+    boardInfo: IBoardConfigData & { projectKey?: string },
+  ) => {
+    dispatch(updateShouldGetBoardConfig(shouldGetBoardConfig));
     dispatch(updateBoardVerifyState(verifyState));
     dispatch(updateBoard(boardInfo));
   };
 
   const resetFields = () => {
     reset(boardConfigOriginal);
-    persistReduxData(false, boardConfigOriginal);
+    persistReduxData(false, false, boardConfigOriginal);
   };
 
   const verifyJira = async () => {
@@ -98,8 +103,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
         token: getJiraBoardToken(boardInfo.token, boardInfo.email),
       });
       if (res?.response) {
-        dispatch(updateShouldGetBoardConfig(true));
-        persistReduxData(true, { ...boardInfo, projectKey: res.response.projectKey });
+        persistReduxData(true, true, { ...boardInfo, projectKey: res.response.projectKey });
       }
     } catch (e) {
       if (isAppError(e)) {

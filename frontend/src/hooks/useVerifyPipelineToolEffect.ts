@@ -25,56 +25,25 @@ export const useVerifyPipelineToolEffect = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const { pipelineToolOriginal } = useDefaultValues();
-  const fields: IField[] = [
-    {
-      key: 'type',
-    },
-    {
-      key: 'token',
-    },
-  ];
+  const fields: IField[] = [{ key: 'type' }, { key: 'token' }];
   const { reset, setError, getValues } = useFormContext();
-  const persistReduxData = (
-    {
-      pipelineToolVerifyState,
-      shouldGetPipelineConfig,
-    }: {
-      pipelineToolVerifyState: boolean;
-      shouldGetPipelineConfig: boolean;
-    },
-    values: IPipelineToolData,
-  ) => {
-    dispatch(updatePipelineToolVerifyState(pipelineToolVerifyState));
-    dispatch(updateShouldGetPipelineConfig(shouldGetPipelineConfig));
-    dispatch(updatePipelineTool(values));
+  const persistReduxData = (pipelineToolConfig: IPipelineToolData) => {
+    dispatch(updatePipelineTool(pipelineToolConfig));
+    dispatch(updateShouldGetPipelineConfig(true));
     dispatch(initDeploymentFrequencySettings());
   };
 
   const resetFields = () => {
     reset(pipelineToolOriginal);
-    persistReduxData(
-      {
-        pipelineToolVerifyState: false,
-        shouldGetPipelineConfig: true,
-      },
-      pipelineToolOriginal,
-    );
+    persistReduxData(pipelineToolOriginal);
   };
 
   const verifyPipelineTool = async (): Promise<void> => {
     setIsLoading(true);
-
     const values = getValues() as IPipelineVerifyRequestDTO;
     const response = await pipelineToolClient.verify(values);
-
     if (response.code === HttpStatusCode.NoContent) {
-      persistReduxData(
-        {
-          pipelineToolVerifyState: true,
-          shouldGetPipelineConfig: true,
-        },
-        values,
-      );
+      persistReduxData(values);
     } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
       setError(fields[FIELD_KEY.TOKEN].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.timeout });
     } else if (response.code === HttpStatusCode.Unauthorized) {

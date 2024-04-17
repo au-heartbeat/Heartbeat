@@ -59,5 +59,7 @@ export const SOURCE_CONTROL_ERROR_MESSAGE: ISourceControlErrorMessage = {
   token: {
     required: 'Token is required!',
     invalid: 'Token is invalid!',
+    unauthorized: 'Token is incorrect!',
+    timeout: 'Timeout!',
   },
 };

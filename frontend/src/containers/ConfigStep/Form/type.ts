@@ -40,5 +40,8 @@ export interface ISourceControlErrorMessage
   token: {
     required: string;
     invalid: string;
+    unauthorized: string;
+    timeout: string;
+    [other: string]: string;
   };
 }
