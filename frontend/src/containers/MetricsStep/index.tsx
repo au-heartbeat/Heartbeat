@@ -81,10 +81,12 @@ const MetricsStep = () => {
         ...boardConfig,
         dateRanges,
       }).then((res) => {
+        // console.log(res);
         if (res) {
           const errorRequests = res.filter((data) => !data.data);
-          if (errorRequests.length == res.length) setAllFailed(true);
-          else if (errorRequests.length > 0) {
+          if (errorRequests.length == res.length) {
+            setAllFailed(true);
+          } else if (errorRequests.length > 0) {
             setPartialFailed(true);
             dispatch(
               addNotification({

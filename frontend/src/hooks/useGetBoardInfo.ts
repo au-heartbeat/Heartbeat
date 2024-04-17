@@ -88,11 +88,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           .getBoardInfo(boardInfoRequest)
           .then((res) => {
             if (!res.data) {
-              setErrorMessage({
-                title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
-                message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
-                code: HttpStatusCode.NoContent,
-              });
+              res.status = HttpStatusCode.NoContent;
             }
             return res;
           })
@@ -105,6 +101,17 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
 
       return Promise.all(allBoardData)
         .then((res) => {
+          console.log(res);
+          if (res.filter((error) => error.status == HttpStatusCode.NoContent).length == res.length) {
+            setErrorMessage({
+              title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
+              message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
+              code: HttpStatusCode.NoContent,
+            });
+          } else {
+            setErrorMessage(codeMapping(HttpStatusCode.BadRequest));
+          }
+
           return res;
         })
         .finally(() => setIsLoading(false));
