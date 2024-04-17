@@ -2,11 +2,11 @@ import { CYCLE_TIME_LIST, CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
-import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { includes, isEqual, sortBy, uniq, uniqBy } from 'lodash';
+import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import { DateRange } from '@src/context/config/configSlice';
-import { includes, isEqual, sortBy, uniq } from 'lodash';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 

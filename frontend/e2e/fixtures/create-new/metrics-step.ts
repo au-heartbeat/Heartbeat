@@ -98,6 +98,7 @@ export const config = {
   deployment: [
     {
       id: 0,
+      isStepSelected: true,
       organization: 'Thoughtworks-Heartbeat',
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
