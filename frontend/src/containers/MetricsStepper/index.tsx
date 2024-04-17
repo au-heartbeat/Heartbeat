@@ -260,7 +260,7 @@ const MetricsStepper = () => {
       </StyledStepper>
       <MetricsStepperContent>
         <Suspense>
-          {activeStep === METRICS_STEPS.CONFIG && <ConfigStep />}
+          {activeStep === METRICS_STEPS.CONFIG && <ConfigStep setIsDisableNextButton={setIsDisableNextButton} />}
           {activeStep === METRICS_STEPS.METRICS && <MetricsStep />}
           {activeStep === METRICS_STEPS.REPORT && <ReportStep handleSave={handleSave} />}
         </Suspense>

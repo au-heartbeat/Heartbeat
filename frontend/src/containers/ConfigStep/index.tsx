@@ -14,15 +14,19 @@ import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
 import { selectConfig } from '@src/context/config/configSlice';
 import BasicInfo from '@src/containers/ConfigStep/BasicInfo';
+import { useEffect, useLayoutEffect, useMemo } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ConfigStepWrapper } from './style';
-import { useLayoutEffect } from 'react';
 
-const ConfigStep = () => {
+interface IConfigStepProps {
+  setIsDisableNextButton: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
   const dispatch = useAppDispatch();
   useLayoutEffect(() => {
     dispatch(closeAllNotifications());
@@ -58,18 +62,52 @@ const ConfigStep = () => {
     resolver: yupResolver(sourceControlSchema),
     mode: 'onChange',
   });
-  // console.log('basicInfoMethods.formState.errors', basicInfoMethods.formState.errors);
-  // console.log('boardConfigMethods.formState.errors', boardConfigMethods.formState.errors);
-  // console.log('pipelineToolMethods.formState.errors', pipelineToolMethods.formState.errors);
-  // console.log('sourceControlMethods.formState.errors', sourceControlMethods.formState.errors);
 
+  const { isValid: isBasicInfoValid } = basicInfoMethods.formState;
+  const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
+    boardConfigMethods.formState;
+  const { isValid: isPipelineToolValid, isSubmitSuccessful: isPipelineToolSubmitSuccessful } =
+    pipelineToolMethods.formState;
+  const { isValid: isSourceControlValid, isSubmitSuccessful: isSourceControlSubmitSuccessful } =
+    sourceControlMethods.formState;
+  const isBoardConfigPass = useMemo(
+    () => (isShowBoard ? isBoardConfigValid && isBoardConfigSubmitSuccessful : true),
+    [isShowBoard, isBoardConfigValid, isBoardConfigSubmitSuccessful],
+  );
+  const isPipelineToolPass = useMemo(
+    () => (isShowPipeline ? isPipelineToolValid && isPipelineToolSubmitSuccessful : true),
+    [isShowPipeline, isPipelineToolValid, isPipelineToolSubmitSuccessful],
+  );
+  const isSourceControlPass = useMemo(
+    () => (isShowSourceControl ? isSourceControlValid && isSourceControlSubmitSuccessful : true),
+    [isShowSourceControl, isSourceControlValid, isSourceControlSubmitSuccessful],
+  );
+  console.log('');
+  console.log('--- Basic form ---');
+  console.log('isBasicInfoValid', isBasicInfoValid);
+  console.log('--- Board form ---');
+  console.log('isBoardConfigValid', isBoardConfigValid);
+  console.log('isBoardConfigSubmitSuccessful', isBoardConfigSubmitSuccessful);
+  console.log('isBoardConfigPass', isBoardConfigPass);
+  console.log('--- PipelineTool form ---');
+  console.log('isPipelineToolValid', isPipelineToolValid);
+  console.log('isPipelineToolSubmitSuccessful', isPipelineToolSubmitSuccessful);
+  console.log('isPipelineToolPass', isPipelineToolPass);
+  console.log('--- SourceControl form ---');
+  console.log('isSourceControlValid', isSourceControlValid);
+  console.log('isSourceControlSubmitSuccessful', isSourceControlSubmitSuccessful);
+  console.log('isSourceControlPass', isSourceControlPass);
   const isAllFormVerified =
-    Object.entries(basicInfoMethods.formState.errors).length === 0 &&
-    Object.entries(boardConfigMethods.formState.errors).length === 0 &&
-    Object.entries(pipelineToolMethods.formState.errors).length === 0 &&
-    Object.entries(sourceControlMethods.formState.errors).length === 0;
+    // isBasicInfoValid &&
+    useMemo(
+      () => isBoardConfigPass && isPipelineToolPass && isSourceControlPass,
+      [isBoardConfigPass, isPipelineToolPass, isSourceControlPass],
+    );
 
-  // console.log('isAllFormVerified', isAllFormVerified);
+  console.log('isAllFormVerified', isAllFormVerified);
+  useEffect(() => {
+    setIsDisableNextButton(!isAllFormVerified);
+  }, [isAllFormVerified]);
   return (
     <ConfigStepWrapper>
       <FormProvider {...basicInfoMethods}>
