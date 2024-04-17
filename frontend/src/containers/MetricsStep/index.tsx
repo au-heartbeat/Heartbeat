@@ -33,9 +33,9 @@ import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import EmptyContent from '@src/components/Common/EmptyContent';
+import { useCallback, useLayoutEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
-import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
 import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
@@ -66,6 +66,8 @@ const MetricsStep = () => {
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
+  const [partialFailed, setPartialFailed] = useState(false);
+  const [allFailed, setAllFailed] = useState(false);
 
   const getInfo = useCallback(
     async () => {
@@ -73,6 +75,16 @@ const MetricsStep = () => {
         ...boardConfig,
         dateRanges,
       }).then((res) => {
+        if (res) {
+          const errorRequests = res.filter((data) => !data.data);
+          if (errorRequests.length == res.length) setAllFailed(true);
+          else if (errorRequests.length > 0) setPartialFailed(true);
+          else {
+            setAllFailed(false);
+            setPartialFailed(false);
+          }
+        }
+
         if (res && res[0].data) {
           const boardInfo = res?.map((r) => r.data);
           const commonPayload = combineBoardInfo(boardInfo!);
@@ -111,7 +123,8 @@ const MetricsStep = () => {
         <MetricSelectionWrapper>
           {isLoading && <Loading />}
           <MetricsSelectionTitle>
-            Board configuration {<StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>}{' '}
+            Board configuration{' '}
+            {(partialFailed || allFailed) && <StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>}{' '}
           </MetricsSelectionTitle>
 
           {isEmpty(errorMessage) ? (
@@ -157,9 +170,7 @@ const MetricsStep = () => {
         requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
         requiredData.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY)) && (
         <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
-          <MetricsSelectionTitle>
-            Pipeline configuration {<StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>}{' '}
-          </MetricsSelectionTitle>
+          <MetricsSelectionTitle>Pipeline configuration</MetricsSelectionTitle>
           <DeploymentFrequencySettings />
         </MetricSelectionWrapper>
       )}
