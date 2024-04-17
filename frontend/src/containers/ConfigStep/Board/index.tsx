@@ -15,10 +15,9 @@ export const Board = () => {
   const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
   const {
     clearErrors,
-    formState: { isSubmitSuccessful, errors },
+    formState: { isValid, isSubmitSuccessful, errors },
     handleSubmit,
   } = useFormContext();
-  const isValid = Object.entries(errors).length === 0;
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
 

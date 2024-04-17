@@ -58,7 +58,18 @@ const ConfigStep = () => {
     resolver: yupResolver(sourceControlSchema),
     mode: 'onChange',
   });
+  // console.log('basicInfoMethods.formState.errors', basicInfoMethods.formState.errors);
+  // console.log('boardConfigMethods.formState.errors', boardConfigMethods.formState.errors);
+  // console.log('pipelineToolMethods.formState.errors', pipelineToolMethods.formState.errors);
+  // console.log('sourceControlMethods.formState.errors', sourceControlMethods.formState.errors);
 
+  const isAllFormVerified =
+    Object.entries(basicInfoMethods.formState.errors).length === 0 &&
+    Object.entries(boardConfigMethods.formState.errors).length === 0 &&
+    Object.entries(pipelineToolMethods.formState.errors).length === 0 &&
+    Object.entries(sourceControlMethods.formState.errors).length === 0;
+
+  // console.log('isAllFormVerified', isAllFormVerified);
   return (
     <ConfigStepWrapper>
       <FormProvider {...basicInfoMethods}>

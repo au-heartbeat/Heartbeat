@@ -16,11 +16,10 @@ export const PipelineTool = () => {
     control,
     setError,
     clearErrors,
-    formState: { isSubmitSuccessful, errors },
+    formState: { isValid, isSubmitSuccessful, errors },
     handleSubmit,
     reset,
   } = useFormContext();
-  const isValid = Object.entries(errors).length === 0;
   const isVerifyTimeOut = errors.token?.message === PIPELINE_TOOL_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
 

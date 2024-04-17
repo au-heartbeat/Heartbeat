@@ -31,7 +31,7 @@ export const FormTextField = ({ name, col }: IFormTextField) => {
             }}
             onChange={(e) => {
               field.onChange(e.target.value);
-              reset(undefined, { keepValues: true, keepDirty: true, keepTouched: true });
+              reset(undefined, { keepValues: true, keepDirty: true, keepTouched: true, keepErrors: true });
             }}
             error={fieldState.invalid && fieldState.error?.message !== BOARD_CONFIG_ERROR_MESSAGE.token.timeout}
             helperText={

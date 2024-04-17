@@ -16,16 +16,16 @@ export const SourceControl = () => {
     control,
     setError,
     clearErrors,
-    formState: { isSubmitSuccessful, errors },
+    formState: { isValid, isSubmitSuccessful, errors },
     handleSubmit,
     reset,
   } = useFormContext();
-  const isValid = Object.entries(errors).length === 0;
   const isVerifyTimeOut = errors.token?.message === SOURCE_CONTROL_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
 
   const onSubmit = async () => await verifyToken();
   const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
+
   return (
     <ConfigSectionContainer aria-label='Source Control Config'>
       {isLoading && <Loading />}
