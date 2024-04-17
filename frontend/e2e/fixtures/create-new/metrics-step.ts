@@ -175,6 +175,7 @@ export const modifiedConfig = {
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
       branches: ['main', 'gh-pages'],
+      isStepSelected: false,
     },
   ],
 };
