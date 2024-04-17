@@ -744,7 +744,7 @@ describe('saveMetricsSetting reducer', () => {
                 pipelineName: 'mockPipelineName2',
                 step: 'mockStep2',
                 branches: [],
-                isStepSelected: false,
+                isStepEmptyString: false,
               },
               {
                 id: 2,
@@ -803,7 +803,7 @@ describe('saveMetricsSetting reducer', () => {
         pipelineCrews: [],
         expectSetting: {
           deploymentFrequencySettings: [
-            { id: 0, organization: '', pipelineName: '', step: '', branches: [], isStepSelected: false },
+            { id: 0, organization: '', pipelineName: '', step: '', branches: [], isStepEmptyString: false },
           ],
           leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
           deploymentWarningMessage: [],
@@ -824,7 +824,7 @@ describe('saveMetricsSetting reducer', () => {
         pipelineCrews: [],
         expectSetting: {
           deploymentFrequencySettings: [
-            { id: 1, organization: '', pipelineName: '', step: '', branches: [], isStepSelected: false },
+            { id: 1, organization: '', pipelineName: '', step: '', branches: [], isStepEmptyString: false },
           ],
           leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
           deploymentWarningMessage: [],
@@ -936,7 +936,7 @@ describe('saveMetricsSetting reducer', () => {
             pipelineName: 'mockPipelineName2',
             step: '',
             branches: [],
-            isStepSelected: true,
+            isStepEmptyString: true,
           },
         ],
         expectedWarning: [
@@ -969,7 +969,7 @@ describe('saveMetricsSetting reducer', () => {
             pipelineName: 'mockPipelineName2',
             step: '',
             branches: [],
-            isStepSelected: true,
+            isStepEmptyString: true,
           },
         ],
         expectedWarning: [
@@ -1002,7 +1002,7 @@ describe('saveMetricsSetting reducer', () => {
             pipelineName: 'mockPipelineName2',
             step: '',
             branches: [],
-            isStepSelected: true,
+            isStepEmptyString: true,
           },
         ],
         expectedWarning: [
@@ -1040,7 +1040,7 @@ describe('saveMetricsSetting reducer', () => {
             pipelineName: 'mockPipelineName2',
             step: '',
             branches: [],
-            isStepSelected: true,
+            isStepEmptyString: true,
           },
         ],
         expectedWarning: [
@@ -1491,7 +1491,7 @@ describe('saveMetricsSetting reducer', () => {
         orgName: 'mockOrganization1',
         repository: 'mockRepository1',
         steps: ['mock step 1', 'mock step 2'],
-        isStepSelected: false,
+        isStepEmptyString: false,
       },
     ];
     const mockSteps = ['mockStep'];

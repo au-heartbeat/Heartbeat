@@ -86,7 +86,7 @@ export const importInputWrongProjectFromFile = {
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
       branches: ['main', 'ADM-747'],
-      isStepSelected: false,
+      isStepEmptyString: false,
     },
   ],
 };

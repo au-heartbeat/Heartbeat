@@ -18,7 +18,7 @@ export interface IPipelineConfig {
   pipelineName: string;
   step: string;
   branches: string[];
-  isStepSelected?: boolean;
+  isStepEmptyString?: boolean;
 }
 
 export interface IReworkConfig {
@@ -364,7 +364,7 @@ export const metricsSlice = createSlice({
       } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
-      state.pipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
+      // state.pipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
       state.importedData.importedCycleTime.importedCycleTimeSettings =
         cycleTime?.jiraColumns || state.importedData.importedCycleTime.importedCycleTimeSettings;
       state.importedData.importedCycleTime.importedTreatFlagCardAsBlock =
@@ -483,18 +483,18 @@ export const metricsSlice = createSlice({
           .map((item: pipeline) => item.name);
 
       const uniqueResponse = (res: IPipelineConfig[]) => {
-        const itemsOmitId = uniqWith(
-          res.map((value) => omit(value, ['id', 'isStepSelected'])),
+        let itemsOmitId = uniqWith(
+          res.map((value) => omit(value, ['id', 'isStepEmptyString'])),
           isEqual,
         );
-        let removeEmpty = itemsOmitId;
+        // let removeEmpty = itemsOmitId;
         if (itemsOmitId.length > 1) {
-          removeEmpty = itemsOmitId.filter(
+          itemsOmitId = itemsOmitId.filter(
             (item) => !Object.values(item).every((value) => value === '' || !value?.length),
           );
         }
-        return removeEmpty.length < res.length
-          ? removeEmpty.map((item, index) => {
+        return itemsOmitId.length < res.length
+          ? itemsOmitId.map((item, index) => {
               return {
                 id: index,
                 ...item,
@@ -507,7 +507,7 @@ export const metricsSlice = createSlice({
         const hasPipeline = pipelines.filter(({ id }) => id !== undefined).length;
         const res =
           pipelines.length && hasPipeline
-            ? pipelines.map(({ id, organization, pipelineName, step, branches, isStepSelected }) => {
+            ? pipelines.map(({ id, organization, pipelineName, step, branches, isStepEmptyString }) => {
                 const matchedOrganization =
                   orgNames.find((i) => (i as string).toLowerCase() === organization.toLowerCase()) || '';
                 const matchedPipelineName = filteredPipelineNames(organization).includes(pipelineName)
@@ -515,14 +515,14 @@ export const metricsSlice = createSlice({
                   : '';
                 return {
                   id,
-                  isStepSelected: isStepSelected || false,
+                  isStepEmptyString: isStepEmptyString || false,
                   organization: matchedOrganization,
                   pipelineName: matchedPipelineName,
                   step: matchedPipelineName ? step : '',
                   branches: matchedPipelineName ? branches : [],
                 };
               })
-            : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [], isStepSelected: false }];
+            : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [], isStepEmptyString: false }];
         return uniqueResponse(res);
       };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {
@@ -561,13 +561,13 @@ export const metricsSlice = createSlice({
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
 
       state.pipelineCrews = intersection(pipelineCrews, state.pipelineCrews);
-      const stepWarningMessage = (selectedStep: string, isStepSelected: boolean) =>
-        steps.includes(selectedStep) || isStepSelected ? null : MESSAGE.STEP_WARNING;
+      const stepWarningMessage = (selectedStep: string, isStepEmptyString: boolean) =>
+        steps.includes(selectedStep) || isStepEmptyString ? null : MESSAGE.STEP_WARNING;
 
       const validStep = (pipeline: IPipelineConfig): string => {
         const selectedStep = pipeline.step;
         if (!selectedStep) {
-          pipeline.isStepSelected = true;
+          pipeline.isStepEmptyString = true;
         }
         return steps.includes(selectedStep) ? selectedStep : '';
       };
@@ -593,11 +593,11 @@ export const metricsSlice = createSlice({
         pipelinesValue: IPipelineConfig[],
       ) => {
         return pipelinesWarning.map((pipeline) => {
-          const matchedPipeline = pipelinesValue.filter((pipeline) => pipeline.id === id)[0];
+          const matchedPipeline = pipelinesValue.find((pipeline) => pipeline.id === id);
           return pipeline?.id === id
             ? {
                 ...pipeline,
-                step: stepWarningMessage(selectedPipelineStep, matchedPipeline?.isStepSelected || false),
+                step: stepWarningMessage(selectedPipelineStep, matchedPipeline?.isStepEmptyString || false),
               }
             : pipeline;
         });

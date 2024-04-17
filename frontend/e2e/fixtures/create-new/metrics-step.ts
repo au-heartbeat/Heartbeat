@@ -98,7 +98,7 @@ export const config = {
   deployment: [
     {
       id: 0,
-      isStepSelected: true,
+      isStepEmptyString: true,
       organization: 'Thoughtworks-Heartbeat',
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
@@ -175,7 +175,7 @@ export const modifiedConfig = {
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
       branches: ['main', 'gh-pages'],
-      isStepSelected: false,
+      isStepEmptyString: false,
     },
   ],
 };
