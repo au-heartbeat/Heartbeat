@@ -38,13 +38,15 @@ jest.mock('@src/context/config/configSlice', () => ({
   selectStepsParams: jest.fn().mockReturnValue({
     buildId: '',
     organizationId: '',
-    params: {
-      endTime: 1681747200000,
-      orgName: '',
-      pipelineName: '',
-      repository: '',
-      startTime: 1680537600000,
-    },
+    params: [
+      {
+        endTime: 1681747200000,
+        orgName: '',
+        pipelineName: '',
+        repository: '',
+        startTime: 1680537600000,
+      },
+    ],
     pipelineType: 'BuildKite',
     token: '',
   }),
@@ -161,7 +163,11 @@ describe('PipelineMetricSelection', () => {
 
   it('should show error message pop when getSteps failed', async () => {
     metricsClient.getSteps = jest.fn().mockImplementation(() => {
-      throw new Error('error message');
+      return Promise.reject({
+        status: 'rejected',
+        reason: 'just test',
+        value: '',
+      });
     });
     const { getByText, getByRole, getAllByRole } = await setup(
       { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', branches: [] },
@@ -178,7 +184,7 @@ describe('PipelineMetricSelection', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Failed to get BuildKite steps: error message')).toBeInTheDocument();
+      expect(getByText('Failed to get BuildKite steps')).toBeInTheDocument();
     });
     expect(mockUpdatePipeline).toHaveBeenCalledTimes(2);
   });
@@ -201,7 +207,7 @@ describe('PipelineMetricSelection', () => {
     await waitFor(() => {
       expect(
         getByText(
-          'There is no step during this period for this pipeline! Please change the search time in the Config page!',
+          'There is no step during these periods for this pipeline! Please change the search time in the Config page!',
         ),
       ).toBeInTheDocument();
 

@@ -1,9 +1,7 @@
 import { ERROR_MESSAGE_TIME_DURATION, MOCK_GET_STEPS_PARAMS } from '../fixtures';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
-import { InternalServerError } from '@src/errors/InternalServerError';
 import { metricsClient } from '@src/clients/MetricsClient';
 import { act, renderHook } from '@testing-library/react';
-import { HttpStatusCode } from 'axios';
 
 describe('use get steps effect', () => {
   const { params, buildId, organizationId, pipelineType, token } = MOCK_GET_STEPS_PARAMS;
@@ -16,7 +14,11 @@ describe('use get steps effect', () => {
   it('should set error message when get steps throw error', async () => {
     jest.useFakeTimers();
     metricsClient.getSteps = jest.fn().mockImplementation(() => {
-      throw new Error('error');
+      return Promise.reject({
+        status: 'rejected',
+        reason: 'error',
+        value: '',
+      });
     });
     const { result } = renderHook(() => useGetMetricsStepsEffect());
 
@@ -32,14 +34,27 @@ describe('use get steps effect', () => {
 
   it('should set error message when get steps response status 500', async () => {
     metricsClient.getSteps = jest.fn().mockImplementation(() => {
-      throw new InternalServerError('error message', HttpStatusCode.InternalServerError, 'fake description');
+      return Promise.reject({
+        status: 'rejected',
+        reason: 'just test',
+        value: '',
+      });
     });
     const { result } = renderHook(() => useGetMetricsStepsEffect());
-
-    act(() => {
-      result.current.getSteps(params, buildId, organizationId, pipelineType, token);
+    const currentParams = [
+      ...params,
+      {
+        pipelineName: 'mock pipeline name',
+        repository: 'mock repository',
+        orgName: 'mock orgName',
+        startTime: 1212112121213,
+        endTime: 1313131313134,
+      },
+    ];
+    await act(async () => {
+      await result.current.getSteps(currentParams, buildId, organizationId, pipelineType, token);
     });
 
-    expect(result.current.errorMessage).toEqual('Failed to get BuildKite steps: error message');
+    expect(result.current.errorMessage).toEqual('Failed to get BuildKite steps');
   });
 });
