@@ -38,8 +38,15 @@ export class HttpClient {
             case HttpStatusCode.Forbidden:
               throw new ForbiddenError(errorMessage, HttpStatusCode.Forbidden, description);
             default:
-              if (status >= 500) {
+              // todo need refactor
+              if (
+                status >= 500 &&
+                response.config.url != '/boards/jira/info' &&
+                response.config.url != 'pipelines/buildkite/info'
+              ) {
                 window.location.href = ROUTE.ERROR_PAGE;
+                throw new InternalServerError(errorMessage, status, description);
+              } else {
                 throw new InternalServerError(errorMessage, status, description);
               }
               throw new UnknownError();

@@ -49,6 +49,11 @@ const codeMapping = (code: string | number) => {
       message: BOARD_CONFIG_INFO_ERROR.RETRY,
       code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
     },
+    [HttpStatusCode.InternalServerError]: {
+      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
+      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
+      code: HttpStatusCode.InternalServerError,
+    },
   };
   return get(codes, code);
 };
