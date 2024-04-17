@@ -110,7 +110,8 @@ const MetricsStep = () => {
       {isShowCrewsAndRealDone && (
         <MetricSelectionWrapper>
           {isLoading && <Loading />}
-          <MetricsSelectionTitle>Board configuration</MetricsSelectionTitle>
+          <MetricsSelectionTitle>Board configuration {<StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>} </MetricsSelectionTitle>
+
           {isEmpty(errorMessage) ? (
             <>
               <Crews options={users} title={'Crew settings'} label={'Included Crews'} />
@@ -154,7 +155,7 @@ const MetricsStep = () => {
         requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
         requiredData.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY)) && (
         <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
-          <MetricsSelectionTitle>Pipeline configuration</MetricsSelectionTitle>
+          <MetricsSelectionTitle>Pipeline configuration {<StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>} </MetricsSelectionTitle>
           <DeploymentFrequencySettings />
         </MetricSelectionWrapper>
       )}
