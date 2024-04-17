@@ -101,13 +101,14 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
 
       return Promise.all(allBoardData)
         .then((res) => {
-          console.log(res);
           if (res.filter((error) => error.status == HttpStatusCode.NoContent).length == res.length) {
             setErrorMessage({
               title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
               message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
               code: HttpStatusCode.NoContent,
             });
+          } else if (res.filter((error) => error.status == HttpStatusCode.Ok).length > 0) {
+            setErrorMessage({});
           } else {
             setErrorMessage(codeMapping(HttpStatusCode.BadRequest));
           }

@@ -100,8 +100,9 @@ const MetricsStep = () => {
           }
         }
 
-        if (res && res[0].data) {
-          const boardInfo = res?.map((r) => r.data);
+        if (res) {
+          const data = res.filter((r) => r.data);
+          const boardInfo = data?.map((r) => r.data);
           const commonPayload = combineBoardInfo(boardInfo!);
           dispatch(updateBoardVerifyState(true));
           dispatch(updateJiraVerifyResponse(commonPayload));
