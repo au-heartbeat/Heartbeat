@@ -20,7 +20,6 @@ import saveMetricsSettingReducer, {
   selectReworkTimesSettings,
   selectShouldGetBoardConfig,
   selectShouldGetPipelineConfig,
-  selectShouldRetryPipelineConfig,
   selectStepWarningMessage,
   selectTreatFlagCardAsBlock,
   setCycleTimeSettingsType,
