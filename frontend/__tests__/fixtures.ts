@@ -375,6 +375,13 @@ export const MOCK_GET_STEPS_PARAMS = {
       startTime: 1212112121212,
       endTime: 1313131313131,
     },
+    {
+      pipelineName: 'mock pipeline name',
+      repository: 'mock repository',
+      orgName: 'mock orgName',
+      startTime: 1212112121214,
+      endTime: 1313131313134,
+    },
   ] as IStepsParams[],
   buildId: 'mockBuildId',
   organizationId: 'mockOrganizationId',

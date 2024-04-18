@@ -33,14 +33,44 @@ describe('use get steps effect', () => {
     expect(result.current.isLoading).toEqual(false);
   });
 
+  it('should get the union set from steps res', async () => {
+    metricsClient.getSteps = jest
+      .fn()
+      .mockReturnValueOnce({
+        response: ['a', 'b', 'c'],
+        haveStep: true,
+        branches: ['branchA', 'branchB'],
+        pipelineCrews: ['crewA', 'crewB'],
+      })
+      .mockReturnValueOnce({
+        response: ['a', 'd', 'e'],
+        haveStep: true,
+        branches: ['branchC', 'branchD'],
+        pipelineCrews: [],
+      })
+      .mockReturnValueOnce({
+        response: [],
+        haveStep: false,
+        branches: [],
+        pipelineCrews: [],
+      });
+    const { result } = renderHook(() => useGetMetricsStepsEffect());
+    let res;
+    await act(async () => {
+      res = await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
+    });
+    expect(res).toEqual({
+      response: ['a', 'b', 'c', 'd', 'e'],
+      haveStep: true,
+      branches: ['branchA', 'branchB', 'branchC', 'branchD'],
+      pipelineCrews: ['crewA', 'crewB'],
+    });
+  });
+
   it('should set error message when get steps throw error', async () => {
     jest.useFakeTimers();
     metricsClient.getSteps = jest.fn().mockImplementation(() => {
-      return Promise.reject({
-        status: 'rejected',
-        reason: 'error',
-        value: '',
-      });
+      return Promise.reject('error');
     });
     const { result } = setup();
 
@@ -59,18 +89,8 @@ describe('use get steps effect', () => {
       return Promise.reject('error');
     });
     const { result } = setup();
-    const currentParams = [
-      ...params,
-      {
-        pipelineName: 'mock pipeline name',
-        repository: 'mock repository',
-        orgName: 'mock orgName',
-        startTime: 1212112121213,
-        endTime: 1313131313134,
-      },
-    ];
     await act(async () => {
-      await result.current.getSteps(currentParams, buildId, organizationId, pipelineType, token);
+      await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
     });
 
     expect(result.current.errorMessage).toEqual('Failed to get BuildKite steps');
@@ -81,18 +101,8 @@ describe('use get steps effect', () => {
       return Promise.reject(new TimeoutError('error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT));
     });
     const { result } = setup();
-    const currentParams = [
-      ...params,
-      {
-        pipelineName: 'mock pipeline name',
-        repository: 'mock repository',
-        orgName: 'mock orgName',
-        startTime: 1212112121213,
-        endTime: 1313131313134,
-      },
-    ];
     await act(async () => {
-      await result.current.getSteps(currentParams, buildId, organizationId, pipelineType, token);
+      await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
     });
 
     expect(result.current.errorMessage).toEqual('Failed to get BuildKite steps: timeout');

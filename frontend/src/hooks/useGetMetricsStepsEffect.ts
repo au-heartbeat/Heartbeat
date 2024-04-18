@@ -61,10 +61,10 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       .reduce(
         (accumulator, currentValue) => {
           return {
-            response: Array.from(new Set([...accumulator.response, ...(currentValue.response || [])])),
+            response: Array.from(new Set([...accumulator.response, ...currentValue.response])),
             haveStep: accumulator.haveStep || currentValue.haveStep,
-            branches: Array.from(new Set([...accumulator.branches, ...(currentValue.branches || [])])),
-            pipelineCrews: Array.from(new Set([...accumulator.pipelineCrews, ...(currentValue.pipelineCrews || [])])),
+            branches: Array.from(new Set([...accumulator.branches, ...currentValue.branches])),
+            pipelineCrews: Array.from(new Set([...accumulator.pipelineCrews, ...currentValue.pipelineCrews])),
           };
         },
         {
