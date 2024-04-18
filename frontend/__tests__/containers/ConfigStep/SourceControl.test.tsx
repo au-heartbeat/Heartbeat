@@ -208,8 +208,6 @@ describe('SourceControl', () => {
 
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
-    // await waitFor(() => {
-    // });
   });
 
   it('should show error message and error style when token is invalid', async () => {
