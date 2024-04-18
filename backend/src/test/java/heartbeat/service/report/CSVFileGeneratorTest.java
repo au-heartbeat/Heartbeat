@@ -484,28 +484,17 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
-	void shouldThrowExceptionWhenTimeStampHasTwoPoint() {
-		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "..";
+	void shouldThrowExceptionWhenTimeStampIsIllegal() {
+		String mockTimeRangeTimeStampWithBackSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "\\";
+		String mockTimeRangeTimeStampWithSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "/";
+		String mockTimeRangeTimeStampWithPoint = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "..";
 
 		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp));
-
-	}
-
-	@Test
-	void shouldThrowExceptionWhenTimeStampHasSlash() {
-		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "/";
-
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStampWithBackSlash));
 		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp));
-	}
-
-	@Test
-	void shouldThrowExceptionWhenTimeStampHasBackslash() {
-		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "\\";
-
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStampWithSlash));
 		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp));
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStampWithPoint));
 	}
 
 	@Test
