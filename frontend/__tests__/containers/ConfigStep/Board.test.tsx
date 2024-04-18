@@ -10,9 +10,12 @@ import {
   FAKE_TOKEN,
   REVERIFY,
 } from '../../fixtures';
+import { boardConfigDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { boardConfigSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
+import { RHFFormProvider } from '@test/utils/FormProviders';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -59,7 +62,9 @@ describe('Board', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <Board />
+        <RHFFormProvider schema={boardConfigSchema} defaultValues={boardConfigDefaultValues}>
+          <Board />
+        </RHFFormProvider>
       </Provider>,
     );
   };

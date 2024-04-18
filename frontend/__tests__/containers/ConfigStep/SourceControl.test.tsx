@@ -11,15 +11,14 @@ import {
   VERIFY,
 } from '../../fixtures';
 import { initDeploymentFrequencySettings, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
-import { ISourceControlData, sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
+import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { AXIOS_REQUEST_ERROR_CODE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
-import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { fireEvent, render, screen, act, waitFor } from '@testing-library/react';
+import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
+import { RHFFormProvider } from '@test/utils/FormProviders';
 import { setupStore } from '../../utils/setupStoreUtil';
-import { useForm, FormProvider } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
@@ -50,22 +49,6 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   initDeploymentFrequencySettings: jest.fn().mockReturnValue({ type: 'INIT_DEPLOYMENT_SETTINGS' }),
 }));
 
-const SourceControlWithForm = () => {
-  const defaultValues = useDefaultValues();
-
-  const sourceControlMethods = useForm<ISourceControlData>({
-    defaultValues: defaultValues.sourceControlOriginal,
-    resolver: yupResolver(sourceControlSchema),
-    mode: 'onChange',
-  });
-
-  return (
-    <FormProvider {...sourceControlMethods}>
-      <SourceControl />
-    </FormProvider>
-  );
-};
-
 describe('SourceControl', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());
@@ -74,7 +57,9 @@ describe('SourceControl', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <SourceControlWithForm />
+        <RHFFormProvider schema={sourceControlSchema} defaultValues={sourceControlDefaultValues}>
+          <SourceControl />
+        </RHFFormProvider>
       </Provider>,
     );
   };
