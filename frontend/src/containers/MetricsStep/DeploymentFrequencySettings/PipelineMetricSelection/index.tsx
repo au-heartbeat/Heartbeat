@@ -82,7 +82,7 @@ export const PipelineMetricSelection = ({
     dispatch(updatePipelineToolVerifyResponseCrews({ organization, pipelineName }));
     dispatch(updatePiplineCrews(newCrews));
     onRemovePipeline(id);
-    setLoadingCompletedNumber((value) => value - 1);
+    setLoadingCompletedNumber((value) => Math.max(value - 1, 0));
   };
 
   useEffect(() => {
@@ -93,8 +93,6 @@ export const PipelineMetricSelection = ({
   useEffect(() => {
     if (isLoadingRef.current && !isLoading) {
       setLoadingCompletedNumber((value) => Math.min(totalPipelineNumber, value + 1));
-    } else if (!shouldGetPipelineConfig && !isLoading) {
-      setLoadingCompletedNumber(totalPipelineNumber);
     }
     isLoadingRef.current = isLoading;
   }, [isLoading, setLoadingCompletedNumber, totalPipelineNumber, shouldGetPipelineConfig]);
@@ -105,6 +103,7 @@ export const PipelineMetricSelection = ({
       organization,
       _pipelineName,
     );
+    setLoadingCompletedNumber((value) => Math.max(value - 1, 0));
     getSteps(params, organizationId, buildId, pipelineType, token).then((res) => {
       if (res && !res.haveStep) {
         isShowRemoveButton && handleRemoveClick();

@@ -6,8 +6,8 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { convertCycleTimeSettings, getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
+import _, { omit, uniqWith, isEqual, intersection, concat } from 'lodash';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
-import _, { omit, uniqWith, isEqual, intersection } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
@@ -558,8 +558,10 @@ export const metricsSlice = createSlice({
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload;
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
+      // todo
+      const currentCrews = concat(pipelineCrews, state.pipelineCrews);
 
-      state.pipelineCrews = intersection(pipelineCrews, state.pipelineCrews);
+      state.pipelineCrews = intersection(currentCrews, state.pipelineCrews);
       const stepWarningMessage = (selectedStep: string, isStepEmptyString: boolean) =>
         steps.includes(selectedStep) || isStepEmptyString ? null : MESSAGE.STEP_WARNING;
 
