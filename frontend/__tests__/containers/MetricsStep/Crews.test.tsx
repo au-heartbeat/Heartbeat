@@ -46,13 +46,13 @@ describe('Crew', () => {
     expect(screen.getByText(mockTitle)).toBeInTheDocument();
   });
 
-  it('should selected all options by default when initializing  as type is board', () => {
+  it('should selected all options by default when initializing given type is board', () => {
     setup();
 
     expect(screen.getByRole('button', { name: 'crew A' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'crew B' })).toBeInTheDocument();
   });
-  it('should selected all options by default when initializing as type is other', () => {
+  it('should selected all options by default when initializing given type is other', () => {
     setup('other');
 
     expect(screen.getByRole('button', { name: 'A' })).toBeInTheDocument();

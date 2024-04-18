@@ -106,11 +106,10 @@ describe('DeploymentFrequencySettings', () => {
 
   it('should show crew settings when select pipelineName', async () => {
     mockSelectPipelineNames = ['Heartbeat'];
-    const { getAllByRole, getByRole, debug } = await setup();
+    const { getAllByRole, getByRole } = await setup();
     await act(async () => {
       await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
     });
-    debug();
 
     let listBox = within(getByRole('listbox'));
     await act(async () => {
@@ -164,7 +163,7 @@ describe('DeploymentFrequencySettings', () => {
     expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(1);
   });
 
-  it('show render crews component when totalPipelineNumber is equal loadingCompletedNumber', () => {
+  it('show render crews component when all pipelines load completed', () => {
     mockSelectShouldGetPipelineConfig = false;
     setup();
     expect(screen.getByText('Crew setting (optional)')).toBeInTheDocument();
@@ -202,7 +201,7 @@ describe('DeploymentFrequencySettings', () => {
     expect(screen.getByTestId(LOADING)).toBeInTheDocument();
   });
 
-  it('should not show show crews part given isFirstFetch is true', async () => {
+  it('should not show show crews part when pipeline is loading', async () => {
     mockGetPipelineToolInfoSpy = {
       ...mockGetPipelineToolInfoOkResponse,
       isFirstFetch: true,
