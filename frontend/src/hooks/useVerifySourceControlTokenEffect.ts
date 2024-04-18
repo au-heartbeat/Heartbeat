@@ -42,7 +42,7 @@ export const useVerifySourceControlTokenEffect = () => {
     const response = await sourceControlClient.verifyToken(values);
     if (response.code === HttpStatusCode.NoContent) {
       persistReduxData(values);
-      reset(undefined, { keepValues: true });
+      reset(sourceControlOriginal, { keepValues: true });
     } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
       setError(fields[FIELD_KEY.TOKEN].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.timeout });
     } else if (response.code === HttpStatusCode.Unauthorized) {

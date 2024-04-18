@@ -50,7 +50,7 @@ describe('ConfigStep', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <ConfigStep />
+        <ConfigStep setIsDisableNextButton={jest.fn()} />
       </Provider>,
     );
   };

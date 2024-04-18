@@ -64,8 +64,10 @@ export const SourceControl = () => {
                   }
                 }}
                 onChange={(e) => {
+                  if (isSubmitSuccessful) {
+                    reset(undefined, { keepValues: true, keepErrors: true });
+                  }
                   field.onChange(e.target.value);
-                  reset(undefined, { keepValues: true, keepDirty: true, keepTouched: true });
                 }}
                 error={fieldState.invalid && fieldState.error?.message !== SOURCE_CONTROL_ERROR_MESSAGE.token.timeout}
                 helperText={

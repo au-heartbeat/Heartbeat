@@ -65,8 +65,10 @@ export const PipelineTool = () => {
                   }
                 }}
                 onChange={(e) => {
+                  if (isSubmitSuccessful) {
+                    reset(undefined, { keepValues: true, keepErrors: true });
+                  }
                   field.onChange(e.target.value);
-                  reset(undefined, { keepValues: true, keepDirty: true, keepTouched: true });
                 }}
                 error={fieldState.invalid && fieldState.error?.message !== PIPELINE_TOOL_ERROR_MESSAGE.token.timeout}
                 helperText={

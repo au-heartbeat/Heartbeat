@@ -10,7 +10,12 @@ interface IFormTextField {
 }
 
 export const FormTextField = ({ name, col }: IFormTextField) => {
-  const { control, setError, reset } = useFormContext();
+  const {
+    control,
+    setError,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = useFormContext();
   return (
     <Controller
       name={name}
@@ -30,8 +35,10 @@ export const FormTextField = ({ name, col }: IFormTextField) => {
               }
             }}
             onChange={(e) => {
+              if (isSubmitSuccessful) {
+                reset(undefined, { keepValues: true, keepErrors: true });
+              }
               field.onChange(e.target.value);
-              reset(undefined, { keepValues: true, keepDirty: true, keepTouched: true, keepErrors: true });
             }}
             error={fieldState.invalid && fieldState.error?.message !== BOARD_CONFIG_ERROR_MESSAGE.token.timeout}
             helperText={

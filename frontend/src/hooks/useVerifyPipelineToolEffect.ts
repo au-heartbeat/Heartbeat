@@ -43,8 +43,8 @@ export const useVerifyPipelineToolEffect = () => {
     const values = getValues() as IPipelineVerifyRequestDTO;
     const response = await pipelineToolClient.verify(values);
     if (response.code === HttpStatusCode.NoContent) {
+      reset(pipelineToolOriginal, { keepValues: true });
       persistReduxData(values);
-      reset(undefined, { keepValues: true });
     } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
       setError(fields[FIELD_KEY.TOKEN].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.timeout });
     } else if (response.code === HttpStatusCode.Unauthorized) {

@@ -104,7 +104,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
       });
       if (res?.response) {
         persistReduxData(true, true, { ...boardInfo, projectKey: res.response.projectKey });
-        reset(undefined, { keepValues: true });
+        reset(boardConfigOriginal, { keepValues: true });
       }
     } catch (e) {
       if (isAppError(e)) {
