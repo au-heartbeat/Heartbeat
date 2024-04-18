@@ -20,6 +20,7 @@ import saveMetricsSettingReducer, {
   selectReworkTimesSettings,
   selectShouldGetBoardConfig,
   selectShouldGetPipelineConfig,
+  selectShouldRetryPipelineConfig,
   selectStepWarningMessage,
   selectTreatFlagCardAsBlock,
   setCycleTimeSettingsType,
@@ -592,9 +593,9 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedPipelineCrews.pipelineCrews).toBe(crews);
   });
 
-  it('should update ShouldRetryPipelineConfig', () => {
-    const result = saveMetricsSettingReducer(initState, updateShouldRetryPipelineConfig(true));
-    expect(result.shouldRetryPipelineConfig).toEqual(true);
+  it('should update ShouldRetryPipelineConfig', async () => {
+    store.dispatch(updateShouldRetryPipelineConfig(true));
+    expect(selectShouldRetryPipelineConfig(store.getState())).toEqual(true);
   });
 
   it('should set cycle time setting type', () => {
