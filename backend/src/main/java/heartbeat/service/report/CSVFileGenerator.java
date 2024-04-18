@@ -39,10 +39,12 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,7 +73,8 @@ public class CSVFileGenerator {
 
 	private static InputStreamResource readStringFromCsvFile(String fileName) {
 		try {
-			InputStream inputStream = new FileInputStream(fileName);
+			Path filePath = Paths.get(fileName);
+			InputStream inputStream = Files.newInputStream(filePath);
 
 			return new InputStreamResource(inputStream);
 		}

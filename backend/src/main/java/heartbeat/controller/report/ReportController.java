@@ -6,7 +6,6 @@ import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +37,13 @@ public class ReportController {
 	@Value("${callback.interval}")
 	private Integer interval;
 
-	@GetMapping("/{reportType}/{timeStamp}")
+	@GetMapping("/{reportType}/{timeStamp}/{timeRange}")
 	public InputStreamResource exportCSV(
 			@Schema(type = "string", allowableValues = { "metric", "pipeline", "board" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable() ReportType reportType,
-			@PathVariable String timeStamp, @Parameter String startDate, @Parameter String endDate) {
+			@PathVariable String timeStamp, @PathVariable String timeRange) {
 		log.info("Start to export CSV file_reportType: {}, filename: {}", reportType.getValue(), timeStamp);
-		InputStreamResource result = reportService.exportCsv(reportType, timeStamp, startDate, endDate);
+		InputStreamResource result = reportService.exportCsv(reportType, timeStamp, timeRange);
 		log.info("Successfully get CSV file_reportType: {}, filename: {}, _result: {}", reportType.getValue(),
 				timeStamp, result);
 		return result;

@@ -37,9 +37,8 @@ public class ReportService {
 
 	private final ReportGenerator reportGenerator;
 
-	public InputStreamResource exportCsv(ReportType reportDataType, String csvTimestamp, String startDate,
-			String endDate) {
-		String timeRangeTimeStamp = startDate + "-" + endDate + "-" + csvTimestamp;
+	public InputStreamResource exportCsv(ReportType reportDataType, String csvTimestamp, String timeRange) {
+		String timeRangeTimeStamp = timeRange + "-" + csvTimestamp;
 		if (isExpiredTimeStamp(Long.parseLong(csvTimestamp))) {
 			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
 		}

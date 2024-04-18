@@ -71,8 +71,8 @@ public class GenerateReportRequest {
 
 	@JsonIgnore
 	public String getTimeRangeTimeStamp() {
-		return TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.startTime)).replaceAll("-", "") + "-"
-				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.endTime)).replaceAll("-", "") + "-"
+		return TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.startTime)).replace("-", "") + "-"
+				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.endTime)).replace("-", "") + "-"
 				+ this.csvTimeStamp;
 
 	}

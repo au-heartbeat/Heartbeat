@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +77,7 @@ public class ReportServiceTest {
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
 
 		InputStream result = reportService
-			.exportCsv(ReportType.METRIC, String.valueOf(validTimestamp), "20240310", "20240409")
+			.exportCsv(ReportType.METRIC, String.valueOf(validTimestamp), "20240310-20240409")
 			.getInputStream();
 		String returnData = new BufferedReader(new InputStreamReader(result)).lines().collect(Collectors.joining("\n"));
 
@@ -86,21 +87,20 @@ public class ReportServiceTest {
 
 	@Test
 	void exportCsvShouldThrowNotFoundExceptionWhenTimestampIsValid() {
-		long invalidTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L;
+		String invalidTimestamp = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L);
 		String mockTimeRangeTimeStamp = invalidTimestamp + "";
-		assertThrows(NotFoundException.class,
-				() -> reportService.exportCsv(ReportType.METRIC, String.valueOf(invalidTimestamp), "", ""));
+		assertThrows(NotFoundException.class, () -> reportService.exportCsv(ReportType.METRIC, invalidTimestamp, ""));
 		verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp);
 	}
 
 	@Nested
 	class GenerateReportByType {
 
-		String timeStamp = "1683734399999";
+		String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
 
-		String startTimeStamp = "1710000000000";
+		String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
 
-		String endTimeStamp = "1712678399999";
+		String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
 
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.csvTimeStamp(timeStamp)

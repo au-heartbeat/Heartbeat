@@ -100,15 +100,15 @@ class ReporterControllerTest {
 	@Test
 	void shouldReturnWhenExportCsv() throws Exception {
 		long csvTimeStamp = TimeUtils.mockTimeStamp(2023, 5, 25, 18, 21, 20);
+		String timeRange = "20230409-20230509";
 		String expectedResponse = "csv data";
 
-		when(reporterService.exportCsv(ReportType.PIPELINE, String.valueOf(csvTimeStamp), "20230409", "20230509"))
+		when(reporterService.exportCsv(ReportType.PIPELINE, String.valueOf(csvTimeStamp), "20230409-20230509"))
 			.thenReturn(new InputStreamResource(new ByteArrayInputStream(expectedResponse.getBytes())));
 
 		MockHttpServletResponse response = mockMvc
-			.perform(get("/reports/{reportType}/{csvTimeStamp}", ReportType.PIPELINE.getValue(), csvTimeStamp)
-				.param("startDate", "20230409")
-				.param("endDate", "20230509"))
+			.perform(get("/reports/{reportType}/{csvTimeStamp}/{timeRange}", ReportType.PIPELINE.getValue(),
+					csvTimeStamp, timeRange))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();

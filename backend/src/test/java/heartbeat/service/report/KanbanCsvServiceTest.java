@@ -38,6 +38,7 @@ import java.util.List;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.MOCK_JIRA_BOARD_COLUMN_SETTING_LIST;
 import static heartbeat.service.report.BoardCsvFixture.MOCK_JIRA_CARD;
 import static heartbeat.service.report.BoardCsvFixture.MOCK_REWORK_TIMES_INFO_LIST;
+import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -75,6 +76,12 @@ class KanbanCsvServiceTest {
 	@Captor
 	private ArgumentCaptor<List<BoardCSVConfig>> csvNewFieldsCaptor;
 
+	public static final String CSV_TIME_STAMP = String.valueOf(mockTimeStamp(2024, 7, 3, 17, 45, 50));
+
+	public static final String START_TIME = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+
+	public static final String END_TIME = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
 	@Test
 	void shouldSaveCsvWithoutNonDoneCardsWhenNonDoneCardIsNull() throws URISyntaxException {
 
@@ -89,9 +96,9 @@ class KanbanCsvServiceTest {
 						.targetFields(List.of(TargetField.builder().name("Doing").build(),
 								TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().build());
@@ -115,9 +122,9 @@ class KanbanCsvServiceTest {
 						.targetFields(List.of(TargetField.builder().name("Doing").build(),
 								TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(Lists.list()).build());
@@ -178,9 +185,9 @@ class KanbanCsvServiceTest {
 						.targetFields(List.of(TargetField.builder().name("Doing").build(),
 								TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -243,9 +250,9 @@ class KanbanCsvServiceTest {
 						.targetFields(List.of(TargetField.builder().name("Doing").build(),
 								TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -290,9 +297,9 @@ class KanbanCsvServiceTest {
 						.targetFields(List.of(TargetField.builder().name("Doing").build(),
 								TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build());
@@ -341,9 +348,9 @@ class KanbanCsvServiceTest {
 					.jiraBoardSetting(JiraBoardSetting.builder()
 						.targetFields(List.of(TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build());
@@ -395,9 +402,9 @@ class KanbanCsvServiceTest {
 						.targetFields(List.of(TargetField.builder().name("Doing").build(),
 								TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -447,9 +454,9 @@ class KanbanCsvServiceTest {
 						.targetFields(List.of(TargetField.builder().name("Doing").build(),
 								TargetField.builder().name("Done").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -489,9 +496,9 @@ class KanbanCsvServiceTest {
 								TargetField.builder().name("fake-target1").flag(true).key("key-target1").build(),
 								TargetField.builder().name("fake-target2").flag(false).key("key-target2").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -533,9 +540,9 @@ class KanbanCsvServiceTest {
 								TargetField.builder().name("fake-target1").flag(true).key("key-target1").build(),
 								TargetField.builder().name("fake-target2").flag(false).key("key-target2").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -578,9 +585,9 @@ class KanbanCsvServiceTest {
 								TargetField.builder().name("fake-target1").flag(true).key("key-target1").build(),
 								TargetField.builder().name("fake-target2").flag(false).key("key-target2").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -630,9 +637,9 @@ class KanbanCsvServiceTest {
 								TargetField.builder().name("fake-target6").flag(true).key("json-array").build(),
 								TargetField.builder().name("fake-target7").flag(true).key("json-obj").build()))
 						.build())
-					.csvTimeStamp("1720000000000")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(doneJiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -702,9 +709,9 @@ class KanbanCsvServiceTest {
 						.boardColumns(MOCK_JIRA_BOARD_COLUMN_SETTING_LIST())
 						.treatFlagCardAsBlock(Boolean.TRUE)
 						.build())
-					.csvTimeStamp("2022-01-01 00:00:00")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -775,9 +782,9 @@ class KanbanCsvServiceTest {
 						.boardColumns(MOCK_JIRA_BOARD_COLUMN_SETTING_LIST())
 						.treatFlagCardAsBlock(Boolean.FALSE)
 						.build())
-					.csvTimeStamp("2022-01-01 00:00:00")
-					.startTime("1710000000000")
-					.endTime("1712678399999")
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
 					.build(),
 				CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
