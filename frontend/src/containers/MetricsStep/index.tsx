@@ -143,7 +143,6 @@ const MetricsStep = () => {
           {isLoading && <Loading />}
           <MetricsSelectionTitle>
             Board configuration{' '}
-            {boardInfoFailedStatus == 2 && <StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>}{' '}
           </MetricsSelectionTitle>
 
           {isEmpty(errorMessage) ? (
