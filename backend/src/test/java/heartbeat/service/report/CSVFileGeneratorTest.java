@@ -7,6 +7,7 @@ import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
+import heartbeat.exception.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -480,6 +482,14 @@ class CSVFileGeneratorTest {
 		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, "1686710104536"));
 		assertThrows(FileIOException.class,
 				() -> csvFileGenerator.convertMetricDataToCSV(reportResponse, "15469:89/033"));
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFileIsNotExist() {
+		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "../";
+		assertThrows(NotFoundException.class,
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp));
+
 	}
 
 	@Test

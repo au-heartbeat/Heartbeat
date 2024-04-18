@@ -30,6 +30,7 @@ import heartbeat.controller.report.dto.response.Rework;
 import heartbeat.controller.report.dto.response.Velocity;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
+import heartbeat.exception.NotFoundException;
 import heartbeat.util.DecimalUtil;
 import io.micrometer.core.instrument.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +40,10 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,15 +70,20 @@ public class CSVFileGenerator {
 
 	private static final String REWORK_FIELD = "Rework";
 
-	private static InputStreamResource readStringFromCsvFile(Path filePath) {
-		try {
-			InputStream inputStream = Files.newInputStream(filePath);
+	private static InputStreamResource readStringFromCsvFile(String fileName) {
+		if (!fileName.contains("..")) {
+			try {
+				InputStream inputStream = new FileInputStream(fileName);
 
-			return new InputStreamResource(inputStream);
+				return new InputStreamResource(inputStream);
+			}
+			catch (IOException e) {
+				log.error("Failed to read file", e);
+				throw new FileIOException(e);
+			}
 		}
-		catch (IOException e) {
-			log.error("Failed to read file", e);
-			throw new FileIOException(e);
+		else {
+			throw new NotFoundException("Failed to read csv file, invalid time range time stamp");
 		}
 	}
 
@@ -161,12 +165,12 @@ public class CSVFileGenerator {
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeTimeStamp) {
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(Paths.get(FILE_LOCAL_PATH,
-					ReportType.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION));
-			case PIPELINE -> readStringFromCsvFile(Paths.get(FILE_LOCAL_PATH,
-					ReportType.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION));
-			default -> readStringFromCsvFile(Paths.get(FILE_LOCAL_PATH,
-					ReportType.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION));
+			case METRIC -> readStringFromCsvFile(
+					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
+			case PIPELINE -> readStringFromCsvFile(
+					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
+			default -> readStringFromCsvFile(
+					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
 		};
 	}
 
