@@ -10,6 +10,9 @@ import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { TIPS } from '@src/constants/resources';
 import { Tooltip } from '@mui/material';
 import React, { useState } from 'react';
+import {useAppSelector} from "@src/hooks";
+import {selectDateRange} from "@src/context/config/configSlice";
+import {sortDateRanges} from "@src/utils/util";
 
 interface ReportButtonGroupProps {
   handleSave?: () => void;
@@ -38,6 +41,9 @@ export const ReportButtonGroup = ({
 }: ReportButtonGroupProps) => {
   const [isShowDialog, setIsShowDialog] = useState(false);
   const { fetchExportData, isExpired } = useExportCsvEffect();
+  const dateRanges = useAppSelector(selectDateRange);
+  const descendingSortedDateRanges = sortDateRanges(dateRanges);
+  const [timePeriods, setTimePeriods] = useState([{}]);
 
   const exportCSV = (dataType: REPORT_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
