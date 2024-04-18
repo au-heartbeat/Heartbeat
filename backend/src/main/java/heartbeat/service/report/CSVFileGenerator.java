@@ -71,9 +71,8 @@ public class CSVFileGenerator {
 
 	private static final String REWORK_FIELD = "Rework";
 
-	private static InputStreamResource readStringFromCsvFile(String fileName) {
+	private static InputStreamResource readStringFromCsvFile(Path filePath) {
 		try {
-			Path filePath = Paths.get(fileName);
 			InputStream inputStream = Files.newInputStream(filePath);
 
 			return new InputStreamResource(inputStream);
@@ -162,12 +161,12 @@ public class CSVFileGenerator {
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeTimeStamp) {
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(
-					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
-			case PIPELINE -> readStringFromCsvFile(
-					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
-			default -> readStringFromCsvFile(
-					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
+			case METRIC -> readStringFromCsvFile(Paths.get(FILE_LOCAL_PATH,
+					ReportType.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION));
+			case PIPELINE -> readStringFromCsvFile(Paths.get(FILE_LOCAL_PATH,
+					ReportType.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION));
+			default -> readStringFromCsvFile(Paths.get(FILE_LOCAL_PATH,
+					ReportType.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION));
 		};
 	}
 
