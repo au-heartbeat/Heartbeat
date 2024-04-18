@@ -1,3 +1,4 @@
+import { selectConfig } from '@src/context/config/configSlice';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -6,6 +7,10 @@ import { reportClient } from '@src/clients/report/ReportClient';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { useRef, useState } from 'react';
+import { useAppSelector } from '@src/hooks';
+import get from 'lodash/get'
+import dayjs from 'dayjs';
+import { formatDateToTimestampString } from '@src/utils/util';
 
 export interface useGenerateReportEffectInterface {
   startToRequestData: (params: ReportRequestDTO) => void;
@@ -21,6 +26,7 @@ export interface useGenerateReportEffectInterface {
 
 export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const reportPath = '/reports';
+  const configData = useAppSelector(selectConfig);
   const [timeout4Board, setTimeout4Board] = useState(DEFAULT_MESSAGE);
   const [timeout4Dora, setTimeout4Dora] = useState(DEFAULT_MESSAGE);
   const [timeout4Report, setTimeout4Report] = useState(DEFAULT_MESSAGE);
@@ -30,21 +36,28 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const [reportData, setReportData] = useState<ReportResponseDTO | undefined>();
   const timerIdRef = useRef<number>();
   let hasPollingStarted = false;
+  const dateRanges = get(configData, 'basic.dateRange', [])
 
   const startToRequestData = (params: ReportRequestDTO) => {
     const { metricTypes } = params;
     resetTimeoutMessage(metricTypes);
-    reportClient
-      .retrieveByUrl(params, reportPath)
-      .then((res) => {
-        if (hasPollingStarted) return;
-        hasPollingStarted = true;
-        pollingReport(res.response.callbackUrl, res.response.interval);
-      })
-      .catch((e) => {
-        const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
-        handleError(e, source);
-      });
+
+    return Promise.all(dateRanges.map(({startDate, endDate}) => (
+      reportClient.retrieveByUrl({
+        ...params,
+        startTime: dayjs(startDate).unix().toString(),
+        endTime: dayjs(endDate).unix().toString()
+      },
+      reportPath)
+    ))).then(responses => {
+      if (hasPollingStarted) return;
+      hasPollingStarted = true;
+      const interval = get(responses, '0.response.interval', 10)
+      return responses.map(({ response: {callbackUrl } }) => pollingReport(callbackUrl, interval))
+    }).catch((e) => {
+      const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
+      handleError(e, source);
+    })
   };
 
   const resetTimeoutMessage = (metricTypes: string[]) => {
