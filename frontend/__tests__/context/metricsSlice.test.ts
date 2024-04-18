@@ -20,6 +20,7 @@ import saveMetricsSettingReducer, {
   selectReworkTimesSettings,
   selectShouldGetBoardConfig,
   selectShouldGetPipelineConfig,
+  selectShouldRetryPipelineConfig,
   selectStepWarningMessage,
   selectTreatFlagCardAsBlock,
   setCycleTimeSettingsType,
@@ -34,6 +35,7 @@ import saveMetricsSettingReducer, {
   updateReworkTimesSettings,
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
+  updateShouldRetryPipelineConfig,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import {
@@ -49,6 +51,7 @@ import { store } from '@src/store';
 const initState = {
   shouldGetBoardConfig: true,
   shouldGetPipeLineConfig: true,
+  shouldRetryPipelineConfig: false,
   jiraColumns: [],
   targetFields: [],
   users: [],
@@ -1476,6 +1479,7 @@ describe('saveMetricsSetting reducer', () => {
           type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
         }),
       );
+      await store.dispatch(updateShouldRetryPipelineConfig(true));
     });
     afterEach(() => {
       jest.clearAllMocks();
@@ -1509,6 +1513,11 @@ describe('saveMetricsSetting reducer', () => {
     it('should return step warning message given its id and type', () => {
       expect(selectStepWarningMessage(store.getState(), 0)).toBeNull();
       expect(selectStepWarningMessage(store.getState(), 1)).toEqual(STEP_WARNING_MESSAGE);
+    });
+
+    it('should be true when change shouldRetryPipelineConfig it to true', () => {
+      // expect().toBeNull();
+      expect(selectShouldRetryPipelineConfig(store.getState())).toEqual(true);
     });
   });
 });

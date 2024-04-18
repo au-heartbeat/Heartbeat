@@ -1,4 +1,7 @@
+import { updateShouldRetryPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IStepsParams, IStepsRes, metricsClient } from '@src/clients/MetricsClient';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { TimeoutError } from '@src/errors/TimeoutError';
 import { MESSAGE } from '@src/constants/resources';
 import { DURATION } from '@src/constants/commons';
 import { useState } from 'react';
@@ -10,20 +13,21 @@ export interface useGetMetricsStepsEffectInterface {
     buildId: string,
     pipelineType: string,
     token: string,
-  ) => Promise<
-    | {
-        haveStep: boolean;
-        response: string[];
-        branches: string[];
-        pipelineCrews: string[];
-      }
-    | undefined
-  >;
+  ) => Promise<IStepsRes | undefined>;
   isLoading: boolean;
   errorMessage: string;
 }
 
+const TIMEOUT = 'timeout';
+
+function isAllTimeoutError(allStepsInfo: PromiseSettledResult<IStepsRes>[]) {
+  return allStepsInfo.every((stepInfo) => {
+    return (stepInfo as PromiseRejectedResult).reason instanceof TimeoutError;
+  });
+}
+
 export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface => {
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -35,18 +39,23 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     token: string,
   ) => {
     setIsLoading(true);
-    const allStepsInfo = await Promise.allSettled<IStepsRes>(
+    const allStepsRes = await Promise.allSettled<IStepsRes>(
       params.map((param) => {
         return metricsClient.getSteps(param, organizationId, buildId, pipelineType, token);
       }),
     );
     setIsLoading(false);
-    if (allStepsInfo.every((stepInfo) => stepInfo.status === 'rejected')) {
+    if (allStepsRes.every((stepInfo) => stepInfo.status === 'rejected')) {
+      if (isAllTimeoutError(allStepsRes)) {
+        dispatch(updateShouldRetryPipelineConfig(true));
+        setErrorMessageAndTime(pipelineType, TIMEOUT);
+        return;
+      }
       setErrorMessageAndTime(pipelineType);
       return;
     }
 
-    return allStepsInfo
+    return allStepsRes
       .filter((stepInfo) => stepInfo.status === 'fulfilled')
       .map((stepInfo) => (stepInfo as PromiseFulfilledResult<IStepsRes>).value)
       .reduce(
@@ -67,8 +76,8 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       );
   };
 
-  const setErrorMessageAndTime = (pipelineType: string) => {
-    setErrorMessage(`${MESSAGE.GET_STEPS_FAILED} ${pipelineType} steps`);
+  const setErrorMessageAndTime = (pipelineType: string, errReason?: string) => {
+    setErrorMessage(`${MESSAGE.GET_STEPS_FAILED} ${pipelineType} steps${errReason ? ': ' + errReason : ''}`);
     setTimeout(() => {
       setErrorMessage('');
     }, DURATION.ERROR_MESSAGE_TIME);
