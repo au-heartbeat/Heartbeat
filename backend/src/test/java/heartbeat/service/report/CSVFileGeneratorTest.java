@@ -7,7 +7,6 @@ import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
-import heartbeat.exception.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -485,11 +484,28 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
-	void shouldThrowExceptionWhenFileIsNotExist() {
-		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "../";
-		assertThrows(NotFoundException.class,
+	void shouldThrowExceptionWhenTimeStampHasTwoPoint() {
+		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "..";
+
+		assertThrows(IllegalArgumentException.class,
 				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp));
 
+	}
+
+	@Test
+	void shouldThrowExceptionWhenTimeStampHasSlash() {
+		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "/";
+
+		assertThrows(IllegalArgumentException.class,
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp));
+	}
+
+	@Test
+	void shouldThrowExceptionWhenTimeStampHasBackslash() {
+		String mockTimeRangeTimeStamp = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "\\";
+
+		assertThrows(IllegalArgumentException.class,
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp));
 	}
 
 	@Test

@@ -30,7 +30,6 @@ import heartbeat.controller.report.dto.response.Rework;
 import heartbeat.controller.report.dto.response.Velocity;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
-import heartbeat.exception.NotFoundException;
 import heartbeat.util.DecimalUtil;
 import io.micrometer.core.instrument.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
@@ -71,19 +70,14 @@ public class CSVFileGenerator {
 	private static final String REWORK_FIELD = "Rework";
 
 	private static InputStreamResource readStringFromCsvFile(String fileName) {
-		if (!fileName.contains("..")) {
-			try {
-				InputStream inputStream = new FileInputStream(fileName);
+		try {
+			InputStream inputStream = new FileInputStream(fileName);
 
-				return new InputStreamResource(inputStream);
-			}
-			catch (IOException e) {
-				log.error("Failed to read file", e);
-				throw new FileIOException(e);
-			}
+			return new InputStreamResource(inputStream);
 		}
-		else {
-			throw new NotFoundException("Failed to read csv file, invalid time range time stamp");
+		catch (IOException e) {
+			log.error("Failed to read file", e);
+			throw new FileIOException(e);
 		}
 	}
 
@@ -164,6 +158,10 @@ public class CSVFileGenerator {
 	}
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeTimeStamp) {
+		if (timeRangeTimeStamp.contains("..") || timeRangeTimeStamp.contains("/")
+				|| timeRangeTimeStamp.contains("\\")) {
+			throw new IllegalArgumentException("Invalid time range time stamp");
+		}
 		return switch (reportDataType) {
 			case METRIC -> readStringFromCsvFile(
 					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
