@@ -91,5 +91,5 @@ export const GRID_CONFIG = {
 export const BOARD_INFO_FAIL_STATUS = {
   NOT_FAILED: 0,
   PARTIAL_FAILED: 1,
-  ALL_FAILED: 2
+  ALL_FAILED: 2,
 };

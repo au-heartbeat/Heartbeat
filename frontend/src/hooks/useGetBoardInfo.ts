@@ -1,10 +1,10 @@
-import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from "@src/constants/resources";
-import { boardInfoClient } from "@src/clients/board/BoardInfoClient";
-import { BoardInfoConfigDTO } from "@src/clients/board/dto/request";
-import { AxiosResponse, HttpStatusCode } from "axios";
-import { ReactNode, useState } from "react";
-import get from "lodash/get";
-import dayjs from "dayjs";
+import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
+import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
+import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
+import { AxiosResponse, HttpStatusCode } from 'axios';
+import { ReactNode, useState } from 'react';
+import get from 'lodash/get';
+import dayjs from 'dayjs';
 
 export type JiraColumns = Record<string, string>[];
 export type TargetFields = Record<string, string>[];
