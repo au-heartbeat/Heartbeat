@@ -188,10 +188,8 @@ describe('SourceControl', () => {
       tokenInput.focus();
     });
 
-    await waitFor(() => {
-      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
-      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
-    });
+    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
+    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
   });
 
   it('should not show error message when field does not trigger any event given an empty value', () => {
@@ -204,12 +202,14 @@ describe('SourceControl', () => {
     setup();
 
     const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
-    tokenInput.focus();
-
-    await waitFor(() => {
-      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
-      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
+    act(() => {
+      tokenInput.focus();
     });
+
+    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
+    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
+    // await waitFor(() => {
+    // });
   });
 
   it('should show error message and error style when token is invalid', async () => {
@@ -231,11 +231,8 @@ describe('SourceControl', () => {
     setup();
 
     await fillSourceControlFieldsInformation();
+    await userEvent.click(screen.getByRole('button', { name: VERIFY }));
 
-    fireEvent.click(screen.getByRole('button', { name: VERIFY }));
-
-    await waitFor(() => {
-      expect(screen.getByText(MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT)).toBeInTheDocument();
-    });
+    expect(screen.getByText(MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT)).toBeInTheDocument();
   });
 });
