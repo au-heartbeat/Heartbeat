@@ -48,6 +48,7 @@ import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import { theme } from '@src/theme';
 import merge from 'lodash/merge';
+import { BOARD_INFO_FAIL_STATUS } from "@src/constants/commons";
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
@@ -72,8 +73,8 @@ const MetricsStep = () => {
   const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
-  const [partialFailed, setPartialFailed] = useState(false);
-  const [allFailed, setAllFailed] = useState(false);
+
+  const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState<BOARD_INFO_FAIL_STATUS>(BOARD_INFO_FAIL_STATUS.NOT_FAILED);
 
   const getInfo = useCallback(
     async () => {
@@ -81,13 +82,13 @@ const MetricsStep = () => {
         ...boardConfig,
         dateRanges,
       }).then((res) => {
-        // console.log(res);
         if (res) {
+          console.log(res);
           const errorRequests = res.filter((data) => !data.data);
           if (errorRequests.length == res.length) {
-            setAllFailed(true);
+            setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.ALL_FAILED);
           } else if (errorRequests.length > 0) {
-            setPartialFailed(true);
+            setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED);
             dispatch(
               addNotification({
                 type: 'warning',
@@ -95,8 +96,7 @@ const MetricsStep = () => {
               }),
             );
           } else {
-            setAllFailed(false);
-            setPartialFailed(false);
+            setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.NOT_FAILED);
           }
         }
 
@@ -140,7 +140,7 @@ const MetricsStep = () => {
           {isLoading && <Loading />}
           <MetricsSelectionTitle>
             Board configuration{' '}
-            {(partialFailed || allFailed) && <StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>}{' '}
+            {(boardInfoFailedStatus == 2) && <StyledRetryButton onClick={getInfo}>Retry</StyledRetryButton>}{' '}
           </MetricsSelectionTitle>
 
           {isEmpty(errorMessage) ? (

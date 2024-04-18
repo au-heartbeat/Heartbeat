@@ -87,3 +87,9 @@ export const GRID_CONFIG = {
   HALF: { XS: 6, MAX_INDEX: 2, FLEX: 1 },
   FULL: { XS: 12, MAX_INDEX: 4, FLEX: 0.25 },
 };
+
+export const BOARD_INFO_FAIL_STATUS = {
+  NOT_FAILED: 0,
+  PARTIAL_FAILED: 1,
+  ALL_FAILED: 2
+};
