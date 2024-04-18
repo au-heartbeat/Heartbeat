@@ -93,6 +93,8 @@ export const PipelineMetricSelection = ({
   useEffect(() => {
     if (isLoadingRef.current && !isLoading) {
       setLoadingCompletedNumber((value) => Math.min(totalPipelineNumber, value + 1));
+    } else if (!shouldGetPipelineConfig && !isLoading) {
+      setLoadingCompletedNumber(totalPipelineNumber);
     }
     isLoadingRef.current = isLoading;
   }, [isLoading, setLoadingCompletedNumber, totalPipelineNumber, shouldGetPipelineConfig]);
