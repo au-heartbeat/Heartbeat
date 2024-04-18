@@ -11,10 +11,13 @@ import {
   FAKE_PIPELINE_TOKEN,
   REVERIFY,
 } from '../../fixtures';
+import { pipelineToolDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
+import { pipelineToolSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { FormProvider } from '@test/utils/FormProviders';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -24,7 +27,7 @@ import { rest } from 'msw';
 
 export const fillPipelineToolFieldsInformation = async () => {
   const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-    'input Token',
+    'input token',
   ) as HTMLInputElement;
   await userEvent.type(tokenInput, FAKE_PIPELINE_TOKEN);
 
@@ -45,7 +48,9 @@ describe('PipelineTool', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <PipelineTool />
+        <FormProvider schema={pipelineToolSchema} defaultValues={pipelineToolDefaultValues}>
+          <PipelineTool />
+        </FormProvider>
       </Provider>,
     );
   };
@@ -74,7 +79,7 @@ describe('PipelineTool', () => {
   it('should clear all fields information when click reset button', async () => {
     setup();
     const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      'input Token',
+      'input token',
     ) as HTMLInputElement;
     await fillPipelineToolFieldsInformation();
 
@@ -144,7 +149,7 @@ describe('PipelineTool', () => {
     await fillPipelineToolFieldsInformation();
     const mockInfo = 'mockToken';
     const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      'input Token',
+      'input token',
     ) as HTMLInputElement;
     await userEvent.type(tokenInput, mockInfo);
     await userEvent.clear(tokenInput);
@@ -162,7 +167,7 @@ describe('PipelineTool', () => {
   it('should show error message when focus on field given an empty value', async () => {
     setup();
 
-    await userEvent.click(screen.getByLabelText('input Token'));
+    await userEvent.click(screen.getByLabelText('input token'));
 
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
@@ -172,7 +177,7 @@ describe('PipelineTool', () => {
     setup();
     const mockInfo = 'mockToken';
     const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      'input Token',
+      'input token',
     ) as HTMLInputElement;
     await userEvent.type(tokenInput, mockInfo);
 

@@ -15,8 +15,8 @@ import { boardConfigSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
-import { RHFFormProvider } from '@test/utils/FormProviders';
 import { Board } from '@src/containers/ConfigStep/Board';
+import { FormProvider } from '@test/utils/FormProviders';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import userEvent from '@testing-library/user-event';
@@ -62,9 +62,9 @@ describe('Board', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <RHFFormProvider schema={boardConfigSchema} defaultValues={boardConfigDefaultValues}>
+        <FormProvider schema={boardConfigSchema} defaultValues={boardConfigDefaultValues}>
           <Board />
-        </RHFFormProvider>
+        </FormProvider>
       </Provider>,
     );
   };

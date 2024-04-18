@@ -17,7 +17,7 @@ import { sourceControlClient } from '@src/clients/sourceControl/SourceControlCli
 import { fireEvent, render, screen, act, waitFor } from '@testing-library/react';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
-import { RHFFormProvider } from '@test/utils/FormProviders';
+import { FormProvider } from '@test/utils/FormProviders';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -57,9 +57,9 @@ describe('SourceControl', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <RHFFormProvider schema={sourceControlSchema} defaultValues={sourceControlDefaultValues}>
+        <FormProvider schema={sourceControlSchema} defaultValues={sourceControlDefaultValues}>
           <SourceControl />
-        </RHFFormProvider>
+        </FormProvider>
       </Provider>,
     );
   };
