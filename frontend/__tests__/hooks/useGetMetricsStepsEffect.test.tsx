@@ -54,7 +54,7 @@ describe('use get steps effect', () => {
     expect(result.current.errorMessage).toEqual('');
   });
 
-  it('should set error message when steps responses are failed', async () => {
+  it('should set error message when get steps responses are failed', async () => {
     metricsClient.getSteps = jest.fn().mockImplementation(() => {
       return Promise.reject('error');
     });

@@ -20,8 +20,8 @@ export interface useGetMetricsStepsEffectInterface {
 
 const TIMEOUT = 'timeout';
 
-function isAllTimeoutError(allStepsInfo: PromiseSettledResult<IStepsRes>[]) {
-  return allStepsInfo.every((stepInfo) => {
+function isAllTimeoutError(allStepsRes: PromiseSettledResult<IStepsRes>[]) {
+  return allStepsRes.every((stepInfo) => {
     return (stepInfo as PromiseRejectedResult).reason instanceof TimeoutError;
   });
 }

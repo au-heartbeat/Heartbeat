@@ -593,6 +593,11 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedPipelineCrews.pipelineCrews).toBe(crews);
   });
 
+  it('should update ShouldRetryPipelineConfig', () => {
+    const result = saveMetricsSettingReducer(initState, updateShouldRetryPipelineConfig(true));
+    expect(result.shouldRetryPipelineConfig).toEqual(true);
+  });
+
   it('should set cycle time setting type', () => {
     const setCycleTimeSettingsTypeResult = saveMetricsSettingReducer(
       initState,
@@ -1479,7 +1484,6 @@ describe('saveMetricsSetting reducer', () => {
           type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
         }),
       );
-      await store.dispatch(updateShouldRetryPipelineConfig(true));
     });
     afterEach(() => {
       jest.clearAllMocks();
@@ -1513,11 +1517,6 @@ describe('saveMetricsSetting reducer', () => {
     it('should return step warning message given its id and type', () => {
       expect(selectStepWarningMessage(store.getState(), 0)).toBeNull();
       expect(selectStepWarningMessage(store.getState(), 1)).toEqual(STEP_WARNING_MESSAGE);
-    });
-
-    it('should be true when change shouldRetryPipelineConfig it to true', () => {
-      // expect().toBeNull();
-      expect(selectShouldRetryPipelineConfig(store.getState())).toEqual(true);
     });
   });
 });
