@@ -15,7 +15,7 @@ export const Board = () => {
   const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
   const {
     clearErrors,
-    formState: { isValid, isSubmitSuccessful, errors, isDirty },
+    formState: { isValid, isSubmitSuccessful, errors },
     formState,
     handleSubmit,
   } = useFormContext();
@@ -34,7 +34,7 @@ export const Board = () => {
         <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeTimeoutAlert} moduleType={'Board'} />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
-        {fields.map(({ key, col }) =>
+        {fields.map(({ key, col, label }) =>
           key === 'type' ? (
             <FormSingleSelect
               key={key}
@@ -45,7 +45,7 @@ export const Board = () => {
               selectLabelId='board-type-checkbox-label'
             />
           ) : (
-            <FormTextField name={key} key={key} col={col} />
+            <FormTextField name={key} key={key} col={col} label={label} />
           ),
         )}
         <ConfigButtonGrop

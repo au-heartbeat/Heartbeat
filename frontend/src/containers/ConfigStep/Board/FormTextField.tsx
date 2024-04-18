@@ -7,9 +7,10 @@ import { KEYS } from '@src/hooks/useVerifyBoardEffect';
 interface IFormTextField {
   name: Exclude<TBoardFieldKeys, 'type'>;
   col: number;
+  label: string;
 }
 
-export const FormTextField = ({ name, col }: IFormTextField) => {
+export const FormTextField = ({ name, col, label }: IFormTextField) => {
   const {
     control,
     setError,
@@ -26,7 +27,7 @@ export const FormTextField = ({ name, col }: IFormTextField) => {
             {...field}
             data-testid={name}
             required
-            label={name}
+            label={label}
             variant='standard'
             type={name === KEYS.TOKEN ? 'password' : 'text'}
             onFocus={() => {

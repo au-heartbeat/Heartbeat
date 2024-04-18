@@ -11,11 +11,15 @@ import {
   VERIFY,
 } from '../../fixtures';
 import { initDeploymentFrequencySettings, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
+import { ISourceControlData, sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { AXIOS_REQUEST_ERROR_CODE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { fireEvent, render, screen, act, waitFor } from '@testing-library/react';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { useForm, FormProvider } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
@@ -23,13 +27,13 @@ import { HttpStatusCode } from 'axios';
 import { rest } from 'msw';
 import React from 'react';
 
-export const fillSourceControlFieldsInformation = () => {
+export const fillSourceControlFieldsInformation = async () => {
   const mockInfo = 'AAAAA_XXXXXX'
     .replace('AAAAA', 'ghpghoghughsghr')
     .replace('XXXXXX', '1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b');
   const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
 
-  fireEvent.change(tokenInput, { target: { value: mockInfo } });
+  await userEvent.type(tokenInput, mockInfo);
 
   expect(tokenInput.value).toEqual(mockInfo);
 };
@@ -46,6 +50,22 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   initDeploymentFrequencySettings: jest.fn().mockReturnValue({ type: 'INIT_DEPLOYMENT_SETTINGS' }),
 }));
 
+const SourceControlWithForm = () => {
+  const defaultValues = useDefaultValues();
+
+  const sourceControlMethods = useForm<ISourceControlData>({
+    defaultValues: defaultValues.sourceControlOriginal,
+    resolver: yupResolver(sourceControlSchema),
+    mode: 'onChange',
+  });
+
+  return (
+    <FormProvider {...sourceControlMethods}>
+      <SourceControl />
+    </FormProvider>
+  );
+};
+
 describe('SourceControl', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());
@@ -54,7 +74,7 @@ describe('SourceControl', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <SourceControl />
+        <SourceControlWithForm />
       </Provider>,
     );
   };
@@ -83,9 +103,9 @@ describe('SourceControl', () => {
     setup();
     const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
 
-    fillSourceControlFieldsInformation();
+    await fillSourceControlFieldsInformation();
 
-    await userEvent.click(screen.getByText(VERIFY));
+    await userEvent.click(screen.getByRole('button', { name: VERIFY }));
 
     await waitFor(async () => {
       expect(screen.getByRole('button', { name: RESET })).toBeTruthy();
@@ -133,22 +153,24 @@ describe('SourceControl', () => {
     expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 
-  it('should enable verify button when all fields checked correctly given disable verify button', () => {
+  it('should enable verify button when all fields checked correctly given disable verify button', async () => {
     setup();
     const verifyButton = screen.getByRole('button', { name: VERIFY });
 
     expect(verifyButton).toBeDisabled();
 
-    fillSourceControlFieldsInformation();
+    await fillSourceControlFieldsInformation();
 
-    expect(verifyButton).toBeEnabled();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: VERIFY })).toBeEnabled();
+    });
   });
 
   it('should show reset button and verified button when verify successfully', async () => {
     setup();
-    fillSourceControlFieldsInformation();
+    await fillSourceControlFieldsInformation();
 
-    fireEvent.click(screen.getByText(VERIFY));
+    await userEvent.click(screen.getByText(VERIFY));
 
     await waitFor(() => {
       expect(screen.getByText(RESET)).toBeTruthy();
@@ -161,29 +183,30 @@ describe('SourceControl', () => {
 
   it('should reload pipeline config when reset fields', async () => {
     setup();
-    fillSourceControlFieldsInformation();
+    await fillSourceControlFieldsInformation();
 
     await userEvent.click(screen.getByText(VERIFY));
 
     await userEvent.click(screen.getByRole('button', { name: RESET }));
 
-    fillSourceControlFieldsInformation();
+    await fillSourceControlFieldsInformation();
 
     expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
     expect(initDeploymentFrequencySettings).toHaveBeenCalled();
   });
 
-  it('should show error message and error style when token is empty', () => {
+  it('should show error message and error style when token is empty', async () => {
     setup();
 
-    fillSourceControlFieldsInformation();
-
     const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
+    act(() => {
+      tokenInput.focus();
+    });
 
-    fireEvent.change(tokenInput, { target: { value: '' } });
-
-    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
-    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
+    await waitFor(() => {
+      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
+      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
+    });
   });
 
   it('should not show error message when field does not trigger any event given an empty value', () => {
@@ -192,21 +215,24 @@ describe('SourceControl', () => {
     expect(screen.queryByText(TOKEN_ERROR_MESSAGE[1])).not.toBeInTheDocument();
   });
 
-  it('should show error message when focus on field given an empty value', () => {
+  it('should show error message when focus on field given an empty value', async () => {
     setup();
 
-    fireEvent.focus(screen.getByLabelText('input Token'));
+    const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
+    tokenInput.focus();
 
-    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
-    expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
+    await waitFor(() => {
+      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
+      expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
+    });
   });
 
-  it('should show error message and error style when token is invalid', () => {
+  it('should show error message and error style when token is invalid', async () => {
     setup();
     const mockInfo = 'mockToken';
     const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
 
-    fireEvent.change(tokenInput, { target: { value: mockInfo } });
+    await userEvent.type(tokenInput, mockInfo);
 
     expect(tokenInput.value).toEqual(mockInfo);
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[0])).toBeInTheDocument();
@@ -219,7 +245,7 @@ describe('SourceControl', () => {
     );
     setup();
 
-    fillSourceControlFieldsInformation();
+    await fillSourceControlFieldsInformation();
 
     fireEvent.click(screen.getByRole('button', { name: VERIFY }));
 

@@ -38,7 +38,7 @@ export const PipelineTool = () => {
           key={fields[FIELD_KEY.TYPE].key}
           name={fields[FIELD_KEY.TYPE].key}
           options={Object.values(PIPELINE_TOOL_TYPES)}
-          labelText='Pipeline Tool'
+          labelText={fields[FIELD_KEY.TYPE].label}
           labelId='pipelineTool-type-checkbox-label'
           selectLabelId='pipelineTool-type-checkbox-label'
           selectAriaLabel='Pipeline Tool type select'
@@ -53,7 +53,7 @@ export const PipelineTool = () => {
                 required
                 key={fields[FIELD_KEY.TOKEN].key}
                 data-testid='pipelineToolTextField'
-                label={fields[FIELD_KEY.TOKEN].key}
+                label={fields[FIELD_KEY.TOKEN].label}
                 variant='standard'
                 type='password'
                 inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}

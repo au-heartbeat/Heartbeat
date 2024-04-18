@@ -19,12 +19,16 @@ export enum FIELD_KEY {
 
 interface IField {
   key: TSourceControlFieldKeys;
+  label: string;
 }
 
 export const useVerifySourceControlTokenEffect = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const fields: IField[] = [{ key: 'type' }, { key: 'token' }];
+  const fields: IField[] = [
+    { key: 'type', label: 'Source Control' },
+    { key: 'token', label: 'Token' },
+  ];
   const { sourceControlOriginal } = useDefaultValues();
   const { reset, setError, getValues } = useFormContext();
   const persistReduxData = (sourceControlConfig: ISourceControlData) => {

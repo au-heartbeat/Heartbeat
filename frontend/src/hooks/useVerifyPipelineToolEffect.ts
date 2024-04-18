@@ -19,13 +19,17 @@ export enum FIELD_KEY {
 }
 interface IField {
   key: TPipelineToolFieldKeys;
+  label: string;
 }
 
 export const useVerifyPipelineToolEffect = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const { pipelineToolOriginal } = useDefaultValues();
-  const fields: IField[] = [{ key: 'type' }, { key: 'token' }];
+  const fields: IField[] = [
+    { key: 'type', label: 'Pipeline Tool' },
+    { key: 'token', label: 'Token' },
+  ];
   const { reset, setError, getValues } = useFormContext();
   const persistReduxData = (pipelineToolConfig: IPipelineToolData) => {
     dispatch(updatePipelineTool(pipelineToolConfig));

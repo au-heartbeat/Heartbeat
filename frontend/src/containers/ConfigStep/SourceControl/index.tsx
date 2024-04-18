@@ -38,7 +38,7 @@ export const SourceControl = () => {
           key={fields[FIELD_KEY.TYPE].key}
           name={fields[FIELD_KEY.TYPE].key}
           options={Object.values(SOURCE_CONTROL_TYPES)}
-          labelText='Source Control'
+          labelText={fields[FIELD_KEY.TYPE].label}
           labelId='sourceControl-type-checkbox-label'
           selectLabelId='sourceControl-type-checkbox-label'
         />
@@ -52,7 +52,7 @@ export const SourceControl = () => {
                 data-testid='sourceControlTextField'
                 key={fields[FIELD_KEY.TOKEN].key}
                 required
-                label={fields[FIELD_KEY.TOKEN].key}
+                label={fields[FIELD_KEY.TOKEN].label}
                 variant='standard'
                 type='password'
                 inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}

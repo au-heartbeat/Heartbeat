@@ -27,6 +27,7 @@ export enum FIELD_KEY {
 export interface IField {
   key: TBoardFieldKeys;
   col: number;
+  label: string;
 }
 
 export interface useVerifyBoardStateInterface {
@@ -59,22 +60,27 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     {
       key: KEYS.BOARD,
       col: 1,
+      label: 'Board',
     },
     {
       key: KEYS.BOARD_ID,
       col: 1,
+      label: 'Board Id',
     },
     {
       key: KEYS.EMAIL,
       col: 1,
+      label: 'Email',
     },
     {
       key: KEYS.SITE,
       col: 1,
+      label: 'Site',
     },
     {
       key: KEYS.TOKEN,
       col: 2,
+      label: 'Token',
     },
   ];
 
