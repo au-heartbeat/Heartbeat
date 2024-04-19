@@ -8,9 +8,14 @@ export class CSVClient extends HttpClient {
   parseCollectionDateToHumanDate = (date: string) => dayjs(date).format('YYYYMMDD');
 
   exportCSVData = async (params: CSVReportRequestDTO) => {
-    const timeRange = `${this.parseCollectionDateToHumanDate(params.startDate)}-${this.parseCollectionDateToHumanDate(params.endDate)}`;
     await this.axiosInstance
-      .get(`/reports/${params.dataType}/${params.csvTimeStamp}/${timeRange}`, { responseType: 'blob' })
+      .get(`/reports/${params.dataType}/${params.csvTimeStamp}`, {
+        params: {
+          startDate: this.parseCollectionDateToHumanDate(params.startDate),
+          endDate: this.parseCollectionDateToHumanDate(params.endDate),
+        },
+        responseType: 'blob',
+      })
       .then((res) => {
         const exportedFilename = `${params.dataType}-${this.parseCollectionDateToHumanDate(
           params.startDate,

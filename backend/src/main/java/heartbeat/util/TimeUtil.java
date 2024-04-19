@@ -34,7 +34,7 @@ public interface TimeUtil {
 
 	static String convertToChinaSimpleISOFormat(Long timestamp) {
 		LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Asia/Shanghai"));
-		return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		return dateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 	}
 
 	static String msToHMS(long timeStamp) {

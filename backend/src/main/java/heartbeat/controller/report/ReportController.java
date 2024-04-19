@@ -6,6 +6,7 @@ import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -37,22 +38,26 @@ public class ReportController {
 	@Value("${callback.interval}")
 	private Integer interval;
 
-	@GetMapping("/{reportType}/{timeStamp}/{timeRange}")
+	@GetMapping("/{reportType}/{timeStamp}")
 	public InputStreamResource exportCSV(
 			@Schema(type = "string", allowableValues = { "metric", "pipeline", "board" },
-					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable() ReportType reportType,
-			@PathVariable String timeStamp, @PathVariable String timeRange) {
+					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable ReportType reportType,
+			@PathVariable String timeStamp, @Schema(type = "string", example = "20240310") @Parameter String startTime,
+			@Schema(type = "string", example = "20240409") @Parameter String endTime) {
 		log.info("Start to export CSV file_reportType: {}, filename: {}", reportType.getValue(), timeStamp);
-		InputStreamResource result = reportService.exportCsv(reportType, timeStamp, timeRange);
+		InputStreamResource result = reportService.exportCsv(reportType, timeStamp, startTime, endTime);
 		log.info("Successfully get CSV file_reportType: {}, filename: {}, _result: {}", reportType.getValue(),
 				timeStamp, result);
 		return result;
 	}
 
-	@GetMapping("/{reportId}")
-	public ResponseEntity<ReportResponse> generateReport(@PathVariable String reportId) {
-		log.info("Start to generate report_reportId: {}", reportId);
-		ReportResponse reportResponse = generateReporterService.getComposedReportResponse(reportId);
+	@GetMapping("/{timeStamp}")
+	public ResponseEntity<ReportResponse> generateReport(@PathVariable String timeStamp,
+			@Schema(type = "string", example = "20240310") @Parameter String startTime,
+			@Schema(type = "string", example = "20240409") @Parameter String endTime) {
+		log.info("Start to generate report_reportId: {}", timeStamp);
+		ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp, startTime,
+				endTime);
 		return ResponseEntity.status(HttpStatus.OK).body(reportResponse);
 	}
 
@@ -60,7 +65,7 @@ public class ReportController {
 	public ResponseEntity<CallbackResponse> generateReport(@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
 		reportService.generateReport(request);
-		String callbackUrl = "/reports/" + request.getTimeRangeTimeStamp();
+		String callbackUrl = "/reports/" + request.getCsvTimeStamp();
 		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());

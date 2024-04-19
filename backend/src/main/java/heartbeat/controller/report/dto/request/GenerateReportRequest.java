@@ -70,7 +70,7 @@ public class GenerateReportRequest {
 	}
 
 	@JsonIgnore
-	public String getTimeRangeTimeStamp() {
+	public String getTimeRangeAndTimeStamp() {
 		return TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.startTime)).replace("-", "") + "-"
 				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.endTime)).replace("-", "") + "-"
 				+ this.csvTimeStamp;
@@ -79,17 +79,17 @@ public class GenerateReportRequest {
 
 	@JsonIgnore
 	public String getPipelineReportFileId() {
-		return IdUtil.getPipelineReportFileId(this.getTimeRangeTimeStamp());
+		return IdUtil.getPipelineReportFileId(this.getTimeRangeAndTimeStamp());
 	}
 
 	@JsonIgnore
 	public String getSourceControlReportFileId() {
-		return IdUtil.getSourceControlReportFileId(this.getTimeRangeTimeStamp());
+		return IdUtil.getSourceControlReportFileId(this.getTimeRangeAndTimeStamp());
 	}
 
 	@JsonIgnore
 	public String getBoardReportFileId() {
-		return IdUtil.getBoardReportFileId(this.getTimeRangeTimeStamp());
+		return IdUtil.getBoardReportFileId(this.getTimeRangeAndTimeStamp());
 	}
 
 	@JsonIgnore

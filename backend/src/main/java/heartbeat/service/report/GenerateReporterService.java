@@ -18,10 +18,10 @@ import heartbeat.handler.AsyncExceptionHandler;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.handler.AsyncReportRequestHandler;
 import heartbeat.handler.base.AsyncExceptionDTO;
-import heartbeat.service.report.calculator.DevChangeFailureRateCalculator;
 import heartbeat.service.report.calculator.ClassificationCalculator;
 import heartbeat.service.report.calculator.CycleTimeCalculator;
 import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
+import heartbeat.service.report.calculator.DevChangeFailureRateCalculator;
 import heartbeat.service.report.calculator.LeadTimeForChangesCalculator;
 import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.ReworkCalculator;
@@ -84,6 +84,8 @@ public class GenerateReporterService {
 
 	private final AsyncExceptionHandler asyncExceptionHandler;
 
+	private static final char FILENAME_SEPARATOR = '-';
+
 	public void generateBoardReport(GenerateReportRequest request) {
 		String boardReportId = request.getBoardReportFileId();
 		removePreviousAsyncException(boardReportId);
@@ -121,7 +123,7 @@ public class GenerateReporterService {
 		}
 
 		MetricsDataCompleted previousMetricsCompleted = asyncMetricsDataHandler
-			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()));
+			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
 		if (Boolean.FALSE.equals(previousMetricsCompleted.doraMetricsCompleted())) {
 			CompletableFuture.runAsync(() -> generateCSVForPipeline(request, fetchedData.getBuildKiteData()));
 		}
@@ -145,7 +147,7 @@ public class GenerateReporterService {
 			asyncExceptionHandler.put(pipelineReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), DORA, false);
+						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()), DORA, false);
 		}
 	}
 
@@ -167,7 +169,7 @@ public class GenerateReporterService {
 			asyncExceptionHandler.put(sourceControlReportId, e);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), DORA, false);
+						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()), DORA, false);
 		}
 	}
 
@@ -226,7 +228,7 @@ public class GenerateReporterService {
 		kanbanCsvService.generateCsvInfo(request, fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
 				fetchedData.getCardCollectionInfo().getNonDoneCardCollection());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-				IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), BOARD, true);
+				IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()), BOARD, true);
 	}
 
 	private void assembleVelocity(FetchedData fetchedData, ReportResponse reportResponse) {
@@ -300,9 +302,9 @@ public class GenerateReporterService {
 		List<PipelineCSVInfo> pipelineData = pipelineService.generateCSVForPipeline(request.getStartTime(),
 				request.getEndTime(), buildKiteData, request.getBuildKiteSetting().getDeploymentEnvList());
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineData, request.getTimeRangeTimeStamp());
+		csvFileGenerator.convertPipelineDataToCSV(pipelineData, request.getTimeRangeAndTimeStamp());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
-				IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()), DORA, true);
+				IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()), DORA, true);
 	}
 
 	public void generateCSVForMetric(ReportResponse reportContent, String csvTimeRangeTimeStamp) {
@@ -365,24 +367,25 @@ public class GenerateReporterService {
 		return asyncReportRequestHandler.getReport(reportId);
 	}
 
-	public MetricsDataCompleted checkReportReadyStatus(String timeRangeTimeStamp) {
-		String timeStamp = timeRangeTimeStamp.substring(timeRangeTimeStamp.lastIndexOf("-") + 1);
+	public MetricsDataCompleted checkReportReadyStatus(String timeRangeAndTimeStamp) {
+		String timeStamp = timeRangeAndTimeStamp.substring(timeRangeAndTimeStamp.lastIndexOf(FILENAME_SEPARATOR) + 1);
 		if (validateExpire(System.currentTimeMillis(), Long.parseLong(timeStamp))) {
 			throw new GenerateReportException("Failed to get report due to report time expires");
 		}
-		return asyncMetricsDataHandler.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeTimeStamp));
+		return asyncMetricsDataHandler.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeAndTimeStamp));
 	}
 
-	public ReportResponse getComposedReportResponse(String timeRangeTimeStamp) {
-		MetricsDataCompleted reportReadyStatus = checkReportReadyStatus(timeRangeTimeStamp);
+	public ReportResponse getComposedReportResponse(String timeStamp, String startTime, String endTime) {
+		String timeRangeAndTimeStamp = startTime + FILENAME_SEPARATOR + endTime + FILENAME_SEPARATOR + timeStamp;
+		MetricsDataCompleted reportReadyStatus = checkReportReadyStatus(timeRangeAndTimeStamp);
 
-		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportFileId(timeRangeTimeStamp));
+		ReportResponse boardReportResponse = getReportFromHandler(IdUtil.getBoardReportFileId(timeRangeAndTimeStamp));
 		ReportResponse pipelineReportResponse = getReportFromHandler(
-				IdUtil.getPipelineReportFileId(timeRangeTimeStamp));
+				IdUtil.getPipelineReportFileId(timeRangeAndTimeStamp));
 		ReportResponse sourceControlReportResponse = getReportFromHandler(
-				IdUtil.getSourceControlReportFileId(timeRangeTimeStamp));
+				IdUtil.getSourceControlReportFileId(timeRangeAndTimeStamp));
 
-		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(timeRangeTimeStamp);
+		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(timeRangeAndTimeStamp);
 		return ReportResponse.builder()
 			.velocity(getValueOrNull(boardReportResponse, ReportResponse::getVelocity))
 			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))

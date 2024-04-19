@@ -10,6 +10,7 @@ import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.util.IdUtil;
+import heartbeat.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
@@ -37,12 +38,16 @@ public class ReportService {
 
 	private final ReportGenerator reportGenerator;
 
-	public InputStreamResource exportCsv(ReportType reportDataType, String csvTimestamp, String timeRange) {
-		String timeRangeTimeStamp = timeRange + "-" + csvTimestamp;
+	private static final char FILENAME_SEPARATOR = '-';
+
+	public InputStreamResource exportCsv(ReportType reportDataType, String csvTimestamp, String startTime,
+			String endTime) {
+
+		String timeRangeAndTimeStamp = startTime + FILENAME_SEPARATOR + endTime + FILENAME_SEPARATOR + csvTimestamp;
 		if (isExpiredTimeStamp(Long.parseLong(csvTimestamp))) {
 			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
 		}
-		return csvFileGenerator.getDataFromCSV(reportDataType, timeRangeTimeStamp);
+		return csvFileGenerator.getDataFromCSV(reportDataType, timeRangeAndTimeStamp);
 	}
 
 	private boolean isExpiredTimeStamp(long timeStamp) {
@@ -51,8 +56,8 @@ public class ReportService {
 
 	public void generateReport(GenerateReportRequest request) {
 		List<MetricType> metricTypes = request.getMetricTypes();
-		String timeRangeTimeStamp = request.getTimeRangeTimeStamp();
-		initializeMetricsDataCompletedInHandler(metricTypes, timeRangeTimeStamp);
+		String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+		initializeMetricsDataCompletedInHandler(metricTypes, timeRangeAndTimeStamp);
 		Map<MetricType, Consumer<GenerateReportRequest>> reportGeneratorMap = reportGenerator
 			.getReportGenerator(generateReporterService);
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
@@ -67,14 +72,19 @@ public class ReportService {
 				thread.join();
 			}
 
-			ReportResponse reportResponse = generateReporterService
-				.getComposedReportResponse(request.getTimeRangeTimeStamp());
+			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(request.getCsvTimeStamp(),
+					convertTimeStampToYYYYMMDD(request.getStartTime()),
+					convertTimeStampToYYYYMMDD(request.getEndTime()));
 			if (isNotGenerateMetricError(reportResponse.getReportMetricsError())) {
-				generateReporterService.generateCSVForMetric(reportResponse, request.getTimeRangeTimeStamp());
+				generateReporterService.generateCSVForMetric(reportResponse, request.getTimeRangeAndTimeStamp());
 			}
-			asyncMetricsDataHandler
-				.updateOverallMetricsCompletedInHandler(IdUtil.getDataCompletedPrefix(request.getTimeRangeTimeStamp()));
+			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(
+					IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
 		});
+	}
+
+	private String convertTimeStampToYYYYMMDD(String timeStamp) {
+		return TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(timeStamp));
 	}
 
 	private boolean isNotGenerateMetricError(ReportMetricsError reportMetricsError) {
@@ -83,9 +93,9 @@ public class ReportService {
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
 	}
 
-	private void initializeMetricsDataCompletedInHandler(List<MetricType> metricTypes, String timeRangeTimeStamp) {
+	private void initializeMetricsDataCompletedInHandler(List<MetricType> metricTypes, String timeRangeAndTimeStamp) {
 		MetricsDataCompleted previousMetricsDataCompleted = asyncMetricsDataHandler
-			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeTimeStamp));
+			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeAndTimeStamp));
 		Boolean initializeBoardMetricsCompleted = null;
 		Boolean initializeDoraMetricsCompleted = null;
 		if (!Objects.isNull(previousMetricsDataCompleted)) {
@@ -93,7 +103,8 @@ public class ReportService {
 			initializeDoraMetricsCompleted = previousMetricsDataCompleted.doraMetricsCompleted();
 		}
 		asyncMetricsDataHandler
-			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeTimeStamp), MetricsDataCompleted.builder()
+			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeAndTimeStamp), MetricsDataCompleted
+				.builder()
 				.boardMetricsCompleted(metricTypes.contains(BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
 				.doraMetricsCompleted(metricTypes.contains(DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
 				.overallMetricCompleted(Boolean.FALSE)

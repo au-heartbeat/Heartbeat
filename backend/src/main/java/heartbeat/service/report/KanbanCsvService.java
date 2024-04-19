@@ -101,7 +101,7 @@ public class KanbanCsvService {
 		}
 		this.generateCSVForBoard(realDoneCardCollection.getJiraCardDTOList(),
 				nonDoneCardCollection.getJiraCardDTOList(), jiraColumns.getJiraColumnResponse(),
-				jiraBoardSetting.getTargetFields(), request.getTimeRangeTimeStamp(), reworkState, reworkFromStates);
+				jiraBoardSetting.getTargetFields(), request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates);
 	}
 
 	private void generateCSVForBoard(List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,

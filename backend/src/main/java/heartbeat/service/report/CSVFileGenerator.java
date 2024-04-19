@@ -157,18 +157,18 @@ public class CSVFileGenerator {
 				pipelineFinishTime, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
-	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeTimeStamp) {
-		if (timeRangeTimeStamp.contains("..") || timeRangeTimeStamp.contains("/")
-				|| timeRangeTimeStamp.contains("\\")) {
+	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeAndTimeStamp) {
+		if (timeRangeAndTimeStamp.contains("..") || timeRangeAndTimeStamp.contains("/")
+				|| timeRangeAndTimeStamp.contains("\\")) {
 			throw new IllegalArgumentException("Invalid time range time stamp");
 		}
 		return switch (reportDataType) {
 			case METRIC -> readStringFromCsvFile(
-					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
+					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
 			case PIPELINE -> readStringFromCsvFile(
-					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
+					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
 			default -> readStringFromCsvFile(
-					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeTimeStamp + CSV_EXTENSION);
+					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
 		};
 	}
 
