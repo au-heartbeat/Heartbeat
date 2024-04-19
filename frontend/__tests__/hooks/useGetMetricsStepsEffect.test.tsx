@@ -1,4 +1,4 @@
-import { ERROR_MESSAGE_TIME_DURATION, MOCK_GET_STEPS_PARAMS } from '../fixtures';
+import { MOCK_GET_STEPS_PARAMS } from '../fixtures';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { act, renderHook, waitFor } from '@testing-library/react';
