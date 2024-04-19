@@ -8,7 +8,7 @@ import {
   StyledExpandMoreIcon,
   StyledListItemButton,
   StyledPriorityHighIcon,
-  StyledListItemIcon
+  StyledListItemIcon,
 } from './style';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
 import { DateRange } from '@src/context/config/configSlice';
@@ -19,14 +19,14 @@ type Props = {
   dateRanges: DateRange;
   expandColor?: string;
   expandBackgroundColor?: string;
-  onSelect?: (value: {startDate: string | null, endDate: string | null}) => void
+  onSelect?: (value: { startDate: string | null; endDate: string | null }) => void;
 };
 
 const DateRangeViewer = ({
   dateRanges,
   expandColor = theme.palette.text.disabled,
   expandBackgroundColor = theme.palette.secondary.dark,
-  onSelect
+  onSelect,
 }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const datePick = dateRanges[0];
@@ -38,9 +38,9 @@ const DateRangeViewer = ({
     }
   }, []);
 
-  const handleSelectOption = (value: {startDate: string | null, endDate: string | null}) => {
-    onSelect?.(value)
-  }
+  const handleSelectOption = (value: { startDate: string | null; endDate: string | null }) => {
+    onSelect?.(value);
+  };
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -54,10 +54,17 @@ const DateRangeViewer = ({
       <DateRangeExpandContainer ref={ref}>
         {dateRanges.map((dateRange, index) => {
           return (
-            <StyledListItemButton key={index} disabled={dateRange.disabled} onClick={() => handleSelectOption(dateRange)} sx={{ backgroundColor: expandBackgroundColor, color: expandColor }}>
-              <StyledListItemIcon>
+            <StyledListItemButton
+              key={index}
+              disabled={dateRange.disabled}
+              onClick={() => handleSelectOption(dateRange)}
+              sx={{ backgroundColor: expandBackgroundColor, color: expandColor }}
+            >
+              {dateRange.disabled && (
+                <StyledListItemIcon>
                   <StyledPriorityHighIcon />
-              </StyledListItemIcon>
+                </StyledListItemIcon>
+              )}
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}

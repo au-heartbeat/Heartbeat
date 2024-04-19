@@ -1,7 +1,7 @@
 import { ArrowForward, CalendarToday, ExpandMore } from '@mui/icons-material';
-import { Z_INDEX } from '@src/constants/commons';
 import { Divider, ListItemButton, ListItemIcon } from '@mui/material';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import { Z_INDEX } from '@src/constants/commons';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
@@ -86,13 +86,13 @@ export const StyledExpandMoreIcon = styled(ExpandMore)({
   cursor: 'pointer',
 });
 
-export const StyledListItemButton = styled(ListItemButton)({})
+export const StyledListItemButton = styled(ListItemButton)({});
 
 export const StyledListItemIcon = styled(ListItemIcon)({
   marginRight: '.5rem',
-  minWidth: '1rem'
-})
+  minWidth: '1rem',
+});
 
 export const StyledPriorityHighIcon = styled(PriorityHighIcon)({
-  pr: 0
-})
+  pr: 0,
+});

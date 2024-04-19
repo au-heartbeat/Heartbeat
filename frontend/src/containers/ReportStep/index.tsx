@@ -400,15 +400,15 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
   };
 
-  const handleSelect = (data: {startDate: string | null, endDate: string | null}) => {
-    console.log(data)
-  }
+  const handleSelect = (data: { startDate: string | null; endDate: string | null }) => {
+    console.log(data);
+  };
 
   return (
     <>
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
-          <DateRangeViewer dateRanges={descendingDateRanges} onSelect={handleSelect}/>
+          <DateRangeViewer dateRanges={descendingDateRanges} onSelect={handleSelect} />
         </StyledCalendarWrapper>
       )}
       {isSummaryPage

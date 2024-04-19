@@ -1,16 +1,16 @@
-import { selectConfig } from '@src/context/config/configSlice';
+import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { reportClient } from '@src/clients/report/ReportClient';
+import { selectConfig } from '@src/context/config/configSlice';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { METRIC_TYPES } from '@src/constants/commons';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '@src/hooks';
-import get from 'lodash/get'
+import get from 'lodash/get';
 import dayjs from 'dayjs';
-import { formatDateToTimestampString } from '@src/utils/util';
 
 export interface useGenerateReportEffectInterface {
   startToRequestData: (params: ReportRequestDTO) => void;
@@ -35,29 +35,57 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const [generalError4Report, setGeneralError4Report] = useState(DEFAULT_MESSAGE);
   const [reportData, setReportData] = useState<ReportResponseDTO | undefined>();
   const timerIdRef = useRef<number>();
-  let hasPollingStarted = false;
-  const dateRanges = get(configData, 'basic.dateRange', [])
+  const dateRanges = get(configData, 'basic.dateRange', []);
+  const [intervalTime, setIntervalTime] = useState<number>(0);
+  const [pollingQueue, setPollingQueue] = useState<any[]>([]);
 
-  const startToRequestData = (params: ReportRequestDTO) => {
+  const startToRequestData = async (params: ReportRequestDTO) => {
     const { metricTypes } = params;
     resetTimeoutMessage(metricTypes);
 
-    return Promise.all(dateRanges.map(({startDate, endDate}) => (
-      reportClient.retrieveByUrl({
-        ...params,
-        startTime: dayjs(startDate).unix().toString(),
-        endTime: dayjs(endDate).unix().toString()
-      },
-      reportPath)
-    ))).then(responses => {
-      if (hasPollingStarted) return;
-      hasPollingStarted = true;
-      const interval = get(responses, '0.response.interval', 10)
-      return responses.map(({ response: {callbackUrl } }) => pollingReport(callbackUrl, interval))
-    }).catch((e) => {
-      const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
-      handleError(e, source);
-    })
+    return Promise.allSettled(
+      dateRanges.map(({ startDate, endDate }) =>
+        reportClient.retrieveByUrl(
+          {
+            ...params,
+            startTime: dayjs(startDate).unix().toString(),
+            endTime: dayjs(endDate).unix().toString(),
+          },
+          reportPath,
+        ),
+      ),
+    ).then(async (responses) => {
+      console.log(responses);
+      if (pollingQueue.length) return;
+      const fulfilled = responses.filter(({ status }) => status === 'fulfilled');
+      const rejected = responses.filter(({ status }) => status === 'rejected');
+      await setIntervalTime(get(fulfilled, '0.value.response.interval', 0));
+
+      await setPollingQueue(fulfilled.map((item) => pollingReport(get(item, 'value.response.callbackUrl', ''))));
+
+      if (rejected.length) {
+        const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
+        handleError(get(rejected, '0.reason', new Error()), source);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getAllReports(pollingQueue);
+  }, [pollingQueue]);
+
+  const getAllReports = (queue: any[]) => {
+    Promise.allSettled(queue).then((responses: any) => {
+      handleAndUpdateData(get(responses, '0.value.response', {}) as ReportResponseDTO);
+      timerIdRef.current = window.setTimeout(() => {
+        setPollingQueue(
+          responses.filter(
+            (response: PromiseSettledResult<any>) =>
+              response.status === 'fulfilled' && !get(response, 'value.response.allMetricsCompleted'),
+          ),
+        );
+      }, intervalTime * 1000);
+    });
   };
 
   const resetTimeoutMessage = (metricTypes: string[]) => {
@@ -88,28 +116,14 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       : handleGeneralError[source](DATA_LOADING_FAILED);
   };
 
-  const pollingReport = (url: string, interval: number) => {
+  const pollingReport = (url: string) => {
     setTimeout4Report(DEFAULT_MESSAGE);
-    reportClient
-      .polling(url)
-      .then((res: { status: number; response: ReportResponseDTO }) => {
-        const response = res.response;
-        handleAndUpdateData(response);
-        if (response.allMetricsCompleted || !hasPollingStarted) {
-          stopPollingReports();
-        } else {
-          timerIdRef.current = window.setTimeout(() => pollingReport(url, interval), interval * 1000);
-        }
-      })
-      .catch((e) => {
-        handleError(e, METRIC_TYPES.ALL);
-        stopPollingReports();
-      });
+    return reportClient.polling(url);
   };
 
-  const stopPollingReports = () => {
+  const stopPollingReports = async () => {
+    await setPollingQueue([]);
     window.clearTimeout(timerIdRef.current);
-    hasPollingStarted = false;
   };
 
   const handleAndUpdateData = (response: ReportResponseDTO) => {
