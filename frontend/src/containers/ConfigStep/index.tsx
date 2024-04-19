@@ -82,21 +82,21 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
     () => (isShowSourceControl ? isSourceControlValid && isSourceControlSubmitSuccessful : true),
     [isShowSourceControl, isSourceControlValid, isSourceControlSubmitSuccessful],
   );
-  console.log('');
-  console.log('--- Basic form ---');
-  console.log('isBasicInfoValid', isBasicInfoValid);
-  console.log('--- Board form ---');
-  console.log('isBoardConfigValid', isBoardConfigValid);
-  console.log('isBoardConfigSubmitSuccessful', isBoardConfigSubmitSuccessful);
-  console.log('isBoardConfigPass', isBoardConfigPass);
-  console.log('--- PipelineTool form ---');
-  console.log('isPipelineToolValid', isPipelineToolValid);
-  console.log('isPipelineToolSubmitSuccessful', isPipelineToolSubmitSuccessful);
-  console.log('isPipelineToolPass', isPipelineToolPass);
-  console.log('--- SourceControl form ---');
-  console.log('isSourceControlValid', isSourceControlValid);
-  console.log('isSourceControlSubmitSuccessful', isSourceControlSubmitSuccessful);
-  console.log('isSourceControlPass', isSourceControlPass);
+  // console.log('');
+  // console.log('--- Basic form ---');
+  // console.log('isBasicInfoValid', isBasicInfoValid);
+  // console.log('--- Board form ---');
+  // console.log('isBoardConfigValid', isBoardConfigValid);
+  // console.log('isBoardConfigSubmitSuccessful', isBoardConfigSubmitSuccessful);
+  // console.log('isBoardConfigPass', isBoardConfigPass);
+  // console.log('--- PipelineTool form ---');
+  // console.log('isPipelineToolValid', isPipelineToolValid);
+  // console.log('isPipelineToolSubmitSuccessful', isPipelineToolSubmitSuccessful);
+  // console.log('isPipelineToolPass', isPipelineToolPass);
+  // console.log('--- SourceControl form ---');
+  // console.log('isSourceControlValid', isSourceControlValid);
+  // console.log('isSourceControlSubmitSuccessful', isSourceControlSubmitSuccessful);
+  // console.log('isSourceControlPass', isSourceControlPass);
   const isAllFormVerified =
     // isBasicInfoValid &&
     useMemo(
@@ -104,7 +104,7 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
       [isBoardConfigPass, isPipelineToolPass, isSourceControlPass],
     );
 
-  console.log('isAllFormVerified', isAllFormVerified);
+  // console.log('isAllFormVerified', isAllFormVerified);
   useEffect(() => {
     setIsDisableNextButton(!isAllFormVerified);
   }, [isAllFormVerified]);

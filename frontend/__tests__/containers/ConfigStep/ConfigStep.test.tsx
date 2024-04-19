@@ -235,7 +235,7 @@ describe('ConfigStep', () => {
     const requireDateSelection = within(screen.getByRole('listbox'));
     await userEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }));
     await closeMuiModal(userEvent);
-    const tokenNode = within(screen.getByTestId('pipelineToolTextField')).getByLabelText('input Token');
+    const tokenNode = within(screen.getByTestId('pipelineToolTextField')).getByLabelText('input token');
     await userEvent.type(tokenNode, FAKE_PIPELINE_TOKEN);
     const submitButton = screen.getByText(VERIFY);
     await userEvent.click(submitButton);
