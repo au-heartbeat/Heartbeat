@@ -35,11 +35,11 @@ import {
   REQUIRED_DATA,
 } from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -58,6 +58,16 @@ const timeoutNotificationMessages = {
   [TimeoutErrorKey[METRIC_TYPES.DORA]]: 'DORA metrics',
   [TimeoutErrorKey[METRIC_TYPES.ALL]]: 'Report',
 };
+
+export interface DateRangeRequestResult {
+  id: number;
+  startDate: string;
+  endDate: string;
+  overallMetricsCompleted: boolean;
+  boardMetricsCompleted: boolean;
+  doraMetricsCompleted: boolean;
+  reportMetricsError: AllErrorResponse;
+}
 
 const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
@@ -110,6 +120,24 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
+
+  const initialDateRangeRequestResults = descendingDateRanges.map(
+    ({ startDate, endDate }) =>
+      ({
+        startDate,
+        endDate,
+        overallMetricsCompleted: false,
+        boardMetricsCompleted: null,
+        doraMetricsCompleted: null,
+        reportMetricsError: {
+          boardMetricsError: null,
+          pipelineMetricsError: null,
+          sourceControlMetricsError: null,
+        },
+      }) as DateRangeRequestResult,
+  );
+  const [dateRangeRequestResults, setRangeRequestResults] =
+    useState<DateRangeRequestResult[]>(initialDateRangeRequestResults);
 
   const getErrorMessage4Board = () => {
     if (currentDataInfo.reportData?.reportMetricsError.boardMetricsError) {
@@ -464,6 +492,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         startDate={startDate}
         endDate={endDate}
         csvTimeStamp={csvTimeStamp}
+        dateRangeRequestResults={dateRangeRequestResults}
       />
     </>
   );

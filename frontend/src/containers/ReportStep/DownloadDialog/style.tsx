@@ -1,7 +1,7 @@
 import { DialogContent, DialogTitle } from '@mui/material';
+import { CalendarToday } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import {CalendarToday} from "@mui/icons-material";
-import {theme} from "@src/theme";
+import { theme } from '@src/theme';
 
 export const DialogContainer = styled('div')({
   width: '38rem',
@@ -38,9 +38,9 @@ export const StyledCalendarToday = styled(CalendarToday)({
 });
 
 export const TimePeriodSelectionMessage = styled('div')({
-  width:'100%',
+  width: '100%',
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
   fontSize: '1rem',
-})
+});
