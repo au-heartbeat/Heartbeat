@@ -626,8 +626,9 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldThrowIllegalArgumentExceptionWhenFilePathIsError() {
 		String fileName = "./app/output/docs/metric-20240310-20240409-127272861371";
+		File file = new File(fileName);
 
-		assertThrows(IllegalArgumentException.class, () -> CSVFileGenerator.readStringFromCsvFile(new File(fileName)));
+		assertThrows(IllegalArgumentException.class, () -> CSVFileGenerator.readStringFromCsvFile(file));
 	}
 
 }
