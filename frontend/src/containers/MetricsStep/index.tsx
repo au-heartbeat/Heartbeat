@@ -39,8 +39,8 @@ import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import { BOARD_INFO_FAIL_STATUS } from '@src/constants/commons';
+import { useCallback, useEffect, useLayoutEffect } from 'react';
 import EmptyContent from '@src/components/Common/EmptyContent';
-import { useCallback, useLayoutEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
@@ -70,13 +70,9 @@ const MetricsStep = () => {
   const isShowRealDone =
     cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
-  const { getBoardInfo, isLoading, errorMessage } = useGetBoardInfoEffect();
+  const { getBoardInfo, isLoading, errorMessage, isDataLoading, boardInfoFailedStatus } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
-
-  const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState<BOARD_INFO_FAIL_STATUS>(
-    BOARD_INFO_FAIL_STATUS.NOT_FAILED,
-  );
 
   const getInfo = useCallback(
     async () => {
@@ -84,24 +80,6 @@ const MetricsStep = () => {
         ...boardConfig,
         dateRanges,
       }).then((res) => {
-        if (res) {
-          // todo need refactor
-          const errorRequests = res.filter((data) => !data.data);
-          if (errorRequests.length == res.length) {
-            setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.ALL_FAILED);
-          } else if (errorRequests.length > 0) {
-            setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED);
-            dispatch(
-              addNotification({
-                type: 'warning',
-                message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED,
-              }),
-            );
-          } else {
-            setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.NOT_FAILED);
-          }
-        }
-
         if (res) {
           // todo need refactor
           const data = res.filter((r) => r.data);
@@ -118,6 +96,34 @@ const MetricsStep = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+
+  const popup = useCallback(() => {
+    console.log('boardInfoFailedStatus' + boardInfoFailedStatus);
+    if (boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX) {
+      dispatch(
+        addNotification({
+          type: 'warning',
+          message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED_4XX,
+        }),
+      );
+    } else if (
+      boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS ||
+      boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT
+    ) {
+      dispatch(
+        addNotification({
+          type: 'warning',
+          message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED_OTHERS,
+        }),
+      );
+    }
+  }, [boardInfoFailedStatus, dispatch]);
+
+  useEffect(() => {
+    if (!isDataLoading) {
+      popup();
+    }
+  }, [isDataLoading, popup]);
 
   useLayoutEffect(() => {
     if (!shouldLoad) return;
@@ -137,15 +143,15 @@ const MetricsStep = () => {
           />
         </MetricSelectionHeader>
       )}
-
       {isShowCrewsAndRealDone && (
         <MetricSelectionWrapper>
           {isLoading && <Loading />}
-          <MetricsSelectionTitle>
-            Board configuration{' '}
-          </MetricsSelectionTitle>
+          <MetricsSelectionTitle>Board configuration </MetricsSelectionTitle>
 
-          {isEmpty(errorMessage) ? (
+          {isEmpty(errorMessage) ||
+          (boardInfoFailedStatus != BOARD_INFO_FAIL_STATUS.ALL_FAILED_4XX &&
+            boardInfoFailedStatus != BOARD_INFO_FAIL_STATUS.ALL_FAILED_TIMEOUT &&
+            boardInfoFailedStatus != BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS) ? (
             <>
               <Crews options={users} title={'Crew settings'} label={'Included Crews'} />
 

@@ -1,8 +1,9 @@
 import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
+import { BOARD_INFO_FAIL_STATUS } from '@src/constants/commons';
+import { ReactNode, useEffect, useState } from 'react';
 import { AxiosResponse, HttpStatusCode } from 'axios';
-import { ReactNode, useState } from 'react';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
@@ -19,51 +20,70 @@ export interface useGetBoardInfoInterface {
   getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<AxiosResponse<BoardInfoResponse>[]> | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
+  isDataLoading: boolean;
+  boardInfoFailedStatus: BOARD_INFO_FAIL_STATUS;
 }
+const boardInfoFailedStatusMapping = (code: string | number) => {
+  const numericCode = typeof code === 'string' ? parseInt(code, 10) : code;
+  if (numericCode >= HttpStatusCode.BadRequest || numericCode < HttpStatusCode.InternalServerError) {
+    return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX;
+  } else {
+    return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
+  }
+};
 
-const codeMapping = (code: string | number) => {
-  const codes = {
-    [HttpStatusCode.BadRequest]: {
-      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
-      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
-      code: HttpStatusCode.BadRequest,
+const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
+  const errorStatusMap = {
+    [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX]: {
+      errorMessage: {
+        title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
+        message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
+        code: HttpStatusCode.BadRequest,
+      },
+      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_4XX,
     },
-    [HttpStatusCode.Unauthorized]: {
-      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
-      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
-      code: HttpStatusCode.Unauthorized,
+    [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT]: {
+      errorMessage: {
+        title: BOARD_CONFIG_INFO_TITLE.EMPTY,
+        message: BOARD_CONFIG_INFO_ERROR.RETRY,
+        code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+      },
+      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_TIMEOUT,
     },
-    [HttpStatusCode.Forbidden]: {
-      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
-      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
-      code: HttpStatusCode.Forbidden,
+    [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS]: {
+      errorMessage: {
+        title: BOARD_CONFIG_INFO_TITLE.EMPTY,
+        message: BOARD_CONFIG_INFO_ERROR.RETRY,
+        code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
+      },
+      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS,
     },
-    [HttpStatusCode.NotFound]: {
-      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
-      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
-      code: HttpStatusCode.NotFound,
-    },
-    [AXIOS_REQUEST_ERROR_CODE.TIMEOUT]: {
-      title: BOARD_CONFIG_INFO_TITLE.EMPTY,
-      message: BOARD_CONFIG_INFO_ERROR.RETRY,
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
-    },
-    [HttpStatusCode.InternalServerError]: {
-      title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
-      message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
-      code: HttpStatusCode.InternalServerError,
+    [BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS]: {
+      errorMessage: {
+        title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
+        message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
+        code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
+      },
+      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS,
     },
   };
-  return get(codes, code);
+  return get(errorStatusMap, status);
 };
 
 export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState({});
+  const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(BOARD_INFO_FAIL_STATUS.NOT_FAILED);
+  useEffect(() => {
+    console.log('boardInfoFailedStatus--hook' + boardInfoFailedStatus);
+  }, [boardInfoFailedStatus]);
 
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
     setErrorMessage({});
+    let errorCount = 0;
+    let localBoardInfoFailedStatus: BOARD_INFO_FAIL_STATUS;
 
     if (data.dateRanges) {
       const dateRangeCopy = Array.from(data.dateRanges);
@@ -87,39 +107,57 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           .getBoardInfo(boardInfoRequest)
           .then((res) => {
             if (!res.data) {
-              res.status = HttpStatusCode.NoContent;
+              errorCount++;
+              localBoardInfoFailedStatus = BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS;
+              setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS);
             }
             return res;
           })
           .catch((err) => {
             const { code } = err;
-            setErrorMessage(codeMapping(code));
+            errorCount++;
+            localBoardInfoFailedStatus = boardInfoFailedStatusMapping(code);
+            console.log('localBoardInfoFailedStatus' + localBoardInfoFailedStatus);
+            setBoardInfoFailedStatus(localBoardInfoFailedStatus);
             return err;
           });
       });
 
       return Promise.all(allBoardData)
         .then((res) => {
-          if (res.filter((error) => error.status == HttpStatusCode.NoContent).length == res.length) {
-            setErrorMessage({
-              title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
-              message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
-              code: HttpStatusCode.NoContent,
-            });
-          } else if (res.filter((error) => error.status == HttpStatusCode.Ok).length > 0) {
-            setErrorMessage({});
-          } else {
-            setErrorMessage(codeMapping(HttpStatusCode.BadRequest));
+          if (localBoardInfoFailedStatus == BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS) {
+            localBoardInfoFailedStatus = BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS;
+          }
+          const config = errorStatusMap(localBoardInfoFailedStatus);
+          console.log(res);
+          console.log('errorCount' + errorCount);
+          console.log('config' + config);
+          if (errorCount == res.length) {
+            if (config) {
+              console.log('all failed');
+              setErrorMessage(config.errorMessage);
+              setBoardInfoFailedStatus(config.newStatus);
+            }
+          } else if (errorCount != 0) {
+            console.log('partial failed');
+            if (config) {
+              setErrorMessage(config.errorMessage);
+            }
           }
 
           return res;
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          setIsLoading(false);
+          setIsDataLoading(false);
+        });
     }
   };
   return {
     getBoardInfo,
     errorMessage,
     isLoading,
+    isDataLoading,
+    boardInfoFailedStatus,
   };
 };

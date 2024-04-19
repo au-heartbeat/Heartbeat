@@ -282,8 +282,10 @@ export const MESSAGE = {
     'Failed to get Classification data, please go back to previous page and try again!',
   FAILED_TO_EXPORT_CSV: 'Failed to export csv.',
   FAILED_TO_REQUEST: 'Failed to request!',
-  BOARD_INFO_REQUEST_PARTIAL_FAILED:
-    'Failed to get partial Board configuration, please click "Retry", or click "Next" button to go to Report page.',
+  BOARD_INFO_REQUEST_PARTIAL_FAILED_4XX:
+    'Failed to get partial Board configuration, please go back to the previous page and check your board info, or click "Next" button to go to Report page.',
+  BOARD_INFO_REQUEST_PARTIAL_FAILED_OTHERS:
+    'Failed to get partial Board configuration, you can click "Next" button to go to Report page.',
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN = [
@@ -336,6 +338,7 @@ export const NO_PIPELINE_STEP_ERROR = 'No steps for this pipeline!';
 
 export enum AXIOS_REQUEST_ERROR_CODE {
   TIMEOUT = 'NETWORK_TIMEOUT',
+  NO_CARDS = 'NO_CARDS',
 }
 
 export const BOARD_CONFIG_INFO_TITLE = {
