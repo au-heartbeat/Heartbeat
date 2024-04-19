@@ -1,10 +1,10 @@
-import { MOCK_GET_STEPS_PARAMS } from '../fixtures';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { metricsClient } from '@src/clients/MetricsClient';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { TimeoutError } from '@src/errors/TimeoutError';
+import { MOCK_GET_STEPS_PARAMS } from '../fixtures';
 import React, { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 
