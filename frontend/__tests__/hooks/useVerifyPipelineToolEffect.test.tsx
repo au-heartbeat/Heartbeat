@@ -9,21 +9,11 @@ import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { pipelineToolSchema } from '@src/containers/ConfigStep/Form/schema';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { FormProvider } from '@test/utils/FormProvider';
-import { PIPELINE_TOOL_TYPES } from '@test/fixtures';
+import { setupStore } from '../utils/setupStoreUtil';
 import { renderHook } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { HttpStatusCode } from 'axios';
 import { ReactNode } from 'react';
-
-const mockDispatch = jest.fn();
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
-}));
-
-jest.mock('@src/hooks/useAppDispatch', () => ({
-  useAppSelector: () => ({ type: PIPELINE_TOOL_TYPES.BUILD_KITE }),
-  useAppDispatch: jest.fn(() => jest.fn()),
-}));
 
 const setErrorSpy = jest.fn();
 const resetSpy = jest.fn();
@@ -47,11 +37,21 @@ jest.mock('react-hook-form', () => {
 });
 
 const HookWrapper = ({ children }: { children: ReactNode }) => {
+  const store = setupStore();
+
   return (
-    <FormProvider defaultValues={pipelineToolDefaultValues} schema={pipelineToolSchema}>
-      {children}
-    </FormProvider>
+    <Provider store={store}>
+      <FormProvider defaultValues={pipelineToolDefaultValues} schema={pipelineToolSchema}>
+        {children}
+      </FormProvider>
+    </Provider>
   );
+};
+
+const setup = () => {
+  const { result } = renderHook(useVerifyPipelineToolEffect, { wrapper: HookWrapper });
+
+  return { result };
 };
 
 describe('use verify pipelineTool state', () => {
@@ -67,7 +67,7 @@ describe('use verify pipelineTool state', () => {
       code: HttpStatusCode.NoContent,
     });
 
-    const { result } = renderHook(useVerifyPipelineToolEffect, { wrapper: HookWrapper });
+    const { result } = setup();
     await result.current.verifyPipelineTool();
 
     expect(resetSpy).toHaveBeenCalledWith({ type: 'BuildKite', token: '' }, { keepValues: true });
@@ -117,7 +117,7 @@ describe('use verify pipelineTool state', () => {
     async ({ mock, field, message }) => {
       pipelineToolClient.verify = jest.fn().mockResolvedValue(mock);
 
-      const { result } = renderHook(useVerifyPipelineToolEffect, { wrapper: HookWrapper });
+      const { result } = setup();
       await result.current.verifyPipelineTool();
 
       expect(setErrorSpy).toHaveBeenCalledWith(field, { message });
@@ -125,7 +125,7 @@ describe('use verify pipelineTool state', () => {
   );
 
   it('should clear all verified error messages when call resetFeilds', async () => {
-    const { result } = renderHook(useVerifyPipelineToolEffect, { wrapper: HookWrapper });
+    const { result } = setup();
 
     result.current.resetFields();
 

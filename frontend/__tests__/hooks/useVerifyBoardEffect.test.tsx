@@ -8,21 +8,11 @@ import { boardClient } from '@src/clients/board/BoardClient';
 import { NotFoundError } from '@src/errors/NotFoundError';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { FormProvider } from '@test/utils/FormProvider';
+import { setupStore } from '../utils/setupStoreUtil';
 import { renderHook } from '@testing-library/react';
-import { BOARD_TYPES } from '@test/fixtures';
+import { Provider } from 'react-redux';
 import { HttpStatusCode } from 'axios';
 import { ReactNode } from 'react';
-
-const mockDispatch = jest.fn();
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
-}));
-
-jest.mock('@src/hooks/useAppDispatch', () => ({
-  useAppSelector: () => ({ type: BOARD_TYPES.JIRA }),
-  useAppDispatch: jest.fn(() => jest.fn()),
-}));
 
 const setErrorSpy = jest.fn();
 const resetSpy = jest.fn();
@@ -43,11 +33,20 @@ jest.mock('react-hook-form', () => {
 });
 
 const HookWrapper = ({ children }: { children: ReactNode }) => {
+  const store = setupStore();
   return (
-    <FormProvider defaultValues={boardConfigDefaultValues} schema={boardConfigSchema}>
-      {children}
-    </FormProvider>
+    <Provider store={store}>
+      <FormProvider defaultValues={boardConfigDefaultValues} schema={boardConfigSchema}>
+        {children}
+      </FormProvider>
+    </Provider>
   );
+};
+
+const setup = () => {
+  const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+
+  return { result };
 };
 
 describe('use verify board state', () => {
@@ -59,7 +58,7 @@ describe('use verify board state', () => {
     jest.clearAllMocks();
   });
   it('should got initial data state when hook render given none input', async () => {
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.fields.length).toBe(5);
@@ -71,7 +70,7 @@ describe('use verify board state', () => {
     };
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.resolve(mockedOkResponse));
 
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
     await result.current.verifyJira();
 
     expect(resetSpy).toHaveBeenCalledWith(
@@ -90,7 +89,7 @@ describe('use verify board state', () => {
     const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
     await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('email', { message: 'Email is incorrect!' });
@@ -103,7 +102,7 @@ describe('use verify board state', () => {
     const mockedError = new NotFoundError('site is incorrect', HttpStatusCode.NotFound, 'site is incorrect');
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
     await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('site', { message: 'Site is incorrect!' });
@@ -113,7 +112,7 @@ describe('use verify board state', () => {
     const mockedError = new NotFoundError('boardId is incorrect', HttpStatusCode.NotFound, 'boardId is incorrect');
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
     await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('boardId', { message: 'Board Id is incorrect!' });
@@ -123,7 +122,7 @@ describe('use verify board state', () => {
     const mockedError = new InternalServerError('', HttpStatusCode.ServiceUnavailable, '');
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
     await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('token', { message: 'Unknown error' });
@@ -133,14 +132,14 @@ describe('use verify board state', () => {
     const mockedError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
     await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('token', { message: 'Timeout!' });
   });
 
   it('should clear all verified error messages when call resetFeilds', async () => {
-    const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
+    const { result } = setup();
 
     result.current.resetFields();
 
