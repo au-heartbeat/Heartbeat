@@ -168,9 +168,12 @@ public class CSVFileGenerator {
 			throw new IllegalArgumentException("Invalid time range time stamp");
 		}
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			case PIPELINE -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			default -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			case METRIC -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.METRIC.getValue()
+					+ FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			case PIPELINE -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.PIPELINE.getValue()
+					+ FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			default -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.BOARD.getValue() + FILENAME_SEPARATOR
+					+ timeRangeAndTimeStamp + CSV_EXTENSION));
 		};
 	}
 
