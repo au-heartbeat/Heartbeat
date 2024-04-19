@@ -6,6 +6,7 @@ import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
+import heartbeat.util.TimeUtil;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -65,7 +66,9 @@ public class ReportController {
 	public ResponseEntity<CallbackResponse> generateReport(@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
 		reportService.generateReport(request);
-		String callbackUrl = "/reports/" + request.getCsvTimeStamp();
+		String callbackUrl = "/reports/" + request.getCsvTimeStamp() + "?startTime="
+				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(request.getStartTime())) + "&endTime="
+				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(request.getEndTime()));
 		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());

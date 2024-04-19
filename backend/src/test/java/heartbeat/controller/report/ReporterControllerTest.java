@@ -128,7 +128,9 @@ class ReporterControllerTest {
 		ObjectMapper mapper = new ObjectMapper();
 		GenerateReportRequest request = mapper.readValue(new File(REQUEST_FILE_PATH), GenerateReportRequest.class);
 
-		String currentTimeStamp = "1685010080107";
+		String currentTimeStamp = String.valueOf(TimeUtils.mockTimeStamp(2023, 5, 25, 18, 21, 20));
+		String startTime = "20220829";
+		String endTme = "20220909";
 		request.setCsvTimeStamp(currentTimeStamp);
 
 		doAnswer(invocation -> null).when(reporterService).generateReport(request);
@@ -137,7 +139,8 @@ class ReporterControllerTest {
 			.perform(post("/reports").contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(request)))
 			.andExpect(status().isAccepted())
-			.andExpect(jsonPath("$.callbackUrl").value("/reports/" + currentTimeStamp))
+			.andExpect(jsonPath("$.callbackUrl")
+				.value("/reports/" + currentTimeStamp + "?startTime=" + startTime + "&endTime=" + endTme))
 			.andExpect(jsonPath("$.interval").value("10"))
 			.andReturn()
 			.getResponse();

@@ -11,8 +11,8 @@ export class CSVClient extends HttpClient {
     await this.axiosInstance
       .get(`/reports/${params.dataType}/${params.csvTimeStamp}`, {
         params: {
-          startDate: this.parseCollectionDateToHumanDate(params.startDate),
-          endDate: this.parseCollectionDateToHumanDate(params.endDate),
+          startTime: this.parseCollectionDateToHumanDate(params.startDate),
+          endTime: this.parseCollectionDateToHumanDate(params.endDate),
         },
         responseType: 'blob',
       })

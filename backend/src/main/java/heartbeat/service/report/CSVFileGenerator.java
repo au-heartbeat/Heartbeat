@@ -69,14 +69,15 @@ public class CSVFileGenerator {
 
 	private static final String REWORK_FIELD = "Rework";
 
-	private static InputStreamResource readStringFromCsvFile(String csvName, String timeRangeAndTimeStamp) {
+	private static InputStreamResource readStringFromCsvFile(String reportType, String timeRangeAndTimeStamp) {
 		if (timeRangeAndTimeStamp.contains("..") || timeRangeAndTimeStamp.contains("/")
 				|| timeRangeAndTimeStamp.contains("\\")) {
 			throw new IllegalArgumentException("Invalid time range time stamp");
 		}
 		try {
-			String fileName = csvName + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION;
-			InputStream inputStream = new FileInputStream(fileName);
+			File file = new File(FILE_LOCAL_PATH,
+					reportType + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
+			InputStream inputStream = new FileInputStream(file);
 
 			return new InputStreamResource(inputStream);
 		}
@@ -164,9 +165,9 @@ public class CSVFileGenerator {
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeAndTimeStamp) {
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(CSVFileNameEnum.METRIC.getValue(), timeRangeAndTimeStamp);
-			case PIPELINE -> readStringFromCsvFile(CSVFileNameEnum.PIPELINE.getValue(), timeRangeAndTimeStamp);
-			default -> readStringFromCsvFile(CSVFileNameEnum.BOARD.getValue(), timeRangeAndTimeStamp);
+			case METRIC -> readStringFromCsvFile(ReportType.METRIC.getValue(), timeRangeAndTimeStamp);
+			case PIPELINE -> readStringFromCsvFile(ReportType.PIPELINE.getValue(), timeRangeAndTimeStamp);
+			default -> readStringFromCsvFile(ReportType.BOARD.getValue(), timeRangeAndTimeStamp);
 		};
 	}
 
