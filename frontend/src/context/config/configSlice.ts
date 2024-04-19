@@ -145,9 +145,6 @@ export const configSlice = createSlice({
     updateProjectCreatedState: (state, action) => {
       state.isProjectCreated = action.payload;
     },
-    updateBoardVerifyState: (state, action) => {
-      state.board.isVerified = action.payload;
-    },
     updateBoard: (state, action) => {
       state.board.config = action.payload;
     },
@@ -206,7 +203,6 @@ export const {
   updateDateRange,
   updateMetrics,
   updateBoard,
-  updateBoardVerifyState,
   updateJiraVerifyResponse,
   updateBasicConfigState,
   updatePipelineToolVerifyState,
@@ -234,8 +230,6 @@ export const selectSourceControl = (state: RootState) => state.config.sourceCont
 export const selectWarningMessage = (state: RootState) => state.config.warningMessage;
 
 export const selectConfig = (state: RootState) => state.config;
-
-export const selectIsBoardVerified = (state: RootState) => state.config.board.isVerified;
 export const selectUsers = (state: RootState) => state.config.board.verifiedResponse.users;
 export const selectJiraColumns = (state: RootState) => state.config.board.verifiedResponse.jiraColumns;
 export const selectIsProjectCreated = (state: RootState) => state.config.isProjectCreated;

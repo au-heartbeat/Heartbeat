@@ -1,5 +1,4 @@
 import { AXIOS_REQUEST_ERROR_CODE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
-import { updateBoard, updateBoardVerifyState } from '@src/context/config/configSlice';
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
@@ -7,6 +6,7 @@ import { updateShouldGetBoardConfig } from '@src/context/Metrics/metricsSlice';
 import { IBoardConfigData } from '@src/containers/ConfigStep/Form/schema';
 import { TBoardFieldKeys } from '@src/containers/ConfigStep/Form/type';
 import { BoardRequestDTO } from '@src/clients/board/dto/request';
+import { updateBoard } from '@src/context/config/configSlice';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { getJiraBoardToken } from '@src/utils/util';
@@ -90,7 +90,6 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
     boardInfo: IBoardConfigData & { projectKey?: string },
   ) => {
     dispatch(updateShouldGetBoardConfig(shouldGetBoardConfig));
-    dispatch(updateBoardVerifyState(verifyState));
     dispatch(updateBoard(boardInfo));
   };
 
