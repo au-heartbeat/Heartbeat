@@ -44,7 +44,6 @@ export const BOARD_CONFIG_ERROR_MESSAGE: IBoardConfigErrorMessage = {
     timeout: 'Timeout!',
   },
 };
-// todo remove duplicated declarations
 export const PIPELINE_TOOL_ERROR_MESSAGE: IPipelineToolErrorMessage = {
   token: {
     required: 'Token is required!',

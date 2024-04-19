@@ -2,7 +2,6 @@ import {
   ALL,
   DEV_CHANGE_FAILURE_RATE,
   CLASSIFICATION,
-  CONFIG_TITLE,
   CYCLE_TIME,
   DEPLOYMENT_FREQUENCY,
   LEAD_TIME_FOR_CHANGES,
@@ -12,24 +11,26 @@ import {
   REWORK_TIMES,
   VELOCITY,
 } from '../../fixtures';
-import { MetricsTypeCheckbox } from '@src/containers/ConfigStep/MetricsTypeCheckbox';
+import { basicInfoDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { basicInfoSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, waitFor, within, screen } from '@testing-library/react';
 import { SELECTED_VALUE_SEPARATOR } from '@src/constants/commons';
 import BasicInfo from '@src/containers/ConfigStep/BasicInfo';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { FormProvider } from '@test/utils/FormProvider';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 
 let store = null;
 
-// todo
-describe.skip('MetricsTypeCheckbox', () => {
+describe('MetricsTypeCheckbox', () => {
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <BasicInfo />
-        <MetricsTypeCheckbox />
+        <FormProvider schema={basicInfoSchema} defaultValues={basicInfoDefaultValues}>
+          <BasicInfo />
+        </FormProvider>
       </Provider>,
     );
   };
@@ -148,22 +149,22 @@ describe.skip('MetricsTypeCheckbox', () => {
     expect(getByText(/Metrics is required/i)).toBeInTheDocument();
   });
 
-  it('should show board component when click MetricsTypeCheckbox selection velocity ', async () => {
-    setup();
-    await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
-    const listBox = within(screen.getByRole('listbox'));
-    await userEvent.click(listBox.getByRole('option', { name: VELOCITY }));
-    expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
-  });
+  // it('should show board component when click MetricsTypeCheckbox selection velocity ', async () => {
+  //   setup();
+  //   await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
+  //   const listBox = within(screen.getByRole('listbox'));
+  //   await userEvent.click(listBox.getByRole('option', { name: VELOCITY }));
+  //   expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
+  // });
 
-  it('should hidden board component when MetricsTypeCheckbox select is null given MetricsTypeCheckbox select is velocity ', async () => {
-    setup();
+  // it('should hidden board component when MetricsTypeCheckbox select is null given MetricsTypeCheckbox select is velocity ', async () => {
+  //   setup();
 
-    await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
-    const requireDateSelection = within(screen.getByRole('listbox'));
-    await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
-    await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+  //   await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
+  //   const requireDateSelection = within(screen.getByRole('listbox'));
+  //   await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+  //   await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
 
-    expect(screen.queryByText(CONFIG_TITLE.BOARD)).not.toBeInTheDocument();
-  });
+  //   expect(screen.queryByText(CONFIG_TITLE.BOARD)).not.toBeInTheDocument();
+  // });
 });
