@@ -43,8 +43,9 @@ public class ReportController {
 	public InputStreamResource exportCSV(
 			@Schema(type = "string", allowableValues = { "metric", "pipeline", "board" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable ReportType reportType,
-			@PathVariable String timeStamp, @Schema(type = "string", example = "20240310") @Parameter String startTime,
-			@Schema(type = "string", example = "20240409") @Parameter String endTime) {
+			@PathVariable String timeStamp,
+			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
+			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
 		log.info("Start to export CSV file_reportType: {}, filename: {}", reportType.getValue(), timeStamp);
 		InputStreamResource result = reportService.exportCsv(reportType, timeStamp, startTime, endTime);
 		log.info("Successfully get CSV file_reportType: {}, filename: {}, _result: {}", reportType.getValue(),
@@ -54,8 +55,8 @@ public class ReportController {
 
 	@GetMapping("/{timeStamp}")
 	public ResponseEntity<ReportResponse> generateReport(@PathVariable String timeStamp,
-			@Schema(type = "string", example = "20240310") @Parameter String startTime,
-			@Schema(type = "string", example = "20240409") @Parameter String endTime) {
+			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
+			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
 		log.info("Start to generate report_reportId: {}", timeStamp);
 		ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp, startTime,
 				endTime);
