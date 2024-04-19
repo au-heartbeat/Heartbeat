@@ -6,9 +6,9 @@ import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { UnauthorizedError } from '@src/errors/UnauthorizedError';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { NotFoundError } from '@src/errors/NotFoundError';
-import { act, renderHook } from '@testing-library/react';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { FormProvider } from '@test/utils/FormProvider';
+import { renderHook } from '@testing-library/react';
 import { BOARD_TYPES } from '@test/fixtures';
 import { HttpStatusCode } from 'axios';
 import { ReactNode } from 'react';
@@ -72,9 +72,7 @@ describe('use verify board state', () => {
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.resolve(mockedOkResponse));
 
     const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
-    await act(async () => {
-      await result.current.verifyJira();
-    });
+    await result.current.verifyJira();
 
     expect(resetSpy).toHaveBeenCalledWith(
       {
@@ -93,9 +91,7 @@ describe('use verify board state', () => {
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
-    await act(async () => {
-      await result.current.verifyJira();
-    });
+    await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('email', { message: 'Email is incorrect!' });
     expect(setErrorSpy).toHaveBeenCalledWith('token', {
@@ -108,9 +104,7 @@ describe('use verify board state', () => {
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
-    await act(async () => {
-      await result.current.verifyJira();
-    });
+    await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('site', { message: 'Site is incorrect!' });
   });
@@ -120,9 +114,7 @@ describe('use verify board state', () => {
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
-    await act(async () => {
-      await result.current.verifyJira();
-    });
+    await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('boardId', { message: 'Board Id is incorrect!' });
   });
@@ -132,9 +124,7 @@ describe('use verify board state', () => {
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
-    await act(async () => {
-      await result.current.verifyJira();
-    });
+    await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('token', { message: 'Unknown error' });
   });
@@ -144,9 +134,7 @@ describe('use verify board state', () => {
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     const { result } = renderHook(useVerifyBoardEffect, { wrapper: HookWrapper });
-    await act(async () => {
-      await result.current.verifyJira();
-    });
+    await result.current.verifyJira();
 
     expect(setErrorSpy).toHaveBeenCalledWith('token', { message: 'Timeout!' });
   });

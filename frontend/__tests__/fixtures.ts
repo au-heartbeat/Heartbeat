@@ -638,6 +638,7 @@ export const MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT = 'Token is incorrect!';
 export const MOCK_PIPELINE_VERIFY_UNAUTHORIZED_TEXT = 'Token is incorrect!';
 export const MOCK_PIPELINE_VERIFY_FORBIDDEN_ERROR_TEXT =
   'Forbidden request, please change your token with correct access permission.';
+export const UNKNOWN_ERROR_TEXT = 'Unknown error';
 
 export const FAKE_TOKEN = 'fake-token';
 
