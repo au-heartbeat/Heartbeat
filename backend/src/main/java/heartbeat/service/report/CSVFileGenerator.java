@@ -69,9 +69,9 @@ public class CSVFileGenerator {
 
 	private static final String REWORK_FIELD = "Rework";
 
-	private static InputStreamResource readStringFromCsvFile(String fileName) {
+	private static InputStreamResource readStringFromCsvFile(File file) {
 		try {
-			InputStream inputStream = new FileInputStream(fileName);
+			InputStream inputStream = new FileInputStream(file);
 
 			return new InputStreamResource(inputStream);
 		}
@@ -164,11 +164,11 @@ public class CSVFileGenerator {
 		}
 		return switch (reportDataType) {
 			case METRIC -> readStringFromCsvFile(
-					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
+					new File(CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
 			case PIPELINE -> readStringFromCsvFile(
-					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
+				new File(CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
 			default -> readStringFromCsvFile(
-					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
+				new File(CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
 		};
 	}
 
