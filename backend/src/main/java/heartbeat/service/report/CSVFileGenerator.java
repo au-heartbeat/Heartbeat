@@ -43,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,18 +66,18 @@ public class CSVFileGenerator {
 
 	public static final String FILE_LOCAL_PATH = "./app/output/csv";
 
+	private static final Path FILE_PATH = new File(FILE_LOCAL_PATH).toPath().normalize();
+
 	private static final String CANCELED_STATUS = "canceled";
 
 	private static final String REWORK_FIELD = "Rework";
 
-	public static InputStreamResource readStringFromCsvFile(String fileName) {
-		if (!fileName.startsWith(FILE_LOCAL_PATH)) {
-			throw new IllegalArgumentException("Invalid fileName");
+	public static InputStreamResource readStringFromCsvFile(File file) {
+		if (!file.toPath().normalize().startsWith(FILE_PATH)) {
+			throw new IllegalArgumentException("Invalid file path");
 		}
 		try {
-			File file = new File(fileName);
 			InputStream inputStream = new FileInputStream(file);
-
 			return new InputStreamResource(inputStream);
 		}
 		catch (IOException e) {
@@ -167,12 +168,9 @@ public class CSVFileGenerator {
 			throw new IllegalArgumentException("Invalid time range time stamp");
 		}
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(
-					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
-			case PIPELINE -> readStringFromCsvFile(
-					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
-			default -> readStringFromCsvFile(
-					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
+			case METRIC -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			case PIPELINE -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			default -> readStringFromCsvFile(new File(FILE_PATH + "/" + ReportType.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
 		};
 	}
 
