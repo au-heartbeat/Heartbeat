@@ -69,8 +69,9 @@ public class CSVFileGenerator {
 
 	private static final String REWORK_FIELD = "Rework";
 
-	private static InputStreamResource readStringFromCsvFile(File file) {
+	private static InputStreamResource readStringFromCsvFile(String fileName) {
 		try {
+			File file = new File(fileName);
 			InputStream inputStream = new FileInputStream(file);
 
 			return new InputStreamResource(inputStream);
@@ -163,12 +164,12 @@ public class CSVFileGenerator {
 			throw new IllegalArgumentException("Invalid time range time stamp");
 		}
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(new File(
-					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			case PIPELINE -> readStringFromCsvFile(new File(
-					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			default -> readStringFromCsvFile(new File(
-					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			case METRIC -> readStringFromCsvFile(
+					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
+			case PIPELINE -> readStringFromCsvFile(
+					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
+			default -> readStringFromCsvFile(
+					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION);
 		};
 	}
 
