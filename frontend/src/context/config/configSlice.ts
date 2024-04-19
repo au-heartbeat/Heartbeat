@@ -189,9 +189,6 @@ export const configSlice = createSlice({
         pipelineCrews,
       );
     },
-    updateSourceControlVerifyState: (state, action) => {
-      state.sourceControl.isVerified = action.payload;
-    },
     updateSourceControl: (state, action) => {
       state.sourceControl.config = action.payload;
     },
@@ -216,7 +213,6 @@ export const {
   updatePipelineTool,
   updatePipelineToolVerifyResponse,
   updateSourceControl,
-  updateSourceControlVerifyState,
   updateSourceControlVerifiedResponse,
   updatePipelineToolVerifyResponseSteps,
   resetImportedData,
@@ -234,7 +230,6 @@ export const isOnlySelectClassification = (state: RootState) =>
 export const selectBoard = (state: RootState) => state.config.board.config;
 export const isPipelineToolVerified = (state: RootState) => state.config.pipelineTool.isVerified;
 export const selectPipelineTool = (state: RootState) => state.config.pipelineTool.config;
-export const isSourceControlVerified = (state: RootState) => state.config.sourceControl.isVerified;
 export const selectSourceControl = (state: RootState) => state.config.sourceControl.config;
 export const selectWarningMessage = (state: RootState) => state.config.warningMessage;
 

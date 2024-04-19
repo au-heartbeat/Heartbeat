@@ -20,12 +20,7 @@ import {
   updateDeploymentFrequencySettings,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
-import {
-  updateBoardVerifyState,
-  updateMetrics,
-  updatePipelineToolVerifyState,
-  updateSourceControlVerifyState,
-} from '@src/context/config/configSlice';
+import { updateBoardVerifyState, updateMetrics, updatePipelineToolVerifyState } from '@src/context/config/configSlice';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { ASSIGNEE_FILTER_TYPES } from '@src/constants/resources';
 import MetricsStepper from '@src/containers/MetricsStepper';
@@ -114,7 +109,6 @@ const fillConfigPageData = async () => {
     store.dispatch(updateMetrics([VELOCITY]));
     store.dispatch(updateBoardVerifyState(true));
     store.dispatch(updatePipelineToolVerifyState(true));
-    store.dispatch(updateSourceControlVerifyState(true));
   });
 };
 
