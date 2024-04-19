@@ -17,8 +17,8 @@ import { sourceControlClient } from '@src/clients/sourceControl/SourceControlCli
 import { fireEvent, render, screen, act, waitFor } from '@testing-library/react';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
-import { FormProvider } from '@test/utils/FormProviders';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { FormProvider } from '@test/utils/FormProvider';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
