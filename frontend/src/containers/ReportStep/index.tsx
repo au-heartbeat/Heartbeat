@@ -60,7 +60,6 @@ const timeoutNotificationMessages = {
 };
 
 export interface DateRangeRequestResult {
-  id: number;
   startDate: string;
   endDate: string;
   overallMetricsCompleted: boolean;

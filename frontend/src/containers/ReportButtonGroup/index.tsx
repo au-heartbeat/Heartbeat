@@ -1,12 +1,12 @@
 import { StyledButtonGroup, StyledExportButton, StyledRightButtonGroup } from '@src/containers/ReportButtonGroup/style';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
 import { DownloadDialog } from '@src/containers/ReportStep/DownloadDialog';
 import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
 import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
 import { COMMON_BUTTONS, REPORT_TYPES } from '@src/constants/commons';
-import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
+import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { DateRangeRequestResult } from '@src/containers/ReportStep';
+import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { TIPS } from '@src/constants/resources';
 import { Tooltip } from '@mui/material';
@@ -82,8 +82,8 @@ export const ReportButtonGroup = ({
     endDate: endDate,
   });
 
-  const handleDownload = (dateRangeRequestResults:DateRangeRequestResult[], dataType: REPORT_TYPES) => {
-    if(dateRangeRequestResults.length > 1) {
+  const handleDownload = (dateRangeRequestResults: DateRangeRequestResult[], dataType: REPORT_TYPES) => {
+    if (dateRangeRequestResults.length > 1) {
       setIsShowDialog(true);
     } else {
       fetchExportData(exportCSV(dataType, startDate, endDate));
@@ -92,7 +92,11 @@ export const ReportButtonGroup = ({
 
   return (
     <>
-      <DownloadDialog isShowDialog={isShowDialog} handleClose={() => setIsShowDialog(false)} />
+      <DownloadDialog
+        isShowDialog={isShowDialog}
+        handleClose={() => setIsShowDialog(false)}
+        dateRangeRequestResults={dateRangeRequestResults}
+      />
       <StyledButtonGroup isShowSave={isShowSave}>
         {isShowSave && (
           <Tooltip title={TIPS.SAVE_CONFIG} placement={'right'}>
