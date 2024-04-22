@@ -54,43 +54,25 @@ export const ReportButtonGroup = ({
     return !!reportMetricsError.pipelineMetricsError || !!reportMetricsError.sourceControlMetricsError;
   };
 
-  const overallMetricsResults = dateRangeRequestResults.map(item => ({
+  const overallMetricsResults = dateRangeRequestResults.map((item) => ({
     startDate: item.startDate,
     endDate: item.endDate,
-    disabled: !(item.overallMetricsCompleted && !isReportHasError(item.reportMetricsError))
+    disabled: !(item.overallMetricsCompleted && !isReportHasError(item.reportMetricsError)),
   }));
-  const boardMetricsResults = dateRangeRequestResults.map(item => ({
+  const boardMetricsResults = dateRangeRequestResults.map((item) => ({
     startDate: item.startDate,
     endDate: item.endDate,
-    disabled: !(item.boardMetricsCompleted && !item.reportMetricsError.boardMetricsError)
+    disabled: !(item.boardMetricsCompleted && !item.reportMetricsError.boardMetricsError),
   }));
-  const pipelineMetricsResults = dateRangeRequestResults.map(item => ({
+  const pipelineMetricsResults = dateRangeRequestResults.map((item) => ({
     startDate: item.startDate,
     endDate: item.endDate,
-    disabled: !(item.doraMetricsCompleted && !isReportHasDoraError(item.reportMetricsError))
+    disabled: !(item.doraMetricsCompleted && !isReportHasDoraError(item.reportMetricsError)),
   }));
 
-  const isAllOverallMetricsCompleted = dateRangeRequestResults.every(
-    ({ overallMetricsCompleted }) => overallMetricsCompleted,
-  );
-  const hasReportWithoutError = dateRangeRequestResults.some(
-    ({ reportMetricsError }) => !isReportHasError(reportMetricsError),
-  );
-  const exportMetricsButtonDisabled = !isAllOverallMetricsCompleted || !hasReportWithoutError;
-
-  const isAllBoardMetricsCompleted = dateRangeRequestResults.every(
-    ({ boardMetricsCompleted }) => boardMetricsCompleted,
-  );
-  const hasReportWithoutBoardError = dateRangeRequestResults.some(
-    ({ reportMetricsError }) => !reportMetricsError.boardMetricsError,
-  );
-  const exportBoardButtonDisabled = !isAllBoardMetricsCompleted || !hasReportWithoutBoardError;
-
-  const isAllDoraMetricsCompleted = dateRangeRequestResults.every(({ doraMetricsCompleted }) => doraMetricsCompleted);
-  const hasReportWithoutDoraError = dateRangeRequestResults.some(
-    ({ reportMetricsError }) => !isReportHasDoraError(reportMetricsError),
-  );
-  const exportDoraButtonDisabled = !isAllDoraMetricsCompleted || !hasReportWithoutDoraError;
+  const exportMetricsButtonDisabled = overallMetricsResults.every(({ disabled }) => disabled);
+  const exportBoardButtonDisabled = boardMetricsResults.every(({ disabled }) => disabled);
+  const exportPipelineButtonDisabled = pipelineMetricsResults.every(({ disabled }) => disabled);
 
   const exportCSV = (dataType: REPORT_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
@@ -145,7 +127,7 @@ export const ReportButtonGroup = ({
           )}
           {isShowExportPipelineButton && (
             <StyledExportButton
-              disabled={exportDoraButtonDisabled}
+              disabled={exportPipelineButtonDisabled}
               onClick={() => handleDownload(pipelineMetricsResults, REPORT_TYPES.PIPELINE)}
             >
               {COMMON_BUTTONS.EXPORT_PIPELINE_DATA}
