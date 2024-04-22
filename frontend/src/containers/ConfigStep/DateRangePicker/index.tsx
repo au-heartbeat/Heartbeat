@@ -3,10 +3,12 @@ import { SortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/
 import { SortingDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortingDateRange';
 import { selectDateRange, selectDateRangeSortType } from '@src/context/config/configSlice';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
+import { BASIC_INFO_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
@@ -21,6 +23,16 @@ export const DateRangePickerSection = () => {
       return dateRange.startDate && dateRange.endDate;
     });
   }, [dateRangeGroup]);
+
+  const { setError, clearErrors, reset } = useFormContext();
+  useEffect(() => {
+    if (hasError) {
+      setError('dateRange', { message: BASIC_INFO_ERROR_MESSAGE.dateRange.invalid });
+    } else {
+      clearErrors('dateRange');
+      reset(undefined, { keepValues: true, keepErrors: true, keepDirty: true, keepTouched: true });
+    }
+  }, [hasError]);
 
   const handleSortTypeChange = (type: SortType) => {
     setSortType(type);

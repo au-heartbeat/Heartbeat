@@ -63,6 +63,10 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
     mode: 'onChange',
   });
 
+  useEffect(() => {
+    basicInfoMethods.trigger();
+  }, []);
+
   const { isValid: isBasicInfoValid } = basicInfoMethods.formState;
   const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
     boardConfigMethods.formState;
@@ -102,8 +106,9 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
   );
 
   useEffect(() => {
-    setIsDisableNextButton(!atleatOneFormVerified);
-  }, [atleatOneFormVerified]);
+    const isConfigPageValid = isBasicInfoValid && atleatOneFormVerified;
+    setIsDisableNextButton(!isConfigPageValid);
+  }, [isBasicInfoValid, atleatOneFormVerified]);
 
   return (
     <ConfigStepWrapper>
