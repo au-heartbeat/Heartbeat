@@ -1,6 +1,6 @@
 import { StyledButtonGroup, StyledExportButton, StyledRightButtonGroup } from '@src/containers/ReportButtonGroup/style';
+import { DateRangeItem, DownloadDialog } from '@src/containers/ReportStep/DownloadDialog';
 import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
-import { DownloadDialog } from '@src/containers/ReportStep/DownloadDialog';
 import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
 import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
 import { COMMON_BUTTONS, REPORT_TYPES } from '@src/constants/commons';
@@ -39,6 +39,7 @@ export const ReportButtonGroup = ({
   dateRangeRequestResults,
 }: ReportButtonGroupProps) => {
   const [isShowDialog, setIsShowDialog] = useState(false);
+  const [downloadReportList, setDownloadReportList] = useState([]);
   const { fetchExportData, isExpired } = useExportCsvEffect();
 
   const isReportHasError = (reportMetricsError) => {
@@ -52,6 +53,10 @@ export const ReportButtonGroup = ({
   const isReportHasDoraError = (reportMetricsError) => {
     return !!reportMetricsError.pipelineMetricsError || !!reportMetricsError.sourceControlMetricsError;
   };
+
+  const overallMetricsResults = [];
+  const boardMetricsResults = [];
+  const pipelineMetricsResults = [];
 
   const isAllOverallMetricsCompleted = dateRangeRequestResults.every(
     ({ overallMetricsCompleted }) => overallMetricsCompleted,
@@ -82,9 +87,10 @@ export const ReportButtonGroup = ({
     endDate: endDate,
   });
 
-  const handleDownload = (dateRangeRequestResults: DateRangeRequestResult[], dataType: REPORT_TYPES) => {
-    if (dateRangeRequestResults.length > 1) {
+  const handleDownload = (dateRange: DateRangeItem[], dataType: REPORT_TYPES) => {
+    if (dateRange.length > 1) {
       setIsShowDialog(true);
+      setDownloadReportList(dateRange);
     } else {
       fetchExportData(exportCSV(dataType, startDate, endDate));
     }
@@ -95,7 +101,7 @@ export const ReportButtonGroup = ({
       <DownloadDialog
         isShowDialog={isShowDialog}
         handleClose={() => setIsShowDialog(false)}
-        dateRangeRequestResults={dateRangeRequestResults}
+        dateRangeItems={downloadReportList}
       />
       <StyledButtonGroup isShowSave={isShowSave}>
         {isShowSave && (
@@ -112,7 +118,7 @@ export const ReportButtonGroup = ({
           {isShowExportMetrics && (
             <StyledExportButton
               disabled={exportMetricsButtonDisabled}
-              onClick={() => handleDownload(dateRangeRequestResults, REPORT_TYPES.METRICS)}
+              onClick={() => handleDownload(overallMetricsResults, REPORT_TYPES.METRICS)}
             >
               {COMMON_BUTTONS.EXPORT_METRIC_DATA}
             </StyledExportButton>
@@ -120,7 +126,7 @@ export const ReportButtonGroup = ({
           {isShowExportBoardButton && (
             <StyledExportButton
               disabled={exportBoardButtonDisabled}
-              onClick={() => handleDownload(dateRangeRequestResults, REPORT_TYPES.BOARD)}
+              onClick={() => handleDownload(boardMetricsResults, REPORT_TYPES.BOARD)}
             >
               {COMMON_BUTTONS.EXPORT_BOARD_DATA}
             </StyledExportButton>
@@ -128,7 +134,7 @@ export const ReportButtonGroup = ({
           {isShowExportPipelineButton && (
             <StyledExportButton
               disabled={exportDoraButtonDisabled}
-              onClick={() => handleDownload(dateRangeRequestResults, REPORT_TYPES.PIPELINE)}
+              onClick={() => handleDownload(pipelineMetricsResults, REPORT_TYPES.PIPELINE)}
             >
               {COMMON_BUTTONS.EXPORT_PIPELINE_DATA}
             </StyledExportButton>
