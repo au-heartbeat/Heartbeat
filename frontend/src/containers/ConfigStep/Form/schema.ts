@@ -13,7 +13,7 @@ import { object, string, mixed, InferType, array } from 'yup';
 import { REGEX } from '@src/constants/regex';
 
 export const basicInfoSchema = object().shape({
-  projectName: string().required(BASIC_INFO_ERROR_MESSAGE.projectName),
+  projectName: string().required(BASIC_INFO_ERROR_MESSAGE.projectName.required),
   dateRange: array()
     .of(
       object().shape({
@@ -23,7 +23,7 @@ export const basicInfoSchema = object().shape({
     )
     .required(),
   calendarType: mixed().oneOf(CALENDAR_TYPE_LITERAL),
-  metrics: mixed().oneOf(METRICS_LITERAL),
+  metrics: array().of(mixed().oneOf(METRICS_LITERAL)).min(1, BASIC_INFO_ERROR_MESSAGE.metrics.required),
 });
 
 export const boardConfigSchema = object().shape({

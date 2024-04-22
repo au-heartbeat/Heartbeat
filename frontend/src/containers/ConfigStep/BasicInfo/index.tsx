@@ -36,7 +36,7 @@ const BasicInfo = () => {
               }}
               onFocus={() => {
                 if (field.value === '') {
-                  setError('projectName', { message: BASIC_INFO_ERROR_MESSAGE.projectName });
+                  setError('projectName', { message: BASIC_INFO_ERROR_MESSAGE.projectName.required });
                 }
               }}
               error={fieldState.invalid}

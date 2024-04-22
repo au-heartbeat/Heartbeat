@@ -1,5 +1,6 @@
 import { Checkbox, FormHelperText, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { RequireDataSelections } from '@src/containers/ConfigStep/BasicInfo/RequiredMetrics/style';
+import { BASIC_INFO_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { selectMetrics, updateMetrics } from '@src/context/config/configSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { METRICS_LITERAL } from '@src/containers/ConfigStep/Form/literal';
@@ -23,7 +24,7 @@ export const RequiredMetrics = () => {
         <Controller
           name={'metrics'}
           control={control}
-          render={({ field }) => {
+          render={({ field, fieldState }) => {
             const isEveryOptionsSelected = ALL_REQUIRED_DATA.every((metric) => field.value.includes(metric));
             const onChange = ({ target: { value: selectedOptions } }: SelectChangeEvent<typeof METRICS_LITERAL>) => {
               const isClickingAll = selectedOptions[selectedOptions.length - 1] === ALL;
@@ -55,7 +56,9 @@ export const RequiredMetrics = () => {
                     </MenuItem>
                   ))}
                 </Select>
-                {field.value.length === 0 && <FormHelperText>Metrics is required</FormHelperText>}
+                {field.value.length === 0 && (
+                  <FormHelperText>{BASIC_INFO_ERROR_MESSAGE.metrics.required}</FormHelperText>
+                )}
               </>
             );
           }}

@@ -1,4 +1,5 @@
 import {
+  IBasicInfoErrorMessage,
   IBoardConfigErrorMessage,
   IPipelineToolErrorMessage,
   ISourceControlErrorMessage,
@@ -19,8 +20,23 @@ export const BOARD_TYPE_LITERAL = ['Jira'];
 export const PIPELINE_TOOL_TYPE_LITERAL = ['BuildKite'];
 export const SOURCE_CONTROL_TYPE_LITERAL = ['GitHub'];
 
-export const BASIC_INFO_ERROR_MESSAGE = {
-  projectName: 'Project name is required',
+export const BASIC_INFO_ERROR_MESSAGE: IBasicInfoErrorMessage = {
+  projectName: {
+    required: 'Project name is required',
+  },
+  metrics: {
+    required: 'Metrics is required',
+  },
+  dateRange: {
+    startDate: {
+      required: 'Start date is required',
+      invalid: 'Start date is invalid',
+    },
+    endDate: {
+      required: 'Start date is required',
+      invalid: 'Start date is invalid',
+    },
+  },
 };
 export const BOARD_CONFIG_ERROR_MESSAGE: IBoardConfigErrorMessage = {
   boardId: {

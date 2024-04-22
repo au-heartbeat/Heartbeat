@@ -1,6 +1,28 @@
 export type TBoardFieldKeys = 'type' | 'boardId' | 'email' | 'site' | 'token';
 export type TPipelineToolFieldKeys = 'type' | 'token';
 export type TSourceControlFieldKeys = 'type' | 'token';
+export type TBasicInfoFieldKeys = 'projectName' | 'calendarType' | 'dateRange' | 'metrics';
+
+export interface IDateRangeErrorMessage {
+  startDate: {
+    required: string;
+    invalid: string;
+  };
+  endDate: {
+    required: string;
+    invalid: string;
+  };
+}
+export interface IBasicInfoErrorMessage
+  extends Record<Exclude<TBasicInfoFieldKeys, 'calendarType'>, Record<string, string> | IDateRangeErrorMessage> {
+  projectName: {
+    required: string;
+  };
+  dateRange: IDateRangeErrorMessage;
+  metrics: {
+    required: string;
+  };
+}
 export interface IBoardConfigErrorMessage extends Record<Exclude<TBoardFieldKeys, 'type'>, Record<string, string>> {
   boardId: {
     required: string;
