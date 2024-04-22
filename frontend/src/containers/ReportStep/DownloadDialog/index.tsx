@@ -66,6 +66,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
                   />
                 }
                 label={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
+                disabled={item.disabled}
               />
             ))}
           </FormGroup>
