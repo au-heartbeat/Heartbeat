@@ -40,6 +40,7 @@ import { addNotification, closeAllNotifications, Notification } from '@src/conte
 import { ListChartButtonContainer, StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
+import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
@@ -429,6 +430,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       )}
     </>
   );
+
+  const showChart = () => <DoraMetricsChart startToRequestDoraData={() => {}} errorMessage={getErrorMessage4Board()} />;
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
@@ -462,13 +465,40 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     closeReportInfosErrorStatus(selectedDateRange.startDate as string, errorKey);
   };
 
+  const handleListClick = () => {
+    setPageType(REPORT_PAGE_TYPE.SUMMARY);
+  };
+
+  const handleChartClick = () => {
+    setPageType(REPORT_PAGE_TYPE.DORA_CHART);
+  };
+
+  const showPage = (pageType: string, reportData: ReportResponseDTO | undefined) => {
+    switch (pageType) {
+      case REPORT_PAGE_TYPE.SUMMARY:
+        return showSummary();
+      case REPORT_PAGE_TYPE.BOARD:
+        return showBoardDetail(reportData);
+      case REPORT_PAGE_TYPE.DORA:
+        return !!reportData && showDoraDetail(reportData);
+      case REPORT_PAGE_TYPE.DORA_CHART:
+        return showChart();
+      default:
+        return showSummary();
+    }
+  };
+
   return (
     <>
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
           <ListChartButtonContainer>
-            <ChartListButton startIcon={<FormatListBulletedIcon />}>List</ChartListButton>
-            <ChartListButton startIcon={<BarChartIcon />}>Chart</ChartListButton>
+            <ChartListButton onClick={handleListClick} startIcon={<FormatListBulletedIcon />}>
+              List
+            </ChartListButton>
+            <ChartListButton onClick={handleChartClick} startIcon={<BarChartIcon />}>
+              Chart
+            </ChartListButton>
           </ListChartButtonContainer>
           <DateRangeViewer
             dateRangeList={descendingDateRanges}
@@ -478,6 +508,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           />
         </StyledCalendarWrapper>
       )}
+      {/*{showPage(pageType, reportData)}*/}
       {isSummaryPage
         ? showSummary()
         : pageType === REPORT_PAGE_TYPE.BOARD

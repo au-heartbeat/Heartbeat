@@ -9,6 +9,8 @@ export const REPORT_PAGE_TYPE = {
   SUMMARY: 'Summary',
   BOARD: 'BoardReport',
   DORA: 'DoraReport',
+  BOARD_CHART: 'BoardChart',
+  DORA_CHART: 'DoraChart',
 };
 
 export const REJECTED = 'rejected';
