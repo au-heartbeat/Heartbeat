@@ -23,11 +23,16 @@ export interface DateRangeItem {
 }
 
 export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems }: DownloadDialogProps) => {
-  const [downloadList, setDownloadList] = useState<DateRangeItem[]>([]);
+  const [selectedRangeItems, setSelectedRangeItems] = useState<DateRangeItem[]>([]);
 
-  const handleChange = () => {
-    return 0;
+  const handleChange = (targetItem: DateRangeItem) => {
+    if (selectedRangeItems.includes(targetItem)) {
+      setSelectedRangeItems(selectedRangeItems.filter((item) => targetItem !== item));
+    } else {
+      setSelectedRangeItems([...selectedRangeItems, targetItem]);
+    }
   };
+
   return (
     <Dialog open={isShowDialog} maxWidth='md'>
       <DialogContainer>
@@ -43,7 +48,9 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems }: Do
           <FormGroup>
             {dateRangeItems.map((item, index) => (
               <FormControlLabel
-                control={<Checkbox checked={downloadList.includes(item)} onChange={handleChange} key={index} />}
+                control={
+                  <Checkbox checked={selectedRangeItems.includes(item)} onChange={() => handleChange(item)} key={index} />
+                }
                 label={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
               />
             ))}
