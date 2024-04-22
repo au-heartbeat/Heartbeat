@@ -46,6 +46,9 @@ interface DoraMetricsChartProps {
   errorMessage: string;
 }
 
+const NO_LABEL = '';
+const LABEL_PERCENT = '%';
+
 function extractedStackedBarData(mappedData: ReportResponse) {
   return {
     title: 'Lead Time For Change',
@@ -54,6 +57,7 @@ function extractedStackedBarData(mappedData: ReportResponse) {
     yAxis: {
       name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
       alignTick: false,
+      axisLabel: NO_LABEL,
     },
     series: mappedData.leadTimeForChangesList?.[0].valuesList.map((item) => {
       const series: Series = {
@@ -77,8 +81,8 @@ function extractedDeploymentFrequencyData(mappedData: ReportResponse) {
     xAxis: ['03/01-03/15'],
     yAxis: {
       name: METRICS_SUBTITLE.DEPLOYMENT_FREQUENCY,
-      data: [`${value}%`],
       alignTick: false,
+      axisLabel: NO_LABEL,
     },
     series: {
       name: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
@@ -99,7 +103,7 @@ function extractedChangeFailureRateData(mappedData: ReportResponse) {
     xAxis: ['03/01-03/15'],
     yAxis: {
       name: METRICS_SUBTITLE.FAILURE_RATE,
-      data: [`${value}%`],
+      axisLabel: LABEL_PERCENT,
       alignTick: false,
     },
     series: {
@@ -120,8 +124,8 @@ function extractedMeanTimeToRecoveryDataData(mappedData: ReportResponse) {
     xAxis: ['03/01-03/15'],
     yAxis: {
       name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
-      data: [`${value}%`],
       alignTick: false,
+      axisLabel: NO_LABEL,
     },
     series: {
       name: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,

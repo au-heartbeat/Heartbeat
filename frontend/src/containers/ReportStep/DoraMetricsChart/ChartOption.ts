@@ -23,6 +23,7 @@ export interface Series {
 export interface yAxis {
   name: string;
   alignTick: boolean;
+  axisLabel: string;
 }
 
 export const oneLineOptionMapper = (props: LineOptionProps) => {
@@ -52,6 +53,15 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
     yAxis: {
       name: props.yAxis.name,
       type: 'value',
+      nameTextStyle: {
+        align: 'left',
+      },
+      paddingLeft: 10,
+      axisLabel: {
+        show: true,
+        interval: 'auto',
+        formatter: `{value}${props.yAxis.axisLabel}`,
+      },
       splitLine: {
         show: true,
         lineStyle: {
@@ -62,7 +72,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
     },
     grid: {
       show: true,
-      left: '6%',
+      left: '7%',
       right: '4%',
     },
     series: {
@@ -91,7 +101,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
     },
     grid: {
       show: true,
-      left: '6%',
+      left: '7%',
       right: '4%',
     },
     xAxis: {
@@ -100,7 +110,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
     yAxis: {
       name: props.yAxis.name,
       nameTextStyle: {
-        marginLeft: 10,
+        align: 'left',
       },
       type: 'value',
       alignTick: false,
