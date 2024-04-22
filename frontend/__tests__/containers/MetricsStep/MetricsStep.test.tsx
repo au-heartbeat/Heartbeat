@@ -195,7 +195,6 @@ describe('MetricsStep', () => {
         { key: 'done', value: { name: 'Done', statuses: ['PRE-DONE,', 'DONE', 'CANCEL'] } },
       ];
 
-      store.dispatch(updateShouldGetBoardConfig(true));
       store.dispatch(updateMetrics(REQUIRED_DATA_LIST));
       store.dispatch(updateCycleTimeSettings(cycleTimeSettingsWithTwoDoneValue));
       store.dispatch(saveDoneColumn(doneColumn));
@@ -286,6 +285,7 @@ describe('MetricsStep', () => {
     });
 
     it('should be render no card container when get board card when no data', async () => {
+      store.dispatch(updateShouldGetBoardConfig(true));
       server.use(
         rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
           return res(ctx.status(HttpStatusCode.Ok));
@@ -374,6 +374,7 @@ describe('MetricsStep', () => {
     });
 
     it('should show retry button when call get info timeout', async () => {
+      store.dispatch(updateShouldGetBoardConfig(true));
       server.use(
         rest.post(MOCK_BOARD_INFO_URL, (_, res) => {
           return res.networkError('NETWORK_TIMEOUT');
