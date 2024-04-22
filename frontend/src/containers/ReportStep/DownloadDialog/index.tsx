@@ -7,7 +7,7 @@ import {
   StyledFormGroup,
   TimePeriodSelectionMessage,
 } from '@src/containers/ReportStep/DownloadDialog/style';
-import { Checkbox, Dialog, FormControlLabel } from '@mui/material';
+import { Checkbox, Dialog, FormControlLabel, Tooltip } from '@mui/material';
 import { COMMON_BUTTONS } from '@src/constants/commons';
 import CloseIcon from '@mui/icons-material/Close';
 import { formatDate } from '@src/utils/util';
@@ -28,6 +28,7 @@ export interface DateRangeItem {
 
 export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, downloadCSVFile }: DownloadDialogProps) => {
   const [selectedRangeItems, setSelectedRangeItems] = useState<DateRangeItem[]>([]);
+  const disableMessage = 'Unavailable time period indicates that report generation during this period has failed.';
 
   const handleChange = (targetItem: DateRangeItem) => {
     if (selectedRangeItems.includes(targetItem)) {
@@ -44,6 +45,14 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
     handleClose();
   };
 
+  const renderLabel = (item: DateRangeItem, index: number) => (
+    <FormControlLabel
+      control={<Checkbox checked={selectedRangeItems.includes(item)} onChange={() => handleChange(item)} key={index} />}
+      label={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
+      disabled={item.disabled}
+    />
+  );
+
   return (
     <Dialog open={isShowDialog} maxWidth='md'>
       <DialogContainer>
@@ -57,19 +66,17 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
             <strong>Select the time period for the exporting data</strong>
           </TimePeriodSelectionMessage>
           <StyledFormGroup>
-            {dateRangeItems.map((item, index) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={selectedRangeItems.includes(item)}
-                    onChange={() => handleChange(item)}
-                    key={index}
-                  />
-                }
-                label={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
-                disabled={item.disabled}
-              />
-            ))}
+            {dateRangeItems.map((item, index) => {
+              if (item.disabled) {
+                return (
+                  <Tooltip arrow title={disableMessage} placement={'top-end'}>
+                    {renderLabel(item, index)}
+                  </Tooltip>
+                );
+              } else {
+                return renderLabel(item, index);
+              }
+            })}
           </StyledFormGroup>
           <StyledButton variant='contained' onClick={handleDownload}>
             {COMMON_BUTTONS.CONFIRM}
