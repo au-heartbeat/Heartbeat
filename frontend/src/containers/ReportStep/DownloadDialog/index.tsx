@@ -1,15 +1,16 @@
 import {
   DialogContainer,
+  StyledButton,
   StyledCalendarToday,
   StyledDialogContent,
   StyledDialogTitle,
+  StyledFormGroup,
   TimePeriodSelectionMessage,
 } from '@src/containers/ReportStep/DownloadDialog/style';
-import { Checkbox, Dialog, FormControlLabel, FormGroup } from '@mui/material';
+import { Checkbox, Dialog, FormControlLabel } from '@mui/material';
 import { COMMON_BUTTONS } from '@src/constants/commons';
 import CloseIcon from '@mui/icons-material/Close';
 import { formatDate } from '@src/utils/util';
-import Button from '@mui/material/Button';
 import React, { useState } from 'react';
 
 interface DownloadDialogProps {
@@ -55,7 +56,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
             <StyledCalendarToday />
             <strong>Select the time period for the exporting data</strong>
           </TimePeriodSelectionMessage>
-          <FormGroup>
+          <StyledFormGroup>
             {dateRangeItems.map((item, index) => (
               <FormControlLabel
                 control={
@@ -69,11 +70,11 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
                 disabled={item.disabled}
               />
             ))}
-          </FormGroup>
+          </StyledFormGroup>
+          <StyledButton variant='contained' onClick={handleDownload}>
+            {COMMON_BUTTONS.CONFIRM}
+          </StyledButton>
         </StyledDialogContent>
-        <Button variant='contained' onClick={handleDownload}>
-          {COMMON_BUTTONS.CONFIRM}
-        </Button>
       </DialogContainer>
     </Dialog>
   );

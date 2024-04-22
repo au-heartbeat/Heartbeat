@@ -1,4 +1,4 @@
-import { DialogContent, DialogTitle } from '@mui/material';
+import { Button, DialogContent, DialogTitle, FormGroup } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
@@ -28,7 +28,7 @@ export const StyledDialogContent = styled(DialogContent)({
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
-  padding: '1.25rem 3.125rem',
+  padding: '1.25rem 3.125rem 1.875rem 3.125rem',
 });
 
 export const StyledCalendarToday = styled(CalendarToday)({
@@ -43,4 +43,12 @@ export const TimePeriodSelectionMessage = styled('div')({
   justifyContent: 'flex-start',
   alignItems: 'center',
   fontSize: '1rem',
+});
+
+export const StyledFormGroup = styled(FormGroup)({
+  margin: '2.5rem 0',
+});
+
+export const StyledButton = styled(Button)({
+  alignSelf: 'flex-end',
 });
