@@ -61,10 +61,9 @@ public class AsyncDataBaseHandler {
 	}
 
 	public <T> T readFileByType(File file, FIleType fIleType, String fileId, Class<T> classType) {
-		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
 		if (file.toPath().normalize().startsWith(new File(OUTPUT_FILE_PATH).toPath().normalize())) {
-			if (Files.exists(Path.of(fileName))) {
-				try (JsonReader reader = new JsonReader(new FileReader(fileName))) {
+			if (file.exists()) {
+				try (JsonReader reader = new JsonReader(new FileReader(file))) {
 					return new Gson().fromJson(reader, classType);
 				}
 				catch (IOException | RuntimeException e) {
