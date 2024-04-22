@@ -24,6 +24,8 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
 	private static final String OUTPUT_FILE_PATH = "./app/output/";
 
+	private static final String SLASH = "/";
+
 	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
 		try {
 			acquireLock(METRICS_DATA_COMPLETED, timeStamp);
@@ -36,7 +38,7 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
 	public MetricsDataCompleted getMetricsDataCompleted(String timeStamp) {
 		Path targetPath = new File(OUTPUT_FILE_PATH).toPath().normalize();
-		String fileName = targetPath + "/" + METRICS_DATA_COMPLETED.getPath() + timeStamp;
+		String fileName = targetPath + SLASH + METRICS_DATA_COMPLETED.getPath() + timeStamp;
 		return readFileByType(new File(fileName), METRICS_DATA_COMPLETED, timeStamp, MetricsDataCompleted.class);
 	}
 
