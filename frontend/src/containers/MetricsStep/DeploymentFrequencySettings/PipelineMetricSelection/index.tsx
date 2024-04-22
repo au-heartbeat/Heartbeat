@@ -1,35 +1,19 @@
 import {
-  updatePipelineToolVerifyResponseCrews,
-  selectPipelineNames,
-  selectPipelineOrganizations,
-  selectSteps,
-  selectStepsParams,
-  updatePipelineToolVerifyResponseSteps,
-  selectPipelineList,
-} from '@src/context/config/configSlice';
-import {
   selectOrganizationWarningMessage,
   selectPipelineNameWarningMessage,
   selectStepWarningMessage,
-  updatePipelineStep,
-  updateShouldGetPipelineConfig,
-  updatePiplineCrews,
 } from '@src/context/Metrics/metricsSlice';
+import { selectPipelineNames, selectPipelineOrganizations, selectSteps } from '@src/context/config/configSlice';
 
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
 import { BranchSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection';
 import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style';
-import { MyPromiseSettledResult } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
-import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
-import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
+import { abc } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { MESSAGE, NO_PIPELINE_STEP_ERROR } from '@src/constants/resources';
-import { ErrorNotification } from '@src/components/ErrorNotification';
-import { useAppDispatch, useAppSelector } from '@src/hooks';
-import { IStepsRes } from '@src/clients/MetricsClient';
 import { Loading } from '@src/components/Loading';
-import { useEffect, useState } from 'react';
 import { store } from '@src/store';
+import { useState } from 'react';
 
 interface pipelineMetricSelectionProps {
   type: string;
@@ -47,7 +31,7 @@ interface pipelineMetricSelectionProps {
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
   totalPipelineNumber: number;
-  stepRes?: MyPromiseSettledResult<IStepsRes | undefined>;
+  stepRes?: abc;
 }
 
 export const PipelineMetricSelection = ({
@@ -60,8 +44,6 @@ export const PipelineMetricSelection = ({
   stepRes,
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting;
-  const dispatch = useAppDispatch();
-  const { isStepLoading, errorMessage, getSteps } = useGetMetricsStepsEffect();
   const storeContext = store.getState();
   const organizationNameOptions = selectPipelineOrganizations(storeContext);
   const pipelineNameOptions = selectPipelineNames(storeContext, organization);
@@ -85,9 +67,9 @@ export const PipelineMetricSelection = ({
       {pipelineNameWarningMessage && <WarningNotification message={pipelineNameWarningMessage} />}
       {stepWarningMessage && <WarningNotification message={stepWarningMessage} />}
       {isShowNoStepWarning && <WarningNotification message={MESSAGE.NO_STEP_WARNING} />}
-      {isStepLoading && <Loading />}
+      {(stepRes?.isLoading || stepRes?.isLoading === undefined) && <Loading />}
       {isDuplicated && <WarningMessage>This pipeline is the same as another one!</WarningMessage>}
-      {errorMessage && <ErrorNotification message={errorMessage} />}
+      {/*{errorMessage && <ErrorNotification message={errorMessage} />}*/}
       <SingleSelection
         id={id}
         options={organizationNameOptions}
@@ -117,7 +99,11 @@ export const PipelineMetricSelection = ({
         />
       )}
       {organization && pipelineName && (
-        <BranchSelection {...pipelineSetting} onUpdatePipeline={onUpdatePipeline} isStepLoading={isStepLoading} />
+        <BranchSelection
+          {...pipelineSetting}
+          onUpdatePipeline={onUpdatePipeline}
+          isStepLoading={stepRes?.isLoading || stepRes?.isLoading === undefined}
+        />
       )}
       <ButtonWrapper>
         {isShowRemoveButton && (

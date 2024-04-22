@@ -32,11 +32,10 @@ import { Loading } from '@src/components/Loading';
 import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
 
-export type MyPromiseSettledResult<T> = PromiseSettledResult<T> & {
-  organization: string;
-  pipelineName: string;
+export interface abc {
   id: number;
-};
+  isLoading: boolean;
+}
 
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch();
@@ -47,10 +46,22 @@ export const DeploymentFrequencySettings = () => {
   const pipelineCrews = useAppSelector(selectPipelineCrews);
   const shouldGetPipelineConfig = useAppSelector(selectShouldGetPipelineConfig);
   const errorDetail = useAppSelector(getErrorDetail) as number;
-  const [stepsInfo, setStepsInfo] = useState<MyPromiseSettledResult<IStepsRes | undefined>[]>([]);
+  const [stepsInfo, setStepsInfo] = useState<abc[]>([]);
   const [preDeploySetting, setPreDeploySetting] = useState<IPipelineConfig[]>(
     shouldGetPipelineConfig ? [] : deploymentFrequencySettings,
   );
+
+  useEffect(() => {
+    const result = deploymentFrequencySettings.map((setting) => {
+      return {
+        id: setting.id,
+        isLoading: stepsInfo.find((stepInfo) => stepInfo.id === setting.id)?.isLoading || false,
+      };
+    });
+    setStepsInfo(result);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deploymentFrequencySettings.length]);
+
   const handleAddPipeline = () => {
     dispatch(addADeploymentFrequencySetting());
     setLoadingCompletedNumber((value) => value + 1);
@@ -85,6 +96,8 @@ export const DeploymentFrequencySettings = () => {
       return { params, buildId, organizationId, pipelineType, token, id };
     });
 
+    const needFetchStepIds: number[] = [];
+
     if (
       stepsParams.every((item) => {
         const id = item.id;
@@ -101,6 +114,10 @@ export const DeploymentFrequencySettings = () => {
       const cur = realDeploymentFrequencySettings.find((item) => item.id === id);
       const pre = preDeploySetting.find((item) => item.id === id);
       if (isNeedFetchStep(pre, cur)) {
+        setStepsInfo((pre) =>
+          pre.map((stepInfo) => (stepInfo.id === id ? { ...stepInfo, isLoading: true } : stepInfo)),
+        );
+        needFetchStepIds.push(id);
         return getSteps(
           paramsObj.params,
           paramsObj.organizationId,
@@ -108,13 +125,6 @@ export const DeploymentFrequencySettings = () => {
           paramsObj.pipelineType,
           paramsObj.token,
         );
-      } else {
-        const stepInfo = stepsInfo.find((item) => item.id === id);
-        if (stepInfo?.status === 'rejected') {
-          return Promise.reject(stepInfo?.reason);
-        } else {
-          return Promise.resolve(stepInfo?.value);
-        }
       }
     });
     setPreDeploySetting(realDeploymentFrequencySettings);
@@ -148,6 +158,7 @@ export const DeploymentFrequencySettings = () => {
 
       const formatStepsRes = res.map((item, index) => ({
         ...item,
+        isLoading: !needFetchStepIds.includes(realDeploymentFrequencySettings[index].id),
         organization: realDeploymentFrequencySettings[index].organization,
         pipelineName: realDeploymentFrequencySettings[index].pipelineName,
         id: realDeploymentFrequencySettings[index].id,
@@ -157,7 +168,15 @@ export const DeploymentFrequencySettings = () => {
           getOnfulfilled(formatStepRes.value, formatStepRes.organization, formatStepRes.pipelineName);
         }
       });
-      setStepsInfo(formatStepsRes);
+
+      setStepsInfo((pre) => {
+        return pre.map((item) => {
+          return {
+            ...item,
+            isLoading: needFetchStepIds.includes(item.id) ? false : item.isLoading,
+          };
+        });
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getSteps, realDeploymentFrequencySettings, isFirstFetch, preDeploySetting]);
@@ -175,15 +194,8 @@ export const DeploymentFrequencySettings = () => {
     );
   };
 
-  const mtchPipeline = (
-    deploymentFrequencySetting: IPipelineConfig,
-    stepsInfo: MyPromiseSettledResult<IStepsRes | undefined>[],
-  ) => {
-    const { pipelineName, organization } = deploymentFrequencySetting;
-    const matchedStepRes = stepsInfo.find((item) => {
-      return item.pipelineName === pipelineName && item.organization === organization;
-    });
-    return matchedStepRes;
+  const matchPipeline = (deploymentFrequencySetting: IPipelineConfig, stepsInfo: abc[]) => {
+    return stepsInfo.find((item) => item.id === deploymentFrequencySetting.id);
   };
   return (
     <>
@@ -208,7 +220,7 @@ export const DeploymentFrequencySettings = () => {
               isDuplicated={getDuplicatedPipeLineIds(realDeploymentFrequencySettings).includes(
                 deploymentFrequencySetting.id,
               )}
-              stepRes={mtchPipeline(deploymentFrequencySetting, stepsInfo)}
+              stepRes={matchPipeline(deploymentFrequencySetting, stepsInfo)}
               totalPipelineNumber={totalPipelineNumber}
               setLoadingCompletedNumber={setLoadingCompletedNumber}
             />
