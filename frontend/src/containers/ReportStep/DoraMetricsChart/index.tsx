@@ -41,9 +41,7 @@ echarts.use([
 ]);
 
 interface DoraMetricsChartProps {
-  startToRequestDoraData: () => void;
   data: ReportResponseDTO;
-  errorMessage: string;
 }
 
 const NO_LABEL = '';
@@ -136,7 +134,7 @@ function extractedMeanTimeToRecoveryDataData(mappedData: ReportResponse) {
   };
 }
 
-export const DoraMetricsChart = ({ startToRequestBoardData, data, errorMessage }: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({ data }: DoraMetricsChartProps) => {
   const LeadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);

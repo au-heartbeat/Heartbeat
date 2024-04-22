@@ -431,9 +431,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     </>
   );
 
-  const showDoraChart = (data: ReportResponseDTO) => (
-    <DoraMetricsChart startToRequestDoraData={() => {}} data={data} errorMessage={getErrorMessage4Board()} />
-  );
+  const showDoraChart = (data: ReportResponseDTO) => <DoraMetricsChart data={data} />;
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
