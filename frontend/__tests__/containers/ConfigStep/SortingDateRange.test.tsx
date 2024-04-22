@@ -1,3 +1,4 @@
+import { AscendingIcon, DescendingIcon } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { SortingDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortingDateRange';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { updateDateRangeSortType } from '@src/context/config/configSlice';
@@ -63,5 +64,20 @@ describe('SortDateRange button behaviors', () => {
     await userEvent.click(sortButton);
     const arrowDropUp = screen.getByRole('button', { name: 'Ascending' });
     expect(arrowDropUp).toBeInTheDocument();
+  });
+  it('should render AscendingIcon with correct styles', () => {
+    render(<AscendingIcon theme={theme} disabled={true} />);
+
+    const ascendingIcon = screen.getByTestId('ArrowDropUpIcon');
+    expect(ascendingIcon).toBeInTheDocument();
+    expect(ascendingIcon).toHaveStyle(`color: ${theme.main.button.disabled.color}`);
+  });
+
+  it('should render DescendingIcon with correct styles', () => {
+    render(<DescendingIcon theme={theme} disabled={true} />);
+
+    const descendingIcon = screen.getByTestId('ArrowDropDownIcon');
+    expect(descendingIcon).toBeInTheDocument();
+    expect(descendingIcon).toHaveStyle(`color: ${theme.main.button.disabled.color}`);
   });
 });
