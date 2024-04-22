@@ -144,7 +144,8 @@ export const configSlice = createSlice({
           isArray(importedDateRanges) &&
           importedDateRanges.length > 0 &&
           importedDateRanges.length <= 6 &&
-          metrics.length > 0
+          metrics.length > 0 &&
+          ((importedDateRanges.length === 1 && !importedSortType) || isSortType(importedSortType))
             ? null
             : MESSAGE.CONFIG_PAGE_VERIFY_IMPORT_ERROR;
       }
