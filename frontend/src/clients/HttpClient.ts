@@ -10,7 +10,7 @@ import { TimeoutError } from '@src/errors/TimeoutError';
 import { ROUTE } from '@src/constants/router';
 
 export class HttpClient {
-  protected httpTimeout = 7000;
+  protected httpTimeout = 300000;
   protected axiosInstance: AxiosInstance;
 
   constructor() {

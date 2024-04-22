@@ -2,8 +2,8 @@ import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TI
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { BOARD_INFO_FAIL_STATUS } from '@src/constants/commons';
-import { ReactNode, useEffect, useState } from 'react';
 import { AxiosResponse, HttpStatusCode } from 'axios';
+import { ReactNode, useState } from 'react';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
@@ -23,7 +23,7 @@ export interface useGetBoardInfoInterface {
   isDataLoading: boolean;
   boardInfoFailedStatus: BOARD_INFO_FAIL_STATUS;
 }
-const boardInfoFailedStatusMapping = (code: string | number) => {
+const boardInfoPartialFailedStatusMapping = (code: string | number) => {
   const numericCode = typeof code === 'string' ? parseInt(code, 10) : code;
   if (numericCode >= HttpStatusCode.BadRequest || numericCode < HttpStatusCode.InternalServerError) {
     return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX;
@@ -52,14 +52,6 @@ const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
     },
     [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS]: {
       errorMessage: {
-        title: BOARD_CONFIG_INFO_TITLE.EMPTY,
-        message: BOARD_CONFIG_INFO_ERROR.RETRY,
-        code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
-      },
-      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS,
-    },
-    [BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS]: {
-      errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
         message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
         code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
@@ -75,9 +67,6 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState({});
   const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(BOARD_INFO_FAIL_STATUS.NOT_FAILED);
-  useEffect(() => {
-    console.log('boardInfoFailedStatus--hook' + boardInfoFailedStatus);
-  }, [boardInfoFailedStatus]);
 
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
@@ -116,8 +105,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           .catch((err) => {
             const { code } = err;
             errorCount++;
-            localBoardInfoFailedStatus = boardInfoFailedStatusMapping(code);
-            console.log('localBoardInfoFailedStatus' + localBoardInfoFailedStatus);
+            localBoardInfoFailedStatus = boardInfoPartialFailedStatusMapping(code);
             setBoardInfoFailedStatus(localBoardInfoFailedStatus);
             return err;
           });
@@ -125,21 +113,13 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
 
       return Promise.all(allBoardData)
         .then((res) => {
-          if (localBoardInfoFailedStatus == BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS) {
-            localBoardInfoFailedStatus = BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS;
-          }
           const config = errorStatusMap(localBoardInfoFailedStatus);
-          console.log(res);
-          console.log('errorCount' + errorCount);
-          console.log('config' + config);
           if (errorCount == res.length) {
             if (config) {
-              console.log('all failed');
               setErrorMessage(config.errorMessage);
               setBoardInfoFailedStatus(config.newStatus);
             }
           } else if (errorCount != 0) {
-            console.log('partial failed');
             if (config) {
               setErrorMessage(config.errorMessage);
             }

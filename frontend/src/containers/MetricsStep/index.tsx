@@ -84,12 +84,14 @@ const MetricsStep = () => {
           // todo need refactor
           const data = res.filter((r) => r.data);
           const boardInfo = data?.map((r) => r.data);
-          const commonPayload = combineBoardInfo(boardInfo!);
-          dispatch(updateBoardVerifyState(true));
-          dispatch(updateJiraVerifyResponse(commonPayload));
-          dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
-          dispatch(updateShouldGetBoardConfig(false));
-          dispatch(updateFirstTimeRoadMetricsBoardData(false));
+          if (boardInfo?.length) {
+            const commonPayload = combineBoardInfo(boardInfo);
+            dispatch(updateBoardVerifyState(true));
+            dispatch(updateJiraVerifyResponse(commonPayload));
+            dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
+            dispatch(updateShouldGetBoardConfig(false));
+            dispatch(updateFirstTimeRoadMetricsBoardData(false));
+          }
         }
       });
     },
@@ -97,33 +99,31 @@ const MetricsStep = () => {
     [],
   );
 
-  const popup = useCallback(() => {
-    console.log('boardInfoFailedStatus' + boardInfoFailedStatus);
-    if (boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX) {
-      dispatch(
-        addNotification({
-          type: 'warning',
-          message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED_4XX,
-        }),
-      );
-    } else if (
-      boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS ||
-      boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT
-    ) {
-      dispatch(
-        addNotification({
-          type: 'warning',
-          message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED_OTHERS,
-        }),
-      );
-    }
-  }, [boardInfoFailedStatus, dispatch]);
-
   useEffect(() => {
+    const popup = () => {
+      if (boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX) {
+        dispatch(
+          addNotification({
+            type: 'warning',
+            message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED_4XX,
+          }),
+        );
+      } else if (
+        boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS ||
+        boardInfoFailedStatus === BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT
+      ) {
+        dispatch(
+          addNotification({
+            type: 'warning',
+            message: MESSAGE.BOARD_INFO_REQUEST_PARTIAL_FAILED_OTHERS,
+          }),
+        );
+      }
+    };
     if (!isDataLoading) {
       popup();
     }
-  }, [isDataLoading, popup]);
+  }, [boardInfoFailedStatus, dispatch, isDataLoading]);
 
   useLayoutEffect(() => {
     if (!shouldLoad) return;
