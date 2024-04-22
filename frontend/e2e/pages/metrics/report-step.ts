@@ -18,7 +18,8 @@ export class ReportStep {
   readonly boardMetricRework: Locator;
   readonly boardMetricsDetailVelocityPart: Locator;
   readonly boardMetricsDetailCycleTimePart: Locator;
-  readonly boardMetricsDetaiClassificationPart: Locator;
+  readonly boardMetricsDetailClassificationPart: Locator;
+  readonly boardMetricsDetailReworkTimesPart: Locator;
   readonly prLeadTime: Locator;
   readonly pipelineLeadTime: Locator;
   readonly totalLeadTime: Locator;
@@ -37,6 +38,7 @@ export class ReportStep {
   readonly classificationRows: Locator;
   readonly leadTimeForChangesRows: Locator;
   readonly devChangeFailureRateRows: Locator;
+  readonly deploymentFrequencyRows: Locator;
   readonly devMeanTimeToRecoveryRows: Locator;
   readonly reworkRows: Locator;
 
@@ -49,7 +51,8 @@ export class ReportStep {
     this.boardMetricRework = this.page.locator('[data-test-id="Rework"] [data-test-id="report-section"]');
     this.boardMetricsDetailVelocityPart = this.page.locator('[data-test-id="Velocity"]');
     this.boardMetricsDetailCycleTimePart = this.page.locator('[data-test-id="Cycle Time"]');
-    this.boardMetricsDetaiClassificationPart = this.page.locator('[data-test-id="Classification"]');
+    this.boardMetricsDetailClassificationPart = this.page.locator('[data-test-id="Classification"]');
+    this.boardMetricsDetailReworkTimesPart = this.page.locator('[data-test-id="Rework"]');
 
     this.prLeadTime = this.page.locator('[data-test-id="Lead Time For Changes"] [data-test-id="report-section"]');
     this.pipelineLeadTime = this.page.locator('[data-test-id="Lead Time For Changes"] [data-test-id="report-section"]');
@@ -70,10 +73,14 @@ export class ReportStep {
     this.homeIcon = page.getByLabel('Home');
     this.velocityRows = this.page.getByTestId('Velocity').locator('tbody').getByRole('row');
     this.cycleTimeRows = this.page.getByTestId('Cycle Time').locator('tbody').getByRole('row');
+    this.deploymentFrequencyRows = this.page.getByTestId('Deployment Frequency').locator('tbody').getByRole('row');
     this.classificationRows = this.page.getByTestId('Classification').locator('tbody').getByRole('row');
     this.leadTimeForChangesRows = this.page.getByTestId('Lead Time For Changes').getByRole('row');
-    this.devChangeFailureRateRows = this.page.getByTestId('Dev Change Failure Rate').getByRole('row');
-    this.devMeanTimeToRecoveryRows = this.page.getByTestId('Dev Mean Time To Recovery').getByRole('row');
+    this.devChangeFailureRateRows = this.page.getByTestId('Dev Change Failure Rate').locator('tbody').getByRole('row');
+    this.devMeanTimeToRecoveryRows = this.page
+      .getByTestId('Dev Mean Time To Recovery')
+      .locator('tbody')
+      .getByRole('row');
     this.reworkRows = this.page.getByTestId('Rework').getByRole('row');
   }
   combineStrings(arr: string[]): string {
@@ -89,9 +96,8 @@ export class ReportStep {
   }
 
   async checkDoraMetricsReportDetails() {
-    await expect(this.page.getByTestId('Deployment Frequency').getByRole('row').nth(2)).toContainText(
-      this.combineStrings(['Deployment frequency', '6.60']),
-    );
+    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
+    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText('6.60');
 
     await expect(this.leadTimeForChangesRows.nth(2)).toContainText(this.combineStrings(['PR Lead Time', '6.12']));
     await expect(this.leadTimeForChangesRows.nth(3)).toContainText(this.combineStrings(['Pipeline Lead Time', '0.50']));
@@ -99,13 +105,10 @@ export class ReportStep {
 
     await expect(this.leadTimeForChangesRows.nth(4)).toContainText(this.combineStrings(['Total Lead Time', '6.62']));
 
-    await expect(this.devChangeFailureRateRows.nth(2)).toContainText(
-      this.combineStrings(['Dev change failure rate', '17.50%(7/40)']),
-    );
-
-    await expect(this.devMeanTimeToRecoveryRows.nth(2)).toContainText(
-      this.combineStrings(['Dev mean time to recovery', '1.90']),
-    );
+    await expect(this.devChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
+    await expect(this.devChangeFailureRateRows.getByRole('cell').nth(1)).toContainText('17.50%(7/40)');
+    await expect(this.devMeanTimeToRecoveryRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
+    await expect(this.devMeanTimeToRecoveryRows.getByRole('cell').nth(1)).toContainText('1.90');
   }
 
   async checkDoraMetricsDetails(projectCreationType: ProjectCreationType) {
@@ -268,19 +271,29 @@ export class ReportStep {
   async checkOnlyVelocityPartVisible() {
     await expect(this.boardMetricsDetailVelocityPart).toBeVisible();
     await expect(this.boardMetricsDetailCycleTimePart).toBeHidden();
-    await expect(this.boardMetricsDetaiClassificationPart).toBeHidden();
+    await expect(this.boardMetricsDetailClassificationPart).toBeHidden();
+    await expect(this.boardMetricsDetailReworkTimesPart).toBeHidden();
   }
 
   async checkOnlyCycleTimePartVisible() {
     await expect(this.boardMetricsDetailVelocityPart).toBeHidden();
     await expect(this.boardMetricsDetailCycleTimePart).toBeVisible();
-    await expect(this.boardMetricsDetaiClassificationPart).toBeHidden();
+    await expect(this.boardMetricsDetailClassificationPart).toBeHidden();
+    await expect(this.boardMetricsDetailReworkTimesPart).toBeHidden();
   }
 
   async checkOnlyClassificationPartVisible() {
     await expect(this.boardMetricsDetailVelocityPart).toBeHidden();
     await expect(this.boardMetricsDetailCycleTimePart).toBeHidden();
-    await expect(this.boardMetricsDetaiClassificationPart).toBeVisible();
+    await expect(this.boardMetricsDetailClassificationPart).toBeVisible();
+    await expect(this.boardMetricsDetailReworkTimesPart).toBeHidden();
+  }
+
+  async checkOnlyReworkTimesPartVisible() {
+    await expect(this.boardMetricsDetailVelocityPart).toBeHidden();
+    await expect(this.boardMetricsDetailCycleTimePart).toBeHidden();
+    await expect(this.boardMetricsDetailClassificationPart).toBeHidden();
+    await expect(this.boardMetricsDetailReworkTimesPart).toBeVisible();
   }
 
   async checkOnlyLeadTimeForChangesPartVisible() {
@@ -342,6 +355,21 @@ export class ReportStep {
       expect(localCsv).toStrictEqual(downloadCsv);
     });
     await this.backButton.click();
+  }
+
+  async checkBoardDownloadDataWithoutBlock(fileName: string) {
+    await downloadFileAndCheck(
+      this.page,
+      this.exportBoardData,
+      'board-data-without-block-column.csv',
+      async (fileDataString) => {
+        const localCsvFile = fs.readFileSync(path.resolve(__dirname, fileName));
+        const localCsv = parse(localCsvFile);
+        const downloadCsv = parse(fileDataString);
+
+        expect(localCsv).toStrictEqual(downloadCsv);
+      },
+    );
   }
 
   async checkDoraMetrics(

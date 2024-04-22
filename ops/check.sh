@@ -162,7 +162,7 @@ buildkite_e2e_deployed_check() {
 github_actions_passed_check() {
 
   MAX_ATTEMPTS="${MAX_ATTEMPTS:-80}"
-  SLEEP_DURATION_SECONDS="${SLEEP_DURATION_SECONDS:-30}"
+  SLEEP_DURATION_SECONDS="${SLEEP_DURATION_SECONDS:-60}"
   BRANCH="${BRANCH:-"main"}"
   GITHUB_TOKEN="${GITHUB_TOKEN:-empty GitHub token}"
   COMMIT_SHA="${COMMIT_SHA:-empty commit sha}"
@@ -264,7 +264,6 @@ dot_star_check() {
 e2e_container_check() {
   docker build -t "heartbeat_e2e:latest" ./ -f ./ops/infra/Dockerfile.e2e
 
-  set +e
   local result
   docker run \
     --name hb_e2e_runner \
@@ -272,12 +271,11 @@ e2e_container_check() {
     -e "E2E_TOKEN_JIRA=${E2E_TOKEN_JIRA:-}" \
     -e "E2E_TOKEN_BUILD_KITE=${E2E_TOKEN_BUILD_KITE:-}" \
     -e "E2E_TOKEN_GITHUB=${E2E_TOKEN_GITHUB:-}" \
-    -e "E2E_TOKEN_FLAG_AS_BLOCK_JIRA=${E2E_TOKEN_FLAG_AS_BLOCK_JIRA:-}" \
     -e "CI=${CI:-}" \
+    -e "E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE=${E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE:-}" \
     heartbeat_e2e:latest \
     pnpm run e2e:major-ci
   result=$?
-  set -e
 
   docker cp hb_e2e_runner:/app/e2e/reports ./e2e-reports
   docker rm hb_e2e_runner

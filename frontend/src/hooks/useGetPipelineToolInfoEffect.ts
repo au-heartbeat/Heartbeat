@@ -2,7 +2,6 @@ import {
   updatePipelineToolVerifyResponse,
   selectIsProjectCreated,
   selectPipelineTool,
-  selectDateRange,
 } from '@src/context/config/configSlice';
 import { pipelineToolClient, IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
 import { selectShouldGetPipelineConfig, updatePipelineSettings } from '@src/context/Metrics/metricsSlice';
@@ -29,7 +28,6 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   const [info, setInfo] = useState<IGetPipelineToolInfoResult>(defaultInfoStructure);
   const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const restoredPipelineTool = useAppSelector(selectPipelineTool);
-  const dateRange = useAppSelector(selectDateRange);
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetPipelineConfig = useAppSelector(selectShouldGetPipelineConfig);
 
@@ -37,8 +35,6 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     const params = {
       type: restoredPipelineTool.type,
       token: restoredPipelineTool.token,
-      startTime: dateRange[0]?.startDate,
-      endTime: dateRange[0]?.endDate,
     };
     setIsLoading(true);
     try {
@@ -49,7 +45,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     } finally {
       setIsLoading(false);
     }
-  }, [dispatch, isProjectCreated, dateRange, restoredPipelineTool.type, restoredPipelineTool.token]);
+  }, [dispatch, isProjectCreated, restoredPipelineTool.type, restoredPipelineTool.token]);
 
   useEffect(() => {
     if (!apiTouchedRef.current && !isLoading && shouldLoad && shouldGetPipelineConfig) {

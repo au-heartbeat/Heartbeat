@@ -1,9 +1,9 @@
 import {
   selectMetricsContent,
-  updateMetricsState,
   selectShouldGetBoardConfig,
-  updateShouldGetBoardConfig,
   updateFirstTimeRoadMetricsBoardData,
+  updateMetricsState,
+  updateShouldGetBoardConfig,
 } from '@src/context/Metrics/metricsSlice';
 import {
   selectDateRange,
@@ -18,27 +18,29 @@ import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
   MetricsSelectionTitle,
+  StyledErrorMessage,
+  StyledRetryButton,
 } from '@src/containers/MetricsStep/style';
-import { CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA, AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AXIOS_REQUEST_ERROR_CODE, CYCLE_TIME_SETTINGS_TYPES, DONE, REQUIRED_DATA } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
-import { StyledRetryButton, StyledErrorMessage } from '@src/containers/MetricsStep/style';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
+import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import EmptyContent from '@src/components/Common/EmptyContent';
-import { useAppSelector, useAppDispatch } from '@src/hooks';
+import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { useCallback, useLayoutEffect } from 'react';
 import { Loading } from '@src/components/Loading';
 import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
+import { theme } from '@src/theme';
 import merge from 'lodash/merge';
-import dayjs from 'dayjs';
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
@@ -49,8 +51,9 @@ const MetricsStep = () => {
   const jiraColumns = useAppSelector(selectJiraColumns);
   const targetFields = useAppSelector(selectMetricsContent).targetFields;
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
-  const dateRange = useAppSelector(selectDateRange);
-  const { startDate, endDate } = dateRange[0];
+  const dateRanges = useAppSelector(selectDateRange);
+  const descendingSortedDateRanges = sortDateRanges(dateRanges);
+  const { startDate, endDate } = descendingSortedDateRanges[0];
   const isShowCrewsAndRealDone =
     requiredData.includes(REQUIRED_DATA.VELOCITY) ||
     requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
@@ -64,19 +67,21 @@ const MetricsStep = () => {
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
 
   const getInfo = useCallback(
-    () =>
+    async () => {
       getBoardInfo({
         ...boardConfig,
-        startTime: dayjs(startDate).valueOf().toString(),
-        endTime: dayjs(endDate).valueOf().toString(),
+        dateRanges,
       }).then((res) => {
-        if (res.data) {
-          dispatch(updateJiraVerifyResponse(res.data));
-          dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
+        if (res && res[0].data) {
+          const boardInfo = res?.map((r) => r.data);
+          const commonPayload = combineBoardInfo(boardInfo!);
+          dispatch(updateJiraVerifyResponse(commonPayload));
+          dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
           dispatch(updateShouldGetBoardConfig(false));
           dispatch(updateFirstTimeRoadMetricsBoardData(false));
         }
-      }),
+      });
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -92,7 +97,11 @@ const MetricsStep = () => {
     <>
       {startDate && endDate && (
         <MetricSelectionHeader>
-          <DateRangeViewer startDate={startDate} endDate={endDate} />
+          <DateRangeViewer
+            dateRanges={descendingSortedDateRanges}
+            expandColor={theme.palette.text.disabled}
+            expandBackgroundColor={theme.palette.secondary.dark}
+          />
         </MetricSelectionHeader>
       )}
 

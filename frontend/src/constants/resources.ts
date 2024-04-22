@@ -218,7 +218,6 @@ export const REWORK_TIME_MAPPING = {
   fromAnalysis: 'analysis',
   fromInDev: 'in dev',
   fromBlock: 'block',
-  fromFlag: 'flag',
   fromReview: 'review',
   fromWaitingForTesting: 'waiting for testing',
   fromTesting: 'testing',
@@ -231,7 +230,6 @@ export const REWORK_BOARD_STATUS: string[] = [
   REWORK_TIME_MAPPING.fromAnalysis,
   REWORK_TIME_MAPPING.fromInDev,
   REWORK_TIME_MAPPING.fromBlock,
-  REWORK_TIME_MAPPING.fromFlag,
   REWORK_TIME_MAPPING.fromWaitingForTesting,
   REWORK_TIME_MAPPING.fromTesting,
   REWORK_TIME_MAPPING.fromReview,
@@ -246,7 +244,7 @@ export const DEV_MEAN_TIME_TO_RECOVERY_NAME = 'Dev mean time to recovery';
 
 export const PIPELINE_STEP = 'Pipeline/step';
 
-export const NAME = 'Name';
+export const SUBTITLE = 'Subtitle';
 
 export const AVERAGE_FIELD = 'Average';
 
@@ -264,12 +262,13 @@ export const MESSAGE = {
   HOME_VERIFY_IMPORT_WARNING: 'The content of the imported JSON file is empty. Please confirm carefully',
   CONFIG_PAGE_VERIFY_IMPORT_ERROR: 'Imported data is not perfectly matched. Please review carefully before going next!',
   CLASSIFICATION_WARNING: 'Some classifications in import data might be removed.',
+  FLAG_CARD_DROPPED_WARNING: 'Please note: ’consider the “Flag” as “Block” ‘ has been dropped!',
   REAL_DONE_WARNING: 'Some selected doneStatus in import data might be removed',
   ORGANIZATION_WARNING: 'This organization in import data might be removed',
   PIPELINE_NAME_WARNING: 'This Pipeline in import data might be removed',
   STEP_WARNING: 'Selected step of this pipeline in import data might be removed',
   NO_STEP_WARNING:
-    'There is no step during this period for this pipeline! Please change the search time in the Config page!',
+    'There is no step during these periods for this pipeline! Please change the search time in the Config page!',
   ERROR_PAGE: 'Something on internet is not quite right. Perhaps head back to our homepage and try again.',
   EXPIRE_INFORMATION: (value: number) => `The file will expire in ${value} minutes, please download it in time.`,
   REPORT_LOADING: 'The report is being generated, please do not refresh the page or all the data will be disappeared.',
@@ -339,6 +338,7 @@ export const BOARD_CONFIG_INFO_TITLE = {
   UNAUTHORIZED_REQUEST: 'Unauthorized request!',
   NOT_FOUND: 'Not found!',
   NO_CONTENT: 'No card within selected date range!',
+  GENERAL_ERROR: 'Failed to get the board configuration!',
   EMPTY: '',
 };
 
@@ -346,6 +346,7 @@ export const BOARD_CONFIG_INFO_ERROR = {
   FORBIDDEN: 'Please go back to the previous page and change your board token with correct access permission.',
   NOT_FOUND: 'Please go back to the previous page and check your board info!',
   NOT_CONTENT: 'Please go back to the previous page and change your collection date, or check your board info!',
+  GENERAL_ERROR: 'Please go back to the previous page to check your board info, or change your time range!',
   RETRY: 'Data loading failed, please',
 };
 
@@ -423,3 +424,11 @@ export const REMOVE_BUTTON_TEXT = 'Remove';
 export const MAX_TIME_RANGE_AMOUNT = 6;
 export const START_DATE_INVALID_TEXT = 'Start date is invalid';
 export const END_DATE_INVALID_TEXT = 'End date is invalid';
+
+export enum SORTING_DATE_RANGE_TEXT {
+  DEFAULT = 'Default sort',
+  ASCENDING = 'Ascending',
+  DESCENDING = 'Descending',
+}
+
+export const BLOCK_COLUMN_NAME = ['BLOCKED', 'BLOCK'];

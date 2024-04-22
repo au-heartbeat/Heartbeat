@@ -6,7 +6,7 @@ import {
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import { BOARD_MAPPING, ERROR_MESSAGE_TIME_DURATION, LIST_OPEN, NO_RESULT_DASH } from '../../fixtures';
-import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
+import { CYCLE_TIME_SETTINGS_TYPES, MESSAGE, METRICS_CONSTANTS } from '@src/constants/resources';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -320,7 +320,7 @@ describe('CycleTime', () => {
     setup();
     await userEvent.click(screen.getByRole('radio', { name: cycleTimeTypeLabels[1] }));
 
-    expect(mockedUseAppDispatch).toHaveBeenCalledTimes(3);
+    expect(mockedUseAppDispatch).toHaveBeenCalledTimes(4);
     expect(mockedUseAppDispatch).toHaveBeenCalledWith(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
     expect(mockedUseAppDispatch).toHaveBeenCalledWith(
       updateCycleTimeSettings(
@@ -331,6 +331,7 @@ describe('CycleTime', () => {
       ),
     );
     expect(mockedUseAppDispatch).toHaveBeenCalledWith(saveDoneColumn([]));
+    expect(mockedUseAppDispatch).toHaveBeenCalledWith(updateTreatFlagCardAsBlock(true));
   });
 
   describe('cycle time by status', () => {
@@ -404,6 +405,25 @@ describe('CycleTime', () => {
       const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[0];
       expect(selectedInputValue).toBe('Testing');
       expect(mockedUseAppDispatch).not.toHaveBeenCalledWith(saveDoneColumn([]));
+    });
+  });
+
+  [CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN].forEach((cycleTimeSettingsType) => {
+    it('should show warning message given both mapping block column and add flag as block', () => {
+      (selectMetricsContent as jest.Mock).mockReturnValue({
+        cycleTimeSettingsType,
+        cycleTimeSettings: [
+          ...cycleTimeSettings,
+          {
+            column: 'Blocked',
+            status: 'BLOCKED',
+            value: 'Block',
+          },
+        ],
+      });
+      setup();
+
+      expect(screen.getByText(MESSAGE.FLAG_CARD_DROPPED_WARNING)).toBeVisible();
     });
   });
 });

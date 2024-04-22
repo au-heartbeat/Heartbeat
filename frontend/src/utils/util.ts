@@ -2,8 +2,10 @@ import { CYCLE_TIME_LIST, CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
+import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
-import { includes, isEqual, sortBy } from 'lodash';
+import { DateRange } from '@src/context/config/configSlice';
+import { includes, isEqual, sortBy, uniqBy } from 'lodash';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 
@@ -100,6 +102,13 @@ export const formatDateToTimestampString = (date: string) => {
   return dayjs(date).valueOf().toString();
 };
 
+export const sortDateRanges = (dateRanges: DateRange, descending = true) => {
+  const result = [...dateRanges].sort((a, b) => {
+    return dayjs(b.startDate as string).diff(dayjs(a.startDate as string));
+  });
+  return descending ? result : result.reverse();
+};
+
 export const formatDuplicatedNameWithSuffix = (data: ITargetFieldType[]) => {
   const nameSumMap = new Map<string, number>();
   const nameCountMap = new Map<string, number>();
@@ -147,4 +156,29 @@ export function convertCycleTimeSettings(
     );
   }
   return cycleTimeSettings?.map(({ status, value }: ICycleTimeSetting) => ({ [status]: value }));
+}
+
+export function existBlockState(cycleTimeSettings: ICycleTimeSetting[]) {
+  return cycleTimeSettings.some(({ value }) => METRICS_CONSTANTS.blockValue === value);
+}
+
+export function combineBoardInfo(boardInfoResponses: BoardInfoResponse[]) {
+  if (boardInfoResponses) {
+    const allUsers = [...new Set(boardInfoResponses.flatMap((result) => result.users))];
+    const allTargetFields = uniqBy(
+      boardInfoResponses.flatMap((result) => result.targetFields),
+      (elem) => [elem.key, elem.name, elem.flag].join(),
+    );
+    const allJiraColumns = boardInfoResponses[boardInfoResponses.length - 1].jiraColumns;
+    const allIgnoredTargetFields = uniqBy(
+      boardInfoResponses.flatMap((result) => result.ignoredTargetFields),
+      (elem) => [elem.key, elem.name, elem.flag].join(),
+    );
+    return {
+      users: allUsers,
+      targetFields: allTargetFields,
+      ignoredTargetFields: allIgnoredTargetFields,
+      jiraColumns: allJiraColumns,
+    };
+  }
 }

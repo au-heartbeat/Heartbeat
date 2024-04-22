@@ -49,7 +49,6 @@ export interface ReworkTimeResponse {
   fromAnalysis: number | null;
   fromInDev: number | null;
   fromBlock: number | null;
-  fromFlag: number | null;
   fromWaitingForTesting: number | null;
   fromTesting: number | null;
   fromReview: number | null;
@@ -167,9 +166,9 @@ export interface ReportResponse {
   cycleTimeList?: ReportDataWithTwoColumns[] | null;
   reworkList?: ReportDataWithTwoColumns[] | null;
   classification?: ReportDataWithThreeColumns[] | null;
-  deploymentFrequencyList?: ReportDataWithThreeColumns[] | null;
-  devMeanTimeToRecoveryList?: ReportDataWithThreeColumns[] | null;
+  deploymentFrequencyList?: ReportDataWithTwoColumns[] | null;
+  devMeanTimeToRecoveryList?: ReportDataWithTwoColumns[] | null;
   leadTimeForChangesList?: ReportDataWithThreeColumns[] | null;
-  devChangeFailureRateList?: ReportDataWithThreeColumns[] | null;
+  devChangeFailureRateList?: ReportDataWithTwoColumns[] | null;
   exportValidityTimeMin?: number | null;
 }

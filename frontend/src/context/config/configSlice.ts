@@ -3,12 +3,13 @@ import {
   CALENDAR,
   DORA_METRICS,
   IMPORT_METRICS_MAPPING,
+  MAX_TIME_RANGE_AMOUNT,
   MESSAGE,
   REQUIRED_DATA,
-  MAX_TIME_RANGE_AMOUNT,
 } from '@src/constants/resources';
 import { initialPipelineToolState, IPipelineToolState } from '@src/context/config/pipelineTool/pipelineToolSlice';
 import { initialSourceControlState, ISourceControl } from '@src/context/config/sourceControl/sourceControlSlice';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { IBoardState, initialBoardState } from '@src/context/config/board/boardSlice';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { createSlice } from '@reduxjs/toolkit';
@@ -18,7 +19,7 @@ import merge from 'lodash/merge';
 import { isArray } from 'lodash';
 import dayjs from 'dayjs';
 
-export type TDateRange = {
+export type DateRange = {
   startDate: string | null;
   endDate: string | null;
 }[];
@@ -28,7 +29,8 @@ export interface BasicConfigState {
   basic: {
     projectName: string;
     calendarType: string;
-    dateRange: TDateRange;
+    dateRange: DateRange;
+    sortType: SortType;
     metrics: string[];
   };
   board: IBoardState;
@@ -48,6 +50,7 @@ export const initialBasicConfigState: BasicConfigState = {
         endDate: null,
       },
     ],
+    sortType: SortType?.DEFAULT,
     metrics: [],
   },
   board: initialBoardState,
@@ -99,6 +102,9 @@ export const configSlice = createSlice({
     },
     updateDateRange: (state, action) => {
       state.basic.dateRange = action.payload;
+    },
+    updateDateRangeSortType: (state, action) => {
+      state.basic.sortType = action.payload;
     },
     updateMetrics: (state, action) => {
       const { metrics, shouldBoardShow, shouldPipelineToolShow, shouldSourceControlShow } = getMetricsInfo(
@@ -197,6 +203,7 @@ export const {
   updateProjectName,
   updateCalendarType,
   updateDateRange,
+  updateDateRangeSortType,
   updateMetrics,
   updateBoard,
   updateJiraVerifyResponse,
@@ -211,6 +218,7 @@ export const {
 
 export const selectBasicInfo = (state: RootState) => state.config.basic;
 export const selectDateRange = (state: RootState) => state.config.basic.dateRange;
+export const selectDateRangeSortType = (state: RootState) => state.config.basic.sortType;
 export const selectMetrics = (state: RootState) => state.config.basic.metrics;
 export const isSelectBoardMetrics = (state: RootState) =>
   state.config.basic.metrics.some((metric) => BOARD_METRICS.includes(metric));
@@ -241,22 +249,23 @@ export const selectStepsParams = (state: RootState, organizationName: string, pi
     (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organizationName,
   );
 
-  const { startDate, endDate } = state.config.basic.dateRange[0];
   const pipelineType = state.config.pipelineTool.config.type;
   const token = state.config.pipelineTool.config.token;
 
   return {
-    params: {
-      pipelineName: pipeline?.name ?? '',
-      repository: pipeline?.repository ?? '',
-      orgName: pipeline?.orgName ?? '',
-      startTime: dayjs(startDate).startOf('date').valueOf(),
-      endTime: dayjs(endDate).endOf('date').valueOf(),
-    },
     buildId: pipeline?.id ?? '',
     organizationId: pipeline?.orgId ?? '',
     pipelineType,
     token,
+    params: state.config.basic.dateRange.map((dateRange) => {
+      return {
+        pipelineName: pipeline?.name ?? '',
+        repository: pipeline?.repository ?? '',
+        orgName: pipeline?.orgName ?? '',
+        startTime: dayjs(dateRange.startDate).startOf('date').valueOf(),
+        endTime: dayjs(dateRange.endDate).endOf('date').valueOf(),
+      };
+    }),
   };
 };
 

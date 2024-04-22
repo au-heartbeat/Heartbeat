@@ -6,6 +6,7 @@ export const config = {
       endDate: '2024-01-19T23:59:59.999+08:00',
     },
   ],
+  sortType: 'DEFAULT',
   calendarType: 'Calendar with Chinese Holiday',
   metrics: [
     'Velocity',
@@ -73,7 +74,7 @@ export const config = {
         Done: 'Done',
       },
     ],
-    treatFlagCardAsBlock: true,
+    treatFlagCardAsBlock: false,
   },
   doneStatus: ['DONE'],
   classification: [
@@ -112,6 +113,7 @@ export const modifiedConfig = {
     startDate: '2024-01-15T00:00:00.000+08:00',
     endDate: '2024-01-19T23:59:59.999+08:00',
   },
+  sortType: 'DEFAULT',
   calendarType: 'Calendar with Chinese Holiday',
   metrics: [
     'Velocity',
@@ -176,4 +178,26 @@ export const modifiedConfig = {
       branches: ['main', 'gh-pages'],
     },
   ],
+};
+
+export const configWithoutBlockColumn = {
+  crews: ['Shiqi Yuan'],
+  cycleTime: {
+    type: 'byColumn',
+    jiraColumns: [
+      {
+        'TO DO': 'To do',
+      },
+      {
+        'IN DEV': 'In Dev',
+      },
+      {
+        'WAITING FOR TESTING': 'Waiting for testing',
+      },
+      {
+        Done: 'Done',
+      },
+    ],
+  },
+  reworkTimesSettings: { excludeStates: [], reworkState: 'In Dev' },
 };

@@ -43,8 +43,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,14 +66,18 @@ public class CSVFileGenerator {
 
 	public static final String FILE_LOCAL_PATH = "./app/output/csv";
 
+	private static final Path FILE_PATH = new File(FILE_LOCAL_PATH).toPath().normalize();
+
 	private static final String CANCELED_STATUS = "canceled";
 
 	private static final String REWORK_FIELD = "Rework";
 
-	private static InputStreamResource readStringFromCsvFile(String fileName) {
+	public static InputStreamResource readStringFromCsvFile(File file) {
+		if (!file.toPath().normalize().startsWith(FILE_PATH)) {
+			throw new IllegalArgumentException("Invalid file path");
+		}
 		try {
-			InputStream inputStream = new FileInputStream(fileName);
-
+			InputStream inputStream = new FileInputStream(file);
 			return new InputStreamResource(inputStream);
 		}
 		catch (IOException e) {
@@ -101,9 +104,10 @@ public class CSVFileGenerator {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
 				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
-						"Code Committer", "Pipeline Creator", "First Code Committed Time In PR", "Code Committed Time",
-						"PR Created Time", "PR Merged Time", "Deployment Completed Time", "Total Lead Time (HH:mm:ss)",
-						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch" };
+						"Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
+						"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
+						"Pipeline Finish Time", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
 
 				csvWriter.writeNext(headers);
 
@@ -121,10 +125,8 @@ public class CSVFileGenerator {
 
 	private String[] getRowData(PipelineCSVInfo csvInfo) {
 		String committerName = null;
-		String commitDate = null;
-		if (csvInfo.getCommitInfo() != null) {
-			committerName = csvInfo.getCommitInfo().getCommit().getAuthor().getName();
-			commitDate = csvInfo.getCommitInfo().getCommit().getAuthor().getDate();
+		if (csvInfo.getBuildInfo().getAuthor() != null && csvInfo.getBuildInfo().getAuthor().getName() != null) {
+			committerName = String.valueOf(csvInfo.getBuildInfo().getAuthor().getName());
 		}
 
 		String creatorName = null;
@@ -137,6 +139,7 @@ public class CSVFileGenerator {
 		String stepName = csvInfo.getStepName();
 		String valid = String.valueOf(csvInfo.getValid()).toLowerCase();
 		String buildNumber = String.valueOf(csvInfo.getBuildInfo().getNumber());
+
 		String state = csvInfo.getPiplineStatus().equals(CANCELED_STATUS) ? CANCELED_STATUS
 				: csvInfo.getDeployInfo().getState();
 		String branch = csvInfo.getBuildInfo().getBranch();
@@ -145,24 +148,32 @@ public class CSVFileGenerator {
 		String firstCommitTimeInPr = leadTimeInfo.getFirstCommitTimeInPr();
 		String prCreatedTime = leadTimeInfo.getPrCreatedTime();
 		String prMergedTime = leadTimeInfo.getPrMergedTime();
-		String jobFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
+		String noPRCommitTime = leadTimeInfo.getNoPRCommitTime();
+		String jobStartTime = leadTimeInfo.getJobStartTime();
+		String pipelineStartTime = leadTimeInfo.getFirstCommitTime();
+		String pipelineFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
 		String totalTime = leadTimeInfo.getTotalTime();
 		String prLeadTime = leadTimeInfo.getPrLeadTime();
 		String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
+		String isRevert = leadTimeInfo.getIsRevert() == null ? "" : String.valueOf(leadTimeInfo.getIsRevert());
 
 		return new String[] { organization, pipelineName, stepName, valid, buildNumber, committerName, creatorName,
-				firstCommitTimeInPr, commitDate, prCreatedTime, prMergedTime, jobFinishTime, totalTime, prLeadTime,
-				pipelineLeadTime, state, branch };
+				firstCommitTimeInPr, prCreatedTime, prMergedTime, noPRCommitTime, jobStartTime, pipelineStartTime,
+				pipelineFinishTime, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
-	public InputStreamResource getDataFromCSV(ReportType reportDataType, long csvTimeStamp) {
+	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeAndTimeStamp) {
+		if (timeRangeAndTimeStamp.contains("..") || timeRangeAndTimeStamp.contains("/")
+				|| timeRangeAndTimeStamp.contains("\\")) {
+			throw new IllegalArgumentException("Invalid time range time stamp");
+		}
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(
-					CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
-			case PIPELINE -> readStringFromCsvFile(
-					CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
-			default -> readStringFromCsvFile(
-					CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION);
+			case METRIC -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
+					ReportType.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			case PIPELINE -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
+					ReportType.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			default -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
+					ReportType.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
 		};
 	}
 
@@ -180,10 +191,10 @@ public class CSVFileGenerator {
 		writeDataToCSV(csvTimeStamp, mergedArrays);
 	}
 
-	public void writeDataToCSV(String csvTimeStamp, String[][] mergedArrays) {
+	public void writeDataToCSV(String csvTimeRangeTimeStamp, String[][] mergedArrays) {
 		createCsvDirToConvertData();
 
-		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
+		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeRangeTimeStamp + CSV_EXTENSION;
 		if (!fileName.contains("..") && fileName.startsWith(FILE_LOCAL_PATH)) {
 			try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
 				writer.writeAll(Arrays.asList(mergedArrays));
