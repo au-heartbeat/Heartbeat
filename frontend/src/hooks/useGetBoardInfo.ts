@@ -20,16 +20,17 @@ export interface useGetBoardInfoInterface {
   getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<BoardInfoResponse[]> | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
-  isDataLoading: boolean;
   boardInfoFailedStatus: BOARD_INFO_FAIL_STATUS;
 }
 const boardInfoPartialFailedStatusMapping = (code: string | number) => {
+  if (code == AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
+    return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
+  }
   const numericCode = typeof code === 'string' ? parseInt(code, 10) : code;
   if (numericCode >= HttpStatusCode.BadRequest || numericCode < HttpStatusCode.InternalServerError) {
     return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX;
-  } else {
-    return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
   }
+  return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX;
 };
 
 const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
@@ -40,7 +41,7 @@ const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
         message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
         code: HttpStatusCode.BadRequest,
       },
-      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_4XX,
+      elevateStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_4XX,
     },
     [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT]: {
       errorMessage: {
@@ -48,7 +49,7 @@ const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
         message: BOARD_CONFIG_INFO_ERROR.RETRY,
         code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
       },
-      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_TIMEOUT,
+      elevateStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_TIMEOUT,
     },
     [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS]: {
       errorMessage: {
@@ -56,7 +57,7 @@ const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
         message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
         code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
       },
-      newStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS,
+      elevateStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS,
     },
   };
   return get(errorStatusMap, status);
@@ -64,7 +65,6 @@ const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
 
 export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isDataLoading, setIsDataLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState({});
   const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(BOARD_INFO_FAIL_STATUS.NOT_FAILED);
 
@@ -117,7 +117,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           if (errorCount == res.length) {
             if (config) {
               setErrorMessage(config.errorMessage);
-              setBoardInfoFailedStatus(config.newStatus);
+              setBoardInfoFailedStatus(config.elevateStatus);
             }
           } else if (errorCount != 0) {
             if (config) {
@@ -129,7 +129,6 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
         })
         .finally(() => {
           setIsLoading(false);
-          setIsDataLoading(false);
         });
     }
   };
@@ -137,7 +136,6 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
     getBoardInfo,
     errorMessage,
     isLoading,
-    isDataLoading,
     boardInfoFailedStatus,
   };
 };

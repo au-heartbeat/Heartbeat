@@ -81,4 +81,65 @@ describe('use get board info', () => {
     });
     expect(result.current.errorMessage.message).toEqual(message);
   });
+
+  it('should get data', async () => {
+    server.use(
+      rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
+        return res(
+          ctx.status(HttpStatusCode.Ok),
+          ctx.json({
+            ignoredTargetFields: [
+              {
+                key: 'description',
+                name: 'Description',
+                flag: false,
+              },
+            ],
+            jiraColumns: [
+              {
+                key: 'To Do',
+                value: {
+                  name: 'TODO',
+                  statuses: ['TODO'],
+                },
+              },
+            ],
+            targetFields: [
+              {
+                key: 'issuetype',
+                name: 'Issue Type',
+                flag: false,
+              },
+            ],
+            users: ['heartbeat user'],
+          }),
+        );
+      }),
+    );
+    const { result } = renderHook(() => useGetBoardInfoEffect());
+    await act(() => {
+      result.current.getBoardInfo(mockBoardConfig);
+    });
+
+    await waitFor(() => {
+      expect(result.current.errorMessage.title).toEqual(undefined);
+    });
+    expect(result.current.errorMessage.message).toEqual(undefined);
+
+    server.use(
+      rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
+        return res(ctx.status(HttpStatusCode.BadRequest));
+      }),
+    );
+    await act(() => {
+      result.current.getBoardInfo(mockBoardConfig);
+    });
+
+    await waitFor(() => {
+      expect(result.current.errorMessage.title).toEqual('Failed to get the board configuration!');
+    });
+    expect(result.current.errorMessage.message).toEqual(
+      'Please go back to the previous page to check your board info, or change your time range!',
+    );
+  });
 });

@@ -70,7 +70,7 @@ const MetricsStep = () => {
   const isShowRealDone =
     cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
-  const { getBoardInfo, isLoading, errorMessage, isDataLoading, boardInfoFailedStatus } = useGetBoardInfoEffect();
+  const { getBoardInfo, isLoading, errorMessage, boardInfoFailedStatus } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoad);
   const shouldGetBoardConfig = useAppSelector(selectShouldGetBoardConfig);
 
@@ -115,10 +115,10 @@ const MetricsStep = () => {
         );
       }
     };
-    if (!isDataLoading) {
+    if (!isLoading) {
       popup();
     }
-  }, [boardInfoFailedStatus, dispatch, isDataLoading]);
+  }, [boardInfoFailedStatus, dispatch, isLoading]);
 
   useLayoutEffect(() => {
     if (!shouldLoad) return;
