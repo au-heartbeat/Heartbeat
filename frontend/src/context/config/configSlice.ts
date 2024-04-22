@@ -85,6 +85,8 @@ const getMetricsInfo = (metrics: string[]) => {
   };
 };
 
+const isSortType = (value: string): value is SortType => Object.values(SortType).includes(value as SortType);
+
 export const configSlice = createSlice({
   name: 'config',
   initialState: {
@@ -129,6 +131,8 @@ export const configSlice = createSlice({
         Array.isArray(importedDateRanges) && importedDateRanges.length > MAX_TIME_RANGE_AMOUNT
           ? importedDateRanges.slice(0, MAX_TIME_RANGE_AMOUNT)
           : importedDateRanges;
+      const importedSortType = action.payload.sortType;
+      action.payload.sortType = isSortType(importedSortType) ? importedSortType : SortType.DEFAULT;
       state.basic.metrics = metrics;
       state.board.isShow = shouldBoardShow;
       state.pipelineTool.isShow = shouldPipelineToolShow;

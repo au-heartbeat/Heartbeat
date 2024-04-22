@@ -16,9 +16,10 @@ import { useState } from 'react';
 type Props = {
   onChange: (type: SortType) => void;
   sortType: SortType;
+  disabled: boolean;
 };
 
-export const SortingDateRange = ({ onChange, sortType }: Props) => {
+export const SortingDateRange = ({ onChange, sortType, disabled }: Props) => {
   const dispatch = useAppDispatch();
   const [dateRangeSortType, setDateRangeSortType] = useState(sortType);
 
@@ -37,14 +38,14 @@ export const SortingDateRange = ({ onChange, sortType }: Props) => {
     <Box aria-label='Sorting date range'>
       <SortingButtoningContainer>
         <SortingTextButton disableRipple>{SORTING_DATE_RANGE_TEXT[dateRangeSortType]}</SortingTextButton>
-        <SortingButton aria-label='sort button' onClick={handleChangeSort}>
+        <SortingButton aria-label='sort button' onClick={handleChangeSort} disabled={disabled}>
           {dateRangeSortType === SortType.ASCENDING ? (
-            <AscendingIcon fontSize='inherit' />
+            <AscendingIcon disabled={disabled} />
           ) : (
             <ArrowDropUp fontSize='inherit' />
           )}
           {dateRangeSortType === SortType.DESCENDING ? (
-            <DescendingIcon fontSize='inherit' />
+            <DescendingIcon disabled={disabled} />
           ) : (
             <ArrowDropDown fontSize='inherit' />
           )}

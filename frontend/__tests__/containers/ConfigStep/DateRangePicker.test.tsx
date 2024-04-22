@@ -8,7 +8,9 @@ import { ERROR_DATE, TIME_RANGE_ERROR_MESSAGE } from '../../fixtures';
 import { render, screen, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@mui/material';
 import { Provider } from 'react-redux';
+import { theme } from '@src/theme';
 import React from 'react';
 import dayjs from 'dayjs';
 
@@ -30,7 +32,9 @@ const setup = () => {
   store = setupStore();
   return render(
     <Provider store={store}>
-      <DateRangePickerSection />
+      <ThemeProvider theme={theme}>
+        <DateRangePickerSection />
+      </ThemeProvider>
     </Provider>,
   );
 };
@@ -266,7 +270,7 @@ describe('DateRangePickerSection', () => {
     expect(sortButton).toBeInTheDocument();
   });
 
-  it('should not show sort button given exist errors in date range', async () => {
+  it('should disabled sort button given exist errors in date range', async () => {
     const rangeDate1 = ['03/12/2024', '03/25/2024'];
     const rangeDate2 = ['03/08/2024', '03/26/2024'];
 
@@ -282,8 +286,8 @@ describe('DateRangePickerSection', () => {
     await userEvent.type(endDate1Input, rangeDate1[1]);
     await userEvent.type(startDate2Input, rangeDate2[0]);
     await userEvent.type(endDate12nput, rangeDate2[1]);
-    const sortButtonContainer = screen.queryByLabelText('Sorting date range');
-    expect(sortButtonContainer).toBeNull();
+    const sortButtonContainer = screen.queryByLabelText('sort button');
+    expect(sortButtonContainer).toBeDisabled();
   });
 
   it('should update sort status when handleSortTypeChange is called', async () => {

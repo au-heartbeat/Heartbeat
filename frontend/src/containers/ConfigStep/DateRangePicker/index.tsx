@@ -40,8 +40,12 @@ export const DateRangePickerSection = () => {
             margin: '1rem 0',
           }}
         />
-        {dateRangeGroup.length > 1 && isDateRangeValid && !hasError && (
-          <SortingDateRange onChange={handleSortTypeChange} sortType={sortType} />
+        {dateRangeGroup.length > 1 && (
+          <SortingDateRange
+            onChange={handleSortTypeChange}
+            sortType={sortType}
+            disabled={!isDateRangeValid || hasError}
+          />
         )}
       </TitleContainer>
       <DateRangePickerGroup sortType={sortType} onError={handleError} />

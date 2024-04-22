@@ -4,7 +4,9 @@ import { updateDateRangeSortType } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@mui/material';
 import { Provider } from 'react-redux';
+import { theme } from '@src/theme';
 import React from 'react';
 
 let store = setupStore();
@@ -12,7 +14,9 @@ const setup = () => {
   store = setupStore();
   return render(
     <Provider store={store}>
-      <SortingDateRange onChange={() => {}} sortType={SortType.DEFAULT} />
+      <ThemeProvider theme={theme}>
+        <SortingDateRange onChange={() => {}} sortType={SortType.DEFAULT} disabled={false} />
+      </ThemeProvider>
     </Provider>,
   );
 };
