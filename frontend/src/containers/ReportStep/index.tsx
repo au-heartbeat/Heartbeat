@@ -431,7 +431,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     </>
   );
 
-  const showChart = () => <DoraMetricsChart startToRequestDoraData={() => {}} errorMessage={getErrorMessage4Board()} />;
+  const showDoraChart = (data: ReportResponseDTO) => (
+    <DoraMetricsChart startToRequestDoraData={() => {}} data={data} errorMessage={getErrorMessage4Board()} />
+  );
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
@@ -482,7 +484,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return showChart();
+        return !!reportData && showDoraChart(reportData);
       default:
         return showSummary();
     }

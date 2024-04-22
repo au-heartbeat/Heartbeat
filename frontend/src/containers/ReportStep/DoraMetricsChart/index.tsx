@@ -14,14 +14,16 @@ import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts/core';
 
 import {
-  BarOptionProps,
-  LineOptionProps,
   oneLineOptionMapper,
+  Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
+import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
+import { reportMapper } from '@src/hooks/reportMapper/report';
 import { CanvasRenderer } from 'echarts/renderers';
+import { toNumber } from 'lodash';
 
 echarts.use([
   LineChart,
@@ -40,113 +42,129 @@ echarts.use([
 
 interface DoraMetricsChartProps {
   startToRequestDoraData: () => void;
-  doraReport?: ReportResponseDTO;
+  data: ReportResponseDTO;
   errorMessage: string;
 }
 
-const mockLTFCdata: BarOptionProps = {
-  title: 'Lead Time For Change',
-  legend: 'Lead Time For Change',
-  xAxis: ['03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15'],
-  yAxis: {
-    name: 'Hours',
-    alignTick: false,
-  },
-  series: [
-    {
-      name: 'PR Lead Time',
-      type: 'bar',
-      data: [7, 4, 6, 11, 5, 1],
+function extractedStackedBarData(mappedData: ReportResponse) {
+  return {
+    title: 'Lead Time For Change',
+    legend: 'Lead Time For Change',
+    xAxis: ['03/01-03/15'],
+    yAxis: {
+      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      alignTick: false,
     },
-    {
-      name: 'Pipeline Lead Time',
-      type: 'bar',
-      data: [7, 4, 6, 11, 5, 1],
+    series: mappedData.leadTimeForChangesList?.[0].valuesList.map((item) => {
+      const series: Series = {
+        name: item.name,
+        type: 'bar',
+        data: [toNumber(item.value)],
+      };
+
+      return series;
+    }),
+    color: ['#003D4F', '#47A1AD', '#F2617A'],
+  };
+}
+
+function extractedDeploymentFrequencyData(mappedData: ReportResponse) {
+  const data = mappedData.deploymentFrequencyList;
+  const value = data?.[0].valueList[0].value as number;
+  return {
+    title: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
+    legend: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
+    xAxis: ['03/01-03/15'],
+    yAxis: {
+      name: METRICS_SUBTITLE.DEPLOYMENT_FREQUENCY,
+      data: [`${value}%`],
+      alignTick: false,
     },
-    {
-      name: 'Total Lead Time',
-      type: 'bar',
-      data: [7, 4, 6, 11, 5, 1],
+    series: {
+      name: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
+      type: 'line',
+      data: [value],
     },
-  ],
-  color: ['#003D4F', '#47A1AD', '#F2617A'],
-};
+    color: '#F2617A',
+  };
+}
 
-const mockDFdata: LineOptionProps = {
-  title: 'Deployment Frequency',
-  legend: 'Deployment Frequency',
-  xAxis: ['03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15'],
-  yAxis: {
-    name: 'Deployments/Days',
-    alignTick: false,
-  },
-  series: {
-    name: 'Deployment Frequency',
-    type: 'line',
-    data: [7, 4, 6, 11, 5, 1],
-  },
-  color: '#F2617A',
-};
+function extractedChangeFailureRateData(mappedData: ReportResponse) {
+  const data = mappedData.devChangeFailureRateList;
+  const valueStr = data?.[0].valueList[0].value as string;
+  const value = toNumber(valueStr.split('%', 1)[0]);
+  return {
+    title: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
+    legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
+    xAxis: ['03/01-03/15'],
+    yAxis: {
+      name: METRICS_SUBTITLE.FAILURE_RATE,
+      data: [`${value}%`],
+      alignTick: false,
+    },
+    series: {
+      name: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
+      type: 'line',
+      data: [value],
+    },
+    color: '#003D4F',
+  };
+}
 
-const mockCFRCdata: LineOptionProps = {
-  title: 'Change Failure Rate',
-  legend: 'Change Failure Rate',
-  xAxis: ['03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15'],
-  yAxis: {
-    name: '',
-    alignTick: false,
-  },
-  series: {
-    name: 'Change Failure Rate',
-    type: 'line',
-    data: [10 / 14, 4 / 5, 6 / 77, 11 / 35, 5 / 44, 1 / 6],
-  },
-  color: '#003D4F',
-};
+function extractedMeanTimeToRecoveryDataData(mappedData: ReportResponse) {
+  const data = mappedData.devMeanTimeToRecoveryList;
+  const value = data?.[0].valueList[0].value as number;
+  return {
+    title: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+    legend: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+    xAxis: ['03/01-03/15'],
+    yAxis: {
+      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      data: [`${value}%`],
+      alignTick: false,
+    },
+    series: {
+      name: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+      type: 'line',
+      data: [value],
+    },
+    color: '#634F7D',
+  };
+}
 
-const mockNTTRdata: LineOptionProps = {
-  title: 'Mean Time To Recovery',
-  legend: 'Mean Time To Recovery',
-  xAxis: ['03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15', '03/01-03/15'],
-  yAxis: {
-    name: 'Hours',
-    alignTick: false,
-  },
-  series: {
-    name: 'Mean Time To Recovery',
-    type: 'line',
-    data: [7, 4, 6, 11, 5, 1],
-  },
-  color: '#634F7D',
-};
-
-export const DoraMetricsChart = ({ startToRequestBoardData, boardReport, errorMessage }: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({ startToRequestBoardData, data, errorMessage }: DoraMetricsChartProps) => {
   const LeadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
 
+  const mappedData: ReportResponse = reportMapper(data);
+  const LeadTimeForChangeData = extractedStackedBarData(mappedData);
+  const deploymentFrequencyData = extractedDeploymentFrequencyData(mappedData);
+  const changeFailureRateData = extractedChangeFailureRateData(mappedData);
+  const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(mappedData);
+
   useEffect(() => {
     const LeadTimeForChangeChart = echarts.init(LeadTimeForChange.current);
-    const option = mockLTFCdata && stackedBarOptionMapper(mockLTFCdata);
+    const option = LeadTimeForChangeData && stackedBarOptionMapper(LeadTimeForChangeData);
     LeadTimeForChangeChart.setOption(option);
   }, [LeadTimeForChange]);
 
   useEffect(() => {
     const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
-    const option = mockDFdata && oneLineOptionMapper(mockDFdata);
+    const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
     deploymentFrequencyChart.setOption(option);
   }, [deploymentFrequency]);
 
   useEffect(() => {
     const changeFailureRateChart = echarts.init(changeFailureRate.current);
-    const option = mockCFRCdata && oneLineOptionMapper(mockCFRCdata);
+    const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
     changeFailureRateChart.setOption(option);
   }, [changeFailureRate]);
 
   useEffect(() => {
     const MeanTimeToRecoveryChart = echarts.init(MeanTimeToRecovery.current);
-    const option = mockNTTRdata && oneLineOptionMapper(mockNTTRdata);
+    const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
     MeanTimeToRecoveryChart.setOption(option);
   }, [MeanTimeToRecovery]);
 

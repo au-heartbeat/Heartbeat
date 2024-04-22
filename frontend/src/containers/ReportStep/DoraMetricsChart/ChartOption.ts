@@ -3,7 +3,7 @@ export interface BarOptionProps {
   legend: string;
   xAxis: string[];
   yAxis: yAxis;
-  series: Series[];
+  series: Series[] | undefined;
   color: string[];
 }
 
@@ -82,7 +82,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       text: props.title,
     },
     legend: {
-      data: props.series.map((item) => item.name),
+      data: props.series?.map((item) => item.name),
       bottom: 1,
       left: 10,
     },
@@ -106,7 +106,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       alignTick: false,
     },
     color: props.color,
-    series: props.series.map((item) => {
+    series: props.series?.map((item) => {
       return {
         name: item.name,
         data: item.data,
