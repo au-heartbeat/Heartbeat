@@ -1,20 +1,19 @@
 import {
-  selectDateRange,
-  selectIsProjectCreated,
-  selectMetrics,
-  updateBoardVerifyState,
-  selectBoard,
-  updateJiraVerifyResponse,
-  selectUsers,
-  selectJiraColumns,
-} from '@src/context/config/configSlice';
-import {
   selectMetricsContent,
   updateMetricsState,
   selectShouldGetBoardConfig,
   updateShouldGetBoardConfig,
   updateFirstTimeRoadMetricsBoardData,
 } from '@src/context/Metrics/metricsSlice';
+import {
+  selectDateRange,
+  selectIsProjectCreated,
+  selectMetrics,
+  selectBoard,
+  updateJiraVerifyResponse,
+  selectUsers,
+  selectJiraColumns,
+} from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
@@ -72,7 +71,6 @@ const MetricsStep = () => {
         endTime: dayjs(endDate).valueOf().toString(),
       }).then((res) => {
         if (res.data) {
-          dispatch(updateBoardVerifyState(true));
           dispatch(updateJiraVerifyResponse(res.data));
           dispatch(updateMetricsState(merge(res.data, { isProjectCreated: isProjectCreated })));
           dispatch(updateShouldGetBoardConfig(false));

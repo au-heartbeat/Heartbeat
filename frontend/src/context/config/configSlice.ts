@@ -154,10 +154,6 @@ export const configSlice = createSlice({
       state.board.verifiedResponse.targetFields = targetFields;
       state.board.verifiedResponse.users = users;
     },
-
-    updatePipelineToolVerifyState: (state, action) => {
-      state.pipelineTool.isVerified = action.payload;
-    },
     updatePipelineTool: (state, action) => {
       state.pipelineTool.config = action.payload;
     },
@@ -205,7 +201,6 @@ export const {
   updateBoard,
   updateJiraVerifyResponse,
   updateBasicConfigState,
-  updatePipelineToolVerifyState,
   updatePipelineTool,
   updatePipelineToolVerifyResponse,
   updateSourceControl,
@@ -224,11 +219,9 @@ export const isSelectDoraMetrics = (state: RootState) =>
 export const isOnlySelectClassification = (state: RootState) =>
   state.config.basic.metrics.length === 1 && state.config.basic.metrics[0] === REQUIRED_DATA.CLASSIFICATION;
 export const selectBoard = (state: RootState) => state.config.board.config;
-export const isPipelineToolVerified = (state: RootState) => state.config.pipelineTool.isVerified;
 export const selectPipelineTool = (state: RootState) => state.config.pipelineTool.config;
 export const selectSourceControl = (state: RootState) => state.config.sourceControl.config;
 export const selectWarningMessage = (state: RootState) => state.config.warningMessage;
-
 export const selectConfig = (state: RootState) => state.config;
 export const selectUsers = (state: RootState) => state.config.board.verifiedResponse.users;
 export const selectJiraColumns = (state: RootState) => state.config.board.verifiedResponse.jiraColumns;

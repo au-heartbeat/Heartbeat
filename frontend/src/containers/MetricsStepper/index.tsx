@@ -50,8 +50,8 @@ const MetricsStepper = () => {
   const formMeta = useAppSelector(getFormMeta);
   const pipelineList = useAppSelector(selectPipelineList);
 
-  const { isShow: isShowBoard, isVerified: isBoardVerified } = config.board;
-  const { isShow: isShowPipeline, isVerified: isPipelineToolVerified } = config.pipelineTool;
+  const { isShow: isShowBoard } = config.board;
+  const { isShow: isShowPipeline } = config.pipelineTool;
   const { isShow: isShowSourceControl } = config.sourceControl;
   const isShowCycleTimeSettings =
     requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
@@ -100,18 +100,6 @@ const MetricsStepper = () => {
   }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
 
   useEffect(() => {
-    if (activeStep === METRICS_STEPS.CONFIG) {
-      const nextButtonValidityOptions = [
-        { isShow: isShowBoard, isValid: isBoardVerified },
-        { isShow: isShowPipeline, isValid: isPipelineToolVerified },
-        { isShow: isShowSourceControl },
-      ];
-      const activeNextButtonValidityOptions = nextButtonValidityOptions.filter(({ isShow }) => isShow);
-      projectName && dateRange && dateRange.length && metrics.length
-        ? setIsDisableNextButton(!activeNextButtonValidityOptions.every(({ isValid }) => isValid))
-        : setIsDisableNextButton(true);
-    }
-
     if (activeStep === METRICS_STEPS.METRICS) {
       const nextButtonValidityOptions = [
         { isShow: isShowBoard, isValid: isCrewsSettingValid },
@@ -131,8 +119,6 @@ const MetricsStepper = () => {
     }
   }, [
     activeStep,
-    isBoardVerified,
-    isPipelineToolVerified,
     isShowBoard,
     isShowSourceControl,
     isShowPipeline,

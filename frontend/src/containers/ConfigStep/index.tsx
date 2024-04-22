@@ -70,44 +70,41 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
     pipelineToolMethods.formState;
   const { isValid: isSourceControlValid, isSubmitSuccessful: isSourceControlSubmitSuccessful } =
     sourceControlMethods.formState;
-  const isBoardConfigPass = useMemo(
-    () => (isShowBoard ? isBoardConfigValid && isBoardConfigSubmitSuccessful : true),
-    [isShowBoard, isBoardConfigValid, isBoardConfigSubmitSuccessful],
-  );
-  const isPipelineToolPass = useMemo(
-    () => (isShowPipeline ? isPipelineToolValid && isPipelineToolSubmitSuccessful : true),
-    [isShowPipeline, isPipelineToolValid, isPipelineToolSubmitSuccessful],
-  );
-  const isSourceControlPass = useMemo(
-    () => (isShowSourceControl ? isSourceControlValid && isSourceControlSubmitSuccessful : true),
-    [isShowSourceControl, isSourceControlValid, isSourceControlSubmitSuccessful],
-  );
-  // console.log('');
-  // console.log('--- Basic form ---');
-  // console.log('isBasicInfoValid', isBasicInfoValid);
-  // console.log('--- Board form ---');
-  // console.log('isBoardConfigValid', isBoardConfigValid);
-  // console.log('isBoardConfigSubmitSuccessful', isBoardConfigSubmitSuccessful);
-  // console.log('isBoardConfigPass', isBoardConfigPass);
-  // console.log('--- PipelineTool form ---');
-  // console.log('isPipelineToolValid', isPipelineToolValid);
-  // console.log('isPipelineToolSubmitSuccessful', isPipelineToolSubmitSuccessful);
-  // console.log('isPipelineToolPass', isPipelineToolPass);
-  // console.log('--- SourceControl form ---');
-  // console.log('isSourceControlValid', isSourceControlValid);
-  // console.log('isSourceControlSubmitSuccessful', isSourceControlSubmitSuccessful);
-  // console.log('isSourceControlPass', isSourceControlPass);
-  const isAllFormVerified =
-    // isBasicInfoValid &&
-    useMemo(
-      () => isBoardConfigPass && isPipelineToolPass && isSourceControlPass,
-      [isBoardConfigPass, isPipelineToolPass, isSourceControlPass],
-    );
 
-  // console.log('isAllFormVerified', isAllFormVerified);
+  const formMeta = useMemo(
+    () => [
+      { isShow: isShowBoard, isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful },
+      { isShow: isShowPipeline, isValid: isPipelineToolValid, isSubmitSuccessful: isPipelineToolSubmitSuccessful },
+      {
+        isShow: isShowSourceControl,
+        isValid: isSourceControlValid,
+        isSubmitSuccessful: isSourceControlSubmitSuccessful,
+      },
+    ],
+    [
+      isShowBoard,
+      isBoardConfigValid,
+      isBoardConfigSubmitSuccessful,
+      isShowPipeline,
+      isPipelineToolValid,
+      isPipelineToolSubmitSuccessful,
+      isShowSourceControl,
+      isSourceControlValid,
+      isSourceControlSubmitSuccessful,
+    ],
+  );
+  const activeFormMeta = useMemo(() => formMeta.filter(({ isShow }) => isShow), [formMeta]);
+  const atleatOneFormVerified = useMemo(
+    () =>
+      activeFormMeta.length > 0 &&
+      activeFormMeta.every(({ isValid, isSubmitSuccessful }) => isValid && isSubmitSuccessful),
+    [formMeta],
+  );
+
   useEffect(() => {
-    setIsDisableNextButton(!isAllFormVerified);
-  }, [isAllFormVerified]);
+    setIsDisableNextButton(!atleatOneFormVerified);
+  }, [atleatOneFormVerified]);
+
   return (
     <ConfigStepWrapper>
       <FormProvider {...basicInfoMethods}>

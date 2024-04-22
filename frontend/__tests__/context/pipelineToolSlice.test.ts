@@ -7,7 +7,6 @@ import {
   updatePipelineTool,
   updatePipelineToolVerifyResponse,
   updatePipelineToolVerifyResponseSteps,
-  updatePipelineToolVerifyState,
 } from '@src/context/config/configSlice';
 import { MOCK_BUILD_KITE_VERIFY_RESPONSE, PIPELINE_TOOL_TYPES } from '../fixtures';
 import configReducer from '@src/context/config/configSlice';
@@ -57,18 +56,6 @@ describe('pipelineTool reducer', () => {
     },
   ];
 
-  it('should set isPipelineToolVerified false when handle initial state', () => {
-    const result = configReducer(undefined, { type: 'unknown' });
-
-    expect(result.pipelineTool.isVerified).toEqual(false);
-  });
-
-  it('should set isPipelineToolVerified true when handle updatePipelineToolVerifyState given isPipelineToolVerified is true', () => {
-    const result = configReducer(initialConfigState, updatePipelineToolVerifyState(true));
-
-    expect(result.pipelineTool.isVerified).toEqual(true);
-  });
-
   it('should update pipelineTool fields when change pipelineTool fields input', () => {
     const config = configReducer(initialConfigState, updatePipelineTool({ token: 'abcd' }));
 
@@ -83,7 +70,6 @@ describe('pipelineTool reducer', () => {
           type: PIPELINE_TOOL_TYPES.BUILD_KITE,
           token: '',
         },
-        isVerified: false,
         isShow: false,
         verifiedResponse: {
           pipelineList: [
@@ -131,7 +117,6 @@ describe('pipelineTool reducer', () => {
           type: PIPELINE_TOOL_TYPES.BUILD_KITE,
           token: '',
         },
-        isVerified: false,
         isShow: false,
         verifiedResponse: {
           pipelineList: [

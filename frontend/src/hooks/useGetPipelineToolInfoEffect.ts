@@ -1,6 +1,5 @@
 import {
   updatePipelineToolVerifyResponse,
-  isPipelineToolVerified,
   selectIsProjectCreated,
   selectPipelineTool,
   selectDateRange,
@@ -28,7 +27,6 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   const [isLoading, setIsLoading] = useState(false);
   const apiTouchedRef = useRef(false);
   const [info, setInfo] = useState<IGetPipelineToolInfoResult>(defaultInfoStructure);
-  const pipelineToolVerified = useAppSelector(isPipelineToolVerified);
   const isProjectCreated = useAppSelector(selectIsProjectCreated);
   const restoredPipelineTool = useAppSelector(selectPipelineTool);
   const dateRange = useAppSelector(selectDateRange);
@@ -47,18 +45,11 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
       const response = await pipelineToolClient.getInfo(params);
       setInfo(response);
       dispatch(updatePipelineToolVerifyResponse(response.data));
-      pipelineToolVerified && dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
+      dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
     } finally {
       setIsLoading(false);
     }
-  }, [
-    dispatch,
-    isProjectCreated,
-    pipelineToolVerified,
-    dateRange,
-    restoredPipelineTool.type,
-    restoredPipelineTool.token,
-  ]);
+  }, [dispatch, isProjectCreated, dateRange, restoredPipelineTool.type, restoredPipelineTool.token]);
 
   useEffect(() => {
     if (!apiTouchedRef.current && !isLoading && shouldLoad && shouldGetPipelineConfig) {
