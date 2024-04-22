@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 interface DownloadDialogProps {
   isShowDialog: boolean;
   handleClose: () => void;
-  downloadList: DateRangeItem[];
+  dateRangeItems: DateRangeItem[];
 }
 
 export interface DateRangeItem {
@@ -22,8 +22,8 @@ export interface DateRangeItem {
   disabled: boolean;
 }
 
-export const DownloadDialog = ({ isShowDialog, handleClose, downloadList }: DownloadDialogProps) => {
-  const [dateRangeCheckList, setDateRangeCheckList] = useState<DateRangeItem[]>([]);
+export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems }: DownloadDialogProps) => {
+  const [downloadList, setDownloadList] = useState<DateRangeItem[]>([]);
 
   const handleChange = () => {
     return 0;
@@ -41,9 +41,9 @@ export const DownloadDialog = ({ isShowDialog, handleClose, downloadList }: Down
             <strong>Select the time period for the exporting data</strong>
           </TimePeriodSelectionMessage>
           <FormGroup>
-            {downloadList.map((item, index) => (
+            {dateRangeItems.map((item, index) => (
               <FormControlLabel
-                control={<Checkbox checked={dateRangeCheckList.includes(item)} onChange={handleChange} key={index} />}
+                control={<Checkbox checked={downloadList.includes(item)} onChange={handleChange} key={index} />}
                 label={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
               />
             ))}

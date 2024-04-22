@@ -54,9 +54,21 @@ export const ReportButtonGroup = ({
     return !!reportMetricsError.pipelineMetricsError || !!reportMetricsError.sourceControlMetricsError;
   };
 
-  const overallMetricsResults = [];
-  const boardMetricsResults = [];
-  const pipelineMetricsResults = [];
+  const overallMetricsResults = dateRangeRequestResults.map(item => ({
+    startDate: item.startDate,
+    endDate: item.endDate,
+    disabled: !(item.overallMetricsCompleted && !isReportHasError(item.reportMetricsError))
+  }));
+  const boardMetricsResults = dateRangeRequestResults.map(item => ({
+    startDate: item.startDate,
+    endDate: item.endDate,
+    disabled: !(item.boardMetricsCompleted && !item.reportMetricsError.boardMetricsError)
+  }));
+  const pipelineMetricsResults = dateRangeRequestResults.map(item => ({
+    startDate: item.startDate,
+    endDate: item.endDate,
+    disabled: !(item.doraMetricsCompleted && !isReportHasDoraError(item.reportMetricsError))
+  }));
 
   const isAllOverallMetricsCompleted = dateRangeRequestResults.every(
     ({ overallMetricsCompleted }) => overallMetricsCompleted,
