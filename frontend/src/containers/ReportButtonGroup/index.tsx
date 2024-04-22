@@ -39,7 +39,8 @@ export const ReportButtonGroup = ({
   dateRangeRequestResults,
 }: ReportButtonGroupProps) => {
   const [isShowDialog, setIsShowDialog] = useState(false);
-  const [downloadReportList, setDownloadReportList] = useState([]);
+  const [downloadReportList, setDownloadReportList] = useState<DateRangeItem[]>([]);
+  const [dataType, setDataType] = useState<REPORT_TYPES | null>(null);
   const { fetchExportData, isExpired } = useExportCsvEffect();
 
   const isReportHasError = (reportMetricsError) => {
@@ -83,20 +84,29 @@ export const ReportButtonGroup = ({
 
   const handleDownload = (dateRange: DateRangeItem[], dataType: REPORT_TYPES) => {
     if (dateRange.length > 1) {
-      setIsShowDialog(true);
       setDownloadReportList(dateRange);
+      setDataType(dataType);
+      setIsShowDialog(true);
     } else {
       fetchExportData(exportCSV(dataType, startDate, endDate));
     }
   };
 
+  const handleCloseDialog = () => {
+    setIsShowDialog(false);
+    setDataType(null);
+  };
+
   return (
     <>
-      <DownloadDialog
-        isShowDialog={isShowDialog}
-        handleClose={() => setIsShowDialog(false)}
-        dateRangeItems={downloadReportList}
-      />
+      {dataType && (
+        <DownloadDialog
+          isShowDialog={isShowDialog}
+          handleClose={handleCloseDialog}
+          dateRangeItems={downloadReportList}
+          downloadCSVFile={(startDate, endDate) => fetchExportData(exportCSV(dataType!, startDate, endDate))}
+        />
+      )}
       <StyledButtonGroup isShowSave={isShowSave}>
         {isShowSave && (
           <Tooltip title={TIPS.SAVE_CONFIG} placement={'right'}>
