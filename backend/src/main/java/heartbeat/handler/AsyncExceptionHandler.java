@@ -15,6 +15,7 @@ import static heartbeat.handler.base.FIleType.ERROR;
 @Component
 @RequiredArgsConstructor
 public class AsyncExceptionHandler extends AsyncDataBaseHandler {
+
 	private static final String OUTPUT_FILE_PATH = "./app/output/";
 
 	public void put(String reportId, BaseException e) {

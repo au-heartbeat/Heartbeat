@@ -85,7 +85,7 @@ public class AsyncDataBaseHandler {
 		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
 			log.info("Start to remove file type: {}, file name: {}", fIleType.getType(), fileId);
 			try {
-				T t = readFileByType(new File(fileName) ,fIleType, fileId, classType);
+				T t = readFileByType(new File(fileName), fIleType, fileId, classType);
 				if (Objects.nonNull(t)) {
 					Files.delete(Path.of(fileName));
 				}

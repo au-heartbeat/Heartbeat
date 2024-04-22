@@ -26,7 +26,8 @@ class AsyncDataBaseHandlerTest {
 	void shouldReturnGenerateReportExceptionGivenFileNotStartWithRightFilePath() {
 		File file = new File("./app/input/lock");
 
-		assertThrows(GenerateReportException.class, () ->asyncDataBaseHandler.readFileByType(file, FIleType.ERROR, "111", ReportResponse.class));
+		assertThrows(GenerateReportException.class,
+				() -> asyncDataBaseHandler.readFileByType(file, FIleType.ERROR, "111", ReportResponse.class));
 	}
 
 }

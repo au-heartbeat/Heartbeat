@@ -14,6 +14,7 @@ import static heartbeat.handler.base.FIleType.REPORT;
 @Component
 @RequiredArgsConstructor
 public class AsyncReportRequestHandler extends AsyncDataBaseHandler {
+
 	private static final String OUTPUT_FILE_PATH = "./app/output/";
 
 	public void putReport(String reportId, ReportResponse e) {
