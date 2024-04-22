@@ -20,5 +20,5 @@ export const ResetButton = styled(BasicButton)({
 export const ChartListButton = styled(BasicButton)({
   width: '5.5rem',
   border: 'solid 0.1rem',
-  borderColor: theme.main.button.border,
+  borderColor: theme.main.button.borderLine,
 });
