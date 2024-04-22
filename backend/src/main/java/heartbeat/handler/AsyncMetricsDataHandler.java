@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 
@@ -20,6 +21,8 @@ import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
 	private static final String GENERATE_REPORT_ERROR = "Failed to update metrics data completed through this timestamp.";
+
+	private static final String OUTPUT_FILE_PATH = "./app/output/";
 
 	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
 		try {
@@ -32,7 +35,9 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 	}
 
 	public MetricsDataCompleted getMetricsDataCompleted(String timeStamp) {
-		return readFileByType(METRICS_DATA_COMPLETED, timeStamp, MetricsDataCompleted.class);
+		Path targetPath = new File(OUTPUT_FILE_PATH).toPath().normalize();
+		String fileName = targetPath + "/" + METRICS_DATA_COMPLETED.getPath() + timeStamp;
+		return readFileByType(new File(fileName), METRICS_DATA_COMPLETED, timeStamp, MetricsDataCompleted.class);
 	}
 
 	public void deleteExpireMetricsDataCompletedFile(long currentTimeStamp, File directory) {

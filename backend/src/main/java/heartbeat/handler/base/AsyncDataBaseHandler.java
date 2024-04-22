@@ -60,9 +60,9 @@ public class AsyncDataBaseHandler {
 		log.info(message);
 	}
 
-	protected <T> T readFileByType(FIleType fIleType, String fileId, Class<T> classType) {
+	public <T> T readFileByType(File file, FIleType fIleType, String fileId, Class<T> classType) {
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
-		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
+		if (file.toPath().normalize().startsWith(new File(OUTPUT_FILE_PATH).toPath().normalize())) {
 			if (Files.exists(Path.of(fileName))) {
 				try (JsonReader reader = new JsonReader(new FileReader(fileName))) {
 					return new Gson().fromJson(reader, classType);
@@ -85,7 +85,7 @@ public class AsyncDataBaseHandler {
 		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())) {
 			log.info("Start to remove file type: {}, file name: {}", fIleType.getType(), fileId);
 			try {
-				T t = readFileByType(fIleType, fileId, classType);
+				T t = readFileByType(new File(fileName) ,fIleType, fileId, classType);
 				if (Objects.nonNull(t)) {
 					Files.delete(Path.of(fileName));
 				}
