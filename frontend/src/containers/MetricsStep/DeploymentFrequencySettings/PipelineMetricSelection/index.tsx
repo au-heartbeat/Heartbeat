@@ -72,7 +72,6 @@ export const PipelineMetricSelection = ({
   const [isShowNoStepWarning, setIsShowNoStepWarning] = useState(false);
 
   const validStepValue = stepsOptions.includes(step) ? step : '';
-  console.log('stepRes--zi', stepRes);
   const handleRemoveClick = () => {
     onRemovePipeline(id);
   };

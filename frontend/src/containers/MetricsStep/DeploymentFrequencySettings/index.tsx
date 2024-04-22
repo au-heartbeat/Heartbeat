@@ -49,9 +49,8 @@ export const DeploymentFrequencySettings = () => {
   const errorDetail = useAppSelector(getErrorDetail) as number;
   const [stepsInfo, setStepsInfo] = useState<MyPromiseSettledResult<IStepsRes | undefined>[]>([]);
   const [preDeploySetting, setPreDeploySetting] = useState<IPipelineConfig[]>(
-    shouldGetPipelineConfig ? deploymentFrequencySettings : [],
+    shouldGetPipelineConfig ? [] : deploymentFrequencySettings,
   );
-
   const handleAddPipeline = () => {
     dispatch(addADeploymentFrequencySetting());
     setLoadingCompletedNumber((value) => value + 1);
@@ -72,7 +71,7 @@ export const DeploymentFrequencySettings = () => {
   const totalPipelineNumber = realDeploymentFrequencySettings.length;
   const shouldShowCrews =
     loadingCompletedNumber !== 0 && totalPipelineNumber !== 0 && loadingCompletedNumber === totalPipelineNumber;
-  const { isStepLoading, errorMessage, getSteps } = useGetMetricsStepsEffect();
+  const { getSteps } = useGetMetricsStepsEffect();
 
   useEffect(() => {
     if (isFirstFetch) return;
@@ -86,10 +85,22 @@ export const DeploymentFrequencySettings = () => {
       return { params, buildId, organizationId, pipelineType, token, id };
     });
 
+    if (
+      stepsParams.every((item) => {
+        const id = item.id;
+        const cur = realDeploymentFrequencySettings.find((item) => item.id === id);
+        const pre = preDeploySetting.find((item) => item.id === id);
+        return !isNeedFetchStep(pre, cur);
+      })
+    ) {
+      return;
+    }
+
     const promiseArray = stepsParams.map((paramsObj) => {
       const id = paramsObj.id;
-      const curDeploySetting = realDeploymentFrequencySettings.find((item) => item.id === id);
-      if (isNeedFetchStep(preDeploySetting[paramsObj.id], curDeploySetting)) {
+      const cur = realDeploymentFrequencySettings.find((item) => item.id === id);
+      const pre = preDeploySetting.find((item) => item.id === id);
+      if (isNeedFetchStep(pre, cur)) {
         return getSteps(
           paramsObj.params,
           paramsObj.organizationId,
@@ -106,8 +117,8 @@ export const DeploymentFrequencySettings = () => {
         }
       }
     });
+    setPreDeploySetting(realDeploymentFrequencySettings);
     Promise.allSettled(promiseArray).then((res) => {
-      setPreDeploySetting(realDeploymentFrequencySettings);
       const getOnfulfilled = (res: IStepsRes | undefined, organization: string, pipelineName: string) => {
         // if (res && !res.haveStep) {
         //   isShowRemoveButton && handleRemoveClick();
@@ -150,8 +161,8 @@ export const DeploymentFrequencySettings = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getSteps, realDeploymentFrequencySettings, isFirstFetch, preDeploySetting]);
+
   const isNeedFetchStep = (pre: IPipelineConfig | undefined, cur: IPipelineConfig | undefined) => {
-    console.log('pre', pre);
     if (pre === undefined && cur?.organization && cur.pipelineName) {
       return true;
     }
