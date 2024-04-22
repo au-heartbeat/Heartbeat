@@ -80,18 +80,13 @@ const MetricsStep = () => {
         ...boardConfig,
         dateRanges,
       }).then((res) => {
-        if (res) {
-          // todo need refactor
-          const data = res.filter((r) => r.data);
-          const boardInfo = data?.map((r) => r.data);
-          if (boardInfo?.length) {
-            const commonPayload = combineBoardInfo(boardInfo);
-            dispatch(updateBoardVerifyState(true));
-            dispatch(updateJiraVerifyResponse(commonPayload));
-            dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
-            dispatch(updateShouldGetBoardConfig(false));
-            dispatch(updateFirstTimeRoadMetricsBoardData(false));
-          }
+        if (res && res.length) {
+          const commonPayload = combineBoardInfo(res);
+          dispatch(updateBoardVerifyState(true));
+          dispatch(updateJiraVerifyResponse(commonPayload));
+          dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
+          dispatch(updateShouldGetBoardConfig(false));
+          dispatch(updateFirstTimeRoadMetricsBoardData(false));
         }
       });
     },

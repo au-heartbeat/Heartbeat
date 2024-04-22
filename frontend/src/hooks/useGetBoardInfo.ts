@@ -2,8 +2,8 @@ import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TI
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { BOARD_INFO_FAIL_STATUS } from '@src/constants/commons';
-import { AxiosResponse, HttpStatusCode } from 'axios';
 import { ReactNode, useState } from 'react';
+import { HttpStatusCode } from 'axios';
 import get from 'lodash/get';
 import dayjs from 'dayjs';
 
@@ -17,7 +17,7 @@ export interface BoardInfoResponse {
   users: Users;
 }
 export interface useGetBoardInfoInterface {
-  getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<AxiosResponse<BoardInfoResponse>[]> | undefined>;
+  getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<BoardInfoResponse[]> | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
   isDataLoading: boolean;
@@ -124,8 +124,8 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
               setErrorMessage(config.errorMessage);
             }
           }
-
-          return res;
+          const data = res.filter((r) => r.data);
+          return data?.map((r) => r.data);
         })
         .finally(() => {
           setIsLoading(false);
