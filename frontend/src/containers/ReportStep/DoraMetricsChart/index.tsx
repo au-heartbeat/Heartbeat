@@ -41,13 +41,14 @@ echarts.use([
 ]);
 
 interface DoraMetricsChartProps {
-  data: ReportResponseDTO;
+  startToRequestDoraData: () => void;
+  data: ReportResponseDTO | undefined;
 }
 
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
-function extractedStackedBarData(mappedData: ReportResponse) {
+function extractedStackedBarData(mappedData?: ReportResponse) {
   return {
     title: 'Lead Time For Change',
     legend: 'Lead Time For Change',
@@ -57,7 +58,7 @@ function extractedStackedBarData(mappedData: ReportResponse) {
       alignTick: false,
       axisLabel: NO_LABEL,
     },
-    series: mappedData.leadTimeForChangesList?.[0].valuesList.map((item) => {
+    series: mappedData?.leadTimeForChangesList?.[0].valuesList.map((item) => {
       const series: Series = {
         name: item.name,
         type: 'bar',
@@ -70,8 +71,8 @@ function extractedStackedBarData(mappedData: ReportResponse) {
   };
 }
 
-function extractedDeploymentFrequencyData(mappedData: ReportResponse) {
-  const data = mappedData.deploymentFrequencyList;
+function extractedDeploymentFrequencyData(mappedData?: ReportResponse) {
+  const data = mappedData?.deploymentFrequencyList;
   const value = data?.[0].valueList[0].value as number;
   return {
     title: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
@@ -91,8 +92,8 @@ function extractedDeploymentFrequencyData(mappedData: ReportResponse) {
   };
 }
 
-function extractedChangeFailureRateData(mappedData: ReportResponse) {
-  const data = mappedData.devChangeFailureRateList;
+function extractedChangeFailureRateData(mappedData?: ReportResponse) {
+  const data = mappedData?.devChangeFailureRateList;
   const valueStr = data?.[0].valueList[0].value as string;
   const value = toNumber(valueStr?.split('%', 1)[0]);
   return {
@@ -113,8 +114,8 @@ function extractedChangeFailureRateData(mappedData: ReportResponse) {
   };
 }
 
-function extractedMeanTimeToRecoveryDataData(mappedData: ReportResponse) {
-  const data = mappedData.devMeanTimeToRecoveryList;
+function extractedMeanTimeToRecoveryDataData(mappedData?: ReportResponse) {
+  const data = mappedData?.devMeanTimeToRecoveryList;
   const value = data?.[0].valueList[0].value as number;
   return {
     title: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
@@ -140,7 +141,7 @@ export const DoraMetricsChart = ({ data }: DoraMetricsChartProps) => {
   const changeFailureRate = useRef<HTMLDivElement>(null);
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
 
-  const mappedData: ReportResponse = reportMapper(data);
+  const mappedData = data && reportMapper(data);
   const deploymentFrequencyData = extractedDeploymentFrequencyData(mappedData);
   const changeFailureRateData = extractedChangeFailureRateData(mappedData);
   const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(mappedData);

@@ -124,6 +124,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
+  const isChartPage = useMemo(
+    () => pageType === REPORT_PAGE_TYPE.DORA_CHART || pageType === REPORT_PAGE_TYPE.BOARD_CHART,
+    [pageType],
+  );
 
   const mapDateResult = (descendingDateRanges: DateRangeList, reportInfos: IReportInfo[]) =>
     descendingDateRanges.map(({ startDate, endDate }) => {
@@ -308,7 +312,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [dispatch, exportValidityTimeMin, isCsvFileGeneratedAtEnd]);
 
   useEffect(() => {
-    dispatch(closeAllNotifications());
+    if (pageType === REPORT_PAGE_TYPE.DORA || pageType === REPORT_PAGE_TYPE.BOARD) {
+      dispatch(closeAllNotifications());
+    }
   }, [dispatch, pageType]);
 
   useEffect(() => {
@@ -322,12 +328,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [dispatch, reportInfos, hasPollingStarted]);
 
   useEffect(() => {
-    if (isSummaryPage && notifications4SummaryPage.length > 0) {
+    if ((isSummaryPage || isChartPage) && notifications4SummaryPage.length > 0) {
       const notification = notifications4SummaryPage[0];
       notification && dispatch(addNotification(notification));
       setNotifications4SummaryPage(notifications4SummaryPage.slice(1));
     }
-  }, [dispatch, notifications4SummaryPage, isSummaryPage]);
+  }, [dispatch, notifications4SummaryPage, isSummaryPage, isChartPage]);
 
   useEffect(() => {
     if (!currentDataInfo.shouldShowBoardMetricsError) return;
@@ -431,7 +437,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     </>
   );
 
-  const showDoraChart = (data: ReportResponseDTO) => <DoraMetricsChart data={data} />;
+  const showDoraChart = (data?: ReportResponseDTO) => (
+    <DoraMetricsChart startToRequestDoraData={() => startToRequestData(doraReportRequestBody)} data={data} />
+  );
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
@@ -482,7 +490,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return !!reportData && showDoraChart(reportData);
+        return showDoraChart(reportData);
       default:
         return showSummary();
     }
