@@ -4,7 +4,6 @@ import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
 import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
 import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
 import { COMMON_BUTTONS, REPORT_TYPES } from '@src/constants/commons';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { DateRangeRequestResult } from '@src/containers/ReportStep';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
@@ -16,7 +15,6 @@ interface ReportButtonGroupProps {
   handleSave?: () => void;
   handleBack: () => void;
   csvTimeStamp: number;
-  reportData: ReportResponseDTO | undefined;
   isShowSave: boolean;
   isShowExportBoardButton: boolean;
   isShowExportPipelineButton: boolean;
