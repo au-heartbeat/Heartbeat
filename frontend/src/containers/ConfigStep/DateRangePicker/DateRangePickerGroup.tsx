@@ -32,7 +32,7 @@ export type SortedDateRangeType = {
   endDateError: DateValidationError | null;
 };
 
-const sortFn = {
+export const sortFn = {
   DEFAULT: ({ sortIndex }: SortedDateRangeType) => sortIndex,
   DESCENDING: ({ startDate }: SortedDateRangeType) => -dayjs(startDate).unix(),
   ASCENDING: ({ startDate }: SortedDateRangeType) => dayjs(startDate).unix(),

@@ -3,6 +3,7 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
+import { SortedDateRangeType, sortFn, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
 import { ERROR_DATE, TIME_RANGE_ERROR_MESSAGE } from '../../fixtures';
 import { render, screen, within } from '@testing-library/react';
@@ -10,7 +11,9 @@ import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material';
 import { Provider } from 'react-redux';
+import sortBy from 'lodash/sortBy';
 import { theme } from '@src/theme';
+import get from 'lodash/get';
 import React from 'react';
 import dayjs from 'dayjs';
 
@@ -310,5 +313,46 @@ describe('DateRangePickerSection', () => {
     expect(screen.getByRole('button', { name: 'Descending' })).toBeInTheDocument();
     await userEvent.click(sortButton);
     expect(screen.getByRole('button', { name: 'Ascending' })).toBeInTheDocument();
+  });
+
+  describe('sort time ranges', () => {
+    const dateRange1: SortedDateRangeType = {
+      startDate: '2024-03-10',
+      endDate: '2024-03-15',
+      sortIndex: 1,
+      startDateError: null,
+      endDateError: null,
+    };
+
+    const dateRange2: SortedDateRangeType = {
+      startDate: '2024-03-05',
+      endDate: '2024-03-08',
+      sortIndex: 2,
+      startDateError: null,
+      endDateError: null,
+    };
+
+    const dateRange3: SortedDateRangeType = {
+      startDate: '2024-03-20',
+      endDate: '2024-03-25',
+      sortIndex: 3,
+      startDateError: null,
+      endDateError: null,
+    };
+
+    it('should correctly sort by default sortIndex', () => {
+      const sorted = [dateRange1, dateRange2, dateRange3].sort(sortFn[SortType.DEFAULT]);
+      expect(sorted).toEqual([dateRange1, dateRange2, dateRange3]);
+    });
+
+    it('should correctly sort by startDate in descending order', () => {
+      const sorted = sortBy([dateRange1, dateRange2, dateRange3], get(sortFn, SortType.DESCENDING));
+      expect(sorted).toEqual([dateRange3, dateRange1, dateRange2]);
+    });
+
+    it('should correctly sort by startDate in ascending order', () => {
+      const sorted = sortBy([dateRange1, dateRange2, dateRange3], get(sortFn, SortType.ASCENDING));
+      expect(sorted).toEqual([dateRange2, dateRange1, dateRange3]);
+    });
   });
 });
