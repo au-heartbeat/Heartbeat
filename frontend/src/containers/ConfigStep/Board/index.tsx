@@ -16,10 +16,8 @@ export const Board = () => {
   const {
     clearErrors,
     formState: { isValid, isSubmitSuccessful, errors },
-    formState,
     handleSubmit,
   } = useFormContext();
-  console.log('formState', formState);
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
 
