@@ -16,7 +16,7 @@ const setup = () => {
   return render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <SortingDateRange onChange={() => {}} sortType={SortType.DEFAULT} disabled={false} />
+        <SortingDateRange disabled={false} />
       </ThemeProvider>
     </Provider>,
   );

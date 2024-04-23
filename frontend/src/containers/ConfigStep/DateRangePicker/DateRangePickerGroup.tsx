@@ -3,10 +3,10 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
+import { selectDateRange, selectDateRangeSortType, updateDateRange } from '@src/context/config/configSlice';
 import { DateRangePickerGroupContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker/DateRangePicker';
 import { ADD_TIME_RANGE_BUTTON_TEXT, MAX_TIME_RANGE_AMOUNT } from '@src/constants/resources';
-import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
@@ -39,7 +39,6 @@ const sortFn = {
 };
 
 type Props = {
-  sortType: SortType;
   onChange?: (data: SortedDateRangeType[]) => void;
   onError?: (data: SortedDateRangeType[]) => void;
 };
@@ -51,9 +50,11 @@ const fillDateRangeGroup = <T,>(item: T, index: number) => ({
   sortIndex: index,
 });
 
-export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
+export const DateRangePickerGroup = ({ onError }: Props) => {
   const dispatch = useAppDispatch();
   const dateRangeGroup = useAppSelector(selectDateRange);
+  const sortType = useAppSelector(selectDateRangeSortType);
+
   const isAddButtonDisabled = dateRangeGroup.length === MAX_TIME_RANGE_AMOUNT;
   const [sortedDateRangeList, setSortedDateRangeList] = useState<SortedDateRangeType[]>(
     dateRangeGroup.map(fillDateRangeGroup),
