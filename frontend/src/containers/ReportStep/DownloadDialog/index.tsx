@@ -9,6 +9,7 @@ import {
   TimePeriodSelectionMessage,
   tooltipModifiers,
 } from '@src/containers/ReportStep/DownloadDialog/style';
+import { DISABLED_DATE_RANGE_MESSAGE } from '@src/constants/resources';
 import { Checkbox, Dialog, Tooltip } from '@mui/material';
 import { COMMON_BUTTONS } from '@src/constants/commons';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,7 +31,6 @@ export interface DateRangeItem {
 
 export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downloadCSVFile }: DownloadDialogProps) => {
   const [selectedRangeItems, setSelectedRangeItems] = useState<DateRangeItem[]>([]);
-  const disableMessage = 'Unavailable time period indicates that report generation during this period has failed.';
 
   const handleChange = (targetItem: DateRangeItem) => {
     if (selectedRangeItems.includes(targetItem)) {
@@ -52,7 +52,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
       return (
         <Tooltip
           arrow
-          title={disableMessage}
+          title={DISABLED_DATE_RANGE_MESSAGE}
           placement={'top-end'}
           slotProps={{
             popper: tooltipModifiers,
