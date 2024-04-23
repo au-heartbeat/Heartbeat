@@ -1,4 +1,4 @@
-import { Button, DialogContent, DialogTitle, FormGroup } from '@mui/material';
+import { Button, DialogContent, DialogTitle, FormGroup, Tooltip, tooltipClasses } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
@@ -52,3 +52,14 @@ export const StyledFormGroup = styled(FormGroup)({
 export const StyledButton = styled(Button)({
   alignSelf: 'flex-end',
 });
+
+export const tooltipModifiers = {
+  modifiers: [
+    {
+      name: 'offset',
+      options: {
+        offset: [190, 0],
+      },
+    },
+  ],
+};

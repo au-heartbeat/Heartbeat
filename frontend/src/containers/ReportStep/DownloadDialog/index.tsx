@@ -6,6 +6,7 @@ import {
   StyledDialogTitle,
   StyledFormGroup,
   TimePeriodSelectionMessage,
+  tooltipModifiers,
 } from '@src/containers/ReportStep/DownloadDialog/style';
 import { Checkbox, Dialog, FormControlLabel, Tooltip } from '@mui/material';
 import { COMMON_BUTTONS } from '@src/constants/commons';
@@ -45,13 +46,24 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
     handleClose();
   };
 
-  const renderLabel = (item: DateRangeItem, index: number) => (
-    <FormControlLabel
-      control={<Checkbox checked={selectedRangeItems.includes(item)} onChange={() => handleChange(item)} key={index} />}
-      label={`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
-      disabled={item.disabled}
-    />
-  );
+  const getLabel = (item: DateRangeItem) => {
+    if (item.disabled) {
+      return (
+        <Tooltip
+          arrow
+          title={disableMessage}
+          placement={'top-end'}
+          slotProps={{
+            popper: tooltipModifiers,
+          }}
+        >
+          <span>{`${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}</span>
+        </Tooltip>
+      );
+    } else {
+      return `${formatDate(item.startDate)} - ${formatDate(item.endDate)}`;
+    }
+  };
 
   return (
     <Dialog open={isShowDialog} maxWidth='md'>
@@ -66,17 +78,19 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
             <strong>Select the time period for the exporting data</strong>
           </TimePeriodSelectionMessage>
           <StyledFormGroup>
-            {dateRangeItems.map((item, index) => {
-              if (item.disabled) {
-                return (
-                  <Tooltip arrow title={disableMessage} placement={'top-end'}>
-                    {renderLabel(item, index)}
-                  </Tooltip>
-                );
-              } else {
-                return renderLabel(item, index);
-              }
-            })}
+            {dateRangeItems.map((item, index) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={selectedRangeItems.includes(item)}
+                    onChange={() => handleChange(item)}
+                    key={index}
+                  />
+                }
+                label={getLabel(item)}
+                disabled={item.disabled}
+              />
+            ))}
           </StyledFormGroup>
           <StyledButton variant='contained' onClick={handleDownload}>
             {COMMON_BUTTONS.CONFIRM}
