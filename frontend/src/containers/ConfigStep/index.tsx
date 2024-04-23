@@ -67,6 +67,10 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
   }, []);
 
   const { isValid: isBasicInfoValid, errors } = basicInfoMethods.formState;
+  console.log('isBasicInfoValid', isBasicInfoValid);
+  console.log('basic info values', basicInfoMethods.getValues());
+  console.log('errors', errors);
+
   const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
     boardConfigMethods.formState;
   const { isValid: isPipelineToolValid, isSubmitSuccessful: isPipelineToolSubmitSuccessful } =

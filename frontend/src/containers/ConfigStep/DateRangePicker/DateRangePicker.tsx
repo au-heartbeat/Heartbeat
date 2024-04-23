@@ -6,8 +6,8 @@ import {
 } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS, REMOVE_BUTTON_TEXT, DATE_RANGE_FORMAT } from '@src/constants/resources';
 import { isDateDisabled, calculateLastAvailableDate } from '@src/containers/ConfigStep/DateRangePicker/validation';
+import { BASIC_INFO_ERROR_MESSAGE, TAGGREGATED_DATE_ERROR_REASON } from '@src/containers/ConfigStep/Form/literal';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { BASIC_INFO_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { DateValidationError } from '@mui/x-date-pickers';
 import { TextField, TextFieldProps } from '@mui/material';
@@ -48,9 +48,9 @@ export const DateRangePicker = ({
   const dateRangeGroupExcludeSelf = rangeList!.filter(({ sortIndex }: { sortIndex: number }) => sortIndex !== index);
   const shouldStartDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
   const shouldEndDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
-  const startDateField = `dateRange[${index}].startDate`;
-  const endDateField = `dateRange[${index}].endDate`;
-  const { setValue } = useFormContext();
+  const startDateFieldName = `dateRange[${index}].startDate`;
+  const endDateFieldName = `dateRange[${index}].endDate`;
+  const { setValue, setError, clearErrors, trigger } = useFormContext();
 
   const changeStartDate = (value: Nullable<Dayjs>, { validationError }: { validationError: DateValidationError }) => {
     let daysAddToEndDate = DEFAULT_SPRINT_INTERVAL_OFFSET_DAYS;
@@ -77,12 +77,12 @@ export const DateRangePicker = ({
     if (isNull(validationError)) {
       if (isNull(value)) {
         onError?.('startDateError', BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required, index);
-      } else {
-        setValue(startDateField, result.startDate);
-        setValue(endDateField, result.endDate);
-        onChange?.(result, index);
       }
+      setValue(startDateFieldName, result.startDate, { shouldValidate: true });
+      setValue(endDateFieldName, result.endDate, { shouldValidate: true });
+      onChange?.(result, index);
     } else {
+      setValue(startDateFieldName, TAGGREGATED_DATE_ERROR_REASON, { shouldValidate: true });
       onError?.('startDateError', validationError, index);
     }
   };
@@ -101,12 +101,12 @@ export const DateRangePicker = ({
     if (isNull(validationError)) {
       if (isNull(value)) {
         onError?.('startDateError', BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required, index);
-      } else {
-        setValue(startDateField, result.startDate);
-        setValue(endDateField, result.endDate);
-        onChange?.(result, index);
       }
+      setValue(startDateFieldName, result.startDate, { shouldValidate: true });
+      setValue(endDateFieldName, result.endDate, { shouldValidate: true });
+      onChange?.(result, index);
     } else {
+      setValue(endDateFieldName, TAGGREGATED_DATE_ERROR_REASON, { shouldValidate: true });
       onError?.('startDateError', validationError, index);
     }
   };

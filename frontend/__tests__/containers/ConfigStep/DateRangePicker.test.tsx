@@ -3,17 +3,20 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
+import { basicInfoDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
+import { basicInfoSchema } from '@src/containers/ConfigStep/Form/schema';
 import { ERROR_DATE, TIME_RANGE_ERROR_MESSAGE } from '../../fixtures';
 import { render, screen, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { FormProvider } from '@test/utils/FormProvider';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import React from 'react';
 import dayjs from 'dayjs';
 
-const START_DATE_LABEL = 'From *';
-const END_DATE_LABEL = 'To *';
+const START_DATE_LABEL = 'From';
+const END_DATE_LABEL = 'To';
 const TODAY = dayjs('2024-03-20');
 const INPUT_DATE_VALUE = TODAY.format('MM/DD/YYYY');
 let store = setupStore();
@@ -30,7 +33,9 @@ const setup = () => {
   store = setupStore();
   return render(
     <Provider store={store}>
-      <DateRangePickerSection />
+      <FormProvider schema={basicInfoSchema} defaultValues={basicInfoDefaultValues}>
+        <DateRangePickerSection />
+      </FormProvider>
     </Provider>,
   );
 };

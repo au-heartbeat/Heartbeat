@@ -5,6 +5,7 @@ import {
   ISourceControlErrorMessage,
 } from '@src/containers/ConfigStep/Form/type';
 
+export const TAGGREGATED_DATE_ERROR_REASON = 'Invalid date';
 export const CALENDAR_TYPE_LITERAL = ['Regular Calendar(Weekend Considered)', 'Calendar with Chinese Holiday'];
 export const METRICS_LITERAL = [
   'Velocity',
@@ -33,8 +34,8 @@ export const BASIC_INFO_ERROR_MESSAGE: IBasicInfoErrorMessage = {
       invalid: 'Start date is invalid',
     },
     endDate: {
-      required: 'Start date is required',
-      invalid: 'Start date is invalid',
+      required: 'End date is required',
+      invalid: 'End date is invalid',
     },
     invalid: 'Date range is invalid',
   },

@@ -7,17 +7,21 @@ import { Props, SortedDateRangeType, sortFn } from '@src/containers/ConfigStep/D
 import { DateRangePickerGroupContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker/DateRangePicker';
 import { ADD_TIME_RANGE_BUTTON_TEXT, MAX_TIME_RANGE_AMOUNT } from '@src/constants/resources';
-import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { BASIC_INFO_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
+import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateValidationError } from '@mui/x-date-pickers';
+import { Nullable } from '@src/utils/types';
 import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import remove from 'lodash/remove';
+import isNull from 'lodash/isNull';
 import get from 'lodash/get';
+
+const deriveErrorMessageByDate = (date: Nullable<string>, message: string) => (isNull(date) ? message : null);
 
 const fillDateRangeGroup = (
   item: {
@@ -27,8 +31,8 @@ const fillDateRangeGroup = (
   index: number,
 ) => ({
   ...item,
-  startDateError: item.startDate ? null : BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required,
-  endDateError: item.endDate ? null : BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required,
+  startDateError: deriveErrorMessageByDate(item.startDate, BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required),
+  endDateError: deriveErrorMessageByDate(item.endDate, BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required),
   sortIndex: index,
 });
 
@@ -41,8 +45,10 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
   );
 
   useEffect(() => {
-    const errors = sortedDateRangeList.filter(({ startDateError, endDateError }) => startDateError || endDateError);
-    onError?.(errors);
+    const rangeListWithErrors = sortedDateRangeList.filter(
+      ({ startDateError, endDateError }) => startDateError || endDateError,
+    );
+    onError?.(rangeListWithErrors);
   }, [onError, sortedDateRangeList]);
 
   const handleError = (type: string, error: DateValidationError | string, index: number) => {
@@ -67,7 +73,15 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
     index: number,
   ) => {
     const result = sortedDateRangeList.map((item) =>
-      item.sortIndex === index ? { ...item, startDate, endDate, startDateError: null, endDateError: null } : item,
+      item.sortIndex === index
+        ? {
+            ...item,
+            startDate,
+            endDate,
+            startDateError: deriveErrorMessageByDate(startDate, BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required),
+            endDateError: deriveErrorMessageByDate(endDate, BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required),
+          }
+        : item,
     );
     setSortedDateRangeList(result);
     dispatchUpdateConfig();

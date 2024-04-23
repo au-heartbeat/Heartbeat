@@ -8,6 +8,7 @@ import {
   BOARD_CONFIG_ERROR_MESSAGE,
   PIPELINE_TOOL_ERROR_MESSAGE,
   SOURCE_CONTROL_ERROR_MESSAGE,
+  TAGGREGATED_DATE_ERROR_REASON,
 } from '@src/containers/ConfigStep/Form/literal';
 import { object, string, mixed, InferType, array } from 'yup';
 import { REGEX } from '@src/constants/regex';
@@ -17,8 +18,46 @@ export const basicInfoSchema = object().shape({
   dateRange: array()
     .of(
       object().shape({
-        startDate: string().required(BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required),
-        endDate: string().required(BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required),
+        startDate: string()
+          .nullable()
+          .test({
+            name: 'CustomStartDateValidation',
+            test: function (value, context) {
+              if (value === null) {
+                return this.createError({
+                  path: context.path,
+                  message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required,
+                });
+              }
+              if (value === TAGGREGATED_DATE_ERROR_REASON) {
+                return this.createError({
+                  path: context.path,
+                  message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.invalid,
+                });
+              } else {
+                return true;
+              }
+            },
+          }),
+        endDate: string().test({
+          name: 'CustomEndDateValidation',
+          test: function (value, context) {
+            if (value === null) {
+              return this.createError({
+                path: context.path,
+                message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required,
+              });
+            }
+            if (value === 'error_reason') {
+              return this.createError({
+                path: context.path,
+                message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.invalid,
+              });
+            } else {
+              return true;
+            }
+          },
+        }),
       }),
     )
     .required(),
