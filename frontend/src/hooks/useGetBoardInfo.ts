@@ -26,7 +26,7 @@ const boardInfoPartialFailedStatusMapping = (code: string | number) => {
   if (code == AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
     return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
   }
-  const numericCode = typeof code === 'string' ? parseInt(code, 10) : code;
+  const numericCode = code as number;
   if (numericCode >= HttpStatusCode.BadRequest || numericCode < HttpStatusCode.InternalServerError) {
     return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX;
   }
