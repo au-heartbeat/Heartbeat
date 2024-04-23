@@ -217,7 +217,7 @@ describe('DeploymentFrequencySettings', () => {
     expect(screen.getByTestId(LOADING)).toBeInTheDocument();
   });
 
-  it('should not show show crews part when pipeline is loading', async () => {
+  it('should not show crews part when pipeline is loading', async () => {
     mockGetPipelineToolInfoSpy = {
       ...mockGetPipelineToolInfoOkResponse,
       isFirstFetch: true,

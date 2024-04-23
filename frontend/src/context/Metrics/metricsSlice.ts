@@ -488,7 +488,6 @@ export const metricsSlice = createSlice({
           res.map((value) => omit(value, ['id', 'isStepEmptyString'])),
           isEqual,
         );
-        // let removeEmpty = itemsOmitId;
         if (itemsOmitId.length > 1) {
           itemsOmitId = itemsOmitId.filter(
             (item) => !Object.values(item).every((value) => value === '' || !value?.length),
@@ -560,7 +559,6 @@ export const metricsSlice = createSlice({
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload;
       const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
-      // todo
       const currentCrews = concat(pipelineCrews, state.pipelineCrews);
 
       state.pipelineCrews = intersection(currentCrews, state.pipelineCrews);
