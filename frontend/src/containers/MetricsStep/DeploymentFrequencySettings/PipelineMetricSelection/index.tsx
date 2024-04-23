@@ -29,7 +29,6 @@ import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Loading } from '@src/components/Loading';
-import { useEffect, useState } from 'react';
 import { store } from '@src/store';
 
 interface pipelineMetricSelectionProps {

@@ -73,7 +73,6 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(initDeploymentFrequencySettings());
   };
 
   const addRangeHandler = () => {
