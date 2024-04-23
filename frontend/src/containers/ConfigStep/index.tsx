@@ -10,13 +10,12 @@ import {
 } from '@src/containers/ConfigStep/Form/schema';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
+import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
 import { selectConfig } from '@src/context/config/configSlice';
 import BasicInfo from '@src/containers/ConfigStep/BasicInfo';
 import { useEffect, useLayoutEffect, useMemo } from 'react';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';

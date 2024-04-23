@@ -4,13 +4,17 @@ import { PIPELINE_TOOL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/lit
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { CONFIG_TITLE, PIPELINE_TOOL_TYPES } from '@src/constants/resources';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
+import { IPipelineToolData } from '@src/containers/ConfigStep/Form/schema';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
+import { updatePipelineTool } from '@src/context/config/configSlice';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { Loading } from '@src/components/Loading';
 
 export const PipelineTool = () => {
+  const dispatch = useAppDispatch();
   const { fields, verifyPipelineTool, isLoading, resetFields } = useVerifyPipelineToolEffect();
   const {
     control,
@@ -19,6 +23,7 @@ export const PipelineTool = () => {
     formState: { isValid, isSubmitSuccessful, errors },
     handleSubmit,
     reset,
+    getValues,
   } = useFormContext();
   const isVerifyTimeOut = errors.token?.message === PIPELINE_TOOL_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
@@ -68,6 +73,11 @@ export const PipelineTool = () => {
                   if (isSubmitSuccessful) {
                     reset(undefined, { keepValues: true, keepErrors: true });
                   }
+                  const pipelineToolConfig: IPipelineToolData = {
+                    ...getValues(),
+                    token: e.target.value,
+                  };
+                  dispatch(updatePipelineTool(pipelineToolConfig));
                   field.onChange(e.target.value);
                 }}
                 error={fieldState.invalid && fieldState.error?.message !== PIPELINE_TOOL_ERROR_MESSAGE.token.timeout}
