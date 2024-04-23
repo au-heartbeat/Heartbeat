@@ -3,14 +3,18 @@ import { ConfigSectionContainer, StyledForm, StyledTextField } from '@src/compon
 import { SOURCE_CONTROL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { CONFIG_TITLE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { ISourceControlData } from '@src/containers/ConfigStep/Form/schema';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
+import { updateSourceControl } from '@src/context/config/configSlice';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { Loading } from '@src/components/Loading';
 
 export const SourceControl = () => {
+  const dispatch = useAppDispatch();
   const { fields, verifyToken, isLoading, resetFields } = useVerifySourceControlTokenEffect();
   const {
     control,
@@ -19,6 +23,7 @@ export const SourceControl = () => {
     formState: { isValid, isSubmitSuccessful, errors },
     handleSubmit,
     reset,
+    getValues,
   } = useFormContext();
   const isVerifyTimeOut = errors.token?.message === SOURCE_CONTROL_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
@@ -67,6 +72,11 @@ export const SourceControl = () => {
                   if (isSubmitSuccessful) {
                     reset(undefined, { keepValues: true, keepErrors: true });
                   }
+                  const sourceControl: ISourceControlData = {
+                    ...getValues(),
+                    token: e.target.value,
+                  };
+                  dispatch(updateSourceControl(sourceControl));
                   field.onChange(e.target.value);
                 }}
                 error={fieldState.invalid && fieldState.error?.message !== SOURCE_CONTROL_ERROR_MESSAGE.token.timeout}
