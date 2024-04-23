@@ -26,8 +26,8 @@ import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
 import { MESSAGE, NO_PIPELINE_STEP_ERROR } from '@src/constants/resources';
 import { ErrorNotification } from '@src/components/ErrorNotification';
 import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
+import { useEffect, useRef, useState } from 'react';
 import { Loading } from '@src/components/Loading';
 import { store } from '@src/store';
 

@@ -6,8 +6,8 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { convertCycleTimeSettings, getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
-import _, { omit, uniqWith, isEqual, intersection, concat } from 'lodash';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import _, { omit, uniqWith, isEqual, intersection, concat } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';

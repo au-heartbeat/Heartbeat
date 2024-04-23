@@ -12,7 +12,6 @@ import {
   END_DATE_INVALID_TEXT,
 } from '@src/constants/resources';
 import { isDateDisabled, calculateLastAvailableDate } from '@src/containers/ConfigStep/DateRangePicker/validation';
-import { updateShouldGetBoardConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IRangePickerProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { DateValidationError } from '@mui/x-date-pickers';

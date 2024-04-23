@@ -1,8 +1,4 @@
-import {
-  initDeploymentFrequencySettings,
-  updateShouldGetBoardConfig,
-  updateShouldGetPipelineConfig,
-} from '@src/context/Metrics/metricsSlice';
+import { updateShouldGetBoardConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { DateRangePickerGroupContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker/DateRangePicker';
 import { ADD_TIME_RANGE_BUTTON_TEXT, MAX_TIME_RANGE_AMOUNT } from '@src/constants/resources';

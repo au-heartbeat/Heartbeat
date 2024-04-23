@@ -16,19 +16,19 @@ import { setupStore } from '@test/utils/setupStoreUtil';
 let mockSelectShouldGetPipelineConfig = true;
 let mockSelectPipelineNames: string[] = [];
 const mockSelectStepsParams = {
-    organizationId: 0,
-    pipelineType: '',
-    token: '',
-    params: [
-      {
-        pipelineName: mockSelectPipelineNames,
-        repository: '',
-        orgName: '',
-        startTime: '2024-02-01T00:00:00.000+08:00',
-        endTime: '2024-02-15T23:59:59.999+08:00',
-      },
-    ],
-  }
+  organizationId: 0,
+  pipelineType: '',
+  token: '',
+  params: [
+    {
+      pipelineName: mockSelectPipelineNames,
+      repository: '',
+      orgName: '',
+      startTime: '2024-02-01T00:00:00.000+08:00',
+      endTime: '2024-02-15T23:59:59.999+08:00',
+    },
+  ],
+};
 
 jest.mock('@src/hooks', () => ({
   ...jest.requireActual('@src/hooks'),
