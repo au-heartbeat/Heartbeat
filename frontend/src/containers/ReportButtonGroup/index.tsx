@@ -99,7 +99,7 @@ export const ReportButtonGroup = ({
         <DownloadDialog
           isShowDialog={isShowDialog}
           handleClose={handleCloseDialog}
-          dateRangeItems={downloadReportList}
+          dateRangeList={downloadReportList}
           downloadCSVFile={(startDate, endDate) => fetchExportData(exportCSV(dataType!, startDate, endDate))}
         />
       )}

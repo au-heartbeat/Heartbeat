@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 interface DownloadDialogProps {
   isShowDialog: boolean;
   handleClose: () => void;
-  dateRangeItems: DateRangeItem[];
+  dateRangeList: DateRangeItem[];
   downloadCSVFile: (startDate: string, endDate: string) => void;
 }
 
@@ -28,7 +28,7 @@ export interface DateRangeItem {
   disabled: boolean;
 }
 
-export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, downloadCSVFile }: DownloadDialogProps) => {
+export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downloadCSVFile }: DownloadDialogProps) => {
   const [selectedRangeItems, setSelectedRangeItems] = useState<DateRangeItem[]>([]);
   const disableMessage = 'Unavailable time period indicates that report generation during this period has failed.';
 
@@ -79,7 +79,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
             <strong>Select the time period for the exporting data</strong>
           </TimePeriodSelectionMessage>
           <StyledFormGroup>
-            {dateRangeItems.map((item, index) => (
+            {dateRangeList.map((item, index) => (
               <StyledFormControlLabel
                 control={<Checkbox onChange={() => handleChange(item)} key={index} />}
                 label={getLabel(item)}
