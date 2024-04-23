@@ -16,8 +16,6 @@ interface ReportButtonGroupProps {
   handleSave?: () => void;
   handleBack: () => void;
   csvTimeStamp: number;
-  startDate: string;
-  endDate: string;
   reportData: ReportResponseDTO | undefined;
   isShowSave: boolean;
   isShowExportBoardButton: boolean;
@@ -30,8 +28,6 @@ export const ReportButtonGroup = ({
   handleSave,
   handleBack,
   csvTimeStamp,
-  startDate,
-  endDate,
   isShowSave,
   isShowExportMetrics,
   isShowExportBoardButton,
@@ -88,7 +84,7 @@ export const ReportButtonGroup = ({
       setDataType(dataType);
       setIsShowDialog(true);
     } else {
-      fetchExportData(exportCSV(dataType, startDate, endDate));
+      fetchExportData(exportCSV(dataType, dateRange[0].startDate, dateRange[0].endDate));
     }
   };
 

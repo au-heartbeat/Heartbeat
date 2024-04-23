@@ -9,7 +9,7 @@ import {
   TimePeriodSelectionMessage,
   tooltipModifiers,
 } from '@src/containers/ReportStep/DownloadDialog/style';
-import { Checkbox, Dialog, FormControlLabel, Tooltip } from '@mui/material';
+import { Checkbox, Dialog, Tooltip } from '@mui/material';
 import { COMMON_BUTTONS } from '@src/constants/commons';
 import CloseIcon from '@mui/icons-material/Close';
 import { formatDate } from '@src/utils/util';
