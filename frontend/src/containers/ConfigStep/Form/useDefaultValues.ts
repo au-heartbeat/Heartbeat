@@ -5,12 +5,19 @@ import {
   SOURCE_CONTROL_TYPE_LITERAL,
 } from '@src/containers/ConfigStep/Form/literal';
 import {
+  DateRange,
+  selectBasicInfo,
+  selectBoard,
+  selectPipelineTool,
+  selectSourceControl,
+} from '@src/context/config/configSlice';
+import {
   IBasicInfoData,
   IBoardConfigData,
   IPipelineToolData,
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
-import { selectBasicInfo, selectBoard, selectPipelineTool, selectSourceControl } from '@src/context/config/configSlice';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 
 export const basicInfoDefaultValues: IBasicInfoData = {
@@ -44,9 +51,13 @@ export const useDefaultValues = () => {
   const pipelineTool = useAppSelector(selectPipelineTool);
   const sourceControl = useAppSelector(selectSourceControl);
 
-  const basicInfoWithImport: IBasicInfoData = {
+  const basicInfoWithImport: IBasicInfoData & { sortType: SortType } = {
     ...basicInfoDefaultValues,
-    ...basicInfo,
+    projectName: basicInfo.projectName,
+    calendarType: basicInfo.calendarType,
+    dateRange: basicInfo.dateRange as { startDate: string; endDate: string }[],
+    metrics: basicInfo.metrics,
+    sortType: basicInfo.sortType,
   };
 
   const boardConfigWithImport: IBoardConfigData = {

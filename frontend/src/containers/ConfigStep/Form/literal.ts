@@ -28,6 +28,14 @@ export const BASIC_INFO_ERROR_MESSAGE: IBasicInfoErrorMessage = {
     required: 'Metrics is required',
   },
   dateRange: {
+    startDate: {
+      required: 'Start date is required',
+      invalid: 'Start date is invalid',
+    },
+    endDate: {
+      required: 'Start date is required',
+      invalid: 'Start date is invalid',
+    },
     invalid: 'Date range is invalid',
   },
 };

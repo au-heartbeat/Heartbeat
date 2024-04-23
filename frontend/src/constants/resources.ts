@@ -422,8 +422,6 @@ export const TIME_RANGE_TITLE = 'Time range settings';
 export const ADD_TIME_RANGE_BUTTON_TEXT = 'New time range';
 export const REMOVE_BUTTON_TEXT = 'Remove';
 export const MAX_TIME_RANGE_AMOUNT = 6;
-export const START_DATE_INVALID_TEXT = 'Start date is invalid';
-export const END_DATE_INVALID_TEXT = 'End date is invalid';
 
 export enum SORTING_DATE_RANGE_TEXT {
   DEFAULT = 'Default sort',

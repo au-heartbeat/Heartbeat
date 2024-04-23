@@ -17,8 +17,8 @@ export const basicInfoSchema = object().shape({
   dateRange: array()
     .of(
       object().shape({
-        startDate: string().nullable(),
-        endDate: string().nullable(),
+        startDate: string().required(BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required),
+        endDate: string().required(BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required),
       }),
     )
     .required(),

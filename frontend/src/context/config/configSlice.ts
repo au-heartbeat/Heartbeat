@@ -9,9 +9,9 @@ import {
 } from '@src/constants/resources';
 import { initialPipelineToolState, IPipelineToolState } from '@src/context/config/pipelineTool/pipelineToolSlice';
 import { initialSourceControlState, ISourceControl } from '@src/context/config/sourceControl/sourceControlSlice';
-import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { IBoardState, initialBoardState } from '@src/context/config/board/boardSlice';
 import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
 import union from 'lodash/union';

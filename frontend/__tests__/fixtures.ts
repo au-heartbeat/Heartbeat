@@ -1,5 +1,5 @@
-import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { IStepsParams } from '@src/clients/MetricsClient';

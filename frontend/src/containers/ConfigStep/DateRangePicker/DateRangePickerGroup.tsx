@@ -3,51 +3,32 @@ import {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
 } from '@src/context/Metrics/metricsSlice';
+import { Props, SortedDateRangeType, sortFn } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { DateRangePickerGroupContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker/DateRangePicker';
 import { ADD_TIME_RANGE_BUTTON_TEXT, MAX_TIME_RANGE_AMOUNT } from '@src/constants/resources';
 import { selectDateRange, updateDateRange } from '@src/context/config/configSlice';
+import { BASIC_INFO_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateValidationError } from '@mui/x-date-pickers';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import remove from 'lodash/remove';
 import get from 'lodash/get';
-import dayjs from 'dayjs';
 
-export enum SortType {
-  DESCENDING = 'DESCENDING',
-  ASCENDING = 'ASCENDING',
-  DEFAULT = 'DEFAULT',
-}
-
-export type SortedDateRangeType = {
-  startDate: string | null;
-  endDate: string | null;
-  sortIndex: number;
-  startDateError: DateValidationError | null;
-  endDateError: DateValidationError | null;
-};
-
-const sortFn = {
-  DEFAULT: ({ sortIndex }: SortedDateRangeType) => sortIndex,
-  DESCENDING: ({ startDate }: SortedDateRangeType) => -dayjs(startDate).unix(),
-  ASCENDING: ({ startDate }: SortedDateRangeType) => dayjs(startDate).unix(),
-};
-
-type Props = {
-  sortType: SortType;
-  onChange?: (data: SortedDateRangeType[]) => void;
-  onError?: (data: SortedDateRangeType[]) => void;
-};
-
-const fillDateRangeGroup = <T,>(item: T, index: number) => ({
+const fillDateRangeGroup = (
+  item: {
+    startDate: string | null;
+    endDate: string | null;
+  },
+  index: number,
+) => ({
   ...item,
-  startDateError: null,
-  endDateError: null,
+  startDateError: item.startDate ? null : BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required,
+  endDateError: item.endDate ? null : BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required,
   sortIndex: index,
 });
 
@@ -64,10 +45,9 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
     onError?.(errors);
   }, [onError, sortedDateRangeList]);
 
-  const handleError = (type: string, error: DateValidationError, index: number) => {
-    setSortedDateRangeList(
-      sortedDateRangeList.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null })),
-    );
+  const handleError = (type: string, error: DateValidationError | string, index: number) => {
+    const newList = sortedDateRangeList.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null }));
+    setSortedDateRangeList(newList);
   };
 
   const dispatchUpdateConfig = () => {
