@@ -1,6 +1,8 @@
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { IStepsParams } from '@src/clients/MetricsClient';
 import { METRIC_TYPES } from '@src/constants/commons';
 
 export const PROJECT_NAME = 'Heartbeat';
@@ -108,7 +110,7 @@ export const MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL = `${BASE_URL}/source-control/
 export const MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL = `${BASE_URL}/source-control/:type/repos/branches/verify`;
 export const MOCK_REPORT_URL = `${BASE_URL}/reports`;
 export const MOCK_VERSION_URL = `${BASE_URL}/version`;
-export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:fileName`;
+export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:csvTimeStamp`;
 
 export const VERSION_RESPONSE = {
   version: '1.11',
@@ -224,6 +226,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
 export const IMPORTED_NEW_CONFIG_FIXTURE = {
   projectName: 'ConfigFileForImporting',
   metrics: ['Velocity', 'Cycle time', 'Classification', 'Lead time for changes'],
+  sortType: SortType.DEFAULT,
   dateRange: [
     {
       startDate: '2023-03-16T00:00:00.000+08:00',
@@ -366,13 +369,22 @@ export enum PIPELINE_SETTING_TYPES {
 export const CONFIRM_DIALOG_DESCRIPTION = 'All the filled data will be cleared. Continue to Home page?';
 
 export const MOCK_GET_STEPS_PARAMS = {
-  params: {
-    pipelineName: 'mock pipeline name',
-    repository: 'mock repository',
-    orgName: 'mock orgName',
-    startTime: 1212112121212,
-    endTime: 1313131313131,
-  },
+  params: [
+    {
+      pipelineName: 'mock pipeline name',
+      repository: 'mock repository',
+      orgName: 'mock orgName',
+      startTime: 1212112121212,
+      endTime: 1313131313131,
+    },
+    {
+      pipelineName: 'mock pipeline name',
+      repository: 'mock repository',
+      orgName: 'mock orgName',
+      startTime: 1212112121214,
+      endTime: 1313131313134,
+    },
+  ] as IStepsParams[],
   buildId: 'mockBuildId',
   organizationId: 'mockOrganizationId',
   pipelineType: 'BuildKite',

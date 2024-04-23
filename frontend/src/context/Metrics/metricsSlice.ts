@@ -42,6 +42,7 @@ export interface ICycleTimeSetting {
 export interface ISavedMetricsSettingState {
   shouldGetBoardConfig: boolean;
   shouldGetPipeLineConfig: boolean;
+  shouldRetryPipelineConfig: boolean;
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[];
   targetFields: { name: string; key: string; flag: boolean }[];
   users: string[];
@@ -78,6 +79,7 @@ export interface ISavedMetricsSettingState {
 const initialState: ISavedMetricsSettingState = {
   shouldGetBoardConfig: false,
   shouldGetPipeLineConfig: false,
+  shouldRetryPipelineConfig: false,
   jiraColumns: [],
   targetFields: [],
   users: [],
@@ -645,6 +647,10 @@ export const metricsSlice = createSlice({
     updateFirstTimeRoadMetricsBoardData: (state, action) => {
       state.firstTimeRoadMetricData = action.payload;
     },
+
+    updateShouldRetryPipelineConfig: (state, action) => {
+      state.shouldRetryPipelineConfig = action.payload;
+    },
   },
 });
 
@@ -673,6 +679,7 @@ export const {
   updateShouldGetPipelineConfig,
   updateReworkTimesSettings,
   updateFirstTimeRoadMetricsBoardData,
+  updateShouldRetryPipelineConfig,
 } = metricsSlice.actions;
 
 export const selectShouldGetBoardConfig = (state: RootState) => state.metrics.shouldGetBoardConfig;
@@ -690,6 +697,7 @@ export const selectAssigneeFilter = (state: RootState) => state.metrics.assignee
 export const selectCycleTimeWarningMessage = (state: RootState) => state.metrics.cycleTimeWarningMessage;
 export const selectClassificationWarningMessage = (state: RootState) => state.metrics.classificationWarningMessage;
 export const selectRealDoneWarningMessage = (state: RootState) => state.metrics.realDoneWarningMessage;
+export const selectShouldRetryPipelineConfig = (state: RootState) => state.metrics.shouldRetryPipelineConfig;
 
 export const selectOrganizationWarningMessage = (state: RootState, id: number) => {
   const { deploymentWarningMessage } = state.metrics;
