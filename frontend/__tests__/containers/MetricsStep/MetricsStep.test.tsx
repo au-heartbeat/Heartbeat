@@ -53,6 +53,19 @@ const setup = () =>
     </Provider>,
   );
 
+// const { getBoardInfo, isLoading, errorMessage, boardInfoFailedStatus } = useGetBoardInfoEffect();
+
+// jest.mock('@src/hooks/useGetBoardInfo', () => ({
+//   ...jest.requireActual('@src/hooks/useGetBoardInfo'),
+//
+//   useGetBoardInfoEffect: jest.fn().mockReturnValue({
+//     getBoardInfo: result.current.getBoardInfo,
+//     isLoading: useGetBoardInfoEffect().isLoading,
+//     errorMessage: useGetBoardInfoEffect().errorMessage,
+//     boardInfoFailedStatus: 1,
+//   }),
+// }));
+
 describe('MetricsStep', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());
@@ -304,7 +317,35 @@ describe('MetricsStep', () => {
       ).toBeInTheDocument();
     });
 
+    it('should be render Failed message container when get 4xx error', async () => {
+      store.dispatch(updateShouldGetBoardConfig(true));
+      server.use(
+        rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
+          return res(ctx.status(HttpStatusCode.BadRequest));
+        }),
+      );
+
+      setup();
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to get Board configuration!')).toBeInTheDocument();
+      });
+      expect(screen.getByText('Please go back to the previous page and check your board info!')).toBeInTheDocument();
+    });
+
+    it('should be render popup when get partial 4xx error', async () => {
+      store.dispatch(updateShouldGetBoardConfig(true));
+
+      setup();
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to get Board configuration!')).toBeInTheDocument();
+      });
+      expect(screen.getByText('Please go back to the previous page and check your board info!')).toBeInTheDocument();
+    });
+
     it('should be render form container when got board card success', async () => {
+      store.dispatch(updateShouldGetBoardConfig(true));
       server.use(
         rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
           return res(
