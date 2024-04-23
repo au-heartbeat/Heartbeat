@@ -4,6 +4,7 @@ import {
   StyledCalendarToday,
   StyledDialogContent,
   StyledDialogTitle,
+  StyledFormControlLabel,
   StyledFormGroup,
   TimePeriodSelectionMessage,
   tooltipModifiers,
@@ -79,15 +80,10 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeItems, down
           </TimePeriodSelectionMessage>
           <StyledFormGroup>
             {dateRangeItems.map((item, index) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={selectedRangeItems.includes(item)}
-                    onChange={() => handleChange(item)}
-                    key={index}
-                  />
-                }
+              <StyledFormControlLabel
+                control={<Checkbox onChange={() => handleChange(item)} key={index} />}
                 label={getLabel(item)}
+                checked={selectedRangeItems.includes(item)}
                 disabled={item.disabled}
               />
             ))}

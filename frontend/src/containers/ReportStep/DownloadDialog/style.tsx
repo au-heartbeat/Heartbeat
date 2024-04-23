@@ -1,4 +1,10 @@
-import { Button, DialogContent, DialogTitle, FormGroup, Tooltip, tooltipClasses } from '@mui/material';
+import {
+  Button,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  FormGroup,
+} from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
@@ -63,3 +69,13 @@ export const tooltipModifiers = {
     },
   ],
 };
+
+export const StyledFormControlLabel = styled(FormControlLabel)(({ checked }) => ({
+  width: '15.5rem',
+  border: '1px solid #F0EDED',
+  margin: '0.375rem 0',
+
+  ...(checked && {
+    background: 'rgba(67, 80, 175, 0.1)',
+  }),
+}));
