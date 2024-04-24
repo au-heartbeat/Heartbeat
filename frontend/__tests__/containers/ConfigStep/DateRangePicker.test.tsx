@@ -305,4 +305,29 @@ describe('DateRangePickerSection', () => {
     await userEvent.click(sortButton);
     expect(screen.getByRole('button', { name: 'Ascending' })).toBeInTheDocument();
   });
+
+  it('should update sort status when handleSortTypeChange is called', async () => {
+    const correctRange = ['03/15/2024', '03/25/2024'];
+    const rangeOfTooEarly = ['03/15/1600', '03/25/2024'];
+    const rangeOfInvalidFormat = ['XXxYY/2024', '03/11/2024'];
+    const unifiedInvalidMessage = 'Start date is invalid';
+
+    const ranges = screen.getAllByLabelText('Range picker row');
+    const startDateInput = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+    const endDateInput = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+    await userEvent.type(startDateInput, rangeOfTooEarly[0]);
+    await userEvent.type(endDateInput, rangeOfTooEarly[1]);
+
+    expect(await screen.findByText(unifiedInvalidMessage)).toBeVisible();
+
+    await userEvent.type(startDateInput, correctRange[0]);
+    await userEvent.type(endDateInput, correctRange[1]);
+
+    expect(screen.queryByText(unifiedInvalidMessage)).toBeNull();
+
+    await userEvent.type(startDateInput, rangeOfInvalidFormat[0]);
+    await userEvent.type(endDateInput, rangeOfInvalidFormat[1]);
+
+    expect(screen.queryByText(unifiedInvalidMessage)).toBeVisible();
+  });
 });

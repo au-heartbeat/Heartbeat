@@ -148,23 +148,4 @@ describe('MetricsTypeCheckbox', () => {
 
     expect(getByText(/Metrics is required/i)).toBeInTheDocument();
   });
-
-  // it('should show board component when click MetricsTypeCheckbox selection velocity ', async () => {
-  //   setup();
-  //   await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
-  //   const listBox = within(screen.getByRole('listbox'));
-  //   await userEvent.click(listBox.getByRole('option', { name: VELOCITY }));
-  //   expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
-  // });
-
-  // it('should hidden board component when MetricsTypeCheckbox select is null given MetricsTypeCheckbox select is velocity ', async () => {
-  //   setup();
-
-  //   await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
-  //   const requireDateSelection = within(screen.getByRole('listbox'));
-  //   await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
-  //   await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
-
-  //   expect(screen.queryByText(CONFIG_TITLE.BOARD)).not.toBeInTheDocument();
-  // });
 });
