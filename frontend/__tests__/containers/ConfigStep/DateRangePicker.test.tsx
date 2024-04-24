@@ -1,8 +1,4 @@
-import {
-  initDeploymentFrequencySettings,
-  updateShouldGetBoardConfig,
-  updateShouldGetPipelineConfig,
-} from '@src/context/Metrics/metricsSlice';
+import { updateShouldGetBoardConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { basicInfoDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
 import { basicInfoSchema } from '@src/containers/ConfigStep/Form/schema';
@@ -123,7 +119,6 @@ describe('DateRangePickerSection', () => {
 
       expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
       expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
     });
 
     it('should dispatch update configuration when change endDate', async () => {
@@ -132,7 +127,6 @@ describe('DateRangePickerSection', () => {
 
       expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
       expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
     });
   });
 
@@ -192,7 +186,6 @@ describe('DateRangePickerSection', () => {
 
       expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
       expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
     });
   });
 

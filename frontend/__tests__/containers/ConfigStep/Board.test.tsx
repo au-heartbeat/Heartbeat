@@ -257,4 +257,39 @@ describe('Board', () => {
       ).toBeInTheDocument();
     });
   });
+
+  it('should close alert modal when user manually close the alert', async () => {
+    setup();
+    await fillBoardFieldsInformation();
+    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(timeoutError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(screen.getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText('Close'));
+
+    expect(screen.queryByLabelText('timeoutAlert')).not.toBeInTheDocument();
+  });
+
+  it('should allow user to re-submit when user interact again with form given form is already submit successfully', async () => {
+    setup();
+    mockVerifySuccess();
+    await fillBoardFieldsInformation();
+
+    expect(screen.getByRole('button', { name: /verify/i })).toBeEnabled();
+
+    await userEvent.click(screen.getByText(/verify/i));
+
+    expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
+
+    const emailInput = (await screen.findByRole('textbox', { name: 'Email' })) as HTMLInputElement;
+    await userEvent.clear(emailInput);
+    await userEvent.type(emailInput, 'other@qq.com');
+    const verifyButton = await screen.findByRole('button', { name: /verify/i });
+
+    expect(verifyButton).toBeEnabled();
+  });
 });

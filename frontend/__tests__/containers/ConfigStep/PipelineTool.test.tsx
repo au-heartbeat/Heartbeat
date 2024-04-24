@@ -19,6 +19,7 @@ import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { FormProvider } from '@test/utils/FormProvider';
+import { TimeoutError } from '@src/errors/TimeoutError';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
@@ -43,6 +44,11 @@ const originalVerify = pipelineToolClient.verify;
 describe('PipelineTool', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());
+  afterEach(() => {
+    store = null;
+    pipelineToolClient.verify = originalVerify;
+  });
+
   store = setupStore();
   const setup = () => {
     store = setupStore();
@@ -54,10 +60,6 @@ describe('PipelineTool', () => {
       </Provider>,
     );
   };
-  afterEach(() => {
-    store = null;
-    pipelineToolClient.verify = originalVerify;
-  });
 
   it('should show pipelineTool title and fields when render pipelineTool component ', () => {
     setup();
@@ -228,5 +230,41 @@ describe('PipelineTool', () => {
     await waitFor(() => {
       expect(getByText('Token is incorrect!')).toBeInTheDocument();
     });
+  });
+
+  it('should close alert modal when user manually close the alert', async () => {
+    setup();
+    await fillPipelineToolFieldsInformation();
+    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    pipelineToolClient.verify = jest.fn().mockImplementation(() => Promise.resolve(timeoutError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(await screen.getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText('Close'));
+
+    expect(screen.queryByLabelText('timeoutAlert')).not.toBeInTheDocument();
+  });
+
+  it('should allow user to re-submit when user interact again with form given form is already submit successfully', async () => {
+    setup();
+    await fillPipelineToolFieldsInformation();
+
+    expect(screen.getByRole('button', { name: /verify/i })).toBeEnabled();
+
+    await userEvent.click(screen.getByText(/verify/i));
+
+    waitFor(() => {
+      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
+    });
+
+    const tokenInput = (await screen.findByLabelText('Token *')) as HTMLInputElement;
+    await userEvent.clear(tokenInput);
+    await userEvent.type(tokenInput, FAKE_PIPELINE_TOKEN);
+    const verifyButton = await screen.findByRole('button', { name: /verify/i });
+
+    expect(verifyButton).toBeEnabled();
   });
 });

@@ -10,13 +10,13 @@ import {
   VERIFIED,
   VERIFY,
 } from '../../fixtures';
-import { initDeploymentFrequencySettings, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { AXIOS_REQUEST_ERROR_CODE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
-import { fireEvent, render, screen, act, waitFor } from '@testing-library/react';
+import { updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { FormProvider } from '@test/utils/FormProvider';
 import userEvent from '@testing-library/user-event';
@@ -26,15 +26,16 @@ import { HttpStatusCode } from 'axios';
 import { rest } from 'msw';
 import React from 'react';
 
+const mockValidFormtToken = 'AAAAA_XXXXXX'
+  .replace('AAAAA', 'ghpghoghughsghr')
+  .replace('XXXXXX', '1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b');
+
 export const fillSourceControlFieldsInformation = async () => {
-  const mockInfo = 'AAAAA_XXXXXX'
-    .replace('AAAAA', 'ghpghoghughsghr')
-    .replace('XXXXXX', '1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b');
   const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
 
-  await userEvent.type(tokenInput, mockInfo);
+  await userEvent.type(tokenInput, mockValidFormtToken);
 
-  expect(tokenInput.value).toEqual(mockInfo);
+  expect(tokenInput.value).toEqual(mockValidFormtToken);
 };
 
 let store = null;
@@ -177,7 +178,6 @@ describe('SourceControl', () => {
     await fillSourceControlFieldsInformation();
 
     expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-    expect(initDeploymentFrequencySettings).toHaveBeenCalled();
   });
 
   it('should show error message and error style when token is empty', async () => {
@@ -232,5 +232,42 @@ describe('SourceControl', () => {
     await userEvent.click(screen.getByRole('button', { name: VERIFY }));
 
     expect(screen.getByText(MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT)).toBeInTheDocument();
+  });
+
+  it('should close alert modal when user manually close the alert', async () => {
+    setup();
+    await fillSourceControlFieldsInformation();
+    sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
+      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+    });
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(await screen.getByTestId('timeoutAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText('Close'));
+
+    expect(screen.queryByLabelText('timeoutAlert')).not.toBeInTheDocument();
+  });
+
+  it('should allow user to re-submit when user interact again with form given form is already submit successfully', async () => {
+    setup();
+    await fillSourceControlFieldsInformation();
+
+    expect(screen.getByRole('button', { name: /verify/i })).toBeEnabled();
+
+    await userEvent.click(screen.getByText(/verify/i));
+
+    waitFor(() => {
+      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
+    });
+
+    const tokenInput = (await screen.findByLabelText('Token *')) as HTMLInputElement;
+    await userEvent.clear(tokenInput);
+    await userEvent.type(tokenInput, mockValidFormtToken);
+    const verifyButton = await screen.findByRole('button', { name: /verify/i });
+
+    expect(verifyButton).toBeEnabled();
   });
 });

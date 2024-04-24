@@ -22,7 +22,10 @@ export const Board = () => {
   const isVerified = isValid && isSubmitSuccessful;
 
   const onSubmit = async () => await verifyJira();
-  const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
+  const closeTimeoutAlert = () => {
+    console.log('on closeTimeoutAlert');
+    clearErrors(fields[FIELD_KEY.TOKEN].key);
+  };
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>

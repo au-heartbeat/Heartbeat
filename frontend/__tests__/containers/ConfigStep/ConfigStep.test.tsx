@@ -15,6 +15,7 @@ import {
   VELOCITY,
   VERIFIED,
   VERIFY,
+  ALL,
 } from '../../fixtures';
 import { fillBoardFieldsInformation } from '@test/containers/ConfigStep/Board.test';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
@@ -247,5 +248,19 @@ describe('ConfigStep', () => {
     });
     expect(screen.queryByText(VERIFIED)).toBeVisible();
     expect(screen.queryByText(RESET)).toBeVisible();
+  });
+
+  it('should show all forms given all metrics selected', async () => {
+    setup();
+
+    const requiredMetricsField = screen.getByRole('combobox', { name: REQUIRED_DATA });
+    await userEvent.click(requiredMetricsField);
+    const requireDateSelection = within(screen.getByRole('listbox'));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: ALL }));
+    await closeMuiModal(userEvent);
+
+    expect(screen.getByLabelText('Board Config')).toBeInTheDocument();
+    expect(screen.getByLabelText('Pipeline Tool Config')).toBeInTheDocument();
+    expect(screen.getByLabelText('Source Control Config')).toBeInTheDocument();
   });
 });
