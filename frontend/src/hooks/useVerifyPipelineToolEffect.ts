@@ -46,7 +46,6 @@ export const useVerifyPipelineToolEffect = () => {
     setIsLoading(true);
     const values = getValues() as IPipelineVerifyRequestDTO;
     const response = await pipelineToolClient.verify(values);
-    console.log('response', response);
     if (response.code === HttpStatusCode.NoContent) {
       reset(pipelineToolOriginal, { keepValues: true });
       persistReduxData(values);

@@ -248,6 +248,9 @@ describe('PipelineTool', () => {
   });
 
   it('should allow user to re-submit when user interact again with form given form is already submit successfully', async () => {
+    server.use(
+      rest.post(MOCK_PIPELINE_VERIFY_URL, (_, res, ctx) => res(ctx.delay(100), ctx.status(HttpStatusCode.NoContent))),
+    );
     setup();
     await fillPipelineToolFieldsInformation();
 
@@ -255,10 +258,8 @@ describe('PipelineTool', () => {
 
     await userEvent.click(screen.getByText(/verify/i));
 
-    waitFor(() => {
-      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
-    });
+    expect(await screen.findByRole('button', { name: /reset/i })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /verified/i })).toBeDisabled();
 
     const tokenInput = (await screen.findByLabelText('Token *')) as HTMLInputElement;
     await userEvent.clear(tokenInput);

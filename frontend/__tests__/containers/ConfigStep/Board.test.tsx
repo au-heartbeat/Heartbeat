@@ -282,8 +282,8 @@ describe('Board', () => {
 
     await userEvent.click(screen.getByText(/verify/i));
 
-    expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
+    expect(await screen.findByRole('button', { name: /reset/i })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /verified/i })).toBeDisabled();
 
     const emailInput = (await screen.findByRole('textbox', { name: 'Email' })) as HTMLInputElement;
     await userEvent.clear(emailInput);

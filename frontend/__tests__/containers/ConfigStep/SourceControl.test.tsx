@@ -53,6 +53,11 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
 describe('SourceControl', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());
+  afterEach(() => {
+    store = null;
+    sourceControlClient.verifyToken = originalVerifyToken;
+  });
+
   store = setupStore();
   const setup = () => {
     store = setupStore();
@@ -64,10 +69,6 @@ describe('SourceControl', () => {
       </Provider>,
     );
   };
-  afterEach(() => {
-    store = null;
-    sourceControlClient.verifyToken = originalVerifyToken;
-  });
 
   it('should show sourceControl title and fields when render sourceControl component', () => {
     setup();
@@ -251,6 +252,11 @@ describe('SourceControl', () => {
   });
 
   it('should allow user to re-submit when user interact again with form given form is already submit successfully', async () => {
+    server.use(
+      rest.post(MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL, (req, res, ctx) =>
+        res(ctx.delay(100), ctx.status(HttpStatusCode.NoContent)),
+      ),
+    );
     setup();
     await fillSourceControlFieldsInformation();
 
@@ -258,10 +264,8 @@ describe('SourceControl', () => {
 
     await userEvent.click(screen.getByText(/verify/i));
 
-    waitFor(() => {
-      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
-    });
+    expect(await screen.findByRole('button', { name: /reset/i })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /verified/i })).toBeDisabled();
 
     const tokenInput = (await screen.findByLabelText('Token *')) as HTMLInputElement;
     await userEvent.clear(tokenInput);
