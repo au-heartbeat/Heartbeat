@@ -5,7 +5,7 @@ import {
   ISourceControlErrorMessage,
 } from '@src/containers/ConfigStep/Form/type';
 
-export const TAGGREGATED_DATE_ERROR_REASON = 'Invalid date';
+export const AGGREGATED_DATE_ERROR_REASON = 'Invalid date';
 export const CALENDAR_TYPE_LITERAL = ['Regular Calendar(Weekend Considered)', 'Calendar with Chinese Holiday'];
 export const METRICS_LITERAL = [
   'Velocity',

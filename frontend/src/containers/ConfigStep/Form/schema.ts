@@ -8,7 +8,7 @@ import {
   BOARD_CONFIG_ERROR_MESSAGE,
   PIPELINE_TOOL_ERROR_MESSAGE,
   SOURCE_CONTROL_ERROR_MESSAGE,
-  TAGGREGATED_DATE_ERROR_REASON,
+  AGGREGATED_DATE_ERROR_REASON,
 } from '@src/containers/ConfigStep/Form/literal';
 import { object, string, mixed, InferType, array } from 'yup';
 import { REGEX } from '@src/constants/regex';
@@ -29,7 +29,7 @@ export const basicInfoSchema = object().shape({
                   message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required,
                 });
               }
-              if (value === TAGGREGATED_DATE_ERROR_REASON) {
+              if (value === AGGREGATED_DATE_ERROR_REASON) {
                 return this.createError({
                   path: context.path,
                   message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.invalid,
@@ -39,25 +39,27 @@ export const basicInfoSchema = object().shape({
               }
             },
           }),
-        endDate: string().test({
-          name: 'CustomEndDateValidation',
-          test: function (value, context) {
-            if (value === null) {
-              return this.createError({
-                path: context.path,
-                message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.required,
-              });
-            }
-            if (value === 'error_reason') {
-              return this.createError({
-                path: context.path,
-                message: BASIC_INFO_ERROR_MESSAGE.dateRange.startDate.invalid,
-              });
-            } else {
-              return true;
-            }
-          },
-        }),
+        endDate: string()
+          .nullable()
+          .test({
+            name: 'CustomEndDateValidation',
+            test: function (value, context) {
+              if (value === null) {
+                return this.createError({
+                  path: context.path,
+                  message: BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.required,
+                });
+              }
+              if (value === AGGREGATED_DATE_ERROR_REASON) {
+                return this.createError({
+                  path: context.path,
+                  message: BASIC_INFO_ERROR_MESSAGE.dateRange.endDate.invalid,
+                });
+              } else {
+                return true;
+              }
+            },
+          }),
       }),
     )
     .required(),

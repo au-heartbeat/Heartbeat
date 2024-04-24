@@ -306,11 +306,14 @@ describe('DateRangePickerSection', () => {
     expect(screen.getByRole('button', { name: 'Ascending' })).toBeInTheDocument();
   });
 
-  it('should update sort status when handleSortTypeChange is called', async () => {
+  it('should provide unified error message when given all invalid time input', async () => {
     const correctRange = ['03/15/2024', '03/25/2024'];
-    const rangeOfTooEarly = ['03/15/1600', '03/25/2024'];
-    const rangeOfInvalidFormat = ['XXxYY/2024', '03/11/2024'];
-    const unifiedInvalidMessage = 'Start date is invalid';
+    const rangeOfTooEarly = ['03/15/1600', '03/25/1600'];
+    const rangeOfInvalidFormat = ['XXxYY/2024', 'ZZ/11/2024'];
+    const startDateRequiredErrorMessage = 'Start date is required';
+    const endDateRequiredErrorMessage = 'End date is required';
+    const unifiedStartDateErrorMessage = 'Start date is invalid';
+    const unifiedEndDateErrorMessage = 'End date is invalid';
 
     const ranges = screen.getAllByLabelText('Range picker row');
     const startDateInput = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
@@ -318,16 +321,30 @@ describe('DateRangePickerSection', () => {
     await userEvent.type(startDateInput, rangeOfTooEarly[0]);
     await userEvent.type(endDateInput, rangeOfTooEarly[1]);
 
-    expect(await screen.findByText(unifiedInvalidMessage)).toBeVisible();
+    expect(await screen.findByText(unifiedStartDateErrorMessage)).toBeVisible();
+    expect(await screen.findByText(unifiedEndDateErrorMessage)).toBeVisible();
+
+    await userEvent.clear(startDateInput);
+    await userEvent.clear(endDateInput);
+    await userEvent.keyboard('{Tab}');
+
+    expect(await screen.findByText(startDateRequiredErrorMessage)).toBeVisible();
+    expect(await screen.findByText(endDateRequiredErrorMessage)).toBeVisible();
 
     await userEvent.type(startDateInput, correctRange[0]);
     await userEvent.type(endDateInput, correctRange[1]);
 
-    expect(screen.queryByText(unifiedInvalidMessage)).toBeNull();
+    expect(screen.queryByText(startDateRequiredErrorMessage)).toBeNull();
+    expect(screen.queryByText(endDateRequiredErrorMessage)).toBeNull();
+    expect(screen.queryByText(unifiedStartDateErrorMessage)).toBeNull();
+    expect(screen.queryByText(unifiedEndDateErrorMessage)).toBeNull();
 
     await userEvent.type(startDateInput, rangeOfInvalidFormat[0]);
     await userEvent.type(endDateInput, rangeOfInvalidFormat[1]);
 
-    expect(screen.queryByText(unifiedInvalidMessage)).toBeVisible();
+    expect(screen.queryByText(startDateRequiredErrorMessage)).toBeNull();
+    expect(screen.queryByText(endDateRequiredErrorMessage)).toBeNull();
+    expect(screen.queryByText(unifiedStartDateErrorMessage)).toBeVisible();
+    expect(screen.queryByText(unifiedEndDateErrorMessage)).toBeVisible();
   });
 });
