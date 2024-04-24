@@ -65,9 +65,9 @@ export const ReportButtonGroup = ({
     disabled: !(item.doraMetricsCompleted && !isReportHasDoraError(item.reportMetricsError)),
   }));
 
-  const exportMetricsButtonDisabled = overallMetricsResults.every(({ disabled }) => disabled);
-  const exportBoardButtonDisabled = boardMetricsResults.every(({ disabled }) => disabled);
-  const exportPipelineButtonDisabled = pipelineMetricsResults.every(({ disabled }) => disabled);
+  const isExportMetricsButtonClickable = overallMetricsResults.some(({ disabled }) => !disabled);
+  const isExportBoardButtonClickable = boardMetricsResults.some(({ disabled }) => !disabled);
+  const isExportPipelineButtonClickable = pipelineMetricsResults.some(({ disabled }) => !disabled);
 
   const exportCSV = (dataType: REPORT_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
@@ -115,7 +115,7 @@ export const ReportButtonGroup = ({
           </BackButton>
           {isShowExportMetrics && (
             <StyledExportButton
-              disabled={exportMetricsButtonDisabled}
+              disabled={!isExportMetricsButtonClickable}
               onClick={() => handleDownload(overallMetricsResults, REPORT_TYPES.METRICS)}
             >
               {COMMON_BUTTONS.EXPORT_METRIC_DATA}
@@ -123,7 +123,7 @@ export const ReportButtonGroup = ({
           )}
           {isShowExportBoardButton && (
             <StyledExportButton
-              disabled={exportBoardButtonDisabled}
+              disabled={!isExportBoardButtonClickable}
               onClick={() => handleDownload(boardMetricsResults, REPORT_TYPES.BOARD)}
             >
               {COMMON_BUTTONS.EXPORT_BOARD_DATA}
@@ -131,7 +131,7 @@ export const ReportButtonGroup = ({
           )}
           {isShowExportPipelineButton && (
             <StyledExportButton
-              disabled={exportPipelineButtonDisabled}
+              disabled={!isExportPipelineButtonClickable}
               onClick={() => handleDownload(pipelineMetricsResults, REPORT_TYPES.PIPELINE)}
             >
               {COMMON_BUTTONS.EXPORT_PIPELINE_DATA}
