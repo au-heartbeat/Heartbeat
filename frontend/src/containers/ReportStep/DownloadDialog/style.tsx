@@ -1,10 +1,4 @@
-import {
-  Button,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  FormGroup,
-} from '@mui/material';
+import { Button, DialogContent, DialogTitle, FormControlLabel, FormGroup } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
