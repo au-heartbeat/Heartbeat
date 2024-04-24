@@ -101,13 +101,13 @@ export const SOURCE_CONTROL_FIELDS = ['Source Control', 'Token'];
 
 export const BASE_URL = 'api/v1';
 export const MOCK_BOARD_URL_FOR_JIRA = `${BASE_URL}/boards/jira/verify`;
-export const MOCK_BOARD_INFO_URL = `${BASE_URL}/boards/jira/info`;
 export const MOCK_PIPELINE_URL = `${BASE_URL}/pipelines/buildkite`;
 export const MOCK_PIPELINE_VERIFY_URL = `${BASE_URL}/pipelines/buildkite/verify`;
 export const MOCK_PIPELINE_GET_INFO_URL = `${BASE_URL}/pipelines/buildkite/info`;
 export const MOCK_JIRA_URL = `${BASE_URL}/pipelines/jira`;
 export const MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL = `${BASE_URL}/source-control/:type/verify`;
 export const MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL = `${BASE_URL}/source-control/:type/repos/branches/verify`;
+export const MOCK_GET_STEPS_URL = 'pipelines/buildkite/:orgId/pipelines/:buildId/steps';
 export const MOCK_REPORT_URL = `${BASE_URL}/reports`;
 export const MOCK_VERSION_URL = `${BASE_URL}/version`;
 export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:csvTimeStamp`;

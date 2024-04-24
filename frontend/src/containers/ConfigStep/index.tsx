@@ -67,9 +67,9 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
   }, []);
 
   const { isValid: isBasicInfoValid, errors } = basicInfoMethods.formState;
-  console.log('isBasicInfoValid', isBasicInfoValid);
-  console.log('basic info values', basicInfoMethods.getValues());
-  console.log('errors', errors);
+  // console.log('isBasicInfoValid', isBasicInfoValid);
+  // console.log('basic info values', basicInfoMethods.getValues());
+  // console.log('errors', errors);
 
   const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
     boardConfigMethods.formState;
@@ -100,18 +100,22 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
       isSourceControlSubmitSuccessful,
     ],
   );
+  // console.log('formMeta', formMeta);
   const activeFormMeta = useMemo(() => formMeta.filter(({ isShow }) => isShow), [formMeta]);
-  const atleatOneFormVerified = useMemo(
+  const shownFormsVerified = useMemo(
     () =>
       activeFormMeta.length > 0 &&
       activeFormMeta.every(({ isValid, isSubmitSuccessful }) => isValid && isSubmitSuccessful),
     [formMeta],
   );
 
+  // console.log('isBasicInfoValid', isBasicInfoValid);
+  // console.log('shownFormsVerified', shownFormsVerified);
+
   useEffect(() => {
-    const isConfigPageValid = isBasicInfoValid && atleatOneFormVerified;
+    const isConfigPageValid = isBasicInfoValid && shownFormsVerified;
     setIsDisableNextButton(!isConfigPageValid);
-  }, [isBasicInfoValid, atleatOneFormVerified]);
+  }, [isBasicInfoValid, shownFormsVerified]);
 
   return (
     <ConfigStepWrapper>
