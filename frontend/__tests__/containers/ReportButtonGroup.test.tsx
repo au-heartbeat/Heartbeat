@@ -6,24 +6,7 @@ import { Provider } from 'react-redux';
 
 describe('test', () => {
   const mockHandler = jest.fn();
-  const mockData = {
-    ...MOCK_REPORT_RESPONSE,
-    exportValidityTime: 30,
-    reportMetricsError: {
-      boardMetricsError: {
-        status: 401,
-        message: 'Unauthorized',
-      },
-      pipelineMetricsError: {
-        status: 401,
-        message: 'Unauthorized',
-      },
-      sourceControlMetricsError: {
-        status: 401,
-        message: 'Unauthorized',
-      },
-    },
-  };
+  const mockData = [];
 
   const setup = () => {
     const store = setupStore();
@@ -36,10 +19,8 @@ describe('test', () => {
           isShowExportPipelineButton={true}
           handleBack={mockHandler}
           handleSave={mockHandler}
-          reportData={mockData}
-          startDate={''}
-          endDate={''}
           csvTimeStamp={1239013}
+          dateRangeRequestResults={mockData}
         />
       </Provider>,
     );
