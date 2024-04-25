@@ -1,7 +1,7 @@
 import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
-import { BOARD_INFO_FAIL_STATUS } from '@src/constants/commons';
+import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
 import { ReactNode, useState } from 'react';
 import { HttpStatusCode } from 'axios';
 import get from 'lodash/get';
@@ -20,44 +20,44 @@ export interface useGetBoardInfoInterface {
   getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<BoardInfoResponse[]> | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
-  boardInfoFailedStatus: BOARD_INFO_FAIL_STATUS;
+  boardInfoFailedStatus: METRICS_DATA_FAIL_STATUS;
 }
 const boardInfoPartialFailedStatusMapping = (code: string | number) => {
   if (code == AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
-    return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
+    return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
   }
   const numericCode = code as number;
   if (numericCode >= HttpStatusCode.BadRequest || numericCode < HttpStatusCode.InternalServerError) {
-    return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX;
+    return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
   }
-  return BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX;
+  return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
 };
 
-const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
+const errorStatusMap = (status: METRICS_DATA_FAIL_STATUS) => {
   const errorStatusMap = {
-    [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_4XX]: {
+    [METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX]: {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
         message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
         code: HttpStatusCode.BadRequest,
       },
-      elevateStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_4XX,
+      elevateStatus: METRICS_DATA_FAIL_STATUS.ALL_FAILED_4XX,
     },
-    [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT]: {
+    [METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT]: {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.EMPTY,
         message: BOARD_CONFIG_INFO_ERROR.RETRY,
         code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
       },
-      elevateStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_TIMEOUT,
+      elevateStatus: METRICS_DATA_FAIL_STATUS.ALL_FAILED_TIMEOUT,
     },
-    [BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS]: {
+    [METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS]: {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
         message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
         code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
       },
-      elevateStatus: BOARD_INFO_FAIL_STATUS.ALL_FAILED_NO_CARDS,
+      elevateStatus: METRICS_DATA_FAIL_STATUS.ALL_FAILED_NO_CARDS,
     },
   };
   return get(errorStatusMap, status);
@@ -66,13 +66,13 @@ const errorStatusMap = (status: BOARD_INFO_FAIL_STATUS) => {
 export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
-  const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(BOARD_INFO_FAIL_STATUS.NOT_FAILED);
+  const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
 
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
     setErrorMessage({});
     let errorCount = 0;
-    let localBoardInfoFailedStatus: BOARD_INFO_FAIL_STATUS;
+    let localBoardInfoFailedStatus: METRICS_DATA_FAIL_STATUS;
 
     if (data.dateRanges) {
       const dateRangeCopy = Array.from(data.dateRanges);
@@ -97,8 +97,8 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           .then((res) => {
             if (!res.data) {
               errorCount++;
-              localBoardInfoFailedStatus = BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS;
-              setBoardInfoFailedStatus(BOARD_INFO_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS);
+              localBoardInfoFailedStatus = METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS;
+              setBoardInfoFailedStatus(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS);
             }
             return res;
           })

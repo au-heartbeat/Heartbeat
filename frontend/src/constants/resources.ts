@@ -286,6 +286,10 @@ export const MESSAGE = {
     'Failed to get partial Board configuration, please go back to the previous page and check your board info, or click "Next" button to go to Report page.',
   BOARD_INFO_REQUEST_PARTIAL_FAILED_OTHERS:
     'Failed to get partial Board configuration, you can click "Next" button to go to Report page.',
+  PIPELINE_STEP_REQUEST_PARTIAL_FAILED_4XX:
+    'Failed to get partial Pipeline configuration, please go back to the previous page and change your pipeline token with correct access permission, or click "Next" button to go to Report page.',
+  PIPELINE_STEP_REQUEST_PARTIAL_FAILED_OTHERS:
+    'Failed to get partial Pipeline configuration, you can click "Next" button to go to Report page.',
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN = [
