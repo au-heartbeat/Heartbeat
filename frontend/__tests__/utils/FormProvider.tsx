@@ -9,7 +9,7 @@ interface IFormProviderProps<T extends AnySchema = AnySchema> {
   schema: T;
 }
 
-export const FormProvider = ({ defaultValues, children, schema }: IFormProviderProps<ObjectSchema<{}>>) => {
+export const FormProvider = ({ defaultValues, children, schema }: IFormProviderProps<ObjectSchema<object>>) => {
   const sourceControlMethods = useForm<InferType<typeof schema>>({
     defaultValues,
     resolver: yupResolver(schema),

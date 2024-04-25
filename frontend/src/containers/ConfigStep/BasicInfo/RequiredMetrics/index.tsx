@@ -24,7 +24,7 @@ export const RequiredMetrics = () => {
         <Controller
           name={'metrics'}
           control={control}
-          render={({ field, fieldState }) => {
+          render={({ field }) => {
             const isEveryOptionsSelected = ALL_REQUIRED_DATA.every((metric) => field.value.includes(metric));
             const onChange = ({ target: { value: selectedOptions } }: SelectChangeEvent<typeof METRICS_LITERAL>) => {
               const isClickingAll = selectedOptions[selectedOptions.length - 1] === ALL;

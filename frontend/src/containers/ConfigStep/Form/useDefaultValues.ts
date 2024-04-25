@@ -5,18 +5,12 @@ import {
   SOURCE_CONTROL_TYPE_LITERAL,
 } from '@src/containers/ConfigStep/Form/literal';
 import {
-  DateRange,
-  selectBasicInfo,
-  selectBoard,
-  selectPipelineTool,
-  selectSourceControl,
-} from '@src/context/config/configSlice';
-import {
   IBasicInfoData,
   IBoardConfigData,
   IPipelineToolData,
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
+import { selectBasicInfo, selectBoard, selectPipelineTool, selectSourceControl } from '@src/context/config/configSlice';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 

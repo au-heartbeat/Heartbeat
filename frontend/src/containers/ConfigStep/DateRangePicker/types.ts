@@ -1,5 +1,5 @@
-import {DateValidationError} from '@mui/x-date-pickers';
-import dayjs from "dayjs";
+import { DateValidationError } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 
 export type SortedDateRangeType = {
   startDate: string | null;
@@ -27,9 +27,9 @@ export enum SortType {
 }
 
 export const sortFn = {
-  DEFAULT: ({sortIndex}: SortedDateRangeType) => sortIndex,
-  DESCENDING: ({startDate}: SortedDateRangeType) => -dayjs(startDate).unix(),
-  ASCENDING: ({startDate}: SortedDateRangeType) => dayjs(startDate).unix(),
+  DEFAULT: ({ sortIndex }: SortedDateRangeType) => sortIndex,
+  DESCENDING: ({ startDate }: SortedDateRangeType) => -dayjs(startDate).unix(),
+  ASCENDING: ({ startDate }: SortedDateRangeType) => dayjs(startDate).unix(),
 };
 export type Props = {
   sortType: SortType;

@@ -64,13 +64,10 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
 
   useEffect(() => {
     basicInfoMethods.trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { isValid: isBasicInfoValid, errors } = basicInfoMethods.formState;
-  // console.log('isBasicInfoValid', isBasicInfoValid);
-  // console.log('basic info values', basicInfoMethods.getValues());
-  // console.log('errors', errors);
-
+  const { isValid: isBasicInfoValid } = basicInfoMethods.formState;
   const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
     boardConfigMethods.formState;
   const { isValid: isPipelineToolValid, isSubmitSuccessful: isPipelineToolSubmitSuccessful } =
@@ -100,22 +97,18 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
       isSourceControlSubmitSuccessful,
     ],
   );
-  // console.log('formMeta', formMeta);
   const activeFormMeta = useMemo(() => formMeta.filter(({ isShow }) => isShow), [formMeta]);
   const shownFormsVerified = useMemo(
     () =>
       activeFormMeta.length > 0 &&
       activeFormMeta.every(({ isValid, isSubmitSuccessful }) => isValid && isSubmitSuccessful),
-    [formMeta],
+    [activeFormMeta],
   );
-
-  // console.log('isBasicInfoValid', isBasicInfoValid);
-  // console.log('shownFormsVerified', shownFormsVerified);
 
   useEffect(() => {
     const isConfigPageValid = isBasicInfoValid && shownFormsVerified;
     setIsDisableNextButton(!isConfigPageValid);
-  }, [isBasicInfoValid, shownFormsVerified]);
+  }, [isBasicInfoValid, shownFormsVerified, setIsDisableNextButton]);
 
   return (
     <ConfigStepWrapper>

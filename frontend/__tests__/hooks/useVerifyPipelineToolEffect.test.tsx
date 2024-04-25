@@ -26,11 +26,10 @@ jest.mock('react-hook-form', () => {
       const originals = useFormContext();
       return {
         ...originals,
-        setError: (...args: any) => {
-          console.log('args', args);
+        setError: (...args: [string, { message: string }]) => {
           setErrorSpy(...args);
         },
-        reset: (...args: any) => resetSpy(...args),
+        reset: (...args: [string, { message: string }]) => resetSpy(...args),
       };
     },
   };
