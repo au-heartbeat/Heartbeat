@@ -10,11 +10,11 @@ interface IFormProviderProps<T extends AnySchema = AnySchema> {
 }
 
 export const FormProvider = ({ defaultValues, children, schema }: IFormProviderProps<ObjectSchema<object>>) => {
-  const sourceControlMethods = useForm<InferType<typeof schema>>({
+  const formMethods = useForm<InferType<typeof schema>>({
     defaultValues,
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
 
-  return <RHFProvider {...sourceControlMethods}>{children}</RHFProvider>;
+  return <RHFProvider {...formMethods}>{children}</RHFProvider>;
 };

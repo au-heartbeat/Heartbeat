@@ -12,7 +12,6 @@ export interface IDateRangeErrorMessage {
     required: string;
     invalid: string;
   };
-  invalid: string;
 }
 export interface IBasicInfoErrorMessage
   extends Record<Exclude<TBasicInfoFieldKeys, 'calendarType'>, Record<string, string> | IDateRangeErrorMessage> {

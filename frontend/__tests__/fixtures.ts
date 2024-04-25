@@ -108,7 +108,6 @@ export const MOCK_PIPELINE_GET_INFO_URL = `${BASE_URL}/pipelines/buildkite/info`
 export const MOCK_JIRA_URL = `${BASE_URL}/pipelines/jira`;
 export const MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL = `${BASE_URL}/source-control/:type/verify`;
 export const MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL = `${BASE_URL}/source-control/:type/repos/branches/verify`;
-export const MOCK_GET_STEPS_URL = 'pipelines/buildkite/:orgId/pipelines/:buildId/steps';
 export const MOCK_REPORT_URL = `${BASE_URL}/reports`;
 export const MOCK_VERSION_URL = `${BASE_URL}/version`;
 export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:csvTimeStamp`;

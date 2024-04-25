@@ -37,7 +37,6 @@ export const BASIC_INFO_ERROR_MESSAGE: IBasicInfoErrorMessage = {
       required: 'End date is required',
       invalid: 'End date is invalid',
     },
-    invalid: 'Date range is invalid',
   },
 };
 export const BOARD_CONFIG_ERROR_MESSAGE: IBoardConfigErrorMessage = {
