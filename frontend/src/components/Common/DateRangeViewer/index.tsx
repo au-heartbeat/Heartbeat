@@ -24,7 +24,7 @@ const DateRangeViewer = ({
   expandBackgroundColor = theme.palette.secondary.dark,
 }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
-  const datePick = dateRanges[0];
+  const [selectedDateRange, setSelectedDateRange] = useState(dateRanges[0]);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -32,6 +32,11 @@ const DateRangeViewer = ({
       setShowMoreDateRange(false);
     }
   }, []);
+
+  const handleClick = (index: number) => {
+    setSelectedDateRange(dateRanges[index])
+    setShowMoreDateRange(false);
+  }
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -45,7 +50,12 @@ const DateRangeViewer = ({
       <DateRangeExpandContainer ref={ref}>
         {dateRanges.map((dateRange, index) => {
           return (
-            <SingleDateRange key={index} color={expandColor} backgroundColor={expandBackgroundColor}>
+            <SingleDateRange
+              onClick={() => handleClick(index)}
+              key={index}
+              color={expandColor}
+              backgroundColor={expandBackgroundColor}
+            >
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}
@@ -58,9 +68,9 @@ const DateRangeViewer = ({
 
   return (
     <DateRangeContainer data-test-id={'date-range'}>
-      {formatDate(datePick.startDate as string)}
+      {formatDate(selectedDateRange.startDate as string)}
       <StyledArrowForward />
-      {formatDate(datePick.endDate as string)}
+      {formatDate(selectedDateRange.endDate as string)}
       <StyledCalendarToday />
       <StyledDivider orientation='vertical' />
       <StyledExpandMoreIcon aria-label='expandMore' onClick={() => setShowMoreDateRange(true)} />
