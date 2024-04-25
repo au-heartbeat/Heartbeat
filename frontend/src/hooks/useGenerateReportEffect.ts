@@ -88,7 +88,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       ),
     );
 
-    updateResultAfterFetchReport(res, metricTypes);
+    updateErrorAfterFetchReport(res, metricTypes);
 
     if (hasPollingStarted) return;
     hasPollingStarted = true;
@@ -110,49 +110,17 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       return;
     }
     const pollingIds: string[] = pollingInfos.map((pollingInfo) => pollingInfo.id);
-    setReportInfos((preInfos) => {
-      return preInfos.map((info) => {
-        if (pollingIds.includes(info.id)) {
-          info.timeout4Report = DEFAULT_MESSAGE;
-        }
-        return info;
-      });
-    });
+    initReportInfosTimeout4Report(pollingIds);
 
     const pollingQueue: Promise<IPollingRes>[] = pollingInfos.map((pollingInfo) =>
       reportClient.polling(pollingInfo.callbackUrl),
     );
     const pollingResponses = await Promise.allSettled(pollingQueue);
-    const pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[] = pollingResponses.map(
-      (singleRes, index) => ({
-        ...singleRes,
-        id: pollingInfos[index].id,
-      }),
-    );
-    const nextPollingInfos: Record<string, string>[] = [];
-    setReportInfos((preReportInfos) => {
-      return preReportInfos.map((singleResult) => {
-        const matchedRes = pollingResponsesWithId.find(
-          (singleRes) => singleRes.id === singleResult.id,
-        ) as PromiseSettledResultWithId<IPollingRes>;
+    const pollingResponsesWithId = assemblePollingResWithId(pollingResponses, pollingInfos);
 
-        if (matchedRes.status === 'fulfilled') {
-          const { response } = matchedRes.value;
-          singleResult.reportData = assembleReportData(response);
-          if (response.allMetricsCompleted || !hasPollingStarted) {
-            // todo 这一条不再polling
-          } else {
-            // todo 继续polling
-            nextPollingInfos.push(pollingInfos.find((pollingInfo) => pollingInfo.id === matchedRes.id)!);
-          }
-        } else {
-          const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
-          singleResult[errorKey] = DATA_LOADING_FAILED;
-          // todo 这一条不再polling
-        }
-        return singleResult;
-      });
-    });
+    updateReportInfosAfterPolling(pollingResponsesWithId);
+
+    const nextPollingInfos = getNextPollingInfos(pollingResponsesWithId, pollingInfos);
     timerIdRef.current = window.setTimeout(() => {
       pollingReport({ pollingInfos: nextPollingInfos, interval });
     }, interval * 1000);
@@ -193,7 +161,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     }
   };
 
-  const updateResultAfterFetchReport = (
+  const updateErrorAfterFetchReport = (
     res: PromiseSettledResult<ReportCallbackResponse>[],
     metricTypes: METRIC_TYPES[],
   ) => {
@@ -212,7 +180,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     });
   };
 
-  function assemblePollingParams(res: PromiseSettledResult<ReportCallbackResponse>[]) {
+  const assemblePollingParams = (res: PromiseSettledResult<ReportCallbackResponse>[]) => {
     const resWithIds: PromiseSettledResultWithId<ReportCallbackResponse>[] = res.map((item, index) => ({
       ...item,
       id: reportInfos[index].id,
@@ -228,7 +196,65 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
     const pollingInterval = (fulfilledResponses[0] as PromiseFulfilledResult<ReportCallbackResponse>).value.interval;
     return { pollingInfos, pollingInterval };
-  }
+  };
+
+  const assemblePollingResWithId = (
+    pollingResponses: Array<PromiseSettledResult<Awaited<Promise<IPollingRes>>>>,
+    pollingInfos: Record<string, string>[],
+  ) => {
+    const pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[] = pollingResponses.map(
+      (singleRes, index) => ({
+        ...singleRes,
+        id: pollingInfos[index].id,
+      }),
+    );
+    return pollingResponsesWithId;
+  };
+
+  const getNextPollingInfos = (
+    pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[],
+    pollingInfos: Record<string, string>[],
+  ) => {
+    const nextPollingInfos: Record<string, string>[] = pollingResponsesWithId
+      .filter(
+        (pollingResponseWithId) =>
+          pollingResponseWithId.status === 'fulfilled' &&
+          !pollingResponseWithId.value.response.allMetricsCompleted &&
+          hasPollingStarted,
+      )
+      .map((pollingResponseWithId) => pollingInfos.find((pollingInfo) => pollingInfo.id === pollingResponseWithId.id)!);
+    return nextPollingInfos;
+  };
+
+  const updateReportInfosAfterPolling = (pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[]) => {
+    setReportInfos((preReportInfos) => {
+      return preReportInfos.map((singleResult) => {
+        const matchedRes = pollingResponsesWithId.find(
+          (singleRes) => singleRes.id === singleResult.id,
+        ) as PromiseSettledResultWithId<IPollingRes>;
+
+        if (matchedRes.status === 'fulfilled') {
+          const { response } = matchedRes.value;
+          singleResult.reportData = assembleReportData(response);
+        } else {
+          const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
+          singleResult[errorKey] = DATA_LOADING_FAILED;
+        }
+        return singleResult;
+      });
+    });
+  };
+
+  const initReportInfosTimeout4Report = (pollingIds: string[]) => {
+    setReportInfos((preInfos) => {
+      return preInfos.map((info) => {
+        if (pollingIds.includes(info.id)) {
+          info.timeout4Report = DEFAULT_MESSAGE;
+        }
+        return info;
+      });
+    });
+  };
 
   return {
     startToRequestData,
