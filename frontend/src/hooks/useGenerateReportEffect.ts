@@ -11,7 +11,7 @@ import { useAppSelector } from '@src/hooks/index';
 import { useRef, useState } from 'react';
 import get from 'lodash/get';
 
-export type MyPromiseSettledResult<T> = PromiseSettledResult<T> & {
+export type PromiseSettledResultWithId<T> = PromiseSettledResult<T> & {
   id: string;
 };
 
@@ -72,24 +72,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   );
   let hasPollingStarted = false;
 
-  function assemblePollingParams(res: PromiseSettledResult<ReportCallbackResponse>[]) {
-    const resWithIds: MyPromiseSettledResult<ReportCallbackResponse>[] = res.map((item, index) => ({
-      ...item,
-      id: reportInfos[index].id,
-    }));
-
-    const fulfilledResponses: MyPromiseSettledResult<ReportCallbackResponse>[] = resWithIds.filter(
-      ({ status }) => status === 'fulfilled',
-    );
-
-    const pollingInfos: Record<string, string>[] = fulfilledResponses.map((v) => {
-      return { callbackUrl: (v as PromiseFulfilledResult<ReportCallbackResponse>).value.callbackUrl, id: v.id };
-    });
-
-    const pollingInterval = (fulfilledResponses[0] as PromiseFulfilledResult<ReportCallbackResponse>).value.interval;
-    return { pollingInfos, pollingInterval };
-  }
-
   const startToRequestData = async (params: ReportRequestDTO) => {
     const { metricTypes } = params;
     resetTimeoutMessage(metricTypes);
@@ -141,16 +123,18 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       reportClient.polling(pollingInfo.callbackUrl),
     );
     const pollingResponses = await Promise.allSettled(pollingQueue);
-    const pollingResponsesWithId: MyPromiseSettledResult<IPollingRes>[] = pollingResponses.map((singleRes, index) => ({
-      ...singleRes,
-      id: pollingInfos[index].id,
-    }));
+    const pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[] = pollingResponses.map(
+      (singleRes, index) => ({
+        ...singleRes,
+        id: pollingInfos[index].id,
+      }),
+    );
     const nextPollingInfos: Record<string, string>[] = [];
     setReportInfos((preReportInfos) => {
       return preReportInfos.map((singleResult) => {
         const matchedRes = pollingResponsesWithId.find(
           (singleRes) => singleRes.id === singleResult.id,
-        ) as MyPromiseSettledResult<IPollingRes>;
+        ) as PromiseSettledResultWithId<IPollingRes>;
 
         if (matchedRes.status === 'fulfilled') {
           const { response } = matchedRes.value;
@@ -213,20 +197,38 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     res: PromiseSettledResult<ReportCallbackResponse>[],
     metricTypes: METRIC_TYPES[],
   ) => {
-    if (res.filter(({ status }) => status === 'rejected').length) {
-      setReportInfos((preReportInfos: IReportInfo[]) => {
-        return preReportInfos.map((resInfo, index) => {
-          const currentRes = res[index];
-          if (currentRes.status === 'rejected') {
-            const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
-            const errorKey = getErrorKey(currentRes.reason, source) as keyof IReportError;
-            resInfo[errorKey] = METRIC_TYPES.ALL;
-          }
-          return resInfo;
-        });
+    if (res.filter(({ status }) => status === 'rejected').length === 0) return;
+
+    setReportInfos((preReportInfos: IReportInfo[]) => {
+      return preReportInfos.map((resInfo, index) => {
+        const currentRes = res[index];
+        if (currentRes.status === 'rejected') {
+          const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
+          const errorKey = getErrorKey(currentRes.reason, source) as keyof IReportError;
+          resInfo[errorKey] = DATA_LOADING_FAILED;
+        }
+        return resInfo;
       });
-    }
+    });
   };
+
+  function assemblePollingParams(res: PromiseSettledResult<ReportCallbackResponse>[]) {
+    const resWithIds: PromiseSettledResultWithId<ReportCallbackResponse>[] = res.map((item, index) => ({
+      ...item,
+      id: reportInfos[index].id,
+    }));
+
+    const fulfilledResponses: PromiseSettledResultWithId<ReportCallbackResponse>[] = resWithIds.filter(
+      ({ status }) => status === 'fulfilled',
+    );
+
+    const pollingInfos: Record<string, string>[] = fulfilledResponses.map((v) => {
+      return { callbackUrl: (v as PromiseFulfilledResult<ReportCallbackResponse>).value.callbackUrl, id: v.id };
+    });
+
+    const pollingInterval = (fulfilledResponses[0] as PromiseFulfilledResult<ReportCallbackResponse>).value.interval;
+    return { pollingInfos, pollingInterval };
+  }
 
   return {
     startToRequestData,
