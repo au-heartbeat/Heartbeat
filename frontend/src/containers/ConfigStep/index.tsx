@@ -1,31 +1,33 @@
 import {
-  basicInfoSchema,
-  boardConfigSchema,
-  pipelineToolSchema,
-  sourceControlSchema,
   IBasicInfoData,
   IBoardConfigData,
   IPipelineToolData,
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
-import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
 import { selectConfig } from '@src/context/config/configSlice';
+import { FormProvider, UseFormReturn } from 'react-hook-form';
 import BasicInfo from '@src/containers/ConfigStep/BasicInfo';
-import { useEffect, useLayoutEffect, useMemo } from 'react';
 import { Board } from '@src/containers/ConfigStep/Board';
-import { useForm, FormProvider } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect, useLayoutEffect } from 'react';
 import { ConfigStepWrapper } from './style';
 
 interface IConfigStepProps {
-  setIsDisableNextButton: React.Dispatch<React.SetStateAction<boolean>>;
+  basicInfoMethods: UseFormReturn<IBasicInfoData>;
+  boardConfigMethods: UseFormReturn<IBoardConfigData>;
+  pipelineToolMethods: UseFormReturn<IPipelineToolData>;
+  sourceControlMethods: UseFormReturn<ISourceControlData>;
 }
 
-const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
+const ConfigStep = ({
+  basicInfoMethods,
+  boardConfigMethods,
+  pipelineToolMethods,
+  sourceControlMethods,
+}: IConfigStepProps) => {
   const dispatch = useAppDispatch();
   useLayoutEffect(() => {
     dispatch(closeAllNotifications());
@@ -36,79 +38,11 @@ const ConfigStep = ({ setIsDisableNextButton }: IConfigStepProps) => {
   const { isShow: isShowBoard } = configData.board;
   const { isShow: isShowPipeline } = configData.pipelineTool;
   const { isShow: isShowSourceControl } = configData.sourceControl;
-  const defaultValues = useDefaultValues();
-
-  const basicInfoMethods = useForm<IBasicInfoData>({
-    defaultValues: defaultValues.basicInfoWithImport,
-    resolver: yupResolver(basicInfoSchema),
-    mode: 'onChange',
-  });
-
-  const boardConfigMethods = useForm<IBoardConfigData>({
-    defaultValues: defaultValues.boardConfigWithImport,
-    resolver: yupResolver(boardConfigSchema),
-    mode: 'onChange',
-  });
-
-  const pipelineToolMethods = useForm<IPipelineToolData>({
-    defaultValues: defaultValues.pipelineToolWithImport,
-    resolver: yupResolver(pipelineToolSchema),
-    mode: 'onChange',
-  });
-
-  const sourceControlMethods = useForm<ISourceControlData>({
-    defaultValues: defaultValues.sourceControlWithImport,
-    resolver: yupResolver(sourceControlSchema),
-    mode: 'onChange',
-  });
 
   useEffect(() => {
     basicInfoMethods.trigger();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const { isValid: isBasicInfoValid } = basicInfoMethods.formState;
-  const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
-    boardConfigMethods.formState;
-  const { isValid: isPipelineToolValid, isSubmitSuccessful: isPipelineToolSubmitSuccessful } =
-    pipelineToolMethods.formState;
-  const { isValid: isSourceControlValid, isSubmitSuccessful: isSourceControlSubmitSuccessful } =
-    sourceControlMethods.formState;
-
-  const formMeta = useMemo(
-    () => [
-      { isShow: isShowBoard, isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful },
-      { isShow: isShowPipeline, isValid: isPipelineToolValid, isSubmitSuccessful: isPipelineToolSubmitSuccessful },
-      {
-        isShow: isShowSourceControl,
-        isValid: isSourceControlValid,
-        isSubmitSuccessful: isSourceControlSubmitSuccessful,
-      },
-    ],
-    [
-      isShowBoard,
-      isBoardConfigValid,
-      isBoardConfigSubmitSuccessful,
-      isShowPipeline,
-      isPipelineToolValid,
-      isPipelineToolSubmitSuccessful,
-      isShowSourceControl,
-      isSourceControlValid,
-      isSourceControlSubmitSuccessful,
-    ],
-  );
-  const activeFormMeta = useMemo(() => formMeta.filter(({ isShow }) => isShow), [formMeta]);
-  const shownFormsVerified = useMemo(
-    () =>
-      activeFormMeta.length > 0 &&
-      activeFormMeta.every(({ isValid, isSubmitSuccessful }) => isValid && isSubmitSuccessful),
-    [activeFormMeta],
-  );
-
-  useEffect(() => {
-    const isConfigPageValid = isBasicInfoValid && shownFormsVerified;
-    setIsDisableNextButton(!isConfigPageValid);
-  }, [isBasicInfoValid, shownFormsVerified, setIsDisableNextButton]);
 
   return (
     <ConfigStepWrapper>

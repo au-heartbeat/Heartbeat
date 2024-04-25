@@ -17,12 +17,25 @@ import {
   VERIFY,
   ALL,
 } from '../../fixtures';
+import {
+  basicInfoSchema,
+  boardConfigSchema,
+  pipelineToolSchema,
+  sourceControlSchema,
+  IBasicInfoData,
+  IBoardConfigData,
+  IPipelineToolData,
+  ISourceControlData,
+} from '@src/containers/ConfigStep/Form/schema';
+import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { fillBoardFieldsInformation } from '@test/containers/ConfigStep/Board.test';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { yupResolver } from '@hookform/resolvers/yup';
 import userEvent from '@testing-library/user-event';
 import ConfigStep from '@src/containers/ConfigStep';
 import { closeMuiModal } from '@test/testUtils';
+import { useForm } from 'react-hook-form';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
@@ -47,11 +60,40 @@ jest.mock('@src/context/config/configSlice', () => ({
 }));
 
 describe('ConfigStep', () => {
+  const defaultValues = useDefaultValues();
+  const basicInfoMethods = useForm<IBasicInfoData>({
+    defaultValues: defaultValues.basicInfoWithImport,
+    resolver: yupResolver(basicInfoSchema),
+    mode: 'onChange',
+  });
+
+  const boardConfigMethods = useForm<IBoardConfigData>({
+    defaultValues: defaultValues.boardConfigWithImport,
+    resolver: yupResolver(boardConfigSchema),
+    mode: 'onChange',
+  });
+
+  const pipelineToolMethods = useForm<IPipelineToolData>({
+    defaultValues: defaultValues.pipelineToolWithImport,
+    resolver: yupResolver(pipelineToolSchema),
+    mode: 'onChange',
+  });
+
+  const sourceControlMethods = useForm<ISourceControlData>({
+    defaultValues: defaultValues.sourceControlWithImport,
+    resolver: yupResolver(sourceControlSchema),
+    mode: 'onChange',
+  });
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <ConfigStep setIsDisableNextButton={jest.fn()} />
+        <ConfigStep
+          basicInfoMethods={basicInfoMethods}
+          boardConfigMethods={boardConfigMethods}
+          pipelineToolMethods={pipelineToolMethods}
+          sourceControlMethods={sourceControlMethods}
+        />
       </Provider>,
     );
   };
