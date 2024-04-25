@@ -67,7 +67,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const configData = useAppSelector(selectConfig);
   const timerIdRef = useRef<number>();
   const dateRanges: DateRange = get(configData, 'basic.dateRange', []);
-  const [result, setResult] = useState<IReportInfo[]>(
+  const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
     dateRanges.map((dateRange) => ({ ...initReportInfo, id: dateRange?.startDate || '' })),
   );
   let hasPollingStarted = false;
@@ -75,7 +75,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   function assemblePollingParams(res: PromiseSettledResult<ReportCallbackResponse>[]) {
     const resWithIds: MyPromiseSettledResult<ReportCallbackResponse>[] = res.map((item, index) => ({
       ...item,
-      id: result[index].id,
+      id: reportInfos[index].id,
     }));
 
     const fulfilledResponses: MyPromiseSettledResult<ReportCallbackResponse>[] = resWithIds.filter(
@@ -128,7 +128,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       return;
     }
     const pollingIds: string[] = pollingInfos.map((pollingInfo) => pollingInfo.id);
-    setResult((preInfos) => {
+    setReportInfos((preInfos) => {
       return preInfos.map((info) => {
         if (pollingIds.includes(info.id)) {
           info.timeout4Report = DEFAULT_MESSAGE;
@@ -146,8 +146,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       id: pollingInfos[index].id,
     }));
     const nextPollingInfos: Record<string, string>[] = [];
-    setResult((preResult) => {
-      return preResult.map((singleResult) => {
+    setReportInfos((preReportInfos) => {
+      return preReportInfos.map((singleResult) => {
         const matchedRes = pollingResponsesWithId.find(
           (singleRes) => singleRes.id === singleResult.id,
         ) as MyPromiseSettledResult<IPollingRes>;
@@ -186,22 +186,22 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   const resetTimeoutMessage = (metricTypes: string[]) => {
     if (metricTypes.length === 2) {
-      setResult((preResult) => {
-        return preResult.map((singleResult) => {
+      setReportInfos((preReportInfos) => {
+        return preReportInfos.map((singleResult) => {
           singleResult.timeout4Report = DEFAULT_MESSAGE;
           return singleResult;
         });
       });
     } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
-      setResult((preResult) => {
-        return preResult.map((singleResult) => {
+      setReportInfos((preReportInfos) => {
+        return preReportInfos.map((singleResult) => {
           singleResult.timeout4Board = DEFAULT_MESSAGE;
           return singleResult;
         });
       });
     } else {
-      setResult((preResult) => {
-        return preResult.map((singleResult) => {
+      setReportInfos((preReportInfos) => {
+        return preReportInfos.map((singleResult) => {
           singleResult.timeout4Dora = DEFAULT_MESSAGE;
           return singleResult;
         });
@@ -214,8 +214,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     metricTypes: METRIC_TYPES[],
   ) => {
     if (res.filter(({ status }) => status === 'rejected').length) {
-      setResult((preResult: IReportInfo[]) => {
-        return preResult.map((resInfo, index) => {
+      setReportInfos((preReportInfos: IReportInfo[]) => {
+        return preReportInfos.map((resInfo, index) => {
           const currentRes = res[index];
           if (currentRes.status === 'rejected') {
             const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
@@ -231,6 +231,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   return {
     startToRequestData,
     stopPollingReports,
-    result,
+    result: reportInfos,
   };
 };
