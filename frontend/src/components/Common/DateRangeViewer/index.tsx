@@ -10,18 +10,18 @@ import {
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
 import { DateRange } from '@src/context/config/configSlice';
 import { formatDate } from '@src/utils/util';
-import { theme } from '@src/theme';
 
 type Props = {
   dateRanges: DateRange;
+  selectedDateRange?: Record<string, string | null | boolean | undefined>;
+  changeDateRange?: (dateRange: Record<string, string | null | boolean | undefined>) => void;
   expandColor?: string;
   expandBackgroundColor?: string;
   disabledAll: boolean;
 };
 
-const DateRangeViewer = ({ dateRanges, disabledAll = true }: Props) => {
+const DateRangeViewer = ({ dateRanges, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
-  const [selectedDateRange, setSelectedDateRange] = useState(dateRanges[0]);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -31,7 +31,7 @@ const DateRangeViewer = ({ dateRanges, disabledAll = true }: Props) => {
   }, []);
 
   const handleClick = (index: number) => {
-    setSelectedDateRange(dateRanges[index]);
+    changeDateRange && changeDateRange(dateRanges[index]);
     setShowMoreDateRange(false);
   };
 
@@ -61,9 +61,9 @@ const DateRangeViewer = ({ dateRanges, disabledAll = true }: Props) => {
 
   return (
     <DateRangeContainer data-test-id={'date-range'} disabled={disabledAll}>
-      {formatDate(selectedDateRange.startDate as string)}
+      {formatDate((selectedDateRange || dateRanges[0]).startDate as string)}
       <StyledArrowForward />
-      {formatDate(selectedDateRange.endDate as string)}
+      {formatDate((selectedDateRange || dateRanges[0]).endDate as string)}
       <StyledCalendarToday />
       <StyledDivider orientation='vertical' />
       <StyledExpandMoreIcon aria-label='expandMore' onClick={() => setShowMoreDateRange(true)} />

@@ -47,15 +47,16 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
   const dateRanges: DateRange = get(configData, 'basic.dateRange', []);
-  const currentDateRange = dateRanges[0];
+  const [selectedDateRange, setSelectedDateRange] = useState<Record<string, string | null | boolean | undefined>>(
+    dateRanges[0],
+  );
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo);
 
   const { startToRequestData, result, stopPollingReports } = useGenerateReportEffect();
 
   useEffect(() => {
-    console.log(result, 123456, JSON.stringify(currentDateRange), currentDateRange);
-    setCurrentDataInfo(result.find((singleResult) => singleResult.id === currentDateRange.startDate)!);
-  }, [result, currentDateRange]);
+    setCurrentDataInfo(result.find((singleResult) => singleResult.id === selectedDateRange.startDate)!);
+  }, [result, selectedDateRange]);
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
@@ -418,7 +419,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <>
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
-          <DateRangeViewer dateRanges={descendingDateRanges} disabledAll={false} />
+          <DateRangeViewer
+            dateRanges={descendingDateRanges}
+            selectedDateRange={selectedDateRange}
+            changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
+            disabledAll={false}
+          />
         </StyledCalendarWrapper>
       )}
       {isSummaryPage
