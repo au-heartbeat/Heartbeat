@@ -355,6 +355,8 @@ export const BOARD_CONFIG_INFO_TITLE = {
   EMPTY: '',
 };
 
+export const PIPELINE_CONFIG_TITLE = 'Failed to get Pipeline configuration!';
+
 export const BOARD_CONFIG_INFO_ERROR = {
   FORBIDDEN: 'Please go back to the previous page and change your board token with correct access permission.',
   NOT_FOUND: 'Please go back to the previous page and check your board info!',

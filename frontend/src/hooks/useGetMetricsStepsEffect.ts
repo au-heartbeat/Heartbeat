@@ -46,7 +46,6 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
         return metricsClient.getSteps(param, organizationId, buildId, pipelineType, token);
       }),
     );
-    console.log(allStepsRes);
     const hasRejected = allStepsRes.some((stepInfo) => stepInfo.status === 'rejected');
     const hasFulfilled = allStepsRes.some((stepInfo) => stepInfo.status === 'fulfilled');
     if (!hasRejected) {
