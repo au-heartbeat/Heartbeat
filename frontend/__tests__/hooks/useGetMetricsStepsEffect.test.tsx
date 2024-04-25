@@ -68,7 +68,7 @@ describe('use get steps effect', () => {
     });
   });
 
-  it('should get the steps failed status partial 4xx from steps res', async () => {
+  it('should get the steps failed status when partial 4xx response from steps res', async () => {
     metricsClient.getSteps = jest
       .fn()
       .mockReturnValueOnce({
@@ -87,7 +87,7 @@ describe('use get steps effect', () => {
     expect(result.current.stepFailedStatus).toEqual(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX);
   });
 
-  it('should get the steps failed status partial timeout from steps res', async () => {
+  it('should get the steps failed status when partial timeout response from steps res', async () => {
     metricsClient.getSteps = jest
       .fn()
       .mockReturnValueOnce({
