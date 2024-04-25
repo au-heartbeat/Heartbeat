@@ -27,7 +27,7 @@ const boardInfoPartialFailedStatusMapping = (code: string | number) => {
     return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
   }
   const numericCode = code as number;
-  if (numericCode >= HttpStatusCode.BadRequest || numericCode < HttpStatusCode.InternalServerError) {
+  if (numericCode >= HttpStatusCode.BadRequest && numericCode < HttpStatusCode.InternalServerError) {
     return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
   }
   return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
