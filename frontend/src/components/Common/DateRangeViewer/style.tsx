@@ -1,10 +1,10 @@
 import { ArrowForward, CalendarToday, ExpandMore } from '@mui/icons-material';
+import { Divider, MenuItem } from '@mui/material';
 import { Z_INDEX } from '@src/constants/commons';
-import { Divider } from '@mui/material';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
-export const DateRangeContainer = styled.div({
+export const DateRangeContainer = styled('div')(({ disabled }) => ({
   position: 'relative',
   display: 'flex',
   justifyContent: 'flex-start',
@@ -15,7 +15,11 @@ export const DateRangeContainer = styled.div({
   width: 'fit-content',
   padding: '.75rem',
   fontSize: '.875rem',
-});
+
+  ...(disabled && {
+    color: theme.palette.text.disabled,
+  }),
+}));
 
 export const DateRangeExpandContainer = styled.div({
   position: 'absolute',
@@ -44,20 +48,21 @@ export const DateRangeExpandContainer = styled.div({
   },
 });
 
-interface SingleDateRangeProps {
-  backgroundColor: string;
-  color: string;
-}
-
-export const SingleDateRange = styled.div<SingleDateRangeProps>((props) => ({
+export const SingleDateRange = styled('div')(({ disabled }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: props.backgroundColor,
-  color: props.color,
+  color: theme.palette.text.primary,
   fontSize: '.875rem',
   padding: '0.5rem',
+  cursor: 'pointer',
+
+  ...(disabled && {
+    color: theme.palette.text.disabled,
+    cursor: 'default',
+  }),
 }));
+
 export const StyledArrowForward = styled(ArrowForward)({
   margin: '0 .5rem',
   fontSize: '0.875rem',

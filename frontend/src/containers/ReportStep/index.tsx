@@ -404,7 +404,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <>
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
-          <DateRangeViewer dateRanges={descendingDateRanges} />
+          <DateRangeViewer dateRanges={descendingDateRanges} disabledAll={false} />
         </StyledCalendarWrapper>
       )}
       {isSummaryPage

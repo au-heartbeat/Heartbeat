@@ -99,11 +99,7 @@ const MetricsStep = () => {
     <>
       {startDate && endDate && (
         <MetricSelectionHeader>
-          <DateRangeViewer
-            dateRanges={descendingSortedDateRanges}
-            expandColor={theme.palette.text.disabled}
-            expandBackgroundColor={theme.palette.secondary.dark}
-          />
+          <DateRangeViewer dateRanges={descendingSortedDateRanges} />
         </MetricSelectionHeader>
       )}
 

@@ -16,13 +16,10 @@ type Props = {
   dateRanges: DateRange;
   expandColor?: string;
   expandBackgroundColor?: string;
+  disabledAll: boolean;
 };
 
-const DateRangeViewer = ({
-  dateRanges,
-  expandColor = theme.palette.text.disabled,
-  expandBackgroundColor = theme.palette.secondary.dark,
-}: Props) => {
+const DateRangeViewer = ({ dateRanges, disabledAll = true }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState(dateRanges[0]);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
@@ -34,9 +31,9 @@ const DateRangeViewer = ({
   }, []);
 
   const handleClick = (index: number) => {
-    setSelectedDateRange(dateRanges[index])
+    setSelectedDateRange(dateRanges[index]);
     setShowMoreDateRange(false);
-  }
+  };
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -49,13 +46,9 @@ const DateRangeViewer = ({
     return (
       <DateRangeExpandContainer ref={ref}>
         {dateRanges.map((dateRange, index) => {
+          const disabled = disabledAll || dateRange.disabled;
           return (
-            <SingleDateRange
-              onClick={() => handleClick(index)}
-              key={index}
-              color={expandColor}
-              backgroundColor={expandBackgroundColor}
-            >
+            <SingleDateRange disabled={disabled} onClick={() => handleClick(index)} key={index}>
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}
@@ -67,7 +60,7 @@ const DateRangeViewer = ({
   });
 
   return (
-    <DateRangeContainer data-test-id={'date-range'}>
+    <DateRangeContainer data-test-id={'date-range'} disabled={disabledAll}>
       {formatDate(selectedDateRange.startDate as string)}
       <StyledArrowForward />
       {formatDate(selectedDateRange.endDate as string)}
