@@ -1,97 +1,177 @@
+import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { IPollingRes, reportClient } from '@src/clients/report/ReportClient';
+import { DateRange, selectConfig } from '@src/context/config/configSlice';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
-import { reportClient } from '@src/clients/report/ReportClient';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { METRIC_TYPES } from '@src/constants/commons';
+import { useAppSelector } from '@src/hooks/index';
 import { useRef, useState } from 'react';
+import get from 'lodash/get';
+
+export type MyPromiseSettledResult<T> = PromiseSettledResult<T> & {
+  id: string;
+};
 
 export interface useGenerateReportEffectInterface {
   startToRequestData: (params: ReportRequestDTO) => void;
   stopPollingReports: () => void;
+  result: IReportInfo[];
+}
+
+interface IReportError {
   timeout4Board: string;
   timeout4Dora: string;
   timeout4Report: string;
   generalError4Board: string;
   generalError4Dora: string;
   generalError4Report: string;
+}
+
+export interface IReportInfo extends IReportError {
+  id: string;
   reportData: ReportResponseDTO | undefined;
 }
 
+export const initReportInfo: IReportInfo = {
+  id: '',
+  timeout4Board: '',
+  timeout4Dora: '',
+  timeout4Report: '',
+  generalError4Board: '',
+  generalError4Dora: '',
+  generalError4Report: '',
+  reportData: undefined,
+};
+
+const timeoutErrorKey = {
+  [METRIC_TYPES.BOARD]: 'timeout4Board',
+  [METRIC_TYPES.DORA]: 'timeout4Dora',
+  [METRIC_TYPES.ALL]: 'timeout4Report',
+};
+
+const generalErrorKey = {
+  [METRIC_TYPES.BOARD]: 'generalError4Board',
+  [METRIC_TYPES.DORA]: 'generalError4Dora',
+  [METRIC_TYPES.ALL]: 'generalError4Report',
+};
+
+const getErrorKey = (error: Error, source: METRIC_TYPES): string => {
+  return error instanceof TimeoutError ? timeoutErrorKey[source] : generalErrorKey[source];
+};
+
 export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const reportPath = '/reports';
-  const [timeout4Board, setTimeout4Board] = useState(DEFAULT_MESSAGE);
-  const [timeout4Dora, setTimeout4Dora] = useState(DEFAULT_MESSAGE);
-  const [timeout4Report, setTimeout4Report] = useState(DEFAULT_MESSAGE);
-  const [generalError4Board, setGeneralError4Board] = useState(DEFAULT_MESSAGE);
-  const [generalError4Dora, setGeneralError4Dora] = useState(DEFAULT_MESSAGE);
-  const [generalError4Report, setGeneralError4Report] = useState(DEFAULT_MESSAGE);
-  const [reportData, setReportData] = useState<ReportResponseDTO | undefined>();
+  const configData = useAppSelector(selectConfig);
   const timerIdRef = useRef<number>();
+  const dateRanges: DateRange = get(configData, 'basic.dateRange', []);
+  const [result, setResult] = useState<IReportInfo[]>(
+    dateRanges.map((dateRange) => ({ ...initReportInfo, id: dateRange?.startDate || '' })),
+  );
   let hasPollingStarted = false;
 
-  const startToRequestData = (params: ReportRequestDTO) => {
+  function assemblePollingParams(res: PromiseSettledResult<ReportCallbackResponse>[]) {
+    const resWithIds: MyPromiseSettledResult<ReportCallbackResponse>[] = res.map((item, index) => ({
+      ...item,
+      id: result[index].id,
+    }));
+
+    const fulfilledResponses: MyPromiseSettledResult<ReportCallbackResponse>[] = resWithIds.filter(
+      ({ status }) => status === 'fulfilled',
+    );
+
+    const pollingInfos: Record<string, string>[] = fulfilledResponses.map((v) => {
+      return { callbackUrl: (v as PromiseFulfilledResult<ReportCallbackResponse>).value.callbackUrl, id: v.id };
+    });
+
+    const pollingInterval = (fulfilledResponses[0] as PromiseFulfilledResult<ReportCallbackResponse>).value.interval;
+    return { pollingInfos, pollingInterval };
+  }
+
+  const startToRequestData = async (params: ReportRequestDTO) => {
     const { metricTypes } = params;
     resetTimeoutMessage(metricTypes);
-    reportClient
-      .retrieveByUrl(params, reportPath)
-      .then((res) => {
-        if (hasPollingStarted) return;
-        hasPollingStarted = true;
-        pollingReport(res.response.callbackUrl, res.response.interval);
-      })
-      .catch((e) => {
-        const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
-        handleError(e, source);
-      });
+    const res: PromiseSettledResult<ReportCallbackResponse>[] = await Promise.allSettled(
+      dateRanges.map(({ startDate, endDate }) =>
+        reportClient.retrieveByUrl(
+          {
+            ...params,
+            startTime: formatDateToTimestampString(startDate!),
+            endTime: formatDateToTimestampString(endDate!),
+          },
+          reportPath,
+        ),
+      ),
+    );
+
+    updateResultAfterFetchReport(res, metricTypes);
+
+    if (hasPollingStarted) return;
+    hasPollingStarted = true;
+
+    const { pollingInfos, pollingInterval } = assemblePollingParams(res);
+
+    await pollingReport({ pollingInfos, interval: pollingInterval });
   };
 
-  const resetTimeoutMessage = (metricTypes: string[]) => {
-    if (metricTypes.length === 2) {
-      setTimeout4Report(DEFAULT_MESSAGE);
-    } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
-      setTimeout4Board(DEFAULT_MESSAGE);
-    } else {
-      setTimeout4Dora(DEFAULT_MESSAGE);
+  const pollingReport = async ({
+    pollingInfos,
+    interval,
+  }: {
+    pollingInfos: Record<string, string>[];
+    interval: number;
+  }) => {
+    if (pollingInfos.length === 0) {
+      stopPollingReports();
+      return;
     }
-  };
-
-  const handleTimeoutError = {
-    [METRIC_TYPES.BOARD]: setTimeout4Board,
-    [METRIC_TYPES.DORA]: setTimeout4Dora,
-    [METRIC_TYPES.ALL]: setTimeout4Report,
-  };
-
-  const handleGeneralError = {
-    [METRIC_TYPES.BOARD]: setGeneralError4Board,
-    [METRIC_TYPES.DORA]: setGeneralError4Dora,
-    [METRIC_TYPES.ALL]: setGeneralError4Report,
-  };
-
-  const handleError = (error: Error, source: METRIC_TYPES) => {
-    return error instanceof TimeoutError
-      ? handleTimeoutError[source](DATA_LOADING_FAILED)
-      : handleGeneralError[source](DATA_LOADING_FAILED);
-  };
-
-  const pollingReport = (url: string, interval: number) => {
-    setTimeout4Report(DEFAULT_MESSAGE);
-    reportClient
-      .polling(url)
-      .then((res: { status: number; response: ReportResponseDTO }) => {
-        const response = res.response;
-        handleAndUpdateData(response);
-        if (response.allMetricsCompleted || !hasPollingStarted) {
-          stopPollingReports();
-        } else {
-          timerIdRef.current = window.setTimeout(() => pollingReport(url, interval), interval * 1000);
+    const pollingIds: string[] = pollingInfos.map((pollingInfo) => pollingInfo.id);
+    setResult((preInfos) => {
+      return preInfos.map((info) => {
+        if (pollingIds.includes(info.id)) {
+          info.timeout4Report = DEFAULT_MESSAGE;
         }
-      })
-      .catch((e) => {
-        handleError(e, METRIC_TYPES.ALL);
-        stopPollingReports();
+        return info;
       });
+    });
+
+    const pollingQueue: Promise<IPollingRes>[] = pollingInfos.map((pollingInfo) =>
+      reportClient.polling(pollingInfo.callbackUrl),
+    );
+    const pollingResponses = await Promise.allSettled(pollingQueue);
+    const pollingResponsesWithId: MyPromiseSettledResult<IPollingRes>[] = pollingResponses.map((singleRes, index) => ({
+      ...singleRes,
+      id: pollingInfos[index].id,
+    }));
+    const nextPollingInfos: Record<string, string>[] = [];
+    setResult((preResult) => {
+      return preResult.map((singleResult) => {
+        const matchedRes = pollingResponsesWithId.find(
+          (singleRes) => singleRes.id === singleResult.id,
+        ) as MyPromiseSettledResult<IPollingRes>;
+
+        if (matchedRes.status === 'fulfilled') {
+          const { response } = matchedRes.value;
+          singleResult.reportData = assembleReportData(response);
+          if (response.allMetricsCompleted || !hasPollingStarted) {
+            // todo 这一条不再polling
+          } else {
+            // todo 继续polling
+            nextPollingInfos.push(pollingInfos.find((pollingInfo) => pollingInfo.id === matchedRes.id)!);
+          }
+        } else {
+          const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
+          singleResult[errorKey] = DATA_LOADING_FAILED;
+          // todo 这一条不再polling
+        }
+        return singleResult;
+      });
+    });
+    timerIdRef.current = window.setTimeout(() => {
+      pollingReport({ pollingInfos: nextPollingInfos, interval });
+    }, interval * 1000);
   };
 
   const stopPollingReports = () => {
@@ -99,20 +179,58 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     hasPollingStarted = false;
   };
 
-  const handleAndUpdateData = (response: ReportResponseDTO) => {
+  const assembleReportData = (response: ReportResponseDTO) => {
     const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
-    setReportData({ ...response, exportValidityTime: exportValidityTime });
+    return { ...response, exportValidityTime: exportValidityTime };
+  };
+
+  const resetTimeoutMessage = (metricTypes: string[]) => {
+    if (metricTypes.length === 2) {
+      setResult((preResult) => {
+        return preResult.map((singleResult) => {
+          singleResult.timeout4Report = DEFAULT_MESSAGE;
+          return singleResult;
+        });
+      });
+    } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
+      setResult((preResult) => {
+        return preResult.map((singleResult) => {
+          singleResult.timeout4Board = DEFAULT_MESSAGE;
+          return singleResult;
+        });
+      });
+    } else {
+      setResult((preResult) => {
+        return preResult.map((singleResult) => {
+          singleResult.timeout4Dora = DEFAULT_MESSAGE;
+          return singleResult;
+        });
+      });
+    }
+  };
+
+  const updateResultAfterFetchReport = (
+    res: PromiseSettledResult<ReportCallbackResponse>[],
+    metricTypes: METRIC_TYPES[],
+  ) => {
+    if (res.filter(({ status }) => status === 'rejected').length) {
+      setResult((preResult: IReportInfo[]) => {
+        return preResult.map((resInfo, index) => {
+          const currentRes = res[index];
+          if (currentRes.status === 'rejected') {
+            const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
+            const errorKey = getErrorKey(currentRes.reason, source) as keyof IReportError;
+            resInfo[errorKey] = METRIC_TYPES.ALL;
+          }
+          return resInfo;
+        });
+      });
+    }
   };
 
   return {
     startToRequestData,
     stopPollingReports,
-    reportData,
-    timeout4Board,
-    timeout4Dora,
-    timeout4Report,
-    generalError4Board,
-    generalError4Dora,
-    generalError4Report,
+    result,
   };
 };
