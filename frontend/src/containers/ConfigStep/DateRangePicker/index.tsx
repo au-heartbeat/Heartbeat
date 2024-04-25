@@ -11,9 +11,7 @@ import { useMemo, useState } from 'react';
 export const DateRangePickerSection = () => {
   const dateRangeGroup = useAppSelector(selectDateRange);
   const dateRangeGroupSortType = useAppSelector(selectDateRangeSortType);
-  const [sortType, setSortType] = useState<SortType>(
-    dateRangeGroupSortType ? dateRangeGroupSortType : SortType.DEFAULT,
-  );
+  const [sortType, setSortType] = useState<SortType>(dateRangeGroupSortType);
 
   const [hasError, setHasError] = useState(false);
   const isDateRangeValid = useMemo(() => {
