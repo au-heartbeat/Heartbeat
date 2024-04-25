@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateValidationError } from '@mui/x-date-pickers';
+import { useFormContext } from 'react-hook-form';
 import { Nullable } from '@src/utils/types';
 import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
@@ -39,6 +40,7 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
   const [sortedDateRangeList, setSortedDateRangeList] = useState<SortedDateRangeType[]>(
     dateRangeGroup.map(fillDateRangeGroup),
   );
+  const { setValue } = useFormContext();
 
   useEffect(() => {
     const rangeListWithErrors = sortedDateRangeList.filter(
@@ -60,6 +62,11 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
   const addRangeHandler = () => {
     const result = [...sortedDateRangeList, { startDate: null, endDate: null }];
     setSortedDateRangeList(result.map(fillDateRangeGroup));
+    setValue(
+      `dateRange`,
+      result.map(({ startDate, endDate }) => ({ startDate, endDate })),
+      { shouldValidate: true },
+    );
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
   };
 
@@ -86,6 +93,11 @@ export const DateRangePickerGroup = ({ sortType, onError }: Props) => {
   const handleRemove = (index: number) => {
     const result = [...sortedDateRangeList];
     remove(result, ({ sortIndex }) => sortIndex === index);
+    setValue(
+      `dateRange`,
+      result.map(({ startDate, endDate }) => ({ startDate, endDate })),
+      { shouldValidate: true },
+    );
     setSortedDateRangeList(result);
     dispatchUpdateConfig();
     dispatch(updateDateRange(result.map(({ startDate, endDate }) => ({ startDate, endDate }))));
