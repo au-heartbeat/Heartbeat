@@ -33,11 +33,10 @@ let boardInfoFailStatus = 1;
 jest.mock('@src/hooks/useGetBoardInfo', () => ({
   ...jest.requireActual('@src/hooks/useGetBoardInfo'),
 
-
-  useGetBoardInfoEffect: jest.fn().mockImplementation( () =>{
+  useGetBoardInfoEffect: jest.fn().mockImplementation(() => {
     return {
       boardInfoFailedStatus: boardInfoFailStatus,
-    }
+    };
   }),
 }));
 
@@ -54,7 +53,7 @@ describe('MetricsStep', () => {
   });
 
   it('should show 4xx popup when call get partial 4xx error', async () => {
-    boardInfoFailStatus = 1
+    boardInfoFailStatus = 1;
     server.use(
       rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
         return res.once(ctx.status(HttpStatusCode.BadRequest));
