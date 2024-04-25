@@ -28,10 +28,16 @@ jest.mock('@src/context/notification/NotificationSlice', () => ({
   addNotification: jest.fn().mockReturnValue({ type: 'ADD_NEW_NOTIFICATION' }),
 }));
 
+let boardInfoFailStatus = 1;
+
 jest.mock('@src/hooks/useGetBoardInfo', () => ({
   ...jest.requireActual('@src/hooks/useGetBoardInfo'),
-  useGetBoardInfoEffect: jest.fn().mockReturnValue({
-    boardInfoFailedStatus: 1,
+
+
+  useGetBoardInfoEffect: jest.fn().mockImplementation( () =>{
+    return {
+      boardInfoFailedStatus: boardInfoFailStatus,
+    }
   }),
 }));
 
@@ -48,6 +54,22 @@ describe('MetricsStep', () => {
   });
 
   it('should show 4xx popup when call get partial 4xx error', async () => {
+    boardInfoFailStatus = 1
+    server.use(
+      rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
+        return res.once(ctx.status(HttpStatusCode.BadRequest));
+      }),
+    );
+
+    setup();
+
+    await waitFor(() => {
+      expect(addNotification).toHaveBeenCalled();
+    });
+  });
+
+  it('should show no cards popup when call get partial no cards error', async () => {
+    boardInfoFailStatus = 3;
     server.use(
       rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
         return res.once(ctx.status(HttpStatusCode.BadRequest));
