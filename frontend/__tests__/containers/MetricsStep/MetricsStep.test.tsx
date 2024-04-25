@@ -53,19 +53,6 @@ const setup = () =>
     </Provider>,
   );
 
-// const { getBoardInfo, isLoading, errorMessage, boardInfoFailedStatus } = useGetBoardInfoEffect();
-
-// jest.mock('@src/hooks/useGetBoardInfo', () => ({
-//   ...jest.requireActual('@src/hooks/useGetBoardInfo'),
-//
-//   useGetBoardInfoEffect: jest.fn().mockReturnValue({
-//     getBoardInfo: result.current.getBoardInfo,
-//     isLoading: useGetBoardInfoEffect().isLoading,
-//     errorMessage: useGetBoardInfoEffect().errorMessage,
-//     boardInfoFailedStatus: 1,
-//   }),
-// }));
-
 describe('MetricsStep', () => {
   beforeAll(() => server.listen());
   afterAll(() => server.close());

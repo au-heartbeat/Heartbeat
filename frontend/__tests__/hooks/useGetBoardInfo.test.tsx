@@ -154,7 +154,6 @@ describe('use get board info', () => {
     );
   });
 
-  // TODO: here
   it('should get data when status is OK', async () => {
     server.use(
       rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
