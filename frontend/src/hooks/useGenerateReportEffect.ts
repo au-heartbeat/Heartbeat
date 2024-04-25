@@ -229,9 +229,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const updateReportInfosAfterPolling = (pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[]) => {
     setReportInfos((preReportInfos) => {
       return preReportInfos.map((singleResult) => {
-        const matchedRes = pollingResponsesWithId.find(
-          (singleRes) => singleRes.id === singleResult.id,
-        ) as PromiseSettledResultWithId<IPollingRes>;
+        const matchedRes = pollingResponsesWithId.find((singleRes) => singleRes.id === singleResult.id);
+        if (!matchedRes) return singleResult;
 
         if (matchedRes.status === 'fulfilled') {
           const { response } = matchedRes.value;
