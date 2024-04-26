@@ -19,40 +19,50 @@ export interface useGenerateReportEffectInterface {
   startToRequestData: (params: ReportRequestDTO) => void;
   stopPollingReports: () => void;
   reportInfos: IReportInfo[];
+  shutReportInfosErrorStatus: (id: string, errorKey: string) => void;
+  shutBoardMetricsError: (id: string) => void;
+  shutPipelineMetricsError: (id: string) => void;
+  shutSourceControlMetricsError: (id: string) => void;
 }
 
 interface IReportError {
-  timeout4Board: string;
-  timeout4Dora: string;
-  timeout4Report: string;
-  generalError4Board: string;
-  generalError4Dora: string;
-  generalError4Report: string;
+  timeout4Board: { message: string; shouldShow: boolean };
+  timeout4Dora: { message: string; shouldShow: boolean };
+  timeout4Report: { message: string; shouldShow: boolean };
+  generalError4Board: { message: string; shouldShow: boolean };
+  generalError4Dora: { message: string; shouldShow: boolean };
+  generalError4Report: { message: string; shouldShow: boolean };
 }
 
 export interface IReportInfo extends IReportError {
   id: string;
   reportData: ReportResponseDTO | undefined;
+  shouldShowBoardMetricsError: boolean;
+  shouldShowPipelineMetricsError: boolean;
+  shouldShowSourceControlMetricsError: boolean;
 }
 
 export const initReportInfo: IReportInfo = {
   id: '',
-  timeout4Board: DEFAULT_MESSAGE,
-  timeout4Dora: DEFAULT_MESSAGE,
-  timeout4Report: DEFAULT_MESSAGE,
-  generalError4Board: DEFAULT_MESSAGE,
-  generalError4Dora: DEFAULT_MESSAGE,
-  generalError4Report: DEFAULT_MESSAGE,
+  timeout4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+  timeout4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+  timeout4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+  generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+  generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+  generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+  shouldShowBoardMetricsError: true,
+  shouldShowPipelineMetricsError: true,
+  shouldShowSourceControlMetricsError: true,
   reportData: undefined,
 };
 
-const timeoutErrorKey = {
+export const timeoutErrorKey = {
   [METRIC_TYPES.BOARD]: 'timeout4Board',
   [METRIC_TYPES.DORA]: 'timeout4Dora',
   [METRIC_TYPES.ALL]: 'timeout4Report',
 };
 
-const generalErrorKey = {
+export const generalErrorKey = {
   [METRIC_TYPES.BOARD]: 'generalError4Board',
   [METRIC_TYPES.DORA]: 'generalError4Dora',
   [METRIC_TYPES.ALL]: 'generalError4Report',
@@ -131,7 +141,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     hasPollingStarted = false;
   };
 
-  const assembleReportData = (response: ReportResponseDTO) => {
+  const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
     const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
     return { ...response, exportValidityTime: exportValidityTime };
   };
@@ -140,21 +150,21 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     if (metricTypes.length === 2) {
       setReportInfos((preReportInfos) => {
         return preReportInfos.map((reportInfo) => {
-          reportInfo.timeout4Report = DEFAULT_MESSAGE;
+          reportInfo.timeout4Report = { message: DEFAULT_MESSAGE, shouldShow: true };
           return reportInfo;
         });
       });
     } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
       setReportInfos((preReportInfos) => {
         return preReportInfos.map((reportInfo) => {
-          reportInfo.timeout4Board = DEFAULT_MESSAGE;
+          reportInfo.timeout4Board = { message: DEFAULT_MESSAGE, shouldShow: true };
           return reportInfo;
         });
       });
     } else {
       setReportInfos((preReportInfos) => {
         return preReportInfos.map((reportInfo) => {
-          reportInfo.timeout4Dora = DEFAULT_MESSAGE;
+          reportInfo.timeout4Dora = { message: DEFAULT_MESSAGE, shouldShow: true };
           return reportInfo;
         });
       });
@@ -173,7 +183,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         if (currentRes.status === 'rejected') {
           const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
           const errorKey = getErrorKey(currentRes.reason, source) as keyof IReportError;
-          resInfo[errorKey] = DATA_LOADING_FAILED;
+          resInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
         }
         return resInfo;
       });
@@ -235,9 +245,12 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         if (matchedRes.status === 'fulfilled') {
           const { response } = matchedRes.value;
           reportInfo.reportData = assembleReportData(response);
+          reportInfo.shouldShowBoardMetricsError = true;
+          reportInfo.shouldShowPipelineMetricsError = true;
+          reportInfo.shouldShowSourceControlMetricsError = true;
         } else {
           const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
-          reportInfo[errorKey] = DATA_LOADING_FAILED;
+          reportInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
         }
         return reportInfo;
       });
@@ -248,9 +261,54 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     setReportInfos((preInfos) => {
       return preInfos.map((info) => {
         if (pollingIds.includes(info.id)) {
-          info.timeout4Report = DEFAULT_MESSAGE;
+          info.timeout4Report = { message: DEFAULT_MESSAGE, shouldShow: true };
         }
         return info;
+      });
+    });
+  };
+
+  const shutReportInfosErrorStatus = (id: string, errorKey: string) => {
+    setReportInfos((preReportInfos) => {
+      return preReportInfos.map((reportInfo) => {
+        if (reportInfo.id === id) {
+          const key = errorKey as keyof IReportError;
+          reportInfo[key].shouldShow = false;
+        }
+        return reportInfo;
+      });
+    });
+  };
+
+  const shutBoardMetricsError = (id: string) => {
+    setReportInfos((preReportInfos) => {
+      return preReportInfos.map((reportInfo) => {
+        if (reportInfo.id === id) {
+          reportInfo.shouldShowBoardMetricsError = false;
+        }
+        return reportInfo;
+      });
+    });
+  };
+
+  const shutPipelineMetricsError = (id: string) => {
+    setReportInfos((preReportInfos) => {
+      return preReportInfos.map((reportInfo) => {
+        if (reportInfo.id === id) {
+          reportInfo.shouldShowPipelineMetricsError = false;
+        }
+        return reportInfo;
+      });
+    });
+  };
+
+  const shutSourceControlMetricsError = (id: string) => {
+    setReportInfos((preReportInfos) => {
+      return preReportInfos.map((reportInfo) => {
+        if (reportInfo.id === id) {
+          reportInfo.shouldShowSourceControlMetricsError = false;
+        }
+        return reportInfo;
       });
     });
   };
@@ -259,5 +317,9 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     startToRequestData,
     stopPollingReports,
     reportInfos,
+    shutReportInfosErrorStatus,
+    shutBoardMetricsError,
+    shutPipelineMetricsError,
+    shutSourceControlMetricsError,
   };
 };

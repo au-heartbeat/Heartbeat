@@ -15,6 +15,13 @@ import {
   selectConfig,
 } from '@src/context/config/configSlice';
 import {
+  generalErrorKey,
+  initReportInfo,
+  IReportInfo,
+  timeoutErrorKey,
+  useGenerateReportEffect,
+} from '@src/hooks/useGenerateReportEffect';
+import {
   BOARD_METRICS,
   CALENDAR,
   DORA_METRICS,
@@ -23,7 +30,6 @@ import {
   REQUIRED_DATA,
 } from '@src/constants/resources';
 import { addNotification, closeAllNotifications, Notification } from '@src/context/notification/NotificationSlice';
-import { initReportInfo, IReportInfo, useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
@@ -52,7 +58,15 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo);
 
-  const { startToRequestData, reportInfos, stopPollingReports } = useGenerateReportEffect();
+  const {
+    startToRequestData,
+    reportInfos,
+    stopPollingReports,
+    shutReportInfosErrorStatus,
+    shutBoardMetricsError,
+    shutPipelineMetricsError,
+    shutSourceControlMetricsError,
+  } = useGenerateReportEffect();
 
   useEffect(() => {
     setCurrentDataInfo(reportInfos.find((singleResult) => singleResult.id === selectedDateRange.startDate)!);
@@ -95,10 +109,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       return `Failed to get Jira info, status: ${currentDataInfo.reportData.reportMetricsError.boardMetricsError.status}`;
     }
     return (
-      currentDataInfo.timeout4Board ||
-      currentDataInfo.timeout4Report ||
-      currentDataInfo.generalError4Board ||
-      currentDataInfo.generalError4Report
+      currentDataInfo.timeout4Board.message ||
+      currentDataInfo.timeout4Report.message ||
+      currentDataInfo.generalError4Board.message ||
+      currentDataInfo.generalError4Report.message
     );
   };
 
@@ -271,6 +285,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [dispatch, notifications4SummaryPage, isSummaryPage]);
 
   useEffect(() => {
+    if (!currentDataInfo.shouldShowBoardMetricsError) return;
     if (currentDataInfo.reportData?.reportMetricsError.boardMetricsError) {
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -280,9 +295,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
     }
+    shutBoardMetricsError(selectedDateRange.startDate as string);
   }, [currentDataInfo.reportData?.reportMetricsError.boardMetricsError]);
 
   useEffect(() => {
+    if (!currentDataInfo.shouldShowPipelineMetricsError) return;
     if (currentDataInfo.reportData?.reportMetricsError.pipelineMetricsError) {
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -292,9 +309,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
     }
+    shutPipelineMetricsError(selectedDateRange.startDate as string);
   }, [currentDataInfo.reportData?.reportMetricsError.pipelineMetricsError]);
 
   useEffect(() => {
+    if (!currentDataInfo.shouldShowSourceControlMetricsError) return;
     if (currentDataInfo.reportData?.reportMetricsError.sourceControlMetricsError) {
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -304,9 +323,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
     }
+    shutSourceControlMetricsError(selectedDateRange.startDate as string);
   }, [currentDataInfo.reportData?.reportMetricsError.sourceControlMetricsError]);
 
   useEffect(() => {
+    if (!currentDataInfo.timeout4Report.shouldShow) return;
     currentDataInfo.timeout4Report &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -315,9 +336,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           type: 'error',
         },
       ]);
+    shutReportInfosErrorStatus(selectedDateRange.startDate as string, timeoutErrorKey[METRIC_TYPES.ALL]);
   }, [currentDataInfo.timeout4Report]);
 
   useEffect(() => {
+    if (!currentDataInfo.timeout4Board.shouldShow) return;
     currentDataInfo.timeout4Board &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -326,9 +349,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           type: 'error',
         },
       ]);
+    shutReportInfosErrorStatus(selectedDateRange.startDate as string, timeoutErrorKey[METRIC_TYPES.BOARD]);
   }, [currentDataInfo.timeout4Board]);
 
   useEffect(() => {
+    if (!currentDataInfo.timeout4Dora.shouldShow) return;
     currentDataInfo.timeout4Dora &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -337,9 +362,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           type: 'error',
         },
       ]);
+    shutReportInfosErrorStatus(selectedDateRange.startDate as string, timeoutErrorKey[METRIC_TYPES.DORA]);
   }, [currentDataInfo.timeout4Dora]);
 
   useEffect(() => {
+    if (!currentDataInfo.generalError4Board.shouldShow) return;
     currentDataInfo.generalError4Board &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -348,9 +375,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           type: 'error',
         },
       ]);
+    shutReportInfosErrorStatus(selectedDateRange.startDate as string, generalErrorKey[METRIC_TYPES.BOARD]);
   }, [currentDataInfo.generalError4Board]);
 
   useEffect(() => {
+    if (!currentDataInfo.generalError4Dora.shouldShow) return;
     currentDataInfo.generalError4Dora &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -359,9 +388,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           type: 'error',
         },
       ]);
+    shutReportInfosErrorStatus(selectedDateRange.startDate as string, generalErrorKey[METRIC_TYPES.DORA]);
   }, [currentDataInfo.generalError4Dora]);
 
   useEffect(() => {
+    if (!currentDataInfo.generalError4Report.shouldShow) return;
     currentDataInfo.generalError4Report &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
@@ -370,6 +401,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           type: 'error',
         },
       ]);
+    shutReportInfosErrorStatus(selectedDateRange.startDate as string, generalErrorKey[METRIC_TYPES.ALL]);
   }, [currentDataInfo.generalError4Report]);
 
   useEffect(() => {
@@ -393,10 +425,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={currentDataInfo.reportData}
           errorMessage={
-            currentDataInfo.timeout4Dora ||
-            currentDataInfo.timeout4Report ||
-            currentDataInfo.generalError4Dora ||
-            currentDataInfo.generalError4Report
+            currentDataInfo.timeout4Dora.message ||
+            currentDataInfo.timeout4Report.message ||
+            currentDataInfo.generalError4Dora.message ||
+            currentDataInfo.generalError4Report.message
           }
         />
       )}
