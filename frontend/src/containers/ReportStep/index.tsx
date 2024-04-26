@@ -52,11 +52,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo);
 
-  const { startToRequestData, result, stopPollingReports } = useGenerateReportEffect();
+  const { startToRequestData, reportInfos, stopPollingReports } = useGenerateReportEffect();
 
   useEffect(() => {
-    setCurrentDataInfo(result.find((singleResult) => singleResult.id === selectedDateRange.startDate)!);
-  }, [result, selectedDateRange]);
+    setCurrentDataInfo(reportInfos.find((singleResult) => singleResult.id === selectedDateRange.startDate)!);
+  }, [reportInfos, selectedDateRange]);
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
