@@ -4,11 +4,7 @@ import { Divider } from '@mui/material';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
-interface DateRangeContainerProps {
-  disabled: boolean;
-}
-
-export const DateRangeContainer = styled('div')(({ disabled }: DateRangeContainerProps) => ({
+export const DateRangeContainer = styled('div')(({ color }) => ({
   position: 'relative',
   display: 'flex',
   justifyContent: 'flex-start',
@@ -19,10 +15,7 @@ export const DateRangeContainer = styled('div')(({ disabled }: DateRangeContaine
   width: 'fit-content',
   padding: '.75rem',
   fontSize: '.875rem',
-
-  ...(disabled && {
-    color: theme.palette.text.disabled,
-  }),
+  color: color,
 }));
 
 export const DateRangeExpandContainer = styled.div({

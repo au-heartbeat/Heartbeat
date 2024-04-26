@@ -10,6 +10,7 @@ import {
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
 import { DateRange } from '@src/context/config/configSlice';
 import { formatDate } from '@src/utils/util';
+import { theme } from '@src/theme';
 
 type Props = {
   dateRanges: DateRange;
@@ -60,7 +61,10 @@ const DateRangeViewer = ({ dateRanges, changeDateRange, selectedDateRange, disab
   });
 
   return (
-    <DateRangeContainer data-test-id={'date-range'} aria-disabled={disabledAll}>
+    <DateRangeContainer
+      data-test-id={'date-range'}
+      color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
+    >
       {formatDate((selectedDateRange || dateRanges[0]).startDate as string)}
       <StyledArrowForward />
       {formatDate((selectedDateRange || dateRanges[0]).endDate as string)}
