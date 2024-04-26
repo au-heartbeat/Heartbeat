@@ -23,6 +23,7 @@ export interface useGenerateReportEffectInterface {
   shutBoardMetricsError: (id: string) => void;
   shutPipelineMetricsError: (id: string) => void;
   shutSourceControlMetricsError: (id: string) => void;
+  getHasPollingStarted: () => boolean;
 }
 
 interface IReportError {
@@ -80,7 +81,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
     dateRanges.map((dateRange) => ({ ...initReportInfo, id: dateRange?.startDate || '' })),
   );
-  let hasPollingStarted = false;
+  const hasPollingStarted = useRef(false);
 
   const startToRequestData = async (params: ReportRequestDTO) => {
     const { metricTypes } = params;
@@ -100,8 +101,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
     updateErrorAfterFetchReport(res, metricTypes);
 
-    if (hasPollingStarted) return;
-    hasPollingStarted = true;
+    if (hasPollingStarted.current) return;
+    hasPollingStarted.current = true;
 
     const { pollingInfos, pollingInterval } = assemblePollingParams(res);
 
@@ -138,7 +139,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   const stopPollingReports = () => {
     window.clearTimeout(timerIdRef.current);
-    hasPollingStarted = false;
+    hasPollingStarted.current = false;
   };
 
   const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
@@ -204,7 +205,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
       return { callbackUrl: (v as PromiseFulfilledResult<ReportCallbackResponse>).value.callbackUrl, id: v.id };
     });
 
-    const pollingInterval = (fulfilledResponses[0] as PromiseFulfilledResult<ReportCallbackResponse>).value.interval;
+    const pollingInterval = (fulfilledResponses[0] as PromiseFulfilledResult<ReportCallbackResponse>)?.value.interval;
     return { pollingInfos, pollingInterval };
   };
 
@@ -230,7 +231,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         (pollingResponseWithId) =>
           pollingResponseWithId.status === 'fulfilled' &&
           !pollingResponseWithId.value.response.allMetricsCompleted &&
-          hasPollingStarted,
+          hasPollingStarted.current,
       )
       .map((pollingResponseWithId) => pollingInfos.find((pollingInfo) => pollingInfo.id === pollingResponseWithId.id)!);
     return nextPollingInfos;
@@ -313,6 +314,10 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     });
   };
 
+  const getHasPollingStarted = () => {
+    return hasPollingStarted.current;
+  };
+
   return {
     startToRequestData,
     stopPollingReports,
@@ -321,5 +326,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     shutBoardMetricsError,
     shutPipelineMetricsError,
     shutSourceControlMetricsError,
+    getHasPollingStarted,
   };
 };

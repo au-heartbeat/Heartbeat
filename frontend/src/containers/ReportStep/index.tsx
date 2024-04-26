@@ -66,6 +66,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     shutBoardMetricsError,
     shutPipelineMetricsError,
     shutSourceControlMetricsError,
+    getHasPollingStarted,
   } = useGenerateReportEffect();
 
   useEffect(() => {
@@ -229,7 +230,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     exportValidityTimeMin &&
       isCsvFileGeneratedAtEnd &&
       dispatch(
@@ -239,7 +240,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       );
   }, [dispatch, exportValidityTimeMin, isCsvFileGeneratedAtEnd]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (exportValidityTimeMin && isCsvFileGeneratedAtEnd) {
       const startTime = Date.now();
       const timer = setInterval(() => {
@@ -264,17 +265,20 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     }
   }, [dispatch, exportValidityTimeMin, isCsvFileGeneratedAtEnd]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     dispatch(closeAllNotifications());
   }, [dispatch, pageType]);
 
   useEffect(() => {
-    setExportValidityTimeMin(currentDataInfo.reportData?.exportValidityTime);
-    currentDataInfo.reportData &&
-      setIsCsvFileGeneratedAtEnd(
-        currentDataInfo.reportData.allMetricsCompleted && currentDataInfo.reportData.isSuccessfulCreateCsvFile,
-      );
-  }, [dispatch, currentDataInfo.reportData]);
+    console.log(getHasPollingStarted(), 123);
+    if (getHasPollingStarted()) return;
+    const successfulReportInfos = reportInfos.filter((reportInfo) => reportInfo.reportData);
+    if (successfulReportInfos.length === 0) return;
+    setExportValidityTimeMin(successfulReportInfos[0].reportData?.exportValidityTime);
+    setIsCsvFileGeneratedAtEnd(
+      successfulReportInfos.some((reportInfo) => reportInfo.reportData?.isSuccessfulCreateCsvFile),
+    );
+  }, [dispatch, reportInfos]);
 
   useEffect(() => {
     if (isSummaryPage && notifications4SummaryPage.length > 0) {
@@ -328,7 +332,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     if (!currentDataInfo.timeout4Report.shouldShow) return;
-    currentDataInfo.timeout4Report &&
+    currentDataInfo.timeout4Report.message &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
         {
@@ -341,7 +345,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     if (!currentDataInfo.timeout4Board.shouldShow) return;
-    currentDataInfo.timeout4Board &&
+    currentDataInfo.timeout4Board.message &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
         {
@@ -354,7 +358,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     if (!currentDataInfo.timeout4Dora.shouldShow) return;
-    currentDataInfo.timeout4Dora &&
+    currentDataInfo.timeout4Dora.message &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
         {
@@ -367,7 +371,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     if (!currentDataInfo.generalError4Board.shouldShow) return;
-    currentDataInfo.generalError4Board &&
+    currentDataInfo.generalError4Board.message &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
         {
@@ -380,7 +384,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     if (!currentDataInfo.generalError4Dora.shouldShow) return;
-    currentDataInfo.generalError4Dora &&
+    currentDataInfo.generalError4Dora.message &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
         {
@@ -393,7 +397,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   useEffect(() => {
     if (!currentDataInfo.generalError4Report.shouldShow) return;
-    currentDataInfo.generalError4Report &&
+    currentDataInfo.generalError4Report.message &&
       setNotifications4SummaryPage((prevState) => [
         ...prevState,
         {
