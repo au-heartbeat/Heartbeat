@@ -304,7 +304,7 @@ describe('MetricsStep', () => {
       ).toBeInTheDocument();
     });
 
-    it('should be render Failed message container when get 4xx error', async () => {
+    it('should be render failed message container when get 4xx error', async () => {
       store.dispatch(updateShouldGetBoardConfig(true));
       server.use(
         rest.post(MOCK_BOARD_INFO_URL, (_, res, ctx) => {
