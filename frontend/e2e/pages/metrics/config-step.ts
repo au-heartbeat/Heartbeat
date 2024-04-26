@@ -52,6 +52,7 @@ export class ConfigStep {
   readonly requiredMetricsChangeFailureRateOption: Locator;
   readonly requiredMetricsMeanTimeToRecoveryOption: Locator;
   readonly requiredMetricsReworkTimesOption: Locator;
+  readonly baseInfomationContainer: Locator;
   readonly boardContainer: Locator;
   readonly boardTypeSelect: Locator;
   readonly boardIdInput: Locator;
@@ -78,21 +79,26 @@ export class ConfigStep {
   readonly sourceControlResetButton: Locator;
   readonly sourceControlTokenErrorMessage: Locator;
   readonly saveAsButton: Locator;
+  readonly addNewTimeRangeButton: Locator;
+  readonly removeTimeRangeButtons: Locator;
+  readonly errorStartTimeMessage: Locator;
+  readonly errorEndTimeMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.stepTitle = page.getByText('Config');
+    this.baseInfomationContainer = page.getByLabel('Basic information');
     this.projectNameInput = page.getByLabel('Project name *');
     this.regularCalendar = page.getByText('Regular Calendar(Weekend');
     this.chineseCalendar = page.getByText('Calendar with Chinese Holiday');
-    this.fromDateInput = page.getByRole('textbox', { name: 'From' });
+    this.fromDateInput = this.baseInfomationContainer.getByRole('textbox', { name: 'From' });
     this.fromDateInputButton = page
       .locator('div')
       .filter({ hasText: /^From \*$/ })
       .getByRole('button', { name: 'Choose date' });
     this.fromDateInputValueSelect = (fromDay: Dayjs) =>
       page.getByRole('dialog', { name: 'From *' }).getByRole('gridcell', { name: `${fromDay.date()}` });
-    this.toDateInput = page.getByRole('textbox', { name: 'To' });
+    this.toDateInput = this.baseInfomationContainer.getByRole('textbox', { name: 'To' });
     this.toDateInputButton = page
       .locator('div')
       .filter({ hasText: /^To \*$/ })
@@ -154,6 +160,10 @@ export class ConfigStep {
     this.sourceControlTokenErrorMessage = this.sourceControlContainer.getByText('Token is incorrect!');
 
     this.saveAsButton = page.getByRole('button', { name: 'Save' });
+    this.addNewTimeRangeButton = page.getByRole('button', { name: 'Button for adding date range' });
+    this.errorStartTimeMessage = page.getByText('Start date is invalid');
+    this.errorEndTimeMessage = page.getByText('End date is invalid');
+    this.removeTimeRangeButtons = page.getByText('Remove');
   }
 
   async waitForShown() {
@@ -240,6 +250,22 @@ export class ConfigStep {
 
   async validateNextButtonNotClickable() {
     await expect(this.nextButton).toBeDisabled();
+  }
+
+  async validateAddNewTimeRangeButtonNotClickable() {
+    await expect(this.addNewTimeRangeButton).toBeDisabled();
+  }
+
+  async validateRemoveTimeRangeButtonIsHidden() {
+    await expect(this.removeTimeRangeButtons.last()).toBeHidden();
+  }
+
+  async checkErrorStratTimeMessage() {
+    await expect(this.errorStartTimeMessage).toBeVisible();
+  }
+
+  async checkErrorEndTimeMessage() {
+    await expect(this.errorEndTimeMessage).toBeVisible();
   }
 
   async validateNextButtonClickable() {
@@ -446,6 +472,14 @@ export class ConfigStep {
 
   async verifyBoardConfig() {
     await this.boardVerifyButton.click();
+  }
+
+  async addNewTimeRange() {
+    await this.addNewTimeRangeButton.click();
+  }
+
+  async RemoveLastNewPipeline() {
+    await this.removeTimeRangeButtons.last().click();
   }
 
   async checkAllConfigInvalid() {
