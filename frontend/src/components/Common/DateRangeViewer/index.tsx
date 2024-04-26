@@ -46,7 +46,7 @@ const DateRangeViewer = ({ dateRanges, changeDateRange, selectedDateRange, disab
     return (
       <DateRangeExpandContainer ref={ref}>
         {dateRanges.map((dateRange, index) => {
-          const disabled = disabledAll || dateRange.disabled;
+          const disabled = dateRange.disabled || disabledAll;
           return (
             <SingleDateRange disabled={disabled} onClick={() => handleClick(index)} key={index}>
               {formatDate(dateRange.startDate as string)}
@@ -60,7 +60,7 @@ const DateRangeViewer = ({ dateRanges, changeDateRange, selectedDateRange, disab
   });
 
   return (
-    <DateRangeContainer data-test-id={'date-range'} disabled={disabledAll}>
+    <DateRangeContainer data-test-id={'date-range'} aria-disabled={disabledAll}>
       {formatDate((selectedDateRange || dateRanges[0]).startDate as string)}
       <StyledArrowForward />
       {formatDate((selectedDateRange || dateRanges[0]).endDate as string)}

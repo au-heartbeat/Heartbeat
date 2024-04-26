@@ -1,10 +1,14 @@
 import { ArrowForward, CalendarToday, ExpandMore } from '@mui/icons-material';
-import { Divider, MenuItem } from '@mui/material';
 import { Z_INDEX } from '@src/constants/commons';
+import { Divider } from '@mui/material';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
-export const DateRangeContainer = styled('div')(({ disabled }) => ({
+interface DateRangeContainerProps {
+  disabled: boolean;
+}
+
+export const DateRangeContainer = styled('div')(({ disabled }: DateRangeContainerProps) => ({
   position: 'relative',
   display: 'flex',
   justifyContent: 'flex-start',
@@ -48,7 +52,11 @@ export const DateRangeExpandContainer = styled.div({
   },
 });
 
-export const SingleDateRange = styled('div')(({ disabled }) => ({
+interface SingleDateRangeProps {
+  disabled: boolean;
+}
+
+export const SingleDateRange = styled('div')(({ disabled }: SingleDateRangeProps) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
