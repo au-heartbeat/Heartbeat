@@ -18,7 +18,7 @@ export type PromiseSettledResultWithId<T> = PromiseSettledResult<T> & {
 export interface useGenerateReportEffectInterface {
   startToRequestData: (params: ReportRequestDTO) => void;
   stopPollingReports: () => void;
-  result: IReportInfo[];
+  reportInfos: IReportInfo[];
 }
 
 interface IReportError {
@@ -37,12 +37,12 @@ export interface IReportInfo extends IReportError {
 
 export const initReportInfo: IReportInfo = {
   id: '',
-  timeout4Board: '',
-  timeout4Dora: '',
-  timeout4Report: '',
-  generalError4Board: '',
-  generalError4Dora: '',
-  generalError4Report: '',
+  timeout4Board: DEFAULT_MESSAGE,
+  timeout4Dora: DEFAULT_MESSAGE,
+  timeout4Report: DEFAULT_MESSAGE,
+  generalError4Board: DEFAULT_MESSAGE,
+  generalError4Dora: DEFAULT_MESSAGE,
+  generalError4Report: DEFAULT_MESSAGE,
   reportData: undefined,
 };
 
@@ -139,23 +139,23 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const resetTimeoutMessage = (metricTypes: string[]) => {
     if (metricTypes.length === 2) {
       setReportInfos((preReportInfos) => {
-        return preReportInfos.map((singleResult) => {
-          singleResult.timeout4Report = DEFAULT_MESSAGE;
-          return singleResult;
+        return preReportInfos.map((reportInfo) => {
+          reportInfo.timeout4Report = DEFAULT_MESSAGE;
+          return reportInfo;
         });
       });
     } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
       setReportInfos((preReportInfos) => {
-        return preReportInfos.map((singleResult) => {
-          singleResult.timeout4Board = DEFAULT_MESSAGE;
-          return singleResult;
+        return preReportInfos.map((reportInfo) => {
+          reportInfo.timeout4Board = DEFAULT_MESSAGE;
+          return reportInfo;
         });
       });
     } else {
       setReportInfos((preReportInfos) => {
-        return preReportInfos.map((singleResult) => {
-          singleResult.timeout4Dora = DEFAULT_MESSAGE;
-          return singleResult;
+        return preReportInfos.map((reportInfo) => {
+          reportInfo.timeout4Dora = DEFAULT_MESSAGE;
+          return reportInfo;
         });
       });
     }
@@ -228,18 +228,18 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   const updateReportInfosAfterPolling = (pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[]) => {
     setReportInfos((preReportInfos) => {
-      return preReportInfos.map((singleResult) => {
-        const matchedRes = pollingResponsesWithId.find((singleRes) => singleRes.id === singleResult.id);
-        if (!matchedRes) return singleResult;
+      return preReportInfos.map((reportInfo) => {
+        const matchedRes = pollingResponsesWithId.find((singleRes) => singleRes.id === reportInfo.id);
+        if (!matchedRes) return reportInfo;
 
         if (matchedRes.status === 'fulfilled') {
           const { response } = matchedRes.value;
-          singleResult.reportData = assembleReportData(response);
+          reportInfo.reportData = assembleReportData(response);
         } else {
           const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
-          singleResult[errorKey] = DATA_LOADING_FAILED;
+          reportInfo[errorKey] = DATA_LOADING_FAILED;
         }
-        return singleResult;
+        return reportInfo;
       });
     });
   };
@@ -258,6 +258,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   return {
     startToRequestData,
     stopPollingReports,
-    result: reportInfos,
+    reportInfos,
   };
 };
