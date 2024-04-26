@@ -16,6 +16,7 @@ import {
   VERIFIED,
   VERIFY,
   ALL,
+  FAKE_TOKEN,
 } from '../../fixtures';
 import {
   basicInfoSchema,
@@ -27,8 +28,12 @@ import {
   IPipelineToolData,
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
-import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
-import { fillBoardFieldsInformation } from '@test/containers/ConfigStep/Board.test';
+import {
+  basicInfoDefaultValues,
+  boardConfigDefaultValues,
+  pipelineToolDefaultValues,
+  sourceControlDefaultValues,
+} from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,47 +58,59 @@ const server = setupServer(
   ),
 );
 
+export const fillBoardFieldsInformation = async () => {
+  await userEvent.type(screen.getByLabelText(/board id/i), '1');
+  await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
+  await userEvent.type(screen.getByLabelText(/site/i), 'fake');
+  await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
+};
+
 let store = null;
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
   selectWarningMessage: jest.fn().mockReturnValue('Test warning Message'),
 }));
 
-describe('ConfigStep', () => {
-  const defaultValues = useDefaultValues();
+const ConfigStepWithFormInstances = () => {
   const basicInfoMethods = useForm<IBasicInfoData>({
-    defaultValues: defaultValues.basicInfoWithImport,
+    defaultValues: basicInfoDefaultValues,
     resolver: yupResolver(basicInfoSchema),
     mode: 'onChange',
   });
 
   const boardConfigMethods = useForm<IBoardConfigData>({
-    defaultValues: defaultValues.boardConfigWithImport,
+    defaultValues: boardConfigDefaultValues,
     resolver: yupResolver(boardConfigSchema),
     mode: 'onChange',
   });
 
   const pipelineToolMethods = useForm<IPipelineToolData>({
-    defaultValues: defaultValues.pipelineToolWithImport,
+    defaultValues: pipelineToolDefaultValues,
     resolver: yupResolver(pipelineToolSchema),
     mode: 'onChange',
   });
 
   const sourceControlMethods = useForm<ISourceControlData>({
-    defaultValues: defaultValues.sourceControlWithImport,
+    defaultValues: sourceControlDefaultValues,
     resolver: yupResolver(sourceControlSchema),
     mode: 'onChange',
   });
+  return (
+    <ConfigStep
+      basicInfoMethods={basicInfoMethods}
+      boardConfigMethods={boardConfigMethods}
+      pipelineToolMethods={pipelineToolMethods}
+      sourceControlMethods={sourceControlMethods}
+    />
+  );
+};
+
+describe('ConfigStep', () => {
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <ConfigStep
-          basicInfoMethods={basicInfoMethods}
-          boardConfigMethods={boardConfigMethods}
-          pipelineToolMethods={pipelineToolMethods}
-          sourceControlMethods={sourceControlMethods}
-        />
+        <ConfigStepWithFormInstances />
       </Provider>,
     );
   };
