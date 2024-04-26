@@ -10,6 +10,8 @@ import {
   MOCK_PIPELINE_VERIFY_URL,
   FAKE_PIPELINE_TOKEN,
   REVERIFY,
+  PIPELINE_TOOL_TOKEN_INPUT_LABEL,
+  TIMEOUT_ALERT_TEST_ID,
 } from '../../fixtures';
 import { pipelineToolDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
@@ -28,7 +30,7 @@ import { rest } from 'msw';
 
 export const fillPipelineToolFieldsInformation = async () => {
   const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-    'input token',
+    PIPELINE_TOOL_TOKEN_INPUT_LABEL,
   ) as HTMLInputElement;
   await userEvent.type(tokenInput, FAKE_PIPELINE_TOKEN);
 
@@ -81,7 +83,7 @@ describe('PipelineTool', () => {
   it('should clear all fields information when click reset button', async () => {
     setup();
     const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      'input token',
+      PIPELINE_TOOL_TOKEN_INPUT_LABEL,
     ) as HTMLInputElement;
     await fillPipelineToolFieldsInformation();
 
@@ -102,11 +104,11 @@ describe('PipelineTool', () => {
 
     await userEvent.click(screen.getByText(VERIFY));
 
-    expect(screen.getByTestId('timeoutAlert')).toBeInTheDocument();
+    expect(screen.getByTestId(TIMEOUT_ALERT_TEST_ID)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: RESET }));
 
-    expect(screen.queryByTestId('timeoutAlert')).not.toBeInTheDocument();
+    expect(screen.queryByTestId(TIMEOUT_ALERT_TEST_ID)).not.toBeInTheDocument();
   });
 
   it('should hidden timeout alert when the error type of api call becomes other', async () => {
@@ -116,13 +118,13 @@ describe('PipelineTool', () => {
 
     await userEvent.click(screen.getByText(VERIFY));
 
-    expect(screen.getByTestId('timeoutAlert')).toBeInTheDocument();
+    expect(screen.getByTestId(TIMEOUT_ALERT_TEST_ID)).toBeInTheDocument();
 
     pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: HttpStatusCode.Unauthorized });
 
     await userEvent.click(screen.getByText(REVERIFY));
 
-    expect(screen.queryByTestId('timeoutAlert')).not.toBeInTheDocument();
+    expect(screen.queryByTestId(TIMEOUT_ALERT_TEST_ID)).not.toBeInTheDocument();
   });
 
   it('should show detail options when click pipelineTool fields', async () => {
@@ -151,7 +153,7 @@ describe('PipelineTool', () => {
     await fillPipelineToolFieldsInformation();
     const mockInfo = 'mockToken';
     const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      'input token',
+      PIPELINE_TOOL_TOKEN_INPUT_LABEL,
     ) as HTMLInputElement;
     await userEvent.type(tokenInput, mockInfo);
     await userEvent.clear(tokenInput);
@@ -169,7 +171,7 @@ describe('PipelineTool', () => {
   it('should show error message when focus on field given an empty value', async () => {
     setup();
 
-    await userEvent.click(screen.getByLabelText('input token'));
+    await userEvent.click(screen.getByLabelText(PIPELINE_TOOL_TOKEN_INPUT_LABEL));
 
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toBeInTheDocument();
     expect(screen.getByText(TOKEN_ERROR_MESSAGE[1])).toHaveStyle(ERROR_MESSAGE_COLOR);
@@ -179,7 +181,7 @@ describe('PipelineTool', () => {
     setup();
     const mockInfo = 'mockToken';
     const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      'input token',
+      PIPELINE_TOOL_TOKEN_INPUT_LABEL,
     ) as HTMLInputElement;
     await userEvent.type(tokenInput, mockInfo);
 
@@ -240,11 +242,11 @@ describe('PipelineTool', () => {
 
     await userEvent.click(screen.getByText(VERIFY));
 
-    expect(await screen.getByTestId('timeoutAlert')).toBeInTheDocument();
+    expect(await screen.getByTestId(TIMEOUT_ALERT_TEST_ID)).toBeInTheDocument();
 
     await userEvent.click(screen.getByLabelText('Close'));
 
-    expect(screen.queryByLabelText('timeoutAlert')).not.toBeInTheDocument();
+    expect(screen.queryByTestId(TIMEOUT_ALERT_TEST_ID)).not.toBeInTheDocument();
   });
 
   it('should allow user to re-submit when user interact again with form given form is already submit successfully', async () => {

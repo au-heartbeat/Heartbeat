@@ -17,6 +17,7 @@ import {
   VERIFY,
   ALL,
   FAKE_TOKEN,
+  PIPELINE_TOOL_TOKEN_INPUT_LABEL,
 } from '../../fixtures';
 import {
   basicInfoSchema,
@@ -295,7 +296,9 @@ describe('ConfigStep', () => {
     const requireDateSelection = within(screen.getByRole('listbox'));
     await userEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }));
     await closeMuiModal(userEvent);
-    const tokenNode = within(screen.getByTestId('pipelineToolTextField')).getByLabelText('input token');
+    const tokenNode = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
+      PIPELINE_TOOL_TOKEN_INPUT_LABEL,
+    );
     await userEvent.type(tokenNode, FAKE_PIPELINE_TOKEN);
     const submitButton = screen.getByText(VERIFY);
     await userEvent.click(submitButton);
