@@ -1,8 +1,6 @@
-import {
-  DateRangePickerGroup,
-  SortedDateRangeType,
-} from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { DateRangePickerGroup } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
 import { SortingDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortingDateRange';
+import { SortedDateRangeType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import SectionTitleWithTooltip from '@src/components/Common/SectionTitleWithTooltip';
 import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { selectDateRange } from '@src/context/config/configSlice';

@@ -6,7 +6,7 @@ import {
   SortingTextButton,
 } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { selectDateRangeSortType, updateDateRangeSortType } from '@src/context/config/configSlice';
-import { SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { SORTING_DATE_RANGE_TEXT } from '@src/constants/resources';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
@@ -20,7 +20,7 @@ type Props = {
 export const SortingDateRange = ({ disabled }: Props) => {
   const dispatch = useAppDispatch();
   const sortType = useAppSelector(selectDateRangeSortType);
-  const [dateRangeSortType, setDateRangeSortType] = useState(sortType);
+  const [dateRangeSortType, setDateRangeSortType] = useState<SortType>(sortType);
 
   const handleChangeSort = () => {
     const totalSortTypes = Object.values(SortType).length;

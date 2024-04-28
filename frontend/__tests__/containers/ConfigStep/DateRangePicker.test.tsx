@@ -1,13 +1,12 @@
-import {
-  initDeploymentFrequencySettings,
-  updateShouldGetBoardConfig,
-  updateShouldGetPipelineConfig,
-} from '@src/context/Metrics/metricsSlice';
-import { SortedDateRangeType, sortFn, SortType } from '@src/containers/ConfigStep/DateRangePicker/DateRangePickerGroup';
+import { updateShouldGetBoardConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
+import { SortedDateRangeType, sortFn, SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
+import { basicInfoDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
+import { basicInfoSchema } from '@src/containers/ConfigStep/Form/schema';
 import { ERROR_DATE, TIME_RANGE_ERROR_MESSAGE } from '../../fixtures';
 import { render, screen, within } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { FormProvider } from '@test/utils/FormProvider';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material';
 import { Provider } from 'react-redux';
@@ -17,8 +16,8 @@ import get from 'lodash/get';
 import React from 'react';
 import dayjs from 'dayjs';
 
-const START_DATE_LABEL = 'From *';
-const END_DATE_LABEL = 'To *';
+const START_DATE_LABEL = 'From';
+const END_DATE_LABEL = 'To';
 const TODAY = dayjs('2024-03-20');
 const INPUT_DATE_VALUE = TODAY.format('MM/DD/YYYY');
 let store = setupStore();
@@ -36,7 +35,9 @@ const setup = () => {
   return render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <DateRangePickerSection />
+        <FormProvider schema={basicInfoSchema} defaultValues={basicInfoDefaultValues}>
+          <DateRangePickerSection />
+        </FormProvider>
       </ThemeProvider>
     </Provider>,
   );
@@ -125,7 +126,6 @@ describe('DateRangePickerSection', () => {
 
       expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
       expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
     });
 
     it('should dispatch update configuration when change endDate', async () => {
@@ -134,7 +134,6 @@ describe('DateRangePickerSection', () => {
 
       expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
       expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
     });
   });
 
@@ -194,7 +193,6 @@ describe('DateRangePickerSection', () => {
 
       expect(updateShouldGetBoardConfig).toHaveBeenCalledWith(true);
       expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
-      expect(initDeploymentFrequencySettings).toHaveBeenCalled();
     });
   });
 
@@ -239,6 +237,48 @@ describe('DateRangePickerSection', () => {
       expect(screen.getByText(TIME_RANGE_ERROR_MESSAGE.START_DATE_INVALID_TEXT)).toBeVisible();
       expect(screen.getByText(TIME_RANGE_ERROR_MESSAGE.END_DATE_INVALID_TEXT)).toBeVisible();
     });
+
+    it('should provide unified error message when given all invalid time input', async () => {
+      const correctRange = ['03/15/2024', '03/25/2024'];
+      const rangeOfTooEarly = ['03/15/1600', '03/25/1600'];
+      const rangeOfInvalidFormat = ['XXxYY/2024', 'ZZ/11/2024'];
+      const startDateRequiredErrorMessage = 'Start date is required';
+      const endDateRequiredErrorMessage = 'End date is required';
+      const unifiedStartDateErrorMessage = 'Start date is invalid';
+      const unifiedEndDateErrorMessage = 'End date is invalid';
+
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDateInput = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDateInput = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      await userEvent.type(startDateInput, rangeOfTooEarly[0]);
+      await userEvent.type(endDateInput, rangeOfTooEarly[1]);
+
+      expect(await screen.findByText(unifiedStartDateErrorMessage)).toBeVisible();
+      expect(await screen.findByText(unifiedEndDateErrorMessage)).toBeVisible();
+
+      await userEvent.clear(startDateInput);
+      await userEvent.clear(endDateInput);
+      await userEvent.keyboard('{Tab}');
+
+      expect(await screen.findByText(startDateRequiredErrorMessage)).toBeVisible();
+      expect(await screen.findByText(endDateRequiredErrorMessage)).toBeVisible();
+
+      await userEvent.type(startDateInput, correctRange[0]);
+      await userEvent.type(endDateInput, correctRange[1]);
+
+      expect(screen.queryByText(startDateRequiredErrorMessage)).toBeNull();
+      expect(screen.queryByText(endDateRequiredErrorMessage)).toBeNull();
+      expect(screen.queryByText(unifiedStartDateErrorMessage)).toBeNull();
+      expect(screen.queryByText(unifiedEndDateErrorMessage)).toBeNull();
+
+      await userEvent.type(startDateInput, rangeOfInvalidFormat[0]);
+      await userEvent.type(endDateInput, rangeOfInvalidFormat[1]);
+
+      expect(screen.queryByText(startDateRequiredErrorMessage)).toBeNull();
+      expect(screen.queryByText(endDateRequiredErrorMessage)).toBeNull();
+      expect(screen.queryByText(unifiedStartDateErrorMessage)).toBeVisible();
+      expect(screen.queryByText(unifiedEndDateErrorMessage)).toBeVisible();
+    });
   });
 
   describe('Sort date range behaviors', () => {
@@ -252,70 +292,67 @@ describe('DateRangePickerSection', () => {
       const sortButtonContainer = screen.queryByLabelText('Sorting date range');
       expect(sortButtonContainer).toBeNull();
     });
-  });
 
-  it('should show sort button given more than one time range', async () => {
-    const rangeDate1 = ['03/15/2024', '03/25/2024'];
-    const rangeDate2 = ['03/08/2024', '03/11/2024'];
+    it('should show sort button given more than one time range', async () => {
+      const rangeDate1 = ['03/15/2024', '03/25/2024'];
+      const rangeDate2 = ['03/08/2024', '03/11/2024'];
 
-    const addButton = screen.getByLabelText('Button for adding date range');
-    await userEvent.click(addButton);
-    const ranges = screen.getAllByLabelText('Range picker row');
-    const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-    const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-    await userEvent.type(startDate1Input, rangeDate1[0]);
-    await userEvent.type(endDate1Input, rangeDate1[1]);
-    await userEvent.type(startDate2Input, rangeDate2[0]);
-    await userEvent.type(endDate12nput, rangeDate2[1]);
-    const sortButton = screen.getByLabelText('Sorting date range');
-    expect(sortButton).toBeInTheDocument();
-  });
+      const addButton = screen.getByLabelText('Button for adding date range');
+      await userEvent.click(addButton);
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      await userEvent.type(startDate1Input, rangeDate1[0]);
+      await userEvent.type(endDate1Input, rangeDate1[1]);
+      await userEvent.type(startDate2Input, rangeDate2[0]);
+      await userEvent.type(endDate12nput, rangeDate2[1]);
+      const sortButton = screen.getByLabelText('Sorting date range');
+      expect(sortButton).toBeInTheDocument();
+    });
 
-  it('should disabled sort button given exist errors in date range', async () => {
-    const rangeDate1 = ['03/12/2024', '03/25/2024'];
-    const rangeDate2 = ['03/08/2024', '03/26/2024'];
+    it('should disabled sort button given exist errors in date range', async () => {
+      const rangeDate1 = ['03/12/2024', '03/25/2024'];
+      const rangeDate2 = ['03/08/2024', '03/26/2024'];
 
-    const addButton = screen.getByLabelText('Button for adding date range');
-    await userEvent.click(addButton);
-    await userEvent.click(addButton);
-    const ranges = screen.getAllByLabelText('Range picker row');
-    const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-    const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-    await userEvent.type(startDate1Input, rangeDate1[0]);
-    await userEvent.type(endDate1Input, rangeDate1[1]);
-    await userEvent.type(startDate2Input, rangeDate2[0]);
-    await userEvent.type(endDate12nput, rangeDate2[1]);
-    const sortButtonContainer = screen.queryByLabelText('sort button');
-    expect(sortButtonContainer).toBeDisabled();
-  });
+      const addButton = screen.getByLabelText('Button for adding date range');
+      await userEvent.click(addButton);
+      await userEvent.click(addButton);
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      await userEvent.type(startDate1Input, rangeDate1[0]);
+      await userEvent.type(endDate1Input, rangeDate1[1]);
+      await userEvent.type(startDate2Input, rangeDate2[0]);
+      await userEvent.type(endDate12nput, rangeDate2[1]);
+      const sortButtonContainer = screen.queryByLabelText('sort button');
+      expect(sortButtonContainer).toBeDisabled();
+    });
 
-  it('should update sort status when handleSortTypeChange is called', async () => {
-    const rangeDate1 = ['03/15/2024', '03/25/2024'];
-    const rangeDate2 = ['03/08/2024', '03/11/2024'];
+    it('should update sort status when handleSortTypeChange is called', async () => {
+      const rangeDate1 = ['03/15/2024', '03/25/2024'];
+      const rangeDate2 = ['03/08/2024', '03/11/2024'];
 
-    const addButton = screen.getByLabelText('Button for adding date range');
-    await userEvent.click(addButton);
-    const ranges = screen.getAllByLabelText('Range picker row');
-    const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-    const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
-    const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
-    await userEvent.type(startDate1Input, rangeDate1[0]);
-    await userEvent.type(endDate1Input, rangeDate1[1]);
-    await userEvent.type(startDate2Input, rangeDate2[0]);
-    await userEvent.type(endDate12nput, rangeDate2[1]);
-    const sortButton = screen.getByLabelText('sort button');
-    await userEvent.click(sortButton);
-    expect(screen.getByRole('button', { name: 'Descending' })).toBeInTheDocument();
-    await userEvent.click(sortButton);
-    expect(screen.getByRole('button', { name: 'Ascending' })).toBeInTheDocument();
-  });
-
-  describe('sort time ranges', () => {
+      const addButton = screen.getByLabelText('Button for adding date range');
+      await userEvent.click(addButton);
+      const ranges = screen.getAllByLabelText('Range picker row');
+      const startDate1Input = within(ranges[0]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate1Input = within(ranges[0]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      const startDate2Input = within(ranges[1]).getByRole('textbox', { name: START_DATE_LABEL }) as HTMLInputElement;
+      const endDate12nput = within(ranges[1]).getByRole('textbox', { name: END_DATE_LABEL }) as HTMLInputElement;
+      await userEvent.type(startDate1Input, rangeDate1[0]);
+      await userEvent.type(endDate1Input, rangeDate1[1]);
+      await userEvent.type(startDate2Input, rangeDate2[0]);
+      await userEvent.type(endDate12nput, rangeDate2[1]);
+      const sortButton = screen.getByLabelText('sort button');
+      await userEvent.click(sortButton);
+      expect(screen.getByRole('button', { name: 'Descending' })).toBeInTheDocument();
+      await userEvent.click(sortButton);
+      expect(screen.getByRole('button', { name: 'Ascending' })).toBeInTheDocument();
+    });
     const dateRange1: SortedDateRangeType = {
       startDate: '2024-03-10',
       endDate: '2024-03-15',
