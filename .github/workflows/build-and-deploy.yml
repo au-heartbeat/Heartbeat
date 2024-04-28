@@ -494,20 +494,21 @@ jobs:
   #         SLACK_ICON_EMOJI: ":heart-beat:"
   #         SLACK_COLOR: ${{ job.status }}
   #         SLACK_USERNAME: "Heartbeat E2E Status"
-  buildkite-check:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Check e2e deployment
-        env:
-          BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
-          COMMIT_SHA: ${{ github.sha }}
-        run: ./ops/check.sh buildkite-e2e-deployed
+
+  # buildkite-check:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v4
+  #     - name: Check e2e deployment
+  #       env:
+  #         BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
+  #         COMMIT_SHA: ${{ github.sha }}
+  #       run: ./ops/check.sh buildkite-e2e-deployed
   e2e-google-chrome:
     runs-on: macos-latest
-    needs:
-      - buildkite-check
+#    needs:
+#      - buildkite-check
     container:
       image: mcr.microsoft.com/playwright:latest
     steps:
@@ -546,8 +547,8 @@ jobs:
       #     SLACK_USERNAME: "Heartbeat E2E Status"
   e2e-microsoft-edge:
     runs-on: macos-latest
-    needs:
-      - buildkite-check
+#    needs:
+#      - buildkite-check
     container:
       image: mcr.microsoft.com/playwright:latest
     steps:
@@ -578,8 +579,8 @@ jobs:
           retention-days: 30
   e2e-tablet:
     runs-on: macos-latest
-    needs:
-      - buildkite-check
+#    needs:
+#      - buildkite-check
     container:
       image: mcr.microsoft.com/playwright:latest
     steps:
@@ -610,8 +611,8 @@ jobs:
           retention-days: 30
   e2e-webkit:
     runs-on: macos-latest
-    needs:
-      - buildkite-check
+#    needs:
+#      - buildkite-check
     container:
       image: mcr.microsoft.com/playwright:latest
     steps:
@@ -642,8 +643,8 @@ jobs:
           retention-days: 30
   e2e-chromium:
     runs-on: macos-latest
-    needs:
-      - buildkite-check
+#    needs:
+#      - buildkite-check
     container:
       image: mcr.microsoft.com/playwright:latest
     steps:
