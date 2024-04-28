@@ -26,7 +26,7 @@ export interface useGenerateReportEffectInterface {
   hasPollingStarted: boolean;
 }
 
-interface IReportError {
+export interface IReportError {
   timeout4Board: { message: string; shouldShow: boolean };
   timeout4Dora: { message: string; shouldShow: boolean };
   timeout4Report: { message: string; shouldShow: boolean };

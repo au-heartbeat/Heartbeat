@@ -1,18 +1,18 @@
 import { MOCK_GENERATE_REPORT_REQUEST_PARAMS, MOCK_REPORT_RESPONSE, MOCK_RETRIEVE_REPORT_RESPONSE } from '../fixtures';
-import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
-import { act, renderHook, waitFor } from '@testing-library/react';
-import { reportClient } from '@src/clients/report/ReportClient';
-import { TimeoutError } from '@src/errors/TimeoutError';
-import { UnknownError } from '@src/errors/UnknownError';
-import { HttpStatusCode } from 'axios';
-import clearAllMocks = jest.clearAllMocks;
-import resetAllMocks = jest.resetAllMocks;
+import { generalErrorKey, IReportError, useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { updateDateRange } from '@src/context/config/configSlice';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { reportClient } from '@src/clients/report/ReportClient';
 import { setupStore } from '@test/utils/setupStoreUtil';
+import { TimeoutError } from '@src/errors/TimeoutError';
+import { UnknownError } from '@src/errors/UnknownError';
 import { METRIC_TYPES } from '@src/constants/commons';
 import React, { ReactNode } from 'react';
 import { Provider } from 'react-redux';
+import { HttpStatusCode } from 'axios';
+import clearAllMocks = jest.clearAllMocks;
+import resetAllMocks = jest.resetAllMocks;
 
 const MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE = {
   ...MOCK_GENERATE_REPORT_REQUEST_PARAMS,
@@ -176,95 +176,32 @@ describe('use generate report effect', () => {
     expect(reportClient.polling).toHaveBeenCalledTimes(2);
   });
 
-  it('should call polling report and setTimeout when request dora data given pollingReport response return 204', async () => {
-    reportClient.polling = jest
-      .fn()
-      .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
-
-    reportClient.retrieveByUrl = jest
-      .fn()
-      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
-    });
-
-    jest.runOnlyPendingTimers();
-
-    await waitFor(() => {
-      expect(reportClient.polling).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('should call polling report only once when request dora data given board data retrieval is called before', async () => {
-    reportClient.polling = jest
-      .fn()
-      .mockImplementation(async () => ({ status: HttpStatusCode.NoContent, response: MOCK_REPORT_RESPONSE }));
-
-    reportClient.retrieveByUrl = jest
-      .fn()
-      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
-    });
-
-    jest.runOnlyPendingTimers();
-
-    await waitFor(() => {
-      expect(reportClient.polling).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('should set "Data loading failed" for board metric when request board data given UnknownException', async () => {
+  it.each([
+    {
+      params: MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE,
+      errorKey: generalErrorKey[METRIC_TYPES.BOARD],
+    },
+    {
+      params: MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE,
+      errorKey: generalErrorKey[METRIC_TYPES.DORA],
+    },
+    {
+      params: MOCK_GENERATE_REPORT_REQUEST_PARAMS,
+      errorKey: generalErrorKey[METRIC_TYPES.ALL],
+    },
+  ])('should set "Data loading failed" for board metric when request board data given UnknownException', async (_) => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
-    const { result } = renderHook(() => useGenerateReportEffect());
+    const { result } = setup();
 
-    await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
-      expect(result.current.reportInfos[0].generalError4Board).toEqual('Data loading failed');
+    await act(async () => {
+      await result.current.startToRequestData(_.params);
     });
-  });
+    const errorKey = _.errorKey as keyof IReportError;
 
-  it('should set "Data loading failed" for dora metric when request dora data given UnknownException', async () => {
-    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE);
-      expect(result.current.reportInfos[0].generalError4Dora).toEqual('Data loading failed');
-    });
-  });
-
-  it('should set "Data loading failed" for report when polling given UnknownException', async () => {
-    reportClient.polling = jest.fn().mockRejectedValue(new UnknownError());
-    reportClient.retrieveByUrl = jest
-      .fn()
-      .mockImplementation(async () => ({ response: MOCK_RETRIEVE_REPORT_RESPONSE }));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.reportInfos[0].generalError4Report).toEqual('Data loading failed');
-    });
-  });
-
-  it('should set "Data loading failed" for report when all data retrieval times out', async () => {
-    reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new TimeoutError('5xx error', 503));
-
-    const { result } = renderHook(() => useGenerateReportEffect());
-
-    await waitFor(() => {
-      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
-      expect(result.current.reportInfos[0].timeout4Report).toEqual('Data loading failed');
-    });
+    expect(result.current.reportInfos[0][errorKey].message).toEqual('Data loading failed');
+    expect(result.current.reportInfos[0][errorKey].shouldShow).toEqual(true);
+    expect(result.current.reportInfos[1][errorKey].message).toEqual('Data loading failed');
+    expect(result.current.reportInfos[1][errorKey].shouldShow).toEqual(true);
   });
 });

@@ -1,19 +1,11 @@
 import {
   filterAndMapCycleTimeSettings,
-  formatDateToTimestampString,
   formatDuplicatedNameWithSuffix,
   getJiraBoardToken,
   getRealDoneStatus,
   onlyEmptyAndDoneState,
   sortDateRanges,
 } from '@src/utils/util';
-import {
-  DateRange,
-  isOnlySelectClassification,
-  isSelectBoardMetrics,
-  isSelectDoraMetrics,
-  selectConfig,
-} from '@src/context/config/configSlice';
 import {
   generalErrorKey,
   initReportInfo,
@@ -27,6 +19,12 @@ import {
   closeNotification,
   Notification,
 } from '@src/context/notification/NotificationSlice';
+import {
+  isOnlySelectClassification,
+  isSelectBoardMetrics,
+  isSelectDoraMetrics,
+  selectConfig,
+} from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -49,7 +47,6 @@ import { BoardDetail, DoraDetail } from './ReportDetail';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
-import get from 'lodash/get';
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -58,9 +55,9 @@ export interface ReportStepProps {
 const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
-  const dateRanges: DateRange = get(configData, 'basic.dateRange', []);
+  const descendingDateRanges = sortDateRanges(configData.basic.dateRange);
   const [selectedDateRange, setSelectedDateRange] = useState<Record<string, string | null | boolean | undefined>>(
-    dateRanges[0],
+    descendingDateRanges[0],
   );
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo);
 
@@ -96,9 +93,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     leadTimeForChanges,
   } = useAppSelector(selectMetricsContent);
 
-  const descendingDateRanges = sortDateRanges(configData.basic.dateRange);
-  const startDate = configData.basic.dateRange[0]?.startDate ?? '';
-  const endDate = configData.basic.dateRange[0]?.endDate ?? '';
+  const startDate = (selectedDateRange?.startDate ?? '') as string;
+  const endDate = (selectedDateRange?.endDate ?? '') as string;
   const { metrics, calendarType } = configData.basic;
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
