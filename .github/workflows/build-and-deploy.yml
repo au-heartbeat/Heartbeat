@@ -509,8 +509,8 @@ jobs:
     runs-on: macos-latest
 #    needs:
 #      - buildkite-check
-    container:
-      image: mcr.microsoft.com/playwright:latest
+#    container:
+ #     image: mcr.microsoft.com/playwright:latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -549,8 +549,8 @@ jobs:
     runs-on: macos-latest
 #    needs:
 #      - buildkite-check
-    container:
-      image: mcr.microsoft.com/playwright:latest
+#    container:
+ #     image: mcr.microsoft.com/playwright:latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -581,8 +581,8 @@ jobs:
     runs-on: macos-latest
 #    needs:
 #      - buildkite-check
-    container:
-      image: mcr.microsoft.com/playwright:latest
+#    container:
+ #     image: mcr.microsoft.com/playwright:latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -613,8 +613,8 @@ jobs:
     runs-on: macos-latest
 #    needs:
 #      - buildkite-check
-    container:
-      image: mcr.microsoft.com/playwright:latest
+#    container:
+ #     image: mcr.microsoft.com/playwright:latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -645,8 +645,8 @@ jobs:
     runs-on: macos-latest
 #    needs:
 #      - buildkite-check
-    container:
-      image: mcr.microsoft.com/playwright:latest
+#    container:
+ #     image: mcr.microsoft.com/playwright:latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
