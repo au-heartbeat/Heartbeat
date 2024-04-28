@@ -81,7 +81,6 @@ const MetricsStep = () => {
       }).then((res) => {
         if (res && res.length) {
           const commonPayload = combineBoardInfo(res);
-          dispatch(updateBoardVerifyState(true));
           dispatch(updateJiraVerifyResponse(commonPayload));
           dispatch(updateMetricsState(merge(commonPayload, { isProjectCreated: isProjectCreated })));
           dispatch(updateShouldGetBoardConfig(false));
