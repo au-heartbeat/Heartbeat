@@ -26,6 +26,7 @@ export class ConfigStep {
   readonly projectNameInput: Locator;
   readonly regularCalendar: Locator;
   readonly chineseCalendar: Locator;
+  readonly basicInfoContainer: Locator;
   readonly fromDateInput: Locator;
   readonly fromDateInputButton: Locator;
   readonly fromDateInputValueSelect: (fromDay: Dayjs) => Locator;
@@ -52,7 +53,6 @@ export class ConfigStep {
   readonly requiredMetricsChangeFailureRateOption: Locator;
   readonly requiredMetricsMeanTimeToRecoveryOption: Locator;
   readonly requiredMetricsReworkTimesOption: Locator;
-  readonly baseInfomationContainer: Locator;
   readonly boardContainer: Locator;
   readonly boardTypeSelect: Locator;
   readonly boardIdInput: Locator;
@@ -87,18 +87,18 @@ export class ConfigStep {
   constructor(page: Page) {
     this.page = page;
     this.stepTitle = page.getByText('Config');
-    this.baseInfomationContainer = page.getByLabel('Basic information');
     this.projectNameInput = page.getByLabel('Project name *');
     this.regularCalendar = page.getByText('Regular Calendar(Weekend');
     this.chineseCalendar = page.getByText('Calendar with Chinese Holiday');
-    this.fromDateInput = this.baseInfomationContainer.getByRole('textbox', { name: 'From' });
+    this.basicInfoContainer = page.getByLabel('Basic information');
+    this.fromDateInput = this.basicInfoContainer.getByRole('textbox', { name: 'From' });
     this.fromDateInputButton = page
       .locator('div')
       .filter({ hasText: /^From \*$/ })
       .getByRole('button', { name: 'Choose date' });
     this.fromDateInputValueSelect = (fromDay: Dayjs) =>
       page.getByRole('dialog', { name: 'From *' }).getByRole('gridcell', { name: `${fromDay.date()}` });
-    this.toDateInput = this.baseInfomationContainer.getByRole('textbox', { name: 'To' });
+    this.toDateInput = this.basicInfoContainer.getByRole('textbox', { name: 'To' });
     this.toDateInputButton = page
       .locator('div')
       .filter({ hasText: /^To \*$/ })
