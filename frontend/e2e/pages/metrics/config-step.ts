@@ -27,6 +27,10 @@ export class ConfigStep {
   readonly regularCalendar: Locator;
   readonly chineseCalendar: Locator;
   readonly basicInfoContainer: Locator;
+  readonly newTimeRangeButton: Locator;
+  readonly removeTimeRangeButtons: Locator;
+  readonly fromDateErrorMessage: Locator;
+  readonly toDateErrorMessage: Locator;
   readonly fromDateInput: Locator;
   readonly fromDateInputButton: Locator;
   readonly fromDateInputValueSelect: (fromDay: Dayjs) => Locator;
@@ -79,10 +83,6 @@ export class ConfigStep {
   readonly sourceControlResetButton: Locator;
   readonly sourceControlTokenErrorMessage: Locator;
   readonly saveAsButton: Locator;
-  readonly newTimeRangeButton: Locator;
-  readonly removeTimeRangeButtons: Locator;
-  readonly fromDateErrorMessage: Locator;
-  readonly toDateErrorMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
