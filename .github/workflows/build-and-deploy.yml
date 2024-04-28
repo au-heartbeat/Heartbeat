@@ -497,6 +497,8 @@ jobs:
   buildkite-check:
     runs-on: macos-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
       - name: Check e2e deployment
         env:
           BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
