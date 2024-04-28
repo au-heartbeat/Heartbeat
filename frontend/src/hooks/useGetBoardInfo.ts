@@ -103,7 +103,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
             return res;
           })
           .catch((err) => {
-            if (err instanceof 'object') {
+            if (typeof err === 'object') {
               const { code } = err;
               errorCount++;
               localBoardInfoFailedStatus = boardInfoPartialFailedStatusMapping(code);
