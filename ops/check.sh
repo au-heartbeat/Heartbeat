@@ -293,7 +293,7 @@ e2e_check() {
   pnpm exec playwright install
   pnpm exec playwright install msedge
   pnpm exec playwright install chrome
-  pnpm run e2e:ci -- --project="'${project}'"
+  pnpm run e2e:ci -- --project="${project}"
 }
 
 buildkite_status_check() {
