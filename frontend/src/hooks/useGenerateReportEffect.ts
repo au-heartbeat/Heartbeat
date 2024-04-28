@@ -23,7 +23,7 @@ export interface useGenerateReportEffectInterface {
   shutBoardMetricsError: (id: string) => void;
   shutPipelineMetricsError: (id: string) => void;
   shutSourceControlMetricsError: (id: string) => void;
-  getHasPollingStarted: () => boolean;
+  hasPollingStarted: boolean;
 }
 
 interface IReportError {
@@ -81,8 +81,8 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
     dateRanges.map((dateRange) => ({ ...initReportInfo, id: dateRange?.startDate || '' })),
   );
-  const hasPollingStarted = useRef(false);
-
+  const [hasPollingStarted, setHasPollingStarted] = useState<boolean>(false);
+  let nextHasPollingStarted = false;
   const startToRequestData = async (params: ReportRequestDTO) => {
     const { metricTypes } = params;
     resetTimeoutMessage(metricTypes);
@@ -101,8 +101,9 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
     updateErrorAfterFetchReport(res, metricTypes);
 
-    if (hasPollingStarted.current) return;
-    hasPollingStarted.current = true;
+    if (hasPollingStarted) return;
+    nextHasPollingStarted = true;
+    setHasPollingStarted(nextHasPollingStarted);
 
     const { pollingInfos, pollingInterval } = assemblePollingParams(res);
 
@@ -116,10 +117,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     pollingInfos: Record<string, string>[];
     interval: number;
   }) => {
-    if (pollingInfos.length === 0) {
-      stopPollingReports();
-      return;
-    }
     const pollingIds: string[] = pollingInfos.map((pollingInfo) => pollingInfo.id);
     initReportInfosTimeout4Report(pollingIds);
 
@@ -132,6 +129,10 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     updateReportInfosAfterPolling(pollingResponsesWithId);
 
     const nextPollingInfos = getNextPollingInfos(pollingResponsesWithId, pollingInfos);
+    if (nextPollingInfos.length === 0) {
+      stopPollingReports();
+      return;
+    }
     timerIdRef.current = window.setTimeout(() => {
       pollingReport({ pollingInfos: nextPollingInfos, interval });
     }, interval * 1000);
@@ -139,7 +140,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
 
   const stopPollingReports = () => {
     window.clearTimeout(timerIdRef.current);
-    hasPollingStarted.current = false;
+    setHasPollingStarted(false);
   };
 
   const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
@@ -231,7 +232,7 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
         (pollingResponseWithId) =>
           pollingResponseWithId.status === 'fulfilled' &&
           !pollingResponseWithId.value.response.allMetricsCompleted &&
-          hasPollingStarted.current,
+          nextHasPollingStarted,
       )
       .map((pollingResponseWithId) => pollingInfos.find((pollingInfo) => pollingInfo.id === pollingResponseWithId.id)!);
     return nextPollingInfos;
@@ -314,10 +315,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     });
   };
 
-  const getHasPollingStarted = () => {
-    return hasPollingStarted.current;
-  };
-
   return {
     startToRequestData,
     stopPollingReports,
@@ -326,6 +323,6 @@ export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
     shutBoardMetricsError,
     shutPipelineMetricsError,
     shutSourceControlMetricsError,
-    getHasPollingStarted,
+    hasPollingStarted,
   };
 };

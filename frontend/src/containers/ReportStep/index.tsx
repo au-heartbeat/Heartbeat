@@ -37,13 +37,13 @@ import {
 } from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import { METRIC_TYPES } from '@src/constants/commons';
@@ -72,7 +72,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     shutBoardMetricsError,
     shutPipelineMetricsError,
     shutSourceControlMetricsError,
-    getHasPollingStarted,
+    hasPollingStarted,
   } = useGenerateReportEffect();
 
   const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
@@ -231,6 +231,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     });
     setNotificationIds([]);
     setCurrentDataInfo(reportInfos.find((singleResult) => singleResult.id === selectedDateRange.startDate)!);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportInfos, selectedDateRange]);
 
   useEffect(() => {
@@ -281,15 +282,14 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [dispatch, pageType]);
 
   useEffect(() => {
-    console.log(getHasPollingStarted(), 123);
-    if (getHasPollingStarted()) return;
+    if (hasPollingStarted) return;
     const successfulReportInfos = reportInfos.filter((reportInfo) => reportInfo.reportData);
     if (successfulReportInfos.length === 0) return;
     setExportValidityTimeMin(successfulReportInfos[0].reportData?.exportValidityTime);
     setIsCsvFileGeneratedAtEnd(
       successfulReportInfos.some((reportInfo) => reportInfo.reportData?.isSuccessfulCreateCsvFile),
     );
-  }, [dispatch, reportInfos]);
+  }, [dispatch, reportInfos, hasPollingStarted]);
 
   useEffect(() => {
     if (isSummaryPage && notifications4SummaryPage.length > 0) {
@@ -314,6 +314,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       ]);
     }
     shutBoardMetricsError(selectedDateRange.startDate as string);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.reportData?.reportMetricsError.boardMetricsError]);
 
   useEffect(() => {
@@ -331,6 +332,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       ]);
     }
     shutPipelineMetricsError(selectedDateRange.startDate as string);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.reportData?.reportMetricsError.pipelineMetricsError]);
 
   useEffect(() => {
@@ -348,6 +350,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       ]);
     }
     shutSourceControlMetricsError(selectedDateRange.startDate as string);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.reportData?.reportMetricsError.sourceControlMetricsError]);
 
   useEffect(() => {
@@ -365,6 +368,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       ]);
     }
     shutReportInfosErrorStatus(selectedDateRange.startDate as string, timeoutErrorKey[METRIC_TYPES.ALL]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.timeout4Report]);
 
   useEffect(() => {
@@ -383,6 +387,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     }
 
     shutReportInfosErrorStatus(selectedDateRange.startDate as string, timeoutErrorKey[METRIC_TYPES.BOARD]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.timeout4Board]);
 
   useEffect(() => {
@@ -401,6 +406,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     }
 
     shutReportInfosErrorStatus(selectedDateRange.startDate as string, timeoutErrorKey[METRIC_TYPES.DORA]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.timeout4Dora]);
 
   useEffect(() => {
@@ -419,6 +425,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     }
 
     shutReportInfosErrorStatus(selectedDateRange.startDate as string, generalErrorKey[METRIC_TYPES.BOARD]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.generalError4Board]);
 
   useEffect(() => {
@@ -436,6 +443,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       ]);
     }
     shutReportInfosErrorStatus(selectedDateRange.startDate as string, generalErrorKey[METRIC_TYPES.DORA]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.generalError4Dora]);
 
   useEffect(() => {
@@ -454,6 +462,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     }
 
     shutReportInfosErrorStatus(selectedDateRange.startDate as string, generalErrorKey[METRIC_TYPES.ALL]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.generalError4Report]);
 
   useEffect(() => {
