@@ -79,10 +79,10 @@ export class ConfigStep {
   readonly sourceControlResetButton: Locator;
   readonly sourceControlTokenErrorMessage: Locator;
   readonly saveAsButton: Locator;
-  readonly addNewTimeRangeButton: Locator;
+  readonly newTimeRangeButton: Locator;
   readonly removeTimeRangeButtons: Locator;
-  readonly errorStartTimeMessage: Locator;
-  readonly errorEndTimeMessage: Locator;
+  readonly fromDateErrorMessage: Locator;
+  readonly toDateErrorMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -105,6 +105,10 @@ export class ConfigStep {
       .getByRole('button', { name: 'Choose date' });
     this.toDateInputValueSelect = (toDay: Dayjs) =>
       page.getByRole('dialog', { name: 'To *' }).getByRole('gridcell', { name: `${toDay.date()}` });
+    this.newTimeRangeButton = this.basicInfoContainer.getByRole('button', { name: 'Button for adding date range' });
+    this.fromDateErrorMessage = this.basicInfoContainer.getByText('Start date is invalid');
+    this.toDateErrorMessage = this.basicInfoContainer.getByText('End date is invalid');
+    this.removeTimeRangeButtons = this.basicInfoContainer.getByText('Remove');
 
     this.requireDataButton = page.getByRole('button', { name: 'Required Data' });
     this.velocityCheckbox = page.getByRole('option', { name: 'Velocity' }).getByRole('checkbox');
@@ -160,10 +164,6 @@ export class ConfigStep {
     this.sourceControlTokenErrorMessage = this.sourceControlContainer.getByText('Token is incorrect!');
 
     this.saveAsButton = page.getByRole('button', { name: 'Save' });
-    this.addNewTimeRangeButton = page.getByRole('button', { name: 'Button for adding date range' });
-    this.errorStartTimeMessage = page.getByText('Start date is invalid');
-    this.errorEndTimeMessage = page.getByText('End date is invalid');
-    this.removeTimeRangeButtons = page.getByText('Remove');
   }
 
   async waitForShown() {
@@ -253,7 +253,7 @@ export class ConfigStep {
   }
 
   async validateAddNewTimeRangeButtonNotClickable() {
-    await expect(this.addNewTimeRangeButton).toBeDisabled();
+    await expect(this.newTimeRangeButton).toBeDisabled();
   }
 
   async validateRemoveTimeRangeButtonIsHidden() {
@@ -261,11 +261,11 @@ export class ConfigStep {
   }
 
   async checkErrorStratTimeMessage() {
-    await expect(this.errorStartTimeMessage).toBeVisible();
+    await expect(this.fromDateErrorMessage).toBeVisible();
   }
 
   async checkErrorEndTimeMessage() {
-    await expect(this.errorEndTimeMessage).toBeVisible();
+    await expect(this.toDateErrorMessage).toBeVisible();
   }
 
   async validateNextButtonClickable() {
@@ -475,7 +475,7 @@ export class ConfigStep {
   }
 
   async addNewTimeRange() {
-    await this.addNewTimeRangeButton.click();
+    await this.newTimeRangeButton.click();
   }
 
   async RemoveLastNewPipeline() {

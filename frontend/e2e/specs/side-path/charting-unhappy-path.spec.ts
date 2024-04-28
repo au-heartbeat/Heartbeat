@@ -1,5 +1,5 @@
 import { importModifiedCorrectConfig as modifiedCorrectProjectFromFile } from '../../fixtures/import-file/unhappy-path-file';
-import { chartUnHappyPathConfig } from '../../fixtures/create-new/config-step';
+import { chartStepData } from '../../fixtures/import-file/chart-step-data';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from '../../utils/clear-temp-dir';
 import { format } from '../../utils/date-time';
@@ -14,13 +14,13 @@ test('Charting unhappy path on config and metri page', async ({ homePage, config
     endDate: format(modifiedCorrectProjectFromFile.dateRange.endDate),
   };
   const errorDateRange = {
-    startDate: format(chartUnHappyPathConfig.errorDateRange[0].startDate),
-    endDate: format(chartUnHappyPathConfig.errorDateRange[0].endDate),
+    startDate: format(chartStepData.errorDateRange[0].startDate),
+    endDate: format(chartStepData.errorDateRange[0].endDate),
   };
 
   const noCardDateRange = {
-    startDate: format(chartUnHappyPathConfig.noCardDateRange[0].startDate),
-    endDate: format(chartUnHappyPathConfig.noCardDateRange[0].endDate),
+    startDate: format(chartStepData.noCardDateRange[0].startDate),
+    endDate: format(chartStepData.noCardDateRange[0].endDate),
   };
   await homePage.goto();
 
@@ -52,8 +52,8 @@ test('Charting unhappy path on config and metri page', async ({ homePage, config
   await configStep.typeInDateRange(rightDateRange);
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
-  await metricsStep.deselectBranch(chartUnHappyPathConfig.unSelectBranch);
-  await metricsStep.addBranch(chartUnHappyPathConfig.addNewBranch);
+  await metricsStep.deselectBranch(chartStepData.unSelectBranch);
+  await metricsStep.addBranch(chartStepData.addNewBranch);
   await metricsStep.checkBranchIsInvalid();
   await configStep.validateNextButtonNotClickable();
 });
