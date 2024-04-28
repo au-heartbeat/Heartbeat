@@ -197,8 +197,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     });
 
   const basicReportRequestBody = {
-    startTime: formatDateToTimestampString(startDate),
-    endTime: formatDateToTimestampString(endDate),
+    startTime: null,
+    endTime: null,
     considerHoliday: calendarType === CALENDAR.CHINA,
     csvTimeStamp,
     metrics,

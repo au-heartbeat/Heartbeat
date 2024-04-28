@@ -18,7 +18,7 @@ type Props = {
   changeDateRange?: (dateRange: Record<string, string | null | boolean | undefined>) => void;
   expandColor?: string;
   expandBackgroundColor?: string;
-  disabledAll: boolean;
+  disabledAll?: boolean;
 };
 
 const DateRangeViewer = ({ dateRanges, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
