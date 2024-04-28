@@ -284,7 +284,8 @@ e2e_container_check() {
 }
 
 e2e_check() {
-  echo "start to run e2e"
+  local project="${E2E_PROJECT:-Google Chrome}"
+  echo "start to run e2e for project: ${project}"
   export TZ=Asia/Shanghai
   npm install -g pnpm
   cd frontend
@@ -292,7 +293,7 @@ e2e_check() {
   pnpm exec playwright install
   pnpm exec playwright install msedge
   pnpm exec playwright install chrome
-  pnpm run e2e:ci
+  pnpm run e2e:ci --project=${project}
 }
 
 buildkite_status_check() {
