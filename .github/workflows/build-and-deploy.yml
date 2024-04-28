@@ -495,7 +495,7 @@ jobs:
   #         SLACK_COLOR: ${{ job.status }}
   #         SLACK_USERNAME: "Heartbeat E2E Status"
   buildkite-check:
-    runs-on: macos-latest-xlarge
+    runs-on: macos-latest
     steps:
       - name: Check e2e deployment
         env:
@@ -503,7 +503,7 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: ./ops/check.sh buildkite-e2e-deployed
   e2e-google-chrome:
-    runs-on: macos-latest-xlarge
+    runs-on: macos-latest
     needs:
       - buildkite-check
     container:
@@ -543,7 +543,7 @@ jobs:
       #     SLACK_COLOR: ${{ job.status }}
       #     SLACK_USERNAME: "Heartbeat E2E Status"
   e2e-microsoft-edge:
-    runs-on: macos-latest-xlarge
+    runs-on: macos-latest
     needs:
       - buildkite-check
     container:
@@ -575,7 +575,7 @@ jobs:
           path: frontend/e2e/reports/
           retention-days: 30
   e2e-tablet:
-    runs-on: macos-latest-xlarge
+    runs-on: macos-latest
     needs:
       - buildkite-check
     container:
@@ -607,7 +607,7 @@ jobs:
           path: frontend/e2e/reports/
           retention-days: 30
   e2e-webkit:
-    runs-on: macos-latest-xlarge
+    runs-on: macos-latest
     needs:
       - buildkite-check
     container:
@@ -639,7 +639,7 @@ jobs:
           path: frontend/e2e/reports/
           retention-days: 30
   e2e-chromium:
-    runs-on: macos-latest-xlarge
+    runs-on: macos-latest
     needs:
       - buildkite-check
     container:
@@ -671,7 +671,7 @@ jobs:
           path: frontend/e2e/reports/
           retention-days: 30
   # e2e-notification:
-  #   runs-on: macos-latest-xlarge
+  #   runs-on: macos-latest
   #   needs:
   #     - e2e-chromium
   #     - e2e-webkit
