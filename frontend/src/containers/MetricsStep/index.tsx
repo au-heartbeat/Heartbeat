@@ -1,20 +1,19 @@
 import {
-  selectBoard,
-  selectDateRange,
-  selectIsProjectCreated,
-  selectJiraColumns,
-  selectMetrics,
-  selectUsers,
-  updateBoardVerifyState,
-  updateJiraVerifyResponse,
-} from '@src/context/config/configSlice';
-import {
   selectMetricsContent,
   selectShouldGetBoardConfig,
   updateFirstTimeRoadMetricsBoardData,
   updateMetricsState,
   updateShouldGetBoardConfig,
 } from '@src/context/Metrics/metricsSlice';
+import {
+  selectDateRange,
+  selectIsProjectCreated,
+  selectMetrics,
+  selectBoard,
+  updateJiraVerifyResponse,
+  selectUsers,
+  selectJiraColumns,
+} from '@src/context/config/configSlice';
 import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
