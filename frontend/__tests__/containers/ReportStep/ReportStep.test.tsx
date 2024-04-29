@@ -23,9 +23,10 @@ import {
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
 import { addADeploymentFrequencySetting, updateDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
+import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
+import { closeNotification } from '@src/context/notification/NotificationSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
-import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import { DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import { backStep } from '@src/context/stepper/StepperSlice';
@@ -38,6 +39,7 @@ import { ReactNode } from 'react';
 jest.mock('@src/context/notification/NotificationSlice', () => ({
   ...jest.requireActual('@src/context/notification/NotificationSlice'),
   addNotification: jest.fn().mockReturnValue({ type: 'ADD_NOTIFICATION' }),
+  closeNotification: jest.fn(),
 }));
 
 jest.mock('@src/context/stepper/StepperSlice', () => ({
@@ -618,11 +620,69 @@ describe('Report Step', () => {
         expect(useGenerateReportEffect().startToRequestData).toHaveBeenCalledTimes(2);
       });
     });
-  });
 
-  // describe('edge scene', () => {
-  //   it('12', () => {
-  //     reportHook.current.hasPollingStarted = true;
-  //   });
-  // });
+    it('should not show notification in sending request', async () => {
+      reportHook.current.hasPollingStarted = true;
+      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
+
+      expect(addNotification).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not show notification when the requests all failed', () => {
+      reportHook.current.hasPollingStarted = false;
+      reportHook.current.reportInfos[0].reportData = undefined;
+      reportHook.current.reportInfos[1].reportData = undefined;
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
+      expect(addNotification).toHaveBeenCalledTimes(0);
+    });
+
+    it('should show "file will expire ..." notification when request is successful', () => {
+      reportHook.current.hasPollingStarted = false;
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
+      expect(addNotification).toHaveBeenCalledWith({
+        message: MESSAGE.EXPIRE_INFORMATION(30),
+      });
+    });
+
+    it('should not show notifications after shown once', () => {
+      reportHook.current.reportInfos = reportHook.current.reportInfos.slice(1);
+      reportHook.current.reportInfos[0].generalError4Report = { shouldShow: false, message: 'error' };
+      reportHook.current.reportInfos[0].generalError4Dora = { shouldShow: false, message: 'error' };
+      reportHook.current.reportInfos[0].generalError4Board = { shouldShow: false, message: 'error' };
+      reportHook.current.reportInfos[0].timeout4Dora = { shouldShow: false, message: 'error' };
+      reportHook.current.reportInfos[0].timeout4Board = { shouldShow: false, message: 'error' };
+      reportHook.current.reportInfos[0].timeout4Report = { shouldShow: false, message: 'error' };
+      reportHook.current.reportInfos[0].reportData!.reportMetricsError = {
+        boardMetricsError: { status: 400, message: 'error' },
+        pipelineMetricsError: { status: 400, message: 'error' },
+        sourceControlMetricsError: { status: 400, message: 'error' },
+      };
+      reportHook.current.reportInfos[0].shouldShowBoardMetricsError = false;
+      reportHook.current.reportInfos[0].shouldShowPipelineMetricsError = false;
+      reportHook.current.reportInfos[0].shouldShowSourceControlMetricsError = false;
+      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
+      expect(addNotification).toHaveBeenCalledTimes(0);
+    });
+
+    it('should close error notification when change dateRange', async () => {
+      reportHook.current.reportInfos[1].timeout4Board = { shouldShow: true, message: 'error' };
+      const { getByTestId, getByText } = setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+      const expandMoreIcon = getByTestId('ExpandMoreIcon');
+      await act(async () => {
+        await userEvent.click(expandMoreIcon);
+      });
+      const secondDateRange = await getByText(/2024\/02\/04/);
+
+      await userEvent.click(secondDateRange);
+      await userEvent.click(expandMoreIcon);
+      const firstDateRange = screen.getByText(/2024\/02\/18/);
+      await userEvent.click(firstDateRange);
+      expect(addNotification).toHaveBeenCalledWith({
+        id: expect.any(String),
+        message: MESSAGE.LOADING_TIMEOUT('Board metrics'),
+        type: 'error',
+      });
+      expect(closeNotification).toHaveBeenCalledTimes(1);
+    });
+  });
 });

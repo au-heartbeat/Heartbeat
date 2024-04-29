@@ -130,10 +130,6 @@ describe('use generate report effect', () => {
   });
 
   it('should call polling report more than one time when metrics is loading', async () => {
-    reportClient.polling = jest.fn().mockImplementation(async () => ({
-      status: HttpStatusCode.Ok,
-      response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: false },
-    }));
     reportClient.polling = jest
       .fn()
       .mockReturnValueOnce({

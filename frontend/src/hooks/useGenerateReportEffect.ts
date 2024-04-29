@@ -79,7 +79,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
   const timerIdRef = useRef<number>();
   const dateRanges: DateRange = get(configData, 'basic.dateRange', []);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
-    dateRanges.map((dateRange) => ({ ...initReportInfo(), id: dateRange?.startDate as string })),
+    dateRanges.map((dateRange) => ({ ...initReportInfo(), id: dateRange.startDate as string })),
   );
   const [hasPollingStarted, setHasPollingStarted] = useState<boolean>(false);
   let nextHasPollingStarted = false;
