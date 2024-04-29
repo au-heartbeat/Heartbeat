@@ -8,12 +8,12 @@ test.beforeAll(async () => {
 });
 
 test('Charting unhappy path on config and metri page', async ({ homePage, configStep, metricsStep }) => {
-  const rightDateRange = {
+  const rightDateRange_frist = {
     startDate: format(chartStepData.rightDateRange[0].startDate),
     endDate: format(chartStepData.rightDateRange[0].endDate),
     number: 0,
   };
-  const rightDateRange1 = {
+  const rightDateRange_second = {
     startDate: format(chartStepData.rightDateRange[1].startDate),
     endDate: format(chartStepData.rightDateRange[1].endDate),
     number: 1,
@@ -23,13 +23,13 @@ test('Charting unhappy path on config and metri page', async ({ homePage, config
     endDate: format(chartStepData.errorDateRange[0].endDate),
   };
 
-  const noCardDateRange = {
+  const noCardDateRange_frist = {
     startDate: format(chartStepData.noCardDateRange[0].startDate),
     endDate: format(chartStepData.noCardDateRange[0].endDate),
     number: 0,
   };
 
-  const noCardDateRange1 = {
+  const noCardDateRange_second = {
     startDate: format(chartStepData.noCardDateRange[1].startDate),
     endDate: format(chartStepData.noCardDateRange[1].endDate),
     number: 1,
@@ -59,9 +59,9 @@ test('Charting unhappy path on config and metri page', async ({ homePage, config
   await configStep.checkErrorEndTimeMessage();
   await configStep.validateNextButtonNotClickable();
 
-  await configStep.typeInDateRange(noCardDateRange);
+  await configStep.typeInDateRange(noCardDateRange_frist);
   await configStep.addNewTimeRange();
-  await configStep.typeInDateRange(noCardDateRange1);
+  await configStep.typeInDateRange(noCardDateRange_second);
   await configStep.selectAllRequiredMetrics();
   await configStep.selectBoardMetricsOnly();
   await configStep.goToMetrics();
@@ -69,8 +69,8 @@ test('Charting unhappy path on config and metri page', async ({ homePage, config
   await metricsStep.validateNextButtonNotClickable();
   await metricsStep.goToPreviousStep();
 
-  await configStep.typeInDateRange(rightDateRange);
-  await configStep.typeInDateRange(rightDateRange1);
+  await configStep.typeInDateRange(rightDateRange_frist);
+  await configStep.typeInDateRange(rightDateRange_second);
   await configStep.selectAllRequiredMetrics();
   await configStep.goToMetrics();
   await metricsStep.deselectBranch(chartStepData.unSelectBranch);
