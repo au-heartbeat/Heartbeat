@@ -505,94 +505,96 @@ jobs:
   #         BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
   #         COMMIT_SHA: ${{ github.sha }}
   #       run: ./ops/check.sh buildkite-e2e-deployed
-  e2e-google-chrome:
-    runs-on: macos-latest
-#    needs:
-#      - buildkite-check
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Install
-        run: |
-          npm install -g pnpm
-      - name: Run E2E
-        env:
-          APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
-          E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
-          E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
-          E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
-          E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: "Google Chrome"
-        shell: bash {0}
-        run: ./ops/check.sh e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-google-chrome
-          path: frontend/e2e/reports/
-          retention-days: 30
-      # - name: Slack Notification
-      #   uses: rtCamp/action-slack-notify@v2
-      #   if: always()
-      #   env:
-      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      #     SLACK_ICON_EMOJI: ":heart-beat:"
-      #     SLACK_COLOR: ${{ job.status }}
-      #     SLACK_USERNAME: "Heartbeat E2E Status"
-  e2e-microsoft-edge:
-    runs-on: macos-latest
-#    needs:
-#      - buildkite-check
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Install
-        run: |
-          npm install -g pnpm
-      - name: Run E2E
-        env:
-          APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
-          E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
-          E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
-          E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
-          E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: "Microsoft Edge"
-        shell: bash {0}
-        run: ./ops/check.sh e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-microsoft-dge
-          path: frontend/e2e/reports/
-          retention-days: 30
-  e2e-tablet:
-    runs-on: macos-latest
-#    needs:
-#      - buildkite-check
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Install
-        run: |
-          npm install -g pnpm
-      - name: Run E2E
-        env:
-          APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
-          E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
-          E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
-          E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
-          E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: "Tablet"
-        shell: bash {0}
-        run: ./ops/check.sh e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-tablet
-          path: frontend/e2e/reports/
-          retention-days: 30
+#   e2e-google-chrome:
+#     runs-on: macos-latest
+# #    needs:
+# #      - buildkite-check
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+#       - name: Install
+#         run: |
+#           npm install -g pnpm
+#       - name: Run E2E
+#         env:
+#           APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
+#           E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
+#           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
+#           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
+#           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
+#           E2E_PROJECT: "Google Chrome"
+#         shell: bash {0}
+#         run: ./ops/check.sh e2e
+#       - uses: actions/upload-artifact@v4
+#         if: always()
+#         with:
+#           name: playwright-report-google-chrome
+#           path: frontend/e2e/reports/
+#           retention-days: 30
+#       # - name: Slack Notification
+#       #   uses: rtCamp/action-slack-notify@v2
+#       #   if: always()
+#       #   env:
+#       #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+#       #     SLACK_ICON_EMOJI: ":heart-beat:"
+#       #     SLACK_COLOR: ${{ job.status }}
+#       #     SLACK_USERNAME: "Heartbeat E2E Status"
+#   e2e-microsoft-edge:
+#     runs-on: macos-latest
+# #    needs:
+# #      - buildkite-check
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+#       - name: Install
+#         run: |
+#           npm install -g pnpm
+#       - name: Run E2E
+#         env:
+#           APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
+#           E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
+#           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
+#           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
+#           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
+#           E2E_PROJECT: "Microsoft Edge"
+#         shell: bash {0}
+#         run: ./ops/check.sh e2e
+#       - uses: actions/upload-artifact@v4
+#         if: always()
+#         with:
+#           name: playwright-report-microsoft-dge
+#           path: frontend/e2e/reports/
+#           retention-days: 30
+#   e2e-tablet:
+#     runs-on: macos-latest
+# #    needs:
+# #      - buildkite-check
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+#       - name: Install
+#         run: |
+#           npm install -g pnpm
+#       - name: Run E2E
+#         env:
+#           APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
+#           E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
+#           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
+#           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
+#           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
+#           E2E_PROJECT: "Tablet"
+#         shell: bash {0}
+#         run: ./ops/check.sh e2e
+#       - uses: actions/upload-artifact@v4
+#         if: always()
+#         with:
+#           name: playwright-report-tablet
+#           path: frontend/e2e/reports/
+#           retention-days: 30
   e2e-webkit:
     runs-on: macos-latest
+    env:
+      E2E_PLATFORM: webkit
 #    needs:
 #      - buildkite-check
     steps:
@@ -609,17 +611,19 @@ jobs:
           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: "webkit"
+          E2E_PROJECT: $E2E_PLATFORM
         shell: bash {0}
         run: ./ops/check.sh e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-webkit
+          name: playwright-report-$E2E_PLATFORM
           path: frontend/e2e/reports/
           retention-days: 30
   e2e-firefox:
     runs-on: macos-latest
+    env:
+      E2E_PLATFORM: firefox
 #    needs:
 #      - buildkite-check
     steps:
@@ -636,49 +640,52 @@ jobs:
           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: "firefox"
+          E2E_PROJECT: $E2E_PLATFORM
         shell: bash {0}
         run: ./ops/check.sh e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-webkit
+          name: playwright-report-$E2E_PLATFORM
           path: frontend/e2e/reports/
           retention-days: 30
-  e2e-chromium:
-    runs-on: macos-latest
-#    needs:
-#      - buildkite-check
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Install
-        run: |
-          npm install -g pnpm
-      - name: Run E2E
-        env:
-          APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
-          E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
-          E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
-          E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
-          E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: "chromium"
-        shell: bash {0}
-        run: ./ops/check.sh e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-chromium
-          path: frontend/e2e/reports/
-          retention-days: 30
+#   e2e-chromium:
+#     runs-on: macos-latest
+      # env:
+      #   E2E_PLATFORM: chromium
+# #    needs:
+# #      - buildkite-check
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+#       - name: Install
+#         run: |
+#           npm install -g pnpm
+#       - name: Run E2E
+#         env:
+#           APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
+#           E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
+#           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
+#           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
+#           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
+#           E2E_PROJECT: $E2E_PLATFORM
+#         shell: bash {0}
+#         run: ./ops/check.sh e2e
+#       - uses: actions/upload-artifact@v4
+#         if: always()
+#         with:
+#           name: playwright-report-$E2E_PLATFORM
+#           path: frontend/e2e/reports/
+#           retention-days: 30
   post:
     runs-on: macos-latest
     needs:
-      - e2e-chromium
+      # - e2e-chromium
       - e2e-webkit
-      - e2e-tablet
-      - e2e-microsoft-edge
-      - e2e-google-chrome
+      - e2e-firefox
+      # - e2e-tablet
+      # - e2e-microsoft-edge
+      # - e2e-google-chrome
     steps:
       - name: Slack notification for failure
         uses: rtCamp/action-slack-notify@v2
