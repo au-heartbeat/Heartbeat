@@ -1,6 +1,6 @@
+import { SortedDateRangeType, sortFn, TProps, TSortErrorTypes } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { updateShouldGetBoardConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { selectDateRange, selectDateRangeSortType, updateDateRange } from '@src/context/config/configSlice';
-import { SortedDateRangeType, sortFn, TProps } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { DateRangePickerGroupContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker/DateRangePicker';
 import { ADD_TIME_RANGE_BUTTON_TEXT, MAX_TIME_RANGE_AMOUNT } from '@src/constants/resources';
@@ -51,8 +51,11 @@ export const DateRangePickerGroup = ({ onError }: TProps) => {
     onError?.(rangeListWithErrors);
   }, [onError, sortedDateRangeList]);
 
-  const handleError = (type: string, error: DateValidationError | string, index: number) => {
-    const newList = sortedDateRangeList.map((item) => ({ ...item, [type]: item.sortIndex === index ? error : null }));
+  const handleError = (type: TSortErrorTypes, error: DateValidationError | string, index: number) => {
+    const newList = sortedDateRangeList.map((item) => ({
+      ...item,
+      [type]: item.sortIndex === index ? error : item[type],
+    }));
     setSortedDateRangeList(newList);
   };
 
