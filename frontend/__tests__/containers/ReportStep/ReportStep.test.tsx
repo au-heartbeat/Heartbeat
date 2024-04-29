@@ -619,4 +619,10 @@ describe('Report Step', () => {
       });
     });
   });
+
+  // describe('edge scene', () => {
+  //   it('12', () => {
+  //     reportHook.current.hasPollingStarted = true;
+  //   });
+  // });
 });

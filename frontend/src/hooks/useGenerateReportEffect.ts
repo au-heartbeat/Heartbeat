@@ -43,7 +43,7 @@ export interface IReportInfo extends IReportError {
   shouldShowSourceControlMetricsError: boolean;
 }
 
-export const initReportInfo: IReportInfo = {
+export const initReportInfo = (): IReportInfo => ({
   id: '',
   timeout4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
   timeout4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
@@ -55,7 +55,7 @@ export const initReportInfo: IReportInfo = {
   shouldShowPipelineMetricsError: true,
   shouldShowSourceControlMetricsError: true,
   reportData: undefined,
-};
+});
 
 export const timeoutErrorKey = {
   [METRIC_TYPES.BOARD]: 'timeout4Board',
@@ -79,7 +79,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
   const timerIdRef = useRef<number>();
   const dateRanges: DateRange = get(configData, 'basic.dateRange', []);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
-    dateRanges.map((dateRange) => ({ ...initReportInfo, id: dateRange?.startDate || '' })),
+    dateRanges.map((dateRange) => ({ ...initReportInfo(), id: dateRange?.startDate as string })),
   );
   const [hasPollingStarted, setHasPollingStarted] = useState<boolean>(false);
   let nextHasPollingStarted = false;

@@ -59,8 +59,8 @@ const mockValidationCheckContext = {
 };
 
 const mockDateRange = {
-  startDate: '2024-04-28T00:00:00.000+08:00',
-  endDate: '2024-04-28T23:59:59.999+08:00',
+  startDate: dayjs().startOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
+  endDate: dayjs().endOf('date').format(COMMON_TIME_FORMAT),
 };
 
 jest.mock('@src/hooks/useMetricsStepValidationCheckContext', () => ({

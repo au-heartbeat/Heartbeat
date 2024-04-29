@@ -4,6 +4,7 @@ import {
   IReportInfo,
   useGenerateReportEffect,
   IUseGenerateReportEffectInterface,
+  timeoutErrorKey,
 } from '@src/hooks/useGenerateReportEffect';
 import { MOCK_GENERATE_REPORT_REQUEST_PARAMS, MOCK_REPORT_RESPONSE, MOCK_RETRIEVE_REPORT_RESPONSE } from '../fixtures';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
@@ -139,10 +140,7 @@ describe('use generate report effect', () => {
         status: HttpStatusCode.Ok,
         response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: false },
       })
-      .mockReturnValueOnce({
-        status: HttpStatusCode.Ok,
-        response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: true },
-      })
+      .mockRejectedValue(new TimeoutError('timeout error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT))
       .mockReturnValueOnce({
         status: HttpStatusCode.Ok,
         response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: true },
@@ -160,6 +158,12 @@ describe('use generate report effect', () => {
     });
 
     expect(reportClient.polling).toHaveBeenCalledTimes(3);
+    expect(result.current.reportInfos[0][timeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].message).toEqual(
+      'Data loading failed',
+    );
+    expect(result.current.reportInfos[0][timeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].shouldShow).toEqual(
+      true,
+    );
   });
 
   it('should call polling report only once when request board data given dora data retrieval is called before', async () => {
@@ -225,7 +229,7 @@ describe('use generate report effect', () => {
       stateKey: 'shouldShowSourceControlMetricsError',
       updateMethod: 'shutSourceControlMetricsError',
     },
-  ])('should update the status when call the update method', async (_) => {
+  ])('should update the report error status when call the update method', async (_) => {
     reportClient.polling = jest.fn().mockImplementation(async () => ({
       status: HttpStatusCode.Ok,
       response: {
@@ -257,5 +261,23 @@ describe('use generate report effect', () => {
 
     expect(result.current.reportInfos[0][_.stateKey as keyof IReportInfo]).toEqual(false);
     expect(result.current.reportInfos[1][_.stateKey as keyof IReportInfo]).toEqual(true);
+  });
+
+  it('should update the network error status when call the update method', async () => {
+    reportClient.retrieveByUrl = jest.fn().mockImplementation(async () => MOCK_RETRIEVE_REPORT_RESPONSE);
+    reportClient.polling = jest
+      .fn()
+      .mockRejectedValue(new TimeoutError('timeout error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT));
+    const { result } = setup();
+    await act(async () => {
+      await result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+    });
+    expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(true);
+    expect(result.current.reportInfos[1].timeout4Dora.shouldShow).toEqual(true);
+    await act(async () => {
+      await result.current.shutReportInfosErrorStatus(dateRanges[0].startDate, timeoutErrorKey[METRIC_TYPES.DORA]);
+    });
+    expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(false);
+    expect(result.current.reportInfos[1].timeout4Dora.shouldShow).toEqual(true);
   });
 });
