@@ -25,7 +25,7 @@
     "e2e:debug": "pnpm run pre-e2e && pnpm run e2e:local --debug",
     "e2e:ui": "pnpm run env:local pnpm run pre-e2e && pnpm run env:local pnpm exec playwright test --ui --headed",
     "e2e:local": "pnpm run env:local pnpm run pre-e2e && pnpm run env:local pnpm exec playwright test --ui",
-    "e2e:report": "pnpm run pre-e2e && pnpm exec playwright show-report",
+    "e2e:report": "pnpm exec playwright show-report",
     "e2e:codegen": "pnpm run pre-e2e && pnpm exec playwright codegen 13.215.41.120:4321",
     "e2e:build-docker-image": "docker build -t 'heartbeat_e2e:latest' ../ -f ../ops/infra/Dockerfile.e2e",
     "e2e:updateSnapshots": "pnpm run e2e:local --update-snapshots",
