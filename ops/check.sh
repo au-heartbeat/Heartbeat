@@ -291,7 +291,7 @@ e2e_check() {
   cd frontend
   pnpm install --no-frozen-lockfile
   case "$project" in
-    "Google Chrome" | "chromium")
+    "Google Chrome")
       echo "Installing Chrome browser"
       pnpm exec playwright install chrome
       ;;
@@ -306,6 +306,10 @@ e2e_check() {
     "firefox")
       echo "Installing WebKit browser"
       pnpm exec playwright install firefox
+      ;;
+    "chromium")
+      echo "Installing WebKit browser"
+      pnpm exec playwright install chromium
       ;;
     *)
       echo "No browser is found for  $project type, install default browsers."

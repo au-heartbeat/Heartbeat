@@ -723,9 +723,9 @@ jobs:
       # - e2e-chromium
       - e2e-webkit
       - e2e-firefox
-      # - e2e-tablet
-      # - e2e-microsoft-edge
-      # - e2e-google-chrome
+      - e2e-tablet
+      - e2e-microsoft-edge
+      - e2e-google-chrome
     steps:
       - name: Slack notification for failure
         uses: rtCamp/action-slack-notify@v2
