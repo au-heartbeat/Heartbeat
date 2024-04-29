@@ -290,7 +290,6 @@ e2e_check() {
   npm install -g pnpm
   cd frontend
   pnpm install --no-frozen-lockfile
-  pnpm exec playwright install
   case "$project" in
     "Google Chrome")
       echo "Installing Chrome browser"
@@ -305,7 +304,8 @@ e2e_check() {
       pnpm exec playwright install webkit
       ;;
     *)
-      echo "Install default browser: $project"
+      echo "No browser is found for  $project type, install default browsers."
+      pnpm exec playwright install
       ;;
   esac
   pnpm run e2e:ci --project="${project}"
