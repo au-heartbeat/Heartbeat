@@ -146,9 +146,9 @@ class BuildKiteServiceTest {
 
 		assertNotNull(pipelineStepsDTO);
 		assertThat(pipelineStepsDTO.getSteps().get(0)).isEqualTo(TEST_JOB_NAME);
-		assertEquals(pipelineStepsDTO.getPipelineCrews().size(), 2);
-		assertEquals(pipelineStepsDTO.getPipelineCrews().get(0), "author");
-		assertEquals(pipelineStepsDTO.getPipelineCrews().get(1), "Unknown");
+		assertEquals(2, pipelineStepsDTO.getPipelineCrews().size());
+		assertEquals("author", pipelineStepsDTO.getPipelineCrews().get(0));
+		assertEquals("Unknown", pipelineStepsDTO.getPipelineCrews().get(1));
 	}
 
 	@Test

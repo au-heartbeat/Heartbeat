@@ -236,8 +236,8 @@ public class PipelineServiceTest {
 
 			assertEquals(result.getDeployTimesList().size(), 1);
 			assertEquals(result.getBuildInfosList().size(), 1);
-			assertEquals(result.getBuildInfosList().get(0).getValue().size(), 1);
-			assertEquals(result.getBuildInfosList().get(0).getValue().get(0).getAuthor().getName(), "someone");
+			assertEquals(1, result.getBuildInfosList().get(0).getValue().size());
+			assertEquals("someone", result.getBuildInfosList().get(0).getValue().get(0).getAuthor().getName());
 			verify(buildKiteService, times(1)).fetchPipelineBuilds(any(), any(), any(), any());
 			verify(buildKiteService, times(1)).countDeployTimes(any(), any(), any(), any());
 		}
