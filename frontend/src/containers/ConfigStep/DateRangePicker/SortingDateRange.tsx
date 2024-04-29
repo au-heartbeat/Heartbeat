@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { SORTING_DATE_RANGE_TEXT } from '@src/constants/resources';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { useState } from 'react';
 
 type Props = {
   disabled: boolean;
@@ -19,30 +18,29 @@ type Props = {
 
 export const SortingDateRange = ({ disabled }: Props) => {
   const dispatch = useAppDispatch();
-  const sortType = useAppSelector(selectDateRangeSortType);
-  const [dateRangeSortType, setDateRangeSortType] = useState<SortType>(sortType);
+  const currentSortType = useAppSelector(selectDateRangeSortType);
 
   const handleChangeSort = () => {
-    const totalSortTypes = Object.values(SortType).length;
-    const currentIndex = Object.values(SortType).indexOf(dateRangeSortType);
+    const sortTypes = Object.values(SortType);
+    const totalSortTypes = sortTypes.length;
+    const currentIndex = sortTypes.indexOf(currentSortType);
     const newIndex = (currentIndex + 1) % totalSortTypes;
-    const newSortType = Object.values(SortType)[newIndex];
+    const newSortType = sortTypes[newIndex];
 
-    setDateRangeSortType(newSortType);
     dispatch(updateDateRangeSortType(newSortType));
   };
 
   return (
     <Box aria-label='Sorting date range'>
       <SortingButtoningContainer>
-        <SortingTextButton disableRipple>{SORTING_DATE_RANGE_TEXT[dateRangeSortType]}</SortingTextButton>
+        <SortingTextButton disableRipple>{SORTING_DATE_RANGE_TEXT[currentSortType]}</SortingTextButton>
         <SortingButton aria-label='sort button' onClick={handleChangeSort} disabled={disabled}>
-          {dateRangeSortType === SortType.ASCENDING ? (
+          {currentSortType === SortType.ASCENDING ? (
             <AscendingIcon disabled={disabled} />
           ) : (
             <ArrowDropUp fontSize='inherit' />
           )}
-          {dateRangeSortType === SortType.DESCENDING ? (
+          {currentSortType === SortType.DESCENDING ? (
             <DescendingIcon disabled={disabled} />
           ) : (
             <ArrowDropDown fontSize='inherit' />
