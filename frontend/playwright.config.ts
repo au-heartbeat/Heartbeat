@@ -26,7 +26,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? '80%' : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   outputDir: './e2e/test-results',
   reporter: [['html', { open: process.env.CI ? 'never' : 'on-failure', outputFolder: './e2e/reports/html' }], ['list']],
