@@ -15,7 +15,7 @@ export type PromiseSettledResultWithId<T> = PromiseSettledResult<T> & {
   id: string;
 };
 
-export interface useGenerateReportEffectInterface {
+export interface IUseGenerateReportEffectInterface {
   startToRequestData: (params: ReportRequestDTO) => void;
   stopPollingReports: () => void;
   reportInfos: IReportInfo[];
@@ -73,7 +73,7 @@ const getErrorKey = (error: Error, source: METRIC_TYPES): string => {
   return error instanceof TimeoutError ? timeoutErrorKey[source] : generalErrorKey[source];
 };
 
-export const useGenerateReportEffect = (): useGenerateReportEffectInterface => {
+export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => {
   const reportPath = '/reports';
   const configData = useAppSelector(selectConfig);
   const timerIdRef = useRef<number>();

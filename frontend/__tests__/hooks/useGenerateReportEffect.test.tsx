@@ -1,5 +1,11 @@
+import {
+  generalErrorKey,
+  IReportError,
+  IReportInfo,
+  useGenerateReportEffect,
+  IUseGenerateReportEffectInterface,
+} from '@src/hooks/useGenerateReportEffect';
 import { MOCK_GENERATE_REPORT_REQUEST_PARAMS, MOCK_REPORT_RESPONSE, MOCK_RETRIEVE_REPORT_RESPONSE } from '../fixtures';
-import { generalErrorKey, IReportError, useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { updateDateRange } from '@src/context/config/configSlice';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -34,7 +40,16 @@ const setup = () =>
     wrapper: Wrapper,
   });
 
-// jest.useFakeTimers();
+const dateRanges = [
+  {
+    startDate: '2024-02-04T00:00:00.000+08:00',
+    endDate: '2024-02-17T23:59:59.999+08:00',
+  },
+  {
+    startDate: '2024-02-18T00:00:00.000+08:00',
+    endDate: '2024-02-28T23:59:59.999+08:00',
+  },
+];
 
 describe('use generate report effect', () => {
   afterAll(() => {
@@ -42,18 +57,7 @@ describe('use generate report effect', () => {
   });
   beforeEach(() => {
     store = setupStore();
-    store.dispatch(
-      updateDateRange([
-        {
-          startDate: '2024-02-04T00:00:00.000+08:00',
-          endDate: '2024-02-17T23:59:59.999+08:00',
-        },
-        {
-          startDate: '2024-02-18T00:00:00.000+08:00',
-          endDate: '2024-02-28T23:59:59.999+08:00',
-        },
-      ]),
-    );
+    store.dispatch(updateDateRange(dateRanges));
     jest.useFakeTimers();
   });
   afterEach(() => {
@@ -203,5 +207,55 @@ describe('use generate report effect', () => {
     expect(result.current.reportInfos[0][errorKey].shouldShow).toEqual(true);
     expect(result.current.reportInfos[1][errorKey].message).toEqual('Data loading failed');
     expect(result.current.reportInfos[1][errorKey].shouldShow).toEqual(true);
+  });
+
+  it.each([
+    {
+      errorKey: 'boardMetricsError',
+      stateKey: 'shouldShowBoardMetricsError',
+      updateMethod: 'shutBoardMetricsError',
+    },
+    {
+      errorKey: 'pipelineMetricsError',
+      stateKey: 'shouldShowPipelineMetricsError',
+      updateMethod: 'shutPipelineMetricsError',
+    },
+    {
+      errorKey: 'sourceControlMetricsError',
+      stateKey: 'shouldShowSourceControlMetricsError',
+      updateMethod: 'shutSourceControlMetricsError',
+    },
+  ])('should update the status when call the update method', async (_) => {
+    reportClient.polling = jest.fn().mockImplementation(async () => ({
+      status: HttpStatusCode.Ok,
+      response: {
+        ...MOCK_REPORT_RESPONSE,
+        reportMetricsError: {
+          [_.errorKey]: {
+            status: 400,
+            message: 'error',
+          },
+        },
+      },
+    }));
+    reportClient.retrieveByUrl = jest.fn().mockImplementation(async () => MOCK_RETRIEVE_REPORT_RESPONSE);
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+    });
+
+    expect(result.current.reportInfos[0][_.stateKey as keyof IReportInfo]).toEqual(true);
+    expect(result.current.reportInfos[1][_.stateKey as keyof IReportInfo]).toEqual(true);
+
+    await act(async () => {
+      const updateMethod = result.current[_.updateMethod as keyof IUseGenerateReportEffectInterface] as (
+        id: string,
+      ) => void;
+      updateMethod(dateRanges[0].startDate);
+    });
+
+    expect(result.current.reportInfos[0][_.stateKey as keyof IReportInfo]).toEqual(false);
+    expect(result.current.reportInfos[1][_.stateKey as keyof IReportInfo]).toEqual(true);
   });
 });

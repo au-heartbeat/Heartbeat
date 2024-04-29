@@ -11,6 +11,7 @@ import {
   TEST_PROJECT_NAME,
   VELOCITY,
   COMMON_TIME_FORMAT,
+  MOCK_REPORT_RESPONSE,
 } from '../../fixtures';
 import {
   updateCycleTimeSettings,
@@ -26,8 +27,8 @@ import {
   updatePipelineToolVerifyState,
   updateSourceControlVerifyState,
 } from '@src/context/config/configSlice';
+import { ASSIGNEE_FILTER_TYPES, DEFAULT_MESSAGE } from '@src/constants/resources';
 import { act, render, screen, waitFor } from '@testing-library/react';
-import { ASSIGNEE_FILTER_TYPES } from '@src/constants/resources';
 import MetricsStepper from '@src/containers/MetricsStepper';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
@@ -55,6 +56,11 @@ const mockValidationCheckContext = {
   clearErrorMessage: jest.fn(),
   checkDuplicatedPipeline: jest.fn(),
   getDuplicatedPipeLineIds: jest.fn().mockReturnValue([]),
+};
+
+const mockDateRange = {
+  startDate: '2024-04-28T00:00:00.000+08:00',
+  endDate: '2024-04-28T23:59:59.999+08:00',
 };
 
 jest.mock('@src/hooks/useMetricsStepValidationCheckContext', () => ({
@@ -89,12 +95,29 @@ jest.mock('@src/utils/util', () => ({
 }));
 
 jest.mock('@src/hooks/useGenerateReportEffect', () => ({
+  ...jest.requireActual('@src/hooks/useGenerateReportEffect'),
   useGenerateReportEffect: jest.fn().mockReturnValue({
     startToRequestData: jest.fn(),
-    startToRequestDoraData: jest.fn(),
     stopPollingReports: jest.fn(),
-    isServerError: false,
-    errorMessage: '',
+    shutReportInfosErrorStatus: jest.fn(),
+    shutBoardMetricsError: jest.fn(),
+    shutPipelineMetricsError: jest.fn(),
+    shutSourceControlMetricsError: jest.fn(),
+    reportInfos: [
+      {
+        id: mockDateRange.startDate,
+        timeout4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+        timeout4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+        timeout4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+        shouldShowBoardMetricsError: true,
+        shouldShowPipelineMetricsError: true,
+        shouldShowSourceControlMetricsError: true,
+        reportData: { ...MOCK_REPORT_RESPONSE, exportValidityTime: 30 },
+      },
+    ],
   }),
 }));
 
@@ -128,17 +151,17 @@ const fillMetricsPageDate = async () => {
   act(() => {
     store.dispatch(saveTargetFields([{ name: 'mockClassification', key: 'mockClassification', flag: true }]));
     store.dispatch(saveUsers(['mockUsers']));
-    store.dispatch(saveDoneColumn(['Done', 'Canceled'])),
-      store.dispatch(
-        updateCycleTimeSettings([
-          { column: 'Testing', status: 'testing', value: 'Done' },
-          { column: 'Testing', status: 'test', value: 'Done' },
-        ]),
-      );
-    store.dispatch(updateTreatFlagCardAsBlock(false)),
-      store.dispatch(
-        updateDeploymentFrequencySettings({ updateId: 0, label: 'organization', value: 'mock new organization' }),
-      );
+    store.dispatch(saveDoneColumn(['Done', 'Canceled']));
+    store.dispatch(
+      updateCycleTimeSettings([
+        { column: 'Testing', status: 'testing', value: 'Done' },
+        { column: 'Testing', status: 'test', value: 'Done' },
+      ]),
+    );
+    store.dispatch(updateTreatFlagCardAsBlock(false));
+    store.dispatch(
+      updateDeploymentFrequencySettings({ updateId: 0, label: 'organization', value: 'mock new organization' }),
+    );
     store.dispatch(
       updateDeploymentFrequencySettings({ updateId: 0, label: 'pipelineName', value: 'mock new pipelineName' }),
     );
@@ -355,8 +378,8 @@ describe('MetricsStepper', () => {
       calendarType: 'Regular Calendar(Weekend Considered)',
       dateRange: [
         {
-          endDate: dayjs().endOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
-          startDate: dayjs().startOf('date').format(COMMON_TIME_FORMAT),
+          endDate: mockDateRange.endDate,
+          startDate: mockDateRange.startDate,
         },
       ],
       metrics: ['Velocity'],
@@ -388,7 +411,7 @@ describe('MetricsStepper', () => {
     await fillConfigPageData();
     await userEvent.click(screen.getByText(NEXT));
     await fillMetricsPageDate();
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByText(NEXT)).toBeInTheDocument();
     });
     await userEvent.click(screen.getByText(NEXT));
