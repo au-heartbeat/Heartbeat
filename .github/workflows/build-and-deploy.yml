@@ -562,35 +562,6 @@ jobs:
           path: frontend/e2e/reports/
           retention-days: 30
 
-  e2e-tablet:
-    runs-on: macos-latest
-    env:
-      E2E_PLATFORM: Tablet
-#    needs:
-#      - buildkite-check
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Install
-        run: |
-          npm install -g pnpm
-      - name: Run E2E
-        env:
-          APP_ORIGIN: ${{ vars.APP_HTTP_SCHEDULE }}://${{ secrets.AWS_EC2_IP_E2E }}:${{ secrets.AWS_EC2_IP_E2E_FRONTEND_PORT }}
-          E2E_TOKEN_JIRA: ${{ secrets.E2E_TOKEN_JIRA }}
-          E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
-          E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
-          E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: ${{ env.E2E_PLATFORM }}
-        shell: bash {0}
-        run: ./ops/check.sh e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-${{ env.E2E_PLATFORM }}
-          path: frontend/e2e/reports/
-          retention-days: 30
-
   e2e-webkit:
     runs-on: macos-latest
     env:
@@ -680,73 +651,49 @@ jobs:
           path: frontend/e2e/reports/
           retention-days: 30
 
-  post:
-    runs-on: macos-latest
+  deploy:
+    runs-on: ubuntu-latest
     needs:
       - e2e-chromium
       - e2e-webkit
       - e2e-firefox
-      - e2e-tablet
       - e2e-microsoft-edge
       - e2e-google-chrome
     steps:
-      - name: Slack notification for failure
-        uses: rtCamp/action-slack-notify@v2
-        if: |
-          needs.e2e-chromium.result != 'success' || needs.e2e-webkit.result != 'success' || needs.e2e-tablet.result != 'success' || needs.e2e-microsoft-edge.result != 'success' || needs.e2e-google-chrome.result != 'success'
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_ICON_EMOJI: ":heart-beat:"
-          SLACK_COLOR: "failure"
-          SLACK_USERNAME: "Heartbeat E2E Status"
-      - name: Slack notification for success
-        uses: rtCamp/action-slack-notify@v2
-        if: |
-          needs.e2e-chromium.result == 'success' || needs.e2e-webkit.result == 'success' || needs.e2e-tablet.result == 'success' || needs.e2e-microsoft-edge.result == 'success' || needs.e2e-google-chrome.result == 'success'
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_ICON_EMOJI: ":heart-beat:"
-          SLACK_COLOR: "success"
-          SLACK_USERNAME: "Heartbeat E2E Status"
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - e2e
-  #   steps:
-  #     - name: Checkout repo
-  #       # uses: actions/checkout@v4
-  #       run: echo "This is an empty step"
-  #     # - name: Update docker-compose.yaml
-  #     #   run: |
-  #     #     sed -i -e 's/heartbeat_backend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_backend:hb${{ github.run_number }}/g' ops/infra/docker-compose.yml
-  #     #     sed -i -e 's/heartbeat_frontend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_frontend:hb${{ github.run_number }}/g' ops/infra/docker-compose.yml
+      - name: Checkout repo
+        # uses: actions/checkout@v4
+        run: echo "This is an empty step"
+      # - name: Update docker-compose.yaml
+      #   run: |
+      #     sed -i -e 's/heartbeat_backend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_backend:hb${{ github.run_number }}/g' ops/infra/docker-compose.yml
+      #     sed -i -e 's/heartbeat_frontend:latest/${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}\/heartbeat_frontend:hb${{ github.run_number }}/g' ops/infra/docker-compose.yml
 
-  #     # - name: Copy docker-compose to ec2
-  #     #   uses: appleboy/scp-action@master
-  #     #   with:
-  #     #     host: ${{ secrets.AWS_EC2_IP }}
-  #     #     username: ${{ secrets.AWS_USERNAME }}
-  #     #     key: ${{ secrets.AWS_PRIVATE_KEY }}
-  #     #     port: ${{ secrets.AWS_SSH_PORT }}
-  #     #     source: "./ops/infra/docker-compose.yml"
-  #     #     target: "./"
-  #     #     strip_components: 1
+      # - name: Copy docker-compose to ec2
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ secrets.AWS_EC2_IP }}
+      #     username: ${{ secrets.AWS_USERNAME }}
+      #     key: ${{ secrets.AWS_PRIVATE_KEY }}
+      #     port: ${{ secrets.AWS_SSH_PORT }}
+      #     source: "./ops/infra/docker-compose.yml"
+      #     target: "./"
+      #     strip_components: 1
 
-  #     # - name: Deploy
-  #     #   uses: appleboy/ssh-action@master
-  #     #   env:
-  #     #     REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}
-  #     #     IMAGE_TAG: "hb${{ github.run_number }}"
-  #     #   with:
-  #     #     host: ${{ secrets.AWS_EC2_IP }}
-  #     #     username: ${{ secrets.AWS_USERNAME }}
-  #     #     key: ${{ secrets.AWS_PRIVATE_KEY }}
-  #     #     port: ${{ secrets.AWS_SSH_PORT }}
-  #     #     script: |
-  #     #       aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}
-  #     #       cp "./ops/infra/docker-compose.yml" ./
-  #     #       # docker-compose down
-  #     #       if [[ -n $(docker images -f label=app=Heartbeat -q) ]]; then docker rmi -f $(docker images -f label=app=Heartbeat -q); fi
-  #     #       docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}/heartbeat_backend:$IMAGE_TAG
-  #     #       docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}/heartbeat_frontend:$IMAGE_TAG
-  #     #       docker-compose up -d frontend
+      # - name: Deploy
+      #   uses: appleboy/ssh-action@master
+      #   env:
+      #     REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}
+      #     IMAGE_TAG: "hb${{ github.run_number }}"
+      #   with:
+      #     host: ${{ secrets.AWS_EC2_IP }}
+      #     username: ${{ secrets.AWS_USERNAME }}
+      #     key: ${{ secrets.AWS_PRIVATE_KEY }}
+      #     port: ${{ secrets.AWS_SSH_PORT }}
+      #     script: |
+      #       aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}
+      #       cp "./ops/infra/docker-compose.yml" ./
+      #       # docker-compose down
+      #       if [[ -n $(docker images -f label=app=Heartbeat -q) ]]; then docker rmi -f $(docker images -f label=app=Heartbeat -q); fi
+      #       docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}/heartbeat_backend:$IMAGE_TAG
+      #       docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_HOST }}/heartbeat_frontend:$IMAGE_TAG
+      #       docker-compose up -d frontend

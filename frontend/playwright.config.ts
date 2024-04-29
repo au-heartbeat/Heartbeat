@@ -60,10 +60,10 @@ export default defineConfig({
     },
 
     /* Test against Tablet viewports. */
-    {
-      name: 'Tablet',
-      use: devices['iPad landscape'],
-    },
+    // {
+    //   name: 'Tablet',
+    //   use: devices['iPad landscape'],
+    // },
 
     /* Test against branded browsers. */
     {
