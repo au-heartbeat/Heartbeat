@@ -291,8 +291,23 @@ e2e_check() {
   cd frontend
   pnpm install --no-frozen-lockfile
   pnpm exec playwright install
-  pnpm exec playwright install msedge
-  pnpm exec playwright install chrome
+  case "$project" in
+    "Google Chrome")
+      echo "Installing Chrome browser"
+      pnpm exec playwright install chrome
+      ;;
+    "Microsoft Edge")
+      echo "Installing Microsoft Edge browser"
+      pnpm exec playwright install msedge
+      ;;
+    "webkit")
+      echo "Installing WebKit browser"
+      pnpm exec playwright install webkit
+      ;;
+    *)
+      echo "Install default browser: $project"
+      ;;
+  esac
   pnpm run e2e:ci --project="${project}"
 }
 

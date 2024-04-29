@@ -512,8 +512,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
       - name: Install
         run: |
           npm install -g pnpm
@@ -548,8 +546,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
       - name: Install
         run: |
           npm install -g pnpm
@@ -576,8 +572,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
       - name: Install
         run: |
           npm install -g pnpm
@@ -604,8 +598,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
       - name: Install
         run: |
           npm install -g pnpm
@@ -633,8 +625,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
       - name: Install
         run: |
           npm install -g pnpm
