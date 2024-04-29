@@ -611,13 +611,13 @@ jobs:
           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: $E2E_PLATFORM
+          E2E_PROJECT: ${{ env.E2E_PLATFORM }}
         shell: bash {0}
         run: ./ops/check.sh e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-$E2E_PLATFORM
+          name: playwright-report-${{ env.E2E_PLATFORM }}
           path: frontend/e2e/reports/
           retention-days: 30
   e2e-firefox:
@@ -640,13 +640,13 @@ jobs:
           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-          E2E_PROJECT: $E2E_PLATFORM
+          E2E_PROJECT: ${{ env.E2E_PLATFORM }}
         shell: bash {0}
         run: ./ops/check.sh e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-$E2E_PLATFORM
+          name: playwright-report-${{ env.E2E_PLATFORM }}
           path: frontend/e2e/reports/
           retention-days: 30
 #   e2e-chromium:
@@ -668,13 +668,13 @@ jobs:
 #           E2E_TOKEN_BUILD_KITE: ${{ secrets.E2E_TOKEN_BUILD_KITE }}
 #           E2E_TOKEN_GITHUB: ${{ secrets.E2E_TOKEN_GITHUB }}
 #           E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE: ${{ secrets.E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE }}
-#           E2E_PROJECT: $E2E_PLATFORM
+#           E2E_PROJECT: ${{ env.E2E_PLATFORM }}
 #         shell: bash {0}
 #         run: ./ops/check.sh e2e
 #       - uses: actions/upload-artifact@v4
 #         if: always()
 #         with:
-#           name: playwright-report-$E2E_PLATFORM
+#           name: playwright-report-${{ env.E2E_PLATFORM }}
 #           path: frontend/e2e/reports/
 #           retention-days: 30
   post:
