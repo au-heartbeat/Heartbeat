@@ -46,7 +46,6 @@ import { Loading } from '@src/components/Loading';
 import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
-import { theme } from '@src/theme';
 import merge from 'lodash/merge';
 
 const MetricsStep = () => {
