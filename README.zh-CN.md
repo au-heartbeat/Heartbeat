@@ -129,8 +129,8 @@ _Image 3-7，Settings for Pipeline_
 
 | Items         | Description  |
 | ------------- |--------------|
-| Organization  | 您的部署流水线所属的组织 |
-| Pipeline Name | 您的流水线名       |
+| Organization  | 你的部署流水线所属的组织 |
+| Pipeline Name | 你的流水线名       |
 | Steps         | 流水线步骤名       |
 | Crew setting  | 代码提交者        |
 
