@@ -437,7 +437,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
           <DateRangeViewer
-            dateRanges={descendingDateRanges}
+            dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
             changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
             disabledAll={false}

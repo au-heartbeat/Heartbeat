@@ -128,7 +128,7 @@ const MetricsStep = () => {
     <>
       {startDate && endDate && (
         <MetricSelectionHeader>
-          <DateRangeViewer dateRanges={descendingSortedDateRanges} />
+          <DateRangeViewer dateRangeList={descendingSortedDateRanges} />
         </MetricSelectionHeader>
       )}
       {isShowCrewsAndRealDone && (

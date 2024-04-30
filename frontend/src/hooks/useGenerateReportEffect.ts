@@ -16,7 +16,7 @@ export type PromiseSettledResultWithId<T> = PromiseSettledResult<T> & {
 };
 
 export interface IUseGenerateReportEffect {
-  startToRequestData: (params: ReportRequestDTO) => void;
+  startToRequestData: (params: ReportRequestDTO) => Promise<void>;
   stopPollingReports: () => void;
   reportInfos: IReportInfo[];
   closeReportInfosErrorStatus: (id: string, errorKey: string) => void;
