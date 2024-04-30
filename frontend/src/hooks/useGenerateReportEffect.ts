@@ -57,20 +57,20 @@ export const initReportInfo = (): IReportInfo => ({
   reportData: undefined,
 });
 
-export const timeoutErrorKey = {
+export const TimeoutErrorKey = {
   [METRIC_TYPES.BOARD]: 'timeout4Board',
   [METRIC_TYPES.DORA]: 'timeout4Dora',
   [METRIC_TYPES.ALL]: 'timeout4Report',
 };
 
-export const generalErrorKey = {
+export const GeneralErrorKey = {
   [METRIC_TYPES.BOARD]: 'generalError4Board',
   [METRIC_TYPES.DORA]: 'generalError4Dora',
   [METRIC_TYPES.ALL]: 'generalError4Report',
 };
 
 const getErrorKey = (error: Error, source: METRIC_TYPES): string => {
-  return error instanceof TimeoutError ? timeoutErrorKey[source] : generalErrorKey[source];
+  return error instanceof TimeoutError ? TimeoutErrorKey[source] : GeneralErrorKey[source];
 };
 
 export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => {

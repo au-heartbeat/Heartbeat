@@ -1,10 +1,10 @@
 import {
-  generalErrorKey,
+  GeneralErrorKey,
   IReportError,
   IReportInfo,
   useGenerateReportEffect,
   IUseGenerateReportEffectInterface,
-  timeoutErrorKey,
+  TimeoutErrorKey,
 } from '@src/hooks/useGenerateReportEffect';
 import { MOCK_GENERATE_REPORT_REQUEST_PARAMS, MOCK_REPORT_RESPONSE, MOCK_RETRIEVE_REPORT_RESPONSE } from '../fixtures';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
@@ -154,10 +154,10 @@ describe('use generate report effect', () => {
     });
 
     expect(reportClient.polling).toHaveBeenCalledTimes(3);
-    expect(result.current.reportInfos[0][timeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].message).toEqual(
+    expect(result.current.reportInfos[0][TimeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].message).toEqual(
       'Data loading failed',
     );
-    expect(result.current.reportInfos[0][timeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].shouldShow).toEqual(
+    expect(result.current.reportInfos[0][TimeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].shouldShow).toEqual(
       true,
     );
   });
@@ -183,15 +183,15 @@ describe('use generate report effect', () => {
   it.each([
     {
       params: MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE,
-      errorKey: generalErrorKey[METRIC_TYPES.BOARD],
+      errorKey: GeneralErrorKey[METRIC_TYPES.BOARD],
     },
     {
       params: MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE,
-      errorKey: generalErrorKey[METRIC_TYPES.DORA],
+      errorKey: GeneralErrorKey[METRIC_TYPES.DORA],
     },
     {
       params: MOCK_GENERATE_REPORT_REQUEST_PARAMS,
-      errorKey: generalErrorKey[METRIC_TYPES.ALL],
+      errorKey: GeneralErrorKey[METRIC_TYPES.ALL],
     },
   ])('should set "Data loading failed" for board metric when request board data given UnknownException', async (_) => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
@@ -271,7 +271,7 @@ describe('use generate report effect', () => {
     expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(true);
     expect(result.current.reportInfos[1].timeout4Dora.shouldShow).toEqual(true);
     await act(async () => {
-      await result.current.shutReportInfosErrorStatus(dateRanges[0].startDate, timeoutErrorKey[METRIC_TYPES.DORA]);
+      await result.current.shutReportInfosErrorStatus(dateRanges[0].startDate, TimeoutErrorKey[METRIC_TYPES.DORA]);
     });
     expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(false);
     expect(result.current.reportInfos[1].timeout4Dora.shouldShow).toEqual(true);

@@ -7,11 +7,11 @@ import {
   sortDateRanges,
 } from '@src/utils/util';
 import {
-  generalErrorKey,
+  GeneralErrorKey,
   initReportInfo,
   IReportError,
   IReportInfo,
-  timeoutErrorKey,
+  TimeoutErrorKey,
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
 import {
@@ -54,9 +54,9 @@ export interface ReportStepProps {
 }
 
 const timeoutNotificationMessages = {
-  [timeoutErrorKey[METRIC_TYPES.BOARD]]: 'Board metrics',
-  [timeoutErrorKey[METRIC_TYPES.DORA]]: 'DORA metrics',
-  [timeoutErrorKey[METRIC_TYPES.ALL]]: 'Report',
+  [TimeoutErrorKey[METRIC_TYPES.BOARD]]: 'Board metrics',
+  [TimeoutErrorKey[METRIC_TYPES.DORA]]: 'DORA metrics',
+  [TimeoutErrorKey[METRIC_TYPES.ALL]]: 'Report',
 };
 
 const ReportStep = ({ handleSave }: ReportStepProps) => {
@@ -357,8 +357,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [currentDataInfo.reportData?.reportMetricsError.sourceControlMetricsError]);
 
   useEffect(() => {
-    Object.values(timeoutErrorKey).forEach((value) => handleTimeoutAndGeneralError(value));
-    Object.values(generalErrorKey).forEach((value) => handleTimeoutAndGeneralError(value));
+    Object.values(TimeoutErrorKey).forEach((value) => handleTimeoutAndGeneralError(value));
+    Object.values(GeneralErrorKey).forEach((value) => handleTimeoutAndGeneralError(value));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentDataInfo.timeout4Board,
