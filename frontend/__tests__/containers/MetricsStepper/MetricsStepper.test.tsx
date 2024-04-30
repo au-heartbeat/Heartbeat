@@ -98,10 +98,10 @@ jest.mock('@src/hooks/useGenerateReportEffect', () => ({
   useGenerateReportEffect: jest.fn().mockReturnValue({
     startToRequestData: jest.fn(),
     stopPollingReports: jest.fn(),
-    shutReportInfosErrorStatus: jest.fn(),
-    shutBoardMetricsError: jest.fn(),
-    shutPipelineMetricsError: jest.fn(),
-    shutSourceControlMetricsError: jest.fn(),
+    closeReportInfosErrorStatus: jest.fn(),
+    closeBoardMetricsError: jest.fn(),
+    closePipelineMetricsError: jest.fn(),
+    closeSourceControlMetricsError: jest.fn(),
     reportInfos: [
       {
         id: mockDateRange.startDate,
