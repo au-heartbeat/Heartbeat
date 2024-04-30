@@ -31,6 +31,7 @@ export interface DateRangeItem {
 
 export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downloadCSVFile }: DownloadDialogProps) => {
   const [selectedRangeItems, setSelectedRangeItems] = useState<DateRangeItem[]>([]);
+  const confirmButtonDisabled = selectedRangeItems.length === 0;
 
   const handleChange = (targetItem: DateRangeItem) => {
     if (selectedRangeItems.includes(targetItem)) {
@@ -88,7 +89,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
               />
             ))}
           </StyledFormGroup>
-          <StyledButton variant='contained' onClick={handleDownload}>
+          <StyledButton variant='contained' onClick={handleDownload} disabled={confirmButtonDisabled}>
             {COMMON_BUTTONS.CONFIRM}
           </StyledButton>
         </StyledDialogContent>
