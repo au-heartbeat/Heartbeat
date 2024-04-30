@@ -126,6 +126,24 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     const pollingResponses = await Promise.allSettled(pollingQueue);
     const pollingResponsesWithId = assemblePollingResWithId(pollingResponses, pollingInfos);
 
+    updateReportInfosAfterPolling(pollingResponsesWithId);
+
+    const nextPollingInfos = getNextPollingInfos(pollingResponsesWithId, pollingInfos);
+    if (nextPollingInfos.length === 0) {
+      stopPollingReports();
+      return;
+    }
+    timerIdRef.current = window.setTimeout(() => {
+      pollingReport({ pollingInfos: nextPollingInfos, interval });
+    }, interval * 1000);
+  };
+
+  const stopPollingReports = () => {
+    window.clearTimeout(timerIdRef.current);
+    setHasPollingStarted(false);
+  };
+
+  function updateReportInfosAfterPolling(pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[]) {
     setReportInfos((preReportInfos) => {
       return preReportInfos.map((reportInfo) => {
         const matchedRes = pollingResponsesWithId.find((singleRes) => singleRes.id === reportInfo.id);
@@ -144,21 +162,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
         return reportInfo;
       });
     });
-
-    const nextPollingInfos = getNextPollingInfos(pollingResponsesWithId, pollingInfos);
-    if (nextPollingInfos.length === 0) {
-      stopPollingReports();
-      return;
-    }
-    timerIdRef.current = window.setTimeout(() => {
-      pollingReport({ pollingInfos: nextPollingInfos, interval });
-    }, interval * 1000);
-  };
-
-  const stopPollingReports = () => {
-    window.clearTimeout(timerIdRef.current);
-    setHasPollingStarted(false);
-  };
+  }
 
   const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
     const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
