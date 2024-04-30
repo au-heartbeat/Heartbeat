@@ -110,6 +110,28 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     await pollingReport({ pollingInfos, interval: pollingInterval });
   };
 
+  function getReportInfosAfterPolling(
+    preReportInfos: IReportInfo[],
+    pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[],
+  ) {
+    return preReportInfos.map((reportInfo) => {
+      const matchedRes = pollingResponsesWithId.find((singleRes) => singleRes.id === reportInfo.id);
+      if (!matchedRes) return reportInfo;
+
+      if (matchedRes.status === 'fulfilled') {
+        const { response } = matchedRes.value;
+        reportInfo.reportData = assembleReportData(response);
+        reportInfo.shouldShowBoardMetricsError = true;
+        reportInfo.shouldShowPipelineMetricsError = true;
+        reportInfo.shouldShowSourceControlMetricsError = true;
+      } else {
+        const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
+        reportInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
+      }
+      return reportInfo;
+    });
+  }
+
   const pollingReport = async ({
     pollingInfos,
     interval,
@@ -126,7 +148,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     const pollingResponses = await Promise.allSettled(pollingQueue);
     const pollingResponsesWithId = assemblePollingResWithId(pollingResponses, pollingInfos);
 
-    updateReportInfosAfterPolling(pollingResponsesWithId);
+    setReportInfos((preReportInfos) => getReportInfosAfterPolling(preReportInfos, pollingResponsesWithId));
 
     const nextPollingInfos = getNextPollingInfos(pollingResponsesWithId, pollingInfos);
     if (nextPollingInfos.length === 0) {
@@ -142,27 +164,6 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     window.clearTimeout(timerIdRef.current);
     setHasPollingStarted(false);
   };
-
-  function updateReportInfosAfterPolling(pollingResponsesWithId: PromiseSettledResultWithId<IPollingRes>[]) {
-    setReportInfos((preReportInfos) => {
-      return preReportInfos.map((reportInfo) => {
-        const matchedRes = pollingResponsesWithId.find((singleRes) => singleRes.id === reportInfo.id);
-        if (!matchedRes) return reportInfo;
-
-        if (matchedRes.status === 'fulfilled') {
-          const { response } = matchedRes.value;
-          reportInfo.reportData = assembleReportData(response);
-          reportInfo.shouldShowBoardMetricsError = true;
-          reportInfo.shouldShowPipelineMetricsError = true;
-          reportInfo.shouldShowSourceControlMetricsError = true;
-        } else {
-          const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
-          reportInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
-        }
-        return reportInfo;
-      });
-    });
-  }
 
   const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
     const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
