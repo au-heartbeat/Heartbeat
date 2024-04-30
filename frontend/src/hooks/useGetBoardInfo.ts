@@ -21,6 +21,7 @@ export interface useGetBoardInfoInterface {
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
   boardInfoFailedStatus: METRICS_DATA_FAIL_STATUS;
+  failedTimeRange: string[];
 }
 const boardInfoPartialFailedStatusMapping = (code: string | number) => {
   if (code == AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
@@ -67,6 +68,13 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
   const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
+  const [failedTimeRange, setFailedTimeRange] = useState<string[]>([]);
+
+  const addFailedTimeRange = (timeRange: string | null) => {
+    if (typeof timeRange === 'string') {
+      setFailedTimeRange((prevTimeRanges) => [...prevTimeRanges, timeRange]);
+    }
+  };
 
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
@@ -98,6 +106,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
             if (!res.data) {
               errorCount++;
               localBoardInfoFailedStatus = METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS;
+              addFailedTimeRange(info.startDate);
               setBoardInfoFailedStatus(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS);
             }
             return res;
@@ -105,6 +114,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           .catch((err) => {
             errorCount++;
             localBoardInfoFailedStatus = boardInfoPartialFailedStatusMapping(err?.code);
+            addFailedTimeRange(info.startDate);
             setBoardInfoFailedStatus(localBoardInfoFailedStatus);
             return err;
           });
@@ -136,5 +146,6 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
     errorMessage,
     isLoading,
     boardInfoFailedStatus,
+    failedTimeRange,
   };
 };
