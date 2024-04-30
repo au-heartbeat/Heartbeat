@@ -65,9 +65,15 @@ export const ReportButtonGroup = ({
     disabled: !(item.doraMetricsCompleted && !isReportHasDoraError(item.reportMetricsError)),
   }));
 
-  const isExportMetricsButtonClickable = overallMetricsResults.some(({ disabled }) => !disabled);
-  const isExportBoardButtonClickable = boardMetricsResults.some(({ disabled }) => !disabled);
-  const isExportPipelineButtonClickable = pipelineMetricsResults.some(({ disabled }) => !disabled);
+  const isExportMetricsButtonClickable =
+    dateRangeRequestResults.every(({ overallMetricsCompleted }) => overallMetricsCompleted) &&
+    overallMetricsResults.some(({ disabled }) => !disabled);
+  const isExportBoardButtonClickable =
+    dateRangeRequestResults.every(({ boardMetricsCompleted }) => boardMetricsCompleted) &&
+    boardMetricsResults.some(({ disabled }) => !disabled);
+  const isExportPipelineButtonClickable =
+    dateRangeRequestResults.every(({ doraMetricsCompleted }) => doraMetricsCompleted) &&
+    pipelineMetricsResults.some(({ disabled }) => !disabled);
 
   const exportCSV = (dataType: REPORT_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
