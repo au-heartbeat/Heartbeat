@@ -207,17 +207,17 @@ describe('use generate report effect', () => {
     {
       errorKey: 'boardMetricsError',
       stateKey: 'shouldShowBoardMetricsError',
-      updateMethod: 'shutBoardMetricsError',
+      updateMethod: 'closeBoardMetricsError',
     },
     {
       errorKey: 'pipelineMetricsError',
       stateKey: 'shouldShowPipelineMetricsError',
-      updateMethod: 'shutPipelineMetricsError',
+      updateMethod: 'closePipelineMetricsError',
     },
     {
       errorKey: 'sourceControlMetricsError',
       stateKey: 'shouldShowSourceControlMetricsError',
-      updateMethod: 'shutSourceControlMetricsError',
+      updateMethod: 'closeSourceControlMetricsError',
     },
   ])('should update the report error status when call the update method', async (_) => {
     reportClient.polling = jest.fn().mockImplementation(async () => ({
