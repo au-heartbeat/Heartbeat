@@ -72,10 +72,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     startToRequestData,
     reportInfos,
     stopPollingReports,
-    shutReportInfosErrorStatus,
-    shutBoardMetricsError,
-    shutPipelineMetricsError,
-    shutSourceControlMetricsError,
+    closeReportInfosErrorStatus,
+    closeBoardMetricsError,
+    closePipelineMetricsError,
+    closeSourceControlMetricsError,
     hasPollingStarted,
   } = useGenerateReportEffect();
 
@@ -316,7 +316,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
     }
-    shutBoardMetricsError(selectedDateRange.startDate as string);
+    closeBoardMetricsError(selectedDateRange.startDate as string);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.reportData?.reportMetricsError.boardMetricsError]);
 
@@ -334,7 +334,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
     }
-    shutPipelineMetricsError(selectedDateRange.startDate as string);
+    closePipelineMetricsError(selectedDateRange.startDate as string);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.reportData?.reportMetricsError.pipelineMetricsError]);
 
@@ -352,7 +352,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
     }
-    shutSourceControlMetricsError(selectedDateRange.startDate as string);
+    closeSourceControlMetricsError(selectedDateRange.startDate as string);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataInfo.reportData?.reportMetricsError.sourceControlMetricsError]);
 
@@ -429,7 +429,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       ]);
     }
-    shutReportInfosErrorStatus(selectedDateRange.startDate as string, errorKey);
+    closeReportInfosErrorStatus(selectedDateRange.startDate as string, errorKey);
   };
 
   return (

@@ -15,24 +15,29 @@ export type PromiseSettledResultWithId<T> = PromiseSettledResult<T> & {
   id: string;
 };
 
-export interface IUseGenerateReportEffectInterface {
+export interface IUseGenerateReportEffect {
   startToRequestData: (params: ReportRequestDTO) => void;
   stopPollingReports: () => void;
   reportInfos: IReportInfo[];
-  shutReportInfosErrorStatus: (id: string, errorKey: string) => void;
-  shutBoardMetricsError: (id: string) => void;
-  shutPipelineMetricsError: (id: string) => void;
-  shutSourceControlMetricsError: (id: string) => void;
+  closeReportInfosErrorStatus: (id: string, errorKey: string) => void;
+  closeBoardMetricsError: (id: string) => void;
+  closePipelineMetricsError: (id: string) => void;
+  closeSourceControlMetricsError: (id: string) => void;
   hasPollingStarted: boolean;
 }
 
+interface IErrorInfo {
+  message: string;
+  shouldShow: boolean;
+}
+
 export interface IReportError {
-  timeout4Board: { message: string; shouldShow: boolean };
-  timeout4Dora: { message: string; shouldShow: boolean };
-  timeout4Report: { message: string; shouldShow: boolean };
-  generalError4Board: { message: string; shouldShow: boolean };
-  generalError4Dora: { message: string; shouldShow: boolean };
-  generalError4Report: { message: string; shouldShow: boolean };
+  timeout4Board: IErrorInfo;
+  timeout4Dora: IErrorInfo;
+  timeout4Report: IErrorInfo;
+  generalError4Board: IErrorInfo;
+  generalError4Dora: IErrorInfo;
+  generalError4Report: IErrorInfo;
 }
 
 export interface IReportInfo extends IReportError {
@@ -69,17 +74,20 @@ export const GeneralErrorKey = {
   [METRIC_TYPES.ALL]: 'generalError4Report',
 };
 
+const REJECTED = 'rejected';
+const FULFILLED = 'fulfilled';
+
 const getErrorKey = (error: Error, source: METRIC_TYPES): string => {
   return error instanceof TimeoutError ? TimeoutErrorKey[source] : GeneralErrorKey[source];
 };
 
-export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => {
+export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   const reportPath = '/reports';
   const configData = useAppSelector(selectConfig);
   const timerIdRef = useRef<number>();
-  const dateRanges: DateRange = get(configData, 'basic.dateRange', []);
+  const dateRangeList: DateRange = get(configData, 'basic.dateRange', []);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
-    dateRanges.map((dateRange) => ({ ...initReportInfo(), id: dateRange.startDate as string })),
+    dateRangeList.map((dateRange) => ({ ...initReportInfo(), id: dateRange.startDate as string })),
   );
   const [hasPollingStarted, setHasPollingStarted] = useState<boolean>(false);
   let nextHasPollingStarted = false;
@@ -87,7 +95,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     const { metricTypes } = params;
     resetTimeoutMessage(metricTypes);
     const res: PromiseSettledResult<ReportCallbackResponse>[] = await Promise.allSettled(
-      dateRanges.map(({ startDate, endDate }) =>
+      dateRangeList.map(({ startDate, endDate }) =>
         reportClient.retrieveByUrl(
           {
             ...params,
@@ -118,7 +126,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
       const matchedRes = pollingResponsesWithId.find((singleRes) => singleRes.id === reportInfo.id);
       if (!matchedRes) return reportInfo;
 
-      if (matchedRes.status === 'fulfilled') {
+      if (matchedRes.status === FULFILLED) {
         const { response } = matchedRes.value;
         reportInfo.reportData = assembleReportData(response);
         reportInfo.shouldShowBoardMetricsError = true;
@@ -171,40 +179,30 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
   };
 
   const resetTimeoutMessage = (metricTypes: string[]) => {
-    if (metricTypes.length === 2) {
-      setReportInfos((preReportInfos) => {
-        return preReportInfos.map((reportInfo) => {
+    setReportInfos((preReportInfos) => {
+      return preReportInfos.map((reportInfo) => {
+        if (metricTypes.length === 2) {
           reportInfo.timeout4Report = { message: DEFAULT_MESSAGE, shouldShow: true };
-          return reportInfo;
-        });
-      });
-    } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
-      setReportInfos((preReportInfos) => {
-        return preReportInfos.map((reportInfo) => {
+        } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
           reportInfo.timeout4Board = { message: DEFAULT_MESSAGE, shouldShow: true };
-          return reportInfo;
-        });
-      });
-    } else {
-      setReportInfos((preReportInfos) => {
-        return preReportInfos.map((reportInfo) => {
+        } else {
           reportInfo.timeout4Dora = { message: DEFAULT_MESSAGE, shouldShow: true };
-          return reportInfo;
-        });
+        }
+        return reportInfo;
       });
-    }
+    });
   };
 
   const updateErrorAfterFetchReport = (
     res: PromiseSettledResult<ReportCallbackResponse>[],
     metricTypes: METRIC_TYPES[],
   ) => {
-    if (res.filter(({ status }) => status === 'rejected').length === 0) return;
+    if (res.filter(({ status }) => status === REJECTED).length === 0) return;
 
     setReportInfos((preReportInfos: IReportInfo[]) => {
       return preReportInfos.map((resInfo, index) => {
         const currentRes = res[index];
-        if (currentRes.status === 'rejected') {
+        if (currentRes.status === REJECTED) {
           const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
           const errorKey = getErrorKey(currentRes.reason, source) as keyof IReportError;
           resInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
@@ -221,7 +219,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     }));
 
     const fulfilledResponses: PromiseSettledResultWithId<ReportCallbackResponse>[] = resWithIds.filter(
-      ({ status }) => status === 'fulfilled',
+      ({ status }) => status === FULFILLED,
     );
 
     const pollingInfos: Record<string, string>[] = fulfilledResponses.map((v) => {
@@ -252,7 +250,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     const nextPollingInfos: Record<string, string>[] = pollingResponsesWithId
       .filter(
         (pollingResponseWithId) =>
-          pollingResponseWithId.status === 'fulfilled' &&
+          pollingResponseWithId.status === FULFILLED &&
           !pollingResponseWithId.value.response.allMetricsCompleted &&
           nextHasPollingStarted,
       )
@@ -320,10 +318,10 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffectInterface => 
     startToRequestData,
     stopPollingReports,
     reportInfos,
-    shutReportInfosErrorStatus,
-    shutBoardMetricsError,
-    shutPipelineMetricsError,
-    shutSourceControlMetricsError,
+    closeReportInfosErrorStatus: shutReportInfosErrorStatus,
+    closeBoardMetricsError: shutBoardMetricsError,
+    closePipelineMetricsError: shutPipelineMetricsError,
+    closeSourceControlMetricsError: shutSourceControlMetricsError,
     hasPollingStarted,
   };
 };

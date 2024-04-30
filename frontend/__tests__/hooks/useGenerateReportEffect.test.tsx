@@ -3,10 +3,15 @@ import {
   IReportError,
   IReportInfo,
   useGenerateReportEffect,
-  IUseGenerateReportEffectInterface,
+  IUseGenerateReportEffect,
   TimeoutErrorKey,
 } from '@src/hooks/useGenerateReportEffect';
-import { MOCK_GENERATE_REPORT_REQUEST_PARAMS, MOCK_REPORT_RESPONSE, MOCK_RETRIEVE_REPORT_RESPONSE } from '../fixtures';
+import {
+  MOCK_GENERATE_REPORT_REQUEST_PARAMS,
+  MOCK_REPORT_RESPONSE,
+  MOCK_RETRIEVE_REPORT_RESPONSE,
+  MockedDateRanges,
+} from '../fixtures';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { updateDateRange } from '@src/context/config/configSlice';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -41,24 +46,13 @@ const setup = () =>
     wrapper: Wrapper,
   });
 
-const dateRanges = [
-  {
-    startDate: '2024-02-04T00:00:00.000+08:00',
-    endDate: '2024-02-17T23:59:59.999+08:00',
-  },
-  {
-    startDate: '2024-02-18T00:00:00.000+08:00',
-    endDate: '2024-02-28T23:59:59.999+08:00',
-  },
-];
-
 describe('use generate report effect', () => {
   afterAll(() => {
     clearAllMocks();
   });
   beforeEach(() => {
     store = setupStore();
-    store.dispatch(updateDateRange(dateRanges));
+    store.dispatch(updateDateRange(MockedDateRanges));
     jest.useFakeTimers();
   });
   afterEach(() => {
@@ -249,10 +243,8 @@ describe('use generate report effect', () => {
     expect(result.current.reportInfos[1][_.stateKey as keyof IReportInfo]).toEqual(true);
 
     await act(async () => {
-      const updateMethod = result.current[_.updateMethod as keyof IUseGenerateReportEffectInterface] as (
-        id: string,
-      ) => void;
-      updateMethod(dateRanges[0].startDate);
+      const updateMethod = result.current[_.updateMethod as keyof IUseGenerateReportEffect] as (id: string) => void;
+      updateMethod(MockedDateRanges[0].startDate);
     });
 
     expect(result.current.reportInfos[0][_.stateKey as keyof IReportInfo]).toEqual(false);
@@ -271,7 +263,10 @@ describe('use generate report effect', () => {
     expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(true);
     expect(result.current.reportInfos[1].timeout4Dora.shouldShow).toEqual(true);
     await act(async () => {
-      await result.current.shutReportInfosErrorStatus(dateRanges[0].startDate, TimeoutErrorKey[METRIC_TYPES.DORA]);
+      await result.current.closeReportInfosErrorStatus(
+        MockedDateRanges[0].startDate,
+        TimeoutErrorKey[METRIC_TYPES.DORA],
+      );
     });
     expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(false);
     expect(result.current.reportInfos[1].timeout4Dora.shouldShow).toEqual(true);

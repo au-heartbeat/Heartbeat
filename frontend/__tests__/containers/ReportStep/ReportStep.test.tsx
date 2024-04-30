@@ -621,14 +621,14 @@ describe('Report Step', () => {
       });
     });
 
-    it('should not show notification in sending request', async () => {
+    it('should not show notification when sending request', async () => {
       reportHook.current.hasPollingStarted = true;
       setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
 
       expect(addNotification).toHaveBeenCalledTimes(0);
     });
 
-    it('should not show notification when the requests all failed', () => {
+    it('should not show notification given the requests all failed', () => {
       reportHook.current.hasPollingStarted = false;
       reportHook.current.reportInfos[0].reportData = undefined;
       reportHook.current.reportInfos[1].reportData = undefined;
@@ -636,7 +636,7 @@ describe('Report Step', () => {
       expect(addNotification).toHaveBeenCalledTimes(0);
     });
 
-    it('should show "file will expire ..." notification when request is successful', () => {
+    it('should show "file will expire ..." notification given the request is successful', () => {
       reportHook.current.hasPollingStarted = false;
       setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
       expect(addNotification).toHaveBeenCalledWith({
@@ -644,7 +644,7 @@ describe('Report Step', () => {
       });
     });
 
-    it('should not show notifications after shown once', () => {
+    it('should not show notifications given shown once', () => {
       reportHook.current.reportInfos = reportHook.current.reportInfos.slice(1);
       reportHook.current.reportInfos[0].generalError4Report = { shouldShow: false, message: 'error' };
       reportHook.current.reportInfos[0].generalError4Dora = { shouldShow: false, message: 'error' };

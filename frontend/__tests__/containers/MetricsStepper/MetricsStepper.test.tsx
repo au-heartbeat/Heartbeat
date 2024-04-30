@@ -26,8 +26,8 @@ import {
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import { ASSIGNEE_FILTER_TYPES, DEFAULT_MESSAGE } from '@src/constants/resources';
+import { updateDateRange, updateMetrics } from '@src/context/config/configSlice';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
-import { updateMetrics } from '@src/context/config/configSlice';
 import MetricsStepper from '@src/containers/MetricsStepper';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
@@ -58,8 +58,8 @@ const mockValidationCheckContext = {
 };
 
 const mockDateRange = {
-  startDate: dayjs().startOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
-  endDate: dayjs().endOf('date').format(COMMON_TIME_FORMAT),
+  startDate: '2024-02-18T00:00:00.000+08:00',
+  endDate: '2024-02-28T23:59:59.999+08:00',
 };
 
 jest.mock('@src/hooks/useMetricsStepValidationCheckContext', () => ({
@@ -183,6 +183,7 @@ const fillMetricsPageDate = async () => {
       updateDeploymentFrequencySettings({ updateId: 0, label: 'pipelineName', value: 'mock new pipelineName' }),
     );
     store.dispatch(updateDeploymentFrequencySettings({ updateId: 0, label: 'step', value: 'mock new step' }));
+    store.dispatch(updateDateRange([mockDateRange]));
   });
 };
 
