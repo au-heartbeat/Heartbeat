@@ -193,7 +193,7 @@ describe('use generate report effect', () => {
       params: MOCK_GENERATE_REPORT_REQUEST_PARAMS,
       errorKey: GeneralErrorKey[METRIC_TYPES.ALL],
     },
-  ])('should set "Data loading failed" for board metric when request board data given UnknownException', async (_) => {
+  ])('should set "Data loading failed" for board metric when request given UnknownException', async (_) => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
     const { result } = setup();
