@@ -36,12 +36,6 @@ describe('verify export csv', () => {
   });
 
   it('should throw error when export csv request status 500', async () => {
-    // server.use(
-    //   http.get(MOCK_EXPORT_CSV_URL, (req, res, ctx) =>
-    //     res(ctx.status(HttpStatusCode.InternalServerError, VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR)),
-    //   ),
-    // );
-
     server.use(
       http.get(MOCK_EXPORT_CSV_URL, () => {
         return new HttpResponse(null, {
