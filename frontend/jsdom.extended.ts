@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const JSDOMEnvironment = require('jest-environment-jsdom').default; // or import JSDOMEnvironment from 'jest-environment-jsdom' if you are using ESM modules
 
 class JSDOMEnvironmentExtended extends JSDOMEnvironment {
