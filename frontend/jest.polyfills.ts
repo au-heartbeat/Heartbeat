@@ -9,8 +9,8 @@
  * you don't want to deal with this.
  */
 
-const { ReadableStream } = require('web-streams-polyfill/ponyfill/es2018');
-const { TextDecoder, TextEncoder } = require('node:util');
+import { ReadableStream } from 'web-streams-polyfill';
+import { TextDecoder, TextEncoder } from 'node:util';
 
 Object.defineProperties(globalThis, {
   TextDecoder: { value: TextDecoder },
@@ -18,8 +18,8 @@ Object.defineProperties(globalThis, {
   ReadableStream: { value: ReadableStream },
 });
 
-const { fetch, Headers, FormData, Request, Response } = require('undici');
-const { Blob } = require('node:buffer');
+import { fetch, Headers, FormData, Request, Response } from 'undici';
+import { Blob } from 'node:buffer';
 
 Object.defineProperties(globalThis, {
   fetch: { value: fetch, writable: true },

@@ -201,6 +201,9 @@ importers:
       undici:
         specifier: ^6.15.0
         version: 6.15.0
+      web-streams-polyfill:
+        specifier: ^4.0.0
+        version: 4.0.0
 
 packages:
 
@@ -5048,6 +5051,10 @@ packages:
 
   web-streams-polyfill@3.3.3:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
+    engines: {node: '>= 8'}
+
+  web-streams-polyfill@4.0.0:
+    resolution: {integrity: sha512-0zJXHRAYEjM2tUfZ2DiSOHAa2aw1tisnnhU3ufD57R8iefL+DcdJyRBRyJpG+NUimDgbTI/lH+gAE1PAvV3Cgw==}
     engines: {node: '>= 8'}
 
   webidl-conversions@4.0.2:
@@ -10876,6 +10883,8 @@ snapshots:
       defaults: 1.0.4
 
   web-streams-polyfill@3.3.3: {}
+
+  web-streams-polyfill@4.0.0: {}
 
   webidl-conversions@4.0.2: {}
 
