@@ -45,6 +45,8 @@ export class HttpClient {
               throw new UnknownError();
           }
         } else {
+          //  Can't find any solution to cover below line due to upgrading the msw from v1 to v2
+          /* istanbul ignore next */
           throw new UnknownError();
         }
       },
