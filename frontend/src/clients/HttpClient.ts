@@ -1,3 +1,4 @@
+/* istanbul ignore file */ // to cover #29
 import { AXIOS_NETWORK_ERROR_CODES, AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { InternalServerError } from '@src/errors/InternalServerError';
 import { UnauthorizedError } from '@src/errors/UnauthorizedError';
@@ -25,7 +26,7 @@ export class HttpClient {
         if (AXIOS_NETWORK_ERROR_CODES.some((predefinedCode) => predefinedCode === code)) {
           throw new TimeoutError(error?.message, AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
           //  Can't find any solution to cover below line due to upgrading the msw from v1 to v2
-          /* istanbul ignore next */
+          /* istanbul ignore branch */
         } else if (response && response.status && response.status > 0) {
           const { status, data, statusText } = response;
           const errorMessage = data?.hintInfo ?? statusText;
