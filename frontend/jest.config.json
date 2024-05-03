@@ -5,6 +5,7 @@
     ".+\\.svg": "<rootDir>/__tests__/__mocks__/svgTransformer.ts"
   },
   "globalSetup": "./global-setup.ts",
+  "setupFiles": ["./jest.polyfills.ts"],
   "setupFilesAfterEnv": ["<rootDir>/__tests__/setupTests.ts"],
   "testEnvironment": "<rootDir>/jsdom.extended.ts",
   "testRegex": "/__tests__/.*(test|spec)\\.(jsx?|tsx?|ts?)$",
