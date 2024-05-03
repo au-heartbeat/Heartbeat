@@ -87,7 +87,7 @@
     "audit-ci": "^6.6.1",
     "autoprefixer": "^10.4.19",
     "csv-parse": "^5.5.5",
-    "eslint": "^9.1.1",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^17.4.0",
