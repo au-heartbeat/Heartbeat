@@ -24,6 +24,8 @@ export class HttpClient {
         const { code, response } = error;
         if (AXIOS_NETWORK_ERROR_CODES.some((predefinedCode) => predefinedCode === code)) {
           throw new TimeoutError(error?.message, AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+          //  Can't find any solution to cover below line due to upgrading the msw from v1 to v2
+          /* istanbul ignore next */
         } else if (response && response.status && response.status > 0) {
           const { status, data, statusText } = response;
           const errorMessage = data?.hintInfo ?? statusText;
