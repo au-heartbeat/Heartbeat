@@ -6,7 +6,7 @@ import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { includes, isEqual, sortBy, uniq, uniqBy } from 'lodash';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
-import { DateRange } from '@src/context/config/configSlice';
+import { DateRangeList } from '@src/context/config/configSlice';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
 
@@ -103,7 +103,7 @@ export const formatDateToTimestampString = (date: string) => {
   return dayjs(date).valueOf().toString();
 };
 
-export const sortDateRanges = (dateRanges: DateRange, descending = true) => {
+export const sortDateRanges = (dateRanges: DateRangeList, descending = true) => {
   const result = [...dateRanges].sort((a, b) => {
     return dayjs(b.startDate as string).diff(dayjs(a.startDate as string));
   });

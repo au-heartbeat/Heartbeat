@@ -2,7 +2,7 @@ import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/d
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
 import { IPollingRes, reportClient } from '@src/clients/report/ReportClient';
-import { DateRange, selectConfig } from '@src/context/config/configSlice';
+import { DateRangeList, selectConfig } from '@src/context/config/configSlice';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { formatDateToTimestampString } from '@src/utils/util';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -85,7 +85,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   const reportPath = '/reports';
   const configData = useAppSelector(selectConfig);
   const timerIdRef = useRef<number>();
-  const dateRangeList: DateRange = get(configData, 'basic.dateRange', []);
+  const dateRangeList: DateRangeList = get(configData, 'basic.dateRange', []);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
     dateRangeList.map((dateRange) => ({ ...initReportInfo(), id: dateRange.startDate as string })),
   );

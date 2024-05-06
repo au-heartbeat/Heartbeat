@@ -21,11 +21,12 @@ import {
   Notification,
 } from '@src/context/notification/NotificationSlice';
 import {
+  DateRange,
   isOnlySelectClassification,
   isSelectBoardMetrics,
   isSelectDoraMetrics,
-  selectConfig,
-} from '@src/context/config/configSlice';
+  selectConfig
+} from "@src/context/config/configSlice";
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -63,7 +64,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
   const descendingDateRanges = sortDateRanges(configData.basic.dateRange);
-  const [selectedDateRange, setSelectedDateRange] = useState<Record<string, string | null | boolean | undefined>>(
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(
     descendingDateRanges[0],
   );
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());

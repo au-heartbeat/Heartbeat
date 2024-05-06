@@ -1,10 +1,10 @@
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
-import { DateRange } from '@src/context/config/configSlice';
+import { DateRangeList } from '@src/context/config/configSlice';
 import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
 
 describe('DateRangeViewer', () => {
-  const setup = (dateRanges: DateRange) => {
+  const setup = (dateRanges: DateRangeList) => {
     return render(<DateRangeViewer dateRangeList={dateRanges} />);
   };
   const mockDateRanges = [

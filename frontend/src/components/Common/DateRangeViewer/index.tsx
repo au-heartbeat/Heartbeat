@@ -8,14 +8,14 @@ import {
   StyledExpandMoreIcon,
 } from './style';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
-import { DateRange } from '@src/context/config/configSlice';
+import { DateRange, DateRangeList } from "@src/context/config/configSlice";
 import { formatDate } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 type Props = {
-  dateRangeList: DateRange;
-  selectedDateRange?: Record<string, string | null | boolean | undefined>;
-  changeDateRange?: (dateRange: Record<string, string | null | boolean | undefined>) => void;
+  dateRangeList: DateRangeList;
+  selectedDateRange?: DateRange;
+  changeDateRange?: (dateRange: DateRange) => void;
   disabledAll?: boolean;
 };
 
