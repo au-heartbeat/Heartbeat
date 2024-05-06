@@ -1,5 +1,5 @@
 {
-  "projectName": "",
+  "projectName": "Heartbeat Metrics",
   "dateRange": {
     "startDate": "2024-02-12T00:00:00.000+08:00",
     "endDate": "2024-02-16T23:59:59.999+08:00"
@@ -30,29 +30,9 @@
     "type": "GitHub",
     "token": "<E2E_TOKEN_GITHUB>"
   },
-  "crews": [],
+  "crews": ["heartbeat user"],
   "assigneeFilter": "lastAssignee",
-  "pipelineCrews": [
-    "Chao",
-    "GuangbinMa",
-    "JiangRu1",
-    "Jianxun.Ma",
-    "Nathan Wang",
-    "Steveay",
-    "Yunsong",
-    "andrea999",
-    "guzhongren",
-    "junbo dai",
-    "junbo.dai",
-    "mjx20045912",
-    "neomgb",
-    "sqsq5566",
-    "weiran.sun",
-    "xuebing",
-    "yichen.wang",
-    "李雪冰",
-    "Unknown"
-  ],
+  "pipelineCrews": ["heartbeat-user", "guzhongren", "Unknown"],
   "cycleTime": {
     "type": "byColumn",
     "jiraColumns": [
@@ -105,7 +85,7 @@
       "organization": "Thoughtworks-Heartbeat",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
-      "branches": ["main", "ADM-747"]
+      "branches": ["main"]
     }
   ],
   "reworkTimesSettings": {

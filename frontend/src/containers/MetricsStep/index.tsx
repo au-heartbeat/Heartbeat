@@ -46,7 +46,6 @@ import { Loading } from '@src/components/Loading';
 import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
-import { theme } from '@src/theme';
 import merge from 'lodash/merge';
 
 const MetricsStep = () => {
@@ -129,11 +128,7 @@ const MetricsStep = () => {
     <>
       {startDate && endDate && (
         <MetricSelectionHeader>
-          <DateRangeViewer
-            dateRanges={descendingSortedDateRanges}
-            expandColor={theme.palette.text.disabled}
-            expandBackgroundColor={theme.palette.secondary.dark}
-          />
+          <DateRangeViewer dateRangeList={descendingSortedDateRanges} />
         </MetricSelectionHeader>
       )}
       {isShowCrewsAndRealDone && (
@@ -142,9 +137,9 @@ const MetricsStep = () => {
           <MetricsSelectionTitle>Board configuration </MetricsSelectionTitle>
 
           {isEmpty(errorMessage) ||
-          (boardInfoFailedStatus != METRICS_DATA_FAIL_STATUS.ALL_FAILED_4XX &&
-            boardInfoFailedStatus != METRICS_DATA_FAIL_STATUS.ALL_FAILED_TIMEOUT &&
-            boardInfoFailedStatus != METRICS_DATA_FAIL_STATUS.ALL_FAILED_NO_CARDS) ? (
+          (boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_4XX &&
+            boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_TIMEOUT &&
+            boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_NO_CARDS) ? (
             <>
               <Crews options={users} title={'Crew settings'} label={'Included Crews'} />
 

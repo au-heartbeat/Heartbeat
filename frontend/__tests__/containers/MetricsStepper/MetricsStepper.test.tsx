@@ -15,6 +15,7 @@ import {
   REQUIRED_DATA,
   MOCK_PIPELINE_VERIFY_URL,
   MOCK_BOARD_URL_FOR_JIRA,
+  MOCK_REPORT_RESPONSE,
 } from '../../fixtures';
 import {
   updateCycleTimeSettings,
@@ -24,18 +25,18 @@ import {
   updateDeploymentFrequencySettings,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
+import { ASSIGNEE_FILTER_TYPES, DEFAULT_MESSAGE } from '@src/constants/resources';
+import { updateDateRange, updateMetrics } from '@src/context/config/configSlice';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
-import { ASSIGNEE_FILTER_TYPES } from '@src/constants/resources';
-import { updateMetrics } from '@src/context/config/configSlice';
 import MetricsStepper from '@src/containers/MetricsStepper';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { exportToJsonFile } from '@src/utils/util';
 import { navigateMock } from '../../setupTests';
+import { HttpResponse, http } from 'msw';
 import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
-import { rest } from 'msw';
 import dayjs from 'dayjs';
 import React from 'react';
 
@@ -54,6 +55,11 @@ const mockValidationCheckContext = {
   clearErrorMessage: jest.fn(),
   checkDuplicatedPipeline: jest.fn(),
   getDuplicatedPipeLineIds: jest.fn().mockReturnValue([]),
+};
+
+const mockDateRange = {
+  startDate: '2024-02-18T00:00:00.000+08:00',
+  endDate: '2024-02-28T23:59:59.999+08:00',
 };
 
 jest.mock('@src/hooks/useMetricsStepValidationCheckContext', () => ({
@@ -88,18 +94,43 @@ jest.mock('@src/utils/util', () => ({
 }));
 
 jest.mock('@src/hooks/useGenerateReportEffect', () => ({
+  ...jest.requireActual('@src/hooks/useGenerateReportEffect'),
   useGenerateReportEffect: jest.fn().mockReturnValue({
     startToRequestData: jest.fn(),
-    startToRequestDoraData: jest.fn(),
     stopPollingReports: jest.fn(),
-    isServerError: false,
-    errorMessage: '',
+    closeReportInfosErrorStatus: jest.fn(),
+    closeBoardMetricsError: jest.fn(),
+    closePipelineMetricsError: jest.fn(),
+    closeSourceControlMetricsError: jest.fn(),
+    reportInfos: [
+      {
+        id: mockDateRange.startDate,
+        timeout4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+        timeout4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+        timeout4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+        shouldShowBoardMetricsError: true,
+        shouldShowPipelineMetricsError: true,
+        shouldShowSourceControlMetricsError: true,
+        reportData: { ...MOCK_REPORT_RESPONSE, exportValidityTime: 30 },
+      },
+    ],
   }),
 }));
 
 const server = setupServer(
-  rest.post(MOCK_REPORT_URL, (_, res, ctx) => res(ctx.status(HttpStatusCode.Ok))),
-  rest.post(MOCK_BOARD_URL_FOR_JIRA, (_, res, ctx) => res(ctx.status(HttpStatusCode.NoContent))),
+  http.post(MOCK_REPORT_URL, () => {
+    return new HttpResponse(null, {
+      status: HttpStatusCode.Ok,
+    });
+  }),
+  http.post(MOCK_BOARD_URL_FOR_JIRA, () => {
+    return new HttpResponse(null, {
+      status: HttpStatusCode.NoContent,
+    });
+  }),
 );
 
 const mockLocation = { ...window.location, reload: jest.fn() };
@@ -160,6 +191,7 @@ const fillMetricsPageDate = async () => {
       updateDeploymentFrequencySettings({ updateId: 0, label: 'pipelineName', value: 'mock new pipelineName' }),
     );
     store.dispatch(updateDeploymentFrequencySettings({ updateId: 0, label: 'step', value: 'mock new step' }));
+    store.dispatch(updateDateRange([mockDateRange]));
   });
 };
 
@@ -239,7 +271,13 @@ describe('MetricsStepper', () => {
   });
 
   it('should enable next when every selected component is show and verified', async () => {
-    server.use(rest.post(MOCK_PIPELINE_VERIFY_URL, (_, res, ctx) => res(ctx.status(HttpStatusCode.NoContent))));
+    server.use(
+      http.post(MOCK_PIPELINE_VERIFY_URL, () => {
+        return new HttpResponse(null, {
+          status: HttpStatusCode.NoContent,
+        });
+      }),
+    );
     await act(async () => {
       setup();
     });
@@ -396,8 +434,8 @@ describe('MetricsStepper', () => {
       calendarType: 'Regular Calendar(Weekend Considered)',
       dateRange: [
         {
-          endDate: dayjs().endOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
-          startDate: dayjs().startOf('date').format(COMMON_TIME_FORMAT),
+          endDate: mockDateRange.endDate,
+          startDate: mockDateRange.startDate,
         },
       ],
       metrics: ['Velocity'],
