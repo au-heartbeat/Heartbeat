@@ -1,7 +1,5 @@
 import { AscendingIcon, DescendingIcon } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { SortingDateRange } from '@src/containers/ConfigStep/DateRangePicker/SortingDateRange';
-import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { updateDateRangeSortType } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,10 +19,6 @@ const setup = () => {
     </Provider>,
   );
 };
-jest.mock('@src/context/config/configSlice', () => ({
-  ...jest.requireActual('@src/context/config/configSlice'),
-  updateDateRangeSortType: jest.fn().mockReturnValue({ type: 'SHOULD_UPDATE_SORT_STATUS' }),
-}));
 
 describe('SortDateRange button behaviors', () => {
   it('should show sort time rang button', () => {
@@ -39,23 +33,7 @@ describe('SortDateRange button behaviors', () => {
     expect(sortButton).toBeInTheDocument();
   });
 
-  it('should change sort order given SortButton is clicked', async () => {
-    setup();
-    const sortButtonContainer = screen.getByLabelText('Sorting date range');
-    expect(sortButtonContainer).toBeInTheDocument();
-
-    const sortTextButton = screen.getByText('Default sort');
-
-    expect(sortTextButton).toBeInTheDocument();
-
-    const sortButton = screen.getByLabelText('sort button');
-    await userEvent.click(sortButton);
-
-    expect(updateDateRangeSortType).toHaveBeenCalledTimes(1);
-    expect(updateDateRangeSortType).toHaveBeenCalledWith(SortType.DESCENDING);
-  });
-
-  it('should render right icon with sort status', async () => {
+  it('should change sort order iterately given SortButton is clicked', async () => {
     setup();
     const sortButton = screen.getByLabelText('sort button');
     await userEvent.click(sortButton);
