@@ -16,7 +16,12 @@ export const basicButtonStyle = {
 
 export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean }) => ({
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
   marginTop: '0.25rem',
-  marginBottom: props.isSummaryPage ? '-3.5rem' : '-2rem',
+  marginBottom: props.isSummaryPage ? '0rem' : '2rem',
 }));
+
+export const ListChartButtonContainer = styled('div')({
+  display: 'flex',
+  marginRight: '1rem',
+});
