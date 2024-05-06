@@ -80,11 +80,11 @@ export const DateRangePicker = ({
       }
       setValue(startDateFieldName, result.startDate, { shouldValidate: true });
       setValue(endDateFieldName, result.endDate, { shouldValidate: true });
-      onChange(result, index);
     } else {
       setValue(startDateFieldName, AGGREGATED_DATE_ERROR_REASON, { shouldValidate: true });
       onError('startDateError', validationError, index);
     }
+    onChange(result, index);
   };
 
   const changeEndDate = (value: Nullable<Dayjs>, { validationError }: { validationError: DateValidationError }) => {
@@ -104,11 +104,11 @@ export const DateRangePicker = ({
       }
       setValue(startDateFieldName, result.startDate, { shouldValidate: true });
       setValue(endDateFieldName, result.endDate, { shouldValidate: true });
-      onChange(result, index);
     } else {
       setValue(endDateFieldName, AGGREGATED_DATE_ERROR_REASON, { shouldValidate: true });
       onError('endDateError', validationError, index);
     }
+    onChange(result, index);
   };
 
   const removeSelfHandler = () => onRemove(index);
