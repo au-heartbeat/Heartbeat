@@ -240,7 +240,7 @@ describe('DateRangePickerSection', () => {
 
     it('should provide unified error message when given all invalid time input', async () => {
       const correctRange = ['03/15/2024', '03/25/2024'];
-      const rangeOfTooEarly = ['03/15/1600', '03/25/1600'];
+      const rangeOfTooEarly = ['03/15/1899', '03/25/1898'];
       const rangeOfInvalidFormat = ['XXxYY/2024', 'ZZ/11/2024'];
       const startDateRequiredErrorMessage = 'Start date is required';
       const endDateRequiredErrorMessage = 'End date is required';

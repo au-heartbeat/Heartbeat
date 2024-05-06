@@ -65,6 +65,7 @@ describe('SortDateRange button behaviors', () => {
     const arrowDropUp = screen.getByRole('button', { name: 'Ascending' });
     expect(arrowDropUp).toBeInTheDocument();
   });
+
   it('should render AscendingIcon with correct styles', () => {
     render(<AscendingIcon theme={theme} disabled={true} />);
 
