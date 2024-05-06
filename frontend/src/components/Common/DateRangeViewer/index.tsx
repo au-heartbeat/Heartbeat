@@ -9,7 +9,7 @@ import {
 } from './style';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { DateRange } from '@src/context/config/configSlice';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { theme } from '@src/theme';
@@ -56,7 +56,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
               key={dateRange.startDate!}
             >
             <SingleDateRange key={index} color={expandColor} backgroundColor={expandBackgroundColor}>
-              {hasError && <ErrorOutlineIcon color='error' />}
+              {hasError && <PriorityHighIcon color='error' />}
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}
