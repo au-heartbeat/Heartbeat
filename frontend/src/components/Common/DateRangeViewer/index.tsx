@@ -5,6 +5,7 @@ import {
   StyledArrowForward,
   StyledCalendarToday,
   StyledDivider,
+  DateRangeFailedIconContainer,
   StyledExpandMoreIcon,
 } from './style';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
@@ -56,7 +57,9 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
               key={dateRange.startDate!}
             >
             <SingleDateRange key={index} color={expandColor} backgroundColor={expandBackgroundColor}>
-              {hasError && <PriorityHighIcon color='error' />}
+              <DateRangeFailedIconContainer>
+                {hasError && <PriorityHighIcon color='error' />}
+              </DateRangeFailedIconContainer>
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}
