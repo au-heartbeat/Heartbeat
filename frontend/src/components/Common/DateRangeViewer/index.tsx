@@ -8,6 +8,7 @@ import {
   DateRangeFailedIconContainer,
   StyledExpandMoreIcon,
 } from './style';
+import { selectFailedTimeRange, selectStepNumber } from '@src/context/stepper/StepperSlice';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
@@ -26,6 +27,8 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const datePick = dateRanges[0];
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
+  const failedTimeRange = useAppSelector(selectFailedTimeRange);
+  const stepNumber = useAppSelector(selectStepNumber);
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (DateRangeExpandRef.current && !DateRangeExpandRef.current?.contains(event.target as Node)) {
@@ -48,6 +51,8 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
     return (
       <DateRangeExpandContainer ref={ref}>
+        {dateRanges.map((dateRange, index) => {
+          const hasMetricsError = failedTimeRange.includes(formatDateToTimestampString(dateRange.startDate as string));
         {dateRangeList.map((dateRange) => {
           const disabled = dateRange.disabled || disabledAll;
           return (
@@ -58,7 +63,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
             >
             <SingleDateRange key={index} color={expandColor} backgroundColor={expandBackgroundColor}>
               <DateRangeFailedIconContainer>
-                {hasError && <PriorityHighIcon color='error' />}
+                {hasMetricsError && stepNumber === 1 && <PriorityHighIcon color='error' />}
               </DateRangeFailedIconContainer>
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
