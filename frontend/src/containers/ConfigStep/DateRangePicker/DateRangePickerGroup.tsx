@@ -14,7 +14,6 @@ import { useFormContext } from 'react-hook-form';
 import { Nullable } from '@src/utils/types';
 import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
-import remove from 'lodash/remove';
 import isNull from 'lodash/isNull';
 import get from 'lodash/get';
 
