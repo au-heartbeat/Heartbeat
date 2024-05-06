@@ -6,12 +6,16 @@ export interface StepState {
   stepNumber: number;
   timeStamp: number;
   shouldMetricsLoad: boolean;
+  failedMetricsBoardTimeRange: string[];
+  failedMetricsPipelineTimeRange: string[];
 }
 
 const initialState: StepState = {
   stepNumber: 0,
   timeStamp: 0,
   shouldMetricsLoad: true,
+  failedMetricsBoardTimeRange: [],
+  failedMetricsPipelineTimeRange: [],
 };
 
 export const stepperSlice = createSlice({
@@ -33,13 +37,28 @@ export const stepperSlice = createSlice({
     updateTimeStamp: (state, action) => {
       state.timeStamp = action.payload;
     },
+    updateFailedMetricsBoardTimeRange: (state, action) => {
+      state.failedMetricsBoardTimeRange = action.payload;
+    },
+    updateFailedMetricsPipelineTimeRange: (state, action) => {
+      state.failedMetricsPipelineTimeRange = action.payload;
+    },
   },
 });
 
-export const { resetStep, nextStep, backStep, updateTimeStamp } = stepperSlice.actions;
+export const {
+  resetStep,
+  nextStep,
+  backStep,
+  updateTimeStamp,
+  updateFailedMetricsBoardTimeRange,
+  updateFailedMetricsPipelineTimeRange,
+} = stepperSlice.actions;
 
 export const selectStepNumber = (state: RootState) => state.stepper.stepNumber;
 export const selectTimeStamp = (state: RootState) => state.stepper.timeStamp;
 export const shouldMetricsLoad = (state: RootState) => state.stepper.shouldMetricsLoad;
+export const selectFailedMetricsBoardTimeRange = (state: RootState) => state.stepper.failedMetricsBoardTimeRange;
+export const selectFailedMetricsPipelineTimeRange = (state: RootState) => state.stepper.failedMetricsPipelineTimeRange;
 
 export default stepperSlice.reducer;

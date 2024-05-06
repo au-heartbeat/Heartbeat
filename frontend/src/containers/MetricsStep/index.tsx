@@ -28,10 +28,10 @@ import {
   MESSAGE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
+import { shouldMetricsLoad, updateFailedMetricsBoardTimeRange } from '@src/context/stepper/StepperSlice';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
-import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
@@ -114,6 +114,7 @@ const MetricsStep = () => {
     };
     if (!isLoading) {
       popup();
+      dispatch(updateFailedMetricsBoardTimeRange(failedTimeRange));
     }
   }, [boardInfoFailedStatus, dispatch, failedTimeRange, isLoading]);
 

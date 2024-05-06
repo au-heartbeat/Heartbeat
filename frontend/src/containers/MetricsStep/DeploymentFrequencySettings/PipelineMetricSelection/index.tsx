@@ -17,6 +17,7 @@ import {
   selectPipelineList,
 } from '@src/context/config/configSlice';
 
+import { shouldMetricsLoad, updateFailedMetricsPipelineTimeRange } from '@src/context/stepper/StepperSlice';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
 import { BranchSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection';
 import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style';
@@ -26,7 +27,6 @@ import { addNotification } from '@src/context/notification/NotificationSlice';
 import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
 import { MESSAGE, NO_PIPELINE_STEP_ERROR } from '@src/constants/resources';
 import { ErrorNotification } from '@src/components/ErrorNotification';
-import { shouldMetricsLoad } from '@src/context/stepper/StepperSlice';
 import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { useEffect, useRef, useState } from 'react';
@@ -64,7 +64,7 @@ export const PipelineMetricSelection = ({
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting;
   const dispatch = useAppDispatch();
-  const { isLoading, errorMessage, getSteps, stepFailedStatus } = useGetMetricsStepsEffect();
+  const { isLoading, errorMessage, getSteps, stepFailedStatus, failedTimeRange } = useGetMetricsStepsEffect();
   const storeContext = store.getState();
   const organizationNameOptions = selectPipelineOrganizations(storeContext);
   const pipelineNameOptions = selectPipelineNames(storeContext, organization);
@@ -155,8 +155,9 @@ export const PipelineMetricSelection = ({
     };
     if (!isLoading) {
       popup();
+      dispatch(updateFailedMetricsPipelineTimeRange(failedTimeRange));
     }
-  }, [stepFailedStatus, dispatch, isLoading]);
+  }, [stepFailedStatus, dispatch, isLoading, failedTimeRange]);
 
   return (
     <PipelineMetricSelectionWrapper>

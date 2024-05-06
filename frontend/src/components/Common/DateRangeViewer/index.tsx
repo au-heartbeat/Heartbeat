@@ -8,8 +8,10 @@ import {
   StyledExpandMoreIcon,
 } from './style';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
+import { formatDate, formatDateToTimestampString } from '@src/utils/util';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { DateRange } from '@src/context/config/configSlice';
-import { formatDate } from '@src/utils/util';
+import { useAppSelector } from '@src/hooks/useAppDispatch';
 import { theme } from '@src/theme';
 
 type Props = {
@@ -21,6 +23,7 @@ type Props = {
 
 const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
+  const datePick = dateRanges[0];
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -52,6 +55,8 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
+            <SingleDateRange key={index} color={expandColor} backgroundColor={expandBackgroundColor}>
+              {hasError && <ErrorOutlineIcon color='error' />}
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}
@@ -63,13 +68,10 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   });
 
   return (
-    <DateRangeContainer
-      data-test-id={'date-range'}
-      color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
-    >
-      {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
+    <DateRangeContainer data-test-id={'date-range'}>
+      {formatDate(datePick.startDate as string)}
       <StyledArrowForward />
-      {formatDate((selectedDateRange || dateRangeList[0]).endDate as string)}
+      {formatDate(datePick.endDate as string)}
       <StyledCalendarToday />
       <StyledDivider orientation='vertical' />
       <StyledExpandMoreIcon aria-label='expandMore' onClick={() => setShowMoreDateRange(true)} />

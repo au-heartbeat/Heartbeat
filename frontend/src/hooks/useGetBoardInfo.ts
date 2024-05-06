@@ -2,6 +2,7 @@ import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TI
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { ReactNode, useState } from 'react';
 import { HttpStatusCode } from 'axios';
 import get from 'lodash/get';
@@ -72,7 +73,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
 
   const addFailedTimeRange = (timeRange: string | null) => {
     if (typeof timeRange === 'string') {
-      setFailedTimeRange((prevTimeRanges) => [...prevTimeRanges, timeRange]);
+      setFailedTimeRange((prevTimeRanges) => [...prevTimeRanges, formatDateToTimestampString(timeRange)]);
     }
   };
 
