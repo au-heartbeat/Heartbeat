@@ -1,4 +1,4 @@
-import { backStep, nextStep, updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
+import { nextStep, updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { DateRange } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
@@ -71,7 +71,6 @@ describe('DateRangeViewer', () => {
   });
 
   it('should not show priority high icon when click expand button and step number is 0', async () => {
-    store.dispatch(backStep());
     const { getByLabelText } = setup(mockDateRanges);
     await userEvent.click(getByLabelText('expandMore'));
     expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
