@@ -82,7 +82,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
           <StyledFormGroup>
             {dateRangeList.map((item, index) => (
               <StyledFormControlLabel
-                control={<Checkbox onChange={() => handleChange(item)} key={index} />}
+                control={<Checkbox onChange={() => handleChange(item)} key={item.startDate} />}
                 label={getLabel(item)}
                 checked={selectedRangeItems.includes(item)}
                 disabled={item.disabled}

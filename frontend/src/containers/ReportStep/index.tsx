@@ -119,23 +119,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
-  const initialDateRangeRequestResults = descendingDateRanges.map(
-    ({ startDate, endDate }) =>
-      ({
-        startDate,
-        endDate,
-        overallMetricsCompleted: false,
-        boardMetricsCompleted: null,
-        doraMetricsCompleted: null,
-        reportMetricsError: {
-          boardMetricsError: null,
-          pipelineMetricsError: null,
-          sourceControlMetricsError: null,
-        },
-      }) as DateRangeRequestResult,
-  );
-  const [dateRangeRequestResults, setRangeRequestResults] =
-    useState<DateRangeRequestResult[]>(initialDateRangeRequestResults);
 
   const mapDateResult = (descendingDateRanges) =>
     descendingDateRanges.map(({ startDate, endDate }) => {
@@ -153,10 +136,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       } as DateRangeRequestResult;
     });
+  const [dateRangeRequestResults, setRangeRequestResults] =
+    useState<DateRangeRequestResult[]>(mapDateResult(descendingDateRanges));
 
   useEffect(() => {
     setRangeRequestResults(mapDateResult(descendingDateRanges));
-  }, [dispatch, reportInfos]);
+  }, [reportInfos]);
 
   const getErrorMessage4Board = () => {
     if (currentDataInfo.reportData?.reportMetricsError.boardMetricsError) {
