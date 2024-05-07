@@ -309,7 +309,7 @@ export const metricsSlice = createSlice({
       state.users = action.payload;
     },
     savePipelineCrews: (state, action) => {
-      state.pipelineCrews = action.payload;
+      state.pipelineCrews = action.payload || [];
     },
     updateCycleTimeSettings: (state, action) => {
       state.cycleTimeSettings = action.payload;
