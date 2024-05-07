@@ -1,4 +1,5 @@
 import {
+  CloseButton,
   DialogContainer,
   StyledButton,
   StyledCalendarToday,
@@ -12,7 +13,6 @@ import {
 import { DISABLED_DATE_RANGE_MESSAGE } from '@src/constants/resources';
 import { Checkbox, Dialog, Tooltip } from '@mui/material';
 import { COMMON_BUTTONS } from '@src/constants/commons';
-import CloseIcon from '@mui/icons-material/Close';
 import { formatDate } from '@src/utils/util';
 import React, { useState } from 'react';
 
@@ -72,7 +72,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
       <DialogContainer>
         <StyledDialogTitle>
           <strong>Export Board Data</strong>
-          <CloseIcon onClick={handleClose} />
+          <CloseButton onClick={handleClose} />
         </StyledDialogTitle>
         <StyledDialogContent dividers>
           <TimePeriodSelectionMessage>

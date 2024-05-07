@@ -2,6 +2,7 @@ import { Button, DialogContent, DialogTitle, FormControlLabel, FormGroup } from 
 import { CalendarToday } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
+import CloseIcon from "@mui/icons-material/Close";
 
 export const DialogContainer = styled('div')({
   width: '38rem',
@@ -14,7 +15,7 @@ export const DialogContainer = styled('div')({
 export const StyledDialogTitle = styled(DialogTitle)({
   boxSizing: 'border-box',
   width: '100%',
-  padding: '2.5rem 2.5rem 1.5rem 2.5rem',
+  padding: '1.5rem 2.5rem 1.5rem 2.5rem',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -73,3 +74,7 @@ export const StyledFormControlLabel = styled(FormControlLabel)(({ checked }) => 
     background: 'rgba(67, 80, 175, 0.1)',
   }),
 }));
+
+export const CloseButton = styled(CloseIcon)({
+  cursor: 'pointer',
+})
