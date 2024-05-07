@@ -64,7 +64,7 @@ export const PipelineMetricSelection = ({
 }: pipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step } = pipelineSetting;
   const dispatch = useAppDispatch();
-  const { isLoading, errorMessage, getSteps, stepFailedStatus, failedTimeRange } = useGetMetricsStepsEffect();
+  const { isLoading, errorMessage, getSteps, stepFailedStatus } = useGetMetricsStepsEffect();
   const storeContext = store.getState();
   const organizationNameOptions = selectPipelineOrganizations(storeContext);
   const pipelineNameOptions = selectPipelineNames(storeContext, organization);
@@ -156,7 +156,7 @@ export const PipelineMetricSelection = ({
     if (!isLoading) {
       popup();
     }
-  }, [stepFailedStatus, dispatch, isLoading, failedTimeRange]);
+  }, [stepFailedStatus, dispatch, isLoading]);
 
   return (
     <PipelineMetricSelectionWrapper>

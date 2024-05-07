@@ -18,7 +18,6 @@ export interface useGetMetricsStepsEffectInterface {
   isLoading: boolean;
   errorMessage: string;
   stepFailedStatus: METRICS_DATA_FAIL_STATUS;
-  failedTimeRange: string[];
 }
 
 const TIMEOUT = 'timeout';
@@ -34,7 +33,6 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [stepFailedStatus, setStepFailedStatus] = useState(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
-  const [failedTimeRange, setFailedTimeRange] = useState<string[]>([]);
 
   const getSteps = async (
     params: IStepsParams[],
@@ -58,7 +56,6 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       return indices;
     }, []);
     const rejectedTimeRanges = rejectedIndices.map((index) => params[index].startTime.toString());
-    setFailedTimeRange(rejectedTimeRanges);
     dispatch(updateFailedTimeRange(rejectedTimeRanges));
     if (!hasRejected) {
       setStepFailedStatus(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
@@ -109,5 +106,5 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     }, DURATION.ERROR_MESSAGE_TIME);
   };
 
-  return { isLoading, getSteps, errorMessage, stepFailedStatus, failedTimeRange };
+  return { isLoading, getSteps, errorMessage, stepFailedStatus };
 };

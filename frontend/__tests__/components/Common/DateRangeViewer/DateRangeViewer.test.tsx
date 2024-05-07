@@ -8,15 +8,23 @@ import { Provider } from 'react-redux';
 import React from 'react';
 
 describe('DateRangeViewer', () => {
-  const store = setupStore();
+  let store = setupStore();
   const setup = (dateRanges: DateRange) => {
     return render(
       <Provider store={store}>
         <DateRangeViewer dateRangeList={dateRanges} />
       </Provider>,
     );
-    return render(<DateRangeViewer dateRangeList={dateRanges} />);
   };
+
+  beforeEach(() => {
+    store = setupStore();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const mockDateRanges = [
     {
       startDate: '2024-03-19T00:00:00.000+08:00',
@@ -54,8 +62,9 @@ describe('DateRangeViewer', () => {
   });
 
   it('should show priority high icon when click expand button and step number is 1', async () => {
+    const failedTimeRanges = ['1706716800000'];
     store.dispatch(nextStep());
-    store.dispatch(updateFailedTimeRange(['1706716800000']));
+    store.dispatch(updateFailedTimeRange(failedTimeRanges));
     const { getByLabelText } = setup(mockDateRanges);
     await userEvent.click(getByLabelText('expandMore'));
     expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
