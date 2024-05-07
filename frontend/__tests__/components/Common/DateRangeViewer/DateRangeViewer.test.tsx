@@ -1,10 +1,20 @@
+import { backStep, nextStep, updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { DateRange } from '@src/context/config/configSlice';
+import { setupStore } from '@test/utils/setupStoreUtil';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import React from 'react';
 
 describe('DateRangeViewer', () => {
+  const store = setupStore();
   const setup = (dateRanges: DateRange) => {
+    return render(
+      <Provider store={store}>
+        <DateRangeViewer dateRanges={dateRanges} />
+      </Provider>,
+    );
     return render(<DateRangeViewer dateRangeList={dateRanges} />);
   };
   const mockDateRanges = [
@@ -41,5 +51,20 @@ describe('DateRangeViewer', () => {
     await userEvent.click(container);
     expect(getByText(/2024\/03\/19/)).toBeInTheDocument();
     expect(getByText(/2024\/03\/21/)).toBeInTheDocument();
+  });
+
+  it('should show priority high icon when click expand button and step number is 1', async () => {
+    store.dispatch(nextStep());
+    store.dispatch(updateFailedTimeRange(['1706716800000']));
+    const { getByLabelText } = setup(mockDateRanges);
+    await userEvent.click(getByLabelText('expandMore'));
+    expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
+  });
+
+  it('should not show priority high icon when click expand button and step number is 0', async () => {
+    store.dispatch(backStep());
+    const { getByLabelText } = setup(mockDateRanges);
+    await userEvent.click(getByLabelText('expandMore'));
+    expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
   });
 });
