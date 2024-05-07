@@ -70,7 +70,7 @@ export const StyledArrowForward = styled(ArrowForward)({
 });
 
 export const DateRangeFailedIconContainer = styled.div({
-  minWidth: '20px',
+  minWidth: '1.25rem',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
