@@ -4,11 +4,10 @@ import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import React, { ReactNode } from 'react';
-import { Provider } from 'react-redux';
 import { HttpResponse, http } from 'msw';
+import { Provider } from 'react-redux';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
-import { rest } from 'msw';
 
 const server = setupServer();
 
@@ -210,7 +209,7 @@ describe('use get board info', () => {
       ),
     );
     const { result } = setup();
-    await act(() => {
+    act(() => {
       result.current.getBoardInfo(mockBoardConfig);
     });
   });

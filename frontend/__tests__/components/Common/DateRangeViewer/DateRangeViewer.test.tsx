@@ -12,7 +12,7 @@ describe('DateRangeViewer', () => {
   const setup = (dateRanges: DateRange) => {
     return render(
       <Provider store={store}>
-        <DateRangeViewer dateRanges={dateRanges} />
+        <DateRangeViewer dateRangeList={dateRanges} />
       </Provider>,
     );
     return render(<DateRangeViewer dateRangeList={dateRanges} />);

@@ -1,11 +1,11 @@
 import {
   DateRangeContainer,
   DateRangeExpandContainer,
+  DateRangeFailedIconContainer,
   SingleDateRange,
   StyledArrowForward,
   StyledCalendarToday,
   StyledDivider,
-  DateRangeFailedIconContainer,
   StyledExpandMoreIcon,
 } from './style';
 import { selectFailedTimeRange, selectStepNumber } from '@src/context/stepper/StepperSlice';
@@ -13,7 +13,7 @@ import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'rea
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { DateRange } from '@src/context/config/configSlice';
-import { useAppSelector } from '@src/hooks/useAppDispatch';
+import { useAppSelector } from '@src/hooks';
 import { theme } from '@src/theme';
 
 type Props = {
@@ -25,7 +25,6 @@ type Props = {
 
 const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
-  const datePick = dateRanges[0];
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
   const failedTimeRange = useAppSelector(selectFailedTimeRange);
   const stepNumber = useAppSelector(selectStepNumber);
@@ -51,17 +50,15 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
     return (
       <DateRangeExpandContainer ref={ref}>
-        {dateRanges.map((dateRange, index) => {
-          const hasMetricsError = failedTimeRange.includes(formatDateToTimestampString(dateRange.startDate as string));
         {dateRangeList.map((dateRange) => {
           const disabled = dateRange.disabled || disabledAll;
+          const hasMetricsError = failedTimeRange.includes(formatDateToTimestampString(dateRange.startDate as string));
           return (
             <SingleDateRange
               disabled={disabled}
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
-            <SingleDateRange key={index} color={expandColor} backgroundColor={expandBackgroundColor}>
               <DateRangeFailedIconContainer>
                 {hasMetricsError && stepNumber === 1 && <PriorityHighIcon color='error' />}
               </DateRangeFailedIconContainer>
@@ -76,10 +73,13 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   });
 
   return (
-    <DateRangeContainer data-test-id={'date-range'}>
-      {formatDate(datePick.startDate as string)}
+    <DateRangeContainer
+      data-test-id={'date-range'}
+      color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
+    >
+      {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
       <StyledArrowForward />
-      {formatDate(datePick.endDate as string)}
+      {formatDate((selectedDateRange || dateRangeList[0]).endDate as string)}
       <StyledCalendarToday />
       <StyledDivider orientation='vertical' />
       <StyledExpandMoreIcon aria-label='expandMore' onClick={() => setShowMoreDateRange(true)} />
