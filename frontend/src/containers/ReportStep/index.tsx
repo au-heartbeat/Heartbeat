@@ -36,7 +36,6 @@ import {
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
-import { addNotification, closeAllNotifications, Notification } from '@src/context/notification/NotificationSlice';
 import { ListChartButtonContainer, StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -47,8 +46,8 @@ import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
-import React, { useEffect, useMemo, useState } from 'react';
 import { ChartListButton } from '@src/components/Common/Buttons';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -437,7 +436,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     </>
   );
 
-  const showDoraChart = (data?: ReportResponseDTO) => (
+  const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
     <DoraMetricsChart startToRequestDoraData={() => startToRequestData(doraReportRequestBody)} data={data} />
   );
   const showBoardDetail = (data?: ReportResponseDTO) => (
@@ -490,7 +489,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return showDoraChart(reportData);
+        console.log(reportInfos);
+        return showDoraChart(reportInfos.map((infos) => infos.reportData));
       default:
         return showSummary();
     }
@@ -516,12 +516,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           />
         </StyledCalendarWrapper>
       )}
-      {/*{showPage(pageType, reportData)}*/}
-      {isSummaryPage
-        ? showSummary()
-        : pageType === REPORT_PAGE_TYPE.BOARD
-          ? showBoardDetail(currentDataInfo.reportData)
-          : !!currentDataInfo.reportData && showDoraDetail(currentDataInfo.reportData)}
+      {showPage(pageType, currentDataInfo.reportData)}
+      {/*{isSummaryPage*/}
+      {/*  ? showSummary()*/}
+      {/*  : pageType === REPORT_PAGE_TYPE.BOARD*/}
+      {/*    ? showBoardDetail(currentDataInfo.reportData)*/}
+      {/*    : !!currentDataInfo.reportData && showDoraDetail(currentDataInfo.reportData)}*/}
       <ReportButtonGroup
         isShowSave={isSummaryPage}
         isShowExportMetrics={isSummaryPage}
