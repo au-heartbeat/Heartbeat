@@ -48,6 +48,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import { BoardMetricsChart } from './BoardMetricsChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
@@ -67,6 +68,15 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
   const descendingDateRanges = sortDateRanges(configData.basic.dateRange);
+  const allDateRanges = descendingDateRanges.reverse().map((range) => {
+    const start = new Date(range.startDate!);
+    const end = new Date(range.endDate!);
+    // 格式化日期为 MM/DD
+    const formattedStart = `${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
+    const formattedEnd = `${(end.getMonth() + 1).toString().padStart(2, '0')}/${end.getDate().toString().padStart(2, '0')}`;
+
+    return `${formattedStart}-${formattedEnd}`;
+  });
   const [selectedDateRange, setSelectedDateRange] = useState<Record<string, string | null | boolean | undefined>>(
     descendingDateRanges[0],
   );
@@ -408,7 +418,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       )}
     </>
   );
-  const showDoraChart = (data?: ReportResponseDTO) => <div>charts</div>;
+  const showDoraChart = (data?: IReportInfo[] | undefined) => (
+    <BoardMetricsChart data={data} dateRanges={allDateRanges} />
+  );
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
@@ -470,7 +482,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return showDoraChart(reportData);
+        return showDoraChart(reportInfos);
       default:
         return showSummary();
     }

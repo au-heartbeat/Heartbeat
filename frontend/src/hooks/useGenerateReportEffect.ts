@@ -1,10 +1,10 @@
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
+import { formatDateToTimestampString, sortDateRanges } from '@src/utils/util';
 import { IPollingRes, reportClient } from '@src/clients/report/ReportClient';
 import { DateRange, selectConfig } from '@src/context/config/configSlice';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
-import { formatDateToTimestampString } from '@src/utils/util';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks/index';
@@ -85,7 +85,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   const reportPath = '/reports';
   const configData = useAppSelector(selectConfig);
   const timerIdRef = useRef<number>();
-  const dateRangeList: DateRange = get(configData, 'basic.dateRange', []);
+  const dateRangeList: DateRange = sortDateRanges(get(configData, 'basic.dateRange', []), false);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>(
     dateRangeList.map((dateRange) => ({ ...initReportInfo(), id: dateRange.startDate as string })),
   );
