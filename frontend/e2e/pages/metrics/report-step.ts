@@ -1,4 +1,5 @@
 import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
+import { IBoardMetricsResult } from '../../fixtures/create-new/report-result';
 import { expect, Locator, Page } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
 import path from 'path';
@@ -136,6 +137,25 @@ export class ReportStep {
     );
   }
 
+  async confirmGeneratedReportForMultipleRanges({
+    totalRanges,
+    expectedFailedIndices = [],
+  }: {
+    totalRanges: number;
+    expectedFailedIndices: number[];
+  }) {
+    for (let i = 0; i < totalRanges; i++) {
+      if (expectedFailedIndices.includes(i)) {
+        // failed
+      } else {
+        await expect(this.page.getByRole('alert').nth(i)).toContainText('Help Information');
+        await expect(this.page.getByRole('alert').nth(i)).toContainText(
+          'The file will expire in 30 minutes, please download it in time.',
+        );
+      }
+    }
+  }
+
   async checkBoardMetricsWithoutRework(
     velocity: string,
     throughPut: string,
@@ -148,18 +168,18 @@ export class ReportStep {
     await expect(this.averageCycleTimeForCard).toContainText(`${averageCycleTimeForCard}Average Cycle Time(Days/Card)`);
   }
 
-  async checkBoardMetrics(
-    velocity: string,
-    throughPut: string,
-    averageCycleTimeForSP: string,
-    averageCycleTimeForCard: string,
-    totalReworkTimes: string,
-    totalReworkCards: string,
-    reworkCardsRatio: string,
-    reworkThroughput: string,
-  ) {
+  async checkBoardMetrics({
+    velocity,
+    throughput,
+    averageCycleTimeForSP,
+    averageCycleTimeForCard,
+    totalReworkTimes,
+    totalReworkCards,
+    reworkCardsRatio,
+    reworkThroughput,
+  }: IBoardMetricsResult) {
     await expect(this.velocityPart).toContainText(`${velocity}Velocity(Story Point)`);
-    await expect(this.velocityPart).toContainText(`${throughPut}Throughput(Cards Count)`);
+    await expect(this.velocityPart).toContainText(`${throughput}Throughput(Cards Count)`);
     await expect(this.averageCycleTimeForSP).toContainText(`${averageCycleTimeForSP}Average Cycle Time(Days/SP)`);
     await expect(this.averageCycleTimeForCard).toContainText(`${averageCycleTimeForCard}Average Cycle Time(Days/Card)`);
     await expect(this.boardMetricRework).toContainText(`${totalReworkTimes}Total rework times`);
@@ -167,6 +187,12 @@ export class ReportStep {
     await expect(this.boardMetricRework).toContainText(
       `${(Number(reworkCardsRatio) * 100).toFixed(2)}% (${totalReworkCards}/${reworkThroughput})Rework cards ratio`,
     );
+  }
+
+  async checkBoardMetricsForMultipleTimes(data: IBoardMetricsResult[]) {
+    for (let i = 0; i < data.length; i++) {
+      await this.checkBoardMetrics(data[i]);
+    }
   }
 
   async checkBoardMetricsReportReportDetail() {

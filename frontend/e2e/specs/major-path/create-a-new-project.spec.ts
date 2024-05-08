@@ -1,7 +1,7 @@
+import { BOARD_METRICS_RESULT_MULTIPLE_TIMES, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
 import { configWithoutBlockColumn as metricsStepWithoutBlockColumnData } from '../../fixtures/create-new/metrics-step';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
-import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
 import { config as configStepData } from '../../fixtures/create-new/config-step';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
@@ -72,16 +72,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics(
-    BOARD_METRICS_RESULT.Velocity,
-    BOARD_METRICS_RESULT.Throughput,
-    BOARD_METRICS_RESULT.AverageCycleTime4SP,
-    BOARD_METRICS_RESULT.AverageCycleTime4Card,
-    BOARD_METRICS_RESULT.totalReworkTimes,
-    BOARD_METRICS_RESULT.totalReworkCards,
-    BOARD_METRICS_RESULT.reworkCardsRatio,
-    BOARD_METRICS_RESULT.throughput,
-  );
+  await reportStep.checkBoardMetricsForMultipleTimes(BOARD_METRICS_RESULT_MULTIPLE_TIMES);
   await reportStep.checkBoardMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT, 9);
   await reportStep.checkDoraMetrics(
     DORA_METRICS_RESULT.PrLeadTime,
@@ -134,6 +125,10 @@ test('Create a new project without block column in boarding mapping', async ({
   await metricsStep.selectReworkSettings(metricsStepWithoutBlockColumnData.reworkTimesSettings);
 
   await metricsStep.goToReportPage();
-  await reportStep.confirmGeneratedReport();
+  // await reportStep.confirmGeneratedReport();
+  await reportStep.confirmGeneratedReportForMultipleRanges({
+    totalRanges: configStepData.dateRange.length,
+    expectedFailedIndices: [],
+  });
   await reportStep.checkBoardDownloadDataWithoutBlock('../../fixtures/create-new/board-data-without-block-column.csv');
 });

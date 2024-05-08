@@ -80,16 +80,7 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics(
-    BOARD_METRICS_RESULT.Velocity,
-    BOARD_METRICS_RESULT.Throughput,
-    BOARD_METRICS_RESULT.AverageCycleTime4SP,
-    BOARD_METRICS_RESULT.AverageCycleTime4Card,
-    BOARD_METRICS_RESULT.totalReworkTimes,
-    BOARD_METRICS_RESULT.totalReworkCards,
-    BOARD_METRICS_RESULT.reworkCardsRatio,
-    BOARD_METRICS_RESULT.throughput,
-  );
+  await reportStep.checkBoardMetrics(BOARD_METRICS_RESULT);
   await reportStep.checkDoraMetrics(
     DORA_METRICS_RESULT.PrLeadTime,
     DORA_METRICS_RESULT.PipelineLeadTime,
