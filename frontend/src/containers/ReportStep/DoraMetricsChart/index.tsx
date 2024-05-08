@@ -24,7 +24,9 @@ import { METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { selectConfig } from '@src/context/config/configSlice';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { CanvasRenderer } from 'echarts/renderers';
+import { sortDateRanges } from '@src/utils/util';
 import { useAppSelector } from '@src/hooks';
+import { theme } from '@src/theme';
 import { toNumber } from 'lodash';
 
 echarts.use([
@@ -86,7 +88,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData?: ReportRes
       return series;
     }),
 
-    color: ['#003D4F', '#47A1AD', '#F2617A'],
+    color: [theme.main.chart.barColorA, theme.main.chart.barColorB, theme.main.chart.barColorC],
   };
 }
 
@@ -107,7 +109,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData?: 
       type: 'line',
       data: value!,
     },
-    color: '#F2617A',
+    color: theme.main.chart.deploymentFrequencyChartColor,
   };
 }
 
@@ -129,7 +131,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData?: Re
       type: 'line',
       data: value!,
     },
-    color: '#003D4F',
+    color: theme.main.chart.devChangeFailureRateColor,
   };
 }
 
@@ -150,13 +152,13 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
       type: 'line',
       data: value!,
     },
-    color: '#634F7D',
+    color: theme.main.chart.devMeanTimeToRecoveryColor,
   };
 }
 
 export const DoraMetricsChart = ({ data }: DoraMetricsChartProps) => {
   const configData = useAppSelector(selectConfig);
-  const dateRange = configData.basic.dateRange;
+  const dateRange = sortDateRanges(configData.basic.dateRange, false);
 
   const allDateRanges = dateRange?.map((date) => {
     return formatDate(date.startDate!) + '-' + formatDate(date!.endDate!);

@@ -9,6 +9,14 @@ declare module '@mui/material/styles' {
   // allow configuration using `createTheme`
   interface ThemeOptions {
     main: {
+      chart: {
+        barColorA: string,
+        barColorB: string,
+        barColorC: string,
+        deploymentFrequencyChartColor: string,
+        devChangeFailureRateColor: string,
+        devMeanTimeToRecoveryColor: string,
+      },
       backgroundColor: string;
       color: string;
       secondColor: string;
@@ -96,6 +104,14 @@ export const theme = createTheme({
     },
   },
   main: {
+    chart: {
+      barColorA: '#003D4F',
+      barColorB: '#47A1AD',
+      barColorC: '#F2617A',
+      deploymentFrequencyChartColor: '#F2617A',
+      devChangeFailureRateColor: '#003D4F',
+      devMeanTimeToRecoveryColor: '#634F7D',
+    },
     backgroundColor: indigo[FIVE_HUNDRED],
     color: '#fff',
     secondColor: 'black',

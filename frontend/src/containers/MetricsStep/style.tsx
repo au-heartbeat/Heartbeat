@@ -70,7 +70,7 @@ export const StyledAlertWrapper = styled('div')({
 export const ChartWrapper = styled('div')({
   boxSizing: 'border-box',
   width: '50%',
-  height: '400px',
+  height: '25rem',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
