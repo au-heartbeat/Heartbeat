@@ -13,6 +13,9 @@ export const REPORT_PAGE_TYPE = {
   DORA_CHART: 'DoraChart',
 };
 
+export const REJECTED = 'rejected';
+export const FULFILLED = 'fulfilled';
+
 export const SHOW_MORE = 'show more >';
 export const BACK = 'Back';
 export const RETRY = 'retry';
