@@ -2,6 +2,7 @@ import { config as configStepData } from '../../fixtures/create-new/config-step'
 import { METRICS_STEP_SAVING_FILENAME } from '../../fixtures';
 import { downloadFileAndCheck } from '../../utils/download';
 import { expect, Locator, Page } from '@playwright/test';
+import { format } from 'e2e/utils/date-time';
 import { Dayjs } from 'dayjs';
 
 interface IBoardData {
@@ -29,6 +30,7 @@ export class ConfigStep {
   readonly basicInfoContainer: Locator;
   readonly newTimeRangeButton: Locator;
   readonly removeTimeRangeButtons: Locator;
+  readonly timeRangeRows: Locator;
   readonly fromDateErrorMessage: Locator;
   readonly toDateErrorMessage: Locator;
   readonly fromDateInput: Locator;
@@ -106,6 +108,7 @@ export class ConfigStep {
     this.toDateInputValueSelect = (toDay: Dayjs) =>
       page.getByRole('dialog', { name: 'To *' }).getByRole('gridcell', { name: `${toDay.date()}` });
     this.newTimeRangeButton = this.basicInfoContainer.getByRole('button', { name: 'Button for adding date range' });
+    this.timeRangeRows = this.basicInfoContainer.getByLabel('Range picker row');
     this.fromDateErrorMessage = this.basicInfoContainer.getByText('Start date is invalid');
     this.toDateErrorMessage = this.basicInfoContainer.getByText('End date is invalid');
     this.removeTimeRangeButtons = this.basicInfoContainer.getByText('Remove');
@@ -246,6 +249,22 @@ export class ConfigStep {
   async typeInDateRange({ startDate, endDate, number = 0 }: { startDate: string; endDate: string; number?: number }) {
     await this.fromDateInput.nth(number).fill(startDate);
     await this.toDateInput.nth(number).fill(endDate);
+  }
+
+  async typeInMultipleRanges(ranges: { startDate: string; endDate: string }[]) {
+    for (let i = 0; i < ranges.length; i++) {
+      const dateRange = {
+        startDate: format(ranges[i].startDate),
+        endDate: format(ranges[i].endDate),
+      };
+      if (i) {
+        await this.addNewTimeRange();
+        await expect(this.timeRangeRows).toHaveCount(i + 1);
+      }
+      await this.typeInDateRange({ ...dateRange, number: i });
+      await expect(this.fromDateInput.nth(i)).toHaveValue(dateRange.startDate);
+      await expect(this.toDateInput.nth(i)).toHaveValue(dateRange.endDate);
+    }
   }
 
   async validateNextButtonNotClickable() {
@@ -478,7 +497,7 @@ export class ConfigStep {
     await this.newTimeRangeButton.click();
   }
 
-  async RemoveLastNewPipeline() {
+  async removeLastTimeRange() {
     await this.removeTimeRangeButtons.last().click();
   }
 

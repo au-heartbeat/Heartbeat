@@ -14,10 +14,6 @@ test.beforeAll(async () => {
 });
 
 test('Create a new project', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
@@ -33,7 +29,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await homePage.createANewProject();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectAllRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormVisible();

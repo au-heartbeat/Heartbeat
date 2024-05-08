@@ -47,11 +47,11 @@ test('Charting unhappy path on config and metri page', async ({ homePage, config
   await configStep.validateAddNewTimeRangeButtonNotClickable();
   await configStep.validateNextButtonNotClickable();
 
-  await configStep.RemoveLastNewPipeline();
-  await configStep.RemoveLastNewPipeline();
-  await configStep.RemoveLastNewPipeline();
-  await configStep.RemoveLastNewPipeline();
-  await configStep.RemoveLastNewPipeline();
+  await configStep.removeLastTimeRange();
+  await configStep.removeLastTimeRange();
+  await configStep.removeLastTimeRange();
+  await configStep.removeLastTimeRange();
+  await configStep.removeLastTimeRange();
   await configStep.validateRemoveTimeRangeButtonIsHidden();
 
   await configStep.typeInDateRange(errorDateRange);
