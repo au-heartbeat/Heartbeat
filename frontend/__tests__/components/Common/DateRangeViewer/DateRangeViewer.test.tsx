@@ -63,23 +63,21 @@ describe('DateRangeViewer', () => {
   });
 
   it('should show priority high icon when click expand button and step number is 1', async () => {
-    // given
     const failedTimeRangeLists = [formatDateToTimestampString('2024-02-01T00:00:00.000+08:00')];
     store.dispatch(nextStep());
     store.dispatch(updateFailedTimeRange(failedTimeRangeLists));
     const { getByLabelText } = setup(mockDateRanges);
-    // when
+
     await userEvent.click(getByLabelText('expandMore'));
-    // then
+
     expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
   });
 
   it('should not show priority high icon when click expand button and step number is 0', async () => {
-    // given
     const { getByLabelText } = setup(mockDateRanges);
-    // when
+
     await userEvent.click(getByLabelText('expandMore'));
-    // then
+
     expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
   });
 });

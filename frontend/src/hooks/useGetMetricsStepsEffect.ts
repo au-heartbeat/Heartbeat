@@ -2,9 +2,9 @@ import { updateShouldRetryPipelineConfig } from '@src/context/Metrics/metricsSli
 import { IStepsParams, IStepsRes, metricsClient } from '@src/clients/MetricsClient';
 import { METRICS_DATA_FAIL_STATUS, DURATION } from '@src/constants/commons';
 import { updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
+import { FULFILLED, MESSAGE, REJECTED } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { TimeoutError } from '@src/errors/TimeoutError';
-import { MESSAGE } from '@src/constants/resources';
 import { useState } from 'react';
 
 export interface useGetMetricsStepsEffectInterface {
@@ -21,8 +21,6 @@ export interface useGetMetricsStepsEffectInterface {
 }
 
 const TIMEOUT = 'timeout';
-const ERROR_STATUS = 'rejected';
-const CORRECT_STATUS = 'fulfilled';
 
 function isAllTimeoutError(allStepsRes: PromiseSettledResult<IStepsRes>[]) {
   return allStepsRes.every((stepInfo) => {
@@ -49,10 +47,10 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
         return metricsClient.getSteps(param, organizationId, buildId, pipelineType, token);
       }),
     );
-    const hasRejected = allStepsRes.some((stepInfo) => stepInfo.status === ERROR_STATUS);
-    const hasFulfilled = allStepsRes.some((stepInfo) => stepInfo.status === CORRECT_STATUS);
+    const hasRejected = allStepsRes.some((stepInfo) => stepInfo.status === REJECTED);
+    const hasFulfilled = allStepsRes.some((stepInfo) => stepInfo.status === FULFILLED);
     const rejectedIndices = allStepsRes.reduce((indices: number[], stepInfo, index) => {
-      if (stepInfo.status === ERROR_STATUS) {
+      if (stepInfo.status === REJECTED) {
         indices.push(index);
       }
       return indices;
@@ -62,7 +60,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     if (!hasRejected) {
       setStepFailedStatus(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
     } else if (hasRejected && hasFulfilled) {
-      const rejectedStep = allStepsRes.find((stepInfo) => stepInfo.status === ERROR_STATUS);
+      const rejectedStep = allStepsRes.find((stepInfo) => stepInfo.status === REJECTED);
       if ((rejectedStep as PromiseRejectedResult).reason.code == 400) {
         setStepFailedStatus(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX);
       } else {
@@ -70,7 +68,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       }
     }
     setIsLoading(false);
-    if (allStepsRes.every((stepInfo) => stepInfo.status === ERROR_STATUS)) {
+    if (allStepsRes.every((stepInfo) => stepInfo.status === REJECTED)) {
       if (isAllTimeoutError(allStepsRes)) {
         dispatch(updateShouldRetryPipelineConfig(true));
         setErrorMessageAndTime(pipelineType, TIMEOUT);
@@ -81,7 +79,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     }
 
     return allStepsRes
-      .filter((stepInfo) => stepInfo.status === CORRECT_STATUS)
+      .filter((stepInfo) => stepInfo.status === FULFILLED)
       .map((stepInfo) => (stepInfo as PromiseFulfilledResult<IStepsRes>).value)
       .reduce(
         (accumulator, currentValue) => {
