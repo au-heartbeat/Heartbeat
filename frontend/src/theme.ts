@@ -10,13 +10,13 @@ declare module '@mui/material/styles' {
   interface ThemeOptions {
     main: {
       chart: {
-        barColorA: string,
-        barColorB: string,
-        barColorC: string,
-        deploymentFrequencyChartColor: string,
-        devChangeFailureRateColor: string,
-        devMeanTimeToRecoveryColor: string,
-      },
+        barColorA: string;
+        barColorB: string;
+        barColorC: string;
+        deploymentFrequencyChartColor: string;
+        devChangeFailureRateColor: string;
+        devMeanTimeToRecoveryColor: string;
+      };
       backgroundColor: string;
       color: string;
       secondColor: string;
