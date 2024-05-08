@@ -27,7 +27,6 @@
     "__tests__/__mocks__/svgTransformer.ts",
     "package.json",
     "pnpm-lock.yaml",
-    "jsdom.extended.ts",
     "jest.polyfills.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.scripts.json" }]
