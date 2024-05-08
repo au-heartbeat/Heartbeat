@@ -588,13 +588,17 @@ export class MetricsStep {
     await this.pipelineNewPipelineButton.click();
     await this.pipelineSettingSection.getByText('Organization *Remove').getByLabel('Open').click();
     await this.page.getByRole('option', { name: 'Thoughtworks-Heartbeat' }).click();
-    await this.pipelineSettingSection.getByText('Organization *Pipeline Name *Remove').getByLabel('Open').nth(1).click();
+    await this.pipelineSettingSection
+      .getByText('Organization *Pipeline Name *Remove')
+      .getByLabel('Open')
+      .nth(1)
+      .click();
     await this.page.getByRole('option', { name: 'Heartbeat-E2E' }).click();
   }
 
   async checkPipelineLength(length: number) {
     const pipelineLength = await this.pipelineSettingSection.getByText('Organization *').count();
-    expect(pipelineLength).toEqual(length)
+    expect(pipelineLength).toEqual(length);
   }
 
   async removePipeline(index: number) {
