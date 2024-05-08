@@ -63,9 +63,9 @@ describe('DateRangeViewer', () => {
   });
 
   it('should show priority high icon when click expand button and step number is 1', async () => {
-    const failedTimeRangeLists = [formatDateToTimestampString('2024-02-01T00:00:00.000+08:00')];
+    const failedTimeRangeList = [formatDateToTimestampString('2024-02-01T00:00:00.000+08:00')];
     store.dispatch(nextStep());
-    store.dispatch(updateFailedTimeRange(failedTimeRangeLists));
+    store.dispatch(updateFailedTimeRange(failedTimeRangeList));
     const { getByLabelText } = setup(mockDateRanges);
 
     await userEvent.click(getByLabelText('expandMore'));
