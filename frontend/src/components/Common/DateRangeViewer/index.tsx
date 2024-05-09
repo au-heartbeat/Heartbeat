@@ -6,6 +6,7 @@ import {
   StyledArrowForward,
   StyledCalendarToday,
   StyledDateRangeViewerContainer,
+  StyledChip,
   StyledDivider,
   StyledExpandContainer,
   StyledExpandMoreIcon,
@@ -112,8 +113,14 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
         {formatDate(currentDateRange.endDate!)}
         <StyledCalendarToday />
       </DateRangeContainer>
-      <StyledDivider orientation='vertical' />
-      <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
+      {disabledAll && stepNumber === 2 ? (
+        <StyledChip label={dateRangeList.length} variant='outlined' size='small' />
+      ) : (
+        <>
+          <StyledDivider orientation='vertical' />
+          <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
+        </>
+      )}
         <StyledExpandMoreIcon />
         {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
       </StyledExpandContainer>

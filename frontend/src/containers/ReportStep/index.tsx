@@ -53,9 +53,9 @@ import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { METRIC_TYPES } from '@src/constants/commons';
+import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
-import { Box, Tab, Tabs } from "@mui/material";
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -110,6 +110,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const [isCsvFileGeneratedAtEnd, setIsCsvFileGeneratedAtEnd] = useState<boolean>(false);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
+  const [isShowingChart, setIsShowingChart] = useState<boolean>(false);
 
   const csvTimeStamp = useAppSelector(selectTimeStamp);
   const {
@@ -450,7 +451,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart startToRequestDoraData={() => startToRequestData(doraReportRequestBody)} data={data} dateRanges={allDateRanges}/>
+    <DoraMetricsChart
+      startToRequestDoraData={() => startToRequestData(doraReportRequestBody)}
+      data={data}
+      dateRanges={allDateRanges}
+    />
   );
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
@@ -490,10 +495,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const handleListClick = () => {
+    setIsShowingChart(false);
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
   };
 
   const handleChartClick = () => {
+    setIsShowingChart(true);
     setPageType(REPORT_PAGE_TYPE.DORA_CHART);
   };
 
@@ -542,21 +549,17 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
             changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
-            disabledAll={false}
+            disabledAll={isShowingChart}
           />
         </StyledCalendarWrapper>
       )}
       {showPage(pageType, currentDataInfo.reportData)}
-      {/*{isSummaryPage*/}
-      {/*  ? showSummary()*/}
-      {/*  : pageType === REPORT_PAGE_TYPE.BOARD*/}
-      {/*    ? showBoardDetail(currentDataInfo.reportData)*/}
-      {/*    : !!currentDataInfo.reportData && showDoraDetail(currentDataInfo.reportData)}*/}
       <ReportButtonGroup
         isShowSave={isSummaryPage}
         isShowExportMetrics={isSummaryPage}
         isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
         isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
+        isShowExportDoraChartButton={pageType === REPORT_PAGE_TYPE.DORA_CHART}
         handleBack={() => handleBack()}
         handleSave={() => handleSave()}
         csvTimeStamp={csvTimeStamp}
