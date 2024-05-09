@@ -69,20 +69,16 @@ export const StyledAlertWrapper = styled('div')({
 
 export const ChartWrapper = styled('div')({
   boxSizing: 'border-box',
-  width: '50%',
   height: '400px',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
   padding: '1.5rem',
-  margin: '3rem 0.5rem 0 0.5rem',
   borderRadius: '0.75rem',
   border: theme.main.cardBorder,
   background: theme.main.color,
   boxShadow: theme.main.cardShadow,
-  position: 'relative',
 });
 
 export const ChartContainer = styled('div')({
-  display: 'flex',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: '1.25rem',
 });

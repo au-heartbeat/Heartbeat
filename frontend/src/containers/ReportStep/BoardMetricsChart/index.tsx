@@ -15,16 +15,14 @@ import * as echarts from 'echarts/core';
 
 import {
   stackedAreaOptionMapper,
-  Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { ReportResponse, ReportResponseDTO, Swimlane } from '@src/clients/report/dto/response';
 import { CYCLE_TIME_MAPPING, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
+import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { CanvasRenderer } from 'echarts/renderers';
-import { toNumber } from 'lodash';
 
 echarts.use([
   LineChart,
@@ -42,7 +40,6 @@ echarts.use([
 ]);
 
 interface BoardMetricsChartProps {
-  // startToRequestDoraData: () => void;
   dateRanges: string[];
   data: IReportInfo[] | undefined;
 }
@@ -67,7 +64,6 @@ function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined) {
     });
   });
 
-  // 删除值全为 0 的项
   Object.keys(res).forEach((key) => {
     if (res[key].every((val) => val === 0)) {
       delete res[key];
@@ -77,32 +73,32 @@ function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined) {
   return res;
 }
 
-function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[]) {
-  const data = mappedData?.map((item) => item.cycleTime?.swimlaneList);
-  const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
-  const cycleTimeByStatus = transformArrayToObject(data);
-  const otherIndicators = [];
-  for (const [name, data] of Object.entries(cycleTimeByStatus)) {
-    otherIndicators.push({ data, name: CYCLE_TIME_MAPPING[name], type: 'bar' });
-  }
+function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]) {
+  const data = mappedData?.map((item) => item.velocityList);
+  const velocity = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
+  const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
   return {
-    title: 'Cycle Time Allocation',
-    legend: 'Cycle Time Allocation',
+    title: REQUIRED_DATA.VELOCITY,
+    legend: REQUIRED_DATA.VELOCITY,
     xAxis: dateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      name: METRICS_SUBTITLE.VELOCITY,
       alignTick: false,
       axisLabel: NO_LABEL,
     },
     series: [
       {
-        name: 'Total Cycle Time',
-        type: 'bar',
-        data: totalCycleTime!,
+        name: 'velocity',
+        type: 'line',
+        data: velocity!,
       },
-      ...otherIndicators,
+      {
+        name: 'throughput',
+        type: 'line',
+        data: throughput!,
+      },
     ],
-    color: ['#003D4F', '#47A1AD', '#F2617A'],
+    color: ['#e16a7c', '#163c4d'],
   };
 }
 
@@ -135,32 +131,32 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   };
 }
 
-function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]) {
-  const data = mappedData?.map((item) => item.velocityList);
-  const velocity = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
-  const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
+function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[]) {
+  const data = mappedData?.map((item) => item.cycleTime?.swimlaneList);
+  const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
+  const cycleTimeByStatus = transformArrayToObject(data);
+  const otherIndicators = [];
+  for (const [name, data] of Object.entries(cycleTimeByStatus)) {
+    otherIndicators.push({ data, name: CYCLE_TIME_MAPPING[name], type: 'bar' });
+  }
   return {
-    title: REQUIRED_DATA.VELOCITY,
-    legend: REQUIRED_DATA.VELOCITY,
+    title: 'Cycle Time Allocation',
+    legend: 'Cycle Time Allocation',
     xAxis: dateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.VELOCITY,
+      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
       alignTick: false,
       axisLabel: NO_LABEL,
     },
     series: [
       {
-        name: 'velocity',
-        type: 'line',
-        data: velocity!,
+        name: 'Total Cycle Time',
+        type: 'bar',
+        data: totalCycleTime!,
       },
-      {
-        name: 'throughput',
-        type: 'line',
-        data: throughput!,
-      },
+      ...otherIndicators,
     ],
-    color: ['#e16a7c', '#163c4d'],
+    color: ['#003D4F', '#47A1AD', '#F2617A'],
   };
 }
 
@@ -200,7 +196,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
 }
 
 interface EmptyData {
-  [key: string]: any[];
+  [key: string]: unknown[];
 }
 
 const emptyData: EmptyData = ['velocityList', 'cycleTimeList', 'reworkList', 'classification'].reduce((obj, key) => {
@@ -222,10 +218,10 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
   const reworkData = extractReworkData(dateRanges, mappedData);
 
   useEffect(() => {
-    const cycleTimeChart = echarts.init(cycleTime.current);
-    const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
-    cycleTimeChart.setOption(option);
-  }, [cycleTime, cycleTimeData]);
+    const velocityChart = echarts.init(velocity.current);
+    const option = velocityData && stackedAreaOptionMapper(velocityData);
+    velocityChart.setOption(option);
+  }, [velocity, velocityData]);
 
   useEffect(() => {
     const averageCycleTimeChart = echarts.init(averageCycleTime.current);
@@ -234,10 +230,10 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
   }, [averageCycleTime, averageCycleTimeData]);
 
   useEffect(() => {
-    const velocityChart = echarts.init(velocity.current);
-    const option = velocityData && stackedAreaOptionMapper(velocityData);
-    velocityChart.setOption(option);
-  }, [velocity, velocityData]);
+    const cycleTimeChart = echarts.init(cycleTime.current);
+    const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
+    cycleTimeChart.setOption(option);
+  }, [cycleTime, cycleTimeData]);
 
   useEffect(() => {
     const reworkChart = echarts.init(rework.current);
@@ -246,15 +242,11 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
   }, [rework, reworkData]);
 
   return (
-    <>
-      <ChartContainer>
-        <ChartWrapper ref={averageCycleTime}></ChartWrapper>
-        <ChartWrapper ref={velocity}></ChartWrapper>
-      </ChartContainer>
-      <ChartContainer>
-        <ChartWrapper ref={rework}></ChartWrapper>
-        <ChartWrapper ref={cycleTime}></ChartWrapper>
-      </ChartContainer>
-    </>
+    <ChartContainer>
+      <ChartWrapper ref={velocity}></ChartWrapper>
+      <ChartWrapper ref={averageCycleTime}></ChartWrapper>
+      <ChartWrapper ref={cycleTime}></ChartWrapper>
+      <ChartWrapper ref={rework}></ChartWrapper>
+    </ChartContainer>
   );
 };
