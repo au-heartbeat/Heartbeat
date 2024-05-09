@@ -19,8 +19,8 @@ import {
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
 import { ReportResponse, ReportResponseDTO, Swimlane } from '@src/clients/report/dto/response';
+import { CYCLE_TIME_MAPPING, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
-import { METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -79,10 +79,12 @@ function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined) {
 
 function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[]) {
   const data = mappedData?.map((item) => item.cycleTime?.swimlaneList);
-  const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards);
+  const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
   const cycleTimeByStatus = transformArrayToObject(data);
-  console.log('totalCycleTime', totalCycleTime);
-  console.log('cycleTimeByStatus', cycleTimeByStatus);
+  const otherIndicators = [];
+  for (const [name, data] of Object.entries(cycleTimeByStatus)) {
+    otherIndicators.push({ data, name: CYCLE_TIME_MAPPING[name], type: 'bar' });
+  }
   return {
     title: 'Cycle Time Allocation',
     legend: 'Cycle Time Allocation',
@@ -92,15 +94,14 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
       alignTick: false,
       axisLabel: NO_LABEL,
     },
-    series: mappedData?.[0].cycleTimeList?.[0].valueList.map((item) => {
-      const series: Series = {
-        name: item.unit + '',
+    series: [
+      {
+        name: 'Total Cycle Time',
         type: 'bar',
-        data: [toNumber(item.value)],
-      };
-
-      return series;
-    }),
+        data: totalCycleTime!,
+      },
+      ...otherIndicators,
+    ],
     color: ['#003D4F', '#47A1AD', '#F2617A'],
   };
 }
@@ -109,8 +110,6 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const data = mappedData?.map((item) => item.cycleTimeList);
   const storyPoints = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
-  console.log('storyPoints', storyPoints);
-  console.log('cardCount', cardCount);
   return {
     title: 'Average Cycle Time',
     legend: 'Average Cycle Time',
@@ -167,7 +166,6 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
 
 function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) {
   const data = mappedData?.map((item) => item.rework);
-  console.log('rework', data);
   const totalReworkTimes = data?.map((item) => item?.totalReworkTimes as number);
   const totalReworkCards = data?.map((item) => item?.totalReworkCards as number);
   const reworkCardsRatio = data?.map((item) => item?.reworkCardsRatio as number);
@@ -223,14 +221,11 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
   const velocityData = extractVelocityData(dateRanges, mappedData);
   const reworkData = extractReworkData(dateRanges, mappedData);
 
-  console.log('mappedData', mappedData);
-  console.log('dateRanges', dateRanges);
-
-  // useEffect(() => {
-  //   const cycleTimeChart = echarts.init(cycleTime.current);
-  //   const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
-  //   cycleTimeChart.setOption(option);
-  // }, [cycleTime, cycleTimeData]);
+  useEffect(() => {
+    const cycleTimeChart = echarts.init(cycleTime.current);
+    const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
+    cycleTimeChart.setOption(option);
+  }, [cycleTime, cycleTimeData]);
 
   useEffect(() => {
     const averageCycleTimeChart = echarts.init(averageCycleTime.current);
@@ -258,6 +253,7 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
       </ChartContainer>
       <ChartContainer>
         <ChartWrapper ref={rework}></ChartWrapper>
+        <ChartWrapper ref={cycleTime}></ChartWrapper>
       </ChartContainer>
     </>
   );

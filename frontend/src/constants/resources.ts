@@ -33,6 +33,14 @@ export const BOARD_METRICS_MAPPING: Record<string, string> = {
   'Rework times': 'rework',
 };
 
+export const CYCLE_TIME_MAPPING: Record<string, string> = {
+  'Waiting for testing': 'Waiting for testing time',
+  'In Dev': 'Total development time',
+  Review: 'Review time',
+  Block: 'Block time',
+  Testing: 'Testing time',
+};
+
 export const DORA_METRICS_MAPPING: Record<string, string> = {
   'Lead time for changes': 'leadTimeForChanges',
   'Deployment frequency': 'deploymentFrequency',
