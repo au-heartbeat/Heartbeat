@@ -1,5 +1,5 @@
+import { savePipelineCrews, saveUsers, updateAssigneeFilter } from '@src/context/Metrics/metricsSlice';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
-import {savePipelineCrews, saveUsers, updateAssigneeFilter} from '@src/context/Metrics/metricsSlice';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
