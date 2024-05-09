@@ -5,13 +5,15 @@ import type { RootState } from '@src/store';
 export interface StepState {
   stepNumber: number;
   timeStamp: number;
-  shouldMetricsLoad: boolean;
+  shouldMetricsLoaded: boolean;
+  failedTimeRangeList: string[];
 }
 
 const initialState: StepState = {
   stepNumber: 0,
   timeStamp: 0,
-  shouldMetricsLoad: true,
+  shouldMetricsLoaded: true,
+  failedTimeRangeList: [],
 };
 
 export const stepperSlice = createSlice({
@@ -23,23 +25,34 @@ export const stepperSlice = createSlice({
       state.timeStamp = initialState.timeStamp;
     },
     nextStep: (state) => {
-      state.shouldMetricsLoad = true;
+      if (state.shouldMetricsLoaded && state.stepNumber === 0) {
+        state.failedTimeRangeList = [];
+      }
+      state.shouldMetricsLoaded = true;
       state.stepNumber += 1;
     },
     backStep: (state) => {
-      state.shouldMetricsLoad = false;
+      state.shouldMetricsLoaded = false;
       state.stepNumber = state.stepNumber === ZERO ? ZERO : state.stepNumber - 1;
+    },
+    updateShouldMetricsLoaded: (state, action) => {
+      state.shouldMetricsLoaded = action.payload;
     },
     updateTimeStamp: (state, action) => {
       state.timeStamp = action.payload;
     },
+    updateFailedTimeRange: (state, action) => {
+      state.failedTimeRangeList = state.failedTimeRangeList.concat(action.payload);
+    },
   },
 });
 
-export const { resetStep, nextStep, backStep, updateTimeStamp } = stepperSlice.actions;
+export const { resetStep, nextStep, backStep, updateShouldMetricsLoaded, updateTimeStamp, updateFailedTimeRange } =
+  stepperSlice.actions;
 
 export const selectStepNumber = (state: RootState) => state.stepper.stepNumber;
 export const selectTimeStamp = (state: RootState) => state.stepper.timeStamp;
-export const shouldMetricsLoad = (state: RootState) => state.stepper.shouldMetricsLoad;
+export const shouldMetricsLoaded = (state: RootState) => state.stepper.shouldMetricsLoaded;
+export const selectFailedTimeRange = (state: RootState) => state.stepper.failedTimeRangeList;
 
 export default stepperSlice.reducer;
