@@ -28,6 +28,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
   const failedTimeRangeList = useAppSelector(selectFailedTimeRange);
   const stepNumber = useAppSelector(selectStepNumber);
+  const backgroundColor = stepNumber === 1 ? theme.palette.secondary.dark : theme.palette.common.white;
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (DateRangeExpandRef.current && !DateRangeExpandRef.current?.contains(event.target as Node)) {
@@ -49,7 +50,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
 
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
     return (
-      <DateRangeExpandContainer ref={ref}>
+      <DateRangeExpandContainer ref={ref} backgroundColor={backgroundColor}>
         {dateRangeList.map((dateRange) => {
           const disabled = dateRange.disabled || disabledAll;
           const hasMetricsError = failedTimeRangeList.includes(
@@ -58,6 +59,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
           return (
             <SingleDateRange
               disabled={disabled}
+              backgroundColor={backgroundColor}
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
@@ -78,6 +80,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
     <DateRangeContainer
       data-test-id={'date-range'}
       color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
+      backgroundColor={backgroundColor}
     >
       {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
       <StyledArrowForward />

@@ -4,12 +4,18 @@ import { Divider } from '@mui/material';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
-export const DateRangeContainer = styled('div')(({ color }) => ({
+interface DateRangeContainerProps {
+  backgroundColor: string;
+  color: string;
+}
+
+export const DateRangeContainer = styled('div')<DateRangeContainerProps>(({ backgroundColor, color }) => ({
   position: 'relative',
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
   borderRadius: '0.5rem',
+  backgroundColor: backgroundColor,
   border: '0.07rem solid',
   borderColor: theme.palette.grey[400],
   width: 'fit-content',
@@ -18,7 +24,11 @@ export const DateRangeContainer = styled('div')(({ color }) => ({
   color: color,
 }));
 
-export const DateRangeExpandContainer = styled.div({
+interface DateRangeExpandContainerProps {
+  backgroundColor: string;
+}
+
+export const DateRangeExpandContainer = styled.div<DateRangeExpandContainerProps>(({ backgroundColor }) => ({
   position: 'absolute',
   top: '4rem',
   right: '0',
@@ -28,7 +38,7 @@ export const DateRangeExpandContainer = styled.div({
   gap: '0.0625rem',
   borderRadius: '0.25rem',
   filter: `drop-shadow(0 0 0.25rem ${theme.palette.grey[400]})`,
-  backgroundColor: theme.palette.common.white,
+  backgroundColor: backgroundColor,
   zIndex: Z_INDEX.POPOVER,
   padding: '0.25rem 0',
   '&:after': {
@@ -43,17 +53,19 @@ export const DateRangeExpandContainer = styled.div({
     borderRightColor: theme.palette.common.white,
     transform: 'rotate(-45deg)',
   },
-});
+}));
 
 interface SingleDateRangeProps {
   disabled: boolean;
+  backgroundColor: string;
 }
 
-export const SingleDateRange = styled('div')(({ disabled }: SingleDateRangeProps) => ({
+export const SingleDateRange = styled('div')(({ disabled, backgroundColor }: SingleDateRangeProps) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   color: theme.palette.text.primary,
+  backgroundColor: backgroundColor,
   fontSize: '.875rem',
   padding: '0.5rem',
   cursor: 'pointer',
