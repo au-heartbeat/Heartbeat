@@ -11,7 +11,7 @@ export interface AreaOptionProps {
   title: string;
   legend: string;
   xAxis: string[];
-  yAxis: yAxis;
+  yAxis: yAxis[];
   series: Series[] | undefined;
   color: string[];
 }
@@ -41,26 +41,48 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
     },
     grid: {
       show: true,
-      left: '7%',
-      right: '4%',
+      borderColor: 'transparent',
     },
     xAxis: {
       data: props.xAxis,
-    },
-    yAxis: {
-      name: props.yAxis.name,
-      nameTextStyle: {
-        align: 'left',
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed',
+          width: 1,
+        },
       },
-      type: 'value',
-      alignTick: false,
     },
+    yAxis: props.yAxis?.map((item, index) => {
+      return {
+        name: item.name,
+        position: index === 0 ? 'left' : 'right',
+        nameTextStyle: {
+          align: 'center',
+        },
+        type: 'value',
+        axisLabel: {
+          show: true,
+          formatter: `{value}${item.axisLabel}`,
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            type: 'dashed',
+            width: 1,
+          },
+        },
+      };
+    }),
     color: props.color,
     series: props.series?.map((item) => {
       return {
         name: item.name,
         data: item.data,
         type: item.type,
+        areaStyle: {
+          opacity: 0.3,
+        },
         smooth: true,
       };
     }),

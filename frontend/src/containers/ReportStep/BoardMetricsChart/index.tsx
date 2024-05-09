@@ -81,21 +81,30 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
     title: REQUIRED_DATA.VELOCITY,
     legend: REQUIRED_DATA.VELOCITY,
     xAxis: dateRanges,
-    yAxis: {
-      name: METRICS_SUBTITLE.VELOCITY,
-      alignTick: false,
-      axisLabel: NO_LABEL,
-    },
+    yAxis: [
+      {
+        name: 'SP',
+        alignTick: false,
+        axisLabel: NO_LABEL,
+      },
+      {
+        name: 'Card',
+        alignTick: false,
+        axisLabel: NO_LABEL,
+      },
+    ],
     series: [
       {
         name: 'velocity',
         type: 'line',
         data: velocity!,
+        yAxisIndex: 0,
       },
       {
         name: 'throughput',
         type: 'line',
         data: throughput!,
+        yAxisIndex: 1,
       },
     ],
     color: ['#e16a7c', '#163c4d'],
@@ -110,21 +119,30 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
     title: 'Average Cycle Time',
     legend: 'Average Cycle Time',
     xAxis: dateRanges,
-    yAxis: {
-      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
-      alignTick: false,
-      axisLabel: NO_LABEL,
-    },
+    yAxis: [
+      {
+        name: 'Days/SP',
+        alignTick: false,
+        axisLabel: NO_LABEL,
+      },
+      {
+        name: 'Days/Card',
+        alignTick: false,
+        axisLabel: NO_LABEL,
+      },
+    ],
     series: [
       {
         name: 'storyPoints',
         type: 'line',
         data: storyPoints!,
+        yAxisIndex: 0,
       },
       {
         name: 'cardCount',
         type: 'line',
         data: cardCount!,
+        yAxisIndex: 1,
       },
     ],
     color: ['#003D4F', '#47A1AD', '#F2617A'],
@@ -144,7 +162,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
     legend: 'Cycle Time Allocation',
     xAxis: dateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      name: 'Days',
       alignTick: false,
       axisLabel: NO_LABEL,
     },
@@ -169,26 +187,39 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
     title: 'Rework',
     legend: 'Rework',
     xAxis: dateRanges,
-    yAxis: {
-      name: METRICS_SUBTITLE.FAILURE_RATE,
-      axisLabel: LABEL_PERCENT,
-      alignTick: false,
-    },
+    yAxis: [
+      {
+        name: '',
+        alignTick: false,
+        axisLabel: NO_LABEL,
+      },
+      {
+        name: '',
+        alignTick: false,
+        axisLabel: LABEL_PERCENT,
+      },
+    ],
     series: [
       {
         name: 'Rework cards ratrio',
         type: 'line',
         data: reworkCardsRatio!,
+        yAxisIndex: 1,
+        setAreaStyle: false,
       },
       {
         name: 'Total rework times',
         type: 'bar',
         data: totalReworkTimes!,
+        yAxisIndex: 0,
+        setAreaStyle: false,
       },
       {
         name: 'Total rework cards',
-        type: 'line',
+        type: 'bar',
         data: totalReworkCards!,
+        yAxisIndex: 0,
+        setAreaStyle: false,
       },
     ],
     color: ['#7aa8b3', '#254456', '#d37a87'],
@@ -221,24 +252,36 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
     const velocityChart = echarts.init(velocity.current);
     const option = velocityData && stackedAreaOptionMapper(velocityData);
     velocityChart.setOption(option);
+    return () => {
+      velocityChart.dispose();
+    };
   }, [velocity, velocityData]);
 
   useEffect(() => {
     const averageCycleTimeChart = echarts.init(averageCycleTime.current);
     const option = averageCycleTimeData && stackedAreaOptionMapper(averageCycleTimeData);
     averageCycleTimeChart.setOption(option);
+    return () => {
+      averageCycleTimeChart.dispose();
+    };
   }, [averageCycleTime, averageCycleTimeData]);
 
   useEffect(() => {
     const cycleTimeChart = echarts.init(cycleTime.current);
     const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
     cycleTimeChart.setOption(option);
+    return () => {
+      cycleTimeChart.dispose();
+    };
   }, [cycleTime, cycleTimeData]);
 
   useEffect(() => {
     const reworkChart = echarts.init(rework.current);
     const option = reworkData && stackedAreaOptionMapper(reworkData);
     reworkChart.setOption(option);
+    return () => {
+      reworkChart.dispose();
+    };
   }, [rework, reworkData]);
 
   return (
