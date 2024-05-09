@@ -13,6 +13,9 @@ export enum ProjectCreationType {
 export class ReportStep {
   readonly page: Page;
   readonly pageHeader: Locator;
+  readonly dateRangeViewerContainer: Locator;
+  readonly dateRangeViewerExpandTrigger: Locator;
+  readonly dateRangeViewerOptions: Locator;
   readonly velocityPart: Locator;
   readonly averageCycleTimeForSP: Locator;
   readonly averageCycleTimeForCard: Locator;
@@ -46,6 +49,9 @@ export class ReportStep {
   constructor(page: Page) {
     this.page = page;
     this.pageHeader = this.page.locator('[data-test-id="Header"]');
+    this.dateRangeViewerContainer = this.page.getByLabel('date range viewer');
+    this.dateRangeViewerExpandTrigger = this.dateRangeViewerContainer.getByLabel('expandMore');
+    this.dateRangeViewerOptions = this.dateRangeViewerContainer.getByLabel('date range viewer options');
     this.velocityPart = this.page.locator('[data-test-id="Velocity"] [data-test-id="report-section"]');
     this.averageCycleTimeForSP = this.page.locator('[data-test-id="Cycle Time"] [data-test-id="report-section"]');
     this.averageCycleTimeForCard = this.page.locator('[data-test-id="Cycle Time"] [data-test-id="report-section"]');
@@ -191,6 +197,10 @@ export class ReportStep {
 
   async checkBoardMetricsForMultipleTimes(data: IBoardMetricsResult[]) {
     for (let i = 0; i < data.length; i++) {
+      await this.dateRangeViewerExpandTrigger.click();
+      await expect(this.dateRangeViewerOptions).toBeVisible();
+      const currentRange = this.dateRangeViewerOptions.getByLabel(`date range viewer - option ${i}`);
+      await currentRange.click();
       await this.checkBoardMetrics(data[i]);
     }
   }

@@ -49,8 +49,8 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
 
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
     return (
-      <DateRangeExpandContainer ref={ref}>
-        {dateRangeList.map((dateRange) => {
+      <DateRangeExpandContainer ref={ref} aria-label='date range viewer options'>
+        {dateRangeList.map((dateRange, index) => {
           const disabled = dateRange.disabled || disabledAll;
           const hasMetricsError = failedTimeRangeList.includes(
             formatDateToTimestampString(dateRange.startDate as string),
@@ -60,6 +60,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
               disabled={disabled}
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
+              aria-label={`date range viewer - option ${index}`}
             >
               <DateRangeFailedIconContainer>
                 {hasMetricsError && stepNumber === 1 && <PriorityHighIcon color='error' />}
@@ -77,6 +78,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   return (
     <DateRangeContainer
       data-test-id={'date-range'}
+      aria-label='date range viewer'
       color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
     >
       {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}

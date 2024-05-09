@@ -1,5 +1,5 @@
-import { BOARD_METRICS_RESULT_MULTIPLE_TIMES, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
 import { configWithoutBlockColumn as metricsStepWithoutBlockColumnData } from '../../fixtures/create-new/metrics-step';
+import { BOARD_METRICS_RESULT_MULTIPLE_TIMES, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
