@@ -19,7 +19,7 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '0.25rem',
-  marginBottom: props.isSummaryPage ? '-3.5rem' : '-2rem',
+  marginBottom: props.isSummaryPage ? '0rem' : '2rem',
   zIndex: Z_INDEX.DROPDOWN,
 }));
 

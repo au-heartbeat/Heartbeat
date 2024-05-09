@@ -21,11 +21,8 @@ import {
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
 import { METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
-import { selectConfig } from '@src/context/config/configSlice';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { CanvasRenderer } from 'echarts/renderers';
-import { sortDateRanges } from '@src/utils/util';
-import { useAppSelector } from '@src/hooks';
 import { theme } from '@src/theme';
 import { toNumber } from 'lodash';
 
@@ -46,22 +43,12 @@ echarts.use([
 
 interface DoraMetricsChartProps {
   startToRequestDoraData: () => void;
+  dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
 }
 
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
-
-function formatDate(date: string) {
-  const d = new Date(date);
-  let month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate();
-
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-
-  return [month, day].join('/');
-}
 
 function extractedStackedBarData(allDateRanges: string[], mappedData?: ReportResponse[]) {
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name);
@@ -156,14 +143,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
-export const DoraMetricsChart = ({ data }: DoraMetricsChartProps) => {
-  const configData = useAppSelector(selectConfig);
-  const dateRange = sortDateRanges(configData.basic.dateRange, false);
-
-  const allDateRanges = dateRange?.map((date) => {
-    return formatDate(date.startDate!) + '-' + formatDate(date!.endDate!);
-  });
-
+export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) => {
   const LeadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
@@ -172,10 +152,10 @@ export const DoraMetricsChart = ({ data }: DoraMetricsChartProps) => {
   //TODO: filter valid report data here:
   const mappedData = data && data.map((currentData) => reportMapper(currentData!));
 
-  const deploymentFrequencyData = extractedDeploymentFrequencyData(allDateRanges, mappedData);
-  const changeFailureRateData = extractedChangeFailureRateData(allDateRanges, mappedData);
-  const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(allDateRanges, mappedData);
-  const LeadTimeForChangeData = extractedStackedBarData(allDateRanges, mappedData);
+  const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
+  const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
+  const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
+  const LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
 
   useEffect(() => {
     const LeadTimeForChangeChart = echarts.init(LeadTimeForChange.current);

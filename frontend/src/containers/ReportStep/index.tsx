@@ -55,6 +55,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
+import { Box, Tab, Tabs } from "@mui/material";
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -79,7 +80,18 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
   const descendingDateRanges = sortDateRanges(configData.basic.dateRange);
+  const allDateRanges = descendingDateRanges.reverse().map((range) => {
+    const start = new Date(range.startDate!);
+    const end = new Date(range.endDate!);
+    // 格式化日期为 MM/DD
+    const formattedStart = `${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
+    const formattedEnd = `${(end.getMonth() + 1).toString().padStart(2, '0')}/${end.getDate().toString().padStart(2, '0')}`;
+
+    return `${formattedStart}-${formattedEnd}`;
+  });
+
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
+  const [chartIndex, setChartIndex] = React.useState(0);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -438,7 +450,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart startToRequestDoraData={() => startToRequestData(doraReportRequestBody)} data={data} />
+    <DoraMetricsChart startToRequestDoraData={() => startToRequestData(doraReportRequestBody)} data={data} dateRanges={allDateRanges}/>
   );
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
@@ -451,6 +463,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const backToSummaryPage = () => {
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
+  };
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setChartIndex(newValue);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {
@@ -481,6 +497,13 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     setPageType(REPORT_PAGE_TYPE.DORA_CHART);
   };
 
+  const tabProps = (index: number) => {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  };
+
   const showPage = (pageType: string, reportData: ReportResponseDTO | undefined) => {
     const sortedReports = sortReportInfos(reportInfos, false);
     switch (pageType) {
@@ -509,6 +532,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
               Chart
             </ChartListButton>
           </ListChartButtonContainer>
+          <Box>
+            <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
+              <Tab label='Board' {...tabProps(0)} />
+              <Tab label='DORA' {...tabProps(1)} />
+            </Tabs>
+          </Box>
           <DateRangeViewer
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
