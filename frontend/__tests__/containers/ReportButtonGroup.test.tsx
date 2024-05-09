@@ -126,7 +126,7 @@ describe('ReportButtonGroup', () => {
           isShowExportPipelineButton={true}
           handleBack={mockHandler}
           handleSave={mockHandler}
-          csvTimeStamp={1239013}
+          csvTimeStamp={1715250961572}
           dateRangeRequestResults={dateRangeRequestResults}
         />
       </Provider>,
@@ -188,8 +188,9 @@ describe('ReportButtonGroup', () => {
     expect(screen.getByRole('button', { name: EXPORT_PIPELINE_DATA })).toBeDisabled();
   });
 
-  [EXPORT_METRIC_DATA, EXPORT_BOARD_DATA, EXPORT_PIPELINE_DATA].forEach((buttonName) => {
-    it(`should not be able to export the ${buttonName} CSV file when an error occurs for a dataRange`, async () => {
+  it.each([EXPORT_METRIC_DATA, EXPORT_BOARD_DATA, EXPORT_PIPELINE_DATA])(
+    `should not be able to export the %s CSV file when an error occurs for a dataRange`,
+    async (buttonName) => {
       setup(partialFailedMockData);
       const exportButton = screen.getByRole('button', { name: buttonName });
       expect(exportButton).not.toBeDisabled();
@@ -199,8 +200,8 @@ describe('ReportButtonGroup', () => {
       expect(screen.getByText('2024/01/15 - 2024/01/31')).toBeInTheDocument();
       const checkbox = screen.getAllByRole('checkbox')[1];
       expect(checkbox).toBeDisabled();
-    });
-  });
+    },
+  );
 
   it('should not open download dialog when click export metric data button given only setting one dataRange', async () => {
     setup([firstBasicMockDateRangeRequestResult]);
@@ -242,13 +243,11 @@ describe('ReportButtonGroup', () => {
     expect(result.current.fetchExportData).toBeCalledTimes(1);
   });
 
-  [EXPORT_METRIC_DATA, EXPORT_BOARD_DATA, EXPORT_PIPELINE_DATA].forEach((buttonName) => {
-    it(`should should not be able to click the ${buttonName} when an error occurs for all dataRanges`, async () => {
-      setup(allFailedMockData);
+  it(`should should not be able to click the button when an error occurs for all dataRanges`, async () => {
+    setup(allFailedMockData);
 
-      const exportButton = screen.getByRole('button', { name: buttonName });
-
-      expect(exportButton).toBeDisabled();
-    });
+    expect(screen.getByRole('button', { name: EXPORT_METRIC_DATA })).toBeDisabled();
+    expect(screen.getByRole('button', { name: EXPORT_BOARD_DATA })).toBeDisabled();
+    expect(screen.getByRole('button', { name: EXPORT_PIPELINE_DATA })).toBeDisabled();
   });
 });
