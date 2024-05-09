@@ -1,8 +1,8 @@
 import { Button, DialogContent, DialogTitle, FormControlLabel, FormGroup } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
-import CloseIcon from "@mui/icons-material/Close";
 
 export const DialogContainer = styled('div')({
   width: '38rem',
@@ -77,4 +77,4 @@ export const StyledFormControlLabel = styled(FormControlLabel)(({ checked }) => 
 
 export const CloseButton = styled(CloseIcon)({
   cursor: 'pointer',
-})
+});

@@ -15,17 +15,18 @@ import {
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
 import {
-  addNotification,
-  closeAllNotifications,
-  closeNotification,
-  Notification,
-} from '@src/context/notification/NotificationSlice';
-import {
+  DateRange,
   isOnlySelectClassification,
   isSelectBoardMetrics,
   isSelectDoraMetrics,
   selectConfig,
 } from '@src/context/config/configSlice';
+import {
+  addNotification,
+  closeAllNotifications,
+  closeNotification,
+  Notification,
+} from '@src/context/notification/NotificationSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -120,12 +121,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
 
-  const mapDateResult = (descendingDateRanges) =>
+  const mapDateResult = (descendingDateRanges: DateRange, reportInfos: IReportInfo[]) =>
     descendingDateRanges.map(({ startDate, endDate }) => {
-      const reportData = reportInfos.find((singleResult) => singleResult.id === startDate).reportData;
+      const reportData = reportInfos.find((singleResult) => singleResult.id === startDate)?.reportData ?? null;
       return {
-        startDate,
-        endDate,
+        startDate: startDate || '',
+        endDate: endDate || '',
         overallMetricsCompleted: reportData?.overallMetricsCompleted ?? false,
         boardMetricsCompleted: reportData?.boardMetricsCompleted ?? null,
         doraMetricsCompleted: reportData?.doraMetricsCompleted ?? null,
@@ -136,12 +137,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         },
       } as DateRangeRequestResult;
     });
-  const [dateRangeRequestResults, setRangeRequestResults] =
-    useState<DateRangeRequestResult[]>(mapDateResult(descendingDateRanges));
-
-  useEffect(() => {
-    setRangeRequestResults(mapDateResult(descendingDateRanges));
-  }, [reportInfos]);
 
   const getErrorMessage4Board = () => {
     if (currentDataInfo.reportData?.reportMetricsError.boardMetricsError) {
@@ -492,11 +487,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
         handleBack={() => handleBack()}
         handleSave={() => handleSave()}
-        reportData={currentDataInfo.reportData}
-        startDate={startDate}
-        endDate={endDate}
         csvTimeStamp={csvTimeStamp}
-        dateRangeRequestResults={dateRangeRequestResults}
+        dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
       />
     </>
   );
