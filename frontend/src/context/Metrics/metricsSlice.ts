@@ -6,7 +6,7 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { convertCycleTimeSettings, getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
-import { pipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import _, { omit, uniqWith, isEqual, intersection, concat } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
@@ -477,11 +477,11 @@ export const metricsSlice = createSlice({
       if (pipelineCrews) {
         state.pipelineCrews = setPipelineCrews(isProjectCreated, pipelineCrews, state.pipelineCrews);
       }
-      const orgNames: Array<string> = _.uniq(pipelineList.map((item: pipeline) => item.orgName));
+      const orgNames: Array<string> = _.uniq(pipelineList.map((item: IPipeline) => item.orgName));
       const filteredPipelineNames = (organization: string) =>
         pipelineList
-          .filter((pipeline: pipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase())
-          .map((item: pipeline) => item.name);
+          .filter((pipeline: IPipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase())
+          .map((item: IPipeline) => item.name);
 
       const uniqueResponse = (res: IPipelineConfig[]) => {
         let itemsOmitId = uniqWith(
