@@ -80,9 +80,10 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
             <strong>Select the time period for the exporting data</strong>
           </TimePeriodSelectionMessage>
           <StyledFormGroup>
-            {dateRangeList.map((item, index) => (
+            {dateRangeList.map((item) => (
               <StyledFormControlLabel
-                control={<Checkbox onChange={() => handleChange(item)} key={item.startDate} />}
+                key={item.startDate}
+                control={<Checkbox onChange={() => handleChange(item)} />}
                 label={getLabel(item)}
                 checked={selectedRangeItems.includes(item)}
                 disabled={item.disabled}

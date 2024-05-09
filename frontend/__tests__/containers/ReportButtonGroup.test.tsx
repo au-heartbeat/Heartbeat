@@ -1,4 +1,4 @@
-import { EXPORT_BOARD_DATA, EXPORT_METRIC_DATA, EXPORT_PIPELINE_DATA, MOCK_REPORT_RESPONSE } from '../fixtures';
+import { EXPORT_BOARD_DATA, EXPORT_METRIC_DATA, EXPORT_PIPELINE_DATA } from '../fixtures';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import { DateRangeRequestResult } from '@src/containers/ReportStep';
 import { render, renderHook, screen } from '@testing-library/react';

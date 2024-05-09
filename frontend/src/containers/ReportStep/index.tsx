@@ -125,8 +125,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     descendingDateRanges.map(({ startDate, endDate }) => {
       const reportData = reportInfos.find((singleResult) => singleResult.id === startDate)?.reportData ?? null;
       return {
-        startDate: startDate || '',
-        endDate: endDate || '',
+        startDate: startDate,
+        endDate: endDate,
         overallMetricsCompleted: reportData?.overallMetricsCompleted ?? false,
         boardMetricsCompleted: reportData?.boardMetricsCompleted ?? null,
         doraMetricsCompleted: reportData?.doraMetricsCompleted ?? null,

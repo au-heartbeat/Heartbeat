@@ -67,11 +67,11 @@ export const tooltipModifiers = {
 
 export const StyledFormControlLabel = styled(FormControlLabel)(({ checked }) => ({
   width: '15.5rem',
-  border: '1px solid #F0EDED',
+  border: `0.0625rem solid ${theme.main.boardColor}`,
   margin: '0.375rem 0',
 
   ...(checked && {
-    background: 'rgba(67, 80, 175, 0.1)',
+    background: theme.main.downloadListLabel.backgroundColor,
   }),
 }));
 
