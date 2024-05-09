@@ -49,19 +49,16 @@ describe('ReportButtonGroup', () => {
     firstBasicMockDateRangeRequestResult,
     secondBasicMockDateRangeRequestResult,
   ];
-  const pendingOverallMetricsMockData: DateRangeRequestResult[] = [
+  const pendingMockData: DateRangeRequestResult[] = [
     firstBasicMockDateRangeRequestResult,
-    { ...secondBasicMockDateRangeRequestResult, overallMetricsCompleted: false },
+    {
+      ...secondBasicMockDateRangeRequestResult,
+      overallMetricsCompleted: false,
+      boardMetricsCompleted: false,
+      doraMetricsCompleted: false,
+    },
   ];
-  const pendingBoardMetricsMockData: DateRangeRequestResult[] = [
-    firstBasicMockDateRangeRequestResult,
-    { ...secondBasicMockDateRangeRequestResult, boardMetricsCompleted: false },
-  ];
-  const pendingPipelineMetricsMockData: DateRangeRequestResult[] = [
-    firstBasicMockDateRangeRequestResult,
-    { ...secondBasicMockDateRangeRequestResult, doraMetricsCompleted: false },
-  ];
-  const errorBoardMetricsMockData: DateRangeRequestResult[] = [
+  const partialFailedMockData: DateRangeRequestResult[] = [
     firstBasicMockDateRangeRequestResult,
     {
       ...secondBasicMockDateRangeRequestResult,
@@ -70,17 +67,42 @@ describe('ReportButtonGroup', () => {
           status: 500,
           message: 'mockError',
         },
-        pipelineMetricsError: null,
-        sourceControlMetricsError: null,
+        pipelineMetricsError: {
+          status: 500,
+          message: 'mockError',
+        },
+        sourceControlMetricsError: {
+          status: 500,
+          message: 'mockError',
+        },
       },
     },
   ];
-  const errorPipelineMetricsMockData: DateRangeRequestResult[] = [
-    firstBasicMockDateRangeRequestResult,
+  const allFailedMockData: DateRangeRequestResult[] = [
+    {
+      ...firstBasicMockDateRangeRequestResult,
+      reportMetricsError: {
+        boardMetricsError: {
+          status: 500,
+          message: 'mockError',
+        },
+        pipelineMetricsError: {
+          status: 500,
+          message: 'mockError',
+        },
+        sourceControlMetricsError: {
+          status: 500,
+          message: 'mockError',
+        },
+      },
+    },
     {
       ...secondBasicMockDateRangeRequestResult,
       reportMetricsError: {
-        boardMetricsError: null,
+        boardMetricsError: {
+          status: 500,
+          message: 'mockError',
+        },
         pipelineMetricsError: {
           status: 500,
           message: 'mockError',
@@ -158,64 +180,26 @@ describe('ReportButtonGroup', () => {
     expect(screen.getAllByRole('checkbox')[1]).not.toBeDisabled();
   });
 
-  it('should export metric data buttons be not clickable when the overall metrics CSV file for any dataRange has not been generated', () => {
-    setup(pendingOverallMetricsMockData);
+  it('should export data buttons be not clickable when the CSV file for any dataRange has not been generated', () => {
+    setup(pendingMockData);
 
     expect(screen.getByRole('button', { name: EXPORT_METRIC_DATA })).toBeDisabled();
-    expect(screen.getByRole('button', { name: EXPORT_BOARD_DATA })).not.toBeDisabled();
-    expect(screen.getByRole('button', { name: EXPORT_PIPELINE_DATA })).not.toBeDisabled();
-  });
-
-  it('should export board data buttons be not clickable when the board metrics CSV file for any dataRange has not been generated', () => {
-    setup(pendingBoardMetricsMockData);
-
-    expect(screen.getByRole('button', { name: EXPORT_METRIC_DATA })).not.toBeDisabled();
     expect(screen.getByRole('button', { name: EXPORT_BOARD_DATA })).toBeDisabled();
-    expect(screen.getByRole('button', { name: EXPORT_PIPELINE_DATA })).not.toBeDisabled();
-  });
-
-  it('should Export pipeline data buttons be not clickable when the pipeline metrics CSV file for any dataRange has not been generated', () => {
-    setup(pendingPipelineMetricsMockData);
-
-    expect(screen.getByRole('button', { name: EXPORT_METRIC_DATA })).not.toBeDisabled();
-    expect(screen.getByRole('button', { name: EXPORT_BOARD_DATA })).not.toBeDisabled();
     expect(screen.getByRole('button', { name: EXPORT_PIPELINE_DATA })).toBeDisabled();
   });
 
-  it('should not be able to export the overall metrics CSV file when an error occurs for a dataRange', async () => {
-    setup(errorBoardMetricsMockData);
-    const exportMetricDataButton = screen.getByRole('button', { name: EXPORT_METRIC_DATA });
-    expect(exportMetricDataButton).not.toBeDisabled();
+  [EXPORT_METRIC_DATA, EXPORT_BOARD_DATA, EXPORT_PIPELINE_DATA].forEach((buttonName) => {
+    it(`should not be able to export the ${buttonName} CSV file when an error occurs for a dataRange`, async () => {
+      setup(partialFailedMockData);
+      const exportButton = screen.getByRole('button', { name: buttonName });
+      expect(exportButton).not.toBeDisabled();
 
-    await userEvent.click(exportMetricDataButton);
+      await userEvent.click(exportButton);
 
-    expect(screen.getByText('2024/01/15 - 2024/01/31')).toBeInTheDocument();
-    const checkbox = screen.getAllByRole('checkbox')[1];
-    expect(checkbox).toBeDisabled();
-  });
-
-  it('should not be able to export the board CSV file when an error occurs for a dataRange', async () => {
-    setup(errorBoardMetricsMockData);
-    const exportBoardDataButton = screen.getByRole('button', { name: EXPORT_BOARD_DATA });
-    expect(exportBoardDataButton).not.toBeDisabled();
-
-    await userEvent.click(exportBoardDataButton);
-
-    expect(screen.getByText('2024/01/15 - 2024/01/31')).toBeInTheDocument();
-    const checkbox = screen.getAllByRole('checkbox')[1];
-    expect(checkbox).toBeDisabled();
-  });
-
-  it('should not be able to export the pipeline CSV file when an error occurs for a dataRange', async () => {
-    setup(errorPipelineMetricsMockData);
-    const exportPipelineDataButton = screen.getByRole('button', { name: EXPORT_PIPELINE_DATA });
-    expect(exportPipelineDataButton).not.toBeDisabled();
-
-    await userEvent.click(exportPipelineDataButton);
-
-    expect(screen.getByText('2024/01/15 - 2024/01/31')).toBeInTheDocument();
-    const checkbox = screen.getAllByRole('checkbox')[1];
-    expect(checkbox).toBeDisabled();
+      expect(screen.getByText('2024/01/15 - 2024/01/31')).toBeInTheDocument();
+      const checkbox = screen.getAllByRole('checkbox')[1];
+      expect(checkbox).toBeDisabled();
+    });
   });
 
   it('should not open download dialog when click export metric data button given only setting one dataRange', async () => {
@@ -256,5 +240,15 @@ describe('ReportButtonGroup', () => {
 
     expect(screen.queryByText('Select the time period for the exporting data')).not.toBeInTheDocument();
     expect(result.current.fetchExportData).toBeCalledTimes(1);
+  });
+
+  [EXPORT_METRIC_DATA, EXPORT_BOARD_DATA, EXPORT_PIPELINE_DATA].forEach((buttonName) => {
+    it(`should should not be able to click the ${buttonName} when an error occurs for all dataRanges`, async () => {
+      setup(allFailedMockData);
+
+      const exportButton = screen.getByRole('button', { name: buttonName });
+
+      expect(exportButton).toBeDisabled();
+    });
   });
 });
