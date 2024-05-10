@@ -63,9 +63,9 @@ const timeoutNotificationMessages = {
 export interface DateRangeRequestResult {
   startDate: string;
   endDate: string;
-  overallMetricsCompleted: boolean;
-  boardMetricsCompleted: boolean;
-  doraMetricsCompleted: boolean;
+  overallMetricsCompleted: boolean | null;
+  boardMetricsCompleted: boolean | null;
+  doraMetricsCompleted: boolean | null;
   reportMetricsError: AllErrorResponse;
 }
 
@@ -127,7 +127,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       return {
         startDate: startDate,
         endDate: endDate,
-        overallMetricsCompleted: reportData?.overallMetricsCompleted ?? false,
+        overallMetricsCompleted: reportData?.overallMetricsCompleted ?? null,
         boardMetricsCompleted: reportData?.boardMetricsCompleted ?? null,
         doraMetricsCompleted: reportData?.doraMetricsCompleted ?? null,
         reportMetricsError: reportData?.reportMetricsError ?? {
