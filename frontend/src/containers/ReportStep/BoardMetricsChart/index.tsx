@@ -17,7 +17,7 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { CYCLE_TIME_MAPPING, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
+import { CYCLE_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
@@ -79,8 +79,10 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
   const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
   return {
     title: REQUIRED_DATA.VELOCITY,
-    legend: REQUIRED_DATA.VELOCITY,
-    xAxis: dateRanges,
+    xAxis: {
+      data: dateRanges,
+      boundaryGap: false,
+    },
     yAxis: [
       {
         name: 'SP',
@@ -95,13 +97,13 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
     ],
     series: [
       {
-        name: 'velocity',
+        name: 'Velocity(Story Point)',
         type: 'line',
         data: velocity!,
         yAxisIndex: 0,
       },
       {
-        name: 'throughput',
+        name: 'Throughput(Cards count)',
         type: 'line',
         data: throughput!,
         yAxisIndex: 1,
@@ -117,8 +119,10 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
   return {
     title: 'Average Cycle Time',
-    legend: 'Average Cycle Time',
-    xAxis: dateRanges,
+    xAxis: {
+      data: dateRanges,
+      boundaryGap: false,
+    },
     yAxis: [
       {
         name: 'Days/SP',
@@ -133,13 +137,13 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
     ],
     series: [
       {
-        name: 'storyPoints',
+        name: 'Days/Story point',
         type: 'line',
         data: storyPoints!,
         yAxisIndex: 0,
       },
       {
-        name: 'cardCount',
+        name: 'Days/Cards count',
         type: 'line',
         data: cardCount!,
         yAxisIndex: 1,
@@ -155,11 +159,10 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   const cycleTimeByStatus = transformArrayToObject(data);
   const otherIndicators = [];
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
-    otherIndicators.push({ data, name: CYCLE_TIME_MAPPING[name], type: 'bar' });
+    otherIndicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
   return {
     title: 'Cycle Time Allocation',
-    legend: 'Cycle Time Allocation',
     xAxis: dateRanges,
     yAxis: {
       name: 'Days',
@@ -168,7 +171,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
     },
     series: [
       {
-        name: 'Total Cycle Time',
+        name: 'Total cycle time',
         type: 'bar',
         data: totalCycleTime!,
       },
@@ -185,8 +188,10 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
   const reworkCardsRatio = data?.map((item) => item?.reworkCardsRatio as number);
   return {
     title: 'Rework',
-    legend: 'Rework',
-    xAxis: dateRanges,
+    xAxis: {
+      data: dateRanges,
+      boundaryGap: true,
+    },
     yAxis: [
       {
         name: '',

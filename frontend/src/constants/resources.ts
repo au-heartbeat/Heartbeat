@@ -33,7 +33,7 @@ export const BOARD_METRICS_MAPPING: Record<string, string> = {
   'Rework times': 'rework',
 };
 
-export const CYCLE_TIME_MAPPING: Record<string, string> = {
+export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
   'Waiting for testing': 'Waiting for testing time',
   'In Dev': 'Total development time',
   Review: 'Review time',
