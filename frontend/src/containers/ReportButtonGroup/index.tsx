@@ -105,7 +105,7 @@ export const ReportButtonGroup = ({
           isShowDialog={isShowDialog}
           handleClose={handleCloseDialog}
           dateRangeList={downloadReportList}
-          downloadCSVFile={(startDate, endDate) => fetchExportData(exportCSV(dataType!, startDate, endDate))}
+          downloadCSVFile={(startDate, endDate) => fetchExportData(exportCSV(dataType, startDate, endDate))}
         />
       )}
       <StyledButtonGroup isShowSave={isShowSave}>
