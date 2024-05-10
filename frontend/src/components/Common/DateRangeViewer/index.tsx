@@ -1,7 +1,6 @@
 import {
   DateRangeContainer,
   DateRangeExpandContainer,
-  DateRangeFailedIconContainer,
   SingleDateRange,
   StyledArrowForward,
   StyledCalendarToday,
@@ -10,7 +9,7 @@ import {
   StyledExpandContainer,
   StyledExpandMoreIcon,
 } from './style';
-import { selectFailedTimeRange, selectStepNumber } from '@src/context/stepper/StepperSlice';
+import { selectMetricsPageFailedTimeRange, selectStepNumber } from '@src/context/stepper/StepperSlice';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
@@ -28,9 +27,10 @@ type Props = {
 const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
-  const failedTimeRangeList = useAppSelector(selectFailedTimeRange);
+  const failedTimeRangeList = useAppSelector(selectMetricsPageFailedTimeRange);
   const stepNumber = useAppSelector(selectStepNumber);
   const backgroundColor = stepNumber === 1 ? theme.palette.secondary.dark : theme.palette.common.white;
+  const currentDateRangeHasFailed = stepNumber === 1 ? failedTimeRangeList.length > 0 : false;
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (DateRangeExpandRef.current && !DateRangeExpandRef.current?.contains(event.target as Node)) {
@@ -62,12 +62,11 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
             <SingleDateRange
               disabled={disabled}
               backgroundColor={backgroundColor}
+              paddingRight={hasMetricsError && stepNumber === 1 ? '1rem' : '0.5rem'}
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
-              <DateRangeFailedIconContainer>
-                {hasMetricsError && stepNumber === 1 && <PriorityHighIcon color='error' />}
-              </DateRangeFailedIconContainer>
+              {<PriorityHighIcon color='error' />}
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}
@@ -85,6 +84,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
       data-test-id={'date-range'}
     >
       <DateRangeContainer>
+        {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
         {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
         <StyledArrowForward />
         {formatDate((selectedDateRange || dateRangeList[0]).endDate as string)}

@@ -6,14 +6,14 @@ export interface StepState {
   stepNumber: number;
   timeStamp: number;
   shouldMetricsLoaded: boolean;
-  failedTimeRangeList: string[];
+  metricsPageFailedTimeRangeList: string[];
 }
 
 const initialState: StepState = {
   stepNumber: 0,
   timeStamp: 0,
   shouldMetricsLoaded: true,
-  failedTimeRangeList: [],
+  metricsPageFailedTimeRangeList: [],
 };
 
 export const stepperSlice = createSlice({
@@ -26,7 +26,7 @@ export const stepperSlice = createSlice({
     },
     nextStep: (state) => {
       if (state.shouldMetricsLoaded && state.stepNumber === 0) {
-        state.failedTimeRangeList = [];
+        state.metricsPageFailedTimeRangeList = [];
       }
       state.shouldMetricsLoaded = true;
       state.stepNumber += 1;
@@ -41,18 +41,24 @@ export const stepperSlice = createSlice({
     updateTimeStamp: (state, action) => {
       state.timeStamp = action.payload;
     },
-    updateFailedTimeRange: (state, action) => {
-      state.failedTimeRangeList = state.failedTimeRangeList.concat(action.payload);
+    updateMetricsPageFailedTimeRange: (state, action) => {
+      state.metricsPageFailedTimeRangeList = state.metricsPageFailedTimeRangeList.concat(action.payload);
     },
   },
 });
 
-export const { resetStep, nextStep, backStep, updateShouldMetricsLoaded, updateTimeStamp, updateFailedTimeRange } =
-  stepperSlice.actions;
+export const {
+  resetStep,
+  nextStep,
+  backStep,
+  updateShouldMetricsLoaded,
+  updateTimeStamp,
+  updateMetricsPageFailedTimeRange,
+} = stepperSlice.actions;
 
 export const selectStepNumber = (state: RootState) => state.stepper.stepNumber;
 export const selectTimeStamp = (state: RootState) => state.stepper.timeStamp;
 export const shouldMetricsLoaded = (state: RootState) => state.stepper.shouldMetricsLoaded;
-export const selectFailedTimeRange = (state: RootState) => state.stepper.failedTimeRangeList;
+export const selectMetricsPageFailedTimeRange = (state: RootState) => state.stepper.metricsPageFailedTimeRangeList;
 
 export default stepperSlice.reducer;

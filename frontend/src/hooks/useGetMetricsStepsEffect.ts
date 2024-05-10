@@ -1,7 +1,7 @@
+import { updateMetricsPageFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import { updateShouldRetryPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IStepsParams, IStepsRes, metricsClient } from '@src/clients/MetricsClient';
 import { METRICS_DATA_FAIL_STATUS, DURATION } from '@src/constants/commons';
-import { updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import { FULFILLED, MESSAGE, REJECTED } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -56,7 +56,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       return indices;
     }, []);
     const rejectedTimeRanges = rejectedIndices.map((index) => params[index].startTime.toString());
-    dispatch(updateFailedTimeRange(rejectedTimeRanges));
+    dispatch(updateMetricsPageFailedTimeRange(rejectedTimeRanges));
     if (!hasRejected) {
       setStepFailedStatus(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
     } else if (hasRejected && hasFulfilled) {

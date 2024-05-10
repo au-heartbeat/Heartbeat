@@ -1,4 +1,4 @@
-import { nextStep, updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
+import { nextStep, updateMetricsPageFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { formatDateToTimestampString } from '@src/utils/util';
 import { DateRange } from '@src/context/config/configSlice';
@@ -65,7 +65,7 @@ describe('DateRangeViewer', () => {
   it('should show priority high icon when click expand button and step number is 1', async () => {
     const failedTimeRangeList = [formatDateToTimestampString('2024-02-01T00:00:00.000+08:00')];
     store.dispatch(nextStep());
-    store.dispatch(updateFailedTimeRange(failedTimeRangeList));
+    store.dispatch(updateMetricsPageFailedTimeRange(failedTimeRangeList));
     const { getByLabelText } = setup(mockDateRanges);
 
     await userEvent.click(getByLabelText('expandMore'));

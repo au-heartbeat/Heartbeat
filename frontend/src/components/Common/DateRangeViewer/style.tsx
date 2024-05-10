@@ -12,8 +12,10 @@ interface DateRangeContainerProps {
 export const StyledDateRangeViewerContainer = styled('div')<DateRangeContainerProps>(({ backgroundColor, color }) => ({
   position: 'relative',
   width: 'fit-content',
+  height: '3rem',
   display: 'flex',
   flexDirection: 'row',
+  alignItems: 'center',
   borderRadius: '0.5rem',
   border: `0.07rem solid ${theme.palette.grey[400]}`,
   backgroundColor: backgroundColor,
@@ -37,8 +39,8 @@ interface DateRangeExpandContainerProps {
 
 export const DateRangeExpandContainer = styled.div<DateRangeExpandContainerProps>(({ backgroundColor }) => ({
   position: 'absolute',
-  right: '-0.25rem',
-  top: '3.5rem',
+  right: '0',
+  top: '4rem',
   display: 'flex',
   flexDirection: 'column',
   gap: '0.0625rem',
@@ -64,18 +66,20 @@ export const DateRangeExpandContainer = styled.div<DateRangeExpandContainerProps
 interface SingleDateRangeProps {
   disabled: boolean;
   backgroundColor: string;
+  paddingRight: string;
 }
 
-export const SingleDateRange = styled('div')(({ disabled, backgroundColor }: SingleDateRangeProps) => ({
+export const SingleDateRange = styled('div')(({ disabled, backgroundColor, paddingRight }: SingleDateRangeProps) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  height: '1.25rem',
   color: theme.palette.text.primary,
   backgroundColor: backgroundColor,
   fontSize: '.875rem',
   padding: '0.5rem',
+  paddingRight: paddingRight,
   cursor: 'pointer',
-
   ...(disabled && {
     color: theme.palette.text.disabled,
     cursor: 'default',
@@ -87,13 +91,6 @@ export const StyledArrowForward = styled(ArrowForward)({
   fontSize: '0.875rem',
 });
 
-export const DateRangeFailedIconContainer = styled.div({
-  minWidth: '1.25rem',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
-
 export const StyledCalendarToday = styled(CalendarToday)({
   marginLeft: '1rem',
   fontSize: '.875rem',
@@ -101,7 +98,7 @@ export const StyledCalendarToday = styled(CalendarToday)({
 
 export const StyledDivider = styled(Divider)({
   position: 'absolute',
-  right: '2.5rem',
+  right: '3rem',
   top: 0,
   height: '100%',
 });
@@ -114,7 +111,7 @@ export const StyledExpandMoreIcon = styled(ExpandMore)({
 export const StyledExpandContainer = styled('div')({
   position: 'relative',
   height: '100%',
-  width: '2.5rem',
+  width: '3rem',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',

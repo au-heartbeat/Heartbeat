@@ -1,5 +1,5 @@
 import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
-import { updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
+import { updateMetricsPageFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
@@ -135,7 +135,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
         })
         .finally(() => {
           setIsLoading(false);
-          dispatch(updateFailedTimeRange(localFailedTimeRangeList));
+          dispatch(updateMetricsPageFailedTimeRange(localFailedTimeRangeList));
         });
     }
   };
