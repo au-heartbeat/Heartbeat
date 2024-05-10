@@ -1,15 +1,15 @@
 export interface BarOptionProps {
   title: string;
   xAxis: string[];
-  yAxis: yAxis;
+  yAxis: YAxis;
   series: Series[] | undefined;
   color: string[];
 }
 
 export interface AreaOptionProps {
   title: string;
-  xAxis: xAxis;
-  yAxis: yAxis[];
+  xAxis: XAxis;
+  yAxis: YAxis[];
   series: Series[] | undefined;
   color: string[];
 }
@@ -20,12 +20,12 @@ export interface Series {
   data: number[];
 }
 
-export interface xAxis {
+export interface XAxis {
   data: string[];
   boundaryGap?: boolean;
 }
 
-export interface yAxis {
+export interface YAxis {
   name: string;
   alignTick: boolean;
   axisLabel: string;
