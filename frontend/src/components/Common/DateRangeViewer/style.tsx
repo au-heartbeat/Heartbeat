@@ -9,20 +9,27 @@ interface DateRangeContainerProps {
   color: string;
 }
 
-export const DateRangeContainer = styled('div')<DateRangeContainerProps>(({ backgroundColor, color }) => ({
+export const StyledDateRangeViewerContainer = styled('div')<DateRangeContainerProps>(({ backgroundColor, color }) => ({
+  position: 'relative',
+  width: 'fit-content',
+  display: 'flex',
+  flexDirection: 'row',
+  borderRadius: '0.5rem',
+  border: `0.07rem solid ${theme.palette.grey[400]}`,
+  backgroundColor: backgroundColor,
+  color: color,
+}));
+
+export const DateRangeContainer = styled('div')({
   position: 'relative',
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  borderRadius: '0.5rem',
-  backgroundColor: backgroundColor,
-  border: '0.07rem solid',
-  borderColor: theme.palette.grey[400],
-  width: 'fit-content',
+  borderTopLeftRadius: '0.5rem',
+  borderBottomLeftRadius: '0.5rem',
   padding: '.75rem',
   fontSize: '.875rem',
-  color: color,
-}));
+});
 
 interface DateRangeExpandContainerProps {
   backgroundColor: string;
@@ -30,9 +37,8 @@ interface DateRangeExpandContainerProps {
 
 export const DateRangeExpandContainer = styled.div<DateRangeExpandContainerProps>(({ backgroundColor }) => ({
   position: 'absolute',
-  top: '4rem',
-  right: '0',
-  width: '14rem',
+  right: '-0.25rem',
+  top: '3.5rem',
   display: 'flex',
   flexDirection: 'column',
   gap: '0.0625rem',
@@ -49,8 +55,8 @@ export const DateRangeExpandContainer = styled.div<DateRangeExpandContainerProps
     width: '0',
     height: '0',
     border: '0.5rem solid transparent',
-    borderTopColor: theme.palette.common.white,
-    borderRightColor: theme.palette.common.white,
+    borderTopColor: backgroundColor,
+    borderRightColor: backgroundColor,
     transform: 'rotate(-45deg)',
   },
 }));
@@ -95,13 +101,22 @@ export const StyledCalendarToday = styled(CalendarToday)({
 
 export const StyledDivider = styled(Divider)({
   position: 'absolute',
-  right: '3rem',
+  right: '2.5rem',
   top: 0,
   height: '100%',
 });
 
 export const StyledExpandMoreIcon = styled(ExpandMore)({
-  marginLeft: '1.5rem',
   color: theme.palette.common.black,
+  cursor: 'pointer',
+});
+
+export const StyledExpandContainer = styled('div')({
+  position: 'relative',
+  height: '100%',
+  width: '2.5rem',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   cursor: 'pointer',
 });

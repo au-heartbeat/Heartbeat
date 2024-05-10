@@ -5,7 +5,9 @@ import {
   SingleDateRange,
   StyledArrowForward,
   StyledCalendarToday,
+  StyledDateRangeViewerContainer,
   StyledDivider,
+  StyledExpandContainer,
   StyledExpandMoreIcon,
 } from './style';
 import { selectFailedTimeRange, selectStepNumber } from '@src/context/stepper/StepperSlice';
@@ -77,19 +79,23 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   });
 
   return (
-    <DateRangeContainer
-      data-test-id={'date-range'}
+    <StyledDateRangeViewerContainer
       color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
       backgroundColor={backgroundColor}
+      data-test-id={'date-range'}
     >
-      {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
-      <StyledArrowForward />
-      {formatDate((selectedDateRange || dateRangeList[0]).endDate as string)}
-      <StyledCalendarToday />
+      <DateRangeContainer>
+        {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
+        <StyledArrowForward />
+        {formatDate((selectedDateRange || dateRangeList[0]).endDate as string)}
+        <StyledCalendarToday />
+      </DateRangeContainer>
       <StyledDivider orientation='vertical' />
-      <StyledExpandMoreIcon aria-label='expandMore' onClick={() => setShowMoreDateRange(true)} />
-      {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
-    </DateRangeContainer>
+      <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
+        <StyledExpandMoreIcon />
+        {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
+      </StyledExpandContainer>
+    </StyledDateRangeViewerContainer>
   );
 };
 
