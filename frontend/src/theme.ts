@@ -147,7 +147,7 @@ export const theme = createTheme({
       },
     },
     downloadListLabel: {
-      backgroundColor: 'rgba(67, 80, 175, 0.1)',
+      backgroundColor: '#4350AF1A',
     },
   },
   typography: {

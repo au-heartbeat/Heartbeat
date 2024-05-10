@@ -43,7 +43,7 @@ describe('DownloadDialog', () => {
     expect(screen.getByText('Confirm')).toBeDisabled();
   });
 
-  it('should not be clickable when there is an error fetching data for this dataRange', () => {
+  it('should not be clickable given there is an error fetching data for this dataRange', () => {
     const mockDataWithDisabledDateRange = [
       ...mockData,
       {
@@ -52,14 +52,13 @@ describe('DownloadDialog', () => {
         disabled: true,
       },
     ];
-
     setup(mockDataWithDisabledDateRange);
     const checkbox = screen.getAllByRole('checkbox')[2];
 
     expect(checkbox).toBeDisabled();
   });
 
-  it('should confirm button be clickable when chose one dateRange', async () => {
+  it('should confirm button be clickable when choosing one dateRange', async () => {
     setup(mockData);
     const checkbox = screen.getAllByRole('checkbox')[0];
     expect(checkbox).not.toBeDisabled();
@@ -70,7 +69,7 @@ describe('DownloadDialog', () => {
     expect(screen.getByText('Confirm')).not.toBeDisabled();
   });
 
-  it('should close download dialog when click the close button', async () => {
+  it('should close download dialog when clicking the close button', async () => {
     setup(mockData);
 
     const closeButton = screen.getByTestId('CloseIcon');
@@ -79,7 +78,7 @@ describe('DownloadDialog', () => {
     expect(handleCloseFn).toBeCalledTimes(1);
   });
 
-  it('should close download dialog and download csv file when click the confirm button', async () => {
+  it('should close download dialog and download csv file when clicking the confirm button given that a dataRange is checked', async () => {
     setup(mockData);
     const checkbox = screen.getAllByRole('checkbox')[0];
     expect(checkbox).not.toBeDisabled();
@@ -93,7 +92,7 @@ describe('DownloadDialog', () => {
     expect(downloadCSVFileFn).toBeCalledTimes(1);
   });
 
-  it('should not choose the dataRange when click on the already selected dataRange', async () => {
+  it('should not check the dataRange when clicking on the checkbox given that the dataRange is already checked', async () => {
     setup(mockData);
     const checkbox = screen.getAllByRole('checkbox')[0];
     expect(checkbox).not.toBeDisabled();
