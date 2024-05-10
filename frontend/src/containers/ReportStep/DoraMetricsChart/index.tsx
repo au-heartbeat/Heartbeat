@@ -9,7 +9,7 @@ import {
 } from 'echarts/components';
 
 import { LabelLayout, UniversalTransition } from 'echarts/features';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BarChart, LineChart } from 'echarts/charts';
 import * as echarts from 'echarts/core';
 
@@ -47,7 +47,9 @@ interface DoraMetricsChartProps {
   startToRequestDoraData: () => void;
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
+  isChartFailed: any;
   setIsChartFailed: any;
+  retry: boolean;
   // startToRetry: () => void;
 }
 
@@ -57,12 +59,8 @@ const LABEL_PERCENT = '%';
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name);
   const extractedValues = mappedData?.map((data) => {
-    console.log(data);
-
     return data.leadTimeForChangesList?.[0].valuesList.map((item) => item.value);
   });
-
-  console.log(extractedValues);
 
   return {
     title: 'Lead Time For Change',
@@ -153,13 +151,11 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
-export const DoraMetricsChart = ({ data, dateRanges, setIsChartFailed }: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({ data, dateRanges, isChartFailed, setIsChartFailed, retry }: DoraMetricsChartProps) => {
   const LeadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
-
-  const [retry, setRetry] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -182,43 +178,58 @@ export const DoraMetricsChart = ({ data, dateRanges, setIsChartFailed }: DoraMet
     meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
     LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
 
+    setIsChartFailed(false);
   } catch (e) {
     deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
     changeFailureRateData = extractedChangeFailureRateData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
     meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
     LeadTimeForChangeData = extractedStackedBarData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
 
-    setIsChartFailed(true);
-    dispatch(
+
+    !isChartFailed && dispatch(
       addNotification({
         type: 'error',
         message: MESSAGE.DORA_CHART_LOADING_FAILED,
       }),
     );
+
+    setIsChartFailed(true);
   }
 
   useEffect(() => {
     const LeadTimeForChangeChart = echarts.init(LeadTimeForChange.current);
     const option = LeadTimeForChangeData && stackedBarOptionMapper(LeadTimeForChangeData);
     LeadTimeForChangeChart.setOption(option);
+    return () => {
+      LeadTimeForChangeChart.dispose();
+    };
   }, [LeadTimeForChange, LeadTimeForChangeData, retry]);
 
   useEffect(() => {
     const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
     const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
     deploymentFrequencyChart.setOption(option);
+    return () => {
+      deploymentFrequencyChart.dispose();
+    };
   }, [deploymentFrequency, deploymentFrequencyData, retry]);
 
   useEffect(() => {
     const changeFailureRateChart = echarts.init(changeFailureRate.current);
     const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
     changeFailureRateChart.setOption(option);
+    return () => {
+      changeFailureRateChart.dispose();
+    };
   }, [changeFailureRate, changeFailureRateData, retry]);
 
   useEffect(() => {
     const MeanTimeToRecoveryChart = echarts.init(MeanTimeToRecovery.current);
     const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
     MeanTimeToRecoveryChart.setOption(option);
+    return () => {
+      MeanTimeToRecoveryChart.dispose();
+    };
   }, [MeanTimeToRecovery, meanTimeToRecoveryData, retry]);
 
   return (

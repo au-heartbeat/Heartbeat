@@ -112,6 +112,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
   const [isShowingChart, setIsShowingChart] = useState<boolean>(false);
   const [isChartFailed, setIsChartFailed] = useState<boolean>(false);
+  const [chartRetry, setChartRetry] = useState<boolean>(false);
 
   const csvTimeStamp = useAppSelector(selectTimeStamp);
   const {
@@ -456,8 +457,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       startToRequestDoraData={() => startToRequestData(doraReportRequestBody)}
       data={data}
       dateRanges={allDateRanges}
+      isChartFailed={isChartFailed}
       setIsChartFailed={setIsChartFailed}
-      // startToRetry={() => s}
+      retry={chartRetry}
     />
   );
   const showBoardDetail = (data?: ReportResponseDTO) => (
@@ -507,7 +509,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     setPageType(REPORT_PAGE_TYPE.DORA_CHART);
   };
 
-  const handleChartRetry = () => {};
+  const handleChartRetry = () => {
+    setChartRetry(!chartRetry);
+    setIsChartFailed(false);
+  };
 
   const tabProps = (index: number) => {
     return {
@@ -551,8 +556,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           </Box>
           {isChartFailed && pageType === REPORT_PAGE_TYPE.DORA_CHART && (
             <Button aria-label='chart retry' onClick={handleChartRetry}>
-              {' '}
-              retry{' '}
+              retry
             </Button>
           )}
           <DateRangeViewer
