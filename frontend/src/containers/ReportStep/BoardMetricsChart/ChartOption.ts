@@ -49,11 +49,23 @@ const commonConfig = {
     top: '20%',
     bottom: '25%',
   },
-  splitLine: {
-    show: true,
-    lineStyle: {
-      type: 'dashed',
-      width: 1,
+  axisConfig: {
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: 'dashed',
+        width: 1,
+      },
+    },
+    axisLine: {
+      lineStyle: {
+        color: '#d9d9d9',
+        width: 1,
+        type: 'dashed',
+      },
+    },
+    axisLabel: {
+      color: 'black',
     },
   },
 };
@@ -73,21 +85,21 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
     xAxis: {
       data: props.xAxis.data,
       boundaryGap: props.xAxis.boundaryGap,
-      splitLine: commonConfig.splitLine,
+      ...commonConfig.axisConfig,
     },
     yAxis: props.yAxis?.map((item, index) => {
       return {
         name: item.name,
         position: index === 0 ? 'left' : 'right',
         nameTextStyle: {
-          align: 'center',
+          align: 'right',
         },
         type: 'value',
         axisLabel: {
           show: true,
           formatter: `{value}${item.axisLabel}`,
         },
-        splitLine: commonConfig.splitLine,
+        splitLine: commonConfig.axisConfig.splitLine,
       };
     }),
     color: props.color,
@@ -118,7 +130,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
     grid: commonConfig.grid,
     xAxis: {
       data: props.xAxis,
-      splitLine: commonConfig.splitLine,
+      ...commonConfig.axisConfig,
     },
     yAxis: {
       name: props.yAxis.name,
@@ -126,7 +138,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
         align: 'left',
       },
       type: 'value',
-      splitLine: commonConfig.splitLine,
+      splitLine: commonConfig.axisConfig.splitLine,
     },
     color: props.color,
     series: props.series?.map((item) => {
