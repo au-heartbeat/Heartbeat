@@ -5,7 +5,6 @@ import {
   getRealDoneStatus,
   onlyEmptyAndDoneState,
   sortDateRanges,
-  sortReportInfos,
 } from '@src/utils/util';
 import {
   DateRange,
@@ -512,7 +511,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const showPage = (pageType: string, reportData: ReportResponseDTO | undefined) => {
-    const sortedReports = sortReportInfos(reportInfos, false);
     switch (pageType) {
       case REPORT_PAGE_TYPE.SUMMARY:
         return showSummary();
@@ -521,7 +519,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return showDoraChart(sortedReports.map((infos) => infos.reportData));
+        return showDoraChart(reportInfos.map((infos) => infos.reportData));
       default:
         return showSummary();
     }

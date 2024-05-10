@@ -82,7 +82,7 @@ export const COMMON_BUTTONS = {
   EXPORT_BOARD_DATA: 'Export board data',
   EXPORT_METRIC_DATA: 'Export metric data',
   EXPORT_BOARD_CHART: 'Export board data',
-  EXPORT_DORA_CHART: 'Export board data',
+  EXPORT_DORA_CHART: 'Export pipeline data',
 };
 
 export const GRID_CONFIG = {

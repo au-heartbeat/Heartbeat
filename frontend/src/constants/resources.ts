@@ -455,3 +455,60 @@ export enum SORTING_DATE_RANGE_TEXT {
 
 export const DISABLED_DATE_RANGE_MESSAGE =
   'Unavailable time period indicates that report generation during this period has failed.';
+
+export const EMPTY_DATA_MAPPER_DORA_CHART = {
+  deploymentFrequencyList: [
+    {
+      id: 0,
+      name: 'Heartbeat/:rocket: Deploy prod',
+      valueList: [
+        {
+          value: '0.00',
+        },
+      ],
+    },
+  ],
+  devMeanTimeToRecoveryList: [
+    {
+      id: 0,
+      name: 'Heartbeat/:rocket: Deploy prod',
+      valueList: [
+        {
+          value: '0.00',
+        },
+      ],
+    },
+  ],
+  leadTimeForChangesList: [
+    {
+      id: 0,
+      name: 'Average',
+      valuesList: [
+        {
+          name: 'PR Lead Time',
+          value: '0.00',
+        },
+        {
+          name: 'Pipeline Lead Time',
+          value: '0.00',
+        },
+        {
+          name: 'Total Lead Time',
+          value: '0.00',
+        },
+      ],
+    },
+  ],
+  devChangeFailureRateList: [
+    {
+      id: 0,
+      name: 'Heartbeat/:rocket: Deploy prod',
+      valueList: [
+        {
+          value: '0.00%(0/0)',
+        },
+      ],
+    },
+  ],
+  exportValidityTimeMin: 0.0005,
+};

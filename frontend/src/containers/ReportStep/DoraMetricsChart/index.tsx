@@ -18,9 +18,9 @@ import {
   Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
+import { EMPTY_DATA_MAPPER_DORA_CHART, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
-import { METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { CanvasRenderer } from 'echarts/renderers';
 import { theme } from '@src/theme';
@@ -50,7 +50,7 @@ interface DoraMetricsChartProps {
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
-function extractedStackedBarData(allDateRanges: string[], mappedData?: ReportResponse[]) {
+function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name);
   const extractedValues = mappedData?.map((data) => {
     return data.leadTimeForChangesList?.[0].valuesList.map((item) => item.value);
@@ -79,7 +79,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData?: ReportRes
   };
 }
 
-function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData?: ReportResponse[]) {
+function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData?.map((item) => item.deploymentFrequencyList);
   const value = data?.map((item) => item?.[0].valueList[0].value as number);
   return {
@@ -100,7 +100,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData?: 
   };
 }
 
-function extractedChangeFailureRateData(allDateRanges: string[], mappedData?: ReportResponse[]) {
+function extractedChangeFailureRateData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData?.map((item) => item.devChangeFailureRateList);
   const valueStr = data?.map((item) => item?.[0].valueList[0].value as string);
   const value = valueStr?.map((item) => toNumber(item?.split('%', 1)[0]));
@@ -122,7 +122,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData?: Re
   };
 }
 
-function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData?: ReportResponse[]) {
+function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
   const value = data?.map((item) => item?.[0].valueList[0].value as number);
   return {
@@ -150,7 +150,15 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
 
   //TODO: filter valid report data here:
-  const mappedData = data && data.map((currentData) => reportMapper(currentData!));
+  const mappedData = data.map((currentData) => {
+    if (!currentData?.doraMetricsCompleted) {
+      return EMPTY_DATA_MAPPER_DORA_CHART;
+    } else {
+      return reportMapper(currentData);
+    }
+  });
+
+  console.log(mappedData);
 
   const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);

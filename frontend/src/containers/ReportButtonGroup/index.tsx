@@ -148,10 +148,7 @@ export const ReportButtonGroup = ({
             </StyledExportButton>
           )}
           {isShowExportDoraChartButton && (
-            <StyledExportButton
-              disabled={!!pipelineButtonDisabled}
-              onClick={() => {}}
-            >
+            <StyledExportButton disabled={!!pipelineButtonDisabled} onClick={() => {}}>
               {COMMON_BUTTONS.EXPORT_DORA_CHART}
             </StyledExportButton>
           )}

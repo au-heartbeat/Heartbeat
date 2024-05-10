@@ -98,6 +98,7 @@ describe('ReportButtonGroup', () => {
           isShowExportMetrics={true}
           isShowExportBoardButton={true}
           isShowExportPipelineButton={true}
+          isShowExportDoraChartButton={false}
           handleBack={mockHandler}
           handleSave={mockHandler}
           csvTimeStamp={1715250961572}
