@@ -54,6 +54,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
+import Button from '@mui/material/Button';
 import { uniqueId } from 'lodash';
 
 export interface ReportStepProps {
@@ -110,6 +111,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
   const [isShowingChart, setIsShowingChart] = useState<boolean>(false);
+  const [isChartFailed, setIsChartFailed] = useState<boolean>(false);
 
   const csvTimeStamp = useAppSelector(selectTimeStamp);
   const {
@@ -454,6 +456,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       startToRequestDoraData={() => startToRequestData(doraReportRequestBody)}
       data={data}
       dateRanges={allDateRanges}
+      setIsChartFailed={setIsChartFailed}
+      // startToRetry={() => s}
     />
   );
   const showBoardDetail = (data?: ReportResponseDTO) => (
@@ -503,6 +507,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     setPageType(REPORT_PAGE_TYPE.DORA_CHART);
   };
 
+  const handleChartRetry = () => {};
+
   const tabProps = (index: number) => {
     return {
       id: `simple-tab-${index}`,
@@ -543,6 +549,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
               <Tab label='DORA' {...tabProps(1)} />
             </Tabs>
           </Box>
+          {isChartFailed && pageType === REPORT_PAGE_TYPE.DORA_CHART && (
+            <Button aria-label='chart retry' onClick={handleChartRetry}>
+              {' '}
+              retry{' '}
+            </Button>
+          )}
           <DateRangeViewer
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
@@ -558,9 +570,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
         isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
         isShowExportDoraChartButton={pageType === REPORT_PAGE_TYPE.DORA_CHART}
+        isShowExportBoardChartButton={pageType === REPORT_PAGE_TYPE.BOARD_CHART}
         handleBack={() => handleBack()}
         handleSave={() => handleSave()}
         csvTimeStamp={csvTimeStamp}
+        isChartFailed={isChartFailed}
         dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
       />
     </>

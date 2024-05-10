@@ -103,6 +103,8 @@ describe('ReportButtonGroup', () => {
           handleSave={mockHandler}
           csvTimeStamp={1715250961572}
           dateRangeRequestResults={dateRangeRequestResults}
+          isShowExportBoardChartButton={false}
+          isChartFailed={false}
         />
       </Provider>,
     );
