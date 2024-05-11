@@ -18,6 +18,7 @@ export interface Series {
   name: string;
   type: string;
   data: number[];
+  smooth?: boolean;
   yAxisIndex?: number;
 }
 
@@ -82,7 +83,7 @@ const commonConfig = {
     areaStyle: {
       opacity: 0.3,
     },
-    smooth: true,
+    barWidth: '20%',
   },
 };
 
@@ -126,6 +127,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
         data: item.data,
         type: item.type,
         yAxisIndex: item.yAxisIndex,
+        smooth: item.smooth,
         ...commonConfig.seriesConfig,
       };
     }),
@@ -164,7 +166,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       return {
         name: item.name,
         data: item.data,
-        barWidth: 30,
+        barWidth: '20%',
         type: item.type,
         stack: 'x',
       };
