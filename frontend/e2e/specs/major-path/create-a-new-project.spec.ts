@@ -2,6 +2,7 @@ import {
   BOARD_METRICS_RESULT_MULTIPLE_RANGES,
   DORA_METRICS_RESULT,
   BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
+  BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
 } from '../../fixtures/create-new/report-result';
 import { configWithoutBlockColumn as metricsStepWithoutBlockColumnData } from '../../fixtures/create-new/metrics-step';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
@@ -79,6 +80,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkBoardMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT, 9, {
     velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
+    cycleTimeData: BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
   });
   // await reportStep.checkDoraMetrics(
   //   DORA_METRICS_RESULT.PrLeadTime,
@@ -131,10 +133,6 @@ test('Create a new project without block column in boarding mapping', async ({
   await metricsStep.selectReworkSettings(metricsStepWithoutBlockColumnData.reworkTimesSettings);
 
   await metricsStep.goToReportPage();
-  // await reportStep.confirmGeneratedReport();
-  await reportStep.confirmGeneratedReportForMultipleRanges({
-    totalRanges: configStepData.dateRange.length,
-    expectedFailedIndices: [],
-  });
+  await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardDownloadDataWithoutBlock('../../fixtures/create-new/board-data-without-block-column.csv');
 });

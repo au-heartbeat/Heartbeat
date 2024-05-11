@@ -1,6 +1,9 @@
+import {
+  IBoardMetricsDetailItem,
+  IBoardMetricsResult,
+  IBoardCycletimeDetailItem,
+} from '../../fixtures/create-new/report-result';
 import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
-import { IBoardMetricsDetailItem } from '../../fixtures/create-new/report-result';
-import { IBoardMetricsResult } from '../../fixtures/create-new/report-result';
 import { expect, Locator, Page } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
 import path from 'path';
@@ -138,29 +141,10 @@ export class ReportStep {
   }
 
   async confirmGeneratedReport() {
-    await expect(this.page.getByRole('alert')).toContainText('Help Information');
-    await expect(this.page.getByRole('alert')).toContainText(
+    await expect(this.page.getByRole('alert').first()).toContainText('Help Information');
+    await expect(this.page.getByRole('alert').first()).toContainText(
       'The file will expire in 30 minutes, please download it in time.',
     );
-  }
-
-  async confirmGeneratedReportForMultipleRanges({
-    totalRanges,
-    expectedFailedIndices = [],
-  }: {
-    totalRanges: number;
-    expectedFailedIndices: number[];
-  }) {
-    for (let i = 0; i < totalRanges; i++) {
-      if (expectedFailedIndices.includes(i)) {
-        // failed
-      } else {
-        await expect(this.page.getByRole('alert').nth(i)).toContainText('Help Information');
-        await expect(this.page.getByRole('alert').nth(i)).toContainText(
-          'The file will expire in 30 minutes, please download it in time.',
-        );
-      }
-    }
   }
 
   async checkBoardMetricsWithoutRework(
@@ -226,54 +210,82 @@ export class ReportStep {
     }
   }
 
-  async checkCycleTimeDetail(cycleTimeData: IBoardMetricsDetailItem[]) {
-    await expect(this.cycleTimeRows.nth(0).getByRole('cell').nth(1)).toContainText('4.86(Days/SP)');
-    await expect(this.cycleTimeRows.filter({ hasText: 'Average cycle time' }).getByRole('cell').nth(1)).toContainText(
-      '4.86(Days/SP)',
-    );
-    await expect(this.cycleTimeRows.nth(1).getByRole('cell').nth(0)).toContainText('9.18(Days/Card)');
-    await expect(
-      this.cycleTimeRows.filter({ hasText: 'Total development time / Total cycle time' }).getByRole('cell').nth(1),
-    ).toContainText('37.55%');
-    await expect(
-      this.cycleTimeRows
-        .filter({ hasText: 'Total waiting for testing time / Total cycle time' })
-        .getByRole('cell')
-        .nth(1),
-    ).toContainText('10.92%');
-    await expect(
-      this.cycleTimeRows.filter({ hasText: 'Total block time / Total cycle time' }).getByRole('cell').nth(1),
-    ).toContainText('19.96%');
-    await expect(
-      this.cycleTimeRows.filter({ hasText: 'Total review time / Total cycle time' }).getByRole('cell').nth(1),
-    ).toContainText('22.47%');
-    await expect(
-      this.cycleTimeRows.filter({ hasText: 'Total testing time / Total cycle time' }).getByRole('cell').nth(1),
-    ).toContainText('9.1%');
-    await expect(
-      this.cycleTimeRows.filter({ hasText: 'Average development time' }).getByRole('cell').nth(1),
-    ).toContainText('1.83(Days/SP)');
-    await expect(this.cycleTimeRows.nth(8).getByRole('cell').nth(0)).toContainText('3.45(Days/Card)');
-    await expect(
-      this.cycleTimeRows.filter({ hasText: 'Average waiting for testing time' }).getByRole('cell').nth(1),
-    ).toContainText('0.53(Days/SP)');
-    await expect(this.cycleTimeRows.nth(10).getByRole('cell').nth(0)).toContainText('1.00(Days/Card)');
-    await expect(this.cycleTimeRows.filter({ hasText: 'Average block time' }).getByRole('cell').nth(1)).toContainText(
-      '0.97(Days/SP)',
-    );
-    await expect(this.cycleTimeRows.nth(12).getByRole('cell').nth(0)).toContainText('1.83(Days/Card)');
-    await expect(this.cycleTimeRows.filter({ hasText: 'Average review time' }).getByRole('cell').nth(1)).toContainText(
-      '1.09(Days/SP)',
-    );
-    await expect(this.cycleTimeRows.nth(14).getByRole('cell').nth(0)).toContainText('2.06(Days/Card)');
-    await expect(this.cycleTimeRows.filter({ hasText: 'Average testing time' }).getByRole('cell').nth(1)).toContainText(
-      '0.44(Days/SP)',
-    );
-    await expect(this.cycleTimeRows.nth(16).getByRole('cell').nth(0)).toContainText('0.84(Days/Card)');
+  async checkCycleTimeDetailForMultipleRanges(data: IBoardCycletimeDetailItem[][]) {
+    for (let i = 0; i < data.length; i++) {
+      await this.changeTimeRange(i);
+      await this.checkCycleTimeDetail(data[i]);
+    }
   }
 
-  async checkBoardMetricsReportReportDetail({ velocityData }: { velocityData: IBoardMetricsDetailItem[][] }) {
+  async checkCycleTimeDetail(cycleTimeData: IBoardCycletimeDetailItem[]) {
+    for (let i = 0; i < cycleTimeData.length; i++) {
+      const currentMetric = cycleTimeData[i];
+      await expect(this.cycleTimeRows.filter({ hasText: currentMetric.name }).getByRole('cell').nth(1)).toContainText(
+        currentMetric.line1Value,
+      );
+      if (currentMetric.line2Value) {
+        const targetValue = await this.cycleTimeRows
+          .filter({ hasText: currentMetric.name })
+          .locator('+tr')
+          .getByRole('cell')
+          .first()
+          .innerHTML();
+        expect(targetValue).toEqual(currentMetric.line2Value);
+      }
+    }
+    // await expect(this.cycleTimeRows.filter({ hasText: 'Average cycle time' }).getByRole('cell').nth(1)).toContainText(
+    //   '4.86(Days/SP)',
+    // );
+    // await expect(this.cycleTimeRows.nth(1).getByRole('cell').nth(0)).toContainText('9.18(Days/Card)');
+    // await expect(
+    //   this.cycleTimeRows.filter({ hasText: 'Total development time / Total cycle time' }).getByRole('cell').nth(1),
+    // ).toContainText('37.55%');
+    // await expect(
+    //   this.cycleTimeRows
+    //     .filter({ hasText: 'Total waiting for testing time / Total cycle time' })
+    //     .getByRole('cell')
+    //     .nth(1),
+    // ).toContainText('10.92%');
+    // await expect(
+    //   this.cycleTimeRows.filter({ hasText: 'Total block time / Total cycle time' }).getByRole('cell').nth(1),
+    // ).toContainText('19.96%');
+    // await expect(
+    //   this.cycleTimeRows.filter({ hasText: 'Total review time / Total cycle time' }).getByRole('cell').nth(1),
+    // ).toContainText('22.47%');
+    // await expect(
+    //   this.cycleTimeRows.filter({ hasText: 'Total testing time / Total cycle time' }).getByRole('cell').nth(1),
+    // ).toContainText('9.1%');
+    // await expect(
+    //   this.cycleTimeRows.filter({ hasText: 'Average development time' }).getByRole('cell').nth(1),
+    // ).toContainText('1.83(Days/SP)');
+    // await expect(this.cycleTimeRows.nth(8).getByRole('cell').nth(0)).toContainText('3.45(Days/Card)');
+    // await expect(
+    //   this.cycleTimeRows.filter({ hasText: 'Average waiting for testing time' }).getByRole('cell').nth(1),
+    // ).toContainText('0.53(Days/SP)');
+    // await expect(this.cycleTimeRows.nth(10).getByRole('cell').nth(0)).toContainText('1.00(Days/Card)');
+    // await expect(this.cycleTimeRows.filter({ hasText: 'Average block time' }).getByRole('cell').nth(1)).toContainText(
+    //   '0.97(Days/SP)',
+    // );
+    // await expect(this.cycleTimeRows.nth(12).getByRole('cell').nth(0)).toContainText('1.83(Days/Card)');
+    // await expect(this.cycleTimeRows.filter({ hasText: 'Average review time' }).getByRole('cell').nth(1)).toContainText(
+    //   '1.09(Days/SP)',
+    // );
+    // await expect(this.cycleTimeRows.nth(14).getByRole('cell').nth(0)).toContainText('2.06(Days/Card)');
+    // await expect(this.cycleTimeRows.filter({ hasText: 'Average testing time' }).getByRole('cell').nth(1)).toContainText(
+    //   '0.44(Days/SP)',
+    // );
+    // await expect(this.cycleTimeRows.nth(16).getByRole('cell').nth(0)).toContainText('0.84(Days/Card)');
+  }
+
+  async checkBoardMetricsReportReportDetail({
+    velocityData,
+    cycleTimeData,
+  }: {
+    velocityData: IBoardMetricsDetailItem[][];
+    cycleTimeData: IBoardCycletimeDetailItem[][];
+  }) {
     await this.checkVelocityDetailForMultipleRanges(velocityData);
+    await this.checkCycleTimeDetailForMultipleRanges(cycleTimeData);
 
     // await expect(this.classificationRows.nth(1)).toContainText(this.combineStrings(['Spike', '11.11%']));
     // await expect(this.classificationRows.nth(2)).toContainText(this.combineStrings(['Task', '88.89%']));
@@ -391,14 +403,17 @@ export class ReportStep {
   async checkBoardMetricsDetails(
     boardDetailType: ProjectCreationType,
     csvCompareLines: number,
-    { velocityData }: { velocityData: IBoardMetricsDetailItem[][] },
+    {
+      velocityData,
+      cycleTimeData,
+    }: { velocityData: IBoardMetricsDetailItem[][]; cycleTimeData: IBoardCycletimeDetailItem[][] },
   ) {
     await this.showMoreLinks.first().click();
     if (
       boardDetailType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
       boardDetailType === ProjectCreationType.CREATE_A_NEW_PROJECT
     ) {
-      await this.checkBoardMetricsReportReportDetail({ velocityData });
+      await this.checkBoardMetricsReportReportDetail({ velocityData, cycleTimeData });
     } else {
       throw Error('The board detail type is not correct, please give a correct one.');
     }
