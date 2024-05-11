@@ -66,10 +66,9 @@ export const DateRangeExpandContainer = styled.div<DateRangeExpandContainerProps
 interface SingleDateRangeProps {
   disabled: boolean;
   backgroundColor: string;
-  paddingRight: string;
 }
 
-export const SingleDateRange = styled('div')(({ disabled, backgroundColor, paddingRight }: SingleDateRangeProps) => ({
+export const SingleDateRange = styled('div')(({ disabled, backgroundColor }: SingleDateRangeProps) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -78,13 +77,20 @@ export const SingleDateRange = styled('div')(({ disabled, backgroundColor, paddi
   backgroundColor: backgroundColor,
   fontSize: '.875rem',
   padding: '0.5rem',
-  paddingRight: paddingRight,
+  paddingRight: '1rem',
   cursor: 'pointer',
   ...(disabled && {
     color: theme.palette.text.disabled,
     cursor: 'default',
   }),
 }));
+
+export const DateRangeFailedIconContainer = styled.div({
+  minWidth: '1.5rem',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
 
 export const StyledArrowForward = styled(ArrowForward)({
   margin: '0 .5rem',

@@ -1,6 +1,7 @@
 import {
   DateRangeContainer,
   DateRangeExpandContainer,
+  DateRangeFailedIconContainer,
   SingleDateRange,
   StyledArrowForward,
   StyledCalendarToday,
@@ -27,10 +28,10 @@ type Props = {
 const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
-  const failedTimeRangeList = useAppSelector(selectMetricsPageFailedTimeRange);
+  const metricsPageFailedTimeRangeList = useAppSelector(selectMetricsPageFailedTimeRange);
   const stepNumber = useAppSelector(selectStepNumber);
   const backgroundColor = stepNumber === 1 ? theme.palette.secondary.dark : theme.palette.common.white;
-  const currentDateRangeHasFailed = stepNumber === 1 ? failedTimeRangeList.length > 0 : false;
+  const currentDateRangeHasFailed = stepNumber === 1 ? metricsPageFailedTimeRangeList.length > 0 : false;
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (DateRangeExpandRef.current && !DateRangeExpandRef.current?.contains(event.target as Node)) {
@@ -55,18 +56,19 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
       <DateRangeExpandContainer ref={ref} backgroundColor={backgroundColor}>
         {dateRangeList.map((dateRange) => {
           const disabled = dateRange.disabled || disabledAll;
-          const hasMetricsError = failedTimeRangeList.includes(
+          const hasMetricsError = metricsPageFailedTimeRangeList.includes(
             formatDateToTimestampString(dateRange.startDate as string),
           );
           return (
             <SingleDateRange
               disabled={disabled}
               backgroundColor={backgroundColor}
-              paddingRight={hasMetricsError && stepNumber === 1 ? '1rem' : '0.5rem'}
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
-              {<PriorityHighIcon color='error' />}
+              <DateRangeFailedIconContainer>
+                {hasMetricsError && stepNumber === 1 && <PriorityHighIcon color='error' />}
+              </DateRangeFailedIconContainer>
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}

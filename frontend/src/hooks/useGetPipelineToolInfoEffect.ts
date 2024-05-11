@@ -2,13 +2,16 @@ import {
   updatePipelineToolVerifyResponse,
   selectIsProjectCreated,
   selectPipelineTool,
+  selectDateRange,
 } from '@src/context/config/configSlice';
 import { pipelineToolClient, IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
 import { selectShouldGetPipelineConfig, updatePipelineSettings } from '@src/context/Metrics/metricsSlice';
+import { shouldMetricsLoaded, updateMetricsPageFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import { clearMetricsPipelineFormMeta } from '@src/context/meta/metaSlice';
-import { shouldMetricsLoaded } from '@src/context/stepper/StepperSlice';
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
+import { HttpStatusCode } from 'axios';
 
 export interface IUseVerifyPipeLineToolStateInterface {
   result: IGetPipelineToolInfoResult;
@@ -31,6 +34,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
   const restoredPipelineTool = useAppSelector(selectPipelineTool);
   const shouldLoad = useAppSelector(shouldMetricsLoaded);
   const shouldGetPipelineConfig = useAppSelector(selectShouldGetPipelineConfig);
+  const dateRangeList = useAppSelector(selectDateRange);
   const [isFirstFetch, setIsFirstFetch] = useState(shouldGetPipelineConfig);
 
   const getPipelineToolInfo = useCallback(async () => {
@@ -42,12 +46,22 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     try {
       const response = await pipelineToolClient.getInfo(params);
       setInfo(response);
-      dispatch(updatePipelineToolVerifyResponse(response.data));
-      dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
+      if (response.code === HttpStatusCode.Ok) {
+        response.data && dispatch(updatePipelineToolVerifyResponse(response.data));
+        response.data && dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
+      }
+      if ((response.code as number) !== HttpStatusCode.Ok && (response.code as number) !== HttpStatusCode.NoContent) {
+        dispatch(
+          updateMetricsPageFailedTimeRange(
+            dateRangeList.map((dateRange) => formatDateToTimestampString(dateRange.startDate!)),
+          ),
+        );
+      }
     } finally {
       setIsLoading(false);
       setIsFirstFetch(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, isProjectCreated, restoredPipelineTool.type, restoredPipelineTool.token]);
 
   useEffect(() => {
