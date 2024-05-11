@@ -199,7 +199,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
   const data = mappedData?.map((item) => item.rework);
   const totalReworkTimes = data?.map((item) => item?.totalReworkTimes as number);
   const totalReworkCards = data?.map((item) => item?.totalReworkCards as number);
-  const reworkCardsRatio = data?.map((item) => item?.reworkCardsRatio as number);
+  const reworkCardsRatio = data?.map((item) => (item?.reworkCardsRatio as number) * 100);
   return {
     title: 'Rework',
     xAxis: {
