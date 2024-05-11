@@ -25,6 +25,7 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 	private static final String OUTPUT_FILE_PATH = "./app/output/";
 
 	private static final String SLASH = "/";
+	private final Object readWriteLock = new Object();
 
 	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
 		try {
@@ -46,12 +47,13 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		deleteExpireFileByType(METRICS_DATA_COMPLETED, currentTimeStamp, directory);
 	}
 
-	@Synchronized
+	@Synchronized("readWriteLock")
 	public void updateMetricsDataCompletedInHandler(String metricDataFileId, MetricType metricType,
 			boolean isCreateCsvSuccess) {
 		MetricsDataCompleted previousMetricsCompleted = getMetricsDataCompleted(metricDataFileId);
 		if (previousMetricsCompleted == null) {
-			log.error(GENERATE_REPORT_ERROR);
+			String filename = OUTPUT_FILE_PATH + METRICS_DATA_COMPLETED.getPath() + metricDataFileId;
+			log.error(GENERATE_REPORT_ERROR + "; filename: " + filename);
 			throw new GenerateReportException(GENERATE_REPORT_ERROR);
 		}
 		if (isCreateCsvSuccess) {
@@ -66,10 +68,12 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
 	}
 
+	@Synchronized("readWriteLock")
 	public void updateOverallMetricsCompletedInHandler(String metricDataFileId) {
 		MetricsDataCompleted previousMetricsCompleted = getMetricsDataCompleted(metricDataFileId);
 		if (previousMetricsCompleted == null) {
-			log.error(GENERATE_REPORT_ERROR);
+			String filename = OUTPUT_FILE_PATH + METRICS_DATA_COMPLETED.getPath() + metricDataFileId;
+			log.error(GENERATE_REPORT_ERROR + "; filename: " + filename);
 			throw new GenerateReportException(GENERATE_REPORT_ERROR);
 		}
 		previousMetricsCompleted.setOverallMetricCompleted(true);

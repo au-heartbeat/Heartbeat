@@ -5,10 +5,7 @@ import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,9 +14,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static heartbeat.controller.report.dto.request.MetricType.BOARD;
+import static heartbeat.controller.report.dto.request.MetricType.DORA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -142,7 +145,7 @@ class AsyncMetricsDataHandlerTest {
 			String currentTime = Long.toString(currentTimeMillis);
 
 			GenerateReportException exception = assertThrows(GenerateReportException.class,
-					() -> asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, MetricType.BOARD,
+					() -> asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD,
 							false));
 
 			assertEquals("Failed to update metrics data completed through this timestamp.", exception.getMessage());
@@ -157,7 +160,7 @@ class AsyncMetricsDataHandlerTest {
 				.build();
 			asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
 
-			asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, MetricType.BOARD, true);
+			asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD, true);
 
 			MetricsDataCompleted completed = asyncMetricsDataHandler.getMetricsDataCompleted(currentTime);
 			assertTrue(completed.boardMetricsCompleted());
@@ -232,6 +235,65 @@ class AsyncMetricsDataHandlerTest {
 			MetricsDataCompleted completed = asyncMetricsDataHandler.getMetricsDataCompleted(currentTime);
 			assertTrue(completed.boardMetricsCompleted());
 			assertNull(completed.doraMetricsCompleted());
+			assertTrue(completed.allMetricsCompleted());
+			Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
+			assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
+		}
+
+	}
+
+	@Nested
+	class UpdateAllMetricsCompletedInHandlerAtTheSameTime {
+		@RepeatedTest(100)
+		void shouldUpdateAllMetricDataAtTheSameTimeWhenPreviousMetricsStatusIsNotNull() throws IOException {
+			long currentTimeMillis = System.currentTimeMillis();
+			String currentTime = Long.toString(currentTimeMillis);
+			List<Integer> sleepTime = new ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				sleepTime.add(new Random().nextInt(100));
+			}
+			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
+				.boardMetricsCompleted(false)
+				.doraMetricsCompleted(false)
+				.overallMetricCompleted(false)
+				.build();
+			asyncMetricsDataHandler.putMetricsDataCompleted(currentTime, metricsDataCompleted);
+
+			List<CompletableFuture<Void>> threadList = new ArrayList<>();
+
+			threadList.add(CompletableFuture.runAsync(() -> {
+				try {
+					Thread.sleep(sleepTime.get(0));
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD, true);
+
+			}));
+			threadList.add(CompletableFuture.runAsync(() -> {
+				try {
+					Thread.sleep(sleepTime.get(1));
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, DORA, true);
+			}));
+			threadList.add(CompletableFuture.runAsync(() -> {
+				try {
+					Thread.sleep(sleepTime.get(2));
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(currentTime);
+			}));
+
+			for (CompletableFuture<Void> thread : threadList) {
+				thread.join();
+			}
+
+			MetricsDataCompleted completed = asyncMetricsDataHandler.getMetricsDataCompleted(currentTime);
+			assertTrue(completed.boardMetricsCompleted());
+			assertTrue(completed.doraMetricsCompleted());
 			assertTrue(completed.allMetricsCompleted());
 			Files.deleteIfExists(Path.of(APP_OUTPUT_METRICS + "/" + currentTime));
 			assertNull(asyncMetricsDataHandler.getMetricsDataCompleted(currentTime));
