@@ -35,7 +35,7 @@ import {
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
-import { ListChartButtonContainer, StyledCalendarWrapper, StyledTabWrapper } from '@src/containers/ReportStep/style';
+import { StyledCalendarWrapper, StyledTabWrapper, StyledTabs } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
@@ -53,6 +53,7 @@ import { BoardMetricsChart } from './BoardMetricsChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
+import { theme } from '@src/theme';
 import { uniqueId } from 'lodash';
 
 export interface ReportStepProps {
@@ -91,6 +92,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     descendingDateRanges[0],
   );
   const [chartIndex, setChartIndex] = React.useState(0);
+  const [displayType, setDisplayType] = React.useState(0);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -473,6 +475,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
   };
 
+  const handleClick = (event: React.SyntheticEvent, newValue: number) => {
+    setDisplayType(newValue);
+    setChartIndex(0);
+    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.SUMMARY : REPORT_PAGE_TYPE.BOARD_CHART);
+  };
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setChartIndex(newValue);
     setPageType(newValue === 0 ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
@@ -527,20 +535,30 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
           <StyledTabWrapper>
-            <ListChartButtonContainer>
-              <ChartListButton onClick={handleListClick} startIcon={<FormatListBulletedIcon />}>
-                List
-              </ChartListButton>
-              <ChartListButton onClick={handleChartClick} startIcon={<BarChartIcon />}>
-                Chart
-              </ChartListButton>
-            </ListChartButtonContainer>
-            <Box>
-              <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-                <Tab label='Board' {...tabProps(0)} />
-                <Tab label='DORA' {...tabProps(1)} />
-              </Tabs>
+            <Box sx={{ marginRight: '2.5rem' }}>
+              <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
+                <Tab
+                  sx={{ border: `1px solid ${theme.main.button.borderLine}`, minHeight: '2.5rem' }}
+                  icon={<FormatListBulletedIcon />}
+                  iconPosition='start'
+                  label='List'
+                />
+                <Tab
+                  sx={{ border: `1px solid ${theme.main.button.borderLine}`, minHeight: '2.5rem' }}
+                  icon={<BarChartIcon />}
+                  iconPosition='start'
+                  label='Chart'
+                />
+              </StyledTabs>
             </Box>
+            {displayType === 1 && (
+              <Box>
+                <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
+                  <Tab label='Board' {...tabProps(0)} />
+                  <Tab label='DORA' {...tabProps(1)} />
+                </Tabs>
+              </Box>
+            )}
           </StyledTabWrapper>
           <DateRangeViewer
             dateRangeList={descendingDateRanges}

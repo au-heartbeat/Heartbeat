@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { Tabs } from '@mui/material';
 import { theme } from '@src/theme';
 
 export const StyledSpacing = styled('div')({
@@ -24,9 +24,11 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
 
 export const StyledTabWrapper = styled('div')({
   display: 'flex',
+  alignItems: 'flex-end',
 });
 
-export const ListChartButtonContainer = styled('div')({
-  display: 'flex',
-  marginRight: '2.5rem',
+export const StyledTabs = styled(Tabs)({
+  '& .MuiTabs-indicator': {
+    display: 'none',
+  },
 });
