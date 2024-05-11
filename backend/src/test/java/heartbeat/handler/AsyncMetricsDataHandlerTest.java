@@ -266,7 +266,7 @@ class AsyncMetricsDataHandlerTest {
 
 			List<CompletableFuture<Void>> threadList = new ArrayList<>();
 
-			threadList.add(CompletableFuture.runAsync(()  -> {
+			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(0));
 				}
