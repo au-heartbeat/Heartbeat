@@ -276,8 +276,7 @@ class AsyncMetricsDataHandlerTest {
 			}));
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
-					// NOSONAR
-					TimeUnit.MILLISECONDS.sleep(sleepTime.get(1));
+					TimeUnit.MILLISECONDS.sleep(sleepTime.get(1)); // NOSONAR
 				}
 				catch (InterruptedException ignored) {
 				}
@@ -285,8 +284,7 @@ class AsyncMetricsDataHandlerTest {
 			}));
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
-					// NOSONAR
-					TimeUnit.MILLISECONDS.sleep(sleepTime.get(2));
+					TimeUnit.MILLISECONDS.sleep(sleepTime.get(2)); // NOSONAR
 				}
 				catch (InterruptedException ignored) {
 				}
