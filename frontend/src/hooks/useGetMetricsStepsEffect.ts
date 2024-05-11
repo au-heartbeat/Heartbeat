@@ -55,7 +55,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
         params.map((param, index) => {
           return {
             startDate: param.startTime,
-            errors: { pipelineStepError: allStepsRes[index].status === REJECTED ? true : false },
+            errors: { pipelineStepError: allStepsRes[index].status === REJECTED },
           };
         }),
       ),

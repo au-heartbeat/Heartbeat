@@ -47,8 +47,8 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
       const response = await pipelineToolClient.getInfo(params);
       setInfo(response);
       if (response.code === HttpStatusCode.Ok) {
-        response.data && dispatch(updatePipelineToolVerifyResponse(response.data));
-        response.data && dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
+        dispatch(updatePipelineToolVerifyResponse(response.data));
+        dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
       }
       dispatch(
         updateMetricsPageFailedTimeRangeInfos(

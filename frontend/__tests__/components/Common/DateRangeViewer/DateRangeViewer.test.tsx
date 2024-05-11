@@ -87,6 +87,22 @@ describe('DateRangeViewer', () => {
   });
 
   it('should not show priority high icon when click expand button and step number is 0', async () => {
+    const failedTimeRangeList = [
+      {
+        startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
+        errors: { boardInfoError: false },
+      },
+      {
+        startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
+        errors: { pipelineStepError: false },
+      },
+      {
+        startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
+        errors: { pipelineInfoError: false },
+      },
+    ];
+    store.dispatch(nextStep());
+    store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
     const { getByLabelText } = setup(mockDateRanges);
 
     await userEvent.click(getByLabelText('expandMore'));
