@@ -249,6 +249,7 @@ class AsyncMetricsDataHandlerTest {
 	class UpdateAllMetricsCompletedInHandlerAtTheSameTime {
 
 		@RepeatedTest(100)
+		@SuppressWarnings("unchecked")
 		void shouldUpdateAllMetricDataAtTheSameTimeWhenPreviousMetricsStatusIsNotNull() throws IOException {
 			long currentTimeMillis = System.currentTimeMillis();
 			String currentTime = Long.toString(currentTimeMillis);
@@ -265,12 +266,11 @@ class AsyncMetricsDataHandlerTest {
 
 			List<CompletableFuture<Void>> threadList = new ArrayList<>();
 
-			threadList.add(CompletableFuture.runAsync(() -> {
+			threadList.add(CompletableFuture.runAsync(()  -> {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(0));
 				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
+				catch (InterruptedException ignored) {
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD, true);
 
@@ -279,8 +279,7 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(1));
 				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
+				catch (InterruptedException ignored) {
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, DORA, true);
 			}));
@@ -288,8 +287,7 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(2));
 				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
+				catch (InterruptedException ignored) {
 				}
 				asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(currentTime);
 			}));
