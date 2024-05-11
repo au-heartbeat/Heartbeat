@@ -268,15 +268,15 @@ class AsyncMetricsDataHandlerTest {
 
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
-					TimeUnit.MILLISECONDS.sleep(sleepTime.get(0));
+					TimeUnit.MILLISECONDS.sleep(sleepTime.get(0)); // NOSONAR
 				}
 				catch (InterruptedException ignored) {
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD, true);
-
 			}));
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
+					// NOSONAR
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(1));
 				}
 				catch (InterruptedException ignored) {
@@ -285,6 +285,7 @@ class AsyncMetricsDataHandlerTest {
 			}));
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
+					// NOSONAR
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(2));
 				}
 				catch (InterruptedException ignored) {
