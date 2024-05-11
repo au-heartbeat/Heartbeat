@@ -1,4 +1,5 @@
 import { styled } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import { theme } from '@src/theme';
 
 export const StyledSpacing = styled('div')({
@@ -21,7 +22,11 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
   marginBottom: props.isSummaryPage ? '0rem' : '2rem',
 }));
 
+export const StyledTabWrapper = styled('div')({
+  display: 'flex',
+});
+
 export const ListChartButtonContainer = styled('div')({
   display: 'flex',
-  marginRight: '1rem',
+  marginRight: '2.5rem',
 });

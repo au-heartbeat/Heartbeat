@@ -35,7 +35,7 @@ import {
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
-import { ListChartButtonContainer, StyledCalendarWrapper } from '@src/containers/ReportStep/style';
+import { ListChartButtonContainer, StyledCalendarWrapper, StyledTabWrapper } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
@@ -445,9 +445,13 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       )}
     </>
   );
-  const showDoraChart = (data?: IReportInfo[] | undefined) => (
+
+  const showBoardChart = (data?: IReportInfo[] | undefined) => (
     <BoardMetricsChart data={data} dateRanges={allDateRanges} />
   );
+
+  const showDoraChart = (data?: IReportInfo[] | undefined) => <div>DoraChart</div>;
+
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
@@ -466,11 +470,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const handleChartClick = () => {
-    setPageType(REPORT_PAGE_TYPE.DORA_CHART);
+    setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setChartIndex(newValue);
+    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {
@@ -508,6 +513,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         return showBoardDetail(reportData);
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
+      case REPORT_PAGE_TYPE.BOARD_CHART:
+        return showBoardChart(reportInfos);
       case REPORT_PAGE_TYPE.DORA_CHART:
         return showDoraChart(reportInfos);
       default:
@@ -519,20 +526,22 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <>
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
-          <ListChartButtonContainer>
-            <ChartListButton onClick={handleListClick} startIcon={<FormatListBulletedIcon />}>
-              List
-            </ChartListButton>
-            <ChartListButton onClick={handleChartClick} startIcon={<BarChartIcon />}>
-              Chart
-            </ChartListButton>
-          </ListChartButtonContainer>
-          <Box>
-            <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-              <Tab label='Board' {...tabProps(0)} />
-              <Tab label='DORA' {...tabProps(1)} />
-            </Tabs>
-          </Box>
+          <StyledTabWrapper>
+            <ListChartButtonContainer>
+              <ChartListButton onClick={handleListClick} startIcon={<FormatListBulletedIcon />}>
+                List
+              </ChartListButton>
+              <ChartListButton onClick={handleChartClick} startIcon={<BarChartIcon />}>
+                Chart
+              </ChartListButton>
+            </ListChartButtonContainer>
+            <Box>
+              <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
+                <Tab label='Board' {...tabProps(0)} />
+                <Tab label='DORA' {...tabProps(1)} />
+              </Tabs>
+            </Box>
+          </StyledTabWrapper>
           <DateRangeViewer
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
