@@ -267,7 +267,7 @@ class AsyncMetricsDataHandlerTest {
 
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
-					Thread.sleep(sleepTime.get(0));
+					TimeUnit.MILLISECONDS.sleep(sleepTime.get(0));
 				}
 				catch (InterruptedException e) {
 					throw new RuntimeException(e);
@@ -277,7 +277,7 @@ class AsyncMetricsDataHandlerTest {
 			}));
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
-					Thread.sleep(sleepTime.get(1));
+					TimeUnit.MILLISECONDS.sleep(sleepTime.get(1));
 				}
 				catch (InterruptedException e) {
 					throw new RuntimeException(e);
@@ -286,7 +286,7 @@ class AsyncMetricsDataHandlerTest {
 			}));
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
-					Thread.sleep(sleepTime.get(2));
+					TimeUnit.MILLISECONDS.sleep(sleepTime.get(2));
 				}
 				catch (InterruptedException e) {
 					throw new RuntimeException(e);
