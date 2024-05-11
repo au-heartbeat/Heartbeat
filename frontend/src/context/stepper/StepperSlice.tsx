@@ -53,11 +53,7 @@ export const stepperSlice = createSlice({
       state.timeStamp = action.payload;
     },
     updateMetricsPageFailedTimeRangeInfos: (state, action) => {
-      let errorInfoList: IMetricsPageFailedDateRangePayload[] | IMetricsPageFailedDateRangePayload = action.payload;
-
-      if (!(errorInfoList instanceof Array)) {
-        errorInfoList = [action.payload];
-      }
+      const errorInfoList: IMetricsPageFailedDateRangePayload[] = action.payload;
 
       errorInfoList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
 

@@ -55,8 +55,7 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
           dateRangeList.map((dateRange) => ({
             startDate: formatDateToTimestampString(dateRange.startDate!),
             errors: {
-              pipelineInfoError:
-                response.code === HttpStatusCode.Ok || response.code === HttpStatusCode.NoContent ? false : true,
+              pipelineInfoError: response.code !== HttpStatusCode.Ok,
             },
           })),
         ),
