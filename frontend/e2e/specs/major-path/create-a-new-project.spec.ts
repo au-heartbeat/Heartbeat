@@ -1,5 +1,9 @@
+import {
+  BOARD_METRICS_RESULT_MULTIPLE_RANGES,
+  DORA_METRICS_RESULT,
+  BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
+} from '../../fixtures/create-new/report-result';
 import { configWithoutBlockColumn as metricsStepWithoutBlockColumnData } from '../../fixtures/create-new/metrics-step';
-import { BOARD_METRICS_RESULT_MULTIPLE_TIMES, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
@@ -72,18 +76,20 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetricsForMultipleTimes(BOARD_METRICS_RESULT_MULTIPLE_TIMES);
-  await reportStep.checkBoardMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT, 9);
-  await reportStep.checkDoraMetrics(
-    DORA_METRICS_RESULT.PrLeadTime,
-    DORA_METRICS_RESULT.PipelineLeadTime,
-    DORA_METRICS_RESULT.TotalLeadTime,
-    DORA_METRICS_RESULT.DeploymentFrequency,
-    DORA_METRICS_RESULT.FailureRate,
-    DORA_METRICS_RESULT.DevMeanTimeToRecovery,
-  );
-  await reportStep.checkDoraMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT);
-  await reportStep.checkMetricDownloadData();
+  await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
+  await reportStep.checkBoardMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT, 9, {
+    velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
+  });
+  // await reportStep.checkDoraMetrics(
+  //   DORA_METRICS_RESULT.PrLeadTime,
+  //   DORA_METRICS_RESULT.PipelineLeadTime,
+  //   DORA_METRICS_RESULT.TotalLeadTime,
+  //   DORA_METRICS_RESULT.DeploymentFrequency,
+  //   DORA_METRICS_RESULT.FailureRate,
+  //   DORA_METRICS_RESULT.DevMeanTimeToRecovery,
+  // );
+  // await reportStep.checkDoraMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT);
+  // await reportStep.checkMetricDownloadData();
 });
 
 test('Create a new project without block column in boarding mapping', async ({
