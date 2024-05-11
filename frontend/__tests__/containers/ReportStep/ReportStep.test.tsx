@@ -666,14 +666,14 @@ describe('Report Step', () => {
 
     it('should close error notification when change dateRange', async () => {
       reportHook.current.reportInfos[1].timeout4Board = { shouldShow: true, message: 'error' };
-      const { getByTestId, getByText } = setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+      const { getByTestId, getAllByText } = setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
       const expandMoreIcon = getByTestId('ExpandMoreIcon');
       await act(async () => {
         await userEvent.click(expandMoreIcon);
       });
-      const secondDateRange = await getByText(/2024\/02\/04/);
+      const secondDateRange = await getAllByText(/2024\/02\/04/);
 
-      await userEvent.click(secondDateRange);
+      await userEvent.click(secondDateRange[0]);
       await userEvent.click(expandMoreIcon);
       const firstDateRange = screen.getByText(/2024\/02\/18/);
       await userEvent.click(firstDateRange);
