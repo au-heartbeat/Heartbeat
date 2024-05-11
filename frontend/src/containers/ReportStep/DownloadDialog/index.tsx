@@ -21,6 +21,7 @@ interface DownloadDialogProps {
   handleClose: () => void;
   dateRangeList: DateRangeItem[];
   downloadCSVFile: (startDate: string, endDate: string) => void;
+  title: string;
 }
 
 export interface DateRangeItem {
@@ -29,7 +30,7 @@ export interface DateRangeItem {
   disabled: boolean;
 }
 
-export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downloadCSVFile }: DownloadDialogProps) => {
+export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downloadCSVFile, title }: DownloadDialogProps) => {
   const [selectedRangeItems, setSelectedRangeItems] = useState<DateRangeItem[]>([]);
   const confirmButtonDisabled = selectedRangeItems.length === 0;
 
@@ -71,7 +72,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
     <Dialog open={isShowDialog} maxWidth='md'>
       <DialogContainer>
         <StyledDialogTitle>
-          <strong>Export Board Data</strong>
+          <strong>Export {title} Data</strong>
           <CloseButton onClick={handleClose} />
         </StyledDialogTitle>
         <StyledDialogContent dividers>
