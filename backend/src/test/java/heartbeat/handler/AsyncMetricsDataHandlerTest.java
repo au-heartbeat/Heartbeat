@@ -145,8 +145,7 @@ class AsyncMetricsDataHandlerTest {
 			String currentTime = Long.toString(currentTimeMillis);
 
 			GenerateReportException exception = assertThrows(GenerateReportException.class,
-					() -> asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD,
-							false));
+					() -> asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD, false));
 
 			assertEquals("Failed to update metrics data completed through this timestamp.", exception.getMessage());
 		}
@@ -244,6 +243,7 @@ class AsyncMetricsDataHandlerTest {
 
 	@Nested
 	class UpdateAllMetricsCompletedInHandlerAtTheSameTime {
+
 		@RepeatedTest(100)
 		void shouldUpdateAllMetricDataAtTheSameTimeWhenPreviousMetricsStatusIsNotNull() throws IOException {
 			long currentTimeMillis = System.currentTimeMillis();
@@ -264,7 +264,8 @@ class AsyncMetricsDataHandlerTest {
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
 					Thread.sleep(sleepTime.get(0));
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD, true);
@@ -273,7 +274,8 @@ class AsyncMetricsDataHandlerTest {
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
 					Thread.sleep(sleepTime.get(1));
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, DORA, true);
@@ -281,7 +283,8 @@ class AsyncMetricsDataHandlerTest {
 			threadList.add(CompletableFuture.runAsync(() -> {
 				try {
 					Thread.sleep(sleepTime.get(2));
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
 				asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(currentTime);

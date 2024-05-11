@@ -25,6 +25,7 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 	private static final String OUTPUT_FILE_PATH = "./app/output/";
 
 	private static final String SLASH = "/";
+
 	private final Object readWriteLock = new Object();
 
 	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
