@@ -2,18 +2,29 @@ import { createSlice } from '@reduxjs/toolkit';
 import { ZERO } from '@src/constants/commons';
 import type { RootState } from '@src/store';
 
+export interface IMetricsPageFailedDateRange {
+  boardInfoError?: boolean;
+  pipelineInfoError?: boolean;
+  pipelineStepError?: boolean;
+}
+
+export interface IMetricsPageFailedDateRangePayload {
+  startDate: string;
+  errors: IMetricsPageFailedDateRange;
+}
+
 export interface StepState {
   stepNumber: number;
   timeStamp: number;
   shouldMetricsLoaded: boolean;
-  metricsPageFailedTimeRangeList: string[];
+  metricsPageFailedTimeRangeInfos: Record<string, IMetricsPageFailedDateRange>;
 }
 
 const initialState: StepState = {
   stepNumber: 0,
   timeStamp: 0,
   shouldMetricsLoaded: true,
-  metricsPageFailedTimeRangeList: [],
+  metricsPageFailedTimeRangeInfos: {},
 };
 
 export const stepperSlice = createSlice({
@@ -26,7 +37,7 @@ export const stepperSlice = createSlice({
     },
     nextStep: (state) => {
       if (state.shouldMetricsLoaded && state.stepNumber === 0) {
-        state.metricsPageFailedTimeRangeList = [];
+        state.metricsPageFailedTimeRangeInfos = {};
       }
       state.shouldMetricsLoaded = true;
       state.stepNumber += 1;
@@ -41,8 +52,22 @@ export const stepperSlice = createSlice({
     updateTimeStamp: (state, action) => {
       state.timeStamp = action.payload;
     },
-    updateMetricsPageFailedTimeRange: (state, action) => {
-      state.metricsPageFailedTimeRangeList = state.metricsPageFailedTimeRangeList.concat(action.payload);
+    updateMetricsPageFailedTimeRangeInfos: (state, action) => {
+      let errorInfoList: IMetricsPageFailedDateRangePayload[] | IMetricsPageFailedDateRangePayload = action.payload;
+
+      if (!(errorInfoList instanceof Array)) {
+        errorInfoList = [action.payload];
+      }
+
+      errorInfoList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
+
+      function updateInfo(errorInfo: IMetricsPageFailedDateRangePayload) {
+        const { startDate, errors } = errorInfo;
+        state.metricsPageFailedTimeRangeInfos[startDate] = {
+          ...state.metricsPageFailedTimeRangeInfos[startDate],
+          ...errors,
+        };
+      }
     },
   },
 });
@@ -53,12 +78,13 @@ export const {
   backStep,
   updateShouldMetricsLoaded,
   updateTimeStamp,
-  updateMetricsPageFailedTimeRange,
+  updateMetricsPageFailedTimeRangeInfos,
 } = stepperSlice.actions;
 
 export const selectStepNumber = (state: RootState) => state.stepper.stepNumber;
 export const selectTimeStamp = (state: RootState) => state.stepper.timeStamp;
 export const shouldMetricsLoaded = (state: RootState) => state.stepper.shouldMetricsLoaded;
-export const selectMetricsPageFailedTimeRange = (state: RootState) => state.stepper.metricsPageFailedTimeRangeList;
+export const selectMetricsPageFailedTimeRangeInfos = (state: RootState) =>
+  state.stepper.metricsPageFailedTimeRangeInfos;
 
 export default stepperSlice.reducer;

@@ -4,9 +4,9 @@ import {
   selectPipelineTool,
   selectDateRange,
 } from '@src/context/config/configSlice';
+import { shouldMetricsLoaded, updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { pipelineToolClient, IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
 import { selectShouldGetPipelineConfig, updatePipelineSettings } from '@src/context/Metrics/metricsSlice';
-import { shouldMetricsLoaded, updateMetricsPageFailedTimeRange } from '@src/context/stepper/StepperSlice';
 import { clearMetricsPipelineFormMeta } from '@src/context/meta/metaSlice';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { formatDateToTimestampString } from '@src/utils/util';
@@ -50,13 +50,17 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
         response.data && dispatch(updatePipelineToolVerifyResponse(response.data));
         response.data && dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
       }
-      if ((response.code as number) !== HttpStatusCode.Ok && (response.code as number) !== HttpStatusCode.NoContent) {
-        dispatch(
-          updateMetricsPageFailedTimeRange(
-            dateRangeList.map((dateRange) => formatDateToTimestampString(dateRange.startDate!)),
-          ),
-        );
-      }
+      dispatch(
+        updateMetricsPageFailedTimeRangeInfos(
+          dateRangeList.map((dateRange) => ({
+            startDate: formatDateToTimestampString(dateRange.startDate!),
+            errors: {
+              pipelineInfoError:
+                response.code === HttpStatusCode.Ok || response.code === HttpStatusCode.NoContent ? false : true,
+            },
+          })),
+        ),
+      );
     } finally {
       setIsLoading(false);
       setIsFirstFetch(false);
