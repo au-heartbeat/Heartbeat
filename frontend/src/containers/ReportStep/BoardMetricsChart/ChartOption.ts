@@ -112,7 +112,6 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
           align: 'center',
         },
         type: 'value',
-        interval: 5,
         axisLabel: {
           show: true,
           formatter: `{value}${item.axisLabel}`,
