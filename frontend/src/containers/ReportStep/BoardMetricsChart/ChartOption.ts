@@ -18,11 +18,19 @@ export interface Series {
   name: string;
   type: string;
   data: number[];
+  yAxisIndex?: number;
 }
 
 export interface XAxis {
   data: string[];
+  axisLabel?: AxisLabel;
   boundaryGap?: boolean;
+}
+
+export interface AxisLabel {
+  color: string;
+  alignMaxLabel: string;
+  alignMinLabel: string;
 }
 
 export interface YAxis {
@@ -35,7 +43,7 @@ const commonConfig = {
   legend: {
     icon: 'circle',
     top: '86%',
-    left: '9%',
+    left: '10%',
     itemGap: 15,
   },
   tooltip: {
@@ -44,8 +52,8 @@ const commonConfig = {
   grid: {
     show: true,
     borderColor: 'transparent',
-    left: '10%',
-    right: '4%',
+    left: '12%',
+    right: '10%',
     top: '20%',
     bottom: '25%',
   },
@@ -64,9 +72,17 @@ const commonConfig = {
         type: 'dashed',
       },
     },
-    axisLabel: {
-      color: 'black',
+  },
+  seriesConfig: {
+    symbol: 'circle',
+    symbolSize: 7,
+    lineStyle: {
+      width: 3,
     },
+    areaStyle: {
+      opacity: 0.3,
+    },
+    smooth: true,
   },
 };
 
@@ -85,6 +101,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
     xAxis: {
       data: props.xAxis.data,
       boundaryGap: props.xAxis.boundaryGap,
+      axisLabel: props.xAxis.axisLabel,
       ...commonConfig.axisConfig,
     },
     yAxis: props.yAxis?.map((item, index) => {
@@ -92,9 +109,10 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
         name: item.name,
         position: index === 0 ? 'left' : 'right',
         nameTextStyle: {
-          align: 'right',
+          align: 'center',
         },
         type: 'value',
+        interval: 5,
         axisLabel: {
           show: true,
           formatter: `{value}${item.axisLabel}`,
@@ -108,14 +126,13 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
         name: item.name,
         data: item.data,
         type: item.type,
-        areaStyle: {
-          opacity: 0.3,
-        },
-        smooth: true,
+        yAxisIndex: item.yAxisIndex,
+        ...commonConfig.seriesConfig,
       };
     }),
   };
 };
+
 export const stackedBarOptionMapper = (props: BarOptionProps) => {
   return {
     title: {
@@ -130,6 +147,9 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
     grid: commonConfig.grid,
     xAxis: {
       data: props.xAxis,
+      axisLabel: {
+        color: 'black',
+      },
       ...commonConfig.axisConfig,
     },
     yAxis: {

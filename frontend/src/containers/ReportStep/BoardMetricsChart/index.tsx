@@ -51,6 +51,18 @@ type Result = {
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
+const LEFT_RIGHT_ALIGN_LABEL = {
+  color: 'black',
+  alignMaxLabel: 'right',
+  alignMinLabel: 'left',
+};
+
+const CENTER_ALIGN_LABEL = {
+  color: 'black',
+  alignMaxLabel: 'center',
+  alignMinLabel: 'center',
+};
+
 function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined) {
   const res: Result = {};
 
@@ -82,6 +94,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
     xAxis: {
       data: dateRanges,
       boundaryGap: false,
+      axisLabel: LEFT_RIGHT_ALIGN_LABEL,
     },
     yAxis: [
       {
@@ -122,6 +135,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
     xAxis: {
       data: dateRanges,
       boundaryGap: false,
+      axisLabel: LEFT_RIGHT_ALIGN_LABEL,
     },
     yAxis: [
       {
@@ -191,6 +205,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
     xAxis: {
       data: dateRanges,
       boundaryGap: true,
+      axisLabel: CENTER_ALIGN_LABEL,
     },
     yAxis: [
       {
