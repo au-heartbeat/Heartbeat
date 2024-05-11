@@ -248,6 +248,7 @@ class AsyncMetricsDataHandlerTest {
 	@Nested
 	class UpdateAllMetricsCompletedInHandlerAtTheSameTime {
 
+		// The test should be moved to integration test next.
 		@RepeatedTest(100)
 		@SuppressWarnings("unchecked")
 		void shouldUpdateAllMetricDataAtTheSameTimeWhenPreviousMetricsStatusIsNotNull() throws IOException {
