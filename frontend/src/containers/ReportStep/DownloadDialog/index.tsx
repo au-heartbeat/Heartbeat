@@ -1,8 +1,10 @@
 import {
+  CheckBoxIcon,
   CloseButton,
   DialogContainer,
   StyledButton,
   StyledCalendarToday,
+  StyledDialog,
   StyledDialogContent,
   StyledDialogTitle,
   StyledFormControlLabel,
@@ -30,7 +32,13 @@ export interface DateRangeItem {
   disabled: boolean;
 }
 
-export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downloadCSVFile, title }: DownloadDialogProps) => {
+export const DownloadDialog = ({
+  isShowDialog,
+  handleClose,
+  dateRangeList,
+  downloadCSVFile,
+  title,
+}: DownloadDialogProps) => {
   const [selectedRangeItems, setSelectedRangeItems] = useState<DateRangeItem[]>([]);
   const confirmButtonDisabled = selectedRangeItems.length === 0;
 
@@ -69,7 +77,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
   };
 
   return (
-    <Dialog open={isShowDialog} maxWidth='md'>
+    <StyledDialog sx={{ borderRadius: 3 }} open={isShowDialog} maxWidth='md'>
       <DialogContainer>
         <StyledDialogTitle>
           <strong>Export {title} Data</strong>
@@ -78,7 +86,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
         <StyledDialogContent dividers>
           <TimePeriodSelectionMessage>
             <StyledCalendarToday />
-            <strong>Select the time period for the exporting data</strong>
+            <strong>Select the time period</strong>
           </TimePeriodSelectionMessage>
           <StyledFormGroup>
             {dateRangeList.map((item) => (
@@ -96,6 +104,6 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
           </StyledButton>
         </StyledDialogContent>
       </DialogContainer>
-    </Dialog>
+    </StyledDialog>
   );
 };
