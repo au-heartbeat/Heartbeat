@@ -114,7 +114,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
         <StyledCalendarToday />
       </DateRangeContainer>
       {disabledAll && stepNumber === 2 ? (
-        <StyledChip label={dateRangeList.length} variant='outlined' size='small' />
+        <StyledChip aria-label='date-count-chip' label={dateRangeList.length} variant='outlined' size='small' />
       ) : (
         <>
           <StyledDivider orientation='vertical' />

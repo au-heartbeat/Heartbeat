@@ -163,6 +163,7 @@ export const DoraMetricsChart = ({
     }
   });
 
+  //TODO：move to report page
   useEffect(() => {
     isChartFailed &&
       dispatch(

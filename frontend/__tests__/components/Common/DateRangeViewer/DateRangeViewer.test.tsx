@@ -189,7 +189,6 @@ describe('DateRangeViewer', () => {
     store.dispatch(nextStep());
     setup(mockDateRangesDisabled);
 
-    //TODO: be precise
-    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByLabelText('date-count-chip')).toBeInTheDocument();
   });
 });

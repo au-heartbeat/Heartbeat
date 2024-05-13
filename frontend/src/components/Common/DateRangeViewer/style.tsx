@@ -125,6 +125,6 @@ export const StyledExpandContainer = styled('div')({
 });
 
 export const StyledChip = styled(Chip)({
-  marginLeft: '1rem',
+  marginRight: '1rem',
   color: theme.palette.text.disabled,
 });
