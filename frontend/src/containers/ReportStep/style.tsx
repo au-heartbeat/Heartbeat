@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles';
-import { Tabs } from '@mui/material';
+import { Tab, Tabs } from '@mui/material';
 import { theme } from '@src/theme';
 
 export const StyledSpacing = styled('div')({
@@ -31,4 +31,12 @@ export const StyledTabs = styled(Tabs)({
   '& .MuiTabs-indicator': {
     display: 'none',
   },
+  '& .Mui-selected': {
+    border: `0.08rem solid ${theme.main.backgroundColor}`,
+  },
+});
+
+export const StyledTab = styled(Tab)({
+  border: `0.08rem solid ${theme.main.button.borderLine}`,
+  minHeight: '2.5rem',
 });

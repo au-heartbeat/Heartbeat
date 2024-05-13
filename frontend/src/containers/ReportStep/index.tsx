@@ -35,7 +35,7 @@ import {
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
-import { StyledCalendarWrapper, StyledTabWrapper, StyledTabs } from '@src/containers/ReportStep/style';
+import { StyledCalendarWrapper, StyledTab, StyledTabWrapper, StyledTabs } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
@@ -44,7 +44,6 @@ import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
-import { ChartListButton } from '@src/components/Common/Buttons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
@@ -53,7 +52,6 @@ import { BoardMetricsChart } from './BoardMetricsChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
-import { theme } from '@src/theme';
 import { uniqueId } from 'lodash';
 
 export interface ReportStepProps {
@@ -537,14 +535,20 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           <StyledTabWrapper>
             <Box sx={{ marginRight: '2.5rem' }}>
               <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
-                <Tab
-                  sx={{ border: `1px solid ${theme.main.button.borderLine}`, minHeight: '2.5rem' }}
+                <StyledTab
+                  sx={{
+                    borderRight: 'none',
+                    borderRadius: '0.16rem 0 0 0.16rem',
+                  }}
                   icon={<FormatListBulletedIcon />}
                   iconPosition='start'
                   label='List'
                 />
-                <Tab
-                  sx={{ border: `1px solid ${theme.main.button.borderLine}`, minHeight: '2.5rem' }}
+                <StyledTab
+                  sx={{
+                    borderLeft: 'none',
+                    borderRadius: '0 0.16rem 0.16rem 0',
+                  }}
                   icon={<BarChartIcon />}
                   iconPosition='start'
                   label='Chart'
