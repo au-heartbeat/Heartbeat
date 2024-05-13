@@ -1,5 +1,6 @@
 import {
   BACK,
+  BAD_REPORT_VALUES,
   BOARD_METRICS_TITLE,
   CLASSIFICATION,
   EMPTY_REPORT_VALUES,
@@ -34,6 +35,7 @@ import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import ReportStep from '@src/containers/ReportStep';
 import { Provider } from 'react-redux';
+import * as echarts from 'echarts';
 import { ReactNode } from 'react';
 
 jest.mock('@src/context/notification/NotificationSlice', () => ({
@@ -683,6 +685,65 @@ describe('Report Step', () => {
         type: 'error',
       });
       expect(closeNotification).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('error notification', () => {
+    beforeEach(() => {
+      jest.spyOn(echarts, 'init').mockImplementation(
+        () =>
+          ({
+            setOption: jest.fn(),
+            resize: jest.fn(),
+            dispatchAction: jest.fn(),
+            dispose: jest.fn(),
+            //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          }) as any,
+      );
+    });
+
+    it('should correctly render dora chart', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
+
+      const switchChartButton = screen.getByText('Chart');
+      await userEvent.click(switchChartButton);
+
+      expect(addNotification).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render dora chart with empty value when exception was thrown', async () => {
+      reportHook.current.reportInfos[0].reportData = { ...BAD_REPORT_VALUES };
+      reportHook.current.reportInfos[1].reportData = { ...BAD_REPORT_VALUES };
+      setup([CLASSIFICATION], [emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText('Chart');
+      await userEvent.click(switchChartButton);
+
+      const switchBoardChartButton = screen.getByText('DORA');
+      await userEvent.click(switchBoardChartButton);
+
+      const chartRetryButton = screen.getByText(RETRY);
+      await userEvent.click(chartRetryButton);
+
+      expect(addNotification).toHaveBeenCalledTimes(2);
+    });
+
+    it('should render metrics list when click list from chart page', async () => {
+      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText('Chart');
+      const switchMetricsListButton = screen.getByText('List');
+      await userEvent.click(switchChartButton);
+      await userEvent.click(switchMetricsListButton);
+
+      expect(screen.getByText('Board Metrics')).toBeInTheDocument();
+      expect(screen.getByText('Velocity')).toBeInTheDocument();
+      expect(screen.getByText('Cycle Time')).toBeInTheDocument();
+      expect(screen.getByText('DORA Metrics')).toBeInTheDocument();
+      expect(screen.getByText('Lead Time For Changes')).toBeInTheDocument();
+      expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
+      expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
+      expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
     });
   });
 });

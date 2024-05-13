@@ -16,11 +16,10 @@ import { theme } from '@src/theme';
 import { toNumber } from 'lodash';
 
 interface DoraMetricsChartProps {
-  startToRequestDoraData: () => void;
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
   isChartFailed: boolean;
-  setIsChartFailed: (boolean) => void;
+  setIsChartFailed: (isChartFailed: boolean) => void;
   retry: boolean;
 }
 
@@ -28,12 +27,12 @@ const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[]) {
+  if (!mappedData?.[0].leadTimeForChangesList) {
+    throw new Error('generating chart failed!');
+  }
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name);
   const extractedValues = mappedData?.map((data) =>
     data.leadTimeForChangesList?.[0].valuesList.map((item) => {
-      if (!item) {
-        throw new Error('generating chart failed!');
-      }
       return item.value!;
     }),
   );
@@ -181,7 +180,7 @@ export const DoraMetricsChart = ({
       LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
       setIsChartFailed(false);
     } catch (e) {
-      LeadTimeForChangeData = extractedStackedBarData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
+      LeadTimeForChangeData = extractedStackedBarData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
     }
     const option = LeadTimeForChangeData && stackedBarOptionMapper(LeadTimeForChangeData);
@@ -198,7 +197,7 @@ export const DoraMetricsChart = ({
       deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
       setIsChartFailed(false);
     } catch (e) {
-      deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
+      deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
     }
     const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
@@ -215,7 +214,7 @@ export const DoraMetricsChart = ({
       changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
       setIsChartFailed(false);
     } catch (e) {
-      changeFailureRateData = extractedChangeFailureRateData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
+      changeFailureRateData = extractedChangeFailureRateData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
     }
     const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
@@ -232,7 +231,7 @@ export const DoraMetricsChart = ({
       meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
       setIsChartFailed(false);
     } catch (e) {
-      meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART(null)]);
+      meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
     }
     const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);

@@ -568,6 +568,24 @@ export const EMPTY_REPORT_VALUES: ReportResponseDTO = {
   reportMetricsError,
 };
 
+export const BAD_REPORT_VALUES: ReportResponseDTO = {
+  velocity: null,
+  classificationList: null,
+  cycleTime: null,
+  rework: null,
+  deploymentFrequency: null,
+  devChangeFailureRate: null,
+  devMeanTimeToRecovery: null,
+  leadTimeForChanges: null,
+  exportValidityTime: null,
+  boardMetricsCompleted: true,
+  doraMetricsCompleted: true,
+  overallMetricsCompleted: true,
+  allMetricsCompleted: true,
+  isSuccessfulCreateCsvFile: true,
+  reportMetricsError,
+};
+
 export const CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE =
   'Imported data is not perfectly matched. Please review carefully before going next!';
 

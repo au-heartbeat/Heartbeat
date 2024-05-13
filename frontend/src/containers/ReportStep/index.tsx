@@ -454,7 +454,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
     <DoraMetricsChart
-      startToRequestDoraData={() => startToRequestData(doraReportRequestBody)}
       data={data}
       dateRanges={allDateRanges}
       isChartFailed={isChartFailed}
@@ -531,8 +530,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.DORA_CHART:
         return showDoraChart(reportInfos.map((infos) => infos.reportData));
-      default:
-        return showSummary();
     }
   };
 

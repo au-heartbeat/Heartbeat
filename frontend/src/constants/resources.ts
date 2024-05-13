@@ -457,7 +457,7 @@ export enum SORTING_DATE_RANGE_TEXT {
 export const DISABLED_DATE_RANGE_MESSAGE =
   'Unavailable time period indicates that report generation during this period has failed.';
 
-export const EMPTY_DATA_MAPPER_DORA_CHART = (value: any) => {
+export const EMPTY_DATA_MAPPER_DORA_CHART = (value: string) => {
   return {
     deploymentFrequencyList: [
       {
