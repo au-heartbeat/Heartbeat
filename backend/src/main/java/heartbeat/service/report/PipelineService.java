@@ -151,7 +151,7 @@ public class PipelineService {
 		if (!CollectionUtils.isEmpty(pipelineCrews)) {
 			buildKiteBuildInfo = buildKiteBuildInfo.stream()
 				.filter(info -> ((pipelineCrews.contains("Unknown") && info.getAuthor() == null))
-						|| (info.getAuthor() != null && pipelineCrews.contains(info.getAuthor().getName())))
+						|| (info.getAuthor() != null && pipelineCrews.contains(info.getAuthor().getUsername())))
 				.toList();
 		}
 		return buildKiteBuildInfo;
