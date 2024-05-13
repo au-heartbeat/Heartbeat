@@ -1,4 +1,12 @@
 import {
+  DateRange,
+  isOnlySelectClassification,
+  isSelectBoardMetrics,
+  isSelectDoraMetrics,
+  isSelectDoraMetricsAndClassification,
+  selectConfig,
+} from '@src/context/config/configSlice';
+import {
   filterAndMapCycleTimeSettings,
   formatDuplicatedNameWithSuffix,
   getJiraBoardToken,
@@ -14,13 +22,6 @@ import {
   TimeoutErrorKey,
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
-import {
-  DateRange,
-  isOnlySelectClassification,
-  isSelectBoardMetrics,
-  isSelectDoraMetrics,
-  selectConfig,
-} from '@src/context/config/configSlice';
 import {
   addNotification,
   closeAllNotifications,
@@ -134,6 +135,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
+  const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
 
   const mapDateResult = (descendingDateRanges: DateRange, reportInfos: IReportInfo[]) =>
@@ -465,18 +467,15 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
   };
 
-  const handleListClick = () => {
-    setPageType(REPORT_PAGE_TYPE.SUMMARY);
-  };
-
-  const handleChartClick = () => {
-    setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
-  };
-
   const handleClick = (event: React.SyntheticEvent, newValue: number) => {
+    const pageType =
+      newValue === 0
+        ? REPORT_PAGE_TYPE.BOARD
+        : selectDoraMetricsAndClassification
+          ? REPORT_PAGE_TYPE.DORA_CHART
+          : REPORT_PAGE_TYPE.BOARD_CHART;
     setDisplayType(newValue);
-    setChartIndex(0);
-    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.SUMMARY : REPORT_PAGE_TYPE.BOARD_CHART);
+    setPageType(pageType);
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -552,13 +551,14 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
                   icon={<BarChartIcon />}
                   iconPosition='start'
                   label='Chart'
+                  disabled={onlySelectClassification}
                 />
               </StyledTabs>
             </Box>
             {displayType === 1 && (
               <Box>
                 <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-                  <Tab label='Board' {...tabProps(0)} />
+                  <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
                   <Tab label='DORA' {...tabProps(1)} />
                 </Tabs>
               </Box>
