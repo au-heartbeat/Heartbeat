@@ -7,6 +7,14 @@ import {
   sortDateRanges,
 } from '@src/utils/util';
 import {
+  DateRange,
+  DateRangeList,
+  isOnlySelectClassification,
+  isSelectBoardMetrics,
+  isSelectDoraMetrics,
+  selectConfig,
+} from '@src/context/config/configSlice';
+import {
   GeneralErrorKey,
   initReportInfo,
   IReportError,
@@ -21,13 +29,6 @@ import {
   Notification,
 } from '@src/context/notification/NotificationSlice';
 import {
-  DateRange,
-  isOnlySelectClassification,
-  isSelectBoardMetrics,
-  isSelectDoraMetrics,
-  selectConfig
-} from "@src/context/config/configSlice";
-import {
   BOARD_METRICS,
   CALENDAR,
   DORA_METRICS,
@@ -36,11 +37,11 @@ import {
   REQUIRED_DATA,
 } from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
-import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -60,13 +61,20 @@ const timeoutNotificationMessages = {
   [TimeoutErrorKey[METRIC_TYPES.ALL]]: 'Report',
 };
 
+export interface DateRangeRequestResult {
+  startDate: string;
+  endDate: string;
+  overallMetricsCompleted: boolean | null;
+  boardMetricsCompleted: boolean | null;
+  doraMetricsCompleted: boolean | null;
+  reportMetricsError: AllErrorResponse;
+}
+
 const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
   const descendingDateRanges = sortDateRanges(configData.basic.dateRange);
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(
-    descendingDateRanges[0],
-  );
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -111,6 +119,23 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
+
+  const mapDateResult = (descendingDateRanges: DateRangeList, reportInfos: IReportInfo[]) =>
+    descendingDateRanges.map(({ startDate, endDate }) => {
+      const reportData = reportInfos.find((singleResult) => singleResult.id === startDate)?.reportData ?? null;
+      return {
+        startDate: startDate,
+        endDate: endDate,
+        overallMetricsCompleted: reportData?.overallMetricsCompleted ?? null,
+        boardMetricsCompleted: reportData?.boardMetricsCompleted ?? null,
+        doraMetricsCompleted: reportData?.doraMetricsCompleted ?? null,
+        reportMetricsError: reportData?.reportMetricsError ?? {
+          boardMetricsError: null,
+          pipelineMetricsError: null,
+          sourceControlMetricsError: null,
+        },
+      } as DateRangeRequestResult;
+    });
 
   const getErrorMessage4Board = () => {
     if (currentDataInfo.reportData?.reportMetricsError.boardMetricsError) {
@@ -243,14 +268,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [selectedDateRange]);
 
   useEffect(() => {
-    setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
-    return () => {
-      stopPollingReports();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     exportValidityTimeMin &&
       isCsvFileGeneratedAtEnd &&
       dispatch(
@@ -375,7 +392,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   ]);
 
   useEffect(() => {
+    setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
     startToRequestData(basicReportRequestBody);
+    return () => {
+      stopPollingReports();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -461,10 +482,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
         handleBack={() => handleBack()}
         handleSave={() => handleSave()}
-        reportData={currentDataInfo.reportData}
-        startDate={startDate}
-        endDate={endDate}
         csvTimeStamp={csvTimeStamp}
+        dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
       />
     </>
   );
