@@ -119,11 +119,11 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
         <>
           <StyledDivider orientation='vertical' />
           <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
+            <StyledExpandMoreIcon />
+            {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
+          </StyledExpandContainer>
         </>
       )}
-        <StyledExpandMoreIcon />
-        {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
-      </StyledExpandContainer>
     </StyledDateRangeViewerContainer>
   );
 };
