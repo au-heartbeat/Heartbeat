@@ -12,13 +12,17 @@ export interface IBoardMetricsResult {
 export interface IBoardMetricsDetailItem {
   name: string;
   value: string;
-  subtitle?: string;
 }
 
 export interface IBoardCycletimeDetailItem {
   name: string;
   line1Value: string;
   line2Value?: string;
+}
+
+export interface IBoardClassificationDetailItem {
+  name: string;
+  lines: [string, string][];
 }
 
 export const BOARD_METRICS_RESULT: IBoardMetricsResult = {
@@ -257,117 +261,258 @@ export const BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES: IBoardCycletimeDetailItem[
   ],
 ];
 
-export const BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES: IBoardMetricsDetailItem[][] = [
+export const BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES: IBoardClassificationDetailItem[][] = [
   [
     {
       name: 'Issue Type',
-      subtitle: 'Task',
-      value: '	100.00%',
-    },
-    {
-      name: 'Issue Type',
-      subtitle: 'Task',
-      value: '	100.00%',
+      lines: [['Task', '100.00%']],
     },
     {
       name: 'Parent',
-      subtitle: 'ADM-322',
-      value: '	50.00%',
-    },
-    {
-      name: 'Parent',
-      subtitle: 'ADM-319',
-      value: '	50.00%',
+      lines: [
+        ['ADM-322', '50.00%'],
+        ['ADM-319', '50.00%'],
+      ],
     },
     {
       name: 'Story testing-2',
-      subtitle: 'None',
-      value: '	100.00%',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Story testing-1',
-      subtitle: '1.0',
-      value: '	100.00%',
+      lines: [['1.0', '100.00%']],
     },
     {
       name: 'Sprint',
-      subtitle: 'Sprint 27',
-      value: '	100.00%',
-    },
-    {
-      name: 'Sprint',
-      subtitle: 'Sprint 28',
-      value: '	100.00%',
+      lines: [
+        ['Sprint 27', '100.00%'],
+        ['Sprint 28', '100.00%'],
+      ],
     },
     {
       name: 'Project',
-      subtitle: 'Auto Dora Metrics',
-      value: '	100.00%',
+      lines: [['Auto Dora Metrics', '100.00%']],
     },
     {
       name: 'Flagged',
-      subtitle: 'None',
-      value: '	100.00%',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Fix versions',
-      subtitle: 'None',
-      value: '	100.00%',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Priority',
-      subtitle: 'Medium',
-      value: '	100.00%',
+      lines: [['Medium', '100.00%']],
     },
     {
       name: 'Partner',
-      subtitle: 'None',
-      value: '	100.00%',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Labels',
-      subtitle: 'Stream1',
-      value: '	50.00%',
-    },
-    {
-      name: 'Labels',
-      subtitle: 'Stream2',
-      value: '	50.00%',
+      lines: [
+        ['Stream1', '50.00%'],
+        ['Stream2', '50.00%'],
+      ],
     },
     {
       name: 'Time tracking',
-      subtitle: 'None',
-      value: '	100.00%',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Story point estimate',
-      subtitle: '1.0',
-      value: '	50.00%',
-    },
-    {
-      name: 'Story point estimate',
-      subtitle: '3.0',
-      value: '	50.00%',
+      lines: [
+        ['1.0', '50.00%'],
+        ['3.0', '50.00%'],
+      ],
     },
     {
       name: 'QA',
-      subtitle: 'None',
-      value: '	100.00%',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Feature/Operation',
-      subtitle: 'None',
-      value: '	100.00%',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Assignee',
-      subtitle: 'Weiran Sun',
-      value: '	50.00%',
+      lines: [
+        ['Weiran Sun', '50.00%'],
+        ['Yunsong Yang', '50.00%'],
+      ],
+    },
+  ],
+  [
+    {
+      name: 'Issue Type',
+      lines: [
+        ['Spike', '14.29%'],
+        ['Task', '85.71%'],
+      ],
+    },
+    {
+      name: 'Parent',
+      lines: [
+        ['ADM-322', '71.43%'],
+        ['ADM-279', '28.57%'],
+      ],
+    },
+    {
+      name: 'Story testing-2',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Story testing-1',
+      lines: [
+        ['1.0', '85.71%'],
+        ['None', '14.29%'],
+      ],
+    },
+    {
+      name: 'Sprint',
+      lines: [
+        ['Sprint 26', '14.29%'],
+        ['Sprint 27', '100.00%'],
+        ['Sprint 28', '100.00%'],
+      ],
+    },
+    {
+      name: 'Project',
+      lines: [['Auto Dora Metrics', '100.00%']],
+    },
+    {
+      name: 'Flagged',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Fix versions',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Priority',
+      lines: [['Medium', '100.00%']],
+    },
+    {
+      name: 'Partner',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Labels',
+      lines: [
+        ['Stream1', '42.86%'],
+        ['Stream2', '57.14%'],
+      ],
+    },
+    {
+      name: 'Time tracking',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Story point estimate',
+      lines: [
+        ['1.0', '42.86%'],
+        ['2.0', '28.57%'],
+        ['3.0', '28.57%'],
+      ],
+    },
+    {
+      name: 'QA',
+      lines: [
+        ['Weiran Sun', '14.29%'],
+        ['None', '85.71%'],
+      ],
+    },
+    {
+      name: 'Feature/Operation',
+      lines: [['None', '100.00%']],
     },
     {
       name: 'Assignee',
-      subtitle: 'Yunsong Yang',
-      value: '	50.00%',
+      lines: [
+        ['heartbeat user', '57.14%'],
+        ['Junbo Dai', '14.29%'],
+        ['Weiran Sun', '14.29%'],
+        ['Xuebing Li', '14.29%'],
+      ],
+    },
+  ],
+  [
+    {
+      name: 'Issue Type',
+      lines: [['Task', '100.00%']],
+    },
+    {
+      name: 'Parent',
+      lines: [['ADM-322', '100.00%']],
+    },
+    {
+      name: 'Story testing-2',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Story testing-1',
+      lines: [['1.0', '100.00%']],
+    },
+    {
+      name: 'Sprint',
+      lines: [
+        ['Sprint 27', '100.00%'],
+        ['Sprint 28', '50.00%'],
+      ],
+    },
+    {
+      name: 'Project',
+      lines: [['Auto Dora Metrics', '100.00%']],
+    },
+    {
+      name: 'Flagged',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Fix versions',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Priority',
+      lines: [['Medium', '100.00%']],
+    },
+    {
+      name: 'Partner',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Labels',
+      lines: [['Stream1', '100.00%']],
+    },
+    {
+      name: 'Time tracking',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Story point estimate',
+      lines: [
+        ['2.0', '50.00%'],
+        ['3.0', '50.00%'],
+      ],
+    },
+    {
+      name: 'QA',
+      lines: [
+        ['Weiran Sun', '50.00%'],
+        ['None', '50.00%'],
+      ],
+    },
+    {
+      name: 'Feature/Operation',
+      lines: [['None', '100.00%']],
+    },
+    {
+      name: 'Assignee',
+      lines: [
+        ['Junbo Dai', '50.00%'],
+        ['Xinyi Wang', '50.00%'],
+      ],
     },
   ],
 ];

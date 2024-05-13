@@ -3,6 +3,7 @@ import {
   DORA_METRICS_RESULT,
   BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
   BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
+  BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
 } from '../../fixtures/create-new/report-result';
 import { configWithoutBlockColumn as metricsStepWithoutBlockColumnData } from '../../fixtures/create-new/metrics-step';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
@@ -81,6 +82,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await reportStep.checkBoardMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT, 9, {
     velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
     cycleTimeData: BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
+    classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
   });
   // await reportStep.checkDoraMetrics(
   //   DORA_METRICS_RESULT.PrLeadTime,

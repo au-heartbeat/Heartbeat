@@ -2,6 +2,7 @@ import {
   IBoardMetricsDetailItem,
   IBoardMetricsResult,
   IBoardCycletimeDetailItem,
+  IBoardClassificationDetailItem,
 } from '../../fixtures/create-new/report-result';
 import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
 import { expect, Locator, Page } from '@playwright/test';
@@ -210,13 +211,6 @@ export class ReportStep {
     }
   }
 
-  async checkCycleTimeDetailForMultipleRanges(data: IBoardCycletimeDetailItem[][]) {
-    for (let i = 0; i < data.length; i++) {
-      await this.changeTimeRange(i);
-      await this.checkCycleTimeDetail(data[i]);
-    }
-  }
-
   async checkCycleTimeDetail(cycleTimeData: IBoardCycletimeDetailItem[]) {
     for (let i = 0; i < cycleTimeData.length; i++) {
       const currentMetric = cycleTimeData[i];
@@ -233,60 +227,54 @@ export class ReportStep {
         expect(targetValue).toEqual(currentMetric.line2Value);
       }
     }
-    // await expect(this.cycleTimeRows.filter({ hasText: 'Average cycle time' }).getByRole('cell').nth(1)).toContainText(
-    //   '4.86(Days/SP)',
-    // );
-    // await expect(this.cycleTimeRows.nth(1).getByRole('cell').nth(0)).toContainText('9.18(Days/Card)');
-    // await expect(
-    //   this.cycleTimeRows.filter({ hasText: 'Total development time / Total cycle time' }).getByRole('cell').nth(1),
-    // ).toContainText('37.55%');
-    // await expect(
-    //   this.cycleTimeRows
-    //     .filter({ hasText: 'Total waiting for testing time / Total cycle time' })
-    //     .getByRole('cell')
-    //     .nth(1),
-    // ).toContainText('10.92%');
-    // await expect(
-    //   this.cycleTimeRows.filter({ hasText: 'Total block time / Total cycle time' }).getByRole('cell').nth(1),
-    // ).toContainText('19.96%');
-    // await expect(
-    //   this.cycleTimeRows.filter({ hasText: 'Total review time / Total cycle time' }).getByRole('cell').nth(1),
-    // ).toContainText('22.47%');
-    // await expect(
-    //   this.cycleTimeRows.filter({ hasText: 'Total testing time / Total cycle time' }).getByRole('cell').nth(1),
-    // ).toContainText('9.1%');
-    // await expect(
-    //   this.cycleTimeRows.filter({ hasText: 'Average development time' }).getByRole('cell').nth(1),
-    // ).toContainText('1.83(Days/SP)');
-    // await expect(this.cycleTimeRows.nth(8).getByRole('cell').nth(0)).toContainText('3.45(Days/Card)');
-    // await expect(
-    //   this.cycleTimeRows.filter({ hasText: 'Average waiting for testing time' }).getByRole('cell').nth(1),
-    // ).toContainText('0.53(Days/SP)');
-    // await expect(this.cycleTimeRows.nth(10).getByRole('cell').nth(0)).toContainText('1.00(Days/Card)');
-    // await expect(this.cycleTimeRows.filter({ hasText: 'Average block time' }).getByRole('cell').nth(1)).toContainText(
-    //   '0.97(Days/SP)',
-    // );
-    // await expect(this.cycleTimeRows.nth(12).getByRole('cell').nth(0)).toContainText('1.83(Days/Card)');
-    // await expect(this.cycleTimeRows.filter({ hasText: 'Average review time' }).getByRole('cell').nth(1)).toContainText(
-    //   '1.09(Days/SP)',
-    // );
-    // await expect(this.cycleTimeRows.nth(14).getByRole('cell').nth(0)).toContainText('2.06(Days/Card)');
-    // await expect(this.cycleTimeRows.filter({ hasText: 'Average testing time' }).getByRole('cell').nth(1)).toContainText(
-    //   '0.44(Days/SP)',
-    // );
-    // await expect(this.cycleTimeRows.nth(16).getByRole('cell').nth(0)).toContainText('0.84(Days/Card)');
+  }
+
+  async checkCycleTimeDetailForMultipleRanges(data: IBoardCycletimeDetailItem[][]) {
+    for (let i = 0; i < data.length; i++) {
+      await this.changeTimeRange(i);
+      await this.checkCycleTimeDetail(data[i]);
+    }
+  }
+
+  async checkClassificationDetail(classificationData: IBoardClassificationDetailItem[]) {
+    for (let i = 0; i < classificationData.length; i++) {
+      const currentMetric = classificationData[i];
+      const nameRow = this.classificationRows.filter({ hasText: currentMetric.name });
+      let currentDataRow = nameRow.locator('+tr');
+      const restLines = [...currentMetric.lines];
+      // const [subtitle, value] = restLines.shift()!;
+      // expect(currentDataRow.getByRole('cell').first().innerHTML()).toEqual(subtitle);
+      // expect(currentDataRow.getByRole('cell').nth(1).innerHTML()).toEqual(value);
+      while (restLines.length) {
+        if (restLines.length < currentMetric.lines.length) {
+          currentDataRow = currentDataRow.locator('+tr');
+        }
+        const [subtitle, value] = restLines.shift()!;
+        expect(await currentDataRow.getByRole('cell').first().innerHTML()).toEqual(subtitle);
+        expect(await currentDataRow.getByRole('cell').nth(1).innerHTML()).toEqual(value);
+      }
+    }
+  }
+
+  async checkClassificationDetailForMultipleRanges(data: IBoardClassificationDetailItem[][]) {
+    for (let i = 0; i < data.length; i++) {
+      await this.changeTimeRange(i);
+      await this.checkClassificationDetail(data[i]);
+    }
   }
 
   async checkBoardMetricsReportReportDetail({
     velocityData,
     cycleTimeData,
+    classificationData,
   }: {
     velocityData: IBoardMetricsDetailItem[][];
     cycleTimeData: IBoardCycletimeDetailItem[][];
+    classificationData: IBoardClassificationDetailItem[][];
   }) {
     await this.checkVelocityDetailForMultipleRanges(velocityData);
     await this.checkCycleTimeDetailForMultipleRanges(cycleTimeData);
-
+    await this.checkClassificationDetailForMultipleRanges(classificationData);
     // await expect(this.classificationRows.nth(1)).toContainText(this.combineStrings(['Spike', '11.11%']));
     // await expect(this.classificationRows.nth(2)).toContainText(this.combineStrings(['Task', '88.89%']));
     // await expect(this.classificationRows.nth(4)).toContainText(this.combineStrings(['ADM-322', '66.67%']));
@@ -406,14 +394,19 @@ export class ReportStep {
     {
       velocityData,
       cycleTimeData,
-    }: { velocityData: IBoardMetricsDetailItem[][]; cycleTimeData: IBoardCycletimeDetailItem[][] },
+      classificationData,
+    }: {
+      velocityData: IBoardMetricsDetailItem[][];
+      cycleTimeData: IBoardCycletimeDetailItem[][];
+      classificationData: IBoardClassificationDetailItem[][];
+    },
   ) {
     await this.showMoreLinks.first().click();
     if (
       boardDetailType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
       boardDetailType === ProjectCreationType.CREATE_A_NEW_PROJECT
     ) {
-      await this.checkBoardMetricsReportReportDetail({ velocityData, cycleTimeData });
+      await this.checkBoardMetricsReportReportDetail({ velocityData, cycleTimeData, classificationData });
     } else {
       throw Error('The board detail type is not correct, please give a correct one.');
     }
