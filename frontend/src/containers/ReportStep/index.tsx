@@ -470,7 +470,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const handleClick = (event: React.SyntheticEvent, newValue: number) => {
     const pageType =
       newValue === 0
-        ? REPORT_PAGE_TYPE.BOARD
+        ? REPORT_PAGE_TYPE.SUMMARY
         : selectDoraMetricsAndClassification
           ? REPORT_PAGE_TYPE.DORA_CHART
           : REPORT_PAGE_TYPE.BOARD_CHART;
