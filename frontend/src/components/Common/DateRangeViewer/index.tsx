@@ -91,7 +91,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
     <StyledDateRangeViewerContainer
       color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
       backgroundColor={backgroundColor}
-      data-test-id={'date-range'}
+      aria-label='date-range'
     >
       <DateRangeContainer>
         {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
