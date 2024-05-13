@@ -11,6 +11,9 @@ export const REPORT_PAGE_TYPE = {
   DORA: 'DoraReport',
 };
 
+export const REJECTED = 'rejected';
+export const FULFILLED = 'fulfilled';
+
 export const SHOW_MORE = 'show more >';
 export const BACK = 'Back';
 export const RETRY = 'retry';
@@ -440,4 +443,5 @@ export enum SORTING_DATE_RANGE_TEXT {
   DESCENDING = 'Descending',
 }
 
-export const BLOCK_COLUMN_NAME = ['BLOCKED', 'BLOCK'];
+export const DISABLED_DATE_RANGE_MESSAGE =
+  'Unavailable time period indicates that report generation during this period has failed.';
