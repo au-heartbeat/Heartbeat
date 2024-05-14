@@ -471,9 +471,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     const pageType =
       newValue === 0
         ? REPORT_PAGE_TYPE.SUMMARY
-        : selectDoraMetricsAndClassification
+        : selectDoraMetricsAndClassification || chartIndex === 1
           ? REPORT_PAGE_TYPE.DORA_CHART
           : REPORT_PAGE_TYPE.BOARD_CHART;
+
     setDisplayType(newValue);
     setPageType(pageType);
   };

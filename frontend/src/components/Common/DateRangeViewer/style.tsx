@@ -9,7 +9,7 @@ export const DateRangeContainer = styled('div')(({ color }) => ({
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  borderRadius: '0.5rem',
+  borderRadius: '0.16rem',
   border: '0.07rem solid',
   borderColor: theme.palette.grey[400],
   width: 'fit-content',
