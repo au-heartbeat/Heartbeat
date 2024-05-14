@@ -26,18 +26,17 @@ export const Board = () => {
   const isVerified = isValid && isSubmitSuccessful;
 
   const onSubmit = async () => await verifyJira();
-  const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
-  const closeVerifyAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
+  const closeAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledAlterWrapper>
-        <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeTimeoutAlert} moduleType={'Board'} />
+        <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeAlert} moduleType={'Board'} />
       </StyledAlterWrapper>
       <StyledAlterWrapper>
-        <BoardVerifyAlert showAlert={isVerifyFailed} onClose={closeVerifyAlert} />
+        <BoardVerifyAlert showAlert={isVerifyFailed} onClose={closeAlert} />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         {fields.map(({ key, col, label }) =>
