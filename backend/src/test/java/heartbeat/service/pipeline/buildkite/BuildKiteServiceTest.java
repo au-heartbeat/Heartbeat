@@ -100,11 +100,9 @@ class BuildKiteServiceTest {
 
 	BuildKiteService buildKiteService;
 
-	ThreadPoolTaskExecutor executor;
-
 	@BeforeEach
 	public void setUp() {
-		buildKiteService = new BuildKiteService(cachePageService, executor = getTaskExecutor(), buildKiteFeignClient);
+		buildKiteService = new BuildKiteService(cachePageService, getTaskExecutor(), buildKiteFeignClient);
 	}
 
 	public ThreadPoolTaskExecutor getTaskExecutor() {

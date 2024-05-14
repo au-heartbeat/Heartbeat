@@ -123,6 +123,38 @@ public class PipelineServiceTest {
 		}
 
 		@Test
+		void shouldReturnEmptyPipelineLeadTimeWhenCodebaseSettingIsNotEmptyAndTokenIsEmpty() {
+			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = new ArrayList<>();
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.buildKiteSetting(BuildKiteSetting.builder()
+					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("env1").repository("repo1").build(),
+							DeploymentEnvironment.builder().id("env2").repository("repo2").build()))
+					.build())
+				.startTime(MOCK_START_TIME)
+				.endTime(MOCK_END_TIME)
+				.codebaseSetting(CodebaseSetting.builder().build())
+				.metrics(new ArrayList<>())
+				.build();
+
+			when(buildKiteService.fetchPipelineBuilds(eq(MOCK_TOKEN), any(), eq(MOCK_START_TIME), eq(MOCK_END_TIME)))
+				.thenReturn(fakeBuildKiteBuildInfos);
+			when(buildKiteService.countDeployTimes(any(), eq(fakeBuildKiteBuildInfos), eq(MOCK_START_TIME),
+					eq(MOCK_END_TIME)))
+				.thenReturn(DeployTimes.builder().build());
+			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN)))
+				.thenReturn(List.of(PipelineLeadTime.builder().build()));
+
+			FetchedData.BuildKiteData result = pipelineService.fetchGitHubData(request);
+
+			assertEquals(0, result.getPipelineLeadTimes().size());
+			assertEquals(2, result.getBuildInfosList().size());
+			assertEquals(2, result.getDeployTimesList().size());
+			verify(buildKiteService, times(2)).countDeployTimes(any(), any(), any(), any());
+			verify(buildKiteService, times(2)).countDeployTimes(any(), any(), any(), any());
+			verify(gitHubService, times(0)).fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN));
+		}
+
+		@Test
 		void shouldGetSecondValueInRoadMapWhenDeployEnvironmentListHasTwoElementWithSameKey() {
 			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = new ArrayList<>();
 			GenerateReportRequest request = GenerateReportRequest.builder()
