@@ -213,18 +213,29 @@ export class ReportStep {
 
   async checkCycleTimeDetail(cycleTimeData: IBoardCycletimeDetailItem[]) {
     for (let i = 0; i < cycleTimeData.length; i++) {
+      // const currentMetric = cycleTimeData[i];
+      // await expect(this.cycleTimeRows.filter({ hasText: currentMetric.name }).getByRole('cell').nth(1)).toContainText(
+      //   currentMetric.line1Value,
+      // );
+      // if (currentMetric.line2Value) {
+      //   const targetValue = await this.cycleTimeRows
+      //     .filter({ hasText: currentMetric.name })
+      //     .locator('+tr')
+      //     .getByRole('cell')
+      //     .first()
+      //     .innerHTML();
+      //   expect(targetValue).toEqual(currentMetric.line2Value);
+      // }
+
       const currentMetric = cycleTimeData[i];
-      await expect(this.cycleTimeRows.filter({ hasText: currentMetric.name }).getByRole('cell').nth(1)).toContainText(
-        currentMetric.line1Value,
-      );
-      if (currentMetric.line2Value) {
-        const targetValue = await this.cycleTimeRows
-          .filter({ hasText: currentMetric.name })
-          .locator('+tr')
-          .getByRole('cell')
-          .first()
-          .innerHTML();
-        expect(targetValue).toEqual(currentMetric.line2Value);
+      let currentRow = this.cycleTimeRows.filter({ hasText: currentMetric.name });
+      const restLines = [...currentMetric.lines];
+      const firstLineValue = restLines.shift();
+      expect(await currentRow.getByRole('cell').nth(1).innerHTML()).toEqual(firstLineValue);
+      while (restLines.length) {
+        currentRow = currentRow.locator('+tr');
+        const value = restLines.shift()!;
+        expect(await currentRow.getByRole('cell').first().innerHTML()).toEqual(value);
       }
     }
   }
@@ -242,9 +253,6 @@ export class ReportStep {
       const nameRow = this.classificationRows.filter({ hasText: currentMetric.name });
       let currentDataRow = nameRow.locator('+tr');
       const restLines = [...currentMetric.lines];
-      // const [subtitle, value] = restLines.shift()!;
-      // expect(currentDataRow.getByRole('cell').first().innerHTML()).toEqual(subtitle);
-      // expect(currentDataRow.getByRole('cell').nth(1).innerHTML()).toEqual(value);
       while (restLines.length) {
         if (restLines.length < currentMetric.lines.length) {
           currentDataRow = currentDataRow.locator('+tr');
