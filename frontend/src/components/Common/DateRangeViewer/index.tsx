@@ -35,13 +35,13 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const metricsPageFailedTimeRangeInfos = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
   const reportPageFailedTimeRangeInfos = useAppSelector(selectReportPageFailedTimeRangeInfos);
   const stepNumber = useAppSelector(selectStepNumber);
-  const backgroundColor = stepNumber === 1 ? theme.palette.secondary.dark : theme.palette.common.white;
-  const currentDateRangeHasFailed =
-    stepNumber === 1
-      ? Object.values(metricsPageFailedTimeRangeInfos).some(
-          (errorInfo) => errorInfo.pipelineInfoError || errorInfo.boardInfoError || errorInfo.pipelineStepError,
-        )
-      : false;
+  const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
+  const isMetricsPage = stepNumber === 1;
+
+  const backgroundColor = isMetricsPage ? theme.palette.secondary.dark : theme.palette.common.white;
+  const currentDateRangeHasFailed = getCurrentDateRangeHasFailed(
+    formatDateToTimestampString(currentDateRange.startDate!),
+  );
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (DateRangeExpandRef.current && !DateRangeExpandRef.current?.contains(event.target as Node)) {
@@ -61,17 +61,22 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
     };
   }, [handleClickOutside]);
 
+  function getCurrentDateRangeHasFailed(startDate: string) {
+    if (isMetricsPage) {
+      const errorInfo = metricsPageFailedTimeRangeInfos[startDate];
+      return !!(errorInfo?.isPipelineInfoError || errorInfo?.isBoardInfoError || errorInfo?.isPipelineStepError);
+    } else {
+      const errorInfo = reportPageFailedTimeRangeInfos[startDate];
+      return !!(errorInfo?.isPollingError || errorInfo?.isGainPollingUrlError);
+    }
+  }
+
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
     return (
       <DateRangeExpandContainer ref={ref} backgroundColor={backgroundColor}>
         {dateRangeList.map((dateRange) => {
           const disabled = dateRange.disabled || disabledAll;
-          const currentFailedInfo = metricsPageFailedTimeRangeInfos[formatDateToTimestampString(dateRange.startDate!)];
-          const hasMetricsError = currentFailedInfo
-            ? currentFailedInfo.pipelineInfoError ||
-              currentFailedInfo.boardInfoError ||
-              currentFailedInfo.pipelineStepError
-            : false;
+          const hasError = getCurrentDateRangeHasFailed(formatDateToTimestampString(dateRange.startDate!));
           return (
             <SingleDateRange
               disabled={disabled}
@@ -80,7 +85,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
               key={dateRange.startDate!}
             >
               <DateRangeFailedIconContainer>
-                {hasMetricsError && stepNumber === 1 && <PriorityHighIcon color='error' />}
+                {hasError && <PriorityHighIcon color='error' />}
               </DateRangeFailedIconContainer>
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
@@ -100,9 +105,9 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
     >
       <DateRangeContainer>
         {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
-        {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
+        {formatDate(currentDateRange.startDate as string)}
         <StyledArrowForward />
-        {formatDate((selectedDateRange || dateRangeList[0]).endDate as string)}
+        {formatDate(currentDateRange.endDate as string)}
         <StyledCalendarToday />
       </DateRangeContainer>
       <StyledDivider orientation='vertical' />

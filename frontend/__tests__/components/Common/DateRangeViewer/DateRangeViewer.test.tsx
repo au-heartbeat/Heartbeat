@@ -1,7 +1,7 @@
 import { nextStep, updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
-import { formatDateToTimestampString } from '@src/utils/util';
 import { DateRangeList } from '@src/context/config/configSlice';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -90,15 +90,15 @@ describe('DateRangeViewer', () => {
     const failedTimeRangeList = [
       {
         startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-        errors: { boardInfoError: false },
+        errors: { isBoardInfoError: false },
       },
       {
         startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-        errors: { pipelineStepError: false },
+        errors: { isPipelineStepError: false },
       },
       {
         startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-        errors: { pipelineInfoError: false },
+        errors: { isPipelineInfoError: false },
       },
     ];
     store.dispatch(nextStep());

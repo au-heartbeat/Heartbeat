@@ -227,8 +227,8 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     const updateReportPageFailedTimeRangeInfosPayload: IPageFailedDateRangePayload<IReportPageFailedDateRange>[] = [];
     pollingResponsesWithId.forEach((currentRes) => {
       updateReportPageFailedTimeRangeInfosPayload.push({
-        startDate: currentRes.id,
-        errors: { pollingError: currentRes.status === REJECTED },
+        startDate: formatDateToTimestampString(currentRes.id),
+        errors: { isPollingError: currentRes.status === REJECTED },
       });
     });
     dispatch(updateReportPageFailedTimeRangeInfos(updateReportPageFailedTimeRangeInfosPayload));
@@ -238,8 +238,8 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     const updateReportPageFailedTimeRangeInfosPayload: IPageFailedDateRangePayload<IReportPageFailedDateRange>[] = [];
     res.forEach((currentRes, index) => {
       updateReportPageFailedTimeRangeInfosPayload.push({
-        startDate: reportInfos[index].id,
-        errors: { getPollingUrlError: currentRes.status === REJECTED },
+        startDate: formatDateToTimestampString(reportInfos[index].id),
+        errors: { isGainPollingUrlError: currentRes.status === REJECTED },
       });
     });
     dispatch(updateReportPageFailedTimeRangeInfos(updateReportPageFailedTimeRangeInfosPayload));

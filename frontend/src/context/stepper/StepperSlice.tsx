@@ -3,14 +3,14 @@ import { ZERO } from '@src/constants/commons';
 import type { RootState } from '@src/store';
 
 export interface IMetricsPageFailedDateRange {
-  boardInfoError?: boolean;
-  pipelineInfoError?: boolean;
-  pipelineStepError?: boolean;
+  isBoardInfoError?: boolean;
+  isPipelineInfoError?: boolean;
+  isPipelineStepError?: boolean;
 }
 
 export interface IReportPageFailedDateRange {
-  getPollingUrlError?: boolean;
-  pollingError?: boolean;
+  isGainPollingUrlError?: boolean;
+  isPollingError?: boolean;
 }
 
 export interface IPageFailedDateRangePayload<T> {
