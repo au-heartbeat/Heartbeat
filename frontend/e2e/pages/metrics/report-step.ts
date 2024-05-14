@@ -213,20 +213,6 @@ export class ReportStep {
 
   async checkCycleTimeDetail(cycleTimeData: IBoardCycletimeDetailItem[]) {
     for (let i = 0; i < cycleTimeData.length; i++) {
-      // const currentMetric = cycleTimeData[i];
-      // await expect(this.cycleTimeRows.filter({ hasText: currentMetric.name }).getByRole('cell').nth(1)).toContainText(
-      //   currentMetric.line1Value,
-      // );
-      // if (currentMetric.line2Value) {
-      //   const targetValue = await this.cycleTimeRows
-      //     .filter({ hasText: currentMetric.name })
-      //     .locator('+tr')
-      //     .getByRole('cell')
-      //     .first()
-      //     .innerHTML();
-      //   expect(targetValue).toEqual(currentMetric.line2Value);
-      // }
-
       const currentMetric = cycleTimeData[i];
       let currentRow = this.cycleTimeRows.filter({ hasText: currentMetric.name });
       const restLines = [...currentMetric.lines];
@@ -271,61 +257,20 @@ export class ReportStep {
     }
   }
 
-  async checkBoardMetricsReportReportDetail({
-    velocityData,
-    cycleTimeData,
-    classificationData,
-  }: {
-    velocityData: IBoardMetricsDetailItem[][];
-    cycleTimeData: IBoardCycletimeDetailItem[][];
-    classificationData: IBoardClassificationDetailItem[][];
-  }) {
-    await this.checkVelocityDetailForMultipleRanges(velocityData);
-    await this.checkCycleTimeDetailForMultipleRanges(cycleTimeData);
-    await this.checkClassificationDetailForMultipleRanges(classificationData);
-    // await expect(this.classificationRows.nth(1)).toContainText(this.combineStrings(['Spike', '11.11%']));
-    // await expect(this.classificationRows.nth(2)).toContainText(this.combineStrings(['Task', '88.89%']));
-    // await expect(this.classificationRows.nth(4)).toContainText(this.combineStrings(['ADM-322', '66.67%']));
-    // await expect(this.classificationRows.nth(5)).toContainText(this.combineStrings(['ADM-279', '22.22%']));
-    // await expect(this.classificationRows.nth(6)).toContainText(this.combineStrings(['ADM-319', '11.11%']));
-    // await expect(this.classificationRows.nth(8)).toContainText(this.combineStrings(['None', '100.00%']));
-    // await expect(this.classificationRows.nth(10)).toContainText(this.combineStrings(['1.0', '88.89%']));
-    // await expect(this.classificationRows.nth(11)).toContainText(this.combineStrings(['None', '11.11%']));
-    // await expect(this.classificationRows.nth(13)).toContainText(this.combineStrings(['Sprint 26', '11.11%']));
-    // await expect(this.classificationRows.nth(14)).toContainText(this.combineStrings(['Sprint 27', '100.00%']));
-    // await expect(this.classificationRows.nth(15)).toContainText(this.combineStrings(['Sprint 28', '88.89%']));
-    // await expect(this.classificationRows.nth(17)).toContainText(this.combineStrings(['Auto Dora Metrics', '100.00%']));
-    // await expect(this.classificationRows.nth(19)).toContainText(this.combineStrings(['None', '100.00%']));
-    // await expect(this.classificationRows.nth(21)).toContainText(this.combineStrings(['None', '100.00%']));
-    // await expect(this.classificationRows.nth(23)).toContainText(this.combineStrings(['Medium', '100.00%']));
-    // await expect(this.classificationRows.nth(25)).toContainText(this.combineStrings(['None', '100.00%']));
-    // await expect(this.classificationRows.nth(27)).toContainText(this.combineStrings(['Stream1', '44.44%']));
-    // await expect(this.classificationRows.nth(28)).toContainText(this.combineStrings(['Stream2', '55.56%']));
-    // await expect(this.classificationRows.nth(30)).toContainText(this.combineStrings(['None', '100.00%']));
-    // await expect(this.classificationRows.nth(32)).toContainText(this.combineStrings(['1.0', '44.44%']));
-    // await expect(this.classificationRows.nth(33)).toContainText(this.combineStrings(['2.0', '22.22%']));
-    // await expect(this.classificationRows.nth(34)).toContainText(this.combineStrings(['3.0', '33.33%']));
-    // await expect(this.classificationRows.nth(36)).toContainText(this.combineStrings(['Weiran Sun', '11.11%']));
-    // await expect(this.classificationRows.nth(37)).toContainText(this.combineStrings(['None', '88.89%']));
-    // await expect(this.classificationRows.nth(39)).toContainText(this.combineStrings(['None', '100.00%']));
-    // await expect(this.classificationRows.nth(41)).toContainText(this.combineStrings(['heartbeat user', '44.44%']));
-    // await expect(this.classificationRows.nth(42)).toContainText(this.combineStrings(['Junbo Dai', '11.11%']));
-    // await expect(this.classificationRows.nth(43)).toContainText(this.combineStrings(['Xinyi Wang', '11.11%']));
-    // await expect(this.classificationRows.nth(44)).toContainText(this.combineStrings(['Weiran Sun', '11.11%']));
-    // await expect(this.classificationRows.nth(45)).toContainText(this.combineStrings(['Xuebing Li', '11.11%']));
-    // await expect(this.classificationRows.nth(46)).toContainText(this.combineStrings(['Yunsong Yang', '11.11%']));
-    // await expect(this.reworkRows.filter({ hasText: 'Total rework' }).getByRole('cell').nth(1)).toContainText(
-    //   '11 (times)',
-    // );
-    // await expect(this.reworkRows.filter({ hasText: 'From block to in Dev' }).getByRole('cell').nth(1)).toContainText(
-    //   '11 (times)',
-    // );
-    // await expect(this.reworkRows.filter({ hasText: 'Total rework cards' }).getByRole('cell').nth(1)).toContainText(
-    //   '6 (cards)',
-    // );
-    // await expect(this.reworkRows.filter({ hasText: 'Rework cards ratio' }).getByRole('cell').nth(1)).toContainText(
-    //   '66.67% (rework cards/throughput)',
-    // );
+  async checkReworkDetail(reworkData: IBoardMetricsDetailItem[]) {
+    await expect(this.reworkRows.filter({ hasText: reworkData[0].name }).getByRole('cell').nth(1)).toContainText(
+      reworkData[0].value,
+    );
+    await expect(this.reworkRows.filter({ hasText: reworkData[1].name }).getByRole('cell').nth(1)).toContainText(
+      reworkData[1].value,
+    );
+  }
+
+  async checkReworkDetailForMultipleRanges(data: IBoardMetricsDetailItem[][]) {
+    for (let i = 0; i < data.length; i++) {
+      await this.changeTimeRange(i);
+      await this.checkReworkDetail(data[i]);
+    }
   }
 
   async checkOnlyVelocityPartVisible() {
@@ -403,10 +348,12 @@ export class ReportStep {
       velocityData,
       cycleTimeData,
       classificationData,
+      reworkData,
     }: {
       velocityData: IBoardMetricsDetailItem[][];
       cycleTimeData: IBoardCycletimeDetailItem[][];
       classificationData: IBoardClassificationDetailItem[][];
+      reworkData: IBoardMetricsDetailItem[][];
     },
   ) {
     await this.showMoreLinks.first().click();
@@ -414,7 +361,10 @@ export class ReportStep {
       boardDetailType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
       boardDetailType === ProjectCreationType.CREATE_A_NEW_PROJECT
     ) {
-      await this.checkBoardMetricsReportReportDetail({ velocityData, cycleTimeData, classificationData });
+      await this.checkVelocityDetailForMultipleRanges(velocityData);
+      await this.checkCycleTimeDetailForMultipleRanges(cycleTimeData);
+      await this.checkClassificationDetailForMultipleRanges(classificationData);
+      await this.checkReworkDetailForMultipleRanges(reworkData);
     } else {
       throw Error('The board detail type is not correct, please give a correct one.');
     }

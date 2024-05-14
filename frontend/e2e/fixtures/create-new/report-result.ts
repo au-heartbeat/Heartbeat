@@ -13,7 +13,6 @@ export interface IBoardMetricsDetailItem {
   name: string;
   value: string;
 }
-
 export interface IBoardCycletimeDetailItem {
   name: string;
   lines: string[];
@@ -507,6 +506,42 @@ export const BOARD_METRICS_REWORK_MULTIPLE_RANGES: IBoardMetricsDetailItem[][] =
     {
       name: 'From block to in dev',
       value: '2 (times)',
+    },
+    {
+      name: 'Total rework cards',
+      value: '1 (cards)',
+    },
+    {
+      name: 'Rework cards ratio',
+      value: '50.00% (rework cards/throughput)',
+    },
+  ],
+  [
+    {
+      name: 'Total rework',
+      value: '11 (times)',
+    },
+    {
+      name: 'From block to in dev',
+      value: '11 (times)',
+    },
+    {
+      name: 'Total rework cards',
+      value: '6 (cards)',
+    },
+    {
+      name: 'Rework cards ratio',
+      value: '85.71% (rework cards/throughput)',
+    },
+  ],
+  [
+    {
+      name: 'Total rework',
+      value: '3 (times)',
+    },
+    {
+      name: 'From block to in dev',
+      value: '3 (times)',
     },
     {
       name: 'Total rework cards',
