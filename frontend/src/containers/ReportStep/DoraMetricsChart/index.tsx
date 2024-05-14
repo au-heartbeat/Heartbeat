@@ -143,8 +143,11 @@ export const DoraMetricsChart = ({ data, dateRanges, setIsChartFailed, retry }: 
   const changeFailureRate = useRef<HTMLDivElement>(null);
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
 
+  console.log(data);
   const mappedData = data.map((currentData) => {
-    if (!currentData?.doraMetricsCompleted) {
+    if (!currentData?.overallMetricsCompleted) {
+      return EMPTY_DATA_MAPPER_DORA_CHART('');
+    } else if (!currentData?.doraMetricsCompleted) {
       return EMPTY_DATA_MAPPER_DORA_CHART('0.00');
     } else {
       return reportMapper(currentData);

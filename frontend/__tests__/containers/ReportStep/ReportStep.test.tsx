@@ -3,6 +3,7 @@ import {
   BAD_REPORT_VALUES,
   BOARD_METRICS_TITLE,
   CLASSIFICATION,
+  DORA_DATA_FAILED_REPORT_VALUES,
   EMPTY_REPORT_VALUES,
   EXPORT_BOARD_DATA,
   EXPORT_METRIC_DATA,
@@ -732,6 +733,9 @@ describe('Report Step', () => {
     });
 
     it('should render metrics list when click list from chart page', async () => {
+      reportHook.current.reportInfos[0].reportData = { ...EMPTY_REPORT_VALUES };
+      reportHook.current.reportInfos[1].reportData = { ...DORA_DATA_FAILED_REPORT_VALUES };
+
       setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
 
       const switchChartButton = screen.getByText('Chart');
