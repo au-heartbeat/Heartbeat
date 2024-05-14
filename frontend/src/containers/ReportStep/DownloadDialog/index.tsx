@@ -12,8 +12,8 @@ import {
   tooltipModifiers,
 } from '@src/containers/ReportStep/DownloadDialog/style';
 import { DISABLED_DATE_RANGE_MESSAGE } from '@src/constants/resources';
-import { Checkbox, Tooltip } from '@mui/material';
 import { COMMON_BUTTONS } from '@src/constants/commons';
+import { Checkbox, Tooltip } from '@mui/material';
 import { formatDate } from '@src/utils/util';
 import React, { useState } from 'react';
 
