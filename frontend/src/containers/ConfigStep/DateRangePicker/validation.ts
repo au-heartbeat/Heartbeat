@@ -1,6 +1,6 @@
 import dayjsSameOrBeforePlugin from 'dayjs/plugin/isSameOrBefore';
-import dayjsSameOrAfterPlugin from 'dayjs/plugin/isSameOrAfter';
 import { DateRangeList } from '@src/context/config/configSlice';
+import dayjsSameOrAfterPlugin from 'dayjs/plugin/isSameOrAfter';
 import dayjs, { Dayjs } from 'dayjs';
 
 dayjs.extend(dayjsSameOrBeforePlugin);
