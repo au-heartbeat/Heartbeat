@@ -77,7 +77,7 @@ export const DownloadDialog = ({
   };
 
   return (
-    <StyledDialog sx={{ borderRadius: 3 }} open={isShowDialog} maxWidth='md'>
+    <StyledDialog open={isShowDialog} maxWidth='md'>
       <DialogContainer>
         <StyledDialogTitle>
           <strong>Export {title} Data</strong>

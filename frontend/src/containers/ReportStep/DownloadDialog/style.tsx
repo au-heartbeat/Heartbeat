@@ -5,7 +5,9 @@ import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
 
 export const StyledDialog = styled(Dialog)({
-  boarderRadius: '1rem',
+  '& .MuiDialog-paper': {
+    borderRadius: '1rem',
+  },
 });
 
 export const DialogContainer = styled('div')({
