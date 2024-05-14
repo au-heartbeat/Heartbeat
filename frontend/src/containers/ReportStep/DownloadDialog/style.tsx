@@ -1,4 +1,4 @@
-import { Button, Checkbox, Dialog, DialogContent, DialogTitle, FormControlLabel, FormGroup } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, FormControlLabel, FormGroup } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
