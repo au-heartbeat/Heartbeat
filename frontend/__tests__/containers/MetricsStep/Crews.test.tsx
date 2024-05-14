@@ -29,6 +29,7 @@ const setup = (type?: string) => {
 describe('Crew', () => {
   beforeEach(() => {
     store = setupStore();
+    store.dispatch(saveUsers(['crew A', 'crew B']));
   });
 
   afterEach(() => {
@@ -42,7 +43,6 @@ describe('Crew', () => {
   });
 
   it('should selected all options by default when initializing given type is board', () => {
-    store.dispatch(saveUsers(['crew A', 'crew B']));
     setup();
 
     expect(screen.getByRole('button', { name: 'crew A' })).toBeInTheDocument();
@@ -57,6 +57,7 @@ describe('Crew', () => {
       await userEvent.click(screen.getByRole('combobox', { name: mockLabel }));
     });
     const listBox = within(screen.getByRole('listbox'));
+
     expect(listBox.getByRole('option', { name: 'All' })).toBeVisible();
     expect(listBox.getByRole('option', { name: 'crew A' })).toBeVisible();
     expect(listBox.getByRole('option', { name: 'crew B' })).toBeVisible();
@@ -79,7 +80,6 @@ describe('Crew', () => {
   });
 
   it('should show error message when crews is null', async () => {
-    store.dispatch(saveUsers(['crew A', 'crew B']));
     setup();
     await act(async () => {
       await userEvent.click(screen.getByRole('combobox', { name: mockLabel }));
@@ -93,7 +93,6 @@ describe('Crew', () => {
   });
 
   it('should show other selections when cancel one option given default all selections in crews', async () => {
-    store.dispatch(saveUsers(['crew A', 'crew B']));
     setup();
 
     await act(async () => {
@@ -110,7 +109,6 @@ describe('Crew', () => {
   });
 
   it('should clear crews data when check all option', async () => {
-    store.dispatch(saveUsers(['crew A', 'crew B']));
     setup();
 
     await act(async () => {
