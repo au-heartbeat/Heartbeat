@@ -70,7 +70,7 @@ describe('DateRangeViewer', () => {
     beforeEach(() => {
       store.dispatch(nextStep());
     });
-    it('should show priority high icon when click expand button', async () => {
+    it('should show priority high icon when click expand button and there are some error infos', async () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
@@ -93,7 +93,7 @@ describe('DateRangeViewer', () => {
       expect(screen.getAllByTestId('PriorityHighIcon')).toHaveLength(4);
     });
 
-    it('should not show priority high icon when click expand button', async () => {
+    it('should not show priority high icon when click expand button and there is no error info', async () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
@@ -122,7 +122,7 @@ describe('DateRangeViewer', () => {
       store.dispatch(nextStep());
       store.dispatch(nextStep());
     });
-    it('should not show priority high icon in report page when click expand button', async () => {
+    it('should not show priority high icon in report page when click expand button and there is no error info', async () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
@@ -142,7 +142,7 @@ describe('DateRangeViewer', () => {
       expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
     });
 
-    it('should show priority high icon in report page when click expand button', async () => {
+    it('should show priority high icon in report page when click expand button and there are some error infos', async () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
