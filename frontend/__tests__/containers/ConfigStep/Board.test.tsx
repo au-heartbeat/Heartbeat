@@ -14,6 +14,7 @@ import { boardConfigDefaultValues } from '@src/containers/ConfigStep/Form/useDef
 import { boardConfigSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { UnauthorizedError } from '@src/errors/UnauthorizedError';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -206,6 +207,32 @@ describe('Board', () => {
     await userEvent.click(screen.getByText(REVERIFY));
 
     expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
+  });
+
+  it('should show board verify alert when board verify unauthorized', async () => {
+    const { getByTestId } = setup();
+    await fillBoardFieldsInformation();
+    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(getByTestId('boardVerifyAlert')).toBeInTheDocument();
+  });
+
+  it('should close board verify alert when user manually close the alert', async () => {
+    setup();
+    await fillBoardFieldsInformation();
+    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(screen.getByTestId('boardVerifyAlert')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText('Close'));
+
+    expect(screen.queryByLabelText('boardVerifyAlert')).not.toBeInTheDocument();
   });
 
   it('should show reset button and verified button when verify succeed ', async () => {
