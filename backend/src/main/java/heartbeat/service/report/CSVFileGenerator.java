@@ -130,8 +130,7 @@ public class CSVFileGenerator {
 			.map(BuildKiteBuildInfo.Author::getUsername)
 			.orElse(null);
 
-		String creatorName = ofNullable(csvInfo.getBuildInfo().getCreator())
-			.map(BuildKiteBuildInfo.Creator::getName)
+		String creatorName = ofNullable(csvInfo.getBuildInfo().getCreator()).map(BuildKiteBuildInfo.Creator::getName)
 			.orElse(null);
 
 		String organization = csvInfo.getOrganizationName();
