@@ -104,7 +104,9 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
       aria-label='date-range'
     >
       <DateRangeContainer>
-        {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
+        <DateRangeFailedIconContainer>
+          {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
+        </DateRangeFailedIconContainer>
         {formatDate(currentDateRange.startDate as string)}
         <StyledArrowForward />
         {formatDate(currentDateRange.endDate as string)}
