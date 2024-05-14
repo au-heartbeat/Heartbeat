@@ -107,9 +107,9 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
         <DateRangeFailedIconContainer>
           {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
         </DateRangeFailedIconContainer>
-        {formatDate(currentDateRange.startDate as string)}
+        {formatDate(currentDateRange.startDate!)}
         <StyledArrowForward />
-        {formatDate(currentDateRange.endDate as string)}
+        {formatDate(currentDateRange.endDate!)}
         <StyledCalendarToday />
       </DateRangeContainer>
       <StyledDivider orientation='vertical' />
