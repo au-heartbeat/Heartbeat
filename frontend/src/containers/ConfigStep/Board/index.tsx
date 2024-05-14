@@ -2,6 +2,7 @@ import { ConfigSectionContainer, StyledForm } from '@src/components/Common/Confi
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { FIELD_KEY, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { FormTextField } from '@src/containers/ConfigStep/Board/FormTextField';
+import { BoardVerifyAlert } from '@src/containers/ConfigStep/BoardVerifyAlert';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
@@ -19,10 +20,14 @@ export const Board = () => {
     handleSubmit,
   } = useFormContext();
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
+  const isVerifyFailed =
+    errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed ||
+    errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.verifyFailed;
   const isVerified = isValid && isSubmitSuccessful;
 
   const onSubmit = async () => await verifyJira();
   const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
+  const closeVerifyAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>
@@ -30,6 +35,9 @@ export const Board = () => {
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledAlterWrapper>
         <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeTimeoutAlert} moduleType={'Board'} />
+      </StyledAlterWrapper>
+      <StyledAlterWrapper>
+        <BoardVerifyAlert showAlert={isVerifyFailed} onClose={closeVerifyAlert} />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         {fields.map(({ key, col, label }) =>
