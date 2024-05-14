@@ -149,7 +149,8 @@ public class PipelineService {
 				startTime, endTime);
 
 		if (!CollectionUtils.isEmpty(pipelineCrews)) {
-			buildKiteBuildInfo.stream().filter(it -> it.getAuthor() == null)
+			buildKiteBuildInfo.stream()
+				.filter(it -> it.getAuthor() == null)
 				.forEach(it -> it.setAuthor(BuildKiteBuildInfo.Author.builder().username("Unknown").build()));
 			buildKiteBuildInfo = buildKiteBuildInfo.stream()
 				.filter(info -> pipelineCrews.contains(info.getAuthor().getUsername()))
