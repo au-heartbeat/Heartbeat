@@ -6,19 +6,15 @@ import {
   Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
-import { EMPTY_DATA_MAPPER_DORA_CHART, MESSAGE, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
+import { EMPTY_DATA_MAPPER_DORA_CHART, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
-import { addNotification } from '@src/context/notification/NotificationSlice';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { useAppDispatch } from '@src/hooks';
 import { theme } from '@src/theme';
-import { toNumber } from 'lodash';
 
 interface DoraMetricsChartProps {
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
-  isChartFailed: boolean;
   setIsChartFailed: (isChartFailed: boolean) => void;
   retry: boolean;
 }
@@ -52,7 +48,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
         name: name,
         type: 'bar',
         data: extractedValues!.map((value) => {
-          return toNumber(value![index]);
+          return value![index] as unknown as number;
         }),
       };
       return series;
@@ -96,7 +92,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
     }
     return item?.[0].valueList[0].value as string;
   });
-  const value = valueStr?.map((item) => toNumber(item?.split('%', 1)[0]));
+  const value = valueStr?.map((item) => item?.split('%', 1)[0] as unknown as number);
   return {
     title: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
     legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
@@ -141,19 +137,11 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
-export const DoraMetricsChart = ({
-  data,
-  dateRanges,
-  isChartFailed,
-  setIsChartFailed,
-  retry,
-}: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({ data, dateRanges, setIsChartFailed, retry }: DoraMetricsChartProps) => {
   const LeadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
-
-  const dispatch = useAppDispatch();
 
   const mappedData = data.map((currentData) => {
     if (!currentData?.doraMetricsCompleted) {
@@ -163,23 +151,11 @@ export const DoraMetricsChart = ({
     }
   });
 
-  //TODO：move to report page
-  useEffect(() => {
-    isChartFailed &&
-      dispatch(
-        addNotification({
-          type: 'error',
-          message: MESSAGE.DORA_CHART_LOADING_FAILED,
-        }),
-      );
-  }, [isChartFailed, dispatch]);
-
   useEffect(() => {
     const LeadTimeForChangeChart = echarts.init(LeadTimeForChange.current);
     let LeadTimeForChangeData;
     try {
       LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
-      setIsChartFailed(false);
     } catch (e) {
       LeadTimeForChangeData = extractedStackedBarData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
@@ -196,7 +172,6 @@ export const DoraMetricsChart = ({
     let deploymentFrequencyData;
     try {
       deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
-      setIsChartFailed(false);
     } catch (e) {
       deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
@@ -213,7 +188,6 @@ export const DoraMetricsChart = ({
     let changeFailureRateData;
     try {
       changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
-      setIsChartFailed(false);
     } catch (e) {
       changeFailureRateData = extractedChangeFailureRateData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
@@ -230,7 +204,6 @@ export const DoraMetricsChart = ({
     let meanTimeToRecoveryData;
     try {
       meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
-      setIsChartFailed(false);
     } catch (e) {
       meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
       setIsChartFailed(true);
@@ -247,8 +220,6 @@ export const DoraMetricsChart = ({
       <ChartContainer>
         <ChartWrapper ref={LeadTimeForChange}></ChartWrapper>
         <ChartWrapper ref={deploymentFrequency}></ChartWrapper>
-      </ChartContainer>
-      <ChartContainer>
         <ChartWrapper ref={changeFailureRate}></ChartWrapper>
         <ChartWrapper ref={MeanTimeToRecovery}></ChartWrapper>
       </ChartContainer>

@@ -92,6 +92,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       text: props.title,
     },
     legend: {
+      icon: 'circle',
       data: props.series?.map((item) => item.name),
       bottom: 1,
       left: 10,

@@ -283,6 +283,17 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportInfos, selectedDateRange]);
 
+  // Dispatch pop-up when chart generating failed
+  useEffect(() => {
+    isChartFailed &&
+      dispatch(
+        addNotification({
+          type: 'error',
+          message: MESSAGE.DORA_CHART_LOADING_FAILED,
+        }),
+      );
+  }, [isChartFailed, dispatch]);
+
   useEffect(() => {
     errorNotificationIds.forEach((notificationId) => {
       dispatch(closeNotification(notificationId));
@@ -453,13 +464,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart
-      data={data}
-      dateRanges={allDateRanges}
-      isChartFailed={isChartFailed}
-      setIsChartFailed={setIsChartFailed}
-      retry={chartRetry}
-    />
+    <DoraMetricsChart data={data} dateRanges={allDateRanges} setIsChartFailed={setIsChartFailed} retry={chartRetry} />
   );
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
