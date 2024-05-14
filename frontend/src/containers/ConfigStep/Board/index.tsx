@@ -20,7 +20,7 @@ export const Board = () => {
     handleSubmit,
   } = useFormContext();
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
-  const isVerifyFailed =
+  const isBoardVerifyFailed =
     errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed ||
     errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.verifyFailed;
   const isVerified = isValid && isSubmitSuccessful;
@@ -36,7 +36,7 @@ export const Board = () => {
         <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeAlert} moduleType={'Board'} />
       </StyledAlterWrapper>
       <StyledAlterWrapper>
-        <BoardVerifyAlert showAlert={isVerifyFailed} onClose={closeAlert} />
+        <BoardVerifyAlert showAlert={isBoardVerifyFailed} onClose={closeAlert} />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         {fields.map(({ key, col, label }) =>
