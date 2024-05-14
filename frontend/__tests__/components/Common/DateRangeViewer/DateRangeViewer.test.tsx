@@ -1,4 +1,8 @@
-import { nextStep, updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
+import {
+  nextStep,
+  updateMetricsPageFailedTimeRangeInfos,
+  updateReportPageFailedTimeRangeInfos,
+} from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { DateRangeList } from '@src/context/config/configSlice';
 import { formatDateToTimestampString } from '@src/utils/util';
@@ -62,51 +66,103 @@ describe('DateRangeViewer', () => {
     expect(getByText(/2024\/03\/21/)).toBeInTheDocument();
   });
 
-  it('should show priority high icon when click expand button and step number is 1', async () => {
-    const failedTimeRangeList = [
-      {
-        startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-        errors: { boardInfoError: true },
-      },
-      {
-        startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-        errors: { pipelineStepError: true },
-      },
-      {
-        startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-        errors: { pipelineInfoError: true },
-      },
-    ];
-    store.dispatch(nextStep());
-    store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
-    const { getByLabelText } = setup(mockDateRanges);
-    expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
+  describe('DateRangeViewer in metrics page', () => {
+    beforeEach(() => {
+      store.dispatch(nextStep());
+    });
+    it('should show priority high icon when click expand button', async () => {
+      const failedTimeRangeList = [
+        {
+          startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
+          errors: { isBoardInfoError: true },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
+          errors: { isPipelineStepError: true },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
+          errors: { isPipelineInfoError: true },
+        },
+      ];
+      store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
+      const { getByLabelText } = setup(mockDateRanges);
+      expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
 
-    await userEvent.click(getByLabelText('expandMore'));
-    expect(screen.getAllByTestId('PriorityHighIcon')).toHaveLength(4);
+      await userEvent.click(getByLabelText('expandMore'));
+      expect(screen.getAllByTestId('PriorityHighIcon')).toHaveLength(4);
+    });
+
+    it('should not show priority high icon when click expand button', async () => {
+      const failedTimeRangeList = [
+        {
+          startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
+          errors: { isBoardInfoError: false },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
+          errors: { isPipelineStepError: false },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
+          errors: { isPipelineInfoError: false },
+        },
+      ];
+      store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
+      const { getByLabelText } = setup(mockDateRanges);
+
+      await userEvent.click(getByLabelText('expandMore'));
+
+      expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
+    });
   });
 
-  it('should not show priority high icon when click expand button and step number is 0', async () => {
-    const failedTimeRangeList = [
-      {
-        startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-        errors: { isBoardInfoError: false },
-      },
-      {
-        startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-        errors: { isPipelineStepError: false },
-      },
-      {
-        startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-        errors: { isPipelineInfoError: false },
-      },
-    ];
-    store.dispatch(nextStep());
-    store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
-    const { getByLabelText } = setup(mockDateRanges);
+  describe('DateRangeViewer in report page', () => {
+    beforeEach(() => {
+      store.dispatch(nextStep());
+      store.dispatch(nextStep());
+    });
+    it('should not show priority high icon in report page when click expand button', async () => {
+      const failedTimeRangeList = [
+        {
+          startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
+          errors: { isGainPollingUrlError: false },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
+          errors: { isPollingError: false },
+        },
+      ];
 
-    await userEvent.click(getByLabelText('expandMore'));
+      store.dispatch(updateReportPageFailedTimeRangeInfos(failedTimeRangeList));
+      const { getByLabelText } = setup(mockDateRanges);
 
-    expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
+      await userEvent.click(getByLabelText('expandMore'));
+
+      expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
+    });
+
+    it('should show priority high icon in report page when click expand button', async () => {
+      const failedTimeRangeList = [
+        {
+          startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
+          errors: { isGainPollingUrlError: true },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
+          errors: { isPollingError: true },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
+          errors: { isPollingError: false },
+        },
+      ];
+      store.dispatch(updateReportPageFailedTimeRangeInfos(failedTimeRangeList));
+      const { getByLabelText } = setup(mockDateRanges);
+      expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
+
+      await userEvent.click(getByLabelText('expandMore'));
+      expect(screen.getAllByTestId('PriorityHighIcon')).toHaveLength(3);
+    });
   });
 });
