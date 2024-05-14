@@ -27,10 +27,17 @@ type Props = {
   dateRangeList: DateRangeList;
   selectedDateRange?: DateRange;
   changeDateRange?: (dateRange: DateRange) => void;
+  isShowingChart?: boolean;
   disabledAll?: boolean;
 };
 
-const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
+const DateRangeViewer = ({
+  dateRangeList,
+  changeDateRange,
+  selectedDateRange,
+  disabledAll = true,
+  isShowingChart = false,
+}: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
   const metricsPageFailedTimeRangeInfos = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
@@ -39,7 +46,12 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
   const isMetricsPage = stepNumber === 1;
 
-  const backgroundColor = isMetricsPage ? theme.palette.secondary.dark : theme.palette.common.white;
+  const backgroundColor =
+    stepNumber === 1
+      ? theme.palette.secondary.dark
+      : isShowingChart
+        ? theme.palette.secondary.dark
+        : theme.palette.common.white;
   const currentDateRangeHasFailed = getCurrentDateRangeHasFailed(
     formatDateToTimestampString(currentDateRange.startDate!),
   );

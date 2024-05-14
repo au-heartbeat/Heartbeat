@@ -592,6 +592,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
             changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
+            isShowingChart={isShowingChart}
             disabledAll={isShowingChart}
           />
         </StyledCalendarWrapper>
