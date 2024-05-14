@@ -213,7 +213,7 @@ public class PipelineServiceTest {
 		void shouldReturnValueWhenDeploymentEnvListIsNotEmpty() {
 			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = List.of(BuildKiteBuildInfo.builder()
 				.creator(BuildKiteBuildInfo.Creator.builder().name("someone").build())
-				.author(BuildKiteBuildInfo.Author.builder().name("someone").build())
+				.author(BuildKiteBuildInfo.Author.builder().username("someone").build())
 				.build());
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.buildKiteSetting(BuildKiteSetting.builder()
@@ -237,7 +237,7 @@ public class PipelineServiceTest {
 			assertEquals(result.getDeployTimesList().size(), 1);
 			assertEquals(result.getBuildInfosList().size(), 1);
 			assertEquals(1, result.getBuildInfosList().get(0).getValue().size());
-			assertEquals("someone", result.getBuildInfosList().get(0).getValue().get(0).getAuthor().getName());
+			assertEquals("someone", result.getBuildInfosList().get(0).getValue().get(0).getAuthor().getUsername());
 			verify(buildKiteService, times(1)).fetchPipelineBuilds(any(), any(), any(), any());
 			verify(buildKiteService, times(1)).countDeployTimes(any(), any(), any(), any());
 		}
@@ -247,11 +247,11 @@ public class PipelineServiceTest {
 			List<BuildKiteBuildInfo> fakeBuildKiteBuildInfos = List.of(
 					BuildKiteBuildInfo.builder()
 						.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator1").build())
-						.author(BuildKiteBuildInfo.Author.builder().name("test-author1").build())
+						.author(BuildKiteBuildInfo.Author.builder().username("test-author1").build())
 						.build(),
 					BuildKiteBuildInfo.builder()
 						.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator2").build())
-						.author(BuildKiteBuildInfo.Author.builder().name("test-author2").build())
+						.author(BuildKiteBuildInfo.Author.builder().username("test-author2").build())
 						.build(),
 					BuildKiteBuildInfo.builder().author(null).build());
 			GenerateReportRequest request = GenerateReportRequest.builder()

@@ -132,7 +132,7 @@ class BuildKiteServiceTest {
 		List<BuildKiteBuildInfo> buildKiteBuildInfoList = new ArrayList<>();
 		buildKiteBuildInfoList.add(BuildKiteBuildInfo.builder()
 			.jobs(List.of(testJob))
-			.author(BuildKiteBuildInfo.Author.builder().name("author").build())
+			.author(BuildKiteBuildInfo.Author.builder().username("author").build())
 			.creator(BuildKiteBuildInfo.Creator.builder().name("xx").build())
 			.build());
 		ResponseEntity<List<BuildKiteBuildInfo>> responseEntity = new ResponseEntity<>(buildKiteBuildInfoList,
