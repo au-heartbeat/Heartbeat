@@ -717,7 +717,7 @@ describe('Report Step', () => {
     it('should render dora chart with empty value when exception was thrown', async () => {
       reportHook.current.reportInfos[0].reportData = { ...BAD_REPORT_VALUES };
       reportHook.current.reportInfos[1].reportData = { ...BAD_REPORT_VALUES };
-      setup([CLASSIFICATION], [emptyValueDateRange]);
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
 
       const switchChartButton = screen.getByText('Chart');
       await userEvent.click(switchChartButton);

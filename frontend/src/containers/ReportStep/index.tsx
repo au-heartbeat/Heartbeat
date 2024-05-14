@@ -480,7 +480,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setChartIndex(newValue);
-    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
+    setPageType(REPORT_PAGE_TYPE.DORA_CHART);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {
@@ -504,12 +504,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const handleClick = (event: React.SyntheticEvent, newValue: number) => {
-    const pageType =
-      newValue === 0
-        ? REPORT_PAGE_TYPE.SUMMARY
-        : chartIndex === 1
-          ? REPORT_PAGE_TYPE.DORA_CHART
-          : REPORT_PAGE_TYPE.BOARD_CHART;
+    const pageType = newValue === 0 ? REPORT_PAGE_TYPE.SUMMARY : REPORT_PAGE_TYPE.DORA_CHART;
 
     setDisplayType(newValue);
     setPageType(pageType);
