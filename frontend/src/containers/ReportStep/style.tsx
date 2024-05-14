@@ -1,5 +1,6 @@
 import { Z_INDEX } from '@src/constants/commons';
 import { styled } from '@mui/material/styles';
+import { Tab, Tabs } from '@mui/material';
 import { theme } from '@src/theme';
 
 export const StyledSpacing = styled('div')({
@@ -23,7 +24,21 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
   zIndex: Z_INDEX.DROPDOWN,
 }));
 
-export const ListChartButtonContainer = styled('div')({
+export const StyledTabWrapper = styled('div')({
   display: 'flex',
-  marginRight: '1rem',
+  alignItems: 'flex-end',
+});
+
+export const StyledTabs = styled(Tabs)({
+  '& .MuiTabs-indicator': {
+    display: 'none',
+  },
+  '& .Mui-selected': {
+    border: `0.08rem solid ${theme.main.backgroundColor}`,
+  },
+});
+
+export const StyledTab = styled(Tab)({
+  border: `0.08rem solid ${theme.main.button.borderLine}`,
+  minHeight: '2.5rem',
 });

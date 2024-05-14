@@ -688,7 +688,7 @@ describe('Report Step', () => {
     });
   });
 
-  describe('error notification', () => {
+  describe('Dora chart test', () => {
     beforeEach(() => {
       jest.spyOn(echarts, 'init').mockImplementation(
         () =>
@@ -708,6 +708,9 @@ describe('Report Step', () => {
       const switchChartButton = screen.getByText('Chart');
       await userEvent.click(switchChartButton);
 
+      expect(addNotification).toHaveBeenCalledWith({
+        message: MESSAGE.EXPIRE_INFORMATION(30),
+      });
       expect(addNotification).toHaveBeenCalledTimes(1);
     });
 

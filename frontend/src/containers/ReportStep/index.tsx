@@ -36,7 +36,7 @@ import {
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
-import { ListChartButtonContainer, StyledCalendarWrapper } from '@src/containers/ReportStep/style';
+import { StyledCalendarWrapper, StyledTab, StyledTabs, StyledTabWrapper } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
@@ -46,7 +46,6 @@ import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
-import { ChartListButton } from '@src/components/Common/Buttons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
@@ -83,7 +82,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const allDateRanges = descendingDateRanges.reverse().map((range) => {
     const start = new Date(range.startDate!);
     const end = new Date(range.endDate!);
-    // 格式化日期为 MM/DD
     const formattedStart = `${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
     const formattedEnd = `${(end.getMonth() + 1).toString().padStart(2, '0')}/${end.getDate().toString().padStart(2, '0')}`;
 
@@ -92,6 +90,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
   const [chartIndex, setChartIndex] = React.useState(0);
+  const [displayType, setDisplayType] = React.useState(0);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -481,6 +480,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setChartIndex(newValue);
+    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {
@@ -501,6 +501,18 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       ]);
     }
     closeReportInfosErrorStatus(selectedDateRange.startDate as string, errorKey);
+  };
+
+  const handleClick = (event: React.SyntheticEvent, newValue: number) => {
+    const pageType =
+      newValue === 0
+        ? REPORT_PAGE_TYPE.SUMMARY
+        : chartIndex === 1
+          ? REPORT_PAGE_TYPE.DORA_CHART
+          : REPORT_PAGE_TYPE.BOARD_CHART;
+
+    setDisplayType(newValue);
+    setPageType(pageType);
   };
 
   const handleListClick = () => {
@@ -542,20 +554,40 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <>
       {startDate && endDate && (
         <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
-          <ListChartButtonContainer>
-            <ChartListButton onClick={handleListClick} startIcon={<FormatListBulletedIcon />}>
-              List
-            </ChartListButton>
-            <ChartListButton onClick={handleChartClick} startIcon={<BarChartIcon />}>
-              Chart
-            </ChartListButton>
-          </ListChartButtonContainer>
-          <Box>
-            <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-              <Tab label='Board' {...tabProps(0)} />
-              <Tab label='DORA' {...tabProps(1)} />
-            </Tabs>
-          </Box>
+          <StyledTabWrapper>
+            <Box sx={{ marginRight: '2.5rem' }}>
+              <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
+                <StyledTab
+                  onClick={handleListClick}
+                  sx={{
+                    borderRight: 'none',
+                    borderRadius: '0.16rem 0 0 0.16rem',
+                  }}
+                  icon={<FormatListBulletedIcon />}
+                  iconPosition='start'
+                  label='List'
+                />
+                <StyledTab
+                  onClick={handleChartClick}
+                  sx={{
+                    borderLeft: 'none',
+                    borderRadius: '0 0.16rem 0.16rem 0',
+                  }}
+                  icon={<BarChartIcon />}
+                  iconPosition='start'
+                  label='Chart'
+                  disabled={onlySelectClassification}
+                />
+              </StyledTabs>
+            </Box>
+            <Box>
+              <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
+                <Tab label='Board' {...tabProps(0)} />
+                <Tab label='DORA' {...tabProps(1)} />
+              </Tabs>
+            </Box>
+          </StyledTabWrapper>
+
           {isChartFailed && pageType === REPORT_PAGE_TYPE.DORA_CHART && (
             <Button aria-label='chart retry' onClick={handleChartRetry}>
               retry

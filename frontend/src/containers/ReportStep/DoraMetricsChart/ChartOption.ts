@@ -30,6 +30,9 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
   return {
     title: {
       text: props.title,
+      textStyle: {
+        fontSize: 16,
+      },
     },
     tooltip: {
       trigger: 'axis',
@@ -90,6 +93,9 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
   return {
     title: {
       text: props.title,
+      textStyle: {
+        fontSize: 16,
+      },
     },
     legend: {
       icon: 'circle',
