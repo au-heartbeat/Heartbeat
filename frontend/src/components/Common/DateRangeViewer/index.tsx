@@ -10,11 +10,15 @@ import {
   StyledExpandContainer,
   StyledExpandMoreIcon,
 } from './style';
-import { selectMetricsPageFailedTimeRangeInfos, selectStepNumber } from '@src/context/stepper/StepperSlice';
+import {
+  selectMetricsPageFailedTimeRangeInfos,
+  selectReportPageFailedTimeRangeInfos,
+  selectStepNumber,
+} from '@src/context/stepper/StepperSlice';
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
+import { DateRange, DateRangeList } from '@src/context/config/configSlice';
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import { DateRange, DateRangeList } from '@src/context/config/configSlice';
 import { useAppSelector } from '@src/hooks';
 import { theme } from '@src/theme';
 
@@ -29,6 +33,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
   const metricsPageFailedTimeRangeInfos = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
+  const reportPageFailedTimeRangeInfos = useAppSelector(selectReportPageFailedTimeRangeInfos);
   const stepNumber = useAppSelector(selectStepNumber);
   const backgroundColor = stepNumber === 1 ? theme.palette.secondary.dark : theme.palette.common.white;
   const currentDateRangeHasFailed =
