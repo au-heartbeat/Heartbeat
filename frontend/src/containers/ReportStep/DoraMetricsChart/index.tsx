@@ -53,9 +53,9 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
   };
 }
 
-function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[]) {
-  const data = mappedData.map((item) => item.deploymentFrequencyList);
-  const value = data.map((item) => {
+function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
+  const data = mappedData?.map((item) => item.deploymentFrequencyList);
+  const value = data?.map((item) => {
     return item?.[0].valueList[0].value as number;
   });
   return {
@@ -76,7 +76,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
   };
 }
 
-function extractedChangeFailureRateData(allDateRanges: string[], mappedData: ReportResponse[]) {
+function extractedChangeFailureRateData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.devChangeFailureRateList);
   const valueStr = data?.map((item) => {
     return item?.[0].valueList[0].value as string;
@@ -100,7 +100,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
   };
 }
 
-function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[]) {
+function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
   const value = data?.map((item) => {
     return item?.[0].valueList[0].value as number;
@@ -128,8 +128,6 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
-
-  console.log(data);
 
   const mappedData = data.map((currentData) => {
     if (!currentData?.doraMetricsCompleted) {

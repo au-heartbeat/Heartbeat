@@ -45,6 +45,7 @@ const DateRangeViewer = ({
   const stepNumber = useAppSelector(selectStepNumber);
   const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
   const isMetricsPage = stepNumber === 1;
+  const isReportPage = stepNumber === 2;
 
   const backgroundColor =
     stepNumber === 1
@@ -125,7 +126,7 @@ const DateRangeViewer = ({
         {formatDate(currentDateRange.endDate!)}
         <StyledCalendarToday />
       </DateRangeContainer>
-      {(disabledAll && stepNumber === 2) ? (
+      {disabledAll && isReportPage ? (
         <StyledChip aria-label='date-count-chip' label={dateRangeList.length} variant='outlined' size='small' />
       ) : (
         <>

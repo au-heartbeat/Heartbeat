@@ -115,7 +115,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const [isCsvFileGeneratedAtEnd, setIsCsvFileGeneratedAtEnd] = useState<boolean>(false);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
-  const [isShowingChart, setIsShowingChart] = useState<boolean>(false);
 
   const csvTimeStamp = useAppSelector(selectTimeStamp);
   const {
@@ -504,17 +503,15 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const handleListClick = () => {
-    setIsShowingChart(false);
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
   };
 
   const handleChartClick = () => {
-    setIsShowingChart(true);
     setPageType(REPORT_PAGE_TYPE.DORA_CHART);
   };
 
   const handleChartRetry = () => {
-    isShowingChart && pageType === REPORT_PAGE_TYPE.DORA_CHART
+    pageType === REPORT_PAGE_TYPE.DORA_CHART
       ? startToRequestData(doraReportRequestBody)
       : startToRequestData(boardReportRequestBody);
   };
@@ -539,12 +536,16 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     }
   };
 
+  const isShowingChart = () => {
+    return pageType === REPORT_PAGE_TYPE.BOARD_CHART || pageType === REPORT_PAGE_TYPE.DORA_CHART;
+  };
+
   const shouldShowChartRetryButton = () => {
     return (
       (currentDataInfo['timeout4Report'].message ||
         currentDataInfo['timeout4Dora'].message ||
         currentDataInfo['timeout4Board'].message) &&
-      (pageType === REPORT_PAGE_TYPE.BOARD_CHART || pageType === REPORT_PAGE_TYPE.DORA_CHART)
+      isShowingChart()
     );
   };
 
@@ -595,8 +596,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
             changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
-            isShowingChart={isShowingChart}
-            disabledAll={isShowingChart}
+            isShowingChart={isShowingChart()}
+            disabledAll={isShowingChart()}
           />
         </StyledCalendarWrapper>
       )}
