@@ -2,13 +2,13 @@ import { ConfigSectionContainer, StyledForm } from '@src/components/Common/Confi
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { FIELD_KEY, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { FormTextField } from '@src/containers/ConfigStep/Board/FormTextField';
-import { BoardVerifyAlert } from '@src/containers/ConfigStep/BoardVerifyAlert';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
-import { TimeoutAlert } from '@src/containers/ConfigStep/TimeoutAlert';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { CONFIG_TITLE, BOARD_TYPES } from '@src/constants/resources';
+import { FormAlert } from '@src/containers/ConfigStep/FormAlert';
+import { FORM_ALERT_TYPES } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
 import { useFormContext } from 'react-hook-form';
 
@@ -33,10 +33,15 @@ export const Board = () => {
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledAlterWrapper>
-        <TimeoutAlert showAlert={isVerifyTimeOut} onClose={closeAlert} moduleType={'Board'} />
+        <FormAlert
+          showAlert={isVerifyTimeOut}
+          onClose={closeAlert}
+          moduleType={'Board'}
+          formAlertType={FORM_ALERT_TYPES.TIMEOUT}
+        />
       </StyledAlterWrapper>
       <StyledAlterWrapper>
-        <BoardVerifyAlert showAlert={isBoardVerifyFailed} onClose={closeAlert} />
+        <FormAlert showAlert={isBoardVerifyFailed} onClose={closeAlert} formAlertType={FORM_ALERT_TYPES.BOARD_VERIFY} />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         {fields.map(({ key, col, label }) =>

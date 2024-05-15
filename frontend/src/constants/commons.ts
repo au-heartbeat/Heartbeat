@@ -65,6 +65,11 @@ export enum REPORT_TYPES {
   PIPELINE = 'pipeline',
 }
 
+export enum FORM_ALERT_TYPES {
+  TIMEOUT,
+  BOARD_VERIFY,
+}
+
 export enum METRIC_TYPES {
   ALL = 'ALL',
   BOARD = 'BOARD',
