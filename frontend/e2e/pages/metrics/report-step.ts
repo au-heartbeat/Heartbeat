@@ -5,7 +5,9 @@ import {
   IBoardClassificationDetailItem,
 } from '../../fixtures/create-new/report-result';
 import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
-import { expect, Locator, Page } from '@playwright/test';
+import { ICsvComparedLines } from '../../fixtures/create-new/report-result';
+import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
+import { expect, Locator, Page, Download } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
 import path from 'path';
 import fs from 'fs';
@@ -50,6 +52,7 @@ export class ReportStep {
   readonly deploymentFrequencyRows: Locator;
   readonly devMeanTimeToRecoveryRows: Locator;
   readonly reworkRows: Locator;
+  readonly downloadDialog: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -94,6 +97,7 @@ export class ReportStep {
       .locator('tbody')
       .getByRole('row');
     this.reworkRows = this.page.getByTestId('Rework').getByRole('row');
+    this.downloadDialog = this.page.getByLabel('download file dialog');
   }
   combineStrings(arr: string[]): string {
     return arr.join('');
@@ -341,21 +345,21 @@ export class ReportStep {
     await expect(this.exportPipelineDataButton).toBeEnabled();
   }
 
-  async checkBoardMetricsDetails(
-    boardDetailType: ProjectCreationType,
-    csvCompareLines: number,
-    {
-      velocityData,
-      cycleTimeData,
-      classificationData,
-      reworkData,
-    }: {
-      velocityData: IBoardMetricsDetailItem[][];
-      cycleTimeData: IBoardCycletimeDetailItem[][];
-      classificationData: IBoardClassificationDetailItem[][];
-      reworkData: IBoardMetricsDetailItem[][];
-    },
-  ) {
+  async checkBoardMetricsDetailsForMultipleRanges({
+    boardDetailType,
+    csvCompareLines,
+    velocityData,
+    cycleTimeData,
+    classificationData,
+    reworkData,
+  }: {
+    boardDetailType: ProjectCreationType;
+    csvCompareLines: ICsvComparedLines;
+    velocityData: IBoardMetricsDetailItem[][];
+    cycleTimeData: IBoardCycletimeDetailItem[][];
+    classificationData: IBoardClassificationDetailItem[][];
+    reworkData: IBoardMetricsDetailItem[][];
+  }) {
     await this.showMoreLinks.first().click();
     if (
       boardDetailType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
@@ -369,14 +373,59 @@ export class ReportStep {
       throw Error('The board detail type is not correct, please give a correct one.');
     }
 
-    // await downloadFileAndCheck(this.page, this.exportBoardData, 'boardData.csv', async (fileDataString) => {
-    //   const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new/board-data.csv'));
-    //   const localCsv = parse(localCsvFile, { to: csvCompareLines });
-    //   const downloadCsv = parse(fileDataString, { to: csvCompareLines });
-
-    //   expect(localCsv).toStrictEqual(downloadCsv);
-    // });
+    await this.downloadFileAndCheckForMultipleRanges({
+      trigger: this.exportBoardData,
+      csvCompareLines,
+    });
     await this.backButton.click();
+  }
+
+  async downloadFileAndCheckForMultipleRanges({
+    trigger,
+    csvCompareLines,
+  }: {
+    trigger: Locator;
+    csvCompareLines: ICsvComparedLines;
+  }) {
+    await expect(trigger).toBeEnabled();
+    await trigger.click();
+    await expect(this.downloadDialog).toBeVisible();
+    const rangeCheckboxes = await this.downloadDialog.getByRole('checkbox').all();
+    for (let i = 0; i < rangeCheckboxes.length; i++) {
+      await expect(rangeCheckboxes[i]).toBeEnabled();
+      await rangeCheckboxes[i].check();
+    }
+    const confirmButton = this.downloadDialog.getByLabel('confirm download');
+    await expect(confirmButton).toBeEnabled();
+    const downloadEvents: Promise<Download>[] = [];
+    this.page.on('download', async (data) => {
+      downloadEvents.push(Promise.resolve(data));
+    });
+    let waitCounter = 0;
+    await confirmButton.click();
+    while (downloadEvents.length < 3 && waitCounter < DOWNLOAD_EVENTS_WAIT_THRESHOLD) {
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          waitCounter++;
+          resolve();
+        }, 1000);
+      });
+    }
+    const downloads = await Promise.all(downloadEvents);
+    for (let i = 0; i < downloads.length; i++) {
+      const download = downloads[i];
+      const fileName = download.suggestedFilename().split('-').slice(0, 3).join('-');
+      const savePath = path.resolve(__dirname, '../../temp', `./${fileName}.csv`);
+      await download.saveAs(savePath);
+      const downloadPath = await download.path();
+      const fileDataString = fs.readFileSync(downloadPath, 'utf8');
+      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new', `./${fileName}.csv`));
+      const localCsv = parse(localCsvFile, { to: csvCompareLines[fileName] });
+      const downloadCsv = parse(fileDataString, { to: csvCompareLines[fileName] });
+
+      expect(localCsv).toStrictEqual(downloadCsv);
+      await download.delete();
+    }
   }
 
   async checkBoardDownloadDataWithoutBlock(fileName: string) {

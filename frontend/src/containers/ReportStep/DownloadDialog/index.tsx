@@ -68,7 +68,7 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
   };
 
   return (
-    <Dialog open={isShowDialog} maxWidth='md'>
+    <Dialog open={isShowDialog} maxWidth='md' aria-label='download file dialog'>
       <DialogContainer>
         <StyledDialogTitle>
           <strong>Export Board Data</strong>
@@ -90,7 +90,12 @@ export const DownloadDialog = ({ isShowDialog, handleClose, dateRangeList, downl
               />
             ))}
           </StyledFormGroup>
-          <StyledButton variant='contained' onClick={handleDownload} disabled={confirmButtonDisabled}>
+          <StyledButton
+            aria-label='confirm download'
+            variant='contained'
+            onClick={handleDownload}
+            disabled={confirmButtonDisabled}
+          >
             {COMMON_BUTTONS.CONFIRM}
           </StyledButton>
         </StyledDialogContent>

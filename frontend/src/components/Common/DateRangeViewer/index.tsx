@@ -92,9 +92,9 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
     <StyledDateRangeViewerContainer
       color={disabledAll ? theme.palette.text.disabled : theme.palette.text.primary}
       backgroundColor={backgroundColor}
-      aria-label='date-range'
+      aria-label='date range viewer'
     >
-      <DateRangeContainer aria-label='date range viewer'>
+      <DateRangeContainer>
         {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
         {formatDate((selectedDateRange || dateRangeList[0]).startDate as string)}
         <StyledArrowForward />

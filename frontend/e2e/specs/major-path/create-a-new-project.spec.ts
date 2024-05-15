@@ -1,6 +1,5 @@
 import {
   BOARD_METRICS_RESULT_MULTIPLE_RANGES,
-  DORA_METRICS_RESULT,
   BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
   BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
   BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
@@ -9,6 +8,7 @@ import {
 import { configWithoutBlockColumn as metricsStepWithoutBlockColumnData } from '../../fixtures/create-new/metrics-step';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
+import { BAORD_CSV_COMPARED_LINES } from '../../fixtures/create-new/report-result';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
 import { config as configStepData } from '../../fixtures/create-new/config-step';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
@@ -80,11 +80,13 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
 
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
-  await reportStep.checkBoardMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT, 9, {
+  await reportStep.checkBoardMetricsDetailsForMultipleRanges({
+    boardDetailType: ProjectCreationType.CREATE_A_NEW_PROJECT,
     velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
     cycleTimeData: BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
     classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
     reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
+    csvCompareLines: BAORD_CSV_COMPARED_LINES,
   });
   // await reportStep.checkDoraMetrics(
   //   DORA_METRICS_RESULT.PrLeadTime,

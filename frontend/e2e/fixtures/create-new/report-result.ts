@@ -23,6 +23,8 @@ export interface IBoardClassificationDetailItem {
   lines: [string, string][];
 }
 
+export interface ICsvComparedLines extends Record<string, number> {}
+
 export const BOARD_METRICS_RESULT: IBoardMetricsResult = {
   velocity: '17',
   throughput: '9',
@@ -553,6 +555,12 @@ export const BOARD_METRICS_REWORK_MULTIPLE_RANGES: IBoardMetricsDetailItem[][] =
     },
   ],
 ];
+
+export const BAORD_CSV_COMPARED_LINES: ICsvComparedLines = {
+  'board-20240115-20240116': 2,
+  'board-20240117-20240118': 7,
+  'board-20240119-20240119': 2,
+};
 
 export const FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT: IBoardMetricsResult = {
   velocity: '7.5',
