@@ -460,6 +460,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const showDoraDetail = (data: ReportResponseDTO) => <DoraDetail onBack={() => backToSummaryPage()} data={data} />;
 
   const handleBack = () => {
+    setDisplayType(0);
     isSummaryPage || onlySelectClassification ? dispatch(backStep()) : backToSummaryPage();
   };
 
