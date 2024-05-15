@@ -132,10 +132,8 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
   console.log(data);
 
   const mappedData = data.map((currentData) => {
-    if (!currentData?.overallMetricsCompleted) {
+    if (!currentData?.doraMetricsCompleted) {
       return EMPTY_DATA_MAPPER_DORA_CHART('');
-    } else if (!currentData?.doraMetricsCompleted) {
-      return EMPTY_DATA_MAPPER_DORA_CHART('0.00');
     } else {
       return reportMapper(currentData);
     }
