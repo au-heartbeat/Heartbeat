@@ -7,6 +7,14 @@ import {
   sortDateRanges,
 } from '@src/utils/util';
 import {
+  DateRange,
+  DateRangeList,
+  isOnlySelectClassification,
+  isSelectBoardMetrics,
+  isSelectDoraMetrics,
+  selectConfig,
+} from '@src/context/config/configSlice';
+import {
   GeneralErrorKey,
   initReportInfo,
   IReportError,
@@ -14,13 +22,6 @@ import {
   TimeoutErrorKey,
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
-import {
-  DateRange,
-  isOnlySelectClassification,
-  isSelectBoardMetrics,
-  isSelectDoraMetrics,
-  selectConfig,
-} from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
