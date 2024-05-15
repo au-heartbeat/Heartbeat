@@ -7,14 +7,6 @@ import {
   sortDateRanges,
 } from '@src/utils/util';
 import {
-  DateRange,
-  DateRangeList,
-  isOnlySelectClassification,
-  isSelectBoardMetrics,
-  isSelectDoraMetrics,
-  selectConfig,
-} from '@src/context/config/configSlice';
-import {
   GeneralErrorKey,
   initReportInfo,
   IReportError,
@@ -23,11 +15,12 @@ import {
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
 import {
-  addNotification,
-  closeAllNotifications,
-  closeNotification,
-  Notification,
-} from '@src/context/notification/NotificationSlice';
+  DateRange,
+  isOnlySelectClassification,
+  isSelectBoardMetrics,
+  isSelectDoraMetrics,
+  selectConfig,
+} from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -35,8 +28,21 @@ import {
   MESSAGE,
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
+  RETRY,
 } from '@src/constants/resources';
-import { StyledCalendarWrapper, StyledTab, StyledTabs, StyledTabWrapper } from '@src/containers/ReportStep/style';
+import {
+  addNotification,
+  closeAllNotifications,
+  closeNotification,
+  Notification,
+} from '@src/context/notification/NotificationSlice';
+import {
+  StyledCalendarWrapper,
+  StyledRetry,
+  StyledTab,
+  StyledTabs,
+  StyledTabWrapper,
+} from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
@@ -53,7 +59,6 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
-import Button from '@mui/material/Button';
 import { uniqueId } from 'lodash';
 
 export interface ReportStepProps {
@@ -110,8 +115,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
   const [isShowingChart, setIsShowingChart] = useState<boolean>(false);
-  const [isChartFailed, setIsChartFailed] = useState<boolean>(false);
-  const [chartRetry, setChartRetry] = useState<boolean>(false);
 
   const csvTimeStamp = useAppSelector(selectTimeStamp);
   const {
@@ -281,17 +284,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     setCurrentDataInfo(reportInfos.find((singleResult) => singleResult.id === selectedDateRange.startDate)!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportInfos, selectedDateRange]);
-
-  // Dispatch pop-up when chart generating failed
-  useEffect(() => {
-    isChartFailed &&
-      dispatch(
-        addNotification({
-          type: 'error',
-          message: MESSAGE.DORA_CHART_LOADING_FAILED,
-        }),
-      );
-  }, [isChartFailed, dispatch]);
 
   useEffect(() => {
     errorNotificationIds.forEach((notificationId) => {
@@ -463,7 +455,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart data={data} dateRanges={allDateRanges} setIsChartFailed={setIsChartFailed} retry={chartRetry} />
+    <DoraMetricsChart data={data} dateRanges={allDateRanges} />
   );
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
@@ -480,7 +472,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setChartIndex(newValue);
-    setPageType(REPORT_PAGE_TYPE.DORA_CHART);
+    setPageType(newValue === 1 ? REPORT_PAGE_TYPE.DORA_CHART : REPORT_PAGE_TYPE.BOARD_CHART);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {
@@ -521,8 +513,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const handleChartRetry = () => {
-    setChartRetry(!chartRetry);
-    setIsChartFailed(false);
+    isShowingChart && pageType === REPORT_PAGE_TYPE.DORA_CHART
+      ? startToRequestData(doraReportRequestBody)
+      : startToRequestData(boardReportRequestBody);
   };
 
   const tabProps = (index: number) => {
@@ -543,6 +536,15 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       case REPORT_PAGE_TYPE.DORA_CHART:
         return showDoraChart(reportInfos.map((infos) => infos.reportData));
     }
+  };
+
+  const shouldShowChartRetryButton = () => {
+    return (
+      (currentDataInfo['timeout4Report'].message ||
+        currentDataInfo['timeout4Dora'].message ||
+        currentDataInfo['timeout4Board'].message) &&
+      (pageType === REPORT_PAGE_TYPE.BOARD_CHART || pageType === REPORT_PAGE_TYPE.DORA_CHART)
+    );
   };
 
   return (
@@ -583,10 +585,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
             </Box>
           </StyledTabWrapper>
 
-          {isChartFailed && pageType === REPORT_PAGE_TYPE.DORA_CHART && (
-            <Button aria-label='chart retry' onClick={handleChartRetry}>
-              retry
-            </Button>
+          {shouldShowChartRetryButton() && (
+            <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
+              {RETRY}
+            </StyledRetry>
           )}
           <DateRangeViewer
             dateRangeList={descendingDateRanges}
@@ -608,7 +610,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         handleBack={() => handleBack()}
         handleSave={() => handleSave()}
         csvTimeStamp={csvTimeStamp}
-        isChartFailed={isChartFailed}
         dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
       />
     </>

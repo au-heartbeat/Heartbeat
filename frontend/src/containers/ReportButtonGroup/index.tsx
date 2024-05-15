@@ -23,7 +23,6 @@ interface ReportButtonGroupProps {
   dateRangeRequestResults: DateRangeRequestResult[];
   isShowExportDoraChartButton: boolean;
   isShowExportBoardChartButton: boolean;
-  isChartFailed: boolean;
 }
 
 export const ReportButtonGroup = ({
@@ -36,7 +35,6 @@ export const ReportButtonGroup = ({
   isShowExportPipelineButton,
   isShowExportDoraChartButton,
   isShowExportBoardChartButton,
-  isChartFailed,
   dateRangeRequestResults,
 }: ReportButtonGroupProps) => {
   const [isShowDialog, setIsShowDialog] = useState(false);
@@ -152,7 +150,7 @@ export const ReportButtonGroup = ({
             </StyledExportButton>
           )}
           {(isShowExportDoraChartButton || isShowExportBoardChartButton) && (
-            <StyledExportButton disabled={!isExportPipelineButtonClickable || isChartFailed}>
+            <StyledExportButton disabled={!isExportPipelineButtonClickable || !isExportBoardButtonClickable}>
               {isShowExportDoraChartButton && COMMON_BUTTONS.EXPORT_DORA_CHART}
             </StyledExportButton>
           )}

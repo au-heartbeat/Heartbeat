@@ -104,7 +104,6 @@ describe('ReportButtonGroup', () => {
           csvTimeStamp={1715250961572}
           dateRangeRequestResults={dateRangeRequestResults}
           isShowExportBoardChartButton={false}
-          isChartFailed={false}
         />
       </Provider>,
     );

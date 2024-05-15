@@ -1,5 +1,6 @@
 import { Z_INDEX } from '@src/constants/commons';
 import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
 import { Tab, Tabs } from '@mui/material';
 import { theme } from '@src/theme';
 
@@ -36,6 +37,14 @@ export const StyledTabs = styled(Tabs)({
   '& .Mui-selected': {
     border: `0.08rem solid ${theme.main.backgroundColor}`,
   },
+});
+
+export const StyledRetry = styled(Button)({
+  marginLeft: '0.5rem',
+  fontSize: '0.8rem',
+  textDecoration: 'none',
+  color: theme.main.alert.info.iconColor,
+  cursor: 'pointer',
 });
 
 export const StyledTab = styled(Tab)({

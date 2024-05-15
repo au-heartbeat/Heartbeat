@@ -15,17 +15,12 @@ import { theme } from '@src/theme';
 interface DoraMetricsChartProps {
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
-  setIsChartFailed: (isChartFailed: boolean) => void;
-  retry: boolean;
 }
 
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
-function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[]) {
-  if (!mappedData?.[0].leadTimeForChangesList) {
-    throw new Error('generating chart failed!');
-  }
+function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name);
   const extractedValues = mappedData?.map((data) =>
     data.leadTimeForChangesList?.[0].valuesList.map((item) => {
@@ -61,9 +56,6 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
 function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData.map((item) => item.deploymentFrequencyList);
   const value = data.map((item) => {
-    if (!item) {
-      throw new Error('generating chart error!');
-    }
     return item?.[0].valueList[0].value as number;
   });
   return {
@@ -87,9 +79,6 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
 function extractedChangeFailureRateData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData?.map((item) => item.devChangeFailureRateList);
   const valueStr = data?.map((item) => {
-    if (!item) {
-      throw new Error('generating chart failed!');
-    }
     return item?.[0].valueList[0].value as string;
   });
   const value = valueStr?.map((item) => item?.split('%', 1)[0] as unknown as number);
@@ -114,9 +103,6 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
 function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
   const value = data?.map((item) => {
-    if (!item) {
-      throw new Error('generating chart failed!');
-    }
     return item?.[0].valueList[0].value as number;
   });
   return {
@@ -137,13 +123,14 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
-export const DoraMetricsChart = ({ data, dateRanges, setIsChartFailed, retry }: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) => {
   const LeadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
   const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
 
   console.log(data);
+
   const mappedData = data.map((currentData) => {
     if (!currentData?.overallMetricsCompleted) {
       return EMPTY_DATA_MAPPER_DORA_CHART('');
@@ -156,76 +143,52 @@ export const DoraMetricsChart = ({ data, dateRanges, setIsChartFailed, retry }: 
 
   useEffect(() => {
     const LeadTimeForChangeChart = echarts.init(LeadTimeForChange.current);
-    let LeadTimeForChangeData;
-    try {
-      LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
-    } catch (e) {
-      LeadTimeForChangeData = extractedStackedBarData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
-      setIsChartFailed(true);
-    }
+    const LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
+
     const option = LeadTimeForChangeData && stackedBarOptionMapper(LeadTimeForChangeData);
     LeadTimeForChangeChart.setOption(option);
     return () => {
       LeadTimeForChangeChart.dispose();
     };
-  }, [LeadTimeForChange, setIsChartFailed, dateRanges, mappedData, retry]);
+  }, [LeadTimeForChange, dateRanges, mappedData]);
 
   useEffect(() => {
     const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
-    let deploymentFrequencyData;
-    try {
-      deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
-    } catch (e) {
-      deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
-      setIsChartFailed(true);
-    }
+    const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
     const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
     deploymentFrequencyChart.setOption(option);
     return () => {
       deploymentFrequencyChart.dispose();
     };
-  }, [deploymentFrequency, setIsChartFailed, dateRanges, mappedData, retry]);
+  }, [deploymentFrequency, dateRanges, mappedData]);
 
   useEffect(() => {
     const changeFailureRateChart = echarts.init(changeFailureRate.current);
-    let changeFailureRateData;
-    try {
-      changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
-    } catch (e) {
-      changeFailureRateData = extractedChangeFailureRateData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
-      setIsChartFailed(true);
-    }
+    const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
+
     const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
     changeFailureRateChart.setOption(option);
     return () => {
       changeFailureRateChart.dispose();
     };
-  }, [changeFailureRate, setIsChartFailed, dateRanges, mappedData, retry]);
+  }, [changeFailureRate, dateRanges, mappedData]);
 
   useEffect(() => {
     const MeanTimeToRecoveryChart = echarts.init(MeanTimeToRecovery.current);
-    let meanTimeToRecoveryData;
-    try {
-      meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
-    } catch (e) {
-      meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, [EMPTY_DATA_MAPPER_DORA_CHART('')]);
-      setIsChartFailed(true);
-    }
+    const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
     const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
     MeanTimeToRecoveryChart.setOption(option);
     return () => {
       MeanTimeToRecoveryChart.dispose();
     };
-  }, [MeanTimeToRecovery, setIsChartFailed, dateRanges, mappedData, retry]);
+  }, [MeanTimeToRecovery, dateRanges, mappedData]);
 
   return (
-    <>
-      <ChartContainer>
-        <ChartWrapper ref={LeadTimeForChange}></ChartWrapper>
-        <ChartWrapper ref={deploymentFrequency}></ChartWrapper>
-        <ChartWrapper ref={changeFailureRate}></ChartWrapper>
-        <ChartWrapper ref={MeanTimeToRecovery}></ChartWrapper>
-      </ChartContainer>
-    </>
+    <ChartContainer>
+      <ChartWrapper ref={LeadTimeForChange}></ChartWrapper>
+      <ChartWrapper ref={deploymentFrequency}></ChartWrapper>
+      <ChartWrapper ref={changeFailureRate}></ChartWrapper>
+      <ChartWrapper ref={MeanTimeToRecovery}></ChartWrapper>
+    </ChartContainer>
   );
 };

@@ -1,6 +1,5 @@
 import {
   BACK,
-  BAD_REPORT_VALUES,
   BOARD_METRICS_TITLE,
   CLASSIFICATION,
   DORA_DATA_FAILED_REPORT_VALUES,
@@ -25,11 +24,11 @@ import {
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
 import { addADeploymentFrequencySetting, updateDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
+import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import { closeNotification } from '@src/context/notification/NotificationSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
-import { DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import { backStep } from '@src/context/stepper/StepperSlice';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -716,20 +715,39 @@ describe('Report Step', () => {
     });
 
     it('should render dora chart with empty value when exception was thrown', async () => {
-      reportHook.current.reportInfos[0].reportData = { ...BAD_REPORT_VALUES };
-      reportHook.current.reportInfos[1].reportData = { ...BAD_REPORT_VALUES };
-      setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
+      reportHook.current.reportInfos[0] = {
+        id: emptyValueDateRange.startDate,
+        timeout4Board: { message: DATA_LOADING_FAILED, shouldShow: true },
+        timeout4Dora: { message: DATA_LOADING_FAILED, shouldShow: true },
+        timeout4Report: { message: DATA_LOADING_FAILED, shouldShow: true },
+        generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+        generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+        shouldShowBoardMetricsError: true,
+        shouldShowPipelineMetricsError: true,
+        shouldShowSourceControlMetricsError: true,
+        reportData: { ...EMPTY_REPORT_VALUES },
+      };
+      reportHook.current.reportInfos[0].reportData = { ...EMPTY_REPORT_VALUES };
+
+      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
 
       const switchChartButton = screen.getByText('Chart');
       await userEvent.click(switchChartButton);
 
-      const switchBoardChartButton = screen.getByText('DORA');
-      await userEvent.click(switchBoardChartButton);
+      const switchDoraChartButton = screen.getByText('DORA');
+      await userEvent.click(switchDoraChartButton);
 
       const chartRetryButton = screen.getByText(RETRY);
       await userEvent.click(chartRetryButton);
 
-      expect(addNotification).toHaveBeenCalledTimes(2);
+      const switchBoardChartButton = screen.getByText('Board');
+      await userEvent.click(switchBoardChartButton);
+
+      const chartRetryButtonInBoardPage = screen.getByText(RETRY);
+      await userEvent.click(chartRetryButtonInBoardPage);
+
+      expect(addNotification).toHaveBeenCalledTimes(3);
     });
 
     it('should render metrics list when click list from chart page', async () => {
