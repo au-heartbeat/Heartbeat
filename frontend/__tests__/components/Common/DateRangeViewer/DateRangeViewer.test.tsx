@@ -136,10 +136,6 @@ describe('DateRangeViewer', () => {
   });
 
   describe('DateRangeViewer in report page', () => {
-    beforeEach(() => {
-      store.dispatch(nextStep());
-      store.dispatch(nextStep());
-    });
     it('should not show priority high icon in report page given click expand button and there is no error info', async () => {
       const failedTimeRangeList = [
         {
