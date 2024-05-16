@@ -149,14 +149,16 @@ public class PipelineService {
 				startTime, endTime);
 
 		if (!CollectionUtils.isEmpty(pipelineCrews)) {
-			buildKiteBuildInfo = buildKiteBuildInfo.stream().peek(it -> {
+			buildKiteBuildInfo = buildKiteBuildInfo.stream().map(it -> {
 				if (Objects.isNull(it.getAuthor())) {
 					it.setAuthor(BuildKiteBuildInfo.Author.builder().username("Unknown").build());
 				}
-			}).peek(it -> {
+				return it;
+			}).map(it -> {
 				if (Objects.isNull(it.getAuthor().getUsername())) {
 					it.getAuthor().setUsername(it.getAuthor().getName());
 				}
+				return it;
 			}).filter(info -> pipelineCrews.contains(info.getAuthor().getUsername())).toList();
 		}
 		return buildKiteBuildInfo;
