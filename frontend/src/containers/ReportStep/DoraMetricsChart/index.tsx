@@ -33,7 +33,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     legend: 'Lead Time For Change',
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      name: 'Hours',
       alignTick: false,
       axisLabel: NO_LABEL,
     },
@@ -63,7 +63,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
     legend: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEPLOYMENT_FREQUENCY,
+      name: 'Deployments/Days',
       alignTick: false,
       axisLabel: NO_LABEL,
     },
@@ -110,7 +110,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
     legend: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      name: 'Hours',
       alignTick: false,
       axisLabel: NO_LABEL,
     },
