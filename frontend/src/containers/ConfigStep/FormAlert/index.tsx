@@ -12,15 +12,16 @@ interface PropsInterface {
   formAlertType: FORM_ALERT_TYPES;
 }
 
-export const FormAlert = ({ showAlert, onClose, moduleType, formAlertType }: PropsInterface) => {
-  const getDataTestId = () => {
-    if (formAlertType === FORM_ALERT_TYPES.TIMEOUT) {
-      return 'timeoutAlert';
-    } else if (formAlertType === FORM_ALERT_TYPES.BOARD_VERIFY) {
-      return 'boardVerifyAlert';
-    }
+const FormAlertDataTestIdMap = (formAlertType: FORM_ALERT_TYPES): string => {
+  const formAlertDataTestIdMap = {
+    [FORM_ALERT_TYPES.TIMEOUT]: 'timeoutAlert',
+    [FORM_ALERT_TYPES.BOARD_VERIFY]: 'boardVerifyAlert',
   };
 
+  return formAlertDataTestIdMap[formAlertType];
+};
+
+export const FormAlert = ({ showAlert, onClose, moduleType, formAlertType }: PropsInterface) => {
   const renderMessage = () => {
     if (formAlertType === FORM_ALERT_TYPES.TIMEOUT) {
       return (
@@ -42,7 +43,7 @@ export const FormAlert = ({ showAlert, onClose, moduleType, formAlertType }: Pro
     <>
       {showAlert && (
         <StyledAlert
-          data-testid={getDataTestId()}
+          data-testid={FormAlertDataTestIdMap(formAlertType)}
           icon={<CancelIcon fontSize='inherit' />}
           severity='error'
           onClose={onClose}
