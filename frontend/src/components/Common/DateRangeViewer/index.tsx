@@ -11,6 +11,8 @@ import {
   StyledExpandMoreIcon,
 } from './style';
 import {
+  IMetricsPageFailedDateRange,
+  IReportPageFailedDateRange,
   selectMetricsPageFailedTimeRangeInfos,
   selectReportPageFailedTimeRangeInfos,
   selectStepNumber,
@@ -49,7 +51,16 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
     }
   }, []);
 
+  const getBackgroundColor = (currentDate: string) => {
+    if (isMetricsPage || currentDate === currentDateRange.startDate) {
+      return theme.palette.secondary.dark;
+    } else {
+      return theme.palette.common.white;
+    }
+  };
+
   const handleClick = (key: string) => {
+    if (disabledAll) return;
     changeDateRange && changeDateRange(dateRangeList.find((dateRange) => dateRange.startDate === key)!);
     setShowMoreDateRange(false);
   };
@@ -62,13 +73,13 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   }, [handleClickOutside]);
 
   function getCurrentDateRangeHasFailed(startDate: string) {
+    let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
     if (isMetricsPage) {
-      const errorInfo = metricsPageFailedTimeRangeInfos[startDate];
-      return !!(errorInfo?.isPipelineInfoError || errorInfo?.isBoardInfoError || errorInfo?.isPipelineStepError);
+      errorInfo = metricsPageFailedTimeRangeInfos[startDate] || {};
     } else {
-      const errorInfo = reportPageFailedTimeRangeInfos[startDate];
-      return !!(errorInfo?.isPollingError || errorInfo?.isGainPollingUrlError);
+      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
     }
+    return Object.values(errorInfo).some((value) => value);
   }
 
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
@@ -80,7 +91,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
           return (
             <SingleDateRange
               disabled={disabled}
-              backgroundColor={backgroundColor}
+              backgroundColor={getBackgroundColor(dateRange.startDate!)}
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
@@ -115,8 +126,8 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
       <StyledDivider orientation='vertical' />
       <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
         <StyledExpandMoreIcon />
-        {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
       </StyledExpandContainer>
+      {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
     </StyledDateRangeViewerContainer>
   );
 };
