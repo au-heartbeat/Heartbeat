@@ -5,8 +5,8 @@ import {
   isSelectBoardMetrics,
   isSelectDoraMetrics,
   isSelectDoraMetricsAndClassification,
-  selectConfig,
-} from '@src/context/config/configSlice';
+  selectConfig, selectDateRange
+} from "@src/context/config/configSlice";
 import {
   filterAndMapCycleTimeSettings,
   formatDuplicatedNameWithSuffix,
@@ -88,8 +88,12 @@ export interface DateRangeRequestResult {
 const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
-  const descendingDateRanges = sortDateRanges(configData.basic.dateRange);
-  const allDateRanges = descendingDateRanges.reverse().map((range) => {
+  const dateRanges = useAppSelector(selectDateRange);
+
+  const descendingDateRanges = sortDateRanges(dateRanges);
+  const ascendingDateRanges = descendingDateRanges.slice();
+
+  const allDateRanges = ascendingDateRanges.reverse().map((range) => {
     const start = new Date(range.startDate!);
     const end = new Date(range.endDate!);
     const formattedStart = `${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
