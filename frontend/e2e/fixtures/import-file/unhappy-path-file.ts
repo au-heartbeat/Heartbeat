@@ -125,6 +125,9 @@ export const importModifiedCorrectConfig = {
     'sqsq5566',
     'weiraneve',
     'Unknown',
+    'Jianxun.Ma',
+    'wenjing-qi',
+    'Yunsong',
   ],
   sourceControl: {
     type: 'GitHub',

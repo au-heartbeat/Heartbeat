@@ -64,6 +64,9 @@ export const config = {
     'sqsq5566',
     'weiraneve',
     'Unknown',
+    'Jianxun.Ma',
+    'wenjing-qi',
+    'Yunsong',
   ],
   cycleTime: {
     type: 'byColumn',

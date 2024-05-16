@@ -285,6 +285,10 @@ public class PipelineServiceTest {
 						.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator2").build())
 						.author(BuildKiteBuildInfo.Author.builder().username("test-author2").build())
 						.build(),
+					BuildKiteBuildInfo.builder()
+						.creator(BuildKiteBuildInfo.Creator.builder().name("test-creator3").build())
+						.author(BuildKiteBuildInfo.Author.builder().name("test-author3").build())
+						.build(),
 					BuildKiteBuildInfo.builder().author(null).build());
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.buildKiteSetting(BuildKiteSetting.builder()
@@ -305,10 +309,16 @@ public class PipelineServiceTest {
 			FetchedData.BuildKiteData result = pipelineService.fetchBuildKiteInfo(request);
 
 			assertEquals(1, result.getBuildInfosList().size());
-			assertEquals(2, result.getBuildInfosList().get(0).getValue().size());
 			assertEquals(1, result.getDeployTimesList().size());
 			verify(buildKiteService, times(1)).fetchPipelineBuilds(any(), any(), any(), any());
 			verify(buildKiteService, times(1)).countDeployTimes(any(), any(), any(), any());
+
+			List<BuildKiteBuildInfo> buildKiteBuildInfoList = result.getBuildInfosList().get(0).getValue();
+			assertEquals(3, buildKiteBuildInfoList.size());
+			assertEquals("test-author2", buildKiteBuildInfoList.get(0).getAuthor().getUsername());
+			assertEquals("test-author3", buildKiteBuildInfoList.get(1).getAuthor().getUsername());
+			assertEquals("Unknown", buildKiteBuildInfoList.get(2).getAuthor().getUsername());
+
 		}
 
 	}
