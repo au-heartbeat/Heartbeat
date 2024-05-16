@@ -64,7 +64,7 @@ public class BuildKiteService {
 		for (String permission : permissions) {
 			if (!buildKiteTokenInfo.getScopes().contains(permission)) {
 				log.error("Failed to call BuildKite, because of insufficient permission, current permissions: {}",
-					buildKiteTokenInfo.getScopes());
+						buildKiteTokenInfo.getScopes());
 				throw new PermissionDenyException("Failed to call BuildKite, because of insufficient permission!");
 			}
 		}
@@ -102,12 +102,12 @@ public class BuildKiteService {
 	}
 
 	public PipelineStepsDTO fetchPipelineSteps(String token, String organizationId, String pipelineId,
-											   PipelineStepsParam stepsParam) {
+			PipelineStepsParam stepsParam) {
 		try {
 			log.info("Start to get pipeline steps, organization id: {}, pipeline id: {}", organizationId, pipelineId);
 
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = fetchPipelineStepsByPage(token,
-				DeploymentEnvironment.builder().id(pipelineId).orgId(organizationId).build(), stepsParam);
+					DeploymentEnvironment.builder().id(pipelineId).orgId(organizationId).build(), stepsParam);
 
 			List<String> sortedSteps = getPipelineStepNames(buildKiteBuildInfos).stream().sorted().toList();
 			List<String> pipelineCrews = getPipelineCrewNames(buildKiteBuildInfos);
@@ -119,7 +119,7 @@ public class BuildKiteService {
 				.toList();
 
 			log.info("Successfully get pipeline steps, organization id: {}, pipeline id: {}, build steps: {}",
-				organizationId, pipelineId, sortedSteps);
+					organizationId, pipelineId, sortedSteps);
 			return PipelineStepsDTO.builder()
 				.pipelineId(pipelineId)
 				.steps(sortedSteps)
@@ -130,35 +130,36 @@ public class BuildKiteService {
 				.branches(sortedBranches)
 				.pipelineCrews(pipelineCrews)
 				.build();
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to get pipeline steps, organization id: {}, pipeline id: {}, e: {}", organizationId,
-				pipelineId, cause.getMessage());
+					pipelineId, cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(
-				String.format("Failed to get pipeline steps, organization id: %s, pipeline id: %s, cause is %s",
-					organizationId, pipelineId, cause.getMessage()));
+					String.format("Failed to get pipeline steps, organization id: %s, pipeline id: %s, cause is %s",
+							organizationId, pipelineId, cause.getMessage()));
 		}
 	}
 
 	private List<BuildKiteBuildInfo> fetchPipelineStepsByPage(String token, DeploymentEnvironment deploymentEnvironment,
-															  PipelineStepsParam stepsParam) {
+			PipelineStepsParam stepsParam) {
 		String page = "1";
 		String perPage = "100";
 		String orgId = deploymentEnvironment.getOrgId();
 		String pipelineId = deploymentEnvironment.getId();
 		List<String> branches = deploymentEnvironment.getBranches();
 		log.info(
-			"Start to paginated pipeline steps pagination info, orgId: {}, pipelineId: {}, stepsParam: {}, page:{}",
-			orgId, pipelineId, stepsParam, page);
+				"Start to paginated pipeline steps pagination info, orgId: {}, pipelineId: {}, stepsParam: {}, page:{}",
+				orgId, pipelineId, stepsParam, page);
 		String realToken = BEARER_TITLE + token;
 		stepsParam.setStartTime(TimeUtil.convertToISOFormat(stepsParam.getStartTime()));
 		stepsParam.setEndTime(TimeUtil.convertToISOFormat(stepsParam.getEndTime()));
 
 		PageStepsInfoDto pageStepsInfoDto = cachePageService.fetchPageStepsInfo(realToken, orgId, pipelineId, page,
-			perPage, stepsParam.getStartTime(), stepsParam.getEndTime(), branches);
+				perPage, stepsParam.getStartTime(), stepsParam.getEndTime(), branches);
 		List<BuildKiteBuildInfo> firstPageStepsInfo = pageStepsInfoDto.getFirstPageStepsInfo();
 		int totalPage = pageStepsInfoDto.getTotalPage();
 		List<BuildKiteBuildInfo> pageStepsInfo = new ArrayList<>();
@@ -169,7 +170,7 @@ public class BuildKiteService {
 			List<CompletableFuture<List<BuildKiteBuildInfo>>> futures = IntStream
 				.range(Integer.parseInt(page) + 1, totalPage + 1)
 				.mapToObj(currentPage -> getBuildKiteStepsAsync(realToken, orgId, pipelineId, stepsParam, perPage,
-					currentPage, branches))
+						currentPage, branches))
 				.toList();
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = futures.stream()
 				.map(CompletableFuture::join)
@@ -181,62 +182,63 @@ public class BuildKiteService {
 	}
 
 	private CompletableFuture<List<BuildKitePipelineDTO>> getBuildKitePipelineInfoAsync(String orgSlug,
-																						String buildKiteToken, int page, String perPage) {
+			String buildKiteToken, int page, String perPage) {
 		return CompletableFuture.supplyAsync(() -> {
 			log.info("Start to paginated pipeline info, orgId: {}, page:{}, perPage:{}", orgSlug, page, perPage);
 			var pipelineInfo = buildKiteFeignClient.getPipelineInfo(buildKiteToken, orgSlug, String.valueOf(page),
-				perPage);
+					perPage);
 			log.info("Successfully get paginated pipeline info, orgSlug: {}, page:{}, perPage:{}", orgSlug, page,
-				perPage);
+					perPage);
 			return pipelineInfo.getBody();
 		}, customTaskExecutor);
 	}
 
 	private CompletableFuture<List<BuildKiteBuildInfo>> getBuildKiteStepsAsync(String token, String organizationId,
-																			   String pipelineId, PipelineStepsParam stepsParam, String perPage, int page, List<String> branch) {
+			String pipelineId, PipelineStepsParam stepsParam, String perPage, int page, List<String> branch) {
 		return CompletableFuture.supplyAsync(() -> {
 			log.info("Start to paginated pipeline steps info, orgId: {}, pipelineId: {}, stepsParam: {}, page:{}",
-				organizationId, pipelineId, stepsParam, page);
+					organizationId, pipelineId, stepsParam, page);
 			List<BuildKiteBuildInfo> pipelineStepsInfo = buildKiteFeignClient.getPipelineStepsInfo(token,
-				organizationId, pipelineId, String.valueOf(page), perPage, stepsParam.getStartTime(),
-				stepsParam.getEndTime(), branch);
+					organizationId, pipelineId, String.valueOf(page), perPage, stepsParam.getStartTime(),
+					stepsParam.getEndTime(), branch);
 			log.info(
-				"Successfully get paginated pipeline steps info, orgId: {}, pipelineId: {}, pipeline steps size: {}, page:{}",
-				organizationId, pipelineId, pipelineStepsInfo.size(), page);
+					"Successfully get paginated pipeline steps info, orgId: {}, pipelineId: {}, pipeline steps size: {}, page:{}",
+					organizationId, pipelineId, pipelineStepsInfo.size(), page);
 			return pipelineStepsInfo;
 		}, customTaskExecutor);
 	}
 
 	public List<BuildKiteBuildInfo> fetchPipelineBuilds(String token, DeploymentEnvironment deploymentEnvironment,
-														String startTime, String endTime) {
+			String startTime, String endTime) {
 		try {
 			log.info("Start to get pipeline builds, param: {}", deploymentEnvironment);
 			PipelineStepsParam stepsParam = PipelineStepsParam.builder().startTime(startTime).endTime(endTime).build();
 			List<BuildKiteBuildInfo> buildKiteBuildInfos = fetchPipelineStepsByPage(token, deploymentEnvironment,
-				stepsParam);
+					stepsParam);
 			log.info("Successfully get pipeline builds, param: {}, buildKite build info size: {}",
-				deploymentEnvironment, buildKiteBuildInfos.size());
+					deploymentEnvironment, buildKiteBuildInfos.size());
 			return buildKiteBuildInfos;
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to get pipeline builds_param:{}, e: {}", deploymentEnvironment, cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(String.format("Failed to get pipeline builds_param: %s, cause is %s",
-				deploymentEnvironment, cause.getMessage()));
+					deploymentEnvironment, cause.getMessage()));
 		}
 	}
 
 	public DeployTimes countDeployTimes(DeploymentEnvironment deploymentEnvironment,
-										List<BuildKiteBuildInfo> buildInfos, String startTime, String endTime) {
+			List<BuildKiteBuildInfo> buildInfos, String startTime, String endTime) {
 		if (deploymentEnvironment.getOrgId() == null) {
 			throw new NotFoundException("Failed to count deployment times due to miss orgId argument");
 		}
 		List<DeployInfo> passedBuilds = getBuildsByState(buildInfos, deploymentEnvironment, "passed", startTime,
-			endTime);
+				endTime);
 		List<DeployInfo> failedBuilds = getBuildsByState(buildInfos, deploymentEnvironment, "failed", startTime,
-			endTime);
+				endTime);
 
 		return DeployTimes.builder()
 			.pipelineId(deploymentEnvironment.getId())
@@ -248,11 +250,11 @@ public class BuildKiteService {
 	}
 
 	private List<DeployInfo> getBuildsByState(List<BuildKiteBuildInfo> buildInfos,
-											  DeploymentEnvironment deploymentEnvironment, String state, String startTime, String endTime) {
+			DeploymentEnvironment deploymentEnvironment, String state, String startTime, String endTime) {
 		return buildInfos.stream()
 			.map(build -> this.mapToDeployInfo(build,
-				getStepsBeforeEndStep(deploymentEnvironment.getStep(), getPipelineStepNames(buildInfos)),
-				List.of(state), startTime, endTime))
+					getStepsBeforeEndStep(deploymentEnvironment.getStep(), getPipelineStepNames(buildInfos)),
+					List.of(state), startTime, endTime))
 			.filter(job -> !job.equals(DeployInfo.builder().build()))
 			.filter(job -> !job.getJobStartTime().isEmpty())
 			.toList();
@@ -264,16 +266,17 @@ public class BuildKiteService {
 			log.info("Start to query token permissions by token");
 			BuildKiteTokenInfo buildKiteTokenInfo = buildKiteFeignClient.getTokenInfo(buildKiteToken);
 			log.info("Successfully query token permissions by token, token info scopes: {}",
-				buildKiteTokenInfo.getScopes());
+					buildKiteTokenInfo.getScopes());
 			verifyTokenScopes(buildKiteTokenInfo);
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to call BuildKite, e: {}", cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(
-				String.format("Failed to call BuildKite, cause is %s", cause.getMessage()));
+					String.format("Failed to call BuildKite, cause is %s", cause.getMessage()));
 		}
 	}
 
@@ -289,20 +292,21 @@ public class BuildKiteService {
 			List<Pipeline> buildKiteInfoList = buildKiteOrganizationsInfo.stream()
 				.flatMap(org -> getPipelineInfoList(org, buildKiteToken).stream()
 					.map(pipeline -> PipelineTransformer.fromBuildKitePipelineDto(pipeline, org.getSlug(),
-						org.getName())))
+							org.getName())))
 				.toList();
 			log.info("Successfully get BuildKite pipelineInfo, slug:{}, pipelineInfoList size:{}",
-				buildKiteOrganizationsInfo, buildKiteInfoList.size());
+					buildKiteOrganizationsInfo, buildKiteInfoList.size());
 
 			return BuildKiteResponseDTO.builder().pipelineList(buildKiteInfoList).build();
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			Throwable cause = ofNullable(e.getCause()).orElse(e);
 			log.error("Failed to call BuildKite, e: {}", cause.getMessage());
 			if (cause instanceof BaseException baseException) {
 				throw baseException;
 			}
 			throw new InternalServerErrorException(
-				String.format("Failed to call BuildKite, cause is %s", cause.getMessage()));
+					String.format("Failed to call BuildKite, cause is %s", cause.getMessage()));
 
 		}
 	}
@@ -311,7 +315,7 @@ public class BuildKiteService {
 		String firstPage = "1";
 		String perPage = "100";
 		var pipelineInfoResponse = cachePageService.getPipelineInfoList(org.getSlug(), buildKiteToken, firstPage,
-			perPage);
+				perPage);
 		var firstPageStepsInfo = pipelineInfoResponse.getFirstPageInfo();
 		int totalPage = pipelineInfoResponse.getTotalPage();
 		List<BuildKitePipelineDTO> pagePipelineInfo = new ArrayList<>();
@@ -334,32 +338,32 @@ public class BuildKiteService {
 	}
 
 	public BuildKiteJob getBuildKiteJob(List<BuildKiteJob> jobs, List<String> steps, List<String> states,
-										String startTime, String endTime) {
+			String startTime, String endTime) {
 		Instant startDate = Instant.ofEpochMilli(Long.parseLong(startTime));
 		Instant endDate = Instant.ofEpochMilli(Long.parseLong(endTime));
 		return jobs.stream().filter(item -> steps.contains(item.getName())).filter(item -> {
-				if (Objects.nonNull(item.getFinishedAt()) && Objects.nonNull(item.getStartedAt())) {
-					Instant time = Instant.parse(item.getFinishedAt());
-					return TimeUtil.isAfterAndEqual(startDate, time) && TimeUtil.isBeforeAndEqual(endDate, time);
-				}
-				return false;
-			})
+			if (Objects.nonNull(item.getFinishedAt()) && Objects.nonNull(item.getStartedAt())) {
+				Instant time = Instant.parse(item.getFinishedAt());
+				return TimeUtil.isAfterAndEqual(startDate, time) && TimeUtil.isBeforeAndEqual(endDate, time);
+			}
+			return false;
+		})
 			.max(Comparator.comparing(BuildKiteJob::getFinishedAt))
 			.filter(buildKiteJob -> states.contains(buildKiteJob.getState()))
 			.orElse(null);
 	}
 
 	public DeployInfo mapToDeployInfo(BuildKiteBuildInfo buildInfo, List<String> steps, List<String> states,
-									  String startTime, String endTime) {
+			String startTime, String endTime) {
 		BuildKiteJob job = getBuildKiteJob(buildInfo.getJobs(), steps, states, startTime, endTime);
 
 		if (buildInfo.getPipelineCreateTime() == null || job == null || job.getStartedAt() == null
-			|| job.getFinishedAt() == null) {
+				|| job.getFinishedAt() == null) {
 			return DeployInfo.builder().build();
 		}
 
 		return new DeployInfo(buildInfo.getPipelineCreateTime(), job.getStartedAt(), job.getFinishedAt(),
-			buildInfo.getCommit(), job.getState(), CANCELED_STATE.equals(buildInfo.getState()), job.getName());
+				buildInfo.getCommit(), job.getState(), CANCELED_STATE.equals(buildInfo.getState()), job.getName());
 	}
 
 }
