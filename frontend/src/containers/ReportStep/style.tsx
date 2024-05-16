@@ -19,9 +19,9 @@ export const basicButtonStyle = {
 
 export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean }) => ({
   alignSelf: 'end',
-  width: 'fit-content',
+  width: '100%',
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
   marginTop: '0.25rem',
   marginBottom: props.isSummaryPage ? '0rem' : '2rem',
   zIndex: Z_INDEX.DROPDOWN,
