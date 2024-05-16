@@ -6,11 +6,14 @@ import {
   StyledArrowForward,
   StyledCalendarToday,
   StyledDateRangeViewerContainer,
+  StyledChip,
   StyledDivider,
   StyledExpandContainer,
   StyledExpandMoreIcon,
 } from './style';
 import {
+  IMetricsPageFailedDateRange,
+  IReportPageFailedDateRange,
   selectMetricsPageFailedTimeRangeInfos,
   selectReportPageFailedTimeRangeInfos,
   selectStepNumber,
@@ -26,10 +29,17 @@ type Props = {
   dateRangeList: DateRangeList;
   selectedDateRange?: DateRange;
   changeDateRange?: (dateRange: DateRange) => void;
+  isShowingChart?: boolean;
   disabledAll?: boolean;
 };
 
-const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, disabledAll = true }: Props) => {
+const DateRangeViewer = ({
+  dateRangeList,
+  changeDateRange,
+  selectedDateRange,
+  disabledAll = true,
+  isShowingChart = false,
+}: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
   const metricsPageFailedTimeRangeInfos = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
@@ -37,8 +47,14 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   const stepNumber = useAppSelector(selectStepNumber);
   const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
   const isMetricsPage = stepNumber === 1;
+  const isReportPage = stepNumber === 2;
 
-  const backgroundColor = isMetricsPage ? theme.palette.secondary.dark : theme.palette.common.white;
+  const backgroundColor =
+    stepNumber === 1
+      ? theme.palette.secondary.dark
+      : isShowingChart
+        ? theme.palette.secondary.dark
+        : theme.palette.common.white;
   const currentDateRangeHasFailed = getCurrentDateRangeHasFailed(
     formatDateToTimestampString(currentDateRange.startDate!),
   );
@@ -49,7 +65,16 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
     }
   }, []);
 
+  const getBackgroundColor = (currentDate: string) => {
+    if (isMetricsPage || currentDate === currentDateRange.startDate) {
+      return theme.palette.secondary.dark;
+    } else {
+      return theme.palette.common.white;
+    }
+  };
+
   const handleClick = (key: string) => {
+    if (disabledAll) return;
     changeDateRange && changeDateRange(dateRangeList.find((dateRange) => dateRange.startDate === key)!);
     setShowMoreDateRange(false);
   };
@@ -62,13 +87,13 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
   }, [handleClickOutside]);
 
   function getCurrentDateRangeHasFailed(startDate: string) {
+    let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
     if (isMetricsPage) {
-      const errorInfo = metricsPageFailedTimeRangeInfos[startDate];
-      return !!(errorInfo?.isPipelineInfoError || errorInfo?.isBoardInfoError || errorInfo?.isPipelineStepError);
+      errorInfo = metricsPageFailedTimeRangeInfos[startDate] || {};
     } else {
-      const errorInfo = reportPageFailedTimeRangeInfos[startDate];
-      return !!(errorInfo?.isPollingError || errorInfo?.isGainPollingUrlError);
+      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
     }
+    return Object.values(errorInfo).some((value) => value);
   }
 
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
@@ -80,7 +105,7 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
           return (
             <SingleDateRange
               disabled={disabled}
-              backgroundColor={backgroundColor}
+              backgroundColor={getBackgroundColor(dateRange.startDate!)}
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
@@ -112,11 +137,17 @@ const DateRangeViewer = ({ dateRangeList, changeDateRange, selectedDateRange, di
         {formatDate(currentDateRange.endDate!)}
         <StyledCalendarToday />
       </DateRangeContainer>
-      <StyledDivider orientation='vertical' />
-      <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
-        <StyledExpandMoreIcon />
-        {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
-      </StyledExpandContainer>
+      {disabledAll && isReportPage ? (
+        <StyledChip aria-label='date-count-chip' label={dateRangeList.length} variant='outlined' size='small' />
+      ) : (
+        <>
+          <StyledDivider orientation='vertical' />
+          <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
+            <StyledExpandMoreIcon />
+          </StyledExpandContainer>
+          {showMoreDateRange && <DateRangeExpand ref={DateRangeExpandRef} />}
+        </>
+      )}
     </StyledDateRangeViewerContainer>
   );
 };
