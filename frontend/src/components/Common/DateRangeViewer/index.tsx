@@ -24,6 +24,7 @@ import { formatDate, formatDateToTimestampString } from '@src/utils/util';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { useAppSelector } from '@src/hooks';
 import { theme } from '@src/theme';
+import { STEP_NUMBER } from "@src/constants/commons";
 
 type Props = {
   dateRangeList: DateRangeList;
@@ -46,11 +47,11 @@ const DateRangeViewer = ({
   const reportPageFailedTimeRangeInfos = useAppSelector(selectReportPageFailedTimeRangeInfos);
   const stepNumber = useAppSelector(selectStepNumber);
   const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
-  const isMetricsPage = stepNumber === 1;
-  const isReportPage = stepNumber === 2;
+  const isMetricsPage = stepNumber === STEP_NUMBER.METRICS_PAGE;
+  const isReportPage = stepNumber === STEP_NUMBER.REPORT_PAGE;
 
   const backgroundColor =
-    stepNumber === 1
+    stepNumber === STEP_NUMBER.METRICS_PAGE
       ? theme.palette.secondary.dark
       : isShowingChart
         ? theme.palette.secondary.dark
