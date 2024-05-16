@@ -2,18 +2,39 @@ import { createSlice } from '@reduxjs/toolkit';
 import { ZERO } from '@src/constants/commons';
 import type { RootState } from '@src/store';
 
+export interface IMetricsPageFailedDateRange {
+  isBoardInfoError?: boolean;
+  isPipelineInfoError?: boolean;
+  isPipelineStepError?: boolean;
+}
+
+export interface IReportPageFailedDateRange {
+  isGainPollingUrlError?: boolean;
+  isPollingError?: boolean;
+  isBoardMetricsError?: boolean;
+  isPipelineMetricsError?: boolean;
+  isSourceControlMetricsError?: boolean;
+}
+
+export interface IPageFailedDateRangePayload<T> {
+  startDate: string;
+  errors: T;
+}
+
 export interface StepState {
   stepNumber: number;
   timeStamp: number;
   shouldMetricsLoaded: boolean;
-  failedTimeRangeList: string[];
+  metricsPageFailedTimeRangeInfos: Record<string, IMetricsPageFailedDateRange>;
+  reportPageFailedTimeRangeInfos: Record<string, IReportPageFailedDateRange>;
 }
 
 const initialState: StepState = {
   stepNumber: 0,
   timeStamp: 0,
   shouldMetricsLoaded: true,
-  failedTimeRangeList: [],
+  metricsPageFailedTimeRangeInfos: {},
+  reportPageFailedTimeRangeInfos: {},
 };
 
 export const stepperSlice = createSlice({
@@ -26,7 +47,10 @@ export const stepperSlice = createSlice({
     },
     nextStep: (state) => {
       if (state.shouldMetricsLoaded && state.stepNumber === 0) {
-        state.failedTimeRangeList = [];
+        state.metricsPageFailedTimeRangeInfos = {};
+      }
+      if (state.stepNumber === 1) {
+        state.reportPageFailedTimeRangeInfos = {};
       }
       state.shouldMetricsLoaded = true;
       state.stepNumber += 1;
@@ -41,18 +65,52 @@ export const stepperSlice = createSlice({
     updateTimeStamp: (state, action) => {
       state.timeStamp = action.payload;
     },
-    updateFailedTimeRange: (state, action) => {
-      state.failedTimeRangeList = state.failedTimeRangeList.concat(action.payload);
+    updateMetricsPageFailedTimeRangeInfos: (state, action) => {
+      const errorInfoList: IPageFailedDateRangePayload<IMetricsPageFailedDateRange>[] = action.payload;
+
+      errorInfoList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
+
+      function updateInfo(errorInfo: IPageFailedDateRangePayload<IMetricsPageFailedDateRange>) {
+        const { startDate, errors } = errorInfo;
+        state.metricsPageFailedTimeRangeInfos[startDate] = {
+          ...state.metricsPageFailedTimeRangeInfos[startDate],
+          ...errors,
+        };
+      }
+    },
+
+    updateReportPageFailedTimeRangeInfos: (state, action) => {
+      const errorInfoList: IPageFailedDateRangePayload<IReportPageFailedDateRange>[] = action.payload;
+
+      errorInfoList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
+
+      function updateInfo(errorInfo: IPageFailedDateRangePayload<IReportPageFailedDateRange>) {
+        const { startDate, errors } = errorInfo;
+        state.reportPageFailedTimeRangeInfos[startDate] = {
+          ...state.reportPageFailedTimeRangeInfos[startDate],
+          ...errors,
+        };
+      }
     },
   },
 });
 
-export const { resetStep, nextStep, backStep, updateShouldMetricsLoaded, updateTimeStamp, updateFailedTimeRange } =
-  stepperSlice.actions;
+export const {
+  resetStep,
+  nextStep,
+  backStep,
+  updateShouldMetricsLoaded,
+  updateTimeStamp,
+  updateMetricsPageFailedTimeRangeInfos,
+  updateReportPageFailedTimeRangeInfos,
+} = stepperSlice.actions;
 
 export const selectStepNumber = (state: RootState) => state.stepper.stepNumber;
 export const selectTimeStamp = (state: RootState) => state.stepper.timeStamp;
 export const shouldMetricsLoaded = (state: RootState) => state.stepper.shouldMetricsLoaded;
-export const selectFailedTimeRange = (state: RootState) => state.stepper.failedTimeRangeList;
+export const selectMetricsPageFailedTimeRangeInfos = (state: RootState) =>
+  state.stepper.metricsPageFailedTimeRangeInfos;
+
+export const selectReportPageFailedTimeRangeInfos = (state: RootState) => state.stepper.reportPageFailedTimeRangeInfos;
 
 export default stepperSlice.reducer;

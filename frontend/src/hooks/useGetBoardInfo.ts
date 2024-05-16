@@ -1,5 +1,5 @@
 import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
-import { updateFailedTimeRange } from '@src/context/stepper/StepperSlice';
+import { updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
@@ -13,18 +13,21 @@ import dayjs from 'dayjs';
 export type JiraColumns = Record<string, string>[];
 export type TargetFields = Record<string, string>[];
 export type Users = string[];
+
 export interface BoardInfoResponse {
   jiraColumns: JiraColumns;
   targetFields: TargetFields;
   ignoredTargetFields: TargetFields;
   users: Users;
 }
+
 export interface useGetBoardInfoInterface {
   getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<BoardInfoResponse[]> | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
   boardInfoFailedStatus: METRICS_DATA_FAIL_STATUS;
 }
+
 const boardInfoPartialFailedStatusMapping = (code: string | number) => {
   if (code == AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
     return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
@@ -76,6 +79,7 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
     setErrorMessage({});
+    const localFailedTimeRangeList: string[] = [];
     let errorCount = 0;
     let localBoardInfoFailedStatus: METRICS_DATA_FAIL_STATUS;
 
@@ -135,7 +139,18 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
         })
         .finally(() => {
           setIsLoading(false);
-          dispatch(updateFailedTimeRange(localFailedTimeRangeList));
+          dispatch(
+            updateMetricsPageFailedTimeRangeInfos(
+              dateRangeCopy.map((dateRange) => ({
+                startDate: formatDateToTimestampString(dateRange.startDate!),
+                errors: {
+                  isBoardInfoError: localFailedTimeRangeList.includes(
+                    formatDateToTimestampString(dateRange.startDate!),
+                  ),
+                },
+              })),
+            ),
+          );
         });
     }
   };

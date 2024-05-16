@@ -1,5 +1,6 @@
 import {
   DateRange,
+  DateRangeList,
   isOnlySelectClassification,
   isSelectBoardMetrics,
   isSelectDoraMetrics,
@@ -22,12 +23,21 @@ import {
   TimeoutErrorKey,
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
+
 import {
   addNotification,
   closeAllNotifications,
   closeNotification,
   Notification,
 } from '@src/context/notification/NotificationSlice';
+
+import {
+  StyledCalendarWrapper,
+  StyledRetry,
+  StyledTab,
+  StyledTabs,
+  StyledTabWrapper,
+} from '@src/containers/ReportStep/style';
 import {
   BOARD_METRICS,
   CALENDAR,
@@ -36,9 +46,9 @@ import {
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
 } from '@src/constants/resources';
-import { StyledCalendarWrapper, StyledTab, StyledTabWrapper, StyledTabs } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
+import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
@@ -49,11 +59,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import { BoardMetricsChart } from './BoardMetricsChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
+import { BoardMetricsChart } from './BoardMetricsChart';
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -81,15 +91,13 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const allDateRanges = descendingDateRanges.reverse().map((range) => {
     const start = new Date(range.startDate!);
     const end = new Date(range.endDate!);
-    // 格式化日期为 MM/DD
     const formattedStart = `${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
     const formattedEnd = `${(end.getMonth() + 1).toString().padStart(2, '0')}/${end.getDate().toString().padStart(2, '0')}`;
 
     return `${formattedStart}-${formattedEnd}`;
   });
-  const [selectedDateRange, setSelectedDateRange] = useState<Record<string, string | null | boolean | undefined>>(
-    descendingDateRanges[0],
-  );
+
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
   const [chartIndex, setChartIndex] = React.useState(0);
   const [displayType, setDisplayType] = React.useState(0);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
@@ -137,6 +145,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
+  const isChartPage = useMemo(
+    () => pageType === REPORT_PAGE_TYPE.DORA_CHART || pageType === REPORT_PAGE_TYPE.BOARD_CHART,
+    [pageType],
+  );
 
   const mapDateResult = (descendingDateRanges: DateRange, reportInfos: IReportInfo[]) =>
     descendingDateRanges.map(({ startDate, endDate }) => {
@@ -286,14 +298,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [selectedDateRange]);
 
   useEffect(() => {
-    setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
-    return () => {
-      stopPollingReports();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     exportValidityTimeMin &&
       isCsvFileGeneratedAtEnd &&
       dispatch(
@@ -329,7 +333,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [dispatch, exportValidityTimeMin, isCsvFileGeneratedAtEnd]);
 
   useEffect(() => {
-    dispatch(closeAllNotifications());
+    if (pageType === REPORT_PAGE_TYPE.DORA || pageType === REPORT_PAGE_TYPE.BOARD) {
+      dispatch(closeAllNotifications());
+    }
   }, [dispatch, pageType]);
 
   useEffect(() => {
@@ -343,12 +349,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, [dispatch, reportInfos, hasPollingStarted]);
 
   useEffect(() => {
-    if (isSummaryPage && notifications4SummaryPage.length > 0) {
+    if ((isSummaryPage || isChartPage) && notifications4SummaryPage.length > 0) {
       const notification = notifications4SummaryPage[0];
       notification && dispatch(addNotification(notification));
       setNotifications4SummaryPage(notifications4SummaryPage.slice(1));
     }
-  }, [dispatch, notifications4SummaryPage, isSummaryPage]);
+  }, [dispatch, notifications4SummaryPage, isSummaryPage, isChartPage]);
 
   useEffect(() => {
     if (!currentDataInfo.shouldShowBoardMetricsError) return;
@@ -418,7 +424,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   ]);
 
   useEffect(() => {
+    setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
     startToRequestData(basicReportRequestBody);
+    return () => {
+      stopPollingReports();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -448,11 +458,13 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     </>
   );
 
+  const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
+    <DoraMetricsChart data={data} dateRanges={allDateRanges} />
+  );
+
   const showBoardChart = (data?: IReportInfo[] | undefined) => (
     <BoardMetricsChart data={data} dateRanges={allDateRanges} />
   );
-
-  const showDoraChart = (data?: IReportInfo[] | undefined) => <div>DoraChart</div>;
 
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
@@ -466,23 +478,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const backToSummaryPage = () => {
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
-  };
-
-  const handleClick = (event: React.SyntheticEvent, newValue: number) => {
-    const pageType =
-      newValue === 0
-        ? REPORT_PAGE_TYPE.SUMMARY
-        : selectDoraMetricsAndClassification || chartIndex === 1
-          ? REPORT_PAGE_TYPE.DORA_CHART
-          : REPORT_PAGE_TYPE.BOARD_CHART;
-
-    setDisplayType(newValue);
-    setPageType(pageType);
-  };
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setChartIndex(newValue);
-    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {
@@ -505,6 +500,24 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     closeReportInfosErrorStatus(selectedDateRange.startDate as string, errorKey);
   };
 
+  const handleClick = (event: React.SyntheticEvent, newValue: number) => {
+    const pageType =
+      newValue === 0
+        ? REPORT_PAGE_TYPE.SUMMARY
+        : selectDoraMetricsAndClassification || chartIndex === 1
+          ? REPORT_PAGE_TYPE.DORA_CHART
+          : REPORT_PAGE_TYPE.BOARD_CHART;
+
+    setDisplayType(newValue);
+    setPageType(pageType);
+  };
+
+  const handleChartRetry = () => {
+    pageType === REPORT_PAGE_TYPE.DORA_CHART
+      ? startToRequestData(doraReportRequestBody)
+      : startToRequestData(boardReportRequestBody);
+  };
+
   const tabProps = (index: number) => {
     return {
       id: `simple-tab-${index}`,
@@ -523,10 +536,21 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       case REPORT_PAGE_TYPE.BOARD_CHART:
         return showBoardChart(reportInfos);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return showDoraChart(reportInfos);
-      default:
-        return showSummary();
+        return showDoraChart(reportInfos.map((infos) => infos.reportData));
     }
+  };
+
+  const isShowingChart = () => {
+    return pageType === REPORT_PAGE_TYPE.BOARD_CHART || pageType === REPORT_PAGE_TYPE.DORA_CHART;
+  };
+
+  const shouldShowChartRetryButton = () => {
+    return (
+      (currentDataInfo['timeout4Report'].message ||
+        currentDataInfo['timeout4Dora'].message ||
+        currentDataInfo['timeout4Board'].message) &&
+      isShowingChart()
+    );
   };
 
   return (
@@ -566,11 +590,17 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
               </Box>
             )}
           </StyledTabWrapper>
+          {shouldShowChartRetryButton() && (
+            <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
+              {RETRY}
+            </StyledRetry>
+          )}
           <DateRangeViewer
             dateRangeList={descendingDateRanges}
             selectedDateRange={selectedDateRange}
             changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
-            disabledAll={false}
+            isShowingChart={isShowingChart()}
+            disabledAll={isShowingChart()}
           />
         </StyledCalendarWrapper>
       )}
@@ -580,6 +610,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         isShowExportMetrics={isSummaryPage}
         isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
         isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
+        isShowExportDoraChartButton={pageType === REPORT_PAGE_TYPE.DORA_CHART}
+        isShowExportBoardChartButton={pageType === REPORT_PAGE_TYPE.BOARD_CHART}
         handleBack={() => handleBack()}
         handleSave={() => handleSave()}
         csvTimeStamp={csvTimeStamp}

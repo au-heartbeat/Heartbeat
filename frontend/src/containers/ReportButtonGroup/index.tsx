@@ -1,9 +1,9 @@
 import { StyledButtonGroup, StyledExportButton, StyledRightButtonGroup } from '@src/containers/ReportButtonGroup/style';
+import { COMMON_BUTTONS, DOWNLOAD_DIALOG_TITLE, REPORT_TYPES } from '@src/constants/commons';
 import { DateRangeItem, DownloadDialog } from '@src/containers/ReportStep/DownloadDialog';
 import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
 import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
 import { CSVReportRequestDTO } from '@src/clients/report/dto/request';
-import { COMMON_BUTTONS, REPORT_TYPES } from '@src/constants/commons';
 import { AllErrorResponse } from '@src/clients/report/dto/response';
 import { DateRangeRequestResult } from '@src/containers/ReportStep';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
@@ -21,6 +21,8 @@ interface ReportButtonGroupProps {
   isShowExportPipelineButton: boolean;
   isShowExportMetrics: boolean;
   dateRangeRequestResults: DateRangeRequestResult[];
+  isShowExportDoraChartButton: boolean;
+  isShowExportBoardChartButton: boolean;
 }
 
 export const ReportButtonGroup = ({
@@ -31,6 +33,8 @@ export const ReportButtonGroup = ({
   isShowExportMetrics,
   isShowExportBoardButton,
   isShowExportPipelineButton,
+  isShowExportDoraChartButton,
+  isShowExportBoardChartButton,
   dateRangeRequestResults,
 }: ReportButtonGroupProps) => {
   const [isShowDialog, setIsShowDialog] = useState(false);
@@ -106,6 +110,7 @@ export const ReportButtonGroup = ({
           handleClose={handleCloseDialog}
           dateRangeList={downloadReportList}
           downloadCSVFile={(startDate, endDate) => fetchExportData(exportCSV(dataType, startDate, endDate))}
+          title={DOWNLOAD_DIALOG_TITLE[dataType]}
         />
       )}
       <StyledButtonGroup isShowSave={isShowSave}>
@@ -142,6 +147,11 @@ export const ReportButtonGroup = ({
               onClick={() => handleDownload(pipelineMetricsResults, REPORT_TYPES.PIPELINE)}
             >
               {COMMON_BUTTONS.EXPORT_PIPELINE_DATA}
+            </StyledExportButton>
+          )}
+          {(isShowExportDoraChartButton || isShowExportBoardChartButton) && (
+            <StyledExportButton disabled={!isExportPipelineButtonClickable || !isExportBoardButtonClickable}>
+              {isShowExportDoraChartButton && COMMON_BUTTONS.EXPORT_DORA_CHART}
             </StyledExportButton>
           )}
         </StyledRightButtonGroup>
