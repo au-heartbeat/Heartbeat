@@ -32,20 +32,21 @@ import {
 } from '@src/context/notification/NotificationSlice';
 
 import {
-  StyledCalendarWrapper,
-  StyledRetry,
-  StyledTab,
-  StyledTabs,
-  StyledTabWrapper,
-} from '@src/containers/ReportStep/style';
-import {
   BOARD_METRICS,
   CALENDAR,
   DORA_METRICS,
   MESSAGE,
   REPORT_PAGE_TYPE,
   REQUIRED_DATA,
+  RETRY,
 } from '@src/constants/resources';
+import {
+  StyledCalendarWrapper,
+  StyledRetry,
+  StyledTab,
+  StyledTabs,
+  StyledTabWrapper,
+} from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
@@ -59,11 +60,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import { BoardMetricsChart } from './BoardMetricsChart';
 import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
-import { BoardMetricsChart } from './BoardMetricsChart';
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -150,7 +151,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     [pageType],
   );
 
-  const mapDateResult = (descendingDateRanges: DateRange, reportInfos: IReportInfo[]) =>
+  const mapDateResult = (descendingDateRanges: DateRangeList, reportInfos: IReportInfo[]) =>
     descendingDateRanges.map(({ startDate, endDate }) => {
       const reportData = reportInfos.find((singleResult) => singleResult.id === startDate)?.reportData ?? null;
       return {
@@ -510,6 +511,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
     setDisplayType(newValue);
     setPageType(pageType);
+  };
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setChartIndex(newValue);
+    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
   };
 
   const handleChartRetry = () => {
