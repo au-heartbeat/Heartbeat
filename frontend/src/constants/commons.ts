@@ -10,7 +10,7 @@ export const STEP_NUMBER = {
   CONFIG_PAGE: 0,
   METRICS_PAGE: 1,
   REPORT_PAGE: 2,
-}
+};
 
 export const EMPTY_STRING = '';
 
