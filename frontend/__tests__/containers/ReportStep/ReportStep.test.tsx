@@ -771,7 +771,7 @@ describe('Report Step', () => {
       expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
     });
 
-    it('should render metrics list when click list from chart page', async () => {
+    it('should select DORA tab when click DORA tab from chart page again', async () => {
       setup(REQUIRED_DATA_LIST);
 
       const switchChartButton = screen.getByText('Chart');
