@@ -440,7 +440,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, []);
 
   const showSummary = () => (
-    <>
+    <Box sx={{ marginTop: allDateRanges.length > 1 ? '0' : '-3.4rem' }}>
       {shouldShowBoardMetrics && (
         <BoardMetrics
           startToRequestBoardData={() => startToRequestData(boardReportRequestBody)}
@@ -462,7 +462,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           }
         />
       )}
-    </>
+    </Box>
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
@@ -568,45 +568,51 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   return (
     <>
       {startDate && endDate && (
-        <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
-          <StyledTabWrapper>
-            <Box sx={{ marginRight: '2.5rem' }}>
-              <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
-                <StyledTab
-                  sx={{
-                    borderRight: 'none',
-                    borderRadius: '0.16rem 0 0 0.16rem',
-                  }}
-                  icon={<FormatListBulletedIcon />}
-                  iconPosition='start'
-                  label='List'
-                />
-                <StyledTab
-                  sx={{
-                    borderLeft: 'none',
-                    borderRadius: '0 0.16rem 0.16rem 0',
-                  }}
-                  icon={<BarChartIcon />}
-                  iconPosition='start'
-                  label='Chart'
-                  disabled={onlySelectClassification}
-                />
-              </StyledTabs>
-            </Box>
-            {displayType === 1 && (
-              <Box>
-                <Tabs
-                  TabIndicatorProps={CHART_TAB_STYLE}
-                  value={chartIndex}
-                  onChange={handleChange}
-                  aria-label='chart tabs'
-                >
-                  <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
-                  <Tab label='DORA' {...tabProps(1)} />
-                </Tabs>
+        <StyledCalendarWrapper
+          data-testid={'calendarWrapper'}
+          isSummaryPage={isSummaryPage}
+          shouldShowChart={allDateRanges.length > 1}
+        >
+          {allDateRanges.length > 1 && (
+            <StyledTabWrapper>
+              <Box sx={{ marginRight: '2.5rem' }}>
+                <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
+                  <StyledTab
+                    sx={{
+                      borderRight: 'none',
+                      borderRadius: '0.16rem 0 0 0.16rem',
+                    }}
+                    icon={<FormatListBulletedIcon />}
+                    iconPosition='start'
+                    label='List'
+                  />
+                  <StyledTab
+                    sx={{
+                      borderLeft: 'none',
+                      borderRadius: '0 0.16rem 0.16rem 0',
+                    }}
+                    icon={<BarChartIcon />}
+                    iconPosition='start'
+                    label='Chart'
+                    disabled={onlySelectClassification}
+                  />
+                </StyledTabs>
               </Box>
-            )}
-          </StyledTabWrapper>
+              {displayType === 1 && (
+                <Box>
+                  <Tabs
+                    TabIndicatorProps={CHART_TAB_STYLE}
+                    value={chartIndex}
+                    onChange={handleChange}
+                    aria-label='chart tabs'
+                  >
+                    <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
+                    <Tab label='DORA' {...tabProps(1)} />
+                  </Tabs>
+                </Box>
+              )}
+            </StyledTabWrapper>
+          )}
           {shouldShowChartRetryButton() && (
             <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
               {RETRY}

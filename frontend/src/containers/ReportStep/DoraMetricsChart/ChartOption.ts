@@ -68,7 +68,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
       name: props.yAxis.name,
       type: 'value',
       nameTextStyle: {
-        align: 'center',
+        align: 'left',
       },
       paddingLeft: 10,
       axisLabel: {

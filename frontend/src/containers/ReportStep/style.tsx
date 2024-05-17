@@ -17,11 +17,11 @@ export const basicButtonStyle = {
   textTransform: theme.typography.button.textTransform,
 };
 
-export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean }) => ({
+export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean; shouldShowChart: boolean }) => ({
   alignSelf: 'end',
   width: '100%',
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: props.shouldShowChart ? 'space-between' : 'flex-end',
   marginTop: '0.25rem',
   marginBottom: props.isSummaryPage ? '0rem' : '2rem',
   zIndex: Z_INDEX.DROPDOWN,
