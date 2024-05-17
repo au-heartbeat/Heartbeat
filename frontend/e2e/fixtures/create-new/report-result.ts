@@ -593,12 +593,12 @@ export const DORA_METRICS_RESULT = {
 
 export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
   {
-    prLeadTime: '11.45',
-    pipelineLeadTime: '0.59',
-    totalLeadTime: '12.04',
-    deploymentFrequency: '6.50',
-    failureRate: '18.75% (3/16)',
-    devMeanTimeToRecovery: '3.74',
+    prLeadTime: '7.64',
+    pipelineLeadTime: '0.40',
+    totalLeadTime: '8.04',
+    deploymentFrequency: '1.50',
+    failureRate: '40.00% (2/5)',
+    devMeanTimeToRecovery: '0.30',
   },
   {
     prLeadTime: '2.12',
@@ -609,11 +609,11 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     devMeanTimeToRecovery: '2.91',
   },
   {
-    prLeadTime: '7.64',
-    pipelineLeadTime: '0.40',
-    totalLeadTime: '8.04',
-    deploymentFrequency: '1.50',
-    failureRate: '40.00% (2/5)',
-    devMeanTimeToRecovery: '0.30',
+    prLeadTime: '9.95',
+    pipelineLeadTime: '0.56',
+    totalLeadTime: '10.51',
+    deploymentFrequency: '7.50',
+    failureRate: '16.67% (3/18)',
+    devMeanTimeToRecovery: '3.74',
   },
 ];

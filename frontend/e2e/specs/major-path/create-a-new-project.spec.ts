@@ -74,7 +74,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
 
   await metricsStep.selectClassifications(metricsStepData.classification);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
-  await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
+  await metricsStep.selectAllPipelineCrews();
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
   await metricsStep.saveConfigStepAsJSONThenVerifyDownloadFile(metricsStepData);
   await metricsStep.goToReportPage();

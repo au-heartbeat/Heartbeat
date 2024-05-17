@@ -637,6 +637,25 @@ export class MetricsStep {
     await this.selectBranch(firstPipelineConfig.branches);
   }
 
+  async selectAllPipelineCrews() {
+    await this.pipelineCrewSettingsLabel.click();
+    const options = this.page.getByRole('option');
+    const allOption = options.filter({ hasText: 'All' }).first();
+    for (const option of (await options.all()).slice(1)) {
+      const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (!isOptionSelected) {
+        await allOption.click();
+        break;
+      }
+    }
+
+    for (const option of (await options.all()).slice(1)) {
+      expect((await option.getAttribute('aria-selected')) === 'true').toBeTruthy();
+    }
+
+    await this.page.keyboard.press('Escape');
+  }
+
   async selectGivenPipelineCrews(crews: string[]) {
     await this.pipelineCrewSettingsLabel.click();
     const options = this.page.getByRole('option');
