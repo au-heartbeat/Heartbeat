@@ -770,5 +770,21 @@ describe('Report Step', () => {
       expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
       expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
     });
+
+    it('should render metrics list when click list from chart page', async () => {
+      setup(REQUIRED_DATA_LIST);
+
+      const switchChartButton = screen.getByText('Chart');
+      await userEvent.click(switchChartButton);
+
+      const switchDORATab = screen.getByText('DORA');
+      await userEvent.click(switchDORATab);
+
+      const switchMetricsListButton = screen.getByText('List');
+      await userEvent.click(switchMetricsListButton);
+      await userEvent.click(switchChartButton);
+
+      expect(switchDORATab).toHaveClass('Mui-selected');
+    });
   });
 });

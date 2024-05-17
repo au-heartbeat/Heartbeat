@@ -47,12 +47,6 @@ function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined) {
     });
   });
 
-  Object.keys(res).forEach((key) => {
-    if (res[key].every((val) => val === 0)) {
-      delete res[key];
-    }
-  });
-
   return res;
 }
 
