@@ -25,7 +25,6 @@ import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { STEP_NUMBER } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks';
 import { theme } from '@src/theme';
-import { STEP_NUMBER } from "@src/constants/commons";
 
 type Props = {
   dateRangeList: DateRangeList;

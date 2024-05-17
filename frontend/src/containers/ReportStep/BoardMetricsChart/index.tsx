@@ -1,19 +1,4 @@
 import {
-  DatasetComponent,
-  GridComponent,
-  LegendComponent,
-  TitleComponent,
-  ToolboxComponent,
-  TooltipComponent,
-  TransformComponent,
-} from 'echarts/components';
-
-import { LabelLayout, UniversalTransition } from 'echarts/features';
-import { BarChart, LineChart } from 'echarts/charts';
-import React, { useEffect, useRef } from 'react';
-import * as echarts from 'echarts/core';
-
-import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
@@ -22,22 +7,8 @@ import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style'
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { CanvasRenderer } from 'echarts/renderers';
-
-echarts.use([
-  LineChart,
-  BarChart,
-  TitleComponent,
-  TooltipComponent,
-  ToolboxComponent,
-  GridComponent,
-  DatasetComponent,
-  TransformComponent,
-  LabelLayout,
-  UniversalTransition,
-  CanvasRenderer,
-  LegendComponent,
-]);
+import React, { useEffect, useRef } from 'react';
+import * as echarts from 'echarts';
 
 interface BoardMetricsChartProps {
   dateRanges: string[];
