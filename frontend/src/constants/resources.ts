@@ -22,6 +22,13 @@ export const RETRY = 'retry';
 export const DATA_LOADING_FAILED = 'Data loading failed';
 export const DEFAULT_MESSAGE = '';
 
+export const CHART_TAB_STYLE = {
+  sx: {
+    bottom: 5,
+    height: '4px',
+  },
+};
+
 export const NOTIFICATION_TITLE = {
   HELP_INFORMATION: 'Help Information',
   PLEASE_NOTE_THAT: 'Please note that',

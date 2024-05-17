@@ -35,6 +35,7 @@ import {
 import {
   BOARD_METRICS,
   CALENDAR,
+  CHART_TAB_STYLE,
   DORA_METRICS,
   MESSAGE,
   REPORT_PAGE_TYPE,
@@ -594,7 +595,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
             </Box>
             {displayType === 1 && (
               <Box>
-                <Tabs value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
+                <Tabs
+                  TabIndicatorProps={CHART_TAB_STYLE}
+                  value={chartIndex}
+                  onChange={handleChange}
+                  aria-label='chart tabs'
+                >
                   <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
                   <Tab label='DORA' {...tabProps(1)} />
                 </Tabs>

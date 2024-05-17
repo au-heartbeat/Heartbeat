@@ -74,7 +74,6 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
   const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
-  const localFailedTimeRangeList: string[] = [];
 
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
