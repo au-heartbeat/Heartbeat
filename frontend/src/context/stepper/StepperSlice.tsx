@@ -1,5 +1,5 @@
+import { STEP_NUMBER } from '@src/constants/commons';
 import { createSlice } from '@reduxjs/toolkit';
-import { STEP_NUMBER } from "@src/constants/commons";
 import type { RootState } from '@src/store';
 
 export interface IMetricsPageFailedDateRange {

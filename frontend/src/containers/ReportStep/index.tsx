@@ -1,13 +1,4 @@
 import {
-  DateRange,
-  DateRangeList,
-  isOnlySelectClassification,
-  isSelectBoardMetrics,
-  isSelectDoraMetrics,
-  isSelectDoraMetricsAndClassification,
-  selectConfig, selectDateRange
-} from "@src/context/config/configSlice";
-import {
   filterAndMapCycleTimeSettings,
   formatDuplicatedNameWithSuffix,
   getJiraBoardToken,
@@ -31,6 +22,16 @@ import {
   Notification,
 } from '@src/context/notification/NotificationSlice';
 
+import {
+  DateRange,
+  DateRangeList,
+  isOnlySelectClassification,
+  isSelectBoardMetrics,
+  isSelectDoraMetrics,
+  isSelectDoraMetricsAndClassification,
+  selectConfig,
+  selectDateRange,
+} from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   CALENDAR,
