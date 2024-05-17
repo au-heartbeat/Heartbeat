@@ -6,7 +6,11 @@ export const DEFAULT_HELPER_TEXT = '';
 
 export const FIVE_HUNDRED = 500;
 
-export const ZERO = 0;
+export const STEP_NUMBER = {
+  CONFIG_PAGE: 0,
+  METRICS_PAGE: 1,
+  REPORT_PAGE: 2,
+};
 
 export const EMPTY_STRING = '';
 
@@ -81,6 +85,8 @@ export const COMMON_BUTTONS = {
   EXPORT_PIPELINE_DATA: 'Export pipeline data',
   EXPORT_BOARD_DATA: 'Export board data',
   EXPORT_METRIC_DATA: 'Export metric data',
+  EXPORT_BOARD_CHART: 'Export board data',
+  EXPORT_DORA_CHART: 'Export pipeline data',
 };
 
 export const GRID_CONFIG = {
@@ -97,3 +103,9 @@ export enum METRICS_DATA_FAIL_STATUS {
   ALL_FAILED_TIMEOUT,
   ALL_FAILED_NO_CARDS,
 }
+
+export const DOWNLOAD_DIALOG_TITLE = {
+  [REPORT_TYPES.METRICS]: 'Metrics',
+  [REPORT_TYPES.BOARD]: 'Board',
+  [REPORT_TYPES.PIPELINE]: 'Pipeline',
+};
