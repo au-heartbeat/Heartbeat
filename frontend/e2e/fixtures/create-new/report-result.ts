@@ -8,11 +8,20 @@ export interface IBoardMetricsResult {
   reworkCardsRatio: string;
   reworkThroughput: string;
 }
+export interface IDoraMetricsResultItem {
+  prLeadTime: string;
+  pipelineLeadTime: string;
+  totalLeadTime: string;
+  deploymentFrequency: string;
+  failureRate: string;
+  devMeanTimeToRecovery: string;
+}
 
 export interface IBoardMetricsDetailItem {
   name: string;
   value: string;
 }
+
 export interface IBoardCycletimeDetailItem {
   name: string;
   lines: string[];
@@ -581,3 +590,30 @@ export const DORA_METRICS_RESULT = {
   FailureRate: '17.50% (7/40)',
   DevMeanTimeToRecovery: '1.90',
 };
+
+export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
+  {
+    prLeadTime: '11.45',
+    pipelineLeadTime: '0.59',
+    totalLeadTime: '12.04',
+    deploymentFrequency: '6.50',
+    failureRate: '18.75% (3/16)',
+    devMeanTimeToRecovery: '3.74',
+  },
+  {
+    prLeadTime: '2.12',
+    pipelineLeadTime: '0.42',
+    totalLeadTime: '2.54',
+    deploymentFrequency: '4.67',
+    failureRate: '6.67% (1/15)',
+    devMeanTimeToRecovery: '2.91',
+  },
+  {
+    prLeadTime: '7.64',
+    pipelineLeadTime: '0.40',
+    totalLeadTime: '8.04',
+    deploymentFrequency: '1.50',
+    failureRate: '40.00% (2/5)',
+    devMeanTimeToRecovery: '0.30',
+  },
+];

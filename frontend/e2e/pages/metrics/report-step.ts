@@ -5,7 +5,7 @@ import {
   IBoardClassificationDetailItem,
 } from '../../fixtures/create-new/report-result';
 import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
-import { ICsvComparedLines } from '../../fixtures/create-new/report-result';
+import { ICsvComparedLines, IDoraMetricsResultItem } from '../../fixtures/create-new/report-result';
 import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { expect, Locator, Page, Download } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
@@ -403,7 +403,7 @@ export class ReportStep {
     });
     let waitCounter = 0;
     await confirmButton.click();
-    while (downloadEvents.length < 3 && waitCounter < DOWNLOAD_EVENTS_WAIT_THRESHOLD) {
+    while (downloadEvents.length < csvCompareLines.length && waitCounter < DOWNLOAD_EVENTS_WAIT_THRESHOLD) {
       await new Promise<void>((resolve) => {
         setTimeout(() => {
           waitCounter++;
@@ -443,20 +443,27 @@ export class ReportStep {
     );
   }
 
-  async checkDoraMetrics(
-    prLeadTime: string,
-    pipelineLeadTime: string,
-    totalLeadTime: string,
-    deploymentFrequency: string,
-    failureRate: string,
-    devMeanTimeToRecovery: string,
-  ) {
+  async checkDoraMetrics({
+    prLeadTime,
+    pipelineLeadTime,
+    totalLeadTime,
+    deploymentFrequency,
+    failureRate,
+    devMeanTimeToRecovery,
+  }: IDoraMetricsResultItem) {
     await expect(this.prLeadTime).toContainText(`${prLeadTime}PR Lead Time(Hours)`);
     await expect(this.pipelineLeadTime).toContainText(`${pipelineLeadTime}Pipeline Lead Time(Hours)`);
     await expect(this.totalLeadTime).toContainText(`${totalLeadTime}Total Lead Time(Hours)`);
     await expect(this.deploymentFrequency).toContainText(`${deploymentFrequency}(Deployments/Days)`);
     await expect(this.failureRate).toContainText(failureRate);
     await expect(this.devMeanTimeToRecovery).toContainText(`${devMeanTimeToRecovery}(Hours)`);
+  }
+
+  async checkDoraMetricsForMultipleRanges(data: IDoraMetricsResultItem[]) {
+    for (let i = 0; i < data.length; i++) {
+      await this.changeTimeRange(i);
+      await this.checkDoraMetrics(data[i]);
+    }
   }
 
   async checkMetricDownloadData() {
