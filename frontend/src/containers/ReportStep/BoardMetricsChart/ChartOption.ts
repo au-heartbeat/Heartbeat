@@ -1,3 +1,4 @@
+import { theme } from '@src/theme';
 import { xAxisLabelDateFormatter } from '@src/utils/util';
 
 export interface BarOptionProps {
@@ -70,7 +71,7 @@ const commonConfig = {
     },
     axisLine: {
       lineStyle: {
-        color: '#d9d9d9',
+        color: theme.main.BoardChart.gridColor,
         width: 1,
         type: 'dashed',
       },

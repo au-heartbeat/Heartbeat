@@ -9,13 +9,25 @@ declare module '@mui/material/styles' {
   // allow configuration using `createTheme`
   interface ThemeOptions {
     main: {
-      chart: {
+      DoraChart: {
         barColorA: string;
         barColorB: string;
         barColorC: string;
         deploymentFrequencyChartColor: string;
         devChangeFailureRateColor: string;
         devMeanTimeToRecoveryColor: string;
+        gridColor: string;
+      };
+      BoardChart: {
+        barColorA: string;
+        barColorB: string;
+        barColorC: string;
+        barColorD: string;
+        barColorE: string;
+        barColorF: string;
+        lineColorA: string;
+        lineColorB: string;
+        gridColor: string;
       };
       backgroundColor: string;
       color: string;
@@ -104,13 +116,25 @@ export const theme = createTheme({
     },
   },
   main: {
-    chart: {
+    DoraChart: {
       barColorA: '#003D4F',
       barColorB: '#47A1AD',
       barColorC: '#F2617A',
       deploymentFrequencyChartColor: '#F2617A',
       devChangeFailureRateColor: '#003D4F',
       devMeanTimeToRecoveryColor: '#634F7D',
+      gridColor: '#D9D9D9',
+    },
+    BoardChart: {
+      barColorA: '#163C4D',
+      barColorB: '#5F9FAB',
+      barColorC: '#E16A7C',
+      barColorD: '#769D7B',
+      barColorE: '#C28830',
+      barColorF: '#5078e6',
+      lineColorA: '#163C4D',
+      lineColorB: '#E16A7C',
+      gridColor: '#D9D9D9',
     },
     backgroundColor: indigo[FIVE_HUNDRED],
     color: '#fff',

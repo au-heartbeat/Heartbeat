@@ -9,6 +9,7 @@ import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { xAxisLabelDateFormatter } from '@src/utils/util';
 import React, { useEffect, useRef } from 'react';
+import { theme } from '@src/theme';
 import * as echarts from 'echarts';
 
 interface BoardMetricsChartProps {
@@ -92,7 +93,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
         smooth: true,
       },
     ],
-    color: ['#e16a7c', '#163c4d'],
+    color: [theme.main.BoardChart.lineColorA, theme.main.BoardChart.lineColorB],
   };
 }
 
@@ -135,7 +136,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
         smooth: true,
       },
     ],
-    color: ['#003D4F', '#47A1AD', '#F2617A'],
+    color: [theme.main.BoardChart.lineColorA, theme.main.BoardChart.lineColorB],
   };
 }
 
@@ -163,7 +164,14 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
       },
       ...otherIndicators,
     ],
-    color: ['#003D4F', '#47A1AD', '#F2617A'],
+    color: [
+      theme.main.BoardChart.barColorA,
+      theme.main.BoardChart.barColorB,
+      theme.main.BoardChart.barColorC,
+      theme.main.BoardChart.barColorD,
+      theme.main.BoardChart.barColorE,
+      theme.main.BoardChart.barColorF,
+    ],
   };
 }
 
@@ -217,7 +225,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
         smooth: false,
       },
     ],
-    color: ['#7aa8b3', '#254456', '#d37a87'],
+    color: [theme.main.BoardChart.lineColorB, theme.main.BoardChart.barColorA, theme.main.BoardChart.barColorB],
   };
 }
 

@@ -1,4 +1,5 @@
 import { xAxisLabelDateFormatter } from '@src/utils/util';
+import { theme } from '@src/theme';
 
 export interface BarOptionProps {
   title: string;
@@ -60,7 +61,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
       },
       axisLine: {
         lineStyle: {
-          color: '#d9d9d9',
+          color: theme.main.DoraChart.gridColor,
           width: 1,
           type: 'dashed',
         },
@@ -149,7 +150,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       },
       axisLine: {
         lineStyle: {
-          color: '#d9d9d9',
+          color: theme.main.DoraChart.gridColor,
           width: 1,
           type: 'dashed',
         },
