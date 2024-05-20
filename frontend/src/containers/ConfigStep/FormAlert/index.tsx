@@ -1,6 +1,6 @@
 import { StyledAlert } from '@src/containers/ConfigStep/FormAlert/style';
 import EllipsisText from '@src/components/Common/EllipsisText';
-import { FORM_ALERT_TYPES } from '@src/constants/commons';
+import { formAlertTypes } from '@src/constants/commons';
 import BoldText from '@src/components/Common/BoldText';
 import CancelIcon from '@mui/icons-material/Cancel';
 import React from 'react';
@@ -9,13 +9,13 @@ interface PropsInterface {
   showAlert: boolean;
   onClose: () => void;
   moduleType?: string;
-  formAlertType: FORM_ALERT_TYPES;
+  formAlertType: formAlertTypes;
 }
 
-const FormAlertDataTestIdMap = (formAlertType: FORM_ALERT_TYPES): string => {
+const FormAlertDataTestIdMap = (formAlertType: formAlertTypes): string => {
   const formAlertDataTestIdMap = {
-    [FORM_ALERT_TYPES.TIMEOUT]: 'timeoutAlert',
-    [FORM_ALERT_TYPES.BOARD_VERIFY]: 'boardVerifyAlert',
+    [formAlertTypes.TIMEOUT]: 'timeoutAlert',
+    [formAlertTypes.BOARD_VERIFY]: 'boardVerifyAlert',
   };
 
   return formAlertDataTestIdMap[formAlertType];
@@ -23,13 +23,13 @@ const FormAlertDataTestIdMap = (formAlertType: FORM_ALERT_TYPES): string => {
 
 export const FormAlert = ({ showAlert, onClose, moduleType, formAlertType }: PropsInterface) => {
   const renderMessage = () => {
-    if (formAlertType === FORM_ALERT_TYPES.TIMEOUT) {
+    if (formAlertType === formAlertTypes.TIMEOUT) {
       return (
         <EllipsisText fitContent>
           Submission timeout on <BoldText>{moduleType}</BoldText>, please reverify!
         </EllipsisText>
       );
-    } else if (formAlertType === FORM_ALERT_TYPES.BOARD_VERIFY) {
+    } else if (formAlertType === formAlertTypes.BOARD_VERIFY) {
       return (
         <EllipsisText fitContent>
           <BoldText>Email</BoldText> and <BoldText>Token</BoldText> are bound for verification. Please modify at least

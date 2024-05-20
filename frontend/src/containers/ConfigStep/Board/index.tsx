@@ -8,7 +8,7 @@ import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { CONFIG_TITLE, BOARD_TYPES } from '@src/constants/resources';
 import { FormAlert } from '@src/containers/ConfigStep/FormAlert';
-import { FORM_ALERT_TYPES } from '@src/constants/commons';
+import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
 import { useFormContext } from 'react-hook-form';
 
@@ -37,11 +37,11 @@ export const Board = () => {
           showAlert={isVerifyTimeOut}
           onClose={closeAlert}
           moduleType={'Board'}
-          formAlertType={FORM_ALERT_TYPES.TIMEOUT}
+          formAlertType={formAlertTypes.TIMEOUT}
         />
       </StyledAlterWrapper>
       <StyledAlterWrapper>
-        <FormAlert showAlert={isBoardVerifyFailed} onClose={closeAlert} formAlertType={FORM_ALERT_TYPES.BOARD_VERIFY} />
+        <FormAlert showAlert={isBoardVerifyFailed} onClose={closeAlert} formAlertType={formAlertTypes.BOARD_VERIFY} />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         {fields.map(({ key, col, label }) =>

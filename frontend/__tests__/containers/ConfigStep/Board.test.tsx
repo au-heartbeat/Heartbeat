@@ -209,7 +209,7 @@ describe('Board', () => {
     expect(queryByTestId('timeoutAlert')).not.toBeInTheDocument();
   });
 
-  it('should show board verify alert when board verify unauthorized', async () => {
+  it('should show board verify alert given board verify unauthorized', async () => {
     const { getByTestId } = setup();
     await fillBoardFieldsInformation();
     const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');

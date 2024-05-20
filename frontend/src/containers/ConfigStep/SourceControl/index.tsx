@@ -11,7 +11,7 @@ import { updateSourceControl } from '@src/context/config/configSlice';
 import { FormAlert } from '@src/containers/ConfigStep/FormAlert';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
-import { FORM_ALERT_TYPES } from '@src/constants/commons';
+import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
 
 export const SourceControl = () => {
@@ -41,7 +41,7 @@ export const SourceControl = () => {
           showAlert={isVerifyTimeOut}
           onClose={closeTimeoutAlert}
           moduleType={'Source Control'}
-          formAlertType={FORM_ALERT_TYPES.TIMEOUT}
+          formAlertType={formAlertTypes.TIMEOUT}
         />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
