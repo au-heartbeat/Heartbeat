@@ -25,7 +25,7 @@ export const DEFAULT_MESSAGE = '';
 export const CHART_TAB_STYLE = {
   sx: {
     bottom: 5,
-    height: '4px',
+    height: '0.67rem',
   },
 };
 
