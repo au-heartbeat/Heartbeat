@@ -78,8 +78,8 @@ export class MetricsStep {
     this.nextButton = page.getByRole('button', { name: 'Next' });
     this.previousButton = page.getByRole('button', { name: 'Previous' });
     this.saveAsButton = page.getByRole('button', { name: 'Save' });
-    this.boardConfigurationTitle = page.getByText('Board configuration');
-    this.pipelineConfigurationTitle = page.getByText('Pipeline configuration');
+    this.boardConfigurationTitle = page.getByLabel('Board configuration title');
+    this.pipelineConfigurationTitle = page.getByLabel('Pipeline configuration title');
     this.loadings = page.getByTestId('loading');
 
     this.boardNocardReminder = page.getByText('No card within selected date range!');

@@ -476,6 +476,10 @@ export class ReportStep {
     );
   }
 
+  async checkBoardDownloadDataWithoutBlockForMultipleRanges(rangeCount: number) {
+    await this.downloadFileAndCheckForMultipleRanges({ trigger: this.exportBoardData, rangeCount });
+  }
+
   async checkDoraMetrics({
     prLeadTime,
     pipelineLeadTime,

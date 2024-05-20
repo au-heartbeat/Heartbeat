@@ -135,7 +135,7 @@ const MetricsStep = () => {
       {isShowCrewsAndRealDone && (
         <MetricSelectionWrapper>
           {isLoading && <Loading />}
-          <MetricsSelectionTitle>Board configuration </MetricsSelectionTitle>
+          <MetricsSelectionTitle aria-label='Board configuration title'>Board configuration </MetricsSelectionTitle>
 
           {isEmpty(errorMessage) ||
           (boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_4XX &&
@@ -183,7 +183,9 @@ const MetricsStep = () => {
         requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
         requiredData.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY)) && (
         <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
-          <MetricsSelectionTitle>Pipeline configuration</MetricsSelectionTitle>
+          <MetricsSelectionTitle aria-label='Pipeline configuration title'>
+            Pipeline configuration
+          </MetricsSelectionTitle>
           <DeploymentFrequencySettings />
         </MetricSelectionWrapper>
       )}

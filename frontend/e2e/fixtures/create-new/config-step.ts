@@ -50,6 +50,14 @@ export const configWithoutBlockColumn = {
       startDate: '2024-04-07T00:00:00.000+08:00',
       endDate: '2024-04-08T23:59:59.999+08:00',
     },
+    {
+      startDate: '2024-04-09T00:00:00.000+08:00',
+      endDate: '2024-04-10T23:59:59.999+08:00',
+    },
+    {
+      startDate: '2024-04-11T00:00:00.000+08:00',
+      endDate: '2024-04-12T23:59:59.999+08:00',
+    },
   ],
   sortType: 'DEFAULT',
   calendarType: 'Calendar with Chinese Holiday',

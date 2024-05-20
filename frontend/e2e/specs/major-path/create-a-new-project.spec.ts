@@ -99,17 +99,12 @@ test('Create a new project without block column in boarding mapping', async ({
   metricsStep,
   reportStep,
 }) => {
-  const dateRange = {
-    startDate: format(configWithoutBlockColumnData.dateRange[0].startDate),
-    endDate: format(configWithoutBlockColumnData.dateRange[0].endDate),
-  };
-
   await homePage.goto();
   await homePage.createANewProject();
   await configStep.waitForShown();
   await configStep.typeInProjectName(configWithoutBlockColumnData.projectName);
   await configStep.selectRegularCalendar(configWithoutBlockColumnData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configWithoutBlockColumnData.dateRange);
   await configStep.selectReworkTimesRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
@@ -130,8 +125,8 @@ test('Create a new project without block column in boarding mapping', async ({
     ),
   );
   await metricsStep.selectReworkSettings(metricsStepWithoutBlockColumnData.reworkTimesSettings);
-
   await metricsStep.goToReportPage();
+
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardDownloadDataWithoutBlock('../../fixtures/create-new/board-data-without-block-column.csv');
+  await reportStep.checkBoardDownloadDataWithoutBlockForMultipleRanges(3);
 });
