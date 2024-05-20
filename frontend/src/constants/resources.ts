@@ -18,7 +18,7 @@ export const FULFILLED = 'fulfilled';
 
 export const SHOW_MORE = 'show more >';
 export const BACK = 'Back';
-export const RETRY = 'retry';
+export const RETRY = 'Retry';
 export const DATA_LOADING_FAILED = 'Data loading failed';
 export const DEFAULT_MESSAGE = '';
 
