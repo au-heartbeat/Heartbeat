@@ -90,7 +90,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
     doraMetricsReportData: DORA_METRICS_RESULT_MULTIPLE_RANGES,
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
   });
-  // await reportStep.checkMetricDownloadData();
+  await reportStep.checkMetricDownloadDataForMultipleRanges(3);
 });
 
 test('Create a new project without block column in boarding mapping', async ({

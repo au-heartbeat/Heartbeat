@@ -509,6 +509,10 @@ export class ReportStep {
     });
   }
 
+  async checkMetricDownloadDataForMultipleRanges(rangeCount: number) {
+    await this.downloadFileAndCheckForMultipleRanges({ trigger: this.exportMetricData, rangeCount });
+  }
+
   async checkMetricDownloadDataByStatus() {
     await downloadFileAndCheck(
       this.page,
