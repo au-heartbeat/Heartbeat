@@ -703,7 +703,7 @@ describe('Report Step', () => {
     });
 
     it('should correctly render dora chart', async () => {
-      setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
       const switchChartButton = screen.getByText('Chart');
       await userEvent.click(switchChartButton);
@@ -715,22 +715,36 @@ describe('Report Step', () => {
     });
 
     it('should render dora chart with empty value when exception was thrown', async () => {
-      reportHook.current.reportInfos[0] = {
-        id: emptyValueDateRange.startDate,
-        timeout4Board: { message: DATA_LOADING_FAILED, shouldShow: true },
-        timeout4Dora: { message: DATA_LOADING_FAILED, shouldShow: true },
-        timeout4Report: { message: DATA_LOADING_FAILED, shouldShow: true },
-        generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
-        generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
-        generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
-        shouldShowBoardMetricsError: true,
-        shouldShowPipelineMetricsError: true,
-        shouldShowSourceControlMetricsError: true,
-        reportData: { ...EMPTY_REPORT_VALUES },
-      };
-      reportHook.current.reportInfos[0].reportData = { ...EMPTY_REPORT_VALUES };
+      reportHook.current.reportInfos = [
+        {
+          id: emptyValueDateRange.startDate,
+          timeout4Board: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Dora: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Report: { message: DATA_LOADING_FAILED, shouldShow: true },
+          generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+          shouldShowBoardMetricsError: true,
+          shouldShowPipelineMetricsError: true,
+          shouldShowSourceControlMetricsError: true,
+          reportData: { ...EMPTY_REPORT_VALUES },
+        },
+        {
+          id: fullValueDateRange.startDate,
+          timeout4Board: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Dora: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Report: { message: DATA_LOADING_FAILED, shouldShow: true },
+          generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+          shouldShowBoardMetricsError: true,
+          shouldShowPipelineMetricsError: true,
+          shouldShowSourceControlMetricsError: true,
+          reportData: { ...EMPTY_REPORT_VALUES },
+        },
+      ];
 
-      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
+      setup(REQUIRED_DATA_LIST, [emptyValueDateRange, fullValueDateRange]);
 
       const switchChartButton = screen.getByText('Chart');
       await userEvent.click(switchChartButton);
@@ -754,7 +768,7 @@ describe('Report Step', () => {
       reportHook.current.reportInfos[0].reportData = { ...EMPTY_REPORT_VALUES };
       reportHook.current.reportInfos[1].reportData = { ...DORA_DATA_FAILED_REPORT_VALUES };
 
-      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
       const switchChartButton = screen.getByText('Chart');
       const switchMetricsListButton = screen.getByText('List');
@@ -772,7 +786,7 @@ describe('Report Step', () => {
     });
 
     it('should select DORA tab when click DORA tab from chart page again', async () => {
-      setup(REQUIRED_DATA_LIST);
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
       const switchChartButton = screen.getByText('Chart');
       await userEvent.click(switchChartButton);

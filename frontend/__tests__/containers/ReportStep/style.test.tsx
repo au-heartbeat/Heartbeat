@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 describe('Report step styled components', () => {
   it('should render the bottom margin depend on whether StyledCalendarWrapper in summary page', () => {
     const wrapper = render(
-      <StyledCalendarWrapper aria-label='test component 1' isSummaryPage={true}>
+      <StyledCalendarWrapper aria-label='test component 1' isSummaryPage={true} shouldShowChart={true}>
         test
       </StyledCalendarWrapper>,
     );
@@ -13,7 +13,9 @@ describe('Report step styled components', () => {
 
     expect(component1).toHaveStyle({ 'margin-bottom': '0rem' });
 
-    wrapper.rerender(<StyledCalendarWrapper aria-label='test component 2' isSummaryPage={false} />);
+    wrapper.rerender(
+      <StyledCalendarWrapper aria-label='test component 2' isSummaryPage={false} shouldShowChart={true} />,
+    );
 
     const component2 = screen.getByLabelText('test component 2');
 
