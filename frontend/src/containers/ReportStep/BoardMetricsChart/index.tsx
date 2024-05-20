@@ -24,6 +24,10 @@ type Result = {
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
+const AREA_STYLE = {
+  opacity: 0.3,
+};
+
 const LEFT_RIGHT_ALIGN_LABEL = {
   color: 'black',
   alignMaxLabel: 'right',
@@ -84,6 +88,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
         data: velocity!,
         yAxisIndex: 0,
         smooth: true,
+        areaStyle: AREA_STYLE,
       },
       {
         name: 'Throughput(Cards count)',
@@ -91,6 +96,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
         data: throughput!,
         yAxisIndex: 1,
         smooth: true,
+        areaStyle: AREA_STYLE,
       },
     ],
     color: [theme.main.BoardChart.lineColorA, theme.main.BoardChart.lineColorB],
@@ -127,6 +133,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
         data: storyPoints!,
         yAxisIndex: 0,
         smooth: true,
+        areaStyle: AREA_STYLE,
       },
       {
         name: 'Days/Cards count',
@@ -134,6 +141,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
         data: cardCount!,
         yAxisIndex: 1,
         smooth: true,
+        areaStyle: AREA_STYLE,
       },
     ],
     color: [theme.main.BoardChart.lineColorA, theme.main.BoardChart.lineColorB],

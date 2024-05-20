@@ -1,5 +1,5 @@
-import { theme } from '@src/theme';
 import { xAxisLabelDateFormatter } from '@src/utils/util';
+import { theme } from '@src/theme';
 
 export interface BarOptionProps {
   title: string;
@@ -22,6 +22,7 @@ export interface Series {
   type: string;
   data: number[];
   smooth?: boolean;
+  areaStyle?: unknown;
   yAxisIndex?: number;
 }
 
@@ -83,9 +84,6 @@ const commonConfig = {
     lineStyle: {
       width: 3,
     },
-    areaStyle: {
-      opacity: 0.3,
-    },
     barWidth: '20%',
   },
 };
@@ -131,6 +129,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
         type: item.type,
         yAxisIndex: item.yAxisIndex,
         smooth: item.smooth,
+        areaStyle: item.areaStyle,
         ...commonConfig.seriesConfig,
       };
     }),
