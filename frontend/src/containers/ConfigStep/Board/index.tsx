@@ -26,7 +26,7 @@ export const Board = () => {
   const isVerified = isValid && isSubmitSuccessful;
 
   const onSubmit = async () => await verifyJira();
-  const closeAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
+  const closeAlert = () => clearErrors([fields[FIELD_KEY.EMAIL].key, fields[FIELD_KEY.TOKEN].key]);
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>
