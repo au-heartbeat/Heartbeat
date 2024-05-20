@@ -59,19 +59,15 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.waitForHiddenLoading();
   await metricsStep.selectCrews(metricsStepData.crews);
-
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, true);
-
   await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTime.type);
   await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
   await metricsStep.selectHeartbeatState(hbStateData, false);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, false);
-
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
-
   await metricsStep.selectClassifications(metricsStepData.classification);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectAllPipelineCrews();
@@ -82,7 +78,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({
-    boardDetailType: ProjectCreationType.CREATE_A_NEW_PROJECT,
+    projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
     velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
     cycleTimeData: BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
     classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
@@ -90,15 +86,10 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
     csvCompareLines: BAORD_CSV_COMPARED_LINES,
   });
   await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_MULTIPLE_RANGES);
-  // await reportStep.checkDoraMetrics(
-  //   DORA_METRICS_RESULT.PrLeadTime,
-  //   DORA_METRICS_RESULT.PipelineLeadTime,
-  //   DORA_METRICS_RESULT.TotalLeadTime,
-  //   DORA_METRICS_RESULT.DeploymentFrequency,
-  //   DORA_METRICS_RESULT.FailureRate,
-  //   DORA_METRICS_RESULT.DevMeanTimeToRecovery,
-  // );
-  // await reportStep.checkDoraMetricsDetails(ProjectCreationType.CREATE_A_NEW_PROJECT);
+  await reportStep.checkDoraMetricsDetailsForMultipleRanges({
+    doraMetricsReportData: DORA_METRICS_RESULT_MULTIPLE_RANGES,
+    projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
+  });
   // await reportStep.checkMetricDownloadData();
 });
 

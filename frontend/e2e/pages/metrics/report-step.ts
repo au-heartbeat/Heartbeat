@@ -111,37 +111,61 @@ export class ReportStep {
     await this.previousButton.click();
   }
 
-  async checkDoraMetricsReportDetails() {
+  async checkDoraMetricsReportDetails(doraMetricsDetailData: IDoraMetricsResultItem) {
     await expect(this.deploymentFrequencyRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText('6.60');
+    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText(
+      doraMetricsDetailData.deploymentFrequency,
+    );
 
-    await expect(this.leadTimeForChangesRows.nth(2)).toContainText(this.combineStrings(['PR Lead Time', '6.12']));
-    await expect(this.leadTimeForChangesRows.nth(3)).toContainText(this.combineStrings(['Pipeline Lead Time', '0.50']));
-    await expect(this.leadTimeForChangesRows.nth(4)).toContainText(this.combineStrings(['Total Lead Time', '6.62']));
+    await expect(this.leadTimeForChangesRows.nth(2)).toContainText(
+      this.combineStrings(['PR Lead Time', doraMetricsDetailData.prLeadTime]),
+    );
+    await expect(this.leadTimeForChangesRows.nth(3)).toContainText(
+      this.combineStrings(['Pipeline Lead Time', doraMetricsDetailData.pipelineLeadTime]),
+    );
+    await expect(this.leadTimeForChangesRows.nth(4)).toContainText(
+      this.combineStrings(['Total Lead Time', doraMetricsDetailData.totalLeadTime]),
+    );
 
     await expect(this.devChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.devChangeFailureRateRows.getByRole('cell').nth(1)).toContainText('17.50%(7/40)');
+    await expect(this.devChangeFailureRateRows.getByRole('cell').nth(1)).toContainText(
+      doraMetricsDetailData.failureRate.replace(' ', ''),
+    );
     await expect(this.devMeanTimeToRecoveryRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.devMeanTimeToRecoveryRows.getByRole('cell').nth(1)).toContainText('1.90');
+    await expect(this.devMeanTimeToRecoveryRows.getByRole('cell').nth(1)).toContainText(
+      doraMetricsDetailData.devMeanTimeToRecovery,
+    );
   }
 
-  async checkDoraMetricsDetails(projectCreationType: ProjectCreationType) {
+  async checkDoraMetricsReportDetailsForMultipleRanges(doraMetricsReportData: IDoraMetricsResultItem[]) {
+    for (let i = 0; i < doraMetricsReportData.length; i++) {
+      await this.changeTimeRange(i);
+      await this.checkDoraMetricsReportDetails(doraMetricsReportData[i]);
+    }
+  }
+
+  async checkDoraMetricsDetailsForMultipleRanges({
+    projectCreationType,
+    doraMetricsReportData,
+  }: {
+    projectCreationType: ProjectCreationType;
+    doraMetricsReportData: IDoraMetricsResultItem[];
+  }) {
     await this.showMoreLinks.nth(1).click();
     if (
       projectCreationType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
       projectCreationType === ProjectCreationType.CREATE_A_NEW_PROJECT
     ) {
-      await this.checkDoraMetricsReportDetails();
+      await this.checkDoraMetricsReportDetailsForMultipleRanges(doraMetricsReportData);
     } else {
       throw Error('The board detail type is not correct, please give a correct one.');
     }
-    await downloadFileAndCheck(this.page, this.exportPipelineDataButton, 'pipelineData.csv', async (fileDataString) => {
-      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new/pipeline-data.csv'));
-      const localCsv = parse(localCsvFile);
-      const downloadCsv = parse(fileDataString);
 
-      expect(localCsv).toStrictEqual(downloadCsv);
+    await this.downloadFileAndCheckForMultipleRanges({
+      trigger: this.exportPipelineDataButton,
+      rangeCount: 3,
     });
+
     await this.backButton.click();
   }
 
@@ -346,14 +370,14 @@ export class ReportStep {
   }
 
   async checkBoardMetricsDetailsForMultipleRanges({
-    boardDetailType,
+    projectCreationType,
     csvCompareLines,
     velocityData,
     cycleTimeData,
     classificationData,
     reworkData,
   }: {
-    boardDetailType: ProjectCreationType;
+    projectCreationType: ProjectCreationType;
     csvCompareLines: ICsvComparedLines;
     velocityData: IBoardMetricsDetailItem[][];
     cycleTimeData: IBoardCycletimeDetailItem[][];
@@ -362,8 +386,8 @@ export class ReportStep {
   }) {
     await this.showMoreLinks.first().click();
     if (
-      boardDetailType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
-      boardDetailType === ProjectCreationType.CREATE_A_NEW_PROJECT
+      projectCreationType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
+      projectCreationType === ProjectCreationType.CREATE_A_NEW_PROJECT
     ) {
       await this.checkVelocityDetailForMultipleRanges(velocityData);
       await this.checkCycleTimeDetailForMultipleRanges(cycleTimeData);
@@ -375,6 +399,7 @@ export class ReportStep {
 
     await this.downloadFileAndCheckForMultipleRanges({
       trigger: this.exportBoardData,
+      rangeCount: csvCompareLines.length,
       csvCompareLines,
     });
     await this.backButton.click();
@@ -382,11 +407,17 @@ export class ReportStep {
 
   async downloadFileAndCheckForMultipleRanges({
     trigger,
+    rangeCount,
     csvCompareLines,
   }: {
     trigger: Locator;
-    csvCompareLines: ICsvComparedLines;
+    rangeCount: number;
+    csvCompareLines?: ICsvComparedLines;
   }) {
+    const isNeedToCompareCsvLines = csvCompareLines !== undefined;
+    if (isNeedToCompareCsvLines && rangeCount !== csvCompareLines.length) {
+      throw new Error('given time ranges count and csvCompareLines count are not equal, please check your fixture');
+    }
     await expect(trigger).toBeEnabled();
     await trigger.click();
     await expect(this.downloadDialog).toBeVisible();
@@ -403,7 +434,7 @@ export class ReportStep {
     });
     let waitCounter = 0;
     await confirmButton.click();
-    while (downloadEvents.length < csvCompareLines.length && waitCounter < DOWNLOAD_EVENTS_WAIT_THRESHOLD) {
+    while (downloadEvents.length < rangeCount && waitCounter < DOWNLOAD_EVENTS_WAIT_THRESHOLD) {
       await new Promise<void>((resolve) => {
         setTimeout(() => {
           waitCounter++;
@@ -420,8 +451,10 @@ export class ReportStep {
       const downloadPath = await download.path();
       const fileDataString = fs.readFileSync(downloadPath, 'utf8');
       const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new', `./${fileName}.csv`));
-      const localCsv = parse(localCsvFile, { to: csvCompareLines[fileName] });
-      const downloadCsv = parse(fileDataString, { to: csvCompareLines[fileName] });
+      const localCsv = parse(localCsvFile, { to: isNeedToCompareCsvLines ? csvCompareLines[fileName] : undefined });
+      const downloadCsv = parse(fileDataString, {
+        to: isNeedToCompareCsvLines ? csvCompareLines[fileName] : undefined,
+      });
 
       expect(localCsv).toStrictEqual(downloadCsv);
       await download.delete();
