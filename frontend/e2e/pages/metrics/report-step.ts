@@ -4,8 +4,12 @@ import {
   IBoardCycletimeDetailItem,
   IBoardClassificationDetailItem,
 } from '../../fixtures/create-new/report-result';
+import {
+  ICsvComparedLines,
+  IDoraMetricsResultItem,
+  DORA_METRICS_RESULT_MULTIPLE_RANGES,
+} from '../../fixtures/create-new/report-result';
 import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
-import { ICsvComparedLines, IDoraMetricsResultItem } from '../../fixtures/create-new/report-result';
 import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { expect, Locator, Page, Download } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
@@ -163,7 +167,7 @@ export class ReportStep {
 
     await this.downloadFileAndCheckForMultipleRanges({
       trigger: this.exportPipelineDataButton,
-      rangeCount: 3,
+      rangeCount: DORA_METRICS_RESULT_MULTIPLE_RANGES.length,
     });
 
     await this.backButton.click();
