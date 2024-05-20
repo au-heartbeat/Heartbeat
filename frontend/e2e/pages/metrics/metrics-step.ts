@@ -13,6 +13,9 @@ export class MetricsStep {
   readonly pipelineConfigurationTitle: Locator;
   readonly loadings: Locator;
   readonly saveAsButton: Locator;
+  readonly dateRangeViewerContainer: Locator;
+  readonly dateRangeViewerExpandTrigger: Locator;
+  readonly dateRangeViewerOptions: Locator;
 
   readonly boardNocardReminder: Locator;
   readonly boardCrewSettingsLabel: Locator;
@@ -81,6 +84,9 @@ export class MetricsStep {
     this.boardConfigurationTitle = page.getByLabel('Board configuration title');
     this.pipelineConfigurationTitle = page.getByLabel('Pipeline configuration title');
     this.loadings = page.getByTestId('loading');
+    this.dateRangeViewerContainer = this.page.getByLabel('date range viewer');
+    this.dateRangeViewerExpandTrigger = this.dateRangeViewerContainer.getByLabel('expandMore');
+    this.dateRangeViewerOptions = this.dateRangeViewerContainer.getByLabel('date range viewer options');
 
     this.boardNocardReminder = page.getByText('No card within selected date range!');
     this.boardCrewSettingsLabel = page.getByLabel('Included Crews *');
@@ -797,5 +803,41 @@ export class MetricsStep {
     await expect(this.pipelineTokenWithNoOrgErrorMessage).toContainText(
       'Please go back to the previous page and change your pipeline token with correct access permission.',
     );
+  }
+
+  async checkPartialApiFailedTimeRangeIndicator(rangeCount: number) {
+    await this.dateRangeViewerExpandTrigger.click();
+    await expect(this.dateRangeViewerOptions).toBeVisible();
+    const apiIndicators = {
+      green: 0,
+      red: 0,
+    };
+    for (let i = 0; i < rangeCount; i++) {
+      const currentRange = this.dateRangeViewerOptions.getByLabel(`date range viewer - option ${i}`);
+      if (currentRange.getByTestId('PriorityHighIcon')) {
+        apiIndicators.red++;
+      }
+      // todo green++
+      // if (currentRange.getByTestId('PriorityHighIcon')) {
+      //   apiIndicators.red++
+      // }
+    }
+    expect(apiIndicators.red).toBeGreaterThan(0);
+    // expect(apiIndicators.green).toBeGreaterThan(0)
+  }
+
+  async checkApiFailedAlertVisible() {
+    await expect(this.page.getByRole('alert').first()).toContainText(
+      'Failed to get partial Board configuration, you can click "Next" button to go to Report page.',
+    );
+  }
+
+  async checkSomeApiFailed(rangeCount: number) {
+    await this.checkApiFailedAlertVisible();
+    await this.checkPartialApiFailedTimeRangeIndicator(rangeCount);
+    // await expect(this.page.getByRole('alert').first()).toContainText('Help Information');
+    // await expect(this.page.getByRole('alert').first()).toContainText(
+    //   'The file will expire in 30 minutes, please download it in time.',
+    // );
   }
 }
