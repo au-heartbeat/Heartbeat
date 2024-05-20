@@ -50,7 +50,7 @@ const DateRangeViewer = ({
   const stepNumber = useAppSelector(selectStepNumber);
   const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
   const isMetricsPage = stepNumber === STEP_NUMBER.METRICS_PAGE;
-  const isReportPage = stepNumber === STEP_NUMBER.REPORT_PAGE;
+  const isShowTotal = isMetricsPage || isShowingChart;
 
   const backgroundColor =
     stepNumber === STEP_NUMBER.METRICS_PAGE
@@ -58,10 +58,9 @@ const DateRangeViewer = ({
       : isShowingChart
         ? theme.palette.secondary.dark
         : theme.palette.common.white;
-  const currentDateRangeHasFailed = getCurrentDateRangeHasFailed(
-    formatDateToTimestampString(currentDateRange.startDate!),
-  );
+
   const currenDateRangeStatus = getDateRangeStatus(formatDateToTimestampString(currentDateRange.startDate!));
+  const totalDateRangeStatus = getTotalDateRangeStatus();
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (DateRangeExpandRef.current && !DateRangeExpandRef.current?.contains(event.target as Node)) {
@@ -90,16 +89,6 @@ const DateRangeViewer = ({
     };
   }, [handleClickOutside]);
 
-  function getCurrentDateRangeHasFailed(startDate: string) {
-    let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
-    if (isMetricsPage) {
-      errorInfo = metricsPageFailedTimeRangeInfos[startDate] || {};
-    } else {
-      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
-    }
-    return Object.values(errorInfo).some((value) => value);
-  }
-
   function getDateRangeStatus(startDate: string) {
     let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
     const result: { isLoading: boolean; isFailed: boolean } = { isLoading: false, isFailed: false };
@@ -127,6 +116,19 @@ const DateRangeViewer = ({
     }
     result.isFailed = Object.values(errorInfo).some((value) => value);
     return result;
+  }
+
+  function getTotalDateRangeStatus() {
+    return dateRangeList.reduce(
+      (pre, cur) => {
+        const currentStatus = getDateRangeStatus(formatDateToTimestampString(cur.startDate!));
+        return {
+          isLoading: pre.isLoading || currentStatus.isLoading,
+          isFailed: pre.isFailed || currentStatus.isFailed,
+        };
+      },
+      { isLoading: false, isFailed: false },
+    );
   }
 
   const DateRangeIcon = ({ isLoading, isFailed }: { isLoading: boolean; isFailed: boolean }) => (
@@ -173,17 +175,18 @@ const DateRangeViewer = ({
     >
       <DateRangeContainer>
         <DateRangeIcon
-          isLoading={currenDateRangeStatus.isLoading}
-          isFailed={currenDateRangeStatus.isFailed}
+          isLoading={isShowTotal ? totalDateRangeStatus.isLoading : currenDateRangeStatus.isLoading}
+          isFailed={isShowTotal ? totalDateRangeStatus.isFailed : currenDateRangeStatus.isFailed}
         ></DateRangeIcon>
-        {formatDate(isShowingChart ? dateRangeList[0].startDate! : currentDateRange.startDate!)}
+        {formatDate(isShowTotal ? dateRangeList.slice(-1)[0].startDate! : currentDateRange.startDate!)}
         <StyledArrowForward />
-        {formatDate(isShowingChart ? dateRangeList.slice(-1)[0].endDate! : currentDateRange.endDate!)}
+        {formatDate(isShowTotal ? dateRangeList[0].endDate! : currentDateRange.endDate!)}
         <StyledCalendarToday />
       </DateRangeContainer>
-      {disabledAll && isReportPage ? (
+      {isShowTotal && (
         <StyledChip aria-label='date-count-chip' label={dateRangeList.length} variant='outlined' size='small' />
-      ) : (
+      )}
+      {!isShowingChart && (
         <>
           <StyledDivider orientation='vertical' />
           <StyledExpandContainer aria-label='expandMore' onClick={() => setShowMoreDateRange(true)}>
