@@ -21,7 +21,7 @@ export const Board = () => {
   } = useFormContext();
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
   const isBoardVerifyFailed =
-    errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed ||
+    errors.email?.message === BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed ||
     errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.verifyFailed;
   const isVerified = isValid && isSubmitSuccessful;
 
