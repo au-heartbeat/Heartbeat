@@ -98,8 +98,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const allDateRanges = ascendingDateRanges.reverse().map((range) => {
     const start = new Date(range.startDate!);
     const end = new Date(range.endDate!);
-    const formattedStart = `${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
-    const formattedEnd = `${(end.getMonth() + 1).toString().padStart(2, '0')}/${end.getDate().toString().padStart(2, '0')}`;
+    const formattedStart = `${start.getFullYear()}/${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
+    const formattedEnd = `${end.getFullYear()}/${(end.getMonth() + 1).toString().padStart(2, '0')}/${end.getDate().toString().padStart(2, '0')}`;
 
     return `${formattedStart}-${formattedEnd}`;
   });

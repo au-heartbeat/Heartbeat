@@ -1,3 +1,5 @@
+import { xAxisLabelDateFormatter } from "@src/utils/util";
+
 export interface BarOptionProps {
   title: string;
   legend: string;
@@ -54,6 +56,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
         color: 'black',
         alignMaxLabel: 'right',
         alignMinLabel: 'left',
+        formatter: xAxisLabelDateFormatter,
       },
       axisLine: {
         lineStyle: {
@@ -153,6 +156,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       },
       axisLabel: {
         color: 'black',
+        formatter: xAxisLabelDateFormatter,
       },
     },
     yAxis: {

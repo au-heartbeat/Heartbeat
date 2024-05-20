@@ -9,6 +9,7 @@ import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
+import { xAxisLabelDateFormatter } from '@src/utils/util';
 
 interface BoardMetricsChartProps {
   dateRanges: string[];
@@ -26,12 +27,14 @@ const LEFT_RIGHT_ALIGN_LABEL = {
   color: 'black',
   alignMaxLabel: 'right',
   alignMinLabel: 'left',
+  formatter: xAxisLabelDateFormatter,
 };
 
 const CENTER_ALIGN_LABEL = {
   color: 'black',
   alignMaxLabel: 'center',
   alignMinLabel: 'center',
+  formatter: xAxisLabelDateFormatter,
 };
 
 function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined) {

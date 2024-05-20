@@ -1,3 +1,5 @@
+import { xAxisLabelDateFormatter } from "@src/utils/util";
+
 export interface BarOptionProps {
   title: string;
   xAxis: string[];
@@ -150,6 +152,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       data: props.xAxis,
       axisLabel: {
         color: 'black',
+        formatter: xAxisLabelDateFormatter,
       },
       ...commonConfig.axisConfig,
     },
