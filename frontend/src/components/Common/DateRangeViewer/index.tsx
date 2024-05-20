@@ -22,7 +22,9 @@ import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'rea
 import { DateRange, DateRangeList } from '@src/context/config/configSlice';
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import DownloadingIcon from '@mui/icons-material/Downloading';
 import { STEP_NUMBER } from '@src/constants/commons';
+import CheckIcon from '@mui/icons-material/Check';
 import { useAppSelector } from '@src/hooks';
 import { theme } from '@src/theme';
 
@@ -59,6 +61,7 @@ const DateRangeViewer = ({
   const currentDateRangeHasFailed = getCurrentDateRangeHasFailed(
     formatDateToTimestampString(currentDateRange.startDate!),
   );
+  const currenDateRangeStatus = getDateRangeStatus(formatDateToTimestampString(currentDateRange.startDate!));
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (DateRangeExpandRef.current && !DateRangeExpandRef.current?.contains(event.target as Node)) {
@@ -97,12 +100,53 @@ const DateRangeViewer = ({
     return Object.values(errorInfo).some((value) => value);
   }
 
+  function getDateRangeStatus(startDate: string) {
+    let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
+    const result: { isLoading: boolean; isFailed: boolean } = { isLoading: false, isFailed: false };
+    if (isMetricsPage) {
+      errorInfo = metricsPageFailedTimeRangeInfos[startDate] || {};
+      if (
+        errorInfo.isBoardInfoError === undefined ||
+        errorInfo.isPipelineInfoError === undefined ||
+        errorInfo.isPipelineStepError === undefined
+      ) {
+        result.isLoading = true;
+      }
+    } else {
+      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
+      if (
+        errorInfo.isBoardMetricsError === undefined ||
+        errorInfo.isGainPollingUrlError === undefined ||
+        errorInfo.isPipelineMetricsError === undefined ||
+        errorInfo.isPollingError === undefined ||
+        errorInfo.isSourceControlMetricsError === undefined
+      ) {
+        result.isLoading = true;
+      }
+      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
+    }
+    result.isFailed = Object.values(errorInfo).some((value) => value);
+    return result;
+  }
+
+  const DateRangeIcon = ({ isLoading, isFailed }: { isLoading: boolean; isFailed: boolean }) => (
+    <DateRangeFailedIconContainer>
+      {isLoading ? (
+        <DownloadingIcon color='success' />
+      ) : isFailed ? (
+        <PriorityHighIcon color='error' />
+      ) : (
+        <CheckIcon color='success' />
+      )}
+    </DateRangeFailedIconContainer>
+  );
+
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
     return (
       <DateRangeExpandContainer ref={ref} backgroundColor={backgroundColor}>
         {dateRangeList.map((dateRange) => {
           const disabled = dateRange.disabled || disabledAll;
-          const hasError = getCurrentDateRangeHasFailed(formatDateToTimestampString(dateRange.startDate!));
+          const status = getDateRangeStatus(formatDateToTimestampString(dateRange.startDate!));
           return (
             <SingleDateRange
               disabled={disabled}
@@ -110,9 +154,7 @@ const DateRangeViewer = ({
               onClick={() => handleClick(dateRange.startDate!)}
               key={dateRange.startDate!}
             >
-              <DateRangeFailedIconContainer>
-                {hasError && <PriorityHighIcon color='error' />}
-              </DateRangeFailedIconContainer>
+              <DateRangeIcon isLoading={status.isLoading} isFailed={status.isFailed} />
               {formatDate(dateRange.startDate as string)}
               <StyledArrowForward />
               {formatDate(dateRange.endDate as string)}
@@ -130,12 +172,13 @@ const DateRangeViewer = ({
       aria-label='date range'
     >
       <DateRangeContainer>
-        <DateRangeFailedIconContainer>
-          {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
-        </DateRangeFailedIconContainer>
-        {formatDate(isShowingChart ? dateRangeList.slice(-1)[0].startDate! : currentDateRange.startDate!)}
+        <DateRangeIcon
+          isLoading={currenDateRangeStatus.isLoading}
+          isFailed={currenDateRangeStatus.isFailed}
+        ></DateRangeIcon>
+        {formatDate(isShowingChart ? dateRangeList[0].startDate! : currentDateRange.startDate!)}
         <StyledArrowForward />
-        {formatDate(isShowingChart ? dateRangeList[0].endDate! : currentDateRange.endDate!)}
+        {formatDate(isShowingChart ? dateRangeList.slice(-1)[0].endDate! : currentDateRange.endDate!)}
         <StyledCalendarToday />
       </DateRangeContainer>
       {disabledAll && isReportPage ? (
