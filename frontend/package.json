@@ -55,7 +55,6 @@
     "axios": "^1.6.8",
     "echarts": "^5.5.0",
     "dayjs": "^1.11.11",
-    "echarts": "^5.5.0",
     "lodash": "^4.17.21",
     "lodash.camelcase": "^4.3.0",
     "react": "^18.3.1",
