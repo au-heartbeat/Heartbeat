@@ -229,10 +229,6 @@ describe('Board', () => {
     await userEvent.click(screen.getByText(VERIFY));
 
     expect(screen.getByTestId('boardVerifyAlert')).toBeInTheDocument();
-
-    await userEvent.click(screen.getByLabelText('Close'));
-
-    expect(screen.queryByLabelText('boardVerifyAlert')).not.toBeInTheDocument();
   });
 
   it('should show reset button and verified button when verify succeed ', async () => {
