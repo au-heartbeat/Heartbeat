@@ -12,13 +12,13 @@ interface PropsInterface {
   formAlertType: formAlertTypes;
 }
 
-const FormAlertDataTestIdMap = (formAlertType: formAlertTypes): string => {
-  const formAlertDataTestIdMap = {
+const FormAlertAriaLabelMap = (formAlertType: formAlertTypes): string => {
+  const formAlertAriaLabelMap = {
     [formAlertTypes.TIMEOUT]: 'timeoutAlert',
     [formAlertTypes.BOARD_VERIFY]: 'boardVerifyAlert',
   };
 
-  return formAlertDataTestIdMap[formAlertType];
+  return formAlertAriaLabelMap[formAlertType];
 };
 
 export const FormAlert = ({ showAlert, onClose, moduleType, formAlertType }: PropsInterface) => {
@@ -43,7 +43,7 @@ export const FormAlert = ({ showAlert, onClose, moduleType, formAlertType }: Pro
     <>
       {showAlert && (
         <StyledAlert
-          data-testid={FormAlertDataTestIdMap(formAlertType)}
+          aria-label={FormAlertAriaLabelMap(formAlertType)}
           icon={<CancelIcon fontSize='inherit' />}
           severity='error'
           onClose={onClose}
