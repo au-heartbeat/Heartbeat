@@ -51,6 +51,7 @@ import {
 } from '@src/containers/ReportStep/style';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { AllErrorResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
+import { CHART_INDEX, DISPLAY_TYPE, METRIC_TYPES } from '@src/constants/commons';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
@@ -63,7 +64,6 @@ import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { BoardMetricsChart } from './BoardMetricsChart';
-import { METRIC_TYPES } from '@src/constants/commons';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
@@ -105,8 +105,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
-  const [chartIndex, setChartIndex] = React.useState(0);
-  const [displayType, setDisplayType] = React.useState(0);
+  const [chartIndex, setChartIndex] = React.useState(CHART_INDEX.BOARD);
+  const [displayType, setDisplayType] = React.useState(DISPLAY_TYPE.LIST);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -479,7 +479,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const showDoraDetail = (data: ReportResponseDTO) => <DoraDetail onBack={() => backToSummaryPage()} data={data} />;
 
   const handleBack = () => {
-    setDisplayType(0);
+    setDisplayType(DISPLAY_TYPE.LIST);
     isSummaryPage || onlySelectClassification ? dispatch(backStep()) : backToSummaryPage();
   };
 
@@ -509,7 +509,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const handleClick = (event: React.SyntheticEvent, newValue: number) => {
     const pageType =
-      newValue === 0
+      newValue === DISPLAY_TYPE.LIST
         ? REPORT_PAGE_TYPE.SUMMARY
         : selectDoraMetricsAndClassification || chartIndex === 1
           ? REPORT_PAGE_TYPE.DORA_CHART
@@ -521,7 +521,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setChartIndex(newValue);
-    setPageType(newValue === 0 ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
+    setPageType(newValue === CHART_INDEX.BOARD ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
   };
 
   const handleChartRetry = () => {
@@ -598,7 +598,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
                   />
                 </StyledTabs>
               </Box>
-              {displayType === 1 && (
+              {displayType === DISPLAY_TYPE.CHART && (
                 <Box>
                   <Tabs
                     TabIndicatorProps={CHART_TAB_STYLE}
