@@ -1,4 +1,4 @@
-import { xAxisLabelDateFormatter } from "@src/utils/util";
+import { xAxisLabelDateFormatter } from '@src/utils/util';
 
 export interface BarOptionProps {
   title: string;

@@ -7,9 +7,9 @@ import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style'
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
+import { xAxisLabelDateFormatter } from '@src/utils/util';
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { xAxisLabelDateFormatter } from '@src/utils/util';
 
 interface BoardMetricsChartProps {
   dateRanges: string[];
