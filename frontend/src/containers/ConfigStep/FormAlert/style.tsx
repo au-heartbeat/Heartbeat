@@ -12,7 +12,7 @@ export const StyledAlert = styled(Alert)({
     maxWidth: '65%',
     alignItems: 'center',
     justifyContent: 'center',
-    '& .MuiAlert-icon': {
+    '&.MuiAlert-icon': {
       marginTop: '0.125rem',
     },
   },
