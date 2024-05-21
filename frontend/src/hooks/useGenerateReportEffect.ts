@@ -98,12 +98,16 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   );
   const [hasPollingStarted, setHasPollingStarted] = useState<boolean>(false);
   let nextHasPollingStarted = false;
+
   const startToRequestData = async (params: ReportRequestDTO) => {
     const { metricTypes } = params;
     resetTimeoutMessage(metricTypes);
     if (hasPollingStarted || nextHasPollingStarted) return;
     nextHasPollingStarted = true;
     setHasPollingStarted(nextHasPollingStarted);
+
+    resetReportPageFailedTimeRangeInfos(dateRangeList);
+
     const res: PromiseSettledResult<ReportCallbackResponse>[] = await Promise.allSettled(
       dateRangeList.map(({ startDate, endDate }) =>
         reportClient.retrieveByUrl(
@@ -200,10 +204,26 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     });
   };
 
+  const resetReportPageFailedTimeRangeInfos = (dateRangeList: DateRangeList) => {
+    const payload = dateRangeList.map(({ startDate }) => ({
+      startDate: formatDateToTimestampString(startDate!),
+      errors: {
+        isGainPollingUrlError: undefined,
+        isPollingError: undefined,
+        isBoardMetricsError: undefined,
+        isPipelineMetricsError: undefined,
+        isSourceControlMetricsError: undefined,
+      },
+    }));
+    dispatch(updateReportPageFailedTimeRangeInfos(payload));
+  };
+
   const updateErrorAfterFetchReport = (
     res: PromiseSettledResult<ReportCallbackResponse>[],
     metricTypes: METRIC_TYPES[],
   ) => {
+    updateReportPageFailedTimeRangeInfosAfterReport(res);
+
     if (res.filter(({ status }) => status === REJECTED).length === 0) return;
 
     setReportInfos((preReportInfos: IReportInfo[]) => {
@@ -217,8 +237,6 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
         return resInfo;
       });
     });
-
-    updateReportPageFailedTimeRangeInfosAfterReport(res);
   };
 
   function updateReportPageFailedTimeRangeInfosAfterPolling(
@@ -227,16 +245,18 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     const updateReportPageFailedTimeRangeInfosPayload: IPageFailedDateRangePayload<IReportPageFailedDateRange>[] = [];
     pollingResponsesWithId.forEach((currentRes) => {
       const isRejected = currentRes.status === REJECTED;
-      updateReportPageFailedTimeRangeInfosPayload.push({
-        startDate: formatDateToTimestampString(currentRes.id),
-        errors: {
-          isPollingError: isRejected,
-          isBoardMetricsError: !isRejected && !!currentRes.value.response.reportMetricsError.boardMetricsError,
-          isSourceControlMetricsError:
-            !isRejected && !!currentRes.value.response.reportMetricsError.sourceControlMetricsError,
-          isPipelineMetricsError: !isRejected && !!currentRes.value.response.reportMetricsError.pipelineMetricsError,
-        },
-      });
+      if (isRejected || currentRes.value.response.allMetricsCompleted) {
+        updateReportPageFailedTimeRangeInfosPayload.push({
+          startDate: formatDateToTimestampString(currentRes.id),
+          errors: {
+            isPollingError: isRejected,
+            isBoardMetricsError: !isRejected && !!currentRes.value.response.reportMetricsError.boardMetricsError,
+            isSourceControlMetricsError:
+              !isRejected && !!currentRes.value.response.reportMetricsError.sourceControlMetricsError,
+            isPipelineMetricsError: !isRejected && !!currentRes.value.response.reportMetricsError.pipelineMetricsError,
+          },
+        });
+      }
     });
     dispatch(updateReportPageFailedTimeRangeInfos(updateReportPageFailedTimeRangeInfosPayload));
   }
