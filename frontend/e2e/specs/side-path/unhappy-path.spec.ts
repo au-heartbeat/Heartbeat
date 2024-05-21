@@ -85,12 +85,12 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
 
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics(BOARD_METRICS_RESULT);
-  await reportStep.checkDoraMetrics(
-    DORA_METRICS_RESULT.PrLeadTime,
-    DORA_METRICS_RESULT.PipelineLeadTime,
-    DORA_METRICS_RESULT.TotalLeadTime,
-    DORA_METRICS_RESULT.DeploymentFrequency,
-    DORA_METRICS_RESULT.FailureRate,
-    DORA_METRICS_RESULT.DevMeanTimeToRecovery,
-  );
+  await reportStep.checkDoraMetrics({
+    prLeadTime: DORA_METRICS_RESULT.PrLeadTime,
+    pipelineLeadTime: DORA_METRICS_RESULT.PipelineLeadTime,
+    totalLeadTime: DORA_METRICS_RESULT.TotalLeadTime,
+    deploymentFrequency: DORA_METRICS_RESULT.DeploymentFrequency,
+    failureRate: DORA_METRICS_RESULT.FailureRate,
+    devMeanTimeToRecovery: DORA_METRICS_RESULT.DevMeanTimeToRecovery,
+  });
 });

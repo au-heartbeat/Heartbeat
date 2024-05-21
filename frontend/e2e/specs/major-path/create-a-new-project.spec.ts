@@ -15,7 +15,6 @@ import { config as configStepData } from '../../fixtures/create-new/config-step'
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
-import { format } from 'e2e/utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();

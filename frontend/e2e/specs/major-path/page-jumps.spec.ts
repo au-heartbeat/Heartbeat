@@ -5,7 +5,6 @@ import {
 import { config as configStepData } from '../../fixtures/create-new/config-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
-import { format } from 'e2e/utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
@@ -57,10 +56,6 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
 });
 
 test('Page jump for create', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
@@ -73,7 +68,7 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectAllRequiredMetrics();
   await configStep.fillAndVerifyBoardConfig(configStepData.board);
   await configStep.fillAndVerifyPipelineToolForm(configStepData.pipelineTool);

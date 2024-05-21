@@ -2,17 +2,12 @@ import { config as metricsStepData } from '../../fixtures/create-new/metrics-ste
 import { config as configStepData } from '../../fixtures/create-new/config-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from '../../utils/clear-temp-dir';
-import { format } from '../../utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
 });
 
 test('Only select velocity metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
@@ -22,7 +17,7 @@ test('Only select velocity metrics on config page', async ({ homePage, configSte
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectVelocityRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
@@ -47,10 +42,6 @@ test('Only select velocity metrics on config page', async ({ homePage, configSte
 });
 
 test('Only select cycle time metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
@@ -60,7 +51,7 @@ test('Only select cycle time metrics on config page', async ({ homePage, configS
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectCycleTimeRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
@@ -85,10 +76,6 @@ test('Only select cycle time metrics on config page', async ({ homePage, configS
 });
 
 test('Only select classification metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
@@ -98,7 +85,7 @@ test('Only select classification metrics on config page', async ({ homePage, con
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectClassificationRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
@@ -122,10 +109,6 @@ test('Only select classification metrics on config page', async ({ homePage, con
 });
 
 test('Only select rework times metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
   const hbStateData = metricsStepData.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
@@ -135,7 +118,7 @@ test('Only select rework times metrics on config page', async ({ homePage, confi
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectReworkTimesRequiredMetrics();
   await configStep.checkBoardFormVisible();
   await configStep.checkPipelineToolFormInvisible();
@@ -165,17 +148,12 @@ test('Only select lead time for changes metrics on config page', async ({
   metricsStep,
   reportStep,
 }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
-
   await homePage.goto();
   await homePage.createANewProject();
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectLeadTimeForChangesMetrics();
   await configStep.checkBoardFormInvisible();
   await configStep.checkPipelineToolFormVisible();
@@ -201,17 +179,12 @@ test('Only select deployment frequency metrics on config page', async ({
   metricsStep,
   reportStep,
 }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
-
   await homePage.goto();
   await homePage.createANewProject();
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectDeploymentFrequencyMetrics();
   await configStep.checkBoardFormInvisible();
   await configStep.checkPipelineToolFormVisible();
@@ -236,17 +209,12 @@ test('Only select change failure rate metrics on config page', async ({
   metricsStep,
   reportStep,
 }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
-
   await homePage.goto();
   await homePage.createANewProject();
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectChangeFailureRateMetrics();
   await configStep.checkBoardFormInvisible();
   await configStep.checkPipelineToolFormVisible();
@@ -271,17 +239,12 @@ test('Only select mean time to recovery metrics on config page', async ({
   metricsStep,
   reportStep,
 }) => {
-  const dateRange = {
-    startDate: format(configStepData.dateRange[0].startDate),
-    endDate: format(configStepData.dateRange[0].endDate),
-  };
-
   await homePage.goto();
   await homePage.createANewProject();
   await configStep.waitForShown();
   await configStep.typeInProjectName(configStepData.projectName);
   await configStep.selectRegularCalendar(configStepData.calendarType);
-  await configStep.typeInDateRange(dateRange);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
   await configStep.selectMeanTimeToRecoveryMetrics();
   await configStep.checkBoardFormInvisible();
   await configStep.checkPipelineToolFormVisible();
