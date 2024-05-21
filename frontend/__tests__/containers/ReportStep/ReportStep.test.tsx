@@ -800,5 +800,32 @@ describe('Report Step', () => {
 
       expect(switchDORATab).toHaveClass('Mui-selected');
     });
+
+    it('should show Export button when click Chart tab', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      reportHook.current.reportInfos[0].reportData = { ...MOCK_REPORT_RESPONSE };
+      reportHook.current.reportInfos[1].reportData = { ...MOCK_REPORT_RESPONSE };
+
+      const { result } = renderHook(() => useExportCsvEffect());
+      const switchChartButton = screen.getByText('Chart');
+      await userEvent.click(switchChartButton);
+
+      const switchDORATab = screen.getByText('DORA');
+      await userEvent.click(switchDORATab);
+
+      const exportDORAButton = screen.getByText(EXPORT_PIPELINE_DATA);
+      expect(exportDORAButton).toBeInTheDocument();
+
+      await userEvent.click(exportDORAButton);
+
+      const switchBoardTab = screen.getByText('Board');
+      await userEvent.click(switchBoardTab);
+
+      const exportBoardButton = screen.getByText(EXPORT_BOARD_DATA);
+      expect(exportBoardButton).toBeInTheDocument();
+
+      await userEvent.click(exportBoardButton);
+    });
   });
 });

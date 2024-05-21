@@ -150,13 +150,19 @@ export const ReportButtonGroup = ({
             </StyledExportButton>
           )}
           {isShowExportBoardChartButton && (
-            <StyledExportButton disabled={!isExportBoardButtonClickable}>
-              {isShowExportBoardChartButton && COMMON_BUTTONS.EXPORT_BOARD_CHART}
+            <StyledExportButton
+              disabled={!isExportBoardButtonClickable}
+              onClick={() => handleDownload(boardMetricsResults, REPORT_TYPES.BOARD)}
+            >
+              {COMMON_BUTTONS.EXPORT_BOARD_CHART}
             </StyledExportButton>
           )}
           {isShowExportDoraChartButton && (
-            <StyledExportButton disabled={!isExportPipelineButtonClickable}>
-              {isShowExportDoraChartButton && COMMON_BUTTONS.EXPORT_DORA_CHART}
+            <StyledExportButton
+              disabled={!isExportPipelineButtonClickable}
+              onClick={() => handleDownload(pipelineMetricsResults, REPORT_TYPES.PIPELINE)}
+            >
+              {COMMON_BUTTONS.EXPORT_DORA_CHART}
             </StyledExportButton>
           )}
         </StyledRightButtonGroup>

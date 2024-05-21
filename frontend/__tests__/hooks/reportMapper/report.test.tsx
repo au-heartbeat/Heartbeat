@@ -236,8 +236,6 @@ describe('report response data mapper', () => {
   it('maps response velocity values to ui display value', () => {
     const mappedReportResponseValues = reportMapper(MOCK_REPORT_RESPONSE);
 
-    console.log('mappedReportResponseValues', mappedReportResponseValues);
-
     expect(mappedReportResponseValues).toEqual(EXPECTED_REPORT_VALUES);
   });
 });
