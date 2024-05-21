@@ -814,17 +814,15 @@ describe('Report Step', () => {
       await userEvent.click(switchDORATab);
 
       const exportDORAButton = screen.getByText(EXPORT_PIPELINE_DATA);
-      expect(exportDORAButton).toBeInTheDocument();
-
       await userEvent.click(exportDORAButton);
+      expect(exportDORAButton).toBeInTheDocument();
 
       const switchBoardTab = screen.getByText('Board');
       await userEvent.click(switchBoardTab);
 
       const exportBoardButton = screen.getByText(EXPORT_BOARD_DATA);
-      expect(exportBoardButton).toBeInTheDocument();
-
       await userEvent.click(exportBoardButton);
+      expect(exportBoardButton).toBeInTheDocument();
     });
   });
 });
