@@ -9,7 +9,7 @@ declare module '@mui/material/styles' {
   // allow configuration using `createTheme`
   interface ThemeOptions {
     main: {
-      DoraChart: {
+      doraChart: {
         barColorA: string;
         barColorB: string;
         barColorC: string;
@@ -18,7 +18,7 @@ declare module '@mui/material/styles' {
         devMeanTimeToRecoveryColor: string;
         gridColor: string;
       };
-      BoardChart: {
+      boardChart: {
         barColorA: string;
         barColorB: string;
         barColorC: string;
@@ -116,7 +116,7 @@ export const theme = createTheme({
     },
   },
   main: {
-    DoraChart: {
+    doraChart: {
       barColorA: '#003D4F',
       barColorB: '#47A1AD',
       barColorC: '#F2617A',
@@ -125,7 +125,7 @@ export const theme = createTheme({
       devMeanTimeToRecoveryColor: '#634F7D',
       gridColor: '#D9D9D9',
     },
-    BoardChart: {
+    boardChart: {
       barColorA: '#163C4D',
       barColorB: '#5F9FAB',
       barColorC: '#E16A7C',

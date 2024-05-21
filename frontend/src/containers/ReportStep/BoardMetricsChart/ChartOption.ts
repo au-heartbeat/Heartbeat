@@ -72,7 +72,7 @@ const commonConfig = {
     },
     axisLine: {
       lineStyle: {
-        color: theme.main.BoardChart.gridColor,
+        color: theme.main.boardChart.gridColor,
         width: 1,
         type: 'dashed',
       },

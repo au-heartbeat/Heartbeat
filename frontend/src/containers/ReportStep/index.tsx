@@ -102,8 +102,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
-  const [chartIndex, setChartIndex] = React.useState(CHART_INDEX.BOARD);
-  const [displayType, setDisplayType] = React.useState(DISPLAY_TYPE.LIST);
+  const [chartIndex, setChartIndex] = useState(CHART_INDEX.BOARD);
+  const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -501,7 +501,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     const pageType =
       newValue === DISPLAY_TYPE.LIST
         ? REPORT_PAGE_TYPE.SUMMARY
-        : selectDoraMetricsAndClassification || chartIndex === 1
+        : selectDoraMetricsAndClassification || chartIndex === CHART_INDEX.DORA
           ? REPORT_PAGE_TYPE.DORA_CHART
           : REPORT_PAGE_TYPE.BOARD_CHART;
 

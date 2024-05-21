@@ -99,7 +99,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
         areaStyle: AREA_STYLE,
       },
     ],
-    color: [theme.main.BoardChart.lineColorA, theme.main.BoardChart.lineColorB],
+    color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
   };
 }
 
@@ -144,7 +144,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
         areaStyle: AREA_STYLE,
       },
     ],
-    color: [theme.main.BoardChart.lineColorA, theme.main.BoardChart.lineColorB],
+    color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
   };
 }
 
@@ -173,12 +173,12 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
       ...otherIndicators,
     ],
     color: [
-      theme.main.BoardChart.barColorA,
-      theme.main.BoardChart.barColorB,
-      theme.main.BoardChart.barColorC,
-      theme.main.BoardChart.barColorD,
-      theme.main.BoardChart.barColorE,
-      theme.main.BoardChart.barColorF,
+      theme.main.boardChart.barColorA,
+      theme.main.boardChart.barColorB,
+      theme.main.boardChart.barColorC,
+      theme.main.boardChart.barColorD,
+      theme.main.boardChart.barColorE,
+      theme.main.boardChart.barColorF,
     ],
   };
 }
@@ -233,7 +233,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
         smooth: false,
       },
     ],
-    color: [theme.main.BoardChart.lineColorB, theme.main.BoardChart.barColorA, theme.main.BoardChart.barColorB],
+    color: [theme.main.boardChart.lineColorB, theme.main.boardChart.barColorA, theme.main.boardChart.barColorB],
   };
 }
 

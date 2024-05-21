@@ -61,7 +61,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
       },
       axisLine: {
         lineStyle: {
-          color: theme.main.DoraChart.gridColor,
+          color: theme.main.doraChart.gridColor,
           width: 1,
           type: 'dashed',
         },
@@ -150,7 +150,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       },
       axisLine: {
         lineStyle: {
-          color: theme.main.DoraChart.gridColor,
+          color: theme.main.doraChart.gridColor,
           width: 1,
           type: 'dashed',
         },

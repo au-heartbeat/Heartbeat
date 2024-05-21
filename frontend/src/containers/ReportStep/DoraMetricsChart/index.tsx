@@ -49,7 +49,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
       return series;
     }),
 
-    color: [theme.main.DoraChart.barColorA, theme.main.DoraChart.barColorB, theme.main.DoraChart.barColorC],
+    color: [theme.main.doraChart.barColorA, theme.main.doraChart.barColorB, theme.main.doraChart.barColorC],
   };
 }
 
@@ -72,7 +72,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
       type: 'line',
       data: value!,
     },
-    color: theme.main.DoraChart.deploymentFrequencyChartColor,
+    color: theme.main.doraChart.deploymentFrequencyChartColor,
   };
 }
 
@@ -96,7 +96,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
       type: 'line',
       data: value!,
     },
-    color: theme.main.DoraChart.devChangeFailureRateColor,
+    color: theme.main.doraChart.devChangeFailureRateColor,
   };
 }
 
@@ -119,7 +119,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
       type: 'line',
       data: value!,
     },
-    color: theme.main.DoraChart.devMeanTimeToRecoveryColor,
+    color: theme.main.doraChart.devMeanTimeToRecoveryColor,
   };
 }
 

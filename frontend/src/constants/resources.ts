@@ -43,14 +43,6 @@ export const BOARD_METRICS_MAPPING: Record<string, string> = {
   'Rework times': 'rework',
 };
 
-export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
-  'Waiting for testing': 'Waiting for testing time',
-  'In Dev': 'Total development time',
-  Review: 'Review time',
-  Block: 'Block time',
-  Testing: 'Testing time',
-};
-
 export const DORA_METRICS_MAPPING: Record<string, string> = {
   'Lead time for changes': 'leadTimeForChanges',
   'Deployment frequency': 'deploymentFrequency',
@@ -182,6 +174,14 @@ export const METRICS_CONSTANTS = {
   waitingValue: 'Waiting for testing',
   testingValue: 'Testing',
   reviewValue: 'Review',
+};
+
+export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
+  [METRICS_CONSTANTS.waitingValue]: 'Waiting for testing time',
+  [METRICS_CONSTANTS.inDevValue]: 'Total development time',
+  [METRICS_CONSTANTS.reviewValue]: 'Review time',
+  [METRICS_CONSTANTS.blockValue]: 'Block time',
+  [METRICS_CONSTANTS.testingValue]: 'Testing time',
 };
 
 export const CYCLE_TIME_LIST = [
