@@ -216,6 +216,10 @@ export class MetricsStep {
     await expect(this.nextButton).toBeDisabled();
   }
 
+  async validateNextButtonClickable() {
+    await expect(this.nextButton).toBeEnabled();
+  }
+
   async checkBoardConfigurationVisible() {
     await expect(this.boardConfigurationTitle).toBeVisible();
   }

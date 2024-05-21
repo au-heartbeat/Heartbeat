@@ -42,16 +42,7 @@
     "type": "GitHub",
     "token": "<E2E_TOKEN_GITHUB>"
   },
-  "crews": [
-    "heartbeat user",
-    "Weiran Sun",
-    "Yufan Wang",
-    "Chao Wang",
-    "Xinyi Wang",
-    "Xuebing Li",
-    "Junbo Dai",
-    "Yunsong Yang"
-  ],
+  "crews": ["heartbeat user", "Weiran Sun", "Yufan Wang", "Xinyi Wang", "Xuebing Li", "Junbo Dai", "Yunsong Yang"],
   "assigneeFilter": "lastAssignee",
   "cycleTime": {
     "type": "byColumn",
