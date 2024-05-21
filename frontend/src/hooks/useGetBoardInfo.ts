@@ -120,6 +120,17 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           });
       });
 
+      dispatch(
+        updateMetricsPageFailedTimeRangeInfos(
+          dateRangeCopy.map((dateRange) => ({
+            startDate: formatDateToTimestampString(dateRange.startDate!),
+            errors: {
+              isBoardInfoError: undefined,
+            },
+          })),
+        ),
+      );
+
       return Promise.all(allBoardData)
         .then((res) => {
           const config = errorStatusMap(localBoardInfoFailedStatus);
