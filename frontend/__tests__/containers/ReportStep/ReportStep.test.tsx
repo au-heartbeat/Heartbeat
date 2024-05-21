@@ -807,7 +807,6 @@ describe('Report Step', () => {
       reportHook.current.reportInfos[0].reportData = { ...MOCK_REPORT_RESPONSE };
       reportHook.current.reportInfos[1].reportData = { ...MOCK_REPORT_RESPONSE };
 
-      const { result } = renderHook(() => useExportCsvEffect());
       const switchChartButton = screen.getByText('Chart');
       await userEvent.click(switchChartButton);
 
