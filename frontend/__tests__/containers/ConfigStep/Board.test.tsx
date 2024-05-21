@@ -235,6 +235,37 @@ describe('Board', () => {
     expect(screen.queryByLabelText('board verify alert')).not.toBeInTheDocument();
   });
 
+  it('should still show board verify alert when user only change email input', async () => {
+    setup();
+    await fillBoardFieldsInformation();
+    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(screen.getByLabelText('board verify alert')).toBeInTheDocument();
+
+    await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
+
+    expect(screen.queryByLabelText('board verify alert')).toBeInTheDocument();
+  });
+
+  it('should hidden board verify alert when user change email and token input', async () => {
+    setup();
+    await fillBoardFieldsInformation();
+    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(screen.getByLabelText('board verify alert')).toBeInTheDocument();
+
+    await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
+    await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
+
+    expect(screen.queryByLabelText('board verify alert')).not.toBeInTheDocument();
+  });
+
   it('should show reset button and verified button when verify succeed ', async () => {
     mockVerifySuccess();
     setup();
