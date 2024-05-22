@@ -610,7 +610,9 @@ describe('updateResponseCrews function', () => {
 describe('xAxisLabelDateFormatter function', () => {
   it('should show the correct date format', () => {
     const inputDate = '2024/01/15-2024/01/19';
+
     const result = xAxisLabelDateFormatter(inputDate);
+
     expect(result).toEqual('01/15-01/19');
   });
 });

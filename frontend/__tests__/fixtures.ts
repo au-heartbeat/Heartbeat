@@ -54,6 +54,16 @@ export const PROJECT_NAME_LABEL = 'Project name';
 
 export const STEPPER = ['Config', 'Metrics', 'Report'];
 
+export const DISPLAY_TYPE = {
+  LIST: 'List',
+  CHART: 'Chart',
+};
+
+export const CHART_TYPE = {
+  BOARD: 'Board',
+  DORA: 'Dora',
+};
+
 export const REQUIRED_DATA_LIST = [
   'All',
   'Velocity',
