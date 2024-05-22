@@ -6,10 +6,12 @@ import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
 import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
+import heartbeat.service.report.model.WorkTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -18,11 +20,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class MeanToRecoveryCalculatorTest {
 
 	@InjectMocks
 	private MeanToRecoveryCalculator calculator;
+
+	@Mock
+	private WorkDay workday;
 
 	@Test
 	void shouldReturnZeroAvgDevMeanTimeToRecoveryWhenDeployTimesIsEmpty() {
@@ -46,6 +54,12 @@ class MeanToRecoveryCalculatorTest {
 		deployTimesList.add(deploy1);
 		deployTimesList.add(deploy2);
 		deployTimesList.add(deploy3);
+
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
+			long firstParam = invocation.getArgument(0);
+			long secondParam = invocation.getArgument(1);
+			return WorkTime.builder().workTime(secondParam - firstParam).build();
+		});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList);
 
@@ -86,6 +100,12 @@ class MeanToRecoveryCalculatorTest {
 		deployTimesList.add(deploy1);
 		deployTimesList.add(deploy2);
 		deployTimesList.add(deploy3);
+
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
+			long firstParam = invocation.getArgument(0);
+			long secondParam = invocation.getArgument(1);
+			return WorkTime.builder().workTime(secondParam - firstParam).build();
+		});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList);
 

@@ -15,6 +15,8 @@ import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
+import heartbeat.service.report.WorkDay;
+import heartbeat.service.report.model.WorkTime;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,6 +58,9 @@ class GithubServiceTest {
 	@Mock
 	GitHubFeignClient gitHubFeignClient;
 
+	@Mock
+	WorkDay workDay;
+
 	@InjectMocks
 	GitHubService githubService;
 
@@ -82,7 +87,6 @@ class GithubServiceTest {
 
 	@BeforeEach
 	public void setUp() {
-		githubService = new GitHubService(gitHubFeignClient);
 		pullRequestInfo = PullRequestInfo.builder()
 			.mergedAt("2022-07-23T04:04:00.000+00:00")
 			.createdAt("2022-07-23T04:03:00.000+00:00")
@@ -281,6 +285,12 @@ class GithubServiceTest {
 			.isRevert(Boolean.FALSE)
 			.build();
 
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
+			long firstParam = invocation.getArgument(0);
+			long secondParam = invocation.getArgument(1);
+			return WorkTime.builder().workTime(secondParam - firstParam).build();
+		});
+
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
 
 		assertEquals(expect, result);
@@ -436,6 +446,12 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
+
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
+			long firstParam = invocation.getArgument(0);
+			long secondParam = invocation.getArgument(1);
+			return WorkTime.builder().workTime(secondParam - firstParam).build();
+		});
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 
@@ -650,6 +666,12 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
 			.thenThrow(new NotFoundException("Failed to get commit"));
+
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
+			long firstParam = invocation.getArgument(0);
+			long secondParam = invocation.getArgument(1);
+			return WorkTime.builder().workTime(secondParam - firstParam).build();
+		});
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
 

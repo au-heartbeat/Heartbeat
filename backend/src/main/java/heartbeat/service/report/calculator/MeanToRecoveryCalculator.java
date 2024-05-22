@@ -6,6 +6,11 @@ import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.TotalTimeAndRecoveryTimes;
+import heartbeat.service.report.WorkDay;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -14,14 +19,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 @Log4j2
 public class MeanToRecoveryCalculator {
+
+	private final WorkDay workDay;
 
 	public DevMeanTimeToRecovery calculate(List<DeployTimes> deployTimes) {
 		if (deployTimes.isEmpty()) {
@@ -78,7 +82,15 @@ public class MeanToRecoveryCalculator {
 		for (DeployInfo job : sortedJobs) {
 			long currentJobFinishTime = Instant.parse(job.getJobFinishTime()).toEpochMilli();
 			if ("passed".equals(job.getState()) && failedJobFinishedTime != 0) {
-				totalTimeToRecovery += currentJobFinishTime - failedJobFinishedTime;
+				long timeToRecovery = workDay
+					.calculateWorkTimeAndHolidayBetween(failedJobFinishedTime, currentJobFinishTime)
+					.getWorkTime();
+				if (timeToRecovery < 0) {
+					// TODO: 2024/5/21 zyy: need to log here
+					log.error("");
+					timeToRecovery = 0;
+				}
+				totalTimeToRecovery += timeToRecovery;
 				failedJobFinishedTime = 0;
 				recoveryTimes++;
 			}

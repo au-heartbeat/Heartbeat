@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.client.HolidayFeignClient;
 import heartbeat.client.dto.board.jira.HolidayDTO;
+import heartbeat.service.report.model.WorkTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -9,12 +10,11 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 @Component
@@ -48,6 +48,14 @@ public class WorkDay {
 		}
 	}
 
+	public boolean verifyIfThisDayHoliday(LocalDate localDate) {
+		String localDateString = localDate.toString();
+		if (holidayMap.containsKey(localDateString)) {
+			return holidayMap.get(localDateString);
+		}
+		return localDate.getDayOfWeek() == DayOfWeek.SATURDAY || localDate.getDayOfWeek() == DayOfWeek.SUNDAY;
+	}
+
 	public boolean verifyIfThisDayHoliday(long time) {
 		String dateString = convertTimeToDateString(time);
 		if (holidayMap.containsKey(dateString)) {
@@ -58,15 +66,53 @@ public class WorkDay {
 	}
 
 	public int calculateWorkDaysBetween(long startTime, long endTime) {
-		long startDate = LocalDate.ofEpochDay(startTime / ONE_DAY).toEpochDay() * ONE_DAY;
-		long endDate = LocalDate.ofEpochDay(endTime / ONE_DAY).toEpochDay() * ONE_DAY;
+		LocalDate startLocalDate = LocalDate.ofEpochDay(startTime / ONE_DAY);
+		LocalDate endLocalDate = LocalDate.ofEpochDay(endTime / ONE_DAY);
+		LocalDate nextLocalDate = startLocalDate.plusDays(0);
+
 		int days = 0;
-		for (long tempDate = startDate; tempDate <= endDate; tempDate += ONE_DAY) {
-			if (!verifyIfThisDayHoliday(tempDate)) {
+		while (!endLocalDate.isBefore(nextLocalDate)) {
+			if (!verifyIfThisDayHoliday(nextLocalDate)) {
 				days++;
 			}
+			nextLocalDate = nextLocalDate.plusDays(1);
 		}
 		return days;
+	}
+
+	public WorkTime calculateWorkTimeAndHolidayBetween(long startTime, long endTime) {
+		long result = endTime - startTime;
+
+		LocalDate startLocalDateTime;
+		LocalDate endLocalDateTime;
+		startLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
+		endLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
+
+		List<Integer> holidayTypeList = new ArrayList<>();
+		LocalDate nextLocalDateTime = startLocalDateTime.plusDays(0);
+
+		while (!endLocalDateTime.isBefore(nextLocalDateTime)) {
+			if (verifyIfThisDayHoliday(nextLocalDateTime)) {
+				holidayTypeList.add(0);
+			}
+			else {
+				holidayTypeList.add(1);
+			}
+			nextLocalDateTime = nextLocalDateTime.plusDays(1);
+		}
+
+		for (int i = 0; i < holidayTypeList.size() && holidayTypeList.get(i) == 0; i++) {
+			holidayTypeList.set(i, 1);
+		}
+
+		for (int i = holidayTypeList.size() - 1; i >= 0 && holidayTypeList.get(i) == 0; i--) {
+			holidayTypeList.set(i, 1);
+		}
+
+		long holidayNums = holidayTypeList.stream().filter(it -> it == 0).count();
+		result = result - holidayNums * ONE_DAY;
+
+		return WorkTime.builder().holidays(holidayNums).workTime(result).build();
 	}
 
 	public double calculateWorkDaysBy24Hours(long startTime, long endTime) {

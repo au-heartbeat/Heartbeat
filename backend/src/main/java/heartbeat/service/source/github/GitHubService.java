@@ -13,6 +13,8 @@ import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
+import heartbeat.service.report.WorkDay;
+import heartbeat.service.report.model.WorkTime;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import heartbeat.util.GithubUtil;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,8 @@ public class GitHubService {
 	public static final String BEARER_TITLE = "Bearer ";
 
 	private final GitHubFeignClient gitHubFeignClient;
+
+	private final WorkDay workDay;
 
 	public void verifyToken(String githubToken) {
 		try {
@@ -226,6 +230,7 @@ public class GitHubService {
 			.totalTime(jobFinishTime - firstCommitTime)
 			.prLeadTime(prLeadTime)
 			.isRevert(isRevert(commitInfo))
+			.holidays(0)
 			.build();
 	}
 
@@ -258,12 +263,20 @@ public class GitHubService {
 		long pipelineLeadTime = jobFinishTime - prMergedTime;
 		long prLeadTime;
 		long totalTime;
+		long holidays = 0;
 		Boolean isRevert = isRevert(commitInfo);
 		if (Boolean.TRUE.equals(isRevert) || isNoFirstCommitTimeInPr(firstCommitTimeInPr)) {
 			prLeadTime = 0;
 		}
 		else {
-			prLeadTime = prMergedTime - firstCommitTimeInPr;
+			WorkTime workTime = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime);
+			prLeadTime = workTime.getWorkTime();
+			holidays = workTime.getHolidays();
+		}
+		if (prLeadTime < 0) {
+			// TODO: 2024/5/22 add log
+			log.error("");
+			prLeadTime = 0;
 		}
 		totalTime = prLeadTime + pipelineLeadTime;
 
@@ -280,6 +293,7 @@ public class GitHubService {
 			.firstCommitTime(prMergedTime)
 			.pipelineCreateTime(pipelineCreateTime)
 			.isRevert(isRevert)
+			.holidays(holidays)
 			.build();
 	}
 
