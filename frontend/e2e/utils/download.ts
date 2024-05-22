@@ -57,7 +57,9 @@ export const checkDownloadWithHolidayReport = async (page: Page, downloadButton:
         localCsvFile = fs.readFileSync(path.resolve(__dirname, '../fixtures/import-file/board-with-holiday-data.csv'));
         break;
       case 'pipelineReport.csv':
-        localCsvFile = fs.readFileSync(path.resolve(__dirname, '../fixtures/import-file/pipeline-with-holiday-data.csv'));
+        localCsvFile = fs.readFileSync(
+          path.resolve(__dirname, '../fixtures/import-file/pipeline-with-holiday-data.csv'),
+        );
         break;
     }
     const localCsv = parse(localCsvFile);
