@@ -373,6 +373,8 @@ export const MOCK_GITHUB_VERIFY_RESPONSE = {
 
 export const CREWS_SETTING = 'Crew settings';
 export const BOARD_MAPPING = 'Board mappings';
+export const BOARD_VERIFY_ALERT = 'board verify alert';
+export const TIMEOUT_ALERT = 'timeout alert';
 export const CLASSIFICATION_SETTING = 'Classification setting';
 export const REAL_DONE = 'Real done setting';
 export const DEPLOYMENT_FREQUENCY_SETTINGS = 'Pipeline settings';
