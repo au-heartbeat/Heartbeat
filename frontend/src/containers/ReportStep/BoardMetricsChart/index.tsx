@@ -253,7 +253,7 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
   const rework = useRef<HTMLDivElement>(null);
 
   const mappedData: ReportResponse[] | undefined =
-    data && data?.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData));
+    data && data.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData));
 
   const cycleTimeData = extractCycleTimeData(dateRanges, mappedData);
   const averageCycleTimeData = extractAverageCycleTimeData(dateRanges, mappedData);
