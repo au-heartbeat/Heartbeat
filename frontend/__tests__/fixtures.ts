@@ -61,7 +61,7 @@ export const DISPLAY_TYPE = {
 
 export const CHART_TYPE = {
   BOARD: 'Board',
-  DORA: 'Dora',
+  DORA: 'DORA',
 };
 
 export const REQUIRED_DATA_LIST = [

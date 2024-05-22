@@ -43,6 +43,7 @@ import {
   RETRY,
 } from '@src/constants/resources';
 import {
+  HeaderContainer,
   StyledCalendarWrapper,
   StyledRetry,
   StyledTab,
@@ -455,6 +456,42 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     </Box>
   );
 
+  const showTabs = () => (
+    <StyledTabWrapper>
+      <Box sx={{ marginRight: '2.5rem' }}>
+        <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
+          <StyledTab
+            sx={{
+              borderRight: 'none',
+              borderRadius: '0.16rem 0 0 0.16rem',
+            }}
+            icon={<FormatListBulletedIcon />}
+            iconPosition='start'
+            label='List'
+          />
+          <StyledTab
+            sx={{
+              borderLeft: 'none',
+              borderRadius: '0 0.16rem 0.16rem 0',
+            }}
+            icon={<BarChartIcon />}
+            iconPosition='start'
+            label='Chart'
+            disabled={onlySelectClassification}
+          />
+        </StyledTabs>
+      </Box>
+      {displayType === DISPLAY_TYPE.CHART && (
+        <Box>
+          <Tabs TabIndicatorProps={CHART_TAB_STYLE} value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
+            <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
+            <Tab label='DORA' {...tabProps(1)} />
+          </Tabs>
+        </Box>
+      )}
+    </StyledTabWrapper>
+  );
+
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
     <DoraMetricsChart data={data} dateRanges={allDateRanges} />
   );
@@ -557,66 +594,29 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   return (
     <>
-      {startDate && endDate && (
-        <StyledCalendarWrapper
-          data-testid={'calendarWrapper'}
-          isSummaryPage={isSummaryPage}
-          shouldShowChart={allDateRanges.length > 1}
-        >
-          {allDateRanges.length > 1 && (
-            <StyledTabWrapper>
-              <Box sx={{ marginRight: '2.5rem' }}>
-                <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
-                  <StyledTab
-                    sx={{
-                      borderRight: 'none',
-                      borderRadius: '0.16rem 0 0 0.16rem',
-                    }}
-                    icon={<FormatListBulletedIcon />}
-                    iconPosition='start'
-                    label='List'
-                  />
-                  <StyledTab
-                    sx={{
-                      borderLeft: 'none',
-                      borderRadius: '0 0.16rem 0.16rem 0',
-                    }}
-                    icon={<BarChartIcon />}
-                    iconPosition='start'
-                    label='Chart'
-                    disabled={onlySelectClassification}
-                  />
-                </StyledTabs>
-              </Box>
-              {displayType === DISPLAY_TYPE.CHART && (
-                <Box>
-                  <Tabs
-                    TabIndicatorProps={CHART_TAB_STYLE}
-                    value={chartIndex}
-                    onChange={handleChange}
-                    aria-label='chart tabs'
-                  >
-                    <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
-                    <Tab label='DORA' {...tabProps(1)} />
-                  </Tabs>
-                </Box>
-              )}
-            </StyledTabWrapper>
-          )}
-          {shouldShowChartRetryButton() && (
-            <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
-              {RETRY}
-            </StyledRetry>
-          )}
-          <DateRangeViewer
-            dateRangeList={descendingDateRanges}
-            selectedDateRange={selectedDateRange}
-            changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
-            isShowingChart={isShowingChart()}
-            disabledAll={isShowingChart()}
-          />
-        </StyledCalendarWrapper>
-      )}
+      <HeaderContainer>
+        {allDateRanges.length > 1 && showTabs()}
+        {startDate && endDate && (
+          <StyledCalendarWrapper
+            data-testid={'calendarWrapper'}
+            isSummaryPage={isSummaryPage}
+            shouldShowChart={allDateRanges.length > 1}
+          >
+            {shouldShowChartRetryButton() && (
+              <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
+                {RETRY}
+              </StyledRetry>
+            )}
+            <DateRangeViewer
+              dateRangeList={descendingDateRanges}
+              selectedDateRange={selectedDateRange}
+              changeDateRange={(dateRange) => setSelectedDateRange(dateRange)}
+              isShowingChart={isShowingChart()}
+              disabledAll={isShowingChart()}
+            />
+          </StyledCalendarWrapper>
+        )}
+      </HeaderContainer>
       {showPage(pageType, currentDataInfo.reportData)}
       <ReportButtonGroup
         isShowSave={isSummaryPage}

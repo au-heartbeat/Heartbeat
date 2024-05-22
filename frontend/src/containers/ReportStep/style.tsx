@@ -17,6 +17,11 @@ export const basicButtonStyle = {
   textTransform: theme.typography.button.textTransform,
 };
 
+export const HeaderContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+})
+
 export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean; shouldShowChart: boolean }) => ({
   alignSelf: 'end',
   width: 'fit-content',
@@ -29,7 +34,7 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
 
 export const StyledTabWrapper = styled('div')({
   display: 'flex',
-  alignItems: 'flex-end',
+  width: 'fit-content',
 });
 
 export const StyledTabs = styled(Tabs)({
