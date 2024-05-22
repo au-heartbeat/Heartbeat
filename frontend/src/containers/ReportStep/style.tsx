@@ -19,7 +19,7 @@ export const basicButtonStyle = {
 
 export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean; shouldShowChart: boolean }) => ({
   alignSelf: 'end',
-  width: '100%',
+  width: 'fit-content',
   display: 'flex',
   justifyContent: props.shouldShowChart ? 'space-between' : 'flex-end',
   marginTop: '0.25rem',
