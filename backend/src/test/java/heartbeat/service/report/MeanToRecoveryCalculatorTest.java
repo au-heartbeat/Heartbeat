@@ -7,7 +7,7 @@ import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
 import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
-import heartbeat.service.report.model.WorkTime;
+import heartbeat.service.report.model.WorkInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,7 +67,7 @@ class MeanToRecoveryCalculatorTest {
 		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
-			return WorkTime.builder().workTime(secondParam - firstParam).build();
+			return WorkInfo.builder().workTime(secondParam - firstParam).build();
 		});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
@@ -115,7 +115,7 @@ class MeanToRecoveryCalculatorTest {
 		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
-			return WorkTime.builder().workTime(secondParam - firstParam).build();
+			return WorkInfo.builder().workTime(secondParam - firstParam).build();
 		});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
@@ -165,7 +165,7 @@ class MeanToRecoveryCalculatorTest {
 		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
-			return WorkTime.builder().workTime(secondParam - firstParam).build();
+			return WorkInfo.builder().workTime(secondParam - firstParam).build();
 		});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);

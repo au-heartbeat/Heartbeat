@@ -2,7 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.client.HolidayFeignClient;
 import heartbeat.client.dto.board.jira.HolidayDTO;
-import heartbeat.service.report.model.WorkTime;
+import heartbeat.service.report.model.WorkInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -84,13 +84,11 @@ public class WorkDay {
 		return days;
 	}
 
-	public WorkTime calculateWorkTimeAndHolidayBetween(long startTime, long endTime) {
+	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime) {
 		long result = endTime - startTime;
 
-		LocalDate startLocalDateTime;
-		LocalDate endLocalDateTime;
-		startLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
-		endLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
+		LocalDate startLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
+		LocalDate endLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
 
 		List<Integer> holidayTypeList = new ArrayList<>();
 		LocalDate nextLocalDateTime = startLocalDateTime.plusDays(0);
@@ -116,7 +114,7 @@ public class WorkDay {
 		long holidayNums = holidayTypeList.stream().filter(it -> it == 0).count();
 		result = result - holidayNums * ONE_DAY;
 
-		return WorkTime.builder().holidays(holidayNums).workTime(result).build();
+		return WorkInfo.builder().holidays(holidayNums).workTime(result).build();
 	}
 
 	public double calculateWorkDaysBy24Hours(long startTime, long endTime) {

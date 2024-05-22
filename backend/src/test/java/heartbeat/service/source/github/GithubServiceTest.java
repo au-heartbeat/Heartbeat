@@ -17,7 +17,7 @@ import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.report.WorkDay;
-import heartbeat.service.report.model.WorkTime;
+import heartbeat.service.report.model.WorkInfo;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -294,7 +294,7 @@ class GithubServiceTest {
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
-			return WorkTime.builder().workTime(secondParam - firstParam).build();
+			return WorkInfo.builder().workTime(secondParam - firstParam).build();
 		});
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
@@ -495,7 +495,7 @@ class GithubServiceTest {
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
-			return WorkTime.builder().workTime(secondParam - firstParam).build();
+			return WorkInfo.builder().workTime(secondParam - firstParam).build();
 		});
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
@@ -520,7 +520,7 @@ class GithubServiceTest {
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
-			return WorkTime.builder().workTime(secondParam - firstParam).build();
+			return WorkInfo.builder().workTime(secondParam - firstParam).build();
 		});
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
@@ -756,7 +756,7 @@ class GithubServiceTest {
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
-			return WorkTime.builder().workTime(secondParam - firstParam).build();
+			return WorkInfo.builder().workTime(secondParam - firstParam).build();
 		});
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,

@@ -15,7 +15,7 @@ import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.report.WorkDay;
-import heartbeat.service.report.model.WorkTime;
+import heartbeat.service.report.model.WorkInfo;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import heartbeat.util.GithubUtil;
 import lombok.RequiredArgsConstructor;
@@ -272,9 +272,9 @@ public class GitHubService {
 			prLeadTime = 0;
 		}
 		else {
-			WorkTime workTime = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime);
-			prLeadTime = workTime.getWorkTime();
-			holidays = workTime.getHolidays();
+			WorkInfo workInfo = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime);
+			prLeadTime = workInfo.getWorkTime();
+			holidays = workInfo.getHolidays();
 		}
 		if (prLeadTime < 0) {
 			log.error(

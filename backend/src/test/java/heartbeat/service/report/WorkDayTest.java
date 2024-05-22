@@ -3,7 +3,7 @@ package heartbeat.service.report;
 import heartbeat.client.HolidayFeignClient;
 import heartbeat.client.dto.board.jira.HolidayDTO;
 import heartbeat.client.dto.board.jira.HolidaysResponseDTO;
-import heartbeat.service.report.model.WorkTime;
+import heartbeat.service.report.model.WorkInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -115,7 +115,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 0;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -132,7 +132,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -159,7 +159,7 @@ class WorkDayTest {
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
 			workDay.changeConsiderHolidayMode(true);
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -176,7 +176,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -193,7 +193,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -210,7 +210,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -227,7 +227,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -244,7 +244,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 0;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -260,7 +260,7 @@ class WorkDayTest {
 			long expectWorkTime = ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
 			long expectHoliday = 0;
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -288,7 +288,7 @@ class WorkDayTest {
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
 			workDay.changeConsiderHolidayMode(true);
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -315,7 +315,7 @@ class WorkDayTest {
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
 			workDay.changeConsiderHolidayMode(true);
 
-			WorkTime works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 

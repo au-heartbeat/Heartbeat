@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class WorkTime {
+public class WorkInfo {
 
 	private long workTime;
 
