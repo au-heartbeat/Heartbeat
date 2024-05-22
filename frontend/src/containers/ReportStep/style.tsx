@@ -48,6 +48,7 @@ export const StyledTabs = styled(Tabs)({
 
 export const StyledRetry = styled(Button)({
   marginLeft: '0.5rem',
+  marginRight: '1.6rem',
   fontSize: '0.8rem',
   textDecoration: 'none',
   color: theme.main.alert.info.iconColor,
