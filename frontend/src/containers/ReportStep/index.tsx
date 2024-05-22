@@ -147,6 +147,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const includeRework = metrics.includes(REQUIRED_DATA.REWORK_TIMES);
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
+  const shouldShowTabs = allDateRanges.length > 1;
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
@@ -594,8 +595,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   return (
     <>
-      <HeaderContainer>
-        {allDateRanges.length > 1 && showTabs()}
+      <HeaderContainer shouldShowTabs={shouldShowTabs}>
+        {shouldShowTabs && showTabs()}
         {startDate && endDate && (
           <StyledCalendarWrapper
             data-testid={'calendarWrapper'}

@@ -17,10 +17,10 @@ export const basicButtonStyle = {
   textTransform: theme.typography.button.textTransform,
 };
 
-export const HeaderContainer = styled('div')({
+export const HeaderContainer = styled('div')((props: { shouldShowTabs: boolean }) => ({
   display: 'flex',
-  justifyContent: 'space-between',
-});
+  justifyContent: props.shouldShowTabs ? 'space-between' : 'flex-end',
+}));
 
 export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean; shouldShowChart: boolean }) => ({
   alignSelf: 'end',
