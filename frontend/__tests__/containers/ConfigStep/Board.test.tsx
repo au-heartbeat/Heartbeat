@@ -211,61 +211,68 @@ describe('Board', () => {
     expect(queryByLabelText(TIMEOUT_ALERT)).not.toBeInTheDocument();
   });
 
-  it('should show board verify alert given board verify unauthorized', async () => {
-    const { getByLabelText } = setup();
-    await fillBoardFieldsInformation();
-    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
-    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+  describe('Board verify alert', () => {
+    beforeEach(() => {
+      const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+      boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+    });
 
-    await userEvent.click(screen.getByText(VERIFY));
+    it('should show board verify alert given board verify unauthorized', async () => {
+      const { getByLabelText } = setup();
+      await fillBoardFieldsInformation();
+      const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+      boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    expect(getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
-  });
+      await userEvent.click(screen.getByText(VERIFY));
 
-  it('should close board verify alert when user manually close the alert', async () => {
-    setup();
-    await fillBoardFieldsInformation();
-    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
-    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+      expect(getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
+    });
 
-    await userEvent.click(screen.getByText(VERIFY));
+    it('should close board verify alert when user manually close the alert', async () => {
+      setup();
+      await fillBoardFieldsInformation();
+      const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+      boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    expect(screen.getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
+      await userEvent.click(screen.getByText(VERIFY));
 
-    await userEvent.click(screen.getByLabelText('Close'));
+      expect(screen.getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
 
-    expect(screen.queryByLabelText(BOARD_VERIFY_ALERT)).not.toBeInTheDocument();
-  });
+      await userEvent.click(screen.getByLabelText('Close'));
 
-  it('should still show board verify alert when user only change email input', async () => {
-    setup();
-    await fillBoardFieldsInformation();
-    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
-    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+      expect(screen.queryByLabelText(BOARD_VERIFY_ALERT)).not.toBeInTheDocument();
+    });
 
-    await userEvent.click(screen.getByText(VERIFY));
+    it('should still show board verify alert when user only change email input', async () => {
+      setup();
+      await fillBoardFieldsInformation();
+      const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+      boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    expect(screen.getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
+      await userEvent.click(screen.getByText(VERIFY));
 
-    await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
+      expect(screen.getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
 
-    expect(screen.queryByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
-  });
+      await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
 
-  it('should hidden board verify alert when user change email and token input', async () => {
-    setup();
-    await fillBoardFieldsInformation();
-    const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
-    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+      expect(screen.queryByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
+    });
 
-    await userEvent.click(screen.getByText(VERIFY));
+    it('should hidden board verify alert when user change email and token input', async () => {
+      setup();
+      await fillBoardFieldsInformation();
+      const mockedError = new UnauthorizedError('', HttpStatusCode.Unauthorized, '');
+      boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
-    expect(screen.getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
+      await userEvent.click(screen.getByText(VERIFY));
 
-    await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
-    await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
+      expect(screen.getByLabelText(BOARD_VERIFY_ALERT)).toBeInTheDocument();
 
-    expect(screen.queryByLabelText(BOARD_VERIFY_ALERT)).not.toBeInTheDocument();
+      await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
+      await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
+
+      expect(screen.queryByLabelText(BOARD_VERIFY_ALERT)).not.toBeInTheDocument();
+    });
   });
 
   it('should show reset button and verified button when verify succeed ', async () => {
