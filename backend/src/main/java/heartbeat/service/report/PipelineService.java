@@ -42,7 +42,7 @@ public class PipelineService {
 		if (Objects.nonNull(request.getCodebaseSetting())
 				&& StringUtils.hasLength(request.getCodebaseSetting().getToken())) {
 			pipelineLeadTimes = gitHubService.fetchPipelinesLeadTime(buildKiteData.getDeployTimesList(), repoMap,
-					request.getCodebaseSetting().getToken());
+					request.getCodebaseSetting().getToken(), request);
 		}
 		buildKiteData.setPipelineLeadTimes(pipelineLeadTimes);
 		return buildKiteData;

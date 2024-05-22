@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
@@ -14,12 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +41,9 @@ class MeanToRecoveryCalculatorTest {
 	void shouldReturnZeroAvgDevMeanTimeToRecoveryWhenDeployTimesIsEmpty() {
 		List<DeployTimes> deployTimes = new ArrayList<>();
 
-		DevMeanTimeToRecovery result = calculator.calculate(deployTimes);
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
+		DevMeanTimeToRecovery result = calculator.calculate(deployTimes, request);
 
 		Assertions.assertEquals(BigDecimal.ZERO, result.getAvgDevMeanTimeToRecovery().getTimeToRecovery());
 		Assertions.assertTrue(result.getDevMeanTimeToRecoveryOfPipelines().isEmpty());
@@ -55,13 +62,15 @@ class MeanToRecoveryCalculatorTest {
 		deployTimesList.add(deploy2);
 		deployTimesList.add(deploy3);
 
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
 			return WorkTime.builder().workTime(secondParam - firstParam).build();
 		});
 
-		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList);
+		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = result.getAvgDevMeanTimeToRecovery();
 		Assertions.assertEquals(0, avgDevMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(100000)));
@@ -101,13 +110,15 @@ class MeanToRecoveryCalculatorTest {
 		deployTimesList.add(deploy2);
 		deployTimesList.add(deploy3);
 
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
 			long secondParam = invocation.getArgument(1);
 			return WorkTime.builder().workTime(secondParam - firstParam).build();
 		});
 
-		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList);
+		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = result.getAvgDevMeanTimeToRecovery();
 		Assertions.assertEquals(0, avgDevMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(80000)));
@@ -130,6 +141,42 @@ class MeanToRecoveryCalculatorTest {
 		Assertions.assertEquals("Pipeline 3", deploy3Result.getName());
 		Assertions.assertEquals("Step 3", deploy3Result.getStep());
 		Assertions.assertEquals(BigDecimal.ZERO, deploy3Result.getTimeToRecovery());
+	}
+
+	@Test
+	void shouldReturnDevMeanTimeToRecoveryIsZeroWhenWorkdayIsNegative() {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(outputStream);
+		System.setOut(printStream);
+
+		DeployTimes deploy = createDeployTimes("Pipeline 1", "Step 1", 1, 1);
+		DeployInfo originPassedDeploy = deploy.getPassed().get(0);
+		originPassedDeploy.setJobFinishTime("2022-07-23T04:04:00.000+00:00");
+		DeployInfo originFailedDeploy = deploy.getFailed().get(0);
+		originFailedDeploy.setJobFinishTime("2022-07-24T04:04:00.000+00:00");
+		deploy.getPassed().set(0, originPassedDeploy);
+		deploy.getFailed().set(0, originFailedDeploy);
+
+		List<DeployTimes> deployTimesList = new ArrayList<>();
+		deployTimesList.add(deploy);
+
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
+			long firstParam = invocation.getArgument(0);
+			long secondParam = invocation.getArgument(1);
+			return WorkTime.builder().workTime(secondParam - firstParam).build();
+		});
+
+		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
+
+		BigDecimal timeToRecovery = result.getAvgDevMeanTimeToRecovery().getTimeToRecovery();
+		String logs = outputStream.toString();
+
+		assertEquals(BigDecimal.ZERO, timeToRecovery);
+		assertTrue(logs.contains("calculate work time error"));
+
+		System.setOut(System.out);
 	}
 
 	private DeployTimes createDeployTimes(String pipelineName, String pipelineStep, int failedCount, int passedCount) {

@@ -10,6 +10,7 @@ import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
@@ -27,6 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -259,10 +263,11 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnNullWhenMergeTimeIsNull() {
 		PullRequestInfo pullRequestInfo = PullRequestInfo.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		DeployInfo deployInfo = DeployInfo.builder().build();
 		CommitInfo commitInfo = CommitInfo.builder().build();
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertNull(result);
 	}
@@ -284,6 +289,7 @@ class GithubServiceTest {
 			.totalTime(180000)
 			.isRevert(Boolean.FALSE)
 			.build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
 			long firstParam = invocation.getArgument(0);
@@ -291,7 +297,7 @@ class GithubServiceTest {
 			return WorkTime.builder().workTime(secondParam - firstParam).build();
 		});
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertEquals(expect, result);
 	}
@@ -299,6 +305,8 @@ class GithubServiceTest {
 	@Test
 	void CommitTimeInPrShouldBeZeroWhenCommitInfoIsNull() {
 		commitInfo = CommitInfo.builder().commit(Commit.builder().message("mock commit message").build()).build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
 			.prCreatedTime(1658548980000L)
@@ -315,7 +323,7 @@ class GithubServiceTest {
 			.isRevert(Boolean.FALSE)
 			.build();
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertEquals(expect, result);
 	}
@@ -323,6 +331,8 @@ class GithubServiceTest {
 	@Test
 	void CommitTimeInPrLeadTimeShouldBeZeroWhenCommitInfoIsNotNullGivenCommitIsReverted() {
 		commitInfo = CommitInfo.builder().commit(Commit.builder().message("Revert commit message").build()).build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
 			.prCreatedTime(1658548980000L)
@@ -339,7 +349,7 @@ class GithubServiceTest {
 			.isRevert(Boolean.TRUE)
 			.build();
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertEquals(expect, result);
 	}
@@ -347,6 +357,7 @@ class GithubServiceTest {
 	@Test
 	void CommitTimeInPrLeadTimeShouldBeZeroWhenCommitInfoIsInLowerCaseGivenCommitIsReverted() {
 		commitInfo = CommitInfo.builder().commit(Commit.builder().message("revert commit message").build()).build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
 			.prCreatedTime(1658548980000L)
@@ -363,7 +374,7 @@ class GithubServiceTest {
 			.totalTime(120000)
 			.build();
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertEquals(expect, result);
 	}
@@ -371,6 +382,7 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnIsRevertIsNullWhenCommitInfoCommitIsNull() {
 		commitInfo = CommitInfo.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
 			.prCreatedTime(1658548980000L)
@@ -387,7 +399,7 @@ class GithubServiceTest {
 			.isRevert(null)
 			.build();
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertEquals(expect, result);
 	}
@@ -395,6 +407,7 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnIsRevertIsNullWhenCommitInfoCommitMessageIsNull() {
 		commitInfo = CommitInfo.builder().commit(Commit.builder().build()).build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
 			.prCreatedTime(1658548980000L)
@@ -411,7 +424,7 @@ class GithubServiceTest {
 			.isRevert(null)
 			.build();
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertEquals(expect, result);
 	}
@@ -419,6 +432,7 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnFirstCommitTimeInPrZeroWhenCommitInfoIsNull() {
 		commitInfo = CommitInfo.builder().commit(Commit.builder().message("mock commit message").build()).build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
 			.prCreatedTime(1658548980000L)
@@ -435,14 +449,70 @@ class GithubServiceTest {
 			.isRevert(Boolean.FALSE)
 			.build();
 
-		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo);
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
 		assertEquals(expect, result);
 	}
 
 	@Test
+	void shouldReturnPrLeadTimeIsZeroWhenWorkdayIsNegative() {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(outputStream);
+		System.setOut(printStream);
+
+		commitInfo = CommitInfo.builder()
+			.commit(Commit.builder()
+				.committer(Committer.builder().date("2022-07-24T04:04:00.000+00:00").build())
+				.message("mock commit message")
+				.build())
+			.build();
+
+		pullRequestInfo = PullRequestInfo.builder()
+			.mergedAt("2022-07-23T04:04:00.000+00:00")
+			.createdAt("2022-07-23T04:03:00.000+00:00")
+			.mergeCommitSha("111")
+			.url("https://api.github.com/repos/XXXX-fs/fs-platform-onboarding/pulls/1")
+			.number(1)
+			.build();
+
+		LeadTime expect = LeadTime.builder()
+			.commitId("111")
+			.prCreatedTime(1658548980000L)
+			.prMergedTime(1658549040000L)
+			.firstCommitTimeInPr(1658635440000L)
+			.jobStartTime(1658549040000L)
+			.jobFinishTime(1658549160000L)
+			.pipelineLeadTime(1658549100000L)
+			.pipelineCreateTime(1658549100000L)
+			.prLeadTime(0L)
+			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
+			.totalTime(120000)
+			.isRevert(Boolean.FALSE)
+			.build();
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
+			long firstParam = invocation.getArgument(0);
+			long secondParam = invocation.getArgument(1);
+			return WorkTime.builder().workTime(secondParam - firstParam).build();
+		});
+
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
+
+		String logs = outputStream.toString();
+
+		assertEquals(expect, result);
+		assertTrue(logs.contains("calculate work time error"));
+
+		System.setOut(System.out);
+	}
+
+	@Test
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmpty() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
@@ -453,7 +523,8 @@ class GithubServiceTest {
 			return WorkTime.builder().workTime(secondParam - firstParam).build();
 		});
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(pipelineLeadTimes, result);
 	}
@@ -462,12 +533,13 @@ class GithubServiceTest {
 	void shouldReturnEmptyLeadTimeWhenDeployTimesIsEmpty() {
 		String mockToken = "mockToken";
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder().build());
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		List<DeployTimes> emptyDeployTimes = List.of(DeployTimes.builder().build());
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(emptyDeployTimes, repositoryMap,
-				mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(emptyDeployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(expect, result);
 	}
@@ -475,6 +547,7 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnEmptyLeadTimeGithubShaIsDifferent() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
 			.pipelineStep(PIPELINE_STEP)
 			.pipelineName("Name")
@@ -503,7 +576,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(expect, result);
 	}
@@ -511,6 +585,7 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnEmptyMergeLeadTimeWhenPullRequestInfoIsEmpty() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
 			.pipelineStep(PIPELINE_STEP)
 			.pipelineName("Name")
@@ -530,7 +605,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(new CommitInfo());
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(expect, result);
 	}
@@ -538,6 +614,8 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnEmptyMergeLeadTimeWhenPullRequestInfoGot404Error() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
 			.pipelineStep(PIPELINE_STEP)
 			.pipelineName("Name")
@@ -558,7 +636,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
 			.thenReturn(CommitInfo.builder().commit(Commit.builder().message("").build()).build());
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(expect, result);
 	}
@@ -566,6 +645,8 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnEmptyMergeLeadTimeWhenMergeTimeIsEmpty() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		pullRequestInfo.setMergedAt(null);
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder()
 			.pipelineStep(PIPELINE_STEP)
@@ -586,7 +667,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(new CommitInfo());
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(expect, result);
 	}
@@ -594,12 +676,14 @@ class GithubServiceTest {
 	@Test
 	void shouldThrowExceptionIfGetPullRequestListInfoHasExceptionWhenFetchPipelinesLeadTime() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+
 		pullRequestInfo.setMergedAt(null);
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any()))
 			.thenThrow(new CompletionException(new Exception("UnExpected Exception")));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
 
-		assertThatThrownBy(() -> githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken))
+		assertThatThrownBy(() -> githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken, request))
 			.isInstanceOf(InternalServerErrorException.class)
 			.hasMessageContaining("UnExpected Exception");
 	}
@@ -607,12 +691,13 @@ class GithubServiceTest {
 	@Test
 	void shouldThrowCompletableExceptionIfGetPullRequestListInfoHasExceptionWhenFetchPipelinesLeadTime() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		pullRequestInfo.setMergedAt(null);
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any()))
 			.thenThrow(new CompletionException(new UnauthorizedException("Bad credentials")));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
 
-		assertThatThrownBy(() -> githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken))
+		assertThatThrownBy(() -> githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken, request))
 			.isInstanceOf(UnauthorizedException.class)
 			.hasMessageContaining("Bad credentials");
 	}
@@ -662,6 +747,7 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmptyAndCommitInfoError() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
@@ -673,7 +759,8 @@ class GithubServiceTest {
 			return WorkTime.builder().workTime(secondParam - firstParam).build();
 		});
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(pipelineLeadTimes, result);
 	}
@@ -681,6 +768,7 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnPipeLineLeadTimeWhenDeployCommitShaIsDifferent() {
 		String mockToken = "mockToken";
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		pullRequestInfo = PullRequestInfo.builder()
 			.mergedAt("2022-07-23T04:04:00.000+00:00")
 			.createdAt("2022-07-23T04:03:00.000+00:00")
@@ -709,7 +797,8 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
 			.thenThrow(new NotFoundException("Failed to get commit"));
 
-		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken);
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
+				request);
 
 		assertEquals(pipelineLeadTimes, result);
 	}

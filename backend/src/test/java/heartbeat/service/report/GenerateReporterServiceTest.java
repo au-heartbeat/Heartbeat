@@ -581,7 +581,7 @@ class GenerateReporterServiceTest {
 			DevMeanTimeToRecovery fakeMeantime = DevMeanTimeToRecovery.builder().build();
 			when(deploymentFrequency.calculate(any(), any(), any())).thenReturn(fakeDeploymentFrequency);
 			when(devChangeFailureRate.calculate(any())).thenReturn(fakeDevChangeFailureRate);
-			when(meanToRecoveryCalculator.calculate(any())).thenReturn(fakeMeantime);
+			when(meanToRecoveryCalculator.calculate(any(), any())).thenReturn(fakeMeantime);
 
 			generateReporterService.generateDoraReport(request);
 

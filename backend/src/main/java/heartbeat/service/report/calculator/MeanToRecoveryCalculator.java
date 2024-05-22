@@ -2,6 +2,7 @@ package heartbeat.service.report.calculator;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
@@ -27,14 +28,14 @@ public class MeanToRecoveryCalculator {
 
 	private final WorkDay workDay;
 
-	public DevMeanTimeToRecovery calculate(List<DeployTimes> deployTimes) {
+	public DevMeanTimeToRecovery calculate(List<DeployTimes> deployTimes, GenerateReportRequest request) {
 		if (deployTimes.isEmpty()) {
 			return new DevMeanTimeToRecovery(
 					AvgDevMeanTimeToRecovery.builder().timeToRecovery(stripTrailingZeros(BigDecimal.ZERO)).build(),
 					Collections.emptyList());
 		}
 		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = deployTimes.stream()
-			.map(this::convertToDevMeanTimeToRecoveryOfPipeline)
+			.map(it -> convertToDevMeanTimeToRecoveryOfPipeline(it, request))
 			.collect(Collectors.toList());
 
 		BigDecimal avgDevMeanTimeToRecovery = devMeanTimeToRecoveryOfPipelines.stream()
@@ -48,13 +49,14 @@ public class MeanToRecoveryCalculator {
 		return new DevMeanTimeToRecovery(avgDevMeanTimeToRecoveryObj, devMeanTimeToRecoveryOfPipelines);
 	}
 
-	private DevMeanTimeToRecoveryOfPipeline convertToDevMeanTimeToRecoveryOfPipeline(DeployTimes deploy) {
+	private DevMeanTimeToRecoveryOfPipeline convertToDevMeanTimeToRecoveryOfPipeline(DeployTimes deploy,
+			GenerateReportRequest request) {
 		if (deploy.getFailed().isEmpty()) {
 			return new DevMeanTimeToRecoveryOfPipeline(deploy.getPipelineName(), deploy.getPipelineStep(),
 					BigDecimal.ZERO);
 		}
 		else {
-			TotalTimeAndRecoveryTimes result = getTotalRecoveryTimeAndRecoveryTimes(deploy);
+			TotalTimeAndRecoveryTimes result = getTotalRecoveryTimeAndRecoveryTimes(deploy, request);
 			BigDecimal devMeanTimeToRecovery = BigDecimal.ZERO;
 			if (result.getRecoveryTimes() != 0) {
 				devMeanTimeToRecovery = stripTrailingZeros(new BigDecimal(result.getTotalTimeToRecovery())
@@ -69,7 +71,8 @@ public class MeanToRecoveryCalculator {
 		return timeToRecovery.stripTrailingZeros();
 	}
 
-	private TotalTimeAndRecoveryTimes getTotalRecoveryTimeAndRecoveryTimes(DeployTimes deploy) {
+	private TotalTimeAndRecoveryTimes getTotalRecoveryTimeAndRecoveryTimes(DeployTimes deploy,
+			GenerateReportRequest request) {
 		List<DeployInfo> sortedJobs = new ArrayList<>(deploy.getFailed());
 		sortedJobs.addAll(deploy.getPassed());
 		sortedJobs.sort(Comparator.comparing(DeployInfo::getPipelineCreateTime));
@@ -86,8 +89,11 @@ public class MeanToRecoveryCalculator {
 					.calculateWorkTimeAndHolidayBetween(failedJobFinishedTime, currentJobFinishTime)
 					.getWorkTime();
 				if (timeToRecovery < 0) {
-					// TODO: 2024/5/21 zyy: need to log here
-					log.error("");
+					log.error("calculate work time error, because the work time is negative, request start time: {}, "
+							+ "request end time: {}, calculate start time: {}, calculate end time: {}, pipeline id: {},"
+							+ " pipeline name: {}, commit id: {}", request.getStartTime(), request.getEndTime(),
+							currentJobFinishTime, failedJobFinishedTime, deploy.getPipelineId(),
+							deploy.getPipelineName(), job.getCommitId());
 					timeToRecovery = 0;
 				}
 				totalTimeToRecovery += timeToRecovery;
