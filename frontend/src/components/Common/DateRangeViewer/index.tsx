@@ -134,9 +134,9 @@ const DateRangeViewer = ({
         <DateRangeFailedIconContainer>
           {currentDateRangeHasFailed && <PriorityHighIcon color='error' />}
         </DateRangeFailedIconContainer>
-        {formatDate(isShowingChart ? dateRangeList[0].startDate! : currentDateRange.startDate!)}
+        {formatDate(isShowingChart ? dateRangeList.slice(-1)[0].startDate! : currentDateRange.startDate!)}
         <StyledArrowForward />
-        {formatDate(isShowingChart ? dateRangeList.slice(-1)[0].endDate! : currentDateRange.endDate!)}
+        {formatDate(isShowingChart ? dateRangeList[0].endDate! : currentDateRange.endDate!)}
         <StyledCalendarToday />
       </DateRangeContainer>
       {disabledAll && isReportPage ? (

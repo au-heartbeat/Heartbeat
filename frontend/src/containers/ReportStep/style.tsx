@@ -17,11 +17,16 @@ export const basicButtonStyle = {
   textTransform: theme.typography.button.textTransform,
 };
 
-export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean }) => ({
-  alignSelf: 'end',
-  width: '100%',
+export const HeaderContainer = styled('div')((props: { shouldShowTabs: boolean }) => ({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: props.shouldShowTabs ? 'space-between' : 'flex-end',
+}));
+
+export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean; shouldShowChart: boolean }) => ({
+  alignSelf: 'end',
+  width: 'fit-content',
+  display: 'flex',
+  justifyContent: props.shouldShowChart ? 'space-between' : 'flex-end',
   marginTop: '0.25rem',
   marginBottom: props.isSummaryPage ? '0rem' : '2rem',
   zIndex: Z_INDEX.DROPDOWN,
@@ -29,7 +34,7 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
 
 export const StyledTabWrapper = styled('div')({
   display: 'flex',
-  alignItems: 'flex-end',
+  width: 'fit-content',
 });
 
 export const StyledTabs = styled(Tabs)({
@@ -43,6 +48,7 @@ export const StyledTabs = styled(Tabs)({
 
 export const StyledRetry = styled(Button)({
   marginLeft: '0.5rem',
+  marginRight: '1.6rem',
   fontSize: '0.8rem',
   textDecoration: 'none',
   color: theme.main.alert.info.iconColor,

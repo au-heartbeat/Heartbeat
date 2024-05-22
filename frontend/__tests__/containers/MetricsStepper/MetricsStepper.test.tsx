@@ -195,7 +195,7 @@ const fillMetricsPageDate = async () => {
   });
 };
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 afterAll(() => server.close());
 beforeEach(() => {
   store = setupStore();

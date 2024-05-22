@@ -27,8 +27,8 @@ export const DateRangeContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  borderTopLeftRadius: '0.5rem',
-  borderBottomLeftRadius: '0.5rem',
+  borderTopLeftRadius: '0.16rem',
+  borderBottomLeftRadius: '0.16rem',
   padding: '.75rem',
   fontSize: '.875rem',
 });
