@@ -20,7 +20,7 @@ export const basicButtonStyle = {
 export const HeaderContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-})
+});
 
 export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean; shouldShowChart: boolean }) => ({
   alignSelf: 'end',
