@@ -152,9 +152,9 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   const data = mappedData?.map((item) => item.cycleTime?.swimlaneList);
   const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
   const cycleTimeByStatus = transformArrayToObject(data, totalCycleTime!);
-  const otherIndicators = [];
+  const indicators = [];
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
-    otherIndicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
+    indicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
   return {
     title: 'Cycle Time Allocation',
@@ -164,7 +164,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
       alignTick: false,
       axisLabel: LABEL_PERCENT,
     },
-    series: [...otherIndicators],
+    series: [...indicators],
     color: [
       theme.main.boardChart.barColorA,
       theme.main.boardChart.barColorB,

@@ -11,6 +11,7 @@ import {
   getJiraBoardToken,
   getRealDoneStatus,
   getSortedAndDeduplicationBoardingMapping,
+  percentageFormatter,
   sortDateRanges,
   sortDisabledOptions,
   transformToCleanedBuildKiteEmoji,
@@ -614,5 +615,15 @@ describe('xAxisLabelDateFormatter function', () => {
     const result = xAxisLabelDateFormatter(inputDate);
 
     expect(result).toEqual('01/15-01/19');
+  });
+});
+
+describe('percentageFormatter function', () => {
+  it('should return the correct data format', () => {
+    const inputData = 66.66;
+
+    const result = percentageFormatter()(inputData);
+
+    expect(result).toEqual('66.66%');
   });
 });

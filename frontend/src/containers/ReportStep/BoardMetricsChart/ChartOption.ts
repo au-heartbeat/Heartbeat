@@ -114,6 +114,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
           align: index === 0 ? 'left' : 'right',
         },
         type: 'value',
+        alignTicks: true,
         axisLabel: {
           show: true,
           formatter: `{value}${item.axisLabel}`,

@@ -87,7 +87,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
     legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
     xAxis: allDateRanges,
     yAxis: {
-      name: 'Failed / Total',
+      name: 'Failed/Total',
       axisLabel: LABEL_PERCENT,
       alignTick: false,
     },
