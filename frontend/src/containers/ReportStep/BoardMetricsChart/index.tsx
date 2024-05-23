@@ -164,7 +164,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
       alignTick: false,
       axisLabel: LABEL_PERCENT,
     },
-    series: [...indicators],
+    series: indicators,
     color: [
       theme.main.boardChart.barColorA,
       theme.main.boardChart.barColorB,
