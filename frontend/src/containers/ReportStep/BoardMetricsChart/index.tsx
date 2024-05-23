@@ -314,12 +314,18 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
     switch (type) {
       case CHART_TYPE.VELOCITY:
       case CHART_TYPE.CYCLE_TIME_ALLOCATION:
-        if (trendNumber >= 0) return { color: 'green', icon: <TrendingUpSharpIcon />, trendPercent };
-        else return { color: 'red', icon: <TrendingDownSharpIcon />, trendPercent };
+        if (trendNumber >= 0)
+          return {
+            color: theme.main.chartTrend.betterColor,
+            icon: <TrendingUpSharpIcon />,
+            trendPercent,
+          };
+        else return { color: theme.main.chartTrend.worseColor, icon: <TrendingDownSharpIcon />, trendPercent };
       case CHART_TYPE.REWORK:
       case CHART_TYPE.AVERAGE_CYCLE_TIME:
-        if (trendNumber <= 0) return { color: 'green', icon: <TrendingDownSharpIcon />, trendPercent };
-        else return { color: 'red', icon: <TrendingUpSharpIcon />, trendPercent };
+        if (trendNumber <= 0)
+          return { color: theme.main.chartTrend.betterColor, icon: <TrendingDownSharpIcon />, trendPercent };
+        else return { color: theme.main.chartTrend.worseColor, icon: <TrendingUpSharpIcon />, trendPercent };
     }
   };
   const velocityColorAndTrendIcon = getColorAndTrendIcon(velocityData.trendInfo.trend, CHART_TYPE.VELOCITY);

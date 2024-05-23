@@ -6,9 +6,14 @@ import '@fontsource/roboto';
 declare module '@mui/material/styles' {
   //eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface Theme extends ThemeOptions {}
+
   // allow configuration using `createTheme`
   interface ThemeOptions {
     main: {
+      chartTrend: {
+        betterColor: string;
+        worseColor: string;
+      };
       doraChart: {
         barColorA: string;
         barColorB: string;
@@ -116,6 +121,10 @@ export const theme = createTheme({
     },
   },
   main: {
+    chartTrend: {
+      betterColor: 'green',
+      worseColor: 'red',
+    },
     doraChart: {
       barColorA: '#003D4F',
       barColorB: '#47A1AD',
