@@ -1,10 +1,6 @@
 import {
-<<<<<<< HEAD
-=======
-  BOARD_METRICS_RESULT,
   BOARD_METRICS_WITH_HOLIDAY_RESULT,
   DORA_METRICS_WITH_HOLIDAY_RESULT,
->>>>>>> main
   FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT,
   BOARD_METRICS_RESULT_MULTIPLE_RANGES,
   BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
@@ -150,31 +146,31 @@ test('Import project from file with holiday', async ({ homePage, configStep, met
   await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
 
-  await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
+  await metricsStep.selectReworkSettings(calculateWithHolidayConfigFile.reworkTimesSettings);
 
   await metricsStep.checkClassifications(calculateWithHolidayConfigFile.classification);
   await metricsStep.checkPipelineConfigurationAreChanged(calculateWithHolidayConfigFile.deployment);
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics(
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.Velocity,
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.Throughput,
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.AverageCycleTime4SP,
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.AverageCycleTime4Card,
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.totalReworkTimes,
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.totalReworkCards,
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.reworkCardsRatio,
-    BOARD_METRICS_WITH_HOLIDAY_RESULT.throughput,
-  );
-  await reportStep.checkDoraMetrics(
-    DORA_METRICS_WITH_HOLIDAY_RESULT.PrLeadTime,
-    DORA_METRICS_WITH_HOLIDAY_RESULT.PipelineLeadTime,
-    DORA_METRICS_WITH_HOLIDAY_RESULT.TotalLeadTime,
-    DORA_METRICS_WITH_HOLIDAY_RESULT.DeploymentFrequency,
-    DORA_METRICS_WITH_HOLIDAY_RESULT.FailureRate,
-    DORA_METRICS_WITH_HOLIDAY_RESULT.DevMeanTimeToRecovery,
-  );
+  await reportStep.checkBoardMetrics({
+    velocity: BOARD_METRICS_WITH_HOLIDAY_RESULT.Velocity,
+    throughput: BOARD_METRICS_WITH_HOLIDAY_RESULT.Throughput,
+    averageCycleTimeForSP: BOARD_METRICS_WITH_HOLIDAY_RESULT.AverageCycleTime4SP,
+    averageCycleTimeForCard: BOARD_METRICS_WITH_HOLIDAY_RESULT.AverageCycleTime4Card,
+    totalReworkTimes: BOARD_METRICS_WITH_HOLIDAY_RESULT.totalReworkTimes,
+    totalReworkCards: BOARD_METRICS_WITH_HOLIDAY_RESULT.totalReworkCards,
+    reworkCardsRatio: BOARD_METRICS_WITH_HOLIDAY_RESULT.reworkCardsRatio,
+    reworkThroughput: BOARD_METRICS_WITH_HOLIDAY_RESULT.throughput,
+  });
+  await reportStep.checkDoraMetrics({
+    prLeadTime: DORA_METRICS_WITH_HOLIDAY_RESULT.PrLeadTime,
+    pipelineLeadTime: DORA_METRICS_WITH_HOLIDAY_RESULT.PipelineLeadTime,
+    totalLeadTime: DORA_METRICS_WITH_HOLIDAY_RESULT.TotalLeadTime,
+    deploymentFrequency: DORA_METRICS_WITH_HOLIDAY_RESULT.DeploymentFrequency,
+    failureRate: DORA_METRICS_WITH_HOLIDAY_RESULT.FailureRate,
+    devMeanTimeToRecovery: DORA_METRICS_WITH_HOLIDAY_RESULT.DevMeanTimeToRecovery,
+  });
   await reportStep.checkDownloadWithHolidayReports();
 });
 
