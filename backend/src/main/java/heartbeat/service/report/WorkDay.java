@@ -66,7 +66,7 @@ public class WorkDay {
 		if (holidayMap.containsKey(dateString)) {
 			return holidayMap.get(dateString);
 		}
-		LocalDate date = LocalDate.ofEpochDay(time / ONE_DAY);
+		LocalDate date = LocalDate.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
 		return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
 	}
 
@@ -81,7 +81,7 @@ public class WorkDay {
 		return calculateWorkTimeAndHolidayBetween(startTime, endTime, true);
 	}
 
-	private WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, Boolean holidayCanWork) {
+	private WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, boolean holidayCanWork) {
 		long result = endTime - startTime;
 
 		LocalDate startLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
@@ -127,7 +127,7 @@ public class WorkDay {
 	}
 
 	private static String convertTimeToDateString(long time) {
-		LocalDate date = LocalDate.ofEpochDay(time / ONE_DAY);
+		LocalDate date = LocalDate.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
 		return date.format(DATE_FORMATTER);
 	}
 

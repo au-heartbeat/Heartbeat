@@ -44,7 +44,7 @@ export const DORA_METRICS_WITH_HOLIDAY_RESULT = {
   PrLeadTime: '109.32',
   PipelineLeadTime: '0.77',
   TotalLeadTime: '110.10',
-  DeploymentFrequency: '2.09',
+  DeploymentFrequency: '2.19',
   FailureRate: '22.03% (13/59)',
   DevMeanTimeToRecovery: '5.43',
 };
