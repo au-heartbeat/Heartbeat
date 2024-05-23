@@ -392,7 +392,9 @@ _Image 3-28，Deployment Frequency Report_
 
 ### 3.4.6 Lead time for changes Data
 - Formula for ‘PR lead time':
-  - if PR exist : PR lead time = PR merged time - first code committed time
+  - if PR exist : `PR lead time` = `PR merged time` - `first code committed time` - `non-workday`
+    - if the PR merge time is a non-working day, such as weekends or holidays, we will treat the non-working days in the PR merge time as working days.
+    - the first code committed time is the same as PR merge time
   - if no PR or revert PR: PR lead time = 0
 
 - Formula for ‘Pipeline lead time':
@@ -413,7 +415,8 @@ _Image 3-30，Dev Change Failure Rate Report_
 
 ### 3.4.8 Dev Mean time to recovery
 - Definition for ‘Dev Mean time to recovery': this metrics is also different from the official definition of Mean time to recovery. This metrics comes from pipeline, and it records how long it generally takes to restore when pipeline failed, and If this value is less than 8 hours, it means ‘red does not last overnight’, which means our repair speed is relatively good.
-- Formula for ‘Dev Mean time to recovery': sum[he time difference from the first fail to the first pass for deployment completed time]/ the number of repairs
+- Formula for ‘Dev Mean time to recovery': sum[the time difference from the first fail to the first pass for deployment completed time]/ the number of repairs
+  - for the time difference from the first fail to the first pass for deployment completed time, we still exclude the weekend and holiday
 
 ![Image 3-31](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15.png)\
 _Image 3-31，mean time to recovery 
