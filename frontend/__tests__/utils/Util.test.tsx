@@ -15,6 +15,7 @@ import {
   sortDisabledOptions,
   transformToCleanedBuildKiteEmoji,
   updateResponseCrews,
+  xAxisLabelDateFormatter,
 } from '@src/utils/util';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
@@ -603,5 +604,15 @@ describe('updateResponseCrews function', () => {
     ];
     const result = updateResponseCrews('xxx', 'xxx', [mockData]);
     expect(result).toEqual(expectData);
+  });
+});
+
+describe('xAxisLabelDateFormatter function', () => {
+  it('should show the correct date format', () => {
+    const inputDate = '2024/01/15-2024/01/19';
+
+    const result = xAxisLabelDateFormatter(inputDate);
+
+    expect(result).toEqual('01/15-01/19');
   });
 });

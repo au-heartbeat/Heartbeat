@@ -1,47 +1,49 @@
 import { ConfigSectionContainer, StyledForm } from '@src/components/Common/ConfigForms';
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
-import { FIELD_KEY, useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { FormTextField } from '@src/containers/ConfigStep/Board/FormTextField';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
+import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { CONFIG_TITLE, BOARD_TYPES } from '@src/constants/resources';
 import { FormAlert } from '@src/containers/ConfigStep/FormAlert';
 import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
 import { useFormContext } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
 export const Board = () => {
   const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
   const {
-    clearErrors,
     formState: { isValid, isSubmitSuccessful, errors },
     handleSubmit,
   } = useFormContext();
+  const [alertVisible, setAlertVisible] = useState(false);
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
   const isBoardVerifyFailed =
-    errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed ||
+    errors.email?.message === BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed ||
     errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.verifyFailed;
   const isVerified = isValid && isSubmitSuccessful;
-
+  const showAlert = alertVisible && (isVerifyTimeOut || isBoardVerifyFailed);
+  const formAlertType = isVerifyTimeOut ? formAlertTypes.TIMEOUT : formAlertTypes.BOARD_VERIFY;
   const onSubmit = async () => await verifyJira();
-  const closeAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
+  const closeAlert = () => setAlertVisible(false);
+
+  useEffect(() => {
+    if (isVerifyTimeOut || isBoardVerifyFailed) {
+      setAlertVisible(true);
+    }
+  }, [isVerifyTimeOut, isBoardVerifyFailed]);
 
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       {isLoading && <Loading />}
       <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
       <StyledAlterWrapper>
-        <FormAlert
-          showAlert={isVerifyTimeOut}
-          onClose={closeAlert}
-          moduleType={'Board'}
-          formAlertType={formAlertTypes.TIMEOUT}
-        />
-      </StyledAlterWrapper>
-      <StyledAlterWrapper>
-        <FormAlert showAlert={isBoardVerifyFailed} onClose={closeAlert} formAlertType={formAlertTypes.BOARD_VERIFY} />
+        {showAlert && (
+          <FormAlert showAlert={showAlert} onClose={closeAlert} moduleType={'Board'} formAlertType={formAlertType} />
+        )}
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         {fields.map(({ key, col, label }) =>

@@ -41,6 +41,8 @@ export const reportMapper = ({
   return {
     velocityList,
     cycleTimeList,
+    cycleTime,
+    rework,
     reworkList,
     classification,
     deploymentFrequencyList,

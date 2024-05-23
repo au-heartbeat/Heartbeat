@@ -197,3 +197,11 @@ export function combineBoardInfo(boardInfoResponses: BoardInfoResponse[]) {
     };
   }
 }
+
+export const xAxisLabelDateFormatter = (dateRange: string) => {
+  const [startDate, endDate] = dateRange.split('-');
+  const startMonthDay = startDate.slice(5);
+  const endMonthDay = endDate.slice(5);
+
+  return `${startMonthDay}-${endMonthDay}`;
+};

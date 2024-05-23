@@ -12,6 +12,16 @@ export const STEP_NUMBER = {
   REPORT_PAGE: 2,
 };
 
+export const CHART_INDEX = {
+  BOARD: 0,
+  DORA: 1,
+};
+
+export const DISPLAY_TYPE = {
+  LIST: 0,
+  CHART: 1,
+};
+
 export const EMPTY_STRING = '';
 
 export const STEPS = ['Config', 'Metrics', 'Report'];

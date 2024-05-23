@@ -33,7 +33,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     legend: 'Lead Time For Change',
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      name: 'Hours',
       alignTick: false,
       axisLabel: NO_LABEL,
     },
@@ -49,7 +49,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
       return series;
     }),
 
-    color: [theme.main.chart.barColorA, theme.main.chart.barColorB, theme.main.chart.barColorC],
+    color: [theme.main.doraChart.barColorA, theme.main.doraChart.barColorB, theme.main.doraChart.barColorC],
   };
 }
 
@@ -63,7 +63,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
     legend: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEPLOYMENT_FREQUENCY,
+      name: 'Deployments/Days',
       alignTick: false,
       axisLabel: NO_LABEL,
     },
@@ -72,7 +72,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
       type: 'line',
       data: value!,
     },
-    color: theme.main.chart.deploymentFrequencyChartColor,
+    color: theme.main.doraChart.deploymentFrequencyChartColor,
   };
 }
 
@@ -96,7 +96,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
       type: 'line',
       data: value!,
     },
-    color: theme.main.chart.devChangeFailureRateColor,
+    color: theme.main.doraChart.devChangeFailureRateColor,
   };
 }
 
@@ -110,7 +110,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
     legend: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+      name: 'Hours',
       alignTick: false,
       axisLabel: NO_LABEL,
     },
@@ -119,7 +119,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
       type: 'line',
       data: value!,
     },
-    color: theme.main.chart.devMeanTimeToRecoveryColor,
+    color: theme.main.doraChart.devMeanTimeToRecoveryColor,
   };
 }
 

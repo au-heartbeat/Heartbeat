@@ -28,7 +28,7 @@ export const SAVE = 'Save';
 
 export const SHOW_MORE = 'show more >';
 
-export const RETRY = 'retry';
+export const RETRY = 'Retry';
 
 export const BACK = 'Back';
 
@@ -53,6 +53,16 @@ export const TOKEN_ERROR_MESSAGE = ['Token is invalid!', 'Token is required!'];
 export const PROJECT_NAME_LABEL = 'Project name';
 
 export const STEPPER = ['Config', 'Metrics', 'Report'];
+
+export const DISPLAY_TYPE = {
+  LIST: 'List',
+  CHART: 'Chart',
+};
+
+export const CHART_TYPE = {
+  BOARD: 'Board',
+  DORA: 'DORA',
+};
 
 export const REQUIRED_DATA_LIST = [
   'All',
@@ -363,6 +373,8 @@ export const MOCK_GITHUB_VERIFY_RESPONSE = {
 
 export const CREWS_SETTING = 'Crew settings';
 export const BOARD_MAPPING = 'Board mappings';
+export const BOARD_VERIFY_ALERT = 'board verify alert';
+export const TIMEOUT_ALERT = 'timeout alert';
 export const CLASSIFICATION_SETTING = 'Classification setting';
 export const REAL_DONE = 'Real done setting';
 export const DEPLOYMENT_FREQUENCY_SETTINGS = 'Pipeline settings';
@@ -735,4 +747,4 @@ export const COMMON_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 export const PIPELINE_TOOL_TOKEN_INPUT_LABEL = 'input token';
 
-export const TIMEOUT_ALERT_TEST_ID = 'timeoutAlert';
+export const TIMEOUT_ALERT_ARIA_LABEL = 'timeout alert';

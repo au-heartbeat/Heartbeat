@@ -1,7 +1,9 @@
 import {
   BACK,
   BOARD_METRICS_TITLE,
+  CHART_TYPE,
   CLASSIFICATION,
+  DISPLAY_TYPE,
   DORA_DATA_FAILED_REPORT_VALUES,
   EMPTY_REPORT_VALUES,
   EXPORT_BOARD_DATA,
@@ -703,9 +705,9 @@ describe('Report Step', () => {
     });
 
     it('should correctly render dora chart', async () => {
-      setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
-      const switchChartButton = screen.getByText('Chart');
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
       await userEvent.click(switchChartButton);
 
       expect(addNotification).toHaveBeenCalledWith({
@@ -715,33 +717,47 @@ describe('Report Step', () => {
     });
 
     it('should render dora chart with empty value when exception was thrown', async () => {
-      reportHook.current.reportInfos[0] = {
-        id: emptyValueDateRange.startDate,
-        timeout4Board: { message: DATA_LOADING_FAILED, shouldShow: true },
-        timeout4Dora: { message: DATA_LOADING_FAILED, shouldShow: true },
-        timeout4Report: { message: DATA_LOADING_FAILED, shouldShow: true },
-        generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
-        generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
-        generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
-        shouldShowBoardMetricsError: true,
-        shouldShowPipelineMetricsError: true,
-        shouldShowSourceControlMetricsError: true,
-        reportData: { ...EMPTY_REPORT_VALUES },
-      };
-      reportHook.current.reportInfos[0].reportData = { ...EMPTY_REPORT_VALUES };
+      reportHook.current.reportInfos = [
+        {
+          id: emptyValueDateRange.startDate,
+          timeout4Board: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Dora: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Report: { message: DATA_LOADING_FAILED, shouldShow: true },
+          generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+          shouldShowBoardMetricsError: true,
+          shouldShowPipelineMetricsError: true,
+          shouldShowSourceControlMetricsError: true,
+          reportData: { ...EMPTY_REPORT_VALUES },
+        },
+        {
+          id: fullValueDateRange.startDate,
+          timeout4Board: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Dora: { message: DATA_LOADING_FAILED, shouldShow: true },
+          timeout4Report: { message: DATA_LOADING_FAILED, shouldShow: true },
+          generalError4Board: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Dora: { message: DEFAULT_MESSAGE, shouldShow: true },
+          generalError4Report: { message: DEFAULT_MESSAGE, shouldShow: true },
+          shouldShowBoardMetricsError: true,
+          shouldShowPipelineMetricsError: true,
+          shouldShowSourceControlMetricsError: true,
+          reportData: { ...EMPTY_REPORT_VALUES },
+        },
+      ];
 
-      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
+      setup(REQUIRED_DATA_LIST, [emptyValueDateRange, fullValueDateRange]);
 
-      const switchChartButton = screen.getByText('Chart');
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
       await userEvent.click(switchChartButton);
 
-      const switchDoraChartButton = screen.getByText('DORA');
+      const switchDoraChartButton = screen.getByText(CHART_TYPE.DORA);
       await userEvent.click(switchDoraChartButton);
 
       const chartRetryButton = screen.getByText(RETRY);
       await userEvent.click(chartRetryButton);
 
-      const switchBoardChartButton = screen.getByText('Board');
+      const switchBoardChartButton = screen.getByText(CHART_TYPE.BOARD);
       await userEvent.click(switchBoardChartButton);
 
       const chartRetryButtonInBoardPage = screen.getByText(RETRY);
@@ -754,10 +770,10 @@ describe('Report Step', () => {
       reportHook.current.reportInfos[0].reportData = { ...EMPTY_REPORT_VALUES };
       reportHook.current.reportInfos[1].reportData = { ...DORA_DATA_FAILED_REPORT_VALUES };
 
-      setup(REQUIRED_DATA_LIST, [emptyValueDateRange]);
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
-      const switchChartButton = screen.getByText('Chart');
-      const switchMetricsListButton = screen.getByText('List');
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      const switchMetricsListButton = screen.getByText(DISPLAY_TYPE.LIST);
       await userEvent.click(switchChartButton);
       await userEvent.click(switchMetricsListButton);
 
@@ -769,6 +785,46 @@ describe('Report Step', () => {
       expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
       expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
       expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
+    });
+
+    it('should select DORA tab when click DORA tab from chart page again', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      await userEvent.click(switchChartButton);
+
+      const switchDORATab = screen.getByText(CHART_TYPE.DORA);
+      await userEvent.click(switchDORATab);
+
+      const switchMetricsListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchMetricsListButton);
+      await userEvent.click(switchChartButton);
+
+      expect(switchDORATab).toHaveClass('Mui-selected');
+    });
+
+    it('should show Export button when click Chart tab', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      reportHook.current.reportInfos[0].reportData = { ...MOCK_REPORT_RESPONSE };
+      reportHook.current.reportInfos[1].reportData = { ...MOCK_REPORT_RESPONSE };
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      await userEvent.click(switchChartButton);
+
+      const switchDORATab = screen.getByText(CHART_TYPE.DORA);
+      await userEvent.click(switchDORATab);
+
+      const exportDORAButton = screen.getByText(EXPORT_PIPELINE_DATA);
+      await userEvent.click(exportDORAButton);
+      expect(exportDORAButton).toBeInTheDocument();
+
+      const switchBoardTab = screen.getByText(CHART_TYPE.BOARD);
+      await userEvent.click(switchBoardTab);
+
+      const exportBoardButton = screen.getByText(EXPORT_BOARD_DATA);
+      await userEvent.click(exportBoardButton);
+      expect(exportBoardButton).toBeInTheDocument();
     });
   });
 });

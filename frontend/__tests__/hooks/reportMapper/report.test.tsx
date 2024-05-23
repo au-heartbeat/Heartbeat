@@ -31,6 +31,39 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
   ],
+  cycleTime: {
+    averageCycleTimePerCard: 30.26,
+    averageCycleTimePerSP: 21.18,
+    totalTimeForCards: 423.59,
+    swimlaneList: [
+      {
+        averageTimeForCards: 11.95,
+        averageTimeForSP: 8.36,
+        optionalItemName: 'Analysis',
+        totalTime: 167.27,
+      },
+      {
+        averageTimeForCards: 17.32,
+        averageTimeForSP: 12.13,
+        optionalItemName: 'In Dev',
+        totalTime: 242.51,
+      },
+    ],
+  },
+  rework: {
+    totalReworkTimes: 111,
+    reworkState: 'In Dev',
+    fromAnalysis: null,
+    fromInDev: null,
+    fromBlock: 111,
+    fromReview: 111,
+    fromWaitingForTesting: 111,
+    fromTesting: null,
+    fromDone: 111,
+    totalReworkCards: 111,
+    reworkCardsRatio: 0.8888,
+    throughput: 1110,
+  },
   classification: [
     {
       id: 0,

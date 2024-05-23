@@ -65,7 +65,7 @@ export const tooltipModifiers = {
     {
       name: 'offset',
       options: {
-        offset: [190, 0],
+        offset: [90, 0],
       },
     },
   ],
