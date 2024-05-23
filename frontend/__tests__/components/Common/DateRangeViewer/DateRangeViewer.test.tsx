@@ -114,10 +114,10 @@ describe('DateRangeViewer', () => {
       store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
       const { getByLabelText } = setup(mockDateRanges);
 
-      expect(screen.getByTestId('dateRangeLoading')).toBeInTheDocument();
+      expect(screen.getByLabelText('loading icon in date')).toBeInTheDocument();
 
       await userEvent.click(getByLabelText('expandMore'));
-      expect(screen.getAllByTestId('dateRangeLoading')).toHaveLength(2);
+      expect(screen.getAllByLabelText('loading icon in date')).toHaveLength(2);
     });
 
     it('should show check icon given click expand button and all data is loaded', async () => {
