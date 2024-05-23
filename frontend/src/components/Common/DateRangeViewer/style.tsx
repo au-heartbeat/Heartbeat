@@ -1,6 +1,7 @@
 import { ArrowForward, CalendarToday, ExpandMore } from '@mui/icons-material';
 import { Z_INDEX } from '@src/constants/commons';
 import { Chip, Divider } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
@@ -130,4 +131,9 @@ export const StyledExpandContainer = styled('div')({
 export const StyledChip = styled(Chip)({
   marginRight: '1rem',
   color: theme.palette.text.disabled,
+});
+
+export const StyledCircularProgress = styled(CircularProgress)({
+  width: '1.25rem !important',
+  height: '1.25rem !important',
 });
