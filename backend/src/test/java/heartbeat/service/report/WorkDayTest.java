@@ -111,8 +111,8 @@ class WorkDayTest {
 	@Test
 	void shouldReturnRightWorkDaysWhenCalculateWorkDaysBetween() {
 
-		int result = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME(), WorkDayFixture.END_TIME());
-		int resultNewYear = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME_NEW_YEAR(),
+		long result = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME(), WorkDayFixture.END_TIME());
+		long resultNewYear = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME_NEW_YEAR(),
 				WorkDayFixture.END_TIME_NEW_YEAR());
 
 		Assertions.assertEquals(23, result);

@@ -70,19 +70,11 @@ public class WorkDay {
 		return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
 	}
 
-	public int calculateWorkDaysBetween(long startTime, long endTime) {
-		LocalDate startLocalDate = LocalDate.ofEpochDay(startTime / ONE_DAY);
-		LocalDate endLocalDate = LocalDate.ofEpochDay(endTime / ONE_DAY);
-		LocalDate nextLocalDate = startLocalDate.plusDays(0);
-
-		int days = 0;
-		while (!endLocalDate.isBefore(nextLocalDate)) {
-			if (!verifyIfThisDayHoliday(nextLocalDate)) {
-				days++;
-			}
-			nextLocalDate = nextLocalDate.plusDays(1);
-		}
-		return days;
+	public long calculateWorkDaysBetween(long startTime, long endTime) {
+		WorkInfo workInfo = calculateWorkTimeAndHolidayBetween(startTime, endTime, false);
+		long totalDays = workInfo.getTotalDays();
+		long holidays = workInfo.getHolidays();
+		return totalDays - holidays;
 	}
 
 	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime) {
@@ -96,16 +88,15 @@ public class WorkDay {
 		LocalDate endLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
 
 		List<DayType> holidayTypeList = new ArrayList<>();
-		LocalDate nextLocalDateTime = startLocalDateTime.plusDays(0);
 
-		while (!endLocalDateTime.isBefore(nextLocalDateTime)) {
-			if (verifyIfThisDayHoliday(nextLocalDateTime)) {
+		while (!endLocalDateTime.isBefore(startLocalDateTime)) {
+			if (verifyIfThisDayHoliday(startLocalDateTime)) {
 				holidayTypeList.add(DayType.NON_WORK_DAY);
 			}
 			else {
 				holidayTypeList.add(DayType.WORK_DAY);
 			}
-			nextLocalDateTime = nextLocalDateTime.plusDays(1);
+			startLocalDateTime = startLocalDateTime.plusDays(1);
 		}
 
 		long totalDays = holidayTypeList.size();
