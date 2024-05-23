@@ -85,6 +85,17 @@ export enum METRICS_TITLE {
   DEV_MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
 }
 
+export enum CHART_TYPE {
+  VELOCITY = 'Velocity',
+  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
+  CYCLE_TIME_ALLOCATION = 'Cycle Time Allocation',
+  REWORK = 'Rework',
+  LEAD_TIME_FOR_CHANGES = 'Lead Time For Changes',
+  DEPLOYMENT_FREQUENCY = 'Deployment Frequency',
+  DEV_CHANGE_FAILURE_RATE = 'Dev Change Failure Rate',
+  DEV_MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
+}
+
 export enum METRICS_SUBTITLE {
   PR_LEAD_TIME = 'PR Lead Time(Hours)',
   PIPELINE_LEAD_TIME = 'Pipeline Lead Time(Hours)',

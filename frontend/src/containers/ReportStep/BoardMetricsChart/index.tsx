@@ -2,12 +2,15 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { CYCLE_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
-import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
+import { calculateTrend, covertNumberToPercent, xAxisLabelDateFormatter } from '@src/utils/util';
+import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
+import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
+import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
+import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
+import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { xAxisLabelDateFormatter } from '@src/utils/util';
 import React, { useEffect, useRef } from 'react';
 import { theme } from '@src/theme';
 import * as echarts from 'echarts';
@@ -62,6 +65,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
   const data = mappedData?.map((item) => item.velocityList);
   const velocity = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
+  const trendInfo = calculateTrend(velocity, dateRanges);
   return {
     title: REQUIRED_DATA.VELOCITY,
     xAxis: {
@@ -100,6 +104,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
       },
     ],
     color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
+    trendInfo,
   };
 }
 
@@ -107,6 +112,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const data = mappedData?.map((item) => item.cycleTimeList);
   const storyPoints = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
+  const trendInfo = calculateTrend(storyPoints, dateRanges);
   return {
     title: 'Average Cycle Time',
     xAxis: {
@@ -145,6 +151,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
       },
     ],
     color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
+    trendInfo,
   };
 }
 
@@ -156,6 +163,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
     otherIndicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
+  const trendInfo = calculateTrend(totalCycleTime, dateRanges);
   return {
     title: 'Cycle Time Allocation',
     xAxis: dateRanges,
@@ -180,6 +188,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
       theme.main.boardChart.barColorE,
       theme.main.boardChart.barColorF,
     ],
+    trendInfo,
   };
 }
 
@@ -188,6 +197,8 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
   const totalReworkTimes = data?.map((item) => item?.totalReworkTimes as number);
   const totalReworkCards = data?.map((item) => item?.totalReworkCards as number);
   const reworkCardsRatio = data?.map((item) => (item?.reworkCardsRatio as number) * 100);
+
+  const trendInfo = calculateTrend(totalReworkTimes, dateRanges);
   return {
     title: 'Rework',
     xAxis: {
@@ -234,6 +245,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
       },
     ],
     color: [theme.main.boardChart.lineColorB, theme.main.boardChart.barColorA, theme.main.boardChart.barColorB],
+    trendInfo,
   };
 }
 
@@ -296,12 +308,45 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
     };
   }, [rework, reworkData]);
 
+  const getColorAndTrendIcon = (trendNumber: number | undefined, type: CHART_TYPE) => {
+    if (trendNumber === undefined) return;
+    const trendPercent = covertNumberToPercent(trendNumber);
+    switch (type) {
+      case CHART_TYPE.VELOCITY:
+      case CHART_TYPE.CYCLE_TIME_ALLOCATION:
+        if (trendNumber >= 0) return { color: 'green', icon: <TrendingUpSharpIcon />, trendPercent };
+        else return { color: 'red', icon: <TrendingDownSharpIcon />, trendPercent };
+      case CHART_TYPE.REWORK:
+      case CHART_TYPE.AVERAGE_CYCLE_TIME:
+        if (trendNumber <= 0) return { color: 'green', icon: <TrendingDownSharpIcon />, trendPercent };
+        else return { color: 'red', icon: <TrendingUpSharpIcon />, trendPercent };
+    }
+  };
+  const velocityColorAndTrendIcon = getColorAndTrendIcon(velocityData.trendInfo.trend, CHART_TYPE.VELOCITY);
+  const averageCycleTimeColorAndTrendIcon = getColorAndTrendIcon(
+    averageCycleTimeData.trendInfo.trend,
+    CHART_TYPE.AVERAGE_CYCLE_TIME,
+  );
+  const cycleTimeDataColorAndTrendIcon = getColorAndTrendIcon(
+    cycleTimeData.trendInfo.trend,
+    CHART_TYPE.CYCLE_TIME_ALLOCATION,
+  );
+  const reworkDataColorAndTrendIcon = getColorAndTrendIcon(reworkData.trendInfo.trend, CHART_TYPE.REWORK);
+
   return (
     <ChartContainer>
-      <ChartWrapper ref={velocity}></ChartWrapper>
-      <ChartWrapper ref={averageCycleTime}></ChartWrapper>
-      <ChartWrapper ref={cycleTime}></ChartWrapper>
-      <ChartWrapper ref={rework}></ChartWrapper>
+      <ChartAndTitleWrapper trendInfo={velocityColorAndTrendIcon} ref={velocity} type={CHART_TYPE.VELOCITY} />
+      <ChartAndTitleWrapper
+        trendInfo={averageCycleTimeColorAndTrendIcon}
+        ref={averageCycleTime}
+        type={CHART_TYPE.AVERAGE_CYCLE_TIME}
+      />
+      <ChartAndTitleWrapper
+        trendInfo={cycleTimeDataColorAndTrendIcon}
+        ref={cycleTime}
+        type={CHART_TYPE.CYCLE_TIME_ALLOCATION}
+      />
+      <ChartAndTitleWrapper trendInfo={reworkDataColorAndTrendIcon} ref={rework} type={CHART_TYPE.REWORK} />
     </ChartContainer>
   );
 };

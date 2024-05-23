@@ -91,8 +91,7 @@ const commonConfig = {
 export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
   return {
     title: {
-      text: props.title,
-      left: '22',
+      text: '',
     },
     legend: {
       data: props.series?.map((item) => item.name),
@@ -139,8 +138,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
 export const stackedBarOptionMapper = (props: BarOptionProps) => {
   return {
     title: {
-      text: props.title,
-      left: '22',
+      text: '',
     },
     legend: {
       data: props.series?.map((item) => item.name),

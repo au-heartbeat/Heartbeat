@@ -205,3 +205,25 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
 
   return `${startMonthDay}-${endMonthDay}`;
 };
+
+export const calculateTrend = (dataList: number[] | undefined, dateRangeList: string[]) => {
+  if (!dataList || dataList.filter((data) => data).length < 2) return {};
+
+  const earliestValidIndex = dataList.findIndex((data) => data);
+  const latestValidIndex = dataList.findLastIndex((data) => data);
+  const validDateRangeList: string[] = [];
+  for (let i = earliestValidIndex; i <= latestValidIndex; i++) {
+    if (dataList[i]) {
+      validDateRangeList.push(dateRangeList[i]);
+    }
+  }
+
+  return {
+    trend: (dataList[latestValidIndex]! - dataList[earliestValidIndex]!) / dataList[earliestValidIndex]!,
+    dateRangeList: validDateRangeList,
+  };
+};
+
+export const covertNumberToPercent = (num: number): string => {
+  return (num * 100).toFixed(2) + '%';
+};
