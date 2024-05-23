@@ -1,7 +1,7 @@
 import { ArrowForward, CalendarToday, ExpandMore } from '@mui/icons-material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Z_INDEX } from '@src/constants/commons';
 import { Chip, Divider } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
