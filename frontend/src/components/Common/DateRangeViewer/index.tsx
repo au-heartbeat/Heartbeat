@@ -134,7 +134,10 @@ const DateRangeViewer = ({
   const DateRangeIcon = ({ isLoading, isFailed }: { isLoading: boolean; isFailed: boolean }) => (
     <DateRangeFailedIconContainer>
       {isLoading ? (
-        <CircularProgress sx={{ width: '1.25rem !important', height: '1.25rem !important' }} />
+        <CircularProgress
+          sx={{ width: '1.25rem !important', height: '1.25rem !important' }}
+          data-testid={'dateRangeLoading'}
+        />
       ) : isFailed ? (
         <PriorityHighIcon color='error' />
       ) : (
