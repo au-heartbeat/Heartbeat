@@ -22,7 +22,7 @@ import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'rea
 import { DateRange, DateRangeList } from '@src/context/config/configSlice';
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import DownloadingIcon from '@mui/icons-material/Downloading';
+import CircularProgress from '@mui/material/CircularProgress';
 import { STEP_NUMBER } from '@src/constants/commons';
 import CheckIcon from '@mui/icons-material/Check';
 import { useAppSelector } from '@src/hooks';
@@ -134,7 +134,7 @@ const DateRangeViewer = ({
   const DateRangeIcon = ({ isLoading, isFailed }: { isLoading: boolean; isFailed: boolean }) => (
     <DateRangeFailedIconContainer>
       {isLoading ? (
-        <DownloadingIcon color='success' />
+        <CircularProgress sx={{ width: '1.25rem !important', height: '1.25rem !important' }} />
       ) : isFailed ? (
         <PriorityHighIcon color='error' />
       ) : (
