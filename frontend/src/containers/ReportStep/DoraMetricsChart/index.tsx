@@ -21,7 +21,7 @@ const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
-  const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name);
+  const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name).slice(0, 2);
   const extractedValues = mappedData?.map((data) =>
     data.leadTimeForChangesList?.[0].valuesList.map((item) => {
       return item.value!;
@@ -87,7 +87,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
     legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.FAILURE_RATE,
+      name: 'Failed / Total',
       axisLabel: LABEL_PERCENT,
       alignTick: false,
     },

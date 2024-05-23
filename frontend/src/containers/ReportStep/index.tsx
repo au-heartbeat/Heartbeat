@@ -103,8 +103,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
-  const [chartIndex, setChartIndex] = useState(CHART_INDEX.BOARD);
-  const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -150,6 +148,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowTabs = allDateRanges.length > 1;
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
+  const [chartIndex, setChartIndex] = useState(
+    selectDoraMetricsAndClassification ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
+  );
+  const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
   const isChartPage = useMemo(
     () => pageType === REPORT_PAGE_TYPE.DORA_CHART || pageType === REPORT_PAGE_TYPE.BOARD_CHART,

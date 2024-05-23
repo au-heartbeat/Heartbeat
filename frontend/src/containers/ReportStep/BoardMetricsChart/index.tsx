@@ -71,7 +71,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
     },
     yAxis: [
       {
-        name: 'SP',
+        name: 'Story Point',
         alignTick: false,
         axisLabel: NO_LABEL,
       },
@@ -116,7 +116,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
     },
     yAxis: [
       {
-        name: 'Days/SP',
+        name: 'Days/Story Point',
         alignTick: false,
         axisLabel: NO_LABEL,
       },
