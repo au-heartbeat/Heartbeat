@@ -146,7 +146,10 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       data: props.series?.map((item) => item.name),
       ...commonConfig.legend,
     },
-    tooltip: commonConfig.tooltip,
+    tooltip: {
+      valueFormatter: (value: number) => value + '%',
+      ...commonConfig.tooltip,
+    },
     grid: commonConfig.grid,
     xAxis: {
       data: props.xAxis,
@@ -166,7 +169,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       axisLabel: {
         show: true,
         formatter: `{value}${props.yAxis.axisLabel}`,
-      }
+      },
     },
     color: props.color,
     series: props.series?.map((item) => {

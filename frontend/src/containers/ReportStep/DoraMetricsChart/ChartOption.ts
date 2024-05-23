@@ -17,6 +17,7 @@ export interface LineOptionProps {
   yAxis: yAxis;
   series: Series;
   color: string;
+  valueType?: string;
 }
 export interface Series {
   name: string;
@@ -40,6 +41,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
     },
     tooltip: {
       trigger: 'axis',
+      valueFormatter: (value: number) => value + (props?.valueType ? '%' : ''),
     },
     xAxis: {
       data: props.xAxis,

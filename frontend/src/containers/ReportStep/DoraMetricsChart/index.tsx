@@ -97,6 +97,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
       data: value!,
     },
     color: theme.main.doraChart.devChangeFailureRateColor,
+    valueType: 'percentage',
   };
 }
 
