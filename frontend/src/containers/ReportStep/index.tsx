@@ -65,6 +65,7 @@ import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { BoardMetricsChart } from './BoardMetricsChart';
+import ReplayIcon from '@mui/icons-material/Replay';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
@@ -607,7 +608,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           >
             {shouldShowChartRetryButton() && (
               <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
-                {RETRY}
+                <ReplayIcon />
               </StyledRetry>
             )}
             <DateRangeViewer

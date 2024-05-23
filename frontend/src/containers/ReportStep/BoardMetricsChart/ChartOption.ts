@@ -163,6 +163,10 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       },
       type: 'value',
       splitLine: commonConfig.axisConfig.splitLine,
+      axisLabel: {
+        show: true,
+        formatter: `{value}${props.yAxis.axisLabel}`,
+      }
     },
     color: props.color,
     series: props.series?.map((item) => {
