@@ -18,6 +18,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +37,28 @@ class WorkDayTest {
 
 	@Mock
 	HolidayFeignClient holidayFeignClient;
+
+	@Test
+	void shouldDontPutToHolidayMapWhenHolidayMapNotEmpty() {
+		HolidaysResponseDTO holidayFirstReturn = HolidaysResponseDTO.builder()
+			.days(List.of(HolidayDTO.builder().date("2024-01-01").name("元旦").isOffDay(true).build()))
+			.build();
+		HolidaysResponseDTO holidaySecondReturn = HolidaysResponseDTO.builder()
+			.days(List.of(HolidayDTO.builder().date("2024-05-01").name("五一").isOffDay(true).build()))
+			.build();
+
+		when(holidayFeignClient.getHolidays("2024")).thenReturn(holidayFirstReturn).thenReturn(holidaySecondReturn);
+
+		workDay.changeConsiderHolidayMode(true);
+		workDay.changeConsiderHolidayMode(true);
+
+		boolean holidayMapContainsFiveOne = workDay.verifyIfThisDayHoliday(LocalDate.parse("2024-05-01"));
+		boolean holidayMapContainsOneOne = workDay.verifyIfThisDayHoliday(LocalDate.parse("2024-01-01"));
+
+		assertTrue(holidayMapContainsOneOne);
+		assertFalse(holidayMapContainsFiveOne);
+
+	}
 
 	@Test
 	void shouldReturnDayIsHoliday() {
@@ -59,7 +83,7 @@ class WorkDayTest {
 		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
 		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
 
-		Assertions.assertTrue(resultWorkDay);
+		assertTrue(resultWorkDay);
 		Assertions.assertFalse(resultHoliday);
 	}
 
@@ -80,8 +104,8 @@ class WorkDayTest {
 		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
 		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
 
-		Assertions.assertTrue(resultWorkDay);
-		Assertions.assertTrue(resultHoliday);
+		assertTrue(resultWorkDay);
+		assertTrue(resultHoliday);
 	}
 
 	@Test
@@ -107,7 +131,7 @@ class WorkDayTest {
 	class CalculateWorkDaysBetweenMaybeWorkInWeekend {
 
 		@Test
-		void startIsWorkdayAndEndIsWorkdayAndMills() {
+		void startIsWorkdayAndEndIsWorkday() {
 			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
 			long endTime = LocalDateTime.of(2024, 3, 15, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
 
@@ -124,7 +148,7 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartIsWorkdayAndEndIsWorkdayAndAcrossWeekendAndMills() {
+		void StartIsWorkdayAndEndIsWorkdayAndAcrossWeekend() {
 			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
 			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
 
@@ -141,7 +165,7 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartIsWorkdayAndEndIsWorkdayAndAcrossHolidayAndMills() {
+		void StartIsWorkdayAndEndIsWorkdayAndAcrossHoliday() {
 			List<HolidayDTO> holidayDTOList = List.of(
 					HolidayDTO.builder().date("2024-04-04").name("清明").isOffDay(true).build(),
 					HolidayDTO.builder().date("2024-04-05").name("清明").isOffDay(true).build(),
@@ -168,41 +192,7 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartIsSundayAndEndIsWorkdayAndAcrossWeekendAndMills() {
-			long startTime = LocalDateTime.of(2024, 3, 10, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
-
-			long expectWorkTime = (29 - 10 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
-					+ 1000;
-			long expectHoliday = 4;
-
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
-			long workTime = works.getWorkTime();
-			long holidays = works.getHolidays();
-
-			Assertions.assertEquals(expectWorkTime, workTime);
-			Assertions.assertEquals(expectHoliday, holidays);
-		}
-
-		@Test
-		void StartIsSaturdayAndEndIsWorkdayAndAcrossWeekendAndMills() {
-			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
-
-			long expectWorkTime = (29 - 9 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
-					+ 1000;
-			long expectHoliday = 4;
-
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
-			long workTime = works.getWorkTime();
-			long holidays = works.getHolidays();
-
-			Assertions.assertEquals(expectWorkTime, workTime);
-			Assertions.assertEquals(expectHoliday, holidays);
-		}
-
-		@Test
-		void StartIsWorkdayAndEndIsSaturdayAndAcrossWeekendAndMills() {
+		void StartIsWorkdayAndEndIsSaturdayAndAcrossWeekend() {
 			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
 			long endTime = LocalDateTime.of(2024, 3, 30, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
 
@@ -219,7 +209,7 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartIsWorkdayAndEndIsSundayAndAcrossWeekendAndMills() {
+		void StartIsWorkdayAndEndIsSundayAndAcrossWeekend() {
 			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
 			long endTime = LocalDateTime.of(2024, 3, 31, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
 
@@ -236,7 +226,40 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartIsSaturdayAndEndIsSundayAndMills() {
+		void StartIsSaturdayAndEndIsWorkdayAndAcrossWeekend() {
+			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+
+			long expectWorkTime = (29 - 9 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
+					+ 1000;
+			long expectHoliday = 4;
+
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			long workTime = works.getWorkTime();
+			long holidays = works.getHolidays();
+
+			Assertions.assertEquals(expectWorkTime, workTime);
+			Assertions.assertEquals(expectHoliday, holidays);
+		}
+
+		@Test
+		void StartAndEndIsTheSameDayAndIsSaturday() {
+			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 9, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+
+			long expectWorkTime = ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
+			long expectHoliday = 0;
+
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			long workTime = works.getWorkTime();
+			long holidays = works.getHolidays();
+
+			Assertions.assertEquals(expectWorkTime, workTime);
+			Assertions.assertEquals(expectHoliday, holidays);
+		}
+
+		@Test
+		void StartIsSaturdayAndEndIsSunday() {
 			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
 			long endTime = LocalDateTime.of(2024, 3, 10, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
 
@@ -253,12 +276,13 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartAndEndIsTheSameDayAndIsSaturdayAndMills() {
-			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 9, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+		void StartIsSundayAndEndIsWorkdayAndAcrossWeekend() {
+			long startTime = LocalDateTime.of(2024, 3, 10, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
 
-			long expectWorkTime = ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
-			long expectHoliday = 0;
+			long expectWorkTime = (29 - 10 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
+					+ 1000;
+			long expectHoliday = 4;
 
 			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
 			long workTime = works.getWorkTime();
@@ -269,7 +293,7 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartIsHolidayAndEndIsWorkdayAndMills() {
+		void StartIsHolidayAndEndIsWorkday() {
 			List<HolidayDTO> holidayDTOList = List.of(
 					HolidayDTO.builder().date("2024-05-01").name("五一").isOffDay(true).build(),
 					HolidayDTO.builder().date("2024-05-02").name("五一").isOffDay(true).build(),
@@ -297,7 +321,7 @@ class WorkDayTest {
 		}
 
 		@Test
-		void StartIsWorkdayAndEndIsHolidayAndMills() {
+		void StartIsWorkdayAndEndIsHoliday() {
 			List<HolidayDTO> holidayDTOList = List.of(
 					HolidayDTO.builder().date("2024-05-01").name("五一").isOffDay(true).build(),
 					HolidayDTO.builder().date("2024-05-02").name("五一").isOffDay(true).build(),

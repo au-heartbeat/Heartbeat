@@ -89,11 +89,12 @@ public class MeanToRecoveryCalculator {
 					.calculateWorkTimeAndHolidayBetween(failedJobFinishedTime, currentJobFinishTime)
 					.getWorkTime();
 				if (timeToRecovery < 0) {
-					log.error("calculate work time error, because the work time is negative, request start time: {}, "
-							+ "request end time: {}, calculate start time: {}, calculate end time: {}, pipeline id: {},"
-							+ " pipeline name: {}, commit id: {}", request.getStartTime(), request.getEndTime(),
-							currentJobFinishTime, failedJobFinishedTime, deploy.getPipelineId(),
-							deploy.getPipelineName(), job.getCommitId());
+					log.error(
+							"calculate work time error, because the work time is negative, request start time: {}, "
+									+ "request end time: {}, failed time: {}, succeed time: {}, pipeline id: {},"
+									+ " pipeline name: {}, commit id: {}",
+							request.getStartTime(), request.getEndTime(), failedJobFinishedTime, currentJobFinishTime,
+							deploy.getPipelineId(), deploy.getPipelineName(), job.getCommitId());
 					timeToRecovery = 0;
 				}
 				totalTimeToRecovery += timeToRecovery;

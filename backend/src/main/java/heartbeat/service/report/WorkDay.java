@@ -3,6 +3,7 @@ package heartbeat.service.report;
 import heartbeat.client.HolidayFeignClient;
 import heartbeat.client.dto.board.jira.HolidayDTO;
 import heartbeat.service.report.model.WorkInfo;
+import heartbeat.config.DayType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -85,36 +86,44 @@ public class WorkDay {
 	}
 
 	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime) {
+		return calculateWorkTimeAndHolidayBetween(startTime, endTime, true);
+	}
+
+	private WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, Boolean holidayCanWork) {
 		long result = endTime - startTime;
 
 		LocalDate startLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
 		LocalDate endLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
 
-		List<Integer> holidayTypeList = new ArrayList<>();
+		List<DayType> holidayTypeList = new ArrayList<>();
 		LocalDate nextLocalDateTime = startLocalDateTime.plusDays(0);
 
 		while (!endLocalDateTime.isBefore(nextLocalDateTime)) {
 			if (verifyIfThisDayHoliday(nextLocalDateTime)) {
-				holidayTypeList.add(0);
+				holidayTypeList.add(DayType.NON_WORK_DAY);
 			}
 			else {
-				holidayTypeList.add(1);
+				holidayTypeList.add(DayType.WORK_DAY);
 			}
 			nextLocalDateTime = nextLocalDateTime.plusDays(1);
 		}
 
-		for (int i = 0; i < holidayTypeList.size() && holidayTypeList.get(i) == 0; i++) {
-			holidayTypeList.set(i, 1);
+		long totalDays = holidayTypeList.size();
+
+		if (holidayCanWork) {
+			for (int i = 0; i < holidayTypeList.size() && holidayTypeList.get(i) == DayType.NON_WORK_DAY; i++) {
+				holidayTypeList.set(i, DayType.WORK_DAY);
+			}
+
+			for (int i = holidayTypeList.size() - 1; i > 0 && holidayTypeList.get(i) == DayType.NON_WORK_DAY; i--) {
+				holidayTypeList.set(i, DayType.WORK_DAY);
+			}
 		}
 
-		for (int i = holidayTypeList.size() - 1; i >= 0 && holidayTypeList.get(i) == 0; i--) {
-			holidayTypeList.set(i, 1);
-		}
-
-		long holidayNums = holidayTypeList.stream().filter(it -> it == 0).count();
+		long holidayNums = holidayTypeList.stream().filter(it -> it.equals(DayType.NON_WORK_DAY)).count();
 		result = result - holidayNums * ONE_DAY;
 
-		return WorkInfo.builder().holidays(holidayNums).workTime(result).build();
+		return WorkInfo.builder().holidays(holidayNums).totalDays(totalDays).workTime(result).build();
 	}
 
 	public double calculateWorkDaysBy24Hours(long startTime, long endTime) {

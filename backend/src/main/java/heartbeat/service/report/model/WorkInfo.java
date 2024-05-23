@@ -11,4 +11,6 @@ public class WorkInfo {
 
 	private long holidays;
 
+	private long totalDays;
+
 }

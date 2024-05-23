@@ -279,9 +279,9 @@ public class GitHubService {
 		if (prLeadTime < 0) {
 			log.error(
 					"calculate work time error, because the work time is negative, request start time: {},"
-							+ " request end time: {}, calculate start time: {}, calculate end time: {}, author: {},"
+							+ " request end time: {}, first commit time in pr: {}, pr merged time: {}, author: {},"
 							+ " pull request url: {}",
-					request.getStartTime(), request.getEndTime(), prMergedTime, firstCommitTimeInPr,
+					request.getStartTime(), request.getEndTime(), firstCommitTimeInPr, prMergedTime,
 					commitInfo.getCommit().getAuthor(), pullRequestInfo.getUrl());
 			prLeadTime = 0;
 		}
