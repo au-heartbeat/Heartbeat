@@ -5,11 +5,16 @@ import {
   IBoardClassificationDetailItem,
 } from '../../fixtures/create-new/report-result';
 import {
+  checkDownloadReport,
+  checkDownloadReportCycleTimeByStatus,
+  checkDownloadWithHolidayReport,
+  downloadFileAndCheck,
+} from 'e2e/utils/download';
+import {
   ICsvComparedLines,
   IDoraMetricsResultItem,
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
 } from '../../fixtures/create-new/report-result';
-import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
 import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { expect, Locator, Page, Download } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
@@ -587,6 +592,12 @@ export class ReportStep {
     await checkDownloadReport(this.page, this.exportMetricData, 'metricReport.csv');
     // await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
     await checkDownloadReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
+  }
+
+  async checkDownloadWithHolidayReports() {
+    await checkDownloadWithHolidayReport(this.page, this.exportMetricData, 'metricReport.csv');
+    // await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
+    await checkDownloadWithHolidayReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
   }
 
   async checkDownloadReportsCycleTimeByStatus() {

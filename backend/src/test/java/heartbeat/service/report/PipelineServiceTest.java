@@ -75,7 +75,7 @@ public class PipelineServiceTest {
 
 			assertEquals(0, result.getBuildInfosList().size());
 			verify(buildKiteService, never()).countDeployTimes(any(), any(), any(), any());
-			verify(gitHubService).fetchPipelinesLeadTime(List.of(), new HashMap<>(), MOCK_TOKEN);
+			verify(gitHubService).fetchPipelinesLeadTime(List.of(), new HashMap<>(), MOCK_TOKEN, request);
 		}
 
 		@Test
@@ -87,7 +87,7 @@ public class PipelineServiceTest {
 			FetchedData.BuildKiteData result = pipelineService.fetchGitHubData(request);
 
 			assertEquals(0, result.getPipelineLeadTimes().size());
-			verify(gitHubService, never()).fetchPipelinesLeadTime(any(), any(), any());
+			verify(gitHubService, never()).fetchPipelinesLeadTime(any(), any(), any(), any());
 		}
 
 		@Test
@@ -109,7 +109,7 @@ public class PipelineServiceTest {
 			when(buildKiteService.countDeployTimes(any(), eq(fakeBuildKiteBuildInfos), eq(MOCK_START_TIME),
 					eq(MOCK_END_TIME)))
 				.thenReturn(DeployTimes.builder().build());
-			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN)))
+			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN), eq(request)))
 				.thenReturn(List.of(PipelineLeadTime.builder().build()));
 
 			FetchedData.BuildKiteData result = pipelineService.fetchGitHubData(request);
@@ -119,7 +119,7 @@ public class PipelineServiceTest {
 			assertEquals(2, result.getDeployTimesList().size());
 			verify(buildKiteService, times(2)).countDeployTimes(any(), any(), any(), any());
 			verify(buildKiteService, times(2)).countDeployTimes(any(), any(), any(), any());
-			verify(gitHubService, times(1)).fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN));
+			verify(gitHubService, times(1)).fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN), eq(request));
 		}
 
 		@Test
@@ -141,7 +141,7 @@ public class PipelineServiceTest {
 			when(buildKiteService.countDeployTimes(any(), eq(fakeBuildKiteBuildInfos), eq(MOCK_START_TIME),
 					eq(MOCK_END_TIME)))
 				.thenReturn(DeployTimes.builder().build());
-			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN)))
+			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN), eq(request)))
 				.thenReturn(List.of(PipelineLeadTime.builder().build()));
 
 			FetchedData.BuildKiteData result = pipelineService.fetchGitHubData(request);
@@ -151,7 +151,7 @@ public class PipelineServiceTest {
 			assertEquals(2, result.getDeployTimesList().size());
 			verify(buildKiteService, times(2)).countDeployTimes(any(), any(), any(), any());
 			verify(buildKiteService, times(2)).countDeployTimes(any(), any(), any(), any());
-			verify(gitHubService, times(0)).fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN));
+			verify(gitHubService, times(0)).fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN), eq(request));
 		}
 
 		@Test
@@ -173,12 +173,12 @@ public class PipelineServiceTest {
 			when(buildKiteService.countDeployTimes(any(), eq(fakeBuildKiteBuildInfos), eq(MOCK_START_TIME),
 					eq(MOCK_END_TIME)))
 				.thenReturn(DeployTimes.builder().build());
-			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN)))
+			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN), eq(request)))
 				.thenReturn(List.of(PipelineLeadTime.builder().build()));
 
 			pipelineService.fetchGitHubData(request);
 
-			verify(gitHubService).fetchPipelinesLeadTime(any(), roadMapArgumentCaptor.capture(), any());
+			verify(gitHubService).fetchPipelinesLeadTime(any(), roadMapArgumentCaptor.capture(), any(), eq(request));
 			assertEquals("repo2", roadMapArgumentCaptor.getValue().get("env1"));
 
 		}
@@ -208,7 +208,7 @@ public class PipelineServiceTest {
 			when(buildKiteService.countDeployTimes(any(), eq(fakeBuildKiteBuildInfos), eq(MOCK_START_TIME),
 					eq(MOCK_END_TIME)))
 				.thenReturn(DeployTimes.builder().build());
-			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN)))
+			when(gitHubService.fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN), eq(request)))
 				.thenReturn(List.of(PipelineLeadTime.builder().build()));
 
 			FetchedData.BuildKiteData result = pipelineService.fetchGitHubData(request);
@@ -219,7 +219,7 @@ public class PipelineServiceTest {
 			assertEquals(1, result.getDeployTimesList().size());
 			verify(buildKiteService, times(1)).fetchPipelineBuilds(any(), any(), any(), any());
 			verify(buildKiteService, times(1)).countDeployTimes(any(), any(), any(), any());
-			verify(gitHubService, times(1)).fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN));
+			verify(gitHubService, times(1)).fetchPipelinesLeadTime(any(), any(), eq(MOCK_TOKEN), eq(request));
 		}
 
 	}
