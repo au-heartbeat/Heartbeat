@@ -47,23 +47,6 @@ describe('DateRangeViewer', () => {
     },
   ];
 
-  const mockDateRangesDisabled = [
-    {
-      startDate: '2024-03-19T00:00:00.000+08:00',
-      endDate: '2024-03-21T23:59:59.999+08:00',
-      disabled: true,
-    },
-    {
-      startDate: '2024-02-01T00:00:00.000+08:00',
-      endDate: '2024-02-14T23:59:59.999+08:00',
-      disabled: true,
-    },
-    {
-      startDate: '2024-04-01T00:00:00.000+08:00',
-      endDate: '2024-04-08T23:59:59.999+08:00',
-      disabled: true,
-    },
-  ];
   it('should show date when render component given startDate and endDate', () => {
     const { getByText } = setup(mockDateRanges);
     expect(getByText(/2024\/03\/19/)).toBeInTheDocument();
@@ -94,15 +77,15 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: true },
+          errors: { isBoardInfoError: true, isPipelineInfoError: false, isPipelineStepError: false },
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: { isPipelineStepError: true },
+          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: { isPipelineInfoError: true },
+          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
         },
       ];
       store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
@@ -110,30 +93,55 @@ describe('DateRangeViewer', () => {
       expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
 
       await userEvent.click(getByLabelText('expandMore'));
-      expect(screen.getAllByTestId('PriorityHighIcon')).toHaveLength(4);
+      expect(screen.getAllByTestId('PriorityHighIcon')).toHaveLength(2);
     });
 
-    it('should not show priority high icon given click expand button and there is no error info', async () => {
+    it('should show loading icon given click expand button and there is data loading', async () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false },
+          errors: { isBoardInfoError: undefined, isPipelineInfoError: false, isPipelineStepError: false },
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: { isPipelineStepError: false },
+          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: { isPipelineInfoError: false },
+          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
         },
       ];
       store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
       const { getByLabelText } = setup(mockDateRanges);
 
-      await userEvent.click(getByLabelText('expandMore'));
+      expect(screen.getByTestId('dateRangeLoading')).toBeInTheDocument();
 
-      expect(screen.queryByTestId('PriorityHighIcon')).not.toBeInTheDocument();
+      await userEvent.click(getByLabelText('expandMore'));
+      expect(screen.getAllByTestId('dateRangeLoading')).toHaveLength(2);
+    });
+
+    it('should show check icon given click expand button and all data is loaded', async () => {
+      const failedTimeRangeList = [
+        {
+          startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
+          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
+          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+        },
+        {
+          startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
+          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+        },
+      ];
+      store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
+      const { getByLabelText } = setup(mockDateRanges);
+
+      expect(screen.getByTestId('CheckIcon')).toBeInTheDocument();
+
+      await userEvent.click(getByLabelText('expandMore'));
+      expect(screen.getAllByTestId('CheckIcon')).toHaveLength(4);
     });
 
     it('should not close the extension date ranges given metrics page and click inside of extension', async () => {
@@ -206,27 +214,63 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: { isGainPollingUrlError: true },
+          errors: {
+            isBoardMetricsError: true,
+            isGainPollingUrlError: false,
+            isPipelineMetricsError: false,
+            isPollingError: false,
+            isSourceControlMetricsError: false,
+          },
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: { isPollingError: true },
+          errors: {
+            isBoardMetricsError: false,
+            isGainPollingUrlError: true,
+            isPipelineMetricsError: false,
+            isPollingError: false,
+            isSourceControlMetricsError: false,
+          },
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: { isPollingError: false },
+          errors: {
+            isBoardMetricsError: false,
+            isGainPollingUrlError: false,
+            isPipelineMetricsError: true,
+            isPollingError: false,
+            isSourceControlMetricsError: false,
+          },
         },
         {
           startDate: formatDateToTimestampString('2023-02-01T00:00:00.000+08:00'),
-          errors: { isBoardMetricsError: true },
+          errors: {
+            isBoardMetricsError: false,
+            isGainPollingUrlError: false,
+            isPipelineMetricsError: false,
+            isPollingError: true,
+            isSourceControlMetricsError: false,
+          },
         },
         {
           startDate: formatDateToTimestampString('2023-03-19T00:00:00.000+08:00'),
-          errors: { isPipelineMetricsError: true },
+          errors: {
+            isBoardMetricsError: false,
+            isGainPollingUrlError: false,
+            isPipelineMetricsError: false,
+            isPollingError: false,
+            isSourceControlMetricsError: true,
+          },
         },
         {
           startDate: formatDateToTimestampString('2023-04-01T00:00:00.000+08:00'),
-          errors: { isSourceControlMetricsError: true },
+          errors: {
+            isBoardMetricsError: false,
+            isGainPollingUrlError: false,
+            isPipelineMetricsError: false,
+            isPollingError: false,
+            isSourceControlMetricsError: false,
+          },
         },
       ];
       store.dispatch(updateReportPageFailedTimeRangeInfos(failedTimeRangeList));
@@ -238,10 +282,23 @@ describe('DateRangeViewer', () => {
     });
   });
 
-  it('should show time range count when DateRangeViewer is disabled in Report page', async () => {
+  it('should show time range count when isShowingChart', async () => {
+    render(
+      <Provider store={store}>
+        <DateRangeViewer dateRangeList={sortDateRanges(mockDateRanges)} disabledAll={false} isShowingChart={true} />
+      </Provider>,
+    );
+
+    expect(screen.getByLabelText('date-count-chip')).toBeInTheDocument();
+  });
+
+  it('should show time range count when is Metrics Page', async () => {
     store.dispatch(nextStep());
-    store.dispatch(nextStep());
-    setup(mockDateRangesDisabled);
+    render(
+      <Provider store={store}>
+        <DateRangeViewer dateRangeList={sortDateRanges(mockDateRanges)} disabledAll={false} isShowingChart={false} />
+      </Provider>,
+    );
 
     expect(screen.getByLabelText('date-count-chip')).toBeInTheDocument();
   });
