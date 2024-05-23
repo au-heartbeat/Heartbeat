@@ -181,10 +181,10 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
 
   return (
     <ChartContainer>
-      <ChartWrapper ref={LeadTimeForChange}></ChartWrapper>
-      <ChartWrapper ref={deploymentFrequency}></ChartWrapper>
-      <ChartWrapper ref={changeFailureRate}></ChartWrapper>
-      <ChartWrapper ref={MeanTimeToRecovery}></ChartWrapper>
+      <ChartWrapper aria-label='lead time for change chart' ref={LeadTimeForChange}></ChartWrapper>
+      <ChartWrapper aria-label='deployment frequency chart' ref={deploymentFrequency}></ChartWrapper>
+      <ChartWrapper aria-label='change failure rate chart' ref={changeFailureRate}></ChartWrapper>
+      <ChartWrapper aria-label='mean time to recovery chart' ref={MeanTimeToRecovery}></ChartWrapper>
     </ChartContainer>
   );
 };

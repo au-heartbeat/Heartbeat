@@ -298,10 +298,10 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
 
   return (
     <ChartContainer>
-      <ChartWrapper ref={velocity}></ChartWrapper>
-      <ChartWrapper ref={averageCycleTime}></ChartWrapper>
-      <ChartWrapper ref={cycleTime}></ChartWrapper>
-      <ChartWrapper ref={rework}></ChartWrapper>
+      <ChartWrapper aria-label='velocity chart' ref={velocity}></ChartWrapper>
+      <ChartWrapper aria-label='average cycle time chart' ref={averageCycleTime}></ChartWrapper>
+      <ChartWrapper aria-label='cycle time allocation chart' ref={cycleTime}></ChartWrapper>
+      <ChartWrapper aria-label='rework chart' ref={rework}></ChartWrapper>
     </ChartContainer>
   );
 };

@@ -57,6 +57,20 @@ export class ReportStep {
   readonly devMeanTimeToRecoveryRows: Locator;
   readonly reworkRows: Locator;
   readonly downloadDialog: Locator;
+  readonly displayTabsContainer: Locator;
+  readonly displayListTab: Locator;
+  readonly displayChartTab: Locator;
+  readonly chartTabsContainer: Locator;
+  readonly displayBoardChartTab: Locator;
+  readonly displayDoraChartTab: Locator;
+  readonly velocityChart: Locator;
+  readonly averageCycleTimeChart: Locator;
+  readonly cycleTimeAllocationChart: Locator;
+  readonly reworkChart: Locator;
+  readonly leadTimeForChangeChart: Locator;
+  readonly deploymentFrequencyChart: Locator;
+  readonly changeFailureRateChart: Locator;
+  readonly meanTimeToRecoveryChart: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -102,6 +116,20 @@ export class ReportStep {
       .getByRole('row');
     this.reworkRows = this.page.getByTestId('Rework').getByRole('row');
     this.downloadDialog = this.page.getByLabel('download file dialog');
+    this.displayTabsContainer = this.page.getByLabel('display types');
+    this.displayListTab = this.displayTabsContainer.getByLabel('display list tab');
+    this.displayChartTab = this.displayTabsContainer.getByLabel('display chart tab');
+    this.chartTabsContainer = this.page.getByLabel('chart tabs');
+    this.displayBoardChartTab = this.chartTabsContainer.getByLabel('board chart');
+    this.displayDoraChartTab = this.chartTabsContainer.getByLabel('dora chart');
+    this.velocityChart = this.page.getByLabel('velocity chart');
+    this.averageCycleTimeChart = this.page.getByLabel('average cycle time chart');
+    this.cycleTimeAllocationChart = this.page.getByLabel('cycle time allocation chart');
+    this.reworkChart = this.page.getByLabel('rework chart');
+    this.leadTimeForChangeChart = this.page.getByLabel('lead time for change chart');
+    this.deploymentFrequencyChart = this.page.getByLabel('deployment frequency chart');
+    this.changeFailureRateChart = this.page.getByLabel('change failure rate chart');
+    this.meanTimeToRecoveryChart = this.page.getByLabel('mean time to recovery chart');
   }
   combineStrings(arr: string[]): string {
     return arr.join('');
@@ -569,5 +597,41 @@ export class ReportStep {
   async clickHomeIconThenBackToHomepage() {
     await this.homeIcon.click();
     await expect(this.page).toHaveURL(/\//);
+  }
+
+  async checkDisplayChartStatus() {
+    await this.displayListTab.click();
+
+    expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('true');
+    expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('false');
+    await expect(this.chartTabsContainer).not.toBeVisible();
+
+    await this.displayChartTab.click();
+
+    expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('false');
+    expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('true');
+    await expect(this.chartTabsContainer).toBeVisible();
+    expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('true');
+    expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('false');
+    await expect(this.velocityChart).toBeVisible();
+    await expect(this.averageCycleTimeChart).toBeVisible();
+    await expect(this.cycleTimeAllocationChart).toBeVisible();
+    await expect(this.reworkChart).toBeVisible();
+
+    await this.displayDoraChartTab.click();
+
+    expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
+    expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
+
+    await this.displayListTab.click();
+    await this.displayChartTab.click();
+
+    expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
+    expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
+
+    await expect(this.leadTimeForChangeChart).toBeVisible();
+    await expect(this.deploymentFrequencyChart).toBeVisible();
+    await expect(this.changeFailureRateChart).toBeVisible();
+    await expect(this.meanTimeToRecoveryChart).toBeVisible();
   }
 }

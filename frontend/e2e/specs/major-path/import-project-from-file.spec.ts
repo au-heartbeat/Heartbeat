@@ -107,6 +107,7 @@ test('Import project from file with partial ranges API failed', async ({
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+  await reportStep.checkDisplayChartStatus();
 });
 
 test('Import project from flag as block and without block column', async ({
