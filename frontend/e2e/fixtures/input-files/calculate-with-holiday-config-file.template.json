@@ -6,7 +6,7 @@
       "endDate": "2024-05-10T23:59:59.999+08:00"
     }
   ],
-  "calendarType": "Regular Calendar(Weekend Considered)",
+  "calendarType": "Calendar with Chinese Holiday",
   "metrics": [
     "Velocity",
     "Cycle time",
