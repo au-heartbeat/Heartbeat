@@ -1,4 +1,4 @@
-import { xAxisLabelDateFormatter } from '@src/utils/util';
+import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 export interface BarOptionProps {
@@ -147,7 +147,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       ...commonConfig.legend,
     },
     tooltip: {
-      valueFormatter: (value: number) => value + '%',
+      valueFormatter: percentageFormatter(),
       ...commonConfig.tooltip,
     },
     grid: commonConfig.grid,

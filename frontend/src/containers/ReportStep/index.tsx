@@ -150,7 +150,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
   const [chartIndex, setChartIndex] = useState(
-    selectDoraMetricsAndClassification ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
+    selectDoraMetricsAndClassification || !shouldShowBoardMetrics ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
   );
   const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
@@ -488,8 +488,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       {displayType === DISPLAY_TYPE.CHART && (
         <Box>
           <Tabs TabIndicatorProps={CHART_TAB_STYLE} value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-            <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
-            <Tab label='DORA' {...tabProps(1)} />
+            <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics} />
+            <Tab label='DORA' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
           </Tabs>
         </Box>
       )}
