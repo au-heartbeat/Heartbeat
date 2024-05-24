@@ -2,7 +2,6 @@ import { xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 export interface BarOptionProps {
-  title: string;
   xAxis: string[];
   yAxis: YAxis;
   series: Series[] | undefined;
@@ -10,7 +9,6 @@ export interface BarOptionProps {
 }
 
 export interface AreaOptionProps {
-  title: string;
   xAxis: XAxis;
   yAxis: YAxis[];
   series: Series[] | undefined;
@@ -90,9 +88,6 @@ const commonConfig = {
 
 export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
   return {
-    title: {
-      text: '',
-    },
     legend: {
       data: props.series?.map((item) => item.name),
       ...commonConfig.legend,
@@ -137,9 +132,6 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
 
 export const stackedBarOptionMapper = (props: BarOptionProps) => {
   return {
-    title: {
-      text: '',
-    },
     legend: {
       data: props.series?.map((item) => item.name),
       ...commonConfig.legend,

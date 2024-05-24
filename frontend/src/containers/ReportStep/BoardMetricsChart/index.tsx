@@ -2,12 +2,11 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { calculateTrend, covertNumberToPercent, xAxisLabelDateFormatter } from '@src/utils/util';
-import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING } from '@src/constants/resources';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
-import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
-import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
+import { calculateTrend, xAxisLabelDateFormatter } from '@src/utils/util';
+import { getColorAndTrendIcon } from '@src/containers/ReportStep/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
@@ -67,7 +66,6 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
   const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
   const trendInfo = calculateTrend(velocity, dateRanges);
   return {
-    title: REQUIRED_DATA.VELOCITY,
     xAxis: {
       data: dateRanges,
       boundaryGap: false,
@@ -114,7 +112,6 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
   const trendInfo = calculateTrend(storyPoints, dateRanges);
   return {
-    title: 'Average Cycle Time',
     xAxis: {
       data: dateRanges,
       boundaryGap: false,
@@ -165,7 +162,6 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   }
   const trendInfo = calculateTrend(totalCycleTime, dateRanges);
   return {
-    title: 'Cycle Time Allocation',
     xAxis: dateRanges,
     yAxis: {
       name: 'Days',
@@ -200,7 +196,6 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
 
   const trendInfo = calculateTrend(totalReworkTimes, dateRanges);
   return {
-    title: 'Rework',
     xAxis: {
       data: dateRanges,
       boundaryGap: true,
@@ -308,36 +303,16 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
     };
   }, [rework, reworkData]);
 
-  const getColorAndTrendIcon = (trendNumber: number | undefined, type: CHART_TYPE) => {
-    if (trendNumber === undefined) return;
-    const trendPercent = covertNumberToPercent(trendNumber);
-    switch (type) {
-      case CHART_TYPE.VELOCITY:
-      case CHART_TYPE.CYCLE_TIME_ALLOCATION:
-        if (trendNumber >= 0)
-          return {
-            color: theme.main.chartTrend.betterColor,
-            icon: <TrendingUpSharpIcon />,
-            trendPercent,
-          };
-        else return { color: theme.main.chartTrend.worseColor, icon: <TrendingDownSharpIcon />, trendPercent };
-      case CHART_TYPE.REWORK:
-      case CHART_TYPE.AVERAGE_CYCLE_TIME:
-        if (trendNumber <= 0)
-          return { color: theme.main.chartTrend.betterColor, icon: <TrendingDownSharpIcon />, trendPercent };
-        else return { color: theme.main.chartTrend.worseColor, icon: <TrendingUpSharpIcon />, trendPercent };
-    }
-  };
-  const velocityColorAndTrendIcon = getColorAndTrendIcon(velocityData.trendInfo.trend, CHART_TYPE.VELOCITY);
+  const velocityColorAndTrendIcon = getColorAndTrendIcon(velocityData.trendInfo, CHART_TYPE.VELOCITY);
   const averageCycleTimeColorAndTrendIcon = getColorAndTrendIcon(
-    averageCycleTimeData.trendInfo.trend,
+    averageCycleTimeData.trendInfo,
     CHART_TYPE.AVERAGE_CYCLE_TIME,
   );
   const cycleTimeDataColorAndTrendIcon = getColorAndTrendIcon(
-    cycleTimeData.trendInfo.trend,
+    cycleTimeData.trendInfo,
     CHART_TYPE.CYCLE_TIME_ALLOCATION,
   );
-  const reworkDataColorAndTrendIcon = getColorAndTrendIcon(reworkData.trendInfo.trend, CHART_TYPE.REWORK);
+  const reworkDataColorAndTrendIcon = getColorAndTrendIcon(reworkData.trendInfo, CHART_TYPE.REWORK);
 
   return (
     <ChartContainer>
