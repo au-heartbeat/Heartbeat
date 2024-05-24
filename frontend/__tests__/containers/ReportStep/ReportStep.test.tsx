@@ -827,8 +827,4 @@ describe('Report Step', () => {
       expect(exportBoardButton).toBeInTheDocument();
     });
   });
-
-  describe('util methods', async () => {
-    it('');
-  });
 });
