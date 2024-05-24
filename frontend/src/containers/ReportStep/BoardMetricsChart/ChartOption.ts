@@ -1,4 +1,4 @@
-import { xAxisLabelDateFormatter } from '@src/utils/util';
+import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 export interface BarOptionProps {
@@ -111,9 +111,10 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
         name: item.name,
         position: index === 0 ? 'left' : 'right',
         nameTextStyle: {
-          align: 'center',
+          align: index === 0 ? 'left' : 'right',
         },
         type: 'value',
+        alignTicks: true,
         axisLabel: {
           show: true,
           formatter: `{value}${item.axisLabel}`,
@@ -146,7 +147,10 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       data: props.series?.map((item) => item.name),
       ...commonConfig.legend,
     },
-    tooltip: commonConfig.tooltip,
+    tooltip: {
+      valueFormatter: percentageFormatter(),
+      ...commonConfig.tooltip,
+    },
     grid: commonConfig.grid,
     xAxis: {
       data: props.xAxis,
@@ -163,6 +167,10 @@ export const stackedBarOptionMapper = (props: BarOptionProps) => {
       },
       type: 'value',
       splitLine: commonConfig.axisConfig.splitLine,
+      axisLabel: {
+        show: true,
+        formatter: `{value}${props.yAxis.axisLabel}`,
+      },
     },
     color: props.color,
     series: props.series?.map((item) => {

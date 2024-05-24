@@ -178,10 +178,22 @@ export const METRICS_CONSTANTS = {
 
 export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
   [METRICS_CONSTANTS.waitingValue]: 'Waiting for testing time',
-  [METRICS_CONSTANTS.inDevValue]: 'Total development time',
+  [METRICS_CONSTANTS.inDevValue]: 'Development time',
   [METRICS_CONSTANTS.reviewValue]: 'Review time',
   [METRICS_CONSTANTS.blockValue]: 'Block time',
   [METRICS_CONSTANTS.testingValue]: 'Testing time',
+};
+
+export const LEAD_TIME_FOR_CHANGES = {
+  PR_LEAD_TIME: 'PR Lead Time',
+  PIPELINE_LEAD_TIME: 'Pipeline Lead Time',
+  TOTAL_LEAD_TIME: 'Total Lead Time',
+};
+
+export const LEAD_TIME_CHARTS_MAPPING = {
+  [LEAD_TIME_FOR_CHANGES.PR_LEAD_TIME]: 'PR lead time',
+  [LEAD_TIME_FOR_CHANGES.PIPELINE_LEAD_TIME]: 'Pipeline lead time',
+  [LEAD_TIME_FOR_CHANGES.TOTAL_LEAD_TIME]: 'Total lead time',
 };
 
 export const CYCLE_TIME_LIST = [
@@ -499,15 +511,15 @@ export const EMPTY_DATA_MAPPER_DORA_CHART = (value: string) => {
         name: 'Average',
         valuesList: [
           {
-            name: 'PR Lead Time',
+            name: LEAD_TIME_FOR_CHANGES.PR_LEAD_TIME,
             value: value,
           },
           {
-            name: 'Pipeline Lead Time',
+            name: LEAD_TIME_FOR_CHANGES.PIPELINE_LEAD_TIME,
             value: value,
           },
           {
-            name: 'Total Lead Time',
+            name: LEAD_TIME_FOR_CHANGES.TOTAL_LEAD_TIME,
             value: value,
           },
         ],

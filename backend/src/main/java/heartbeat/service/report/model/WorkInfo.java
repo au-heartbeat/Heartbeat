@@ -13,4 +13,8 @@ public class WorkInfo {
 
 	private long totalDays;
 
+	public long getWorkDays() {
+		return totalDays - holidays;
+	}
+
 }
