@@ -88,7 +88,7 @@ const DateRangeViewer = ({
 
   function getDateRangeStatus(startDate: string) {
     let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
-    const result: { isLoading: boolean; isFailed: boolean } = { isLoading: false, isFailed: false };
+    const dateRangeStatus: { isLoading: boolean; isFailed: boolean } = { isLoading: false, isFailed: false };
     if (isMetricsPage) {
       errorInfo = metricsPageFailedTimeRangeInfos[startDate] || {};
       if (
@@ -96,7 +96,7 @@ const DateRangeViewer = ({
         errorInfo.isPipelineInfoError === undefined ||
         errorInfo.isPipelineStepError === undefined
       ) {
-        result.isLoading = true;
+        dateRangeStatus.isLoading = true;
       }
     } else {
       errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
@@ -107,11 +107,11 @@ const DateRangeViewer = ({
         errorInfo.isPollingError === undefined ||
         errorInfo.isSourceControlMetricsError === undefined
       ) {
-        result.isLoading = true;
+        dateRangeStatus.isLoading = true;
       }
     }
-    result.isFailed = Object.values(errorInfo).some((value) => value);
-    return result;
+    dateRangeStatus.isFailed = Object.values(errorInfo).some((value) => value);
+    return dateRangeStatus;
   }
 
   function getTotalDateRangeStatus() {

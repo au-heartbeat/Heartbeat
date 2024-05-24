@@ -282,7 +282,7 @@ describe('DateRangeViewer', () => {
     });
   });
 
-  it('should show time range count when isShowingChart', async () => {
+  it('should show time range count when showing chart', async () => {
     render(
       <Provider store={store}>
         <DateRangeViewer dateRangeList={sortDateRanges(mockDateRanges)} disabledAll={false} isShowingChart={true} />
@@ -292,7 +292,7 @@ describe('DateRangeViewer', () => {
     expect(screen.getByLabelText('date-count-chip')).toBeInTheDocument();
   });
 
-  it('should show time range count when is Metrics Page', async () => {
+  it('should show time range count when current page is Metrics page given not showing chart', async () => {
     store.dispatch(nextStep());
     render(
       <Provider store={store}>
