@@ -2,7 +2,7 @@ import { config as configStepData } from '../../fixtures/create-new/config-step'
 import { METRICS_STEP_SAVING_FILENAME } from '../../fixtures';
 import { downloadFileAndCheck } from '../../utils/download';
 import { expect, Locator, Page } from '@playwright/test';
-import { format } from 'e2e/utils/date-time';
+import { format } from '../../utils/date-time';
 import { Dayjs } from 'dayjs';
 
 interface IBoardData {
