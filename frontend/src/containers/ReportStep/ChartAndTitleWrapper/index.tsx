@@ -1,16 +1,22 @@
-import { ChartTitle, TrendContainer, TrendIcon } from '@src/containers/ReportStep/ChartAndTitleWrapper/style';
+import {
+  ChartTitle,
+  StyledToolTipContent,
+  TrendContainer,
+  TrendIcon,
+} from '@src/containers/ReportStep/ChartAndTitleWrapper/style';
+import { CHART_TREND_TIP, CHART_TYPE, TREND_ICON, UP_TREND_IS_BETTER } from '@src/constants/resources';
 import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
 import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
-import { CHART_TYPE, TREND_ICON } from '@src/constants/resources';
 import { ChartWrapper } from '@src/containers/MetricsStep/style';
+import { convertNumberToPercent } from '@src/utils/util';
 import React, { ForwardedRef, forwardRef } from 'react';
 import { Tooltip } from '@mui/material';
 
 export interface ITrendInfo {
-  color: string;
-  icon: TREND_ICON;
-  trendPercent: string;
-  dateRangeList: string[];
+  color?: string;
+  icon?: TREND_ICON;
+  trendNumber?: number;
+  dateRangeList?: string[];
   type: CHART_TYPE;
 }
 
@@ -18,6 +24,9 @@ const TREND_ICON_MAPPING = {
   [TREND_ICON.UP]: <TrendingUpSharpIcon />,
   [TREND_ICON.DOWN]: <TrendingDownSharpIcon />,
 };
+
+const DECREASE = 'decrease';
+const CREASE = 'crease';
 
 const ChartAndTitleWrapper = forwardRef(
   (
@@ -28,22 +37,36 @@ const ChartAndTitleWrapper = forwardRef(
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
+    const trendDescribe = () => {
+      if (trendInfo.trendNumber === undefined) return '';
+      if (trendInfo.trendNumber > 0) {
+        return CREASE;
+      } else if (trendInfo.trendNumber < 0) {
+        return DECREASE;
+      } else {
+        if (UP_TREND_IS_BETTER.includes(trendInfo.type)) {
+          return CREASE;
+        } else {
+          return DECREASE;
+        }
+      }
+    };
     const tipContent = (
-      <>
-        <p>The rate of decrease for Total development time/Total cycle time: </p>
-        {trendInfo?.dateRangeList.map((dateRange, index) => <p key={index}>{dateRange}</p>)}
-      </>
+      <StyledToolTipContent>
+        <p>{`The rate of ${trendDescribe()} for ${CHART_TREND_TIP[trendInfo.type]}: `}</p>
+        {trendInfo.dateRangeList?.map((dateRange, index) => <p key={index}>{dateRange}</p>)}
+      </StyledToolTipContent>
     );
 
     return (
       <div>
         <ChartTitle>
           {trendInfo.type}
-          {trendInfo && (
+          {trendInfo.trendNumber !== undefined && (
             <Tooltip title={tipContent} arrow>
-              <TrendContainer color={trendInfo.color}>
-                <TrendIcon>{TREND_ICON_MAPPING[trendInfo.icon]}</TrendIcon>
-                {trendInfo.trendPercent}
+              <TrendContainer color={trendInfo.color!}>
+                <TrendIcon>{TREND_ICON_MAPPING[trendInfo.icon!]}</TrendIcon>
+                {convertNumberToPercent(trendInfo.trendNumber)}
               </TrendContainer>
             </Tooltip>
           )}

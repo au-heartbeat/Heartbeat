@@ -1,4 +1,5 @@
 import { styled } from '@mui/material/styles';
+import { Tooltip } from '@mui/material';
 
 export const ChartTitle = styled('div')({
   display: 'flex',
@@ -29,3 +30,10 @@ export const TrendContainer = styled('div')(({ color }: { color: string }) => ({
   marginLeft: '0.5rem',
   fontSize: '1.125rem',
 }));
+
+export const StyledToolTipContent = styled('div')({
+  fontSize: '0.85rem',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.5rem',
+});

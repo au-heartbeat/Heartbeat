@@ -2,8 +2,10 @@ import {
   CHART_TYPE,
   CYCLE_TIME_LIST,
   CYCLE_TIME_SETTINGS_TYPES,
+  DOWN_TREND_IS_BETTER,
   METRICS_CONSTANTS,
   TREND_ICON,
+  UP_TREND_IS_BETTER,
 } from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
@@ -216,25 +218,12 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
 
 export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: CHART_TYPE) => {
   const result: ITrendInfo = {
-    trendPercent: covertNumberToPercent(trendNumber),
+    trendNumber: trendNumber,
     dateRangeList: dateRangeList as string[],
     type,
   } as ITrendInfo;
 
-  const upTrendIsBetter: CHART_TYPE[] = [
-    CHART_TYPE.VELOCITY,
-    CHART_TYPE.CYCLE_TIME_ALLOCATION,
-    CHART_TYPE.DEPLOYMENT_FREQUENCY,
-  ];
-  const downTrendIsBetter: CHART_TYPE[] = [
-    CHART_TYPE.REWORK,
-    CHART_TYPE.AVERAGE_CYCLE_TIME,
-    CHART_TYPE.LEAD_TIME_FOR_CHANGES,
-    CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY,
-    CHART_TYPE.DEV_CHANGE_FAILURE_RATE,
-  ];
-
-  if (upTrendIsBetter.includes(type)) {
+  if (UP_TREND_IS_BETTER.includes(type)) {
     if (trendNumber >= 0) {
       result.color = theme.main.chartTrend.betterColor;
       result.icon = TREND_ICON.UP;
@@ -242,7 +231,7 @@ export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type:
       result.color = theme.main.chartTrend.worseColor;
       result.icon = TREND_ICON.DOWN;
     }
-  } else if (downTrendIsBetter.includes(type)) {
+  } else if (DOWN_TREND_IS_BETTER.includes(type)) {
     if (trendNumber <= 0) {
       result.color = theme.main.chartTrend.betterColor;
       result.icon = TREND_ICON.DOWN;
@@ -259,7 +248,7 @@ export const calculateTrendInfo = (
   dateRangeList: string[],
   type: CHART_TYPE,
 ): ITrendInfo => {
-  if (!dataList || dataList.filter((data) => data).length < 2) return { type } as ITrendInfo;
+  if (!dataList || dataList.filter((data) => data).length < 2) return { type };
 
   const latestValidIndex = dataList.findLastIndex((data) => data);
   const beforeLatestValidIndex = dataList.findLastIndex((data, index) => data && index !== latestValidIndex);
@@ -272,6 +261,6 @@ export const calculateTrendInfo = (
   return getTrendInfo(trendNumber, validDateRangeList, type);
 };
 
-export const covertNumberToPercent = (num: number): string => {
+export const convertNumberToPercent = (num: number): string => {
   return (num * 100).toFixed(2) + '%';
 };
