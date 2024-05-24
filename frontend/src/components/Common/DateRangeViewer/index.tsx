@@ -1,7 +1,6 @@
 import {
   DateRangeContainer,
   DateRangeExpandContainer,
-  DateRangeFailedIconContainer,
   SingleDateRange,
   StyledArrowForward,
   StyledCalendarToday,
@@ -10,7 +9,6 @@ import {
   StyledDivider,
   StyledExpandContainer,
   StyledExpandMoreIcon,
-  StyledCircularProgress,
 } from './style';
 import {
   IMetricsPageFailedDateRange,
@@ -22,9 +20,8 @@ import {
 import React, { useRef, useState, forwardRef, useEffect, useCallback } from 'react';
 import { DateRange, DateRangeList } from '@src/context/config/configSlice';
 import { formatDate, formatDateToTimestampString } from '@src/utils/util';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { STEP_NUMBER } from '@src/constants/commons';
-import CheckIcon from '@mui/icons-material/Check';
+import DateRangeIcon from './DateRangeIcon';
 import { useAppSelector } from '@src/hooks';
 import { theme } from '@src/theme';
 
@@ -112,7 +109,6 @@ const DateRangeViewer = ({
       ) {
         result.isLoading = true;
       }
-      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
     }
     result.isFailed = Object.values(errorInfo).some((value) => value);
     return result;
@@ -130,18 +126,6 @@ const DateRangeViewer = ({
       { isLoading: false, isFailed: false },
     );
   }
-
-  const DateRangeIcon = ({ isLoading, isFailed }: { isLoading: boolean; isFailed: boolean }) => (
-    <DateRangeFailedIconContainer>
-      {isLoading ? (
-        <StyledCircularProgress aria-label={'loading icon in date'} />
-      ) : isFailed ? (
-        <PriorityHighIcon color='error' />
-      ) : (
-        <CheckIcon color='success' />
-      )}
-    </DateRangeFailedIconContainer>
-  );
 
   const DateRangeExpand = forwardRef((props, ref: React.ForwardedRef<HTMLDivElement>) => {
     return (
