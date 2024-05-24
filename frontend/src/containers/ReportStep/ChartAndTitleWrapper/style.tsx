@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles';
-import { Tooltip } from '@mui/material';
 
 export const ChartTitle = styled('div')({
   display: 'flex',
