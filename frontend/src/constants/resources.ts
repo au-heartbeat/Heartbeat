@@ -188,13 +188,13 @@ export const LEAD_TIME_FOR_CHANGES = {
   PR_LEAD_TIME: 'PR Lead Time',
   PIPELINE_LEAD_TIME: 'Pipeline Lead Time',
   TOTAL_LEAD_TIME: 'Total Lead Time',
-}
+};
 
 export const LEAD_TIME_CHARTS_MAPPING = {
   [LEAD_TIME_FOR_CHANGES.PR_LEAD_TIME]: 'PR lead time',
   [LEAD_TIME_FOR_CHANGES.PIPELINE_LEAD_TIME]: 'Pipeline lead time',
   [LEAD_TIME_FOR_CHANGES.TOTAL_LEAD_TIME]: 'Total lead time',
-}
+};
 
 export const CYCLE_TIME_LIST = [
   METRICS_CONSTANTS.cycleTimeEmptyStr,

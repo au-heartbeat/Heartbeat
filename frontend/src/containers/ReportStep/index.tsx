@@ -488,7 +488,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       {displayType === DISPLAY_TYPE.CHART && (
         <Box>
           <Tabs TabIndicatorProps={CHART_TAB_STYLE} value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-            <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics} />
+            <Tab
+              label='Board'
+              {...tabProps(0)}
+              disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics}
+            />
             <Tab label='DORA' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
           </Tabs>
         </Box>
