@@ -1,13 +1,21 @@
-import { CYCLE_TIME_LIST, CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
+import {
+  CHART_TYPE,
+  CYCLE_TIME_LIST,
+  CYCLE_TIME_SETTINGS_TYPES,
+  METRICS_CONSTANTS,
+  TREND_ICON,
+} from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { ITrendInfo } from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { includes, isEqual, sortBy, uniq, uniqBy } from 'lodash';
 import { DateRangeList } from '@src/context/config/configSlice';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import duration from 'dayjs/plugin/duration';
+import { theme } from '@src/theme';
 import dayjs from 'dayjs';
 
 dayjs.extend(duration);
@@ -206,22 +214,62 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
   return `${startMonthDay}-${endMonthDay}`;
 };
 
-export const calculateTrend = (dataList: number[] | undefined, dateRangeList: string[]) => {
-  if (!dataList || dataList.filter((data) => data).length < 2) return {};
+export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: CHART_TYPE) => {
+  const result: ITrendInfo = {
+    trendPercent: covertNumberToPercent(trendNumber),
+    dateRangeList: dateRangeList as string[],
+    type,
+  } as ITrendInfo;
 
-  const earliestValidIndex = dataList.findIndex((data) => data);
-  const latestValidIndex = dataList.findLastIndex((data) => data);
-  const validDateRangeList: string[] = [];
-  for (let i = earliestValidIndex; i <= latestValidIndex; i++) {
-    if (dataList[i]) {
-      validDateRangeList.push(dateRangeList[i]);
+  const upTrendIsBetter: CHART_TYPE[] = [
+    CHART_TYPE.VELOCITY,
+    CHART_TYPE.CYCLE_TIME_ALLOCATION,
+    CHART_TYPE.DEPLOYMENT_FREQUENCY,
+  ];
+  const downTrendIsBetter: CHART_TYPE[] = [
+    CHART_TYPE.REWORK,
+    CHART_TYPE.AVERAGE_CYCLE_TIME,
+    CHART_TYPE.LEAD_TIME_FOR_CHANGES,
+    CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY,
+    CHART_TYPE.DEV_CHANGE_FAILURE_RATE,
+  ];
+
+  if (upTrendIsBetter.includes(type)) {
+    if (trendNumber >= 0) {
+      result.color = theme.main.chartTrend.betterColor;
+      result.icon = TREND_ICON.UP;
+    } else {
+      result.color = theme.main.chartTrend.worseColor;
+      result.icon = TREND_ICON.DOWN;
+    }
+  } else if (downTrendIsBetter.includes(type)) {
+    if (trendNumber <= 0) {
+      result.color = theme.main.chartTrend.betterColor;
+      result.icon = TREND_ICON.DOWN;
+    } else {
+      result.color = theme.main.chartTrend.worseColor;
+      result.icon = TREND_ICON.UP;
     }
   }
+  return result;
+};
 
-  return {
-    trend: (dataList[latestValidIndex]! - dataList[earliestValidIndex]!) / dataList[earliestValidIndex]!,
-    dateRangeList: validDateRangeList,
-  };
+export const calculateTrendInfo = (
+  dataList: number[] | undefined,
+  dateRangeList: string[],
+  type: CHART_TYPE,
+): ITrendInfo => {
+  if (!dataList || dataList.filter((data) => data).length < 2) return { type } as ITrendInfo;
+
+  const latestValidIndex = dataList.findLastIndex((data) => data);
+  const beforeLatestValidIndex = dataList.findLastIndex((data, index) => data && index !== latestValidIndex);
+
+  const trendNumber =
+    (dataList[latestValidIndex]! - dataList[beforeLatestValidIndex]!) / dataList[beforeLatestValidIndex]!;
+  const validDateRangeList: string[] = [];
+  validDateRangeList.push(dateRangeList[latestValidIndex], dateRangeList[beforeLatestValidIndex]);
+
+  return getTrendInfo(trendNumber, validDateRangeList, type);
 };
 
 export const covertNumberToPercent = (num: number): string => {

@@ -96,6 +96,11 @@ export enum CHART_TYPE {
   DEV_MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
 }
 
+export enum TREND_ICON {
+  UP = 'UP',
+  DOWN = 'DOWN',
+}
+
 export enum METRICS_SUBTITLE {
   PR_LEAD_TIME = 'PR Lead Time(Hours)',
   PIPELINE_LEAD_TIME = 'Pipeline Lead Time(Hours)',

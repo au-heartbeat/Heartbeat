@@ -4,9 +4,8 @@ import {
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING } from '@src/constants/resources';
+import { calculateTrendInfo, xAxisLabelDateFormatter } from '@src/utils/util';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
-import { calculateTrend, xAxisLabelDateFormatter } from '@src/utils/util';
-import { getColorAndTrendIcon } from '@src/containers/ReportStep/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
@@ -64,7 +63,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
   const data = mappedData?.map((item) => item.velocityList);
   const velocity = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
-  const trendInfo = calculateTrend(velocity, dateRanges);
+  const trendInfo = calculateTrendInfo(velocity, dateRanges, CHART_TYPE.VELOCITY);
   return {
     xAxis: {
       data: dateRanges,
@@ -110,7 +109,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const data = mappedData?.map((item) => item.cycleTimeList);
   const storyPoints = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
-  const trendInfo = calculateTrend(storyPoints, dateRanges);
+  const trendInfo = calculateTrendInfo(storyPoints, dateRanges, CHART_TYPE.AVERAGE_CYCLE_TIME);
   return {
     xAxis: {
       data: dateRanges,
@@ -160,7 +159,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
     otherIndicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
-  const trendInfo = calculateTrend(totalCycleTime, dateRanges);
+  const trendInfo = calculateTrendInfo(totalCycleTime, dateRanges, CHART_TYPE.CYCLE_TIME_ALLOCATION);
   return {
     xAxis: dateRanges,
     yAxis: {
@@ -194,7 +193,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
   const totalReworkCards = data?.map((item) => item?.totalReworkCards as number);
   const reworkCardsRatio = data?.map((item) => (item?.reworkCardsRatio as number) * 100);
 
-  const trendInfo = calculateTrend(totalReworkTimes, dateRanges);
+  const trendInfo = calculateTrendInfo(totalReworkTimes, dateRanges, CHART_TYPE.REWORK);
   return {
     xAxis: {
       data: dateRanges,
@@ -303,31 +302,12 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
     };
   }, [rework, reworkData]);
 
-  const velocityColorAndTrendIcon = getColorAndTrendIcon(velocityData.trendInfo, CHART_TYPE.VELOCITY);
-  const averageCycleTimeColorAndTrendIcon = getColorAndTrendIcon(
-    averageCycleTimeData.trendInfo,
-    CHART_TYPE.AVERAGE_CYCLE_TIME,
-  );
-  const cycleTimeDataColorAndTrendIcon = getColorAndTrendIcon(
-    cycleTimeData.trendInfo,
-    CHART_TYPE.CYCLE_TIME_ALLOCATION,
-  );
-  const reworkDataColorAndTrendIcon = getColorAndTrendIcon(reworkData.trendInfo, CHART_TYPE.REWORK);
-
   return (
     <ChartContainer>
-      <ChartAndTitleWrapper trendInfo={velocityColorAndTrendIcon} ref={velocity} type={CHART_TYPE.VELOCITY} />
-      <ChartAndTitleWrapper
-        trendInfo={averageCycleTimeColorAndTrendIcon}
-        ref={averageCycleTime}
-        type={CHART_TYPE.AVERAGE_CYCLE_TIME}
-      />
-      <ChartAndTitleWrapper
-        trendInfo={cycleTimeDataColorAndTrendIcon}
-        ref={cycleTime}
-        type={CHART_TYPE.CYCLE_TIME_ALLOCATION}
-      />
-      <ChartAndTitleWrapper trendInfo={reworkDataColorAndTrendIcon} ref={rework} type={CHART_TYPE.REWORK} />
+      <ChartAndTitleWrapper trendInfo={velocityData.trendInfo} ref={velocity} />
+      <ChartAndTitleWrapper trendInfo={averageCycleTimeData.trendInfo} ref={averageCycleTime} />
+      <ChartAndTitleWrapper trendInfo={cycleTimeData.trendInfo} ref={cycleTime} />
+      <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} />
     </ChartContainer>
   );
 };

@@ -9,10 +9,9 @@ import {
 import { CHART_TYPE, EMPTY_DATA_MAPPER_DORA_CHART, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { getColorAndTrendIcon } from '@src/containers/ReportStep/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { calculateTrend } from '@src/utils/util';
+import { calculateTrendInfo } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 interface DoraMetricsChartProps {
@@ -31,7 +30,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     }),
   );
   const prLeadTimeValues = extractedValues?.map((value) => value![0]);
-  const trendInfo = calculateTrend(prLeadTimeValues, allDateRanges);
+  const trendInfo = calculateTrendInfo(prLeadTimeValues, allDateRanges, CHART_TYPE.LEAD_TIME_FOR_CHANGES);
 
   return {
     legend: 'Lead Time For Change',
@@ -63,7 +62,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
   const value = data?.map((item) => {
     return Number(item?.[0].valueList[0].value) || 0;
   });
-  const trendInfo = calculateTrend(value, allDateRanges);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEPLOYMENT_FREQUENCY);
   return {
     legend: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
     xAxis: allDateRanges,
@@ -88,7 +87,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
     return item?.[0].valueList[0].value as string;
   });
   const value = valueStr?.map((item) => Number(item?.split('%', 1)[0]));
-  const trendInfo = calculateTrend(value, allDateRanges);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEV_CHANGE_FAILURE_RATE);
   return {
     legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
     xAxis: allDateRanges,
@@ -112,7 +111,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   const value = data?.map((item) => {
     return Number(item?.[0].valueList[0].value) || 0;
   });
-  const trendInfo = calculateTrend(value, allDateRanges);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY);
   return {
     legend: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
     xAxis: allDateRanges,
@@ -186,45 +185,12 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
     };
   }, [MeanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData]);
 
-  const leadTimeForChangeColorAndTrendIcon = getColorAndTrendIcon(
-    LeadTimeForChangeData.trendInfo,
-    CHART_TYPE.LEAD_TIME_FOR_CHANGES,
-  );
-  const deploymentFrequencyColorAndTrendIcon = getColorAndTrendIcon(
-    deploymentFrequencyData.trendInfo,
-    CHART_TYPE.DEPLOYMENT_FREQUENCY,
-  );
-  const changeFailureRateColorAndTrendIcon = getColorAndTrendIcon(
-    changeFailureRateData.trendInfo,
-    CHART_TYPE.DEV_CHANGE_FAILURE_RATE,
-  );
-  const meanTimeToRecoveryColorAndTrendIcon = getColorAndTrendIcon(
-    meanTimeToRecoveryData.trendInfo,
-    CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY,
-  );
-
   return (
     <ChartContainer>
-      <ChartAndTitleWrapper
-        trendInfo={leadTimeForChangeColorAndTrendIcon}
-        ref={LeadTimeForChange}
-        type={CHART_TYPE.LEAD_TIME_FOR_CHANGES}
-      />
-      <ChartAndTitleWrapper
-        trendInfo={deploymentFrequencyColorAndTrendIcon}
-        ref={deploymentFrequency}
-        type={CHART_TYPE.DEPLOYMENT_FREQUENCY}
-      />
-      <ChartAndTitleWrapper
-        trendInfo={changeFailureRateColorAndTrendIcon}
-        ref={changeFailureRate}
-        type={CHART_TYPE.DEV_CHANGE_FAILURE_RATE}
-      />
-      <ChartAndTitleWrapper
-        trendInfo={meanTimeToRecoveryColorAndTrendIcon}
-        ref={MeanTimeToRecovery}
-        type={CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY}
-      />
+      <ChartAndTitleWrapper trendInfo={LeadTimeForChangeData.trendInfo} ref={LeadTimeForChange} />
+      <ChartAndTitleWrapper trendInfo={deploymentFrequencyData.trendInfo} ref={deploymentFrequency} />
+      <ChartAndTitleWrapper trendInfo={changeFailureRateData.trendInfo} ref={changeFailureRate} />
+      <ChartAndTitleWrapper trendInfo={meanTimeToRecoveryData.trendInfo} ref={MeanTimeToRecovery} />
     </ChartContainer>
   );
 };

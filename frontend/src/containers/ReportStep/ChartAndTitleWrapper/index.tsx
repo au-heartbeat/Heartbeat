@@ -1,24 +1,30 @@
 import { ChartTitle, TrendContainer, TrendIcon } from '@src/containers/ReportStep/ChartAndTitleWrapper/style';
-import React, { ForwardedRef, forwardRef, ReactNode } from 'react';
+import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
+import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
+import { CHART_TYPE, TREND_ICON } from '@src/constants/resources';
 import { ChartWrapper } from '@src/containers/MetricsStep/style';
-import { CHART_TYPE } from '@src/constants/resources';
+import React, { ForwardedRef, forwardRef } from 'react';
 import { Tooltip } from '@mui/material';
 
 export interface ITrendInfo {
   color: string;
-  icon: ReactNode;
+  icon: TREND_ICON;
   trendPercent: string;
   dateRangeList: string[];
+  type: CHART_TYPE;
 }
+
+const TREND_ICON_MAPPING = {
+  [TREND_ICON.UP]: <TrendingUpSharpIcon />,
+  [TREND_ICON.DOWN]: <TrendingDownSharpIcon />,
+};
 
 const ChartAndTitleWrapper = forwardRef(
   (
     {
       trendInfo,
-      type,
     }: {
-      trendInfo: ITrendInfo | undefined;
-      type: CHART_TYPE;
+      trendInfo: ITrendInfo;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
@@ -32,11 +38,11 @@ const ChartAndTitleWrapper = forwardRef(
     return (
       <div>
         <ChartTitle>
-          {type}
+          {trendInfo.type}
           {trendInfo && (
             <Tooltip title={tipContent} arrow>
               <TrendContainer color={trendInfo.color}>
-                <TrendIcon>{trendInfo.icon}</TrendIcon>
+                <TrendIcon>{TREND_ICON_MAPPING[trendInfo.icon]}</TrendIcon>
                 {trendInfo.trendPercent}
               </TrendContainer>
             </Tooltip>
