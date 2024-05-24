@@ -6,7 +6,7 @@ import {
   Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
-import { EMPTY_DATA_MAPPER_DORA_CHART, METRICS_SUBTITLE, REQUIRED_DATA } from '@src/constants/resources';
+import { EMPTY_DATA_MAPPER_DORA_CHART, LEAD_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
@@ -21,7 +21,9 @@ const NO_LABEL = '';
 const LABEL_PERCENT = '%';
 
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
-  const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList.map((item) => item.name);
+  const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList
+    .map((item) => LEAD_TIME_CHARTS_MAPPING[item.name])
+    .slice(0, 2);
   const extractedValues = mappedData?.map((data) =>
     data.leadTimeForChangesList?.[0].valuesList.map((item) => {
       return item.value!;
@@ -87,7 +89,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
     legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
     xAxis: allDateRanges,
     yAxis: {
-      name: METRICS_SUBTITLE.FAILURE_RATE,
+      name: 'Failed/Total',
       axisLabel: LABEL_PERCENT,
       alignTick: false,
     },
@@ -97,6 +99,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
       data: value!,
     },
     color: theme.main.doraChart.devChangeFailureRateColor,
+    valueType: 'percentage',
   };
 }
 

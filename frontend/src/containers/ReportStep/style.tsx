@@ -35,6 +35,7 @@ export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: bool
 export const StyledTabWrapper = styled('div')({
   display: 'flex',
   width: 'fit-content',
+  marginTop: '0.5rem',
 });
 
 export const StyledTabs = styled(Tabs)({

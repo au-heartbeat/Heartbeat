@@ -205,3 +205,7 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
 
   return `${startMonthDay}-${endMonthDay}`;
 };
+
+export const percentageFormatter = (showPercentage = true) => {
+  return (value: number) => value + (showPercentage ? '%' : '');
+};

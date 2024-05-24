@@ -33,16 +33,6 @@ import {
   selectDateRange,
 } from '@src/context/config/configSlice';
 import {
-  BOARD_METRICS,
-  CALENDAR,
-  CHART_TAB_STYLE,
-  DORA_METRICS,
-  MESSAGE,
-  REPORT_PAGE_TYPE,
-  REQUIRED_DATA,
-  RETRY,
-} from '@src/constants/resources';
-import {
   HeaderContainer,
   StyledCalendarWrapper,
   StyledRetry,
@@ -50,6 +40,15 @@ import {
   StyledTabs,
   StyledTabWrapper,
 } from '@src/containers/ReportStep/style';
+import {
+  BOARD_METRICS,
+  CALENDAR,
+  CHART_TAB_STYLE,
+  DORA_METRICS,
+  MESSAGE,
+  REPORT_PAGE_TYPE,
+  REQUIRED_DATA,
+} from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { CHART_INDEX, DISPLAY_TYPE, METRIC_TYPES } from '@src/constants/commons';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
@@ -65,6 +64,7 @@ import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { BoardMetricsChart } from './BoardMetricsChart';
+import ReplayIcon from '@mui/icons-material/Replay';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
 import { uniqueId } from 'lodash';
@@ -103,8 +103,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   });
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
-  const [chartIndex, setChartIndex] = useState(CHART_INDEX.BOARD);
-  const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
@@ -150,6 +148,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowTabs = allDateRanges.length > 1;
   const onlySelectClassification = useAppSelector(isOnlySelectClassification);
   const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
+  const [chartIndex, setChartIndex] = useState(
+    selectDoraMetricsAndClassification || !shouldShowBoardMetrics ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
+  );
+  const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
   const isChartPage = useMemo(
     () => pageType === REPORT_PAGE_TYPE.DORA_CHART || pageType === REPORT_PAGE_TYPE.BOARD_CHART,
@@ -485,8 +487,12 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       {displayType === DISPLAY_TYPE.CHART && (
         <Box>
           <Tabs TabIndicatorProps={CHART_TAB_STYLE} value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-            <Tab label='Board' {...tabProps(0)} disabled={selectDoraMetricsAndClassification} />
-            <Tab label='DORA' {...tabProps(1)} />
+            <Tab
+              label='Board'
+              {...tabProps(0)}
+              disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics}
+            />
+            <Tab label='DORA' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
           </Tabs>
         </Box>
       )}
@@ -605,7 +611,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
           >
             {shouldShowChartRetryButton() && (
               <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
-                {RETRY}
+                <ReplayIcon />
               </StyledRetry>
             )}
             <DateRangeViewer

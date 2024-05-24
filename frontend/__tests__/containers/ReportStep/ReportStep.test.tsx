@@ -754,13 +754,13 @@ describe('Report Step', () => {
       const switchDoraChartButton = screen.getByText(CHART_TYPE.DORA);
       await userEvent.click(switchDoraChartButton);
 
-      const chartRetryButton = screen.getByText(RETRY);
+      const chartRetryButton = screen.getByTestId('ReplayIcon');
       await userEvent.click(chartRetryButton);
 
       const switchBoardChartButton = screen.getByText(CHART_TYPE.BOARD);
       await userEvent.click(switchBoardChartButton);
 
-      const chartRetryButtonInBoardPage = screen.getByText(RETRY);
+      const chartRetryButtonInBoardPage = screen.getByTestId('ReplayIcon');
       await userEvent.click(chartRetryButtonInBoardPage);
 
       expect(addNotification).toHaveBeenCalledTimes(3);

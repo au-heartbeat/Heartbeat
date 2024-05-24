@@ -42,16 +42,16 @@ const CENTER_ALIGN_LABEL = {
   formatter: xAxisLabelDateFormatter,
 };
 
-function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined) {
+function transformArrayToObject(input: (Swimlane[] | undefined)[] | undefined, totalCycleTime: number[]) {
   const res: Result = {};
 
-  input?.forEach((arr) => {
+  input?.forEach((arr, idx) => {
     arr?.forEach((item) => {
       if (!res[item.optionalItemName]) {
         res[item.optionalItemName] = new Array(input.length).fill(0);
       }
       const index = input.indexOf(arr);
-      res[item.optionalItemName][index] = item.totalTime;
+      res[item.optionalItemName][index] = Number((100 * (item.totalTime / totalCycleTime[idx])).toFixed(2));
     });
   });
 
@@ -71,7 +71,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
     },
     yAxis: [
       {
-        name: 'SP',
+        name: 'Story point',
         alignTick: false,
         axisLabel: NO_LABEL,
       },
@@ -83,7 +83,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
     ],
     series: [
       {
-        name: 'Velocity(Story Point)',
+        name: 'Velocity(Story point)',
         type: 'line',
         data: velocity!,
         yAxisIndex: 0,
@@ -116,7 +116,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
     },
     yAxis: [
       {
-        name: 'Days/SP',
+        name: 'Days/Story point',
         alignTick: false,
         axisLabel: NO_LABEL,
       },
@@ -151,27 +151,20 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
 function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[]) {
   const data = mappedData?.map((item) => item.cycleTime?.swimlaneList);
   const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
-  const cycleTimeByStatus = transformArrayToObject(data);
-  const otherIndicators = [];
+  const cycleTimeByStatus = transformArrayToObject(data, totalCycleTime!);
+  const indicators = [];
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
-    otherIndicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
+    indicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
   return {
     title: 'Cycle Time Allocation',
     xAxis: dateRanges,
     yAxis: {
-      name: 'Days',
+      name: 'Value/Total cycle time',
       alignTick: false,
-      axisLabel: NO_LABEL,
+      axisLabel: LABEL_PERCENT,
     },
-    series: [
-      {
-        name: 'Total cycle time',
-        type: 'bar',
-        data: totalCycleTime!,
-      },
-      ...otherIndicators,
-    ],
+    series: indicators,
     color: [
       theme.main.boardChart.barColorA,
       theme.main.boardChart.barColorB,
