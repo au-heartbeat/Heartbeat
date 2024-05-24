@@ -71,10 +71,7 @@ public class WorkDay {
 	}
 
 	public long calculateWorkDaysBetween(long startTime, long endTime) {
-		WorkInfo workInfo = calculateWorkTimeAndHolidayBetween(startTime, endTime, false);
-		long totalDays = workInfo.getTotalDays();
-		long holidays = workInfo.getHolidays();
-		return totalDays - holidays;
+		return calculateWorkTimeAndHolidayBetween(startTime, endTime, false).getWorkDays();
 	}
 
 	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime) {

@@ -1,8 +1,8 @@
 export const calculateWithHolidayConfigFile = {
   projectName: 'Heartbeat Metrics',
   dateRange: {
-    startDate: '2024-04-10T00:00:00.000+08:00',
-    endDate: '2024-05-10T23:59:59.999+08:00',
+    startDate: '2023-12-10T00:00:00.000+08:00',
+    endDate: '2024-01-09T23:59:59.999+08:00',
   },
   calendarType: 'Calendar with Chinese Holiday',
   metrics: [
@@ -30,7 +30,7 @@ export const calculateWithHolidayConfigFile = {
     type: 'GitHub',
     token: process.env.E2E_TOKEN_GITHUB,
   },
-  crews: ['heartbeat user', 'Yao Zhang', 'Weiran Sun', 'Chao Wang', 'Junbo Dai', 'Yufan Wang', 'Shiqi Yuan'],
+  crews: ['heartbeat user', 'Weiran Sun', 'Chao Wang', 'Junbo Dai', 'Yufan Wang', 'Shiqi Yuan'],
   assigneeFilter: 'lastAssignee',
   cycleTime: {
     type: 'byColumn',
@@ -84,7 +84,7 @@ export const calculateWithHolidayConfigFile = {
     {
       id: 0,
       isStepEmptyString: false,
-      organization: 'Heartbeat-backup',
+      organization: 'Thoughtworks-Heartbeat',
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
       branches: ['main'],
