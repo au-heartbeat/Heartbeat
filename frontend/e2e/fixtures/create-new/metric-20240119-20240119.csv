@@ -42,7 +42,7 @@
 "Rework","Total rework times","2"
 "Rework","Total rework cards","1"
 "Rework","Rework cards ratio(Total rework cards/Throughput)","0.5000"
-"Deployment frequency","Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)","1.50"
+"Deployment frequency","Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)","3.00"
 "Lead time for changes","Heartbeat / Deploy prod / PR Lead Time","7.64"
 "Lead time for changes","Heartbeat / Deploy prod / Pipeline Lead Time","0.40"
 "Lead time for changes","Heartbeat / Deploy prod / Total Lead Time","8.04"
