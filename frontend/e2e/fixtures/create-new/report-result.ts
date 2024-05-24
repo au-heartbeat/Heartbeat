@@ -30,21 +30,21 @@ export const DORA_METRICS_RESULT = {
 };
 
 export const BOARD_METRICS_WITH_HOLIDAY_RESULT = {
-  Velocity: '46.5',
-  Throughput: '22',
-  AverageCycleTime4SP: '4.80',
-  AverageCycleTime4Card: '10.14',
-  totalReworkTimes: '8',
-  totalReworkCards: '7',
-  reworkCardsRatio: '0.3182',
-  throughput: '22',
+  Velocity: '22',
+  Throughput: '13',
+  AverageCycleTime4SP: '3.57',
+  AverageCycleTime4Card: '6.03',
+  totalReworkTimes: '9',
+  totalReworkCards: '6',
+  reworkCardsRatio: '0.4615',
+  throughput: '13',
 };
 
 export const DORA_METRICS_WITH_HOLIDAY_RESULT = {
-  PrLeadTime: '109.32',
-  PipelineLeadTime: '0.77',
-  TotalLeadTime: '110.10',
-  DeploymentFrequency: '2.19',
-  FailureRate: '22.03% (13/59)',
-  DevMeanTimeToRecovery: '5.43',
+  PrLeadTime: '13.57',
+  PipelineLeadTime: '0.44',
+  TotalLeadTime: '14.01',
+  DeploymentFrequency: '2.10',
+  FailureRate: '10.20% (5/49)',
+  DevMeanTimeToRecovery: '6.88',
 };

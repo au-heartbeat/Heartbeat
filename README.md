@@ -394,7 +394,7 @@ _Image 3-28，Deployment Frequency Report_
 - Formula for ‘PR lead time':
   - if PR exist : `PR lead time` = `PR merged time` - `first code committed time` - `non-workday`
     - if the PR merge time is a non-working day, such as weekends or holidays, we will treat the non-working days in the PR merge time as working days.
-    - the first code committed time is the same as PR merge time
+    - the first code committed time is calculated the same way as the PR merge time
   - if no PR or revert PR: PR lead time = 0
 
 - Formula for ‘Pipeline lead time':

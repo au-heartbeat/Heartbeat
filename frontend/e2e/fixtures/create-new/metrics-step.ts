@@ -211,7 +211,7 @@ export const modifiedConfig = {
       organization: 'Thoughtworks-Heartbeat',
       pipelineName: 'Heartbeat',
       step: ':rocket: Deploy prod',
-      branches: ['main', 'gh-pages'],
+      branches: ['main'],
       isStepEmptyString: false,
     },
   ],
