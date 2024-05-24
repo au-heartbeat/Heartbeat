@@ -1,4 +1,5 @@
 import {
+  calculateTrendInfo,
   combineBoardInfo,
   convertCycleTimeSettings,
   exportToJsonFile,
@@ -17,8 +18,15 @@ import {
   updateResponseCrews,
   xAxisLabelDateFormatter,
 } from '@src/utils/util';
+import {
+  CHART_TYPE,
+  CYCLE_TIME_SETTINGS_TYPES,
+  DOWN_TREND_IS_BETTER,
+  METRICS_CONSTANTS,
+  TREND_ICON,
+  UP_TREND_IS_BETTER,
+} from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
-import { CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
@@ -615,4 +623,82 @@ describe('xAxisLabelDateFormatter function', () => {
 
     expect(result).toEqual('01/15-01/19');
   });
+});
+
+describe('calculateTrendInfo function', () => {
+  const dateRangeList = [
+    '2024/01/15-2024/01/19',
+    '2024/01/20-2024/01/21',
+    '2024/01/22-2024/01/23',
+    '2024/01/24-2024/01/25',
+  ];
+  it('should only return type given the valid data length is less 2', () => {
+    const dataList = [0, 0, 3, 0];
+    const result = calculateTrendInfo(dataList, dateRangeList, CHART_TYPE.VELOCITY);
+
+    expect(result.dateRangeList).toEqual(undefined);
+    expect(result.trendNumber).toEqual(undefined);
+    expect(result.color).toEqual(undefined);
+    expect(result.icon).toEqual(undefined);
+    expect(result.type).toEqual(CHART_TYPE.VELOCITY);
+  });
+  it.each(UP_TREND_IS_BETTER)(
+    'should get better result given the type is the up trend is better and the data is up',
+    (type) => {
+      const dataList = [1, 0, 3, 0];
+
+      const result = calculateTrendInfo(dataList, dateRangeList, type);
+
+      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(result.trendNumber).toEqual(2);
+      expect(result.color).toEqual('green');
+      expect(result.icon).toEqual(TREND_ICON.UP);
+      expect(result.type).toEqual(type);
+    },
+  );
+
+  it.each(UP_TREND_IS_BETTER)(
+    'should get worse result given the type is the up trend is better and the data is down',
+    (type) => {
+      const dataList = [3, 0, 1, 0];
+
+      const result = calculateTrendInfo(dataList, dateRangeList, type);
+
+      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(Number(result.trendNumber?.toFixed(2))).toEqual(-0.67);
+      expect(result.color).toEqual('red');
+      expect(result.icon).toEqual(TREND_ICON.DOWN);
+      expect(result.type).toEqual(type);
+    },
+  );
+
+  it.each(DOWN_TREND_IS_BETTER)(
+    'should get better result given the type is the down trend is better and the data is down',
+    (type) => {
+      const dataList = [3, 0, 1, 0];
+
+      const result = calculateTrendInfo(dataList, dateRangeList, type);
+
+      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(Number(result.trendNumber?.toFixed(2))).toEqual(-0.67);
+      expect(result.color).toEqual('green');
+      expect(result.icon).toEqual(TREND_ICON.DOWN);
+      expect(result.type).toEqual(type);
+    },
+  );
+
+  it.each(DOWN_TREND_IS_BETTER)(
+    'should get worse result given the type is the down trend is better and the data is up',
+    (type) => {
+      const dataList = [1, 0, 3, 0];
+
+      const result = calculateTrendInfo(dataList, dateRangeList, type);
+
+      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(result.trendNumber).toEqual(2);
+      expect(result.color).toEqual('red');
+      expect(result.icon).toEqual(TREND_ICON.UP);
+      expect(result.type).toEqual(type);
+    },
+  );
 });
