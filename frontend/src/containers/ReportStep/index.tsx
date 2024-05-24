@@ -33,16 +33,6 @@ import {
   selectDateRange,
 } from '@src/context/config/configSlice';
 import {
-  BOARD_METRICS,
-  CALENDAR,
-  CHART_TAB_STYLE,
-  DORA_METRICS,
-  MESSAGE,
-  REPORT_PAGE_TYPE,
-  REQUIRED_DATA,
-  RETRY,
-} from '@src/constants/resources';
-import {
   HeaderContainer,
   StyledCalendarWrapper,
   StyledRetry,
@@ -50,6 +40,15 @@ import {
   StyledTabs,
   StyledTabWrapper,
 } from '@src/containers/ReportStep/style';
+import {
+  BOARD_METRICS,
+  CALENDAR,
+  CHART_TAB_STYLE,
+  DORA_METRICS,
+  MESSAGE,
+  REPORT_PAGE_TYPE,
+  REQUIRED_DATA,
+} from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { CHART_INDEX, DISPLAY_TYPE, METRIC_TYPES } from '@src/constants/commons';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
