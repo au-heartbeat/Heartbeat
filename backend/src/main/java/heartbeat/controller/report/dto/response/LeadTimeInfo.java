@@ -41,6 +41,8 @@ public class LeadTimeInfo {
 
 	private Boolean isRevert;
 
+	private long nonWorkdays;
+
 	public LeadTimeInfo(LeadTime leadTime) {
 		if (leadTime == null) {
 			return;
@@ -63,6 +65,8 @@ public class LeadTimeInfo {
 		if (leadTime.getTotalTime() != 0) {
 			this.totalTime = TimeUtil.msToHMS(leadTime.getTotalTime());
 		}
+
+		this.nonWorkdays = leadTime.getHolidays();
 	}
 
 	private String convertToISOFormat(Long time) {

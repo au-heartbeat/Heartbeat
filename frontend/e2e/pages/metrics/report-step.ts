@@ -1,4 +1,9 @@
-import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
+import {
+  checkDownloadReport,
+  checkDownloadReportCycleTimeByStatus,
+  checkDownloadWithHolidayReport,
+  downloadFileAndCheck,
+} from 'e2e/utils/download';
 import { expect, Locator, Page } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
 import path from 'path';
@@ -99,9 +104,9 @@ export class ReportStep {
     await expect(this.deploymentFrequencyRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
     await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText('6.60');
 
-    await expect(this.leadTimeForChangesRows.nth(2)).toContainText(this.combineStrings(['PR Lead Time', '6.12']));
+    await expect(this.leadTimeForChangesRows.nth(2)).toContainText(this.combineStrings(['PR Lead Time', '3.21']));
     await expect(this.leadTimeForChangesRows.nth(3)).toContainText(this.combineStrings(['Pipeline Lead Time', '0.50']));
-    await expect(this.leadTimeForChangesRows.nth(4)).toContainText(this.combineStrings(['Total Lead Time', '6.62']));
+    await expect(this.leadTimeForChangesRows.nth(4)).toContainText(this.combineStrings(['Total Lead Time', '3.71']));
 
     await expect(this.devChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
     await expect(this.devChangeFailureRateRows.getByRole('cell').nth(1)).toContainText('17.50%(7/40)');
@@ -434,6 +439,12 @@ export class ReportStep {
     await checkDownloadReport(this.page, this.exportMetricData, 'metricReport.csv');
     // await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
     await checkDownloadReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
+  }
+
+  async checkDownloadWithHolidayReports() {
+    await checkDownloadWithHolidayReport(this.page, this.exportMetricData, 'metricReport.csv');
+    // await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
+    await checkDownloadWithHolidayReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
   }
 
   async checkDownloadReportsCycleTimeByStatus() {

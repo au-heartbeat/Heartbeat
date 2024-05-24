@@ -26,7 +26,7 @@ public class DeploymentFrequencyCalculator {
 	private final WorkDay workDay;
 
 	public DeploymentFrequency calculate(List<DeployTimes> deployTimes, Long startTime, Long endTime) {
-		int timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
+		long timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
 			int passedDeployInfosCount = (int) item.getPassed()
