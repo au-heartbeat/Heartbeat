@@ -110,7 +110,12 @@ test('Import project from file with partial ranges API failed', async ({
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkDisplayChartStatus();
+
+  await reportStep.checkSelectListTab();
+  await reportStep.goToChartBoardTab();
+  await reportStep.checkChartBoardTabStatus();
+  await reportStep.goToCharDoraTab();
+  await reportStep.checkChartDoraTabStatus();
 });
 
 test('Import project from file with holiday', async ({ homePage, configStep, metricsStep, reportStep }) => {

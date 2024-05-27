@@ -495,7 +495,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
               {...tabProps(0)}
               disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics}
             />
-            <Tab label='DORA' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
+            <Tab label='DORA' aria-label='dora chart' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
           </Tabs>
         </Box>
       )}

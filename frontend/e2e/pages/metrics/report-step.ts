@@ -605,20 +605,17 @@ export class ReportStep {
     await checkDownloadReportCycleTimeByStatus(this.page, this.exportBoardData, 'boardReport.csv');
   }
 
-  async clickHomeIconThenBackToHomepage() {
-    await this.homeIcon.click();
-    await expect(this.page).toHaveURL(/\//);
-  }
-
-  async checkDisplayChartStatus() {
-    await this.displayListTab.click();
-
+  async checkSelectListTab() {
     expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('true');
     expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('false');
     await expect(this.chartTabsContainer).not.toBeVisible();
+  }
 
+  async goToChartBoardTab() {
     await this.displayChartTab.click();
+  }
 
+  async checkChartBoardTabStatus() {
     expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('true');
     await expect(this.chartTabsContainer).toBeVisible();
@@ -628,18 +625,19 @@ export class ReportStep {
     await expect(this.averageCycleTimeChart).toBeVisible();
     await expect(this.cycleTimeAllocationChart).toBeVisible();
     await expect(this.reworkChart).toBeVisible();
+  }
 
+  async goToCharDoraTab() {
     await this.displayDoraChartTab.click();
+  }
 
+  async checkChartDoraTabStatus() {
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
-
     await this.displayListTab.click();
     await this.displayChartTab.click();
-
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
-
     await expect(this.leadTimeForChangeChart).toBeVisible();
     await expect(this.deploymentFrequencyChart).toBeVisible();
     await expect(this.changeFailureRateChart).toBeVisible();

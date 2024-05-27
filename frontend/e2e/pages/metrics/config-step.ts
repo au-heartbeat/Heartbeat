@@ -256,19 +256,27 @@ export class ConfigStep {
   }
 
   async typeInMultipleRanges(ranges: { startDate: string; endDate: string }[]) {
+    await this.addNewTimeRangeAndVerify(ranges.length);
+    await this.typeInMultipleRangesAndVerify(ranges);
+  }
+
+  async typeInMultipleRangesAndVerify(ranges: { startDate: string; endDate: string }[]) {
     for (let i = 0; i < ranges.length; i++) {
       const dateRange = {
         startDate: format(ranges[i].startDate),
         endDate: format(ranges[i].endDate),
       };
-      if (i) {
-        await this.addNewTimeRange();
-        await expect(this.timeRangeRows).toHaveCount(i + 1);
-      }
       await this.typeInDateRange({ ...dateRange, number: i });
       await expect(this.fromDateInput.nth(i)).toHaveValue(dateRange.startDate);
       await expect(this.toDateInput.nth(i)).toHaveValue(dateRange.endDate);
     }
+  }
+
+  async addNewTimeRangeAndVerify(length: number) {
+    for (let i = 1; i < length; i++) {
+      await this.addNewTimeRange();
+    }
+    await expect(this.timeRangeRows).toHaveCount(length);
   }
 
   async validateNextButtonNotClickable() {

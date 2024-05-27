@@ -194,7 +194,7 @@ export class MetricsStep {
     this.pipelineStepsErrorMessage = page.getByText('No steps for this pipeline!');
     this.pipelineBranchesErrorMessage = page.getByText('The branch has been deleted!');
     this.pipelineTokenWithNoOrgErrorMessage = this.pipelineSettingSection.getByLabel('Error UI for pipeline settings');
-    this.pipelineBranchSelectIndicator = page.getByRole('progressbar');
+    this.pipelineBranchSelectIndicator = this.pipelineDefaultBranchSelectContainer.getByRole('progressbar');
     this.pipelineNewPipelineButton = page.getByRole('button', { name: 'New Pipeline' });
     this.pipelineCrewSettingsLabel = this.pipelineSettingSection
       .getByLabel('Included Crews multiple select')
@@ -660,7 +660,8 @@ export class MetricsStep {
     }
 
     for (const option of (await options.all()).slice(1)) {
-      expect((await option.getAttribute('aria-selected')) === 'true').toBeTruthy();
+      const value = await option.getAttribute('aria-selected');
+      expect(value).toEqual('true');
     }
 
     await this.page.keyboard.press('Escape');
@@ -818,16 +819,15 @@ export class MetricsStep {
     };
     for (let i = 0; i < rangeCount; i++) {
       const currentRange = this.dateRangeViewerOptions.getByLabel(`date range viewer - option ${i}`);
-      if (currentRange.getByTestId('PriorityHighIcon')) {
+      if ((await currentRange.getByLabel('error icon in date').count()) > 0) {
         apiIndicators.red++;
+      } else if ((await currentRange.getByLabel('success icon in date').count()) > 0) {
+        apiIndicators.green++;
       }
-      // todo green++
-      // if (currentRange.getByTestId('PriorityHighIcon')) {
-      //   apiIndicators.red++
-      // }
     }
     expect(apiIndicators.red).toBeGreaterThan(0);
-    // expect(apiIndicators.green).toBeGreaterThan(0)
+    expect(apiIndicators.green).toBeGreaterThan(0);
+    expect(apiIndicators.red + apiIndicators.green).toEqual(rangeCount);
   }
 
   async checkApiFailedAlertVisible() {
@@ -839,9 +839,5 @@ export class MetricsStep {
   async checkSomeApiFailed(rangeCount: number) {
     await this.checkApiFailedAlertVisible();
     await this.checkPartialApiFailedTimeRangeIndicator(rangeCount);
-    // await expect(this.page.getByRole('alert').first()).toContainText('Help Information');
-    // await expect(this.page.getByRole('alert').first()).toContainText(
-    //   'The file will expire in 30 minutes, please download it in time.',
-    // );
   }
 }

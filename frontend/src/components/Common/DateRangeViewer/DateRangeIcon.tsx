@@ -6,8 +6,8 @@ const DateRangeIcon = ({ isLoading, isFailed }: { isLoading: boolean; isFailed: 
   return (
     <DateRangeFailedIconContainer>
       {isLoading && <StyledCircularProgress aria-label={'loading icon in date'} />}
-      {!isLoading && isFailed && <PriorityHighIcon color='error' />}
-      {!isLoading && !isFailed && <CheckIcon color='success' />}
+      {!isLoading && isFailed && <PriorityHighIcon color='error' aria-label={'error icon in date'} />}
+      {!isLoading && !isFailed && <CheckIcon color='success' aria-label={'success icon in date'} />}
     </DateRangeFailedIconContainer>
   );
 };
