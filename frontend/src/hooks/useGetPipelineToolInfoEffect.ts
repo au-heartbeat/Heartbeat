@@ -43,6 +43,17 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
       token: restoredPipelineTool.token,
     };
     setIsLoading(true);
+    dispatch(
+      updateMetricsPageFailedTimeRangeInfos(
+        dateRangeList.map((dateRange) => ({
+          startDate: formatDateToTimestampString(dateRange.startDate!),
+          errors: {
+            isPipelineInfoError: undefined,
+          },
+        })),
+      ),
+    );
+
     try {
       const response = await pipelineToolClient.getInfo(params);
       setInfo(response);

@@ -42,6 +42,18 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     token: string,
   ) => {
     setIsLoading(true);
+
+    dispatch(
+      updateMetricsPageFailedTimeRangeInfos(
+        params.map((param) => {
+          return {
+            startDate: param.startTime,
+            errors: { isPipelineStepError: undefined },
+          };
+        }),
+      ),
+    );
+
     const allStepsRes = await Promise.allSettled<IStepsRes>(
       params.map((param) => {
         return metricsClient.getSteps(param, organizationId, buildId, pipelineType, token);
