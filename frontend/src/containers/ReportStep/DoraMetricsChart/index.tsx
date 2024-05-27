@@ -131,10 +131,10 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
 }
 
 export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) => {
-  const LeadTimeForChange = useRef<HTMLDivElement>(null);
+  const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
-  const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
+  const meanTimeToRecovery = useRef<HTMLDivElement>(null);
 
   const mappedData = data.map((currentData) => {
     if (!currentData?.doraMetricsCompleted) {
@@ -144,19 +144,19 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
     }
   });
 
-  const LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
+  const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
   const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
   const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
   useEffect(() => {
-    const LeadTimeForChangeChart = echarts.init(LeadTimeForChange.current);
+    const LeadTimeForChangeChart = echarts.init(leadTimeForChange.current);
 
-    const option = LeadTimeForChangeData && stackedBarOptionMapper(LeadTimeForChangeData);
+    const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
     LeadTimeForChangeChart.setOption(option);
     return () => {
       LeadTimeForChangeChart.dispose();
     };
-  }, [LeadTimeForChange, LeadTimeForChangeData, dateRanges, mappedData]);
+  }, [leadTimeForChange, leadTimeForChangeData, dateRanges, mappedData]);
 
   useEffect(() => {
     const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
@@ -177,20 +177,20 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
   }, [changeFailureRate, changeFailureRateData, dateRanges, mappedData]);
 
   useEffect(() => {
-    const MeanTimeToRecoveryChart = echarts.init(MeanTimeToRecovery.current);
+    const MeanTimeToRecoveryChart = echarts.init(meanTimeToRecovery.current);
     const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
     MeanTimeToRecoveryChart.setOption(option);
     return () => {
       MeanTimeToRecoveryChart.dispose();
     };
-  }, [MeanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData]);
+  }, [meanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData]);
 
   return (
     <ChartContainer>
-      <ChartAndTitleWrapper trendInfo={LeadTimeForChangeData.trendInfo} ref={LeadTimeForChange} />
+      <ChartAndTitleWrapper trendInfo={leadTimeForChangeData.trendInfo} ref={leadTimeForChange} />
       <ChartAndTitleWrapper trendInfo={deploymentFrequencyData.trendInfo} ref={deploymentFrequency} />
       <ChartAndTitleWrapper trendInfo={changeFailureRateData.trendInfo} ref={changeFailureRate} />
-      <ChartAndTitleWrapper trendInfo={meanTimeToRecoveryData.trendInfo} ref={MeanTimeToRecovery} />
+      <ChartAndTitleWrapper trendInfo={meanTimeToRecoveryData.trendInfo} ref={meanTimeToRecovery} />
     </ChartContainer>
   );
 };

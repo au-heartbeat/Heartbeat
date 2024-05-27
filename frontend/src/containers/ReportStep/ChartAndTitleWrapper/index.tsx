@@ -26,7 +26,7 @@ const TREND_ICON_MAPPING = {
 };
 
 const DECREASE = 'decrease';
-const CREASE = 'crease';
+const INCREASE = 'increase';
 
 const ChartAndTitleWrapper = forwardRef(
   (
@@ -40,12 +40,12 @@ const ChartAndTitleWrapper = forwardRef(
     const trendDescribe = () => {
       if (trendInfo.trendNumber === undefined) return '';
       if (trendInfo.trendNumber > 0) {
-        return CREASE;
+        return INCREASE;
       } else if (trendInfo.trendNumber < 0) {
         return DECREASE;
       } else {
         if (UP_TREND_IS_BETTER.includes(trendInfo.type)) {
-          return CREASE;
+          return INCREASE;
         } else {
           return DECREASE;
         }
