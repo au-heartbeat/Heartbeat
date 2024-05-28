@@ -81,14 +81,4 @@ public class ReportController {
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());
 	}
 
-	public static void main(String[] args) {
-		long startTime = 1710000000000L;
-		LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTime),
-				ZoneId.systemDefault());
-		long endTime = 1712678399999L;
-		LocalDateTime endLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
-		System.out.println(startLocalDateTime);
-		System.out.println(endLocalDateTime);
-	}
-
 }
