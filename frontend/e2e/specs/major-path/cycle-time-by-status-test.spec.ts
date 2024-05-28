@@ -1,8 +1,13 @@
 import { BOARD_METRICS_RESULT } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-report-result';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { cycleTimeByColumnFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-column-fixture';
+import adjustBrowserTimezone from '../../utils/set-chrome-default-timezone';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { format } from '../../utils/date-time';
+
+test.beforeAll(async () => {
+  await adjustBrowserTimezone();
+});
 
 test('Create a new project with cycle time by status', async ({ homePage, configStep, metricsStep, reportStep }) => {
   const dateRange = {

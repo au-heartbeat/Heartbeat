@@ -3,12 +3,14 @@ import {
   importModifiedCorrectConfig as modifiedCorrectProjectFromFile,
 } from '../../fixtures/import-file/unhappy-path-file';
 import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
+import adjustBrowserTimezone from '../../utils/set-chrome-default-timezone';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from '../../utils/clear-temp-dir';
 import { format } from '../../utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
+  await adjustBrowserTimezone();
 });
 
 test('Error UI should be pipeline with no org config when pipeline token without org', async ({
