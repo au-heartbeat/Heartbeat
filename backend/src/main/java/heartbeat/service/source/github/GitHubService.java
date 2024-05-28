@@ -272,7 +272,8 @@ public class GitHubService {
 			prLeadTime = 0;
 		}
 		else {
-			WorkInfo workInfo = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime);
+			WorkInfo workInfo = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime,
+					request.getTimezoneByZoneId());
 			prLeadTime = workInfo.getWorkTime();
 			holidays = workInfo.getHolidays();
 		}

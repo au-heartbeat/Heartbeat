@@ -18,6 +18,7 @@ public class GenerateReportRequestTest {
 		.csvTimeStamp("123456789")
 		.startTime("1710000000000")
 		.endTime("1712678399999")
+		.timezone("Asia/Shanghai")
 		.build();
 
 	@Test

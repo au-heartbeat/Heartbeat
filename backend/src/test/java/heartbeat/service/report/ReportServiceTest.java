@@ -113,6 +113,7 @@ public class ReportServiceTest {
 			.endTime(endTimeStamp)
 			.metrics(new ArrayList<>())
 			.metricTypes(List.of(BOARD))
+			.timezone("Asia/Shanghai")
 			.build();
 
 		@Test

@@ -99,6 +99,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().build());
@@ -125,6 +126,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(Lists.list()).build());
@@ -188,6 +190,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -253,6 +256,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -300,6 +304,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build());
@@ -351,6 +356,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build());
@@ -405,6 +411,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -457,6 +464,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -499,6 +507,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -543,6 +552,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -588,6 +598,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -640,6 +651,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(List.of(doneJiraCardDTO)).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -712,6 +724,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
@@ -785,6 +798,7 @@ class KanbanCsvServiceTest {
 					.csvTimeStamp(CSV_TIME_STAMP)
 					.startTime(START_TIME)
 					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
 					.build(),
 				CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());

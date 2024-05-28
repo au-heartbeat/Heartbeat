@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +71,8 @@ public class ReportService {
 		CompletableFuture<Void> allFutures = CompletableFuture.allOf(threadList.toArray(new CompletableFuture[0]));
 		allFutures.thenRun(() -> {
 			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(request.getCsvTimeStamp(),
-					convertTimeStampToYYYYMMDD(request.getStartTime()),
-					convertTimeStampToYYYYMMDD(request.getEndTime()));
+					convertTimeStampToYYYYMMDD(request.getStartTime(), request.getTimezoneByZoneId()),
+					convertTimeStampToYYYYMMDD(request.getEndTime(), request.getTimezoneByZoneId()));
 			if (isNotGenerateMetricError(reportResponse.getReportMetricsError())) {
 				generateReporterService.generateCSVForMetric(reportResponse, request.getTimeRangeAndTimeStamp());
 			}
@@ -80,8 +81,8 @@ public class ReportService {
 		});
 	}
 
-	private String convertTimeStampToYYYYMMDD(String timeStamp) {
-		return TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(timeStamp));
+	private String convertTimeStampToYYYYMMDD(String timeStamp, ZoneId timezone) {
+		return TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(timeStamp), timezone);
 	}
 
 	private boolean isNotGenerateMetricError(ReportMetricsError reportMetricsError) {

@@ -24,6 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Report")
@@ -68,11 +72,23 @@ public class ReportController {
 		log.info("Start to generate report");
 		reportService.generateReport(request);
 		String callbackUrl = "/reports/" + request.getCsvTimeStamp() + "?startTime="
-				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(request.getStartTime())) + "&endTime="
-				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(request.getEndTime()));
+				+ TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getStartTime()),
+						request.getTimezoneByZoneId())
+				+ "&endTime=" + TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getEndTime()),
+						request.getTimezoneByZoneId());
 		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());
+	}
+
+	public static void main(String[] args) {
+		long startTime = 1710000000000L;
+		LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTime),
+				ZoneId.systemDefault());
+		long endTime = 1712678399999L;
+		LocalDateTime endLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
+		System.out.println(startLocalDateTime);
+		System.out.println(endLocalDateTime);
 	}
 
 }

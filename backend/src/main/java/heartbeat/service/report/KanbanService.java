@@ -32,7 +32,8 @@ public class KanbanService {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = buildStoryPointsAndCycleTimeRequest(
 				jiraBoardSetting, request.getStartTime(), request.getEndTime());
 		return jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers(), jiraBoardSetting.getAssigneeFilter());
+				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers(), jiraBoardSetting.getAssigneeFilter(),
+				request.getTimezoneByZoneId());
 	}
 
 	private CardCollection fetchNonDoneCardCollection(GenerateReportRequest request) {
@@ -40,7 +41,7 @@ public class KanbanService {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = buildStoryPointsAndCycleTimeRequest(
 				jiraBoardSetting, request.getStartTime(), request.getEndTime());
 		return jiraService.getStoryPointsAndCycleTimeForNonDoneCards(storyPointsAndCycleTimeRequest,
-				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers());
+				jiraBoardSetting.getBoardColumns(), jiraBoardSetting.getUsers(), request.getTimezoneByZoneId());
 	}
 
 	private static StoryPointsAndCycleTimeRequest buildStoryPointsAndCycleTimeRequest(JiraBoardSetting jiraBoardSetting,
