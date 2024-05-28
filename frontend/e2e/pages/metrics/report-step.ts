@@ -452,9 +452,8 @@ export class ReportStep {
     csvCompareLines?: ICsvComparedLines;
   }) {
     const isNeedToCompareCsvLines = csvCompareLines !== undefined;
-    if (isNeedToCompareCsvLines && rangeCount !== csvCompareLines.length) {
-      throw new Error('given time ranges count and csvCompareLines count are not equal, please check your fixture');
-    }
+    const isRangesCountAndCsvCountEqual = isNeedToCompareCsvLines && rangeCount !== csvCompareLines.length;
+    expect(isRangesCountAndCsvCountEqual).toEqual(false);
     await expect(trigger).toBeEnabled();
     await trigger.click();
     await expect(this.downloadDialog).toBeVisible();
