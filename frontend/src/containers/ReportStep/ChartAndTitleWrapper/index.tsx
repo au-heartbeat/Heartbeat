@@ -43,7 +43,7 @@ const ChartAndTitleWrapper = forwardRef(
         return INCREASE;
       } else if (trendInfo.trendNumber < 0) {
         return DECREASE;
-      } else if (UP_TREND_IS_BETTER.includes(trendInfo.type)){
+      } else if (UP_TREND_IS_BETTER.includes(trendInfo.type)) {
         return INCREASE;
       } else {
         return DECREASE;
