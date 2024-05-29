@@ -2,14 +2,21 @@ import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
 import {
+  CHART_TYPE,
+  EMPTY_DATA_MAPPER_DORA_CHART,
+  LEAD_TIME_CHARTS_MAPPING,
+  REQUIRED_DATA,
+} from '@src/constants/resources';
+import {
   oneLineOptionMapper,
   Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
-import { EMPTY_DATA_MAPPER_DORA_CHART, LEAD_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
-import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
+import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
+import { calculateTrendInfo } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 interface DoraMetricsChartProps {
@@ -26,12 +33,13 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     .slice(0, 2);
   const extractedValues = mappedData?.map((data) =>
     data.leadTimeForChangesList?.[0].valuesList.map((item) => {
-      return item.value!;
+      return Number(item.value);
     }),
   );
+  const prLeadTimeValues = extractedValues?.map((value) => value![0]);
+  const trendInfo = calculateTrendInfo(prLeadTimeValues, allDateRanges, CHART_TYPE.LEAD_TIME_FOR_CHANGES);
 
   return {
-    title: 'Lead Time For Change',
     legend: 'Lead Time For Change',
     xAxis: allDateRanges,
     yAxis: {
@@ -45,23 +53,24 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
         name: name,
         type: 'bar',
         data: extractedValues!.map((value) => {
-          return value![index] as unknown as number;
+          return value![index];
         }),
       };
       return series;
     }),
 
     color: [theme.main.doraChart.barColorA, theme.main.doraChart.barColorB, theme.main.doraChart.barColorC],
+    trendInfo,
   };
 }
 
 function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.deploymentFrequencyList);
   const value = data?.map((item) => {
-    return item?.[0].valueList[0].value as number;
+    return Number(item?.[0].valueList[0].value) || 0;
   });
+  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEPLOYMENT_FREQUENCY);
   return {
-    title: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
     legend: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
     xAxis: allDateRanges,
     yAxis: {
@@ -75,6 +84,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
       data: value!,
     },
     color: theme.main.doraChart.deploymentFrequencyChartColor,
+    trendInfo,
   };
 }
 
@@ -83,9 +93,9 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
   const valueStr = data?.map((item) => {
     return item?.[0].valueList[0].value as string;
   });
-  const value = valueStr?.map((item) => item?.split('%', 1)[0] as unknown as number);
+  const value = valueStr?.map((item) => Number(item?.split('%', 1)[0]));
+  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEV_CHANGE_FAILURE_RATE);
   return {
-    title: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
     legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
     xAxis: allDateRanges,
     yAxis: {
@@ -99,17 +109,17 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
       data: value!,
     },
     color: theme.main.doraChart.devChangeFailureRateColor,
-    valueType: 'percentage',
+    trendInfo,
   };
 }
 
 function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
   const value = data?.map((item) => {
-    return item?.[0].valueList[0].value as number;
+    return Number(item?.[0].valueList[0].value) || 0;
   });
+  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY);
   return {
-    title: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
     legend: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
     xAxis: allDateRanges,
     yAxis: {
@@ -123,14 +133,15 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
       data: value!,
     },
     color: theme.main.doraChart.devMeanTimeToRecoveryColor,
+    trendInfo,
   };
 }
 
 export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) => {
-  const LeadTimeForChange = useRef<HTMLDivElement>(null);
+  const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
-  const MeanTimeToRecovery = useRef<HTMLDivElement>(null);
+  const meanTimeToRecovery = useRef<HTMLDivElement>(null);
 
   const mappedData = data.map((currentData) => {
     if (!currentData?.doraMetricsCompleted) {
@@ -140,54 +151,53 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
     }
   });
 
+  const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
+  const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
+  const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
+  const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
   useEffect(() => {
-    const LeadTimeForChangeChart = echarts.init(LeadTimeForChange.current);
-    const LeadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
+    const LeadTimeForChangeChart = echarts.init(leadTimeForChange.current);
 
-    const option = LeadTimeForChangeData && stackedBarOptionMapper(LeadTimeForChangeData);
+    const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
     LeadTimeForChangeChart.setOption(option);
     return () => {
       LeadTimeForChangeChart.dispose();
     };
-  }, [LeadTimeForChange, dateRanges, mappedData]);
+  }, [leadTimeForChange, leadTimeForChangeData, dateRanges, mappedData]);
 
   useEffect(() => {
     const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
-    const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
     const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
     deploymentFrequencyChart.setOption(option);
     return () => {
       deploymentFrequencyChart.dispose();
     };
-  }, [deploymentFrequency, dateRanges, mappedData]);
+  }, [deploymentFrequency, dateRanges, mappedData, deploymentFrequencyData]);
 
   useEffect(() => {
     const changeFailureRateChart = echarts.init(changeFailureRate.current);
-    const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
-
     const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
     changeFailureRateChart.setOption(option);
     return () => {
       changeFailureRateChart.dispose();
     };
-  }, [changeFailureRate, dateRanges, mappedData]);
+  }, [changeFailureRate, changeFailureRateData, dateRanges, mappedData]);
 
   useEffect(() => {
-    const MeanTimeToRecoveryChart = echarts.init(MeanTimeToRecovery.current);
-    const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
+    const MeanTimeToRecoveryChart = echarts.init(meanTimeToRecovery.current);
     const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
     MeanTimeToRecoveryChart.setOption(option);
     return () => {
       MeanTimeToRecoveryChart.dispose();
     };
-  }, [MeanTimeToRecovery, dateRanges, mappedData]);
+  }, [meanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData]);
 
   return (
     <ChartContainer>
-      <ChartWrapper aria-label='lead time for change chart' ref={LeadTimeForChange}></ChartWrapper>
-      <ChartWrapper aria-label='deployment frequency chart' ref={deploymentFrequency}></ChartWrapper>
-      <ChartWrapper aria-label='change failure rate chart' ref={changeFailureRate}></ChartWrapper>
-      <ChartWrapper aria-label='mean time to recovery chart' ref={MeanTimeToRecovery}></ChartWrapper>
+      <ChartAndTitleWrapper trendInfo={leadTimeForChangeData.trendInfo} ref={leadTimeForChange} />
+      <ChartAndTitleWrapper trendInfo={deploymentFrequencyData.trendInfo} ref={deploymentFrequency} />
+      <ChartAndTitleWrapper trendInfo={changeFailureRateData.trendInfo} ref={changeFailureRate} />
+      <ChartAndTitleWrapper trendInfo={meanTimeToRecoveryData.trendInfo} ref={meanTimeToRecovery} />
     </ChartContainer>
   );
 };

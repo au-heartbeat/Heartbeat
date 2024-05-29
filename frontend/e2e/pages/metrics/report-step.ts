@@ -15,6 +15,7 @@ import {
   IDoraMetricsResultItem,
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
 } from '../../fixtures/create-new/report-result';
+import { BOARD_CHART_VALUE, DORA_CHART_VALUE } from '../../fixtures/import-file/chart-result';
 import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { expect, Locator, Page, Download } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
@@ -76,6 +77,22 @@ export class ReportStep {
   readonly deploymentFrequencyChart: Locator;
   readonly changeFailureRateChart: Locator;
   readonly meanTimeToRecoveryChart: Locator;
+  readonly velocityTrendContainer: Locator;
+  readonly reworkTrendContainer: Locator;
+  readonly cycleTimeAllocationTrendContainer: Locator;
+  readonly averageCycleTimeTrendContainer: Locator;
+  readonly velocityTrendIcon: Locator;
+  readonly reworkTrendIcon: Locator;
+  readonly cycleTimeAllocationTrendIcon: Locator;
+  readonly averageCycleTimeTrendIcon: Locator;
+  readonly devMeanTimeToRecoveryTrendContainer: Locator;
+  readonly devChangeFailureRateTrendContainer: Locator;
+  readonly deploymentFrequencyTrendContainer: Locator;
+  readonly leadTimeForChangesTrendContainer: Locator;
+  readonly devMeanTimeToRecoveryTrendIcon: Locator;
+  readonly devChangeFailureRateTrendIcon: Locator;
+  readonly deploymentFrequencyTrendIcon: Locator;
+  readonly leadTimeForChangesTrendIcon: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -131,10 +148,27 @@ export class ReportStep {
     this.averageCycleTimeChart = this.page.getByLabel('average cycle time chart');
     this.cycleTimeAllocationChart = this.page.getByLabel('cycle time allocation chart');
     this.reworkChart = this.page.getByLabel('rework chart');
-    this.leadTimeForChangeChart = this.page.getByLabel('lead time for change chart');
+    this.leadTimeForChangeChart = this.page.getByLabel('lead time for changes chart');
     this.deploymentFrequencyChart = this.page.getByLabel('deployment frequency chart');
     this.changeFailureRateChart = this.page.getByLabel('change failure rate chart');
     this.meanTimeToRecoveryChart = this.page.getByLabel('mean time to recovery chart');
+    this.velocityTrendContainer = this.page.getByLabel('velocity trend container');
+    this.averageCycleTimeTrendContainer = this.page.getByLabel('average cycle time trend container');
+    this.cycleTimeAllocationTrendContainer = this.page.getByLabel('cycle time allocation trend container');
+    this.reworkTrendContainer = this.page.getByLabel('rework trend container');
+    this.velocityTrendIcon = this.velocityTrendContainer.getByLabel('trend up');
+    this.averageCycleTimeTrendIcon = this.averageCycleTimeTrendContainer.getByLabel('trend up');
+    this.cycleTimeAllocationTrendIcon = this.cycleTimeAllocationTrendContainer.getByLabel('trend up');
+    this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend up');
+
+    this.leadTimeForChangesTrendContainer = this.page.getByLabel('lead time for changes trend container');
+    this.deploymentFrequencyTrendContainer = this.page.getByLabel('deployment frequency trend container');
+    this.devChangeFailureRateTrendContainer = this.page.getByLabel('dev change failure rate trend container');
+    this.devMeanTimeToRecoveryTrendContainer = this.page.getByLabel('dev mean time to recovery trend container');
+    this.leadTimeForChangesTrendIcon = this.leadTimeForChangesTrendContainer.getByLabel('trend down');
+    this.deploymentFrequencyTrendIcon = this.deploymentFrequencyTrendContainer.getByLabel('trend down');
+    this.devChangeFailureRateTrendIcon = this.devChangeFailureRateTrendContainer.getByLabel('trend down');
+    this.devMeanTimeToRecoveryTrendIcon = this.devMeanTimeToRecoveryTrendContainer.getByLabel('trend down');
   }
   combineStrings(arr: string[]): string {
     return arr.join('');
@@ -624,6 +658,31 @@ export class ReportStep {
     await expect(this.averageCycleTimeChart).toBeVisible();
     await expect(this.cycleTimeAllocationChart).toBeVisible();
     await expect(this.reworkChart).toBeVisible();
+
+    await expect(this.velocityTrendContainer).toBeVisible();
+    await expect(this.velocityTrendContainer).toHaveCSS('color', BOARD_CHART_VALUE.Velocity.color);
+    await expect(this.velocityTrendIcon).toBeVisible();
+    await expect(this.velocityTrendContainer).toContainText(BOARD_CHART_VALUE.Velocity.value);
+
+    await expect(this.averageCycleTimeTrendContainer).toBeVisible();
+    await expect(this.averageCycleTimeTrendContainer).toHaveCSS('color', BOARD_CHART_VALUE['Average Cycle Time'].color);
+    await expect(this.averageCycleTimeTrendIcon).toBeVisible();
+    await expect(this.averageCycleTimeTrendContainer).toContainText(BOARD_CHART_VALUE['Average Cycle Time'].value);
+
+    await expect(this.cycleTimeAllocationTrendContainer).toBeVisible();
+    await expect(this.cycleTimeAllocationTrendContainer).toHaveCSS(
+      'color',
+      BOARD_CHART_VALUE['Cycle Time Allocation'].color,
+    );
+    await expect(this.cycleTimeAllocationTrendIcon).toBeVisible();
+    await expect(this.cycleTimeAllocationTrendContainer).toContainText(
+      BOARD_CHART_VALUE['Cycle Time Allocation'].value,
+    );
+
+    await expect(this.reworkTrendContainer).toBeVisible();
+    await expect(this.reworkTrendContainer).toHaveCSS('color', BOARD_CHART_VALUE['Rework'].color);
+    await expect(this.reworkTrendIcon).toBeVisible();
+    await expect(this.reworkTrendContainer).toContainText(BOARD_CHART_VALUE['Rework'].value);
   }
 
   async goToCharDoraTab() {
@@ -641,5 +700,41 @@ export class ReportStep {
     await expect(this.deploymentFrequencyChart).toBeVisible();
     await expect(this.changeFailureRateChart).toBeVisible();
     await expect(this.meanTimeToRecoveryChart).toBeVisible();
+
+    await expect(this.leadTimeForChangesTrendContainer).toBeVisible();
+    await expect(this.leadTimeForChangesTrendContainer).toHaveCSS(
+      'color',
+      DORA_CHART_VALUE['Lead Time For Changes'].color,
+    );
+    await expect(this.leadTimeForChangesTrendIcon).toBeVisible();
+    await expect(this.leadTimeForChangesTrendContainer).toContainText(DORA_CHART_VALUE['Lead Time For Changes'].value);
+
+    await expect(this.deploymentFrequencyTrendContainer).toBeVisible();
+    await expect(this.deploymentFrequencyTrendContainer).toHaveCSS(
+      'color',
+      DORA_CHART_VALUE['Deployment Frequency'].color,
+    );
+    await expect(this.deploymentFrequencyTrendIcon).toBeVisible();
+    await expect(this.deploymentFrequencyTrendContainer).toContainText(DORA_CHART_VALUE['Deployment Frequency'].value);
+
+    await expect(this.devChangeFailureRateTrendContainer).toBeVisible();
+    await expect(this.devChangeFailureRateTrendContainer).toHaveCSS(
+      'color',
+      DORA_CHART_VALUE['Dev Change Failure Rate'].color,
+    );
+    await expect(this.devChangeFailureRateTrendIcon).toBeVisible();
+    await expect(this.devChangeFailureRateTrendContainer).toContainText(
+      DORA_CHART_VALUE['Dev Change Failure Rate'].value,
+    );
+
+    await expect(this.devMeanTimeToRecoveryTrendContainer).toBeVisible();
+    await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveCSS(
+      'color',
+      DORA_CHART_VALUE['Dev Mean Time To Recovery'].color,
+    );
+    await expect(this.devMeanTimeToRecoveryTrendIcon).toBeVisible();
+    await expect(this.devMeanTimeToRecoveryTrendContainer).toContainText(
+      DORA_CHART_VALUE['Dev Mean Time To Recovery'].value,
+    );
   }
 }

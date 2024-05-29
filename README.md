@@ -128,10 +128,12 @@ _Image 3-1，home page_
 
 If you are first use the product, you need to select “Create A New Project”，it will go to config page (Image 3-2)
 
-![Image 3-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/2.png)\
+![Image 3-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-2.png)\
 _Image 3-2，Project config page_
 
-Users need to select a period of time, then all of the data that follows is based on that time period.
+Users need to select at least one period of time, and users can click the “New time range” button to add up to 6 periods, and then multiple corresponding data reports will be generated on the report page. 
+
+Note: Charts will be generated only by selecting at least 2 time periods.
 
 **Have two items of time period:**
 
@@ -151,9 +153,9 @@ _Image 3-3，Metrics Data_
 
 User can not select future time in calendar (both start time & end time). The max date interval between start time and end time is 31 days (e.g. 01/01/2024 - 01/31/2024).
 
-Invalid dates may be, e.g. future dates, interval between start time and end time is more than 31 days, end time is before start time, etc.
+Invalid dates may be, e.g. future dates, interval between start time and end time is more than 31 days, end time is before start time, etc. If users select an invalid date, a warning will be popped up.
 
-If user selects and invalid date, a warning may be shown.
+Users can click the sort button to sort multiple periods of time in ascending or descending order. 
 
 #### 3.1.3 Config project account
 
@@ -172,7 +174,7 @@ According to your selected required data, you need to input account settings for
 | Dev change failure rate   | Pipeline       |
 | Dev mean time to recovery | Pipeline       |
 
-![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/4.png)\
+![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4.png)\
 Image 3-4，Project config
 
 **The details for board:**
@@ -218,9 +220,14 @@ _Image 3-8, authorize GitHub token with correct organization_
 
 After inputting the details info, users need to click the `Verify` button to verify if can access to these tool. Once verified, they could click the `Next` button go to next page -- Config Metrics page(Image 3-5，Image 3-6，Image 3-7)
 
+When users select multiple time periods on the config page, heartbeat retrieve report configuration from third parties with union manner for Board Crew settings, Classification setting, Pipeline settings, Pipeline Crew setting, while it take latest configuration for Board mappings, Rework times settings, Advanced settings.
+
+Users can expand the date picker to see all the time periods they selected.
+
+
 #### 3.2.1 Config Crews/Board Mappings
 
-![Image 3-9](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/5.png)\
+![Image 3-9](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-9.png)\
 _Image 3-9, Crews/Board Mappings config_
 
 **Crew Settings:** You could select your team members from a list get from board source. The list will include the assignees for those tickets that finished in the time period selected in the last step.
@@ -313,7 +320,7 @@ If builds were manually/scheduled triggered or could not find code committer fro
 
 When user first use this tool, need to create a project, and do some config. To avoid the user entering configuration information repeatedly every time, we provide a “Save” button in the config and metrics pages. In config page, click the save button, it will save all items in config page in a Json file. If you click the save button in the metrics page, it will save all items in config and metrics settings in a Json file. Here is the json file (Image 3-16)。Note: Below screenshot just contains a part of data.
 
-![Image 3-20](https://user-images.githubusercontent.com/995849/89784710-b4c41180-db4b-11ea-9bc4-db14ce98ef69.png)\
+![Image 3-20](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-20.png)
 _Image 3-20, Config Json file_
 
 ### 3.3.2 Import Config Json File
@@ -326,10 +333,19 @@ _Image 3-21, Warning message_
 ## 3.4 Generate Metrics report
 
 After setup and configuration, then it will generate the heartbeat dashboard.
-![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/8.png)
+
+Users can switch dates to view the dashboard for the corresponding time period. And users can switch between dashboard and chart by clicking on `List` and `Chart` button.
+
+
+![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22.png)
 _Image 3-22, Report page_
 
 You could find the drill down from `show more >` link from dashboard.
+
+In report `chart` page, heartbeat provide a better visualization on delivery and user can see the changing trends for key metrics over multiple time periods as below
+
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1.png)
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2.png)
 
 ### 3.4.1 Velocity
 
@@ -424,6 +440,10 @@ _Image 3-31，mean time to recovery
 ## 3.5 Export original data
 
 After generating the report, you can export the original data for your board and pipeline (Image 3-18). Users can click the “Export board data” or “Export pipeline data” button to export the original data.
+
+If users select multiple time ranges, then when users click “Export board data” or “Export pipeline data” button, the pop-up will show as below, and users can select the time period they want to export.
+
+![Image 3-31-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-31-1.png)
 
 ### 3.5.1 Export board data
 
