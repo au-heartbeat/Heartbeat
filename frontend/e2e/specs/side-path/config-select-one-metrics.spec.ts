@@ -1,13 +1,11 @@
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
 import { config as configStepData } from '../../fixtures/create-new/config-step';
-import adjustBrowserTimezone from '../../utils/set-chrome-default-timezone';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from '../../utils/clear-temp-dir';
 import { format } from '../../utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
-  await adjustBrowserTimezone();
 });
 
 test('Only select velocity metrics on config page', async ({ homePage, configStep, metricsStep, reportStep }) => {
