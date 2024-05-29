@@ -59,81 +59,98 @@ public class WorkDay {
 	}
 
 	public long calculateWorkDaysBetween(long startTime, long endTime, ZoneId timezone) {
-		return calculateWorkTimeAndHolidayBetween(startTime, endTime, timezone, false, false).getWorkDays();
+		return calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, timezone, false)
+			.getWorkDays();
 	}
 
 	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, ZoneId timezone) {
-		return calculateWorkTimeAndHolidayBetween(startTime, endTime, timezone, true, false);
+		return calculateWorkTimeAndHolidayBetweenWhenHolidayCanWork(startTime, endTime, timezone);
 	}
 
-	private WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, ZoneId timezone,
-			boolean holidayCanWork, boolean toScale) {
-		long result = endTime - startTime;
-
-		LocalDate startLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), timezone);
-		LocalDate endLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), timezone);
-
-		LocalDate localDateTimeIndex = LocalDate.of(startLocalDateTime.getYear(), startLocalDateTime.getMonth(),
-				startLocalDateTime.getDayOfMonth());
+	private List<DayType> getDayType(LocalDate startLocalDate, LocalDate endLocalDate) {
+		LocalDate localDateIndex = LocalDate.of(startLocalDate.getYear(), startLocalDate.getMonth(),
+				startLocalDate.getDayOfMonth());
 
 		List<DayType> holidayTypeList = new ArrayList<>();
 
-		while (!endLocalDateTime.isBefore(localDateTimeIndex)) {
-			if (verifyIfThisDayHoliday(localDateTimeIndex)) {
+		while (!endLocalDate.isBefore(localDateIndex)) {
+			if (verifyIfThisDayHoliday(localDateIndex)) {
 				holidayTypeList.add(DayType.NON_WORK_DAY);
 			}
 			else {
 				holidayTypeList.add(DayType.WORK_DAY);
 			}
-			localDateTimeIndex = localDateTimeIndex.plusDays(1);
+			localDateIndex = localDateIndex.plusDays(1);
+		}
+		return holidayTypeList;
+	}
+
+	private WorkInfo calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(long startTime, long endTime,
+			ZoneId timezone, boolean toScale) {
+		LocalDate startLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), timezone);
+		LocalDate endLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), timezone);
+
+		List<DayType> dayTypeList = getDayType(startLocalDate, endLocalDate);
+
+		long totalDays = dayTypeList.size();
+
+		long newStartTime = startTime;
+		int startTimeIndex = 0;
+		int endTimeIndex = dayTypeList.size() - 1;
+
+		if (dayTypeList.get(startTimeIndex) == DayType.NON_WORK_DAY) {
+			while (startTimeIndex < dayTypeList.size() && dayTypeList.get(startTimeIndex) == DayType.NON_WORK_DAY) {
+				startTimeIndex++;
+			}
+			LocalDate newStartLocalDateTime = startLocalDate.plusDays(startTimeIndex);
+			newStartTime = newStartLocalDateTime.atStartOfDay(timezone).toInstant().toEpochMilli();
 		}
 
-		long totalDays = holidayTypeList.size();
-
-		if (holidayCanWork) {
-			for (int i = 0; i < holidayTypeList.size() && holidayTypeList.get(i) == DayType.NON_WORK_DAY; i++) {
-				holidayTypeList.set(i, DayType.WORK_DAY);
+		long newEndTime = endTime;
+		if (dayTypeList.get(endTimeIndex) == DayType.NON_WORK_DAY) {
+			while (endTimeIndex >= startTimeIndex && dayTypeList.get(endTimeIndex) == DayType.NON_WORK_DAY) {
+				endTimeIndex--;
 			}
-
-			for (int i = holidayTypeList.size() - 1; i > 0 && holidayTypeList.get(i) == DayType.NON_WORK_DAY; i--) {
-				holidayTypeList.set(i, DayType.WORK_DAY);
-			}
+			LocalDate newEndLocalDateTime = startLocalDate.plusDays(endTimeIndex + 1L);
+			newEndTime = newEndLocalDateTime.atStartOfDay(timezone).toInstant().toEpochMilli();
 		}
-		else {
-			long newStartTime = startTime;
-			int startTimeIndex = 0;
-			int endTimeIndex = holidayTypeList.size() - 1;
-
-			if (holidayTypeList.get(startTimeIndex) == DayType.NON_WORK_DAY) {
-				while (startTimeIndex < holidayTypeList.size()
-						&& holidayTypeList.get(startTimeIndex) == DayType.NON_WORK_DAY) {
-					startTimeIndex++;
-				}
-				LocalDate newStartLocalDateTime = startLocalDateTime.plusDays(startTimeIndex);
-				newStartTime = newStartLocalDateTime.atStartOfDay(timezone).toInstant().toEpochMilli();
-			}
-
-			long newEndTime = endTime;
-			if (holidayTypeList.get(endTimeIndex) == DayType.NON_WORK_DAY) {
-				while (endTimeIndex >= startTimeIndex && holidayTypeList.get(endTimeIndex) == DayType.NON_WORK_DAY) {
-					endTimeIndex--;
-				}
-				LocalDate newEndLocalDateTime = startLocalDateTime.plusDays(endTimeIndex + 1);
-				newEndTime = newEndLocalDateTime.atStartOfDay(timezone).toInstant().toEpochMilli();
-			}
-			result = newEndTime - newStartTime;
-			if (toScale) {
-				holidayTypeList = holidayTypeList.subList(startTimeIndex, endTimeIndex + 1);
-			}
+		long result = newEndTime - newStartTime;
+		if (toScale) {
+			dayTypeList = dayTypeList.subList(startTimeIndex, endTimeIndex + 1);
 		}
-		long holidayNums = holidayTypeList.stream().filter(it -> it.equals(DayType.NON_WORK_DAY)).count();
+		long holidayNums = dayTypeList.stream().filter(it -> it.equals(DayType.NON_WORK_DAY)).count();
+		result = result - holidayNums * ONE_DAY;
+
+		return WorkInfo.builder().holidays(holidayNums).totalDays(totalDays).workTime(result).build();
+	}
+
+	private WorkInfo calculateWorkTimeAndHolidayBetweenWhenHolidayCanWork(long startTime, long endTime,
+			ZoneId timezone) {
+		long result = endTime - startTime;
+
+		LocalDate startLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), timezone);
+		LocalDate endLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), timezone);
+
+		List<DayType> dayTypeList = getDayType(startLocalDate, endLocalDate);
+		long totalDays = dayTypeList.size();
+
+		for (int i = 0; i < dayTypeList.size() && dayTypeList.get(i) == DayType.NON_WORK_DAY; i++) {
+			dayTypeList.set(i, DayType.WORK_DAY);
+		}
+
+		for (int i = dayTypeList.size() - 1; i > 0 && dayTypeList.get(i) == DayType.NON_WORK_DAY; i--) {
+			dayTypeList.set(i, DayType.WORK_DAY);
+		}
+
+		long holidayNums = dayTypeList.stream().filter(it -> it.equals(DayType.NON_WORK_DAY)).count();
 		result = result - holidayNums * ONE_DAY;
 
 		return WorkInfo.builder().holidays(holidayNums).totalDays(totalDays).workTime(result).build();
 	}
 
 	public double calculateWorkDaysToTwoScale(long startTime, long endTime, ZoneId timezone) {
-		double days = (double) calculateWorkTimeAndHolidayBetween(startTime, endTime, timezone, false, true)
+		double days = (double) calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, timezone,
+				true)
 			.getWorkTime() / ONE_DAY;
 		return BigDecimal.valueOf(days).setScale(2, RoundingMode.HALF_UP).doubleValue();
 	}

@@ -268,8 +268,14 @@ public class JiraService {
 		for (RequestJiraBoardColumnSetting boardColumn : boardColumns) {
 			CardStepsEnum.fromValue(boardColumn.getValue());
 		}
-		List<JiraCardDTO> realDoneCards = getRealDoneCards(request, boardColumns, users, baseUrl, allDoneCards,
-				jiraCardWithFields.getTargetFields(), assigneeFilter, timezone);
+		JiraBoardInfo jiraBoardInfo = JiraBoardInfo.builder()
+			.boardColumns(boardColumns)
+			.users(users)
+			.baseUrl(baseUrl)
+			.allDoneCards(allDoneCards)
+			.targetFields(jiraCardWithFields.getTargetFields())
+			.build();
+		List<JiraCardDTO> realDoneCards = getRealDoneCards(request, jiraBoardInfo, assigneeFilter, timezone);
 
 		double storyPointSum = realDoneCards.stream()
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
@@ -593,9 +599,13 @@ public class JiraService {
 			.toList();
 	}
 
-	private List<JiraCardDTO> getRealDoneCards(StoryPointsAndCycleTimeRequest request,
-			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
-			List<JiraCard> allDoneCards, List<TargetField> targetFields, String filterMethod, ZoneId timezone) {
+	private List<JiraCardDTO> getRealDoneCards(StoryPointsAndCycleTimeRequest request, JiraBoardInfo jiraBoardInfo,
+			String filterMethod, ZoneId timezone) {
+		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardInfo.getBoardColumns();
+		List<String> users = jiraBoardInfo.getUsers();
+		URI baseUrl = jiraBoardInfo.getBaseUrl();
+		List<JiraCard> allDoneCards = jiraBoardInfo.getAllDoneCards();
+		List<TargetField> targetFields = jiraBoardInfo.getTargetFields();
 
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields, request.getOverrideFields());
 		String keyFlagged = cardCustomFieldKey.getFlagged();

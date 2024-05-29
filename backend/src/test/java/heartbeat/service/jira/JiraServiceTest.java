@@ -1142,8 +1142,10 @@ class JiraServiceTest {
 
 		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 		List<String> users = List.of("Zhang San");
-		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, boardColumns, users, null, ZoneId.of("Asia/Shanghai")))
+		ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+		assertThatThrownBy(
+				() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
+						boardColumns, users, null, zoneId))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Board type does not find!");
 	}
@@ -1222,10 +1224,11 @@ class JiraServiceTest {
 
 		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 		List<String> users = List.of("Zhang San");
-		assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, boardColumns, users, null, ZoneId.of("Asia/Shanghai")))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("Type does not find!");
+		ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+		assertThatThrownBy(() -> {
+			jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
+					boardColumns, users, null, zoneId);
+		}).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Type does not find!");
 	}
 
 	@Test
