@@ -1,13 +1,23 @@
-import { CYCLE_TIME_LIST, CYCLE_TIME_SETTINGS_TYPES, METRICS_CONSTANTS } from '@src/constants/resources';
+import {
+  CHART_TYPE,
+  CYCLE_TIME_LIST,
+  CYCLE_TIME_SETTINGS_TYPES,
+  DOWN_TREND_IS_BETTER,
+  METRICS_CONSTANTS,
+  TREND_ICON,
+  UP_TREND_IS_BETTER,
+} from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { ITrendInfo } from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { includes, isEqual, sortBy, uniq, uniqBy } from 'lodash';
 import { DateRangeList } from '@src/context/config/configSlice';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import duration from 'dayjs/plugin/duration';
+import { theme } from '@src/theme';
 import dayjs from 'dayjs';
 
 dayjs.extend(duration);
@@ -204,6 +214,55 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
   const endMonthDay = endDate.slice(5);
 
   return `${startMonthDay}-${endMonthDay}`;
+};
+
+export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: CHART_TYPE) => {
+  const result: ITrendInfo = {
+    trendNumber: trendNumber,
+    dateRangeList: dateRangeList,
+    type,
+  } as ITrendInfo;
+
+  if (UP_TREND_IS_BETTER.includes(type)) {
+    if (trendNumber >= 0) {
+      result.color = theme.main.chartTrend.betterColor;
+      result.icon = TREND_ICON.UP;
+    } else {
+      result.color = theme.main.chartTrend.worseColor;
+      result.icon = TREND_ICON.DOWN;
+    }
+  } else if (DOWN_TREND_IS_BETTER.includes(type)) {
+    if (trendNumber <= 0) {
+      result.color = theme.main.chartTrend.betterColor;
+      result.icon = TREND_ICON.DOWN;
+    } else {
+      result.color = theme.main.chartTrend.worseColor;
+      result.icon = TREND_ICON.UP;
+    }
+  }
+  return result;
+};
+
+export const calculateTrendInfo = (
+  dataList: number[] | undefined,
+  dateRangeList: string[],
+  type: CHART_TYPE,
+): ITrendInfo => {
+  if (!dataList || dataList.filter((data) => data).length < 2) return { type };
+
+  const latestValidIndex = dataList.findLastIndex((data) => data);
+  const beforeLatestValidIndex = dataList.findLastIndex((data, index) => data && index !== latestValidIndex);
+
+  const trendNumber =
+    (dataList[latestValidIndex] - dataList[beforeLatestValidIndex]) / dataList[beforeLatestValidIndex];
+  const validDateRangeList: string[] = [];
+  validDateRangeList.push(dateRangeList[latestValidIndex], dateRangeList[beforeLatestValidIndex]);
+
+  return getTrendInfo(trendNumber, validDateRangeList, type);
+};
+
+export const convertNumberToPercent = (num: number): string => {
+  return (num * 100).toFixed(2) + '%';
 };
 
 export const percentageFormatter = (showPercentage = true) => {

@@ -2,12 +2,13 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { CYCLE_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
-import { ChartContainer, ChartWrapper } from '@src/containers/MetricsStep/style';
+import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING } from '@src/constants/resources';
+import { calculateTrendInfo, xAxisLabelDateFormatter } from '@src/utils/util';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
+import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { xAxisLabelDateFormatter } from '@src/utils/util';
 import React, { useEffect, useRef } from 'react';
 import { theme } from '@src/theme';
 import * as echarts from 'echarts';
@@ -62,8 +63,8 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
   const data = mappedData?.map((item) => item.velocityList);
   const velocity = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
+  const trendInfo = calculateTrendInfo(velocity, dateRanges, CHART_TYPE.VELOCITY);
   return {
-    title: REQUIRED_DATA.VELOCITY,
     xAxis: {
       data: dateRanges,
       boundaryGap: false,
@@ -100,6 +101,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
       },
     ],
     color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
+    trendInfo,
   };
 }
 
@@ -107,8 +109,8 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const data = mappedData?.map((item) => item.cycleTimeList);
   const storyPoints = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
+  const trendInfo = calculateTrendInfo(storyPoints, dateRanges, CHART_TYPE.AVERAGE_CYCLE_TIME);
   return {
-    title: 'Average Cycle Time',
     xAxis: {
       data: dateRanges,
       boundaryGap: false,
@@ -145,6 +147,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
       },
     ],
     color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
+    trendInfo,
   };
 }
 
@@ -156,8 +159,8 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
     indicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
+  const trendInfo = calculateTrendInfo(totalCycleTime, dateRanges, CHART_TYPE.CYCLE_TIME_ALLOCATION);
   return {
-    title: 'Cycle Time Allocation',
     xAxis: dateRanges,
     yAxis: {
       name: 'Value/Total cycle time',
@@ -173,6 +176,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
       theme.main.boardChart.barColorE,
       theme.main.boardChart.barColorF,
     ],
+    trendInfo,
   };
 }
 
@@ -181,8 +185,9 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
   const totalReworkTimes = data?.map((item) => item?.totalReworkTimes as number);
   const totalReworkCards = data?.map((item) => item?.totalReworkCards as number);
   const reworkCardsRatio = data?.map((item) => (item?.reworkCardsRatio as number) * 100);
+
+  const trendInfo = calculateTrendInfo(totalReworkTimes, dateRanges, CHART_TYPE.REWORK);
   return {
-    title: 'Rework',
     xAxis: {
       data: dateRanges,
       boundaryGap: true,
@@ -227,6 +232,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
       },
     ],
     color: [theme.main.boardChart.lineColorB, theme.main.boardChart.barColorA, theme.main.boardChart.barColorB],
+    trendInfo,
   };
 }
 
@@ -291,10 +297,10 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
 
   return (
     <ChartContainer>
-      <ChartWrapper ref={velocity}></ChartWrapper>
-      <ChartWrapper ref={averageCycleTime}></ChartWrapper>
-      <ChartWrapper ref={cycleTime}></ChartWrapper>
-      <ChartWrapper ref={rework}></ChartWrapper>
+      <ChartAndTitleWrapper trendInfo={velocityData.trendInfo} ref={velocity} />
+      <ChartAndTitleWrapper trendInfo={averageCycleTimeData.trendInfo} ref={averageCycleTime} />
+      <ChartAndTitleWrapper trendInfo={cycleTimeData.trendInfo} ref={cycleTime} />
+      <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} />
     </ChartContainer>
   );
 };

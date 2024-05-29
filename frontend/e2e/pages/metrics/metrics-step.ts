@@ -188,7 +188,7 @@ export class MetricsStep {
     this.pipelineStepsErrorMessage = page.getByText('No steps for this pipeline!');
     this.pipelineBranchesErrorMessage = page.getByText('The branch has been deleted!');
     this.pipelineTokenWithNoOrgErrorMessage = this.pipelineSettingSection.getByLabel('Error UI for pipeline settings');
-    this.pipelineBranchSelectIndicator = this.pipelineBranchSelect.getByRole('progressbar');
+    this.pipelineBranchSelectIndicator = page.getByText('Branches').getByRole('progressbar');
     this.pipelineNewPipelineButton = page.getByRole('button', { name: 'New Pipeline' });
     this.pipelineCrewSettingsLabel = this.pipelineSettingSection
       .getByLabel('Included Crews multiple select')

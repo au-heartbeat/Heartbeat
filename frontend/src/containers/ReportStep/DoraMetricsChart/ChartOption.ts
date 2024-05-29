@@ -2,7 +2,6 @@ import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 export interface BarOptionProps {
-  title: string;
   legend: string;
   xAxis: string[];
   yAxis: yAxis;
@@ -11,7 +10,6 @@ export interface BarOptionProps {
 }
 
 export interface LineOptionProps {
-  title: string;
   legend: string;
   xAxis: string[];
   yAxis: yAxis;
@@ -32,13 +30,6 @@ export interface yAxis {
 
 export const oneLineOptionMapper = (props: LineOptionProps) => {
   return {
-    title: {
-      text: props.title,
-      left: '22',
-      textStyle: {
-        fontSize: 16,
-      },
-    },
     tooltip: {
       trigger: 'axis',
       valueFormatter: percentageFormatter(!!props.valueType),
@@ -116,13 +107,6 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
 };
 export const stackedBarOptionMapper = (props: BarOptionProps) => {
   return {
-    title: {
-      text: props.title,
-      left: '22',
-      textStyle: {
-        fontSize: 16,
-      },
-    },
     legend: {
       icon: 'circle',
       data: props.series?.map((item) => item.name),
