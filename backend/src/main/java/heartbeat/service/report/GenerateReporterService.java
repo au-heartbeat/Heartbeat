@@ -190,8 +190,8 @@ public class GenerateReporterService {
 								Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
 				case "dev change failure rate" -> reportResponse.setDevChangeFailureRate(
 						devChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
-				case "dev mean time to recovery" -> reportResponse.setDevMeanTimeToRecovery(
-						meanToRecoveryCalculator.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
+				case "dev mean time to recovery" -> reportResponse.setDevMeanTimeToRecovery(meanToRecoveryCalculator
+					.calculate(fetchedData.getBuildKiteData().getDeployTimesList(), request));
 				default -> {
 					// TODO
 				}

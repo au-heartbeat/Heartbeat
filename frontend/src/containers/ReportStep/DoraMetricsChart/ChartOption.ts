@@ -1,4 +1,4 @@
-import { xAxisLabelDateFormatter } from '@src/utils/util';
+import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 export interface BarOptionProps {
@@ -15,6 +15,7 @@ export interface LineOptionProps {
   yAxis: yAxis;
   series: Series;
   color: string;
+  valueType?: string;
 }
 export interface Series {
   name: string;
@@ -31,6 +32,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
   return {
     tooltip: {
       trigger: 'axis',
+      valueFormatter: percentageFormatter(!!props.valueType),
     },
     xAxis: {
       data: props.xAxis,

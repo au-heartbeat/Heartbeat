@@ -264,3 +264,7 @@ export const calculateTrendInfo = (
 export const convertNumberToPercent = (num: number): string => {
   return (num * 100).toFixed(2) + '%';
 };
+
+export const percentageFormatter = (showPercentage = true) => {
+  return (value: number) => value + (showPercentage ? '%' : '');
+};

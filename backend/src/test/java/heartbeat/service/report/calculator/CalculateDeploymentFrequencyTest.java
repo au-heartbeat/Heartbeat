@@ -50,7 +50,7 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
 				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
@@ -67,7 +67,7 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(0);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(0L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
 				Long.parseLong(START_TIME), Long.parseLong(START_TIME));
@@ -82,7 +82,7 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
 				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
@@ -100,7 +100,7 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
 				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
@@ -114,7 +114,7 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(Collections.emptyList(),
 				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
@@ -136,7 +136,7 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
 				Long.parseLong(START_TIME), Long.parseLong(END_TIME));

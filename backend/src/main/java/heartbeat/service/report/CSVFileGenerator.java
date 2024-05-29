@@ -108,8 +108,8 @@ public class CSVFileGenerator {
 				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
 						"Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
 						"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
-						"Pipeline Finish Time", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
+						"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)",
+						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
 
 				csvWriter.writeNext(headers);
 
@@ -151,6 +151,7 @@ public class CSVFileGenerator {
 		String jobStartTime = leadTimeInfo.getJobStartTime();
 		String pipelineStartTime = leadTimeInfo.getFirstCommitTime();
 		String pipelineFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
+		String nonWorkdays = String.valueOf(leadTimeInfo.getNonWorkdays() * 24);
 		String totalTime = leadTimeInfo.getTotalTime();
 		String prLeadTime = leadTimeInfo.getPrLeadTime();
 		String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
@@ -158,7 +159,7 @@ public class CSVFileGenerator {
 
 		return new String[] { organization, pipelineName, stepName, valid, buildNumber, committerName, creatorName,
 				firstCommitTimeInPr, prCreatedTime, prMergedTime, noPRCommitTime, jobStartTime, pipelineStartTime,
-				pipelineFinishTime, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
+				pipelineFinishTime, nonWorkdays, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeAndTimeStamp) {

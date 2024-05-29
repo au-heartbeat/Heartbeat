@@ -7,12 +7,15 @@ import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
+import heartbeat.service.report.WorkDay;
+import heartbeat.service.report.model.WorkInfo;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import heartbeat.util.GithubUtil;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,8 @@ public class GitHubService {
 	public static final String BEARER_TITLE = "Bearer ";
 
 	private final GitHubFeignClient gitHubFeignClient;
+
+	private final WorkDay workDay;
 
 	public void verifyToken(String githubToken) {
 		try {
@@ -88,7 +93,7 @@ public class GitHubService {
 	}
 
 	public List<PipelineLeadTime> fetchPipelinesLeadTime(List<DeployTimes> deployTimes,
-			Map<String, String> repositories, String token) {
+			Map<String, String> repositories, String token, GenerateReportRequest request) {
 		try {
 			String realToken = BEARER_TITLE + token;
 			List<PipelineInfoOfRepository> pipelineInfoOfRepositories = getInfoOfRepositories(deployTimes,
@@ -100,7 +105,7 @@ public class GitHubService {
 						return CompletableFuture.completedFuture(PipelineLeadTime.builder().build());
 					}
 
-					List<CompletableFuture<LeadTime>> leadTimeFutures = getLeadTimeFutures(realToken, item);
+					List<CompletableFuture<LeadTime>> leadTimeFutures = getLeadTimeFutures(realToken, item, request);
 
 					CompletableFuture<List<LeadTime>> allLeadTimesFuture = CompletableFuture
 						.allOf(leadTimeFutures.toArray(new CompletableFuture[0]))
@@ -131,7 +136,8 @@ public class GitHubService {
 
 	}
 
-	private List<CompletableFuture<LeadTime>> getLeadTimeFutures(String realToken, PipelineInfoOfRepository item) {
+	private List<CompletableFuture<LeadTime>> getLeadTimeFutures(String realToken, PipelineInfoOfRepository item,
+			GenerateReportRequest request) {
 		return item.getPassedDeploy().stream().map(deployInfo -> {
 			CompletableFuture<List<PullRequestInfo>> pullRequestInfoFuture = CompletableFuture.supplyAsync(() -> {
 				try {
@@ -142,8 +148,8 @@ public class GitHubService {
 					return Collections.emptyList();
 				}
 			});
-			return pullRequestInfoFuture
-				.thenApply(pullRequestInfos -> getLeadTimeByPullRequest(realToken, item, deployInfo, pullRequestInfos));
+			return pullRequestInfoFuture.thenApply(pullRequestInfos -> getLeadTimeByPullRequest(realToken, item,
+					deployInfo, pullRequestInfos, request));
 		}).filter(Objects::nonNull).toList();
 	}
 
@@ -166,7 +172,7 @@ public class GitHubService {
 	}
 
 	private LeadTime getLeadTimeByPullRequest(String realToken, PipelineInfoOfRepository item, DeployInfo deployInfo,
-			List<PullRequestInfo> pullRequestInfos) {
+			List<PullRequestInfo> pullRequestInfos, GenerateReportRequest request) {
 		LeadTime noPrLeadTime = parseNoMergeLeadTime(deployInfo, item, realToken);
 		if (pullRequestInfos.isEmpty()) {
 			return noPrLeadTime;
@@ -187,7 +193,7 @@ public class GitHubService {
 		if (!mergedPull.get().getMergeCommitSha().equals(deployInfo.getCommitId())) {
 			return noPrLeadTime;
 		}
-		return mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo);
+		return mapLeadTimeWithInfo(mergedPull.get(), deployInfo, firstCommitInfo, request);
 	}
 
 	private LeadTime parseNoMergeLeadTime(DeployInfo deployInfo, PipelineInfoOfRepository item, String realToken) {
@@ -226,6 +232,7 @@ public class GitHubService {
 			.totalTime(jobFinishTime - firstCommitTime)
 			.prLeadTime(prLeadTime)
 			.isRevert(isRevert(commitInfo))
+			.holidays(0)
 			.build();
 	}
 
@@ -237,7 +244,8 @@ public class GitHubService {
 		return isRevert;
 	}
 
-	public LeadTime mapLeadTimeWithInfo(PullRequestInfo pullRequestInfo, DeployInfo deployInfo, CommitInfo commitInfo) {
+	public LeadTime mapLeadTimeWithInfo(PullRequestInfo pullRequestInfo, DeployInfo deployInfo, CommitInfo commitInfo,
+			GenerateReportRequest request) {
 		if (pullRequestInfo.getMergedAt() == null) {
 			return null;
 		}
@@ -258,12 +266,24 @@ public class GitHubService {
 		long pipelineLeadTime = jobFinishTime - prMergedTime;
 		long prLeadTime;
 		long totalTime;
+		long holidays = 0;
 		Boolean isRevert = isRevert(commitInfo);
 		if (Boolean.TRUE.equals(isRevert) || isNoFirstCommitTimeInPr(firstCommitTimeInPr)) {
 			prLeadTime = 0;
 		}
 		else {
-			prLeadTime = prMergedTime - firstCommitTimeInPr;
+			WorkInfo workInfo = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime);
+			prLeadTime = workInfo.getWorkTime();
+			holidays = workInfo.getHolidays();
+		}
+		if (prLeadTime < 0) {
+			log.error(
+					"calculate work time error, because the work time is negative, request start time: {},"
+							+ " request end time: {}, first commit time in pr: {}, pr merged time: {}, author: {},"
+							+ " pull request url: {}",
+					request.getStartTime(), request.getEndTime(), firstCommitTimeInPr, prMergedTime,
+					commitInfo.getCommit().getAuthor(), pullRequestInfo.getUrl());
+			prLeadTime = 0;
 		}
 		totalTime = prLeadTime + pipelineLeadTime;
 
@@ -280,6 +300,7 @@ public class GitHubService {
 			.firstCommitTime(prMergedTime)
 			.pipelineCreateTime(pipelineCreateTime)
 			.isRevert(isRevert)
+			.holidays(holidays)
 			.build();
 	}
 

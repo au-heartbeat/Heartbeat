@@ -12,6 +12,7 @@ import {
   getJiraBoardToken,
   getRealDoneStatus,
   getSortedAndDeduplicationBoardingMapping,
+  percentageFormatter,
   sortDateRanges,
   sortDisabledOptions,
   transformToCleanedBuildKiteEmoji,
@@ -701,4 +702,22 @@ describe('calculateTrendInfo function', () => {
       expect(result.type).toEqual(type);
     },
   );
+});
+
+describe('percentageFormatter function', () => {
+  it('should return the correct data format with percentage symbol', () => {
+    const inputData = 66.66;
+
+    const result = percentageFormatter()(inputData);
+
+    expect(result).toEqual('66.66%');
+  });
+
+  it('should return the correct data format without percentage symbol', () => {
+    const inputData = 66.66;
+
+    const result = percentageFormatter(false)(inputData);
+
+    expect(result).toEqual('66.66');
+  });
 });

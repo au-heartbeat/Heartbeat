@@ -45,4 +45,6 @@ public class LeadTime {
 
 	private long totalTime;
 
+	private long holidays;
+
 }

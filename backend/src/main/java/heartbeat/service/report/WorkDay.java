@@ -2,6 +2,8 @@ package heartbeat.service.report;
 
 import heartbeat.client.HolidayFeignClient;
 import heartbeat.client.dto.board.jira.HolidayDTO;
+import heartbeat.service.report.model.WorkInfo;
+import heartbeat.config.DayType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -9,12 +11,15 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 @Log4j2
 @Component
@@ -48,25 +53,65 @@ public class WorkDay {
 		}
 	}
 
+	public boolean verifyIfThisDayHoliday(LocalDate localDate) {
+		String localDateString = localDate.toString();
+		if (holidayMap.containsKey(localDateString)) {
+			return holidayMap.get(localDateString);
+		}
+		return localDate.getDayOfWeek() == DayOfWeek.SATURDAY || localDate.getDayOfWeek() == DayOfWeek.SUNDAY;
+	}
+
 	public boolean verifyIfThisDayHoliday(long time) {
 		String dateString = convertTimeToDateString(time);
 		if (holidayMap.containsKey(dateString)) {
 			return holidayMap.get(dateString);
 		}
-		LocalDate date = LocalDate.ofEpochDay(time / ONE_DAY);
+		LocalDate date = LocalDate.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
 		return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
 	}
 
-	public int calculateWorkDaysBetween(long startTime, long endTime) {
-		long startDate = LocalDate.ofEpochDay(startTime / ONE_DAY).toEpochDay() * ONE_DAY;
-		long endDate = LocalDate.ofEpochDay(endTime / ONE_DAY).toEpochDay() * ONE_DAY;
-		int days = 0;
-		for (long tempDate = startDate; tempDate <= endDate; tempDate += ONE_DAY) {
-			if (!verifyIfThisDayHoliday(tempDate)) {
-				days++;
+	public long calculateWorkDaysBetween(long startTime, long endTime) {
+		return calculateWorkTimeAndHolidayBetween(startTime, endTime, false).getWorkDays();
+	}
+
+	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime) {
+		return calculateWorkTimeAndHolidayBetween(startTime, endTime, true);
+	}
+
+	private WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, boolean holidayCanWork) {
+		long result = endTime - startTime;
+
+		LocalDate startLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
+		LocalDate endLocalDateTime = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
+
+		List<DayType> holidayTypeList = new ArrayList<>();
+
+		while (!endLocalDateTime.isBefore(startLocalDateTime)) {
+			if (verifyIfThisDayHoliday(startLocalDateTime)) {
+				holidayTypeList.add(DayType.NON_WORK_DAY);
+			}
+			else {
+				holidayTypeList.add(DayType.WORK_DAY);
+			}
+			startLocalDateTime = startLocalDateTime.plusDays(1);
+		}
+
+		long totalDays = holidayTypeList.size();
+
+		if (holidayCanWork) {
+			for (int i = 0; i < holidayTypeList.size() && holidayTypeList.get(i) == DayType.NON_WORK_DAY; i++) {
+				holidayTypeList.set(i, DayType.WORK_DAY);
+			}
+
+			for (int i = holidayTypeList.size() - 1; i > 0 && holidayTypeList.get(i) == DayType.NON_WORK_DAY; i--) {
+				holidayTypeList.set(i, DayType.WORK_DAY);
 			}
 		}
-		return days;
+
+		long holidayNums = holidayTypeList.stream().filter(it -> it.equals(DayType.NON_WORK_DAY)).count();
+		result = result - holidayNums * ONE_DAY;
+
+		return WorkInfo.builder().holidays(holidayNums).totalDays(totalDays).workTime(result).build();
 	}
 
 	public double calculateWorkDaysBy24Hours(long startTime, long endTime) {
@@ -79,7 +124,7 @@ public class WorkDay {
 	}
 
 	private static String convertTimeToDateString(long time) {
-		LocalDate date = LocalDate.ofEpochDay(time / ONE_DAY);
+		LocalDate date = LocalDate.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
 		return date.format(DATE_FORMATTER);
 	}
 
