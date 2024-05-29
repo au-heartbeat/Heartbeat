@@ -43,18 +43,16 @@ const ChartAndTitleWrapper = forwardRef(
         return INCREASE;
       } else if (trendInfo.trendNumber < 0) {
         return DECREASE;
+      } else if (UP_TREND_IS_BETTER.includes(trendInfo.type)){
+        return INCREASE;
       } else {
-        if (UP_TREND_IS_BETTER.includes(trendInfo.type)) {
-          return INCREASE;
-        } else {
-          return DECREASE;
-        }
+        return DECREASE;
       }
     };
     const tipContent = (
       <StyledToolTipContent>
         <p>{`The rate of ${trendDescribe()} for ${CHART_TREND_TIP[trendInfo.type]}: `}</p>
-        {trendInfo.dateRangeList?.map((dateRange, index) => <p key={index}>{dateRange}</p>)}
+        {trendInfo.dateRangeList?.map((dateRange) => <p key={dateRange}>{dateRange}</p>)}
       </StyledToolTipContent>
     );
 

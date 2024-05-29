@@ -219,7 +219,7 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
 export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: CHART_TYPE) => {
   const result: ITrendInfo = {
     trendNumber: trendNumber,
-    dateRangeList: dateRangeList as string[],
+    dateRangeList: dateRangeList,
     type,
   } as ITrendInfo;
 
@@ -254,7 +254,7 @@ export const calculateTrendInfo = (
   const beforeLatestValidIndex = dataList.findLastIndex((data, index) => data && index !== latestValidIndex);
 
   const trendNumber =
-    (dataList[latestValidIndex]! - dataList[beforeLatestValidIndex]!) / dataList[beforeLatestValidIndex]!;
+    (dataList[latestValidIndex] - dataList[beforeLatestValidIndex]) / dataList[beforeLatestValidIndex];
   const validDateRangeList: string[] = [];
   validDateRangeList.push(dateRangeList[latestValidIndex], dateRangeList[beforeLatestValidIndex]);
 

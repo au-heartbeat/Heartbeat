@@ -33,7 +33,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     .slice(0, 2);
   const extractedValues = mappedData?.map((data) =>
     data.leadTimeForChangesList?.[0].valuesList.map((item) => {
-      return Number(item.value!);
+      return Number(item.value);
     }),
   );
   const prLeadTimeValues = extractedValues?.map((value) => value![0]);
