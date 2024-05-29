@@ -2,11 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
 import {
+  CHART_TYPE,
+  EMPTY_DATA_MAPPER_DORA_CHART,
+  LEAD_TIME_CHARTS_MAPPING,
+  REQUIRED_DATA,
+} from '@src/constants/resources';
+import {
   oneLineOptionMapper,
   Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
-import { CHART_TYPE, EMPTY_DATA_MAPPER_DORA_CHART, LEAD_TIME_CHARTS_MAPPING, REQUIRED_DATA } from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
