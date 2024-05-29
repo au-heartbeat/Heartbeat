@@ -1,5 +1,5 @@
-import ChartAndTitleWrapper from '../../../src/containers/ReportStep/ChartAndTitleWrapper';
-import { CHART_TYPE, TREND_ICON } from '../../../src/constants/resources';
+import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { CHART_TYPE, TREND_ICON } from '@src/constants/resources';
 import { render, screen } from '@testing-library/react';
 
 describe('ChartAndTitleWrapper', () => {
