@@ -1,4 +1,3 @@
-import adjustBrowserTimezone from '../../utils/set-chrome-default-timezone';
 import { chartStepData } from '../../fixtures/import-file/chart-step-data';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from '../../utils/clear-temp-dir';
@@ -6,7 +5,6 @@ import { format } from '../../utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
-  await adjustBrowserTimezone();
 });
 
 test('Charting unhappy path on config and metri page', async ({ homePage, configStep, metricsStep }) => {

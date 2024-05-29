@@ -4,7 +4,6 @@ import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cy
 import { BOARD_METRICS_RESULT, DORA_METRICS_RESULT } from '../../fixtures/create-new/report-result';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
 import { config as configStepData } from '../../fixtures/create-new/config-step';
-import adjustBrowserTimezone from '../../utils/set-chrome-default-timezone';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
@@ -12,7 +11,6 @@ import { format } from 'e2e/utils/date-time';
 
 test.beforeAll(async () => {
   await clearTempDir();
-  await adjustBrowserTimezone();
 });
 
 test('Create a new project', async ({ homePage, configStep, metricsStep, reportStep }) => {

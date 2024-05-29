@@ -8,14 +8,12 @@ import { calculateWithHolidayConfigFile } from '../../fixtures/import-file/calcu
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
-import adjustBrowserTimezone from '../../utils/set-chrome-default-timezone';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
 
 test.beforeAll(async () => {
   await clearTempDir();
-  await adjustBrowserTimezone();
 });
 
 test('Import project from file', async ({ homePage, configStep, metricsStep, reportStep }) => {
