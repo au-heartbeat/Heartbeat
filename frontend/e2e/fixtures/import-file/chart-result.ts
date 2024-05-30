@@ -12,7 +12,7 @@ export const BOARD_CHART_VALUE = {
   'Cycle Time Allocation': {
     type: 'trend up',
     color: 'green',
-    value: '355.89%',
+    value: '1.93%',
   },
   Rework: {
     type: 'trend up',
@@ -25,21 +25,21 @@ export const DORA_CHART_VALUE = {
   'Lead Time For Changes': {
     type: 'trend down',
     color: 'green',
-    value: '-40.28%',
+    value: '40.28%',
   },
   'Deployment Frequency': {
     type: 'trend down',
     color: 'red',
-    value: '-6.67%',
+    value: '6.67%',
   },
   'Dev Change Failure Rate': {
     type: 'trend down',
     color: 'green',
-    value: '-59.99%',
+    value: '59.99%',
   },
   'Dev Mean Time To Recovery': {
     type: 'trend down',
     color: 'green',
-    value: '-22.19%',
+    value: '22.19%',
   },
 };
