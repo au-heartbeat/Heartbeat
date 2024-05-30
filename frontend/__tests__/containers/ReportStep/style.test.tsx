@@ -35,4 +35,14 @@ describe('ChartAndTitleWrapper styled component', () => {
     console.log(screen.getByLabelText('test component 1'));
     expect(screen.getByLabelText('test component 1').children[0]).toHaveStyle({ color: 'red' });
   });
+
+  it('should render the TrendTypeIcon with the reverse style', () => {
+    render(
+      <TrendTypeIcon aria-label='test component 2' color='red' reverse>
+        <ThumbUpIcon />
+      </TrendTypeIcon>,
+    );
+    console.log(screen.getByLabelText('test component 2'));
+    expect(screen.getByLabelText('test component 2').children[0]).toHaveStyle({ transform: 'scaleY(-1)' });
+  });
 });

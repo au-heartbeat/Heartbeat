@@ -122,8 +122,8 @@ export const theme = createTheme({
   },
   main: {
     chartTrend: {
-      betterColor: 'green',
-      worseColor: 'red',
+      betterColor: '#02C4A8',
+      worseColor: '#E82107',
     },
     doraChart: {
       barColorA: '#003D4F',

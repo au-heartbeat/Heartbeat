@@ -1,7 +1,6 @@
 import {
   ChartTitle,
   StyledTooltipContent,
-  StyledTooltipWrapper,
   TrendContainer,
   TrendIcon,
   TrendTypeIcon,
@@ -10,7 +9,6 @@ import { CHART_TREND_TIP, CHART_TYPE, TREND_ICON, TREND_TYPE, UP_TREND_IS_BETTER
 import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
 import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
 import { ChartWrapper } from '@src/containers/MetricsStep/style';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import { convertNumberToPercent } from '@src/utils/util';
 import React, { ForwardedRef, forwardRef } from 'react';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -28,11 +26,6 @@ export interface ITrendInfo {
 const TREND_ICON_MAPPING = {
   [TREND_ICON.UP]: <TrendingUpSharpIcon aria-label={'trend up'} />,
   [TREND_ICON.DOWN]: <TrendingDownSharpIcon aria-label={'trend down'} />,
-};
-
-const TREND_TYPE_ICON_MAPPING = {
-  [TREND_TYPE.BETTER]: <ThumbUpIcon />,
-  [TREND_TYPE.WORSE]: <ThumbDownIcon />,
 };
 
 const TREND_COLOR_MAP = {
@@ -65,15 +58,13 @@ const ChartAndTitleWrapper = forwardRef(
       }
     };
     const tipContent = (
-      <StyledTooltipWrapper>
-        <TrendTypeIcon color={TREND_COLOR_MAP[trendInfo.trendType!]}>
-          {TREND_TYPE_ICON_MAPPING[trendInfo.trendType!]}
+      <StyledTooltipContent>
+        <p>{`The rate of ${trendDescribe()} for ${CHART_TREND_TIP[trendInfo.type]}: `}</p>
+        {trendInfo.dateRangeList?.map((dateRange) => <p key={dateRange}>{dateRange}</p>)}
+        <TrendTypeIcon color={TREND_COLOR_MAP[trendInfo.trendType!]} reverse={trendInfo.trendType === TREND_TYPE.WORSE}>
+          <ThumbUpIcon />
         </TrendTypeIcon>
-        <StyledTooltipContent>
-          <p>{`The rate of ${trendDescribe()} for ${CHART_TREND_TIP[trendInfo.type]}: `}</p>
-          {trendInfo.dateRangeList?.map((dateRange) => <p key={dateRange}>{dateRange}</p>)}
-        </StyledTooltipContent>
-      </StyledTooltipWrapper>
+      </StyledTooltipContent>
     );
 
     return (

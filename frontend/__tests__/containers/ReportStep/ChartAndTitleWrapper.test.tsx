@@ -1,6 +1,7 @@
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { CHART_TYPE, TREND_ICON, TREND_TYPE } from '@src/constants/resources';
 import { render, screen } from '@testing-library/react';
+import { theme } from '@src/theme';
 
 describe('ChartAndTitleWrapper', () => {
   it('should render green up icon given icon is set to up and better', () => {
@@ -14,7 +15,7 @@ describe('ChartAndTitleWrapper', () => {
     const icon = screen.getByTestId('TrendingUpSharpIcon');
 
     expect(icon).toBeInTheDocument();
-    expect(icon.parentElement?.parentElement).toHaveStyle({ color: 'green' });
+    expect(icon.parentElement?.parentElement).toHaveStyle({ color: theme.main.chartTrend.betterColor });
   });
 
   it('should render down icon given icon is set to down and worse', () => {
@@ -28,7 +29,7 @@ describe('ChartAndTitleWrapper', () => {
     const icon = screen.getByTestId('TrendingDownSharpIcon');
 
     expect(screen.getByTestId('TrendingDownSharpIcon')).toBeInTheDocument();
-    expect(icon.parentElement?.parentElement).toHaveStyle({ color: 'red' });
+    expect(icon.parentElement?.parentElement).toHaveStyle({ color: theme.main.chartTrend.worseColor });
   });
 
   it('should show positive trend number even if the tend number is negative', () => {

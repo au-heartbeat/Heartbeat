@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles';
-
 export const ChartTitle = styled('div')({
   display: 'flex',
   alignItems: 'center',
@@ -31,20 +30,20 @@ export const TrendContainer = styled('div')(({ color }: { color: string }) => ({
 }));
 
 export const StyledTooltipContent = styled('div')({
+  position: 'relative',
   fontSize: '0.85rem',
   display: 'flex',
   flexDirection: 'column',
   gap: '0.5rem',
 });
 
-export const StyledTooltipWrapper = styled('div')({
-  display: 'flex',
-});
-
-export const TrendTypeIcon = styled('div')(({ color }: { color: string }) => ({
+export const TrendTypeIcon = styled('div')(({ color, reverse }: { color: string; reverse?: boolean }) => ({
+  position: 'absolute',
+  right: '0',
+  bottom: '0',
   '& svg': {
     color: color,
-    fontSize: '1rem',
-    marginRight: '0.5rem',
+    fontSize: '1.125rem',
+    transform: reverse ? 'scaleY(-1)' : 'none',
   },
 }));
