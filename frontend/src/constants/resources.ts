@@ -101,6 +101,11 @@ export enum TREND_ICON {
   DOWN = 'DOWN',
 }
 
+export enum TREND_TYPE {
+  BETTER = 'BETTER',
+  WORSE = 'WORSE',
+}
+
 export const CHART_TREND_TIP = {
   [CHART_TYPE.VELOCITY]: 'Velocity(Story point)',
   [CHART_TYPE.AVERAGE_CYCLE_TIME]: 'Days/Story point',

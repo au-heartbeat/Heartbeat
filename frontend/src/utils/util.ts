@@ -5,6 +5,7 @@ import {
   DOWN_TREND_IS_BETTER,
   METRICS_CONSTANTS,
   TREND_ICON,
+  TREND_TYPE,
   UP_TREND_IS_BETTER,
 } from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
@@ -17,7 +18,6 @@ import { DateRangeList } from '@src/context/config/configSlice';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import duration from 'dayjs/plugin/duration';
-import { theme } from '@src/theme';
 import dayjs from 'dayjs';
 
 dayjs.extend(duration);
@@ -225,19 +225,19 @@ export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type:
 
   if (UP_TREND_IS_BETTER.includes(type)) {
     if (trendNumber >= 0) {
-      result.color = theme.main.chartTrend.betterColor;
       result.icon = TREND_ICON.UP;
+      result.trendType = TREND_TYPE.BETTER;
     } else {
-      result.color = theme.main.chartTrend.worseColor;
       result.icon = TREND_ICON.DOWN;
+      result.trendType = TREND_TYPE.WORSE;
     }
   } else if (DOWN_TREND_IS_BETTER.includes(type)) {
     if (trendNumber <= 0) {
-      result.color = theme.main.chartTrend.betterColor;
       result.icon = TREND_ICON.DOWN;
+      result.trendType = TREND_TYPE.BETTER;
     } else {
-      result.color = theme.main.chartTrend.worseColor;
       result.icon = TREND_ICON.UP;
+      result.trendType = TREND_TYPE.WORSE;
     }
   }
   return result;
@@ -262,7 +262,8 @@ export const calculateTrendInfo = (
 };
 
 export const convertNumberToPercent = (num: number): string => {
-  return (num * 100).toFixed(2) + '%';
+  const positiveNumber = num >= 0 ? num : -num;
+  return (positiveNumber * 100).toFixed(2) + '%';
 };
 
 export const percentageFormatter = (showPercentage = true) => {

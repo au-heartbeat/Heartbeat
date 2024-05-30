@@ -30,9 +30,21 @@ export const TrendContainer = styled('div')(({ color }: { color: string }) => ({
   fontSize: '1.125rem',
 }));
 
-export const StyledToolTipContent = styled('div')({
+export const StyledTooltipContent = styled('div')({
   fontSize: '0.85rem',
   display: 'flex',
   flexDirection: 'column',
   gap: '0.5rem',
 });
+
+export const StyledTooltipWrapper = styled('div')({
+  display: 'flex',
+});
+
+export const TrendTypeIcon = styled('div')(({ color }: { color: string }) => ({
+  '& svg': {
+    color: color,
+    fontSize: '1rem',
+    marginRight: '0.5rem',
+  },
+}));

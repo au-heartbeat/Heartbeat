@@ -1,13 +1,13 @@
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { CHART_TYPE, TREND_ICON } from '@src/constants/resources';
+import { CHART_TYPE, TREND_ICON, TREND_TYPE } from '@src/constants/resources';
 import { render, screen } from '@testing-library/react';
 
 describe('ChartAndTitleWrapper', () => {
-  it('should render green up icon when icon is set to up and green', () => {
+  it('should render green up icon when icon is set to up and better', () => {
     const testedTrendInfo = {
-      color: 'green',
+      trendType: TREND_TYPE.BETTER,
       icon: TREND_ICON.UP,
-      trendNumber: 83.72,
+      trendNumber: 0.83,
       type: CHART_TYPE.VELOCITY,
     };
     render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
@@ -17,11 +17,11 @@ describe('ChartAndTitleWrapper', () => {
     expect(icon.parentElement?.parentElement).toHaveStyle({ color: 'green' });
   });
 
-  it('should render down icon when icon is set to down', () => {
+  it('should render down icon when icon is set to worse', () => {
     const testedTrendInfo = {
-      color: 'red',
+      trendType: TREND_TYPE.WORSE,
       icon: TREND_ICON.DOWN,
-      trendNumber: -83.72,
+      trendNumber: -0.83,
       type: CHART_TYPE.VELOCITY,
     };
     render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
@@ -29,5 +29,17 @@ describe('ChartAndTitleWrapper', () => {
 
     expect(screen.getByTestId('TrendingDownSharpIcon')).toBeInTheDocument();
     expect(icon.parentElement?.parentElement).toHaveStyle({ color: 'red' });
+  });
+
+  it('should show positive trend number even if the tend number is negative', () => {
+    const testedTrendInfo = {
+      trendType: TREND_TYPE.WORSE,
+      icon: TREND_ICON.DOWN,
+      trendNumber: -0.8372,
+      type: CHART_TYPE.VELOCITY,
+    };
+    render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
+
+    expect(screen.getByLabelText('trend number')).toHaveTextContent('83.72%');
   });
 });
