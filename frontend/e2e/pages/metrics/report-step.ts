@@ -660,17 +660,20 @@ export class ReportStep {
     await expect(this.reworkChart).toBeVisible();
 
     await expect(this.velocityTrendContainer).toBeVisible();
-    await expect(this.velocityTrendContainer).toHaveCSS('color', BOARD_CHART_VALUE.Velocity.color);
+    await expect(this.velocityTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE.Velocity.color);
     await expect(this.velocityTrendIcon).toBeVisible();
     await expect(this.velocityTrendContainer).toContainText(BOARD_CHART_VALUE.Velocity.value);
 
     await expect(this.averageCycleTimeTrendContainer).toBeVisible();
-    await expect(this.averageCycleTimeTrendContainer).toHaveCSS('color', BOARD_CHART_VALUE['Average Cycle Time'].color);
+    await expect(this.averageCycleTimeTrendContainer).toHaveAttribute(
+      'color',
+      BOARD_CHART_VALUE['Average Cycle Time'].color,
+    );
     await expect(this.averageCycleTimeTrendIcon).toBeVisible();
     await expect(this.averageCycleTimeTrendContainer).toContainText(BOARD_CHART_VALUE['Average Cycle Time'].value);
 
     await expect(this.cycleTimeAllocationTrendContainer).toBeVisible();
-    await expect(this.cycleTimeAllocationTrendContainer).toHaveCSS(
+    await expect(this.cycleTimeAllocationTrendContainer).toHaveAttribute(
       'color',
       BOARD_CHART_VALUE['Cycle Time Allocation'].color,
     );
@@ -680,7 +683,7 @@ export class ReportStep {
     );
 
     await expect(this.reworkTrendContainer).toBeVisible();
-    await expect(this.reworkTrendContainer).toHaveCSS('color', BOARD_CHART_VALUE['Rework'].color);
+    await expect(this.reworkTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE['Rework'].color);
     await expect(this.reworkTrendIcon).toBeVisible();
     await expect(this.reworkTrendContainer).toContainText(BOARD_CHART_VALUE['Rework'].value);
   }
@@ -702,7 +705,7 @@ export class ReportStep {
     await expect(this.meanTimeToRecoveryChart).toBeVisible();
 
     await expect(this.leadTimeForChangesTrendContainer).toBeVisible();
-    await expect(this.leadTimeForChangesTrendContainer).toHaveCSS(
+    await expect(this.leadTimeForChangesTrendContainer).toHaveAttribute(
       'color',
       DORA_CHART_VALUE['Lead Time For Changes'].color,
     );
@@ -710,7 +713,7 @@ export class ReportStep {
     await expect(this.leadTimeForChangesTrendContainer).toContainText(DORA_CHART_VALUE['Lead Time For Changes'].value);
 
     await expect(this.deploymentFrequencyTrendContainer).toBeVisible();
-    await expect(this.deploymentFrequencyTrendContainer).toHaveCSS(
+    await expect(this.deploymentFrequencyTrendContainer).toHaveAttribute(
       'color',
       DORA_CHART_VALUE['Deployment Frequency'].color,
     );
@@ -718,7 +721,7 @@ export class ReportStep {
     await expect(this.deploymentFrequencyTrendContainer).toContainText(DORA_CHART_VALUE['Deployment Frequency'].value);
 
     await expect(this.devChangeFailureRateTrendContainer).toBeVisible();
-    await expect(this.devChangeFailureRateTrendContainer).toHaveCSS(
+    await expect(this.devChangeFailureRateTrendContainer).toHaveAttribute(
       'color',
       DORA_CHART_VALUE['Dev Change Failure Rate'].color,
     );
@@ -728,7 +731,7 @@ export class ReportStep {
     );
 
     await expect(this.devMeanTimeToRecoveryTrendContainer).toBeVisible();
-    await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveCSS(
+    await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveAttribute(
       'color',
       DORA_CHART_VALUE['Dev Mean Time To Recovery'].color,
     );
