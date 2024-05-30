@@ -3,7 +3,7 @@ import { CHART_TYPE, TREND_ICON, TREND_TYPE } from '@src/constants/resources';
 import { render, screen } from '@testing-library/react';
 
 describe('ChartAndTitleWrapper', () => {
-  it('should render green up icon when icon is set to up and better', () => {
+  it('should render green up icon given icon is set to up and better', () => {
     const testedTrendInfo = {
       trendType: TREND_TYPE.BETTER,
       icon: TREND_ICON.UP,
@@ -17,7 +17,7 @@ describe('ChartAndTitleWrapper', () => {
     expect(icon.parentElement?.parentElement).toHaveStyle({ color: 'green' });
   });
 
-  it('should render down icon when icon is set to worse', () => {
+  it('should render down icon given icon is set to down and worse', () => {
     const testedTrendInfo = {
       trendType: TREND_TYPE.WORSE,
       icon: TREND_ICON.DOWN,
