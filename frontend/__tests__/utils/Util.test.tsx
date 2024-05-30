@@ -25,6 +25,7 @@ import {
   DOWN_TREND_IS_BETTER,
   METRICS_CONSTANTS,
   TREND_ICON,
+  TREND_TYPE,
   UP_TREND_IS_BETTER,
 } from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
@@ -639,7 +640,7 @@ describe('calculateTrendInfo function', () => {
 
     expect(result.dateRangeList).toEqual(undefined);
     expect(result.trendNumber).toEqual(undefined);
-    expect(result.color).toEqual(undefined);
+    expect(result.trendType).toEqual(undefined);
     expect(result.icon).toEqual(undefined);
     expect(result.type).toEqual(CHART_TYPE.VELOCITY);
   });
@@ -652,7 +653,7 @@ describe('calculateTrendInfo function', () => {
 
       expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
       expect(result.trendNumber).toEqual(2);
-      expect(result.color).toEqual('green');
+      expect(result.trendType).toEqual(TREND_TYPE.BETTER);
       expect(result.icon).toEqual(TREND_ICON.UP);
       expect(result.type).toEqual(type);
     },
@@ -667,7 +668,7 @@ describe('calculateTrendInfo function', () => {
 
       expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
       expect(Number(result.trendNumber?.toFixed(2))).toEqual(-0.67);
-      expect(result.color).toEqual('red');
+      expect(result.trendType).toEqual(TREND_TYPE.WORSE);
       expect(result.icon).toEqual(TREND_ICON.DOWN);
       expect(result.type).toEqual(type);
     },
@@ -682,7 +683,7 @@ describe('calculateTrendInfo function', () => {
 
       expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
       expect(Number(result.trendNumber?.toFixed(2))).toEqual(-0.67);
-      expect(result.color).toEqual('green');
+      expect(result.trendType).toEqual(TREND_TYPE.BETTER);
       expect(result.icon).toEqual(TREND_ICON.DOWN);
       expect(result.type).toEqual(type);
     },
@@ -697,7 +698,7 @@ describe('calculateTrendInfo function', () => {
 
       expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
       expect(result.trendNumber).toEqual(2);
-      expect(result.color).toEqual('red');
+      expect(result.trendType).toEqual(TREND_TYPE.WORSE);
       expect(result.icon).toEqual(TREND_ICON.UP);
       expect(result.type).toEqual(type);
     },
