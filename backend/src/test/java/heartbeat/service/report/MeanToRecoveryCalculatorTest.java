@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,13 +63,14 @@ class MeanToRecoveryCalculatorTest {
 		deployTimesList.add(deploy2);
 		deployTimesList.add(deploy3);
 
-		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
-			long firstParam = invocation.getArgument(0);
-			long secondParam = invocation.getArgument(1);
-			return WorkInfo.builder().workTime(secondParam - firstParam).build();
-		});
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 
@@ -110,13 +112,14 @@ class MeanToRecoveryCalculatorTest {
 		deployTimesList.add(deploy2);
 		deployTimesList.add(deploy3);
 
-		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
-			long firstParam = invocation.getArgument(0);
-			long secondParam = invocation.getArgument(1);
-			return WorkInfo.builder().workTime(secondParam - firstParam).build();
-		});
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 
@@ -160,13 +163,14 @@ class MeanToRecoveryCalculatorTest {
 		List<DeployTimes> deployTimesList = new ArrayList<>();
 		deployTimesList.add(deploy);
 
-		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
-			long firstParam = invocation.getArgument(0);
-			long secondParam = invocation.getArgument(1);
-			return WorkInfo.builder().workTime(secondParam - firstParam).build();
-		});
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
 
 		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 

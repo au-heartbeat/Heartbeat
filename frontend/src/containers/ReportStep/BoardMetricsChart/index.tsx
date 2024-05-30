@@ -2,8 +2,8 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
+import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS } from '@src/constants/resources';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING } from '@src/constants/resources';
 import { calculateTrendInfo, xAxisLabelDateFormatter } from '@src/utils/util';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
@@ -159,7 +159,11 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
     indicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
-  const trendInfo = calculateTrendInfo(totalCycleTime, dateRanges, CHART_TYPE.CYCLE_TIME_ALLOCATION);
+  const developmentPercentageList = indicators.find(
+    ({ name }) => name === CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue],
+  )?.data;
+  const trendInfo = calculateTrendInfo(developmentPercentageList, dateRanges, CHART_TYPE.CYCLE_TIME_ALLOCATION);
+
   return {
     xAxis: dateRanges,
     yAxis: {

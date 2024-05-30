@@ -12,10 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -66,15 +68,8 @@ class WorkDayTest {
 				HolidayDTO.builder().date("2023-01-01").name("元旦").isOffDay(true).build(),
 				HolidayDTO.builder().date("2023-01-28").name("春节").isOffDay(false).build());
 
-		long holidayTime = LocalDate.parse("2023-01-01", DateTimeFormatter.ISO_DATE)
-			.atStartOfDay(ZoneOffset.UTC)
-			.toInstant()
-			.toEpochMilli();
-
-		long workdayTime = LocalDate.parse("2023-01-28", DateTimeFormatter.ISO_DATE)
-			.atStartOfDay(ZoneOffset.UTC)
-			.toInstant()
-			.toEpochMilli();
+		LocalDate holidayTime = LocalDate.of(2023, 1, 1);
+		LocalDate workdayTime = LocalDate.of(2023, 1, 28);
 
 		when(holidayFeignClient.getHolidays(any()))
 			.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
@@ -90,15 +85,8 @@ class WorkDayTest {
 	@Test
 	void shouldReturnDayIsHolidayWithoutChineseHoliday() {
 
-		long holidayTime = LocalDate.parse("2023-01-01", DateTimeFormatter.ISO_DATE)
-			.atStartOfDay(ZoneOffset.UTC)
-			.toInstant()
-			.toEpochMilli();
-
-		long workdayTime = LocalDate.parse("2023-01-28", DateTimeFormatter.ISO_DATE)
-			.atStartOfDay(ZoneOffset.UTC)
-			.toInstant()
-			.toEpochMilli();
+		LocalDate holidayTime = LocalDate.of(2023, 1, 1);
+		LocalDate workdayTime = LocalDate.of(2023, 1, 28);
 
 		workDay.changeConsiderHolidayMode(false);
 		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
@@ -111,20 +99,73 @@ class WorkDayTest {
 	@Test
 	void shouldReturnRightWorkDaysWhenCalculateWorkDaysBetween() {
 
-		long result = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME(), WorkDayFixture.END_TIME());
+		long result = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME(), WorkDayFixture.END_TIME(),
+				ZoneId.of("Asia/Shanghai"));
 		long resultNewYear = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME_NEW_YEAR(),
-				WorkDayFixture.END_TIME_NEW_YEAR());
+				WorkDayFixture.END_TIME_NEW_YEAR(), ZoneId.of("Asia/Shanghai"));
 
 		Assertions.assertEquals(23, result);
 		Assertions.assertEquals(22, resultNewYear);
 	}
 
-	@Test
-	void shouldReturnRightWorkDaysWhenCalculateWorkDaysBy24Hours() {
+	@Nested
+	class CalculateWorkDaysToTwoScale {
 
-		double days = workDay.calculateWorkDaysBy24Hours(WorkDayFixture.START_TIME(), WorkDayFixture.END_TIME());
+		@Test
+		void shouldReturnRightWorkDaysWhenCalculateWorkDaysToTwoScaleAndStartIsWorkDayAndEndIsWorkDay() {
+			long startTime = LocalDateTime.of(2024, 3, 1, 1, 1, 1).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+			long endTime = LocalDateTime.of(2024, 3, 4, 2, 2, 2).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
 
-		Assertions.assertEquals(23, days);
+			double expectDays = (double) (ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000)
+					/ ONE_DAY_MILLISECONDS;
+			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
+
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+
+			Assertions.assertEquals(expectDays, days);
+		}
+
+		@Test
+		void shouldReturnRightWorkDaysWhenCalculateWorkDaysToTwoScaleAndStartIsWorkDayAndEndIsNonWorkDay() {
+			long startTime = LocalDateTime.of(2024, 3, 1, 1, 1, 1).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+			long endTime = LocalDateTime.of(2024, 3, 3, 2, 2, 2).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+
+			double expectDays = (double) (ONE_DAY_MILLISECONDS - ONE_HOUR_MILLISECONDS - ONE_MINUTE_MILLISECONDS - 1000)
+					/ ONE_DAY_MILLISECONDS;
+			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
+
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+
+			Assertions.assertEquals(expectDays, days);
+		}
+
+		@Test
+		void shouldReturnRightWorkDaysWhenCalculateWorkDaysToTwoScaleAndStartIsNonWorkDayAndEndIsWorkDay() {
+			long startTime = LocalDateTime.of(2024, 3, 2, 1, 1, 1).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+			long endTime = LocalDateTime.of(2024, 3, 4, 2, 2, 2).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+
+			double expectDays = (double) (2 * ONE_HOUR_MILLISECONDS + 2 * ONE_MINUTE_MILLISECONDS + 2 * 1000)
+					/ ONE_DAY_MILLISECONDS;
+			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
+
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+
+			Assertions.assertEquals(expectDays, days);
+		}
+
+		@Test
+		void shouldReturnRightWorkDaysWhenCalculateWorkDaysToTwoScaleAndStartIsNonWorkDayAndEndIsNonWorkDay() {
+			long startTime = LocalDateTime.of(2024, 3, 2, 1, 1, 1).toInstant(ZoneOffset.UTC).toEpochMilli();
+			long endTime = LocalDateTime.of(2024, 3, 3, 2, 2, 2).toInstant(ZoneOffset.UTC).toEpochMilli();
+
+			double expectDays = 0;
+			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
+
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+
+			Assertions.assertEquals(expectDays, days);
+		}
+
 	}
 
 	@Nested
@@ -132,14 +173,14 @@ class WorkDayTest {
 
 		@Test
 		void startIsWorkdayAndEndIsWorkday() {
-			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 15, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 15, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (15 - 11) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -149,14 +190,14 @@ class WorkDayTest {
 
 		@Test
 		void StartIsWorkdayAndEndIsWorkdayAndAcrossWeekend() {
-			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (29 - 11 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -172,8 +213,8 @@ class WorkDayTest {
 					HolidayDTO.builder().date("2024-04-06").name("清明").isOffDay(true).build(),
 					HolidayDTO.builder().date("2024-04-07").name("清明").isOffDay(false).build());
 
-			long startTime = LocalDateTime.of(2024, 4, 3, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 4, 7, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 4, 3, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 4, 7, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (7 - 3 - 3) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
@@ -183,7 +224,7 @@ class WorkDayTest {
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
 			workDay.changeConsiderHolidayMode(true);
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -193,14 +234,14 @@ class WorkDayTest {
 
 		@Test
 		void StartIsWorkdayAndEndIsSaturdayAndAcrossWeekend() {
-			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 30, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 30, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (30 - 11 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -210,14 +251,14 @@ class WorkDayTest {
 
 		@Test
 		void StartIsWorkdayAndEndIsSundayAndAcrossWeekend() {
-			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 31, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 11, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 31, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (31 - 11 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -227,14 +268,14 @@ class WorkDayTest {
 
 		@Test
 		void StartIsSaturdayAndEndIsWorkdayAndAcrossWeekend() {
-			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (29 - 9 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -244,13 +285,13 @@ class WorkDayTest {
 
 		@Test
 		void StartAndEndIsTheSameDayAndIsSaturday() {
-			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 9, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 9, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -260,14 +301,14 @@ class WorkDayTest {
 
 		@Test
 		void StartIsSaturdayAndEndIsSunday() {
-			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 10, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 9, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 10, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (10 - 9) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -277,14 +318,14 @@ class WorkDayTest {
 
 		@Test
 		void StartIsSundayAndEndIsWorkdayAndAcrossWeekend() {
-			long startTime = LocalDateTime.of(2024, 3, 10, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 3, 10, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 3, 29, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (29 - 10 - 4) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -301,8 +342,8 @@ class WorkDayTest {
 					HolidayDTO.builder().date("2024-05-04").name("五一").isOffDay(true).build(),
 					HolidayDTO.builder().date("2024-05-05").name("五一").isOffDay(true).build());
 
-			long startTime = LocalDateTime.of(2024, 5, 1, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 5, 6, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 5, 1, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 5, 6, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = (6 - 1) * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS
 					+ 1000;
@@ -312,7 +353,7 @@ class WorkDayTest {
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
 			workDay.changeConsiderHolidayMode(true);
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -329,8 +370,8 @@ class WorkDayTest {
 					HolidayDTO.builder().date("2024-05-04").name("五一").isOffDay(true).build(),
 					HolidayDTO.builder().date("2024-05-05").name("五一").isOffDay(true).build());
 
-			long startTime = LocalDateTime.of(2024, 4, 28, 1, 10, 11).toEpochSecond(ZoneOffset.UTC) * 1000;
-			long endTime = LocalDateTime.of(2024, 5, 3, 2, 11, 12).toEpochSecond(ZoneOffset.UTC) * 1000;
+			long startTime = LocalDateTime.of(2024, 4, 28, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
+			long endTime = LocalDateTime.of(2024, 5, 3, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 
 			long expectWorkTime = 5 * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
 			long expectHoliday = 0;
@@ -339,7 +380,7 @@ class WorkDayTest {
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
 			workDay.changeConsiderHolidayMode(true);
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime);
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 

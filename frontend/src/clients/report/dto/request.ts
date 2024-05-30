@@ -41,6 +41,7 @@ export interface IBasicReportRequestDTO {
   considerHoliday: boolean;
   startTime: string | null;
   endTime: string | null;
+  timezone: string;
   metrics: string[];
   jiraBoardSetting?: {
     token: string;

@@ -10,6 +10,7 @@
   "startTime": 1661702400000,
   "endTime": 1662739199000,
   "considerHoliday": true,
+  "timezone": "Asia/Shanghai",
   "buildKiteSetting": {
     "type": "BuildKite",
     "token": "0d6*********************************a57a",

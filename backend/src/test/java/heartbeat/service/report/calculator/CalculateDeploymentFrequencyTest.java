@@ -14,9 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,10 +52,10 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -67,10 +69,10 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(0L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(ZoneId.class))).thenReturn(0L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(START_TIME));
+				Long.parseLong(START_TIME), Long.parseLong(START_TIME), ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -82,10 +84,10 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -100,10 +102,10 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -114,10 +116,10 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(Collections.emptyList(),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -136,10 +138,10 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong())).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());

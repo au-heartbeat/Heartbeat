@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneId;
 import java.util.List;
 
 @Data
@@ -40,6 +41,9 @@ public class GenerateReportRequest {
 
 	@NotBlank
 	private String csvTimeStamp;
+
+	@NotBlank
+	private String timezone;
 
 	@JsonIgnore
 	public List<String> getPipelineMetrics() {
@@ -71,8 +75,9 @@ public class GenerateReportRequest {
 
 	@JsonIgnore
 	public String getTimeRangeAndTimeStamp() {
-		return TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.startTime)) + "-"
-				+ TimeUtil.convertToChinaSimpleISOFormat(Long.parseLong(this.endTime)) + "-" + this.csvTimeStamp;
+		return TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(this.startTime), this.getTimezoneByZoneId()) + "-"
+				+ TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(this.endTime), this.getTimezoneByZoneId()) + "-"
+				+ this.csvTimeStamp;
 
 	}
 
@@ -101,6 +106,7 @@ public class GenerateReportRequest {
 			.codebaseSetting(this.codebaseSetting)
 			.buildKiteSetting(this.buildKiteSetting)
 			.csvTimeStamp(this.csvTimeStamp)
+			.timezone(timezone)
 			.build();
 	}
 
@@ -114,7 +120,13 @@ public class GenerateReportRequest {
 			.codebaseSetting(this.codebaseSetting)
 			.buildKiteSetting(this.buildKiteSetting)
 			.csvTimeStamp(this.csvTimeStamp)
+			.timezone(timezone)
 			.build();
+	}
+
+	@JsonIgnore
+	public ZoneId getTimezoneByZoneId() {
+		return ZoneId.of(timezone);
 	}
 
 }

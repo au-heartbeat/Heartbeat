@@ -175,6 +175,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
@@ -220,6 +221,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
@@ -249,6 +251,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
@@ -278,6 +281,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
@@ -306,6 +310,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
@@ -342,6 +347,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().boardMetricsCompleted(true).build());
@@ -380,6 +386,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().build());
@@ -414,6 +421,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(kanbanService.fetchDataFromKanban(request)).thenThrow(new NotFoundException(""));
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
@@ -442,6 +450,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(kanbanService.fetchDataFromKanban(request)).thenReturn(FetchedData.CardCollectionInfo.builder()
 				.realDoneCardCollection(CardCollection.builder().reworkCardNumber(2).build())
@@ -477,6 +486,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
@@ -505,6 +515,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(true).build());
@@ -535,6 +546,7 @@ class GenerateReporterServiceTest {
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(true).build());
@@ -567,6 +579,7 @@ class GenerateReporterServiceTest {
 				.metrics(List.of("deployment frequency", "dev change failure rate", "dev mean time to recovery"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
@@ -579,7 +592,7 @@ class GenerateReporterServiceTest {
 			DeploymentFrequency fakeDeploymentFrequency = DeploymentFrequency.builder().build();
 			DevChangeFailureRate fakeDevChangeFailureRate = DevChangeFailureRate.builder().build();
 			DevMeanTimeToRecovery fakeMeantime = DevMeanTimeToRecovery.builder().build();
-			when(deploymentFrequency.calculate(any(), any(), any())).thenReturn(fakeDeploymentFrequency);
+			when(deploymentFrequency.calculate(any(), any(), any(), any())).thenReturn(fakeDeploymentFrequency);
 			when(devChangeFailureRate.calculate(any())).thenReturn(fakeDevChangeFailureRate);
 			when(meanToRecoveryCalculator.calculate(any(), any())).thenReturn(fakeMeantime);
 
@@ -612,6 +625,7 @@ class GenerateReporterServiceTest {
 				.metrics(List.of("dev change failure rate"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(true).build());
@@ -640,6 +654,7 @@ class GenerateReporterServiceTest {
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
@@ -678,6 +693,7 @@ class GenerateReporterServiceTest {
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
@@ -716,6 +732,7 @@ class GenerateReporterServiceTest {
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
+				.timezone("Asia/Shanghai")
 				.build();
 			when(asyncMetricsDataHandler.getMetricsDataCompleted(any()))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(true).build());

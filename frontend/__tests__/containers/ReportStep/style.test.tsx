@@ -1,5 +1,7 @@
+import { TrendTypeIcon } from '@src/containers/ReportStep/ChartAndTitleWrapper/style';
 import { StyledCalendarWrapper } from '@src/containers/ReportStep/style';
 import { render, screen } from '@testing-library/react';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 describe('Report step styled components', () => {
   it('should render the bottom margin depend on whether StyledCalendarWrapper in summary page', () => {
@@ -20,5 +22,17 @@ describe('Report step styled components', () => {
     const component2 = screen.getByLabelText('test component 2');
 
     expect(component2).toHaveStyle({ 'margin-bottom': '2rem' });
+  });
+});
+
+describe('ChartAndTitleWrapper styled component', () => {
+  it('should render the TrendTypeIcon with the given color', () => {
+    render(
+      <TrendTypeIcon aria-label='test component 1' color='red'>
+        <ThumbUpIcon />
+      </TrendTypeIcon>,
+    );
+    console.log(screen.getByLabelText('test component 1'));
+    expect(screen.getByLabelText('test component 1').children[0]).toHaveStyle({ color: 'red' });
   });
 });

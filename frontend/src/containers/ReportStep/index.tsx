@@ -259,6 +259,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const basicReportRequestBody = {
     startTime: null,
     endTime: null,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     considerHoliday: calendarType === CALENDAR.CHINA,
     csvTimeStamp,
     metrics,
