@@ -86,7 +86,8 @@ public class MeanToRecoveryCalculator {
 			long currentJobFinishTime = Instant.parse(job.getJobFinishTime()).toEpochMilli();
 			if ("passed".equals(job.getState()) && failedJobFinishedTime != 0) {
 				long timeToRecovery = workDay
-					.calculateWorkTimeAndHolidayBetween(failedJobFinishedTime, currentJobFinishTime)
+					.calculateWorkTimeAndHolidayBetween(failedJobFinishedTime, currentJobFinishTime,
+							request.getTimezoneByZoneId())
 					.getWorkTime();
 				if (timeToRecovery < 0) {
 					log.error(

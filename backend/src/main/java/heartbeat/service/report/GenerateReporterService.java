@@ -185,9 +185,9 @@ public class GenerateReporterService {
 
 		request.getPipelineMetrics().forEach(metric -> {
 			switch (metric) {
-				case "deployment frequency" -> reportResponse.setDeploymentFrequency(
-						deploymentFrequency.calculate(fetchedData.getBuildKiteData().getDeployTimesList(),
-								Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime())));
+				case "deployment frequency" -> reportResponse.setDeploymentFrequency(deploymentFrequency.calculate(
+						fetchedData.getBuildKiteData().getDeployTimesList(), Long.parseLong(request.getStartTime()),
+						Long.parseLong(request.getEndTime()), request.getTimezoneByZoneId()));
 				case "dev change failure rate" -> reportResponse.setDevChangeFailureRate(
 						devChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
 				case "dev mean time to recovery" -> reportResponse.setDevMeanTimeToRecovery(meanToRecoveryCalculator

@@ -182,6 +182,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
   startTime: '1613664000000',
   endTime: '1614873600000',
   considerHoliday: true,
+  timezone: 'Asia/Shanghai',
   buildKiteSetting: {
     token: 'mockToken',
     type: PIPELINE_TOOL_TYPES.BUILD_KITE,

@@ -30,6 +30,7 @@ import org.mockito.quality.Strictness;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -289,13 +290,14 @@ class GithubServiceTest {
 			.totalTime(180000)
 			.isRevert(Boolean.FALSE)
 			.build();
-		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
-			long firstParam = invocation.getArgument(0);
-			long secondParam = invocation.getArgument(1);
-			return WorkInfo.builder().workTime(secondParam - firstParam).build();
-		});
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
@@ -490,13 +492,14 @@ class GithubServiceTest {
 			.totalTime(120000)
 			.isRevert(Boolean.FALSE)
 			.build();
-		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
-			long firstParam = invocation.getArgument(0);
-			long secondParam = invocation.getArgument(1);
-			return WorkInfo.builder().workTime(secondParam - firstParam).build();
-		});
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
 
 		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
 
@@ -511,17 +514,18 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmpty() {
 		String mockToken = "mockToken";
-		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
-			long firstParam = invocation.getArgument(0);
-			long secondParam = invocation.getArgument(1);
-			return WorkInfo.builder().workTime(secondParam - firstParam).build();
-		});
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
 				request);
@@ -747,17 +751,18 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmptyAndCommitInfoError() {
 		String mockToken = "mockToken";
-		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
 			.thenThrow(new NotFoundException("Failed to get commit"));
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class))).thenAnswer(invocation -> {
-			long firstParam = invocation.getArgument(0);
-			long secondParam = invocation.getArgument(1);
-			return WorkInfo.builder().workTime(secondParam - firstParam).build();
-		});
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
 				request);
