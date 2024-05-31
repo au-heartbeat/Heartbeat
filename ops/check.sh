@@ -229,7 +229,7 @@ hex_check() {
   result=$(grep -rinE \
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
-    --exclude-dir='e2e/fixtures' \
+    --exclude='chart-result.ts' \
     --exclude='*.html' \
     --exclude='*.svg' \
     --exclude='*.xml' \
