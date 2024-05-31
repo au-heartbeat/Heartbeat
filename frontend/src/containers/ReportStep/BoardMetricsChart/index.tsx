@@ -211,8 +211,16 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
     ],
     series: [
       {
-        name: 'Rework cards ratrio',
+        name: 'Rework cards ratio',
         type: 'line',
+        tooltip: {
+          valueFormatter: function (value: number) {
+            if (isNaN(value)) {
+              return '-';
+            }
+            return value.toFixed(2) + ' %';
+          },
+        },
         data: reworkCardsRatio!,
         yAxisIndex: 1,
         setAreaStyle: false,

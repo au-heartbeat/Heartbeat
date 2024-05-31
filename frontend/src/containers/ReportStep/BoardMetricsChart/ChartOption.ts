@@ -22,6 +22,7 @@ export interface Series {
   smooth?: boolean;
   areaStyle?: unknown;
   yAxisIndex?: number;
+  tooltip?: object;
 }
 
 export interface XAxis {
@@ -125,7 +126,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
         yAxisIndex: item.yAxisIndex,
         smooth: item.smooth,
         areaStyle: item.areaStyle,
-        ...commonConfig.seriesConfig,
+        tooltip: item.tooltip,
       };
     }),
   };
