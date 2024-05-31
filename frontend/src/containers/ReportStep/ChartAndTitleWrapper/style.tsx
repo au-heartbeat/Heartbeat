@@ -27,6 +27,9 @@ export const TrendContainer = styled('div')(({ color }: { color: string }) => ({
   color: color,
   marginLeft: '0.5rem',
   fontSize: '1.125rem',
+  '&:hover': {
+    cursor: 'pointer',
+  },
 }));
 
 export const StyledTooltipContent = styled('div')({
