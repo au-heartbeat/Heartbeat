@@ -32,7 +32,6 @@ describe('ChartAndTitleWrapper styled component', () => {
         <ThumbUpIcon />
       </TrendTypeIcon>,
     );
-    console.log(screen.getByLabelText('test component 1'));
     expect(screen.getByLabelText('test component 1').children[0]).toHaveStyle({ color: 'red' });
   });
 
@@ -42,7 +41,6 @@ describe('ChartAndTitleWrapper styled component', () => {
         <ThumbUpIcon />
       </TrendTypeIcon>,
     );
-    console.log(screen.getByLabelText('test component 2'));
     expect(screen.getByLabelText('test component 2').children[0]).toHaveStyle({ transform: 'scaleY(-1)' });
   });
 });
