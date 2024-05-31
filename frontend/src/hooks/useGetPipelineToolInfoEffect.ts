@@ -48,7 +48,11 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
         dateRangeList.map((dateRange) => ({
           startDate: formatDateToTimestampString(dateRange.startDate!),
           errors: {
-            isPipelineInfoError: undefined,
+            pipelineInfo: {
+              isLoading: true,
+              isLoaded: false,
+              isLoadedWithError: false,
+            },
           },
         })),
       ),
@@ -66,7 +70,11 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
           dateRangeList.map((dateRange) => ({
             startDate: formatDateToTimestampString(dateRange.startDate!),
             errors: {
-              isPipelineInfoError: response.code !== HttpStatusCode.Ok,
+              pipelineInfo: {
+                isLoading: false,
+                isLoaded: true,
+                isLoadedWithError: response.code !== HttpStatusCode.Ok,
+              },
             },
           })),
         ),

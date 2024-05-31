@@ -205,14 +205,19 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   };
 
   const resetReportPageFailedTimeRangeInfos = (dateRangeList: DateRangeList) => {
+    const loadingStatus = {
+      isLoading: true,
+      isLoaded: false,
+      isLoadedWithError: false,
+    };
     const payload = dateRangeList.map(({ startDate }) => ({
       startDate: formatDateToTimestampString(startDate!),
       errors: {
-        isGainPollingUrlError: undefined,
-        isPollingError: undefined,
-        isBoardMetricsError: undefined,
-        isPipelineMetricsError: undefined,
-        isSourceControlMetricsError: undefined,
+        gainPollingUrl: { ...loadingStatus },
+        polling: { ...loadingStatus },
+        boardMetrics: { ...loadingStatus },
+        pipelineMetrics: { ...loadingStatus },
+        sourceControlMetrics: { ...loadingStatus },
       },
     }));
     dispatch(updateReportPageFailedTimeRangeInfos(payload));
@@ -249,11 +254,27 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
         updateReportPageFailedTimeRangeInfosPayload.push({
           startDate: formatDateToTimestampString(currentRes.id),
           errors: {
-            isPollingError: isRejected,
-            isBoardMetricsError: !isRejected && !!currentRes.value.response.reportMetricsError.boardMetricsError,
-            isSourceControlMetricsError:
-              !isRejected && !!currentRes.value.response.reportMetricsError.sourceControlMetricsError,
-            isPipelineMetricsError: !isRejected && !!currentRes.value.response.reportMetricsError.pipelineMetricsError,
+            polling: {
+              isLoading: false,
+              isLoaded: true,
+              isLoadedWithError: isRejected,
+            },
+            boardMetrics: {
+              isLoading: false,
+              isLoaded: true,
+              isLoadedWithError: !isRejected && !!currentRes.value.response.reportMetricsError.boardMetricsError,
+            },
+            pipelineMetrics: {
+              isLoading: false,
+              isLoaded: true,
+              isLoadedWithError: !isRejected && !!currentRes.value.response.reportMetricsError.pipelineMetricsError,
+            },
+            sourceControlMetrics: {
+              isLoading: false,
+              isLoaded: true,
+              isLoadedWithError:
+                !isRejected && !!currentRes.value.response.reportMetricsError.sourceControlMetricsError,
+            },
           },
         });
       }
@@ -266,7 +287,13 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     res.forEach((currentRes, index) => {
       updateReportPageFailedTimeRangeInfosPayload.push({
         startDate: formatDateToTimestampString(reportInfos[index].id),
-        errors: { isGainPollingUrlError: currentRes.status === REJECTED },
+        errors: {
+          gainPollingUrl: {
+            isLoading: false,
+            isLoaded: true,
+            isLoadedWithError: currentRes.status === REJECTED,
+          },
+        },
       });
     });
     dispatch(updateReportPageFailedTimeRangeInfos(updateReportPageFailedTimeRangeInfosPayload));

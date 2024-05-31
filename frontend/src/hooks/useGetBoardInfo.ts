@@ -125,7 +125,11 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           dateRangeCopy.map((dateRange) => ({
             startDate: formatDateToTimestampString(dateRange.startDate!),
             errors: {
-              isBoardInfoError: undefined,
+              boardInfo: {
+                isLoading: true,
+                isLoaded: false,
+                isLoadedWithError: false,
+              },
             },
           })),
         ),
@@ -154,9 +158,13 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
               dateRangeCopy.map((dateRange) => ({
                 startDate: formatDateToTimestampString(dateRange.startDate!),
                 errors: {
-                  isBoardInfoError: localFailedTimeRangeList.includes(
-                    formatDateToTimestampString(dateRange.startDate!),
-                  ),
+                  boardInfo: {
+                    isLoading: false,
+                    isLoaded: true,
+                    isLoadedWithError: localFailedTimeRangeList.includes(
+                      formatDateToTimestampString(dateRange.startDate!),
+                    ),
+                  },
                 },
               })),
             ),

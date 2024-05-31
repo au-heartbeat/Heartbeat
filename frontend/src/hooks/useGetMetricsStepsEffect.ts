@@ -48,7 +48,13 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
         params.map((param) => {
           return {
             startDate: param.startTime,
-            errors: { isPipelineStepError: undefined },
+            errors: {
+              pipelineStep: {
+                isLoading: true,
+                isLoaded: false,
+                isLoadedWithError: false,
+              },
+            },
           };
         }),
       ),
@@ -67,7 +73,13 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
         params.map((param, index) => {
           return {
             startDate: param.startTime,
-            errors: { isPipelineStepError: allStepsRes[index].status === REJECTED },
+            errors: {
+              pipelineStep: {
+                isLoading: false,
+                isLoaded: true,
+                isLoadedWithError: allStepsRes[index].status === REJECTED,
+              },
+            },
           };
         }),
       ),
