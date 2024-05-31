@@ -2,24 +2,24 @@ import { STEP_NUMBER } from '@src/constants/commons';
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '@src/store';
 
-interface LoadStatus {
+interface LoadingStatus {
   isLoading: boolean;
   isLoaded: boolean;
   isLoadedWithError: boolean;
 }
 
 export interface IMetricsPageFailedDateRange {
-  boardInfo?: LoadStatus;
-  pipelineInfo?: LoadStatus;
-  pipelineStep?: LoadStatus;
+  boardInfo?: LoadingStatus;
+  pipelineInfo?: LoadingStatus;
+  pipelineStep?: LoadingStatus;
 }
 
 export interface IReportPageFailedDateRange {
-  gainPollingUrl?: LoadStatus;
-  polling?: LoadStatus;
-  boardMetrics?: LoadStatus;
-  pipelineMetrics?: LoadStatus;
-  sourceControlMetrics?: LoadStatus;
+  gainPollingUrl?: LoadingStatus;
+  polling?: LoadingStatus;
+  boardMetrics?: LoadingStatus;
+  pipelineMetrics?: LoadingStatus;
+  sourceControlMetrics?: LoadingStatus;
 }
 
 export interface IPageFailedDateRangePayload<T> {

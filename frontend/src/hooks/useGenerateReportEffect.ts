@@ -125,6 +125,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
     const { pollingInfos, pollingInterval } = assemblePollingParams(res);
 
+    resetPollingLoadingStatusBeforePolling(pollingInfos.map((item) => item.id));
     await pollingReport({ pollingInfos, interval: pollingInterval });
   };
 
@@ -206,14 +207,14 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
   const resetReportPageFailedTimeRangeInfos = (dateRangeList: DateRangeList) => {
     const loadingStatus = {
-      isLoading: true,
+      isLoading: false,
       isLoaded: false,
       isLoadedWithError: false,
     };
     const payload = dateRangeList.map(({ startDate }) => ({
       startDate: formatDateToTimestampString(startDate!),
       errors: {
-        gainPollingUrl: { ...loadingStatus },
+        gainPollingUrl: { isLoading: false, isLoaded: false, isLoadedWithError: false },
         polling: { ...loadingStatus },
         boardMetrics: { ...loadingStatus },
         pipelineMetrics: { ...loadingStatus },
@@ -222,6 +223,24 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     }));
     dispatch(updateReportPageFailedTimeRangeInfos(payload));
   };
+
+  function resetPollingLoadingStatusBeforePolling(dates: string[]) {
+    const loadingStatus = {
+      isLoading: true,
+      isLoaded: false,
+      isLoadedWithError: false,
+    };
+    const payload = dates.map((date) => ({
+      startDate: formatDateToTimestampString(date),
+      errors: {
+        polling: { ...loadingStatus },
+        boardMetrics: { ...loadingStatus },
+        pipelineMetrics: { ...loadingStatus },
+        sourceControlMetrics: { ...loadingStatus },
+      },
+    }));
+    dispatch(updateReportPageFailedTimeRangeInfos(payload));
+  }
 
   const updateErrorAfterFetchReport = (
     res: PromiseSettledResult<ReportCallbackResponse>[],

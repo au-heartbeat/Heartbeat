@@ -97,7 +97,7 @@ const DateRangeViewer = ({
 
     return {
       isLoading: Object.values(errorInfo).some(({ isLoading }) => isLoading),
-      isFailed: Object.values(errorInfo).some(({ isLoadedWithError }) => isLoadedWithError),
+      isFailed: Object.values(errorInfo).some(({ isLoaded, isLoadedWithError }) => isLoaded && isLoadedWithError),
     };
   }
 
