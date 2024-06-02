@@ -1,4 +1,4 @@
-import { MOCK_VERSION_URL, VERIFY_ERROR_MESSAGE, VERSION_RESPONSE } from '../fixtures';
+import { MOCK_VERSION_URL, VerifyErrorMessage, VERSION_RESPONSE } from '../fixtures';
 import { headerClient } from '@src/clients/header/HeaderClient';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
@@ -35,7 +35,7 @@ describe('header client', () => {
       http.get(MOCK_VERSION_URL, () => {
         return new HttpResponse(
           JSON.stringify({
-            hintInfo: VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR,
+            hintInfo: VerifyErrorMessage.InternalServerError,
           }),
           {
             status: HttpStatusCode.InternalServerError,
@@ -46,6 +46,6 @@ describe('header client', () => {
 
     expect(async () => {
       await headerClient.getVersion();
-    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR);
+    }).rejects.toThrow(VerifyErrorMessage.InternalServerError);
   });
 });

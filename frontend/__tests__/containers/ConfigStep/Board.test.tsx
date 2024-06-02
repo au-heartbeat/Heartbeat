@@ -1,7 +1,7 @@
 import {
   BOARD_FIELDS,
   BOARD_TYPES,
-  CONFIG_TITLE,
+  ConfigTitle,
   ERROR_MESSAGE_COLOR,
   MOCK_BOARD_URL_FOR_JIRA,
   RESET,
@@ -82,7 +82,7 @@ describe('Board', () => {
     BOARD_FIELDS.map((field) => {
       expect(screen.getByLabelText(`${field} *`)).toBeInTheDocument();
     });
-    expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(ConfigTitle.Board)[0]).toBeInTheDocument();
   });
 
   it('should show default value jira when init board component', () => {
@@ -96,7 +96,7 @@ describe('Board', () => {
 
   it('should show detail options when click board field', async () => {
     setup();
-    await userEvent.click(screen.getByRole('combobox', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('combobox', { name: ConfigTitle.Board }));
     const listBox = within(screen.getByRole('listbox'));
     const options = listBox.getAllByRole('option');
     const optionValue = options.map((li) => li.getAttribute('data-value'));
@@ -106,7 +106,7 @@ describe('Board', () => {
 
   it('should show board type when select board field value ', async () => {
     setup();
-    await userEvent.click(screen.getByRole('combobox', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('combobox', { name: ConfigTitle.Board }));
 
     await waitFor(() => {
       expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();

@@ -1,4 +1,4 @@
-import { MOCK_EXPORT_CSV_REQUEST_PARAMS, MOCK_EXPORT_CSV_URL, VERIFY_ERROR_MESSAGE } from '../fixtures';
+import { MOCK_EXPORT_CSV_REQUEST_PARAMS, MOCK_EXPORT_CSV_URL, VerifyErrorMessage } from '../fixtures';
 import { csvClient } from '@src/clients/report/CSVClient';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -40,13 +40,13 @@ describe('verify export csv', () => {
       http.get(MOCK_EXPORT_CSV_URL, () => {
         return new HttpResponse(null, {
           status: HttpStatusCode.InternalServerError,
-          statusText: VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR,
+          statusText: VerifyErrorMessage.InternalServerError,
         });
       }),
     );
 
     await expect(async () => {
       await csvClient.exportCSVData(MOCK_EXPORT_CSV_REQUEST_PARAMS);
-    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR);
+    }).rejects.toThrow(VerifyErrorMessage.InternalServerError);
   });
 });

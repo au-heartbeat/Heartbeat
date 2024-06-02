@@ -6,7 +6,7 @@ import { PipelineMetricSelection } from '@src/containers/MetricsStep/DeploymentF
 import { IPipelineConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';
-import { PIPELINE_SETTING_TYPES } from '@test/fixtures';
+import { PipelineSettingTypes } from '@test/fixtures';
 
 const store = setupStore();
 let stepFailStatus = MetricsDataFailStatus.NotFailed;
@@ -47,7 +47,7 @@ describe('PipelineMetricSelection', () => {
     return render(
       <Provider store={store}>
         <PipelineMetricSelection
-          type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
+          type={PipelineSettingTypes.DeploymentFrequencySettingsType}
           pipelineSetting={deploymentFrequencySetting}
           isShowRemoveButton={isShowRemoveButton}
           onRemovePipeline={mockHandleClickRemoveButton}

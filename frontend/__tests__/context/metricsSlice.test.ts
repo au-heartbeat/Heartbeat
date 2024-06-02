@@ -42,7 +42,7 @@ import {
   CLASSIFICATION_WARNING_MESSAGE,
   DEFAULT_REWORK_SETTINGS,
   NO_RESULT_DASH,
-  PIPELINE_SETTING_TYPES,
+  PipelineSettingTypes,
 } from '../fixtures';
 import { ASSIGNEE_FILTER_TYPES, CYCLE_TIME_SETTINGS_TYPES, MESSAGE } from '@src/constants/resources';
 import { setupStore } from '../utils/setupStoreUtil';
@@ -935,7 +935,7 @@ describe('saveMetricsSetting reducer', () => {
         steps: mockSteps,
         pipelineCrews: ['crew1'],
         branches: [],
-        type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
+        type: PipelineSettingTypes.DeploymentFrequencySettingsType,
         expectedSettings: [
           {
             id: 0,
@@ -968,7 +968,7 @@ describe('saveMetricsSetting reducer', () => {
         steps: mockSteps,
         pipelineCrews: ['crew1'],
         branches: ['branch1'],
-        type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
+        type: PipelineSettingTypes.DeploymentFrequencySettingsType,
         expectedSettings: [
           {
             id: 0,
@@ -1001,7 +1001,7 @@ describe('saveMetricsSetting reducer', () => {
         steps: mockSteps,
         pipelineCrews: ['crew1'],
         branches: ['branch1'],
-        type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
+        type: PipelineSettingTypes.DeploymentFrequencySettingsType,
         expectedSettings: [
           {
             id: 0,
@@ -1039,7 +1039,7 @@ describe('saveMetricsSetting reducer', () => {
         steps: mockSteps,
         pipelineCrews: ['crew1'],
         branches: ['branch1'],
-        type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
+        type: PipelineSettingTypes.DeploymentFrequencySettingsType,
         expectedSettings: [
           {
             id: 0,
@@ -1522,14 +1522,14 @@ describe('saveMetricsSetting reducer', () => {
         updatePipelineStep({
           steps: mockSteps,
           id: 0,
-          type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
+          type: PipelineSettingTypes.DeploymentFrequencySettingsType,
         }),
       );
       await store.dispatch(
         updatePipelineStep({
           steps: mockSteps,
           id: 1,
-          type: PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE,
+          type: PipelineSettingTypes.DeploymentFrequencySettingsType,
         }),
       );
     });

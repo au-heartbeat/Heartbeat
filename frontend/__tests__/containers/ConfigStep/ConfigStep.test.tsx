@@ -1,7 +1,7 @@
 // TODO: refactor case, replace fireEvent use userEvent. @Kai Zhou
 import {
   CHINA_CALENDAR,
-  CONFIG_TITLE,
+  ConfigTitle,
   DEPLOYMENT_FREQUENCY,
   ERROR_MESSAGE_TIME_DURATION,
   FAKE_PIPELINE_TOKEN,
@@ -214,7 +214,7 @@ describe('ConfigStep', () => {
     setup();
 
     await waitFor(() => {
-      expect(screen.queryByText(CONFIG_TITLE.BOARD)).toBeNull();
+      expect(screen.queryByText(ConfigTitle.Board)).toBeNull();
     });
   });
 
@@ -232,7 +232,7 @@ describe('ConfigStep', () => {
     await userEvent.click(requireDateSelection.getByRole('option', { name: /cycle time/i }));
 
     await waitFor(() => {
-      expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(ConfigTitle.Board)[0]).toBeInTheDocument();
     });
   });
 
@@ -249,7 +249,7 @@ describe('ConfigStep', () => {
     await userEvent.click(requireDateSelection.getByRole('option', { name: 'Classification' }));
 
     await waitFor(() => {
-      expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(ConfigTitle.Board)[0]).toBeInTheDocument();
     });
   });
 

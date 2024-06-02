@@ -1,5 +1,5 @@
 import {
-  CONFIG_TITLE,
+  ConfigTitle,
   ERROR_MESSAGE_COLOR,
   MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT,
   MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL,
@@ -79,7 +79,7 @@ describe('SourceControl', () => {
   it('should show sourceControl title and fields when render sourceControl component', () => {
     setup();
 
-    expect(screen.getAllByText(CONFIG_TITLE.SOURCE_CONTROL)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(ConfigTitle.SourceControl)[0]).toBeInTheDocument();
     SOURCE_CONTROL_FIELDS.map((field) => {
       expect(screen.getByLabelText(`${field} *`)).toBeInTheDocument();
     });

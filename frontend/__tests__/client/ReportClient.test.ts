@@ -2,7 +2,7 @@ import {
   MOCK_GENERATE_REPORT_REQUEST_PARAMS,
   MOCK_REPORT_RESPONSE,
   MOCK_RETRIEVE_REPORT_RESPONSE,
-  VERIFY_ERROR_MESSAGE,
+  VerifyErrorMessage,
 } from '../fixtures';
 import { reportClient } from '@src/clients/report/ReportClient';
 import { HttpResponse, http } from 'msw';
@@ -48,7 +48,7 @@ describe('report client', () => {
       http.post(MOCK_REPORT_URL, () => {
         return new HttpResponse(
           JSON.stringify({
-            hintInfo: VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR,
+            hintInfo: VerifyErrorMessage.InternalServerError,
           }),
           {
             status: HttpStatusCode.InternalServerError,
@@ -59,7 +59,7 @@ describe('report client', () => {
 
     await expect(async () => {
       await reportClient.retrieveByUrl(MOCK_GENERATE_REPORT_REQUEST_PARAMS, '/reports');
-    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR);
+    }).rejects.toThrow(VerifyErrorMessage.InternalServerError);
   });
 
   it('should throw error when generate report response status 400', async () => {
@@ -67,7 +67,7 @@ describe('report client', () => {
       http.post(MOCK_REPORT_URL, () => {
         return new HttpResponse(
           JSON.stringify({
-            hintInfo: VERIFY_ERROR_MESSAGE.BAD_REQUEST,
+            hintInfo: VerifyErrorMessage.BadRequest,
           }),
           {
             status: HttpStatusCode.BadRequest,
@@ -78,7 +78,7 @@ describe('report client', () => {
 
     await expect(async () => {
       await reportClient.retrieveByUrl(MOCK_GENERATE_REPORT_REQUEST_PARAMS, '/reports');
-    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.BAD_REQUEST);
+    }).rejects.toThrow(VerifyErrorMessage.BadRequest);
   });
 
   it('should throw error when calling pollingReport given response status 500', () => {
@@ -86,7 +86,7 @@ describe('report client', () => {
       http.get(MOCK_REPORT_URL, () => {
         return new HttpResponse(
           JSON.stringify({
-            hintInfo: VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR,
+            hintInfo: VerifyErrorMessage.InternalServerError,
           }),
           {
             status: HttpStatusCode.InternalServerError,
@@ -97,7 +97,7 @@ describe('report client', () => {
 
     expect(async () => {
       await reportClient.polling(MOCK_REPORT_URL);
-    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR);
+    }).rejects.toThrow(VerifyErrorMessage.InternalServerError);
   });
 
   it('should return status and response when calling pollingReport given response status 201', async () => {

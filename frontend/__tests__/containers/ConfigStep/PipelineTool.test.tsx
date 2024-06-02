@@ -1,5 +1,5 @@
 import {
-  CONFIG_TITLE,
+  ConfigTitle,
   ERROR_MESSAGE_COLOR,
   PIPELINE_TOOL_FIELDS,
   PIPELINE_TOOL_TYPES,
@@ -76,7 +76,7 @@ describe('PipelineTool', () => {
       expect(screen.getByLabelText(`${field} *`)).toBeInTheDocument();
     });
 
-    expect(screen.getAllByText(CONFIG_TITLE.PIPELINE_TOOL)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(ConfigTitle.PipelineTool)[0]).toBeInTheDocument();
   });
 
   it('should show default value buildKite when init pipelineTool component', () => {
