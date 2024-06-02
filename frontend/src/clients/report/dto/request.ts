@@ -1,4 +1,4 @@
-import { METRIC_TYPES } from '@src/constants/commons';
+import { MetricTypes } from '@src/constants/commons';
 
 export interface ReportRequestDTO extends IBasicReportRequestDTO {
   buildKiteSetting?: {
@@ -59,7 +59,7 @@ export interface IBasicReportRequestDTO {
     doneColumn: string[];
   };
   csvTimeStamp?: number;
-  metricTypes: METRIC_TYPES[];
+  metricTypes: MetricTypes[];
 }
 
 export interface CSVReportRequestDTO {

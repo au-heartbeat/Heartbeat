@@ -4,7 +4,7 @@ import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { IStepsParams } from '@src/clients/MetricsClient';
-import { METRIC_TYPES } from '@src/constants/commons';
+import { MetricTypes } from '@src/constants/commons';
 
 export const PROJECT_NAME = 'Heartbeat';
 export const PROJECT_DESCRIPTION =
@@ -232,7 +232,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
       excludedStates: [],
     },
   },
-  metricTypes: [METRIC_TYPES.BOARD, METRIC_TYPES.DORA],
+  metricTypes: [MetricTypes.Board, MetricTypes.DORA],
 };
 
 export const IMPORTED_NEW_CONFIG_FIXTURE = {

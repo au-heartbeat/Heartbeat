@@ -1,7 +1,7 @@
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { metricsClient } from '@src/clients/MetricsClient';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -84,7 +84,7 @@ describe('use get steps effect', () => {
     await act(async () => {
       await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
     });
-    expect(result.current.stepFailedStatus).toEqual(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX);
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailed4xx);
   });
 
   it('should get the steps failed status when partial timeout response from steps res', async () => {
@@ -103,7 +103,7 @@ describe('use get steps effect', () => {
     await act(async () => {
       await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
     });
-    expect(result.current.stepFailedStatus).toEqual(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT);
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailedTimeout);
   });
 
   it('should set error message when get steps throw error', async () => {

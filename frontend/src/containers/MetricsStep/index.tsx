@@ -36,10 +36,10 @@ import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
-import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import { useCallback, useEffect, useLayoutEffect } from 'react';
 import EmptyContent from '@src/components/Common/EmptyContent';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
@@ -94,7 +94,7 @@ const MetricsStep = () => {
 
   useEffect(() => {
     const popup = () => {
-      if (boardInfoFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX) {
+      if (boardInfoFailedStatus === MetricsDataFailStatus.PartialFailed4xx) {
         dispatch(
           addNotification({
             type: 'warning',
@@ -102,8 +102,8 @@ const MetricsStep = () => {
           }),
         );
       } else if (
-        boardInfoFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS ||
-        boardInfoFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT
+        boardInfoFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
+        boardInfoFailedStatus === MetricsDataFailStatus.PartialFailedTimeout
       ) {
         dispatch(
           addNotification({
@@ -138,9 +138,9 @@ const MetricsStep = () => {
           <MetricsSelectionTitle aria-label='Board configuration title'>Board configuration </MetricsSelectionTitle>
 
           {isEmpty(errorMessage) ||
-          (boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_4XX &&
-            boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_TIMEOUT &&
-            boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_NO_CARDS) ? (
+          (boardInfoFailedStatus !== MetricsDataFailStatus.AllFailed4xx &&
+            boardInfoFailedStatus !== MetricsDataFailStatus.AllFailedTimeout &&
+            boardInfoFailedStatus !== MetricsDataFailStatus.AllFailedNoCards) ? (
             <>
               <Crews options={users} title={'Crew settings'} label={'Included Crews'} />
 

@@ -69,20 +69,20 @@ export const Z_INDEX = {
   FIXED: 1070,
 };
 
-export enum REPORT_TYPES {
-  METRICS = 'metric',
-  BOARD = 'board',
-  PIPELINE = 'pipeline',
+export enum ReportTypes {
+  Metrics = 'metric',
+  Board = 'board',
+  Pipeline = 'pipeline',
 }
 
 export enum formAlertTypes {
-  TIMEOUT,
-  BOARD_VERIFY,
+  Timeout,
+  BoardVerify,
 }
 
-export enum METRIC_TYPES {
-  ALL = 'ALL',
-  BOARD = 'BOARD',
+export enum MetricTypes {
+  All = 'ALL',
+  Board = 'BOARD',
   DORA = 'DORA',
 }
 
@@ -109,18 +109,18 @@ export const GRID_CONFIG = {
   FULL: { XS: 12, MAX_INDEX: 4, FLEX: 0.25 },
 };
 
-export enum METRICS_DATA_FAIL_STATUS {
-  NOT_FAILED,
-  PARTIAL_FAILED_4XX,
-  PARTIAL_FAILED_TIMEOUT,
-  PARTIAL_FAILED_NO_CARDS,
-  ALL_FAILED_4XX,
-  ALL_FAILED_TIMEOUT,
-  ALL_FAILED_NO_CARDS,
+export enum MetricsDataFailStatus {
+  NotFailed,
+  PartialFailed4xx,
+  PartialFailedTimeout,
+  PartialFailedNoCards,
+  AllFailed4xx,
+  AllFailedTimeout,
+  AllFailedNoCards,
 }
 
 export const DOWNLOAD_DIALOG_TITLE = {
-  [REPORT_TYPES.METRICS]: 'Metrics',
-  [REPORT_TYPES.BOARD]: 'Board',
-  [REPORT_TYPES.PIPELINE]: 'Pipeline',
+  [ReportTypes.Metrics]: 'Metrics',
+  [ReportTypes.Board]: 'Board',
+  [ReportTypes.Pipeline]: 'Pipeline',
 };

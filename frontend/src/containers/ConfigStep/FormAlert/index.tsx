@@ -14,8 +14,8 @@ interface PropsInterface {
 
 const FormAlertAriaLabelMap = (formAlertType: formAlertTypes): string => {
   const formAlertAriaLabelMap = {
-    [formAlertTypes.TIMEOUT]: 'timeout alert',
-    [formAlertTypes.BOARD_VERIFY]: 'board verify alert',
+    [formAlertTypes.Timeout]: 'timeout alert',
+    [formAlertTypes.BoardVerify]: 'board verify alert',
   };
 
   return formAlertAriaLabelMap[formAlertType];
@@ -23,13 +23,13 @@ const FormAlertAriaLabelMap = (formAlertType: formAlertTypes): string => {
 
 export const FormAlert = ({ showAlert, onClose, moduleType, formAlertType }: PropsInterface) => {
   const renderMessage = () => {
-    if (formAlertType === formAlertTypes.TIMEOUT) {
+    if (formAlertType === formAlertTypes.Timeout) {
       return (
         <EllipsisText fitContent>
           Submission timeout on <BoldText>{moduleType}</BoldText>, please reverify!
         </EllipsisText>
       );
-    } else if (formAlertType === formAlertTypes.BOARD_VERIFY) {
+    } else if (formAlertType === formAlertTypes.BoardVerify) {
       return (
         <EllipsisText fitContent>
           <BoldText>Email</BoldText> and <BoldText>Token</BoldText> are bound for verification. Please modify one of the

@@ -19,7 +19,7 @@ import { reportClient } from '@src/clients/report/ReportClient';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { UnknownError } from '@src/errors/UnknownError';
-import { METRIC_TYPES } from '@src/constants/commons';
+import { MetricTypes } from '@src/constants/commons';
 import React, { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { HttpStatusCode } from 'axios';
@@ -28,11 +28,11 @@ import resetAllMocks = jest.resetAllMocks;
 
 const MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE = {
   ...MOCK_GENERATE_REPORT_REQUEST_PARAMS,
-  metricTypes: [METRIC_TYPES.BOARD],
+  metricTypes: [MetricTypes.Board],
 };
 const MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE = {
   ...MOCK_GENERATE_REPORT_REQUEST_PARAMS,
-  metricTypes: [METRIC_TYPES.DORA],
+  metricTypes: [MetricTypes.DORA],
 };
 
 let store = setupStore();
@@ -148,10 +148,10 @@ describe('use generate report effect', () => {
     });
 
     expect(reportClient.polling).toHaveBeenCalledTimes(3);
-    expect(result.current.reportInfos[0][TimeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].message).toEqual(
+    expect(result.current.reportInfos[0][TimeoutErrorKey[MetricTypes.All] as keyof IReportError].message).toEqual(
       'Data loading failed',
     );
-    expect(result.current.reportInfos[0][TimeoutErrorKey[METRIC_TYPES.ALL] as keyof IReportError].shouldShow).toEqual(
+    expect(result.current.reportInfos[0][TimeoutErrorKey[MetricTypes.All] as keyof IReportError].shouldShow).toEqual(
       true,
     );
   });
@@ -177,15 +177,15 @@ describe('use generate report effect', () => {
   it.each([
     {
       params: MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE,
-      errorKey: GeneralErrorKey[METRIC_TYPES.BOARD],
+      errorKey: GeneralErrorKey[MetricTypes.Board],
     },
     {
       params: MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_DORA_METRIC_TYPE,
-      errorKey: GeneralErrorKey[METRIC_TYPES.DORA],
+      errorKey: GeneralErrorKey[MetricTypes.DORA],
     },
     {
       params: MOCK_GENERATE_REPORT_REQUEST_PARAMS,
-      errorKey: GeneralErrorKey[METRIC_TYPES.ALL],
+      errorKey: GeneralErrorKey[MetricTypes.All],
     },
   ])('should set "Data loading failed" for board metric when request given UnknownException', async (_) => {
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
@@ -265,7 +265,7 @@ describe('use generate report effect', () => {
     await act(async () => {
       await result.current.closeReportInfosErrorStatus(
         MockedDateRanges[0].startDate,
-        TimeoutErrorKey[METRIC_TYPES.DORA],
+        TimeoutErrorKey[MetricTypes.DORA],
       );
     });
     expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(false);

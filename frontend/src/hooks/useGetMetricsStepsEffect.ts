@@ -1,7 +1,7 @@
 import { updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { updateShouldRetryPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IStepsParams, IStepsRes, metricsClient } from '@src/clients/MetricsClient';
-import { METRICS_DATA_FAIL_STATUS, DURATION } from '@src/constants/commons';
+import { MetricsDataFailStatus, DURATION } from '@src/constants/commons';
 import { FULFILLED, MESSAGE, REJECTED } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -17,7 +17,7 @@ export interface useGetMetricsStepsEffectInterface {
   ) => Promise<IStepsRes | undefined>;
   isLoading: boolean;
   errorMessage: string;
-  stepFailedStatus: METRICS_DATA_FAIL_STATUS;
+  stepFailedStatus: MetricsDataFailStatus;
 }
 
 const TIMEOUT = 'timeout';
@@ -32,7 +32,7 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [stepFailedStatus, setStepFailedStatus] = useState(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
+  const [stepFailedStatus, setStepFailedStatus] = useState(MetricsDataFailStatus.NotFailed);
 
   const getSteps = async (
     params: IStepsParams[],
@@ -73,13 +73,13 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       ),
     );
     if (!hasRejected) {
-      setStepFailedStatus(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
+      setStepFailedStatus(MetricsDataFailStatus.NotFailed);
     } else if (hasRejected && hasFulfilled) {
       const rejectedStep = allStepsRes.find((stepInfo) => stepInfo.status === REJECTED);
       if ((rejectedStep as PromiseRejectedResult).reason.code == 400) {
-        setStepFailedStatus(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX);
+        setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
       } else {
-        setStepFailedStatus(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT);
+        setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);
       }
     }
     setIsLoading(false);

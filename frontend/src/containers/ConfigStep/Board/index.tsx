@@ -26,7 +26,7 @@ export const Board = () => {
     errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.verifyFailed;
   const isVerified = isValid && isSubmitSuccessful;
   const showAlert = alertVisible && (isVerifyTimeOut || isBoardVerifyFailed);
-  const formAlertType = isVerifyTimeOut ? formAlertTypes.TIMEOUT : formAlertTypes.BOARD_VERIFY;
+  const formAlertType = isVerifyTimeOut ? formAlertTypes.Timeout : formAlertTypes.BoardVerify;
   const onSubmit = async () => await verifyJira();
   const closeAlert = () => setAlertVisible(false);
 

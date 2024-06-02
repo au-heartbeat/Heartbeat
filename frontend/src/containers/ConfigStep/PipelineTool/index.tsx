@@ -41,7 +41,7 @@ export const PipelineTool = () => {
           showAlert={isVerifyTimeOut}
           onClose={closeTimeoutAlert}
           moduleType={'Pipeline Tool'}
-          formAlertType={formAlertTypes.TIMEOUT}
+          formAlertType={formAlertTypes.Timeout}
         />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>

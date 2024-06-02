@@ -41,7 +41,7 @@ export const SourceControl = () => {
           showAlert={isVerifyTimeOut}
           onClose={closeTimeoutAlert}
           moduleType={'Source Control'}
-          formAlertType={formAlertTypes.TIMEOUT}
+          formAlertType={formAlertTypes.Timeout}
         />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
