@@ -1,5 +1,5 @@
 import { ReportDataWithTwoColumns, ValueWithUnits } from '@src/hooks/reportMapper/reportUIDataStructure';
-import { CYCLE_TIME_METRICS_NAME, METRICS_CONSTANTS, ReportSuffixUnits } from '@src/constants/resources';
+import { CycleTimeMetricsName, METRICS_CONSTANTS, ReportSuffixUnits } from '@src/constants/resources';
 import { CycleTimeResponse, Swimlane } from '@src/clients/report/dto/response';
 
 export const cycleTimeMapper = ({
@@ -50,7 +50,7 @@ export const cycleTimeMapper = ({
     AVERAGE_TESTING_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
   };
 
-  Object.entries(CYCLE_TIME_METRICS_NAME).map(([key, cycleName]) => {
+  Object.entries(CycleTimeMetricsName).map(([key, cycleName]) => {
     if (cycleTimeValue[key].length > 0) {
       mappedCycleTimeValue.push({ id: mappedCycleTimeValue.length, name: cycleName, valueList: cycleTimeValue[key] });
     }

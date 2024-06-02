@@ -282,7 +282,7 @@ export enum VelocityMetricsName {
   ThroughputCardsCount = 'Throughput(Cards Count)',
 }
 
-export enum CYCLE_TIME_METRICS_NAME {
+export enum CycleTimeMetricsName {
   AVERAGE_CYCLE_TIME = 'Average cycle time',
   DEVELOPMENT_PROPORTION = 'Total development time / Total cycle time',
   WAITING_PROPORTION = 'Total waiting for testing time / Total cycle time',
