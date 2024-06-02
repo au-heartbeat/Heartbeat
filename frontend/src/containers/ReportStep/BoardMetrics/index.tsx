@@ -9,7 +9,7 @@ import {
 import {
   BOARD_METRICS,
   BOARD_METRICS_MAPPING,
-  METRICS_SUBTITLE,
+  MetricsSubtitle,
   MetricsTitle,
   REPORT_PAGE,
   RequiredData,
@@ -58,12 +58,12 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
             items: velocity && [
               {
                 value: velocity.velocityForSP,
-                subtitle: METRICS_SUBTITLE.VELOCITY,
+                subtitle: MetricsSubtitle.Velocity,
                 isToFixed: false,
               },
               {
                 value: velocity.velocityForCards,
-                subtitle: METRICS_SUBTITLE.THROUGHPUT,
+                subtitle: MetricsSubtitle.Throughput,
                 isToFixed: false,
               },
             ],
@@ -78,11 +78,11 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
             items: cycleTime && [
               {
                 value: cycleTime.averageCycleTimePerSP,
-                subtitle: METRICS_SUBTITLE.AVERAGE_CYCLE_TIME_PRE_SP,
+                subtitle: MetricsSubtitle.AverageCycleTimePerSP,
               },
               {
                 value: cycleTime.averageCycleTimePerCard,
-                subtitle: METRICS_SUBTITLE.AVERAGE_CYCLE_TIME_PRE_CARD,
+                subtitle: MetricsSubtitle.AverageCycleTimePerCard,
               },
             ],
           },
@@ -102,18 +102,18 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
             items: rework && [
               {
                 value: rework.totalReworkTimes,
-                subtitle: METRICS_SUBTITLE.TOTAL_REWORK_TIMES,
+                subtitle: MetricsSubtitle.TotalReworkTimes,
                 isToFixed: false,
               },
               {
                 value: rework.totalReworkCards,
-                subtitle: METRICS_SUBTITLE.TOTAL_REWORK_CARDS,
+                subtitle: MetricsSubtitle.TotalReworkCards,
                 isToFixed: false,
               },
               {
                 value: Number(rework.reworkCardsRatio) * 100,
                 extraValue: `% (${rework.totalReworkCards}/${rework.throughput})`,
-                subtitle: METRICS_SUBTITLE.REWORK_CARDS_RATIO,
+                subtitle: MetricsSubtitle.ReworkCardsRatio,
               },
             ],
           },

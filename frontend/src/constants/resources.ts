@@ -130,20 +130,20 @@ export const DOWN_TREND_IS_BETTER: ChartType[] = [
   ChartType.DevChangeFailureRate,
 ];
 
-export enum METRICS_SUBTITLE {
-  PR_LEAD_TIME = 'PR Lead Time(Hours)',
-  PIPELINE_LEAD_TIME = 'Pipeline Lead Time(Hours)',
-  TOTAL_DELAY_TIME = 'Total Lead Time(Hours)',
-  DEPLOYMENT_FREQUENCY = '(Deployments/Days)',
-  DEV_MEAN_TIME_TO_RECOVERY_HOURS = '(Hours)',
-  FAILURE_RATE = '',
-  AVERAGE_CYCLE_TIME_PRE_SP = 'Average Cycle Time(Days/SP)',
-  AVERAGE_CYCLE_TIME_PRE_CARD = 'Average Cycle Time(Days/Card)',
-  THROUGHPUT = 'Throughput(Cards Count)',
-  VELOCITY = 'Velocity(Story Point)',
-  TOTAL_REWORK_TIMES = 'Total rework times',
-  TOTAL_REWORK_CARDS = 'Total rework cards',
-  REWORK_CARDS_RATIO = 'Rework cards ratio',
+export enum MetricsSubtitle {
+  PRLeadTime = 'PR Lead Time(Hours)',
+  PipelineLeadTime = 'Pipeline Lead Time(Hours)',
+  TotalDelayTime = 'Total Lead Time(Hours)',
+  DeploymentFrequency = '(Deployments/Days)',
+  DevMeanTimeToRecoveryHours = '(Hours)',
+  FailureRate = '',
+  AverageCycleTimePerSP = 'Average Cycle Time(Days/SP)',
+  AverageCycleTimePerCard = 'Average Cycle Time(Days/Card)',
+  Throughput = 'Throughput(Cards Count)',
+  Velocity = 'Velocity(Story Point)',
+  TotalReworkTimes = 'Total rework times',
+  TotalReworkCards = 'Total rework cards',
+  ReworkCardsRatio = 'Rework cards ratio',
 }
 
 export const SOURCE_CONTROL_METRICS: string[] = [RequiredData.LeadTimeForChanges];

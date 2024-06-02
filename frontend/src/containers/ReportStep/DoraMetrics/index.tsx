@@ -1,6 +1,6 @@
 import {
   DORA_METRICS_MAPPING,
-  METRICS_SUBTITLE,
+  MetricsSubtitle,
   MetricsTitle,
   PIPELINE_METRICS,
   REPORT_PAGE,
@@ -49,15 +49,15 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
         items: leadTimeForChanges && [
           {
             value: formatMinToHours(leadTimeForChanges.avgLeadTimeForChanges.prLeadTime),
-            subtitle: METRICS_SUBTITLE.PR_LEAD_TIME,
+            subtitle: MetricsSubtitle.PRLeadTime,
           },
           {
             value: formatMinToHours(leadTimeForChanges.avgLeadTimeForChanges.pipelineLeadTime),
-            subtitle: METRICS_SUBTITLE.PIPELINE_LEAD_TIME,
+            subtitle: MetricsSubtitle.PipelineLeadTime,
           },
           {
             value: formatMinToHours(leadTimeForChanges.avgLeadTimeForChanges.totalDelayTime),
-            subtitle: METRICS_SUBTITLE.TOTAL_DELAY_TIME,
+            subtitle: MetricsSubtitle.TotalDelayTime,
           },
         ],
       },
@@ -76,7 +76,7 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
             items: deploymentFrequency && [
               {
                 value: deploymentFrequency?.avgDeploymentFrequency.deploymentFrequency,
-                subtitle: METRICS_SUBTITLE.DEPLOYMENT_FREQUENCY,
+                subtitle: MetricsSubtitle.DeploymentFrequency,
               },
             ],
           },
@@ -90,7 +90,7 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
             items: devMeanTimeToRecovery && [
               {
                 value: formatMillisecondsToHours(devMeanTimeToRecovery.avgDevMeanTimeToRecovery.timeToRecovery),
-                subtitle: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+                subtitle: MetricsSubtitle.DevMeanTimeToRecoveryHours,
               },
             ],
           },
@@ -105,7 +105,7 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
               {
                 value: devChangeFailureRate.avgDevChangeFailureRate.failureRate * 100,
                 extraValue: `% (${devChangeFailureRate.avgDevChangeFailureRate.totalFailedTimes}/${devChangeFailureRate.avgDevChangeFailureRate.totalTimes})`,
-                subtitle: METRICS_SUBTITLE.FAILURE_RATE,
+                subtitle: MetricsSubtitle.FailureRate,
               },
             ],
           },
