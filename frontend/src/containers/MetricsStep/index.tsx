@@ -21,13 +21,7 @@ import {
   StyledErrorMessage,
   StyledRetryButton,
 } from '@src/containers/MetricsStep/style';
-import {
-  AxiosRequestErrorCode,
-  CYCLE_TIME_SETTINGS_TYPES,
-  DONE,
-  MESSAGE,
-  RequiredData,
-} from '@src/constants/resources';
+import { AxiosRequestErrorCode, CycleTimeSettingsTypes, DONE, MESSAGE, RequiredData } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
@@ -67,7 +61,7 @@ const MetricsStep = () => {
     requiredData.includes(RequiredData.Classification) ||
     requiredData.includes(RequiredData.ReworkTimes);
   const isShowRealDone =
-    cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
+    cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage, boardInfoFailedStatus } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoaded);

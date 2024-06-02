@@ -21,7 +21,7 @@ import {
 } from '@src/utils/util';
 import {
   ChartType,
-  CYCLE_TIME_SETTINGS_TYPES,
+  CycleTimeSettingsTypes,
   DOWN_TREND_IS_BETTER,
   METRICS_CONSTANTS,
   TrendIcon,
@@ -224,19 +224,19 @@ const MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE = [
 
 describe('getRealDoneStatus', () => {
   it('should return selected done status given cycle time settings only one done value and type is by column', () => {
-    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_With_ONE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, []);
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_With_ONE_DONE, CycleTimeSettingsTypes.BY_COLUMN, []);
 
     expect(result).toEqual(['DONE']);
   });
 
   it('should return selected done status given cycle time settings only one done value and type is by status', () => {
-    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_With_ONE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, []);
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_With_ONE_DONE, CycleTimeSettingsTypes.BY_STATUS, []);
 
     expect(result).toEqual(['DONE']);
   });
 
   it('should return status from real done settings given cycle time settings type is by column', () => {
-    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, [
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE, CycleTimeSettingsTypes.BY_COLUMN, [
       'Doing',
     ]);
 
@@ -244,7 +244,7 @@ describe('getRealDoneStatus', () => {
   });
 
   it('should return selected done status given cycle time settings type is by column', () => {
-    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, [
+    const result = getRealDoneStatus(MOCK_CYCLE_TIME_SETTING_WITH_MUTIPLE_DONE, CycleTimeSettingsTypes.BY_STATUS, [
       'something',
     ]);
 
@@ -373,7 +373,7 @@ describe('convertCycleTimeSettings function', () => {
         DONE: '',
       },
     ];
-    const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, mockCycleTime);
+    const result = convertCycleTimeSettings(CycleTimeSettingsTypes.BY_STATUS, mockCycleTime);
     expect(result).toStrictEqual(expectResult);
   });
   it('convert cycle time settings correctly by column', () => {
@@ -400,7 +400,7 @@ describe('convertCycleTimeSettings function', () => {
         Done: '----',
       },
     ];
-    const result = convertCycleTimeSettings(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, mockCycleTime);
+    const result = convertCycleTimeSettings(CycleTimeSettingsTypes.BY_COLUMN, mockCycleTime);
     expect(result).toStrictEqual(expectResult);
   });
 });

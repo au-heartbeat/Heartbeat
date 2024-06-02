@@ -8,7 +8,7 @@ import { resetImportedData, updateBasicConfigState, updateProjectCreatedState } 
 import { GuideButton, HomeGuideContainer, ImportFileWrapper, StyledStack } from '@src/components/HomeGuide/style';
 import { convertToNewFileConfig, NewFileConfig, OldFileConfig } from '@src/constants/fileConfig';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
-import { CYCLE_TIME_SETTINGS_TYPES, MESSAGE } from '@src/constants/resources';
+import { CycleTimeSettingsTypes, MESSAGE } from '@src/constants/resources';
 import { resetStep } from '@src/context/stepper/StepperSlice';
 import { resetFormMeta } from '@src/context/meta/metaSlice';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
@@ -32,9 +32,9 @@ export const HomeGuide = () => {
   };
 
   const getCycleTimeSettingsType = (typeInConfig?: string) =>
-    (Object.values(CYCLE_TIME_SETTINGS_TYPES) as string[]).includes(typeInConfig || '')
+    (Object.values(CycleTimeSettingsTypes) as string[]).includes(typeInConfig || '')
       ? typeInConfig
-      : CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN;
+      : CycleTimeSettingsTypes.BY_COLUMN;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.files?.[0];

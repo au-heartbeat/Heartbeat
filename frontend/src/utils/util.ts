@@ -1,7 +1,7 @@
 import {
   ChartType,
   CYCLE_TIME_LIST,
-  CYCLE_TIME_SETTINGS_TYPES,
+  CycleTimeSettingsTypes,
   DOWN_TREND_IS_BETTER,
   METRICS_CONSTANTS,
   TrendIcon,
@@ -67,7 +67,7 @@ export const filterAndMapCycleTimeSettings = (cycleTimeSettings: ICycleTimeSetti
 
 export const getRealDoneStatus = (
   cycleTimeSettings: ICycleTimeSetting[],
-  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
+  cycleTimeSettingsType: CycleTimeSettingsTypes,
   realDoneStatus: string[],
 ) => {
   const selectedDoneStatus = cycleTimeSettings
@@ -76,7 +76,7 @@ export const getRealDoneStatus = (
   if (selectedDoneStatus.length <= 1) {
     return selectedDoneStatus;
   }
-  return cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+  return cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN
     ? realDoneStatus
     : cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).map(({ status }) => status);
 };
@@ -154,10 +154,10 @@ export const onlyEmptyAndDoneState = (boardingMappingStates: string[]) =>
   isEqual(boardingMappingStates, [METRICS_CONSTANTS.doneValue, METRICS_CONSTANTS.cycleTimeEmptyStr]);
 
 export const convertCycleTimeSettings = (
-  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
+  cycleTimeSettingsType: CycleTimeSettingsTypes,
   cycleTimeSettings: ICycleTimeSetting[],
 ) => {
-  if (cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN) {
+  if (cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN) {
     return ([...new Set(cycleTimeSettings.map(({ column }: ICycleTimeSetting) => column))] as string[]).map(
       (uniqueColumn) => ({
         [uniqueColumn]:

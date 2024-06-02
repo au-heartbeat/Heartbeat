@@ -8,7 +8,7 @@ import {
   ICycleTimeSetting,
 } from '@src/context/Metrics/metricsSlice';
 import {
-  CYCLE_TIME_SETTINGS_TYPES,
+  CycleTimeSettingsTypes,
   DONE,
   METRICS_CONSTANTS,
   METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN,
@@ -31,7 +31,7 @@ import { theme } from '@src/theme';
 const CycleTimeTable = () => {
   const dispatch = useAppDispatch();
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
-  const isColumnAsKey = cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN;
+  const isColumnAsKey = cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN;
 
   const resetRealDoneColumn = useCallback(
     (name: string, value: string) => {
@@ -111,8 +111,8 @@ const CycleTimeTable = () => {
   return (
     <>
       <StyledRadioGroup aria-label='cycleTimeSettingsType' value={cycleTimeSettingsType} onChange={handleTypeChange}>
-        <FormControlLabel value={CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN} control={<Radio />} label='By Column' />
-        <FormControlLabel value={CYCLE_TIME_SETTINGS_TYPES.BY_STATUS} control={<Radio />} label='By Status' />
+        <FormControlLabel value={CycleTimeSettingsTypes.BY_COLUMN} control={<Radio />} label='By Column' />
+        <FormControlLabel value={CycleTimeSettingsTypes.BY_STATUS} control={<Radio />} label='By Status' />
       </StyledRadioGroup>
       <TableContainer sx={{ mb: '2rem' }}>
         <Table aria-label='cycle time settings table'>

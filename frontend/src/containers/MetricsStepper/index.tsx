@@ -23,7 +23,7 @@ import {
   selectCycleTimeSettings,
   selectMetricsContent,
 } from '@src/context/Metrics/metricsSlice';
-import { CYCLE_TIME_SETTINGS_TYPES, DONE, METRICS_CONSTANTS, RequiredData, TIPS } from '@src/constants/resources';
+import { CycleTimeSettingsTypes, DONE, METRICS_CONSTANTS, RequiredData, TIPS } from '@src/constants/resources';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
@@ -145,7 +145,7 @@ const MetricsStepper = () => {
 
   const isShowRealDone =
     isShowBoard &&
-    metricsConfig.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
+    metricsConfig.cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN &&
     metricsConfig.cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).length > 1;
   const isShowDeploymentFrequency =
     requiredData.includes(RequiredData.DeploymentFrequency) ||

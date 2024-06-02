@@ -44,7 +44,7 @@ import {
   NO_RESULT_DASH,
   PipelineSettingTypes,
 } from '../fixtures';
-import { ASSIGNEE_FILTER_TYPES, CYCLE_TIME_SETTINGS_TYPES, MESSAGE } from '@src/constants/resources';
+import { ASSIGNEE_FILTER_TYPES, CycleTimeSettingsTypes, MESSAGE } from '@src/constants/resources';
 import { setupStore } from '../utils/setupStoreUtil';
 import { store } from '@src/store';
 
@@ -57,7 +57,7 @@ const initState = {
   users: [],
   pipelineCrews: [],
   doneColumn: [],
-  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
+  cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
   deploymentFrequencySettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
@@ -316,7 +316,7 @@ describe('saveMetricsSetting reducer', () => {
     const savedMetricsSetting = saveMetricsSettingReducer(
       {
         ...initState,
-        cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_STATUS,
+        cycleTimeSettingsType: CycleTimeSettingsTypes.BY_STATUS,
         importedData: {
           ...initState.importedData,
           importedCrews: ['User B', 'User C'],
@@ -342,7 +342,7 @@ describe('saveMetricsSetting reducer', () => {
     const savedMetricsSetting = saveMetricsSettingReducer(
       {
         ...initState,
-        cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_STATUS,
+        cycleTimeSettingsType: CycleTimeSettingsTypes.BY_STATUS,
         importedData: {
           ...initState.importedData,
           importedCrews: ['User B', 'User C'],
@@ -377,7 +377,7 @@ describe('saveMetricsSetting reducer', () => {
     const savedMetricsSetting = saveMetricsSettingReducer(
       {
         ...initState,
-        cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_STATUS,
+        cycleTimeSettingsType: CycleTimeSettingsTypes.BY_STATUS,
         importedData: {
           ...initState.importedData,
           importedCrews: ['User B', 'User C'],
@@ -607,10 +607,10 @@ describe('saveMetricsSetting reducer', () => {
   it('should set cycle time setting type', () => {
     const setCycleTimeSettingsTypeResult = saveMetricsSettingReducer(
       initState,
-      setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN),
+      setCycleTimeSettingsType(CycleTimeSettingsTypes.BY_COLUMN),
     );
 
-    expect(setCycleTimeSettingsTypeResult.cycleTimeSettingsType).toBe(CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN);
+    expect(setCycleTimeSettingsTypeResult.cycleTimeSettingsType).toBe(CycleTimeSettingsTypes.BY_COLUMN);
   });
 
   it('should update get board config info', () => {
@@ -1172,7 +1172,7 @@ describe('saveMetricsSetting reducer', () => {
       },
     );
 
-    it.each([CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN, CYCLE_TIME_SETTINGS_TYPES.BY_STATUS])(
+    it.each([CycleTimeSettingsTypes.BY_COLUMN, CycleTimeSettingsTypes.BY_STATUS])(
       'should update cycle time settings correctly when reload metrics page',
       (cycleTimeSettingsType) => {
         const savedMetricsSetting = saveMetricsSettingReducer(

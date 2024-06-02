@@ -1,7 +1,7 @@
 import {
   ASSIGNEE_FILTER_TYPES,
   CYCLE_TIME_LIST,
-  CYCLE_TIME_SETTINGS_TYPES,
+  CycleTimeSettingsTypes,
   MESSAGE,
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
@@ -48,7 +48,7 @@ export interface ISavedMetricsSettingState {
   users: string[];
   pipelineCrews: string[];
   doneColumn: string[];
-  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES;
+  cycleTimeSettingsType: CycleTimeSettingsTypes;
   cycleTimeSettings: ICycleTimeSetting[];
   deploymentFrequencySettings: IPipelineConfig[];
   leadTimeForChanges: IPipelineConfig[];
@@ -85,7 +85,7 @@ const initialState: ISavedMetricsSettingState = {
   users: [],
   pipelineCrews: [],
   doneColumn: [],
-  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN,
+  cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
   deploymentFrequencySettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
@@ -408,7 +408,7 @@ export const metricsSlice = createSlice({
         );
         const metricsContainsValues = Object.values(METRICS_CONSTANTS);
         const importedKeyMismatchWarning =
-          state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+          state.cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN
             ? compareArrays(importedCycleTimeSettingsKeys, jiraColumnsNames, 'column')
             : compareArrays(importedCycleTimeSettingsKeys, jiraStatuses, 'status');
         const importedValueMismatchWarning = findDifferentValues(
@@ -446,7 +446,7 @@ export const metricsSlice = createSlice({
       }
       if (jiraColumns) {
         state.cycleTimeSettings =
-          state.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+          state.cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN
             ? getCycleTimeSettingsByColumn(state, jiraColumns)
             : getCycleTimeSettingsByStatus(state, jiraColumns);
       }

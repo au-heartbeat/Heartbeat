@@ -411,7 +411,7 @@ export const REPORT_PAGE = {
   },
 };
 
-export enum CYCLE_TIME_SETTINGS_TYPES {
+export enum CycleTimeSettingsTypes {
   BY_COLUMN = 'byColumn',
   BY_STATUS = 'byStatus',
 }
@@ -518,7 +518,7 @@ export const ADD_TIME_RANGE_BUTTON_TEXT = 'New time range';
 export const REMOVE_BUTTON_TEXT = 'Remove';
 export const MAX_TIME_RANGE_AMOUNT = 6;
 
-export enum SORTING_DATE_RANGE_TEXT {
+export enum SortingDateRangeText {
   DEFAULT = 'Default sort',
   ASCENDING = 'Ascending',
   DESCENDING = 'Descending',

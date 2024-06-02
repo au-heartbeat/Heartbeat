@@ -30,7 +30,7 @@ import {
 import { updateJiraVerifyResponse, updateMetrics } from '@src/context/config/configSlice';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { backStep, nextStep } from '@src/context/stepper/StepperSlice';
-import { CYCLE_TIME_SETTINGS_TYPES } from '@src/constants/resources';
+import { CycleTimeSettingsTypes } from '@src/constants/resources';
 import userEvent from '@testing-library/user-event';
 import { HttpStatusCode } from 'axios';
 
@@ -274,7 +274,7 @@ describe('MetricsStep', () => {
     });
 
     it('should hide Real Done when cycleTime settings type is by status', async () => {
-      await store.dispatch(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
+      await store.dispatch(setCycleTimeSettingsType(CycleTimeSettingsTypes.BY_STATUS));
       const { queryByText } = setup();
 
       expect(queryByText(REAL_DONE)).not.toBeInTheDocument();
