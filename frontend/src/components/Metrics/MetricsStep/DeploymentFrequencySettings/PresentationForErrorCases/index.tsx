@@ -8,7 +8,7 @@ import {
 import { StyledErrorMessage, StyledErrorSection, StyledErrorTitle } from '@src/components/Common/EmptyContent/styles';
 import { PIPELINE_TOOL_RETRY_MESSAGE, PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE } from '@src/constants/resources';
 import { IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import errorSvg from '@src/assets/PipelineInfoError.svg';
 import React, { useCallback } from 'react';
 
@@ -19,7 +19,7 @@ export interface IPresentationForErrorCasesProps extends IGetPipelineToolInfoRes
 
 const PresentationForErrorCases = (props: IPresentationForErrorCasesProps) => {
   const handleRetry = useCallback(() => !props.isLoading && props.retry(), [props]);
-  const isShowRetryUI = AXIOS_REQUEST_ERROR_CODE.TIMEOUT === props.code;
+  const isShowRetryUI = AxiosRequestErrorCode.Timeout === props.code;
   return (
     <StyledContainer aria-label='Error UI for pipeline settings'>
       <StyledImageContainer>

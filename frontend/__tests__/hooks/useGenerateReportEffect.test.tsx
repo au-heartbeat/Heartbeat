@@ -12,9 +12,9 @@ import {
   MOCK_RETRIEVE_REPORT_RESPONSE,
   MockedDateRanges,
 } from '../fixtures';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { updateDateRange } from '@src/context/config/configSlice';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { reportClient } from '@src/clients/report/ReportClient';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -63,7 +63,7 @@ describe('use generate report effect', () => {
   it('should set "Data loading failed" for all board metrics when board data retrieval times out', async () => {
     reportClient.retrieveByUrl = jest
       .fn()
-      .mockRejectedValue(new TimeoutError('timeout error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT));
+      .mockRejectedValue(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout));
     reportClient.polling = jest.fn();
 
     const { result } = setup();
@@ -85,7 +85,7 @@ describe('use generate report effect', () => {
   it('should set "Data loading failed" for dora metrics when dora data retrieval times out', async () => {
     reportClient.retrieveByUrl = jest
       .fn()
-      .mockRejectedValueOnce(new TimeoutError('timeout error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT))
+      .mockRejectedValueOnce(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout))
       .mockResolvedValueOnce(async () => MOCK_RETRIEVE_REPORT_RESPONSE);
 
     reportClient.polling = jest
@@ -130,7 +130,7 @@ describe('use generate report effect', () => {
         status: HttpStatusCode.Ok,
         response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: false },
       })
-      .mockRejectedValue(new TimeoutError('timeout error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT))
+      .mockRejectedValue(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout))
       .mockReturnValueOnce({
         status: HttpStatusCode.Ok,
         response: { ...MOCK_REPORT_RESPONSE, allMetricsCompleted: true },
@@ -255,7 +255,7 @@ describe('use generate report effect', () => {
     reportClient.retrieveByUrl = jest.fn().mockImplementation(async () => MOCK_RETRIEVE_REPORT_RESPONSE);
     reportClient.polling = jest
       .fn()
-      .mockRejectedValue(new TimeoutError('timeout error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT));
+      .mockRejectedValue(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout));
     const { result } = setup();
     await act(async () => {
       await result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);

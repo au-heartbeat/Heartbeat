@@ -18,7 +18,7 @@ import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { pipelineToolSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { FormProvider } from '@test/utils/FormProvider';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -106,7 +106,7 @@ describe('PipelineTool', () => {
   it('should hidden timeout alert when click reset button', async () => {
     setup();
     await fillPipelineToolFieldsInformation();
-    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT });
+    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AxiosRequestErrorCode.Timeout });
 
     await userEvent.click(screen.getByText(VERIFY));
 
@@ -120,7 +120,7 @@ describe('PipelineTool', () => {
   it('should hidden timeout alert when the error type of api call becomes other', async () => {
     setup();
     await fillPipelineToolFieldsInformation();
-    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT });
+    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AxiosRequestErrorCode.Timeout });
 
     await userEvent.click(screen.getByText(VERIFY));
 
@@ -254,7 +254,7 @@ describe('PipelineTool', () => {
   it('should close alert modal when user manually close the alert', async () => {
     setup();
     await fillPipelineToolFieldsInformation();
-    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const timeoutError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     pipelineToolClient.verify = jest.fn().mockImplementation(() => Promise.resolve(timeoutError));
 
     await userEvent.click(screen.getByText(VERIFY));

@@ -6,7 +6,7 @@ import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValu
 import { TSourceControlFieldKeys } from '@src/containers/ConfigStep/Form/type';
 import { ISourceControlData } from '@src/containers/ConfigStep/Form/schema';
 import { updateSourceControl } from '@src/context/config/configSlice';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/index';
 import { useFormContext } from 'react-hook-form';
 import { HttpStatusCode } from 'axios';
@@ -47,7 +47,7 @@ export const useVerifySourceControlTokenEffect = () => {
     if (response.code === HttpStatusCode.NoContent) {
       persistReduxData(values);
       reset(sourceControlOriginal, { keepValues: true });
-    } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
+    } else if (response.code === AxiosRequestErrorCode.Timeout) {
       setError(fields[FieldKey.Token].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.timeout });
     } else if (response.code === HttpStatusCode.Unauthorized) {
       setError(fields[FieldKey.Token].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.unauthorized });

@@ -7,7 +7,7 @@ import { TPipelineToolFieldKeys } from '@src/containers/ConfigStep/Form/type';
 import { IPipelineVerifyRequestDTO } from '@src/clients/pipeline/dto/request';
 import { IPipelineToolData } from '@src/containers/ConfigStep/Form/schema';
 import { updatePipelineTool } from '@src/context/config/configSlice';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { useFormContext } from 'react-hook-form';
 import { useAppDispatch } from '@src/hooks';
 import { HttpStatusCode } from 'axios';
@@ -49,7 +49,7 @@ export const useVerifyPipelineToolEffect = () => {
     if (response.code === HttpStatusCode.NoContent) {
       reset(pipelineToolOriginal, { keepValues: true });
       persistReduxData(values);
-    } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
+    } else if (response.code === AxiosRequestErrorCode.Timeout) {
       setError(fields[FieldKey.Token].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.timeout });
     } else if (response.code === HttpStatusCode.Unauthorized) {
       setError(fields[FieldKey.Token].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.unauthorized });

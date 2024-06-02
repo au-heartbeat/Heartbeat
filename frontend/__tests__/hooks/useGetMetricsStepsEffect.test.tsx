@@ -1,6 +1,6 @@
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { MetricsDataFailStatus } from '@src/constants/commons';
 import { metricsClient } from '@src/clients/MetricsClient';
 import { setupStore } from '@test/utils/setupStoreUtil';
@@ -142,7 +142,7 @@ describe('use get steps effect', () => {
 
   it('should set error message when get steps responses are timeout', async () => {
     metricsClient.getSteps = jest.fn().mockImplementation(() => {
-      return Promise.reject(new TimeoutError('error', AXIOS_REQUEST_ERROR_CODE.TIMEOUT));
+      return Promise.reject(new TimeoutError('error', AxiosRequestErrorCode.Timeout));
     });
     const { result } = setup();
     await act(async () => {

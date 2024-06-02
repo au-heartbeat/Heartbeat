@@ -1,7 +1,7 @@
 import { MOCK_BOARD_INFO_URL, FAKE_TOKEN, FAKE_DATE_EARLIER, FAKE_DATE_LATER } from '@test/fixtures';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import React, { ReactNode } from 'react';
 import { HttpResponse, http } from 'msw';
@@ -146,7 +146,7 @@ describe('use get board info', () => {
       http.post(MOCK_BOARD_INFO_URL, () => {
         return new HttpResponse(
           JSON.stringify({
-            code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+            code: AxiosRequestErrorCode.Timeout,
           }),
           {
             status: HttpStatusCode.Unused,

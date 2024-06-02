@@ -1,4 +1,4 @@
-import { AXIOS_REQUEST_ERROR_CODE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
+import { AxiosRequestErrorCode, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
@@ -117,7 +117,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
           setError(KEYS.SITE, { message: BOARD_CONFIG_ERROR_MESSAGE.site.verifyFailed });
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setError(KEYS.BOARD_ID, { message: BOARD_CONFIG_ERROR_MESSAGE.boardId.verifyFailed });
-        } else if (code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
+        } else if (code === AxiosRequestErrorCode.Timeout) {
           setError(KEYS.TOKEN, { message: BOARD_CONFIG_ERROR_MESSAGE.token.timeout });
         } else {
           setError(KEYS.TOKEN, { message: UNKNOWN_ERROR_TITLE });

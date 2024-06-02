@@ -2,8 +2,8 @@ import { boardConfigDefaultValues } from '@src/containers/ConfigStep/Form/useDef
 import { boardConfigSchema } from '@src/containers/ConfigStep/Form/schema';
 import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { InternalServerError } from '@src/errors/InternalServerError';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { UnauthorizedError } from '@src/errors/UnauthorizedError';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { NotFoundError } from '@src/errors/NotFoundError';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -129,7 +129,7 @@ describe('use verify board state', () => {
   });
 
   it('should set timeout is true given getVerifyBoard api is timeout', async () => {
-    const mockedError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const mockedError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     const { result } = setup();

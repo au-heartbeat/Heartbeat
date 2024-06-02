@@ -11,8 +11,8 @@ import {
   VERIFY,
 } from '../../fixtures';
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
-import { AXIOS_REQUEST_ERROR_CODE, SourceControlTypes } from '@src/constants/resources';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { AxiosRequestErrorCode, SourceControlTypes } from '@src/constants/resources';
 import { updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
@@ -115,7 +115,7 @@ describe('SourceControl', () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillSourceControlFieldsInformation();
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+      code: AxiosRequestErrorCode.Timeout,
     });
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -130,7 +130,7 @@ describe('SourceControl', () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillSourceControlFieldsInformation();
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+      code: AxiosRequestErrorCode.Timeout,
     });
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -249,7 +249,7 @@ describe('SourceControl', () => {
     setup();
     await fillSourceControlFieldsInformation();
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+      code: AxiosRequestErrorCode.Timeout,
     });
 
     await userEvent.click(screen.getByText(VERIFY));

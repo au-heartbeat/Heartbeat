@@ -1,6 +1,6 @@
-import { AXIOS_REQUEST_ERROR_CODE, SourceControlTypes } from '@src/constants/resources';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { SourceControlInfoRequestDTO } from '@src/clients/sourceControl/dto/request';
+import { AxiosRequestErrorCode, SourceControlTypes } from '@src/constants/resources';
 import { selectSourceControl } from '@src/context/config/configSlice';
 import { FormFieldWithMeta } from '@src/context/meta/metaSlice';
 import ChipExtended from '@src/components/Common/ChipExtended';
@@ -55,7 +55,7 @@ const BranchChip = ({ value, needVerify, error, updateBranchMeta, repository, er
       label={value}
       loading={needVerify}
       error={error}
-      showRetry={errorDetail === AXIOS_REQUEST_ERROR_CODE.TIMEOUT}
+      showRetry={errorDetail === AxiosRequestErrorCode.Timeout}
       onRetry={handleRetry}
     />
   );

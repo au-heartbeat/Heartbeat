@@ -1,4 +1,4 @@
-import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
+import { AxiosRequestErrorCode, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
@@ -29,7 +29,7 @@ export interface useGetBoardInfoInterface {
 }
 
 const boardInfoPartialFailedStatusMapping = (code: string | number) => {
-  if (code == AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
+  if (code == AxiosRequestErrorCode.Timeout) {
     return MetricsDataFailStatus.PartialFailedTimeout;
   }
   const numericCode = code as number;
@@ -53,7 +53,7 @@ const errorStatusMap = (status: MetricsDataFailStatus) => {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.EMPTY,
         message: BOARD_CONFIG_INFO_ERROR.RETRY,
-        code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+        code: AxiosRequestErrorCode.Timeout,
       },
       elevateStatus: MetricsDataFailStatus.AllFailedTimeout,
     },
@@ -61,7 +61,7 @@ const errorStatusMap = (status: MetricsDataFailStatus) => {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
         message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
-        code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
+        code: AxiosRequestErrorCode.NoCards,
       },
       elevateStatus: MetricsDataFailStatus.AllFailedNoCards,
     },

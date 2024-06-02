@@ -420,9 +420,9 @@ export const AXIOS_NETWORK_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ET
 
 export const NO_PIPELINE_STEP_ERROR = 'No steps for this pipeline!';
 
-export enum AXIOS_REQUEST_ERROR_CODE {
-  TIMEOUT = 'NETWORK_TIMEOUT',
-  NO_CARDS = 'NO_CARDS',
+export enum AxiosRequestErrorCode {
+  Timeout = 'NETWORK_TIMEOUT',
+  NoCards = 'NO_CARDS',
 }
 
 export const BOARD_CONFIG_INFO_TITLE = {

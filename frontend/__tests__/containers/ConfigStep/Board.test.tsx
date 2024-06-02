@@ -15,8 +15,8 @@ import {
 import { boardConfigDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { boardConfigSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { UnauthorizedError } from '@src/errors/UnauthorizedError';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -181,7 +181,7 @@ describe('Board', () => {
   it('should hidden timeout alert when click reset button', async () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillBoardFieldsInformation();
-    const mockedError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const mockedError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -196,7 +196,7 @@ describe('Board', () => {
   it('should hidden timeout alert when the error type of api call becomes other', async () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillBoardFieldsInformation();
-    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const timeoutError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(timeoutError));
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -334,7 +334,7 @@ describe('Board', () => {
   it('should close alert modal when user manually close the alert', async () => {
     setup();
     await fillBoardFieldsInformation();
-    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const timeoutError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(timeoutError));
 
     await userEvent.click(screen.getByText(VERIFY));

@@ -22,7 +22,7 @@ import {
   StyledRetryButton,
 } from '@src/containers/MetricsStep/style';
 import {
-  AXIOS_REQUEST_ERROR_CODE,
+  AxiosRequestErrorCode,
   CYCLE_TIME_SETTINGS_TYPES,
   DONE,
   MESSAGE,
@@ -164,7 +164,7 @@ const MetricsStep = () => {
             <EmptyContent
               title={errorMessage.title}
               message={
-                errorMessage.code !== AXIOS_REQUEST_ERROR_CODE.TIMEOUT ? (
+                errorMessage.code !== AxiosRequestErrorCode.Timeout ? (
                   errorMessage.message
                 ) : (
                   <>
