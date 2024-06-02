@@ -12,9 +12,9 @@ import { useFormContext } from 'react-hook-form';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export enum FIELD_KEY {
-  TYPE = 0,
-  TOKEN = 1,
+export enum FieldKey {
+  Type = 0,
+  Token = 1,
 }
 
 interface IField {
@@ -48,11 +48,11 @@ export const useVerifySourceControlTokenEffect = () => {
       persistReduxData(values);
       reset(sourceControlOriginal, { keepValues: true });
     } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
-      setError(fields[FIELD_KEY.TOKEN].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.timeout });
+      setError(fields[FieldKey.Token].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.timeout });
     } else if (response.code === HttpStatusCode.Unauthorized) {
-      setError(fields[FIELD_KEY.TOKEN].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.unauthorized });
+      setError(fields[FieldKey.Token].key, { message: SOURCE_CONTROL_ERROR_MESSAGE.token.unauthorized });
     } else {
-      setError(fields[FIELD_KEY.TOKEN].key, { message: response.errorTitle });
+      setError(fields[FieldKey.Token].key, { message: response.errorTitle });
     }
     setIsLoading(false);
     return response;

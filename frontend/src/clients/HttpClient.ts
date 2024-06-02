@@ -8,7 +8,7 @@ import { ForbiddenError } from '@src/errors/ForbiddenError';
 import { NotFoundError } from '@src/errors/NotFoundError';
 import { UnknownError } from '@src/errors/UnknownError';
 import { TimeoutError } from '@src/errors/TimeoutError';
-import { ROUTE } from '@src/constants/router';
+import { Route } from '@src/constants/router';
 
 export class HttpClient {
   protected httpTimeout = 300000;
@@ -42,7 +42,7 @@ export class HttpClient {
               throw new ForbiddenError(errorMessage, HttpStatusCode.Forbidden, description);
             default:
               if (status >= 500) {
-                window.location.href = ROUTE.ERROR_PAGE;
+                window.location.href = Route.ErrorPage;
                 throw new InternalServerError(errorMessage, status, description);
               }
               throw new UnknownError();

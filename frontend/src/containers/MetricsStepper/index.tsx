@@ -37,7 +37,7 @@ import { getFormMeta } from '@src/context/meta/metaSlice';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from 'react-router-dom';
-import { ROUTE } from '@src/constants/router';
+import { Route } from '@src/constants/router';
 import { useForm } from 'react-hook-form';
 import { Tooltip } from '@mui/material';
 import isEmpty from 'lodash/isEmpty';
@@ -305,7 +305,7 @@ const MetricsStepper = () => {
   };
 
   const backToHomePage = () => {
-    navigate(ROUTE.BASE_PAGE);
+    navigate(Route.BasePage);
     setIsDialogShowing(false);
     window.location.reload();
   };

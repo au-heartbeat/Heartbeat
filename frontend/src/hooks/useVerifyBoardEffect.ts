@@ -16,12 +16,12 @@ import { isAppError } from '@src/errors';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export enum FIELD_KEY {
-  TYPE = 0,
-  BOARD_ID = 1,
-  EMAIL = 2,
-  SITE = 3,
-  TOKEN = 4,
+export enum FieldKey {
+  Type = 0,
+  BoardID = 1,
+  EMail = 2,
+  Site = 3,
+  Token = 4,
 }
 
 export interface IField {

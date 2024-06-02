@@ -13,7 +13,7 @@ import { resetStep } from '@src/context/stepper/StepperSlice';
 import { resetFormMeta } from '@src/context/meta/metaSlice';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { useNavigate } from 'react-router-dom';
-import { ROUTE } from '@src/constants/router';
+import { Route } from '@src/constants/router';
 import { useRef, useState } from 'react';
 
 export const HomeGuide = () => {
@@ -50,7 +50,7 @@ export const HomeGuide = () => {
             dispatch(updateMetricsImportedData(config));
             dispatch(savePipelineCrews(config.pipelineCrews));
             dispatch(setCycleTimeSettingsType(getCycleTimeSettingsType(config.cycleTime?.type)));
-            navigate(ROUTE.METRICS_PAGE);
+            navigate(Route.MetricsPage);
           } else {
             setValidConfig(false);
           }
@@ -82,7 +82,7 @@ export const HomeGuide = () => {
 
   const createNewProject = () => {
     resetState();
-    navigate(ROUTE.METRICS_PAGE);
+    navigate(Route.MetricsPage);
   };
 
   return (

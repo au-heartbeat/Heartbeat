@@ -13,9 +13,9 @@ import { useAppDispatch } from '@src/hooks';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export enum FIELD_KEY {
-  TYPE = 0,
-  TOKEN = 1,
+export enum FieldKey {
+  Type = 0,
+  Token = 1,
 }
 interface IField {
   key: TPipelineToolFieldKeys;
@@ -50,13 +50,13 @@ export const useVerifyPipelineToolEffect = () => {
       reset(pipelineToolOriginal, { keepValues: true });
       persistReduxData(values);
     } else if (response.code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
-      setError(fields[FIELD_KEY.TOKEN].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.timeout });
+      setError(fields[FieldKey.Token].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.timeout });
     } else if (response.code === HttpStatusCode.Unauthorized) {
-      setError(fields[FIELD_KEY.TOKEN].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.unauthorized });
+      setError(fields[FieldKey.Token].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.unauthorized });
     } else if (response.code === HttpStatusCode.Forbidden) {
-      setError(fields[FIELD_KEY.TOKEN].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.forbidden });
+      setError(fields[FieldKey.Token].key, { message: PIPELINE_TOOL_ERROR_MESSAGE.token.forbidden });
     } else {
-      setError(fields[FIELD_KEY.TOKEN].key, { message: response.errorTitle });
+      setError(fields[FieldKey.Token].key, { message: response.errorTitle });
     }
     setIsLoading(false);
   };

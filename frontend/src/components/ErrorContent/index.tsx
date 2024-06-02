@@ -13,14 +13,14 @@ import {
 import { MESSAGE } from '@src/constants/resources';
 import ErrorIcon from '@src/assets/ErrorIcon.svg';
 import { useNavigate } from 'react-router-dom';
-import { ROUTE } from '@src/constants/router';
+import { Route } from '@src/constants/router';
 import React from 'react';
 
 export const ErrorContent = () => {
   const navigate = useNavigate();
 
   const backToHomePage = () => {
-    navigate(ROUTE.BASE_PAGE);
+    navigate(Route.BasePage);
   };
 
   return (
