@@ -10,9 +10,9 @@ import {
   BOARD_METRICS,
   BOARD_METRICS_MAPPING,
   METRICS_SUBTITLE,
-  METRICS_TITLE,
+  MetricsTitle,
   REPORT_PAGE,
-  REQUIRED_DATA,
+  RequiredData,
   RETRY,
   SHOW_MORE,
 } from '@src/constants/resources';
@@ -42,7 +42,7 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
   const boardMetricsCompleted = (
-    isOnlyEmptyAndDoneState ? boardMetrics.filter((metric) => metric !== REQUIRED_DATA.REWORK_TIMES) : boardMetrics
+    isOnlyEmptyAndDoneState ? boardMetrics.filter((metric) => metric !== RequiredData.ReworkTimes) : boardMetrics
   )
     .map((metric) => BOARD_METRICS_MAPPING[metric])
     .every((metric) => boardReport?.[metric] ?? false);
@@ -51,10 +51,10 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
     const velocity = boardReport?.velocity;
     const cycleTime = boardReport?.cycleTime;
 
-    const velocityItems = boardMetrics.includes(REQUIRED_DATA.VELOCITY)
+    const velocityItems = boardMetrics.includes(RequiredData.Velocity)
       ? [
           {
-            title: METRICS_TITLE.VELOCITY,
+            title: MetricsTitle.Velocity,
             items: velocity && [
               {
                 value: velocity.velocityForSP,
@@ -71,10 +71,10 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
         ]
       : [];
 
-    const cycleTimeItems = boardMetrics.includes(REQUIRED_DATA.CYCLE_TIME)
+    const cycleTimeItems = boardMetrics.includes(RequiredData.CycleTime)
       ? [
           {
-            title: METRICS_TITLE.CYCLE_TIME,
+            title: MetricsTitle.CycleTime,
             items: cycleTime && [
               {
                 value: cycleTime.averageCycleTimePerSP,
@@ -95,10 +95,10 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
   const getReworkBoardItem = () => {
     const rework = boardReport?.rework;
 
-    const reworkItems = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES)
+    const reworkItems = boardMetrics.includes(RequiredData.ReworkTimes)
       ? [
           {
-            title: METRICS_TITLE.REWORK,
+            title: MetricsTitle.Rework,
             items: rework && [
               {
                 value: rework.totalReworkTimes,
@@ -128,7 +128,7 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
 
   const isShowMoreLoadingDisplay = () =>
     boardMetrics.length === 1 &&
-    boardMetrics[0] === REQUIRED_DATA.CLASSIFICATION &&
+    boardMetrics[0] === RequiredData.Classification &&
     !errorMessage &&
     !boardReport?.boardMetricsCompleted;
 

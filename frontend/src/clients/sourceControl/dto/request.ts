@@ -1,12 +1,12 @@
-import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { SourceControlTypes } from '@src/constants/resources';
 
 export interface SourceControlVerifyRequestDTO {
-  type: SOURCE_CONTROL_TYPES;
+  type: SourceControlTypes;
   token: string;
 }
 
 export interface SourceControlInfoRequestDTO {
-  type: SOURCE_CONTROL_TYPES;
+  type: SourceControlTypes;
   branch: string;
   repository: string;
   token: string;

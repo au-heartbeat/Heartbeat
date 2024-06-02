@@ -11,7 +11,7 @@ import {
   VERIFY,
 } from '../../fixtures';
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
-import { AXIOS_REQUEST_ERROR_CODE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { AXIOS_REQUEST_ERROR_CODE, SourceControlTypes } from '@src/constants/resources';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
@@ -87,7 +87,7 @@ describe('SourceControl', () => {
 
   it('should show default value gitHub when init sourceControl component', () => {
     setup();
-    const sourceControlType = screen.getByText(SOURCE_CONTROL_TYPES.GITHUB);
+    const sourceControlType = screen.getByText(SourceControlTypes.GitHub);
 
     expect(sourceControlType).toBeInTheDocument();
   });
@@ -106,7 +106,7 @@ describe('SourceControl', () => {
     });
 
     expect(tokenInput.value).toEqual('');
-    expect(screen.getByText(SOURCE_CONTROL_TYPES.GITHUB)).toBeInTheDocument();
+    expect(screen.getByText(SourceControlTypes.GitHub)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: RESET })).not.toBeTruthy();
     expect(screen.getByRole('button', { name: VERIFY })).toBeDisabled();
   });

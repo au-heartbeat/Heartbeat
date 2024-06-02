@@ -26,7 +26,7 @@ import {
   CYCLE_TIME_SETTINGS_TYPES,
   DONE,
   MESSAGE,
-  REQUIRED_DATA,
+  RequiredData,
 } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
@@ -62,10 +62,10 @@ const MetricsStep = () => {
 
   const { startDate, endDate } = descendingSortedDateRanges[0];
   const isShowCrewsAndRealDone =
-    requiredData.includes(REQUIRED_DATA.VELOCITY) ||
-    requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
-    requiredData.includes(REQUIRED_DATA.CLASSIFICATION) ||
-    requiredData.includes(REQUIRED_DATA.REWORK_TIMES);
+    requiredData.includes(RequiredData.Velocity) ||
+    requiredData.includes(RequiredData.CycleTime) ||
+    requiredData.includes(RequiredData.Classification) ||
+    requiredData.includes(RequiredData.ReworkTimes);
   const isShowRealDone =
     cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
@@ -150,14 +150,14 @@ const MetricsStep = () => {
                 <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
               )}
 
-              {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
+              {requiredData.includes(RequiredData.Classification) && (
                 <Classification
                   targetFields={targetFields}
                   title={'Classification setting'}
                   label={'Distinguished By'}
                 />
               )}
-              {requiredData.includes(REQUIRED_DATA.REWORK_TIMES) && <ReworkSettings />}
+              {requiredData.includes(RequiredData.ReworkTimes) && <ReworkSettings />}
               <Advance />
             </>
           ) : (
@@ -178,10 +178,10 @@ const MetricsStep = () => {
         </MetricSelectionWrapper>
       )}
 
-      {(requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
-        requiredData.includes(REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE) ||
-        requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
-        requiredData.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY)) && (
+      {(requiredData.includes(RequiredData.DeploymentFrequency) ||
+        requiredData.includes(RequiredData.DevChangeFailureRate) ||
+        requiredData.includes(RequiredData.LeadTimeForChanges) ||
+        requiredData.includes(RequiredData.DevMeanTimeToRecovery)) && (
         <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
           <MetricsSelectionTitle aria-label='Pipeline configuration title'>
             Pipeline configuration

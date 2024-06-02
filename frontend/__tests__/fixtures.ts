@@ -1,4 +1,4 @@
-import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, SourceControlTypes } from '@src/constants/resources';
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -174,7 +174,7 @@ export const MOCK_PIPELINE_VERIFY_REQUEST_PARAMS = {
 
 export const MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS = {
   token: 'mockToken',
-  type: SOURCE_CONTROL_TYPES.GITHUB,
+  type: SourceControlTypes.GitHub,
 };
 
 export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {

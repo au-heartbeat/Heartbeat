@@ -6,7 +6,7 @@ import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { useVerifyBoardEffect } from '@src/hooks/useVerifyBoardEffect';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
-import { CONFIG_TITLE, BOARD_TYPES } from '@src/constants/resources';
+import { ConfigTitle, BOARD_TYPES } from '@src/constants/resources';
 import { FormAlert } from '@src/containers/ConfigStep/FormAlert';
 import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
@@ -39,7 +39,7 @@ export const Board = () => {
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       {isLoading && <Loading />}
-      <ConfigSelectionTitle>{CONFIG_TITLE.BOARD}</ConfigSelectionTitle>
+      <ConfigSelectionTitle>{ConfigTitle.Board}</ConfigSelectionTitle>
       <StyledAlterWrapper>
         {showAlert && (
           <FormAlert showAlert={showAlert} onClose={closeAlert} moduleType={'Board'} formAlertType={formAlertType} />

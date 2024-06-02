@@ -2,16 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
 import {
-  CHART_TYPE,
-  EMPTY_DATA_MAPPER_DORA_CHART,
-  LEAD_TIME_CHARTS_MAPPING,
-  REQUIRED_DATA,
-} from '@src/constants/resources';
-import {
   oneLineOptionMapper,
   Series,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
+import {
+  ChartType,
+  EMPTY_DATA_MAPPER_DORA_CHART,
+  LEAD_TIME_CHARTS_MAPPING,
+  RequiredData,
+} from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
@@ -37,7 +37,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     }),
   );
   const prLeadTimeValues = extractedValues?.map((value) => value![0]);
-  const trendInfo = calculateTrendInfo(prLeadTimeValues, allDateRanges, CHART_TYPE.LEAD_TIME_FOR_CHANGES);
+  const trendInfo = calculateTrendInfo(prLeadTimeValues, allDateRanges, ChartType.LeadTimeForChanges);
 
   return {
     legend: 'Lead Time For Change',
@@ -69,9 +69,9 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
   const value = data?.map((item) => {
     return Number(item?.[0].valueList[0].value) || 0;
   });
-  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEPLOYMENT_FREQUENCY);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DeploymentFrequency);
   return {
-    legend: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
+    legend: RequiredData.DeploymentFrequency,
     xAxis: allDateRanges,
     yAxis: {
       name: 'Deployments/Days',
@@ -79,7 +79,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
       axisLabel: NO_LABEL,
     },
     series: {
-      name: REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
+      name: RequiredData.DeploymentFrequency,
       type: 'line',
       data: value!,
     },
@@ -94,9 +94,9 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
     return item?.[0].valueList[0].value as string;
   });
   const value = valueStr?.map((item) => Number(item?.split('%', 1)[0]));
-  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEV_CHANGE_FAILURE_RATE);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevChangeFailureRate);
   return {
-    legend: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
+    legend: RequiredData.DevChangeFailureRate,
     xAxis: allDateRanges,
     yAxis: {
       name: 'Failed/Total',
@@ -104,7 +104,7 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
       alignTick: false,
     },
     series: {
-      name: REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
+      name: RequiredData.DevChangeFailureRate,
       type: 'line',
       data: value!,
     },
@@ -118,9 +118,9 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   const value = data?.map((item) => {
     return Number(item?.[0].valueList[0].value) || 0;
   });
-  const trendInfo = calculateTrendInfo(value, allDateRanges, CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevMeanTimeToRecovery);
   return {
-    legend: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+    legend: RequiredData.DevMeanTimeToRecovery,
     xAxis: allDateRanges,
     yAxis: {
       name: 'Hours',
@@ -128,7 +128,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
       axisLabel: NO_LABEL,
     },
     series: {
-      name: REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+      name: RequiredData.DevMeanTimeToRecovery,
       type: 'line',
       data: value!,
     },

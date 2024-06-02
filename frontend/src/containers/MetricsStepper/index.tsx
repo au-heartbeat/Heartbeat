@@ -23,7 +23,7 @@ import {
   selectCycleTimeSettings,
   selectMetricsContent,
 } from '@src/context/Metrics/metricsSlice';
-import { CYCLE_TIME_SETTINGS_TYPES, DONE, METRICS_CONSTANTS, REQUIRED_DATA, TIPS } from '@src/constants/resources';
+import { CYCLE_TIME_SETTINGS_TYPES, DONE, METRICS_CONSTANTS, RequiredData, TIPS } from '@src/constants/resources';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
@@ -130,15 +130,15 @@ const MetricsStepper = () => {
   );
 
   const isShowCycleTimeSettings =
-    requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
-    requiredData.includes(REQUIRED_DATA.CLASSIFICATION) ||
-    requiredData.includes(REQUIRED_DATA.VELOCITY);
+    requiredData.includes(RequiredData.CycleTime) ||
+    requiredData.includes(RequiredData.Classification) ||
+    requiredData.includes(RequiredData.Velocity);
   const isCycleTimeSettingsVerified = cycleTimeSettings.some((e) => e.value === DONE);
   const boardingMappingStatus = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStatus);
-  const onlyIncludeReworkMetrics = requiredData.includes(REQUIRED_DATA.REWORK_TIMES) && requiredData.length === 1;
-  const isShowClassificationSetting = requiredData.includes(REQUIRED_DATA.CLASSIFICATION);
-  const isShowReworkSettings = requiredData.includes(REQUIRED_DATA.REWORK_TIMES);
+  const onlyIncludeReworkMetrics = requiredData.includes(RequiredData.ReworkTimes) && requiredData.length === 1;
+  const isShowClassificationSetting = requiredData.includes(RequiredData.Classification);
+  const isShowReworkSettings = requiredData.includes(RequiredData.ReworkTimes);
   const isClassificationSettingVerified = metricsConfig.targetFields.some((item) => item.flag);
   const isReworkStateSelected = !!metricsConfig.importedData.reworkTimesSettings.reworkState;
   const { metrics, projectName, dateRange } = config.basic;
@@ -148,10 +148,10 @@ const MetricsStepper = () => {
     metricsConfig.cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
     metricsConfig.cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).length > 1;
   const isShowDeploymentFrequency =
-    requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
-    requiredData.includes(REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE) ||
-    requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
-    requiredData.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY);
+    requiredData.includes(RequiredData.DeploymentFrequency) ||
+    requiredData.includes(RequiredData.DevChangeFailureRate) ||
+    requiredData.includes(RequiredData.LeadTimeForChanges) ||
+    requiredData.includes(RequiredData.DevMeanTimeToRecovery);
   const isCrewsSettingValid = metricsConfig.users.length > 0;
   const isRealDoneValid = metricsConfig.doneColumn.length > 0;
 

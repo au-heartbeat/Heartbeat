@@ -1,11 +1,11 @@
 import {
-  CHART_TYPE,
+  ChartType,
   CYCLE_TIME_LIST,
   CYCLE_TIME_SETTINGS_TYPES,
   DOWN_TREND_IS_BETTER,
   METRICS_CONSTANTS,
-  TREND_ICON,
-  TREND_TYPE,
+  TrendIcon,
+  TrendType,
   UP_TREND_IS_BETTER,
 } from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
@@ -216,7 +216,7 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
   return `${startMonthDay}-${endMonthDay}`;
 };
 
-export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: CHART_TYPE) => {
+export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: ChartType) => {
   const result: ITrendInfo = {
     trendNumber: trendNumber,
     dateRangeList: dateRangeList,
@@ -225,19 +225,19 @@ export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type:
 
   if (UP_TREND_IS_BETTER.includes(type)) {
     if (trendNumber >= 0) {
-      result.icon = TREND_ICON.UP;
-      result.trendType = TREND_TYPE.BETTER;
+      result.icon = TrendIcon.Up;
+      result.trendType = TrendType.Better;
     } else {
-      result.icon = TREND_ICON.DOWN;
-      result.trendType = TREND_TYPE.WORSE;
+      result.icon = TrendIcon.Down;
+      result.trendType = TrendType.Worse;
     }
   } else if (DOWN_TREND_IS_BETTER.includes(type)) {
     if (trendNumber <= 0) {
-      result.icon = TREND_ICON.DOWN;
-      result.trendType = TREND_TYPE.BETTER;
+      result.icon = TrendIcon.Down;
+      result.trendType = TrendType.Better;
     } else {
-      result.icon = TREND_ICON.UP;
-      result.trendType = TREND_TYPE.WORSE;
+      result.icon = TrendIcon.Up;
+      result.trendType = TrendType.Worse;
     }
   }
   return result;
@@ -246,7 +246,7 @@ export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type:
 export const calculateTrendInfo = (
   dataList: number[] | undefined,
   dateRangeList: string[],
-  type: CHART_TYPE,
+  type: ChartType,
 ): ITrendInfo => {
   if (!dataList || dataList.filter((data) => data).length < 2) return { type };
 

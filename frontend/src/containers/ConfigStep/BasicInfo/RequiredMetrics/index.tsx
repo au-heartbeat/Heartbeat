@@ -6,10 +6,10 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { METRICS_LITERAL } from '@src/containers/ConfigStep/Form/literal';
 import { SELECTED_VALUE_SEPARATOR } from '@src/constants/commons';
 import { Controller, useFormContext } from 'react-hook-form';
-import { REQUIRED_DATA } from '@src/constants/resources';
+import { RequiredData } from '@src/constants/resources';
 
 const ALL = 'All';
-const ALL_REQUIRED_DATA = Object.values(REQUIRED_DATA) as string[];
+const ALL_REQUIRED_DATA = Object.values(RequiredData) as string[];
 
 export const RequiredMetrics = () => {
   const dispatch = useAppDispatch();

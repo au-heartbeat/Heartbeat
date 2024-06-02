@@ -2,9 +2,9 @@ import { FIELD_KEY, useVerifySourceControlTokenEffect } from '@src/hooks/useVeri
 import { ConfigSectionContainer, StyledForm, StyledTextField } from '@src/components/Common/ConfigForms';
 import { SOURCE_CONTROL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
-import { CONFIG_TITLE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { ISourceControlData } from '@src/containers/ConfigStep/Form/schema';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
+import { ConfigTitle, SourceControlTypes } from '@src/constants/resources';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { StyledAlterWrapper } from '@src/containers/ConfigStep/style';
 import { updateSourceControl } from '@src/context/config/configSlice';
@@ -35,7 +35,7 @@ export const SourceControl = () => {
   return (
     <ConfigSectionContainer aria-label='Source Control Config'>
       {isLoading && <Loading />}
-      <ConfigSelectionTitle>{CONFIG_TITLE.SOURCE_CONTROL}</ConfigSelectionTitle>
+      <ConfigSelectionTitle>{ConfigTitle.SourceControl}</ConfigSelectionTitle>
       <StyledAlterWrapper>
         <FormAlert
           showAlert={isVerifyTimeOut}
@@ -48,7 +48,7 @@ export const SourceControl = () => {
         <FormSingleSelect
           key={fields[FIELD_KEY.TYPE].key}
           name={fields[FIELD_KEY.TYPE].key}
-          options={Object.values(SOURCE_CONTROL_TYPES)}
+          options={Object.values(SourceControlTypes)}
           labelText={fields[FIELD_KEY.TYPE].label}
           labelId='sourceControl-type-checkbox-label'
           selectLabelId='sourceControl-type-checkbox-label'

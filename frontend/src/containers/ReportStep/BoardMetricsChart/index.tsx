@@ -2,7 +2,7 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS } from '@src/constants/resources';
+import { ChartType, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS } from '@src/constants/resources';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { calculateTrendInfo, xAxisLabelDateFormatter } from '@src/utils/util';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
@@ -63,7 +63,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
   const data = mappedData?.map((item) => item.velocityList);
   const velocity = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const throughput = data?.map((item) => item?.[1]?.valueList?.[0]?.value as number);
-  const trendInfo = calculateTrendInfo(velocity, dateRanges, CHART_TYPE.VELOCITY);
+  const trendInfo = calculateTrendInfo(velocity, dateRanges, ChartType.Velocity);
   return {
     xAxis: {
       data: dateRanges,
@@ -109,7 +109,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const data = mappedData?.map((item) => item.cycleTimeList);
   const storyPoints = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
-  const trendInfo = calculateTrendInfo(storyPoints, dateRanges, CHART_TYPE.AVERAGE_CYCLE_TIME);
+  const trendInfo = calculateTrendInfo(storyPoints, dateRanges, ChartType.AverageCycleTime);
   return {
     xAxis: {
       data: dateRanges,
@@ -162,7 +162,7 @@ function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[
   const developmentPercentageList = indicators.find(
     ({ name }) => name === CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue],
   )?.data;
-  const trendInfo = calculateTrendInfo(developmentPercentageList, dateRanges, CHART_TYPE.CYCLE_TIME_ALLOCATION);
+  const trendInfo = calculateTrendInfo(developmentPercentageList, dateRanges, ChartType.CycleTimeAllocation);
 
   return {
     xAxis: dateRanges,
@@ -190,7 +190,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
   const totalReworkCards = data?.map((item) => item?.totalReworkCards as number);
   const reworkCardsRatio = data?.map((item) => (item?.reworkCardsRatio as number) * 100);
 
-  const trendInfo = calculateTrendInfo(totalReworkTimes, dateRanges, CHART_TYPE.REWORK);
+  const trendInfo = calculateTrendInfo(totalReworkTimes, dateRanges, ChartType.Rework);
   return {
     xAxis: {
       data: dateRanges,

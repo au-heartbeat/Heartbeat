@@ -1,5 +1,5 @@
 import { initSourceControlVerifyResponseState, ISourceControlVerifyResponse } from './verifyResponseSlice';
-import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { SourceControlTypes } from '@src/constants/resources';
 
 export interface ISourceControl {
   config: { type: string; token: string };
@@ -9,7 +9,7 @@ export interface ISourceControl {
 
 export const initialSourceControlState: ISourceControl = {
   config: {
-    type: SOURCE_CONTROL_TYPES.GITHUB,
+    type: SourceControlTypes.GitHub,
     token: '',
   },
   isShow: false,

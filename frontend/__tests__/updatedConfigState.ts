@@ -1,5 +1,5 @@
 import { BOARD_TYPES, CHINA_CALENDAR, CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, PIPELINE_TOOL_TYPES } from './fixtures';
-import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { SourceControlTypes } from '@src/constants/resources';
 
 const updatedConfigState = {
   isProjectCreated: true,
@@ -40,7 +40,7 @@ const updatedConfigState = {
   },
   sourceControl: {
     config: {
-      type: SOURCE_CONTROL_TYPES.GITHUB,
+      type: SourceControlTypes.GitHub,
       token: '',
     },
     isShow: false,

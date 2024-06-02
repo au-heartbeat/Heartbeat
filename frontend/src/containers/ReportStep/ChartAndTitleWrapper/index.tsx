@@ -2,10 +2,10 @@ import {
   ChartTitle,
   StyledTooltipContent,
   TrendContainer,
-  TrendIcon,
+  TrendIconSpan,
   TrendTypeIcon,
 } from '@src/containers/ReportStep/ChartAndTitleWrapper/style';
-import { CHART_TREND_TIP, CHART_TYPE, TREND_ICON, TREND_TYPE, UP_TREND_IS_BETTER } from '@src/constants/resources';
+import { CHART_TREND_TIP, ChartType, TrendIcon, TrendType, UP_TREND_IS_BETTER } from '@src/constants/resources';
 import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
 import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
 import { ChartWrapper } from '@src/containers/MetricsStep/style';
@@ -16,21 +16,21 @@ import { Tooltip } from '@mui/material';
 import { theme } from '@src/theme';
 
 export interface ITrendInfo {
-  icon?: TREND_ICON;
+  icon?: TrendIcon;
   trendNumber?: number;
   dateRangeList?: string[];
-  type: CHART_TYPE;
-  trendType?: TREND_TYPE;
+  type: ChartType;
+  trendType?: TrendType;
 }
 
 const TREND_ICON_MAPPING = {
-  [TREND_ICON.UP]: <TrendingUpSharpIcon aria-label={'trend up'} />,
-  [TREND_ICON.DOWN]: <TrendingDownSharpIcon aria-label={'trend down'} />,
+  [TrendIcon.Up]: <TrendingUpSharpIcon aria-label={'trend up'} />,
+  [TrendIcon.Down]: <TrendingDownSharpIcon aria-label={'trend down'} />,
 };
 
 const TREND_COLOR_MAP = {
-  [TREND_TYPE.BETTER]: theme.main.chartTrend.betterColor,
-  [TREND_TYPE.WORSE]: theme.main.chartTrend.worseColor,
+  [TrendType.Better]: theme.main.chartTrend.betterColor,
+  [TrendType.Worse]: theme.main.chartTrend.worseColor,
 };
 
 const DECREASE = 'decrease';
@@ -61,7 +61,7 @@ const ChartAndTitleWrapper = forwardRef(
       <StyledTooltipContent>
         <p>{`The rate of ${trendDescribe()} for ${CHART_TREND_TIP[trendInfo.type]}: `}</p>
         {trendInfo.dateRangeList?.map((dateRange) => <p key={dateRange}>{dateRange}</p>)}
-        <TrendTypeIcon color={TREND_COLOR_MAP[trendInfo.trendType!]} reverse={trendInfo.trendType === TREND_TYPE.WORSE}>
+        <TrendTypeIcon color={TREND_COLOR_MAP[trendInfo.trendType!]} reverse={trendInfo.trendType === TrendType.Worse}>
           <ThumbUpIcon />
         </TrendTypeIcon>
       </StyledTooltipContent>
@@ -77,7 +77,7 @@ const ChartAndTitleWrapper = forwardRef(
                 color={TREND_COLOR_MAP[trendInfo.trendType!]}
                 aria-label={trendInfo.type + ' trend container'}
               >
-                <TrendIcon>{TREND_ICON_MAPPING[trendInfo.icon!]}</TrendIcon>
+                <TrendIconSpan>{TREND_ICON_MAPPING[trendInfo.icon!]}</TrendIconSpan>
                 <span aria-label='trend number'>{convertNumberToPercent(trendInfo.trendNumber)}</span>
               </TrendContainer>
             </Tooltip>

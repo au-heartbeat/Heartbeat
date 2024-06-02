@@ -2,7 +2,7 @@ import { ConfigSectionContainer, StyledForm, StyledTextField } from '@src/compon
 import { FIELD_KEY, useVerifyPipelineToolEffect } from '@src/hooks/useVerifyPipelineToolEffect';
 import { PIPELINE_TOOL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
-import { CONFIG_TITLE, PIPELINE_TOOL_TYPES } from '@src/constants/resources';
+import { ConfigTitle, PIPELINE_TOOL_TYPES } from '@src/constants/resources';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { IPipelineToolData } from '@src/containers/ConfigStep/Form/schema';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
@@ -35,7 +35,7 @@ export const PipelineTool = () => {
   return (
     <ConfigSectionContainer aria-label='Pipeline Tool Config'>
       {isLoading && <Loading />}
-      <ConfigSelectionTitle>{CONFIG_TITLE.PIPELINE_TOOL}</ConfigSelectionTitle>
+      <ConfigSelectionTitle>{ConfigTitle.PipelineTool}</ConfigSelectionTitle>
       <StyledAlterWrapper>
         <FormAlert
           showAlert={isVerifyTimeOut}

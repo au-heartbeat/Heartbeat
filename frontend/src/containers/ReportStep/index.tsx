@@ -47,7 +47,7 @@ import {
   DORA_METRICS,
   MESSAGE,
   REPORT_PAGE_TYPE,
-  REQUIRED_DATA,
+  RequiredData,
 } from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
@@ -142,7 +142,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const { metrics, calendarType } = configData.basic;
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
-  const includeRework = metrics.includes(REQUIRED_DATA.REWORK_TIMES);
+  const includeRework = metrics.includes(RequiredData.ReworkTimes);
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const shouldShowTabs = allDateRanges.length > 1;
