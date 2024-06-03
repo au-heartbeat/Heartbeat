@@ -27,7 +27,7 @@ import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
 import { MESSAGE, NO_PIPELINE_STEP_ERROR } from '@src/constants/resources';
 import { shouldMetricsLoaded } from '@src/context/stepper/StepperSlice';
 import { ErrorNotification } from '@src/components/ErrorNotification';
-import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { useEffect, useRef, useState } from 'react';
 import { Loading } from '@src/components/Loading';
@@ -130,7 +130,7 @@ export const PipelineMetricSelection = ({
 
   useEffect(() => {
     const popup = () => {
-      if (stepFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX) {
+      if (stepFailedStatus === MetricsDataFailStatus.PartialFailed4xx) {
         dispatch(
           addNotification({
             type: 'warning',
@@ -138,8 +138,8 @@ export const PipelineMetricSelection = ({
           }),
         );
       } else if (
-        stepFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS ||
-        stepFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT
+        stepFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
+        stepFailedStatus === MetricsDataFailStatus.PartialFailedTimeout
       ) {
         dispatch(
           addNotification({

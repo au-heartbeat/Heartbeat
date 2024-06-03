@@ -1,5 +1,5 @@
-import { CYCLE_TIME_METRICS_NAME, METRICS_CONSTANTS, REPORT_SUFFIX_UNITS } from '@src/constants/resources';
 import { ReportDataWithTwoColumns, ValueWithUnits } from '@src/hooks/reportMapper/reportUIDataStructure';
+import { CycleTimeMetricsName, METRICS_CONSTANTS, ReportSuffixUnits } from '@src/constants/resources';
 import { CycleTimeResponse, Swimlane } from '@src/clients/report/dto/response';
 
 export const cycleTimeMapper = ({
@@ -21,10 +21,10 @@ export const cycleTimeMapper = ({
     const swimlane = getSwimlaneByItemName(itemName);
     return swimlane
       ? [
-          { value: swimlane.averageTimeForSP.toFixed(2), unit: REPORT_SUFFIX_UNITS.PER_SP },
+          { value: swimlane.averageTimeForSP.toFixed(2), unit: ReportSuffixUnits.DaysPerSP },
           {
             value: swimlane.averageTimeForCards.toFixed(2),
-            unit: REPORT_SUFFIX_UNITS.PER_CARD,
+            unit: ReportSuffixUnits.DaysPerCard,
           },
         ]
       : [];
@@ -32,10 +32,10 @@ export const cycleTimeMapper = ({
 
   const cycleTimeValue: { [key: string]: ValueWithUnits[] } = {
     AVERAGE_CYCLE_TIME: [
-      { value: Number(averageCycleTimePerSP.toFixed(2)), unit: REPORT_SUFFIX_UNITS.PER_SP },
+      { value: Number(averageCycleTimePerSP.toFixed(2)), unit: ReportSuffixUnits.DaysPerSP },
       {
         value: averageCycleTimePerCard.toFixed(2),
-        unit: REPORT_SUFFIX_UNITS.PER_CARD,
+        unit: ReportSuffixUnits.DaysPerCard,
       },
     ],
     DEVELOPMENT_PROPORTION: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.inDevValue),
@@ -50,7 +50,7 @@ export const cycleTimeMapper = ({
     AVERAGE_TESTING_TIME: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
   };
 
-  Object.entries(CYCLE_TIME_METRICS_NAME).map(([key, cycleName]) => {
+  Object.entries(CycleTimeMetricsName).map(([key, cycleName]) => {
     if (cycleTimeValue[key].length > 0) {
       mappedCycleTimeValue.push({ id: mappedCycleTimeValue.length, name: cycleName, valueList: cycleTimeValue[key] });
     }

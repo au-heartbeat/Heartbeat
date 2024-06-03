@@ -6,7 +6,7 @@ import {
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import { BOARD_MAPPING, ERROR_MESSAGE_TIME_DURATION, LIST_OPEN, NO_RESULT_DASH } from '../../fixtures';
-import { CYCLE_TIME_SETTINGS_TYPES, MESSAGE, METRICS_CONSTANTS } from '@src/constants/resources';
+import { CycleTimeSettingsTypes, MESSAGE, METRICS_CONSTANTS } from '@src/constants/resources';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -321,7 +321,7 @@ describe('CycleTime', () => {
     await userEvent.click(screen.getByRole('radio', { name: cycleTimeTypeLabels[1] }));
 
     expect(mockedUseAppDispatch).toHaveBeenCalledTimes(4);
-    expect(mockedUseAppDispatch).toHaveBeenCalledWith(setCycleTimeSettingsType(CYCLE_TIME_SETTINGS_TYPES.BY_STATUS));
+    expect(mockedUseAppDispatch).toHaveBeenCalledWith(setCycleTimeSettingsType(CycleTimeSettingsTypes.BY_STATUS));
     expect(mockedUseAppDispatch).toHaveBeenCalledWith(
       updateCycleTimeSettings(
         cycleTimeSettings.map((item) => ({
@@ -408,7 +408,7 @@ describe('CycleTime', () => {
     });
   });
 
-  [CYCLE_TIME_SETTINGS_TYPES.BY_STATUS, CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN].forEach((cycleTimeSettingsType) => {
+  [CycleTimeSettingsTypes.BY_STATUS, CycleTimeSettingsTypes.BY_COLUMN].forEach((cycleTimeSettingsType) => {
     it('should show warning message given both mapping block column and add flag as block', () => {
       (selectMetricsContent as jest.Mock).mockReturnValue({
         cycleTimeSettingsType,

@@ -47,10 +47,10 @@ import {
   DORA_METRICS,
   MESSAGE,
   REPORT_PAGE_TYPE,
-  REQUIRED_DATA,
+  RequiredData,
 } from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { CHART_INDEX, DISPLAY_TYPE, METRIC_TYPES } from '@src/constants/commons';
+import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
@@ -74,9 +74,9 @@ export interface ReportStepProps {
 }
 
 const timeoutNotificationMessages = {
-  [TimeoutErrorKey[METRIC_TYPES.BOARD]]: 'Board metrics',
-  [TimeoutErrorKey[METRIC_TYPES.DORA]]: 'DORA metrics',
-  [TimeoutErrorKey[METRIC_TYPES.ALL]]: 'Report',
+  [TimeoutErrorKey[MetricTypes.Board]]: 'Board metrics',
+  [TimeoutErrorKey[MetricTypes.DORA]]: 'DORA metrics',
+  [TimeoutErrorKey[MetricTypes.All]]: 'Report',
 };
 
 export interface DateRangeRequestResult {
@@ -142,7 +142,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const { metrics, calendarType } = configData.basic;
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
-  const includeRework = metrics.includes(REQUIRED_DATA.REWORK_TIMES);
+  const includeRework = metrics.includes(RequiredData.ReworkTimes);
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   const shouldShowTabs = allDateRanges.length > 1;
@@ -264,8 +264,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     csvTimeStamp,
     metrics,
     metricTypes: [
-      ...(shouldShowBoardMetrics ? [METRIC_TYPES.BOARD] : []),
-      ...(shouldShowDoraMetrics ? [METRIC_TYPES.DORA] : []),
+      ...(shouldShowBoardMetrics ? [MetricTypes.Board] : []),
+      ...(shouldShowDoraMetrics ? [MetricTypes.DORA] : []),
     ],
     jiraBoardSetting: shouldShowBoardMetrics ? getJiraBoardSetting() : undefined,
     ...(shouldShowDoraMetrics ? getDoraSetting() : {}),
@@ -274,7 +274,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const boardReportRequestBody = {
     ...basicReportRequestBody,
     metrics: metrics.filter((metric) => BOARD_METRICS.includes(metric)),
-    metricTypes: [METRIC_TYPES.BOARD],
+    metricTypes: [MetricTypes.Board],
     buildKiteSetting: undefined,
     codebaseSetting: undefined,
   };
@@ -282,7 +282,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const doraReportRequestBody = {
     ...basicReportRequestBody,
     metrics: metrics.filter((metric) => DORA_METRICS.includes(metric)),
-    metricTypes: [METRIC_TYPES.DORA],
+    metricTypes: [MetricTypes.DORA],
     jiraBoardSetting: undefined,
   };
 

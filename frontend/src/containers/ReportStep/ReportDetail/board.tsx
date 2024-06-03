@@ -1,7 +1,7 @@
 import { isOnlySelectClassification, selectMetrics } from '@src/context/config/configSlice';
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
-import { MESSAGE, METRICS_TITLE, REQUIRED_DATA } from '@src/constants/resources';
+import { MESSAGE, MetricsTitle, RequiredData } from '@src/constants/resources';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -40,18 +40,18 @@ export const BoardDetail = withGoBack(({ data, errorMessage }: Property) => {
 
   return (
     <>
-      {showSectionWith2Columns(METRICS_TITLE.VELOCITY, mappedData?.velocityList)}
-      {showSectionWith2Columns(METRICS_TITLE.CYCLE_TIME, mappedData?.cycleTimeList)}
-      {metrics.includes(REQUIRED_DATA.CLASSIFICATION) && (
+      {showSectionWith2Columns(MetricsTitle.Velocity, mappedData?.velocityList)}
+      {showSectionWith2Columns(MetricsTitle.CycleTime, mappedData?.cycleTimeList)}
+      {metrics.includes(RequiredData.Classification) && (
         <ReportForThreeColumns
-          title={METRICS_TITLE.CLASSIFICATION}
+          title={MetricsTitle.Classification}
           fieldName={'Field Name'}
           listName={'Subtitle'}
           data={mappedData?.classification}
           errorMessage={errorMessage}
         />
       )}
-      {showSectionWith2Columns(METRICS_TITLE.REWORK, mappedData?.reworkList)}
+      {showSectionWith2Columns(MetricsTitle.Rework, mappedData?.reworkList)}
     </>
   );
 });

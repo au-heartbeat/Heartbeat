@@ -1,6 +1,6 @@
 import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-import { METRICS_TITLE, PIPELINE_STEP, SUBTITLE } from '@src/constants/resources';
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
+import { MetricsTitle, PIPELINE_STEP, SUBTITLE } from '@src/constants/resources';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { reportMapper } from '@src/hooks/reportMapper/report';
@@ -24,10 +24,10 @@ export const DoraDetail = withGoBack(({ data }: Property) => {
 
   return (
     <>
-      {showTwoColumnSection(METRICS_TITLE.DEPLOYMENT_FREQUENCY, mappedData.deploymentFrequencyList)}
-      {showThreeColumnSection(METRICS_TITLE.LEAD_TIME_FOR_CHANGES, mappedData.leadTimeForChangesList)}
-      {showTwoColumnSection(METRICS_TITLE.DEV_CHANGE_FAILURE_RATE, mappedData.devChangeFailureRateList)}
-      {showTwoColumnSection(METRICS_TITLE.DEV_MEAN_TIME_TO_RECOVERY, mappedData.devMeanTimeToRecoveryList)}
+      {showTwoColumnSection(MetricsTitle.DeploymentFrequency, mappedData.deploymentFrequencyList)}
+      {showThreeColumnSection(MetricsTitle.LeadTimeForChanges, mappedData.leadTimeForChangesList)}
+      {showTwoColumnSection(MetricsTitle.DevChangeFailureRate, mappedData.devChangeFailureRateList)}
+      {showTwoColumnSection(MetricsTitle.DevMeanTimeToRecovery, mappedData.devMeanTimeToRecoveryList)}
     </>
   );
 });

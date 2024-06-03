@@ -1,5 +1,5 @@
 import {
-  CONFIG_TITLE,
+  ConfigTitle,
   ERROR_MESSAGE_COLOR,
   MOCK_SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT,
   MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL,
@@ -11,8 +11,8 @@ import {
   VERIFY,
 } from '../../fixtures';
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
-import { AXIOS_REQUEST_ERROR_CODE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { AxiosRequestErrorCode, SourceControlTypes } from '@src/constants/resources';
 import { updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
@@ -79,7 +79,7 @@ describe('SourceControl', () => {
   it('should show sourceControl title and fields when render sourceControl component', () => {
     setup();
 
-    expect(screen.getAllByText(CONFIG_TITLE.SOURCE_CONTROL)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(ConfigTitle.SourceControl)[0]).toBeInTheDocument();
     SOURCE_CONTROL_FIELDS.map((field) => {
       expect(screen.getByLabelText(`${field} *`)).toBeInTheDocument();
     });
@@ -87,7 +87,7 @@ describe('SourceControl', () => {
 
   it('should show default value gitHub when init sourceControl component', () => {
     setup();
-    const sourceControlType = screen.getByText(SOURCE_CONTROL_TYPES.GITHUB);
+    const sourceControlType = screen.getByText(SourceControlTypes.GitHub);
 
     expect(sourceControlType).toBeInTheDocument();
   });
@@ -106,7 +106,7 @@ describe('SourceControl', () => {
     });
 
     expect(tokenInput.value).toEqual('');
-    expect(screen.getByText(SOURCE_CONTROL_TYPES.GITHUB)).toBeInTheDocument();
+    expect(screen.getByText(SourceControlTypes.GitHub)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: RESET })).not.toBeTruthy();
     expect(screen.getByRole('button', { name: VERIFY })).toBeDisabled();
   });
@@ -115,7 +115,7 @@ describe('SourceControl', () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillSourceControlFieldsInformation();
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+      code: AxiosRequestErrorCode.Timeout,
     });
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -130,7 +130,7 @@ describe('SourceControl', () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillSourceControlFieldsInformation();
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+      code: AxiosRequestErrorCode.Timeout,
     });
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -249,7 +249,7 @@ describe('SourceControl', () => {
     setup();
     await fillSourceControlFieldsInformation();
     sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+      code: AxiosRequestErrorCode.Timeout,
     });
 
     await userEvent.click(screen.getByText(VERIFY));

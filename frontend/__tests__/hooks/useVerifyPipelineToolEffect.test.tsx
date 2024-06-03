@@ -7,7 +7,7 @@ import { pipelineToolDefaultValues } from '@src/containers/ConfigStep/Form/useDe
 import { useVerifyPipelineToolEffect } from '@src/hooks/useVerifyPipelineToolEffect';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { pipelineToolSchema } from '@src/containers/ConfigStep/Form/schema';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { FormProvider } from '@test/utils/FormProvider';
 import { setupStore } from '../utils/setupStoreUtil';
 import { renderHook } from '@testing-library/react';
@@ -102,7 +102,7 @@ describe('use verify pipelineTool state', () => {
     },
     {
       mock: {
-        code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+        code: AxiosRequestErrorCode.Timeout,
         errorTitle: '',
       },
       field: 'token',

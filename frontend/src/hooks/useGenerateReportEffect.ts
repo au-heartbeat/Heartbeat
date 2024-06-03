@@ -12,7 +12,7 @@ import { IPollingRes, reportClient } from '@src/clients/report/ReportClient';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { TimeoutError } from '@src/errors/TimeoutError';
-import { METRIC_TYPES } from '@src/constants/commons';
+import { MetricTypes } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks/index';
 import { useRef, useState } from 'react';
 import get from 'lodash/get';
@@ -69,21 +69,21 @@ export const initReportInfo = (): IReportInfo => ({
 });
 
 export const TimeoutErrorKey = {
-  [METRIC_TYPES.BOARD]: 'timeout4Board',
-  [METRIC_TYPES.DORA]: 'timeout4Dora',
-  [METRIC_TYPES.ALL]: 'timeout4Report',
+  [MetricTypes.Board]: 'timeout4Board',
+  [MetricTypes.DORA]: 'timeout4Dora',
+  [MetricTypes.All]: 'timeout4Report',
 };
 
 export const GeneralErrorKey = {
-  [METRIC_TYPES.BOARD]: 'generalError4Board',
-  [METRIC_TYPES.DORA]: 'generalError4Dora',
-  [METRIC_TYPES.ALL]: 'generalError4Report',
+  [MetricTypes.Board]: 'generalError4Board',
+  [MetricTypes.DORA]: 'generalError4Dora',
+  [MetricTypes.All]: 'generalError4Report',
 };
 
 const REJECTED = 'rejected';
 const FULFILLED = 'fulfilled';
 
-const getErrorKey = (error: Error, source: METRIC_TYPES): string => {
+const getErrorKey = (error: Error, source: MetricTypes): string => {
   return error instanceof TimeoutError ? TimeoutErrorKey[source] : GeneralErrorKey[source];
 };
 
@@ -143,7 +143,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
         reportInfo.shouldShowPipelineMetricsError = true;
         reportInfo.shouldShowSourceControlMetricsError = true;
       } else {
-        const errorKey = getErrorKey(matchedRes.reason, METRIC_TYPES.ALL) as keyof IReportError;
+        const errorKey = getErrorKey(matchedRes.reason, MetricTypes.All) as keyof IReportError;
         reportInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
       }
       return reportInfo;
@@ -194,7 +194,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
       return preReportInfos.map((reportInfo) => {
         if (metricTypes.length === 2) {
           reportInfo.timeout4Report = { message: DEFAULT_MESSAGE, shouldShow: true };
-        } else if (metricTypes.includes(METRIC_TYPES.BOARD)) {
+        } else if (metricTypes.includes(MetricTypes.Board)) {
           reportInfo.timeout4Board = { message: DEFAULT_MESSAGE, shouldShow: true };
         } else {
           reportInfo.timeout4Dora = { message: DEFAULT_MESSAGE, shouldShow: true };
@@ -220,7 +220,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
   const updateErrorAfterFetchReport = (
     res: PromiseSettledResult<ReportCallbackResponse>[],
-    metricTypes: METRIC_TYPES[],
+    metricTypes: MetricTypes[],
   ) => {
     updateReportPageFailedTimeRangeInfosAfterReport(res);
 
@@ -230,7 +230,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
       return preReportInfos.map((resInfo, index) => {
         const currentRes = res[index];
         if (currentRes.status === REJECTED) {
-          const source: METRIC_TYPES = metricTypes.length === 2 ? METRIC_TYPES.ALL : metricTypes[0];
+          const source: MetricTypes = metricTypes.length === 2 ? MetricTypes.All : metricTypes[0];
           const errorKey = getErrorKey(currentRes.reason, source) as keyof IReportError;
           resInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
         }

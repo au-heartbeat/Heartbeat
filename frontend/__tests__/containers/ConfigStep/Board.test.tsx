@@ -1,7 +1,7 @@
 import {
   BOARD_FIELDS,
   BOARD_TYPES,
-  CONFIG_TITLE,
+  ConfigTitle,
   ERROR_MESSAGE_COLOR,
   MOCK_BOARD_URL_FOR_JIRA,
   RESET,
@@ -15,8 +15,8 @@ import {
 import { boardConfigDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { boardConfigSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
 import { UnauthorizedError } from '@src/errors/UnauthorizedError';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
 import { Board } from '@src/containers/ConfigStep/Board';
 import { setupStore } from '../../utils/setupStoreUtil';
@@ -82,7 +82,7 @@ describe('Board', () => {
     BOARD_FIELDS.map((field) => {
       expect(screen.getByLabelText(`${field} *`)).toBeInTheDocument();
     });
-    expect(screen.getAllByText(CONFIG_TITLE.BOARD)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(ConfigTitle.Board)[0]).toBeInTheDocument();
   });
 
   it('should show default value jira when init board component', () => {
@@ -96,7 +96,7 @@ describe('Board', () => {
 
   it('should show detail options when click board field', async () => {
     setup();
-    await userEvent.click(screen.getByRole('combobox', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('combobox', { name: ConfigTitle.Board }));
     const listBox = within(screen.getByRole('listbox'));
     const options = listBox.getAllByRole('option');
     const optionValue = options.map((li) => li.getAttribute('data-value'));
@@ -106,7 +106,7 @@ describe('Board', () => {
 
   it('should show board type when select board field value ', async () => {
     setup();
-    await userEvent.click(screen.getByRole('combobox', { name: CONFIG_TITLE.BOARD }));
+    await userEvent.click(screen.getByRole('combobox', { name: ConfigTitle.Board }));
 
     await waitFor(() => {
       expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
@@ -181,7 +181,7 @@ describe('Board', () => {
   it('should hidden timeout alert when click reset button', async () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillBoardFieldsInformation();
-    const mockedError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const mockedError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -196,7 +196,7 @@ describe('Board', () => {
   it('should hidden timeout alert when the error type of api call becomes other', async () => {
     const { getByLabelText, queryByLabelText } = setup();
     await fillBoardFieldsInformation();
-    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const timeoutError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(timeoutError));
 
     await userEvent.click(screen.getByText(VERIFY));
@@ -334,7 +334,7 @@ describe('Board', () => {
   it('should close alert modal when user manually close the alert', async () => {
     setup();
     await fillBoardFieldsInformation();
-    const timeoutError = new TimeoutError('', AXIOS_REQUEST_ERROR_CODE.TIMEOUT);
+    const timeoutError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
     boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(timeoutError));
 
     await userEvent.click(screen.getByText(VERIFY));

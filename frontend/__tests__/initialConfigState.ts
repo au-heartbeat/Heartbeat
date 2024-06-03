@@ -1,7 +1,7 @@
 import { BOARD_TYPES, PIPELINE_TOOL_TYPES, REGULAR_CALENDAR } from './fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { BasicConfigState } from '@src/context/config/configSlice';
-import { SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { SourceControlTypes } from '@src/constants/resources';
 
 const initialConfigState: BasicConfigState = {
   isProjectCreated: true,
@@ -45,7 +45,7 @@ const initialConfigState: BasicConfigState = {
   },
   sourceControl: {
     config: {
-      type: SOURCE_CONTROL_TYPES.GITHUB,
+      type: SourceControlTypes.GitHub,
       token: '',
     },
     isShow: false,

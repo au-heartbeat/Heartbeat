@@ -1,15 +1,15 @@
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { CHART_TYPE, TREND_ICON, TREND_TYPE } from '@src/constants/resources';
+import { ChartType, TrendIcon, TrendType } from '@src/constants/resources';
 import { render, screen } from '@testing-library/react';
 import { theme } from '@src/theme';
 
 describe('ChartAndTitleWrapper', () => {
   it('should render green up icon given icon is set to up and better', () => {
     const testedTrendInfo = {
-      trendType: TREND_TYPE.BETTER,
-      icon: TREND_ICON.UP,
+      trendType: TrendType.Better,
+      icon: TrendIcon.Up,
       trendNumber: 0.83,
-      type: CHART_TYPE.VELOCITY,
+      type: ChartType.Velocity,
     };
     render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
     const icon = screen.getByTestId('TrendingUpSharpIcon');
@@ -20,10 +20,10 @@ describe('ChartAndTitleWrapper', () => {
 
   it('should render down icon given icon is set to down and worse', () => {
     const testedTrendInfo = {
-      trendType: TREND_TYPE.WORSE,
-      icon: TREND_ICON.DOWN,
+      trendType: TrendType.Worse,
+      icon: TrendIcon.Down,
       trendNumber: -0.83,
-      type: CHART_TYPE.VELOCITY,
+      type: ChartType.Velocity,
     };
     render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
     const icon = screen.getByTestId('TrendingDownSharpIcon');
@@ -34,10 +34,10 @@ describe('ChartAndTitleWrapper', () => {
 
   it('should show positive trend number even if the tend number is negative', () => {
     const testedTrendInfo = {
-      trendType: TREND_TYPE.WORSE,
-      icon: TREND_ICON.DOWN,
+      trendType: TrendType.Worse,
+      icon: TrendIcon.Down,
       trendNumber: -0.8372,
-      type: CHART_TYPE.VELOCITY,
+      type: ChartType.Velocity,
     };
     render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
 

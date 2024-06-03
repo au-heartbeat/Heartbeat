@@ -1,8 +1,8 @@
-import { AXIOS_REQUEST_ERROR_CODE, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
+import { AxiosRequestErrorCode, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
 import { updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
-import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { formatDateToTimestampString } from '@src/utils/util';
 import { useAppDispatch } from '@src/hooks/index';
 import { ReactNode, useState } from 'react';
@@ -25,45 +25,45 @@ export interface useGetBoardInfoInterface {
   getBoardInfo: (data: BoardInfoConfigDTO) => Promise<Awaited<BoardInfoResponse[]> | undefined>;
   isLoading: boolean;
   errorMessage: Record<string, ReactNode>;
-  boardInfoFailedStatus: METRICS_DATA_FAIL_STATUS;
+  boardInfoFailedStatus: MetricsDataFailStatus;
 }
 
 const boardInfoPartialFailedStatusMapping = (code: string | number) => {
-  if (code == AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
-    return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
+  if (code == AxiosRequestErrorCode.Timeout) {
+    return MetricsDataFailStatus.PartialFailedTimeout;
   }
   const numericCode = code as number;
   if (numericCode >= HttpStatusCode.BadRequest && numericCode < HttpStatusCode.InternalServerError) {
-    return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
+    return MetricsDataFailStatus.PartialFailed4xx;
   }
-  return METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
+  return MetricsDataFailStatus.PartialFailed4xx;
 };
 
-const errorStatusMap = (status: METRICS_DATA_FAIL_STATUS) => {
+const errorStatusMap = (status: MetricsDataFailStatus) => {
   const errorStatusMap = {
-    [METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX]: {
+    [MetricsDataFailStatus.PartialFailed4xx]: {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.GENERAL_ERROR,
         message: BOARD_CONFIG_INFO_ERROR.GENERAL_ERROR,
         code: HttpStatusCode.BadRequest,
       },
-      elevateStatus: METRICS_DATA_FAIL_STATUS.ALL_FAILED_4XX,
+      elevateStatus: MetricsDataFailStatus.AllFailed4xx,
     },
-    [METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT]: {
+    [MetricsDataFailStatus.PartialFailedTimeout]: {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.EMPTY,
         message: BOARD_CONFIG_INFO_ERROR.RETRY,
-        code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+        code: AxiosRequestErrorCode.Timeout,
       },
-      elevateStatus: METRICS_DATA_FAIL_STATUS.ALL_FAILED_TIMEOUT,
+      elevateStatus: MetricsDataFailStatus.AllFailedTimeout,
     },
-    [METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS]: {
+    [MetricsDataFailStatus.PartialFailedNoCards]: {
       errorMessage: {
         title: BOARD_CONFIG_INFO_TITLE.NO_CONTENT,
         message: BOARD_CONFIG_INFO_ERROR.NOT_CONTENT,
-        code: AXIOS_REQUEST_ERROR_CODE.NO_CARDS,
+        code: AxiosRequestErrorCode.NoCards,
       },
-      elevateStatus: METRICS_DATA_FAIL_STATUS.ALL_FAILED_NO_CARDS,
+      elevateStatus: MetricsDataFailStatus.AllFailedNoCards,
     },
   };
   return get(errorStatusMap, status);
@@ -73,14 +73,14 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
-  const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(METRICS_DATA_FAIL_STATUS.NOT_FAILED);
+  const [boardInfoFailedStatus, setBoardInfoFailedStatus] = useState(MetricsDataFailStatus.NotFailed);
 
   const getBoardInfo = async (data: BoardInfoConfigDTO) => {
     setIsLoading(true);
     setErrorMessage({});
     const localFailedTimeRangeList: string[] = [];
     let errorCount = 0;
-    let localBoardInfoFailedStatus: METRICS_DATA_FAIL_STATUS;
+    let localBoardInfoFailedStatus: MetricsDataFailStatus;
 
     if (data.dateRanges) {
       const dateRangeCopy = Array.from(data.dateRanges);
@@ -105,9 +105,9 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
           .then((res) => {
             if (!res.data) {
               errorCount++;
-              localBoardInfoFailedStatus = METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS;
+              localBoardInfoFailedStatus = MetricsDataFailStatus.PartialFailedNoCards;
               localFailedTimeRangeList.push(formatDateToTimestampString(info.startDate as string));
-              setBoardInfoFailedStatus(METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS);
+              setBoardInfoFailedStatus(MetricsDataFailStatus.PartialFailedNoCards);
             }
             return res;
           })

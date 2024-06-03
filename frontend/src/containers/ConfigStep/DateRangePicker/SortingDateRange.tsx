@@ -8,8 +8,8 @@ import {
 import { selectDateRangeSortType, updateDateRangeSortType } from '@src/context/config/configSlice';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { SORTING_DATE_RANGE_TEXT } from '@src/constants/resources';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import { SortingDateRangeText } from '@src/constants/resources';
 import { Box } from '@mui/material';
 
 type Props = {
@@ -33,7 +33,7 @@ export const SortingDateRange = ({ disabled }: Props) => {
   return (
     <Box aria-label='Sorting date range'>
       <SortingButtoningContainer>
-        <SortingTextButton disableRipple>{SORTING_DATE_RANGE_TEXT[currentSortType]}</SortingTextButton>
+        <SortingTextButton disableRipple>{SortingDateRangeText[currentSortType]}</SortingTextButton>
         <SortingButton aria-label='sort button' onClick={handleChangeSort} disabled={disabled}>
           {currentSortType === SortType.ASCENDING ? (
             <AscendingIcon disabled={disabled} />

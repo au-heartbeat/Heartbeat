@@ -1,6 +1,6 @@
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
 import { CYCLE_TIME, DEPLOYMENT_FREQUENCY, VELOCITY } from '../../fixtures';
-import { REPORT_SUFFIX_UNITS } from '@src/constants/resources';
+import { ReportSuffixUnits } from '@src/constants/resources';
 import { render, screen } from '@testing-library/react';
 
 describe('Report for two columns', () => {
@@ -18,9 +18,9 @@ describe('Report for two columns', () => {
 
   it('should show cycle time table row', () => {
     const mockData = [
-      { id: 0, name: 'name1', valueList: [{ value: '1.1', units: REPORT_SUFFIX_UNITS.PER_CARD }] },
-      { id: 1, name: 'name2', valueList: [{ value: '2', units: REPORT_SUFFIX_UNITS.PER_CARD }] },
-      { id: 2, name: <div>name3</div>, valueList: [{ value: '3', units: REPORT_SUFFIX_UNITS.PER_CARD }] },
+      { id: 0, name: 'name1', valueList: [{ value: '1.1', units: ReportSuffixUnits.DaysPerCard }] },
+      { id: 1, name: 'name2', valueList: [{ value: '2', units: ReportSuffixUnits.DaysPerCard }] },
+      { id: 2, name: <div>name3</div>, valueList: [{ value: '3', units: ReportSuffixUnits.DaysPerCard }] },
     ];
 
     render(<ReportForTwoColumns title={CYCLE_TIME} data={mockData} />);
@@ -42,8 +42,8 @@ describe('Report for two columns', () => {
 
   it('should show table when data with Units is not empty', () => {
     const mockData = [
-      { id: 0, name: 'name1', valueList: [{ value: 1, units: REPORT_SUFFIX_UNITS.PER_CARD }] },
-      { id: 1, name: 'name2', valueList: [{ value: 2, units: REPORT_SUFFIX_UNITS.PER_CARD }] },
+      { id: 0, name: 'name1', valueList: [{ value: 1, units: ReportSuffixUnits.DaysPerCard }] },
+      { id: 1, name: 'name2', valueList: [{ value: 2, units: ReportSuffixUnits.DaysPerCard }] },
     ];
 
     render(<ReportForTwoColumns title={CYCLE_TIME} data={mockData} />);

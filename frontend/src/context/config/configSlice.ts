@@ -6,7 +6,7 @@ import {
   IMPORT_METRICS_MAPPING,
   MAX_TIME_RANGE_AMOUNT,
   MESSAGE,
-  REQUIRED_DATA,
+  RequiredData,
 } from '@src/constants/resources';
 import { initialPipelineToolState, IPipelineToolState } from '@src/context/config/pipelineTool/pipelineToolSlice';
 import { initialSourceControlState, ISourceControl } from '@src/context/config/sourceControl/sourceControlSlice';
@@ -64,19 +64,19 @@ export const initialBasicConfigState: BasicConfigState = {
 
 const getMetricsInfo = (metrics: string[]) => {
   const {
-    VELOCITY,
-    CYCLE_TIME,
-    CLASSIFICATION,
-    LEAD_TIME_FOR_CHANGES,
-    DEPLOYMENT_FREQUENCY,
-    DEV_CHANGE_FAILURE_RATE,
-    DEV_MEAN_TIME_TO_RECOVERY,
-    REWORK_TIMES,
-  } = REQUIRED_DATA;
+    Velocity: VELOCITY,
+    CycleTime: CYCLE_TIME,
+    Classification: CLASSIFICATION,
+    LeadTimeForChanges: LEAD_TIME_FOR_CHANGES,
+    DeploymentFrequency: DEPLOYMENT_FREQUENCY,
+    DevChangeFailureRate: DEV_CHANGE_FAILURE_RATE,
+    DevMeanTimeToRecovery: DEV_MEAN_TIME_TO_RECOVERY,
+    ReworkTimes: REWORK_TIMES,
+  } = RequiredData;
   return {
     metrics: metrics
       .map((metric) => IMPORT_METRICS_MAPPING[metric])
-      .filter((metric) => (Object.values(REQUIRED_DATA) as string[]).includes(metric)),
+      .filter((metric) => (Object.values(RequiredData) as string[]).includes(metric)),
     shouldBoardShow: [VELOCITY, CYCLE_TIME, CLASSIFICATION, REWORK_TIMES].some((metric) => metrics.includes(metric)),
     shouldPipelineToolShow: [
       LEAD_TIME_FOR_CHANGES,
@@ -238,10 +238,10 @@ export const isSelectBoardMetrics = (state: RootState) =>
 export const isSelectDoraMetrics = (state: RootState) =>
   state.config.basic.metrics.some((metric) => DORA_METRICS.includes(metric));
 export const isOnlySelectClassification = (state: RootState) =>
-  state.config.basic.metrics.length === 1 && state.config.basic.metrics[0] === REQUIRED_DATA.CLASSIFICATION;
+  state.config.basic.metrics.length === 1 && state.config.basic.metrics[0] === RequiredData.Classification;
 export const isSelectDoraMetricsAndClassification = (state: RootState) =>
   state.config.basic.metrics.some((metric) => DORA_METRICS.includes(metric)) &&
-  state.config.basic.metrics.includes(REQUIRED_DATA.CLASSIFICATION) &&
+  state.config.basic.metrics.includes(RequiredData.Classification) &&
   !state.config.basic.metrics.some((metric) => BOARD_METRICS_EXCLUDE_CLASSIFICATION.includes(metric));
 export const selectBoard = (state: RootState) => state.config.board.config;
 export const selectPipelineTool = (state: RootState) => state.config.pipelineTool.config;

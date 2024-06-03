@@ -4,7 +4,7 @@ import MetricsStep from '@src/containers/MetricsStep';
 import { Provider } from 'react-redux';
 
 import { addNotification } from '@src/context/notification/NotificationSlice';
-import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 
 let store = setupStore();
 const setup = () =>
@@ -19,7 +19,7 @@ jest.mock('@src/context/notification/NotificationSlice', () => ({
   addNotification: jest.fn().mockReturnValue({ type: 'ADD_NEW_NOTIFICATION' }),
 }));
 
-let boardInfoFailStatus = METRICS_DATA_FAIL_STATUS.NOT_FAILED;
+let boardInfoFailStatus = MetricsDataFailStatus.NotFailed;
 
 jest.mock('@src/hooks/useGetBoardInfo', () => ({
   ...jest.requireActual('@src/hooks/useGetBoardInfo'),
@@ -41,7 +41,7 @@ describe('MetricsStep', () => {
   });
 
   it('should show 4xx popup when call get partial 4xx error', async () => {
-    boardInfoFailStatus = METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
+    boardInfoFailStatus = MetricsDataFailStatus.PartialFailed4xx;
     setup();
 
     await waitFor(() => {
@@ -50,7 +50,7 @@ describe('MetricsStep', () => {
   });
 
   it('should show no cards popup when call get partial no cards error', async () => {
-    boardInfoFailStatus = METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS;
+    boardInfoFailStatus = MetricsDataFailStatus.PartialFailedNoCards;
     setup();
 
     await waitFor(() => {

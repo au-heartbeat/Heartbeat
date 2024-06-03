@@ -1,10 +1,10 @@
-import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, SOURCE_CONTROL_TYPES } from '@src/constants/resources';
+import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, SourceControlTypes } from '@src/constants/resources';
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { IStepsParams } from '@src/clients/MetricsClient';
-import { METRIC_TYPES } from '@src/constants/commons';
+import { MetricTypes } from '@src/constants/commons';
 
 export const PROJECT_NAME = 'Heartbeat';
 export const PROJECT_DESCRIPTION =
@@ -100,10 +100,10 @@ export const PIPELINE_TOOL_TYPES = {
   BUILD_KITE: 'BuildKite',
 };
 
-export enum CONFIG_TITLE {
-  BOARD = 'Board',
-  PIPELINE_TOOL = 'Pipeline Tool',
-  SOURCE_CONTROL = 'Source Control',
+export enum ConfigTitle {
+  Board = 'Board',
+  PipelineTool = 'Pipeline Tool',
+  SourceControl = 'Source Control',
 }
 
 export const BOARD_FIELDS = ['Board', 'Board Id', 'Email', 'Site', 'Token'];
@@ -127,18 +127,18 @@ export const VERSION_RESPONSE = {
   version: '1.11',
 };
 
-export enum VERIFY_ERROR_MESSAGE {
-  BAD_REQUEST = 'Please reconfirm the input',
-  UNAUTHORIZED = 'Token is incorrect',
-  INTERNAL_SERVER_ERROR = 'Internal server error',
-  NOT_FOUND = 'Not found',
-  PERMISSION_DENIED = 'Permission denied',
-  REQUEST_TIMEOUT = 'Request Timeout',
-  UNKNOWN = 'Unknown',
+export enum VerifyErrorMessage {
+  BadRequest = 'Please reconfirm the input',
+  Unauthorized = 'Token is incorrect',
+  InternalServerError = 'Internal server error',
+  NotFound = 'Not found',
+  PermissionDenied = 'Permission denied',
+  RequestTimeout = 'Request Timeout',
+  Unknown = 'Unknown',
 }
 
-export enum AXIOS_ERROR_MESSAGE {
-  ERR_NETWORK = 'Network Error',
+export enum AxiosErrorMessage {
+  ErrorNetwork = 'Network Error',
 }
 
 export const VERIFY_FAILED = 'verify failed';
@@ -174,7 +174,7 @@ export const MOCK_PIPELINE_VERIFY_REQUEST_PARAMS = {
 
 export const MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS = {
   token: 'mockToken',
-  type: SOURCE_CONTROL_TYPES.GITHUB,
+  type: SourceControlTypes.GitHub,
 };
 
 export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
@@ -232,7 +232,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
       excludedStates: [],
     },
   },
-  metricTypes: [METRIC_TYPES.BOARD, METRIC_TYPES.DORA],
+  metricTypes: [MetricTypes.Board, MetricTypes.DORA],
 };
 
 export const IMPORTED_NEW_CONFIG_FIXTURE = {
@@ -380,8 +380,8 @@ export const CLASSIFICATION_SETTING = 'Classification setting';
 export const REAL_DONE = 'Real done setting';
 export const DEPLOYMENT_FREQUENCY_SETTINGS = 'Pipeline settings';
 
-export enum PIPELINE_SETTING_TYPES {
-  DEPLOYMENT_FREQUENCY_SETTINGS_TYPE = 'DeploymentFrequencySettings',
+export enum PipelineSettingTypes {
+  DeploymentFrequencySettingsType = 'DeploymentFrequencySettings',
 }
 
 export const CONFIRM_DIALOG_DESCRIPTION = 'All the filled data will be cleared. Continue to Home page?';

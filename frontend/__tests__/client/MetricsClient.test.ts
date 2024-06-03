@@ -1,4 +1,4 @@
-import { BASE_URL, MOCK_GET_STEPS_PARAMS, VERIFY_ERROR_MESSAGE } from '../fixtures';
+import { BASE_URL, MOCK_GET_STEPS_PARAMS, VerifyErrorMessage } from '../fixtures';
 import { metricsClient } from '@src/clients/MetricsClient';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
@@ -28,7 +28,7 @@ describe('get steps from metrics response', () => {
   it('should throw error when getSteps response status 500', async () => {
     server.use(
       http.get(getStepsUrl, () => {
-        return new HttpResponse(JSON.stringify({ hintInfo: VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR }), {
+        return new HttpResponse(JSON.stringify({ hintInfo: VerifyErrorMessage.InternalServerError }), {
           status: HttpStatusCode.InternalServerError,
         });
       }),
@@ -36,13 +36,13 @@ describe('get steps from metrics response', () => {
 
     await expect(async () => {
       await metricsClient.getSteps(params[0], buildId, organizationId, pipelineType, token);
-    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.INTERNAL_SERVER_ERROR);
+    }).rejects.toThrow(VerifyErrorMessage.InternalServerError);
   });
 
   it('should throw error when getSteps response status 400', async () => {
     server.use(
       http.get(getStepsUrl, () => {
-        return new HttpResponse(JSON.stringify({ hintInfo: VERIFY_ERROR_MESSAGE.BAD_REQUEST }), {
+        return new HttpResponse(JSON.stringify({ hintInfo: VerifyErrorMessage.BadRequest }), {
           status: HttpStatusCode.BadRequest,
         });
       }),
@@ -50,7 +50,7 @@ describe('get steps from metrics response', () => {
 
     await expect(async () => {
       await metricsClient.getSteps(params[0], buildId, organizationId, pipelineType, token);
-    }).rejects.toThrow(VERIFY_ERROR_MESSAGE.BAD_REQUEST);
+    }).rejects.toThrow(VerifyErrorMessage.BadRequest);
   });
 
   it('should show isNoStep True when getSteps response status 204', async () => {

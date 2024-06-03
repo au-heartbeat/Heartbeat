@@ -9,10 +9,10 @@ import {
 import {
   BOARD_METRICS,
   BOARD_METRICS_MAPPING,
-  METRICS_SUBTITLE,
-  METRICS_TITLE,
+  MetricsSubtitle,
+  MetricsTitle,
   REPORT_PAGE,
-  REQUIRED_DATA,
+  RequiredData,
   RETRY,
   SHOW_MORE,
 } from '@src/constants/resources';
@@ -42,7 +42,7 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
   const boardMetricsCompleted = (
-    isOnlyEmptyAndDoneState ? boardMetrics.filter((metric) => metric !== REQUIRED_DATA.REWORK_TIMES) : boardMetrics
+    isOnlyEmptyAndDoneState ? boardMetrics.filter((metric) => metric !== RequiredData.ReworkTimes) : boardMetrics
   )
     .map((metric) => BOARD_METRICS_MAPPING[metric])
     .every((metric) => boardReport?.[metric] ?? false);
@@ -51,19 +51,19 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
     const velocity = boardReport?.velocity;
     const cycleTime = boardReport?.cycleTime;
 
-    const velocityItems = boardMetrics.includes(REQUIRED_DATA.VELOCITY)
+    const velocityItems = boardMetrics.includes(RequiredData.Velocity)
       ? [
           {
-            title: METRICS_TITLE.VELOCITY,
+            title: MetricsTitle.Velocity,
             items: velocity && [
               {
                 value: velocity.velocityForSP,
-                subtitle: METRICS_SUBTITLE.VELOCITY,
+                subtitle: MetricsSubtitle.Velocity,
                 isToFixed: false,
               },
               {
                 value: velocity.velocityForCards,
-                subtitle: METRICS_SUBTITLE.THROUGHPUT,
+                subtitle: MetricsSubtitle.Throughput,
                 isToFixed: false,
               },
             ],
@@ -71,18 +71,18 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
         ]
       : [];
 
-    const cycleTimeItems = boardMetrics.includes(REQUIRED_DATA.CYCLE_TIME)
+    const cycleTimeItems = boardMetrics.includes(RequiredData.CycleTime)
       ? [
           {
-            title: METRICS_TITLE.CYCLE_TIME,
+            title: MetricsTitle.CycleTime,
             items: cycleTime && [
               {
                 value: cycleTime.averageCycleTimePerSP,
-                subtitle: METRICS_SUBTITLE.AVERAGE_CYCLE_TIME_PRE_SP,
+                subtitle: MetricsSubtitle.AverageCycleTimePerSP,
               },
               {
                 value: cycleTime.averageCycleTimePerCard,
-                subtitle: METRICS_SUBTITLE.AVERAGE_CYCLE_TIME_PRE_CARD,
+                subtitle: MetricsSubtitle.AverageCycleTimePerCard,
               },
             ],
           },
@@ -95,25 +95,25 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
   const getReworkBoardItem = () => {
     const rework = boardReport?.rework;
 
-    const reworkItems = boardMetrics.includes(REQUIRED_DATA.REWORK_TIMES)
+    const reworkItems = boardMetrics.includes(RequiredData.ReworkTimes)
       ? [
           {
-            title: METRICS_TITLE.REWORK,
+            title: MetricsTitle.Rework,
             items: rework && [
               {
                 value: rework.totalReworkTimes,
-                subtitle: METRICS_SUBTITLE.TOTAL_REWORK_TIMES,
+                subtitle: MetricsSubtitle.TotalReworkTimes,
                 isToFixed: false,
               },
               {
                 value: rework.totalReworkCards,
-                subtitle: METRICS_SUBTITLE.TOTAL_REWORK_CARDS,
+                subtitle: MetricsSubtitle.TotalReworkCards,
                 isToFixed: false,
               },
               {
                 value: Number(rework.reworkCardsRatio) * 100,
                 extraValue: `% (${rework.totalReworkCards}/${rework.throughput})`,
-                subtitle: METRICS_SUBTITLE.REWORK_CARDS_RATIO,
+                subtitle: MetricsSubtitle.ReworkCardsRatio,
               },
             ],
           },
@@ -128,7 +128,7 @@ const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, erro
 
   const isShowMoreLoadingDisplay = () =>
     boardMetrics.length === 1 &&
-    boardMetrics[0] === REQUIRED_DATA.CLASSIFICATION &&
+    boardMetrics[0] === RequiredData.Classification &&
     !errorMessage &&
     !boardReport?.boardMetricsCompleted;
 

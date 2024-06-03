@@ -1,11 +1,11 @@
 import {
-  CHART_TYPE,
+  ChartType,
   CYCLE_TIME_LIST,
-  CYCLE_TIME_SETTINGS_TYPES,
+  CycleTimeSettingsTypes,
   DOWN_TREND_IS_BETTER,
   METRICS_CONSTANTS,
-  TREND_ICON,
-  TREND_TYPE,
+  TrendIcon,
+  TrendType,
   UP_TREND_IS_BETTER,
 } from '@src/constants/resources';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
@@ -67,7 +67,7 @@ export const filterAndMapCycleTimeSettings = (cycleTimeSettings: ICycleTimeSetti
 
 export const getRealDoneStatus = (
   cycleTimeSettings: ICycleTimeSetting[],
-  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
+  cycleTimeSettingsType: CycleTimeSettingsTypes,
   realDoneStatus: string[],
 ) => {
   const selectedDoneStatus = cycleTimeSettings
@@ -76,7 +76,7 @@ export const getRealDoneStatus = (
   if (selectedDoneStatus.length <= 1) {
     return selectedDoneStatus;
   }
-  return cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN
+  return cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN
     ? realDoneStatus
     : cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).map(({ status }) => status);
 };
@@ -154,10 +154,10 @@ export const onlyEmptyAndDoneState = (boardingMappingStates: string[]) =>
   isEqual(boardingMappingStates, [METRICS_CONSTANTS.doneValue, METRICS_CONSTANTS.cycleTimeEmptyStr]);
 
 export const convertCycleTimeSettings = (
-  cycleTimeSettingsType: CYCLE_TIME_SETTINGS_TYPES,
+  cycleTimeSettingsType: CycleTimeSettingsTypes,
   cycleTimeSettings: ICycleTimeSetting[],
 ) => {
-  if (cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN) {
+  if (cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN) {
     return ([...new Set(cycleTimeSettings.map(({ column }: ICycleTimeSetting) => column))] as string[]).map(
       (uniqueColumn) => ({
         [uniqueColumn]:
@@ -216,7 +216,7 @@ export const xAxisLabelDateFormatter = (dateRange: string) => {
   return `${startMonthDay}-${endMonthDay}`;
 };
 
-export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: CHART_TYPE) => {
+export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type: ChartType) => {
   const result: ITrendInfo = {
     trendNumber: trendNumber,
     dateRangeList: dateRangeList,
@@ -225,19 +225,19 @@ export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type:
 
   if (UP_TREND_IS_BETTER.includes(type)) {
     if (trendNumber >= 0) {
-      result.icon = TREND_ICON.UP;
-      result.trendType = TREND_TYPE.BETTER;
+      result.icon = TrendIcon.Up;
+      result.trendType = TrendType.Better;
     } else {
-      result.icon = TREND_ICON.DOWN;
-      result.trendType = TREND_TYPE.WORSE;
+      result.icon = TrendIcon.Down;
+      result.trendType = TrendType.Worse;
     }
   } else if (DOWN_TREND_IS_BETTER.includes(type)) {
     if (trendNumber <= 0) {
-      result.icon = TREND_ICON.DOWN;
-      result.trendType = TREND_TYPE.BETTER;
+      result.icon = TrendIcon.Down;
+      result.trendType = TrendType.Better;
     } else {
-      result.icon = TREND_ICON.UP;
-      result.trendType = TREND_TYPE.WORSE;
+      result.icon = TrendIcon.Up;
+      result.trendType = TrendType.Worse;
     }
   }
   return result;
@@ -246,7 +246,7 @@ export const getTrendInfo = (trendNumber: number, dateRangeList: string[], type:
 export const calculateTrendInfo = (
   dataList: number[] | undefined,
   dateRangeList: string[],
-  type: CHART_TYPE,
+  type: ChartType,
 ): ITrendInfo => {
   if (!dataList || dataList.filter((data) => data).length < 2) return { type };
 

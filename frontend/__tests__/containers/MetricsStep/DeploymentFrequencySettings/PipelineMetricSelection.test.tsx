@@ -5,7 +5,7 @@ import {
   MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL,
   ORGANIZATION,
   PIPELINE_NAME,
-  PIPELINE_SETTING_TYPES,
+  PipelineSettingTypes,
   REMOVE_BUTTON,
   STEP,
 } from '@test/fixtures';
@@ -107,7 +107,7 @@ describe('PipelineMetricSelection', () => {
     return render(
       <Provider store={store}>
         <PipelineMetricSelection
-          type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
+          type={PipelineSettingTypes.DeploymentFrequencySettingsType}
           pipelineSetting={deploymentFrequencySetting}
           isShowRemoveButton={isShowRemoveButton}
           onRemovePipeline={mockHandleClickRemoveButton}

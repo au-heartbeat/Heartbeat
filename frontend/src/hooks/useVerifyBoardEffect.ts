@@ -1,4 +1,4 @@
-import { AXIOS_REQUEST_ERROR_CODE, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
+import { AxiosRequestErrorCode, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { updateTreatFlagCardAsBlock } from '@src/context/Metrics/metricsSlice';
@@ -16,12 +16,12 @@ import { isAppError } from '@src/errors';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export enum FIELD_KEY {
-  TYPE = 0,
-  BOARD_ID = 1,
-  EMAIL = 2,
-  SITE = 3,
-  TOKEN = 4,
+export enum FieldKey {
+  Type = 0,
+  BoardID = 1,
+  EMail = 2,
+  Site = 3,
+  Token = 4,
 }
 
 export interface IField {
@@ -117,7 +117,7 @@ export const useVerifyBoardEffect = (): useVerifyBoardStateInterface => {
           setError(KEYS.SITE, { message: BOARD_CONFIG_ERROR_MESSAGE.site.verifyFailed });
         } else if (code === HttpStatusCode.NotFound && description === ERROR_INFO.BOARD_NOT_FOUND) {
           setError(KEYS.BOARD_ID, { message: BOARD_CONFIG_ERROR_MESSAGE.boardId.verifyFailed });
-        } else if (code === AXIOS_REQUEST_ERROR_CODE.TIMEOUT) {
+        } else if (code === AxiosRequestErrorCode.Timeout) {
           setError(KEYS.TOKEN, { message: BOARD_CONFIG_ERROR_MESSAGE.token.timeout });
         } else {
           setError(KEYS.TOKEN, { message: UNKNOWN_ERROR_TITLE });

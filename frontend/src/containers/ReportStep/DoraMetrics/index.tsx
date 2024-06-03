@@ -1,10 +1,10 @@
 import {
   DORA_METRICS_MAPPING,
-  METRICS_SUBTITLE,
-  METRICS_TITLE,
+  MetricsSubtitle,
+  MetricsTitle,
   PIPELINE_METRICS,
   REPORT_PAGE,
-  REQUIRED_DATA,
+  RequiredData,
   RETRY,
   SHOW_MORE,
   SOURCE_CONTROL_METRICS,
@@ -31,7 +31,7 @@ interface DoraMetricsProps {
 const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMessage }: DoraMetricsProps) => {
   const configData = useAppSelector(selectConfig);
   const { metrics } = configData.basic;
-  const shouldShowSourceControl = metrics.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES);
+  const shouldShowSourceControl = metrics.includes(RequiredData.LeadTimeForChanges);
   const sourceControlMetricsCompleted = metrics
     .filter((metric) => SOURCE_CONTROL_METRICS.includes(metric))
     .map((metric) => DORA_METRICS_MAPPING[metric])
@@ -45,19 +45,19 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
     const leadTimeForChanges = doraReport?.leadTimeForChanges;
     return [
       {
-        title: METRICS_TITLE.LEAD_TIME_FOR_CHANGES,
+        title: MetricsTitle.LeadTimeForChanges,
         items: leadTimeForChanges && [
           {
             value: formatMinToHours(leadTimeForChanges.avgLeadTimeForChanges.prLeadTime),
-            subtitle: METRICS_SUBTITLE.PR_LEAD_TIME,
+            subtitle: MetricsSubtitle.PRLeadTime,
           },
           {
             value: formatMinToHours(leadTimeForChanges.avgLeadTimeForChanges.pipelineLeadTime),
-            subtitle: METRICS_SUBTITLE.PIPELINE_LEAD_TIME,
+            subtitle: MetricsSubtitle.PipelineLeadTime,
           },
           {
             value: formatMinToHours(leadTimeForChanges.avgLeadTimeForChanges.totalDelayTime),
-            subtitle: METRICS_SUBTITLE.TOTAL_DELAY_TIME,
+            subtitle: MetricsSubtitle.TotalDelayTime,
           },
         ],
       },
@@ -69,43 +69,43 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
     const devMeanTimeToRecovery = doraReport?.devMeanTimeToRecovery;
     const devChangeFailureRate = doraReport?.devChangeFailureRate;
 
-    const deploymentFrequencyList = metrics.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY)
+    const deploymentFrequencyList = metrics.includes(RequiredData.DeploymentFrequency)
       ? [
           {
-            title: METRICS_TITLE.DEPLOYMENT_FREQUENCY,
+            title: MetricsTitle.DeploymentFrequency,
             items: deploymentFrequency && [
               {
                 value: deploymentFrequency?.avgDeploymentFrequency.deploymentFrequency,
-                subtitle: METRICS_SUBTITLE.DEPLOYMENT_FREQUENCY,
+                subtitle: MetricsSubtitle.DeploymentFrequency,
               },
             ],
           },
         ]
       : [];
 
-    const devMeanTimeToRecoveryList = metrics.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY)
+    const devMeanTimeToRecoveryList = metrics.includes(RequiredData.DevMeanTimeToRecovery)
       ? [
           {
-            title: METRICS_TITLE.DEV_MEAN_TIME_TO_RECOVERY,
+            title: MetricsTitle.DevMeanTimeToRecovery,
             items: devMeanTimeToRecovery && [
               {
                 value: formatMillisecondsToHours(devMeanTimeToRecovery.avgDevMeanTimeToRecovery.timeToRecovery),
-                subtitle: METRICS_SUBTITLE.DEV_MEAN_TIME_TO_RECOVERY_HOURS,
+                subtitle: MetricsSubtitle.DevMeanTimeToRecoveryHours,
               },
             ],
           },
         ]
       : [];
 
-    const devChangeFailureRateList = metrics.includes(REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE)
+    const devChangeFailureRateList = metrics.includes(RequiredData.DevChangeFailureRate)
       ? [
           {
-            title: METRICS_TITLE.DEV_CHANGE_FAILURE_RATE,
+            title: MetricsTitle.DevChangeFailureRate,
             items: devChangeFailureRate && [
               {
                 value: devChangeFailureRate.avgDevChangeFailureRate.failureRate * 100,
                 extraValue: `% (${devChangeFailureRate.avgDevChangeFailureRate.totalFailedTimes}/${devChangeFailureRate.avgDevChangeFailureRate.totalTimes})`,
-                subtitle: METRICS_SUBTITLE.FAILURE_RATE,
+                subtitle: MetricsSubtitle.FailureRate,
               },
             ],
           },

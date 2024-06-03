@@ -50,15 +50,15 @@ export const DORA_METRICS_MAPPING: Record<string, string> = {
   'Dev mean time to recovery': 'devMeanTimeToRecovery',
 };
 
-export enum REQUIRED_DATA {
-  VELOCITY = 'Velocity',
-  CYCLE_TIME = 'Cycle time',
-  CLASSIFICATION = 'Classification',
-  REWORK_TIMES = 'Rework times',
-  LEAD_TIME_FOR_CHANGES = 'Lead time for changes',
-  DEPLOYMENT_FREQUENCY = 'Deployment frequency',
-  DEV_CHANGE_FAILURE_RATE = 'Dev change failure rate',
-  DEV_MEAN_TIME_TO_RECOVERY = 'Dev mean time to recovery',
+export enum RequiredData {
+  Velocity = 'Velocity',
+  CycleTime = 'Cycle time',
+  Classification = 'Classification',
+  ReworkTimes = 'Rework times',
+  LeadTimeForChanges = 'Lead time for changes',
+  DeploymentFrequency = 'Deployment frequency',
+  DevChangeFailureRate = 'Dev change failure rate',
+  DevMeanTimeToRecovery = 'Dev mean time to recovery',
 }
 
 export const IMPORT_METRICS_MAPPING: Record<string, string> = {
@@ -74,110 +74,110 @@ export const IMPORT_METRICS_MAPPING: Record<string, string> = {
   'Mean time to recovery': 'Dev mean time to recovery',
 };
 
-export enum METRICS_TITLE {
-  VELOCITY = 'Velocity',
-  CYCLE_TIME = 'Cycle Time',
-  CLASSIFICATION = 'Classification',
-  REWORK = 'Rework',
-  LEAD_TIME_FOR_CHANGES = 'Lead Time For Changes',
-  DEPLOYMENT_FREQUENCY = 'Deployment Frequency',
-  DEV_CHANGE_FAILURE_RATE = 'Dev Change Failure Rate',
-  DEV_MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
+export enum MetricsTitle {
+  Velocity = 'Velocity',
+  CycleTime = 'Cycle Time',
+  Classification = 'Classification',
+  Rework = 'Rework',
+  LeadTimeForChanges = 'Lead Time For Changes',
+  DeploymentFrequency = 'Deployment Frequency',
+  DevChangeFailureRate = 'Dev Change Failure Rate',
+  DevMeanTimeToRecovery = 'Dev Mean Time To Recovery',
 }
 
-export enum CHART_TYPE {
-  VELOCITY = 'Velocity',
-  AVERAGE_CYCLE_TIME = 'Average Cycle Time',
-  CYCLE_TIME_ALLOCATION = 'Cycle Time Allocation',
-  REWORK = 'Rework',
-  LEAD_TIME_FOR_CHANGES = 'Lead Time For Changes',
-  DEPLOYMENT_FREQUENCY = 'Deployment Frequency',
-  DEV_CHANGE_FAILURE_RATE = 'Dev Change Failure Rate',
-  DEV_MEAN_TIME_TO_RECOVERY = 'Dev Mean Time To Recovery',
+export enum ChartType {
+  Velocity = 'Velocity',
+  AverageCycleTime = 'Average Cycle Time',
+  CycleTimeAllocation = 'Cycle Time Allocation',
+  Rework = 'Rework',
+  LeadTimeForChanges = 'Lead Time For Changes',
+  DeploymentFrequency = 'Deployment Frequency',
+  DevChangeFailureRate = 'Dev Change Failure Rate',
+  DevMeanTimeToRecovery = 'Dev Mean Time To Recovery',
 }
 
-export enum TREND_ICON {
-  UP = 'UP',
-  DOWN = 'DOWN',
+export enum TrendIcon {
+  Up = 'UP',
+  Down = 'DOWN',
 }
 
-export enum TREND_TYPE {
-  BETTER = 'BETTER',
-  WORSE = 'WORSE',
+export enum TrendType {
+  Better = 'BETTER',
+  Worse = 'WORSE',
 }
 
 export const CHART_TREND_TIP = {
-  [CHART_TYPE.VELOCITY]: 'Velocity(Story point)',
-  [CHART_TYPE.AVERAGE_CYCLE_TIME]: 'Days/Story point',
-  [CHART_TYPE.CYCLE_TIME_ALLOCATION]: 'Total development time/Total cycle time',
-  [CHART_TYPE.REWORK]: 'Total rework times',
-  [CHART_TYPE.LEAD_TIME_FOR_CHANGES]: 'PR Lead Time',
-  [CHART_TYPE.DEPLOYMENT_FREQUENCY]: 'Mean Time To Recovery',
-  [CHART_TYPE.DEV_CHANGE_FAILURE_RATE]: 'Dev Change Failure Rate',
-  [CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY]: 'Dev Mean Time To Recovery',
+  [ChartType.Velocity]: 'Velocity(Story point)',
+  [ChartType.AverageCycleTime]: 'Days/Story point',
+  [ChartType.CycleTimeAllocation]: 'Total development time/Total cycle time',
+  [ChartType.Rework]: 'Total rework times',
+  [ChartType.LeadTimeForChanges]: 'PR Lead Time',
+  [ChartType.DeploymentFrequency]: 'Mean Time To Recovery',
+  [ChartType.DevChangeFailureRate]: 'Dev Change Failure Rate',
+  [ChartType.DevMeanTimeToRecovery]: 'Dev Mean Time To Recovery',
 };
 
-export const UP_TREND_IS_BETTER: CHART_TYPE[] = [
-  CHART_TYPE.VELOCITY,
-  CHART_TYPE.CYCLE_TIME_ALLOCATION,
-  CHART_TYPE.DEPLOYMENT_FREQUENCY,
+export const UP_TREND_IS_BETTER: ChartType[] = [
+  ChartType.Velocity,
+  ChartType.CycleTimeAllocation,
+  ChartType.DeploymentFrequency,
 ];
-export const DOWN_TREND_IS_BETTER: CHART_TYPE[] = [
-  CHART_TYPE.REWORK,
-  CHART_TYPE.AVERAGE_CYCLE_TIME,
-  CHART_TYPE.LEAD_TIME_FOR_CHANGES,
-  CHART_TYPE.DEV_MEAN_TIME_TO_RECOVERY,
-  CHART_TYPE.DEV_CHANGE_FAILURE_RATE,
+export const DOWN_TREND_IS_BETTER: ChartType[] = [
+  ChartType.Rework,
+  ChartType.AverageCycleTime,
+  ChartType.LeadTimeForChanges,
+  ChartType.DevMeanTimeToRecovery,
+  ChartType.DevChangeFailureRate,
 ];
 
-export enum METRICS_SUBTITLE {
-  PR_LEAD_TIME = 'PR Lead Time(Hours)',
-  PIPELINE_LEAD_TIME = 'Pipeline Lead Time(Hours)',
-  TOTAL_DELAY_TIME = 'Total Lead Time(Hours)',
-  DEPLOYMENT_FREQUENCY = '(Deployments/Days)',
-  DEV_MEAN_TIME_TO_RECOVERY_HOURS = '(Hours)',
-  FAILURE_RATE = '',
-  AVERAGE_CYCLE_TIME_PRE_SP = 'Average Cycle Time(Days/SP)',
-  AVERAGE_CYCLE_TIME_PRE_CARD = 'Average Cycle Time(Days/Card)',
-  THROUGHPUT = 'Throughput(Cards Count)',
-  VELOCITY = 'Velocity(Story Point)',
-  TOTAL_REWORK_TIMES = 'Total rework times',
-  TOTAL_REWORK_CARDS = 'Total rework cards',
-  REWORK_CARDS_RATIO = 'Rework cards ratio',
+export enum MetricsSubtitle {
+  PRLeadTime = 'PR Lead Time(Hours)',
+  PipelineLeadTime = 'Pipeline Lead Time(Hours)',
+  TotalDelayTime = 'Total Lead Time(Hours)',
+  DeploymentFrequency = '(Deployments/Days)',
+  DevMeanTimeToRecoveryHours = '(Hours)',
+  FailureRate = '',
+  AverageCycleTimePerSP = 'Average Cycle Time(Days/SP)',
+  AverageCycleTimePerCard = 'Average Cycle Time(Days/Card)',
+  Throughput = 'Throughput(Cards Count)',
+  Velocity = 'Velocity(Story Point)',
+  TotalReworkTimes = 'Total rework times',
+  TotalReworkCards = 'Total rework cards',
+  ReworkCardsRatio = 'Rework cards ratio',
 }
 
-export const SOURCE_CONTROL_METRICS: string[] = [REQUIRED_DATA.LEAD_TIME_FOR_CHANGES];
+export const SOURCE_CONTROL_METRICS: string[] = [RequiredData.LeadTimeForChanges];
 
 export const PIPELINE_METRICS: string[] = [
-  REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
-  REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
-  REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+  RequiredData.DeploymentFrequency,
+  RequiredData.DevChangeFailureRate,
+  RequiredData.DevMeanTimeToRecovery,
 ];
 
 export const DORA_METRICS: string[] = [
-  REQUIRED_DATA.LEAD_TIME_FOR_CHANGES,
-  REQUIRED_DATA.DEPLOYMENT_FREQUENCY,
-  REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE,
-  REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY,
+  RequiredData.LeadTimeForChanges,
+  RequiredData.DeploymentFrequency,
+  RequiredData.DevChangeFailureRate,
+  RequiredData.DevMeanTimeToRecovery,
 ];
 
 export const BOARD_METRICS: string[] = [
-  REQUIRED_DATA.VELOCITY,
-  REQUIRED_DATA.CYCLE_TIME,
-  REQUIRED_DATA.CLASSIFICATION,
-  REQUIRED_DATA.REWORK_TIMES,
+  RequiredData.Velocity,
+  RequiredData.CycleTime,
+  RequiredData.Classification,
+  RequiredData.ReworkTimes,
 ];
 
 export const BOARD_METRICS_EXCLUDE_CLASSIFICATION: string[] = [
-  REQUIRED_DATA.VELOCITY,
-  REQUIRED_DATA.CYCLE_TIME,
-  REQUIRED_DATA.REWORK_TIMES,
+  RequiredData.Velocity,
+  RequiredData.CycleTime,
+  RequiredData.ReworkTimes,
 ];
 
-export enum CONFIG_TITLE {
-  BOARD = 'Board',
-  PIPELINE_TOOL = 'Pipeline Tool',
-  SOURCE_CONTROL = 'Source Control',
+export enum ConfigTitle {
+  Board = 'Board',
+  PipelineTool = 'Pipeline Tool',
+  SourceControl = 'Source Control',
 }
 
 export const BOARD_TYPES = {
@@ -188,13 +188,13 @@ export const PIPELINE_TOOL_TYPES = {
   BUILD_KITE: 'BuildKite',
 };
 
-export enum SOURCE_CONTROL_TYPES {
-  GITHUB = 'GitHub',
+export enum SourceControlTypes {
+  GitHub = 'GitHub',
 }
 
-export enum PIPELINE_SETTING_TYPES {
-  DEPLOYMENT_FREQUENCY_SETTINGS_TYPE = 'DeploymentFrequencySettings',
-  LEAD_TIME_FOR_CHANGES_TYPE = 'LeadTimeForChanges',
+export enum PipelineSettingTypes {
+  DeploymentFrequencySettingType = 'DeploymentFrequencySettings',
+  LeadTimeForChangesType = 'LeadTimeForChanges',
 }
 
 export const ASSIGNEE_FILTER_TYPES = {
@@ -277,12 +277,12 @@ export const TIPS = {
   TIME_RANGE_PICKER: 'The report page will generate charts to compare metrics data over multiple time ranges',
 };
 
-export enum VELOCITY_METRICS_NAME {
-  VELOCITY_SP = 'Velocity(Story Point)',
-  THROUGHPUT_CARDS_COUNT = 'Throughput(Cards Count)',
+export enum VelocityMetricsName {
+  VelocitySP = 'Velocity(Story Point)',
+  ThroughputCardsCount = 'Throughput(Cards Count)',
 }
 
-export enum CYCLE_TIME_METRICS_NAME {
+export enum CycleTimeMetricsName {
   AVERAGE_CYCLE_TIME = 'Average cycle time',
   DEVELOPMENT_PROPORTION = 'Total development time / Total cycle time',
   WAITING_PROPORTION = 'Total waiting for testing time / Total cycle time',
@@ -331,11 +331,11 @@ export const SUBTITLE = 'Subtitle';
 
 export const AVERAGE_FIELD = 'Average';
 
-export enum REPORT_SUFFIX_UNITS {
-  PER_SP = '(Days/SP)',
-  PER_CARD = '(Days/Card)',
-  HOURS = '(Hours)',
-  DEPLOYMENTS_DAY = '(Deployments/Day)',
+export enum ReportSuffixUnits {
+  DaysPerSP = '(Days/SP)',
+  DaysPerCard = '(Days/Card)',
+  Hours = '(Hours)',
+  DeploymentsPerDay = '(Deployments/Day)',
 }
 
 export const MESSAGE = {
@@ -411,7 +411,7 @@ export const REPORT_PAGE = {
   },
 };
 
-export enum CYCLE_TIME_SETTINGS_TYPES {
+export enum CycleTimeSettingsTypes {
   BY_COLUMN = 'byColumn',
   BY_STATUS = 'byStatus',
 }
@@ -420,9 +420,9 @@ export const AXIOS_NETWORK_ERROR_CODES = [AxiosError.ECONNABORTED, AxiosError.ET
 
 export const NO_PIPELINE_STEP_ERROR = 'No steps for this pipeline!';
 
-export enum AXIOS_REQUEST_ERROR_CODE {
-  TIMEOUT = 'NETWORK_TIMEOUT',
-  NO_CARDS = 'NO_CARDS',
+export enum AxiosRequestErrorCode {
+  Timeout = 'NETWORK_TIMEOUT',
+  NoCards = 'NO_CARDS',
 }
 
 export const BOARD_CONFIG_INFO_TITLE = {
@@ -518,7 +518,7 @@ export const ADD_TIME_RANGE_BUTTON_TEXT = 'New time range';
 export const REMOVE_BUTTON_TEXT = 'Remove';
 export const MAX_TIME_RANGE_AMOUNT = 6;
 
-export enum SORTING_DATE_RANGE_TEXT {
+export enum SortingDateRangeText {
   DEFAULT = 'Default sort',
   ASCENDING = 'Ascending',
   DESCENDING = 'Descending',

@@ -11,7 +11,7 @@ export const ChartTitle = styled('div')({
   height: '1.5rem',
 });
 
-export const TrendIcon = styled('span')({
+export const TrendIconSpan = styled('span')({
   position: 'relative',
   fontSize: '1rem',
   top: '0.1rem',

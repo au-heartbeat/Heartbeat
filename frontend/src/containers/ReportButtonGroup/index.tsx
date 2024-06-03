@@ -1,5 +1,5 @@
 import { StyledButtonGroup, StyledExportButton, StyledRightButtonGroup } from '@src/containers/ReportButtonGroup/style';
-import { COMMON_BUTTONS, DOWNLOAD_DIALOG_TITLE, REPORT_TYPES } from '@src/constants/commons';
+import { COMMON_BUTTONS, DOWNLOAD_DIALOG_TITLE, ReportTypes } from '@src/constants/commons';
 import { DateRangeItem, DownloadDialog } from '@src/containers/ReportStep/DownloadDialog';
 import { BackButton, SaveButton } from '@src/containers/MetricsStepper/style';
 import { ExpiredDialog } from '@src/containers/ReportStep/ExpiredDialog';
@@ -45,7 +45,7 @@ export const ReportButtonGroup = ({
 }: ReportButtonGroupProps) => {
   const [isShowDialog, setIsShowDialog] = useState(false);
   const [downloadReportList, setDownloadReportList] = useState<DateRangeItem[]>([]);
-  const [dataType, setDataType] = useState<REPORT_TYPES | null>(null);
+  const [dataType, setDataType] = useState<ReportTypes | null>(null);
   const { fetchExportData, isExpired } = useExportCsvEffect();
 
   const isReportHasError = (reportMetricsError: AllErrorResponse) => {
@@ -93,14 +93,14 @@ export const ReportButtonGroup = ({
       dateRangeListWithStatus.some(({ enableExportPipelineData }) => enableExportPipelineData),
   };
 
-  const exportCSV = (dataType: REPORT_TYPES, startDate: string, endDate: string): CSVReportRequestDTO => ({
+  const exportCSV = (dataType: ReportTypes, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
     csvTimeStamp: csvTimeStamp,
     startDate: startDate,
     endDate: endDate,
   });
 
-  const handleDownload = (dateRange: DateRangeItem[], dataType: REPORT_TYPES) => {
+  const handleDownload = (dateRange: DateRangeItem[], dataType: ReportTypes) => {
     if (dateRange.length > 1) {
       setDownloadReportList(dateRange);
       setDataType(dataType);
@@ -115,11 +115,11 @@ export const ReportButtonGroup = ({
     setDataType(null);
   };
 
-  const getDownloadInfos = (dataType: REPORT_TYPES): DateRangeItem[] => {
+  const getDownloadInfos = (dataType: ReportTypes): DateRangeItem[] => {
     const REPORT_TYPE_MAPPING = {
-      [REPORT_TYPES.BOARD]: SINGLE_DATE_RANGE_DOWNLOAD_KEY.ENABLE_EXPORT_BOARD_DATA,
-      [REPORT_TYPES.PIPELINE]: SINGLE_DATE_RANGE_DOWNLOAD_KEY.ENABLE_EXPORT_PIPELINE_DATA,
-      [REPORT_TYPES.METRICS]: SINGLE_DATE_RANGE_DOWNLOAD_KEY.ENABLE_EXPORT_METRIC_DATA,
+      [ReportTypes.Board]: SINGLE_DATE_RANGE_DOWNLOAD_KEY.ENABLE_EXPORT_BOARD_DATA,
+      [ReportTypes.Pipeline]: SINGLE_DATE_RANGE_DOWNLOAD_KEY.ENABLE_EXPORT_PIPELINE_DATA,
+      [ReportTypes.Metrics]: SINGLE_DATE_RANGE_DOWNLOAD_KEY.ENABLE_EXPORT_METRIC_DATA,
     };
     return dateRangeListWithStatus.map((dateRangeWithStatus) => ({
       startDate: dateRangeWithStatus.startDate,
@@ -154,7 +154,7 @@ export const ReportButtonGroup = ({
           {isShowExportMetrics && (
             <StyledExportButton
               disabled={!exportButtonsClickable.exportMetricData}
-              onClick={() => handleDownload(getDownloadInfos(REPORT_TYPES.METRICS), REPORT_TYPES.METRICS)}
+              onClick={() => handleDownload(getDownloadInfos(ReportTypes.Metrics), ReportTypes.Metrics)}
             >
               {COMMON_BUTTONS.EXPORT_METRIC_DATA}
             </StyledExportButton>
@@ -162,7 +162,7 @@ export const ReportButtonGroup = ({
           {isShowExportBoardButton && (
             <StyledExportButton
               disabled={!exportButtonsClickable.exportBoardData}
-              onClick={() => handleDownload(getDownloadInfos(REPORT_TYPES.BOARD), REPORT_TYPES.BOARD)}
+              onClick={() => handleDownload(getDownloadInfos(ReportTypes.Board), ReportTypes.Board)}
             >
               {COMMON_BUTTONS.EXPORT_BOARD_DATA}
             </StyledExportButton>
@@ -170,7 +170,7 @@ export const ReportButtonGroup = ({
           {isShowExportPipelineButton && (
             <StyledExportButton
               disabled={!exportButtonsClickable.exportPipelineData}
-              onClick={() => handleDownload(getDownloadInfos(REPORT_TYPES.PIPELINE), REPORT_TYPES.PIPELINE)}
+              onClick={() => handleDownload(getDownloadInfos(ReportTypes.Pipeline), ReportTypes.Pipeline)}
             >
               {COMMON_BUTTONS.EXPORT_PIPELINE_DATA}
             </StyledExportButton>
@@ -178,7 +178,7 @@ export const ReportButtonGroup = ({
           {isShowExportBoardChartButton && (
             <StyledExportButton
               disabled={!exportButtonsClickable.exportBoardData}
-              onClick={() => handleDownload(getDownloadInfos(REPORT_TYPES.BOARD), REPORT_TYPES.BOARD)}
+              onClick={() => handleDownload(getDownloadInfos(ReportTypes.Board), ReportTypes.Board)}
             >
               {COMMON_BUTTONS.EXPORT_BOARD_CHART}
             </StyledExportButton>
@@ -186,7 +186,7 @@ export const ReportButtonGroup = ({
           {isShowExportDoraChartButton && (
             <StyledExportButton
               disabled={!exportButtonsClickable.exportPipelineData}
-              onClick={() => handleDownload(getDownloadInfos(REPORT_TYPES.PIPELINE), REPORT_TYPES.PIPELINE)}
+              onClick={() => handleDownload(getDownloadInfos(ReportTypes.Pipeline), ReportTypes.Pipeline)}
             >
               {COMMON_BUTTONS.EXPORT_DORA_CHART}
             </StyledExportButton>

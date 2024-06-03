@@ -14,7 +14,7 @@ import { StyledAlertWrapper } from '@src/containers/MetricsStep/style';
 import { selectPipelineCrews } from '@src/context/config/configSlice';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { PipelineMetricSelection } from './PipelineMetricSelection';
-import { PIPELINE_SETTING_TYPES } from '@src/constants/resources';
+import { PipelineSettingTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
@@ -63,7 +63,7 @@ export const DeploymentFrequencySettings = () => {
             <PipelineMetricSelection
               isInfoLoading={isLoading}
               key={deploymentFrequencySetting.id}
-              type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
+              type={PipelineSettingTypes.DeploymentFrequencySettingType}
               pipelineSetting={deploymentFrequencySetting}
               isShowRemoveButton={totalPipelineNumber > 1}
               onRemovePipeline={(id) => handleRemovePipeline(id)}

@@ -3,7 +3,7 @@ import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useD
 import { MOCK_PIPELINE_VERIFY_UNAUTHORIZED_TEXT, UNKNOWN_ERROR_TEXT } from '../fixtures';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
-import { AXIOS_REQUEST_ERROR_CODE } from '@src/constants/resources';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { FormProvider } from '@test/utils/FormProvider';
 import { setupStore } from '../utils/setupStoreUtil';
 import { renderHook } from '@testing-library/react';
@@ -85,7 +85,7 @@ describe('use verify sourceControl token', () => {
     },
     {
       mock: {
-        code: AXIOS_REQUEST_ERROR_CODE.TIMEOUT,
+        code: AxiosRequestErrorCode.Timeout,
         errorTitle: '',
       },
       field: 'token',

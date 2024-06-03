@@ -5,11 +5,11 @@ import { Provider } from 'react-redux';
 import { PipelineMetricSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection';
 import { IPipelineConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
-import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
-import { PIPELINE_SETTING_TYPES } from '@test/fixtures';
+import { MetricsDataFailStatus } from '@src/constants/commons';
+import { PipelineSettingTypes } from '@test/fixtures';
 
 const store = setupStore();
-let stepFailStatus = METRICS_DATA_FAIL_STATUS.NOT_FAILED;
+let stepFailStatus = MetricsDataFailStatus.NotFailed;
 
 jest.mock('@src/context/notification/NotificationSlice', () => ({
   ...jest.requireActual('@src/context/notification/NotificationSlice'),
@@ -47,7 +47,7 @@ describe('PipelineMetricSelection', () => {
     return render(
       <Provider store={store}>
         <PipelineMetricSelection
-          type={PIPELINE_SETTING_TYPES.DEPLOYMENT_FREQUENCY_SETTINGS_TYPE}
+          type={PipelineSettingTypes.DeploymentFrequencySettingsType}
           pipelineSetting={deploymentFrequencySetting}
           isShowRemoveButton={isShowRemoveButton}
           onRemovePipeline={mockHandleClickRemoveButton}
@@ -66,7 +66,7 @@ describe('PipelineMetricSelection', () => {
   });
 
   it('should show 4xx popup when call pipeline step to get partial 4xx error', async () => {
-    stepFailStatus = METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX;
+    stepFailStatus = MetricsDataFailStatus.PartialFailed4xx;
     await setup(deploymentFrequencySetting, true, false);
 
     await waitFor(() => {
@@ -75,7 +75,7 @@ describe('PipelineMetricSelection', () => {
   });
 
   it('should show timeout popup when call pipeline step to get partial timeout error', async () => {
-    stepFailStatus = METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT;
+    stepFailStatus = MetricsDataFailStatus.PartialFailedTimeout;
     await setup(deploymentFrequencySetting, true, false);
 
     await waitFor(() => {

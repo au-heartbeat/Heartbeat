@@ -5,8 +5,8 @@ import {
   Row,
   StyledTableCell,
 } from '@src/components/Common/ReportForTwoColumns/style';
-import { AVERAGE_FIELD, METRICS_TITLE, REPORT_SUFFIX_UNITS } from '@src/constants/resources';
 import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
+import { AVERAGE_FIELD, MetricsTitle, ReportSuffixUnits } from '@src/constants/resources';
 import { EmojiWrap, StyledAvatar, StyledTypography } from '@src/constants/emojis/style';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { ReportSelectionTitle } from '@src/containers/MetricsStep/style';
@@ -83,7 +83,7 @@ export const ReportForThreeColumns = ({
     });
 
   const getTitleUnit = (title: string) => {
-    return title === METRICS_TITLE.LEAD_TIME_FOR_CHANGES ? REPORT_SUFFIX_UNITS.HOURS : '';
+    return title === MetricsTitle.LeadTimeForChanges ? ReportSuffixUnits.Hours : '';
   };
 
   const renderLoading = () => (

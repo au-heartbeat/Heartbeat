@@ -21,13 +21,7 @@ import {
   StyledErrorMessage,
   StyledRetryButton,
 } from '@src/containers/MetricsStep/style';
-import {
-  AXIOS_REQUEST_ERROR_CODE,
-  CYCLE_TIME_SETTINGS_TYPES,
-  DONE,
-  MESSAGE,
-  REQUIRED_DATA,
-} from '@src/constants/resources';
+import { AxiosRequestErrorCode, CycleTimeSettingsTypes, DONE, MESSAGE, RequiredData } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
@@ -36,10 +30,10 @@ import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { useGetBoardInfoEffect } from '@src/hooks/useGetBoardInfo';
 import { combineBoardInfo, sortDateRanges } from '@src/utils/util';
 import { CycleTime } from '@src/containers/MetricsStep/CycleTime';
-import { METRICS_DATA_FAIL_STATUS } from '@src/constants/commons';
 import { RealDone } from '@src/containers/MetricsStep/RealDone';
 import { useCallback, useEffect, useLayoutEffect } from 'react';
 import EmptyContent from '@src/components/Common/EmptyContent';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
@@ -62,12 +56,12 @@ const MetricsStep = () => {
 
   const { startDate, endDate } = descendingSortedDateRanges[0];
   const isShowCrewsAndRealDone =
-    requiredData.includes(REQUIRED_DATA.VELOCITY) ||
-    requiredData.includes(REQUIRED_DATA.CYCLE_TIME) ||
-    requiredData.includes(REQUIRED_DATA.CLASSIFICATION) ||
-    requiredData.includes(REQUIRED_DATA.REWORK_TIMES);
+    requiredData.includes(RequiredData.Velocity) ||
+    requiredData.includes(RequiredData.CycleTime) ||
+    requiredData.includes(RequiredData.Classification) ||
+    requiredData.includes(RequiredData.ReworkTimes);
   const isShowRealDone =
-    cycleTimeSettingsType === CYCLE_TIME_SETTINGS_TYPES.BY_COLUMN &&
+    cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN &&
     cycleTimeSettings.filter((e) => e.value === DONE).length > 1;
   const { getBoardInfo, isLoading, errorMessage, boardInfoFailedStatus } = useGetBoardInfoEffect();
   const shouldLoad = useAppSelector(shouldMetricsLoaded);
@@ -94,7 +88,7 @@ const MetricsStep = () => {
 
   useEffect(() => {
     const popup = () => {
-      if (boardInfoFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_4XX) {
+      if (boardInfoFailedStatus === MetricsDataFailStatus.PartialFailed4xx) {
         dispatch(
           addNotification({
             type: 'warning',
@@ -102,8 +96,8 @@ const MetricsStep = () => {
           }),
         );
       } else if (
-        boardInfoFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_NO_CARDS ||
-        boardInfoFailedStatus === METRICS_DATA_FAIL_STATUS.PARTIAL_FAILED_TIMEOUT
+        boardInfoFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
+        boardInfoFailedStatus === MetricsDataFailStatus.PartialFailedTimeout
       ) {
         dispatch(
           addNotification({
@@ -138,9 +132,9 @@ const MetricsStep = () => {
           <MetricsSelectionTitle aria-label='Board configuration title'>Board configuration </MetricsSelectionTitle>
 
           {isEmpty(errorMessage) ||
-          (boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_4XX &&
-            boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_TIMEOUT &&
-            boardInfoFailedStatus !== METRICS_DATA_FAIL_STATUS.ALL_FAILED_NO_CARDS) ? (
+          (boardInfoFailedStatus !== MetricsDataFailStatus.AllFailed4xx &&
+            boardInfoFailedStatus !== MetricsDataFailStatus.AllFailedTimeout &&
+            boardInfoFailedStatus !== MetricsDataFailStatus.AllFailedNoCards) ? (
             <>
               <Crews options={users} title={'Crew settings'} label={'Included Crews'} />
 
@@ -150,21 +144,21 @@ const MetricsStep = () => {
                 <RealDone columns={jiraColumns} title={'Real done setting'} label={'Consider as Done'} />
               )}
 
-              {requiredData.includes(REQUIRED_DATA.CLASSIFICATION) && (
+              {requiredData.includes(RequiredData.Classification) && (
                 <Classification
                   targetFields={targetFields}
                   title={'Classification setting'}
                   label={'Distinguished By'}
                 />
               )}
-              {requiredData.includes(REQUIRED_DATA.REWORK_TIMES) && <ReworkSettings />}
+              {requiredData.includes(RequiredData.ReworkTimes) && <ReworkSettings />}
               <Advance />
             </>
           ) : (
             <EmptyContent
               title={errorMessage.title}
               message={
-                errorMessage.code !== AXIOS_REQUEST_ERROR_CODE.TIMEOUT ? (
+                errorMessage.code !== AxiosRequestErrorCode.Timeout ? (
                   errorMessage.message
                 ) : (
                   <>
@@ -178,10 +172,10 @@ const MetricsStep = () => {
         </MetricSelectionWrapper>
       )}
 
-      {(requiredData.includes(REQUIRED_DATA.DEPLOYMENT_FREQUENCY) ||
-        requiredData.includes(REQUIRED_DATA.DEV_CHANGE_FAILURE_RATE) ||
-        requiredData.includes(REQUIRED_DATA.LEAD_TIME_FOR_CHANGES) ||
-        requiredData.includes(REQUIRED_DATA.DEV_MEAN_TIME_TO_RECOVERY)) && (
+      {(requiredData.includes(RequiredData.DeploymentFrequency) ||
+        requiredData.includes(RequiredData.DevChangeFailureRate) ||
+        requiredData.includes(RequiredData.LeadTimeForChanges) ||
+        requiredData.includes(RequiredData.DevMeanTimeToRecovery)) && (
         <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
           <MetricsSelectionTitle aria-label='Pipeline configuration title'>
             Pipeline configuration

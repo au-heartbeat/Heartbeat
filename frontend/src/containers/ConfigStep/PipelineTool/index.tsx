@@ -1,8 +1,8 @@
 import { ConfigSectionContainer, StyledForm, StyledTextField } from '@src/components/Common/ConfigForms';
-import { FIELD_KEY, useVerifyPipelineToolEffect } from '@src/hooks/useVerifyPipelineToolEffect';
+import { FieldKey, useVerifyPipelineToolEffect } from '@src/hooks/useVerifyPipelineToolEffect';
 import { PIPELINE_TOOL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
-import { CONFIG_TITLE, PIPELINE_TOOL_TYPES } from '@src/constants/resources';
+import { ConfigTitle, PIPELINE_TOOL_TYPES } from '@src/constants/resources';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
 import { IPipelineToolData } from '@src/containers/ConfigStep/Form/schema';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
@@ -30,47 +30,47 @@ export const PipelineTool = () => {
   const isVerified = isValid && isSubmitSuccessful;
 
   const onSubmit = async () => await verifyPipelineTool();
-  const closeTimeoutAlert = () => clearErrors(fields[FIELD_KEY.TOKEN].key);
+  const closeTimeoutAlert = () => clearErrors(fields[FieldKey.Token].key);
 
   return (
     <ConfigSectionContainer aria-label='Pipeline Tool Config'>
       {isLoading && <Loading />}
-      <ConfigSelectionTitle>{CONFIG_TITLE.PIPELINE_TOOL}</ConfigSelectionTitle>
+      <ConfigSelectionTitle>{ConfigTitle.PipelineTool}</ConfigSelectionTitle>
       <StyledAlterWrapper>
         <FormAlert
           showAlert={isVerifyTimeOut}
           onClose={closeTimeoutAlert}
           moduleType={'Pipeline Tool'}
-          formAlertType={formAlertTypes.TIMEOUT}
+          formAlertType={formAlertTypes.Timeout}
         />
       </StyledAlterWrapper>
       <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
         <FormSingleSelect
-          key={fields[FIELD_KEY.TYPE].key}
-          name={fields[FIELD_KEY.TYPE].key}
+          key={fields[FieldKey.Type].key}
+          name={fields[FieldKey.Type].key}
           options={Object.values(PIPELINE_TOOL_TYPES)}
-          labelText={fields[FIELD_KEY.TYPE].label}
+          labelText={fields[FieldKey.Type].label}
           labelId='pipelineTool-type-checkbox-label'
           selectLabelId='pipelineTool-type-checkbox-label'
           selectAriaLabel='Pipeline Tool type select'
         />
         <Controller
-          name={fields[FIELD_KEY.TOKEN].key}
+          name={fields[FieldKey.Token].key}
           control={control}
           render={({ field, fieldState }) => {
             return (
               <StyledTextField
                 {...field}
                 required
-                key={fields[FIELD_KEY.TOKEN].key}
+                key={fields[FieldKey.Token].key}
                 data-testid='pipelineToolTextField'
-                label={fields[FIELD_KEY.TOKEN].label}
+                label={fields[FieldKey.Token].label}
                 variant='standard'
                 type='password'
-                inputProps={{ 'aria-label': `input ${fields[FIELD_KEY.TOKEN].key}` }}
+                inputProps={{ 'aria-label': `input ${fields[FieldKey.Token].key}` }}
                 onFocus={() => {
                   if (field.value === '') {
-                    setError(fields[FIELD_KEY.TOKEN].key, {
+                    setError(fields[FieldKey.Token].key, {
                       message: PIPELINE_TOOL_ERROR_MESSAGE.token.required,
                     });
                   }
