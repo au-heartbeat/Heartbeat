@@ -117,6 +117,7 @@ export const shouldMetricsLoaded = (state: RootState) => state.stepper.shouldMet
 export const selectMetricsPageFailedTimeRangeInfos = (state: RootState) =>
   state.stepper.metricsPageTimeRangeLoadingStatus;
 
-export const selectReportPageFailedTimeRangeInfos = (state: RootState) => state.stepper.reportPageTimeRangeLoadingStatus;
+export const selectReportPageFailedTimeRangeInfos = (state: RootState) =>
+  state.stepper.reportPageTimeRangeLoadingStatus;
 
 export default stepperSlice.reducer;
