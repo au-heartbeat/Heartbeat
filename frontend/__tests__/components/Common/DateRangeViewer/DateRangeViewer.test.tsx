@@ -13,6 +13,19 @@ import { Provider } from 'react-redux';
 import React from 'react';
 
 const changeDateRange = jest.fn();
+const loadedSuccess = { isLoading: false, isLoaded: true, isLoadedWithError: false };
+const allMetricsPageDataLoadedSuccess = {
+  boardInfo: loadedSuccess,
+  pipelineInfo: loadedSuccess,
+  pipelineStep: loadedSuccess,
+};
+const allReportPageDataLoadedSuccess = {
+  gainPollingUrl: loadedSuccess,
+  polling: loadedSuccess,
+  boardMetrics: loadedSuccess,
+  pipelineMetrics: loadedSuccess,
+  sourceControlMetrics: loadedSuccess,
+};
 
 describe('DateRangeViewer', () => {
   let store = setupStore();
@@ -77,15 +90,27 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: true, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: {
+            boardInfo: { isLoading: false, isLoaded: true, isLoadedWithError: true },
+            pipelineInfo: loadedSuccess,
+            pipelineStep: loadedSuccess,
+          },
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: {
+            boardInfo: loadedSuccess,
+            pipelineInfo: loadedSuccess,
+            pipelineStep: loadedSuccess,
+          },
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: {
+            boardInfo: loadedSuccess,
+            pipelineInfo: loadedSuccess,
+            pipelineStep: loadedSuccess,
+          },
         },
       ];
       store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
@@ -100,15 +125,27 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: undefined, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: {
+            boardInfo: { isLoading: true, isLoaded: false, isLoadedWithError: false },
+            pipelineInfo: loadedSuccess,
+            pipelineStep: loadedSuccess,
+          },
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: {
+            boardInfo: loadedSuccess,
+            pipelineInfo: loadedSuccess,
+            pipelineStep: loadedSuccess,
+          },
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: {
+            boardInfo: loadedSuccess,
+            pipelineInfo: loadedSuccess,
+            pipelineStep: loadedSuccess,
+          },
         },
       ];
       store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
@@ -124,15 +161,15 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: allMetricsPageDataLoadedSuccess,
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: allMetricsPageDataLoadedSuccess,
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: { isBoardInfoError: false, isPipelineInfoError: false, isPipelineStepError: false },
+          errors: allMetricsPageDataLoadedSuccess,
         },
       ];
       store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
@@ -179,11 +216,11 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: { isGainPollingUrlError: false },
+          errors: allReportPageDataLoadedSuccess,
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: { isPollingError: false },
+          errors: allReportPageDataLoadedSuccess,
         },
       ];
 
@@ -215,62 +252,52 @@ describe('DateRangeViewer', () => {
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
           errors: {
-            isBoardMetricsError: true,
-            isGainPollingUrlError: false,
-            isPipelineMetricsError: false,
-            isPollingError: false,
-            isSourceControlMetricsError: false,
+            gainPollingUrl: loadedSuccess,
+            polling: loadedSuccess,
+            boardMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
+            pipelineMetrics: loadedSuccess,
+            sourceControlMetrics: loadedSuccess,
           },
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
           errors: {
-            isBoardMetricsError: false,
-            isGainPollingUrlError: true,
-            isPipelineMetricsError: false,
-            isPollingError: false,
-            isSourceControlMetricsError: false,
+            gainPollingUrl: { isLoading: false, isLoaded: true, isLoadedWithError: true },
           },
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
           errors: {
-            isBoardMetricsError: false,
-            isGainPollingUrlError: false,
-            isPipelineMetricsError: true,
-            isPollingError: false,
-            isSourceControlMetricsError: false,
+            gainPollingUrl: loadedSuccess,
+            polling: loadedSuccess,
+            boardMetrics: loadedSuccess,
+            pipelineMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
+            sourceControlMetrics: loadedSuccess,
           },
         },
         {
           startDate: formatDateToTimestampString('2023-02-01T00:00:00.000+08:00'),
           errors: {
-            isBoardMetricsError: false,
-            isGainPollingUrlError: false,
-            isPipelineMetricsError: false,
-            isPollingError: true,
-            isSourceControlMetricsError: false,
+            gainPollingUrl: loadedSuccess,
+            polling: { isLoading: false, isLoaded: true, isLoadedWithError: true },
+            boardMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
+            pipelineMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
+            sourceControlMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
           },
         },
         {
           startDate: formatDateToTimestampString('2023-03-19T00:00:00.000+08:00'),
           errors: {
-            isBoardMetricsError: false,
-            isGainPollingUrlError: false,
-            isPipelineMetricsError: false,
-            isPollingError: false,
-            isSourceControlMetricsError: true,
+            gainPollingUrl: loadedSuccess,
+            polling: loadedSuccess,
+            boardMetrics: loadedSuccess,
+            pipelineMetrics: loadedSuccess,
+            sourceControlMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
           },
         },
         {
           startDate: formatDateToTimestampString('2023-04-01T00:00:00.000+08:00'),
-          errors: {
-            isBoardMetricsError: false,
-            isGainPollingUrlError: false,
-            isPipelineMetricsError: false,
-            isPollingError: false,
-            isSourceControlMetricsError: false,
-          },
+          errors: allReportPageDataLoadedSuccess,
         },
       ];
       store.dispatch(updateReportPageFailedTimeRangeInfos(failedTimeRangeList));
