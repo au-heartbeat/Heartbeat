@@ -17,6 +17,7 @@ import {
   sortDisabledOptions,
   transformToCleanedBuildKiteEmoji,
   updateResponseCrews,
+  valueFormatter,
   xAxisLabelDateFormatter,
 } from '@src/utils/util';
 import {
@@ -720,5 +721,21 @@ describe('percentageFormatter function', () => {
     const result = percentageFormatter(false)(inputData);
 
     expect(result).toEqual('66.66');
+  });
+});
+
+describe('valueFormatter function', () => {
+  it('should return the percent data format with number', () => {
+    const inputData: number = 66.66;
+
+    const result: string = valueFormatter(inputData);
+
+    expect(result).toEqual('66.66%');
+  });
+
+  it('should return symbol when data is NaN', () => {
+    const result: string = valueFormatter(NaN);
+
+    expect(result).toEqual('-');
   });
 });

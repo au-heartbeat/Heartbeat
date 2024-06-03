@@ -269,3 +269,9 @@ export const convertNumberToPercent = (num: number): string => {
 export const percentageFormatter = (showPercentage = true) => {
   return (value: number) => value + (showPercentage ? '%' : '');
 };
+export const valueFormatter = (value: number) => {
+  if (isNaN(value)) {
+    return '-';
+  }
+  return value.toFixed(2) + '%';
+};

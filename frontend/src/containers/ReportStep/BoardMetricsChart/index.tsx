@@ -3,8 +3,8 @@ import {
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
 import { CHART_TYPE, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS } from '@src/constants/resources';
+import { calculateTrendInfo, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { calculateTrendInfo, xAxisLabelDateFormatter } from '@src/utils/util';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
@@ -191,6 +191,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
   const reworkCardsRatio = data?.map((item) => (item?.reworkCardsRatio as number) * 100);
 
   const trendInfo = calculateTrendInfo(totalReworkTimes, dateRanges, CHART_TYPE.REWORK);
+
   return {
     xAxis: {
       data: dateRanges,
@@ -213,14 +214,7 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
       {
         name: 'Rework cards ratio',
         type: 'line',
-        tooltip: {
-          valueFormatter: function (value: number) {
-            if (isNaN(value)) {
-              return '-';
-            }
-            return value.toFixed(2) + ' %';
-          },
-        },
+        tooltip: { valueFormatter },
         data: reworkCardsRatio!,
         yAxisIndex: 1,
         setAreaStyle: false,
