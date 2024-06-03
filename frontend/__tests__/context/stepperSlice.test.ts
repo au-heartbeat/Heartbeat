@@ -21,8 +21,8 @@ describe('stepper reducer', () => {
         stepNumber: 0,
         timeStamp: 0,
         shouldMetricsLoaded: true,
-        metricsPageFailedTimeRangeInfos: {},
-        reportPageFailedTimeRangeInfos: {},
+        metricsPageTimeRangeLoadingStatus: {},
+        reportPageTimeRangeLoadingStatus: {},
       },
       nextStep(),
     );
@@ -36,8 +36,8 @@ describe('stepper reducer', () => {
         stepNumber: 0,
         timeStamp: 0,
         shouldMetricsLoaded: true,
-        metricsPageFailedTimeRangeInfos: {},
-        reportPageFailedTimeRangeInfos: {},
+        metricsPageTimeRangeLoadingStatus: {},
+        reportPageTimeRangeLoadingStatus: {},
       },
       backStep(),
     );
@@ -51,8 +51,8 @@ describe('stepper reducer', () => {
         stepNumber: 2,
         timeStamp: 0,
         shouldMetricsLoaded: true,
-        metricsPageFailedTimeRangeInfos: {},
-        reportPageFailedTimeRangeInfos: {},
+        metricsPageTimeRangeLoadingStatus: {},
+        reportPageTimeRangeLoadingStatus: {},
       },
       backStep(),
     );
@@ -67,8 +67,8 @@ describe('stepper reducer', () => {
         stepNumber: 2,
         timeStamp: 0,
         shouldMetricsLoaded: true,
-        metricsPageFailedTimeRangeInfos: {},
-        reportPageFailedTimeRangeInfos: {},
+        metricsPageTimeRangeLoadingStatus: {},
+        reportPageTimeRangeLoadingStatus: {},
       },
       updateTimeStamp(mockTime),
     );

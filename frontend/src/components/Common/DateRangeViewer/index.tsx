@@ -11,8 +11,8 @@ import {
   StyledExpandMoreIcon,
 } from './style';
 import {
-  IMetricsPageFailedDateRange,
-  IReportPageFailedDateRange,
+  IMetricsPageLoadingStatus,
+  IReportPageLoadingStatus,
   selectMetricsPageFailedTimeRangeInfos,
   selectReportPageFailedTimeRangeInfos,
   selectStepNumber,
@@ -42,8 +42,8 @@ const DateRangeViewer = ({
 }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
-  const metricsPageFailedTimeRangeInfos = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
-  const reportPageFailedTimeRangeInfos = useAppSelector(selectReportPageFailedTimeRangeInfos);
+  const metricsPageTimeRangeLoadingStatus = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
+  const reportPageTimeRangeLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
   const stepNumber = useAppSelector(selectStepNumber);
   const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
   const isMetricsPage = stepNumber === STEP_NUMBER.METRICS_PAGE;
@@ -87,31 +87,18 @@ const DateRangeViewer = ({
   }, [handleClickOutside]);
 
   function getDateRangeStatus(startDate: string) {
-    let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
-    const dateRangeStatus: { isLoading: boolean; isFailed: boolean } = { isLoading: false, isFailed: false };
+    let errorInfo: IMetricsPageLoadingStatus | IReportPageLoadingStatus;
+
     if (isMetricsPage) {
-      errorInfo = metricsPageFailedTimeRangeInfos[startDate] || {};
-      if (
-        errorInfo.isBoardInfoError === undefined ||
-        errorInfo.isPipelineInfoError === undefined ||
-        errorInfo.isPipelineStepError === undefined
-      ) {
-        dateRangeStatus.isLoading = true;
-      }
+      errorInfo = metricsPageTimeRangeLoadingStatus[startDate] || {};
     } else {
-      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
-      if (
-        errorInfo.isBoardMetricsError === undefined ||
-        errorInfo.isGainPollingUrlError === undefined ||
-        errorInfo.isPipelineMetricsError === undefined ||
-        errorInfo.isPollingError === undefined ||
-        errorInfo.isSourceControlMetricsError === undefined
-      ) {
-        dateRangeStatus.isLoading = true;
-      }
+      errorInfo = reportPageTimeRangeLoadingStatus[startDate] || {};
     }
-    dateRangeStatus.isFailed = Object.values(errorInfo).some((value) => value);
-    return dateRangeStatus;
+
+    return {
+      isLoading: Object.values(errorInfo).some(({ isLoading }) => isLoading),
+      isFailed: Object.values(errorInfo).some(({ isLoaded, isLoadedWithError }) => isLoaded && isLoadedWithError),
+    };
   }
 
   function getTotalDateRangeStatus() {

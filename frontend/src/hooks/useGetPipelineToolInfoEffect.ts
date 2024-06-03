@@ -4,9 +4,9 @@ import {
   selectPipelineTool,
   selectDateRange,
 } from '@src/context/config/configSlice';
-import { shouldMetricsLoaded, updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { pipelineToolClient, IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
 import { selectShouldGetPipelineConfig, updatePipelineSettings } from '@src/context/Metrics/metricsSlice';
+import { shouldMetricsLoaded, updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { clearMetricsPipelineFormMeta } from '@src/context/meta/metaSlice';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { formatDateToTimestampString } from '@src/utils/util';
@@ -44,11 +44,15 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
     };
     setIsLoading(true);
     dispatch(
-      updateMetricsPageFailedTimeRangeInfos(
+      updateMetricsPageLoadingStatus(
         dateRangeList.map((dateRange) => ({
           startDate: formatDateToTimestampString(dateRange.startDate!),
-          errors: {
-            isPipelineInfoError: undefined,
+          loadingStatus: {
+            pipelineInfo: {
+              isLoading: true,
+              isLoaded: false,
+              isLoadedWithError: false,
+            },
           },
         })),
       ),
@@ -62,11 +66,15 @@ export const useGetPipelineToolInfoEffect = (): IUseVerifyPipeLineToolStateInter
         dispatch(updatePipelineSettings({ ...response.data, isProjectCreated }));
       }
       dispatch(
-        updateMetricsPageFailedTimeRangeInfos(
+        updateMetricsPageLoadingStatus(
           dateRangeList.map((dateRange) => ({
             startDate: formatDateToTimestampString(dateRange.startDate!),
-            errors: {
-              isPipelineInfoError: response.code !== HttpStatusCode.Ok,
+            loadingStatus: {
+              pipelineInfo: {
+                isLoading: false,
+                isLoaded: true,
+                isLoadedWithError: response.code !== HttpStatusCode.Ok,
+              },
             },
           })),
         ),

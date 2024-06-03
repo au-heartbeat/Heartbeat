@@ -1,6 +1,6 @@
-import { updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { updateShouldRetryPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IStepsParams, IStepsRes, metricsClient } from '@src/clients/MetricsClient';
+import { updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { MetricsDataFailStatus, DURATION } from '@src/constants/commons';
 import { FULFILLED, MESSAGE, REJECTED } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
@@ -44,11 +44,17 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     setIsLoading(true);
 
     dispatch(
-      updateMetricsPageFailedTimeRangeInfos(
+      updateMetricsPageLoadingStatus(
         params.map((param) => {
           return {
             startDate: param.startTime,
-            errors: { isPipelineStepError: undefined },
+            loadingStatus: {
+              pipelineStep: {
+                isLoading: true,
+                isLoaded: false,
+                isLoadedWithError: false,
+              },
+            },
           };
         }),
       ),
@@ -63,11 +69,17 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
     const hasFulfilled = allStepsRes.some((stepInfo) => stepInfo.status === FULFILLED);
 
     dispatch(
-      updateMetricsPageFailedTimeRangeInfos(
+      updateMetricsPageLoadingStatus(
         params.map((param, index) => {
           return {
             startDate: param.startTime,
-            errors: { isPipelineStepError: allStepsRes[index].status === REJECTED },
+            loadingStatus: {
+              pipelineStep: {
+                isLoading: false,
+                isLoaded: true,
+                isLoadedWithError: allStepsRes[index].status === REJECTED,
+              },
+            },
           };
         }),
       ),
