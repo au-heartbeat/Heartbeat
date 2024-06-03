@@ -214,7 +214,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     const payload = dateRangeList.map(({ startDate }) => ({
       startDate: formatDateToTimestampString(startDate!),
       loadingStatus: {
-        gainPollingUrl: { isLoading: false, isLoaded: false, isLoadedWithError: false },
+        gainPollingUrl: { isLoading: true, isLoaded: false, isLoadedWithError: false },
         polling: { ...loadingStatus },
         boardMetrics: { ...loadingStatus },
         pipelineMetrics: { ...loadingStatus },
