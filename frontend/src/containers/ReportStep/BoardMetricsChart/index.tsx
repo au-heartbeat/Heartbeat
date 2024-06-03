@@ -109,7 +109,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   const data = mappedData?.map((item) => item.cycleTimeList);
   const storyPoints = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
-  const trendInfo = calculateTrendInfo(storyPoints, dateRanges, ChartType.AverageCycleTime);
+  const trendInfo = calculateTrendInfo(storyPoints, dateRanges, ChartType.CycleTime);
   return {
     xAxis: {
       data: dateRanges,

@@ -87,7 +87,7 @@ export enum MetricsTitle {
 
 export enum ChartType {
   Velocity = 'Velocity',
-  AverageCycleTime = 'Average Cycle Time',
+  CycleTime = 'Cycle Time',
   CycleTimeAllocation = 'Cycle Time Allocation',
   Rework = 'Rework',
   LeadTimeForChanges = 'Lead Time For Changes',
@@ -108,7 +108,7 @@ export enum TrendType {
 
 export const CHART_TREND_TIP = {
   [ChartType.Velocity]: 'Velocity(Story point)',
-  [ChartType.AverageCycleTime]: 'Days/Story point',
+  [ChartType.CycleTime]: 'Days/Story point',
   [ChartType.CycleTimeAllocation]: 'Total development time/Total cycle time',
   [ChartType.Rework]: 'Total rework times',
   [ChartType.LeadTimeForChanges]: 'PR Lead Time',
@@ -124,7 +124,7 @@ export const UP_TREND_IS_BETTER: ChartType[] = [
 ];
 export const DOWN_TREND_IS_BETTER: ChartType[] = [
   ChartType.Rework,
-  ChartType.AverageCycleTime,
+  ChartType.CycleTime,
   ChartType.LeadTimeForChanges,
   ChartType.DevMeanTimeToRecovery,
   ChartType.DevChangeFailureRate,

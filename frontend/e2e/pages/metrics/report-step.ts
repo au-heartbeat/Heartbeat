@@ -70,7 +70,7 @@ export class ReportStep {
   readonly displayBoardChartTab: Locator;
   readonly displayDoraChartTab: Locator;
   readonly velocityChart: Locator;
-  readonly averageCycleTimeChart: Locator;
+  readonly cycleTimeChart: Locator;
   readonly cycleTimeAllocationChart: Locator;
   readonly reworkChart: Locator;
   readonly leadTimeForChangeChart: Locator;
@@ -80,11 +80,11 @@ export class ReportStep {
   readonly velocityTrendContainer: Locator;
   readonly reworkTrendContainer: Locator;
   readonly cycleTimeAllocationTrendContainer: Locator;
-  readonly averageCycleTimeTrendContainer: Locator;
+  readonly cycleTimeTrendContainer: Locator;
   readonly velocityTrendIcon: Locator;
   readonly reworkTrendIcon: Locator;
   readonly cycleTimeAllocationTrendIcon: Locator;
-  readonly averageCycleTimeTrendIcon: Locator;
+  readonly cycleTimeTrendIcon: Locator;
   readonly devMeanTimeToRecoveryTrendContainer: Locator;
   readonly devChangeFailureRateTrendContainer: Locator;
   readonly deploymentFrequencyTrendContainer: Locator;
@@ -145,7 +145,7 @@ export class ReportStep {
     this.displayBoardChartTab = this.chartTabsContainer.getByLabel('board chart');
     this.displayDoraChartTab = this.chartTabsContainer.getByLabel('dora chart');
     this.velocityChart = this.page.getByLabel('velocity chart');
-    this.averageCycleTimeChart = this.page.getByLabel('average cycle time chart');
+    this.cycleTimeChart = this.page.getByLabel('cycle time chart');
     this.cycleTimeAllocationChart = this.page.getByLabel('cycle time allocation chart');
     this.reworkChart = this.page.getByLabel('rework chart');
     this.leadTimeForChangeChart = this.page.getByLabel('lead time for changes chart');
@@ -153,11 +153,11 @@ export class ReportStep {
     this.changeFailureRateChart = this.page.getByLabel('change failure rate chart');
     this.meanTimeToRecoveryChart = this.page.getByLabel('mean time to recovery chart');
     this.velocityTrendContainer = this.page.getByLabel('velocity trend container');
-    this.averageCycleTimeTrendContainer = this.page.getByLabel('average cycle time trend container');
+    this.cycleTimeTrendContainer = this.page.getByLabel('cycle time trend container');
     this.cycleTimeAllocationTrendContainer = this.page.getByLabel('cycle time allocation trend container');
     this.reworkTrendContainer = this.page.getByLabel('rework trend container');
     this.velocityTrendIcon = this.velocityTrendContainer.getByLabel('trend up');
-    this.averageCycleTimeTrendIcon = this.averageCycleTimeTrendContainer.getByLabel('trend up');
+    this.cycleTimeTrendIcon = this.cycleTimeTrendContainer.getByLabel('trend up');
     this.cycleTimeAllocationTrendIcon = this.cycleTimeAllocationTrendContainer.getByLabel('trend up');
     this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend up');
 
@@ -655,7 +655,7 @@ export class ReportStep {
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('true');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('false');
     await expect(this.velocityChart).toBeVisible();
-    await expect(this.averageCycleTimeChart).toBeVisible();
+    await expect(this.cycleTimeChart).toBeVisible();
     await expect(this.cycleTimeAllocationChart).toBeVisible();
     await expect(this.reworkChart).toBeVisible();
 
@@ -664,13 +664,10 @@ export class ReportStep {
     await expect(this.velocityTrendIcon).toBeVisible();
     await expect(this.velocityTrendContainer).toContainText(BOARD_CHART_VALUE.Velocity.value);
 
-    await expect(this.averageCycleTimeTrendContainer).toBeVisible();
-    await expect(this.averageCycleTimeTrendContainer).toHaveAttribute(
-      'color',
-      BOARD_CHART_VALUE['Average Cycle Time'].color,
-    );
-    await expect(this.averageCycleTimeTrendIcon).toBeVisible();
-    await expect(this.averageCycleTimeTrendContainer).toContainText(BOARD_CHART_VALUE['Average Cycle Time'].value);
+    await expect(this.cycleTimeTrendContainer).toBeVisible();
+    await expect(this.cycleTimeTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE['Average Cycle Time'].color);
+    await expect(this.cycleTimeTrendIcon).toBeVisible();
+    await expect(this.cycleTimeTrendContainer).toContainText(BOARD_CHART_VALUE['Average Cycle Time'].value);
 
     await expect(this.cycleTimeAllocationTrendContainer).toBeVisible();
     await expect(this.cycleTimeAllocationTrendContainer).toHaveAttribute(
