@@ -8,13 +8,13 @@ interface LoadingStatus {
   isLoadedWithError: boolean;
 }
 
-export interface IMetricsPageFailedDateRange {
+export interface IMetricsPageLoadingStatus {
   boardInfo?: LoadingStatus;
   pipelineInfo?: LoadingStatus;
   pipelineStep?: LoadingStatus;
 }
 
-export interface IReportPageFailedDateRange {
+export interface IReportPageLoadingStatus {
   gainPollingUrl?: LoadingStatus;
   polling?: LoadingStatus;
   boardMetrics?: LoadingStatus;
@@ -22,25 +22,25 @@ export interface IReportPageFailedDateRange {
   sourceControlMetrics?: LoadingStatus;
 }
 
-export interface IPageFailedDateRangePayload<T> {
+export interface IPageLoadingStatusPayload<T> {
   startDate: string;
-  errors: T;
+  loadingStatus: T;
 }
 
 export interface StepState {
   stepNumber: number;
   timeStamp: number;
   shouldMetricsLoaded: boolean;
-  metricsPageFailedTimeRangeInfos: Record<string, IMetricsPageFailedDateRange>;
-  reportPageFailedTimeRangeInfos: Record<string, IReportPageFailedDateRange>;
+  metricsPageTimeRangeLoadingStatus: Record<string, IMetricsPageLoadingStatus>;
+  reportPageTimeRangeLoadingStatus: Record<string, IReportPageLoadingStatus>;
 }
 
 const initialState: StepState = {
   stepNumber: STEP_NUMBER.CONFIG_PAGE,
   timeStamp: 0,
   shouldMetricsLoaded: true,
-  metricsPageFailedTimeRangeInfos: {},
-  reportPageFailedTimeRangeInfos: {},
+  metricsPageTimeRangeLoadingStatus: {},
+  reportPageTimeRangeLoadingStatus: {},
 };
 
 export const stepperSlice = createSlice({
@@ -53,10 +53,10 @@ export const stepperSlice = createSlice({
     },
     nextStep: (state) => {
       if (state.shouldMetricsLoaded && state.stepNumber === STEP_NUMBER.CONFIG_PAGE) {
-        state.metricsPageFailedTimeRangeInfos = {};
+        state.metricsPageTimeRangeLoadingStatus = {};
       }
       if (state.stepNumber === STEP_NUMBER.METRICS_PAGE) {
-        state.reportPageFailedTimeRangeInfos = {};
+        state.reportPageTimeRangeLoadingStatus = {};
       }
       state.shouldMetricsLoaded = true;
       state.stepNumber += 1;
@@ -71,30 +71,30 @@ export const stepperSlice = createSlice({
     updateTimeStamp: (state, action) => {
       state.timeStamp = action.payload;
     },
-    updateMetricsPageFailedTimeRangeInfos: (state, action) => {
-      const errorInfoList: IPageFailedDateRangePayload<IMetricsPageFailedDateRange>[] = action.payload;
+    updateMetricsPageLoadingStatus: (state, action) => {
+      const loadingStatusList: IPageLoadingStatusPayload<IMetricsPageLoadingStatus>[] = action.payload;
 
-      errorInfoList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
+      loadingStatusList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
 
-      function updateInfo(errorInfo: IPageFailedDateRangePayload<IMetricsPageFailedDateRange>) {
-        const { startDate, errors } = errorInfo;
-        state.metricsPageFailedTimeRangeInfos[startDate] = {
-          ...state.metricsPageFailedTimeRangeInfos[startDate],
-          ...errors,
+      function updateInfo(loadingInfo: IPageLoadingStatusPayload<IMetricsPageLoadingStatus>) {
+        const { startDate, loadingStatus } = loadingInfo;
+        state.metricsPageTimeRangeLoadingStatus[startDate] = {
+          ...state.metricsPageTimeRangeLoadingStatus[startDate],
+          ...loadingStatus,
         };
       }
     },
 
-    updateReportPageFailedTimeRangeInfos: (state, action) => {
-      const errorInfoList: IPageFailedDateRangePayload<IReportPageFailedDateRange>[] = action.payload;
+    updateReportPageLoadingStatus: (state, action) => {
+      const loadingStatusList: IPageLoadingStatusPayload<IReportPageLoadingStatus>[] = action.payload;
 
-      errorInfoList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
+      loadingStatusList.forEach((singleTimeRangeInfo) => updateInfo(singleTimeRangeInfo));
 
-      function updateInfo(errorInfo: IPageFailedDateRangePayload<IReportPageFailedDateRange>) {
-        const { startDate, errors } = errorInfo;
-        state.reportPageFailedTimeRangeInfos[startDate] = {
-          ...state.reportPageFailedTimeRangeInfos[startDate],
-          ...errors,
+      function updateInfo(loadingInfo: IPageLoadingStatusPayload<IReportPageLoadingStatus>) {
+        const { startDate, loadingStatus } = loadingInfo;
+        state.reportPageTimeRangeLoadingStatus[startDate] = {
+          ...state.reportPageTimeRangeLoadingStatus[startDate],
+          ...loadingStatus,
         };
       }
     },
@@ -107,16 +107,16 @@ export const {
   backStep,
   updateShouldMetricsLoaded,
   updateTimeStamp,
-  updateMetricsPageFailedTimeRangeInfos,
-  updateReportPageFailedTimeRangeInfos,
+  updateMetricsPageLoadingStatus,
+  updateReportPageLoadingStatus,
 } = stepperSlice.actions;
 
 export const selectStepNumber = (state: RootState) => state.stepper.stepNumber;
 export const selectTimeStamp = (state: RootState) => state.stepper.timeStamp;
 export const shouldMetricsLoaded = (state: RootState) => state.stepper.shouldMetricsLoaded;
 export const selectMetricsPageFailedTimeRangeInfos = (state: RootState) =>
-  state.stepper.metricsPageFailedTimeRangeInfos;
+  state.stepper.metricsPageTimeRangeLoadingStatus;
 
-export const selectReportPageFailedTimeRangeInfos = (state: RootState) => state.stepper.reportPageFailedTimeRangeInfos;
+export const selectReportPageFailedTimeRangeInfos = (state: RootState) => state.stepper.reportPageTimeRangeLoadingStatus;
 
 export default stepperSlice.reducer;

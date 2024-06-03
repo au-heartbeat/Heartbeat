@@ -1,5 +1,5 @@
 import { AxiosRequestErrorCode, BOARD_CONFIG_INFO_ERROR, BOARD_CONFIG_INFO_TITLE } from '@src/constants/resources';
-import { updateMetricsPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
+import { updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { boardInfoClient } from '@src/clients/board/BoardInfoClient';
 import { BoardInfoConfigDTO } from '@src/clients/board/dto/request';
 import { MetricsDataFailStatus } from '@src/constants/commons';
@@ -121,10 +121,10 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
       });
 
       dispatch(
-        updateMetricsPageFailedTimeRangeInfos(
+        updateMetricsPageLoadingStatus(
           dateRangeCopy.map((dateRange) => ({
             startDate: formatDateToTimestampString(dateRange.startDate!),
-            errors: {
+            loadingStatus: {
               boardInfo: {
                 isLoading: true,
                 isLoaded: false,
@@ -154,10 +154,10 @@ export const useGetBoardInfoEffect = (): useGetBoardInfoInterface => {
         .finally(() => {
           setIsLoading(false);
           dispatch(
-            updateMetricsPageFailedTimeRangeInfos(
+            updateMetricsPageLoadingStatus(
               dateRangeCopy.map((dateRange) => ({
                 startDate: formatDateToTimestampString(dateRange.startDate!),
-                errors: {
+                loadingStatus: {
                   boardInfo: {
                     isLoading: false,
                     isLoaded: true,

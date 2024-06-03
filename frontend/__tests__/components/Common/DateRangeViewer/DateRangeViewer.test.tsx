@@ -1,7 +1,7 @@
 import {
   nextStep,
-  updateMetricsPageFailedTimeRangeInfos,
-  updateReportPageFailedTimeRangeInfos,
+  updateMetricsPageLoadingStatus,
+  updateReportPageLoadingStatus,
 } from '@src/context/stepper/StepperSlice';
 import { formatDateToTimestampString, sortDateRanges } from '@src/utils/util';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
@@ -90,7 +90,7 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             boardInfo: { isLoading: false, isLoaded: true, isLoadedWithError: true },
             pipelineInfo: loadedSuccess,
             pipelineStep: loadedSuccess,
@@ -98,7 +98,7 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             boardInfo: loadedSuccess,
             pipelineInfo: loadedSuccess,
             pipelineStep: loadedSuccess,
@@ -106,14 +106,14 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             boardInfo: loadedSuccess,
             pipelineInfo: loadedSuccess,
             pipelineStep: loadedSuccess,
           },
         },
       ];
-      store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
+      store.dispatch(updateMetricsPageLoadingStatus(failedTimeRangeList));
       const { getByLabelText } = setup(mockDateRanges);
       expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
 
@@ -125,7 +125,7 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             boardInfo: { isLoading: true, isLoaded: false, isLoadedWithError: false },
             pipelineInfo: loadedSuccess,
             pipelineStep: loadedSuccess,
@@ -133,7 +133,7 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             boardInfo: loadedSuccess,
             pipelineInfo: loadedSuccess,
             pipelineStep: loadedSuccess,
@@ -141,14 +141,14 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             boardInfo: loadedSuccess,
             pipelineInfo: loadedSuccess,
             pipelineStep: loadedSuccess,
           },
         },
       ];
-      store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
+      store.dispatch(updateMetricsPageLoadingStatus(failedTimeRangeList));
       const { getByLabelText } = setup(mockDateRanges);
 
       expect(screen.getByLabelText('loading icon in date')).toBeInTheDocument();
@@ -161,18 +161,18 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: allMetricsPageDataLoadedSuccess,
+          loadingStatus: allMetricsPageDataLoadedSuccess,
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: allMetricsPageDataLoadedSuccess,
+          loadingStatus: allMetricsPageDataLoadedSuccess,
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: allMetricsPageDataLoadedSuccess,
+          loadingStatus: allMetricsPageDataLoadedSuccess,
         },
       ];
-      store.dispatch(updateMetricsPageFailedTimeRangeInfos(failedTimeRangeList));
+      store.dispatch(updateMetricsPageLoadingStatus(failedTimeRangeList));
       const { getByLabelText } = setup(mockDateRanges);
 
       expect(screen.getByTestId('CheckIcon')).toBeInTheDocument();
@@ -216,15 +216,15 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: allReportPageDataLoadedSuccess,
+          loadingStatus: allReportPageDataLoadedSuccess,
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: allReportPageDataLoadedSuccess,
+          loadingStatus: allReportPageDataLoadedSuccess,
         },
       ];
 
-      store.dispatch(updateReportPageFailedTimeRangeInfos(failedTimeRangeList));
+      store.dispatch(updateReportPageLoadingStatus(failedTimeRangeList));
       const { getByLabelText } = setup(mockDateRanges);
 
       await userEvent.click(getByLabelText('expandMore'));
@@ -251,7 +251,7 @@ describe('DateRangeViewer', () => {
       const failedTimeRangeList = [
         {
           startDate: formatDateToTimestampString('2024-02-01T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             gainPollingUrl: loadedSuccess,
             polling: loadedSuccess,
             boardMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
@@ -261,13 +261,13 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2024-03-19T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             gainPollingUrl: { isLoading: false, isLoaded: true, isLoadedWithError: true },
           },
         },
         {
           startDate: formatDateToTimestampString('2024-04-01T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             gainPollingUrl: loadedSuccess,
             polling: loadedSuccess,
             boardMetrics: loadedSuccess,
@@ -277,7 +277,7 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2023-02-01T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             gainPollingUrl: loadedSuccess,
             polling: { isLoading: false, isLoaded: true, isLoadedWithError: true },
             boardMetrics: { isLoading: false, isLoaded: true, isLoadedWithError: true },
@@ -287,7 +287,7 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2023-03-19T00:00:00.000+08:00'),
-          errors: {
+          loadingStatus: {
             gainPollingUrl: loadedSuccess,
             polling: loadedSuccess,
             boardMetrics: loadedSuccess,
@@ -297,10 +297,10 @@ describe('DateRangeViewer', () => {
         },
         {
           startDate: formatDateToTimestampString('2023-04-01T00:00:00.000+08:00'),
-          errors: allReportPageDataLoadedSuccess,
+          loadingStatus: allReportPageDataLoadedSuccess,
         },
       ];
-      store.dispatch(updateReportPageFailedTimeRangeInfos(failedTimeRangeList));
+      store.dispatch(updateReportPageLoadingStatus(failedTimeRangeList));
       const { getByLabelText } = setup(dateRangeList);
       expect(screen.getByTestId('PriorityHighIcon')).toBeInTheDocument();
 

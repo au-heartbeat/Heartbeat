@@ -11,8 +11,8 @@ import {
   StyledExpandMoreIcon,
 } from './style';
 import {
-  IMetricsPageFailedDateRange,
-  IReportPageFailedDateRange,
+  IMetricsPageLoadingStatus,
+  IReportPageLoadingStatus,
   selectMetricsPageFailedTimeRangeInfos,
   selectReportPageFailedTimeRangeInfos,
   selectStepNumber,
@@ -42,8 +42,8 @@ const DateRangeViewer = ({
 }: Props) => {
   const [showMoreDateRange, setShowMoreDateRange] = useState(false);
   const DateRangeExpandRef = useRef<HTMLDivElement>(null);
-  const metricsPageFailedTimeRangeInfos = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
-  const reportPageFailedTimeRangeInfos = useAppSelector(selectReportPageFailedTimeRangeInfos);
+  const metricsPageTimeRangeLoadingStatus = useAppSelector(selectMetricsPageFailedTimeRangeInfos);
+  const reportPageTimeRangeLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
   const stepNumber = useAppSelector(selectStepNumber);
   const currentDateRange: DateRange = selectedDateRange || dateRangeList[0];
   const isMetricsPage = stepNumber === STEP_NUMBER.METRICS_PAGE;
@@ -87,12 +87,12 @@ const DateRangeViewer = ({
   }, [handleClickOutside]);
 
   function getDateRangeStatus(startDate: string) {
-    let errorInfo: IMetricsPageFailedDateRange | IReportPageFailedDateRange;
+    let errorInfo: IMetricsPageLoadingStatus | IReportPageLoadingStatus;
 
     if (isMetricsPage) {
-      errorInfo = metricsPageFailedTimeRangeInfos[startDate] || {};
+      errorInfo = metricsPageTimeRangeLoadingStatus[startDate] || {};
     } else {
-      errorInfo = reportPageFailedTimeRangeInfos[startDate] || {};
+      errorInfo = reportPageTimeRangeLoadingStatus[startDate] || {};
     }
 
     return {
