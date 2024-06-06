@@ -39,6 +39,15 @@ describe('deployment frequency data mapper', () => {
           },
         ],
       },
+      {
+        id: 1,
+        name: 'Average',
+        valueList: [
+          {
+            value: '0.40',
+          },
+        ],
+      },
     ];
     const mappedDeploymentFrequency = deploymentFrequencyMapper(mockDeploymentFrequencyRes);
 

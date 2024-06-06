@@ -29,6 +29,15 @@ describe('dev change failure rate data mapper', () => {
           },
         ],
       },
+      {
+        id: 1,
+        name: 'Average',
+        valueList: [
+          {
+            value: '0.00',
+          },
+        ],
+      },
     ];
     const mappedDevChangeFailureRate = devChangeFailureRateMapper(mockDevChangeFailureRateRes);
 

@@ -26,16 +26,19 @@ interface DoraMetricsChartProps {
 
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
+const AVERAGE = 'Average';
 
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList
     .map((item) => LEAD_TIME_CHARTS_MAPPING[item.name])
     .slice(0, 2);
-  const extractedValues = mappedData?.map((data) =>
-    data.leadTimeForChangesList?.[0].valuesList.map((item) => {
-      return Number(item.value);
-    }),
-  );
+  const extractedValues = mappedData?.map((data) => {
+    const averageItem = data.leadTimeForChangesList?.find((leadTimeForChange) => leadTimeForChange.name === AVERAGE);
+    if (!averageItem) return;
+
+    return averageItem.valuesList.map((item) => Number(item.value));
+  });
+
   const prLeadTimeValues = extractedValues?.map((value) => value![0]);
   const trendInfo = calculateTrendInfo(prLeadTimeValues, allDateRanges, ChartType.LeadTimeForChanges);
 
@@ -66,8 +69,10 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
 
 function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.deploymentFrequencyList);
-  const value = data?.map((item) => {
-    return Number(item?.[0].valueList[0].value) || 0;
+  const value = data?.map((items) => {
+    const averageItem = items?.find((item) => item.name === AVERAGE);
+    if (!averageItem) return 0;
+    return Number(averageItem.valueList[0].value) || 0;
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DeploymentFrequency);
   return {
@@ -90,10 +95,11 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
 
 function extractedChangeFailureRateData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.devChangeFailureRateList);
-  const valueStr = data?.map((item) => {
-    return item?.[0].valueList[0].value as string;
+  const value = data?.map((items) => {
+    const averageItem = items?.find((item) => item.name === AVERAGE);
+    if (!averageItem) return 0;
+    return Number(averageItem.valueList[0].value) || 0;
   });
-  const value = valueStr?.map((item) => Number(item?.split('%', 1)[0]));
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevChangeFailureRate);
   return {
     legend: RequiredData.DevChangeFailureRate,
@@ -115,8 +121,10 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
 
 function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
-  const value = data?.map((item) => {
-    return Number(item?.[0].valueList[0].value) || 0;
+  const value = data?.map((items) => {
+    const averageItem = items?.find((item) => item.name === AVERAGE);
+    if (!averageItem) return 0;
+    return Number(averageItem.valueList[0].value) || 0;
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevMeanTimeToRecovery);
   return {

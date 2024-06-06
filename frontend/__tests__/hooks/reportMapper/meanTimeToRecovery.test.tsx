@@ -25,6 +25,15 @@ describe('dev mean time to recovery data mapper', () => {
           },
         ],
       },
+      {
+        id: 1,
+        name: 'Average',
+        valueList: [
+          {
+            value: '45.03',
+          },
+        ],
+      },
     ];
     const mappedDevMeanTimeToRecovery = devMeanTimeToRecoveryMapper(mockDevMeanTimeToRecovery);
 
@@ -55,6 +64,15 @@ describe('dev mean time to recovery data mapper', () => {
           },
         ],
       },
+      {
+        id: 1,
+        name: 'Average',
+        valueList: [
+          {
+            value: '0.00',
+          },
+        ],
+      },
     ];
     const mappedDevMeanTimeToRecovery = devMeanTimeToRecoveryMapper(mockDevMeanTimeToRecovery);
 
@@ -79,6 +97,15 @@ describe('dev mean time to recovery data mapper', () => {
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
+        valueList: [
+          {
+            value: '0.00',
+          },
+        ],
+      },
+      {
+        id: 1,
+        name: 'Average',
         valueList: [
           {
             value: '0.00',

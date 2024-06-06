@@ -81,6 +81,15 @@ export const EXPECTED_REPORT_VALUES = {
         },
       ],
     },
+    {
+      id: 1,
+      name: 'Average',
+      valueList: [
+        {
+          value: '0.40',
+        },
+      ],
+    },
   ],
   devMeanTimeToRecoveryList: [
     {
@@ -107,6 +116,15 @@ export const EXPECTED_REPORT_VALUES = {
       valueList: [
         {
           value: '7.67',
+        },
+      ],
+    },
+    {
+      id: 3,
+      name: 'Average',
+      valueList: [
+        {
+          value: '4.00',
         },
       ],
     },
@@ -138,6 +156,15 @@ export const EXPECTED_REPORT_VALUES = {
       valueList: [
         {
           value: '0.00%(0/2)',
+        },
+      ],
+    },
+    {
+      id: 1,
+      name: 'Average',
+      valueList: [
+        {
+          value: '0.00',
         },
       ],
     },
