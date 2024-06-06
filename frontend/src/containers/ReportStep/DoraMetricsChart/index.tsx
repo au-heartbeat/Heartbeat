@@ -34,7 +34,7 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     .slice(0, 2);
   const extractedValues = mappedData?.map((data) => {
     const averageItem = data.leadTimeForChangesList?.find((leadTimeForChange) => leadTimeForChange.name === AVERAGE);
-    if (!averageItem) return;
+    if (!averageItem) return [];
 
     return averageItem.valuesList.map((item) => Number(item.value));
   });

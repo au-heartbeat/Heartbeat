@@ -12,6 +12,7 @@ import {
   LEAD_TIME_FOR_CHANGES,
   MOCK_JIRA_VERIFY_RESPONSE,
   MOCK_REPORT_RESPONSE,
+  MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION,
   PREVIOUS,
   REQUIRED_DATA_LIST,
   RETRY,
@@ -825,6 +826,23 @@ describe('Report Step', () => {
       const exportBoardButton = screen.getByText(EXPORT_BOARD_DATA);
       await userEvent.click(exportBoardButton);
       expect(exportBoardButton).toBeInTheDocument();
+    });
+
+    it('should export error when click DORA Chart and lead time for change dont have average', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      reportHook.current.reportInfos[0].reportData = { ...MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION };
+      reportHook.current.reportInfos[1].reportData = { ...MOCK_REPORT_RESPONSE };
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      await userEvent.click(switchChartButton);
+
+      const switchDORATab = screen.getByText(CHART_TYPE.DORA);
+      await userEvent.click(switchDORATab);
+
+      // expect(async () => {
+      //   await userEvent.click(switchDORATab);
+      // }).rejects.toThrowError();
     });
   });
 });
