@@ -840,9 +840,16 @@ describe('Report Step', () => {
       const switchDORATab = screen.getByText(CHART_TYPE.DORA);
       await userEvent.click(switchDORATab);
 
-      // expect(async () => {
-      //   await userEvent.click(switchDORATab);
-      // }).rejects.toThrowError();
+      const exportDORAButton = screen.getByText(EXPORT_PIPELINE_DATA);
+      await userEvent.click(exportDORAButton);
+      expect(exportDORAButton).toBeInTheDocument();
+
+      const switchBoardTab = screen.getByText(CHART_TYPE.BOARD);
+      await userEvent.click(switchBoardTab);
+
+      const exportBoardButton = screen.getByText(EXPORT_BOARD_DATA);
+      await userEvent.click(exportBoardButton);
+      expect(exportBoardButton).toBeInTheDocument();
     });
   });
 });
