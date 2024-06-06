@@ -14,9 +14,9 @@ import {
 } from '@src/constants/resources';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { calculateTrendInfo } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 interface DoraMetricsChartProps {
@@ -113,6 +113,9 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
       name: RequiredData.DevChangeFailureRate,
       type: 'line',
       data: value!,
+      tooltip: {
+        valueFormatter: percentageFormatter(!!value),
+      },
     },
     color: theme.main.doraChart.devChangeFailureRateColor,
     trendInfo,
