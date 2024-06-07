@@ -71,10 +71,6 @@ export const ChartWrapper = styled('div')({
   boxSizing: 'border-box',
   height: '25rem',
   padding: '1.5rem 0',
-  borderRadius: '0.75rem',
-  border: theme.main.cardBorder,
-  background: theme.main.color,
-  boxShadow: theme.main.cardShadow,
 });
 
 export const ChartContainer = styled('div')({

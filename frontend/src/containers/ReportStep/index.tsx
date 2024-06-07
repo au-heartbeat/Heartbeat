@@ -85,6 +85,11 @@ export interface DateRangeRequestResult {
   reportData: ReportResponseDTO | undefined;
 }
 
+export const CHART_LOADING = {
+  text: '',
+  color: 'rgba(255, 255, 255, 0.8)',
+};
+
 const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);

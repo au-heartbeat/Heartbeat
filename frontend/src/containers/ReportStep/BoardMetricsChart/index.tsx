@@ -9,6 +9,7 @@ import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
+import { CHART_LOADING } from '@src/containers/ReportStep';
 import React, { useEffect, useRef } from 'react';
 import { theme } from '@src/theme';
 import * as echarts from 'echarts';
@@ -106,7 +107,7 @@ function extractVelocityData(dateRanges: string[], mappedData?: ReportResponse[]
   };
 }
 
-function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[]) {
+function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[]) {
   const data = mappedData?.map((item) => item.cycleTimeList);
   const storyPoints = data?.map((item) => item?.[0]?.valueList?.[0]?.value as number);
   const cardCount = data?.map((item) => item?.[0]?.valueList?.[1]?.value as number);
@@ -152,7 +153,7 @@ function extractAverageCycleTimeData(dateRanges: string[], mappedData?: ReportRe
   };
 }
 
-function extractCycleTimeData(dateRanges: string[], mappedData?: ReportResponse[]) {
+function extractCycleTimeAllocationData(dateRanges: string[], mappedData?: ReportResponse[]) {
   const data = mappedData?.map((item) => item.cycleTime?.swimlaneList);
   const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
   const cycleTimeByStatus = transformArrayToObject(data, totalCycleTime!);
@@ -260,68 +261,100 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
   const mappedData: ReportResponse[] | undefined =
     data && data.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData));
 
+  const cycleTimeAllocationData = extractCycleTimeAllocationData(dateRanges, mappedData);
   const cycleTimeData = extractCycleTimeData(dateRanges, mappedData);
-  const averageCycleTimeData = extractAverageCycleTimeData(dateRanges, mappedData);
   const velocityData = extractVelocityData(dateRanges, mappedData);
   const reworkData = extractReworkData(dateRanges, mappedData);
+
+  const isVelocityFinished = mappedData?.flatMap((value) => value.velocityList)?.length == dateRanges.length * 2;
+  const isCycleTimeFinished =
+    mappedData?.flatMap((value) => value.cycleTimeList?.[0]?.valueList)?.length == dateRanges.length * 2;
+  const reworkList = mappedData?.map((values) => values.rework).filter((value) => value);
+  const isReworkFinished =
+    reworkList?.length == dateRanges.length &&
+    reworkList?.every((values) => values?.totalReworkTimes && values.totalReworkCards && values.reworkCardsRatio);
 
   useEffect(() => {
     if (velocity.current) {
       const velocityChart = echarts.init(velocity.current);
-      const option = velocityData && stackedAreaOptionMapper(velocityData);
-      velocityChart.setOption(option);
+      velocityChart.showLoading(CHART_LOADING);
+      if (isVelocityFinished) {
+        velocityChart.hideLoading();
+        const option = velocityData && stackedAreaOptionMapper(velocityData);
+        velocityChart.setOption(option);
+      }
       return () => {
         velocityChart.dispose();
       };
     }
-  }, [velocity, velocityData]);
+  }, [velocity, velocityData, isVelocityFinished]);
 
   useEffect(() => {
     if (averageCycleTime.current) {
       const averageCycleTimeChart = echarts.init(averageCycleTime.current);
-      const option = averageCycleTimeData && stackedAreaOptionMapper(averageCycleTimeData);
-      averageCycleTimeChart.setOption(option);
+      averageCycleTimeChart.showLoading(CHART_LOADING);
+      if (isCycleTimeFinished) {
+        averageCycleTimeChart.hideLoading();
+        const option = cycleTimeData && stackedAreaOptionMapper(cycleTimeData);
+        averageCycleTimeChart.setOption(option);
+      }
       return () => {
         averageCycleTimeChart.dispose();
       };
     }
-  }, [averageCycleTime, averageCycleTimeData]);
+  }, [averageCycleTime, cycleTimeData, isCycleTimeFinished]);
 
   useEffect(() => {
     if (cycleTime.current) {
       const cycleTimeChart = echarts.init(cycleTime.current);
-      const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
-      cycleTimeChart.setOption(option);
+      cycleTimeChart.showLoading(CHART_LOADING);
+      if (isCycleTimeFinished) {
+        cycleTimeChart.hideLoading();
+        const option = cycleTimeAllocationData && stackedBarOptionMapper(cycleTimeAllocationData);
+        cycleTimeChart.setOption(option);
+      }
       return () => {
         cycleTimeChart.dispose();
       };
     }
-  }, [cycleTime, cycleTimeData]);
+  }, [cycleTime, cycleTimeAllocationData, isCycleTimeFinished]);
 
   useEffect(() => {
     if (rework.current) {
       const reworkChart = echarts.init(rework.current);
-      const option = reworkData && stackedAreaOptionMapper(reworkData);
-      reworkChart.setOption(option);
+      reworkChart.showLoading(CHART_LOADING);
+      if (isReworkFinished) {
+        reworkChart.hideLoading();
+        const option = reworkData && stackedAreaOptionMapper(reworkData);
+        reworkChart.setOption(option);
+      }
       return () => {
         reworkChart.dispose();
       };
     }
-  }, [rework, reworkData]);
+  }, [rework, reworkData, isReworkFinished]);
 
   return (
     <ChartContainer>
       {metrics.includes(RequiredData.Velocity) && (
-        <ChartAndTitleWrapper trendInfo={velocityData.trendInfo} ref={velocity} />
+        <ChartAndTitleWrapper trendInfo={velocityData.trendInfo} ref={velocity} isLoading={!isVelocityFinished} />
       )}
       {metrics.includes(RequiredData.CycleTime) && (
-        <ChartAndTitleWrapper trendInfo={averageCycleTimeData.trendInfo} ref={averageCycleTime} />
+        <ChartAndTitleWrapper
+          trendInfo={cycleTimeData.trendInfo}
+          ref={averageCycleTime}
+          isLoading={!isCycleTimeFinished}
+        />
       )}
       {metrics.includes(RequiredData.CycleTime) && (
-        <ChartAndTitleWrapper trendInfo={cycleTimeData.trendInfo} ref={cycleTime} />
+        <ChartAndTitleWrapper
+          trendInfo={cycleTimeAllocationData.trendInfo}
+          ref={cycleTime}
+          isLoading={!isCycleTimeFinished}
+        />
       )}
       {metrics.includes(RequiredData.ReworkTimes) && (
-        <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} />
+        <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} isLoading={!isReworkFinished} />
       )}
     </ChartContainer>
   );

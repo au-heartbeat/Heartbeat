@@ -11,7 +11,7 @@ describe('ChartAndTitleWrapper', () => {
       trendNumber: 0.83,
       type: ChartType.Velocity,
     };
-    render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
+    render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} isLoading={false} />);
     const icon = screen.getByTestId('TrendingUpSharpIcon');
 
     expect(icon).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe('ChartAndTitleWrapper', () => {
       trendNumber: -0.83,
       type: ChartType.Velocity,
     };
-    render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
+    render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} isLoading={false} />);
     const icon = screen.getByTestId('TrendingDownSharpIcon');
 
     expect(screen.getByTestId('TrendingDownSharpIcon')).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('ChartAndTitleWrapper', () => {
       trendNumber: -0.8372,
       type: ChartType.Velocity,
     };
-    render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} />);
+    render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} isLoading={false} />);
 
     expect(screen.getByLabelText('trend number')).toHaveTextContent('83.72%');
   });

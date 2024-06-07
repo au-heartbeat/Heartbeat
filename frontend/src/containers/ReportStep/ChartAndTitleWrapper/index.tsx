@@ -1,4 +1,5 @@
 import {
+  ChartDiv,
   ChartTitle,
   StyledTooltipContent,
   TrendContainer,
@@ -12,6 +13,7 @@ import { ChartWrapper } from '@src/containers/MetricsStep/style';
 import { convertNumberToPercent } from '@src/utils/util';
 import React, { ForwardedRef, forwardRef } from 'react';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { Loading } from '@src/components/Loading';
 import { Tooltip } from '@mui/material';
 import { theme } from '@src/theme';
 
@@ -40,8 +42,10 @@ const ChartAndTitleWrapper = forwardRef(
   (
     {
       trendInfo,
+      isLoading,
     }: {
       trendInfo: ITrendInfo;
+      isLoading: boolean;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
@@ -68,7 +72,10 @@ const ChartAndTitleWrapper = forwardRef(
     );
 
     return (
-      <div>
+      <ChartDiv>
+        {isLoading && (
+          <Loading size='1.5rem' backgroundColor='transparent' aria-label={trendInfo.type.toLowerCase() + ' loading'} />
+        )}
         <ChartTitle>
           {trendInfo.type}
           {trendInfo.trendNumber !== undefined && (
@@ -84,7 +91,7 @@ const ChartAndTitleWrapper = forwardRef(
           )}
         </ChartTitle>
         <ChartWrapper ref={ref} aria-label={trendInfo.type.toLowerCase() + ' chart'}></ChartWrapper>
-      </div>
+      </ChartDiv>
     );
   },
 );

@@ -17,6 +17,7 @@ import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrappe
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
+import { CHART_LOADING } from '@src/containers/ReportStep';
 import { theme } from '@src/theme';
 
 interface DoraMetricsChartProps {
@@ -163,67 +164,133 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
     }
   });
 
+  const leadTimeForChangesValuelist = mappedData
+    .flatMap((value) => value.leadTimeForChangesList)
+    .filter((value) => value?.name === AVERAGE)
+    .map((value) => value?.valuesList);
+
+  const isLeadTimeForChangesFinished =
+    leadTimeForChangesValuelist.length === dateRanges.length &&
+    leadTimeForChangesValuelist.every((value) => value?.every((it) => it.value != ''));
+
+  const deploymentFrequencyValueList = mappedData
+    .flatMap((value) => value.deploymentFrequencyList)
+    .filter((value) => value?.name == AVERAGE)
+    .map((value) => value?.valueList);
+  const isDeploymentFrequencyFinished =
+    deploymentFrequencyValueList.length == dateRanges.length &&
+    deploymentFrequencyValueList.every((value) => value?.every((it) => it.value != ''));
+
+  const devChangeFailureRateValueList = mappedData
+    .flatMap((value) => value.devChangeFailureRateList)
+    .filter((value) => value?.name == AVERAGE)
+    .map((value) => value?.valueList);
+  const isDevChangeFailureRateFinished =
+    devChangeFailureRateValueList.length == dateRanges.length &&
+    devChangeFailureRateValueList.every((value) => value?.every((it) => it.value != ''));
+
+  const devMeanTimeToRecoveryValueList = mappedData
+    .flatMap((value) => value.devMeanTimeToRecoveryList)
+    .filter((value) => value?.name == AVERAGE)
+    .map((value) => value?.valueList);
+  const isDevMeanTimeToRecoveryValueListFinished =
+    devMeanTimeToRecoveryValueList.length == dateRanges.length &&
+    devMeanTimeToRecoveryValueList.every((value) => value?.every((it) => it.value != ''));
+
   const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
   const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
   const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
+
   useEffect(() => {
     if (leadTimeForChange.current) {
       const leadTimeForChangeChart = echarts.init(leadTimeForChange.current);
-      const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
-      leadTimeForChangeChart.setOption(option);
+      leadTimeForChangeChart.showLoading(CHART_LOADING);
+      if (isLeadTimeForChangesFinished) {
+        leadTimeForChangeChart.hideLoading();
+        const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
+        leadTimeForChangeChart.setOption(option);
+      }
       return () => {
         leadTimeForChangeChart.dispose();
       };
     }
-  }, [leadTimeForChange, leadTimeForChangeData, dateRanges, mappedData]);
+  }, [leadTimeForChange, leadTimeForChangeData, dateRanges, mappedData, isLeadTimeForChangesFinished]);
 
   useEffect(() => {
     if (deploymentFrequency.current) {
       const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
-      const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
-      deploymentFrequencyChart.setOption(option);
+      deploymentFrequencyChart.showLoading(CHART_LOADING);
+      if (isDeploymentFrequencyFinished) {
+        deploymentFrequencyChart.hideLoading();
+        const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
+        deploymentFrequencyChart.setOption(option);
+      }
       return () => {
         deploymentFrequencyChart.dispose();
       };
     }
-  }, [deploymentFrequency, dateRanges, mappedData, deploymentFrequencyData]);
+  }, [deploymentFrequency, dateRanges, mappedData, deploymentFrequencyData, isDeploymentFrequencyFinished]);
 
   useEffect(() => {
     if (changeFailureRate.current) {
       const changeFailureRateChart = echarts.init(changeFailureRate.current);
-      const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
-      changeFailureRateChart.setOption(option);
+      changeFailureRateChart.showLoading(CHART_LOADING);
+      if (isDevChangeFailureRateFinished) {
+        changeFailureRateChart.hideLoading();
+        const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
+        changeFailureRateChart.setOption(option);
+      }
       return () => {
         changeFailureRateChart.dispose();
       };
     }
-  }, [changeFailureRate, changeFailureRateData, dateRanges, mappedData]);
+  }, [changeFailureRate, changeFailureRateData, dateRanges, mappedData, isDevChangeFailureRateFinished]);
 
   useEffect(() => {
     if (meanTimeToRecovery.current) {
-      const MeanTimeToRecoveryChart = echarts.init(meanTimeToRecovery.current);
-      const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
-      MeanTimeToRecoveryChart.setOption(option);
+      const meanTimeToRecoveryChart = echarts.init(meanTimeToRecovery.current);
+      meanTimeToRecoveryChart.showLoading(CHART_LOADING);
+      if (isDevMeanTimeToRecoveryValueListFinished) {
+        meanTimeToRecoveryChart.hideLoading();
+        const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
+        meanTimeToRecoveryChart.setOption(option);
+      }
       return () => {
-        MeanTimeToRecoveryChart.dispose();
+        meanTimeToRecoveryChart.dispose();
       };
     }
-  }, [meanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData]);
+  }, [meanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData, isDevMeanTimeToRecoveryValueListFinished]);
 
   return (
     <ChartContainer>
       {metrics.includes(RequiredData.LeadTimeForChanges) && (
-        <ChartAndTitleWrapper trendInfo={leadTimeForChangeData.trendInfo} ref={leadTimeForChange} />
+        <ChartAndTitleWrapper
+          trendInfo={leadTimeForChangeData.trendInfo}
+          ref={leadTimeForChange}
+          isLoading={!isLeadTimeForChangesFinished}
+        />
       )}
       {metrics.includes(RequiredData.DeploymentFrequency) && (
-        <ChartAndTitleWrapper trendInfo={deploymentFrequencyData.trendInfo} ref={deploymentFrequency} />
+        <ChartAndTitleWrapper
+          trendInfo={deploymentFrequencyData.trendInfo}
+          ref={deploymentFrequency}
+          isLoading={!isDeploymentFrequencyFinished}
+        />
       )}
       {metrics.includes(RequiredData.DevChangeFailureRate) && (
-        <ChartAndTitleWrapper trendInfo={changeFailureRateData.trendInfo} ref={changeFailureRate} />
+        <ChartAndTitleWrapper
+          trendInfo={changeFailureRateData.trendInfo}
+          ref={changeFailureRate}
+          isLoading={!isDevChangeFailureRateFinished}
+        />
       )}
       {metrics.includes(RequiredData.DevMeanTimeToRecovery) && (
-        <ChartAndTitleWrapper trendInfo={meanTimeToRecoveryData.trendInfo} ref={meanTimeToRecovery} />
+        <ChartAndTitleWrapper
+          trendInfo={meanTimeToRecoveryData.trendInfo}
+          ref={meanTimeToRecovery}
+          isLoading={!isDevMeanTimeToRecoveryValueListFinished}
+        />
       )}
     </ChartContainer>
   );

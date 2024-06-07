@@ -77,6 +77,14 @@ export class ReportStep {
   readonly deploymentFrequencyChart: Locator;
   readonly changeFailureRateChart: Locator;
   readonly meanTimeToRecoveryChart: Locator;
+  readonly velocityLoading: Locator;
+  readonly cycleTimeLoading: Locator;
+  readonly cycleTimeAllocationLoading: Locator;
+  readonly reworkLoading: Locator;
+  readonly leadTimeForChangeLoading: Locator;
+  readonly deploymentFrequencyLoading: Locator;
+  readonly changeFailureRateLoading: Locator;
+  readonly meanTimeToRecoveryLoading: Locator;
   readonly velocityTrendContainer: Locator;
   readonly reworkTrendContainer: Locator;
   readonly cycleTimeAllocationTrendContainer: Locator;
@@ -152,6 +160,14 @@ export class ReportStep {
     this.deploymentFrequencyChart = this.page.getByLabel('deployment frequency chart');
     this.changeFailureRateChart = this.page.getByLabel('change failure rate chart');
     this.meanTimeToRecoveryChart = this.page.getByLabel('mean time to recovery chart');
+    this.velocityLoading = this.page.getByLabel('velocity loading');
+    this.cycleTimeLoading = this.page.getByLabel('cycle time loading');
+    this.cycleTimeAllocationLoading = this.page.getByLabel('cycle time allocation loading');
+    this.reworkLoading = this.page.getByLabel('rework loading');
+    this.leadTimeForChangeLoading = this.page.getByLabel('lead time for changes loading');
+    this.deploymentFrequencyLoading = this.page.getByLabel('deployment frequency loading');
+    this.changeFailureRateLoading = this.page.getByLabel('change failure rate loading');
+    this.meanTimeToRecoveryLoading = this.page.getByLabel('mean time to recovery loading');
     this.velocityTrendContainer = this.page.getByLabel('velocity trend container');
     this.cycleTimeTrendContainer = this.page.getByLabel('cycle time trend container');
     this.cycleTimeAllocationTrendContainer = this.page.getByLabel('cycle time allocation trend container');
@@ -665,6 +681,11 @@ export class ReportStep {
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('true');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('false');
 
+    await expect(this.velocityLoading).toBeHidden();
+    await expect(this.cycleTimeLoading).toBeHidden();
+    await expect(this.cycleTimeAllocationLoading).toBeHidden();
+    await expect(this.reworkLoading).toBeHidden();
+
     if (showVelocityChart) {
       await expect(this.velocityChart).toBeVisible();
       await expect(this.velocityTrendContainer).toBeVisible();
@@ -744,6 +765,11 @@ export class ReportStep {
     await this.displayChartTab.click();
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
+
+    await expect(this.leadTimeForChangeLoading).toBeHidden();
+    await expect(this.deploymentFrequencyLoading).toBeHidden();
+    await expect(this.meanTimeToRecoveryLoading).toBeHidden();
+    await expect(this.changeFailureRateLoading).toBeHidden();
 
     if (showLeadTimeForChangeChart) {
       await expect(this.leadTimeForChangeChart).toBeVisible();
