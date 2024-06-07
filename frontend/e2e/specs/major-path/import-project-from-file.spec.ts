@@ -14,6 +14,7 @@ import { calculateWithHolidayConfigFile } from '../../fixtures/import-file/calcu
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
+import { partialMetricsShowChart } from '../../fixtures/import-file/partial-metrics-show-chart';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
@@ -113,9 +114,63 @@ test('Import project from file with partial ranges API failed', async ({
 
   await reportStep.checkSelectListTab();
   await reportStep.goToChartBoardTab();
-  await reportStep.checkChartBoardTabStatus();
+  await reportStep.checkChartBoardTabStatus({
+    showVelocityChart: true,
+    showReworkChart: true,
+    showCycleTimeChart: true,
+    showCycleTimeAllocationChart: true,
+  });
   await reportStep.goToCharDoraTab();
-  await reportStep.checkChartDoraTabStatus();
+  await reportStep.checkChartDoraTabStatus({
+    showDevMeanTimeToRecoveryTrendContainer: true,
+    showLeadTimeForChangeChart: true,
+    showDeploymentFrequencyChart: true,
+    showDevChangeFailureRateTrendContainer: true,
+  });
+});
+
+test('Import project from file with no all metrics', async ({ homePage, configStep, metricsStep, reportStep }) => {
+  const hbStateData = partialTimeRangesSuccess.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+
+  await homePage.goto();
+
+  await homePage.importProjectFromFile('../fixtures/input-files/partial-metrics-show-chart.json');
+  await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
+  await configStep.verifyAllConfig();
+  await configStep.goToMetrics();
+
+  await metricsStep.waitForShown();
+  await metricsStep.checkSomeApiFailed(3);
+  await metricsStep.checkCrewsAreChanged(partialMetricsShowChart.crews);
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+  await metricsStep.selectCycleTimeSettingsType(partialMetricsShowChart.cycleTime.type);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+  await metricsStep.selectAllPipelineCrews();
+  await metricsStep.checkClassifications(partialMetricsShowChart.classification);
+  await metricsStep.validateNextButtonClickable();
+  await metricsStep.goToReportPage();
+
+  await reportStep.confirmGeneratedReport();
+
+  await reportStep.checkSelectListTab();
+  await reportStep.goToChartBoardTab();
+  await reportStep.checkChartBoardTabStatus({
+    showVelocityChart: true,
+    showReworkChart: false,
+    showCycleTimeChart: true,
+    showCycleTimeAllocationChart: true,
+  });
+  await reportStep.goToCharDoraTab();
+  await reportStep.checkChartDoraTabStatus({
+    showDevMeanTimeToRecoveryTrendContainer: true,
+    showLeadTimeForChangeChart: true,
+    showDeploymentFrequencyChart: false,
+    showDevChangeFailureRateTrendContainer: false,
+  });
 });
 
 test('Import project from file with holiday', async ({ homePage, configStep, metricsStep, reportStep }) => {

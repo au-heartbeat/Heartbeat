@@ -648,93 +648,168 @@ export class ReportStep {
     await this.displayChartTab.click();
   }
 
-  async checkChartBoardTabStatus() {
+  async checkChartBoardTabStatus({
+    showVelocityChart,
+    showCycleTimeChart,
+    showCycleTimeAllocationChart,
+    showReworkChart,
+  }: {
+    showVelocityChart: boolean;
+    showCycleTimeChart: boolean;
+    showCycleTimeAllocationChart: boolean;
+    showReworkChart: boolean;
+  }) {
     expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('true');
     await expect(this.chartTabsContainer).toBeVisible();
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('true');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('false');
-    await expect(this.velocityChart).toBeVisible();
-    await expect(this.cycleTimeChart).toBeVisible();
-    await expect(this.cycleTimeAllocationChart).toBeVisible();
-    await expect(this.reworkChart).toBeVisible();
 
-    await expect(this.velocityTrendContainer).toBeVisible();
-    await expect(this.velocityTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE.Velocity.color);
-    await expect(this.velocityTrendIcon).toBeVisible();
-    await expect(this.velocityTrendContainer).toContainText(BOARD_CHART_VALUE.Velocity.value);
+    if (showVelocityChart) {
+      await expect(this.velocityChart).toBeVisible();
+      await expect(this.velocityTrendContainer).toBeVisible();
+      await expect(this.velocityTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE.Velocity.color);
+      await expect(this.velocityTrendIcon).toBeVisible();
+      await expect(this.velocityTrendContainer).toContainText(BOARD_CHART_VALUE.Velocity.value);
+    } else {
+      await expect(this.velocityChart).not.toBeVisible();
+      await expect(this.velocityTrendContainer).not.toBeVisible();
+      await expect(this.velocityTrendIcon).not.toBeVisible();
+    }
 
-    await expect(this.cycleTimeTrendContainer).toBeVisible();
-    await expect(this.cycleTimeTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE['Average Cycle Time'].color);
-    await expect(this.cycleTimeTrendIcon).toBeVisible();
-    await expect(this.cycleTimeTrendContainer).toContainText(BOARD_CHART_VALUE['Average Cycle Time'].value);
+    if (showCycleTimeChart) {
+      await expect(this.cycleTimeChart).toBeVisible();
+      await expect(this.cycleTimeTrendContainer).toBeVisible();
+      await expect(this.cycleTimeTrendContainer).toHaveAttribute(
+        'color',
+        BOARD_CHART_VALUE['Average Cycle Time'].color,
+      );
+      await expect(this.cycleTimeTrendIcon).toBeVisible();
+      await expect(this.cycleTimeTrendContainer).toContainText(BOARD_CHART_VALUE['Average Cycle Time'].value);
+    } else {
+      await expect(this.cycleTimeChart).not.toBeVisible();
+      await expect(this.cycleTimeTrendContainer).not.toBeVisible();
+      await expect(this.cycleTimeTrendIcon).not.toBeVisible();
+    }
 
-    await expect(this.cycleTimeAllocationTrendContainer).toBeVisible();
-    await expect(this.cycleTimeAllocationTrendContainer).toHaveAttribute(
-      'color',
-      BOARD_CHART_VALUE['Cycle Time Allocation'].color,
-    );
-    await expect(this.cycleTimeAllocationTrendIcon).toBeVisible();
-    await expect(this.cycleTimeAllocationTrendContainer).toContainText(
-      BOARD_CHART_VALUE['Cycle Time Allocation'].value,
-    );
+    if (showCycleTimeAllocationChart) {
+      await expect(this.cycleTimeAllocationChart).toBeVisible();
+      await expect(this.cycleTimeAllocationTrendContainer).toBeVisible();
+      await expect(this.cycleTimeAllocationTrendContainer).toHaveAttribute(
+        'color',
+        BOARD_CHART_VALUE['Cycle Time Allocation'].color,
+      );
+      await expect(this.cycleTimeAllocationTrendIcon).toBeVisible();
+      await expect(this.cycleTimeAllocationTrendContainer).toContainText(
+        BOARD_CHART_VALUE['Cycle Time Allocation'].value,
+      );
+    } else {
+      await expect(this.cycleTimeAllocationChart).not.toBeVisible();
+      await expect(this.cycleTimeAllocationTrendContainer).not.toBeVisible();
+      await expect(this.cycleTimeAllocationTrendIcon).not.toBeVisible();
+    }
 
-    await expect(this.reworkTrendContainer).toBeVisible();
-    await expect(this.reworkTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE['Rework'].color);
-    await expect(this.reworkTrendIcon).toBeVisible();
-    await expect(this.reworkTrendContainer).toContainText(BOARD_CHART_VALUE['Rework'].value);
+    if (showReworkChart) {
+      await expect(this.reworkChart).toBeVisible();
+      await expect(this.reworkTrendContainer).toBeVisible();
+      await expect(this.reworkTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE['Rework'].color);
+      await expect(this.reworkTrendIcon).toBeVisible();
+      await expect(this.reworkTrendContainer).toContainText(BOARD_CHART_VALUE['Rework'].value);
+    } else {
+      await expect(this.reworkChart).not.toBeVisible();
+      await expect(this.reworkTrendContainer).not.toBeVisible();
+      await expect(this.reworkTrendIcon).not.toBeVisible();
+    }
   }
 
   async goToCharDoraTab() {
     await this.displayDoraChartTab.click();
   }
 
-  async checkChartDoraTabStatus() {
+  async checkChartDoraTabStatus({
+    showLeadTimeForChangeChart,
+    showDeploymentFrequencyChart,
+    showDevChangeFailureRateTrendContainer,
+    showDevMeanTimeToRecoveryTrendContainer,
+  }: {
+    showLeadTimeForChangeChart: boolean;
+    showDeploymentFrequencyChart: boolean;
+    showDevChangeFailureRateTrendContainer: boolean;
+    showDevMeanTimeToRecoveryTrendContainer: boolean;
+  }) {
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
     await this.displayListTab.click();
     await this.displayChartTab.click();
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
-    await expect(this.leadTimeForChangeChart).toBeVisible();
-    await expect(this.deploymentFrequencyChart).toBeVisible();
-    await expect(this.changeFailureRateChart).toBeVisible();
-    await expect(this.meanTimeToRecoveryChart).toBeVisible();
 
-    await expect(this.leadTimeForChangesTrendContainer).toBeVisible();
-    await expect(this.leadTimeForChangesTrendContainer).toHaveAttribute(
-      'color',
-      DORA_CHART_VALUE['Lead Time For Changes'].color,
-    );
-    await expect(this.leadTimeForChangesTrendIcon).toBeVisible();
-    await expect(this.leadTimeForChangesTrendContainer).toContainText(DORA_CHART_VALUE['Lead Time For Changes'].value);
+    if (showLeadTimeForChangeChart) {
+      await expect(this.leadTimeForChangeChart).toBeVisible();
+      await expect(this.leadTimeForChangesTrendContainer).toBeVisible();
+      await expect(this.leadTimeForChangesTrendContainer).toHaveAttribute(
+        'color',
+        DORA_CHART_VALUE['Lead Time For Changes'].color,
+      );
+      await expect(this.leadTimeForChangesTrendIcon).toBeVisible();
+      await expect(this.leadTimeForChangesTrendContainer).toContainText(
+        DORA_CHART_VALUE['Lead Time For Changes'].value,
+      );
+    } else {
+      await expect(this.leadTimeForChangeChart).not.toBeVisible();
+      await expect(this.leadTimeForChangesTrendContainer).not.toBeVisible();
+      await expect(this.leadTimeForChangesTrendIcon).not.toBeVisible();
+    }
 
-    await expect(this.deploymentFrequencyTrendContainer).toBeVisible();
-    await expect(this.deploymentFrequencyTrendContainer).toHaveAttribute(
-      'color',
-      DORA_CHART_VALUE['Deployment Frequency'].color,
-    );
-    await expect(this.deploymentFrequencyTrendIcon).toBeVisible();
-    await expect(this.deploymentFrequencyTrendContainer).toContainText(DORA_CHART_VALUE['Deployment Frequency'].value);
+    if (showDeploymentFrequencyChart) {
+      await expect(this.deploymentFrequencyChart).toBeVisible();
+      await expect(this.deploymentFrequencyTrendContainer).toBeVisible();
+      await expect(this.deploymentFrequencyTrendContainer).toHaveAttribute(
+        'color',
+        DORA_CHART_VALUE['Deployment Frequency'].color,
+      );
+      await expect(this.deploymentFrequencyTrendIcon).toBeVisible();
+      await expect(this.deploymentFrequencyTrendContainer).toContainText(
+        DORA_CHART_VALUE['Deployment Frequency'].value,
+      );
+    } else {
+      await expect(this.deploymentFrequencyChart).not.toBeVisible();
+      await expect(this.deploymentFrequencyTrendContainer).not.toBeVisible();
+      await expect(this.deploymentFrequencyTrendIcon).not.toBeVisible();
+    }
 
-    await expect(this.devChangeFailureRateTrendContainer).toBeVisible();
-    await expect(this.devChangeFailureRateTrendContainer).toHaveAttribute(
-      'color',
-      DORA_CHART_VALUE['Dev Change Failure Rate'].color,
-    );
-    await expect(this.devChangeFailureRateTrendIcon).toBeVisible();
-    await expect(this.devChangeFailureRateTrendContainer).toContainText(
-      DORA_CHART_VALUE['Dev Change Failure Rate'].value,
-    );
+    if (showDevChangeFailureRateTrendContainer) {
+      await expect(this.changeFailureRateChart).toBeVisible();
+      await expect(this.devChangeFailureRateTrendContainer).toBeVisible();
+      await expect(this.devChangeFailureRateTrendContainer).toHaveAttribute(
+        'color',
+        DORA_CHART_VALUE['Dev Change Failure Rate'].color,
+      );
+      await expect(this.devChangeFailureRateTrendIcon).toBeVisible();
+      await expect(this.devChangeFailureRateTrendContainer).toContainText(
+        DORA_CHART_VALUE['Dev Change Failure Rate'].value,
+      );
+    } else {
+      await expect(this.changeFailureRateChart).not.toBeVisible();
+      await expect(this.devChangeFailureRateTrendContainer).not.toBeVisible();
+      await expect(this.devChangeFailureRateTrendIcon).not.toBeVisible();
+    }
 
-    await expect(this.devMeanTimeToRecoveryTrendContainer).toBeVisible();
-    await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveAttribute(
-      'color',
-      DORA_CHART_VALUE['Dev Mean Time To Recovery'].color,
-    );
-    await expect(this.devMeanTimeToRecoveryTrendIcon).toBeVisible();
-    await expect(this.devMeanTimeToRecoveryTrendContainer).toContainText(
-      DORA_CHART_VALUE['Dev Mean Time To Recovery'].value,
-    );
+    if (showDevMeanTimeToRecoveryTrendContainer) {
+      await expect(this.meanTimeToRecoveryChart).toBeVisible();
+      await expect(this.devMeanTimeToRecoveryTrendContainer).toBeVisible();
+      await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveAttribute(
+        'color',
+        DORA_CHART_VALUE['Dev Mean Time To Recovery'].color,
+      );
+      await expect(this.devMeanTimeToRecoveryTrendIcon).toBeVisible();
+      await expect(this.devMeanTimeToRecoveryTrendContainer).toContainText(
+        DORA_CHART_VALUE['Dev Mean Time To Recovery'].value,
+      );
+    } else {
+      await expect(this.meanTimeToRecoveryChart).not.toBeVisible();
+      await expect(this.devMeanTimeToRecoveryTrendContainer).not.toBeVisible();
+      await expect(this.devMeanTimeToRecoveryTrendIcon).not.toBeVisible();
+    }
   }
 }
