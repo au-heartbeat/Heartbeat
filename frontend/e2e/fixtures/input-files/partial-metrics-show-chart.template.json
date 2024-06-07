@@ -15,12 +15,7 @@
     }
   ],
   "calendarType": "Calendar with Chinese Holiday",
-  "metrics": [
-    "Velocity",
-    "Cycle time",
-    "Lead time for changes",
-    "Dev mean time to recovery"
-  ],
+  "metrics": ["Velocity", "Cycle time", "Lead time for changes", "Dev mean time to recovery"],
   "board": {
     "type": "Jira",
     "boardId": "2",
