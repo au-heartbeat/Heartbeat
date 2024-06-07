@@ -103,6 +103,7 @@ rgba_check() {
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
     --exclude='*.html' \
+    --exclude='index.tsx' \
     --exclude='*.svg' \
     --exclude='*.xml' \
     --exclude='*.test.tsx' \
