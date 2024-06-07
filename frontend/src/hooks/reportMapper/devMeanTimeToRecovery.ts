@@ -1,7 +1,10 @@
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { DevMeanTimeToRecoveryResponse } from '@src/clients/report/dto/response';
 
-export const devMeanTimeToRecoveryMapper = ({ devMeanTimeToRecoveryOfPipelines }: DevMeanTimeToRecoveryResponse) => {
+export const devMeanTimeToRecoveryMapper = ({
+  devMeanTimeToRecoveryOfPipelines,
+  avgDevMeanTimeToRecovery,
+}: DevMeanTimeToRecoveryResponse) => {
   const minutesPerHour = 60;
   const milliscondMinute = 60000;
   const formatDuration = (duration: number) => {
@@ -22,6 +25,16 @@ export const devMeanTimeToRecoveryMapper = ({ devMeanTimeToRecoveryOfPipelines }
       ],
     };
     mappedDevMeanTimeToRecoveryValue.push(devMeanTimeToRecoveryValue);
+  });
+
+  mappedDevMeanTimeToRecoveryValue.push({
+    id: mappedDevMeanTimeToRecoveryValue.length,
+    name: avgDevMeanTimeToRecovery.name,
+    valueList: [
+      {
+        value: `${formatDuration(avgDevMeanTimeToRecovery.timeToRecovery)}`,
+      },
+    ],
   });
 
   return mappedDevMeanTimeToRecoveryValue;

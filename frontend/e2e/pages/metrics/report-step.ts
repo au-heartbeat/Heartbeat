@@ -684,6 +684,7 @@ export class ReportStep {
         'color',
         BOARD_CHART_VALUE['Average Cycle Time'].color,
       );
+
       await expect(this.cycleTimeTrendIcon).toBeVisible();
       await expect(this.cycleTimeTrendContainer).toContainText(BOARD_CHART_VALUE['Average Cycle Time'].value);
     } else {

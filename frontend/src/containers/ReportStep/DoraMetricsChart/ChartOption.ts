@@ -1,4 +1,5 @@
 import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
+import { TooltipComponentOption } from 'echarts';
 import { theme } from '@src/theme';
 
 export interface BarOptionProps {
@@ -21,6 +22,7 @@ export interface Series {
   name: string;
   type: string;
   data: number[];
+  tooltip?: TooltipComponentOption;
 }
 export interface yAxis {
   name: string;
@@ -102,6 +104,7 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
       areaStyle: {
         opacity: 0.3,
       },
+      tooltip: props.series.tooltip,
     },
   };
 };

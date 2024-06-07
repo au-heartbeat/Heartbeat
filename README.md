@@ -84,6 +84,7 @@
 - [Dev 4 2023 - Release Heartbeat - 1.1.4](release-notes/20231204.md)
 - [Feb 29 2024 - Release Heartbeat - 1.1.5](release-notes/20240229.md)
 - [Apr 2 2024 - Release heartbeat - 1.1.6](release-notes/20240402.md)
+- [June 6 2024 - Release heartbeat - 1.1.7](release-notes/20240605.md)
 
 # 1 About Heartbeat
 
@@ -336,16 +337,30 @@ After setup and configuration, then it will generate the heartbeat dashboard.
 
 Users can switch dates to view the dashboard for the corresponding time period. And users can switch between dashboard and chart by clicking on `List` and `Chart` button.
 
+#### List view
 
 ![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22.png)
 _Image 3-22, Report page_
 
 You could find the drill down from `show more >` link from dashboard.
 
-In report `chart` page, heartbeat provide a better visualization on delivery and user can see the changing trends for key metrics over multiple time periods as below
+#### chart view
+In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.  
 
+- Board chart 
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1.png)
+- Dora chart
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2.png)
+
+Within chart, Hearteat also provide trend indicator which represent last two periods comparison result. The trend indicator includes three key points:
+- Color: From delivery perspective, Green means healthy, Red means unhealthy
+- Trend direction: Increased or decreased compared between last two periods  
+- Value: Changed value in percentage format 
+
+Below trend indicator means that Velocity is pretty health between 2024.5.13-2024.5.27 and 2024.4.29-20204.5.12. And the Velocity increased 268.75%.
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-3.png)
+Below trend indicator means that development time ratio is not so unhealthy between 2024.5.13-2024.5.27 and 2024.4.29-20204.5.12. And the development time ratio decreased 23.17%.
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-4.png)
 
 ### 3.4.1 Velocity
 
