@@ -22,6 +22,7 @@ import { theme } from '@src/theme';
 interface DoraMetricsChartProps {
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
+  metrics: string[];
 }
 
 const NO_LABEL = '';
@@ -137,7 +138,7 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
-export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChartProps) => {
   const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
@@ -156,48 +157,56 @@ export const DoraMetricsChart = ({ data, dateRanges }: DoraMetricsChartProps) =>
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
   const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
   useEffect(() => {
-    const LeadTimeForChangeChart = echarts.init(leadTimeForChange.current);
+    const LeadTimeForChangeChart = leadTimeForChange.current && echarts.init(leadTimeForChange.current);
 
     const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
-    LeadTimeForChangeChart.setOption(option);
+    LeadTimeForChangeChart && LeadTimeForChangeChart.setOption(option);
     return () => {
-      LeadTimeForChangeChart.dispose();
+      LeadTimeForChangeChart && LeadTimeForChangeChart.dispose();
     };
   }, [leadTimeForChange, leadTimeForChangeData, dateRanges, mappedData]);
 
   useEffect(() => {
-    const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
+    const deploymentFrequencyChart = deploymentFrequency.current && echarts.init(deploymentFrequency.current);
     const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
-    deploymentFrequencyChart.setOption(option);
+    deploymentFrequencyChart && deploymentFrequencyChart.setOption(option);
     return () => {
-      deploymentFrequencyChart.dispose();
+      deploymentFrequencyChart && deploymentFrequencyChart.dispose();
     };
   }, [deploymentFrequency, dateRanges, mappedData, deploymentFrequencyData]);
 
   useEffect(() => {
-    const changeFailureRateChart = echarts.init(changeFailureRate.current);
+    const changeFailureRateChart = changeFailureRate.current && echarts.init(changeFailureRate.current);
     const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
-    changeFailureRateChart.setOption(option);
+    changeFailureRateChart && changeFailureRateChart.setOption(option);
     return () => {
-      changeFailureRateChart.dispose();
+      changeFailureRateChart && changeFailureRateChart.dispose();
     };
   }, [changeFailureRate, changeFailureRateData, dateRanges, mappedData]);
 
   useEffect(() => {
-    const MeanTimeToRecoveryChart = echarts.init(meanTimeToRecovery.current);
+    const MeanTimeToRecoveryChart = meanTimeToRecovery.current && echarts.init(meanTimeToRecovery.current);
     const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
-    MeanTimeToRecoveryChart.setOption(option);
+    MeanTimeToRecoveryChart && MeanTimeToRecoveryChart.setOption(option);
     return () => {
-      MeanTimeToRecoveryChart.dispose();
+      MeanTimeToRecoveryChart && MeanTimeToRecoveryChart.dispose();
     };
   }, [meanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData]);
 
   return (
     <ChartContainer>
-      <ChartAndTitleWrapper trendInfo={leadTimeForChangeData.trendInfo} ref={leadTimeForChange} />
-      <ChartAndTitleWrapper trendInfo={deploymentFrequencyData.trendInfo} ref={deploymentFrequency} />
-      <ChartAndTitleWrapper trendInfo={changeFailureRateData.trendInfo} ref={changeFailureRate} />
-      <ChartAndTitleWrapper trendInfo={meanTimeToRecoveryData.trendInfo} ref={meanTimeToRecovery} />
+      {metrics.includes(RequiredData.LeadTimeForChanges) && (
+        <ChartAndTitleWrapper trendInfo={leadTimeForChangeData.trendInfo} ref={leadTimeForChange} />
+      )}
+      {metrics.includes(RequiredData.DeploymentFrequency) && (
+        <ChartAndTitleWrapper trendInfo={deploymentFrequencyData.trendInfo} ref={deploymentFrequency} />
+      )}
+      {metrics.includes(RequiredData.DevChangeFailureRate) && (
+        <ChartAndTitleWrapper trendInfo={changeFailureRateData.trendInfo} ref={changeFailureRate} />
+      )}
+      {metrics.includes(RequiredData.DevMeanTimeToRecovery) && (
+        <ChartAndTitleWrapper trendInfo={meanTimeToRecoveryData.trendInfo} ref={meanTimeToRecovery} />
+      )}
     </ChartContainer>
   );
 };

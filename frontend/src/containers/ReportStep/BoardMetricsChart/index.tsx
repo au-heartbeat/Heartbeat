@@ -2,7 +2,7 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { ChartType, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS } from '@src/constants/resources';
+import { ChartType, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS, RequiredData } from '@src/constants/resources';
 import { calculateTrendInfo, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
@@ -16,6 +16,7 @@ import * as echarts from 'echarts';
 interface BoardMetricsChartProps {
   dateRanges: string[];
   data: IReportInfo[] | undefined;
+  metrics: string[];
 }
 
 type Result = {
@@ -250,7 +251,7 @@ const emptyData: EmptyData = ['velocityList', 'cycleTimeList', 'reworkList', 'cl
   return obj;
 }, {} as EmptyData);
 
-export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) => {
+export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsChartProps) => {
   const cycleTime = useRef<HTMLDivElement>(null);
   const averageCycleTime = useRef<HTMLDivElement>(null);
   const velocity = useRef<HTMLDivElement>(null);
@@ -265,47 +266,55 @@ export const BoardMetricsChart = ({ data, dateRanges }: BoardMetricsChartProps) 
   const reworkData = extractReworkData(dateRanges, mappedData);
 
   useEffect(() => {
-    const velocityChart = echarts.init(velocity.current);
+    const velocityChart = velocity.current && echarts.init(velocity.current);
     const option = velocityData && stackedAreaOptionMapper(velocityData);
-    velocityChart.setOption(option);
+    velocityChart && velocityChart.setOption(option);
     return () => {
-      velocityChart.dispose();
+      velocityChart && velocityChart.dispose();
     };
   }, [velocity, velocityData]);
 
   useEffect(() => {
-    const averageCycleTimeChart = echarts.init(averageCycleTime.current);
+    const averageCycleTimeChart = averageCycleTime.current && echarts.init(averageCycleTime.current);
     const option = averageCycleTimeData && stackedAreaOptionMapper(averageCycleTimeData);
-    averageCycleTimeChart.setOption(option);
+    averageCycleTimeChart && averageCycleTimeChart.setOption(option);
     return () => {
-      averageCycleTimeChart.dispose();
+      averageCycleTimeChart && averageCycleTimeChart.dispose();
     };
   }, [averageCycleTime, averageCycleTimeData]);
 
   useEffect(() => {
-    const cycleTimeChart = echarts.init(cycleTime.current);
+    const cycleTimeChart = cycleTime.current && echarts.init(cycleTime.current);
     const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
-    cycleTimeChart.setOption(option);
+    cycleTimeChart && cycleTimeChart.setOption(option);
     return () => {
-      cycleTimeChart.dispose();
+      cycleTimeChart && cycleTimeChart.dispose();
     };
   }, [cycleTime, cycleTimeData]);
 
   useEffect(() => {
-    const reworkChart = echarts.init(rework.current);
+    const reworkChart = rework.current && echarts.init(rework.current);
     const option = reworkData && stackedAreaOptionMapper(reworkData);
-    reworkChart.setOption(option);
+    reworkChart && reworkChart.setOption(option);
     return () => {
-      reworkChart.dispose();
+      reworkChart && reworkChart.dispose();
     };
   }, [rework, reworkData]);
 
   return (
     <ChartContainer>
-      <ChartAndTitleWrapper trendInfo={velocityData.trendInfo} ref={velocity} />
-      <ChartAndTitleWrapper trendInfo={averageCycleTimeData.trendInfo} ref={averageCycleTime} />
-      <ChartAndTitleWrapper trendInfo={cycleTimeData.trendInfo} ref={cycleTime} />
-      <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} />
+      {metrics.includes(RequiredData.Velocity) && (
+        <ChartAndTitleWrapper trendInfo={velocityData.trendInfo} ref={velocity} />
+      )}
+      {metrics.includes(RequiredData.CycleTime) && (
+        <ChartAndTitleWrapper trendInfo={averageCycleTimeData.trendInfo} ref={averageCycleTime} />
+      )}
+      {metrics.includes(RequiredData.CycleTime) && (
+        <ChartAndTitleWrapper trendInfo={cycleTimeData.trendInfo} ref={cycleTime} />
+      )}
+      {metrics.includes(RequiredData.ReworkTimes) && (
+        <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} />
+      )}
     </ChartContainer>
   );
 };

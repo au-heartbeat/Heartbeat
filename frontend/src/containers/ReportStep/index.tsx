@@ -504,11 +504,11 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart data={data} dateRanges={allDateRanges} />
+    <DoraMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} />
   );
 
   const showBoardChart = (data?: IReportInfo[] | undefined) => (
-    <BoardMetricsChart data={data} dateRanges={allDateRanges} />
+    <BoardMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} />
   );
 
   const showBoardDetail = (data?: ReportResponseDTO) => (
