@@ -266,39 +266,47 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
   const reworkData = extractReworkData(dateRanges, mappedData);
 
   useEffect(() => {
-    const velocityChart = velocity.current && echarts.init(velocity.current);
-    const option = velocityData && stackedAreaOptionMapper(velocityData);
-    velocityChart && velocityChart.setOption(option);
-    return () => {
-      velocityChart && velocityChart.dispose();
-    };
+    if (velocity.current) {
+      const velocityChart = echarts.init(velocity.current);
+      const option = velocityData && stackedAreaOptionMapper(velocityData);
+      velocityChart.setOption(option);
+      return () => {
+        velocityChart.dispose();
+      };
+    }
   }, [velocity, velocityData]);
 
   useEffect(() => {
-    const averageCycleTimeChart = averageCycleTime.current && echarts.init(averageCycleTime.current);
-    const option = averageCycleTimeData && stackedAreaOptionMapper(averageCycleTimeData);
-    averageCycleTimeChart && averageCycleTimeChart.setOption(option);
-    return () => {
-      averageCycleTimeChart && averageCycleTimeChart.dispose();
-    };
+    if (averageCycleTime.current) {
+      const averageCycleTimeChart = echarts.init(averageCycleTime.current);
+      const option = averageCycleTimeData && stackedAreaOptionMapper(averageCycleTimeData);
+      averageCycleTimeChart.setOption(option);
+      return () => {
+        averageCycleTimeChart.dispose();
+      };
+    }
   }, [averageCycleTime, averageCycleTimeData]);
 
   useEffect(() => {
-    const cycleTimeChart = cycleTime.current && echarts.init(cycleTime.current);
-    const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
-    cycleTimeChart && cycleTimeChart.setOption(option);
-    return () => {
-      cycleTimeChart && cycleTimeChart.dispose();
-    };
+    if (cycleTime.current) {
+      const cycleTimeChart = echarts.init(cycleTime.current);
+      const option = cycleTimeData && stackedBarOptionMapper(cycleTimeData);
+      cycleTimeChart.setOption(option);
+      return () => {
+        cycleTimeChart.dispose();
+      };
+    }
   }, [cycleTime, cycleTimeData]);
 
   useEffect(() => {
-    const reworkChart = rework.current && echarts.init(rework.current);
-    const option = reworkData && stackedAreaOptionMapper(reworkData);
-    reworkChart && reworkChart.setOption(option);
-    return () => {
-      reworkChart && reworkChart.dispose();
-    };
+    if (rework.current) {
+      const reworkChart = echarts.init(rework.current);
+      const option = reworkData && stackedAreaOptionMapper(reworkData);
+      reworkChart.setOption(option);
+      return () => {
+        reworkChart.dispose();
+      };
+    }
   }, [rework, reworkData]);
 
   return (

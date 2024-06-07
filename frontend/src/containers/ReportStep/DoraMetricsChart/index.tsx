@@ -168,40 +168,47 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
   const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
   useEffect(() => {
-    const LeadTimeForChangeChart = leadTimeForChange.current && echarts.init(leadTimeForChange.current);
-
-    const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
-    LeadTimeForChangeChart && LeadTimeForChangeChart.setOption(option);
-    return () => {
-      LeadTimeForChangeChart && LeadTimeForChangeChart.dispose();
-    };
+    if (leadTimeForChange.current) {
+      const leadTimeForChangeChart = echarts.init(leadTimeForChange.current);
+      const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
+      leadTimeForChangeChart.setOption(option);
+      return () => {
+        leadTimeForChangeChart.dispose();
+      };
+    }
   }, [leadTimeForChange, leadTimeForChangeData, dateRanges, mappedData]);
 
   useEffect(() => {
-    const deploymentFrequencyChart = deploymentFrequency.current && echarts.init(deploymentFrequency.current);
-    const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
-    deploymentFrequencyChart && deploymentFrequencyChart.setOption(option);
-    return () => {
-      deploymentFrequencyChart && deploymentFrequencyChart.dispose();
-    };
+    if (deploymentFrequency.current) {
+      const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
+      const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
+      deploymentFrequencyChart.setOption(option);
+      return () => {
+        deploymentFrequencyChart.dispose();
+      };
+    }
   }, [deploymentFrequency, dateRanges, mappedData, deploymentFrequencyData]);
 
   useEffect(() => {
-    const changeFailureRateChart = changeFailureRate.current && echarts.init(changeFailureRate.current);
-    const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
-    changeFailureRateChart && changeFailureRateChart.setOption(option);
-    return () => {
-      changeFailureRateChart && changeFailureRateChart.dispose();
-    };
+    if (changeFailureRate.current) {
+      const changeFailureRateChart = echarts.init(changeFailureRate.current);
+      const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
+      changeFailureRateChart.setOption(option);
+      return () => {
+        changeFailureRateChart.dispose();
+      };
+    }
   }, [changeFailureRate, changeFailureRateData, dateRanges, mappedData]);
 
   useEffect(() => {
-    const MeanTimeToRecoveryChart = meanTimeToRecovery.current && echarts.init(meanTimeToRecovery.current);
-    const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
-    MeanTimeToRecoveryChart && MeanTimeToRecoveryChart.setOption(option);
-    return () => {
-      MeanTimeToRecoveryChart && MeanTimeToRecoveryChart.dispose();
-    };
+    if (meanTimeToRecovery.current) {
+      const MeanTimeToRecoveryChart = echarts.init(meanTimeToRecovery.current);
+      const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
+      MeanTimeToRecoveryChart.setOption(option);
+      return () => {
+        MeanTimeToRecoveryChart.dispose();
+      };
+    }
   }, [meanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData]);
 
   return (
