@@ -700,6 +700,8 @@ describe('Report Step', () => {
             resize: jest.fn(),
             dispatchAction: jest.fn(),
             dispose: jest.fn(),
+            showLoading: jest.fn(),
+            hideLoading: jest.fn(),
             //eslint-disable-next-line @typescript-eslint/no-explicit-any
           }) as any,
       );
