@@ -1,6 +1,6 @@
 import {
-  ChartDiv,
   ChartTitle,
+  StyledChartAndTitleWrapper,
   StyledTooltipContent,
   TrendContainer,
   TrendIconSpan,
@@ -72,7 +72,7 @@ const ChartAndTitleWrapper = forwardRef(
     );
 
     return (
-      <ChartDiv>
+      <StyledChartAndTitleWrapper>
         {isLoading && (
           <Loading size='1.5rem' backgroundColor='transparent' aria-label={trendInfo.type.toLowerCase() + ' loading'} />
         )}
@@ -91,7 +91,7 @@ const ChartAndTitleWrapper = forwardRef(
           )}
         </ChartTitle>
         <ChartWrapper ref={ref} aria-label={trendInfo.type.toLowerCase() + ' chart'}></ChartWrapper>
-      </ChartDiv>
+      </StyledChartAndTitleWrapper>
     );
   },
 );

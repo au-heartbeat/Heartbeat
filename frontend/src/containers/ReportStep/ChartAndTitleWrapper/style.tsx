@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
-export const ChartDiv = styled('div')({
+
+export const StyledChartAndTitleWrapper = styled('div')({
   position: 'relative',
   height: '25rem',
   marginTop: '1.5rem',
@@ -14,7 +15,7 @@ export const ChartTitle = styled('div')({
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
-  top: '1.65rem',
+  top: '1.75rem',
   left: '1.75rem',
   zIndex: '1',
   fontSize: '1.2rem',

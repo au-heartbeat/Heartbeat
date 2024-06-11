@@ -6,11 +6,15 @@ export const StyledStepper = styled(Stepper)({
   display: 'flex',
   flexDirection: 'row',
   width: '60%',
+  minWidth: '960px',
+  maxWidth: '1216px',
   margin: '0 auto',
   padding: '2rem',
-  [theme.breakpoints.down('sm')]: {
-    flexDirection: 'column',
-    fontSize: '0.5rem',
+  [theme.breakpoints.down('lg')]: {
+    margin: '1.25rem',
+    width: 'auto',
+    padding: '0',
+    minWidth: 'auto',
   },
 });
 
@@ -40,10 +44,14 @@ export const MetricsStepperContent = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   width: '70%',
+  minWidth: '1240px',
+  maxWidth: '1344px',
   margin: '0 auto',
   textAlign: 'left',
-  [theme.breakpoints.down('md')]: {
-    width: '80%',
+  [theme.breakpoints.down('lg')]: {
+    width: 'auto',
+    margin: '0 1.25rem',
+    minWidth: 'auto',
   },
 });
 
@@ -101,4 +109,11 @@ export const ButtonContainer = styled('div')({
   margin: '0 auto',
   padding: '0 0 2rem 0',
   width: '70%',
+  minWidth: '1240px',
+  maxWidth: '1344px',
+  [theme.breakpoints.down('lg')]: {
+    width: 'auto',
+    margin: '0 1.25rem',
+    minWidth: 'auto',
+  },
 });

@@ -6,7 +6,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 describe('Report step styled components', () => {
   it('should render the bottom margin depend on whether StyledCalendarWrapper in summary page', () => {
     const wrapper = render(
-      <StyledCalendarWrapper aria-label='test component 1' isSummaryPage={true} shouldShowChart={true}>
+      <StyledCalendarWrapper aria-label='test component 1' isSummaryPage={true}>
         test
       </StyledCalendarWrapper>,
     );
@@ -15,9 +15,7 @@ describe('Report step styled components', () => {
 
     expect(component1).toHaveStyle({ 'margin-bottom': '0rem' });
 
-    wrapper.rerender(
-      <StyledCalendarWrapper aria-label='test component 2' isSummaryPage={false} shouldShowChart={true} />,
-    );
+    wrapper.rerender(<StyledCalendarWrapper aria-label='test component 2' isSummaryPage={false} />);
 
     const component2 = screen.getByLabelText('test component 2');
 

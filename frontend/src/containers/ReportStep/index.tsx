@@ -35,10 +35,10 @@ import {
 import {
   HeaderContainer,
   StyledCalendarWrapper,
+  StyledChartTabs,
   StyledRetry,
   StyledTab,
   StyledTabs,
-  StyledTabWrapper,
 } from '@src/containers/ReportStep/style';
 import {
   BOARD_METRICS,
@@ -65,8 +65,8 @@ import { BoardDetail, DoraDetail } from './ReportDetail';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { BoardMetricsChart } from './BoardMetricsChart';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { Box, Tab, Tabs } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
+import { Box, Tab } from '@mui/material';
 import { theme } from '@src/theme';
 import * as echarts from 'echarts';
 import { uniqueId } from 'lodash';
@@ -482,46 +482,46 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showTabs = () => (
-    <StyledTabWrapper>
-      <Box sx={{ marginRight: '2.5rem' }}>
-        <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
-          <StyledTab
-            aria-label='display list tab'
-            sx={{
-              borderRight: 'none',
-              borderRadius: '0.16rem 0 0 0.16rem',
-            }}
-            icon={<FormatListBulletedIcon />}
-            iconPosition='start'
-            label='List'
-          />
-          <StyledTab
-            aria-label='display chart tab'
-            sx={{
-              borderLeft: 'none',
-              borderRadius: '0 0.16rem 0.16rem 0',
-            }}
-            icon={<BarChartIcon />}
-            iconPosition='start'
-            label='Chart'
-            disabled={onlySelectClassification}
-          />
-        </StyledTabs>
-      </Box>
-      {displayType === DISPLAY_TYPE.CHART && (
-        <Box>
-          <Tabs TabIndicatorProps={CHART_TAB_STYLE} value={chartIndex} onChange={handleChange} aria-label='chart tabs'>
-            <Tab
-              aria-label='board chart'
-              label='Board'
-              {...tabProps(0)}
-              disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics}
-            />
-            <Tab label='DORA' aria-label='dora chart' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
-          </Tabs>
-        </Box>
-      )}
-    </StyledTabWrapper>
+    <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
+      <StyledTab
+        aria-label='display list tab'
+        sx={{
+          borderRight: 'none',
+          borderRadius: '0.16rem 0 0 0.16rem',
+        }}
+        icon={<FormatListBulletedIcon />}
+        iconPosition='start'
+        label='List'
+      />
+      <StyledTab
+        aria-label='display chart tab'
+        sx={{
+          borderLeft: 'none',
+          borderRadius: '0 0.16rem 0.16rem 0',
+        }}
+        icon={<BarChartIcon />}
+        iconPosition='start'
+        label='Chart'
+        disabled={onlySelectClassification}
+      />
+    </StyledTabs>
+  );
+
+  const showChartTabs = () => (
+    <StyledChartTabs
+      TabIndicatorProps={CHART_TAB_STYLE}
+      value={chartIndex}
+      onChange={handleChange}
+      aria-label='chart tabs'
+    >
+      <Tab
+        aria-label='board chart'
+        label='Board'
+        {...tabProps(0)}
+        disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics}
+      />
+      <Tab label='DORA' aria-label='dora chart' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
+    </StyledChartTabs>
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
@@ -628,12 +628,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <>
       <HeaderContainer shouldShowTabs={shouldShowTabs}>
         {shouldShowTabs && showTabs()}
+        {shouldShowTabs && displayType === DISPLAY_TYPE.CHART && showChartTabs()}
         {startDate && endDate && (
-          <StyledCalendarWrapper
-            data-testid={'calendarWrapper'}
-            isSummaryPage={isSummaryPage}
-            shouldShowChart={allDateRanges.length > 1}
-          >
+          <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
             {shouldShowChartRetryButton() && (
               <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
                 <ReplayIcon />
