@@ -24,7 +24,7 @@ describe('lead time for changes data mapper', () => {
       {
         id: 0,
         name: 'Heartbeat/:rocket: Run e2e',
-        valuesList: [
+        valueList: [
           {
             name: 'PR Lead Time',
             value: '374.69',
@@ -42,7 +42,7 @@ describe('lead time for changes data mapper', () => {
       {
         id: 1,
         name: 'Average',
-        valuesList: [
+        valueList: [
           {
             name: 'PR Lead Time',
             value: '374.69',
@@ -86,7 +86,7 @@ describe('lead time for changes data mapper', () => {
       {
         id: 0,
         name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
-        valuesList: [
+        valueList: [
           { name: PR_LEAD_TIME, value: '0.00' },
           { name: PIPELINE_LEAD_TIME, value: '0.00' },
           { name: TOTAL_DELAY_TIME, value: '0.00' },
@@ -95,7 +95,7 @@ describe('lead time for changes data mapper', () => {
       {
         id: 1,
         name: 'Average',
-        valuesList: [
+        valueList: [
           { name: PR_LEAD_TIME, value: '0.00' },
           { name: PIPELINE_LEAD_TIME, value: '0.00' },
           { name: TOTAL_DELAY_TIME, value: '0.00' },

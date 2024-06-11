@@ -25,7 +25,7 @@ describe('classification data mapper', () => {
       {
         id: 0,
         name: 'FS Work Type',
-        valuesList: [
+        valueList: [
           { name: 'Feature Work - Planned', value: '57.14%' },
           { name: 'Operational Work - Planned', value: '35.71%' },
           { name: 'Feature Work - Unplanned', value: '7.14%' },

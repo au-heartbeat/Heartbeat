@@ -12,9 +12,9 @@ describe('Report for three columns', () => {
 
   it('should show table when data is not empty', () => {
     const mockData = [
-      { id: 0, name: 'name1', valuesList: [{ name: 'test1', value: '1' }] },
-      { id: 1, name: 'name2', valuesList: [{ name: 'test2', value: '2' }] },
-      { id: 2, name: 'name3', valuesList: [{ name: 'test3', value: '3' }] },
+      { id: 0, name: 'name1', valueList: [{ name: 'test1', value: '1' }] },
+      { id: 1, name: 'name2', valueList: [{ name: 'test2', value: '2' }] },
+      { id: 2, name: 'name3', valueList: [{ name: 'test3', value: '3' }] },
     ];
 
     render(
@@ -26,9 +26,9 @@ describe('Report for three columns', () => {
 
   it('should show table when data name contains emoji', () => {
     const mockData = [
-      { id: 0, name: 'name1/:rocket: Deploy prod', valuesList: [{ name: 'test1', value: '1' }] },
-      { id: 1, name: 'name2/:rocket: Deploy prod', valuesList: [{ name: 'test2', value: '2' }] },
-      { id: 2, name: 'name3/:rocket: Deploy prod', valuesList: [{ name: 'test3', value: '3' }] },
+      { id: 0, name: 'name1/:rocket: Deploy prod', valueList: [{ name: 'test1', value: '1' }] },
+      { id: 1, name: 'name2/:rocket: Deploy prod', valueList: [{ name: 'test2', value: '2' }] },
+      { id: 2, name: 'name3/:rocket: Deploy prod', valueList: [{ name: 'test3', value: '3' }] },
     ];
 
     render(<ReportForThreeColumns title={VELOCITY} fieldName='fieldName' listName='listName' data={mockData} />);
@@ -36,8 +36,8 @@ describe('Report for three columns', () => {
     expect(screen.getByTestId(VELOCITY)).toBeInTheDocument();
   });
 
-  it('should show default value when valuesList is empty', () => {
-    const mockData = [{ id: 0, name: 'name1', valuesList: [] }];
+  it('should show default value when valueList is empty', () => {
+    const mockData = [{ id: 0, name: 'name1', valueList: [] }];
 
     render(<ReportForThreeColumns title={VELOCITY} fieldName='fieldName' listName='listName' data={mockData} />);
 

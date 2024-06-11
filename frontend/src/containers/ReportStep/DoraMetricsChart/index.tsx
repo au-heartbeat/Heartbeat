@@ -17,6 +17,7 @@ import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrappe
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
+import { EMPTY_STRING } from '@src/constants/commons';
 import { theme } from '@src/theme';
 
 interface DoraMetricsChartProps {
@@ -35,14 +36,14 @@ const LABEL_PERCENT = '%';
 const AVERAGE = 'Average';
 
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
-  const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valuesList
+  const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valueList
     .map((item) => LEAD_TIME_CHARTS_MAPPING[item.name])
     .slice(0, 2);
   const extractedValues = mappedData?.map((data) => {
     const averageItem = data.leadTimeForChangesList?.find((leadTimeForChange) => leadTimeForChange.name === AVERAGE);
     if (!averageItem) return [];
 
-    return averageItem.valuesList.map((item) => Number(item.value));
+    return averageItem.valueList.map((item) => Number(item.value));
   });
 
   const prLeadTimeValues = extractedValues?.map((value) => value![0]);
@@ -154,6 +155,44 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
+enum DORA_METRICS_CHART_LIST {
+  LeadTimeForChanges = 'leadTimeForChangesList',
+  DeploymentFrequency = 'deploymentFrequencyList',
+  DevChangeFailureRate = 'devChangeFailureRateList',
+  DevMeanTimeToRecovery = 'devMeanTimeToRecoveryList',
+}
+function isDoraMetricsChartFinish({
+  dateRangeLength,
+  mappedData,
+  type,
+}: {
+  dateRangeLength: number;
+  mappedData: (
+    | ReportResponse
+    | {
+        deploymentFrequencyList: { id: number; name: string; valueList: { value: string }[] }[];
+        devChangeFailureRateList: { id: number; name: string; valueList: { value: string }[] }[];
+        devMeanTimeToRecoveryList: { id: number; name: string; valueList: { value: string }[] }[];
+        exportValidityTimeMin: number;
+        leadTimeForChangesList: {
+          id: number;
+          name: string;
+          valueList: { value: string }[];
+        }[];
+      }
+  )[];
+  type: DORA_METRICS_CHART_LIST;
+}): boolean {
+  const valueList = mappedData
+    .flatMap((value) => value[type])
+    .filter((value) => value?.name === AVERAGE)
+    .map((value) => value?.valueList);
+
+  return (
+    valueList.length === dateRangeLength && valueList.every((value) => value?.every((it) => it.value != EMPTY_STRING))
+  );
+}
+
 export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChartProps) => {
   const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
@@ -168,38 +207,28 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
     }
   });
 
-  const leadTimeForChangesValuelist = mappedData
-    .flatMap((value) => value.leadTimeForChangesList)
-    .filter((value) => value?.name === AVERAGE)
-    .map((value) => value?.valuesList);
+  const dateRangeLength: number = dateRanges.length;
 
-  const isLeadTimeForChangesFinished =
-    leadTimeForChangesValuelist.length === dateRanges.length &&
-    leadTimeForChangesValuelist.every((value) => value?.every((it) => it.value != ''));
-
-  const deploymentFrequencyValueList = mappedData
-    .flatMap((value) => value.deploymentFrequencyList)
-    .filter((value) => value?.name == AVERAGE)
-    .map((value) => value?.valueList);
-  const isDeploymentFrequencyFinished =
-    deploymentFrequencyValueList.length == dateRanges.length &&
-    deploymentFrequencyValueList.every((value) => value?.every((it) => it.value != ''));
-
-  const devChangeFailureRateValueList = mappedData
-    .flatMap((value) => value.devChangeFailureRateList)
-    .filter((value) => value?.name == AVERAGE)
-    .map((value) => value?.valueList);
-  const isDevChangeFailureRateFinished =
-    devChangeFailureRateValueList.length == dateRanges.length &&
-    devChangeFailureRateValueList.every((value) => value?.every((it) => it.value != ''));
-
-  const devMeanTimeToRecoveryValueList = mappedData
-    .flatMap((value) => value.devMeanTimeToRecoveryList)
-    .filter((value) => value?.name == AVERAGE)
-    .map((value) => value?.valueList);
-  const isDevMeanTimeToRecoveryValueListFinished =
-    devMeanTimeToRecoveryValueList.length == dateRanges.length &&
-    devMeanTimeToRecoveryValueList.every((value) => value?.every((it) => it.value != ''));
+  const isLeadTimeForChangesFinished: boolean = isDoraMetricsChartFinish({
+    dateRangeLength,
+    mappedData,
+    type: DORA_METRICS_CHART_LIST.LeadTimeForChanges,
+  });
+  const isDeploymentFrequencyFinished: boolean = isDoraMetricsChartFinish({
+    dateRangeLength,
+    mappedData,
+    type: DORA_METRICS_CHART_LIST.DeploymentFrequency,
+  });
+  const isDevChangeFailureRateFinished: boolean = isDoraMetricsChartFinish({
+    dateRangeLength,
+    mappedData,
+    type: DORA_METRICS_CHART_LIST.DevChangeFailureRate,
+  });
+  const isDevMeanTimeToRecoveryValueListFinished: boolean = isDoraMetricsChartFinish({
+    dateRangeLength,
+    mappedData,
+    type: DORA_METRICS_CHART_LIST.DevMeanTimeToRecovery,
+  });
 
   const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
   const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);

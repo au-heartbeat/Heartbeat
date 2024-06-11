@@ -59,8 +59,8 @@ export const ReportForThreeColumns = ({
 
   const renderRows = () =>
     data?.slice(0, data?.length === 2 && data[1]?.name === AVERAGE_FIELD ? 1 : data?.length).map((row) => {
-      if (isEmpty(row.valuesList)) {
-        row.valuesList = [
+      if (isEmpty(row.valueList)) {
+        row.valueList = [
           {
             name: '--',
             value: '--',
@@ -70,9 +70,9 @@ export const ReportForThreeColumns = ({
       return (
         <Fragment key={row.id}>
           <TableRow data-testid={'tr'}>
-            <ColumnTableCell rowSpan={row.valuesList.length + 1}>{emojiRow(row)}</ColumnTableCell>
+            <ColumnTableCell rowSpan={row.valueList.length + 1}>{emojiRow(row)}</ColumnTableCell>
           </TableRow>
-          {row.valuesList.map((valuesList) => (
+          {row.valueList.map((valuesList) => (
             <Row data-testid={'tr'} key={valuesList.name}>
               <BorderTableCell>{valuesList.name}</BorderTableCell>
               <BorderTableCell>{valuesList.value}</BorderTableCell>

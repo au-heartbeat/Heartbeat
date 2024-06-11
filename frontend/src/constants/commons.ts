@@ -1,5 +1,3 @@
-import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-
 export const PROJECT_NAME = 'Heartbeat';
 
 export const DEFAULT_HELPER_TEXT = '';
@@ -32,27 +30,6 @@ export const DURATION = {
   ERROR_MESSAGE_TIME: 4000,
   NOTIFICATION_TIME: 10000,
 };
-
-export const INIT_REPORT_DATA_WITH_TWO_COLUMNS: ReportDataWithTwoColumns[] = [
-  {
-    id: 1,
-    name: '',
-    valueList: [{ value: 0, unit: '' }],
-  },
-];
-
-export const INIT_REPORT_DATA_WITH_THREE_COLUMNS: ReportDataWithThreeColumns[] = [
-  {
-    id: 1,
-    name: '',
-    valuesList: [
-      {
-        name: '',
-        value: '',
-      },
-    ],
-  },
-];
 
 export const Z_INDEX = {
   DEFAULT: 0,

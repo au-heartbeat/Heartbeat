@@ -14,7 +14,7 @@ export const classificationMapper = (classification: ClassificationResponse[]) =
     const classificationValue: ReportDataWithThreeColumns = {
       id: index,
       name: item.fieldName,
-      valuesList: pairsValues,
+      valueList: pairsValues,
     };
     mappedClassificationValue.push(classificationValue);
   });

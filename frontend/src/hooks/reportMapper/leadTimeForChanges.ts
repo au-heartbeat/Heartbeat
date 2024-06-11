@@ -18,7 +18,7 @@ export const leadTimeForChangesMapper = ({
     return {
       id: index,
       name: `${item.name}/${item.step}`,
-      valuesList: Object.entries(item)
+      valueList: Object.entries(item)
         .slice(-3)
         .map(([name, value]) => ({
           name: formatNameDisplay(name) as string,
@@ -30,7 +30,7 @@ export const leadTimeForChangesMapper = ({
   mappedLeadTimeForChangesValue.push({
     id: mappedLeadTimeForChangesValue.length,
     name: avgLeadTimeForChanges.name,
-    valuesList: Object.entries(avgLeadTimeForChanges)
+    valueList: Object.entries(avgLeadTimeForChanges)
       .slice(-3)
       .map(([name, value]) => ({
         name: formatNameDisplay(name) as string,

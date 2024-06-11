@@ -68,7 +68,7 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 0,
       name: 'FS Work Type',
-      valuesList: [{ name: 'Feature Work - Planned', value: '57.14%' }],
+      valueList: [{ name: 'Feature Work - Planned', value: '57.14%' }],
     },
   ],
   deploymentFrequencyList: [
@@ -133,7 +133,7 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 0,
       name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
-      valuesList: [
+      valueList: [
         { name: PR_LEAD_TIME, value: '45.04' },
         { name: PIPELINE_LEAD_TIME, value: '43.12' },
         { name: TOTAL_DELAY_TIME, value: '88.17' },
@@ -142,7 +142,7 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 1,
       name: 'Average',
-      valuesList: [
+      valueList: [
         { name: PR_LEAD_TIME, value: '60.79' },
         { name: PIPELINE_LEAD_TIME, value: '39.03' },
         { name: TOTAL_DELAY_TIME, value: '99.82' },

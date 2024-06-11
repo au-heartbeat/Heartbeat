@@ -554,7 +554,7 @@ export const EMPTY_DATA_MAPPER_DORA_CHART = (value: string) => {
       {
         id: 0,
         name: 'Average',
-        valuesList: [
+        valueList: [
           {
             name: LEAD_TIME_FOR_CHANGES.PR_LEAD_TIME,
             value: value,
