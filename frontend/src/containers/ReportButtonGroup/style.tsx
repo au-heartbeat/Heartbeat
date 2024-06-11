@@ -5,23 +5,33 @@ import { theme } from '@src/theme';
 
 export const StyledRightButtonGroup = styled('div')({
   [theme.breakpoints.down('lg')]: {
-    width: '85%',
     display: 'flex',
-    justifyContent: 'end',
-    alignItems: 'center',
+    flexDirection: 'column',
+    width: '100%',
+    '& .MuiButtonBase-root': {
+      display: 'flex',
+      width: '100%',
+      margin: '0 0 0.5rem',
+      '&:hover': {
+        marginLeft: 0,
+      },
+    },
   },
 });
 
-export const StyledButtonGroup = styled('div')`
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 0 auto;
-  justify-content: ${(props: { isShowSave: boolean }) => (props.isShowSave ? 'space-between' : 'flex-end')};
-  width: 100%;
-  padding-top: 2rem;
-`;
+export const StyledButtonGroup = styled('div')((props: { isShowSave: boolean }) => ({
+  boxSizing: 'border-box',
+  display: 'flex',
+  alignItems: 'center',
+  textAlign: 'center',
+  margin: '0 auto',
+  justifyContent: props.isShowSave ? 'space-between' : 'flex-end',
+  width: '100%',
+  paddingTop: '2rem',
+  [theme.breakpoints.down('lg')]: {
+    flexDirection: 'column',
+  },
+}));
 
 export const StyledExportButton = styled(Button)({
   ...basicButtonStyle,

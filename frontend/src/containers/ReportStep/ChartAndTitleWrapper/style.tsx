@@ -1,9 +1,14 @@
 import { styled } from '@mui/material/styles';
+
+export const StyledChartAndTitleWrapper = styled('div')({
+  position: 'relative',
+});
+
 export const ChartTitle = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  position: 'relative',
-  top: '3.15rem',
+  position: 'absolute',
+  top: '1.75rem',
   left: '1.75rem',
   zIndex: '1',
   fontSize: '1.2rem',

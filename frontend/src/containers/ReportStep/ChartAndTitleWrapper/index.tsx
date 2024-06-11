@@ -1,5 +1,6 @@
 import {
   ChartTitle,
+  StyledChartAndTitleWrapper,
   StyledTooltipContent,
   TrendContainer,
   TrendIconSpan,
@@ -68,7 +69,7 @@ const ChartAndTitleWrapper = forwardRef(
     );
 
     return (
-      <div>
+      <StyledChartAndTitleWrapper>
         <ChartTitle>
           {trendInfo.type}
           {trendInfo.trendNumber !== undefined && (
@@ -84,7 +85,7 @@ const ChartAndTitleWrapper = forwardRef(
           )}
         </ChartTitle>
         <ChartWrapper ref={ref} aria-label={trendInfo.type.toLowerCase() + ' chart'}></ChartWrapper>
-      </div>
+      </StyledChartAndTitleWrapper>
     );
   },
 );
