@@ -9,7 +9,6 @@ import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { CHART_LOADING } from '@src/containers/ReportStep';
 import React, { useEffect, useRef } from 'react';
 import { theme } from '@src/theme';
 import * as echarts from 'echarts';
@@ -36,6 +35,11 @@ const LEFT_RIGHT_ALIGN_LABEL = {
   alignMaxLabel: 'right',
   alignMinLabel: 'left',
   formatter: xAxisLabelDateFormatter,
+};
+
+const CHART_LOADING = {
+  text: '',
+  color: theme.main.boardChart.loadingColor,
 };
 
 const CENTER_ALIGN_LABEL = {

@@ -17,7 +17,6 @@ import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrappe
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
-import { CHART_LOADING } from '@src/containers/ReportStep';
 import { theme } from '@src/theme';
 
 interface DoraMetricsChartProps {
@@ -25,6 +24,11 @@ interface DoraMetricsChartProps {
   data: (ReportResponseDTO | undefined)[];
   metrics: string[];
 }
+
+const CHART_LOADING = {
+  text: '',
+  color: theme.main.doraChart.loadingColor,
+};
 
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';

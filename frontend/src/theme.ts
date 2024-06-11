@@ -22,6 +22,7 @@ declare module '@mui/material/styles' {
         devChangeFailureRateColor: string;
         devMeanTimeToRecoveryColor: string;
         gridColor: string;
+        loadingColor: string;
       };
       boardChart: {
         barColorA: string;
@@ -33,6 +34,7 @@ declare module '@mui/material/styles' {
         lineColorA: string;
         lineColorB: string;
         gridColor: string;
+        loadingColor: string;
       };
       backgroundColor: string;
       color: string;
@@ -133,6 +135,7 @@ export const theme = createTheme({
       devChangeFailureRateColor: '#003D4F',
       devMeanTimeToRecoveryColor: '#634F7D',
       gridColor: '#D9D9D9',
+      loadingColor: 'rgba(255, 255, 255, 0.8)',
     },
     boardChart: {
       barColorA: '#163C4D',
@@ -144,6 +147,7 @@ export const theme = createTheme({
       lineColorA: '#163C4D',
       lineColorB: '#E16A7C',
       gridColor: '#D9D9D9',
+      loadingColor: 'rgba(255, 255, 255, 0.8)',
     },
     backgroundColor: indigo[FIVE_HUNDRED],
     color: '#fff',
