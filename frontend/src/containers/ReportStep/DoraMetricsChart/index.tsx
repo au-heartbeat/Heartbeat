@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import * as echarts from 'echarts';
 
 import {
   oneLineOptionMapper,
@@ -17,6 +16,7 @@ import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrappe
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
+import { showChart } from '@src/containers/ReportStep';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { theme } from '@src/theme';
 
@@ -26,10 +26,12 @@ interface DoraMetricsChartProps {
   metrics: string[];
 }
 
-const CHART_LOADING = {
-  text: '',
-  color: theme.main.doraChart.loadingColor,
-};
+enum DORA_METRICS_CHART_LIST {
+  LeadTimeForChanges = 'leadTimeForChangesList',
+  DeploymentFrequency = 'deploymentFrequencyList',
+  DevChangeFailureRate = 'devChangeFailureRateList',
+  DevMeanTimeToRecovery = 'devMeanTimeToRecoveryList',
+}
 
 const NO_LABEL = '';
 const LABEL_PERCENT = '%';
@@ -155,12 +157,6 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
-enum DORA_METRICS_CHART_LIST {
-  LeadTimeForChanges = 'leadTimeForChangesList',
-  DeploymentFrequency = 'deploymentFrequencyList',
-  DevChangeFailureRate = 'devChangeFailureRateList',
-  DevMeanTimeToRecovery = 'devMeanTimeToRecoveryList',
-}
 function isDoraMetricsChartFinish({
   dateRangeLength,
   mappedData,
@@ -231,69 +227,29 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
   });
 
   const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
+  const leadTimeForChangeDataOption = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
   const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
+  const deploymentFrequencyDataOption = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
+  const changeFailureRateDataOption = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
   const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
+  const meanTimeToRecoveryDataOption = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
 
   useEffect(() => {
-    if (leadTimeForChange.current) {
-      const leadTimeForChangeChart = echarts.init(leadTimeForChange.current);
-      leadTimeForChangeChart.showLoading(CHART_LOADING);
-      if (isLeadTimeForChangesFinished) {
-        leadTimeForChangeChart.hideLoading();
-        const option = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
-        leadTimeForChangeChart.setOption(option);
-      }
-      return () => {
-        leadTimeForChangeChart.dispose();
-      };
-    }
-  }, [leadTimeForChange, leadTimeForChangeData, dateRanges, mappedData, isLeadTimeForChangesFinished]);
+    showChart(leadTimeForChange.current, isLeadTimeForChangesFinished, leadTimeForChangeDataOption);
+  }, [leadTimeForChange, leadTimeForChangeDataOption, isLeadTimeForChangesFinished]);
 
   useEffect(() => {
-    if (deploymentFrequency.current) {
-      const deploymentFrequencyChart = echarts.init(deploymentFrequency.current);
-      deploymentFrequencyChart.showLoading(CHART_LOADING);
-      if (isDeploymentFrequencyFinished) {
-        deploymentFrequencyChart.hideLoading();
-        const option = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
-        deploymentFrequencyChart.setOption(option);
-      }
-      return () => {
-        deploymentFrequencyChart.dispose();
-      };
-    }
-  }, [deploymentFrequency, dateRanges, mappedData, deploymentFrequencyData, isDeploymentFrequencyFinished]);
+    showChart(deploymentFrequency.current, isDeploymentFrequencyFinished, deploymentFrequencyDataOption);
+  }, [deploymentFrequency, deploymentFrequencyDataOption, isDeploymentFrequencyFinished]);
 
   useEffect(() => {
-    if (changeFailureRate.current) {
-      const changeFailureRateChart = echarts.init(changeFailureRate.current);
-      changeFailureRateChart.showLoading(CHART_LOADING);
-      if (isDevChangeFailureRateFinished) {
-        changeFailureRateChart.hideLoading();
-        const option = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
-        changeFailureRateChart.setOption(option);
-      }
-      return () => {
-        changeFailureRateChart.dispose();
-      };
-    }
-  }, [changeFailureRate, changeFailureRateData, dateRanges, mappedData, isDevChangeFailureRateFinished]);
+    showChart(changeFailureRate.current, isDevChangeFailureRateFinished, changeFailureRateDataOption);
+  }, [changeFailureRate, changeFailureRateDataOption, isDevChangeFailureRateFinished]);
 
   useEffect(() => {
-    if (meanTimeToRecovery.current) {
-      const meanTimeToRecoveryChart = echarts.init(meanTimeToRecovery.current);
-      meanTimeToRecoveryChart.showLoading(CHART_LOADING);
-      if (isDevMeanTimeToRecoveryValueListFinished) {
-        meanTimeToRecoveryChart.hideLoading();
-        const option = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
-        meanTimeToRecoveryChart.setOption(option);
-      }
-      return () => {
-        meanTimeToRecoveryChart.dispose();
-      };
-    }
-  }, [meanTimeToRecovery, dateRanges, mappedData, meanTimeToRecoveryData, isDevMeanTimeToRecoveryValueListFinished]);
+    showChart(meanTimeToRecovery.current, isDevMeanTimeToRecoveryValueListFinished, meanTimeToRecoveryDataOption);
+  }, [meanTimeToRecovery, meanTimeToRecoveryDataOption, isDevMeanTimeToRecoveryValueListFinished]);
 
   return (
     <ChartContainer>

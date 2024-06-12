@@ -33,13 +33,13 @@ import { closeNotification } from '@src/context/notification/NotificationSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
+import ReportStep, { showChart } from '@src/containers/ReportStep';
 import { backStep } from '@src/context/stepper/StepperSlice';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
-import ReportStep from '@src/containers/ReportStep';
+import React, { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import * as echarts from 'echarts';
-import { ReactNode } from 'react';
 
 jest.mock('@src/context/notification/NotificationSlice', () => ({
   ...jest.requireActual('@src/context/notification/NotificationSlice'),
@@ -692,19 +692,59 @@ describe('Report Step', () => {
   });
 
   describe('Dora chart test', () => {
+    const chart = {
+      setOption: jest.fn(),
+      resize: jest.fn(),
+      dispatchAction: jest.fn(),
+      dispose: jest.fn(),
+      showLoading: jest.fn(),
+      hideLoading: jest.fn(),
+    };
     beforeEach(() => {
       jest.spyOn(echarts, 'init').mockImplementation(
         () =>
-          ({
-            setOption: jest.fn(),
-            resize: jest.fn(),
-            dispatchAction: jest.fn(),
-            dispose: jest.fn(),
-            showLoading: jest.fn(),
-            hideLoading: jest.fn(),
-            //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          }) as any,
+          //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          chart as any,
       );
+    });
+
+    it('should return undefined when div is null', async () => {
+      const result = showChart(null, false, {});
+
+      expect(result).toBeUndefined();
+      expect(echarts.init).toHaveBeenCalledTimes(0);
+      expect(chart.showLoading).toHaveBeenCalledTimes(0);
+      expect(chart.hideLoading).toHaveBeenCalledTimes(0);
+      expect(chart.setOption).toHaveBeenCalledTimes(0);
+      expect(chart.dispose).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return function when div is not null', async () => {
+      const div = document.createElement('div');
+
+      const disposeFunction = showChart(div, false, {});
+      disposeFunction && disposeFunction();
+
+      expect(disposeFunction).not.toBeUndefined();
+      expect(echarts.init).toHaveBeenCalledTimes(1);
+      expect(chart.showLoading).toHaveBeenCalledTimes(1);
+      expect(chart.hideLoading).toHaveBeenCalledTimes(0);
+      expect(chart.setOption).toHaveBeenCalledTimes(0);
+      expect(chart.dispose).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return hide loading when finished', async () => {
+      const div = document.createElement('div');
+
+      const disposeFunction = showChart(div, true, {});
+      disposeFunction && disposeFunction();
+
+      expect(disposeFunction).not.toBeUndefined();
+      expect(echarts.init).toHaveBeenCalledTimes(1);
+      expect(chart.showLoading).toHaveBeenCalledTimes(1);
+      expect(chart.hideLoading).toHaveBeenCalledTimes(1);
+      expect(chart.setOption).toHaveBeenCalledTimes(1);
+      expect(chart.dispose).toHaveBeenCalledTimes(1);
     });
 
     it('should correctly render dora chart', async () => {
