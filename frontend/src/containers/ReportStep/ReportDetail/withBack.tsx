@@ -12,7 +12,7 @@ const StyledDiv = styled('div')`
   align-items: center;
   width: max-content;
   z-index: 2;
-  margin-bottom: 2.5rem;
+  margin: 2.25rem 0;
   color: ${theme.main.secondColor};
   opacity: 0.65;
   cursor: pointer;

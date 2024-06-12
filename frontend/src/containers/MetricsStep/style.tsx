@@ -81,6 +81,7 @@ export const ChartContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(2, 1fr)',
   gap: '1.25rem',
+  marginTop: '1.25rem',
   [theme.breakpoints.down('lg')]: {
     gridTemplateColumns: '1fr',
   },

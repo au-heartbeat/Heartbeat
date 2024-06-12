@@ -435,7 +435,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   }, []);
 
   const showSummary = () => (
-    <Box sx={{ marginTop: allDateRanges.length > 1 ? '0' : '-3.4rem' }}>
+    <Box>
       {shouldShowBoardMetrics && (
         <BoardMetrics
           startToRequestBoardData={() => startToRequestData(boardReportRequestBody)}
@@ -609,7 +609,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         {shouldShowTabs && showTabs()}
         {shouldShowTabs && displayType === DISPLAY_TYPE.CHART && showChartTabs()}
         {startDate && endDate && (
-          <StyledCalendarWrapper data-testid={'calendarWrapper'} isSummaryPage={isSummaryPage}>
+          <StyledCalendarWrapper data-testid={'calendarWrapper'} justCalendar={!shouldShowTabs}>
             {shouldShowChartRetryButton() && (
               <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
                 <ReplayIcon />
