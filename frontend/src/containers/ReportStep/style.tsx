@@ -57,9 +57,6 @@ export const StyledTabs = styled(Tabs)({
   '& .Mui-selected': {
     border: `0.08rem solid ${theme.main.backgroundColor}`,
   },
-  // [theme.breakpoints.down('lg')]: {
-  //   margin: '0 0 1.25rem',
-  // },
 });
 
 export const StyledChartTabs = styled(Tabs)({

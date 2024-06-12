@@ -11,7 +11,7 @@ export const StyledRightButtonGroup = styled('div')({
     '& .MuiButtonBase-root': {
       display: 'flex',
       width: '100%',
-      margin: '0 0 0.5rem',
+      margin: '0.5rem 0 0',
       '&:hover': {
         marginLeft: 0,
       },
