@@ -691,7 +691,7 @@ describe('Report Step', () => {
     });
   });
 
-  describe('Dora chart test', () => {
+  describe('showChart test', () => {
     const chart = {
       setOption: jest.fn(),
       resize: jest.fn(),
@@ -745,6 +745,23 @@ describe('Report Step', () => {
       expect(chart.hideLoading).toHaveBeenCalledTimes(1);
       expect(chart.setOption).toHaveBeenCalledTimes(1);
       expect(chart.dispose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Dora chart test', () => {
+    beforeEach(() => {
+      jest.spyOn(echarts, 'init').mockImplementation(
+        () =>
+          ({
+            setOption: jest.fn(),
+            resize: jest.fn(),
+            dispatchAction: jest.fn(),
+            dispose: jest.fn(),
+            showLoading: jest.fn(),
+            hideLoading: jest.fn(),
+            //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          }) as any,
+      );
     });
 
     it('should correctly render dora chart', async () => {
