@@ -701,11 +701,7 @@ describe('Report Step', () => {
       hideLoading: jest.fn(),
     };
     beforeEach(() => {
-      jest.spyOn(echarts, 'init').mockImplementation(
-        () =>
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          chart as any,
-      );
+      jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
     });
 
     it('should return undefined when div is null', async () => {
@@ -759,8 +755,7 @@ describe('Report Step', () => {
             dispose: jest.fn(),
             showLoading: jest.fn(),
             hideLoading: jest.fn(),
-            //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          }) as any,
+          }) as unknown as echarts.ECharts,
       );
     });
 

@@ -26,7 +26,7 @@ interface DoraMetricsChartProps {
   metrics: string[];
 }
 
-enum DORA_METRICS_CHART_LIST {
+enum DORAMetricsChartType {
   LeadTimeForChanges = 'leadTimeForChangesList',
   DeploymentFrequency = 'deploymentFrequencyList',
   DevChangeFailureRate = 'devChangeFailureRateList',
@@ -157,6 +157,8 @@ function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData
   };
 }
 
+type ChartValueSource = { id: number; name: string; valueList: { value: string }[] };
+
 function isDoraMetricsChartFinish({
   dateRangeLength,
   mappedData,
@@ -166,21 +168,17 @@ function isDoraMetricsChartFinish({
   mappedData: (
     | ReportResponse
     | {
-        deploymentFrequencyList: { id: number; name: string; valueList: { value: string }[] }[];
-        devChangeFailureRateList: { id: number; name: string; valueList: { value: string }[] }[];
-        devMeanTimeToRecoveryList: { id: number; name: string; valueList: { value: string }[] }[];
+        deploymentFrequencyList: ChartValueSource[];
+        devChangeFailureRateList: ChartValueSource[];
+        devMeanTimeToRecoveryList: ChartValueSource[];
         exportValidityTimeMin: number;
-        leadTimeForChangesList: {
-          id: number;
-          name: string;
-          valueList: { value: string }[];
-        }[];
+        leadTimeForChangesList: ChartValueSource[];
       }
   )[];
-  type: DORA_METRICS_CHART_LIST;
+  type: DORAMetricsChartType;
 }): boolean {
   const valueList = mappedData
-    .flatMap((value) => value[type])
+    .flatMap((value) => value[type] as unknown as ChartValueSource[])
     .filter((value) => value?.name === AVERAGE)
     .map((value) => value?.valueList);
 
@@ -208,22 +206,22 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
   const isLeadTimeForChangesFinished: boolean = isDoraMetricsChartFinish({
     dateRangeLength,
     mappedData,
-    type: DORA_METRICS_CHART_LIST.LeadTimeForChanges,
+    type: DORAMetricsChartType.LeadTimeForChanges,
   });
   const isDeploymentFrequencyFinished: boolean = isDoraMetricsChartFinish({
     dateRangeLength,
     mappedData,
-    type: DORA_METRICS_CHART_LIST.DeploymentFrequency,
+    type: DORAMetricsChartType.DeploymentFrequency,
   });
   const isDevChangeFailureRateFinished: boolean = isDoraMetricsChartFinish({
     dateRangeLength,
     mappedData,
-    type: DORA_METRICS_CHART_LIST.DevChangeFailureRate,
+    type: DORAMetricsChartType.DevChangeFailureRate,
   });
   const isDevMeanTimeToRecoveryValueListFinished: boolean = isDoraMetricsChartFinish({
     dateRangeLength,
     mappedData,
-    type: DORA_METRICS_CHART_LIST.DevMeanTimeToRecovery,
+    type: DORAMetricsChartType.DevMeanTimeToRecovery,
   });
 
   const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
