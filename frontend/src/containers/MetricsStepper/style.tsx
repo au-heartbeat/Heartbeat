@@ -6,8 +6,8 @@ export const StyledStepper = styled(Stepper)({
   display: 'flex',
   flexDirection: 'row',
   width: '60%',
-  minWidth: '960px',
-  maxWidth: '1216px',
+  minWidth: '60rem',
+  maxWidth: '76rem',
   margin: '0 auto',
   padding: '2rem',
   [theme.breakpoints.down('lg')]: {
@@ -44,8 +44,8 @@ export const MetricsStepperContent = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   width: '70%',
-  minWidth: '1240px',
-  maxWidth: '1344px',
+  minWidth: theme.main.contentMinWidth,
+  maxWidth: theme.main.contentMaxWidth,
   margin: '0 auto',
   textAlign: 'left',
   [theme.breakpoints.down('lg')]: {
@@ -109,8 +109,8 @@ export const ButtonContainer = styled('div')({
   margin: '0 auto',
   padding: '0 0 2rem 0',
   width: '70%',
-  minWidth: '1240px',
-  maxWidth: '1344px',
+  minWidth: theme.main.contentMinWidth,
+  maxWidth: theme.main.contentMaxWidth,
   [theme.breakpoints.down('lg')]: {
     width: 'auto',
     margin: '0 1.25rem',

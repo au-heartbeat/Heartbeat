@@ -4,7 +4,6 @@ body,
 .app {
   width: 100%;
   height: fit-content;
-  min-width: 25rem;
   font-family:
     Roboto,
     sans-serif,
