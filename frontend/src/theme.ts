@@ -34,9 +34,6 @@ declare module '@mui/material/styles' {
         lineColorB: string;
         gridColor: string;
       };
-      chart: {
-        loadingColor: string;
-      };
       backgroundColor: string;
       color: string;
       secondColor: string;
@@ -149,9 +146,6 @@ export const theme = createTheme({
       lineColorA: '#163C4D',
       lineColorB: '#E16A7C',
       gridColor: '#D9D9D9',
-    },
-    chart: {
-      loadingColor: 'rgba(255, 255, 255, 0.8)',
     },
     backgroundColor: indigo[FIVE_HUNDRED],
     color: '#fff',

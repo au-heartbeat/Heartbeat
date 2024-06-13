@@ -67,7 +67,6 @@ import { BoardMetricsChart } from './BoardMetricsChart';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { useAppSelector } from '@src/hooks';
 import { Box, Tab } from '@mui/material';
-import { theme } from '@src/theme';
 import * as echarts from 'echarts';
 import { uniqueId } from 'lodash';
 
@@ -87,19 +86,10 @@ export interface DateRangeRequestResult {
   reportData: ReportResponseDTO | undefined;
 }
 
-const CHART_LOADING = {
-  text: '',
-  color: theme.main.chart.loadingColor,
-};
-
 export function showChart(div: HTMLDivElement | null, isFinished: boolean, options: echarts.EChartsCoreOption) {
   if (div) {
     const chart = echarts.init(div);
-    chart.showLoading(CHART_LOADING);
-    if (isFinished) {
-      chart.hideLoading();
-      chart.setOption(options);
-    }
+    chart.setOption(options);
     return () => {
       chart.dispose();
     };
