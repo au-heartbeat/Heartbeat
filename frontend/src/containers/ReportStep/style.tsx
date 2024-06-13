@@ -35,7 +35,7 @@ export const StyledCalendarWrapper = styled('div')((props: { justCalendar: boole
   [theme.breakpoints.down('lg')]: {
     flex: '0',
     order: 1,
-    justifyContent: 'flex-start',
+    flexDirection: 'row-reverse',
     alignSelf: 'auto',
     margin: props.justCalendar ? '0' : '1.25rem 0 0 ',
     position: 'relative',
