@@ -43,15 +43,9 @@ export const StyledExportButton = styled(Button)({
     ...basicButtonStyle,
     backgroundColor: theme.main.backgroundColor,
     color: theme.main.color,
-    [theme.breakpoints.down('lg')]: {
-      fontSize: '0.8rem',
-    },
   },
   '&:disabled': {
     backgroundColor: theme.main.button.disabled.backgroundColor,
     color: theme.main.button.disabled.color,
-  },
-  [theme.breakpoints.down('lg')]: {
-    fontSize: '0.8rem',
   },
 });
