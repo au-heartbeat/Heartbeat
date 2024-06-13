@@ -19,17 +19,27 @@ export const basicButtonStyle = {
 
 export const HeaderContainer = styled('div')((props: { shouldShowTabs: boolean }) => ({
   display: 'flex',
+  alignItems: 'flex-start',
   justifyContent: props.shouldShowTabs ? 'space-between' : 'flex-end',
+  [theme.breakpoints.down('lg')]: {
+    flexDirection: 'column',
+  },
 }));
 
-export const StyledCalendarWrapper = styled('div')((props: { isSummaryPage: boolean; shouldShowChart: boolean }) => ({
-  alignSelf: 'end',
-  width: 'fit-content',
+export const StyledCalendarWrapper = styled('div')((props: { justCalendar: boolean }) => ({
   display: 'flex',
-  justifyContent: props.shouldShowChart ? 'space-between' : 'flex-end',
-  marginTop: '0.25rem',
-  marginBottom: props.isSummaryPage ? '0rem' : '2rem',
+  flex: '1',
+  justifyContent: 'flex-end',
+  position: props.justCalendar ? 'absolute' : 'relative',
   zIndex: Z_INDEX.DROPDOWN,
+  [theme.breakpoints.down('lg')]: {
+    flex: '0',
+    order: 1,
+    justifyContent: 'flex-start',
+    alignSelf: 'auto',
+    margin: props.justCalendar ? '0' : '1.25rem 0 0 ',
+    position: 'relative',
+  },
 }));
 
 export const StyledTabWrapper = styled('div')({
@@ -39,11 +49,20 @@ export const StyledTabWrapper = styled('div')({
 });
 
 export const StyledTabs = styled(Tabs)({
+  marginRight: '2.5rem',
+  order: 0,
   '& .MuiTabs-indicator': {
     display: 'none',
   },
   '& .Mui-selected': {
     border: `0.08rem solid ${theme.main.backgroundColor}`,
+  },
+});
+
+export const StyledChartTabs = styled(Tabs)({
+  [theme.breakpoints.down('lg')]: {
+    order: 2,
+    margin: '1.25rem 0 0',
   },
 });
 

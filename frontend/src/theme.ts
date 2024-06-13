@@ -91,6 +91,8 @@ declare module '@mui/material/styles' {
       downloadListLabel: {
         backgroundColor: string;
       };
+      contentMinWidth: string;
+      contentMaxWidth: string;
     };
   }
 
@@ -206,6 +208,8 @@ export const theme = createTheme({
     downloadListLabel: {
       backgroundColor: '#4350AF1A',
     },
+    contentMinWidth: '77.5rem', // 1240/16
+    contentMaxWidth: '84rem', // 1344/16
   },
   typography: {
     button: {
@@ -215,7 +219,7 @@ export const theme = createTheme({
   breakpoints: {
     values: {
       xs: 0,
-      sm: 600,
+      sm: 390,
       md: 960,
       lg: 1280,
       xl: 1920,
