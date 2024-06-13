@@ -1,5 +1,6 @@
 import {
   ChartType,
+  CYCLE_TIME_CHARTS_MAPPING,
   CYCLE_TIME_LIST,
   CycleTimeSettingsTypes,
   DOWN_TREND_IS_BETTER,
@@ -276,3 +277,14 @@ export const valueFormatter = (value: number) => {
   }
   return value.toFixed(2) + '%';
 };
+
+export function sortLegend<T extends { data: number[]; name: string; type: string }[]>(indicators: T): T {
+  indicators.sort((a) => {
+    if (a.name === CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue]) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+  return indicators;
+}

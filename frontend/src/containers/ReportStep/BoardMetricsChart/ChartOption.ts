@@ -87,14 +87,10 @@ const commonConfig = {
   },
 };
 
-export const stackedAreaOptionMapper = (props: AreaOptionProps, firstLegend: string | undefined = undefined) => {
-  let legendData = props.series?.map((item) => item.name);
-  if (firstLegend) {
-    legendData = [...new Set([firstLegend, ...legendData!])];
-  }
+export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
   return {
     legend: {
-      data: legendData,
+      data: props.series?.map((item) => item.name),
       ...commonConfig.legend,
     },
     tooltip: commonConfig.tooltip,
@@ -136,14 +132,10 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps, firstLegend: str
   };
 };
 
-export const stackedBarOptionMapper = (props: BarOptionProps, firstLegend: string | undefined = undefined) => {
-  let legendData = props.series?.map((item) => item.name);
-  if (firstLegend) {
-    legendData = [...new Set([firstLegend, ...legendData!])];
-  }
+export const stackedBarOptionMapper = (props: BarOptionProps) => {
   return {
     legend: {
-      data: legendData,
+      data: props.series?.map((item) => item.name),
       ...commonConfig.legend,
     },
     tooltip: {

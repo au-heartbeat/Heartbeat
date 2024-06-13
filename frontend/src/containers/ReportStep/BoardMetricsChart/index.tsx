@@ -3,7 +3,7 @@ import {
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
 import { ChartType, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS, RequiredData } from '@src/constants/resources';
-import { calculateTrendInfo, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
+import { calculateTrendInfo, sortLegend, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
@@ -156,10 +156,13 @@ function extractCycleTimeAllocationData(dateRanges: string[], mappedData?: Repor
   const data = mappedData?.map((item) => item.cycleTime?.swimlaneList);
   const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
   const cycleTimeByStatus = transformArrayToObject(data, totalCycleTime!);
+
   const indicators = [];
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
     indicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
+  sortLegend(indicators);
+
   const developmentPercentageList = indicators.find(
     ({ name }) => name === CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue],
   )?.data;
@@ -212,19 +215,19 @@ function extractReworkData(dateRanges: string[], mappedData?: ReportResponse[]) 
     ],
     series: [
       {
+        name: 'Total rework times',
+        type: 'bar',
+        data: totalReworkTimes!,
+        yAxisIndex: 0,
+        setAreaStyle: false,
+        smooth: false,
+      },
+      {
         name: 'Rework cards ratio',
         type: 'line',
         tooltip: { valueFormatter },
         data: reworkCardsRatio!,
         yAxisIndex: 1,
-        setAreaStyle: false,
-        smooth: false,
-      },
-      {
-        name: 'Total rework times',
-        type: 'bar',
-        data: totalReworkTimes!,
-        yAxisIndex: 0,
         setAreaStyle: false,
         smooth: false,
       },
@@ -261,14 +264,13 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
     data && data.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData));
 
   const cycleTimeAllocationData = extractCycleTimeAllocationData(dateRanges, mappedData);
-  const cycleTimeAllocationDataOption =
-    cycleTimeAllocationData && stackedBarOptionMapper(cycleTimeAllocationData, 'Development time');
+  const cycleTimeAllocationDataOption = cycleTimeAllocationData && stackedBarOptionMapper(cycleTimeAllocationData);
   const cycleTimeData = extractCycleTimeData(dateRanges, mappedData);
   const cycleTimeDataOption = cycleTimeData && stackedAreaOptionMapper(cycleTimeData);
   const velocityData = extractVelocityData(dateRanges, mappedData);
   const velocityDataOption = velocityData && stackedAreaOptionMapper(velocityData);
   const reworkData = extractReworkData(dateRanges, mappedData);
-  const reworkDataOption = reworkData && stackedAreaOptionMapper(reworkData, 'Total rework times');
+  const reworkDataOption = reworkData && stackedAreaOptionMapper(reworkData);
 
   const isVelocityFinished = mappedData?.flatMap((value) => value.velocityList)?.length === dateRanges.length * 2;
   const isCycleTimeFinished =
