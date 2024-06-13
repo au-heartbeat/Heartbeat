@@ -4,7 +4,6 @@ import { theme } from '@src/theme';
 export const StyledChartAndTitleWrapper = styled('div')({
   position: 'relative',
   height: '25rem',
-  marginTop: '1.5rem',
   borderRadius: '0.75rem',
   border: theme.main.cardBorder,
   background: theme.main.color,
