@@ -277,9 +277,9 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
     reworkList?.length === dateRanges.length &&
     reworkList?.every(
       (values) =>
-        Number.isNaN(values?.totalReworkTimes) &&
-        Number.isNaN(values?.totalReworkCards) &&
-        Number.isNaN(values?.reworkCardsRatio),
+        !Number.isNaN(values?.totalReworkTimes) &&
+        !Number.isNaN(values?.totalReworkCards) &&
+        !Number.isNaN(values?.reworkCardsRatio),
     );
 
   useEffect(() => {
