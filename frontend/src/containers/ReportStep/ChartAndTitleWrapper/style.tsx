@@ -36,7 +36,7 @@ export const TrendContainer = styled('div')(({ color }: { color: string }) => ({
   display: 'flex',
   alignItems: 'center',
   color: color,
-  marginLeft: '0.5rem',
+  margin: '0 0.5rem',
   fontSize: '1.125rem',
   '&:hover': {
     cursor: 'pointer',
