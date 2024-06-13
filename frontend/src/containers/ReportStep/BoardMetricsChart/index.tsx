@@ -261,13 +261,14 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
     data && data.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData));
 
   const cycleTimeAllocationData = extractCycleTimeAllocationData(dateRanges, mappedData);
-  const cycleTimeAllocationDataOption = cycleTimeAllocationData && stackedBarOptionMapper(cycleTimeAllocationData);
+  const cycleTimeAllocationDataOption =
+    cycleTimeAllocationData && stackedBarOptionMapper(cycleTimeAllocationData, 'Development time');
   const cycleTimeData = extractCycleTimeData(dateRanges, mappedData);
   const cycleTimeDataOption = cycleTimeData && stackedAreaOptionMapper(cycleTimeData);
   const velocityData = extractVelocityData(dateRanges, mappedData);
   const velocityDataOption = velocityData && stackedAreaOptionMapper(velocityData);
   const reworkData = extractReworkData(dateRanges, mappedData);
-  const reworkDataOption = reworkData && stackedAreaOptionMapper(reworkData);
+  const reworkDataOption = reworkData && stackedAreaOptionMapper(reworkData, 'Total rework times');
 
   const isVelocityFinished = mappedData?.flatMap((value) => value.velocityList)?.length === dateRanges.length * 2;
   const isCycleTimeFinished =
