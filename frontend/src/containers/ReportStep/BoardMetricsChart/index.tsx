@@ -275,7 +275,12 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
   const reworkList = mappedData?.map((values) => values.rework).filter((value) => value);
   const isReworkFinished =
     reworkList?.length === dateRanges.length &&
-    reworkList?.every((values) => values?.totalReworkTimes && values.totalReworkCards && values.reworkCardsRatio);
+    reworkList?.every(
+      (values) =>
+        !Number.isNaN(values?.totalReworkTimes) &&
+        !Number.isNaN(values?.totalReworkCards) &&
+        !Number.isNaN(values?.reworkCardsRatio),
+    );
 
   useEffect(() => {
     showChart(velocity.current, isVelocityFinished, velocityDataOption);

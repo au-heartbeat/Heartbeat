@@ -78,7 +78,7 @@ const ChartAndTitleWrapper = forwardRef(
         )}
         <ChartTitle>
           {trendInfo.type}
-          {trendInfo.trendNumber !== undefined && (
+          {trendInfo.trendNumber !== undefined && !isLoading && (
             <Tooltip title={tipContent} arrow>
               <TrendContainer
                 color={TREND_COLOR_MAP[trendInfo.trendType!]}
