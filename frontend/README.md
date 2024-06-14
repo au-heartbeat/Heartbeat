@@ -78,3 +78,32 @@ test.cy.ts:
 
 
 ```
+
+## Page Responsibility
+We need consider responsibility in our page. We consider three main breakpoints in out system, 390, 1280 and 1920.
+Our minimum page size is 390, so that if the screen size is smaller than 390, the page will scroll Horizontally.
+When the screen size is smaller than 1280, it shows the mobile view.
+When the screen size is 1280 or larger than 1280, it shows the desktop view.
+When the screen size is larger than 1920, the content size will no longer chang with the screen size, that means it will keep the same size with it in 1920.
+
+the breakpoints are set in theme.js file.
+```
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 390,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+    keys: ['xs', 'sm', 'md', 'lg', 'xl'],
+  },
+```
+how we use it:
+```
+  [theme.breakpoints.down('lg')]: {
+    order: 2,
+    margin: '1.25rem 0 0',
+  },
+```
+you can search material ui responsibility to find more information.
