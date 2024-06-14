@@ -45,7 +45,7 @@ const BasicInfo = () => {
           )}
         />
 
-        <CollectionDateLabel>Collection Date</CollectionDateLabel>
+        <CollectionDateLabel>Collection Date(Weekend Considered)</CollectionDateLabel>
         <Controller
           name={'calendarType'}
           control={control}
@@ -60,6 +60,7 @@ const BasicInfo = () => {
               >
                 <StyledFormControlLabel value={CALENDAR.REGULAR} control={<Radio />} label={CALENDAR.REGULAR} />
                 <StyledFormControlLabel value={CALENDAR.CHINA} control={<Radio />} label={CALENDAR.CHINA} />
+                <StyledFormControlLabel value={CALENDAR.VIETNAM} control={<Radio />} label={CALENDAR.VIETNAM} />
               </RadioGroup>
             );
           }}

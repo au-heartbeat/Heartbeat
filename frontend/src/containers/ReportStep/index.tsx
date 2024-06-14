@@ -86,6 +86,12 @@ export interface DateRangeRequestResult {
   reportData: ReportResponseDTO | undefined;
 }
 
+const CalendarRequestMapping = {
+  [CALENDAR.REGULAR]: 'nonw',
+  [CALENDAR.CHINA]: 'cn',
+  [CALENDAR.VIETNAM]: 'vn',
+};
+
 export function showChart(div: HTMLDivElement | null, isFinished: boolean, options: echarts.EChartsCoreOption) {
   if (div) {
     const chart = echarts.init(div);
@@ -271,7 +277,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     startTime: null,
     endTime: null,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    considerHoliday: calendarType === CALENDAR.CHINA,
+    considerHoliday: CalendarRequestMapping[calendarType],
     csvTimeStamp,
     metrics,
     metricTypes: [

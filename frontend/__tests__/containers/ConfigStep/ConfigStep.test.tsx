@@ -18,6 +18,7 @@ import {
   ALL,
   FAKE_TOKEN,
   PIPELINE_TOOL_TOKEN_INPUT_LABEL,
+  VIETNAM_CALENDAR,
 } from '../../fixtures';
 import {
   basicInfoSchema,
@@ -186,8 +187,10 @@ describe('ConfigStep', () => {
 
     const defaultValue = screen.getByRole('radio', { name: REGULAR_CALENDAR });
     const chinaCalendar = screen.getByRole('radio', { name: CHINA_CALENDAR });
+    const vietnamCalendar = screen.getByRole('radio', { name: VIETNAM_CALENDAR });
     expect(defaultValue).toBeChecked();
     expect(chinaCalendar).not.toBeChecked();
+    expect(vietnamCalendar).not.toBeChecked();
   });
 
   it('should switch the radio when any radioLabel is selected', async () => {
@@ -208,6 +211,26 @@ describe('ConfigStep', () => {
       expect(regularCalendar).toBeChecked();
     });
     expect(chinaCalendar).not.toBeChecked();
+  });
+
+  it('should select Vietnam holiday when Regular calendar is default', async () => {
+    setup();
+
+    const vietnamCalendar = screen.getByRole('radio', { name: VIETNAM_CALENDAR });
+    const regularCalendar = screen.getByRole('radio', { name: REGULAR_CALENDAR });
+    await userEvent.click(vietnamCalendar);
+
+    await waitFor(() => {
+      expect(vietnamCalendar).toBeChecked();
+    });
+    expect(regularCalendar).not.toBeChecked();
+
+    await userEvent.click(regularCalendar);
+
+    await waitFor(() => {
+      expect(regularCalendar).toBeChecked();
+    });
+    expect(vietnamCalendar).not.toBeChecked();
   });
 
   it('should not show board component when init ConfigStep component ', async () => {

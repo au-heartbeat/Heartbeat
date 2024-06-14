@@ -12,9 +12,11 @@ export const PROJECT_DESCRIPTION =
 
 export const ZERO = 0;
 
-export const REGULAR_CALENDAR = 'Regular Calendar(Weekend Considered)';
+export const REGULAR_CALENDAR = 'Regular Calendar';
 
 export const CHINA_CALENDAR = 'Calendar with Chinese Holiday';
+
+export const VIETNAM_CALENDAR = 'Calendar with Vietnam Holiday';
 
 export const NEXT = 'Next';
 
@@ -181,7 +183,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
   metrics: [],
   startTime: '1613664000000',
   endTime: '1614873600000',
-  considerHoliday: true,
+  considerHoliday: 'cn',
   timezone: 'Asia/Shanghai',
   buildKiteSetting: {
     token: 'mockToken',

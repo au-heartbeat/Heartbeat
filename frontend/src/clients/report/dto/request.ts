@@ -38,7 +38,7 @@ interface ReworkSettingsRequest {
 }
 
 export interface IBasicReportRequestDTO {
-  considerHoliday: boolean;
+  considerHoliday: string;
   startTime: string | null;
   endTime: string | null;
   timezone: string;

@@ -1,8 +1,9 @@
 import { AxiosError } from 'axios';
 
 export const CALENDAR = {
-  REGULAR: 'Regular Calendar(Weekend Considered)',
+  REGULAR: 'Regular Calendar',
   CHINA: 'Calendar with Chinese Holiday',
+  VIETNAM: 'Calendar with Vietnam Holiday',
 };
 
 export const REPORT_PAGE_TYPE = {

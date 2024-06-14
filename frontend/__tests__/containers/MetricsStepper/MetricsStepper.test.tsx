@@ -327,7 +327,7 @@ describe('MetricsStepper', () => {
     const expectedFileName = 'config';
     const expectedJson = {
       board: undefined,
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: 'Regular Calendar',
       dateRange: [
         {
           endDate: null,
@@ -351,7 +351,7 @@ describe('MetricsStepper', () => {
     const expectedFileName = 'config';
     const expectedJson = {
       board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: 'Regular Calendar',
       dateRange: [
         {
           endDate: null,
@@ -378,7 +378,7 @@ describe('MetricsStepper', () => {
     const expectedJson = {
       advancedSettings: null,
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: 'Regular Calendar',
       dateRange: [
         {
           endDate: dayjs().endOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
@@ -431,7 +431,7 @@ describe('MetricsStepper', () => {
       advancedSettings: null,
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
       board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: 'Regular Calendar',
       dateRange: [
         {
           endDate: mockDateRange.endDate,

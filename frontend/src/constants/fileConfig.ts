@@ -167,5 +167,8 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       })),
     };
   }
+  if (fileConfig.calendarType === 'Regular Calendar(Weekend Considered)') {
+    fileConfig.calendarType = 'Regular Calendar';
+  }
   return { ...fileConfig, reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings) };
 };
