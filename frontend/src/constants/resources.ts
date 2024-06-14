@@ -111,7 +111,7 @@ export const CHART_TREND_TIP = {
   [ChartType.CycleTime]: 'Days/Story point',
   [ChartType.CycleTimeAllocation]: 'Total development time/Total cycle time',
   [ChartType.Rework]: 'Total rework times',
-  [ChartType.LeadTimeForChanges]: 'PR Lead Time',
+  [ChartType.LeadTimeForChanges]: 'Lead Time',
   [ChartType.DeploymentFrequency]: 'Mean Time To Recovery',
   [ChartType.DevChangeFailureRate]: 'Dev Change Failure Rate',
   [ChartType.DevMeanTimeToRecovery]: 'Dev Mean Time To Recovery',

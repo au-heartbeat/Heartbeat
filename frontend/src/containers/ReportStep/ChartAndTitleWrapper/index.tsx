@@ -73,9 +73,7 @@ const ChartAndTitleWrapper = forwardRef(
 
     return (
       <StyledChartAndTitleWrapper>
-        {isLoading && (
-          <Loading size='1.5rem' backgroundColor='transparent' aria-label={trendInfo.type.toLowerCase() + ' loading'} />
-        )}
+        {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
         <ChartTitle>
           {trendInfo.type}
           {trendInfo.trendNumber !== undefined && !isLoading && (

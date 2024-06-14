@@ -697,8 +697,6 @@ describe('Report Step', () => {
       resize: jest.fn(),
       dispatchAction: jest.fn(),
       dispose: jest.fn(),
-      showLoading: jest.fn(),
-      hideLoading: jest.fn(),
     };
     beforeEach(() => {
       jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
@@ -709,8 +707,6 @@ describe('Report Step', () => {
 
       expect(result).toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(0);
-      expect(chart.showLoading).toHaveBeenCalledTimes(0);
-      expect(chart.hideLoading).toHaveBeenCalledTimes(0);
       expect(chart.setOption).toHaveBeenCalledTimes(0);
       expect(chart.dispose).toHaveBeenCalledTimes(0);
     });
@@ -723,9 +719,7 @@ describe('Report Step', () => {
 
       expect(disposeFunction).not.toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(1);
-      expect(chart.showLoading).toHaveBeenCalledTimes(1);
-      expect(chart.hideLoading).toHaveBeenCalledTimes(0);
-      expect(chart.setOption).toHaveBeenCalledTimes(0);
+      expect(chart.setOption).toHaveBeenCalledTimes(1);
       expect(chart.dispose).toHaveBeenCalledTimes(1);
     });
 
@@ -737,8 +731,6 @@ describe('Report Step', () => {
 
       expect(disposeFunction).not.toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(1);
-      expect(chart.showLoading).toHaveBeenCalledTimes(1);
-      expect(chart.hideLoading).toHaveBeenCalledTimes(1);
       expect(chart.setOption).toHaveBeenCalledTimes(1);
       expect(chart.dispose).toHaveBeenCalledTimes(1);
     });
@@ -753,8 +745,6 @@ describe('Report Step', () => {
             resize: jest.fn(),
             dispatchAction: jest.fn(),
             dispose: jest.fn(),
-            showLoading: jest.fn(),
-            hideLoading: jest.fn(),
           }) as unknown as echarts.ECharts,
       );
     });

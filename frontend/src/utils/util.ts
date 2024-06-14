@@ -276,3 +276,14 @@ export const valueFormatter = (value: number) => {
   }
   return value.toFixed(2) + '%';
 };
+
+export function sortLegend<T extends { data: number[]; name: string; type: string }[]>(indicators: T, name: string): T {
+  indicators.sort((a) => {
+    if (a.name === name) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+  return indicators;
+}
