@@ -48,8 +48,8 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
     return averageItem.valueList.map((item) => Number(item.value));
   });
 
-  const prLeadTimeValues = extractedValues?.map((value) => value![0]);
-  const trendInfo = calculateTrendInfo(prLeadTimeValues, allDateRanges, ChartType.LeadTimeForChanges);
+  const leadTimeValues = extractedValues?.map((value) => value![2]);
+  const trendInfo = calculateTrendInfo(leadTimeValues, allDateRanges, ChartType.LeadTimeForChanges);
 
   return {
     legend: 'Lead Time For Change',
