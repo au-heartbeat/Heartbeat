@@ -82,8 +82,9 @@ test.cy.ts:
 ## Page Responsibility
 
 We need consider responsibility in our page. We consider three main breakpoints in out system, 390, 1280 and 1920. For the screen size,
+
 - if < 390, the page size will keep 390 and scrolls horizontally;
-- if >= 390 and < 1280, it shows mobile view and the content size will change to fit viewport; 
+- if >= 390 and < 1280, it shows mobile view and the content size will change to fit viewport;
 - if >= 1280 and <= 1920, it shows desktop view, the content size is 70% of the viewport but has a minimum size 1240 and a maximum size 1344.
 - if > 1920, the content size will no longer change with the screen size, that means it will keep the same size with it in 1920. But the page header will still change to fit viewport.
 
