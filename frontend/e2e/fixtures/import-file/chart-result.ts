@@ -25,7 +25,7 @@ export const DORA_CHART_VALUE = {
   'Lead Time For Changes': {
     type: 'trend down',
     color: '#02C4A8',
-    value: '40.28%',
+    value: '38.20%',
   },
   'Deployment Frequency': {
     type: 'trend down',
