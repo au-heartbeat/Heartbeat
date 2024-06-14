@@ -161,7 +161,7 @@ function extractCycleTimeAllocationData(dateRanges: string[], mappedData?: Repor
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
     indicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
   }
-  sortLegend(indicators);
+  sortLegend(indicators, CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue]);
 
   const developmentPercentageList = indicators.find(
     ({ name }) => name === CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue],

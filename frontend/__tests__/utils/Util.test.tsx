@@ -799,7 +799,7 @@ describe('sortLegend function', () => {
       },
     ];
 
-    sortLegend(data);
+    sortLegend(data, 'Development time');
 
     expect(data).toStrictEqual(expectData);
   });
