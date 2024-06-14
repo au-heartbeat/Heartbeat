@@ -42,7 +42,6 @@ import {
 } from '@src/containers/ReportStep/style';
 import {
   BOARD_METRICS,
-  CALENDAR,
   CHART_TAB_STYLE,
   DORA_METRICS,
   MESSAGE,
@@ -85,12 +84,6 @@ export interface DateRangeRequestResult {
   endDate: string;
   reportData: ReportResponseDTO | undefined;
 }
-
-const CalendarRequestMapping = {
-  [CALENDAR.REGULAR]: 'nonw',
-  [CALENDAR.CHINA]: 'cn',
-  [CALENDAR.VIETNAM]: 'vn',
-};
 
 export function showChart(div: HTMLDivElement | null, isFinished: boolean, options: echarts.EChartsCoreOption) {
   if (div) {
@@ -277,7 +270,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     startTime: null,
     endTime: null,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    considerHoliday: CalendarRequestMapping[calendarType],
+    calendarType,
     csvTimeStamp,
     metrics,
     metricTypes: [

@@ -31,7 +31,7 @@ export interface BasicConfigState {
   isProjectCreated: boolean;
   basic: {
     projectName: string;
-    calendarType: string;
+    calendarType: CALENDAR;
     dateRange: DateRangeList;
     sortType: SortType;
     metrics: string[];

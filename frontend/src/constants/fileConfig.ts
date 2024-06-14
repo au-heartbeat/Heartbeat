@@ -1,5 +1,5 @@
+import { CALENDAR, CALENDAR_LABEL, REWORK_TIME_LIST } from '@src/constants/resources';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { CALENDAR, REWORK_TIME_LIST } from '@src/constants/resources';
 import { IReworkConfig } from '@src/context/Metrics/metricsSlice';
 
 export interface OldFileConfig {
@@ -168,7 +168,9 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
     };
   }
   if (fileConfig.calendarType === 'Regular Calendar(Weekend Considered)') {
-    fileConfig.calendarType = 'Regular Calendar';
+    fileConfig.calendarType = CALENDAR.REGULAR;
+  } else if (fileConfig.calendarType === CALENDAR_LABEL[CALENDAR.CHINA]) {
+    fileConfig.calendarType = CALENDAR.CHINA;
   }
   return { ...fileConfig, reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings) };
 };
