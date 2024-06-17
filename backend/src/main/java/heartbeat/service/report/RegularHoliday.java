@@ -11,4 +11,5 @@ public class RegularHoliday extends AbstractCountryHoliday {
 	public Map<String, Boolean> loadHolidayList(String year) {
 		return Map.of();
 	}
+
 }

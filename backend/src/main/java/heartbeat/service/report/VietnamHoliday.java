@@ -24,10 +24,11 @@ public class VietnamHoliday extends AbstractCountryHoliday {
 
 	public Map<String, Boolean> loadHolidayList(String year) {
 		Map<String, Boolean> holidayMap = new HashMap<>();
-		System.out.println(apiKey + "-" + CalendarTypeEnum.VN.getValue());
 		log.info("Start to get vietnam holiday by year: {}", year);
-		CalendarificHolidayResponseDTO holidays1 = calendarificFeignClient.getHolidays(CalendarTypeEnum.VN.getValue(), year, apiKey);
-		List<CalendarificHolidayResponseDTO.Response.CalendarificHolidayDetail> holidays = holidays1.getResponse().getHolidays();
+		List<CalendarificHolidayResponseDTO.Response.CalendarificHolidayDetail> holidays = calendarificFeignClient
+			.getHolidays(CalendarTypeEnum.VN.getValue(), year, apiKey)
+			.getResponse()
+			.getHolidays();
 		log.info("Successfully get vietnam holiday list:{}", holidays);
 
 		holidays.forEach(holiday -> {

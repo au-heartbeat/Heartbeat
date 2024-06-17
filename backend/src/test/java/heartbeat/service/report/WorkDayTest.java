@@ -1,8 +1,7 @@
 package heartbeat.service.report;
 
 import heartbeat.client.HolidayFeignClient;
-import heartbeat.client.dto.board.jira.HolidayDTO;
-import heartbeat.client.dto.board.jira.HolidaysResponseDTO;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.service.report.model.WorkInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -18,11 +17,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,43 +35,26 @@ class WorkDayTest {
 	WorkDay workDay;
 
 	@Mock
-	HolidayFeignClient holidayFeignClient;
+	private HolidayFactory holidayFactory;
 
-	@Test
-	void shouldDontPutToHolidayMapWhenHolidayMapNotEmpty() {
-		HolidaysResponseDTO holidayFirstReturn = HolidaysResponseDTO.builder()
-			.days(List.of(HolidayDTO.builder().date("2024-01-01").name("元旦").isOffDay(true).build()))
-			.build();
-		HolidaysResponseDTO holidaySecondReturn = HolidaysResponseDTO.builder()
-			.days(List.of(HolidayDTO.builder().date("2024-05-01").name("五一").isOffDay(true).build()))
-			.build();
+	@Mock
+	private ChinaHoliday chinaHoliday;
 
-		when(holidayFeignClient.getHolidays("2024")).thenReturn(holidayFirstReturn).thenReturn(holidaySecondReturn);
-
-		workDay.selectCalendarType(true);
-		workDay.selectCalendarType(true);
-
-		boolean holidayMapContainsFiveOne = workDay.verifyIfThisDayHoliday(LocalDate.parse("2024-05-01"));
-		boolean holidayMapContainsOneOne = workDay.verifyIfThisDayHoliday(LocalDate.parse("2024-01-01"));
-
-		assertTrue(holidayMapContainsOneOne);
-		assertFalse(holidayMapContainsFiveOne);
-
-	}
+	@Mock
+	private RegularHoliday regularHoliday;
 
 	@Test
 	void shouldReturnDayIsHoliday() {
-		List<HolidayDTO> holidayDTOList = List.of(
-				HolidayDTO.builder().date("2023-01-01").name("元旦").isOffDay(true).build(),
-				HolidayDTO.builder().date("2023-01-28").name("春节").isOffDay(false).build());
+		CalendarTypeEnum calendarType = CalendarTypeEnum.CN;
+		Map<String, Boolean> holidayMap = Map.of("2023-01-01", true, "2023-01-28", false);
 
 		LocalDate holidayTime = LocalDate.of(2023, 1, 1);
 		LocalDate workdayTime = LocalDate.of(2023, 1, 28);
 
-		when(holidayFeignClient.getHolidays(any()))
-			.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
+		when(holidayFactory.build(calendarType)).thenReturn(chinaHoliday);
+		when(chinaHoliday.loadHolidayList("2024")).thenReturn(holidayMap);
 
-		workDay.selectCalendarType(true);
+		workDay.selectCalendarType(calendarType);
 		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
 		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
 
@@ -84,11 +64,14 @@ class WorkDayTest {
 
 	@Test
 	void shouldReturnDayIsHolidayWithoutChineseHoliday() {
-
+		CalendarTypeEnum calendarType = CalendarTypeEnum.REGULAR;
 		LocalDate holidayTime = LocalDate.of(2023, 1, 1);
 		LocalDate workdayTime = LocalDate.of(2023, 1, 28);
+		Map<String, Boolean> holidayMap = Map.of();
+		when(holidayFactory.build(calendarType)).thenReturn(regularHoliday);
+		when(regularHoliday.loadHolidayList("2024")).thenReturn(holidayMap);
 
-		workDay.selectCalendarType(false);
+		workDay.selectCalendarType(CalendarTypeEnum.REGULAR);
 		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
 		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
 
@@ -207,11 +190,10 @@ class WorkDayTest {
 
 		@Test
 		void StartIsWorkdayAndEndIsWorkdayAndAcrossHoliday() {
-			List<HolidayDTO> holidayDTOList = List.of(
-					HolidayDTO.builder().date("2024-04-04").name("清明").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-04-05").name("清明").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-04-06").name("清明").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-04-07").name("清明").isOffDay(false).build());
+			CalendarTypeEnum calendarType = CalendarTypeEnum.CN;
+
+			Map<String, Boolean> holidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
+					"2024-04-07", false);
 
 			long startTime = LocalDateTime.of(2024, 4, 3, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 			long endTime = LocalDateTime.of(2024, 4, 7, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
@@ -220,9 +202,10 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 3;
 
-			when(holidayFeignClient.getHolidays("2024"))
-				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
-			workDay.selectCalendarType(true);
+			when(holidayFactory.build(calendarType)).thenReturn(chinaHoliday);
+			when(chinaHoliday.loadHolidayList("2024")).thenReturn(holidayMap);
+
+			workDay.selectCalendarType(CalendarTypeEnum.CN);
 
 			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
@@ -335,12 +318,10 @@ class WorkDayTest {
 
 		@Test
 		void StartIsHolidayAndEndIsWorkday() {
-			List<HolidayDTO> holidayDTOList = List.of(
-					HolidayDTO.builder().date("2024-05-01").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-02").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-03").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-04").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-05").name("五一").isOffDay(true).build());
+			CalendarTypeEnum calendarType = CalendarTypeEnum.CN;
+
+			Map<String, Boolean> holidayMap = Map.of("2024-05-01", true, "2024-05-02", true, "2024-05-03", true,
+					"2024-05-04", true, "2024-05-05", true);
 
 			long startTime = LocalDateTime.of(2024, 5, 1, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 			long endTime = LocalDateTime.of(2024, 5, 6, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
@@ -349,9 +330,10 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 0;
 
-			when(holidayFeignClient.getHolidays("2024"))
-				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
-			workDay.selectCalendarType(true);
+			when(holidayFactory.build(calendarType)).thenReturn(chinaHoliday);
+			when(chinaHoliday.loadHolidayList("2024")).thenReturn(holidayMap);
+
+			workDay.selectCalendarType(calendarType);
 
 			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
@@ -363,12 +345,10 @@ class WorkDayTest {
 
 		@Test
 		void StartIsWorkdayAndEndIsHoliday() {
-			List<HolidayDTO> holidayDTOList = List.of(
-					HolidayDTO.builder().date("2024-05-01").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-02").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-03").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-04").name("五一").isOffDay(true).build(),
-					HolidayDTO.builder().date("2024-05-05").name("五一").isOffDay(true).build());
+			CalendarTypeEnum calendarType = CalendarTypeEnum.CN;
+
+			Map<String, Boolean> holidayMap = Map.of("2024-05-01", true, "2024-05-02", true, "2024-05-03", true,
+					"2024-05-04", true, "2024-05-05", true);
 
 			long startTime = LocalDateTime.of(2024, 4, 28, 1, 10, 11).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
 			long endTime = LocalDateTime.of(2024, 5, 3, 2, 11, 12).toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
@@ -376,9 +356,10 @@ class WorkDayTest {
 			long expectWorkTime = 5 * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
 			long expectHoliday = 0;
 
-			when(holidayFeignClient.getHolidays("2024"))
-				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
-			workDay.selectCalendarType(true);
+			when(holidayFactory.build(calendarType)).thenReturn(chinaHoliday);
+			when(chinaHoliday.loadHolidayList("2024")).thenReturn(holidayMap);
+
+			workDay.selectCalendarType(CalendarTypeEnum.CN);
 
 			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();

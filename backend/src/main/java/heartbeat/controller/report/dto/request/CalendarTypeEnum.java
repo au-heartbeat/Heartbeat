@@ -1,9 +1,8 @@
 package heartbeat.controller.report.dto.request;
 
 public enum CalendarTypeEnum {
-	REGULAR("REGULAR"),
-	CN("CN"),
-	VN("VN");
+
+	REGULAR("REGULAR"), CN("CN"), VN("VN");
 
 	private final String value;
 
@@ -14,4 +13,5 @@ public enum CalendarTypeEnum {
 	public String getValue() {
 		return value;
 	}
+
 }

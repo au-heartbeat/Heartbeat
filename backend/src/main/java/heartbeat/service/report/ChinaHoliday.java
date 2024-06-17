@@ -29,4 +29,5 @@ public class ChinaHoliday extends AbstractCountryHoliday {
 		}
 		return holidayMap;
 	}
+
 }

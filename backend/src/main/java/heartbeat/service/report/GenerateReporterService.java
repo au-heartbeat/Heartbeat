@@ -133,8 +133,8 @@ public class GenerateReporterService {
 		String pipelineReportId = request.getPipelineReportFileId();
 		log.info(
 				"Start to generate pipeline report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
-				request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(),
-				request.getEndTime(), pipelineReportId);
+				request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(),
+				pipelineReportId);
 		try {
 			fetchBuildKiteData(request, fetchedData);
 			saveReporterInHandler(generatePipelineReporter(request, fetchedData), pipelineReportId);

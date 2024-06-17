@@ -15,11 +15,13 @@ public class CalendarificHolidayResponseDTO implements Serializable {
 	@Data
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Response implements Serializable {
+
 		private List<CalendarificHolidayDetail> holidays;
 
 		@Data
 		@JsonIgnoreProperties(ignoreUnknown = true)
 		public static class CalendarificHolidayDetail implements Serializable {
+
 			private HolidayDateTime date;
 
 			private List<String> type;
@@ -27,9 +29,13 @@ public class CalendarificHolidayResponseDTO implements Serializable {
 			@Data
 			@JsonIgnoreProperties(ignoreUnknown = true)
 			public static class HolidayDateTime implements Serializable {
+
 				private String iso;
+
 			}
+
 		}
+
 	}
 
 }
