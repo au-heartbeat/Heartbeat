@@ -1,6 +1,7 @@
 package heartbeat.config;
 
 import heartbeat.client.dto.board.jira.CardHistoryResponseDTO;
+import heartbeat.client.dto.board.jira.CalendarificHolidayResponseDTO;
 import heartbeat.client.dto.board.jira.FieldResponseDTO;
 import heartbeat.client.dto.board.jira.HolidaysResponseDTO;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
@@ -55,6 +56,7 @@ public class CacheConfig {
 		cacheManager.createCache("commitInfo", getCacheConfiguration(CommitInfo.class));
 		cacheManager.createCache("pullRequestCommitInfo", getCacheConfiguration(List.class));
 		cacheManager.createCache("pullRequestListInfo", getCacheConfiguration(List.class));
+		cacheManager.createCache("calendarificResult", getCacheConfiguration(CalendarificHolidayResponseDTO.class));
 		return cacheManager;
 	}
 
@@ -70,6 +72,9 @@ public class CacheConfig {
 		Duration timeToLive;
 		if (valueType == HolidaysResponseDTO.class) {
 			timeToLive = Duration.ofSeconds(300);
+		}
+		else if (valueType == CalendarificHolidayResponseDTO.class) {
+			timeToLive = Duration.ofDays(365);
 		}
 		else {
 			timeToLive = Duration.ofSeconds(90);

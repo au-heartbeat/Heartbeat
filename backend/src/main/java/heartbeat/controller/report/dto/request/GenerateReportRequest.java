@@ -21,8 +21,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GenerateReportRequest {
 
-	private Boolean considerHoliday;
-
 	@NotBlank(message = "StartTime is required")
 	private String startTime;
 
@@ -44,6 +42,9 @@ public class GenerateReportRequest {
 
 	@NotBlank
 	private String timezone;
+
+	@NotBlank
+	private CalendarTypeEnum calendarType;
 
 	@JsonIgnore
 	public List<String> getPipelineMetrics() {
@@ -101,12 +102,12 @@ public class GenerateReportRequest {
 		return GenerateReportRequest.builder()
 			.startTime(this.startTime)
 			.endTime(this.endTime)
-			.considerHoliday(this.considerHoliday)
 			.metrics(this.getPipelineMetrics())
 			.codebaseSetting(this.codebaseSetting)
 			.buildKiteSetting(this.buildKiteSetting)
 			.csvTimeStamp(this.csvTimeStamp)
 			.timezone(timezone)
+			.calendarType(calendarType)
 			.build();
 	}
 
@@ -115,12 +116,12 @@ public class GenerateReportRequest {
 		return GenerateReportRequest.builder()
 			.startTime(this.startTime)
 			.endTime(this.endTime)
-			.considerHoliday(this.considerHoliday)
 			.metrics(this.getSourceControlMetrics())
 			.codebaseSetting(this.codebaseSetting)
 			.buildKiteSetting(this.buildKiteSetting)
 			.csvTimeStamp(this.csvTimeStamp)
 			.timezone(timezone)
+			.calendarType(calendarType)
 			.build();
 	}
 

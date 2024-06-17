@@ -51,8 +51,8 @@ class WorkDayTest {
 
 		when(holidayFeignClient.getHolidays("2024")).thenReturn(holidayFirstReturn).thenReturn(holidaySecondReturn);
 
-		workDay.changeConsiderHolidayMode(true);
-		workDay.changeConsiderHolidayMode(true);
+		workDay.selectCalendarType(true);
+		workDay.selectCalendarType(true);
 
 		boolean holidayMapContainsFiveOne = workDay.verifyIfThisDayHoliday(LocalDate.parse("2024-05-01"));
 		boolean holidayMapContainsOneOne = workDay.verifyIfThisDayHoliday(LocalDate.parse("2024-01-01"));
@@ -74,7 +74,7 @@ class WorkDayTest {
 		when(holidayFeignClient.getHolidays(any()))
 			.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
 
-		workDay.changeConsiderHolidayMode(true);
+		workDay.selectCalendarType(true);
 		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
 		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
 
@@ -88,7 +88,7 @@ class WorkDayTest {
 		LocalDate holidayTime = LocalDate.of(2023, 1, 1);
 		LocalDate workdayTime = LocalDate.of(2023, 1, 28);
 
-		workDay.changeConsiderHolidayMode(false);
+		workDay.selectCalendarType(false);
 		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
 		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
 
@@ -222,7 +222,7 @@ class WorkDayTest {
 
 			when(holidayFeignClient.getHolidays("2024"))
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
-			workDay.changeConsiderHolidayMode(true);
+			workDay.selectCalendarType(true);
 
 			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
@@ -351,7 +351,7 @@ class WorkDayTest {
 
 			when(holidayFeignClient.getHolidays("2024"))
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
-			workDay.changeConsiderHolidayMode(true);
+			workDay.selectCalendarType(true);
 
 			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
@@ -378,7 +378,7 @@ class WorkDayTest {
 
 			when(holidayFeignClient.getHolidays("2024"))
 				.thenReturn(HolidaysResponseDTO.builder().days(holidayDTOList).build());
-			workDay.changeConsiderHolidayMode(true);
+			workDay.selectCalendarType(true);
 
 			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();

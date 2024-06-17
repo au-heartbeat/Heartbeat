@@ -14,3 +14,7 @@ jira:
 
 buildKite:
   url: https://api.buildkite.com
+
+calendarific:
+  url: https://calendarific.com/api/v2
+  apiKey: RzQjN0CCwMrABymlmUlymWWi79Oju3Ff

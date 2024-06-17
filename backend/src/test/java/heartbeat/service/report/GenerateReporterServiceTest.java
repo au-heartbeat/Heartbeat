@@ -198,7 +198,7 @@ class GenerateReporterServiceTest {
 
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -235,7 +235,7 @@ class GenerateReporterServiceTest {
 
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -262,7 +262,7 @@ class GenerateReporterServiceTest {
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
 			verify(pipelineService, never()).fetchGitHubData(any());
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -296,7 +296,7 @@ class GenerateReporterServiceTest {
 					exceptionCaptor.getValue().getMessage());
 			assertEquals(400, exceptionCaptor.getValue().getStatus());
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler, never()).putReport(eq(request.getBoardReportFileId()), any());
 		}
 
@@ -328,7 +328,7 @@ class GenerateReporterServiceTest {
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -366,7 +366,7 @@ class GenerateReporterServiceTest {
 
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -403,7 +403,7 @@ class GenerateReporterServiceTest {
 
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -598,7 +598,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getPipelineReportFileId()),
 					responseArgumentCaptor.capture());
 
@@ -669,7 +669,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getSourceControlReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -710,7 +710,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay, times(2)).changeConsiderHolidayMode(false);
+			verify(workDay, times(2)).selectCalendarType(false);
 			verify(asyncReportRequestHandler).putReport(eq(request.getSourceControlReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
