@@ -1,12 +1,11 @@
 import {
   IMPORTED_NEW_CONFIG_FIXTURE,
   BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
-  REGULAR_CALENDAR,
-  CHINA_CALENDAR,
   DEFAULT_REWORK_SETTINGS,
 } from '../../fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { convertToNewFileConfig } from '@src/constants/fileConfig';
+import { CALENDAR } from '@src/constants/resources';
 
 describe('#fileConfig', () => {
   const BASIC_NEW_CONFIG = {
@@ -58,7 +57,7 @@ describe('#fileConfig', () => {
   it('should convert to new config when it is old config and considerHoliday is false', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: REGULAR_CALENDAR,
+      calendarType: CALENDAR.REGULAR,
     };
     expect(
       convertToNewFileConfig({
@@ -71,7 +70,7 @@ describe('#fileConfig', () => {
   it('should convert to new config when it is old config and considerHoliday is true', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: CHINA_CALENDAR,
+      calendarType: CALENDAR.CHINA,
     };
     expect(
       convertToNewFileConfig({
@@ -84,7 +83,7 @@ describe('#fileConfig', () => {
   it('should get default rework value when reworkState and excludeStates are all invalid', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: CHINA_CALENDAR,
+      calendarType: CALENDAR.CHINA,
       reworkTimesSettings: { reworkState: null, excludeStates: [] },
     };
     expect(
@@ -99,7 +98,7 @@ describe('#fileConfig', () => {
   it('should filter invalid rework value when excludeStates field is invalid', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: CHINA_CALENDAR,
+      calendarType: CALENDAR.CHINA,
       reworkTimesSettings: { reworkState: 'In Dev', excludeStates: ['Review'] },
     };
     expect(

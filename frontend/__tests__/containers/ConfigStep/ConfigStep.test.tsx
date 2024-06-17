@@ -1,6 +1,5 @@
 // TODO: refactor case, replace fireEvent use userEvent. @Kai Zhou
 import {
-  CHINA_CALENDAR,
   ConfigTitle,
   DEPLOYMENT_FREQUENCY,
   ERROR_MESSAGE_TIME_DURATION,
@@ -8,7 +7,6 @@ import {
   MOCK_BOARD_URL_FOR_JIRA,
   MOCK_PIPELINE_VERIFY_URL,
   PROJECT_NAME_LABEL,
-  REGULAR_CALENDAR,
   REQUIRED_DATA,
   RESET,
   TEST_PROJECT_NAME,
@@ -18,6 +16,8 @@ import {
   ALL,
   FAKE_TOKEN,
   PIPELINE_TOOL_TOKEN_INPUT_LABEL,
+  REGULAR_CALENDAR,
+  CHINA_CALENDAR,
   VIETNAM_CALENDAR,
 } from '../../fixtures';
 import {

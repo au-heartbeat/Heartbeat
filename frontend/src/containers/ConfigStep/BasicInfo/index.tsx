@@ -3,11 +3,11 @@ import { CollectionDateLabel, ProjectNameInput, StyledFormControlLabel } from '.
 import { RequiredMetrics } from '@src/containers/ConfigStep/BasicInfo/RequiredMetrics';
 import { DateRangePickerSection } from '@src/containers/ConfigStep/DateRangePicker';
 import { BASIC_INFO_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
-import { CALENDAR_LABEL, CALENDAR_LIST } from '@src/constants/resources';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { ConfigSectionContainer } from '@src/components/Common/ConfigForms';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
+import { CALENDAR_LABEL, CALENDAR_LIST } from '@src/constants/resources';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Radio, RadioGroup } from '@mui/material';
 
@@ -63,6 +63,7 @@ const BasicInfo = () => {
                     key={calendarType}
                     value={calendarType}
                     control={<Radio />}
+                    name={CALENDAR_LABEL[calendarType]}
                     label={CALENDAR_LABEL[calendarType]}
                   />
                 ))}
