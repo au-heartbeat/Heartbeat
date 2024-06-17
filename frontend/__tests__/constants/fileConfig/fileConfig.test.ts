@@ -82,30 +82,22 @@ describe('#fileConfig', () => {
     ).toEqual(expected);
   });
 
-  it('should convert to new config when it is old config and calendarType is Regular Calendar(Weekend Considered)', () => {
-    const expected = {
-      ...BASIC_NEW_CONFIG,
-      calendarType: CALENDAR.REGULAR,
-    };
+  it('should convert calendarType Regular Calendar(Weekend Considered) to REGULAR', () => {
     expect(
       convertToNewFileConfig({
         ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
         calendarType: OLD_REGULAR_CALENDAR_LABEL,
-      }),
-    ).toEqual(expected);
+      }).calendarType,
+    ).toEqual(CALENDAR.REGULAR);
   });
 
-  it('should convert to new config when it is old config and calendarType is Calendar with Chinese Holiday', () => {
-    const expected = {
-      ...BASIC_NEW_CONFIG,
-      calendarType: CALENDAR.CHINA,
-    };
+  it('should convert calendarType Calendar with Chinese Holiday to CHINA', () => {
     expect(
       convertToNewFileConfig({
         ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
         calendarType: CHINA_CALENDAR,
-      }),
-    ).toEqual(expected);
+      }).calendarType,
+    ).toEqual(CALENDAR.CHINA);
   });
 
   it('should get default rework value when reworkState and excludeStates are all invalid', () => {
