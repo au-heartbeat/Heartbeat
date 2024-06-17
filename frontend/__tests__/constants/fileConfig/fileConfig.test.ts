@@ -2,6 +2,8 @@ import {
   IMPORTED_NEW_CONFIG_FIXTURE,
   BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
   DEFAULT_REWORK_SETTINGS,
+  CHINA_CALENDAR,
+  OLD_REGULAR_CALENDAR_LABEL,
 } from '../../fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { convertToNewFileConfig } from '@src/constants/fileConfig';
@@ -76,6 +78,32 @@ describe('#fileConfig', () => {
       convertToNewFileConfig({
         ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
         considerHoliday: true,
+      }),
+    ).toEqual(expected);
+  });
+
+  it('should convert to new config when it is old config and calendarType is Regular Calendar(Weekend Considered)', () => {
+    const expected = {
+      ...BASIC_NEW_CONFIG,
+      calendarType: CALENDAR.REGULAR,
+    };
+    expect(
+      convertToNewFileConfig({
+        ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
+        calendarType: OLD_REGULAR_CALENDAR_LABEL,
+      }),
+    ).toEqual(expected);
+  });
+
+  it('should convert to new config when it is old config and calendarType is Calendar with Chinese Holiday', () => {
+    const expected = {
+      ...BASIC_NEW_CONFIG,
+      calendarType: CALENDAR.CHINA,
+    };
+    expect(
+      convertToNewFileConfig({
+        ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
+        calendarType: CHINA_CALENDAR,
       }),
     ).toEqual(expected);
   });

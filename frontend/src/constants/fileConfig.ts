@@ -1,4 +1,4 @@
-import { CALENDAR, CALENDAR_LABEL, REWORK_TIME_LIST } from '@src/constants/resources';
+import { CALENDAR, CALENDAR_LABEL, OLD_REGULAR_CALENDAR_LABEL, REWORK_TIME_LIST } from '@src/constants/resources';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { IReworkConfig } from '@src/context/Metrics/metricsSlice';
 
@@ -9,7 +9,8 @@ export interface OldFileConfig {
     startDate: string;
     endDate: string;
   }[];
-  considerHoliday: boolean;
+  considerHoliday?: boolean;
+  calendarType?: string;
   board?: {
     type?: string;
     verifyToken?: string;
@@ -64,7 +65,7 @@ export interface NewFileConfig {
     endDate: string;
   }[];
   sortType: SortType;
-  calendarType: string;
+  calendarType: CALENDAR;
   metrics: string[];
   board?: {
     type?: string;
@@ -167,10 +168,13 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       })),
     };
   }
-  if (fileConfig.calendarType === 'Regular Calendar(Weekend Considered)') {
+  if (fileConfig.calendarType === OLD_REGULAR_CALENDAR_LABEL) {
     fileConfig.calendarType = CALENDAR.REGULAR;
   } else if (fileConfig.calendarType === CALENDAR_LABEL[CALENDAR.CHINA]) {
     fileConfig.calendarType = CALENDAR.CHINA;
   }
-  return { ...fileConfig, reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings) };
+  return {
+    ...fileConfig,
+    reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings),
+  } as NewFileConfig;
 };

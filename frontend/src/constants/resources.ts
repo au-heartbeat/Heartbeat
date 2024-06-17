@@ -12,6 +12,8 @@ export const CALENDAR_LABEL = {
   [CALENDAR.VIETNAM]: 'Calendar with Vietnam Holiday',
 };
 
+export const OLD_REGULAR_CALENDAR_LABEL = 'Regular Calendar(Weekend Considered)';
+
 export const CALENDAR_LIST = [CALENDAR.REGULAR, CALENDAR.CHINA, CALENDAR.VIETNAM];
 
 export const REPORT_PAGE_TYPE = {

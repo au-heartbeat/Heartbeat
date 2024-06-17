@@ -12,6 +12,8 @@ export const PROJECT_DESCRIPTION =
 
 export const ZERO = 0;
 
+export const OLD_REGULAR_CALENDAR_LABEL = 'Regular Calendar(Weekend Considered)';
+
 export const REGULAR_CALENDAR = 'Regular Calendar';
 
 export const CHINA_CALENDAR = 'Calendar with Chinese Holiday';
