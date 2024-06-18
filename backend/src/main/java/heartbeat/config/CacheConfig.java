@@ -56,12 +56,13 @@ public class CacheConfig {
 		cacheManager.createCache("commitInfo", getCacheConfiguration(CommitInfo.class));
 		cacheManager.createCache("pullRequestCommitInfo", getCacheConfiguration(List.class));
 		cacheManager.createCache("pullRequestListInfo", getCacheConfiguration(List.class));
-		cacheManager.createCache("calendarificResult", getCacheConfiguration(CalendarificHolidayResponseDTO.class));
+		cacheManager.createCache("calendarificResult", getCacheConfiguration(String.class, true));
 		return cacheManager;
 	}
 
 	@SuppressWarnings("unchecked")
-	private <K, V> javax.cache.configuration.Configuration<K, V> getCacheConfiguration(Class<V> valueType) {
+	private <K, V> javax.cache.configuration.Configuration<K, V> getCacheConfiguration(Class<V> valueType,
+			boolean isSaveLongTime) {
 		ResourcePoolsBuilder offHeap;
 		if (valueType == String.class) {
 			offHeap = ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(4, MemoryUnit.MB);
@@ -73,17 +74,22 @@ public class CacheConfig {
 		if (valueType == HolidaysResponseDTO.class) {
 			timeToLive = Duration.ofSeconds(300);
 		}
-		else if (valueType == CalendarificHolidayResponseDTO.class) {
-			timeToLive = Duration.ofDays(365);
-		}
 		else {
 			timeToLive = Duration.ofSeconds(90);
+		}
+		if (isSaveLongTime) {
+			timeToLive = Duration.ofDays(356);
 		}
 		CacheConfigurationBuilder<K, V> configuration = CacheConfigurationBuilder
 			.newCacheConfigurationBuilder((Class<K>) String.class, valueType, offHeap)
 			.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(timeToLive));
 
 		return Eh107Configuration.fromEhcacheCacheConfiguration(configuration);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <K, V> javax.cache.configuration.Configuration<K, V> getCacheConfiguration(Class<V> valueType) {
+		return getCacheConfiguration(valueType, false);
 	}
 
 }

@@ -20,8 +20,7 @@ buildKite:
   url: https://api.buildkite.com
 
 calendarific:
-  url: https://calendarific.com/api/v2
-  apiKey: RzQjN0CCwMrABymlmUlymWWi79Oju3Ff
+  url: https://raw.githubusercontent.com/au-heartbeat/calendars/main
 
 callback:
   interval: 10

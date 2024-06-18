@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.client.CalendarificFeignClient;
 import heartbeat.client.dto.board.jira.CalendarificHolidayResponseDTO;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
@@ -19,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +30,9 @@ class VietnamHolidayTest {
 	@Mock
 	private CalendarificFeignClient calendarificFeignClient;
 
+	@Mock
+	private ObjectMapper objectMapper;
+
 	@InjectMocks
 	private VietnamHoliday vietnamHoliday;
 
@@ -39,8 +42,10 @@ class VietnamHolidayTest {
 		String year = "2024";
 		CalendarificHolidayResponseDTO calendarificHolidayResponseDTO = JsonFileReader.readJsonFile(
 				"./src/test/resources/VietnamCalendarHolidayResponse.json", CalendarificHolidayResponseDTO.class);
-		when(calendarificFeignClient.getHolidays(eq(country.getValue()), eq(year), any()))
-			.thenReturn(calendarificHolidayResponseDTO);
+		String calendarificHolidayResponseDTOString = calendarificHolidayResponseDTO.toString();
+		when(calendarificFeignClient.getHolidays(country.getValue().toLowerCase(), year))
+			.thenReturn(calendarificHolidayResponseDTOString);
+		when(vietnamHoliday.decoder(any(), country, year, any())).thenReturn(calendarificHolidayResponseDTO);
 
 		Map<String, Boolean> result = vietnamHoliday.loadHolidayList(year);
 
@@ -53,7 +58,7 @@ class VietnamHolidayTest {
 				assertFalse(result.get(key));
 			}
 		}
-		verify(calendarificFeignClient).getHolidays(eq(country.getValue()), eq(year), any());
+		verify(calendarificFeignClient).getHolidays(country.getValue().toLowerCase(), year);
 	}
 
 }
