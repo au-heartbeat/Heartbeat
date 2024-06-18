@@ -12,7 +12,7 @@ import { CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, VELOCITY } from '../fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import initialConfigState from '../initialConfigState';
-import { CALENDAR } from '@src/constants/resources';
+import { Calendar } from '@src/constants/resources';
 
 const MockBasicState = {
   projectName: 'Test Project',
@@ -29,7 +29,7 @@ describe('config reducer', () => {
     const config = configReducer(undefined, { type: 'unknown' }).basic;
 
     expect(config.projectName).toEqual('');
-    expect(config.calendarType).toEqual(CALENDAR.REGULAR);
+    expect(config.calendarType).toEqual(Calendar.Regular);
     expect(config.dateRange).toEqual([{ startDate: null, endDate: null }]);
   });
 
@@ -40,9 +40,9 @@ describe('config reducer', () => {
   });
 
   it('should update calendar when change calendar types', () => {
-    const config = configReducer(initialConfigState, updateCalendarType(CALENDAR.CHINA)).basic;
+    const config = configReducer(initialConfigState, updateCalendarType(Calendar.China)).basic;
 
-    expect(config.calendarType).toEqual(CALENDAR.CHINA);
+    expect(config.calendarType).toEqual(Calendar.China);
   });
 
   it('should update date range when change date', () => {

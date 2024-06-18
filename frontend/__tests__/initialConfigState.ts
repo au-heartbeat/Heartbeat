@@ -1,5 +1,5 @@
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { CALENDAR, SourceControlTypes } from '@src/constants/resources';
+import { Calendar, SourceControlTypes } from '@src/constants/resources';
 import { BasicConfigState } from '@src/context/config/configSlice';
 import { BOARD_TYPES, PIPELINE_TOOL_TYPES } from './fixtures';
 
@@ -7,7 +7,7 @@ const initialConfigState: BasicConfigState = {
   isProjectCreated: true,
   basic: {
     projectName: '',
-    calendarType: CALENDAR.REGULAR,
+    calendarType: Calendar.Regular,
     dateRange: [
       {
         startDate: null,

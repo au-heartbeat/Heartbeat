@@ -7,7 +7,7 @@ import {
 } from '../../fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { convertToNewFileConfig } from '@src/constants/fileConfig';
-import { CALENDAR } from '@src/constants/resources';
+import { Calendar } from '@src/constants/resources';
 
 describe('#fileConfig', () => {
   const BASIC_NEW_CONFIG = {
@@ -59,7 +59,7 @@ describe('#fileConfig', () => {
   it('should convert to new config when it is old config and considerHoliday is false', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: CALENDAR.REGULAR,
+      calendarType: Calendar.Regular,
     };
     expect(
       convertToNewFileConfig({
@@ -72,7 +72,7 @@ describe('#fileConfig', () => {
   it('should convert to new config when it is old config and considerHoliday is true', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: CALENDAR.CHINA,
+      calendarType: Calendar.China,
     };
     expect(
       convertToNewFileConfig({
@@ -88,7 +88,7 @@ describe('#fileConfig', () => {
         ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
         calendarType: OLD_REGULAR_CALENDAR_LABEL,
       }).calendarType,
-    ).toEqual(CALENDAR.REGULAR);
+    ).toEqual(Calendar.Regular);
   });
 
   it('should convert calendarType Calendar with Chinese Holiday to CHINA', () => {
@@ -97,13 +97,13 @@ describe('#fileConfig', () => {
         ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,
         calendarType: CHINA_CALENDAR,
       }).calendarType,
-    ).toEqual(CALENDAR.CHINA);
+    ).toEqual(Calendar.China);
   });
 
   it('should get default rework value when reworkState and excludeStates are all invalid', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: CALENDAR.CHINA,
+      calendarType: Calendar.China,
       reworkTimesSettings: { reworkState: null, excludeStates: [] },
     };
     expect(
@@ -118,7 +118,7 @@ describe('#fileConfig', () => {
   it('should filter invalid rework value when excludeStates field is invalid', () => {
     const expected = {
       ...BASIC_NEW_CONFIG,
-      calendarType: CALENDAR.CHINA,
+      calendarType: Calendar.China,
       reworkTimesSettings: { reworkState: 'In Dev', excludeStates: ['Review'] },
     };
     expect(
