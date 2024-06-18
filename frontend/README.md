@@ -81,13 +81,14 @@ test.cy.ts:
 
 ## Page Responsibility
 
-We need consider responsibility in our page. We consider three main breakpoints in out system, 390, 1280 and 1920.
-Our minimum page size is 390, so that if the screen size is smaller than 390, the page will scroll Horizontally.
-When the screen size is smaller than 1280, it shows the mobile view.
-When the screen size is 1280 or larger than 1280, it shows the desktop view.
-When the screen size is larger than 1920, the content size will no longer chang with the screen size, that means it will keep the same size with it in 1920.
+We need consider responsibility in our page. We consider three main breakpoints in out system, 390, 1280 and 1920. For the screen size,
 
-the breakpoints are set in theme.js file.
+- if < 390, the page size will keep 390 and scrolls horizontally;
+- if >= 390 and < 1280, it shows mobile view and the content size will change to fit viewport;
+- if >= 1280 and <= 1920, it shows desktop view, the content size is 70% of the viewport but has a minimum size 1240 and a maximum size 1344.
+- if > 1920, the content size will no longer change with the screen size, that means it will keep the same size with it in 1920. But the page header will still change to fit viewport.
+
+the breakpoints are set in `theme.js` file.
 
 ```
   breakpoints: {
