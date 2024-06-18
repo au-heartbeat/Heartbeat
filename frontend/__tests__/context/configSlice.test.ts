@@ -8,10 +8,11 @@ import configReducer, {
   updateProjectCreatedState,
   updateProjectName,
 } from '@src/context/config/configSlice';
-import { CHINA_CALENDAR, CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, REGULAR_CALENDAR, VELOCITY } from '../fixtures';
+import { CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, VELOCITY } from '../fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import initialConfigState from '../initialConfigState';
+import { Calendar } from '@src/constants/resources';
 
 const MockBasicState = {
   projectName: 'Test Project',
@@ -28,7 +29,7 @@ describe('config reducer', () => {
     const config = configReducer(undefined, { type: 'unknown' }).basic;
 
     expect(config.projectName).toEqual('');
-    expect(config.calendarType).toEqual(REGULAR_CALENDAR);
+    expect(config.calendarType).toEqual(Calendar.Regular);
     expect(config.dateRange).toEqual([{ startDate: null, endDate: null }]);
   });
 
@@ -39,9 +40,9 @@ describe('config reducer', () => {
   });
 
   it('should update calendar when change calendar types', () => {
-    const config = configReducer(initialConfigState, updateCalendarType(CHINA_CALENDAR)).basic;
+    const config = configReducer(initialConfigState, updateCalendarType(Calendar.China)).basic;
 
-    expect(config.calendarType).toEqual(CHINA_CALENDAR);
+    expect(config.calendarType).toEqual(Calendar.China);
   });
 
   it('should update date range when change date', () => {

@@ -1,4 +1,4 @@
-import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, SourceControlTypes } from '@src/constants/resources';
+import { Calendar, DATA_LOADING_FAILED, DEFAULT_MESSAGE, SourceControlTypes } from '@src/constants/resources';
 import { CSVReportRequestDTO, ReportRequestDTO } from '@src/clients/report/dto/request';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -12,9 +12,13 @@ export const PROJECT_DESCRIPTION =
 
 export const ZERO = 0;
 
-export const REGULAR_CALENDAR = 'Regular Calendar(Weekend Considered)';
+export const OLD_REGULAR_CALENDAR_LABEL = 'Regular Calendar(Weekend Considered)';
+
+export const REGULAR_CALENDAR = 'Regular Calendar';
 
 export const CHINA_CALENDAR = 'Calendar with Chinese Holiday';
+
+export const VIETNAM_CALENDAR = 'Calendar with Vietnam Holiday';
 
 export const NEXT = 'Next';
 
@@ -181,7 +185,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
   metrics: [],
   startTime: '1613664000000',
   endTime: '1614873600000',
-  considerHoliday: true,
+  calendarType: Calendar.China,
   timezone: 'Asia/Shanghai',
   buildKiteSetting: {
     token: 'mockToken',
@@ -292,7 +296,7 @@ export const MOCK_EXPORT_CSV_REQUEST_PARAMS: CSVReportRequestDTO = {
 
 export const MOCK_IMPORT_FILE = {
   projectName: 'Mock Project Name',
-  calendarType: CHINA_CALENDAR,
+  calendarType: Calendar.China,
   dateRange: {
     startDate: '2023-03-15T16:00:00.000Z',
     endDate: '2023-03-29T16:00:00.000Z',

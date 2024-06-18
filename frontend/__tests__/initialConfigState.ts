@@ -1,13 +1,13 @@
-import { BOARD_TYPES, PIPELINE_TOOL_TYPES, REGULAR_CALENDAR } from './fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
+import { Calendar, SourceControlTypes } from '@src/constants/resources';
 import { BasicConfigState } from '@src/context/config/configSlice';
-import { SourceControlTypes } from '@src/constants/resources';
+import { BOARD_TYPES, PIPELINE_TOOL_TYPES } from './fixtures';
 
 const initialConfigState: BasicConfigState = {
   isProjectCreated: true,
   basic: {
     projectName: '',
-    calendarType: REGULAR_CALENDAR,
+    calendarType: Calendar.Regular,
     dateRange: [
       {
         startDate: null,

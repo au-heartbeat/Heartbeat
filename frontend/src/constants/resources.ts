@@ -1,9 +1,20 @@
 import { AxiosError } from 'axios';
 
-export const CALENDAR = {
-  REGULAR: 'Regular Calendar(Weekend Considered)',
-  CHINA: 'Calendar with Chinese Holiday',
+export enum Calendar {
+  Regular = 'REGULAR',
+  China = 'CN',
+  Vietnam = 'VN',
+}
+
+export const CALENDAR_LABEL = {
+  [Calendar.Regular]: 'Regular Calendar',
+  [Calendar.China]: 'Calendar with Chinese Holiday',
+  [Calendar.Vietnam]: 'Calendar with Vietnam Holiday',
 };
+
+export const OLD_REGULAR_CALENDAR_LABEL = 'Regular Calendar(Weekend Considered)';
+
+export const CALENDAR_LIST = [Calendar.Regular, Calendar.China, Calendar.Vietnam];
 
 export const REPORT_PAGE_TYPE = {
   SUMMARY: 'Summary',

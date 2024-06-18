@@ -28,4 +28,16 @@ public class JsonFileReader {
 		return jsonMap;
 	}
 
+	public static <T> T readJsonFile(String filePath, Class<T> clazz) {
+		T data = null;
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			Gson gson = new Gson();
+			data = gson.fromJson(reader, clazz);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
 }

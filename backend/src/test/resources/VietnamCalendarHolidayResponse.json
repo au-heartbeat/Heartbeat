@@ -1,0 +1,163 @@
+{
+  "meta": {
+    "code": 200
+  },
+  "response": {
+    "holidays": [
+      {
+        "name": "International New Year's Day",
+        "description": "New Year’s Day is the first day of the year, or January 1, in the Gregorian calendar.",
+        "country": {
+          "id": "vn",
+          "name": "Vietnam"
+        },
+        "date": {
+          "iso": "2024-01-01",
+          "datetime": {
+            "year": 2024,
+            "month": 1,
+            "day": 1
+          }
+        },
+        "type": [
+          "National holiday"
+        ],
+        "primary_type": "National holiday",
+        "canonical_url": "https://calendarific.com/holiday/vietnam/new-year-day",
+        "urlid": "vietnam/new-year-day",
+        "locations": "All",
+        "states": "All"
+      },
+      {
+        "name": "March Equinox",
+        "description": "March Equinox in China (Beijing)",
+        "country": {
+          "id": "cn",
+          "name": "China"
+        },
+        "date": {
+          "iso": "2024-03-20T11:06:28+08:00",
+          "datetime": {
+            "year": 2024,
+            "month": 3,
+            "day": 20,
+            "hour": 11,
+            "minute": 6,
+            "second": 28
+          },
+          "timezone": {
+            "offset": "+08:00",
+            "zoneabb": "CST",
+            "zoneoffset": 28800,
+            "zonedst": 0,
+            "zonetotaloffset": 28800
+          }
+        },
+        "type": [
+          "Season"
+        ],
+        "primary_type": "Season",
+        "canonical_url": "https://calendarific.com/holiday/seasons/vernal-equinox",
+        "urlid": "seasons/vernal-equinox",
+        "locations": "All",
+        "states": "All"
+      },
+      {
+        "name": "Special Working Day",
+        "description": "Special Working Day is a working day on weekend in China",
+        "country": {
+          "id": "cn",
+          "name": "China"
+        },
+        "date": {
+          "iso": "2024-02-04",
+          "datetime": {
+            "year": 2024,
+            "month": 2,
+            "day": 4
+          }
+        },
+        "type": [
+          "Weekend"
+        ],
+        "primary_type": "Working day on weekend",
+        "canonical_url": "https://calendarific.com/holiday/china/spring-festival-moved-weekend-7",
+        "urlid": "china/spring-festival-moved-weekend-7",
+        "locations": "All",
+        "states": "All"
+      },
+      {
+        "name": "Children's Day",
+        "description": "Children's Day is a other observance in China",
+        "country": {
+          "id": "cn",
+          "name": "China"
+        },
+        "date": {
+          "iso": "2024-06-01",
+          "datetime": {
+            "year": 2024,
+            "month": 6,
+            "day": 1
+          }
+        },
+        "type": [
+          "Observance"
+        ],
+        "primary_type": "Other Observance",
+        "canonical_url": "https://calendarific.com/holiday/china/children-day",
+        "urlid": "china/children-day",
+        "locations": "All",
+        "states": "All"
+      },
+      {
+        "name": "Children's Day",
+        "description": "Children's Day is a other observance in China",
+        "country": {
+          "id": "cn",
+          "name": "China"
+        },
+        "date": {
+          "iso": "2024-07-01",
+          "datetime": {
+            "year": 2024,
+            "month": 7,
+            "day": 1
+          }
+        },
+        "type": [
+          "Religious"
+        ],
+        "primary_type": "Other Observance",
+        "canonical_url": "https://calendarific.com/holiday/china/children-day",
+        "urlid": "china/children-day",
+        "locations": "All",
+        "states": "All"
+      },
+      {
+        "name": "Children's Day",
+        "description": "Children's Day is a other observance in China",
+        "country": {
+          "id": "cn",
+          "name": "China"
+        },
+        "date": {
+          "iso": "2024-08-01",
+          "datetime": {
+            "year": 2024,
+            "month": 8,
+            "day": 1
+          }
+        },
+        "type": [
+          "Local"
+        ],
+        "primary_type": "Other Observance",
+        "canonical_url": "https://calendarific.com/holiday/china/children-day",
+        "urlid": "china/children-day",
+        "locations": "All",
+        "states": "All"
+      }
+    ]
+  }
+}

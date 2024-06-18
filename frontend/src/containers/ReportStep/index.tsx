@@ -42,7 +42,6 @@ import {
 } from '@src/containers/ReportStep/style';
 import {
   BOARD_METRICS,
-  CALENDAR,
   CHART_TAB_STYLE,
   DORA_METRICS,
   MESSAGE,
@@ -271,7 +270,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     startTime: null,
     endTime: null,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    considerHoliday: calendarType === CALENDAR.CHINA,
+    calendarType,
     csvTimeStamp,
     metrics,
     metricTypes: [

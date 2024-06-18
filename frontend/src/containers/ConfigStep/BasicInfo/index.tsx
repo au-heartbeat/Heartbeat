@@ -7,8 +7,8 @@ import { WarningNotification } from '@src/components/Common/WarningNotification'
 import { ConfigSectionContainer } from '@src/components/Common/ConfigForms';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
+import { CALENDAR_LABEL, CALENDAR_LIST } from '@src/constants/resources';
 import { Controller, useFormContext } from 'react-hook-form';
-import { CALENDAR } from '@src/constants/resources';
 import { Radio, RadioGroup } from '@mui/material';
 
 const BasicInfo = () => {
@@ -45,7 +45,7 @@ const BasicInfo = () => {
           )}
         />
 
-        <CollectionDateLabel>Collection Date</CollectionDateLabel>
+        <CollectionDateLabel>Collection Date(Weekend Considered)</CollectionDateLabel>
         <Controller
           name={'calendarType'}
           control={control}
@@ -58,8 +58,15 @@ const BasicInfo = () => {
                   dispatch(updateCalendarType(e.target.value));
                 }}
               >
-                <StyledFormControlLabel value={CALENDAR.REGULAR} control={<Radio />} label={CALENDAR.REGULAR} />
-                <StyledFormControlLabel value={CALENDAR.CHINA} control={<Radio />} label={CALENDAR.CHINA} />
+                {CALENDAR_LIST.map((calendarType) => (
+                  <StyledFormControlLabel
+                    key={calendarType}
+                    value={calendarType}
+                    control={<Radio />}
+                    name={CALENDAR_LABEL[calendarType]}
+                    label={CALENDAR_LABEL[calendarType]}
+                  />
+                ))}
               </RadioGroup>
             );
           }}

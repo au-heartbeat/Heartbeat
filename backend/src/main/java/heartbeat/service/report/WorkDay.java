@@ -1,10 +1,8 @@
 package heartbeat.service.report;
 
-import heartbeat.client.HolidayFeignClient;
-import heartbeat.client.dto.board.jira.HolidayDTO;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.service.report.model.WorkInfo;
 import heartbeat.config.DayType;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -22,32 +20,21 @@ import java.util.ArrayList;
 
 @Log4j2
 @Component
-@RequiredArgsConstructor
 public class WorkDay {
 
 	private static final long ONE_DAY = 1000L * 60 * 60 * 24;
 
-	private final HolidayFeignClient holidayFeignClient;
-
 	private Map<String, Boolean> holidayMap = new HashMap<>();
 
-	private void loadHolidayList(String year) {
-		log.info("Start to get chinese holiday by year: {}", year);
-		List<HolidayDTO> tempHolidayList = holidayFeignClient.getHolidays(year).getDays();
-		log.info("Successfully get holiday list:{}", tempHolidayList);
+	private final HolidayFactory holidayFactory;
 
-		for (HolidayDTO tempHoliday : tempHolidayList) {
-			holidayMap.put(tempHoliday.getDate(), tempHoliday.getIsOffDay());
-		}
+	public WorkDay(HolidayFactory holidayFactory) {
+		this.holidayFactory = holidayFactory;
 	}
 
-	public void changeConsiderHolidayMode(boolean considerHoliday) {
-		if (!considerHoliday) {
-			holidayMap = new HashMap<>();
-		}
-		else if (holidayMap.size() == 0) {
-			loadHolidayList(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
-		}
+	public void selectCalendarType(CalendarTypeEnum calendarType) {
+		AbstractCountryHoliday holiday = holidayFactory.build(calendarType);
+		holidayMap = holiday.loadHolidayList(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
 	}
 
 	public boolean verifyIfThisDayHoliday(LocalDate localDate) {

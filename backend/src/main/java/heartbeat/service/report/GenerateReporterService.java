@@ -90,14 +90,14 @@ public class GenerateReporterService {
 		String boardReportId = request.getBoardReportFileId();
 		removePreviousAsyncException(boardReportId);
 		log.info(
-				"Start to generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
-				request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
+				"Start to generate board report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
+				request.getMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(),
 				boardReportId);
 		try {
 			saveReporterInHandler(generateBoardReporter(request), boardReportId);
 			log.info(
-					"Successfully generate board report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
-					request.getMetrics(), request.getConsiderHoliday(), request.getStartTime(), request.getEndTime(),
+					"Successfully generate board report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _boardReportId: {}",
+					request.getMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(),
 					boardReportId);
 		}
 		catch (BaseException e) {
@@ -132,15 +132,15 @@ public class GenerateReporterService {
 	private void generatePipelineReport(GenerateReportRequest request, FetchedData fetchedData) {
 		String pipelineReportId = request.getPipelineReportFileId();
 		log.info(
-				"Start to generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
-				request.getPipelineMetrics(), request.getConsiderHoliday(), request.getStartTime(),
-				request.getEndTime(), pipelineReportId);
+				"Start to generate pipeline report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
+				request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(),
+				pipelineReportId);
 		try {
 			fetchBuildKiteData(request, fetchedData);
 			saveReporterInHandler(generatePipelineReporter(request, fetchedData), pipelineReportId);
 			log.info(
-					"Successfully generate pipeline report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
-					request.getPipelineMetrics(), request.getConsiderHoliday(), request.getStartTime(),
+					"Successfully generate pipeline report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _pipelineReportId: {}",
+					request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(),
 					request.getEndTime(), pipelineReportId);
 		}
 		catch (BaseException e) {
@@ -154,15 +154,15 @@ public class GenerateReporterService {
 	private void generateSourceControlReport(GenerateReportRequest request, FetchedData fetchedData) {
 		String sourceControlReportId = request.getSourceControlReportFileId();
 		log.info(
-				"Start to generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
-				request.getSourceControlMetrics(), request.getConsiderHoliday(), request.getStartTime(),
+				"Start to generate source control report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
+				request.getSourceControlMetrics(), request.getCalendarType(), request.getStartTime(),
 				request.getEndTime(), sourceControlReportId);
 		try {
 			fetchGitHubData(request, fetchedData);
 			saveReporterInHandler(generateSourceControlReporter(request, fetchedData), sourceControlReportId);
 			log.info(
-					"Successfully generate source control report, _metrics: {}, _considerHoliday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
-					request.getSourceControlMetrics(), request.getConsiderHoliday(), request.getStartTime(),
+					"Successfully generate source control report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _sourceControlReportId: {}",
+					request.getSourceControlMetrics(), request.getCalendarType(), request.getStartTime(),
 					request.getEndTime(), sourceControlReportId);
 		}
 		catch (BaseException e) {
@@ -179,7 +179,7 @@ public class GenerateReporterService {
 
 	private synchronized ReportResponse generatePipelineReporter(GenerateReportRequest request,
 			FetchedData fetchedData) {
-		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
+		workDay.selectCalendarType(request.getCalendarType());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
@@ -202,7 +202,7 @@ public class GenerateReporterService {
 	}
 
 	private synchronized ReportResponse generateBoardReporter(GenerateReportRequest request) {
-		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
+		workDay.selectCalendarType(request.getCalendarType());
 		FetchedData fetchedData = fetchJiraBoardData(request, new FetchedData());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
@@ -260,7 +260,7 @@ public class GenerateReporterService {
 
 	private synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request,
 			FetchedData fetchedData) {
-		workDay.changeConsiderHolidayMode(request.getConsiderHoliday());
+		workDay.selectCalendarType(request.getCalendarType());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
