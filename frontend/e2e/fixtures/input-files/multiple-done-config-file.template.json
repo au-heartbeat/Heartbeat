@@ -1,22 +1,21 @@
 {
-  "projectName": "Heartbeat Metrics",
+  "projectName": "Import project from file with all ranges API succeed",
   "dateRange": [
     {
-      "startDate": "2024-01-15T00:00:00.000+08:00",
-      "endDate": "2024-01-16T23:59:59.999+08:00"
+      "startDate": "2024-06-03T00:00:00.000+08:00",
+      "endDate": "2024-06-04T23:59:59.999+08:00"
     },
     {
-      "startDate": "2024-01-17T00:00:00.000+08:00",
-      "endDate": "2024-01-18T23:59:59.999+08:00"
+      "startDate": "2024-06-05T00:00:00.000+08:00",
+      "endDate": "2024-06-06T23:59:59.999+08:00"
     },
     {
-      "startDate": "2024-01-19T00:00:00.000+08:00",
-      "endDate": "2024-01-19T23:59:59.999+08:00"
+      "startDate": "2024-06-07T00:00:00.000+08:00",
+      "endDate": "2024-06-07T23:59:59.999+08:00"
     }
   ],
   "calendarType": "Calendar with Chinese Holiday",
   "metrics": [
-    "All",
     "Velocity",
     "Cycle time",
     "Classification",
@@ -26,11 +25,11 @@
     "Dev change failure rate",
     "Dev mean time to recovery"
   ],
+  "sortType": "ASCENDING",
   "board": {
     "type": "Jira",
     "boardId": "2",
     "email": "heartbeatuser2023@gmail.com",
-    "projectKey": "ADM",
     "site": "dorametrics",
     "token": "<E2E_TOKEN_JIRA>"
   },
@@ -43,16 +42,20 @@
     "token": "<E2E_TOKEN_GITHUB>"
   },
   "crews": [
+    "Man Tang",
     "heartbeat user",
-    "Weiran Sun",
-    "Yufan Wang",
+    "Qiuhong Lei",
     "Chao Wang",
-    "Xinyi Wang",
-    "Xuebing Li",
-    "Junbo Dai",
-    "Yunsong Yang"
+    "YinYuan Zhou"
   ],
   "assigneeFilter": "lastAssignee",
+  "pipelineCrews": [
+    "Mandy-Tang",
+    "guzhongren",
+    "zhou-yinyuan",
+    "Unknown",
+    "davidwangcn9"
+  ],
   "cycleTime": {
     "type": "byColumn",
     "jiraColumns": [
@@ -78,13 +81,14 @@
         "Done": "Done"
       }
     ],
-    "treatFlagCardAsBlock": true
+    "treatFlagCardAsBlock": false
   },
-  "doneStatus": ["DONE"],
   "classification": [
     "issuetype",
     "parent",
     "customfield_10061",
+    "customfield_10062",
+    "customfield_10063",
     "customfield_10020",
     "project",
     "customfield_10021",
@@ -99,13 +103,17 @@
     "customfield_10027",
     "customfield_10060"
   ],
+  "advancedSettings": null,
   "deployment": [
     {
       "id": 0,
-      "organization": "Thoughtworks-Heartbeat",
+      "isStepEmptyString": false,
+      "organization": "Heartbeat-backup",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
-      "branches": ["main"]
+      "branches": [
+        "main"
+      ]
     }
   ],
   "reworkTimesSettings": {

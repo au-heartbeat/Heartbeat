@@ -33,7 +33,7 @@ import_file_name='./e2e/fixtures/input-files/pipeline-no-org-config-file.json'
 echo "Start to generate ${import_file_name}"
 cat ./e2e/fixtures/input-files/pipeline-no-org-config-file.template.json > "${import_file_name}"
 sed -i -e "s/<E2E_TOKEN_JIRA>/${E2E_TOKEN_JIRA}/g" "${import_file_name}"
-sed -i -e "s/<E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE>/${E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE}/g" "${import_file_name}"
+#sed -i -e "s/<E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE>/${E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE}/g" "${import_file_name}"
 sed -i -e "s/<E2E_TOKEN_GITHUB>/${E2E_TOKEN_GITHUB}/g" "${import_file_name}"
 echo "Successfully generate ${import_file_name}"
 
