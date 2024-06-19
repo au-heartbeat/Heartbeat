@@ -16,7 +16,6 @@ import java.util.Map;
 @Slf4j
 public class VietnamHoliday extends AbstractCountryHoliday {
 
-
 	private final CalendarificFeignClient calendarificFeignClient;
 
 	@Autowired
