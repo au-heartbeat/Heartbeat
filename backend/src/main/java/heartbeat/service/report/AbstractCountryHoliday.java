@@ -17,7 +17,7 @@ public abstract class AbstractCountryHoliday {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	abstract public Map<String, Boolean> loadHolidayList(String year);
+	public abstract Map<String, Boolean> loadHolidayList(String year);
 
 	protected <T> T decoder(String value, CalendarTypeEnum calendarTypeEnum, String year, Class<T> clazz) {
 		try {

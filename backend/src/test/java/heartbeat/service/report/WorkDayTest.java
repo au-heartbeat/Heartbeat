@@ -1,6 +1,5 @@
 package heartbeat.service.report;
 
-import heartbeat.client.HolidayFeignClient;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.service.report.model.WorkInfo;
 import org.junit.jupiter.api.Assertions;

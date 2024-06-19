@@ -38,7 +38,7 @@ class ChinaHolidayTest {
 
 		Map<String, Boolean> result = chinaHoliday.loadHolidayList(year);
 
-		assertEquals(result.size(), 2);
+		assertEquals(2, result.size());
 		assertTrue(result.get("2024-01-01"));
 		assertFalse(result.get("2024-02-04"));
 		verify(holidayFeignClient).getHolidays(year);

@@ -54,7 +54,7 @@ class VietnamHolidayTest {
 
 		Map<String, Boolean> result = vietnamHoliday.loadHolidayList(year);
 
-		assertEquals(result.size(), 6);
+		assertEquals(6, result.size());
 		for (String key : result.keySet()) {
 			if (Objects.equals(key, "2024-01-01")) {
 				assertTrue(result.get(key));

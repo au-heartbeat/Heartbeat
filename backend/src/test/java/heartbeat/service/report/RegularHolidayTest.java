@@ -19,11 +19,11 @@ class RegularHolidayTest {
 	public RegularHoliday regularHoliday;
 
 	@Test
-	public void loadHolidayListSuccess() {
+	void loadHolidayListSuccess() {
 		String year = "2024";
 		Map<String, Boolean> result = regularHoliday.loadHolidayList(year);
 
-		assertEquals(result.size(), 0);
+		assertEquals(0, result.size());
 	}
 
 }

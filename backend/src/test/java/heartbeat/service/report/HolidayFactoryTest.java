@@ -28,21 +28,21 @@ class HolidayFactoryTest {
 	private HolidayFactory holidayFactory;
 
 	@Test
-	public void shouldReturnRegularHolidayWhenSendRegular() {
+	void shouldReturnRegularHolidayWhenSendRegular() {
 		CalendarTypeEnum calendarType = CalendarTypeEnum.REGULAR;
 		AbstractCountryHoliday holiday = holidayFactory.build(calendarType);
 		assertTrue(holiday instanceof RegularHoliday);
 	}
 
 	@Test
-	public void shouldReturnChinaHolidayWhenSendChina() {
+	void shouldReturnChinaHolidayWhenSendChina() {
 		CalendarTypeEnum calendarType = CalendarTypeEnum.CN;
 		AbstractCountryHoliday holiday = holidayFactory.build(calendarType);
 		assertTrue(holiday instanceof ChinaHoliday);
 	}
 
 	@Test
-	public void shouldReturnVietnamHolidayWhenSendVietnam() {
+	void shouldReturnVietnamHolidayWhenSendVietnam() {
 		CalendarTypeEnum calendarType = CalendarTypeEnum.VN;
 		AbstractCountryHoliday holiday = holidayFactory.build(calendarType);
 		assertTrue(holiday instanceof VietnamHoliday);
