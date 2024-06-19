@@ -7,7 +7,7 @@ test.beforeAll(async () => {
   await clearTempDir();
 });
 
-test('Charting unhappy path on config and metri page', async ({ homePage, configStep, metricsStep }) => {
+test('Charting unhappy path on config and metric page', async ({ homePage, configStep, metricsStep }) => {
   const rightDateRange_frist = {
     startDate: format(chartStepData.rightDateRange[0].startDate),
     endDate: format(chartStepData.rightDateRange[0].endDate),

@@ -172,10 +172,10 @@ export class ReportStep {
     this.cycleTimeTrendContainer = this.page.getByLabel('cycle time trend container');
     this.cycleTimeAllocationTrendContainer = this.page.getByLabel('cycle time allocation trend container');
     this.reworkTrendContainer = this.page.getByLabel('rework trend container');
-    this.velocityTrendIcon = this.velocityTrendContainer.getByLabel('trend up');
-    this.cycleTimeTrendIcon = this.cycleTimeTrendContainer.getByLabel('trend up');
-    this.cycleTimeAllocationTrendIcon = this.cycleTimeAllocationTrendContainer.getByLabel('trend up');
-    this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend up');
+    this.velocityTrendIcon = this.velocityTrendContainer.getByLabel('trend down');
+    this.cycleTimeTrendIcon = this.cycleTimeTrendContainer.getByLabel('trend down');
+    this.cycleTimeAllocationTrendIcon = this.cycleTimeAllocationTrendContainer.getByLabel('trend down');
+    this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend down');
 
     this.leadTimeForChangesTrendContainer = this.page.getByLabel('lead time for changes trend container');
     this.deploymentFrequencyTrendContainer = this.page.getByLabel('deployment frequency trend container');
@@ -753,12 +753,16 @@ export class ReportStep {
     showLeadTimeForChangeChart,
     showDeploymentFrequencyChart,
     showDevChangeFailureRateTrendContainer,
+    showDevChangeFailureRateChart,
+    showDevMeanTimeToRecoveryChart,
     showDevMeanTimeToRecoveryTrendContainer,
   }: {
     showLeadTimeForChangeChart: boolean;
     showDeploymentFrequencyChart: boolean;
     showDevChangeFailureRateTrendContainer: boolean;
+    showDevChangeFailureRateChart: boolean;
     showDevMeanTimeToRecoveryTrendContainer: boolean;
+    showDevMeanTimeToRecoveryChart: boolean;
   }) {
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
@@ -806,34 +810,44 @@ export class ReportStep {
       await expect(this.deploymentFrequencyTrendIcon).not.toBeVisible();
     }
 
-    if (showDevChangeFailureRateTrendContainer) {
+    if (showDevChangeFailureRateChart) {
       await expect(this.changeFailureRateChart).toBeVisible();
-      await expect(this.devChangeFailureRateTrendContainer).toBeVisible();
-      await expect(this.devChangeFailureRateTrendContainer).toHaveAttribute(
-        'color',
-        DORA_CHART_VALUE['Dev Change Failure Rate'].color,
-      );
-      await expect(this.devChangeFailureRateTrendIcon).toBeVisible();
-      await expect(this.devChangeFailureRateTrendContainer).toContainText(
-        DORA_CHART_VALUE['Dev Change Failure Rate'].value,
-      );
+      if (showDevChangeFailureRateTrendContainer) {
+        await expect(this.devChangeFailureRateTrendContainer).toBeVisible();
+        await expect(this.devChangeFailureRateTrendContainer).toHaveAttribute(
+          'color',
+          DORA_CHART_VALUE['Dev Change Failure Rate'].color,
+        );
+        await expect(this.devChangeFailureRateTrendIcon).toBeVisible();
+        await expect(this.devChangeFailureRateTrendContainer).toContainText(
+          DORA_CHART_VALUE['Dev Change Failure Rate'].value,
+        );
+      } else {
+        await expect(this.devChangeFailureRateTrendContainer).not.toBeVisible();
+        await expect(this.devChangeFailureRateTrendIcon).not.toBeVisible();
+      }
     } else {
       await expect(this.changeFailureRateChart).not.toBeVisible();
       await expect(this.devChangeFailureRateTrendContainer).not.toBeVisible();
       await expect(this.devChangeFailureRateTrendIcon).not.toBeVisible();
     }
 
-    if (showDevMeanTimeToRecoveryTrendContainer) {
+    if (showDevMeanTimeToRecoveryChart) {
       await expect(this.meanTimeToRecoveryChart).toBeVisible();
-      await expect(this.devMeanTimeToRecoveryTrendContainer).toBeVisible();
-      await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveAttribute(
-        'color',
-        DORA_CHART_VALUE['Dev Mean Time To Recovery'].color,
-      );
-      await expect(this.devMeanTimeToRecoveryTrendIcon).toBeVisible();
-      await expect(this.devMeanTimeToRecoveryTrendContainer).toContainText(
-        DORA_CHART_VALUE['Dev Mean Time To Recovery'].value,
-      );
+      if (showDevMeanTimeToRecoveryTrendContainer) {
+        await expect(this.devMeanTimeToRecoveryTrendContainer).toBeVisible();
+        await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveAttribute(
+          'color',
+          DORA_CHART_VALUE['Dev Mean Time To Recovery'].color,
+        );
+        await expect(this.devMeanTimeToRecoveryTrendIcon).toBeVisible();
+        await expect(this.devMeanTimeToRecoveryTrendContainer).toContainText(
+          DORA_CHART_VALUE['Dev Mean Time To Recovery'].value,
+        );
+      } else {
+        await expect(this.devMeanTimeToRecoveryTrendContainer).not.toBeVisible();
+        await expect(this.devMeanTimeToRecoveryTrendIcon).not.toBeVisible();
+      }
     } else {
       await expect(this.meanTimeToRecoveryChart).not.toBeVisible();
       await expect(this.devMeanTimeToRecoveryTrendContainer).not.toBeVisible();

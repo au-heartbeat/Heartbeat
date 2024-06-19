@@ -35,14 +35,14 @@ export interface IBoardClassificationDetailItem {
 export interface ICsvComparedLines extends Record<string, number> {}
 
 export const BOARD_METRICS_RESULT: IBoardMetricsResult = {
-  velocity: '17',
-  throughput: '9',
-  averageCycleTimeForSP: '4.86',
-  averageCycleTimeForCard: '9.18',
-  totalReworkTimes: '11',
-  totalReworkCards: '6',
-  reworkCardsRatio: '0.6667',
-  reworkThroughput: '9',
+  velocity: '7.5',
+  throughput: '5',
+  averageCycleTimeForSP: '4.49',
+  averageCycleTimeForCard: '6.73',
+  totalReworkTimes: '2',
+  totalReworkCards: '2',
+  reworkCardsRatio: '0.4000',
+  reworkThroughput: '5',
 };
 
 export const BOARD_METRICS_RESULT_MULTIPLE_RANGES: IBoardMetricsResult[] = [
@@ -566,12 +566,12 @@ export const FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT: IBoardMetricsResult = {
 };
 
 export const DORA_METRICS_RESULT = {
-  PrLeadTime: '3.21',
-  PipelineLeadTime: '0.50',
-  TotalLeadTime: '3.71',
-  DeploymentFrequency: '6.60',
-  FailureRate: '17.50% (7/40)',
-  DevMeanTimeToRecovery: '1.90',
+  PrLeadTime: '0.00',
+  PipelineLeadTime: '22.72',
+  TotalLeadTime: '22.72',
+  DeploymentFrequency: '0.20',
+  FailureRate: '0.00% (0/1)',
+  DevMeanTimeToRecovery: '0.00',
 };
 
 export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
@@ -580,7 +580,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     pipelineLeadTime: '0.00',
     totalLeadTime: '0.00',
     deploymentFrequency: '0.00',
-    failureRate: '0.00%(0/0)',
+    failureRate: '0.00% (0/0)',
     devMeanTimeToRecovery: '0.00',
   },
   {
@@ -588,7 +588,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     pipelineLeadTime: '0.36',
     totalLeadTime: '2.22',
     deploymentFrequency: '0.50',
-    failureRate: '0.00%(0/1)',
+    failureRate: '0.00% (0/1)',
     devMeanTimeToRecovery: '0.00',
   },
   {
@@ -596,27 +596,27 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     pipelineLeadTime: '0.59',
     totalLeadTime: '11.38',
     deploymentFrequency: '2.00',
-    failureRate: '0.00%(0/4)',
+    failureRate: '0.00% (0/4)',
     devMeanTimeToRecovery: '0.00',
   },
 ];
 
 export const BOARD_METRICS_WITH_HOLIDAY_RESULT = {
-  Velocity: '22',
-  Throughput: '13',
-  AverageCycleTime4SP: '3.57',
-  AverageCycleTime4Card: '6.03',
-  totalReworkTimes: '9',
-  totalReworkCards: '6',
-  reworkCardsRatio: '0.4615',
-  throughput: '13',
+  Velocity: '1',
+  Throughput: '1',
+  AverageCycleTime4SP: '0.98',
+  AverageCycleTime4Card: '0.98',
+  totalReworkTimes: '0',
+  totalReworkCards: '0',
+  reworkCardsRatio: '0.0000',
+  throughput: '1',
 };
 
 export const DORA_METRICS_WITH_HOLIDAY_RESULT = {
-  PrLeadTime: '13.57',
-  PipelineLeadTime: '0.44',
-  TotalLeadTime: '14.01',
-  DeploymentFrequency: '2.10',
-  FailureRate: '10.20% (5/49)',
-  DevMeanTimeToRecovery: '6.88',
+  PrLeadTime: '45.48',
+  PipelineLeadTime: '0.83',
+  TotalLeadTime: '46.31',
+  DeploymentFrequency: '1.00',
+  FailureRate: '16.67% (1/6)',
+  DevMeanTimeToRecovery: '0.78',
 };

@@ -1,8 +1,8 @@
 {
   "projectName": "Heartbeat Metrics",
   "dateRange": {
-    "startDate": "2024-01-15T00:00:00.000+08:00",
-    "endDate": "2024-01-19T23:59:59.999+08:00"
+    "startDate": "2024-06-03T00:00:00.000+08:00",
+    "endDate": "2024-06-07T23:59:59.999+08:00"
   },
   "calendarType": "Calendar with Chinese Holiday",
   "metrics": [
@@ -33,14 +33,11 @@
     "token": "<E2E_TOKEN_GITHUB>"
   },
   "crews": [
+    "Man Tang",
     "heartbeat user",
-    "Weiran Sun",
-    "Yufan Wang",
+    "Qiuhong Lei",
     "Chao Wang",
-    "Xinyi Wang",
-    "Xuebing Li",
-    "Junbo Dai",
-    "Yunsong Yang"
+    "YinYuan Zhou"
   ],
   "assigneeFilter": "lastAssignee",
   "cycleTime": {
@@ -75,6 +72,8 @@
     "issuetype",
     "parent",
     "customfield_10061",
+    "customfield_10062",
+    "customfield_10063",
     "customfield_10020",
     "project",
     "customfield_10021",
@@ -92,10 +91,13 @@
   "deployment": [
     {
       "id": 0,
-      "organization": "Thoughtworks-Heartbeat",
+      "isStepEmptyString": false,
+      "organization": "Heartbeat-backup",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
-      "branches": ["main"]
+      "branches": [
+        "main"
+      ]
     }
   ],
   "reworkTimesSettings": {
