@@ -17,7 +17,7 @@ public abstract class AbstractCountryHoliday {
 	private final ObjectMapper objectMapper;
 
 	@Autowired
-	public AbstractCountryHoliday(ObjectMapper objectMapper) {
+	protected AbstractCountryHoliday(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
 
