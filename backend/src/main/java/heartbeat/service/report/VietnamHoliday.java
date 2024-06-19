@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.client.CalendarificFeignClient;
 import heartbeat.client.dto.board.jira.CalendarificHolidayResponseDTO;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
@@ -15,8 +16,14 @@ import java.util.Map;
 @Slf4j
 public class VietnamHoliday extends AbstractCountryHoliday {
 
+
+	private final CalendarificFeignClient calendarificFeignClient;
+
 	@Autowired
-	private CalendarificFeignClient calendarificFeignClient;
+	public VietnamHoliday(ObjectMapper objectMapper, CalendarificFeignClient calendarificFeignClient) {
+		super(objectMapper);
+		this.calendarificFeignClient = calendarificFeignClient;
+	}
 
 	public Map<String, Boolean> loadHolidayList(String year) {
 		Map<String, Boolean> holidayMap = new HashMap<>();

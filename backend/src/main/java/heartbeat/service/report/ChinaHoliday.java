@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.client.HolidayFeignClient;
 import heartbeat.client.dto.board.jira.HolidayDTO;
 import lombok.extern.log4j.Log4j2;
@@ -14,8 +15,13 @@ import java.util.Map;
 @Component
 public class ChinaHoliday extends AbstractCountryHoliday {
 
+	private final HolidayFeignClient holidayFeignClient;
+
 	@Autowired
-	private HolidayFeignClient holidayFeignClient;
+	public ChinaHoliday(ObjectMapper objectMapper, HolidayFeignClient holidayFeignClient) {
+		super(objectMapper);
+		this.holidayFeignClient = holidayFeignClient;
+	}
 
 	@Override
 	public Map<String, Boolean> loadHolidayList(String year) {

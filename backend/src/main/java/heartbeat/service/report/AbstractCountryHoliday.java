@@ -14,8 +14,12 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractCountryHoliday {
 
+	private final ObjectMapper objectMapper;
+
 	@Autowired
-	private ObjectMapper objectMapper;
+	public AbstractCountryHoliday(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
 
 	public abstract Map<String, Boolean> loadHolidayList(String year);
 
