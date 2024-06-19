@@ -532,7 +532,6 @@ export class ReportStep {
     for (let i = 0; i < downloads.length; i++) {
       const download = downloads[i];
       const fileName = download.suggestedFilename().split('-').slice(0, 3).join('-');
-      console.log(fileName);
       const savePath = path.resolve(__dirname, '../../temp', `./${fileName}.csv`);
       await download.saveAs(savePath);
       const downloadPath = await download.path();
