@@ -86,9 +86,7 @@
       "organization": "Heartbeat-backup",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
-      "branches": [
-        "main"
-      ]
+      "branches": ["main"]
     }
   ],
   "reworkTimesSettings": {

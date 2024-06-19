@@ -47,7 +47,7 @@ export const checkDownloadReport = async (page: Page, downloadButton: Locator, s
 
 export const checkDownloadWithHolidayReport = async (page: Page, downloadButton: Locator, savedFileName: string) => {
   await downloadFileAndCheck(page, downloadButton, savedFileName, async (fileDataString) => {
-    console.log(savedFileName)
+    console.log(savedFileName);
     expect(fileDataString.length).toBeGreaterThan(0);
     let localCsvFile = fs.readFileSync(path.resolve(__dirname, '../fixtures/import-file/metric-with-holiday-data.csv'));
     switch (savedFileName) {

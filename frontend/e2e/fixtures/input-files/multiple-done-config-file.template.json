@@ -41,21 +41,9 @@
     "type": "GitHub",
     "token": "<E2E_TOKEN_GITHUB>"
   },
-  "crews": [
-    "Man Tang",
-    "heartbeat user",
-    "Qiuhong Lei",
-    "Chao Wang",
-    "YinYuan Zhou"
-  ],
+  "crews": ["Man Tang", "heartbeat user", "Qiuhong Lei", "Chao Wang", "YinYuan Zhou"],
   "assigneeFilter": "lastAssignee",
-  "pipelineCrews": [
-    "Mandy-Tang",
-    "guzhongren",
-    "zhou-yinyuan",
-    "Unknown",
-    "davidwangcn9"
-  ],
+  "pipelineCrews": ["Mandy-Tang", "guzhongren", "zhou-yinyuan", "Unknown", "davidwangcn9"],
   "cycleTime": {
     "type": "byColumn",
     "jiraColumns": [
@@ -111,9 +99,7 @@
       "organization": "Heartbeat-backup",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
-      "branches": [
-        "main"
-      ]
+      "branches": ["main"]
     }
   ],
   "reworkTimesSettings": {
