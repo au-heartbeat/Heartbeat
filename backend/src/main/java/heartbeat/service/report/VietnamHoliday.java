@@ -37,7 +37,7 @@ public class VietnamHoliday extends AbstractCountryHoliday {
 
 		holidays.forEach(holiday -> {
 			String date = holiday.getDate().getIso();
-			if(holiday.getType().contains("National holiday")) {
+			if (holiday.getType().contains("National holiday")) {
 				holidayMap.put(date, true);
 			}
 		});
