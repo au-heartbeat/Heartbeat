@@ -1,4 +1,4 @@
-import { FormControlLabel, TextField } from '@mui/material';
+import { FormControlLabel, FormLabel, TextField } from '@mui/material';
 import { css, styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
 
@@ -16,10 +16,11 @@ export const StyledFormControlLabel = styled(FormControlLabel)`
   `}
 `;
 
-export const CollectionDateLabel = styled('div')({
+export const CollectionDateLabel = styled(FormLabel)({
   width: '100%',
   color: theme.palette.secondary.contrastText,
-  fontSize: '0.8rem',
+  fontSize: '0.75rem',
   lineHeight: '2em',
   boxSizing: 'border-box',
+  marginTop: '1rem',
 });

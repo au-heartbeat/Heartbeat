@@ -8,8 +8,8 @@ import { ConfigSectionContainer } from '@src/components/Common/ConfigForms';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { ConfigSelectionTitle } from '@src/containers/MetricsStep/style';
 import { CALENDAR_LABEL, CALENDAR_LIST } from '@src/constants/resources';
+import { FormControl, Radio, RadioGroup } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Radio, RadioGroup } from '@mui/material';
 
 const BasicInfo = () => {
   const dispatch = useAppDispatch();
@@ -45,32 +45,34 @@ const BasicInfo = () => {
           )}
         />
 
-        <CollectionDateLabel>Collection Date(Weekend Considered)</CollectionDateLabel>
-        <Controller
-          name={'calendarType'}
-          control={control}
-          render={({ field }) => {
-            return (
-              <RadioGroup
-                {...field}
-                onChange={(e) => {
-                  field.onChange(e.target.value);
-                  dispatch(updateCalendarType(e.target.value));
-                }}
-              >
-                {CALENDAR_LIST.map((calendarType) => (
-                  <StyledFormControlLabel
-                    key={calendarType}
-                    value={calendarType}
-                    control={<Radio />}
-                    name={CALENDAR_LABEL[calendarType]}
-                    label={CALENDAR_LABEL[calendarType]}
-                  />
-                ))}
-              </RadioGroup>
-            );
-          }}
-        />
+        <FormControl required>
+          <CollectionDateLabel>Collection Date (Weekend Considered)</CollectionDateLabel>
+          <Controller
+            name={'calendarType'}
+            control={control}
+            render={({ field }) => {
+              return (
+                <RadioGroup
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    dispatch(updateCalendarType(e.target.value));
+                  }}
+                >
+                  {CALENDAR_LIST.map((calendarType) => (
+                    <StyledFormControlLabel
+                      key={calendarType}
+                      value={calendarType}
+                      control={<Radio />}
+                      name={CALENDAR_LABEL[calendarType]}
+                      label={CALENDAR_LABEL[calendarType]}
+                    />
+                  ))}
+                </RadioGroup>
+              );
+            }}
+          />
+        </FormControl>
         <DateRangePickerSection />
         <RequiredMetrics />
       </ConfigSectionContainer>
