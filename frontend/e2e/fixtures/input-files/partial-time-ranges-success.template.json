@@ -2,12 +2,12 @@
   "projectName": "Heartbeat Metrics",
   "dateRange": [
     {
-      "startDate": "2024-01-15T00:00:00.000+08:00",
-      "endDate": "2024-01-16T23:59:59.999+08:00"
+      "startDate": "2024-06-03T00:00:00.000+08:00",
+      "endDate": "2024-06-04T23:59:59.999+08:00"
     },
     {
-      "startDate": "2024-01-17T00:00:00.000+08:00",
-      "endDate": "2024-01-18T23:59:59.999+08:00"
+      "startDate": "2024-06-05T00:00:00.000+08:00",
+      "endDate": "2024-06-06T23:59:59.999+08:00"
     },
     {
       "startDate": "2013-01-01T00:00:00.000+08:00",
@@ -42,7 +42,7 @@
     "type": "GitHub",
     "token": "<E2E_TOKEN_GITHUB>"
   },
-  "crews": ["heartbeat user", "Weiran Sun", "Yufan Wang", "Xinyi Wang", "Xuebing Li", "Junbo Dai", "Yunsong Yang"],
+  "crews": ["Man Tang", "heartbeat user", "Qiuhong Lei", "Chao Wang", "YinYuan Zhou"],
   "assigneeFilter": "lastAssignee",
   "cycleTime": {
     "type": "byColumn",
@@ -76,6 +76,8 @@
     "issuetype",
     "parent",
     "customfield_10061",
+    "customfield_10062",
+    "customfield_10063",
     "customfield_10020",
     "project",
     "customfield_10021",
@@ -93,7 +95,8 @@
   "deployment": [
     {
       "id": 0,
-      "organization": "Thoughtworks-Heartbeat",
+      "isStepEmptyString": false,
+      "organization": "Heartbeat-backup",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
       "branches": ["main"]

@@ -1,8 +1,8 @@
 {
   "projectName": "Heartbeat Metrics",
   "dateRange": {
-    "startDate": "2024-02-12T00:00:00.000+08:00",
-    "endDate": "2024-02-16T23:59:59.999+08:00"
+    "startDate": "2024-06-03T00:00:00.000+08:00",
+    "endDate": "2024-06-07T23:59:59.999+08:00"
   },
   "calendarType": "Calendar with Chinese Holiday",
   "metrics": [
@@ -82,7 +82,8 @@
   "deployment": [
     {
       "id": 0,
-      "organization": "Thoughtworks-Heartbeat",
+      "isStepEmptyString": false,
+      "organization": "Heartbeat-backup",
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
       "branches": ["main"]
