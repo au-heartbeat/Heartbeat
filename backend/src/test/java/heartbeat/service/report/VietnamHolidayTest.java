@@ -54,15 +54,7 @@ class VietnamHolidayTest {
 
 		Map<String, Boolean> result = vietnamHoliday.loadHolidayList(year);
 
-		assertEquals(6, result.size());
-		for (String key : result.keySet()) {
-			if (Objects.equals(key, "2024-01-01")) {
-				assertTrue(result.get(key));
-			}
-			else {
-				assertFalse(result.get(key));
-			}
-		}
+		assertEquals(Map.of("2024-01-01", true), result);
 		verify(calendarificFeignClient).getHolidays(country.getValue().toLowerCase(), year);
 		verify(objectMapper).readValue(eq(calendarificHolidayResponseDTOString), any(Class.class));
 	}
