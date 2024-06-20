@@ -15,7 +15,7 @@ export const config = {
     },
   ],
   sortType: 'DEFAULT',
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: [
     'Velocity',
     'Cycle time',
@@ -60,7 +60,7 @@ export const configWithoutBlockColumn = {
     },
   ],
   sortType: 'DEFAULT',
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: ['Cycle time'],
   board: {
     type: 'Jira',

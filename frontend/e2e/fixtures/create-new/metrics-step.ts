@@ -15,7 +15,7 @@ export const config = {
     },
   ],
   sortType: 'DEFAULT',
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: [
     'Velocity',
     'Cycle time',
