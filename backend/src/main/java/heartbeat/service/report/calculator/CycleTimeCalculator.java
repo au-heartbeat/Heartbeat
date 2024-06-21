@@ -116,7 +116,7 @@ public class CycleTimeCalculator {
 		for (Map.Entry<String, Double> entry : aggregatedMap.entrySet()) {
 			String key = entry.getKey();
 			double value = BigDecimal.valueOf(entry.getValue()).setScale(2, RoundingMode.HALF_UP).doubleValue();
-			if (List.of(CardStepsEnum.ANALYSE, CardStepsEnum.TODO).contains(CardStepsEnum.fromValue(key))
+			if (Objects.equals(CardStepsEnum.TODO, CardStepsEnum.fromValue(key))
 					|| realDoneKeys.contains(key.toUpperCase())) {
 				continue;
 			}

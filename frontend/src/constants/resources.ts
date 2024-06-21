@@ -295,11 +295,13 @@ export enum VelocityMetricsName {
 
 export enum CycleTimeMetricsName {
   AVERAGE_CYCLE_TIME = 'Average cycle time',
+  ANALYSIS_PROPORTION = 'Total analysis time / Total cycle time',
   DEVELOPMENT_PROPORTION = 'Total development time / Total cycle time',
   WAITING_PROPORTION = 'Total waiting for testing time / Total cycle time',
   BLOCK_PROPORTION = 'Total block time / Total cycle time',
   REVIEW_PROPORTION = 'Total review time / Total cycle time',
   TESTING_PROPORTION = 'Total testing time / Total cycle time',
+  AVERAGE_ANALYSIS_TIME = 'Average analysis time',
   AVERAGE_DEVELOPMENT_TIME = 'Average development time',
   AVERAGE_WAITING_TIME = 'Average waiting for testing time',
   AVERAGE_BLOCK_TIME = 'Average block time',
