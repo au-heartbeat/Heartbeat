@@ -14,7 +14,7 @@ export const importMultipleDoneProjectFromFile = {
       endDate: '2024-06-07T23:59:59.999+08:00',
     },
   ],
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: [
     'All',
     'Velocity',

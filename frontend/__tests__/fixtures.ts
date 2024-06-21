@@ -16,9 +16,9 @@ export const OLD_REGULAR_CALENDAR_LABEL = 'Regular Calendar(Weekend Considered)'
 
 export const REGULAR_CALENDAR = 'Regular calendar';
 
-export const CHINA_CALENDAR = 'Calendar with Chinese Holiday';
+export const CHINA_CALENDAR = 'Calendar with Chinese holiday';
 
-export const VIETNAM_CALENDAR = 'Calendar with Vietnam Holiday';
+export const VIETNAM_CALENDAR = 'Calendar with Vietnam holiday';
 
 export const NEXT = 'Next';
 
@@ -249,7 +249,7 @@ export const IMPORTED_NEW_CONFIG_FIXTURE = {
       endDate: '2023-03-30T23:59:59.999+08:00',
     },
   ],
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   board: {
     type: 'Jira',
     verifyToken: 'mockVerifyToken',

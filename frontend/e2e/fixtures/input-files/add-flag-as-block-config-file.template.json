@@ -4,7 +4,7 @@
     "startDate": "2024-04-01T00:00:00.000+08:00",
     "endDate": "2024-04-09T23:59:59.999+08:00"
   },
-  "calendarType": "Calendar with Chinese Holiday",
+  "calendarType": "CN",
   "metrics": ["Velocity", "Cycle time", "Classification", "Rework times"],
   "board": {
     "type": "Jira",

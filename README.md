@@ -139,8 +139,8 @@ Note: Charts will be generated only by selecting at least 2 time periods.
 **Have three items of time period:**
 
 1.  **Regular calendar:** If you select this item, it means all data will exclude the weekend.
-2.  **Calendar with Chinese Holiday:** If you select this item, it means all data will exclude the weekend and Chinese holiday. So if the time period you selected contains Chinese holiday, you need to select this item.
-3.  **Calendar with Vietnam Holiday:** If you select this item, it means all data will exclude the weekend and Vietnam holiday. So if the time period you selected contains Vietnam holiday, you need to select this item.
+2.  **Calendar with Chinese holiday:** If you select this item, it means all data will exclude the weekend and Chinese holiday. So if the time period you selected contains Chinese holiday, you need to select this item.
+3.  **Calendar with Vietnam holiday:** If you select this item, it means all data will exclude the weekend and Vietnam holiday. So if the time period you selected contains Vietnam holiday, you need to select this item.
 
 All need to select which data you want to get, for now, we support seven metrics data (Image 3-3). Those seven metrics are `Deployment Frequency (DF)`, `Lead Time for changes (LTC)`, `Mean Time To Recover (MTTR)`, `Change Failure Rate (CFR)`, and `Velocity`, `Cycle time`, `Classification`, where
 

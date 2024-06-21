@@ -116,7 +116,7 @@ export const modifiedConfig = {
     endDate: '2024-01-19T23:59:59.999+08:00',
   },
   sortType: 'DEFAULT',
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: [
     'Velocity',
     'Cycle time',
