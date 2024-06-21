@@ -40,6 +40,9 @@ export const DateRangePicker = ({ startDate, endDate, index, onChange, onRemove,
   const dateRangeGroupExcludeSelf = rangeList.filter(({ sortIndex }: { sortIndex: number }) => sortIndex !== index);
   const shouldStartDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
   const shouldEndDateDisableDate = isDateDisabled.bind(null, dateRangeGroupExcludeSelf);
+  const shouldDisableYear = (date: Dayjs) => {
+    return dayjs(date).isBefore('2020-01-01', 'year');
+  };
   const startDateFieldName = `dateRange[${index}].startDate`;
   const endDateFieldName = `dateRange[${index}].endDate`;
   const { setValue } = useFormContext();
@@ -127,6 +130,7 @@ export const DateRangePicker = ({ startDate, endDate, index, onChange, onRemove,
         <StyledDateRangePicker
           disableFuture
           shouldDisableDate={shouldStartDateDisableDate}
+          shouldDisableYear={shouldDisableYear}
           label='From'
           value={startDate ? dayjs(startDate) : null}
           onChange={changeStartDate}
@@ -145,6 +149,7 @@ export const DateRangePicker = ({ startDate, endDate, index, onChange, onRemove,
           disableFuture
           label='To'
           shouldDisableDate={shouldEndDateDisableDate}
+          shouldDisableYear={shouldDisableYear}
           value={endDate ? dayjs(endDate) : null}
           maxDate={dayjs(startDate).add(30, 'day')}
           minDate={dayjs(startDate)}
