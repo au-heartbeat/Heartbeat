@@ -235,6 +235,7 @@ export const METRICS_CONSTANTS = {
 export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
   [METRICS_CONSTANTS.waitingValue]: 'Waiting for testing time',
   [METRICS_CONSTANTS.inDevValue]: 'Development time',
+  [METRICS_CONSTANTS.analysisValue]: 'Analysis time',
   [METRICS_CONSTANTS.reviewValue]: 'Review time',
   [METRICS_CONSTANTS.blockValue]: 'Block time',
   [METRICS_CONSTANTS.testingValue]: 'Testing time',
