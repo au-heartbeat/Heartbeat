@@ -946,7 +946,10 @@ public class JiraService {
 						stepsDay.setReview(stepsDay.getReview() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
-					case ANALYSE -> stepsDay.setAnalyse(stepsDay.getAnalyse() + cycleTimeInfo.getDay());
+					case ANALYSE -> {
+						stepsDay.setAnalyse(stepsDay.getAnalyse() + cycleTimeInfo.getDay());
+						total += cycleTimeInfo.getDay();
+					}
 					default -> {
 					}
 				}
