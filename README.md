@@ -138,7 +138,7 @@ Note: Charts will be generated only by selecting at least 2 time periods.
 
 **Have three items of time period:**
 
-1.  **Regular Calendar:** If you select this item, it means all data will exclude the weekend.
+1.  **Regular calendar:** If you select this item, it means all data will exclude the weekend.
 2.  **Calendar with Chinese Holiday:** If you select this item, it means all data will exclude the weekend and Chinese holiday. So if the time period you selected contains Chinese holiday, you need to select this item.
 3.  **Calendar with Vietnam Holiday:** If you select this item, it means all data will exclude the weekend and Vietnam holiday. So if the time period you selected contains Vietnam holiday, you need to select this item.
 
