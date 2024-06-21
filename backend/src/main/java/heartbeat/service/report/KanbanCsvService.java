@@ -101,12 +101,14 @@ public class KanbanCsvService {
 		}
 		this.generateCSVForBoard(realDoneCardCollection.getJiraCardDTOList(),
 				nonDoneCardCollection.getJiraCardDTOList(), jiraColumns.getJiraColumnResponse(),
-				jiraBoardSetting.getTargetFields(), request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates);
+				jiraBoardSetting.getTargetFields(), request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates,
+				jiraBoardSetting.getBoardColumns());
 	}
 
 	private void generateCSVForBoard(List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,
 			List<JiraColumnDTO> jiraColumns, List<TargetField> targetFields, String csvTimeRangeTimeStamp,
-			CardStepsEnum reworkState, List<String> reworkFromStates) {
+			CardStepsEnum reworkState, List<String> reworkFromStates,
+			List<RequestJiraBoardColumnSetting> boardColumns) {
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
 		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
 
@@ -124,7 +126,8 @@ public class KanbanCsvService {
 
 		List<TargetField> enabledTargetFields = targetFields.stream().filter(TargetField::isFlag).toList();
 
-		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields();
+		Boolean existTodo = boardColumns.stream().anyMatch(it -> it.getValue().equals("To do"));
+		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields(existTodo);
 		List<BoardCSVConfig> extraFields = getExtraFields(enabledTargetFields, fixedBoardFields);
 
 		List<BoardCSVConfig> newExtraFields = updateExtraFieldsWithCardField(extraFields, cardDTOList);
@@ -316,10 +319,13 @@ public class KanbanCsvService {
 		return extraFields;
 	}
 
-	private List<BoardCSVConfig> getFixedBoardFields() {
-		return Arrays.stream(BoardCSVConfigEnum.values())
+	private List<BoardCSVConfig> getFixedBoardFields(Boolean existTodo) {
+		List<BoardCSVConfig> fields = new ArrayList<>(Arrays.stream(BoardCSVConfigEnum.values())
 			.map(field -> BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build())
-			.toList();
+			.toList());
+		int removeIndex = existTodo ? 17 : 16;
+		fields.remove(removeIndex);
+		return fields;
 	}
 
 	private String getFieldDisplayValue(Object object) {

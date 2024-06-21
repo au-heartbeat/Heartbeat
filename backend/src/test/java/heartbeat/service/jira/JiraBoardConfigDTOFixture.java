@@ -61,6 +61,8 @@ public class JiraBoardConfigDTOFixture {
 
 	public static final String UNKNOWN = "UNKNOWN";
 
+	public static final String TODO = "To do";
+
 	public static final String WAITING_FOR_TESTING = "Waiting for testing";
 
 	public static final String ASSIGNEE_NAME = "Zhang San";
@@ -471,7 +473,8 @@ public class JiraBoardConfigDTOFixture {
 					RequestJiraBoardColumnSetting.builder().name(TESTING).value(TESTING).build(),
 					RequestJiraBoardColumnSetting.builder().name(REVIEW).value(REVIEW).build(),
 					RequestJiraBoardColumnSetting.builder().name(FLAG).value(FLAG).build(),
-					RequestJiraBoardColumnSetting.builder().name(UNKNOWN).value(UNKNOWN).build()))
+					RequestJiraBoardColumnSetting.builder().name(UNKNOWN).value(UNKNOWN).build(),
+					RequestJiraBoardColumnSetting.builder().name(TODO).value(TODO).build()))
 			.token("token")
 			.site("site")
 			.doneColumn(List.of("DONE_A", "DONE_B"))

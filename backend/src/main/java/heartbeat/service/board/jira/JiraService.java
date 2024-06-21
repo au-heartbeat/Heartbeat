@@ -950,6 +950,7 @@ public class JiraService {
 						stepsDay.setAnalyse(stepsDay.getAnalyse() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
+					case TODO -> stepsDay.setTodo(stepsDay.getTodo() + cycleTimeInfo.getDay());
 					default -> {
 					}
 				}

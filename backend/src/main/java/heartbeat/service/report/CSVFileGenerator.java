@@ -184,13 +184,6 @@ public class CSVFileGenerator {
 		log.info(message);
 	}
 
-	public void convertBoardDataToCSV(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fields,
-			List<BoardCSVConfig> extraFields, String csvTimeStamp) {
-		log.info("Start to create board csv directory");
-		String[][] mergedArrays = assembleBoardData(cardDTOList, fields, extraFields);
-		writeDataToCSV(csvTimeStamp, mergedArrays);
-	}
-
 	public void writeDataToCSV(String csvTimeRangeTimeStamp, String[][] mergedArrays) {
 		createCsvDirToConvertData();
 
@@ -265,6 +258,9 @@ public class CSVFileGenerator {
 		List<BoardCSVConfig> originCycleTimeFields = getOriginCycleTimeFields(fixedFields);
 		int fixedFieldColumnCount = columnCount - originCycleTimeFields.size();
 
+		Boolean existTodo = fixedFields.stream()
+			.anyMatch(it -> it.getLabel().equals(BoardCSVConfigEnum.TODO_DAYS.getLabel()));
+
 		String[][] data = new String[rowCount][columnCount];
 
 		for (int column = 0; column < columnCount; column++) {
@@ -273,7 +269,7 @@ public class CSVFileGenerator {
 		for (int row = 0; row < cardDTOList.size(); row++) {
 			JiraCardDTO cardDTO = cardDTOList.get(row);
 
-			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO, fixedFieldColumnCount);
+			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO, fixedFieldColumnCount, existTodo);
 			String[] originCycleTimePerRow = getOriginCycleTimePerRow(cardDTO, originCycleTimeFields);
 			data[row + 1] = Stream.concat(Arrays.stream(fixedDataPerRow), Arrays.stream(originCycleTimePerRow))
 				.toArray(String[]::new);
@@ -307,7 +303,7 @@ public class CSVFileGenerator {
 		return originCycleTimeFields;
 	}
 
-	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount) {
+	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount, Boolean existTodo) {
 		String[] rowData = new String[columnCount];
 		if (cardDTO.getBaseInfo() != null) {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
@@ -320,7 +316,8 @@ public class CSVFileGenerator {
 		if (cardDTO.getCardCycleTime() != null) {
 			rowData[14] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
 			rowData[15] = cardDTO.getTotalCycleTimeDivideStoryPoints();
-			rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+			rowData[16] = DecimalUtil.formatDecimalTwo(existTodo ? cardDTO.getCardCycleTime().getSteps().getTodo()
+					: cardDTO.getCardCycleTime().getSteps().getAnalyse());
 			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
 			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
 			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
