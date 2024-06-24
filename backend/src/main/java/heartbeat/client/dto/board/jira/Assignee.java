@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Assignee implements ICardFieldDisplayName {
 

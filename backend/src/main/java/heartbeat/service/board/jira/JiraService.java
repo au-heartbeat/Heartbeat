@@ -515,7 +515,7 @@ public class JiraService {
 	private Sprint getSprint(JsonElement fieldValue) {
 		if (!fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
 			JsonArray jsonArray = fieldValue.getAsJsonArray();
-			if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+			if (!jsonArray.isEmpty()) {
 				Type listType = new TypeToken<List<Sprint>>() {
 				}.getType();
 				List<Sprint> sprints = new Gson().fromJson(jsonArray, listType);

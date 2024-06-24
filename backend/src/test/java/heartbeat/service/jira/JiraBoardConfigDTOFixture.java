@@ -212,7 +212,7 @@ public class JiraBoardConfigDTOFixture {
 	public static AllCardsResponseDTO.AllCardsResponseDTOBuilder ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER() {
 		return AllCardsResponseDTO.builder()
 			.total("3")
-			.issues(List.of(
+			.issues(new ArrayList<>(List.of(
 					new JiraCard("1",
 							JiraCardField.builder()
 								.assignee(new Assignee(ASSIGNEE_NAME))
@@ -232,7 +232,7 @@ public class JiraBoardConfigDTOFixture {
 								.assignee(new Assignee(ASSIGNEE_NAME))
 								.issuetype(IssueType.builder().name("缺陷").build())
 								.status(new Status(CardStepsEnum.DONE.getValue()))
-								.build())));
+								.build()))));
 	}
 
 	public static AllCardsResponseDTO.AllCardsResponseDTOBuilder ALL_DONE_TWO_PAGES_CARDS_RESPONSE_BUILDER() {
@@ -285,7 +285,8 @@ public class JiraBoardConfigDTOFixture {
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_MULTI_RESPONSE_BUILDER() {
 		return CardHistoryResponseDTO.builder()
 			.isLast(true)
-			.items(List.of(new HistoryDetail(1, "status", new Status("To do"), new Status(BLOCK), null, null),
+			.items(new ArrayList<>(List.of(
+					new HistoryDetail(1, "status", new Status("To do"), new Status(BLOCK), null, null),
 					new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do"), null, null),
 					new HistoryDetail(3, "status", new Status(REVIEW), new Status("In Dev"), null, null),
 					new HistoryDetail(4, "status", new Status(WAITING_FOR_TESTING), new Status(REVIEW), null, null),
@@ -300,7 +301,7 @@ public class JiraBoardConfigDTOFixture {
 					new HistoryDetail(1672642750003L, "status", new Status("Done"), new Status(TESTING), null, null),
 					new HistoryDetail(1672642750004L, "status", new Status("Done"), new Status(TESTING), null, null),
 					new HistoryDetail(1672642750005L, "customfield_10021", new Status(UNKNOWN),
-							new Status("removeFlag"), null, null)));
+							new Status("removeFlag"), null, null))));
 	}
 
 	public static CardHistoryResponseDTO.CardHistoryResponseDTOBuilder CARD_HISTORY_MULTI_REAL_DONE_RESPONSE_BUILDER() {
@@ -384,6 +385,7 @@ public class JiraBoardConfigDTOFixture {
 		IssueField flaggedIssueField = new IssueField("customfield_10021", "Flagged");
 
 		IssueField sprintIssueField = new IssueField("sprint", "Sprint");
+		IssueField otherSprintIssueField = new IssueField("otherSprint", "Sprint");
 		IssueField storyPointEstimateIssueField = new IssueField("story point estimate", "Story point estimate");
 		IssueField FlaggedIssueField = new IssueField("flagged", "Flagged");
 		IssueField otherIssueField = new IssueField("other", "Other");
@@ -395,6 +397,7 @@ public class JiraBoardConfigDTOFixture {
 		issueFieldMap.put("priority", priorityIssueField);
 		issueFieldMap.put("customfield_10021", flaggedIssueField);
 		issueFieldMap.put("timetracking", timetrackingIssueField);
+		issueFieldMap.put("otherSprint", otherSprintIssueField);
 
 		issueFieldMap.put("sprint", sprintIssueField);
 		issueFieldMap.put("storyPointEstimateIssueField", storyPointEstimateIssueField);

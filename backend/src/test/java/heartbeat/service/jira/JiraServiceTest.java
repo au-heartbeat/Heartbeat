@@ -2,7 +2,6 @@ package heartbeat.service.jira;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonNull;
 import heartbeat.client.JiraFeignClient;
 import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.CardHistoryResponseDTO;
@@ -26,6 +25,7 @@ import heartbeat.controller.board.dto.request.ReworkTimesSetting;
 import heartbeat.controller.board.dto.request.StoryPointsAndCycleTimeRequest;
 import heartbeat.controller.board.dto.response.BoardConfigDTO;
 import heartbeat.controller.board.dto.response.CardCollection;
+import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.exception.BadRequestException;
@@ -773,7 +773,7 @@ class JiraServiceTest {
 	}
 
 	@Test
-	void shouldGetCardCollection() throws JsonProcessingException {
+	void shouldGetCardCollection() {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 
@@ -785,7 +785,7 @@ class JiraServiceTest {
 			.build();
 		storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 		String allDoneCards = """
-				{"total":"2","issues":[{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":5.0,"story point estimate":null,"flagged":null}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":1}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":"s"}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{"test":1}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":0}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[{"value":1}]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"Story point estimate":{"test":1},"Flagged":[null]}}]}
+				{"total":"2","issues":[{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":5.0,"story point estimate":null,"sprint":null,"flagged":null}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{},otherSprint:1}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":1,otherSprint:[]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":"s",otherSprint:[{"key":1}]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{"test":1}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":0}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[{"value":1}]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"Story point estimate":{"test":1},"Flagged":[null]}}]}
 				""";
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
@@ -1330,6 +1330,58 @@ class JiraServiceTest {
 				ZoneId.of("Asia/Shanghai"));
 		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
+	}
+
+	@Test
+	public void shouldReturnCardsWhenCallGetStoryPointsWhenAssigneeIsNull() throws JsonProcessingException {
+		String assignName = "Zhang San";
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+
+		CardHistoryResponseDTO cardHistoryResponseDTO = CardHistoryResponseDTO.builder()
+			.isLast(true)
+			.items(List.of(new HistoryDetail(1, "assignee", Status.builder().name("nonToDisplay").build(),
+					Status.builder().name("nonFromDisplay").build(), null, null)))
+			.build();
+
+		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
+		AllCardsResponseDTO allCardsResponseDTO = AllCardsResponseDTO.builder()
+			.total("3")
+			.issues(List.of(
+					new JiraCard("1",
+							JiraCardField.builder()
+								.assignee(new Assignee(assignName))
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(2)
+								.status(new Status(CardStepsEnum.TESTING.getValue()))
+								.build()),
+					new JiraCard("2",
+							JiraCardField.builder()
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(2)
+								.status(new Status(CardStepsEnum.TESTING.getValue()))
+								.build()),
+					new JiraCard("3",
+							JiraCardField.builder()
+								.assignee(Assignee.builder().build())
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(2)
+								.status(new Status(CardStepsEnum.TESTING.getValue()))
+								.build())))
+			.build();
+
+		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
+			.thenReturn(objectMapper.writeValueAsString(allCardsResponseDTO));
+		when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
+			.thenReturn(cardHistoryResponseDTO);
+		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
+
+		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
+				ZoneId.of("Asia/Shanghai"));
+		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
+		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
 	}
 
 	@Test
