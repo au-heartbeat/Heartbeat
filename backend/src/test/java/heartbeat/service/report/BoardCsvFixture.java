@@ -259,7 +259,11 @@ public class BoardCsvFixture {
 			.cycleTimeFlat(cycleTimeFlat)
 			.totalCycleTimeDivideStoryPoints("0.90")
 			.build();
-		return List.of(jiraCardDTO);
+		JiraCardDTO jiraCardDTOWithoutBaseInfo = JiraCardDTO.builder().build();
+		JiraCardDTO jiraCardDTOWithoutFields = JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder().key("ADM-489").build())
+			.build();
+		return List.of(jiraCardDTO, jiraCardDTOWithoutBaseInfo, jiraCardDTOWithoutFields);
 	}
 
 	public static JiraCardField MOCK_JIRA_CARD() {

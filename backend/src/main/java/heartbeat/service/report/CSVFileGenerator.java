@@ -45,7 +45,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
@@ -469,10 +473,14 @@ public class CSVFileGenerator {
 				String.valueOf(cycleTime.getAverageCycleTimePerCard()) });
 		List<CycleTimeForSelectedStepItem> swimlaneList = cycleTime.getSwimlaneList();
 
-		swimlaneList.stream().filter(it -> Objects.equals(it.getOptionalItemName(), "Analysis")).findFirst().ifPresent(analysisItem -> {
-			swimlaneList.removeIf(it -> Objects.equals(it.getOptionalItemName(), analysisItem.getOptionalItemName()));
-			swimlaneList.add(1, analysisItem);
-		});
+		swimlaneList.stream()
+			.filter(it -> Objects.equals(it.getOptionalItemName(), "Analysis"))
+			.findFirst()
+			.ifPresent(analysisItem -> {
+				swimlaneList
+					.removeIf(it -> Objects.equals(it.getOptionalItemName(), analysisItem.getOptionalItemName()));
+				swimlaneList.add(1, analysisItem);
+			});
 
 		swimlaneList.forEach(cycleTimeForSelectedStepItem -> {
 			String stepName = formatStepName(cycleTimeForSelectedStepItem);
