@@ -500,7 +500,7 @@ public class JiraService {
 			case "Flagged" -> {
 				if (!fieldValue.isJsonNull() && fieldValue.isJsonArray()) {
 					JsonArray jsonArray = fieldValue.getAsJsonArray();
-					if (!jsonArray.isJsonNull() && !jsonArray.isEmpty()) {
+					if (!jsonArray.isEmpty()) {
 						JsonElement targetField = jsonArray.get(jsonArray.size() - 1);
 						fieldValue = targetField.getAsJsonObject().get("value");
 					}
