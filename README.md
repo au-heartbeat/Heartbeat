@@ -129,7 +129,7 @@ _Image 3-1，home page_
 
 If you are first use the product, you need to select “Create A New Project”，it will go to config page (Image 3-2)
 
-![Image 3-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-2.png)\
+![Image 3-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-2-1.png)\
 _Image 3-2，Project config page_
 
 Users need to select at least one period of time, and users can click the “New time range” button to add up to 6 periods, and then multiple corresponding data reports will be generated on the report page. 
@@ -138,9 +138,9 @@ Note: Charts will be generated only by selecting at least 2 time periods.
 
 **Have three items of time period:**
 
-1.  **Regular Calendar:** If you select this item, it means all data will exclude the weekend.
-2.  **Calendar with Chinese Holiday:** If you select this item, it means all data will exclude the weekend and Chinese holiday. So if the time period you selected contains Chinese holiday, you need to select this item.
-3.  **Calendar with Vietnam Holiday:** If you select this item, it means all data will exclude the weekend and Vietnam holiday. So if the time period you selected contains Vietnam holiday, you need to select this item.
+1.  **Regular calendar:** If you select this item, it means all data will exclude the weekend.
+2.  **Calendar with Chinese holiday:** If you select this item, it means all data will exclude the weekend and Chinese holiday. So if the time period you selected contains Chinese holiday, you need to select this item.
+3.  **Calendar with Vietnam holiday:** If you select this item, it means all data will exclude the weekend and Vietnam holiday. So if the time period you selected contains Vietnam holiday, you need to select this item.
 
 All need to select which data you want to get, for now, we support seven metrics data (Image 3-3). Those seven metrics are `Deployment Frequency (DF)`, `Lead Time for changes (LTC)`, `Mean Time To Recover (MTTR)`, `Change Failure Rate (CFR)`, and `Velocity`, `Cycle time`, `Classification`, where
 
@@ -148,7 +148,7 @@ All need to select which data you want to get, for now, we support seven metrics
 - `Cycle time`: the time it take for each card start to do until move to done.
 - `Classification`: provide different dimensions to view how much efforts team spent within selected time period.
 
-![Image 3-3](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3.png)\
+![Image 3-3](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-3.png)\
 _Image 3-3，Metrics Data_
 
 ##### 3.1.2.1 Date picker validation rules
@@ -176,7 +176,7 @@ According to your selected required data, you need to input account settings for
 | Dev change failure rate   | Pipeline       |
 | Dev mean time to recovery | Pipeline       |
 
-![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4.png)\
+![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4-1.png)\
 Image 3-4，Project config
 
 **The details for board:**

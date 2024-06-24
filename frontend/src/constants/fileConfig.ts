@@ -170,7 +170,7 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
   }
   if (fileConfig.calendarType === OLD_REGULAR_CALENDAR_LABEL) {
     fileConfig.calendarType = Calendar.Regular;
-  } else if (fileConfig.calendarType === CALENDAR_LABEL[Calendar.China]) {
+  } else if (fileConfig.calendarType?.toLocaleLowerCase() === CALENDAR_LABEL[Calendar.China].toLocaleLowerCase()) {
     fileConfig.calendarType = Calendar.China;
   }
   return {

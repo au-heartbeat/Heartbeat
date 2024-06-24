@@ -91,7 +91,7 @@ describe('#fileConfig', () => {
     ).toEqual(Calendar.Regular);
   });
 
-  it('should convert calendarType Calendar with Chinese Holiday to CHINA', () => {
+  it('should convert calendarType Calendar with Chinese holiday to CHINA', () => {
     expect(
       convertToNewFileConfig({
         ...BASIC_IMPORTED_OLD_CONFIG_FIXTURE,

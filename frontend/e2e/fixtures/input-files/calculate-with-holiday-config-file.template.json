@@ -6,7 +6,7 @@
       "endDate": "2024-06-14T23:59:59.999+08:00"
     }
   ],
-  "calendarType": "Calendar with Chinese Holiday",
+  "calendarType": "CN",
   "metrics": [
     "Velocity",
     "Cycle time",

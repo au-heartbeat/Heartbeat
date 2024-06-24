@@ -46,7 +46,7 @@ const BasicInfo = () => {
         />
 
         <FormControl required>
-          <CollectionDateLabel>Collection Date (Weekend Considered)</CollectionDateLabel>
+          <CollectionDateLabel>Collection date (Weekend considered)</CollectionDateLabel>
           <Controller
             name={'calendarType'}
             control={control}

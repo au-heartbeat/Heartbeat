@@ -4,7 +4,7 @@ export const cycleTimeByColumnFixture = {
     startDate: '2024-03-27T00:00:00.000+08:00',
     endDate: '2024-03-29T23:59:59.999+08:00',
   },
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: [
     'All',
     'Velocity',

@@ -14,7 +14,7 @@
       "endDate": "2013-01-10T23:59:59.999+08:00"
     }
   ],
-  "calendarType": "Calendar with Chinese Holiday",
+  "calendarType": "CN",
   "metrics": ["Velocity", "Cycle time", "Lead time for changes", "Dev mean time to recovery"],
   "board": {
     "type": "Jira",

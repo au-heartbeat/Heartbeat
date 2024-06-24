@@ -7,9 +7,9 @@ export enum Calendar {
 }
 
 export const CALENDAR_LABEL = {
-  [Calendar.Regular]: 'Regular Calendar',
-  [Calendar.China]: 'Calendar with Chinese Holiday',
-  [Calendar.Vietnam]: 'Calendar with Vietnam Holiday',
+  [Calendar.Regular]: 'Regular calendar',
+  [Calendar.China]: 'Calendar with Chinese holiday',
+  [Calendar.Vietnam]: 'Calendar with Vietnam holiday',
 };
 
 export const OLD_REGULAR_CALENDAR_LABEL = 'Regular Calendar(Weekend Considered)';

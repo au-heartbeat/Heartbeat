@@ -98,9 +98,9 @@ export class ConfigStep {
     this.page = page;
     this.stepTitle = page.getByText('Config');
     this.projectNameInput = page.getByLabel('Project name *');
-    this.regularCalendar = page.getByText('Regular Calendar');
-    this.chineseCalendar = page.getByText('Calendar with Chinese Holiday');
-    this.vietnamCalendar = page.getByText('Calendar with Vietnam Holiday');
+    this.regularCalendar = page.getByText('Regular calendar');
+    this.chineseCalendar = page.getByText('Calendar with Chinese holiday');
+    this.vietnamCalendar = page.getByText('Calendar with Vietnam holiday');
     this.basicInfoContainer = page.getByLabel('Basic information');
     this.fromDateInput = this.basicInfoContainer.getByRole('textbox', { name: 'From' });
     this.fromDateInputButton = page

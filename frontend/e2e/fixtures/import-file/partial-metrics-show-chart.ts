@@ -14,7 +14,7 @@ export const partialMetricsShowChart = {
       endDate: '2024-01-19T23:59:59.999+08:00',
     },
   ],
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: ['Velocity', 'Cycle time', 'Lead time for changes', 'Dev mean time to recovery'],
   board: {
     type: 'Jira',
