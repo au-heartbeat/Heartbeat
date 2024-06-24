@@ -151,16 +151,16 @@ public class JiraBoardConfigDTOFixture {
 		return AllCardsResponseDTO.builder()
 			.total("2")
 			.issues(new ArrayList<>(List.of(
-				new JiraCard("1",
-					JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(2).build()),
-				new JiraCard("1",
-					JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(1).build()),
-				new JiraCard("1",
-					JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(3).build()),
-				new JiraCard("1",
-					JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(5).build()),
-				new JiraCard("2",
-					JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(5).build()))));
+					new JiraCard("1",
+							JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(2).build()),
+					new JiraCard("1",
+							JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(1).build()),
+					new JiraCard("1",
+							JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(3).build()),
+					new JiraCard("1",
+							JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(5).build()),
+					new JiraCard("2",
+							JiraCardField.builder().assignee(new Assignee(ASSIGNEE_NAME)).storyPoints(5).build()))));
 	}
 
 	public static AllCardsResponseDTO.AllCardsResponseDTOBuilder ALL_REAL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER() {

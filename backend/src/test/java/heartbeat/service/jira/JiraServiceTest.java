@@ -730,19 +730,21 @@ class JiraServiceTest {
 
 	@Test
 	void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeGivenStoryPointKeyFromEnvironmentVariableWhenTargetFieldIsTrue()
-		throws JsonProcessingException {
+			throws JsonProcessingException {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
 		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 		String jql = String.format("status in ('%s') AND status changed during (%s, %s)", "DONE",
-			boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
+				boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 		Map<String, String> envMap = new HashMap<>();
 		envMap.put("STORY_POINT_KEY", "storyPoints");
 
 		AllCardsResponseDTO allCardsResponseDTO = ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build();
-		allCardsResponseDTO.getIssues().add(JiraCard.builder().key("2").fields(
-			JiraCardField.builder().assignee(new Assignee("Test 1")).storyPoints(0).build()
-		).build());
+		allCardsResponseDTO.getIssues()
+			.add(JiraCard.builder()
+				.key("2")
+				.fields(JiraCardField.builder().assignee(new Assignee("Test 1")).storyPoints(0).build())
+				.build());
 		String allDoneCards = objectMapper.writeValueAsString(allCardsResponseDTO);
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
@@ -758,13 +760,13 @@ class JiraServiceTest {
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		jiraBoardSetting
 			.setOverrideFields(List.of(TargetField.builder().key("summary").name("Story Points").flag(true).build(),
-				TargetField.builder().key("").name("Flagged").flag(true).build()));
+					TargetField.builder().key("").name("Flagged").flag(true).build()));
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 		storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-			storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-			ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
+				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0.0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -778,22 +780,23 @@ class JiraServiceTest {
 		JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
 		jiraBoardSetting
 			.setOverrideFields(List.of(TargetField.builder().key("summary").name("Story Points").flag(true).build(),
-				TargetField.builder().key("").name("Flagged").flag(true).build()));
+					TargetField.builder().key("").name("Flagged").flag(true).build()));
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
 			.build();
 		storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 		String allDoneCards = """
-			{"total":"2","issues":[{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":5.0,"story point estimate":null,"flagged":null}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":1}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":"s"}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{"test":1}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":0}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[{"value":1}]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"Story point estimate":{"test":1},"Flagged":[null]}}]}
-			""";
+				{"total":"2","issues":[{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":5.0,"story point estimate":null,"flagged":null}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":1}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":"s"}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{"test":1}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":0}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[{"value":1}]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"Story point estimate":{"test":1},"Flagged":[null]}}]}
+				""";
 
 		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 		when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "1", 0, 100, token))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
-		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_CONTAIN_CUSTOMER_FIELDS().build());
+		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token))
+			.thenReturn(ALL_FIELD_RESPONSE_CONTAIN_CUSTOMER_FIELDS().build());
 
 		jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-			jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ZoneId.of("Asia/Shanghai"));
 
 		verify(jiraFeignClient, times(10)).getJiraCardHistoryByCount(any(), eq("1"), anyInt(), anyInt(), any());
 	}
