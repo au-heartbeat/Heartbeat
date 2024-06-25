@@ -1,4 +1,5 @@
 import { MetricTypes } from '@src/constants/commons';
+import { Calendar } from '@src/constants/resources';
 
 export interface ReportRequestDTO extends IBasicReportRequestDTO {
   buildKiteSetting?: {
@@ -38,7 +39,7 @@ interface ReworkSettingsRequest {
 }
 
 export interface IBasicReportRequestDTO {
-  considerHoliday: boolean;
+  calendarType: Calendar;
   startTime: string | null;
   endTime: string | null;
   timezone: string;

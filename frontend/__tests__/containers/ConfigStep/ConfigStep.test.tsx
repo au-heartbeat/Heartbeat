@@ -1,6 +1,5 @@
 // TODO: refactor case, replace fireEvent use userEvent. @Kai Zhou
 import {
-  CHINA_CALENDAR,
   ConfigTitle,
   DEPLOYMENT_FREQUENCY,
   ERROR_MESSAGE_TIME_DURATION,
@@ -8,7 +7,6 @@ import {
   MOCK_BOARD_URL_FOR_JIRA,
   MOCK_PIPELINE_VERIFY_URL,
   PROJECT_NAME_LABEL,
-  REGULAR_CALENDAR,
   REQUIRED_DATA,
   RESET,
   TEST_PROJECT_NAME,
@@ -18,6 +16,9 @@ import {
   ALL,
   FAKE_TOKEN,
   PIPELINE_TOOL_TOKEN_INPUT_LABEL,
+  REGULAR_CALENDAR,
+  CHINA_CALENDAR,
+  VIETNAM_CALENDAR,
 } from '../../fixtures';
 import {
   basicInfoSchema,
@@ -186,8 +187,10 @@ describe('ConfigStep', () => {
 
     const defaultValue = screen.getByRole('radio', { name: REGULAR_CALENDAR });
     const chinaCalendar = screen.getByRole('radio', { name: CHINA_CALENDAR });
+    const vietnamCalendar = screen.getByRole('radio', { name: VIETNAM_CALENDAR });
     expect(defaultValue).toBeChecked();
     expect(chinaCalendar).not.toBeChecked();
+    expect(vietnamCalendar).not.toBeChecked();
   });
 
   it('should switch the radio when any radioLabel is selected', async () => {
@@ -208,6 +211,26 @@ describe('ConfigStep', () => {
       expect(regularCalendar).toBeChecked();
     });
     expect(chinaCalendar).not.toBeChecked();
+  });
+
+  it('should select Vietnam holiday when Regular calendar is default', async () => {
+    setup();
+
+    const vietnamCalendar = screen.getByRole('radio', { name: VIETNAM_CALENDAR });
+    const regularCalendar = screen.getByRole('radio', { name: REGULAR_CALENDAR });
+    await userEvent.click(vietnamCalendar);
+
+    await waitFor(() => {
+      expect(vietnamCalendar).toBeChecked();
+    });
+    expect(regularCalendar).not.toBeChecked();
+
+    await userEvent.click(regularCalendar);
+
+    await waitFor(() => {
+      expect(regularCalendar).toBeChecked();
+    });
+    expect(vietnamCalendar).not.toBeChecked();
   });
 
   it('should not show board component when init ConfigStep component ', async () => {

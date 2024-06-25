@@ -1,11 +1,11 @@
-import { BOARD_TYPES, CHINA_CALENDAR, CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, PIPELINE_TOOL_TYPES } from './fixtures';
-import { SourceControlTypes } from '@src/constants/resources';
+import { BOARD_TYPES, CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, PIPELINE_TOOL_TYPES } from './fixtures';
+import { Calendar, SourceControlTypes } from '@src/constants/resources';
 
 const updatedConfigState = {
   isProjectCreated: true,
   basic: {
     projectName: 'Mock Project Name',
-    calendarType: CHINA_CALENDAR,
+    calendarType: Calendar.China,
     dateRange: {
       startDate: '2023-03-15T16:00:00.000Z',
       endDate: '2023-03-29T16:00:00.000Z',

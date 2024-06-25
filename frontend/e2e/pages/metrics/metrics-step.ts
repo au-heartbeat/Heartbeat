@@ -597,13 +597,13 @@ export class MetricsStep {
   async addNewPipelineAndSelectOrgAndName() {
     await this.pipelineNewPipelineButton.click();
     await this.pipelineSettingSection.getByText('Organization *Remove').getByLabel('Open').click();
-    await this.page.getByRole('option', { name: 'Thoughtworks-Heartbeat' }).click();
+    await this.page.getByRole('option', { name: 'Heartbeat-backup' }).click();
     await this.pipelineSettingSection
       .getByText('Organization *Pipeline Name *Remove')
       .getByLabel('Open')
       .nth(1)
       .click();
-    await this.page.getByRole('option', { name: 'Heartbeat-E2E' }).click();
+    await this.page.getByRole('option', { name: 'Heartbeat' }).nth(0).click();
   }
 
   async checkPipelineLength(length: number) {

@@ -25,7 +25,7 @@ import {
   updateDeploymentFrequencySettings,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
-import { ASSIGNEE_FILTER_TYPES, DEFAULT_MESSAGE } from '@src/constants/resources';
+import { ASSIGNEE_FILTER_TYPES, Calendar, DEFAULT_MESSAGE } from '@src/constants/resources';
 import { updateDateRange, updateMetrics } from '@src/context/config/configSlice';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import MetricsStepper from '@src/containers/MetricsStepper';
@@ -327,7 +327,7 @@ describe('MetricsStepper', () => {
     const expectedFileName = 'config';
     const expectedJson = {
       board: undefined,
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: Calendar.Regular,
       dateRange: [
         {
           endDate: null,
@@ -351,7 +351,7 @@ describe('MetricsStepper', () => {
     const expectedFileName = 'config';
     const expectedJson = {
       board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: Calendar.Regular,
       dateRange: [
         {
           endDate: null,
@@ -378,7 +378,7 @@ describe('MetricsStepper', () => {
     const expectedJson = {
       advancedSettings: null,
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: Calendar.Regular,
       dateRange: [
         {
           endDate: dayjs().endOf('date').add(0, 'day').format(COMMON_TIME_FORMAT),
@@ -431,7 +431,7 @@ describe('MetricsStepper', () => {
       advancedSettings: null,
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
       board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
-      calendarType: 'Regular Calendar(Weekend Considered)',
+      calendarType: Calendar.Regular,
       dateRange: [
         {
           endDate: mockDateRange.endDate,

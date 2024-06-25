@@ -4,9 +4,10 @@ import {
   IPipelineToolErrorMessage,
   ISourceControlErrorMessage,
 } from '@src/containers/ConfigStep/Form/type';
+import { CALENDAR_LIST } from '@src/constants/resources';
 
 export const AGGREGATED_DATE_ERROR_REASON = 'Invalid date';
-export const CALENDAR_TYPE_LITERAL = ['Regular Calendar(Weekend Considered)', 'Calendar with Chinese Holiday'];
+export const CALENDAR_TYPE_LITERAL = CALENDAR_LIST;
 export const METRICS_LITERAL = [
   'Velocity',
   'Cycle time',

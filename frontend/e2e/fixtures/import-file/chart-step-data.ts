@@ -1,6 +1,6 @@
 export const chartStepData = {
   unSelectBranch: 'main',
-  addNewBranch: ['ADM-669'],
+  addNewBranch: ['ADM-963'],
   errorDateRange: [
     {
       startDate: '2024-09-07T00:00:00.000+08:00',
@@ -19,12 +19,12 @@ export const chartStepData = {
   ],
   rightDateRange: [
     {
-      startDate: '2024-01-15T00:00:00.000+08:00',
-      endDate: '2024-01-16T23:59:59.999+08:00',
+      startDate: '2024-06-03T00:00:00.000+08:00',
+      endDate: '2024-06-06T23:59:59.999+08:00',
     },
     {
-      startDate: '2024-01-17T00:00:00.000+08:00',
-      endDate: '2024-01-19T23:59:59.999+08:00',
+      startDate: '2024-06-07T00:00:00.000+08:00',
+      endDate: '2024-06-07T23:59:59.999+08:00',
     },
   ],
 };

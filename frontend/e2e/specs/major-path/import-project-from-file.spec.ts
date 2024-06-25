@@ -122,10 +122,12 @@ test('Import project from file with partial ranges API failed', async ({
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkChartDoraTabStatus({
-    showDevMeanTimeToRecoveryTrendContainer: true,
+    showDevMeanTimeToRecoveryTrendContainer: false,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: true,
-    showDevChangeFailureRateTrendContainer: true,
+    showDevChangeFailureRateTrendContainer: false,
+    showDevChangeFailureRateChart: true,
+    showDevMeanTimeToRecoveryChart: true,
   });
 });
 
@@ -166,7 +168,9 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkChartDoraTabStatus({
-    showDevMeanTimeToRecoveryTrendContainer: true,
+    showDevMeanTimeToRecoveryTrendContainer: false,
+    showDevChangeFailureRateChart: false,
+    showDevMeanTimeToRecoveryChart: true,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: false,
     showDevChangeFailureRateTrendContainer: false,

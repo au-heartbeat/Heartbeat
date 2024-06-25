@@ -1,10 +1,10 @@
 {
   "projectName": "",
   "dateRange": {
-    "startDate": "2024-02-12T00:00:00.000+08:00",
-    "endDate": "2024-02-16T23:59:59.999+08:00"
+    "startDate": "2024-05-01T00:00:00.000+08:00",
+    "endDate": "2024-05-05T23:59:59.999+08:00"
   },
-  "calendarType": "Calendar with Chinese Holiday",
+  "calendarType": "CN",
   "metrics": [
     "Velocity",
     "Cycle time",
@@ -85,6 +85,8 @@
     "issuetype",
     "parent",
     "customfield_10061",
+    "customfield_10062",
+    "customfield_10063",
     "customfield_10020",
     "project",
     "customfield_10021",
@@ -102,9 +104,9 @@
   "deployment": [
     {
       "id": 0,
-      "organization": "Thoughtworks-Heartbeat",
-      "pipelineName": "Heartbeat",
-      "step": ":rocket: Deploy prod",
+      "organization": "Heartbeat-backup",
+      "pipelineName": "Heartbeat-E2E",
+      "step": ":rocket: Run e2e",
       "branches": ["main", "ADM-747"]
     }
   ],

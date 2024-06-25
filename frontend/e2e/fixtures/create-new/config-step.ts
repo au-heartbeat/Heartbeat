@@ -2,20 +2,20 @@ export const config = {
   projectName: 'Heartbeat Metrics',
   dateRange: [
     {
-      startDate: '2024-01-15T00:00:00.000+08:00',
-      endDate: '2024-01-16T23:59:59.999+08:00',
+      startDate: '2024-06-03T00:00:00.000+08:00',
+      endDate: '2024-06-04T23:59:59.999+08:00',
     },
     {
-      startDate: '2024-01-17T00:00:00.000+08:00',
-      endDate: '2024-01-18T23:59:59.999+08:00',
+      startDate: '2024-06-05T00:00:00.000+08:00',
+      endDate: '2024-06-06T23:59:59.999+08:00',
     },
     {
-      startDate: '2024-01-19T00:00:00.000+08:00',
-      endDate: '2024-01-19T23:59:59.999+08:00',
+      startDate: '2024-06-07T00:00:00.000+08:00',
+      endDate: '2024-06-07T23:59:59.999+08:00',
     },
   ],
   sortType: 'DEFAULT',
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: [
     'Velocity',
     'Cycle time',
@@ -60,7 +60,7 @@ export const configWithoutBlockColumn = {
     },
   ],
   sortType: 'DEFAULT',
-  calendarType: 'Calendar with Chinese Holiday',
+  calendarType: 'CN',
   metrics: ['Cycle time'],
   board: {
     type: 'Jira',

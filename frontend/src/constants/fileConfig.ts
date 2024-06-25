@@ -1,5 +1,5 @@
+import { Calendar, CALENDAR_LABEL, OLD_REGULAR_CALENDAR_LABEL, REWORK_TIME_LIST } from '@src/constants/resources';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { CALENDAR, REWORK_TIME_LIST } from '@src/constants/resources';
 import { IReworkConfig } from '@src/context/Metrics/metricsSlice';
 
 export interface OldFileConfig {
@@ -9,7 +9,8 @@ export interface OldFileConfig {
     startDate: string;
     endDate: string;
   }[];
-  considerHoliday: boolean;
+  considerHoliday?: boolean;
+  calendarType?: string;
   board?: {
     type?: string;
     verifyToken?: string;
@@ -64,7 +65,7 @@ export interface NewFileConfig {
     endDate: string;
   }[];
   sortType: SortType;
-  calendarType: string;
+  calendarType: Calendar;
   metrics: string[];
   board?: {
     type?: string;
@@ -133,7 +134,7 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       sortType: SortType?.DEFAULT,
       projectName,
       dateRange,
-      calendarType: considerHoliday ? CALENDAR.CHINA : CALENDAR.REGULAR,
+      calendarType: considerHoliday ? Calendar.China : Calendar.Regular,
       metrics,
       board: {
         type: board?.type,
@@ -167,5 +168,13 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       })),
     };
   }
-  return { ...fileConfig, reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings) };
+  if (fileConfig.calendarType === OLD_REGULAR_CALENDAR_LABEL) {
+    fileConfig.calendarType = Calendar.Regular;
+  } else if (fileConfig.calendarType?.toLocaleLowerCase() === CALENDAR_LABEL[Calendar.China].toLocaleLowerCase()) {
+    fileConfig.calendarType = Calendar.China;
+  }
+  return {
+    ...fileConfig,
+    reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings),
+  } as NewFileConfig;
 };

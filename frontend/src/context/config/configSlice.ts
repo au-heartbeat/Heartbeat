@@ -1,7 +1,7 @@
 import {
   BOARD_METRICS,
   BOARD_METRICS_EXCLUDE_CLASSIFICATION,
-  CALENDAR,
+  Calendar,
   DORA_METRICS,
   IMPORT_METRICS_MAPPING,
   MAX_TIME_RANGE_AMOUNT,
@@ -31,7 +31,7 @@ export interface BasicConfigState {
   isProjectCreated: boolean;
   basic: {
     projectName: string;
-    calendarType: string;
+    calendarType: Calendar;
     dateRange: DateRangeList;
     sortType: SortType;
     metrics: string[];
@@ -46,7 +46,7 @@ export const initialBasicConfigState: BasicConfigState = {
   isProjectCreated: true,
   basic: {
     projectName: '',
-    calendarType: CALENDAR.REGULAR,
+    calendarType: Calendar.Regular,
     dateRange: [
       {
         startDate: null,

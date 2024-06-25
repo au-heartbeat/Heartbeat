@@ -21,12 +21,19 @@ interface ISourceControlData {
   token: string;
 }
 
+enum CalendarType {
+  REGULAR = 'REGULAR',
+  CN = 'CN',
+  VN = 'VN',
+}
+
 export class ConfigStep {
   readonly page: Page;
   readonly stepTitle: Locator;
   readonly projectNameInput: Locator;
   readonly regularCalendar: Locator;
   readonly chineseCalendar: Locator;
+  readonly vietnamCalendar: Locator;
   readonly basicInfoContainer: Locator;
   readonly newTimeRangeButton: Locator;
   readonly removeTimeRangeButtons: Locator;
@@ -91,8 +98,9 @@ export class ConfigStep {
     this.page = page;
     this.stepTitle = page.getByText('Config');
     this.projectNameInput = page.getByLabel('Project name *');
-    this.regularCalendar = page.getByText('Regular Calendar(Weekend');
-    this.chineseCalendar = page.getByText('Calendar with Chinese Holiday');
+    this.regularCalendar = page.getByText('Regular calendar');
+    this.chineseCalendar = page.getByText('Calendar with Chinese holiday');
+    this.vietnamCalendar = page.getByText('Calendar with Vietnam holiday');
     this.basicInfoContainer = page.getByLabel('Basic information');
     this.fromDateInput = this.basicInfoContainer.getByRole('textbox', { name: 'From' });
     this.fromDateInputButton = page
@@ -212,14 +220,21 @@ export class ConfigStep {
   }
 
   async selectRegularCalendar(calendarType: string) {
-    if (calendarType === 'Calendar with Chinese Holiday') {
+    if (calendarType === CalendarType.CN) {
       await this.chineseCalendar.click();
       await expect(this.chineseCalendar).toBeChecked();
+      await expect(this.vietnamCalendar).not.toBeChecked();
+      await expect(this.regularCalendar).not.toBeChecked();
+    } else if (calendarType === CalendarType.VN) {
+      await this.vietnamCalendar.click();
+      await expect(this.vietnamCalendar).toBeChecked();
+      await expect(this.chineseCalendar).not.toBeChecked();
       await expect(this.regularCalendar).not.toBeChecked();
     } else {
       await this.regularCalendar.click();
       await expect(this.regularCalendar).toBeChecked();
       await expect(this.chineseCalendar).not.toBeChecked();
+      await expect(this.vietnamCalendar).not.toBeChecked();
     }
   }
 

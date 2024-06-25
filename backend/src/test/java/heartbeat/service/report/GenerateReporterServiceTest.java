@@ -3,12 +3,13 @@ package heartbeat.service.report;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.controller.board.dto.request.ReworkTimesSetting;
 import heartbeat.controller.board.dto.response.CardCollection;
-import heartbeat.controller.report.dto.request.BuildKiteSetting;
-import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
+import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
-import heartbeat.controller.report.dto.request.MetricEnum;
 import heartbeat.controller.report.dto.request.MetricType;
+import heartbeat.controller.report.dto.request.CodebaseSetting;
+import heartbeat.controller.report.dto.request.MetricEnum;
 import heartbeat.controller.report.dto.response.Classification;
 import heartbeat.controller.report.dto.response.CycleTime;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
@@ -165,7 +166,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldSaveReportResponseWithReworkInfoWhenReworkInfoTimesIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("rework times"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder()
@@ -198,7 +199,7 @@ class GenerateReporterServiceTest {
 
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -214,7 +215,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldSaveReportResponseWithReworkInfoWhenReworkSettingIsNullAndMetricsHasReworkTimes() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("rework times"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder().build())
@@ -235,7 +236,7 @@ class GenerateReporterServiceTest {
 
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -245,7 +246,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldSaveReportResponseWithoutMetricDataAndUpdateMetricCompletedWhenMetricsIsEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
@@ -262,7 +263,7 @@ class GenerateReporterServiceTest {
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
 			verify(pipelineService, never()).fetchGitHubData(any());
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -275,7 +276,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowErrorWhenJiraBoardSettingIsNull() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("velocity"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
@@ -296,14 +297,14 @@ class GenerateReporterServiceTest {
 					exceptionCaptor.getValue().getMessage());
 			assertEquals(400, exceptionCaptor.getValue().getStatus());
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler, never()).putReport(eq(request.getBoardReportFileId()), any());
 		}
 
 		@Test
 		void shouldSaveReportResponseWithVelocityAndUpdateMetricCompletedWhenVelocityMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("velocity"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder().build())
@@ -328,7 +329,7 @@ class GenerateReporterServiceTest {
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -340,7 +341,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldSaveReportResponseWithCycleTimeAndUpdateMetricCompletedWhenCycleTimeMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("cycle time"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder().build())
@@ -366,7 +367,7 @@ class GenerateReporterServiceTest {
 
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -379,7 +380,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldSaveReportResponseWithClassificationAndUpdateMetricCompletedWhenClassificationMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("classification"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder().build())
@@ -403,7 +404,7 @@ class GenerateReporterServiceTest {
 
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -414,7 +415,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldUpdateMetricCompletedWhenExceptionStart4() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("classification"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder().build())
@@ -440,7 +441,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldAsyncToGenerateCsvAndGenerateReportWhenFetchRight() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("rework times"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.jiraBoardSetting(JiraBoardSetting.builder()
@@ -480,7 +481,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGenerateCsvFile() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
@@ -509,7 +510,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowErrorWhenCodeSettingIsNullButSourceControlMetricsIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of("lead time for changes"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
@@ -573,7 +574,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGenerateCsvWithPipelineReportWhenPipeLineMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
 				.metrics(List.of("deployment frequency", "dev change failure rate", "dev mean time to recovery"))
@@ -598,7 +599,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getPipelineReportFileId()),
 					responseArgumentCaptor.capture());
 
@@ -619,7 +620,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldUpdateMetricCompletedWhenGenerateCsvWithPipelineReportFailed() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
 				.metrics(List.of("dev change failure rate"))
@@ -647,7 +648,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGenerateCsvWithSourceControlReportWhenSourceControlMetricIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
 				.metrics(List.of("lead time for changes"))
@@ -669,7 +670,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay).changeConsiderHolidayMode(false);
+			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getSourceControlReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -685,7 +686,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGenerateCsvWithCachedDataWhenBuildKiteDataAlreadyExisted() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
 				.metrics(List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue(),
@@ -710,7 +711,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay, times(2)).changeConsiderHolidayMode(false);
+			verify(workDay, times(2)).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getSourceControlReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -725,7 +726,7 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldUpdateMetricCompletedWhenGenerateCsvWithSourceControlReportFailed() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
-				.considerHoliday(false)
+				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
 				.metrics(List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue()))
