@@ -109,6 +109,7 @@ public class CycleTimeCalculator {
 			CardCollection cardCollection, Map<String, String> selectedStepsMap) {
 		List<String> realDoneKeys = selectedStepsMap.entrySet()
 			.stream()
+			.filter(entry -> Objects.nonNull(entry.getValue()))
 			.filter(entry -> entry.getValue().equals(CardStepsEnum.DONE.getValue()))
 			.map(Map.Entry::getKey)
 			.toList();
