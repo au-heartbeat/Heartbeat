@@ -817,7 +817,7 @@ class JiraServiceTest {
 				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0.0);
-		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
+		assertThat(cardCollection.getCardsNumber()).isZero();
 	}
 
 	@Test
@@ -1381,7 +1381,7 @@ class JiraServiceTest {
 	}
 
 	@Test
-	public void shouldReturnCardsWhenCallGetStoryPointsWhenAssigneeIsNull() throws JsonProcessingException {
+	void shouldReturnCardsWhenCallGetStoryPointsWhenAssigneeIsNull() throws JsonProcessingException {
 		String assignName = "Zhang San";
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
@@ -1428,12 +1428,12 @@ class JiraServiceTest {
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
 				ZoneId.of("Asia/Shanghai"));
-		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
+		assertThat(nonDoneCards.getStoryPointSum()).isZero();
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldReturnCardsWhenCallGetStoryPointsWhenHistoryItemIsEmpty() throws JsonProcessingException {
+	void shouldReturnCardsWhenCallGetStoryPointsWhenHistoryItemIsEmpty() throws JsonProcessingException {
 		String assignName = "Zhang San";
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
@@ -1483,12 +1483,12 @@ class JiraServiceTest {
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
 				ZoneId.of("Asia/Shanghai"));
-		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
+		assertThat(nonDoneCards.getStoryPointSum()).isZero();
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForActiveSprintWithStatusIsEmpty()
+	void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForActiveSprintWithStatusIsEmpty()
 			throws JsonProcessingException {
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);

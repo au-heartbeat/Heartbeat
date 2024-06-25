@@ -19,7 +19,6 @@ import java.util.List;
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING;
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING_WITH_MULTIPLE_STATUSES;
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING_WITH_MULTIPLE_SWIM_LANES;
-import static heartbeat.service.report.CycleTimeFixture.MOCK_CARD_COLLECTION;
 import static heartbeat.service.report.CycleTimeFixture.MOCK_CARD_COLLECTION_COLUMN_WITH_MULTIPLE_STATUSES;
 import static heartbeat.service.report.CycleTimeFixture.MOCK_CARD_COLLECTION_WITH_ZERO_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,9 +1,6 @@
 package heartbeat.service.report;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import heartbeat.client.dto.board.jira.Assignee;
 import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraCardField;
@@ -12,19 +9,14 @@ import heartbeat.client.dto.board.jira.Status;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.board.dto.response.CardCycleTime;
 import heartbeat.controller.board.dto.response.CardParent;
-import heartbeat.controller.board.dto.response.ColumnValue;
-import heartbeat.controller.board.dto.response.CycleTimeInfo;
 import heartbeat.controller.board.dto.response.Fields;
-import heartbeat.controller.board.dto.response.FixVersion;
 import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
-import heartbeat.controller.board.dto.response.JiraColumnDTO;
 import heartbeat.controller.board.dto.response.JiraProject;
 import heartbeat.controller.board.dto.response.Priority;
 import heartbeat.controller.board.dto.response.Reporter;
 import heartbeat.controller.board.dto.response.ReworkTimesInfo;
 import heartbeat.controller.board.dto.response.StepsDay;
-import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.util.JsonFileReader;
 

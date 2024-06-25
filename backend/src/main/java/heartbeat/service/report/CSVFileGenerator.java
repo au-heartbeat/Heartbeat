@@ -259,7 +259,7 @@ public class CSVFileGenerator {
 		List<BoardCSVConfig> originCycleTimeFields = getOriginCycleTimeFields(fixedFields);
 		int fixedFieldColumnCount = columnCount - originCycleTimeFields.size();
 
-		Boolean existTodo = fixedFields.stream()
+		boolean existTodo = fixedFields.stream()
 			.anyMatch(it -> it.getLabel().equals(BoardCSVConfigEnum.TODO_DAYS.getLabel()));
 
 		String[][] data = new String[rowCount][columnCount];
@@ -304,7 +304,7 @@ public class CSVFileGenerator {
 		return originCycleTimeFields;
 	}
 
-	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount, Boolean existTodo) {
+	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount, boolean existTodo) {
 		String[] rowData = new String[columnCount];
 		if (cardDTO.getBaseInfo() != null) {
 			rowData[0] = cardDTO.getBaseInfo().getKey();

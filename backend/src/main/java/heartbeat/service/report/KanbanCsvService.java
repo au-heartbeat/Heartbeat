@@ -101,14 +101,14 @@ public class KanbanCsvService {
 		}
 		this.generateCSVForBoard(realDoneCardCollection.getJiraCardDTOList(),
 				nonDoneCardCollection.getJiraCardDTOList(), jiraColumns.getJiraColumnResponse(),
-				jiraBoardSetting.getTargetFields(), request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates,
-				jiraBoardSetting.getBoardColumns());
+				request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates, jiraBoardSetting);
 	}
 
 	private void generateCSVForBoard(List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,
-			List<JiraColumnDTO> jiraColumns, List<TargetField> targetFields, String csvTimeRangeTimeStamp,
-			CardStepsEnum reworkState, List<String> reworkFromStates,
-			List<RequestJiraBoardColumnSetting> boardColumns) {
+			List<JiraColumnDTO> jiraColumns, String csvTimeRangeTimeStamp, CardStepsEnum reworkState,
+			List<String> reworkFromStates, JiraBoardSetting jiraBoardSetting) {
+		List<TargetField> targetFields = jiraBoardSetting.getTargetFields();
+		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
 		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
 
@@ -126,7 +126,7 @@ public class KanbanCsvService {
 
 		List<TargetField> enabledTargetFields = targetFields.stream().filter(TargetField::isFlag).toList();
 
-		Boolean existTodo = boardColumns.stream().anyMatch(it -> it.getValue().equals("To do"));
+		boolean existTodo = boardColumns.stream().anyMatch(it -> it.getValue().equals("To do"));
 		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields(existTodo);
 		List<BoardCSVConfig> extraFields = getExtraFields(enabledTargetFields, fixedBoardFields);
 
@@ -319,7 +319,7 @@ public class KanbanCsvService {
 		return extraFields;
 	}
 
-	private List<BoardCSVConfig> getFixedBoardFields(Boolean existTodo) {
+	private List<BoardCSVConfig> getFixedBoardFields(boolean existTodo) {
 		List<BoardCSVConfig> fields = new ArrayList<>(Arrays.stream(BoardCSVConfigEnum.values())
 			.map(field -> BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build())
 			.toList());
