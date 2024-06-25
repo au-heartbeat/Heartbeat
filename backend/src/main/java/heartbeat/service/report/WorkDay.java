@@ -31,7 +31,7 @@ public class WorkDay {
 
 	private AbstractCountryHoliday countryHoliday;
 
-	private List<Integer> years = new ArrayList<Integer>();
+	private List<Integer> years = new ArrayList<>();
 
 	public WorkDay(HolidayFactory holidayFactory) {
 		this.holidayFactory = holidayFactory;
@@ -39,7 +39,7 @@ public class WorkDay {
 
 	public void selectCalendarType(CalendarTypeEnum calendarType) {
 		countryHoliday = holidayFactory.build(calendarType);
-		if(years.isEmpty()) {
+		if (years.isEmpty()) {
 			Integer year = Calendar.getInstance().get(Calendar.YEAR);
 			holidayMap.putAll(countryHoliday.loadHolidayList(String.valueOf(year)));
 			years.add(year);
@@ -48,7 +48,7 @@ public class WorkDay {
 	}
 
 	private List<Integer> getSelectedYears(long startTime, long endTime, ZoneId timezone) {
-		List<Integer> years = new ArrayList<>();
+		List<Integer> selectedYears = new ArrayList<>();
 
 		Instant startInstant = Instant.ofEpochMilli(startTime);
 		Instant endInstant = Instant.ofEpochMilli(endTime);
@@ -57,10 +57,10 @@ public class WorkDay {
 		Year endYear = Year.from(endInstant.atZone(timezone));
 
 		for (int year = startYear.getValue(); year <= endYear.getValue(); year++) {
-			years.add(year);
+			selectedYears.add(year);
 		}
 
-		return years;
+		return selectedYears;
 	}
 
 	private void refreshHolidayMap(long startTime, long endTime, ZoneId timezone) {
@@ -68,9 +68,7 @@ public class WorkDay {
 		for (Integer year : needYears) {
 			if (!(years.contains(year))) {
 				Map<String, Boolean> addedHolidayMap = countryHoliday.loadHolidayList(String.valueOf(year));
-				log.info("put all added holidays: " + year);
 				holidayMap.putAll(addedHolidayMap);
-				log.info("put all added holidays: " + holidayMap.size());
 				years.add(year);
 			}
 		}
