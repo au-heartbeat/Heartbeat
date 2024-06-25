@@ -14,6 +14,8 @@ import heartbeat.controller.board.dto.response.Priority;
 import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
+import heartbeat.controller.report.dto.response.CycleTime;
+import heartbeat.controller.report.dto.response.CycleTimeForSelectedStepItem;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.FileIOException;
@@ -406,6 +408,14 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsMetric() throws IOException {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
+		CycleTime cycleTime = reportResponse.getCycleTime();
+		cycleTime.getSwimlaneList()
+			.add(CycleTimeForSelectedStepItem.builder()
+				.optionalItemName("Waiting for testing")
+				.averageTimeForSP(2.6)
+				.averageTimeForCards(6.06)
+				.totalTime(18.17)
+				.build());
 
 		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
 
@@ -427,6 +437,7 @@ class CSVFileGeneratorTest {
 						"Cycle time","Total review time / Total cycle time","37.39"
 						"Cycle time","Total testing time / Total cycle time","0.17"
 						"Cycle time","Total  time / Total cycle time","0.17"
+						"Cycle time","Total waiting for testing time / Total cycle time","62.10"
 						"Cycle time","Average development time(days/storyPoint)","2.60"
 						"Cycle time","Average development time(days/card)","6.06"
 						"Cycle time","Average analysis time(days/storyPoint)","12.60"
@@ -439,6 +450,8 @@ class CSVFileGeneratorTest {
 						"Cycle time","Average testing time(days/card)","0.02"
 						"Cycle time","Average  time(days/storyPoint)","0.01"
 						"Cycle time","Average  time(days/card)","0.02"
+						"Cycle time","Average waiting for testing time(days/storyPoint)","2.60"
+						"Cycle time","Average waiting for testing time(days/card)","6.06"
 						"Classifications","Issue Type / Bug","33.33"
 						"Classifications","Issue Type / Story","66.67"
 						"Deployment frequency","Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)","0.78"
