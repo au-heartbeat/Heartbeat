@@ -3,7 +3,15 @@ package heartbeat.service.report;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import heartbeat.client.dto.board.jira.JiraCard;
+import heartbeat.client.dto.board.jira.JiraCardField;
+import heartbeat.client.dto.board.jira.Status;
+import heartbeat.controller.board.dto.response.CardCycleTime;
+import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
+import heartbeat.controller.board.dto.response.JiraProject;
+import heartbeat.controller.board.dto.response.Priority;
+import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
@@ -28,6 +36,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -546,6 +555,47 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
+	void shouldAssembleBoardDataSuccessWhenExistTodoAndNullFields() {
+		CardCycleTime cardCycleTime = CardCycleTime.builder()
+			.name("ADM-489")
+			.total(0.90)
+			.steps(StepsDay.builder().development(0.90).build())
+			.build();
+		List<JiraCardDTO> cardDTOList = List.of(JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder()
+				.key("ADM-489")
+				.fields(JiraCardField.builder()
+					.summary("summary")
+					.issuetype(IssueType.builder().name("issue type").build())
+					.status(Status.builder().displayValue("done").build())
+					.storyPoints(2)
+					.project(JiraProject.builder().id("10001").key("ADM").name("Auto Dora Metrics").build())
+					.priority(Priority.builder().name("Medium").build())
+					.labels(Collections.emptyList())
+					.build())
+				.build())
+			.totalCycleTimeDivideStoryPoints("0.90")
+			.cardCycleTime(cardCycleTime)
+			.build());
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_WITH_TODO_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+		String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
+				"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint", "Labels",
+				"Cycle Time", "Story point estimate", "Flagged", "1010", "1011", "Cycle Time / Story Points",
+				"Todo Days", "In Dev Days", "Waiting Days", "Testing Days", "Block Days", "Review Days",
+				"OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
+		String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null, "ADM",
+				"Auto Dora Metrics", "Medium", null, null, "", "0.90", null, null, null, null, "0.45", "0", "0.90", "0",
+				"0", "0", "0", null, null };
+
+		String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
+
+		assertEquals(2, result.length);
+		assertTrue(Arrays.equals(expectKey, result[0]));
+		assertTrue(Arrays.equals(expectNormalCardValue, result[1]));
+	}
+
+	@Test
 	void shouldWriteDataToCSVErrorWhenWriteThrowException() {
 		String[] mockBoardDataRow1 = { "Issue Type", "Reporter" };
 		String[] mockBoardDataRow2 = { "ADM-696", "test" };
@@ -680,9 +730,9 @@ class CSVFileGeneratorTest {
 				extraDataPerRow);
 	}
 
-	private void assertNonNullValue(String[] value, List<Integer> index, List<String> otherValue) {
+	private void assertNonNullValue(String[] value, List<Integer> nonNullIndex, List<String> otherValue) {
 		for (int i = 0; i < value.length; i++) {
-			int pos = index.indexOf(i);
+			int pos = nonNullIndex.indexOf(i);
 			if (pos != -1) {
 				assertEquals(otherValue.get(pos), value[i]);
 			}
