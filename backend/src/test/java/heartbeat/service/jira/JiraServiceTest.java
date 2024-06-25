@@ -7,9 +7,12 @@ import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.CardHistoryResponseDTO;
 import heartbeat.client.dto.board.jira.FieldResponseDTO;
 import heartbeat.client.dto.board.jira.HistoryDetail;
+import heartbeat.client.dto.board.jira.IssueField;
+import heartbeat.client.dto.board.jira.Issuetype;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraBoardProject;
 import heartbeat.client.dto.board.jira.JiraBoardVerifyDTO;
+import heartbeat.client.dto.board.jira.Project;
 import heartbeat.client.dto.board.jira.Status;
 import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.client.dto.board.jira.AllCardsResponseDTO;
@@ -773,6 +776,51 @@ class JiraServiceTest {
 	}
 
 	@Test
+	void shouldGetCardsWhenCallGetStoryPointsWhenStartTimeIsTooBig() throws JsonProcessingException {
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		String token = "token";
+		CardHistoryResponseDTO cardHistoryResponseDTO = CardHistoryResponseDTO.builder()
+			.isLast(true)
+			.items(List.of(new HistoryDetail(1, "status", new Status("To do"), new Status("Done"), null, null)))
+			.build();
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+		jiraBoardSetting
+			.setOverrideFields(List.of(TargetField.builder().key("summary").name("Story Points").flag(true).build(),
+					TargetField.builder().key("").name("Flagged").flag(true).build()));
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+		storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
+		BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
+		String jql = String.format("status in ('%s') AND status changed during (%s, %s)", "DONE",
+				storyPointsAndCycleTimeRequest.getStartTime(), storyPointsAndCycleTimeRequest.getEndTime());
+
+		Map<String, String> envMap = new HashMap<>();
+		envMap.put("STORY_POINT_KEY", "storyPoints");
+
+		AllCardsResponseDTO allCardsResponseDTO = ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build();
+		allCardsResponseDTO.getIssues()
+			.add(JiraCard.builder()
+				.key("2")
+				.fields(JiraCardField.builder().assignee(new Assignee("Test 1")).storyPoints(0).build())
+				.build());
+		String allDoneCards = objectMapper.writeValueAsString(allCardsResponseDTO);
+
+		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
+		when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
+			.thenReturn(allDoneCards);
+		when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "1", 0, 100, token)).thenReturn(cardHistoryResponseDTO);
+		when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "2", 0, 100, token)).thenReturn(cardHistoryResponseDTO);
+		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
+		when(systemUtil.getEnvMap()).thenReturn(envMap);
+
+		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
+				ZoneId.of("Asia/Shanghai"));
+
+		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0.0);
+		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
+	}
+
+	@Test
 	void shouldGetCardCollection() {
 		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 		String token = "token";
@@ -1376,6 +1424,61 @@ class JiraServiceTest {
 		when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
 			.thenReturn(cardHistoryResponseDTO);
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
+
+		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
+				ZoneId.of("Asia/Shanghai"));
+		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
+		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
+	}
+
+	@Test
+	public void shouldReturnCardsWhenCallGetStoryPointsWhenHistoryItemIsEmpty() throws JsonProcessingException {
+		String assignName = "Zhang San";
+		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+		URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+		HashMap<String, IssueField> issueFieldMap = new HashMap<>();
+		FieldResponseDTO targetField = FieldResponseDTO.builder()
+			.projects(List.of(new Project(List.of(new Issuetype(issueFieldMap)))))
+			.build();
+
+		CardHistoryResponseDTO cardHistoryResponseDTO = CardHistoryResponseDTO.builder()
+			.isLast(true)
+			.items(List.of())
+			.build();
+
+		when(urlGenerator.getUri(any())).thenReturn(baseUrl);
+		AllCardsResponseDTO allCardsResponseDTO = AllCardsResponseDTO.builder()
+			.total("3")
+			.issues(List.of(
+					new JiraCard("1",
+							JiraCardField.builder()
+								.assignee(new Assignee(assignName))
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(2)
+								.status(new Status(CardStepsEnum.TESTING.getValue()))
+								.build()),
+					new JiraCard("2",
+							JiraCardField.builder()
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(2)
+								.status(new Status(CardStepsEnum.TESTING.getValue()))
+								.build()),
+					new JiraCard("3",
+							JiraCardField.builder()
+								.assignee(Assignee.builder().build())
+								.issuetype(IssueType.builder().name("缺陷").build())
+								.storyPoints(2)
+								.status(new Status(CardStepsEnum.TESTING.getValue()))
+								.build())))
+			.build();
+
+		when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
+			.thenReturn(objectMapper.writeValueAsString(allCardsResponseDTO));
+		when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
+			.thenReturn(cardHistoryResponseDTO);
+		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(targetField);
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),

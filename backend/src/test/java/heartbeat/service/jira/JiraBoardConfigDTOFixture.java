@@ -643,7 +643,8 @@ public class JiraBoardConfigDTOFixture {
 	}
 
 	public static List<CycleTimeInfo> CYCLE_TIME_INFO_LIST() {
-		return List.of(CycleTimeInfo.builder().column("TO DO").day(10.0).build(),
+		return List.of(CycleTimeInfo.builder().column("OTHER").day(5.0).build(),
+				CycleTimeInfo.builder().column("TO DO").day(10.0).build(),
 				CycleTimeInfo.builder().column("WAITING FOR TESTING").day(1.0).build(),
 				CycleTimeInfo.builder().column("TESTING").day(2.0).build(),
 				CycleTimeInfo.builder().column("IN DEV").day(3.0).build(),

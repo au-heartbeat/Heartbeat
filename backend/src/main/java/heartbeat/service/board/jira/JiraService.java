@@ -873,7 +873,7 @@ public class JiraService {
 			.filter(activity -> STATUS_FIELD_ID.equals(activity.getFieldId()))
 			.toList();
 
-		if (jiraCardHistory.getItems().size() > 0 && statusActivities.size() > 0) {
+		if (!jiraCardHistory.getItems().isEmpty() && !statusActivities.isEmpty()) {
 			statusChangedArray.add(StatusChangedItem.builder()
 				.timestamp(jiraCardHistory.getItems().get(0).getTimestamp() - 1)
 				.status(statusActivities.get(0).getFrom().getDisplayValue())
@@ -1066,15 +1066,12 @@ public class JiraService {
 	}
 
 	private void setLastStatusChangeTimeInCard(JiraCard card, CardHistoryResponseDTO cardHistoryResponseDTO) {
-		Optional<Long> lastStatusChangeTime = cardHistoryResponseDTO.getItems()
+		cardHistoryResponseDTO.getItems()
 			.stream()
 			.filter(history -> STATUS_FIELD_ID.equals(history.getFieldId()))
 			.map(HistoryDetail::getTimestamp)
-			.max(Long::compareTo);
-
-		if (lastStatusChangeTime.isPresent() && nonNull(card.getFields())) {
-			card.getFields().setLastStatusChangeDate(lastStatusChangeTime.get());
-		}
+			.max(Long::compareTo)
+			.ifPresent(aLong -> card.getFields().setLastStatusChangeDate(aLong));
 	}
 
 	private List<String> getAssigneeSetWithDisplayName(URI baseUrl, JiraCard card, String token) {
