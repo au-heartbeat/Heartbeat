@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.Year;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -28,13 +29,51 @@ public class WorkDay {
 
 	private final HolidayFactory holidayFactory;
 
+	private AbstractCountryHoliday countryHoliday;
+
+	private List<Integer> years = new ArrayList<Integer>();
+
 	public WorkDay(HolidayFactory holidayFactory) {
 		this.holidayFactory = holidayFactory;
 	}
 
 	public void selectCalendarType(CalendarTypeEnum calendarType) {
-		AbstractCountryHoliday holiday = holidayFactory.build(calendarType);
-		holidayMap = holiday.loadHolidayList(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+		countryHoliday = holidayFactory.build(calendarType);
+		if(years.isEmpty()) {
+			Integer year = Calendar.getInstance().get(Calendar.YEAR);
+			holidayMap.putAll(countryHoliday.loadHolidayList(String.valueOf(year)));
+			years.add(year);
+		}
+
+	}
+
+	private List<Integer> getSelectedYears(long startTime, long endTime, ZoneId timezone) {
+		List<Integer> years = new ArrayList<>();
+
+		Instant startInstant = Instant.ofEpochMilli(startTime);
+		Instant endInstant = Instant.ofEpochMilli(endTime);
+
+		Year startYear = Year.from(startInstant.atZone(timezone));
+		Year endYear = Year.from(endInstant.atZone(timezone));
+
+		for (int year = startYear.getValue(); year <= endYear.getValue(); year++) {
+			years.add(year);
+		}
+
+		return years;
+	}
+
+	private void refreshHolidayMap(long startTime, long endTime, ZoneId timezone) {
+		List<Integer> needYears = getSelectedYears(startTime, endTime, timezone);
+		for (Integer year : needYears) {
+			if (!(years.contains(year))) {
+				Map<String, Boolean> addedHolidayMap = countryHoliday.loadHolidayList(String.valueOf(year));
+				log.info("put all added holidays: " + year);
+				holidayMap.putAll(addedHolidayMap);
+				log.info("put all added holidays: " + holidayMap.size());
+				years.add(year);
+			}
+		}
 	}
 
 	public boolean verifyIfThisDayHoliday(LocalDate localDate) {
@@ -46,11 +85,13 @@ public class WorkDay {
 	}
 
 	public long calculateWorkDaysBetween(long startTime, long endTime, ZoneId timezone) {
+		refreshHolidayMap(startTime, endTime, timezone);
 		return calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, timezone, false)
 			.getWorkDays();
 	}
 
 	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, ZoneId timezone) {
+		refreshHolidayMap(startTime, endTime, timezone);
 		return calculateWorkTimeAndHolidayBetweenWhenHolidayCanWork(startTime, endTime, timezone);
 	}
 
@@ -136,6 +177,7 @@ public class WorkDay {
 	}
 
 	public double calculateWorkDaysToTwoScale(long startTime, long endTime, ZoneId timezone) {
+		refreshHolidayMap(startTime, endTime, timezone);
 		double days = (double) calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, timezone,
 				true)
 			.getWorkTime() / ONE_DAY;
