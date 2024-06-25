@@ -39,7 +39,7 @@ public class WorkDay {
 
 	public void selectCalendarType(CalendarTypeEnum calendarType) {
 		countryHoliday = holidayFactory.build(calendarType);
-		if(years.isEmpty()) {
+		if (years.isEmpty()) {
 			Integer year = Calendar.getInstance().get(Calendar.YEAR);
 			holidayMap.putAll(countryHoliday.loadHolidayList(String.valueOf(year)));
 			years.add(year);
@@ -68,9 +68,7 @@ public class WorkDay {
 		for (Integer year : needYears) {
 			if (!(years.contains(year))) {
 				Map<String, Boolean> addedHolidayMap = countryHoliday.loadHolidayList(String.valueOf(year));
-				log.info("put all added holidays: " + year);
 				holidayMap.putAll(addedHolidayMap);
-				log.info("put all added holidays: " + holidayMap.size());
 				years.add(year);
 			}
 		}
