@@ -515,6 +515,7 @@ public class CSVFileGenerator {
 			case "Review" -> "review";
 			case "Testing" -> "testing";
 			case "Analysis" -> "analysis";
+			case "Waiting for testing" -> "waiting for testing";
 			default -> "";
 		};
 	}

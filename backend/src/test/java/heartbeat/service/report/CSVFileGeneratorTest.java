@@ -18,7 +18,6 @@ import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -475,7 +474,7 @@ class CSVFileGeneratorTest {
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		assertEquals(metricCsvData, "\"Group\",\"Metrics\",\"Value\"");
+		assertEquals("\"Group\",\"Metrics\",\"Value\"", metricCsvData);
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
 		Files.deleteIfExists(Path.of(fileName));
