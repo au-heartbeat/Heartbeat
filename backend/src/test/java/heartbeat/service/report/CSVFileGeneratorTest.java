@@ -270,7 +270,7 @@ class CSVFileGeneratorTest {
 		String csvPipelineData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(
+		assertEquals(
 				"\"Organization\",\"Pipeline Name\",\"Pipeline Step\",\"Valid\",\"Build Number\",\"Code Committer\",\"Build Creator\",\"First Code Committed Time In PR\",\"PR Created Time\",\"PR Merged Time\",\"No PR Committed Time\",\"Job Start Time\",\"Pipeline Start Time\",\"Pipeline Finish Time\",\"Non-Workdays (Hours)\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\",\"Revert\"\n"
 						+ "\"Thoughtworks-Heartbeat\",\"Heartbeat\",\":rocket: Deploy prod\",\"true\",\"880\",\"XXXX\",,\"2023-05-08T07:18:18Z\",\"168369327000\",\"1683793037000\",,\"168369327000\",\"168369327000\",\"1684793037000\",\"240\",\"8379303\",\"16837\",\"653037000\",\"passed\",\"branch\",\"\"",
 				csvPipelineData);
@@ -292,7 +292,7 @@ class CSVFileGeneratorTest {
 		String csvPipelineData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals("\"Issue Type\",\"Reporter\"\n\"ADM-696\",\"test\"", csvPipelineData);
+		assertEquals("\"Issue Type\",\"Reporter\"\n\"ADM-696\",\"test\"", csvPipelineData);
 
 		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
@@ -358,9 +358,9 @@ class CSVFileGeneratorTest {
 		FileInputStream fileInputStream = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
-		Assertions.assertEquals("\"Group\",\"Metrics\",\"Value\"", headers);
+		assertEquals("\"Group\",\"Metrics\",\"Value\"", headers);
 		String firstLine = reader.readLine();
-		Assertions.assertEquals("\"Velocity\",\"Velocity(Story Point)\",\"7.0\"", firstLine);
+		assertEquals("\"Velocity\",\"Velocity(Story Point)\",\"7.0\"", firstLine);
 		reader.close();
 		fileInputStream.close();
 		boolean delete = file.delete();
@@ -415,7 +415,7 @@ class CSVFileGeneratorTest {
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(metricCsvData,
+		assertEquals(metricCsvData,
 				"""
 						"Group","Metrics","Value"
 						"Velocity","Velocity(Story Point)","7.0"
@@ -475,7 +475,7 @@ class CSVFileGeneratorTest {
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(metricCsvData, "\"Group\",\"Metrics\",\"Value\"");
+		assertEquals(metricCsvData, "\"Group\",\"Metrics\",\"Value\"");
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
 		Files.deleteIfExists(Path.of(fileName));
@@ -492,7 +492,7 @@ class CSVFileGeneratorTest {
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(metricCsvData, """
+		assertEquals(metricCsvData, """
 				"Group","Metrics","Value"
 				"Rework","Total rework times","3"
 				"Rework","Total rework cards","3"
