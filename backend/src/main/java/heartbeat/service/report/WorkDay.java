@@ -31,7 +31,7 @@ public class WorkDay {
 
 	private AbstractCountryHoliday countryHoliday;
 
-	private List<Integer> years = new ArrayList<Integer>();
+	private List<Integer> years = new ArrayList<>();
 
 	public WorkDay(HolidayFactory holidayFactory) {
 		this.holidayFactory = holidayFactory;
@@ -48,7 +48,7 @@ public class WorkDay {
 	}
 
 	private List<Integer> getSelectedYears(long startTime, long endTime, ZoneId timezone) {
-		List<Integer> years = new ArrayList<>();
+		List<Integer> selectedYears = new ArrayList<>();
 
 		Instant startInstant = Instant.ofEpochMilli(startTime);
 		Instant endInstant = Instant.ofEpochMilli(endTime);
@@ -57,10 +57,10 @@ public class WorkDay {
 		Year endYear = Year.from(endInstant.atZone(timezone));
 
 		for (int year = startYear.getValue(); year <= endYear.getValue(); year++) {
-			years.add(year);
+			selectedYears.add(year);
 		}
 
-		return years;
+		return selectedYears;
 	}
 
 	private void refreshHolidayMap(long startTime, long endTime, ZoneId timezone) {
