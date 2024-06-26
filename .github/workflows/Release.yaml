@@ -24,7 +24,7 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v3
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v3.3.2
+        uses: gradle/gradle-build-action@v3.4.2
       - name: Build
         run: ./gradlew clean build
       - uses: actions/upload-artifact@v4
@@ -76,7 +76,7 @@ jobs:
         run: |
           echo "TAG_NAME=$(git tag --sort version:refname | tail -n 1)" >> "$GITHUB_ENV"
       - name: Build and Push Docker Image for frontend
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: ./ops/infra/Dockerfile.frontend
           push: true
@@ -84,7 +84,7 @@ jobs:
             ghcr.io/${{ env.LOWCASE_REPO_NAME }}_frontend:${{ env.TAG_NAME }}
             ghcr.io/${{ env.LOWCASE_REPO_NAME }}_frontend:latest
       - name: Build and Push Docker Image for backend
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: ./ops/infra/Dockerfile.backend
           push: true
