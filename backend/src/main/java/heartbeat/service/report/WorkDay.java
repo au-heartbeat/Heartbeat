@@ -46,7 +46,7 @@ public class WorkDay {
 						synchronized (this) {
 							if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
 								Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(
-									allCountryHolidayMap.get(calendarTypeEnum));
+										allCountryHolidayMap.get(calendarTypeEnum));
 								loadedYearHolidayMap.putAll(addedHolidayMap);
 								allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
 							}
@@ -59,10 +59,10 @@ public class WorkDay {
 				}
 				loadedYears.add(year);
 			}
-		} finally {
+		}
+		finally {
 			executor.shutdown();
 		}
-
 
 	}
 
