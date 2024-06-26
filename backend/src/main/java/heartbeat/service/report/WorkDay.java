@@ -12,7 +12,12 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -61,7 +66,9 @@ public class WorkDay {
 			}
 		}
 		finally {
-			executor.shutdown();
+			if (executor != null) {
+				executor.shutdown();
+			}
 		}
 
 	}
