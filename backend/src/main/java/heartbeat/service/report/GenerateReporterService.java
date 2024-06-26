@@ -203,12 +203,14 @@ public class GenerateReporterService {
 
 	private synchronized ReportResponse generateBoardReporter(GenerateReportRequest request) {
 		workDay.selectCalendarType(request.getCalendarType());
+		log.info("--- start to fetch board data for preparation...");
 		FetchedData fetchedData = fetchJiraBoardData(request, new FetchedData());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
-
+		log.info("--- Complete the fetch of board data for preparation!");
 		request.getBoardMetrics().forEach(metric -> {
+			log.info(" --- Start to generate report for {} ...",metric);
 			switch (metric) {
 				case "velocity" -> assembleVelocity(fetchedData, reportResponse);
 				case "cycle time" -> assembleCycleTime(fetchedData, reportResponse, jiraBoardSetting);
@@ -218,6 +220,7 @@ public class GenerateReporterService {
 					// TODO
 				}
 			}
+			log.info(" --- Complete the generation for {}!",metric);
 		});
 
 		CompletableFuture.runAsync(() -> generateCsvForBoard(request, fetchedData));
@@ -225,10 +228,12 @@ public class GenerateReporterService {
 	}
 
 	private void generateCsvForBoard(GenerateReportRequest request, FetchedData fetchedData) {
+		log.info("--- Start to generate CSV for board report");
 		kanbanCsvService.generateCsvInfo(request, fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
 				fetchedData.getCardCollectionInfo().getNonDoneCardCollection());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(
 				IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()), BOARD, true);
+		log.info("--- Complete the generation of CSV for board report");
 	}
 
 	private void assembleVelocity(FetchedData fetchedData, ReportResponse reportResponse) {

@@ -18,9 +18,12 @@ public class KanbanService {
 	private final JiraService jiraService;
 
 	public FetchedData.CardCollectionInfo fetchDataFromKanban(GenerateReportRequest request) {
+		log.info("--- Start to retrieve for un-done cards...");
 		CardCollection nonDoneCardCollection = fetchNonDoneCardCollection(request);
+		log.info("--- Complete to retrieve for un-done cards!");
+		log.info("--- Start to retrieve for done cards...");
 		CardCollection realDoneCardCollection = fetchRealDoneCardCollection(request);
-
+		log.info("--- Complete to retrieve for done cards!");
 		return FetchedData.CardCollectionInfo.builder()
 			.realDoneCardCollection(realDoneCardCollection)
 			.nonDoneCardCollection(nonDoneCardCollection)
