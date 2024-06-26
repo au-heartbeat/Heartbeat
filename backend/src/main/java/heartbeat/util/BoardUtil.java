@@ -23,7 +23,7 @@ public class BoardUtil {
 	private final WorkDay workDay;
 
 	public List<CycleTimeInfo> getOriginCycleTimeInfos(List<StatusChangedItem> statusChangedArray,
-													   Boolean treatFlagCardAsBlock, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+			Boolean treatFlagCardAsBlock, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		List<StatusTimeStamp> flagTimeStamp = getFlagTimeStamps(statusChangedArray);
 		List<StatusTimeStamp> columnTimeStamp = getColumnTimeStamps(statusChangedArray);
 		List<CycleTimeInfo> originCycleTimeInfos = calculateOriginCycleTime(flagTimeStamp, columnTimeStamp,
@@ -32,7 +32,8 @@ public class BoardUtil {
 	}
 
 	public List<CycleTimeInfo> getCycleTimeInfos(List<StatusChangedItem> statusChangedArray,
-												 List<String> realDoneStatus, Boolean treatFlagCardAsBlock, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+			List<String> realDoneStatus, Boolean treatFlagCardAsBlock, CalendarTypeEnum calendarTypeEnum,
+			ZoneId timezone) {
 		List<StatusChangedItem> statusChangedByFiltered;
 		if (treatFlagCardAsBlock) {
 			statusChangedByFiltered = statusChangedArray;
@@ -48,14 +49,15 @@ public class BoardUtil {
 		List<StatusTimeStamp> flagTimeStamp = getFlagTimeStamps(statusChangedBySorted);
 		List<StatusTimeStamp> columnTimeStamp = getColumnTimeStamps(statusChangedBySorted);
 
-		List<CycleTimeInfo> cycleTimeInfos = calculateCycleTime(realDoneStatus, flagTimeStamp, columnTimeStamp, calendarTypeEnum,
-			timezone);
+		List<CycleTimeInfo> cycleTimeInfos = calculateCycleTime(realDoneStatus, flagTimeStamp, columnTimeStamp,
+				calendarTypeEnum, timezone);
 
 		return getCollectRemovedDuplicates(cycleTimeInfos);
 	}
 
 	private List<CycleTimeInfo> calculateOriginCycleTime(List<StatusTimeStamp> flagTimeStamp,
-														 List<StatusTimeStamp> columnTimeStamp, Boolean treatFlagCardAsBlock, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+			List<StatusTimeStamp> columnTimeStamp, Boolean treatFlagCardAsBlock, CalendarTypeEnum calendarTypeEnum,
+			ZoneId timezone) {
 		List<CycleTimeInfo> originCycleTimeInfos = new ArrayList<>();
 
 		for (StatusTimeStamp columnTimeStampItem : columnTimeStamp) {
@@ -80,7 +82,7 @@ public class BoardUtil {
 	}
 
 	private List<CycleTimeInfo> calculateCycleTime(List<String> realDoneStatus, List<StatusTimeStamp> flagTimeStamp,
-												   List<StatusTimeStamp> columnTimeStamp, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+			List<StatusTimeStamp> columnTimeStamp, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		List<CycleTimeInfo> cycleTimeInfos = new ArrayList<>();
 		double totalFlagTimeInDays = calculateTotalFlagCycleTime(flagTimeStamp, calendarTypeEnum, timezone);
 		double totalFlagAndRealDoneOverlapTime = calculateTotalFlagAndRealDoneOverlapTime(realDoneStatus, flagTimeStamp,
@@ -94,7 +96,8 @@ public class BoardUtil {
 				realColumnTimeInDays = originColumnTimeInDays;
 			}
 			else {
-				double totalOverlapTimeInDays = calculateTotalOverlapTime(columnTimeStampItem, flagTimeStamp, calendarTypeEnum, timezone);
+				double totalOverlapTimeInDays = calculateTotalOverlapTime(columnTimeStampItem, flagTimeStamp,
+						calendarTypeEnum, timezone);
 				if (Objects.equals(columnTimeStampItem.getStatus(), CardStepsEnum.BLOCK.getValue().toUpperCase())) {
 					realColumnTimeInDays = originColumnTimeInDays + totalFlagTimeInDays - totalOverlapTimeInDays
 							- totalFlagAndRealDoneOverlapTime;
@@ -128,12 +131,13 @@ public class BoardUtil {
 	}
 
 	private double calculateTotalFlagAndRealDoneOverlapTime(List<String> realDoneStatus,
-															List<StatusTimeStamp> flagTimeStamp, List<StatusTimeStamp> columnTimeStamp, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+			List<StatusTimeStamp> flagTimeStamp, List<StatusTimeStamp> columnTimeStamp,
+			CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		double totalFlagAndRealDoneColumnOverlapTime = 0.0;
 		for (StatusTimeStamp columnTimeStampItem : columnTimeStamp) {
 			if (realDoneStatus.contains(columnTimeStampItem.getStatus().toUpperCase())) {
-				totalFlagAndRealDoneColumnOverlapTime += calculateTotalOverlapTime(columnTimeStampItem, flagTimeStamp, calendarTypeEnum,
-					timezone);
+				totalFlagAndRealDoneColumnOverlapTime += calculateTotalOverlapTime(columnTimeStampItem, flagTimeStamp,
+						calendarTypeEnum, timezone);
 			}
 		}
 		return totalFlagAndRealDoneColumnOverlapTime;
@@ -166,7 +170,7 @@ public class BoardUtil {
 	}
 
 	private double calculateTotalOverlapTime(StatusTimeStamp columnTimeStampItem, List<StatusTimeStamp> flagTimeStamp,
-											 CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+			CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		double totalOverlapTimeInDays = 0.0;
 
 		for (StatusTimeStamp flagTimeStampItem : flagTimeStamp) {
@@ -182,7 +186,8 @@ public class BoardUtil {
 		return totalOverlapTimeInDays;
 	}
 
-	private double calculateTotalFlagCycleTime(List<StatusTimeStamp> flagTimeStamp, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+	private double calculateTotalFlagCycleTime(List<StatusTimeStamp> flagTimeStamp, CalendarTypeEnum calendarTypeEnum,
+			ZoneId timezone) {
 		double totalFlagTimeInDays = 0.0;
 
 		for (StatusTimeStamp flagTimeStampItem : flagTimeStamp) {

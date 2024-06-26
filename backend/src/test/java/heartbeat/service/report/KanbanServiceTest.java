@@ -59,7 +59,8 @@ class KanbanServiceTest {
 				mockJiraBoardSetting.getUsers(), null, ZoneId.of("Asia/Shanghai"));
 		verify(jiraService).getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 				KanbanFixture.MOCK_EXPECT_STORY_POINT_AND_CYCLE_TIME_REQUEST(), mockJiraBoardSetting.getBoardColumns(),
-				mockJiraBoardSetting.getUsers(), mockJiraBoardSetting.getAssigneeFilter(), null, ZoneId.of("Asia/Shanghai"));
+				mockJiraBoardSetting.getUsers(), mockJiraBoardSetting.getAssigneeFilter(), null,
+				ZoneId.of("Asia/Shanghai"));
 	}
 
 }
