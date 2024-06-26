@@ -13,10 +13,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,11 +27,9 @@ public class WorkDay {
 
 	private static final long ONE_DAY = 1000L * 60 * 60 * 24;
 
-	private Map<CalendarTypeEnum, Map<String, Boolean>> allCountryHolidayMap = new HashMap<>();
+	private Map<CalendarTypeEnum, Map<String, Boolean>> allCountryHolidayMap = new EnumMap<>(CalendarTypeEnum.class);
 
 	private final HolidayFactory holidayFactory;
-
-	private List<Integer> loadedYears = new ArrayList<>();
 
 	public WorkDay(HolidayFactory holidayFactory) {
 		this.holidayFactory = holidayFactory;
@@ -38,36 +37,34 @@ public class WorkDay {
 	}
 
 	private void loadAllHolidayList() {
-		ExecutorService executor = Executors.newFixedThreadPool(15);
-		for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
-			for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
-				int finalYear = year;
-				executor.submit(() -> {
-					Map<String, Boolean> addedHolidayMap = holidayFactory.build(calendarTypeEnum)
-						.loadHolidayList(String.valueOf(finalYear));
-					synchronized (this) {
-						if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
-							Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(
-									allCountryHolidayMap.get(calendarTypeEnum));
-							loadedYearHolidayMap.putAll(addedHolidayMap);
-							allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
+		try (ExecutorService executor = Executors.newFixedThreadPool(15)) {
+			for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
+				for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
+					int finalYear = year;
+					executor.submit(() -> {
+						Map<String, Boolean> addedHolidayMap = holidayFactory.build(calendarTypeEnum)
+							.loadHolidayList(String.valueOf(finalYear));
+						synchronized (this) {
+							if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
+								Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(
+										allCountryHolidayMap.get(calendarTypeEnum));
+								loadedYearHolidayMap.putAll(addedHolidayMap);
+								allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
+							}
+							else {
+								allCountryHolidayMap.put(calendarTypeEnum, addedHolidayMap);
+							}
 						}
-						else {
-							allCountryHolidayMap.put(calendarTypeEnum, addedHolidayMap);
-						}
-					}
 
-				});
+					});
+				}
 			}
-			loadedYears.add(year);
 		}
-		executor.shutdown();
 	}
 
 	public boolean verifyIfThisDayHoliday(LocalDate localDate, CalendarTypeEnum calendarTypeEnum) {
 		String localDateString = localDate.toString();
-		if (allCountryHolidayMap.containsKey(calendarTypeEnum)
-				&& allCountryHolidayMap.get(calendarTypeEnum).containsKey(localDateString)) {
+		if (allCountryHolidayMap.get(calendarTypeEnum).containsKey(localDateString)) {
 			return allCountryHolidayMap.get(calendarTypeEnum).get(localDateString);
 		}
 		return localDate.getDayOfWeek() == DayOfWeek.SATURDAY || localDate.getDayOfWeek() == DayOfWeek.SUNDAY;

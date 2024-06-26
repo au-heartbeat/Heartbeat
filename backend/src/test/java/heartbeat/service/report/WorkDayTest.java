@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.service.report.model.WorkInfo;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,11 +21,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +40,8 @@ class WorkDayTest {
 	private static final long ONE_HOUR_MILLISECONDS = 1000L * 60 * 60;
 
 	private static final long ONE_MINUTE_MILLISECONDS = 1000L * 60;
+
+	private static final Logger log = LoggerFactory.getLogger(WorkDayTest.class);
 
 	@Mock
 	private ChinaHoliday chinaHoliday;
@@ -48,70 +57,127 @@ class WorkDayTest {
 
 	WorkDay workDay;
 
-	@BeforeEach
-	public void setUp() {
-		Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
-				"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03", true,
-				"2024-05-04", true, "2024-05-05", true);
-		Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
-		when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
-		when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
-		when(vietnamHoliday.loadHolidayList(any())).thenReturn(vietnamHolidayMap);
+	@Nested
+	class VerifyIfThisDayHoliday {
 
-		workDay = new WorkDay(holidayFactory);
+		@BeforeEach
+		public void setUp() {
+			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
+			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
+			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
+			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
+			when(vietnamHoliday.loadHolidayList(any())).thenReturn(vietnamHolidayMap);
+
+			workDay = new WorkDay(holidayFactory);
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				verify(chinaHoliday, times(i)).loadHolidayList(any());
+				verify(regularHoliday, times(i)).loadHolidayList(any());
+				verify(vietnamHoliday, times(i)).loadHolidayList(any());
+			});
+		}
+
+		@Test
+		void shouldReturnDayIsHoliday() {
+
+			CalendarTypeEnum calendarType = CalendarTypeEnum.CN;
+
+			LocalDate holidayTime = LocalDate.of(2024, 4, 4);
+			LocalDate workdayTime = LocalDate.of(2024, 4, 7);
+
+			boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime, calendarType);
+			boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime, calendarType);
+
+			assertTrue(resultWorkDay);
+			Assertions.assertFalse(resultHoliday);
+		}
+
+		@Test
+		void shouldReturnDayIsHolidayWithoutChineseHoliday() {
+			CalendarTypeEnum calendarType = CalendarTypeEnum.REGULAR;
+
+			LocalDate holidayTime = LocalDate.of(2024, 4, 4);
+			LocalDate workdayTime = LocalDate.of(2024, 4, 7);
+
+			boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime, calendarType);
+			boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime, calendarType);
+
+			Assertions.assertFalse(resultWorkDay);
+			assertTrue(resultHoliday);
+		}
+
 	}
 
-	@Test
-	void shouldReturnDayIsHoliday() {
+	@Nested
+	class CalculateWorkDaysBetween {
 
-		CalendarTypeEnum calendarType = CalendarTypeEnum.CN;
+		@BeforeEach
+		public void setUp() {
+			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
+			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
+			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
+			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
+			when(vietnamHoliday.loadHolidayList(any())).thenReturn(vietnamHolidayMap);
 
-		LocalDate holidayTime = LocalDate.of(2024, 4, 4);
-		LocalDate workdayTime = LocalDate.of(2024, 4, 7);
+			workDay = new WorkDay(holidayFactory);
 
-		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime, calendarType);
-		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime, calendarType);
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				verify(chinaHoliday, times(i)).loadHolidayList(any());
+				verify(regularHoliday, times(i)).loadHolidayList(any());
+				verify(vietnamHoliday, times(i)).loadHolidayList(any());
+			});
+		}
 
-		assertTrue(resultWorkDay);
-		Assertions.assertFalse(resultHoliday);
-	}
+		@Test
+		void shouldReturnRightWorkDaysWhenCalculateWorkDaysBetween() {
+			long startTime = LocalDate.parse("2024-04-01", DateTimeFormatter.ISO_DATE)
+				.atStartOfDay(ZoneOffset.ofHours(8))
+				.toInstant()
+				.toEpochMilli();
+			long endTime = LocalDate.parse("2024-05-05", DateTimeFormatter.ISO_DATE)
+				.atStartOfDay(ZoneOffset.ofHours(8))
+				.toInstant()
+				.toEpochMilli();
 
-	@Test
-	void shouldReturnDayIsHolidayWithoutChineseHoliday() {
-		CalendarTypeEnum calendarType = CalendarTypeEnum.REGULAR;
+			long regularResult = workDay.calculateWorkDaysBetween(startTime, endTime, CalendarTypeEnum.REGULAR,
+					ZoneId.of("Asia/Shanghai"));
+			long chinaResult = workDay.calculateWorkDaysBetween(startTime, endTime, CalendarTypeEnum.CN,
+					ZoneId.of("Asia/Shanghai"));
 
-		LocalDate holidayTime = LocalDate.of(2024, 4, 4);
-		LocalDate workdayTime = LocalDate.of(2024, 4, 7);
+			Assertions.assertEquals(25, regularResult);
+			Assertions.assertEquals(22, chinaResult);
+		}
 
-		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime, calendarType);
-		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime, calendarType);
-
-		Assertions.assertFalse(resultWorkDay);
-		assertTrue(resultHoliday);
-	}
-
-	@Test
-	void shouldReturnRightWorkDaysWhenCalculateWorkDaysBetween() {
-		long startTime = LocalDate.parse("2024-04-01", DateTimeFormatter.ISO_DATE)
-			.atStartOfDay(ZoneOffset.ofHours(8))
-			.toInstant()
-			.toEpochMilli();
-		long endTime = LocalDate.parse("2024-05-05", DateTimeFormatter.ISO_DATE)
-			.atStartOfDay(ZoneOffset.ofHours(8))
-			.toInstant()
-			.toEpochMilli();
-
-		long regularResult = workDay.calculateWorkDaysBetween(startTime, endTime, CalendarTypeEnum.REGULAR,
-				ZoneId.of("Asia/Shanghai"));
-		long chinaResult = workDay.calculateWorkDaysBetween(startTime, endTime, CalendarTypeEnum.CN,
-				ZoneId.of("Asia/Shanghai"));
-
-		Assertions.assertEquals(25, regularResult);
-		Assertions.assertEquals(22, chinaResult);
 	}
 
 	@Nested
 	class CalculateWorkDaysToTwoScale {
+
+		@BeforeEach
+		public void setUp() {
+			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
+			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
+			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
+			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
+			when(vietnamHoliday.loadHolidayList(any())).thenReturn(vietnamHolidayMap);
+
+			workDay = new WorkDay(holidayFactory);
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				verify(chinaHoliday, times(i)).loadHolidayList(any());
+				verify(regularHoliday, times(i)).loadHolidayList(any());
+				verify(vietnamHoliday, times(i)).loadHolidayList(any());
+			});
+		}
 
 		@Test
 		void shouldReturnRightWorkDaysWhenCalculateWorkDaysToTwoScaleAndStartIsWorkDayAndEndIsWorkDay() {
@@ -176,6 +242,26 @@ class WorkDayTest {
 
 	@Nested
 	class CalculateWorkDaysBetweenMaybeWorkInWeekend {
+
+		@BeforeEach
+		public void setUp() {
+			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
+			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
+			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
+			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
+			when(vietnamHoliday.loadHolidayList(any())).thenReturn(vietnamHolidayMap);
+
+			workDay = new WorkDay(holidayFactory);
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				verify(chinaHoliday, times(i)).loadHolidayList(any());
+				verify(regularHoliday, times(i)).loadHolidayList(any());
+				verify(vietnamHoliday, times(i)).loadHolidayList(any());
+			});
+		}
 
 		@Test
 		void startIsWorkdayAndEndIsWorkday() {

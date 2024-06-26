@@ -1026,8 +1026,9 @@ public class JiraService {
 					request.getOverrideFields());
 		}
 
-		List<JiraCardDTO> matchedNonCards = getMatchedNonDoneCards(request, boardColumns, users, baseUrl,
-				jiraCardWithFields.getJiraCards(), jiraCardWithFields.getTargetFields(), calendarTypeEnum, timezone);
+		List<JiraCardDTO> matchedNonCards = getMatchedNonDoneCards(new GetMatchedNonDoneCardsParams(request,
+				boardColumns, users, baseUrl, jiraCardWithFields.getJiraCards(), jiraCardWithFields.getTargetFields(),
+				calendarTypeEnum, timezone));
 		double storyPointSum = matchedNonCards.stream()
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
@@ -1039,26 +1040,28 @@ public class JiraService {
 			.build();
 	}
 
-	private List<JiraCardDTO> getMatchedNonDoneCards(StoryPointsAndCycleTimeRequest request,
-			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
-			List<JiraCard> allNonDoneCards, List<TargetField> targetFields, CalendarTypeEnum calendarTypeEnum,
-			ZoneId timezone) {
+	private List<JiraCardDTO> getMatchedNonDoneCards(GetMatchedNonDoneCardsParams getMatchedNonDoneCardsParams) {
 
 		List<JiraCardDTO> matchedCards = new ArrayList<>();
-		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields, request.getOverrideFields());
+		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(getMatchedNonDoneCardsParams.getTargetFields(),
+				getMatchedNonDoneCardsParams.getRequest().getOverrideFields());
 		String keyFlagged = cardCustomFieldKey.getFlagged();
 
-		allNonDoneCards.forEach(card -> {
-			CardHistoryResponseDTO cardHistoryResponseDTO = getJiraCardHistory(baseUrl, card.getKey(), 0,
-					request.getToken());
-			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(cardHistoryResponseDTO, request.isTreatFlagCardAsBlock(),
-					keyFlagged, request.getStatus(), calendarTypeEnum, timezone);
+		getMatchedNonDoneCardsParams.getAllNonDoneCards().forEach(card -> {
+			CardHistoryResponseDTO cardHistoryResponseDTO = getJiraCardHistory(
+					getMatchedNonDoneCardsParams.getBaseUrl(), card.getKey(), 0,
+					getMatchedNonDoneCardsParams.getRequest().getToken());
+			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(cardHistoryResponseDTO,
+					getMatchedNonDoneCardsParams.getRequest().isTreatFlagCardAsBlock(), keyFlagged,
+					getMatchedNonDoneCardsParams.getRequest().getStatus(),
+					getMatchedNonDoneCardsParams.getCalendarTypeEnum(), getMatchedNonDoneCardsParams.getTimezone());
 
 			setLastStatusChangeTimeInCard(card, cardHistoryResponseDTO);
-			List<String> assigneeSet = getAssigneeSetWithDisplayName(baseUrl, card, request.getToken());
-			if (users.stream().anyMatch(assigneeSet::contains)) {
+			List<String> assigneeSet = getAssigneeSetWithDisplayName(getMatchedNonDoneCardsParams.getBaseUrl(), card,
+					getMatchedNonDoneCardsParams.getRequest().getToken());
+			if (getMatchedNonDoneCardsParams.getUsers().stream().anyMatch(assigneeSet::contains)) {
 				CardCycleTime cardCycleTime = calculateCardCycleTime(card.getKey(),
-						cycleTimeInfoDTO.getCycleTimeInfos(), boardColumns);
+						cycleTimeInfoDTO.getCycleTimeInfos(), getMatchedNonDoneCardsParams.getBoardColumns());
 
 				cardCycleTime.setTotal(0.0);
 

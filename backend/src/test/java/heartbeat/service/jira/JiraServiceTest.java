@@ -771,7 +771,7 @@ class JiraServiceTest {
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0.0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -816,7 +816,7 @@ class JiraServiceTest {
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0.0);
 		assertThat(cardCollection.getCardsNumber()).isZero();
@@ -846,7 +846,8 @@ class JiraServiceTest {
 			.thenReturn(ALL_FIELD_RESPONSE_CONTAIN_CUSTOMER_FIELDS().build());
 
 		jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", CalendarTypeEnum.REGULAR,
+				ZoneId.of("Asia/Shanghai"));
 
 		verify(jiraFeignClient, times(10)).getJiraCardHistoryByCount(any(), eq("1"), anyInt(), anyInt(), any());
 	}
@@ -1428,7 +1429,7 @@ class JiraServiceTest {
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-				ZoneId.of("Asia/Shanghai"));
+				CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
 		assertThat(nonDoneCards.getStoryPointSum()).isZero();
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
 	}
@@ -1483,7 +1484,7 @@ class JiraServiceTest {
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-				ZoneId.of("Asia/Shanghai"));
+				CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
 		assertThat(nonDoneCards.getStoryPointSum()).isZero();
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
 	}

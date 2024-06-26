@@ -1,7 +1,6 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.board.dto.response.CardCollection;
-import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.service.board.jira.JiraService;
