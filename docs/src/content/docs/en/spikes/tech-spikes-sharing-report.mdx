@@ -1,0 +1,85 @@
+---
+title: Sharing Report
+description: Design to share the report to anyone
+---
+
+## Background
+
+It is a bit difficult to get the final report for some users, they just want to see the report, do not want to store/upload the config file for our app. it is reasonable for the product.
+
+Our target is to re-design the arch to match the user's requirement.
+
+## Scopes
+
+- Frontend
+- Backend
+
+## Design
+
+### Frontend
+
+|Item|New|Note|
+|:--|:--|:--|
+|Router|`/metrics/sharing`|for posting request to generate the reports|
+|Router|`/metrics/sharing/:uuid`|for sharing|
+
+:::note[limitations]
+Define the routers ref [here](https://reactrouter.com/en/main/start/concepts#defining-routes)
+:::
+
+#### Requirement
+
+- Add 2 routes for sharing
+
+### Backend
+
+```plantuml
+@startuml
+skin rose
+autonumber
+title Sharing Report
+
+==Generate the reports==
+frontend -> backend: POST /reports when jumping into report page
+backend --> frontend: uuid
+frontend -> frontend: Re-render with new URL /metrics/sharing/:uuid
+loop Spring list
+  frontend -> backend: POST /reports/:uuid with the previous/same payload
+  backend --> frontend: Report result
+end
+frontend -> frontend: Render reports & charts
+...Someone share the report to another one with the URL...
+
+==Get the sharing result==
+frontend -> frontend: GET /metrics/sharing/:uuid
+frontend --> frontend: Render frontend page
+alt There is 1 report at least
+  frontend -> backend: GET /reports/:uuid
+  backend-> backend: Loop all report under uuid folder
+  backend --> frontend: Response the URL list of report, e.g.   [`/api/v1/reports/uuid/1719387221071?startTime=20240528&endTime=20240531`]
+  loop URL list
+    frontend-> backend: GET /api/v1/reports/uuid/1719387221071?startTime=20240528&endTime=20240531
+    backend --> frontend: Report result
+  end
+  frontend -> frontend: Render reports & charts
+else No report under uuid folder
+  backend-> frontend: Response with 400
+end
+
+@enduml
+```
+
+#### New file/folder tree
+
+```sh
+app/output/reports
+  -- uuid
+    -- [startDatetime]-[endDatetime]-[timestamp].csv
+````
+
+:::note[Need actions]
+- Update the logic of deleting the existing report
+:::
+
+
+## Decision

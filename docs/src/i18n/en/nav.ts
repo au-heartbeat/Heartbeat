@@ -186,6 +186,12 @@ export default [
 		slug: 'spikes/tech-spikes-chart-api-solutions',
 		key: 'spikes/tech-spikes-chart-api-solutions',
 	},
+	{
+		text: 'Sharing Report',
+		slug: 'spikes/tech-spikes-sharing-report',
+		key: 'spikes/tech-spikes-sharing-report',
+	},
+
 	{ text: 'Biz', header: true, type: 'biz', key: 'Biz' },
 	{ text: 'Biz context', slug: 'biz/business-context', key: 'biz/business-context' },
 
