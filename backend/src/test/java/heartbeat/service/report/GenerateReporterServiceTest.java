@@ -593,7 +593,7 @@ class GenerateReporterServiceTest {
 			DeploymentFrequency fakeDeploymentFrequency = DeploymentFrequency.builder().build();
 			DevChangeFailureRate fakeDevChangeFailureRate = DevChangeFailureRate.builder().build();
 			DevMeanTimeToRecovery fakeMeantime = DevMeanTimeToRecovery.builder().build();
-			when(deploymentFrequency.calculate(any(), any(), any(), any())).thenReturn(fakeDeploymentFrequency);
+			when(deploymentFrequency.calculate(any(), any(), any(), , any())).thenReturn(fakeDeploymentFrequency);
 			when(devChangeFailureRate.calculate(any())).thenReturn(fakeDevChangeFailureRate);
 			when(meanToRecoveryCalculator.calculate(any(), any())).thenReturn(fakeMeantime);
 
