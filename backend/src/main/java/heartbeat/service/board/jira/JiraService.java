@@ -43,6 +43,7 @@ import heartbeat.controller.board.dto.response.ReworkTimesInfo;
 import heartbeat.controller.board.dto.response.StatusChangedItem;
 import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.board.dto.response.TargetField;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
@@ -248,8 +249,8 @@ public class JiraService {
 	}
 
 	public CardCollection getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(StoryPointsAndCycleTimeRequest request,
-			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, String assigneeFilter,
-			ZoneId timezone) {
+																			  List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, String assigneeFilter,
+																			  CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		BoardType boardType = BoardType.fromValue(request.getType());
 		URI baseUrl = urlGenerator.getUri(request.getSite());
 		BoardRequestParam boardRequestParam = BoardRequestParam.builder()
@@ -275,7 +276,7 @@ public class JiraService {
 			.allDoneCards(allDoneCards)
 			.targetFields(jiraCardWithFields.getTargetFields())
 			.build();
-		List<JiraCardDTO> realDoneCards = getRealDoneCards(request, jiraBoardInfo, assigneeFilter, timezone);
+		List<JiraCardDTO> realDoneCards = getRealDoneCards(request, jiraBoardInfo, assigneeFilter, calendarTypeEnum, timezone);
 
 		double storyPointSum = realDoneCards.stream()
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
@@ -600,7 +601,7 @@ public class JiraService {
 	}
 
 	private List<JiraCardDTO> getRealDoneCards(StoryPointsAndCycleTimeRequest request, JiraBoardInfo jiraBoardInfo,
-			String filterMethod, ZoneId timezone) {
+											   String filterMethod, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardInfo.getBoardColumns();
 		List<String> users = jiraBoardInfo.getUsers();
 		URI baseUrl = jiraBoardInfo.getBaseUrl();
@@ -624,7 +625,7 @@ public class JiraService {
 					request.getToken());
 			List<String> assigneeSet = getAssigneeSet(cardHistoryResponseDTO, filterMethod, doneCard);
 			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(cardHistoryResponseDTO, request.isTreatFlagCardAsBlock(),
-					keyFlagged, request.getStatus(), timezone);
+					keyFlagged, request.getStatus(), calendarTypeEnum, timezone);
 			if (users.stream().anyMatch(assigneeSet::contains)) {
 				JiraCardDTO jiraCardDTO = JiraCardDTO.builder()
 					.baseInfo(doneCard)
@@ -851,13 +852,13 @@ public class JiraService {
 	}
 
 	private CycleTimeInfoDTO getCycleTime(CardHistoryResponseDTO cardHistoryResponseDTO, Boolean treatFlagCardAsBlock,
-			String keyFlagged, List<String> realDoneStatus, ZoneId timezone) {
+										  String keyFlagged, List<String> realDoneStatus, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		List<StatusChangedItem> statusChangedArray = putStatusChangeEventsIntoAnArray(cardHistoryResponseDTO,
 				keyFlagged);
 		List<CycleTimeInfo> cycleTimeInfos = boardUtil.getCycleTimeInfos(statusChangedArray, realDoneStatus,
-				treatFlagCardAsBlock, timezone);
+				treatFlagCardAsBlock, calendarTypeEnum, timezone);
 		List<CycleTimeInfo> originCycleTimeInfos = boardUtil.getOriginCycleTimeInfos(statusChangedArray,
-				treatFlagCardAsBlock, timezone);
+				treatFlagCardAsBlock, calendarTypeEnum, timezone);
 
 		return CycleTimeInfoDTO.builder()
 			.cycleTimeInfos(cycleTimeInfos)
@@ -1004,7 +1005,7 @@ public class JiraService {
 	}
 
 	public CardCollection getStoryPointsAndCycleTimeForNonDoneCards(StoryPointsAndCycleTimeRequest request,
-			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, ZoneId timezone) {
+																	List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		URI baseUrl = urlGenerator.getUri(request.getSite());
 		BoardRequestParam boardRequestParam = BoardRequestParam.builder()
 			.boardId(request.getBoardId())
@@ -1024,7 +1025,7 @@ public class JiraService {
 		}
 
 		List<JiraCardDTO> matchedNonCards = getMatchedNonDoneCards(request, boardColumns, users, baseUrl,
-				jiraCardWithFields.getJiraCards(), jiraCardWithFields.getTargetFields(), timezone);
+				jiraCardWithFields.getJiraCards(), jiraCardWithFields.getTargetFields(), calendarTypeEnum, timezone);
 		double storyPointSum = matchedNonCards.stream()
 			.mapToDouble(card -> card.getBaseInfo().getFields().getStoryPoints())
 			.sum();
@@ -1037,8 +1038,8 @@ public class JiraService {
 	}
 
 	private List<JiraCardDTO> getMatchedNonDoneCards(StoryPointsAndCycleTimeRequest request,
-			List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
-			List<JiraCard> allNonDoneCards, List<TargetField> targetFields, ZoneId timezone) {
+													 List<RequestJiraBoardColumnSetting> boardColumns, List<String> users, URI baseUrl,
+													 List<JiraCard> allNonDoneCards, List<TargetField> targetFields, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 
 		List<JiraCardDTO> matchedCards = new ArrayList<>();
 		CardCustomFieldKey cardCustomFieldKey = covertCustomFieldKey(targetFields, request.getOverrideFields());
@@ -1048,7 +1049,7 @@ public class JiraService {
 			CardHistoryResponseDTO cardHistoryResponseDTO = getJiraCardHistory(baseUrl, card.getKey(), 0,
 					request.getToken());
 			CycleTimeInfoDTO cycleTimeInfoDTO = getCycleTime(cardHistoryResponseDTO, request.isTreatFlagCardAsBlock(),
-					keyFlagged, request.getStatus(), timezone);
+					keyFlagged, request.getStatus(), calendarTypeEnum, timezone);
 
 			setLastStatusChangeTimeInCard(card, cardHistoryResponseDTO);
 			List<String> assigneeSet = getAssigneeSetWithDisplayName(baseUrl, card, request.getToken());

@@ -34,10 +34,10 @@ class BoardUtilTest {
 			.CYCLE_TIME_INFOS_LIST_OF_REAL_DONE_COLUMN();
 		List<String> realDoneStatus = List.of("DONE");
 
-		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), any(ZoneId.class)))
+		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), , any(ZoneId.class)))
 			.thenReturn(StatusChangedItemsListAndCycleTimeInfosListFixture.EXPECT_DAYS);
-		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, true,
-				ZoneId.of("Asia/Shanghai"));
+		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, true, ,
+			ZoneId.of("Asia/Shanghai"));
 		Assertions.assertEquals(statusChangedItemsExpect, result);
 	}
 
@@ -49,10 +49,10 @@ class BoardUtilTest {
 			.CYCLE_TIME_INFOS_LIST_OF_BLOCK_COLUMN();
 		List<String> realDoneStatus = List.of("DONE");
 
-		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), any(ZoneId.class)))
+		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), , any(ZoneId.class)))
 			.thenReturn(StatusChangedItemsListAndCycleTimeInfosListFixture.EXPECT_DAYS);
-		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, true,
-				ZoneId.of("Asia/Shanghai"));
+		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, true, ,
+			ZoneId.of("Asia/Shanghai"));
 		Assertions.assertEquals(statusChangedItemsExpect, result);
 	}
 
@@ -64,10 +64,10 @@ class BoardUtilTest {
 			.CYCLE_TIME_INFOS_LIST_OF_OTHER_COLUMN();
 		List<String> realDoneStatus = List.of("DONE");
 
-		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), any(ZoneId.class)))
+		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), , any(ZoneId.class)))
 			.thenReturn(StatusChangedItemsListAndCycleTimeInfosListFixture.EXPECT_DAYS);
-		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, true,
-				ZoneId.of("Asia/Shanghai"));
+		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, true, ,
+			ZoneId.of("Asia/Shanghai"));
 		Assertions.assertEquals(statusChangedItemsExpect, result);
 	}
 
@@ -79,10 +79,10 @@ class BoardUtilTest {
 			.CYCLE_TIME_INFOS_LIST_WHEN_NOT_TREAT_FLAG_AS_BLOCK();
 		List<String> realDoneStatus = List.of("DONE");
 
-		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), any(ZoneId.class)))
+		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), , any(ZoneId.class)))
 			.thenReturn(StatusChangedItemsListAndCycleTimeInfosListFixture.EXPECT_DAYS);
-		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, false,
-				ZoneId.of("Asia/Shanghai"));
+		List<CycleTimeInfo> result = boardUtil.getCycleTimeInfos(statusChangedItems, realDoneStatus, false, ,
+			ZoneId.of("Asia/Shanghai"));
 		Assertions.assertEquals(statusChangedItemsExpect, result);
 	}
 
@@ -93,11 +93,11 @@ class BoardUtilTest {
 		List<CycleTimeInfo> statusChangedItemsExpect = StatusChangedItemsListAndCycleTimeInfosListFixture
 			.CYCLE_TIME_INFOS_LIST_OF_ORIGIN();
 
-		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), any(ZoneId.class)))
+		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), , any(ZoneId.class)))
 			.thenReturn(StatusChangedItemsListAndCycleTimeInfosListFixture.EXPECT_DAYS);
 
-		List<CycleTimeInfo> result = boardUtil.getOriginCycleTimeInfos(statusChangedItems, Boolean.TRUE,
-				ZoneId.of("Asia/Shanghai"));
+		List<CycleTimeInfo> result = boardUtil.getOriginCycleTimeInfos(statusChangedItems, Boolean.TRUE, ,
+			ZoneId.of("Asia/Shanghai"));
 		Assertions.assertEquals(statusChangedItemsExpect, result);
 	}
 
@@ -108,10 +108,10 @@ class BoardUtilTest {
 		List<CycleTimeInfo> statusChangedItemsWithoutFlagExpect = StatusChangedItemsListAndCycleTimeInfosListFixture
 			.CYCLE_TIME_INFOS_LIST_OF_ORIGIN_WITHOUT_FLAG();
 
-		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), any(ZoneId.class)))
+		when(workDay.calculateWorkDaysToTwoScale(anyLong(), anyLong(), , any(ZoneId.class)))
 			.thenReturn(StatusChangedItemsListAndCycleTimeInfosListFixture.EXPECT_DAYS);
-		List<CycleTimeInfo> result = boardUtil.getOriginCycleTimeInfos(statusChangedItems, Boolean.FALSE,
-				ZoneId.of("Asia/Shanghai"));
+		List<CycleTimeInfo> result = boardUtil.getOriginCycleTimeInfos(statusChangedItems, Boolean.FALSE, ,
+			ZoneId.of("Asia/Shanghai"));
 		Assertions.assertEquals(statusChangedItemsWithoutFlagExpect, result);
 	}
 

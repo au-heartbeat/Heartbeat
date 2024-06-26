@@ -55,8 +55,8 @@ class WorkDayTest {
 		when(chinaHoliday.loadHolidayList("2024")).thenReturn(holidayMap);
 
 		workDay.selectCalendarType(calendarType);
-		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
-		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
+		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime, );
+		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime, );
 
 		assertTrue(resultWorkDay);
 		Assertions.assertFalse(resultHoliday);
@@ -72,8 +72,8 @@ class WorkDayTest {
 		when(regularHoliday.loadHolidayList("2024")).thenReturn(holidayMap);
 
 		workDay.selectCalendarType(CalendarTypeEnum.REGULAR);
-		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime);
-		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime);
+		boolean resultWorkDay = workDay.verifyIfThisDayHoliday(holidayTime, );
+		boolean resultHoliday = workDay.verifyIfThisDayHoliday(workdayTime, );
 
 		assertTrue(resultWorkDay);
 		assertTrue(resultHoliday);
@@ -84,10 +84,10 @@ class WorkDayTest {
 		when(holidayFactory.build(CalendarTypeEnum.REGULAR)).thenReturn(regularHoliday);
 		workDay.selectCalendarType(CalendarTypeEnum.REGULAR);
 
-		long result = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME(), WorkDayFixture.END_TIME(),
-				ZoneId.of("Asia/Shanghai"));
+		long result = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME(), WorkDayFixture.END_TIME(), ,
+			ZoneId.of("Asia/Shanghai"));
 		long resultNewYear = workDay.calculateWorkDaysBetween(WorkDayFixture.START_TIME_NEW_YEAR(),
-				WorkDayFixture.END_TIME_NEW_YEAR(), ZoneId.of("Asia/Shanghai"));
+				WorkDayFixture.END_TIME_NEW_YEAR(), , ZoneId.of("Asia/Shanghai"));
 
 		Assertions.assertEquals(23, result);
 		Assertions.assertEquals(22, resultNewYear);
@@ -111,7 +111,7 @@ class WorkDayTest {
 					/ ONE_DAY_MILLISECONDS;
 			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 
 			Assertions.assertEquals(expectDays, days);
 		}
@@ -125,7 +125,7 @@ class WorkDayTest {
 					/ ONE_DAY_MILLISECONDS;
 			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 
 			Assertions.assertEquals(expectDays, days);
 		}
@@ -139,7 +139,7 @@ class WorkDayTest {
 					/ ONE_DAY_MILLISECONDS;
 			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 
 			Assertions.assertEquals(expectDays, days);
 		}
@@ -152,7 +152,7 @@ class WorkDayTest {
 			double expectDays = 0;
 			expectDays = BigDecimal.valueOf(expectDays).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			double days = workDay.calculateWorkDaysToTwoScale(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 
 			Assertions.assertEquals(expectDays, days);
 		}
@@ -185,7 +185,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -202,7 +202,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -222,7 +222,7 @@ class WorkDayTest {
 
 			workDay.selectCalendarType(CalendarTypeEnum.CN);
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -239,7 +239,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -256,7 +256,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -273,7 +273,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -289,7 +289,7 @@ class WorkDayTest {
 			long expectWorkTime = ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -306,7 +306,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -323,7 +323,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 4;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -341,7 +341,7 @@ class WorkDayTest {
 					+ 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 
@@ -358,7 +358,7 @@ class WorkDayTest {
 			long expectWorkTime = 5 * ONE_DAY_MILLISECONDS + ONE_HOUR_MILLISECONDS + ONE_MINUTE_MILLISECONDS + 1000;
 			long expectHoliday = 0;
 
-			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, ZoneId.of("Asia/Shanghai"));
+			WorkInfo works = workDay.calculateWorkTimeAndHolidayBetween(startTime, endTime, , ZoneId.of("Asia/Shanghai"));
 			long workTime = works.getWorkTime();
 			long holidays = works.getHolidays();
 

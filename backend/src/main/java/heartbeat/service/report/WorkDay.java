@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.Year;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -25,82 +24,70 @@ public class WorkDay {
 
 	private static final long ONE_DAY = 1000L * 60 * 60 * 24;
 
-	private Map<String, Boolean> holidayMap = new HashMap<>();
+	private Map<CalendarTypeEnum, Map<String, Boolean>> allCountryHolidayMap = new HashMap<>();
 
 	private final HolidayFactory holidayFactory;
 
-	private AbstractCountryHoliday countryHoliday;
-
-	private List<Integer> years = new ArrayList<>();
+	private List<Integer> loadedYears = new ArrayList<>();
 
 	public WorkDay(HolidayFactory holidayFactory) {
 		this.holidayFactory = holidayFactory;
+		this.loadAllHolidayList();
+	}
+
+	private void loadAllHolidayList() {
+		log.info("Start loading all Country holidays for all year");
+		for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
+			for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
+				Map<String, Boolean> addedHolidayMap = this.holidayFactory.build(calendarTypeEnum).loadHolidayList(String.valueOf(year));
+				if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
+					Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(this.allCountryHolidayMap.get(calendarTypeEnum));
+					loadedYearHolidayMap.putAll(addedHolidayMap);
+					allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
+				} else {
+					allCountryHolidayMap.put(calendarTypeEnum, addedHolidayMap);
+				}
+			}
+			loadedYears.add(year);
+		}
+		log.info("End loading all Country holidays for all year Successfully" + allCountryHolidayMap);
 	}
 
 	public void selectCalendarType(CalendarTypeEnum calendarType) {
-		countryHoliday = holidayFactory.build(calendarType);
-		if (years.isEmpty()) {
-			Integer year = Calendar.getInstance().get(Calendar.YEAR);
-			holidayMap.putAll(countryHoliday.loadHolidayList(String.valueOf(year)));
-			years.add(year);
-		}
-
+////		countryHoliday = holidayFactory.build(calendarType);
+//		if (loadedYears.isEmpty()) {
+//			Integer year = Calendar.getInstance().get(Calendar.YEAR);
+////			allCountryHolidayMap.putAll(countryHoliday.loadHolidayList(String.valueOf(year)));
+//			loadedYears.add(year);
+//		}
 	}
 
-	private List<Integer> getSelectedYears(long startTime, long endTime, ZoneId timezone) {
-		List<Integer> selectedYears = new ArrayList<>();
 
-		Instant startInstant = Instant.ofEpochMilli(startTime);
-		Instant endInstant = Instant.ofEpochMilli(endTime);
-
-		Year startYear = Year.from(startInstant.atZone(timezone));
-		Year endYear = Year.from(endInstant.atZone(timezone));
-
-		for (int year = startYear.getValue(); year <= endYear.getValue(); year++) {
-			selectedYears.add(year);
-		}
-
-		return selectedYears;
-	}
-
-	private void refreshHolidayMap(long startTime, long endTime, ZoneId timezone) {
-		List<Integer> needYears = getSelectedYears(startTime, endTime, timezone);
-		for (Integer year : needYears) {
-			if (!(years.contains(year))) {
-				Map<String, Boolean> addedHolidayMap = countryHoliday.loadHolidayList(String.valueOf(year));
-				holidayMap.putAll(addedHolidayMap);
-				years.add(year);
-			}
-		}
-	}
-
-	public boolean verifyIfThisDayHoliday(LocalDate localDate) {
+	public boolean verifyIfThisDayHoliday(LocalDate localDate, CalendarTypeEnum calendarTypeEnum) {
 		String localDateString = localDate.toString();
-		if (holidayMap.containsKey(localDateString)) {
-			return holidayMap.get(localDateString);
+		if (allCountryHolidayMap.containsKey(calendarTypeEnum) && allCountryHolidayMap.get(calendarTypeEnum).containsKey(localDateString)) {
+			return allCountryHolidayMap.get(calendarTypeEnum).get(localDateString);
 		}
 		return localDate.getDayOfWeek() == DayOfWeek.SATURDAY || localDate.getDayOfWeek() == DayOfWeek.SUNDAY;
 	}
 
-	public long calculateWorkDaysBetween(long startTime, long endTime, ZoneId timezone) {
-		refreshHolidayMap(startTime, endTime, timezone);
-		return calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, timezone, false)
+	public long calculateWorkDaysBetween(long startTime, long endTime, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+		return calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, calendarTypeEnum, timezone, false)
 			.getWorkDays();
 	}
 
-	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, ZoneId timezone) {
-		refreshHolidayMap(startTime, endTime, timezone);
-		return calculateWorkTimeAndHolidayBetweenWhenHolidayCanWork(startTime, endTime, timezone);
+	public WorkInfo calculateWorkTimeAndHolidayBetween(long startTime, long endTime, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+		return calculateWorkTimeAndHolidayBetweenWhenHolidayCanWork(startTime, endTime, calendarTypeEnum, timezone);
 	}
 
-	private List<DayType> getDayType(LocalDate startLocalDate, LocalDate endLocalDate) {
+	private List<DayType> getDayType(LocalDate startLocalDate, LocalDate endLocalDate, CalendarTypeEnum calendarTypeEnum) {
 		LocalDate localDateIndex = LocalDate.of(startLocalDate.getYear(), startLocalDate.getMonth(),
 				startLocalDate.getDayOfMonth());
 
 		List<DayType> holidayTypeList = new ArrayList<>();
 
 		while (!endLocalDate.isBefore(localDateIndex)) {
-			if (verifyIfThisDayHoliday(localDateIndex)) {
+			if (verifyIfThisDayHoliday(localDateIndex, calendarTypeEnum)) {
 				holidayTypeList.add(DayType.NON_WORK_DAY);
 			}
 			else {
@@ -111,12 +98,12 @@ public class WorkDay {
 		return holidayTypeList;
 	}
 
-	private WorkInfo calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(long startTime, long endTime,
-			ZoneId timezone, boolean toScale) {
+	private WorkInfo calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(long startTime, long endTime, CalendarTypeEnum calendarTypeEnum,
+																			 ZoneId timezone, boolean toScale) {
 		LocalDate startLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), timezone);
 		LocalDate endLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), timezone);
 
-		List<DayType> dayTypeList = getDayType(startLocalDate, endLocalDate);
+		List<DayType> dayTypeList = getDayType(startLocalDate, endLocalDate, calendarTypeEnum);
 
 		long totalDays = dayTypeList.size();
 
@@ -151,13 +138,13 @@ public class WorkDay {
 	}
 
 	private WorkInfo calculateWorkTimeAndHolidayBetweenWhenHolidayCanWork(long startTime, long endTime,
-			ZoneId timezone) {
+																		  CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
 		long result = endTime - startTime;
 
 		LocalDate startLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(startTime), timezone);
 		LocalDate endLocalDate = LocalDate.ofInstant(Instant.ofEpochMilli(endTime), timezone);
 
-		List<DayType> dayTypeList = getDayType(startLocalDate, endLocalDate);
+		List<DayType> dayTypeList = getDayType(startLocalDate, endLocalDate, calendarTypeEnum);
 		long totalDays = dayTypeList.size();
 
 		for (int i = 0; i < dayTypeList.size() && dayTypeList.get(i) == DayType.NON_WORK_DAY; i++) {
@@ -174,10 +161,9 @@ public class WorkDay {
 		return WorkInfo.builder().holidays(holidayNums).totalDays(totalDays).workTime(result).build();
 	}
 
-	public double calculateWorkDaysToTwoScale(long startTime, long endTime, ZoneId timezone) {
-		refreshHolidayMap(startTime, endTime, timezone);
-		double days = (double) calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, timezone,
-				true)
+	public double calculateWorkDaysToTwoScale(long startTime, long endTime, CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+		double days = (double) calculateWorkTimeAndHolidayBetweenWhenHolidayCannotWork(startTime, endTime, calendarTypeEnum,
+			timezone, true)
 			.getWorkTime() / ONE_DAY;
 		return BigDecimal.valueOf(days).setScale(2, RoundingMode.HALF_UP).doubleValue();
 	}

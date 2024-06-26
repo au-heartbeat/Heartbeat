@@ -591,7 +591,7 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 		// when
 		jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", , ZoneId.of("Asia/Shanghai"));
 		// then
 		verify(jiraFeignClient, times(2)).getJiraCardHistoryByCount(any(), eq("2"), anyInt(), anyInt(), any());
 	}
@@ -724,8 +724,8 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 		storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(6.0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(4);
@@ -878,8 +878,8 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_REAL_DONE_CARD().build();
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_REAL_DONE_SETTING_BUILD().build();
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(5);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -916,8 +916,8 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 		storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(11);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(4);
@@ -1198,8 +1198,8 @@ class JiraServiceTest {
 		StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 		JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -1229,8 +1229,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
 	}
@@ -1255,8 +1255,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
 	}
@@ -1273,7 +1273,7 @@ class JiraServiceTest {
 		ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 		assertThatThrownBy(
 				() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-						boardColumns, users, null, zoneId))
+						boardColumns, users, null, , zoneId))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Board type does not find!");
 	}
@@ -1302,12 +1302,12 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(FIELD_RESPONSE_BUILDER().build());
 		when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
-		when(boardUtil.getCycleTimeInfos(any(), any(), any(), any())).thenReturn(CYCLE_TIME_INFO_LIST());
-		when(boardUtil.getOriginCycleTimeInfos(any(), any(), any())).thenReturn(CYCLE_TIME_INFO_LIST());
+		when(boardUtil.getCycleTimeInfos(any(), any(), any(), , any())).thenReturn(CYCLE_TIME_INFO_LIST());
+		when(boardUtil.getOriginCycleTimeInfos(any(), any(), , any())).thenReturn(CYCLE_TIME_INFO_LIST());
 
 		CardCollection doneCards = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", ,
+			ZoneId.of("Asia/Shanghai"));
 		assertThat(doneCards.getStoryPointSum()).isEqualTo(1);
 		assertThat(doneCards.getCardsNumber()).isEqualTo(1);
 	}
@@ -1326,8 +1326,8 @@ class JiraServiceTest {
 			.thenReturn(CARD_HISTORY_RESPONSE_BUILDER_TO_DONE().build());
 
 		CardCollection doneCards = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), null,
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), null, ,
+			ZoneId.of("Asia/Shanghai"));
 		assertThat(doneCards.getStoryPointSum()).isEqualTo(0);
 		assertThat(doneCards.getCardsNumber()).isEqualTo(0);
 	}
@@ -1355,7 +1355,7 @@ class JiraServiceTest {
 		ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 		assertThatThrownBy(() -> {
 			jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-					boardColumns, users, null, zoneId);
+					boardColumns, users, null, , zoneId);
 		}).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Type does not find!");
 	}
 
@@ -1374,8 +1374,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), ,
+			ZoneId.of("Asia/Shanghai"));
 		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
 	}
@@ -1503,8 +1503,8 @@ class JiraServiceTest {
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
@@ -1534,8 +1534,8 @@ class JiraServiceTest {
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
@@ -1564,8 +1564,8 @@ class JiraServiceTest {
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
@@ -1589,8 +1589,8 @@ class JiraServiceTest {
 			.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
 		CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
-				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-				ZoneId.of("Asia/Shanghai"));
+				storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 		assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
@@ -1640,9 +1640,9 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection1 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 		CardCollection cardCollection2 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of("song"), assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("song"), assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection1.getCardsNumber()).isEqualTo(0);
 		assertThat(cardCollection2.getCardsNumber()).isEqualTo(1);
@@ -1679,9 +1679,9 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection1 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of("yun"), assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("yun"), assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 		CardCollection cardCollection2 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection1.getCardsNumber()).isEqualTo(1);
 		assertThat(cardCollection1.getJiraCardDTOList().get(0).getBaseInfo().getKey()).isEqualTo("ADM-520");
@@ -1795,7 +1795,7 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
 		assertThat(cardCollection.getJiraCardDTOList().get(0).getBaseInfo().getKey()).isEqualTo("ADM-475");
@@ -1829,7 +1829,7 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getCardsNumber()).isZero();
 	}
@@ -1867,7 +1867,7 @@ class JiraServiceTest {
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 				jiraBoardSetting.getBoardColumns(),
 				List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE, JiraBoardConfigDTOFixture.DISPLAY_NAME_TWO),
-				assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 		assertThat(cardCollection.getReworkRatio()).isEqualTo(0.5);
@@ -1913,8 +1913,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE), assigneeFilter,
-				ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE), assigneeFilter, ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 		assertThat(cardCollection.getReworkRatio()).isEqualTo(1);
@@ -1960,7 +1960,7 @@ class JiraServiceTest {
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 				jiraBoardSetting.getBoardColumns(),
 				List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE, JiraBoardConfigDTOFixture.DISPLAY_NAME_TWO),
-				assigneeFilter, ZoneId.of("Asia/Shanghai"));
+				assigneeFilter, , ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 		assertThat(cardCollection.getReworkRatio()).isEqualTo(0.5);
@@ -2006,8 +2006,8 @@ class JiraServiceTest {
 		when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
 		CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
-				jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE), assigneeFilter,
-				ZoneId.of("Asia/Shanghai"));
+				jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE), assigneeFilter, ,
+			ZoneId.of("Asia/Shanghai"));
 
 		assertThat(cardCollection.getReworkCardNumber()).isZero();
 		assertThat(cardCollection.getReworkRatio()).isZero();

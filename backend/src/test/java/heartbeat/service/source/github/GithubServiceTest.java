@@ -292,7 +292,7 @@ class GithubServiceTest {
 			.build();
 		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -494,7 +494,7 @@ class GithubServiceTest {
 			.build();
 		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -520,7 +520,7 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -757,7 +757,7 @@ class GithubServiceTest {
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
 			.thenThrow(new NotFoundException("Failed to get commit"));
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);

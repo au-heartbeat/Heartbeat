@@ -44,9 +44,9 @@ class KanbanServiceTest {
 		CardCollection realDoneCardCollection = CardCollection.builder().build();
 		CardCollection nonDoneCardCollection = CardCollection.builder().build();
 
-		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any(), any(), any()))
+		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any(), any(), , any()))
 			.thenReturn(nonDoneCardCollection);
-		when(jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(any(), any(), any(), any(), any()))
+		when(jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(any(), any(), any(), any(), , any()))
 			.thenReturn(realDoneCardCollection);
 
 		FetchedData.CardCollectionInfo result = kanbanService.fetchDataFromKanban(request);
@@ -55,10 +55,10 @@ class KanbanServiceTest {
 		assertEquals(nonDoneCardCollection, result.getNonDoneCardCollection());
 		verify(jiraService).getStoryPointsAndCycleTimeForNonDoneCards(
 				KanbanFixture.MOCK_EXPECT_STORY_POINT_AND_CYCLE_TIME_REQUEST(), mockJiraBoardSetting.getBoardColumns(),
-				mockJiraBoardSetting.getUsers(), ZoneId.of("Asia/Shanghai"));
+				mockJiraBoardSetting.getUsers(), , ZoneId.of("Asia/Shanghai"));
 		verify(jiraService).getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 				KanbanFixture.MOCK_EXPECT_STORY_POINT_AND_CYCLE_TIME_REQUEST(), mockJiraBoardSetting.getBoardColumns(),
-				mockJiraBoardSetting.getUsers(), mockJiraBoardSetting.getAssigneeFilter(), ZoneId.of("Asia/Shanghai"));
+				mockJiraBoardSetting.getUsers(), mockJiraBoardSetting.getAssigneeFilter(), , ZoneId.of("Asia/Shanghai"));
 	}
 
 }
