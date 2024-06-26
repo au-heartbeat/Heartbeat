@@ -103,7 +103,7 @@ public class CSVFileGenerator {
 		createCsvDirToConvertData();
 
 		String fileName = CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
-		if (!fileName.contains("..")) {
+		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
 				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
@@ -189,7 +189,7 @@ public class CSVFileGenerator {
 		createCsvDirToConvertData();
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeRangeTimeStamp + CSV_EXTENSION;
-		if (!fileName.contains("..")) {
+		if (isFormatFileName(fileName)) {
 			try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
 				writer.writeAll(Arrays.asList(mergedArrays));
 			}
@@ -396,7 +396,7 @@ public class CSVFileGenerator {
 		createCsvDirToConvertData();
 
 		String fileName = CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
-		if (!fileName.contains("..")) {
+		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
@@ -414,6 +414,10 @@ public class CSVFileGenerator {
 		else {
 			throw new GenerateReportException("Failed to generate metric csv file, invalid csvTimestamp");
 		}
+	}
+
+	private boolean isFormatFileName(String fileName) {
+		return !fileName.contains("..");
 	}
 
 	private List<String[]> convertReportResponseToCSVRows(ReportResponse reportResponse) {
