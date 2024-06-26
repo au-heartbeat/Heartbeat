@@ -23,4 +23,6 @@ public class StepsDay {
 
 	private double review;
 
+	private double todo;
+
 }

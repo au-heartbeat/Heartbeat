@@ -22,6 +22,7 @@ import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
 import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static heartbeat.controller.board.dto.request.CardStepsEnum.TODO;
@@ -136,12 +137,18 @@ public class MetricCsvFixture {
 				.totalTimeForCards(29.26)
 				.averageCycleTimePerCard(9.75)
 				.averageCycleTimePerSP(4.18)
-				.swimlaneList(List.of(
+				.swimlaneList(new ArrayList<>(List.of(
 						CycleTimeForSelectedStepItem.builder()
 							.optionalItemName("In Dev")
 							.averageTimeForSP(2.6)
 							.averageTimeForCards(6.06)
 							.totalTime(18.17)
+							.build(),
+						CycleTimeForSelectedStepItem.builder()
+							.optionalItemName("Analysis")
+							.averageTimeForSP(12.6)
+							.averageTimeForCards(26.06)
+							.totalTime(318.17)
 							.build(),
 						CycleTimeForSelectedStepItem.builder()
 							.optionalItemName("Block")
@@ -166,7 +173,7 @@ public class MetricCsvFixture {
 							.averageTimeForSP(0.01)
 							.averageTimeForCards(0.02)
 							.totalTime(0.05)
-							.build()))
+							.build())))
 				.build())
 			.deploymentFrequency(DeploymentFrequency.builder()
 				.avgDeploymentFrequency(

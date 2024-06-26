@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -108,6 +109,7 @@ public class CycleTimeCalculator {
 			CardCollection cardCollection, Map<String, String> selectedStepsMap) {
 		List<String> realDoneKeys = selectedStepsMap.entrySet()
 			.stream()
+			.filter(entry -> Objects.nonNull(entry.getValue()))
 			.filter(entry -> entry.getValue().equals(CardStepsEnum.DONE.getValue()))
 			.map(Map.Entry::getKey)
 			.toList();
@@ -116,7 +118,7 @@ public class CycleTimeCalculator {
 		for (Map.Entry<String, Double> entry : aggregatedMap.entrySet()) {
 			String key = entry.getKey();
 			double value = BigDecimal.valueOf(entry.getValue()).setScale(2, RoundingMode.HALF_UP).doubleValue();
-			if (List.of(CardStepsEnum.ANALYSE, CardStepsEnum.TODO).contains(CardStepsEnum.fromValue(key))
+			if (Objects.equals(CardStepsEnum.TODO, CardStepsEnum.fromValue(key))
 					|| realDoneKeys.contains(key.toUpperCase())) {
 				continue;
 			}

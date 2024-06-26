@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Status implements ICardFieldDisplayName, Serializable {
 

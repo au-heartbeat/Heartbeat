@@ -2,6 +2,8 @@ package heartbeat.service.report;
 
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
 import heartbeat.controller.board.dto.response.CardCollection;
+import heartbeat.controller.board.dto.response.CycleTimeInfo;
+import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.response.CycleTime;
 import heartbeat.controller.report.dto.response.CycleTimeForSelectedStepItem;
 import heartbeat.service.report.calculator.CycleTimeCalculator;
@@ -17,7 +19,6 @@ import java.util.List;
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING;
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING_WITH_MULTIPLE_STATUSES;
 import static heartbeat.service.report.CycleTimeFixture.JIRA_BOARD_COLUMNS_SETTING_WITH_MULTIPLE_SWIM_LANES;
-import static heartbeat.service.report.CycleTimeFixture.MOCK_CARD_COLLECTION;
 import static heartbeat.service.report.CycleTimeFixture.MOCK_CARD_COLLECTION_COLUMN_WITH_MULTIPLE_STATUSES;
 import static heartbeat.service.report.CycleTimeFixture.MOCK_CARD_COLLECTION_WITH_ZERO_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,9 +31,29 @@ class CycleTimeCalculatorTest {
 	CycleTimeCalculator cycleTimeCalculator;
 
 	@Test
-	void shouldReturnAllDoneCardsCycleTimeWhenCallCalculateCycleTime() {
-		CardCollection cardCollection = MOCK_CARD_COLLECTION();
-		List<RequestJiraBoardColumnSetting> boardColumns = JIRA_BOARD_COLUMNS_SETTING();
+	void shouldReturnAllDoneCardsCycleTimeWhenCallCalculateCycleTimeAndOtherIsNull() {
+		List<CycleTimeInfo> cycleTimeInfoList = List.of(CycleTimeInfo.builder().column("OTHER").day(3.1).build(),
+				CycleTimeInfo.builder().column("DOING").day(3.1).build(),
+				CycleTimeInfo.builder().column("TODO").day(3.1).build(),
+				CycleTimeInfo.builder().column("BLOCKED").day(2.0).build(),
+				CycleTimeInfo.builder().column("FLAG").day(1.0).build(),
+				CycleTimeInfo.builder().column("DONE").day(9.0).build(),
+				CycleTimeInfo.builder().column("TESTING").day(1.3).build());
+
+		CardCollection cardCollection = CardCollection.builder()
+			.storyPointSum(3)
+			.cardsNumber(2)
+			.jiraCardDTOList(List.of(JiraCardDTO.builder().cycleTime(cycleTimeInfoList).build(),
+					JiraCardDTO.builder().cycleTime(cycleTimeInfoList).build()))
+			.build();
+		;
+		List<RequestJiraBoardColumnSetting> boardColumns = List.of(
+				RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+				RequestJiraBoardColumnSetting.builder().name("Doing").value("In Dev").build(),
+				RequestJiraBoardColumnSetting.builder().name("Blocked").value("Block").build(),
+				RequestJiraBoardColumnSetting.builder().name("Testing").value("Testing").build(),
+				RequestJiraBoardColumnSetting.builder().name("Done").value("Done").build(),
+				RequestJiraBoardColumnSetting.builder().name("Other").build());
 
 		CycleTime cycleTimeExpect = CycleTime.builder()
 			.totalTimeForCards(14.8)
