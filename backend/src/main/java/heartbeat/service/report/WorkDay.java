@@ -3,6 +3,7 @@ package heartbeat.service.report;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.service.report.model.WorkInfo;
 import heartbeat.config.DayType;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -30,18 +31,18 @@ public class WorkDay {
 
 	private List<Integer> loadedYears = new ArrayList<>();
 
-	public WorkDay(HolidayFactory holidayFactory) {
-		this.holidayFactory = holidayFactory;
-		this.loadAllHolidayList();
+	public WorkDay(HolidayFactory holidayFactory1) {
+		this.holidayFactory = holidayFactory1;
+		loadAllHolidayList();
 	}
 
 	private void loadAllHolidayList() {
 		log.info("Start loading all Country holidays for all year");
 		for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
 			for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
-				Map<String, Boolean> addedHolidayMap = this.holidayFactory.build(calendarTypeEnum).loadHolidayList(String.valueOf(year));
+				Map<String, Boolean> addedHolidayMap = holidayFactory.build(calendarTypeEnum).loadHolidayList(String.valueOf(year));
 				if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
-					Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(this.allCountryHolidayMap.get(calendarTypeEnum));
+					Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(allCountryHolidayMap.get(calendarTypeEnum));
 					loadedYearHolidayMap.putAll(addedHolidayMap);
 					allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
 				} else {

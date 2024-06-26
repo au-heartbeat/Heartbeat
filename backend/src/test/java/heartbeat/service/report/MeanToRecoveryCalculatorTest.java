@@ -65,7 +65,7 @@ class MeanToRecoveryCalculatorTest {
 
 		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any() , any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -114,7 +114,7 @@ class MeanToRecoveryCalculatorTest {
 
 		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any() , any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -165,7 +165,7 @@ class MeanToRecoveryCalculatorTest {
 
 		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
 
-		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
+		when(workday.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(), any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);

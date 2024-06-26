@@ -4,7 +4,7 @@ import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HolidayFactory {
+public class  HolidayFactory {
 
 	private final VietnamHoliday vietnamHoliday;
 
@@ -35,5 +35,9 @@ public class HolidayFactory {
 	public AbstractCountryHoliday build(CalendarTypeEnum calendarType) {
 		return dispatch(calendarType);
 	}
+
+//	public static HolidayFactory create() {
+//		return new HolidayFactory(this.vietnamHoliday, this.chinaHoliday, this.regularHoliday);
+//	}
 
 }
