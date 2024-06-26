@@ -12,11 +12,10 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Log4j2
 @Component
@@ -36,22 +35,40 @@ public class WorkDay {
 	}
 
 	private void loadAllHolidayList() {
+		ExecutorService executor = Executors.newFixedThreadPool(15);
 		for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
 			for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
-				Map<String, Boolean> addedHolidayMap = holidayFactory.build(calendarTypeEnum)
-					.loadHolidayList(String.valueOf(year));
-				if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
-					Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(
-							allCountryHolidayMap.get(calendarTypeEnum));
-					loadedYearHolidayMap.putAll(addedHolidayMap);
-					allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
-				}
-				else {
-					allCountryHolidayMap.put(calendarTypeEnum, addedHolidayMap);
-				}
+				int finalYear = year;
+				log.info("Start loop holidays for year {} {}", finalYear, calendarTypeEnum);
+				executor.submit(() -> {
+					log.info("Start loading holidays for year {} {}", finalYear, calendarTypeEnum);
+					Map<String, Boolean> addedHolidayMap = holidayFactory.build(calendarTypeEnum)
+						.loadHolidayList(String.valueOf(finalYear));
+					synchronized (this) {
+						if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
+							Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(
+								allCountryHolidayMap.get(calendarTypeEnum));
+							loadedYearHolidayMap.putAll(addedHolidayMap);
+//							try {
+//								Thread.sleep(new Random().nextInt(10 * 1000));
+//							} catch (InterruptedException e) {
+//								throw new RuntimeException(e);
+//							}
+							allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
+						}
+						else {
+							allCountryHolidayMap.put(calendarTypeEnum, addedHolidayMap);
+						}
+						log.info("End loading holidays for year {} {}", finalYear, calendarTypeEnum);
+						log.info("holiday map result {} add year {} with size {} to {}", calendarTypeEnum, finalYear, addedHolidayMap.size(), allCountryHolidayMap.get(calendarTypeEnum).size());
+					}
+
+				});
+				log.info("End loop holidays for year {} {}", finalYear, calendarTypeEnum);
 			}
 			loadedYears.add(year);
 		}
+		executor.shutdown();
 	}
 
 	public boolean verifyIfThisDayHoliday(LocalDate localDate, CalendarTypeEnum calendarTypeEnum) {
