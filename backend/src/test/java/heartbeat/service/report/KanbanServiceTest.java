@@ -1,6 +1,7 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.board.dto.response.CardCollection;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.service.board.jira.JiraService;
@@ -44,9 +45,9 @@ class KanbanServiceTest {
 		CardCollection realDoneCardCollection = CardCollection.builder().build();
 		CardCollection nonDoneCardCollection = CardCollection.builder().build();
 
-		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any(), any(), , any()))
+		when(jiraService.getStoryPointsAndCycleTimeForNonDoneCards(any(), any(), any(), any(), any()))
 			.thenReturn(nonDoneCardCollection);
-		when(jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(any(), any(), any(), any(), , any()))
+		when(jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(any(), any(), any(), any(), any(), any()))
 			.thenReturn(realDoneCardCollection);
 
 		FetchedData.CardCollectionInfo result = kanbanService.fetchDataFromKanban(request);
@@ -55,10 +56,11 @@ class KanbanServiceTest {
 		assertEquals(nonDoneCardCollection, result.getNonDoneCardCollection());
 		verify(jiraService).getStoryPointsAndCycleTimeForNonDoneCards(
 				KanbanFixture.MOCK_EXPECT_STORY_POINT_AND_CYCLE_TIME_REQUEST(), mockJiraBoardSetting.getBoardColumns(),
-				mockJiraBoardSetting.getUsers(), , ZoneId.of("Asia/Shanghai"));
+				mockJiraBoardSetting.getUsers(), null, ZoneId.of("Asia/Shanghai"));
 		verify(jiraService).getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 				KanbanFixture.MOCK_EXPECT_STORY_POINT_AND_CYCLE_TIME_REQUEST(), mockJiraBoardSetting.getBoardColumns(),
-				mockJiraBoardSetting.getUsers(), mockJiraBoardSetting.getAssigneeFilter(), , ZoneId.of("Asia/Shanghai"));
+				mockJiraBoardSetting.getUsers(), mockJiraBoardSetting.getAssigneeFilter(), null,
+				ZoneId.of("Asia/Shanghai"));
 	}
 
 }

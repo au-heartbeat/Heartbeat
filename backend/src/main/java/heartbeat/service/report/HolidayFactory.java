@@ -36,4 +36,9 @@ public class HolidayFactory {
 		return dispatch(calendarType);
 	}
 
+	// public static HolidayFactory create() {
+	// return new HolidayFactory(this.vietnamHoliday, this.chinaHoliday,
+	// this.regularHoliday);
+	// }
+
 }

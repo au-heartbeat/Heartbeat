@@ -10,6 +10,7 @@ import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.InternalServerErrorException;
@@ -290,9 +291,13 @@ class GithubServiceTest {
 			.totalTime(180000)
 			.isRevert(Boolean.FALSE)
 			.build();
-		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.REGULAR)
+			.build();
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
+				any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -492,9 +497,13 @@ class GithubServiceTest {
 			.totalTime(120000)
 			.isRevert(Boolean.FALSE)
 			.build();
-		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.REGULAR)
+			.build();
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
+				any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -514,13 +523,17 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmpty() {
 		String mockToken = "mockToken";
-		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.REGULAR)
+			.build();
 
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
+				any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);
@@ -751,13 +764,17 @@ class GithubServiceTest {
 	@Test
 	void shouldReturnPipeLineLeadTimeWhenDeployITimesIsNotEmptyAndCommitInfoError() {
 		String mockToken = "mockToken";
-		GenerateReportRequest request = GenerateReportRequest.builder().timezone("Asia/Shanghai").build();
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.REGULAR)
+			.build();
 		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
 		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
 		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
 			.thenThrow(new NotFoundException("Failed to get commit"));
 
-		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), , any(ZoneId.class)))
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
+				any(ZoneId.class)))
 			.thenAnswer(invocation -> {
 				long firstParam = invocation.getArgument(0);
 				long secondParam = invocation.getArgument(1);

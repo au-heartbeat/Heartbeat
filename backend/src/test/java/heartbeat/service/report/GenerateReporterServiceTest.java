@@ -199,7 +199,6 @@ class GenerateReporterServiceTest {
 
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -236,7 +235,6 @@ class GenerateReporterServiceTest {
 
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -263,7 +261,6 @@ class GenerateReporterServiceTest {
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
 			verify(pipelineService, never()).fetchGitHubData(any());
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -297,7 +294,6 @@ class GenerateReporterServiceTest {
 					exceptionCaptor.getValue().getMessage());
 			assertEquals(400, exceptionCaptor.getValue().getStatus());
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler, never()).putReport(eq(request.getBoardReportFileId()), any());
 		}
 
@@ -329,7 +325,6 @@ class GenerateReporterServiceTest {
 			verify(asyncExceptionHandler).remove(request.getBoardReportFileId());
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -367,7 +362,6 @@ class GenerateReporterServiceTest {
 
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -404,7 +398,6 @@ class GenerateReporterServiceTest {
 
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanService).fetchDataFromKanban(eq(request));
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getBoardReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -593,13 +586,12 @@ class GenerateReporterServiceTest {
 			DeploymentFrequency fakeDeploymentFrequency = DeploymentFrequency.builder().build();
 			DevChangeFailureRate fakeDevChangeFailureRate = DevChangeFailureRate.builder().build();
 			DevMeanTimeToRecovery fakeMeantime = DevMeanTimeToRecovery.builder().build();
-			when(deploymentFrequency.calculate(any(), any(), any(), , any())).thenReturn(fakeDeploymentFrequency);
+			when(deploymentFrequency.calculate(any(), any(), any(), any(), any())).thenReturn(fakeDeploymentFrequency);
 			when(devChangeFailureRate.calculate(any())).thenReturn(fakeDevChangeFailureRate);
 			when(meanToRecoveryCalculator.calculate(any(), any())).thenReturn(fakeMeantime);
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getPipelineReportFileId()),
 					responseArgumentCaptor.capture());
 
@@ -670,7 +662,6 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getSourceControlReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();
@@ -711,7 +702,6 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(request);
 
-			verify(workDay, times(2)).selectCalendarType(CalendarTypeEnum.REGULAR);
 			verify(asyncReportRequestHandler).putReport(eq(request.getSourceControlReportFileId()),
 					responseArgumentCaptor.capture());
 			ReportResponse response = responseArgumentCaptor.getValue();

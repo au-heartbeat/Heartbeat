@@ -1,6 +1,7 @@
 package heartbeat.service.report.calculator;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
 import heartbeat.service.pipeline.buildkite.builder.DeployInfoBuilder;
@@ -52,10 +53,11 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), , any(ZoneId.class))).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME), , ZoneId.of("Asia/Shanghai"));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), CalendarTypeEnum.REGULAR,
+				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -69,10 +71,11 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), , any(ZoneId.class))).thenReturn(0L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(), any(ZoneId.class))).thenReturn(0L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(START_TIME), , ZoneId.of("Asia/Shanghai"));
+				Long.parseLong(START_TIME), Long.parseLong(START_TIME), CalendarTypeEnum.REGULAR,
+				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -84,10 +87,11 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), , any(ZoneId.class))).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME), , ZoneId.of("Asia/Shanghai"));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), CalendarTypeEnum.REGULAR,
+				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -102,10 +106,11 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), , any(ZoneId.class))).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME), , ZoneId.of("Asia/Shanghai"));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), CalendarTypeEnum.REGULAR,
+				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -116,10 +121,11 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.0F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), , any(ZoneId.class))).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(Collections.emptyList(),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME), , ZoneId.of("Asia/Shanghai"));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), CalendarTypeEnum.REGULAR,
+				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
@@ -138,10 +144,11 @@ class CalculateDeploymentFrequencyTest {
 		DeploymentFrequency expectedDeploymentFrequency = DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder().deploymentFrequency(0.2F).build())
 			.build();
-		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), , any(ZoneId.class))).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(anyLong(), anyLong(), any(), any(ZoneId.class))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = this.deploymentFrequency.calculate(List.of(mockedDeployTimes),
-				Long.parseLong(START_TIME), Long.parseLong(END_TIME), , ZoneId.of("Asia/Shanghai"));
+				Long.parseLong(START_TIME), Long.parseLong(END_TIME), CalendarTypeEnum.REGULAR,
+				ZoneId.of("Asia/Shanghai"));
 
 		assertThat(deploymentFrequency.getAvgDeploymentFrequency())
 			.isEqualTo(expectedDeploymentFrequency.getAvgDeploymentFrequency());
