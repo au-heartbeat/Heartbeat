@@ -64,8 +64,7 @@ public class WorkDay {
 
 	public boolean verifyIfThisDayHoliday(LocalDate localDate, CalendarTypeEnum calendarTypeEnum) {
 		String localDateString = localDate.toString();
-		if (allCountryHolidayMap.containsKey(calendarTypeEnum)
-				&& allCountryHolidayMap.get(calendarTypeEnum).containsKey(localDateString)) {
+		if (allCountryHolidayMap.get(calendarTypeEnum).containsKey(localDateString)) {
 			return allCountryHolidayMap.get(calendarTypeEnum).get(localDateString);
 		}
 		return localDate.getDayOfWeek() == DayOfWeek.SATURDAY || localDate.getDayOfWeek() == DayOfWeek.SUNDAY;
