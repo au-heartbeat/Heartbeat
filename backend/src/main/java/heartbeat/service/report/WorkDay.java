@@ -38,9 +38,7 @@ public class WorkDay {
 	}
 
 	private void loadAllHolidayList() {
-		ExecutorService executor = null;
-		try {
-			executor = Executors.newFixedThreadPool(15);
+		try(ExecutorService executor = Executors.newFixedThreadPool(15)) {
 			for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
 				for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
 					int finalYear = year;
@@ -63,12 +61,6 @@ public class WorkDay {
 				}
 			}
 		}
-		finally {
-			if (executor != null) {
-				executor.close();
-			}
-		}
-
 	}
 
 	public boolean verifyIfThisDayHoliday(LocalDate localDate, CalendarTypeEnum calendarTypeEnum) {
