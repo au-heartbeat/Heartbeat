@@ -18,11 +18,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,6 +61,16 @@ class WorkDayTest {
 		when(vietnamHoliday.loadHolidayList(any())).thenReturn(vietnamHolidayMap);
 
 		workDay = new WorkDay(holidayFactory);
+	}
+
+	@Test
+	void shouldLoadAllHolidaysWhenCreated() {
+		verify(regularHoliday).loadHolidayList("2020");
+		verify(regularHoliday).loadHolidayList(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+		verify(chinaHoliday).loadHolidayList("2020");
+		verify(chinaHoliday).loadHolidayList(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+		verify(vietnamHoliday).loadHolidayList("2020");
+		verify(vietnamHoliday).loadHolidayList(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
 	}
 
 	@Test

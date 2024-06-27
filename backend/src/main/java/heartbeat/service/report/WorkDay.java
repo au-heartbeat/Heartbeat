@@ -31,8 +31,6 @@ public class WorkDay {
 
 	private final HolidayFactory holidayFactory;
 
-	private List<Integer> loadedYears = new ArrayList<>();
-
 	public WorkDay(HolidayFactory holidayFactory) {
 		this.holidayFactory = holidayFactory;
 		loadAllHolidayList();
@@ -62,7 +60,6 @@ public class WorkDay {
 
 					});
 				}
-				loadedYears.add(year);
 			}
 		}
 		finally {
