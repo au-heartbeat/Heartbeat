@@ -68,6 +68,7 @@ export enum RequiredData {
   ReworkTimes = 'Rework times',
   LeadTimeForChanges = 'Lead time for changes',
   DeploymentFrequency = 'Deployment frequency',
+  DeploymentTimes = 'Deployment times',
   DevChangeFailureRate = 'Dev change failure rate',
   DevMeanTimeToRecovery = 'Dev mean time to recovery',
 }

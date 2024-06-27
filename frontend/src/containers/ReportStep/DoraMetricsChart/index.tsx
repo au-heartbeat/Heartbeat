@@ -11,9 +11,10 @@ import {
   LEAD_TIME_CHARTS_MAPPING,
   RequiredData,
 } from '@src/constants/resources';
+import { AreaOptionProps, stackedAreaOptionMapper } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
+import { calculateTrendInfo, percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { showChart } from '@src/containers/ReportStep';
@@ -78,26 +79,63 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
 
 function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.deploymentFrequencyList);
-  const value = data?.map((items) => {
+  const averageDeploymentFrequency = data?.map((items) => {
     const averageItem = items?.find((item) => item.name === AVERAGE);
     if (!averageItem) return 0;
     return Number(averageItem.valueList[0].value) || 0;
   });
-  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DeploymentFrequency);
+  const deployTimes = data?.map((items) => {
+    const averageItem = items?.find((item) => item.name === AVERAGE);
+    if (!averageItem) return 0;
+    return Number(averageItem.valueList[1].value) || 0;
+  });
+  const trendInfo = calculateTrendInfo(averageDeploymentFrequency, allDateRanges, ChartType.DeploymentFrequency);
   return {
-    legend: RequiredData.DeploymentFrequency,
-    xAxis: allDateRanges,
-    yAxis: {
-      name: 'Deployments/Days',
-      alignTick: false,
-      axisLabel: NO_LABEL,
+    xAxis: {
+      data: allDateRanges,
+      boundaryGap: false,
+      axisLabel: {
+        color: 'black',
+        alignMaxLabel: 'right',
+        alignMinLabel: 'left',
+      },
+      formatter: xAxisLabelDateFormatter,
     },
-    series: {
-      name: RequiredData.DeploymentFrequency,
-      type: 'line',
-      data: value!,
-    },
-    color: theme.main.doraChart.deploymentFrequencyChartColor,
+    yAxis: [
+      {
+        name: RequiredData.DeploymentFrequency,
+        alignTick: false,
+        axisLabel: NO_LABEL,
+      },
+      {
+        name: RequiredData.DeploymentTimes,
+        alignTick: false,
+        axisLabel: NO_LABEL,
+      },
+    ],
+    series: [
+      {
+        name: RequiredData.DeploymentFrequency,
+        type: 'line',
+        data: averageDeploymentFrequency!,
+        yAxisIndex: 0,
+        smooth: true,
+        areaStyle: {
+          opacity: 0.3,
+        },
+      },
+      {
+        name: RequiredData.DeploymentTimes,
+        type: 'line',
+        data: deployTimes!,
+        yAxisIndex: 1,
+        smooth: true,
+        areaStyle: {
+          opacity: 0.3,
+        },
+      },
+    ],
+    color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
     trendInfo,
   };
 }
@@ -227,7 +265,7 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
   const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
   const leadTimeForChangeDataOption = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
   const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
-  const deploymentFrequencyDataOption = deploymentFrequencyData && oneLineOptionMapper(deploymentFrequencyData);
+  const deploymentFrequencyDataOption = deploymentFrequencyData && stackedAreaOptionMapper(deploymentFrequencyData);
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
   const changeFailureRateDataOption = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
   const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
