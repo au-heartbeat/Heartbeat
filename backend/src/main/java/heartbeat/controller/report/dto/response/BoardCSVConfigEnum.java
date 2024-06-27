@@ -14,13 +14,11 @@ public enum BoardCSVConfigEnum {
 	SPRINT("Sprint", "baseInfo.fields.sprint.name"), LABELS("Labels", "baseInfo.fields.label"),
 	CYCLE_TIME("Cycle Time", "cardCycleTime.total"),
 	CYCLE_TIME_STORY_POINTS("Cycle Time / Story Points", "totalCycleTimeDivideStoryPoints"),
-	ANALYSIS_DAYS("Analysis Days", "cardCycleTime.steps.analyse"),
+	TODO_DAYS("Todo Days", "cardCycleTime.steps.todo"), ANALYSIS_DAYS("Analysis Days", "cardCycleTime.steps.analyse"),
 	IN_DEV_DAYS("In Dev Days", "cardCycleTime.steps.development"),
 	WAITING_DAYS("Waiting Days", "cardCycleTime.steps.waiting"),
 	TESTING_DAYS("Testing Days", "cardCycleTime.steps.testing"),
-	BLOCK_DAYS("Block Days", "cardCycleTime.steps.blocked"),
-
-	REVIEW_DAYS("Review Days", "cardCycleTime.steps.review");
+	BLOCK_DAYS("Block Days", "cardCycleTime.steps.blocked"), REVIEW_DAYS("Review Days", "cardCycleTime.steps.review");
 
 	private final String label;
 

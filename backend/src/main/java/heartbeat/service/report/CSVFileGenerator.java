@@ -48,6 +48,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -102,7 +103,7 @@ public class CSVFileGenerator {
 		createCsvDirToConvertData();
 
 		String fileName = CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
-		if (!fileName.contains("..") && fileName.startsWith(FILE_LOCAL_PATH)) {
+		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
 				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
@@ -184,18 +185,11 @@ public class CSVFileGenerator {
 		log.info(message);
 	}
 
-	public void convertBoardDataToCSV(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fields,
-			List<BoardCSVConfig> extraFields, String csvTimeStamp) {
-		log.info("Start to create board csv directory");
-		String[][] mergedArrays = assembleBoardData(cardDTOList, fields, extraFields);
-		writeDataToCSV(csvTimeStamp, mergedArrays);
-	}
-
 	public void writeDataToCSV(String csvTimeRangeTimeStamp, String[][] mergedArrays) {
 		createCsvDirToConvertData();
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeRangeTimeStamp + CSV_EXTENSION;
-		if (!fileName.contains("..") && fileName.startsWith(FILE_LOCAL_PATH)) {
+		if (isFormatFileName(fileName)) {
 			try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
 				writer.writeAll(Arrays.asList(mergedArrays));
 			}
@@ -265,6 +259,9 @@ public class CSVFileGenerator {
 		List<BoardCSVConfig> originCycleTimeFields = getOriginCycleTimeFields(fixedFields);
 		int fixedFieldColumnCount = columnCount - originCycleTimeFields.size();
 
+		boolean existTodo = fixedFields.stream()
+			.anyMatch(it -> it.getLabel().equals(BoardCSVConfigEnum.TODO_DAYS.getLabel()));
+
 		String[][] data = new String[rowCount][columnCount];
 
 		for (int column = 0; column < columnCount; column++) {
@@ -273,7 +270,7 @@ public class CSVFileGenerator {
 		for (int row = 0; row < cardDTOList.size(); row++) {
 			JiraCardDTO cardDTO = cardDTOList.get(row);
 
-			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO, fixedFieldColumnCount);
+			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO, fixedFieldColumnCount, existTodo);
 			String[] originCycleTimePerRow = getOriginCycleTimePerRow(cardDTO, originCycleTimeFields);
 			data[row + 1] = Stream.concat(Arrays.stream(fixedDataPerRow), Arrays.stream(originCycleTimePerRow))
 				.toArray(String[]::new);
@@ -307,7 +304,7 @@ public class CSVFileGenerator {
 		return originCycleTimeFields;
 	}
 
-	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount) {
+	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount, boolean existTodo) {
 		String[] rowData = new String[columnCount];
 		if (cardDTO.getBaseInfo() != null) {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
@@ -320,7 +317,8 @@ public class CSVFileGenerator {
 		if (cardDTO.getCardCycleTime() != null) {
 			rowData[14] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
 			rowData[15] = cardDTO.getTotalCycleTimeDivideStoryPoints();
-			rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+			rowData[16] = DecimalUtil.formatDecimalTwo(existTodo ? cardDTO.getCardCycleTime().getSteps().getTodo()
+					: cardDTO.getCardCycleTime().getSteps().getAnalyse());
 			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
 			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
 			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
@@ -398,7 +396,7 @@ public class CSVFileGenerator {
 		createCsvDirToConvertData();
 
 		String fileName = CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
-		if (!fileName.contains("..") && fileName.startsWith(FILE_LOCAL_PATH)) {
+		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
@@ -416,6 +414,10 @@ public class CSVFileGenerator {
 		else {
 			throw new GenerateReportException("Failed to generate metric csv file, invalid csvTimestamp");
 		}
+	}
+
+	private boolean isFormatFileName(String fileName) {
+		return !fileName.contains("..");
 	}
 
 	private List<String[]> convertReportResponseToCSVRows(ReportResponse reportResponse) {
@@ -475,6 +477,15 @@ public class CSVFileGenerator {
 				String.valueOf(cycleTime.getAverageCycleTimePerCard()) });
 		List<CycleTimeForSelectedStepItem> swimlaneList = cycleTime.getSwimlaneList();
 
+		swimlaneList.stream()
+			.filter(it -> Objects.equals(it.getOptionalItemName(), "Analysis"))
+			.findFirst()
+			.ifPresent(analysisItem -> {
+				swimlaneList
+					.removeIf(it -> Objects.equals(it.getOptionalItemName(), analysisItem.getOptionalItemName()));
+				swimlaneList.add(1, analysisItem);
+			});
+
 		swimlaneList.forEach(cycleTimeForSelectedStepItem -> {
 			String stepName = formatStepName(cycleTimeForSelectedStepItem);
 			double proportion = cycleTimeForSelectedStepItem.getTotalTime() / cycleTime.getTotalTimeForCards();
@@ -507,6 +518,8 @@ public class CSVFileGenerator {
 			case "Block" -> "block";
 			case "Review" -> "review";
 			case "Testing" -> "testing";
+			case "Analysis" -> "analysis";
+			case "Waiting for testing" -> "waiting for testing";
 			default -> "";
 		};
 	}

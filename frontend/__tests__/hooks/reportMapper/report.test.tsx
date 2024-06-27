@@ -19,11 +19,24 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 1,
+      name: 'Total analysis time / Total cycle time',
+      valueList: [{ value: '39.49%' }],
+    },
+    {
+      id: 2,
       name: 'Total development time / Total cycle time',
       valueList: [{ value: '57.25%' }],
     },
     {
-      id: 2,
+      id: 3,
+      name: 'Average analysis time',
+      valueList: [
+        { value: '8.36', unit: '(Days/SP)' },
+        { value: '11.95', unit: '(Days/Card)' },
+      ],
+    },
+    {
+      id: 4,
       name: 'Average development time',
       valueList: [
         { value: '12.13', unit: '(Days/SP)' },

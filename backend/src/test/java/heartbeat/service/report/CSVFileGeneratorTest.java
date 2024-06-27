@@ -1,13 +1,25 @@
 package heartbeat.service.report;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import heartbeat.client.dto.board.jira.JiraCard;
+import heartbeat.client.dto.board.jira.JiraCardField;
+import heartbeat.client.dto.board.jira.Status;
+import heartbeat.controller.board.dto.response.CardCycleTime;
+import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
+import heartbeat.controller.board.dto.response.JiraProject;
+import heartbeat.controller.board.dto.response.Priority;
+import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
+import heartbeat.controller.report.dto.response.CycleTime;
+import heartbeat.controller.report.dto.response.CycleTimeForSelectedStepItem;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.FileIOException;
 import heartbeat.exception.GenerateReportException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,13 +37,16 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -256,10 +271,29 @@ class CSVFileGeneratorTest {
 		String csvPipelineData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(
+		assertEquals(
 				"\"Organization\",\"Pipeline Name\",\"Pipeline Step\",\"Valid\",\"Build Number\",\"Code Committer\",\"Build Creator\",\"First Code Committed Time In PR\",\"PR Created Time\",\"PR Merged Time\",\"No PR Committed Time\",\"Job Start Time\",\"Pipeline Start Time\",\"Pipeline Finish Time\",\"Non-Workdays (Hours)\",\"Total Lead Time (HH:mm:ss)\",\"PR Lead Time (HH:mm:ss)\",\"Pipeline Lead Time (HH:mm:ss)\",\"Status\",\"Branch\",\"Revert\"\n"
 						+ "\"Thoughtworks-Heartbeat\",\"Heartbeat\",\":rocket: Deploy prod\",\"true\",\"880\",\"XXXX\",,\"2023-05-08T07:18:18Z\",\"168369327000\",\"1683793037000\",,\"168369327000\",\"168369327000\",\"1684793037000\",\"240\",\"8379303\",\"16837\",\"653037000\",\"passed\",\"branch\",\"\"",
 				csvPipelineData);
+
+		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		File file = new File(fileName);
+		file.delete();
+	}
+
+	@Test
+	void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsBoard() throws IOException {
+		String[] mockBoardDataRow1 = { "Issue Type", "Reporter" };
+		String[] mockBoardDataRow2 = { "ADM-696", "test" };
+		String[][] mockBoardData = { mockBoardDataRow1, mockBoardDataRow2 };
+		csvFileGenerator.writeDataToCSV(mockTimeStamp, mockBoardData);
+
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.BOARD, mockTimeStamp);
+		InputStream csvDataInputStream = inputStreamResource.getInputStream();
+		String csvPipelineData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
+			.collect(Collectors.joining("\n"));
+
+		assertEquals("\"Issue Type\",\"Reporter\"\n\"ADM-696\",\"test\"", csvPipelineData);
 
 		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
@@ -313,132 +347,6 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
-	void shouldMakeCsvDirWhenNotExistGivenDataTypeIsBoard() {
-		String csvDirPath = "./app/output/csv";
-		File csvDir = new File(csvDirPath);
-		deleteDirectory(csvDir);
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-
-		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
-		File csvFile = new File(fileName);
-		assertTrue(csvFile.exists());
-		csvFile.delete();
-	}
-
-	@Test
-	void shouldGenerateBoardCsvWhenConvertBoardDataToCsv() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-
-		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
-		File csvFile = new File(fileName);
-		assertTrue(csvFile.exists());
-		csvFile.delete();
-	}
-
-	@Test
-	void shouldGetValueWhenConvertBoardDataToCsvGivenExtraFields() throws IOException {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_BASE_INFO_CUSTOM_DATA();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS_WITH_CUSTOM();
-
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.BOARD, mockTimeStamp);
-		InputStream csvDataInputStream = inputStreamResource.getInputStream();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(csvDataInputStream));
-		String header = reader.readLine();
-		String firstRow = reader.readLine();
-		String labelName = extraFields.get(0).getLabel();
-		String[] headerFields = header.split(",");
-		String[] rowFields = firstRow.split(",");
-		int index = Arrays.asList(headerFields).indexOf("\"" + labelName + "\"");
-		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
-		File csvFile = new File(fileName);
-		Assertions.assertEquals("\"dev\"", rowFields[index]);
-		csvFile.delete();
-	}
-
-	@Test
-	void shouldGenerateBoardCsvWhenConvertBoardDataToCsvGivenBaseInfoIsEmpty() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-
-		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
-		File csvFile = new File(fileName);
-		assertTrue(csvFile.exists());
-		csvFile.delete();
-	}
-
-	@Test
-	void shouldGenerateBoardCsvWhenConvertBoardDataToCsvGivenBaseInfoFieldsIsNull() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO_FIELDS();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-
-		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
-		File csvFile = new File(fileName);
-		assertTrue(csvFile.exists());
-		csvFile.delete();
-	}
-
-	@Test
-	void shouldGenerateBoardCsvWhenConvertBoardDataToCsvGivenCycleTimeIsNull() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_CARD_CYCLE_TIME();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-
-		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
-		File csvFile = new File(fileName);
-		assertTrue(csvFile.exists());
-		csvFile.delete();
-	}
-
-	@Test
-	void shouldThrowExceptionWhenBoardCsvNotExist() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO_WITH_EMPTY_BASE_INFO();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.BOARD, "1686710104536"));
-		assertThrows(FileIOException.class,
-				() -> csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, "15469:89/033"));
-	}
-
-	@Test
-	void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsBoard() throws IOException {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.BOARD, mockTimeStamp);
-		InputStream csvDataInputStream = inputStreamResource.getInputStream();
-		String boardCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
-			.collect(Collectors.joining("\n"));
-
-		Assertions.assertEquals(boardCsvData,
-				"\"Issue key\",\"Summary\",\"Issue Type\",\"Status\",\"Status Date\",\"Story Points\",\"assignee\",\"Reporter\",\"Project Key\",\"Project Name\",\"Priority\",\"Parent Summary\",\"Sprint\",\"Labels\",\"Cycle Time\",\"Story point estimate\",\"Flagged\",\"1010\",\"1011\",\"Cycle Time / Story Points\",\"Analysis Days\",\"In Dev Days\",\"Waiting Days\",\"Testing Days\",\"Block Days\",\"Review Days\",\"OriginCycleTime: DOING\",\"OriginCycleTime: BLOCKED\"\n"
-						+ "\"ADM-489\",\"summary\",\"issue type\",,\"2023-11-28\",\"2.0\",\"name\",\"name\",\"ADM\",\"Auto Dora Metrics\",\"Medium\",\"parent\",\"sprint 1\",\"\",\"0.90\",\"1.00\",\"\",\"\",\"{}\",\"0.45\",\"0\",\"0.90\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"");
-
-		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
-		Files.deleteIfExists(Path.of(fileName));
-	}
-
-	@Test
 	void shouldConvertMetricDataToCsv() throws IOException {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
 
@@ -451,9 +359,9 @@ class CSVFileGeneratorTest {
 		FileInputStream fileInputStream = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
-		Assertions.assertEquals("\"Group\",\"Metrics\",\"Value\"", headers);
+		assertEquals("\"Group\",\"Metrics\",\"Value\"", headers);
 		String firstLine = reader.readLine();
-		Assertions.assertEquals("\"Velocity\",\"Velocity(Story Point)\",\"7.0\"", firstLine);
+		assertEquals("\"Velocity\",\"Velocity(Story Point)\",\"7.0\"", firstLine);
 		reader.close();
 		fileInputStream.close();
 		boolean delete = file.delete();
@@ -500,6 +408,14 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsMetric() throws IOException {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
+		CycleTime cycleTime = reportResponse.getCycleTime();
+		cycleTime.getSwimlaneList()
+			.add(CycleTimeForSelectedStepItem.builder()
+				.optionalItemName("Waiting for testing")
+				.averageTimeForSP(2.6)
+				.averageTimeForCards(6.06)
+				.totalTime(18.17)
+				.build());
 
 		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
 
@@ -508,7 +424,7 @@ class CSVFileGeneratorTest {
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(metricCsvData,
+		assertEquals(metricCsvData,
 				"""
 						"Group","Metrics","Value"
 						"Velocity","Velocity(Story Point)","7.0"
@@ -516,12 +432,16 @@ class CSVFileGeneratorTest {
 						"Cycle time","Average cycle time(days/storyPoint)","4.18"
 						"Cycle time","Average cycle time(days/card)","9.75"
 						"Cycle time","Total development time / Total cycle time","62.10"
+						"Cycle time","Total analysis time / Total cycle time","1087.39"
 						"Cycle time","Total block time / Total cycle time","0.34"
 						"Cycle time","Total review time / Total cycle time","37.39"
 						"Cycle time","Total testing time / Total cycle time","0.17"
 						"Cycle time","Total  time / Total cycle time","0.17"
+						"Cycle time","Total waiting for testing time / Total cycle time","62.10"
 						"Cycle time","Average development time(days/storyPoint)","2.60"
 						"Cycle time","Average development time(days/card)","6.06"
+						"Cycle time","Average analysis time(days/storyPoint)","12.60"
+						"Cycle time","Average analysis time(days/card)","26.06"
 						"Cycle time","Average block time(days/storyPoint)","0.01"
 						"Cycle time","Average block time(days/card)","0.03"
 						"Cycle time","Average review time(days/storyPoint)","1.56"
@@ -530,6 +450,8 @@ class CSVFileGeneratorTest {
 						"Cycle time","Average testing time(days/card)","0.02"
 						"Cycle time","Average  time(days/storyPoint)","0.01"
 						"Cycle time","Average  time(days/card)","0.02"
+						"Cycle time","Average waiting for testing time(days/storyPoint)","2.60"
+						"Cycle time","Average waiting for testing time(days/card)","6.06"
 						"Classifications","Issue Type / Bug","33.33"
 						"Classifications","Issue Type / Story","66.67"
 						"Deployment frequency","Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)","0.78"
@@ -565,7 +487,7 @@ class CSVFileGeneratorTest {
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(metricCsvData, "\"Group\",\"Metrics\",\"Value\"");
+		assertEquals("\"Group\",\"Metrics\",\"Value\"", metricCsvData);
 
 		String fileName = CSVFileNameEnum.BOARD.getValue() + "-" + mockTimeStamp + ".csv";
 		Files.deleteIfExists(Path.of(fileName));
@@ -582,7 +504,7 @@ class CSVFileGeneratorTest {
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		Assertions.assertEquals(metricCsvData, """
+		assertEquals(metricCsvData, """
 				"Group","Metrics","Value"
 				"Rework","Total rework times","3"
 				"Rework","Total rework cards","3"
@@ -606,16 +528,6 @@ class CSVFileGeneratorTest {
 	}
 
 	@Test
-	void shouldThrowGenerateReportExceptionWhenGenerateBoardCsvAndCsvTimeStampInvalid() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-
-		assertThrows(GenerateReportException.class,
-				() -> csvFileGenerator.convertBoardDataToCSV(cardDTOList, fields, extraFields, "../"));
-	}
-
-	@Test
 	void shouldThrowGenerateReportExceptionWhenGenerateMetricsCsvAndCsvTimeStampInvalid() {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA_WITH_ONE_PIPELINE();
 
@@ -629,6 +541,217 @@ class CSVFileGeneratorTest {
 		File file = new File(fileName);
 
 		assertThrows(IllegalArgumentException.class, () -> CSVFileGenerator.readStringFromCsvFile(file));
+	}
+
+	@Test
+	void shouldAssembleBoardDataSuccess() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+		String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
+				"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint", "Labels",
+				"Cycle Time", "Story point estimate", "Flagged", "1010", "1011", "Cycle Time / Story Points",
+				"Analysis Days", "In Dev Days", "Waiting Days", "Testing Days", "Block Days", "Review Days",
+				"OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
+		String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, "2023-11-28", "2.0", "name",
+				"name", "ADM", "Auto Dora Metrics", "Medium", "parent", "sprint 1", "", "0.90", "1.00", "", "", "{}",
+				"0.45", "0", "0.90", "0", "0", "0", "0", "0", "0" };
+
+		String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
+
+		assertEquals(4, result.length);
+		assertTrue(Arrays.equals(expectKey, result[0]));
+		assertTrue(Arrays.equals(expectNormalCardValue, result[1]));
+		assertNonNullValue(result[2], List.of(), List.of());
+		assertNonNullValue(result[3], List.of(0), List.of("ADM-489"));
+	}
+
+	@Test
+	void shouldAssembleBoardDataSuccessWhenExistTodoAndNullFields() {
+		CardCycleTime cardCycleTime = CardCycleTime.builder()
+			.name("ADM-489")
+			.total(0.90)
+			.steps(StepsDay.builder().development(0.90).build())
+			.build();
+		List<JiraCardDTO> cardDTOList = List.of(JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder()
+				.key("ADM-489")
+				.fields(JiraCardField.builder()
+					.summary("summary")
+					.issuetype(IssueType.builder().name("issue type").build())
+					.status(Status.builder().displayValue("done").build())
+					.storyPoints(2)
+					.project(JiraProject.builder().id("10001").key("ADM").name("Auto Dora Metrics").build())
+					.priority(Priority.builder().name("Medium").build())
+					.labels(Collections.emptyList())
+					.build())
+				.build())
+			.totalCycleTimeDivideStoryPoints("0.90")
+			.cardCycleTime(cardCycleTime)
+			.build());
+		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_WITH_TODO_FIELDS();
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+		String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
+				"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint", "Labels",
+				"Cycle Time", "Story point estimate", "Flagged", "1010", "1011", "Cycle Time / Story Points",
+				"Todo Days", "In Dev Days", "Waiting Days", "Testing Days", "Block Days", "Review Days",
+				"OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
+		String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null, "ADM",
+				"Auto Dora Metrics", "Medium", null, null, "", "0.90", null, null, null, null, "0.45", "0", "0.90", "0",
+				"0", "0", "0", null, null };
+
+		String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
+
+		assertEquals(2, result.length);
+		assertTrue(Arrays.equals(expectKey, result[0]));
+		assertTrue(Arrays.equals(expectNormalCardValue, result[1]));
+	}
+
+	@Test
+	void shouldWriteDataToCSVErrorWhenWriteThrowException() {
+		String[] mockBoardDataRow1 = { "Issue Type", "Reporter" };
+		String[] mockBoardDataRow2 = { "ADM-696", "test" };
+		String[][] mockBoardData = { mockBoardDataRow1, mockBoardDataRow2 };
+
+		assertThrows(FileIOException.class, () -> {
+			csvFileGenerator.writeDataToCSV("15469:89/033", mockBoardData);
+		});
+
+	}
+
+	@Test
+	void shouldWriteDataToCSVErrorWhenFileNameError() {
+		String[] mockBoardDataRow1 = { "Issue Type", "Reporter" };
+		String[] mockBoardDataRow2 = { "ADM-696", "test" };
+		String[][] mockBoardData = { mockBoardDataRow1, mockBoardDataRow2 };
+
+		assertThrows(GenerateReportException.class, () -> {
+			csvFileGenerator.writeDataToCSV(mockTimeStamp + "..", mockBoardData);
+		});
+	}
+
+	@Test
+	void shouldGetExtraDataPerRowIsNullWhenElementMapIsNull() {
+		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+		BoardCSVConfig extraField = extraFields.get(0);
+
+		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(null, extraField);
+
+		assertNull(extraDataPerRow);
+	}
+
+	@Test
+	void shouldGetExtraDataPerRowWhenFieldIsNull() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+		BoardCSVConfig extraField = BoardCSVConfig.builder()
+			.label("Story point estimate")
+			.value("baseInfo.fields.customFields.customfield_1001")
+			.originKey("customfield_1001")
+			.build();
+
+		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+		assertEquals("", extraDataPerRow);
+	}
+
+	@Test
+	void shouldGetExtraDataPerRowWhenFieldIsNullAndExtraFieldContainOriginCycleTime() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+		BoardCSVConfig extraField = BoardCSVConfig.builder()
+			.label("OriginCycleTime")
+			.value("baseInfo.fields.customFields.customfield_1001")
+			.originKey("customfield_1001")
+			.build();
+
+		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+		assertEquals("0", extraDataPerRow);
+	}
+
+	@Test
+	void shouldGetExtraDataPerRowWhenFieldValueIsDouble() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+		BoardCSVConfig extraField = BoardCSVConfig.builder()
+			.label("Story point estimate")
+			.value("baseInfo.fields.customFields.customfield_1008")
+			.originKey("customfield_1008")
+			.build();
+
+		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+		assertEquals("1.00", extraDataPerRow);
+	}
+
+	@Test
+	void shouldGetExtraDataPerRowWhenFieldValueIsNull() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+		BoardCSVConfig extraField = BoardCSVConfig.builder()
+			.label("Story point estimate")
+			.value("baseInfo.fields.customFields.customfield_1010")
+			.originKey("customfield_1010")
+			.build();
+
+		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+		assertEquals("", extraDataPerRow);
+	}
+
+	@Test
+	void shouldGetExtraDataPerRowWhenFieldValueIsArray() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+		Map<String, JsonElement> elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+		JsonArray jsonElements = new JsonArray();
+		jsonElements.add(new JsonObject());
+		jsonElements.add(1);
+		elementMap.put("customfield_1005", jsonElements);
+		BoardCSVConfig extraField = BoardCSVConfig.builder()
+			.label("Story point estimate")
+			.value("baseInfo.fields.customFields.customfield_1005")
+			.originKey("customfield_1005")
+			.build();
+
+		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+		assertEquals("None", extraDataPerRow);
+	}
+
+	@Test
+	void shouldGetExtraDataPerRowWhenFieldValueIsOther() {
+		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+		BoardCSVConfig extraField = BoardCSVConfig.builder()
+			.label("Story point estimate")
+			.value("baseInfo.fields.customFields.customfield_1009")
+			.originKey("customfield_1009")
+			.build();
+
+		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+		assertEquals(
+				"{hasEpicLinkFieldDependency=false, showField=false, nonEditableReason={reason=reason, message=message}}",
+				extraDataPerRow);
+	}
+
+	private void assertNonNullValue(String[] value, List<Integer> nonNullIndex, List<String> otherValue) {
+		for (int i = 0; i < value.length; i++) {
+			int pos = nonNullIndex.indexOf(i);
+			if (pos != -1) {
+				assertEquals(otherValue.get(pos), value[i]);
+			}
+			else {
+				assertNull(value[i]);
+			}
+		}
 	}
 
 }
