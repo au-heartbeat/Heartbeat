@@ -59,14 +59,14 @@ frontend --> frontend: Render frontend page
 alt There is 1 report at least
   frontend -> backend: GET /reports/:uuid
   backend-> backend: Loop all report under uuid folder
-  backend --> frontend: Response the URL list of report, e.g.   [`/api/v1/reports/uuid/1719387221071?startTime=20240528&endTime=20240531`]
+  backend --> frontend: Response the URL list of report, e.g.   [`/api/v1/reports/:uuid?startTime=20240528&endTime=20240531`]
   loop URL list
-    frontend-> backend: GET /api/v1/reports/uuid/1719387221071?startTime=20240528&endTime=20240531
+    frontend-> backend: GET /api/v1/reports/:uuid?startTime=20240528&endTime=20240531
     backend --> frontend: Report result
   end
   frontend -> frontend: Render reports & charts
-else No report under uuid folder
-  backend-> frontend: Response with 400
+else no uuid folder or no report under uuid folder
+  backend-> frontend: Response with 404
 end
 
 @enduml
@@ -87,13 +87,17 @@ app/output/reports
 ## Tasks
 
 - Refactor with the RESTFul API in the backend
-  - POST `/reports`
-  - POST `/reports/:uuid`
-  - GET  `/reports/uuid/1719387221071?startTime=20240528&endTime=20240531`
-  - GET  `/reports/:uuid`
-- Update the logic of deleting the existing report
+  - [new]    POST `/reports` return UUID
+  - [upadte] POST `/reports/:uuid` return callback URL
+  - [update] GET  `/reports/:uuid?startTime=20240528&endTime=20240531`
+  - [new]    GET  `/reports/:uuid` return callback URL list
+  - [udpate] GET  `/reports/:type/:uuid` download reports
+  - Update the logic of deleting the existing report
+    - Delete in the 7 days in the backend
 - Add new route in the frontend and implatement the sharing dashboard
   - Route: `/metrics/reports/:uuid`
   - Page: Sharing dashboard
+  - Page: 404
+  - Show 1 day to delete
 
 ## Decision
