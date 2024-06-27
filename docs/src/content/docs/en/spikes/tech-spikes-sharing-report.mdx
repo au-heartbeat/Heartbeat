@@ -20,16 +20,10 @@ Our target is to re-design the arch to match the user's requirement.
 
 |Item|New|Note|
 |:--|:--|:--|
-|Router|`/metrics/sharing`|for posting request to generate the reports|
-|Router|`/metrics/sharing/:uuid`|for sharing|
-
+|Router|`/metrics/reports/:uuid`|Sharing dashboard|
 :::note[limitations]
 Define the routers ref [here](https://reactrouter.com/en/main/start/concepts#defining-routes)
 :::
-
-#### Requirement
-
-- Add 2 routes for sharing
 
 ### Backend
 
@@ -39,19 +33,28 @@ skin rose
 autonumber
 title Sharing Report
 
+actor       TeamLeader       as TeamLeader
+actor       Manager       as Manager
+participant frontend as frontend
+participant backend as backend
+
 ==Generate the reports==
 frontend -> backend: POST /reports when jumping into report page
 backend --> frontend: uuid
-frontend -> frontend: Re-render with new URL /metrics/sharing/:uuid
 loop Spring list
   frontend -> backend: POST /reports/:uuid with the previous/same payload
-  backend --> frontend: Report result
+  backend --> frontend: Callback URL
 end
+
+loop Spring list
+  frontend -> backend: Request report result
+end
+
 frontend -> frontend: Render reports & charts
 ...Someone share the report to another one with the URL...
-
+TeamLeader -> frontend: Share the link to someone
 ==Get the sharing result==
-frontend -> frontend: GET /metrics/sharing/:uuid
+Manager -> frontend: GET /metrics/reports/:uuid
 frontend --> frontend: Render frontend page
 alt There is 1 report at least
   frontend -> backend: GET /reports/:uuid
@@ -81,5 +84,16 @@ app/output/reports
 - Update the logic of deleting the existing report
 :::
 
+## Tasks
+
+- Refactor with the RESTFul API in the backend
+  - POST `/reports`
+  - POST `/reports/:uuid`
+  - GET  `/reports/uuid/1719387221071?startTime=20240528&endTime=20240531`
+  - GET  `/reports/:uuid`
+- Update the logic of deleting the existing report
+- Add new route in the frontend and implatement the sharing dashboard
+  - Route: `/metrics/reports/:uuid`
+  - Page: Sharing dashboard
 
 ## Decision
