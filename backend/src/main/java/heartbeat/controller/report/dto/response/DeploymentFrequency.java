@@ -15,6 +15,8 @@ public class DeploymentFrequency {
 
 	private AvgDeploymentFrequency avgDeploymentFrequency;
 
+	private int totalDeployTimes;
+
 	private List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines;
 
 }

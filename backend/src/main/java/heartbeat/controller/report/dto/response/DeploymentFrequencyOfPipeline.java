@@ -19,6 +19,8 @@ public class DeploymentFrequencyOfPipeline {
 
 	private float deploymentFrequency;
 
+	private int deployTimes;
+
 	private List<DailyDeploymentCount> dailyDeploymentCounts;
 
 }

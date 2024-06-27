@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -29,10 +30,11 @@ public class DeploymentFrequencyCalculator {
 		long timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime, timezone);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
-			int passedDeployInfosCount = (int) item.getPassed()
-				.stream()
-				.filter(deployInfo -> deployInfo.getJobName().equals(item.getPipelineStep()))
-				.count();
+			int passedDeployInfosCount = Optional.ofNullable(item.getPassed())
+				.map(it -> (int) it.stream()
+					.filter(deployInfo -> deployInfo.getJobName().equals(item.getPipelineStep()))
+					.count())
+				.orElse(0);
 			List<DailyDeploymentCount> dailyDeploymentCounts = mapDeploymentPassedItems(item.getPassed());
 			float frequency = passedDeployInfosCount == 0 || timePeriod == 0 ? 0
 					: (float) passedDeployInfosCount / timePeriod;
@@ -40,6 +42,7 @@ public class DeploymentFrequencyCalculator {
 				.name(item.getPipelineName())
 				.step(item.getPipelineStep())
 				.dailyDeploymentCounts(dailyDeploymentCounts)
+				.deployTimes(passedDeployInfosCount)
 				.deploymentFrequency(Float.parseFloat(DecimalUtil.formatDecimalTwo(frequency)))
 				.build();
 		}).collect(Collectors.toList());
@@ -50,11 +53,16 @@ public class DeploymentFrequencyCalculator {
 		int pipelineCount = deploymentFrequencyOfPipelines.size();
 		float avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
 
+		int totalDeployTimes = deploymentFrequencyOfPipelines.stream()
+			.mapToInt(DeploymentFrequencyOfPipeline::getDeployTimes)
+			.sum();
+
 		return DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder()
 				.deploymentFrequency(Float.parseFloat(DecimalUtil.formatDecimalTwo(avgDeployFrequency)))
 				.build())
 			.deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
+			.totalDeployTimes(totalDeployTimes)
 			.build();
 	}
 
@@ -67,7 +75,8 @@ public class DeploymentFrequencyCalculator {
 		}
 
 		deployInfos.forEach((item) -> {
-			if (!item.getJobFinishTime().isEmpty() && !item.getJobFinishTime().equals("NaN")) {
+			if (item.getJobFinishTime() != null && !item.getJobFinishTime().isEmpty()
+					&& !item.getJobFinishTime().equals("NaN")) {
 				String localDate = dateTimeFormatter
 					.format(Instant.parse(item.getJobFinishTime()).atZone(ZoneId.of("UTC")));
 				DailyDeploymentCount existingDateItem = dailyDeploymentCounts.stream()
