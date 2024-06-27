@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @Component
@@ -38,7 +37,7 @@ public class WorkDay {
 	}
 
 	private void loadAllHolidayList() {
-		try(ExecutorService executor = Executors.newFixedThreadPool(15)) {
+		try (ExecutorService executor = Executors.newFixedThreadPool(15)) {
 			for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
 				for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
 					int finalYear = year;

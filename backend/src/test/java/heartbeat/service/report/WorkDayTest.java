@@ -24,11 +24,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class WorkDayTest {
@@ -38,6 +40,7 @@ class WorkDayTest {
 	private static final long ONE_HOUR_MILLISECONDS = 1000L * 60 * 60;
 
 	private static final long ONE_MINUTE_MILLISECONDS = 1000L * 60;
+
 	private static final Logger log = LoggerFactory.getLogger(WorkDayTest.class);
 
 	@Mock
@@ -60,8 +63,8 @@ class WorkDayTest {
 		@BeforeEach
 		public void setUp() {
 			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
-				"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03", true,
-				"2024-05-04", true, "2024-05-05", true);
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
 			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
 			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
 			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
@@ -114,8 +117,8 @@ class WorkDayTest {
 		@BeforeEach
 		public void setUp() {
 			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
-				"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03", true,
-				"2024-05-04", true, "2024-05-05", true);
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
 			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
 			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
 			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
@@ -131,7 +134,6 @@ class WorkDayTest {
 			});
 		}
 
-
 		@Test
 		void shouldReturnRightWorkDaysWhenCalculateWorkDaysBetween() {
 			long startTime = LocalDate.parse("2024-04-01", DateTimeFormatter.ISO_DATE)
@@ -144,13 +146,14 @@ class WorkDayTest {
 				.toEpochMilli();
 
 			long regularResult = workDay.calculateWorkDaysBetween(startTime, endTime, CalendarTypeEnum.REGULAR,
-				ZoneId.of("Asia/Shanghai"));
+					ZoneId.of("Asia/Shanghai"));
 			long chinaResult = workDay.calculateWorkDaysBetween(startTime, endTime, CalendarTypeEnum.CN,
-				ZoneId.of("Asia/Shanghai"));
+					ZoneId.of("Asia/Shanghai"));
 
 			Assertions.assertEquals(25, regularResult);
 			Assertions.assertEquals(22, chinaResult);
 		}
+
 	}
 
 	@Nested
@@ -159,8 +162,8 @@ class WorkDayTest {
 		@BeforeEach
 		public void setUp() {
 			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
-				"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03", true,
-				"2024-05-04", true, "2024-05-05", true);
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
 			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
 			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
 			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
@@ -243,8 +246,8 @@ class WorkDayTest {
 		@BeforeEach
 		public void setUp() {
 			Map<String, Boolean> chinaHolidayMap = Map.of("2024-04-04", true, "2024-04-05", true, "2024-04-06", true,
-				"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03", true,
-				"2024-05-04", true, "2024-05-05", true);
+					"2024-04-07", false, "2024-04-28", false, "2024-05-01", true, "2024-05-02", true, "2024-05-03",
+					true, "2024-05-04", true, "2024-05-05", true);
 			Map<String, Boolean> vietnamHolidayMap = Map.of("2024-04-29", true, "2024-04-30", true, "2024-05-01", true);
 			when(chinaHoliday.loadHolidayList(any())).thenReturn(chinaHolidayMap);
 			when(regularHoliday.loadHolidayList(any())).thenReturn(new HashMap<>());
