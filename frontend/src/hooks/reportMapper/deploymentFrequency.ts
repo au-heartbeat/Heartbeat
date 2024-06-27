@@ -4,6 +4,7 @@ import { DeploymentFrequencyResponse } from '@src/clients/report/dto/response';
 export const deploymentFrequencyMapper = ({
   deploymentFrequencyOfPipelines,
   avgDeploymentFrequency,
+  totalDeployTimes,
 }: DeploymentFrequencyResponse) => {
   const mappedDeploymentFrequencyValue: ReportDataWithTwoColumns[] = [];
 
@@ -11,7 +12,7 @@ export const deploymentFrequencyMapper = ({
     const deploymentFrequencyValue: ReportDataWithTwoColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
-      valueList: [{ value: `${item.deploymentFrequency.toFixed(2)}` }],
+      valueList: [{ value: `${item.deploymentFrequency.toFixed(2)}` }, { value: `${item.deployTimes}` }],
     };
     mappedDeploymentFrequencyValue.push(deploymentFrequencyValue);
   });
@@ -22,6 +23,9 @@ export const deploymentFrequencyMapper = ({
     valueList: [
       {
         value: `${avgDeploymentFrequency.deploymentFrequency.toFixed(2)}`,
+      },
+      {
+        value: `${(totalDeployTimes / deploymentFrequencyOfPipelines.length).toFixed(2)}`,
       },
     ],
   });

@@ -66,6 +66,7 @@ export interface ClassificationResponse {
 export interface DeploymentFrequencyResponse {
   avgDeploymentFrequency: AVGDeploymentFrequency;
   deploymentFrequencyOfPipelines: DeploymentFrequencyOfPipeline[];
+  totalDeployTimes: number;
 }
 
 export interface LeadTimeForChangesResponse {
@@ -99,6 +100,7 @@ export interface DeploymentDateCount {
 export interface DeploymentFrequencyOfPipeline {
   name: string;
   step: string;
+  deployTimes: number;
   deploymentFrequency: number;
   dailyDeploymentCounts: DeploymentDateCount[];
 }

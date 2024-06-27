@@ -64,12 +64,9 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
     ];
   };
 
-  const getPipelineItems = () => {
+  const getDeploymentFrequencyItems = () => {
     const deploymentFrequency = doraReport?.deploymentFrequency;
-    const devMeanTimeToRecovery = doraReport?.devMeanTimeToRecovery;
-    const devChangeFailureRate = doraReport?.devChangeFailureRate;
-
-    const deploymentFrequencyList = metrics.includes(RequiredData.DeploymentFrequency)
+    return metrics.includes(RequiredData.DeploymentFrequency)
       ? [
           {
             title: MetricsTitle.DeploymentFrequency,
@@ -78,10 +75,20 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
                 value: deploymentFrequency?.avgDeploymentFrequency.deploymentFrequency,
                 subtitle: MetricsSubtitle.DeploymentFrequency,
               },
+              {
+                value: deploymentFrequency?.totalDeployTimes,
+                subtitle: MetricsSubtitle.DeploymentTimes,
+                isToFixed: false,
+              },
             ],
           },
         ]
       : [];
+  };
+
+  const getPipelineItems = () => {
+    const devMeanTimeToRecovery = doraReport?.devMeanTimeToRecovery;
+    const devChangeFailureRate = doraReport?.devChangeFailureRate;
 
     const devMeanTimeToRecoveryList = metrics.includes(RequiredData.DevMeanTimeToRecovery)
       ? [
@@ -112,7 +119,7 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
         ]
       : [];
 
-    return [...deploymentFrequencyList, ...devChangeFailureRateList, ...devMeanTimeToRecoveryList];
+    return [...devChangeFailureRateList, ...devMeanTimeToRecoveryList];
   };
 
   const getErrorMessage4BuildKite = () =>
@@ -156,6 +163,11 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
         {shouldShowSourceControl && (
           <ReportGrid reportDetails={getSourceControlItems()} errorMessage={errorMessage || getErrorMessage4Github()} />
         )}
+        <StyledSpacing />
+        <ReportGrid
+          reportDetails={getDeploymentFrequencyItems()}
+          errorMessage={errorMessage || getErrorMessage4BuildKite()}
+        />
         <StyledSpacing />
         <ReportGrid
           reportDetails={getPipelineItems()}

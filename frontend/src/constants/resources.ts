@@ -145,7 +145,8 @@ export enum MetricsSubtitle {
   PRLeadTime = 'PR Lead Time(Hours)',
   PipelineLeadTime = 'Pipeline Lead Time(Hours)',
   TotalDelayTime = 'Total Lead Time(Hours)',
-  DeploymentFrequency = '(Deployments/Days)',
+  DeploymentFrequency = 'Deployments/Days',
+  DeploymentTimes = 'Deployment times',
   DevMeanTimeToRecoveryHours = '(Hours)',
   FailureRate = '',
   AverageCycleTimePerSP = 'Average Cycle Time(Days/SP)',
@@ -350,6 +351,7 @@ export enum ReportSuffixUnits {
   DaysPerCard = '(Days/Card)',
   Hours = '(Hours)',
   DeploymentsPerDay = '(Deployments/Day)',
+  DeploymentsTimes = '(Deployment times)',
 }
 
 export const MESSAGE = {
