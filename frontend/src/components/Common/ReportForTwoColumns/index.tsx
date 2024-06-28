@@ -77,11 +77,10 @@ export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) =
 };
 
 const getTitleUnit = (title: string) => {
-  switch (title) {
-    case MetricsTitle.DevMeanTimeToRecovery:
-      return ReportSuffixUnits.Hours;
-    default:
-      return '';
+  if (title === MetricsTitle.DevMeanTimeToRecovery) {
+    return ReportSuffixUnits.Hours;
+  } else {
+    return '';
   }
 };
 

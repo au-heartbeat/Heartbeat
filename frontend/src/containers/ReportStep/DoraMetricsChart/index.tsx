@@ -8,15 +8,19 @@ import {
   RequiredData,
 } from '@src/constants/resources';
 import {
+  oneLineOptionMapper,
+  Series,
+  stackedBarOptionMapper,
+  stackedAreaOptionMapper,
+} from '@src/containers/ReportStep/ChartOption';
+import {
   AREA_STYLE,
   LABEL_PERCENT,
   LEFT_RIGHT_ALIGN_LABEL,
   NO_LABEL,
 } from '@src/containers/ReportStep/BoardMetricsChart';
-import { oneLineOptionMapper, Series, stackedBarOptionMapper } from '@src/containers/ReportStep/ChartOption';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { stackedAreaOptionMapper } from '@src/containers/ReportStep/ChartOption';
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
