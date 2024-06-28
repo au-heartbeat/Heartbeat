@@ -69,7 +69,7 @@ class WorkDayTest {
 			workDay = new WorkDay(holidayFactory);
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 2;
 				verify(chinaHoliday, times(i)).loadHolidayList(any());
 				verify(regularHoliday, times(i)).loadHolidayList(any());
 				verify(vietnamHoliday, times(i)).loadHolidayList(any());
@@ -123,7 +123,7 @@ class WorkDayTest {
 			workDay = new WorkDay(holidayFactory);
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 2;
 				verify(chinaHoliday, times(i)).loadHolidayList(any());
 				verify(regularHoliday, times(i)).loadHolidayList(any());
 				verify(vietnamHoliday, times(i)).loadHolidayList(any());
@@ -168,7 +168,7 @@ class WorkDayTest {
 			workDay = new WorkDay(holidayFactory);
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 2;
 				verify(chinaHoliday, times(i)).loadHolidayList(any());
 				verify(regularHoliday, times(i)).loadHolidayList(any());
 				verify(vietnamHoliday, times(i)).loadHolidayList(any());
@@ -252,7 +252,7 @@ class WorkDayTest {
 			workDay = new WorkDay(holidayFactory);
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 1;
+				Integer i = Calendar.getInstance().get(Calendar.YEAR) - 2020 + 2;
 				verify(chinaHoliday, times(i)).loadHolidayList(any());
 				verify(regularHoliday, times(i)).loadHolidayList(any());
 				verify(vietnamHoliday, times(i)).loadHolidayList(any());

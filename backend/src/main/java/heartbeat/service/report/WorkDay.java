@@ -36,7 +36,7 @@ public class WorkDay {
 	}
 
 	private void loadAllHolidayList() {
-		for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
+		for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR) + 1; year++) {
 			for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
 				int finalYear = year;
 				CompletableFuture.runAsync(() -> {
