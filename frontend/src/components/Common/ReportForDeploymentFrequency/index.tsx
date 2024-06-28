@@ -23,7 +23,7 @@ export const ReportForDeploymentFrequency = ({ title, tableTitles, data }: Repor
     if (typeof row.name != 'string') {
       return row.name;
     }
-    const name = row.name as string;
+    const name: string = row.name === 'Average' ? 'Total' : row.name;
     const emojiUrls: string[] = getEmojiUrls(name);
     if (name.includes(':') && emojiUrls.length > 0) {
       const [prefix, suffix] = name.split('/');

@@ -64,7 +64,7 @@ class DeploymentFrequencyCalculatorTest {
 		assertEquals(1, deploymentFrequency.getTotalDeployTimes());
 
 		AvgDeploymentFrequency avgDeploymentFrequency = deploymentFrequency.getAvgDeploymentFrequency();
-		assertEquals(0.03, avgDeploymentFrequency.getDeploymentFrequency(), 0.001f);
+		assertEquals(0.1, avgDeploymentFrequency.getDeploymentFrequency(), 0.001f);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deploymentFrequency
 			.getDeploymentFrequencyOfPipelines();

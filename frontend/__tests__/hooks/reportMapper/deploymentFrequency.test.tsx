@@ -52,7 +52,7 @@ describe('deployment frequency data mapper', () => {
             value: '0.40',
           },
           {
-            value: '1.00',
+            value: '1',
           },
         ],
       },

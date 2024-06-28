@@ -50,8 +50,6 @@ public class DeploymentFrequencyCalculator {
 		float deploymentFrequency = (float) deploymentFrequencyOfPipelines.stream()
 			.mapToDouble(DeploymentFrequencyOfPipeline::getDeploymentFrequency)
 			.sum();
-		int pipelineCount = deploymentFrequencyOfPipelines.size();
-		float avgDeployFrequency = pipelineCount == 0 ? 0 : deploymentFrequency / pipelineCount;
 
 		int totalDeployTimes = deploymentFrequencyOfPipelines.stream()
 			.mapToInt(DeploymentFrequencyOfPipeline::getDeployTimes)
@@ -59,7 +57,7 @@ public class DeploymentFrequencyCalculator {
 
 		return DeploymentFrequency.builder()
 			.avgDeploymentFrequency(AvgDeploymentFrequency.builder()
-				.deploymentFrequency(Float.parseFloat(DecimalUtil.formatDecimalTwo(avgDeployFrequency)))
+				.deploymentFrequency(Float.parseFloat(DecimalUtil.formatDecimalTwo(deploymentFrequency)))
 				.build())
 			.deploymentFrequencyOfPipelines(deploymentFrequencyOfPipelines)
 			.totalDeployTimes(totalDeployTimes)

@@ -25,7 +25,7 @@ export const deploymentFrequencyMapper = ({
         value: `${avgDeploymentFrequency.deploymentFrequency.toFixed(2)}`,
       },
       {
-        value: `${(totalDeployTimes / deploymentFrequencyOfPipelines.length).toFixed(2)}`,
+        value: `${totalDeployTimes}`,
       },
     ],
   });
