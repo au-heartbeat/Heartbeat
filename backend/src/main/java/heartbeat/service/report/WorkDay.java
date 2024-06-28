@@ -18,8 +18,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
 
 @Log4j2
 @Component
@@ -37,27 +36,24 @@ public class WorkDay {
 	}
 
 	private void loadAllHolidayList() {
-		try (ExecutorService executor = Executors.newFixedThreadPool(15)) {
-			for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
-				for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
-					int finalYear = year;
-					executor.submit(() -> {
-						Map<String, Boolean> addedHolidayMap = holidayFactory.build(calendarTypeEnum)
-							.loadHolidayList(String.valueOf(finalYear));
-						synchronized (this) {
-							if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
-								Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(
-										allCountryHolidayMap.get(calendarTypeEnum));
-								loadedYearHolidayMap.putAll(addedHolidayMap);
-								allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
-							}
-							else {
-								allCountryHolidayMap.put(calendarTypeEnum, addedHolidayMap);
-							}
+		for (int year = 2020; year <= Calendar.getInstance().get(Calendar.YEAR); year++) {
+			for (CalendarTypeEnum calendarTypeEnum : CalendarTypeEnum.values()) {
+				int finalYear = year;
+				CompletableFuture.runAsync(() -> {
+					Map<String, Boolean> addedHolidayMap = holidayFactory.build(calendarTypeEnum)
+						.loadHolidayList(String.valueOf(finalYear));
+					synchronized (this) {
+						if (allCountryHolidayMap.containsKey(calendarTypeEnum)) {
+							Map<String, Boolean> loadedYearHolidayMap = new HashMap<>(
+									allCountryHolidayMap.get(calendarTypeEnum));
+							loadedYearHolidayMap.putAll(addedHolidayMap);
+							allCountryHolidayMap.put(calendarTypeEnum, loadedYearHolidayMap);
 						}
-
-					});
-				}
+						else {
+							allCountryHolidayMap.put(calendarTypeEnum, addedHolidayMap);
+						}
+					}
+				});
 			}
 		}
 	}
