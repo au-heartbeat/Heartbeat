@@ -2,6 +2,7 @@ package heartbeat.service.report.calculator;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DailyDeploymentCount;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
@@ -17,6 +18,8 @@ import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,10 +60,10 @@ class DeploymentFrequencyCalculatorTest {
 		long endTime = 2L;
 		ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
-		when(workDay.calculateWorkDaysBetween(startTime, endTime, zoneId)).thenReturn(10L);
+		when(workDay.calculateWorkDaysBetween(eq(startTime), eq(endTime), any(), eq(zoneId))).thenReturn(10L);
 
 		DeploymentFrequency deploymentFrequency = deploymentFrequencyCalculator.calculate(deployTimes, startTime,
-				endTime, zoneId);
+				endTime, CalendarTypeEnum.REGULAR, zoneId);
 		assertEquals(1, deploymentFrequency.getTotalDeployTimes());
 
 		AvgDeploymentFrequency avgDeploymentFrequency = deploymentFrequency.getAvgDeploymentFrequency();
