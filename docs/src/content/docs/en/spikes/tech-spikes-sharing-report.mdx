@@ -41,12 +41,12 @@ participant backend as backend
 ==Generate the reports==
 frontend -> backend: POST /reports when jumping into report page
 backend --> frontend: uuid
-loop Spring list
+loop Sprint list
   frontend -> backend: POST /reports/:uuid with the previous/same payload
   backend --> frontend: Callback URL
 end
 
-loop Spring list
+loop Sprint list
   frontend -> backend: Request report result
 end
 
