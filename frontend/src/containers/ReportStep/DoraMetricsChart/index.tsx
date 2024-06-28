@@ -1,20 +1,22 @@
 import React, { useEffect, useRef } from 'react';
 
 import {
-  oneLineOptionMapper,
-  Series,
-  stackedBarOptionMapper,
-} from '@src/containers/ReportStep/DoraMetricsChart/ChartOption';
+  AREA_STYLE,
+  LABEL_PERCENT,
+  LEFT_RIGHT_ALIGN_LABEL,
+  NO_LABEL,
+} from '@src/containers/ReportStep/BoardMetricsChart';
 import {
   ChartType,
   EMPTY_DATA_MAPPER_DORA_CHART,
   LEAD_TIME_CHARTS_MAPPING,
   RequiredData,
 } from '@src/constants/resources';
-import { AreaOptionProps, stackedAreaOptionMapper } from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
-import { calculateTrendInfo, percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
+import { oneLineOptionMapper, Series, stackedBarOptionMapper } from '@src/containers/ReportStep/ChartOption';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { stackedAreaOptionMapper } from '@src/containers/ReportStep/ChartOption';
+import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { showChart } from '@src/containers/ReportStep';
@@ -34,8 +36,6 @@ enum DORAMetricsChartType {
   DevMeanTimeToRecovery = 'devMeanTimeToRecoveryList',
 }
 
-const NO_LABEL = '';
-const LABEL_PERCENT = '%';
 const AVERAGE = 'Average';
 
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
@@ -94,12 +94,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
     xAxis: {
       data: allDateRanges,
       boundaryGap: false,
-      axisLabel: {
-        color: 'black',
-        alignMaxLabel: 'right',
-        alignMinLabel: 'left',
-      },
-      formatter: xAxisLabelDateFormatter,
+      axisLabel: LEFT_RIGHT_ALIGN_LABEL,
     },
     yAxis: [
       {
@@ -120,9 +115,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
         data: averageDeploymentFrequency!,
         yAxisIndex: 0,
         smooth: true,
-        areaStyle: {
-          opacity: 0.3,
-        },
+        areaStyle: AREA_STYLE,
       },
       {
         name: RequiredData.DeploymentTimes,
@@ -130,9 +123,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
         data: deployTimes!,
         yAxisIndex: 1,
         smooth: true,
-        areaStyle: {
-          opacity: 0.3,
-        },
+        areaStyle: AREA_STYLE,
       },
     ],
     color: [theme.main.boardChart.lineColorA, theme.main.boardChart.lineColorB],
@@ -263,7 +254,7 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
   });
 
   const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
-  const leadTimeForChangeDataOption = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData);
+  const leadTimeForChangeDataOption = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData, false);
   const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
   const deploymentFrequencyDataOption = deploymentFrequencyData && stackedAreaOptionMapper(deploymentFrequencyData);
   const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);

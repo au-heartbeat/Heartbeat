@@ -1,9 +1,6 @@
-import {
-  stackedAreaOptionMapper,
-  stackedBarOptionMapper,
-} from '@src/containers/ReportStep/BoardMetricsChart/ChartOption';
 import { ChartType, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS, RequiredData } from '@src/constants/resources';
 import { calculateTrendInfo, sortLegend, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
+import { stackedAreaOptionMapper, stackedBarOptionMapper } from '@src/containers/ReportStep/ChartOption';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
@@ -23,14 +20,14 @@ type Result = {
   [key: string]: number[];
 };
 
-const NO_LABEL = '';
-const LABEL_PERCENT = '%';
+export const NO_LABEL = '';
+export const LABEL_PERCENT = '%';
 
-const AREA_STYLE = {
+export const AREA_STYLE = {
   opacity: 0.3,
 };
 
-const LEFT_RIGHT_ALIGN_LABEL = {
+export const LEFT_RIGHT_ALIGN_LABEL = {
   color: 'black',
   alignMaxLabel: 'right',
   alignMinLabel: 'left',

@@ -1,48 +1,6 @@
 import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
-export interface BarOptionProps {
-  xAxis: string[];
-  yAxis: YAxis;
-  series: Series[] | undefined;
-  color: string[];
-}
-
-export interface AreaOptionProps {
-  xAxis: XAxis;
-  yAxis: YAxis[];
-  series: Series[] | undefined;
-  color: string[];
-}
-
-export interface Series {
-  name: string;
-  type: string;
-  data: number[];
-  smooth?: boolean;
-  areaStyle?: unknown;
-  yAxisIndex?: number;
-  tooltip?: object;
-}
-
-export interface XAxis {
-  data: string[];
-  axisLabel?: AxisLabel;
-  boundaryGap?: boolean;
-}
-
-export interface AxisLabel {
-  color: string;
-  alignMaxLabel: string;
-  alignMinLabel: string;
-}
-
-export interface YAxis {
-  name: string;
-  alignTick: boolean;
-  axisLabel: string;
-}
-
 const commonConfig = {
   legend: {
     icon: 'circle',
@@ -85,6 +43,137 @@ const commonConfig = {
     },
     barWidth: '20%',
   },
+};
+
+export interface AreaOptionProps {
+  xAxis: XAxis;
+  yAxis: YAxis[];
+  series: Series[] | undefined;
+  color: string[];
+}
+
+export interface Series {
+  name: string;
+  type: string;
+  data: number[];
+  smooth?: boolean;
+  areaStyle?: unknown;
+  yAxisIndex?: number;
+  tooltip?: object;
+}
+
+export interface XAxis {
+  data: string[];
+  axisLabel?: AxisLabel;
+  boundaryGap?: boolean;
+}
+
+export interface AxisLabel {
+  color: string;
+  alignMaxLabel: string;
+  alignMinLabel: string;
+}
+
+export interface YAxis {
+  name: string;
+  alignTick: boolean;
+  axisLabel: string;
+}
+
+export interface BarOptionProps {
+  legend?: string;
+  xAxis: string[];
+  yAxis: YAxis;
+  series: Series[] | undefined;
+  color: string[];
+}
+
+export interface LineOptionProps {
+  legend: string;
+  xAxis: string[];
+  yAxis: YAxis;
+  series: Series;
+  color: string;
+  valueType?: string;
+}
+
+export const oneLineOptionMapper = (props: LineOptionProps) => {
+  return {
+    tooltip: {
+      trigger: 'axis',
+      valueFormatter: percentageFormatter(!!props.valueType),
+    },
+    xAxis: {
+      data: props.xAxis,
+      boundaryGap: false,
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed',
+          width: 1,
+        },
+      },
+      axisLabel: {
+        show: true,
+        fontSize: 12,
+        color: 'black',
+        alignMaxLabel: 'right',
+        alignMinLabel: 'left',
+        formatter: xAxisLabelDateFormatter,
+      },
+      axisLine: {
+        lineStyle: {
+          color: theme.main.doraChart.gridColor,
+          width: 1,
+          type: 'dashed',
+        },
+      },
+    },
+    color: [props.color],
+    yAxis: {
+      name: props.yAxis.name,
+      type: 'value',
+      nameTextStyle: {
+        align: 'left',
+      },
+      paddingLeft: 10,
+      axisLabel: {
+        show: true,
+        interval: 'auto',
+        formatter: `{value}${props.yAxis.axisLabel}`,
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed',
+          width: 1,
+        },
+      },
+    },
+    grid: {
+      show: true,
+      borderColor: 'transparent',
+      left: '12%',
+      right: '10%',
+      top: '20%',
+      bottom: '25%',
+    },
+    series: {
+      name: props.series.name,
+      data: props.series.data,
+      type: props.series.type,
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 7,
+      lineStyle: {
+        width: 3,
+      },
+      areaStyle: {
+        opacity: 0.3,
+      },
+      tooltip: props.series.tooltip,
+    },
+  };
 };
 
 export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
@@ -132,14 +221,14 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
   };
 };
 
-export const stackedBarOptionMapper = (props: BarOptionProps) => {
+export const stackedBarOptionMapper = (props: BarOptionProps, showPercentage: boolean = true) => {
   return {
     legend: {
       data: props.series?.map((item) => item.name),
       ...commonConfig.legend,
     },
     tooltip: {
-      valueFormatter: percentageFormatter(),
+      valueFormatter: percentageFormatter(showPercentage),
       ...commonConfig.tooltip,
     },
     grid: commonConfig.grid,
