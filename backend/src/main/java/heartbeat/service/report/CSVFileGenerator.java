@@ -538,16 +538,26 @@ public class CSVFileGenerator {
 		List<String[]> rows = new ArrayList<>();
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deploymentFrequency
 			.getDeploymentFrequencyOfPipelines();
-		deploymentFrequencyOfPipelines.forEach(pipeline -> rows.add(new String[] { "Deployment frequency",
-				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
-						+ " / Deployment frequency(Deployments/Day)",
-				DecimalUtil.formatDecimalTwo(pipeline.getDeploymentFrequency()) }));
+		deploymentFrequencyOfPipelines.forEach(pipeline -> {
+			rows.add(new String[] { "Deployment frequency",
+					pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
+							+ " / Deployment frequency(Deployments/Day)",
+					DecimalUtil.formatDecimalTwo(pipeline.getDeploymentFrequency()) });
+			rows.add(
+					new String[] { "Deployment frequency",
+							pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
+									+ " / Deployment frequency(Deployment times)",
+							String.valueOf(pipeline.getDeployTimes()) });
+		});
 
 		AvgDeploymentFrequency avgDeploymentFrequency = deploymentFrequency.getAvgDeploymentFrequency();
-		if (deploymentFrequencyOfPipelines.size() > 1)
+		if (deploymentFrequencyOfPipelines.size() > 1) {
 			rows.add(new String[] { "Deployment frequency",
 					avgDeploymentFrequency.getName() + " / Deployment frequency(Deployments/Day)",
 					DecimalUtil.formatDecimalTwo(avgDeploymentFrequency.getDeploymentFrequency()) });
+			rows.add(new String[] { "Deployment frequency", "Total / Deployment frequency(Deployment times)",
+					String.valueOf(deploymentFrequency.getTotalDeployTimes()) });
+		}
 
 		return rows;
 	}
