@@ -11,8 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,8 +38,6 @@ class WorkDayTest {
 	private static final long ONE_HOUR_MILLISECONDS = 1000L * 60 * 60;
 
 	private static final long ONE_MINUTE_MILLISECONDS = 1000L * 60;
-
-	private static final Logger log = LoggerFactory.getLogger(WorkDayTest.class);
 
 	@Mock
 	private ChinaHoliday chinaHoliday;
