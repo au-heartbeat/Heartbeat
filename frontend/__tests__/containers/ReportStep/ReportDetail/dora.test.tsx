@@ -23,10 +23,10 @@ describe('DoraDetail', () => {
         deploymentFrequencyList: [{ id: 0, name: 'name1', valueList: [{ value: 1 }] }],
       });
       render(<DoraDetail data={data} onBack={jest.fn()} />);
-      const deploymentFrequencyTable = screen.getByTestId('Deployment Frequency');
+      const deploymentFrequencyTable = screen.getByLabelText('Deployment Frequency');
       expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
       expect(deploymentFrequencyTable).toBeInTheDocument();
-      expect(within(deploymentFrequencyTable).queryAllByTestId('tr').length).toBe(1);
+      expect(within(deploymentFrequencyTable).getAllByLabelText('tr').length).toBe(1);
     });
 
     it('should not show deploymentFrequencyList when deploymentFrequencyList data is not existing', () => {

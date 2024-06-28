@@ -8,6 +8,7 @@ describe('deployment frequency data mapper', () => {
     },
     deploymentFrequencyOfPipelines: [
       {
+        deployTimes: 1,
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
         deploymentFrequency: 0.3,
@@ -27,6 +28,7 @@ describe('deployment frequency data mapper', () => {
         ],
       },
     ],
+    totalDeployTimes: 1,
   };
   it('maps response deployment frequency values to ui display value', () => {
     const expectedDeploymentFrequencyValues = [
@@ -37,6 +39,9 @@ describe('deployment frequency data mapper', () => {
           {
             value: '0.30',
           },
+          {
+            value: '1',
+          },
         ],
       },
       {
@@ -45,6 +50,9 @@ describe('deployment frequency data mapper', () => {
         valueList: [
           {
             value: '0.40',
+          },
+          {
+            value: '1.00',
           },
         ],
       },

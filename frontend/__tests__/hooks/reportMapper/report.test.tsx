@@ -92,6 +92,9 @@ export const EXPECTED_REPORT_VALUES = {
         {
           value: '0.30',
         },
+        {
+          value: '10',
+        },
       ],
     },
     {
@@ -100,6 +103,9 @@ export const EXPECTED_REPORT_VALUES = {
       valueList: [
         {
           value: '0.40',
+        },
+        {
+          value: '10.00',
         },
       ],
     },

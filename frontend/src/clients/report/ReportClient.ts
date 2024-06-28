@@ -57,6 +57,7 @@ export class ReportClient extends HttpClient {
         deploymentFrequency: 0,
       },
       deploymentFrequencyOfPipelines: [],
+      totalDeployTimes: 0,
     },
     leadTimeForChanges: {
       leadTimeForChangesOfPipelines: [],

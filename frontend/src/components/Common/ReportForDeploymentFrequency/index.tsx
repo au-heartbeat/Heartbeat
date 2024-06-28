@@ -40,8 +40,6 @@ export const ReportForDeploymentFrequency = ({ title, tableTitles, data }: Repor
     return <StyledTypography>{name}</StyledTypography>;
   };
 
-  console.log('data');
-  console.log(data);
   const renderRows = () => {
     return data.map((row) => (
       <Fragment key={row.id}>

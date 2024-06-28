@@ -1,17 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 
 import {
+  ChartType,
+  EMPTY_DATA_MAPPER_DORA_CHART,
+  LEAD_TIME_CHARTS_MAPPING,
+  MetricsSubtitle,
+  RequiredData,
+} from '@src/constants/resources';
+import {
   AREA_STYLE,
   LABEL_PERCENT,
   LEFT_RIGHT_ALIGN_LABEL,
   NO_LABEL,
 } from '@src/containers/ReportStep/BoardMetricsChart';
-import {
-  ChartType,
-  EMPTY_DATA_MAPPER_DORA_CHART,
-  LEAD_TIME_CHARTS_MAPPING,
-  RequiredData,
-} from '@src/constants/resources';
 import { oneLineOptionMapper, Series, stackedBarOptionMapper } from '@src/containers/ReportStep/ChartOption';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
@@ -98,19 +99,19 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
     },
     yAxis: [
       {
-        name: RequiredData.DeploymentFrequency,
+        name: MetricsSubtitle.DeploymentFrequency,
         alignTick: false,
         axisLabel: NO_LABEL,
       },
       {
-        name: RequiredData.DeploymentTimes,
+        name: MetricsSubtitle.DeploymentTimes,
         alignTick: false,
         axisLabel: NO_LABEL,
       },
     ],
     series: [
       {
-        name: RequiredData.DeploymentFrequency,
+        name: MetricsSubtitle.DeploymentFrequency,
         type: 'line',
         data: averageDeploymentFrequency!,
         yAxisIndex: 0,
@@ -118,7 +119,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
         areaStyle: AREA_STYLE,
       },
       {
-        name: RequiredData.DeploymentTimes,
+        name: MetricsSubtitle.DeploymentTimes,
         type: 'line',
         data: deployTimes!,
         yAxisIndex: 1,
