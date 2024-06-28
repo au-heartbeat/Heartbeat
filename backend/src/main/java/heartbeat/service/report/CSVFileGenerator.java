@@ -538,13 +538,14 @@ public class CSVFileGenerator {
 		List<String[]> rows = new ArrayList<>();
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deploymentFrequency
 			.getDeploymentFrequencyOfPipelines();
+		String deploymentFrequencyTitle = "Deployment frequency";
 		deploymentFrequencyOfPipelines.forEach(pipeline -> {
-			rows.add(new String[] { "Deployment frequency",
+			rows.add(new String[] { deploymentFrequencyTitle,
 					pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
 							+ " / Deployment frequency(Deployments/Day)",
 					DecimalUtil.formatDecimalTwo(pipeline.getDeploymentFrequency()) });
 			rows.add(
-					new String[] { "Deployment frequency",
+					new String[] { deploymentFrequencyTitle,
 							pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
 									+ " / Deployment frequency(Deployment times)",
 							String.valueOf(pipeline.getDeployTimes()) });
@@ -552,10 +553,10 @@ public class CSVFileGenerator {
 
 		AvgDeploymentFrequency avgDeploymentFrequency = deploymentFrequency.getAvgDeploymentFrequency();
 		if (deploymentFrequencyOfPipelines.size() > 1) {
-			rows.add(new String[] { "Deployment frequency",
+			rows.add(new String[] { deploymentFrequencyTitle,
 					avgDeploymentFrequency.getName() + " / Deployment frequency(Deployments/Day)",
 					DecimalUtil.formatDecimalTwo(avgDeploymentFrequency.getDeploymentFrequency()) });
-			rows.add(new String[] { "Deployment frequency", "Total / Deployment frequency(Deployment times)",
+			rows.add(new String[] { deploymentFrequencyTitle, "Total / Deployment frequency(Deployment times)",
 					String.valueOf(deploymentFrequency.getTotalDeployTimes()) });
 		}
 

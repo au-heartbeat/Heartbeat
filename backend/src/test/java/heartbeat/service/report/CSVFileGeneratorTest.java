@@ -702,7 +702,6 @@ class CSVFileGeneratorTest {
 					.build())
 				.build())
 			.build();
-		;
 
 		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
 		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeStamp);
