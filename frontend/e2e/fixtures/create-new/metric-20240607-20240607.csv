@@ -37,5 +37,6 @@
 "Rework","Total rework cards","0"
 "Rework","Rework cards ratio(Total rework cards/Throughput)","0.0000"
 "Deployment frequency","Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)","0"
+"Deployment frequency","Heartbeat / Deploy prod / Deployment frequency(Deployment times)","0"
 "Dev change failure rate","Heartbeat / Deploy prod / Dev change failure rate","0.0000"
 "Dev mean time to recovery","Heartbeat / Deploy prod / Dev mean time to recovery","0"

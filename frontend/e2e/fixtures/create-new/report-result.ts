@@ -12,6 +12,7 @@ export interface IDoraMetricsResultItem {
   prLeadTime: string;
   pipelineLeadTime: string;
   totalLeadTime: string;
+  deploymentTimes: string;
   deploymentFrequency: string;
   failureRate: string;
   devMeanTimeToRecovery: string;
@@ -572,6 +573,7 @@ export const DORA_METRICS_RESULT = {
   DeploymentFrequency: '0.20',
   FailureRate: '0.00% (0/1)',
   DevMeanTimeToRecovery: '0.00',
+  DeploymentTimes: '1',
 };
 
 export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
@@ -580,6 +582,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     pipelineLeadTime: '0.00',
     totalLeadTime: '0.00',
     deploymentFrequency: '0.00',
+    deploymentTimes: '0',
     failureRate: '0.00% (0/0)',
     devMeanTimeToRecovery: '0.00',
   },
@@ -588,6 +591,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     pipelineLeadTime: '0.36',
     totalLeadTime: '2.22',
     deploymentFrequency: '0.50',
+    deploymentTimes: '1',
     failureRate: '0.00% (0/1)',
     devMeanTimeToRecovery: '0.00',
   },
@@ -596,6 +600,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     pipelineLeadTime: '0.59',
     totalLeadTime: '11.38',
     deploymentFrequency: '2.00',
+    deploymentTimes: '4',
     failureRate: '0.00% (0/4)',
     devMeanTimeToRecovery: '0.00',
   },
@@ -619,4 +624,5 @@ export const DORA_METRICS_WITH_HOLIDAY_RESULT = {
   DeploymentFrequency: '1.00',
   FailureRate: '16.67% (1/6)',
   DevMeanTimeToRecovery: '0.78',
+  DeploymentTimes: '5',
 };

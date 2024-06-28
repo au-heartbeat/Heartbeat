@@ -136,7 +136,7 @@ export class ReportStep {
     this.homeIcon = page.getByLabel('Home');
     this.velocityRows = this.page.getByTestId('Velocity').locator('tbody').getByRole('row');
     this.cycleTimeRows = this.page.getByTestId('Cycle Time').locator('tbody').getByRole('row');
-    this.deploymentFrequencyRows = this.page.getByTestId('Deployment Frequency').locator('tbody').getByRole('row');
+    this.deploymentFrequencyRows = this.page.getByLabel('Deployment Frequency').locator('tbody').getByRole('row');
     this.classificationRows = this.page.getByTestId('Classification').locator('tbody').getByRole('row');
     this.leadTimeForChangesRows = this.page.getByTestId('Lead Time For Changes').getByRole('row');
     this.devChangeFailureRateRows = this.page.getByTestId('Dev Change Failure Rate').locator('tbody').getByRole('row');
@@ -202,6 +202,9 @@ export class ReportStep {
     await expect(this.deploymentFrequencyRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
     await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText(
       doraMetricsDetailData.deploymentFrequency,
+    );
+    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(2)).toContainText(
+      doraMetricsDetailData.deploymentTimes,
     );
 
     await expect(this.leadTimeForChangesRows.nth(2)).toContainText(
@@ -573,11 +576,14 @@ export class ReportStep {
     deploymentFrequency,
     failureRate,
     devMeanTimeToRecovery,
+    deploymentTimes,
   }: IDoraMetricsResultItem) {
     await expect(this.prLeadTime).toContainText(`${prLeadTime}PR Lead Time(Hours)`);
     await expect(this.pipelineLeadTime).toContainText(`${pipelineLeadTime}Pipeline Lead Time(Hours)`);
     await expect(this.totalLeadTime).toContainText(`${totalLeadTime}Total Lead Time(Hours)`);
-    await expect(this.deploymentFrequency).toContainText(`${deploymentFrequency}(Deployments/Days)`);
+    await expect(this.deploymentFrequency).toContainText(
+      `${deploymentFrequency}Deployments/Days${deploymentTimes}Deployment times`,
+    );
     await expect(this.failureRate).toContainText(failureRate);
     await expect(this.devMeanTimeToRecovery).toContainText(`${devMeanTimeToRecovery}(Hours)`);
   }
