@@ -84,7 +84,7 @@ class VietnamHolidayTest {
 		CalendarTypeEnum country = CalendarTypeEnum.VN;
 		String year = "2024";
 		CalendarificHolidayResponseDTO calendarificHolidayResponseDTO = JsonFileReader.readJsonFile(
-			"./src/test/resources/VietnamCalendarHolidayResponse.json", CalendarificHolidayResponseDTO.class);
+				"./src/test/resources/VietnamCalendarHolidayResponse.json", CalendarificHolidayResponseDTO.class);
 		when(calendarificFeignClient.getHolidays(country.getValue().toLowerCase(), year))
 			.thenThrow(NotFoundException.class);
 

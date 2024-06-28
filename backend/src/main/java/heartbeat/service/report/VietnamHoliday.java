@@ -31,8 +31,8 @@ public class VietnamHoliday extends AbstractCountryHoliday {
 
 		try {
 			List<CalendarificHolidayResponseDTO.Response.CalendarificHolidayDetail> holidays = decoder(
-				calendarificFeignClient.getHolidays(CalendarTypeEnum.VN.getValue().toLowerCase(), year),
-				CalendarTypeEnum.VN, year, CalendarificHolidayResponseDTO.class)
+					calendarificFeignClient.getHolidays(CalendarTypeEnum.VN.getValue().toLowerCase(), year),
+					CalendarTypeEnum.VN, year, CalendarificHolidayResponseDTO.class)
 				.getResponse()
 				.getHolidays();
 			log.info("Successfully get vietnam holiday list:{}", holidays);
@@ -44,7 +44,8 @@ public class VietnamHoliday extends AbstractCountryHoliday {
 				}
 			});
 			return holidayMap;
-		} catch (NotFoundException e) {
+		}
+		catch (NotFoundException e) {
 			return new HashMap<>();
 		}
 
