@@ -80,8 +80,6 @@ const getTitleUnit = (title: string) => {
   switch (title) {
     case MetricsTitle.DevMeanTimeToRecovery:
       return ReportSuffixUnits.Hours;
-    case MetricsTitle.DeploymentFrequency:
-      return ReportSuffixUnits.DeploymentsPerDay;
     default:
       return '';
   }

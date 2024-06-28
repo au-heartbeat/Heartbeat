@@ -88,7 +88,7 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
   const deployTimes = data?.map((items) => {
     const averageItem = items?.find((item) => item.name === AVERAGE);
     if (!averageItem) return 0;
-    return Number(averageItem.valueList[1].value) || 0;
+    return Number(averageItem.valueList[1].value);
   });
   const trendInfo = calculateTrendInfo(averageDeploymentFrequency, allDateRanges, ChartType.DeploymentFrequency);
   return {
