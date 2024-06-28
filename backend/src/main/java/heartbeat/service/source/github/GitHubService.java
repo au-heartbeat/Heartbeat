@@ -273,7 +273,7 @@ public class GitHubService {
 		}
 		else {
 			WorkInfo workInfo = workDay.calculateWorkTimeAndHolidayBetween(firstCommitTimeInPr, prMergedTime,
-					request.getTimezoneByZoneId());
+					request.getCalendarType(), request.getTimezoneByZoneId());
 			prLeadTime = workInfo.getWorkTime();
 			holidays = workInfo.getHolidays();
 		}

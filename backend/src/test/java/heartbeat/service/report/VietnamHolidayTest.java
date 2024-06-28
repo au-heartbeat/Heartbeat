@@ -6,6 +6,7 @@ import heartbeat.client.CalendarificFeignClient;
 import heartbeat.client.dto.board.jira.CalendarificHolidayResponseDTO;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.exception.DecodeCalendarException;
+import heartbeat.exception.NotFoundException;
 import heartbeat.util.JsonFileReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,6 +77,16 @@ class VietnamHolidayTest {
 		verify(calendarificFeignClient).getHolidays(country.getValue().toLowerCase(), year);
 		verify(objectMapper).readValue(eq(calendarificHolidayResponseDTOString), any(Class.class));
 
+	}
+
+	@Test
+	void loadHolidayListErrorWhenNotFoundError() {
+		CalendarTypeEnum country = CalendarTypeEnum.VN;
+		String year = "2024";
+		when(calendarificFeignClient.getHolidays(country.getValue().toLowerCase(), year))
+			.thenThrow(NotFoundException.class);
+
+		assertEquals(new HashMap<String, Boolean>(), vietnamHoliday.loadHolidayList(year));
 	}
 
 }

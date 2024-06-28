@@ -2,6 +2,7 @@ package heartbeat.service.report.calculator;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DailyDeploymentCount;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
@@ -26,8 +27,9 @@ public class DeploymentFrequencyCalculator {
 
 	private final WorkDay workDay;
 
-	public DeploymentFrequency calculate(List<DeployTimes> deployTimes, Long startTime, Long endTime, ZoneId timezone) {
-		long timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime, timezone);
+	public DeploymentFrequency calculate(List<DeployTimes> deployTimes, Long startTime, Long endTime,
+			CalendarTypeEnum calendarTypeEnum, ZoneId timezone) {
+		long timePeriod = workDay.calculateWorkDaysBetween(startTime, endTime, calendarTypeEnum, timezone);
 
 		List<DeploymentFrequencyOfPipeline> deploymentFrequencyOfPipelines = deployTimes.stream().map((item) -> {
 			int passedDeployInfosCount = Optional.ofNullable(item.getPassed())

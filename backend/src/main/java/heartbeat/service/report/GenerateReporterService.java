@@ -179,15 +179,15 @@ public class GenerateReporterService {
 
 	private synchronized ReportResponse generatePipelineReporter(GenerateReportRequest request,
 			FetchedData fetchedData) {
-		workDay.selectCalendarType(request.getCalendarType());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
 		request.getPipelineMetrics().forEach(metric -> {
 			switch (metric) {
-				case "deployment frequency" -> reportResponse.setDeploymentFrequency(deploymentFrequency.calculate(
-						fetchedData.getBuildKiteData().getDeployTimesList(), Long.parseLong(request.getStartTime()),
-						Long.parseLong(request.getEndTime()), request.getTimezoneByZoneId()));
+				case "deployment frequency" -> reportResponse.setDeploymentFrequency(
+						deploymentFrequency.calculate(fetchedData.getBuildKiteData().getDeployTimesList(),
+								Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime()),
+								request.getCalendarType(), request.getTimezoneByZoneId()));
 				case "dev change failure rate" -> reportResponse.setDevChangeFailureRate(
 						devChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
 				case "dev mean time to recovery" -> reportResponse.setDevMeanTimeToRecovery(meanToRecoveryCalculator
@@ -202,7 +202,6 @@ public class GenerateReporterService {
 	}
 
 	private synchronized ReportResponse generateBoardReporter(GenerateReportRequest request) {
-		workDay.selectCalendarType(request.getCalendarType());
 		FetchedData fetchedData = fetchJiraBoardData(request, new FetchedData());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
@@ -260,7 +259,6 @@ public class GenerateReporterService {
 
 	private synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request,
 			FetchedData fetchedData) {
-		workDay.selectCalendarType(request.getCalendarType());
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
