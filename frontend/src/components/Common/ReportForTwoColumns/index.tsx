@@ -18,28 +18,28 @@ interface ReportForTwoColumnsProps {
   data: ReportDataWithTwoColumns[];
 }
 
-export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) => {
-  const transformEmoji = (row: ReportDataWithTwoColumns) => {
-    if (typeof row.name != 'string') {
-      return row.name;
-    }
-    const name = row.name as string;
-    const emojiUrls: string[] = getEmojiUrls(name);
-    if (name.includes(':') && emojiUrls.length > 0) {
-      const [prefix, suffix] = name.split('/');
-      return (
-        <EmojiWrap>
-          <StyledTypography>{prefix}/</StyledTypography>
-          {emojiUrls.map((url) => (
-            <StyledAvatar key={url} src={url} />
-          ))}
-          <StyledTypography>{removeExtraEmojiName(suffix)}</StyledTypography>
-        </EmojiWrap>
-      );
-    }
-    return <StyledTypography>{name}</StyledTypography>;
-  };
+export const transformEmoji = (row: ReportDataWithTwoColumns) => {
+  if (typeof row.name != 'string') {
+    return row.name;
+  }
+  const name = row.name as string;
+  const emojiUrls: string[] = getEmojiUrls(name);
+  if (name.includes(':') && emojiUrls.length > 0) {
+    const [prefix, suffix] = name.split('/');
+    return (
+      <EmojiWrap>
+        <StyledTypography>{prefix}/</StyledTypography>
+        {emojiUrls.map((url) => (
+          <StyledAvatar key={url} src={url} />
+        ))}
+        <StyledTypography>{removeExtraEmojiName(suffix)}</StyledTypography>
+      </EmojiWrap>
+    );
+  }
+  return <StyledTypography>{name}</StyledTypography>;
+};
 
+export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) => {
   const renderRows = () => {
     return data.map((row) => (
       <Fragment key={row.id}>
