@@ -340,7 +340,7 @@ Users can switch dates to view the dashboard for the corresponding time period. 
 
 #### List view
 
-![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22.png)
+![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-new.png)
 _Image 3-22, Report page_
 
 You could find the drill down from `show more >` link from dashboard.
@@ -351,7 +351,7 @@ In report `chart` page, heartbeat provide a better visualization on delivery and
 - Board chart 
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1.png)
 - Dora chart
-![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2.png)
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-new.png)
 
 Within chart, Hearteat also provide trend indicator which represent last two periods comparison result. The trend indicator includes three key points:
 - Color: From delivery perspective, Green means healthy, Red means unhealthy
@@ -416,10 +416,12 @@ _Image 3-26，Rework Report_
 
 ### 3.4.5 Deployment Frequency
 - Definition for ‘Deployment Frequency': this metrics records how often you deploy code to production on a daily basis.
-- Formula for ‘Deployment Frequency': the umber of build for（Status = passed & Valid = true）/working days
+- Definition for ‘Deployment times': this times how many you deploy code to production on a daily basis.
+- Formula for ‘Deployment Frequency': the number of build for（Status = passed & Valid = true）/working days. If multiple pipeline: the sum of every pipeline.
+- Formula for ‘Deployment times': the number of build for（Status = passed & Valid = true. If multiple pipeline: the sum of every pipeline.
 ![Image 3-27](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/export/export-pipline-data.png)\
 _Image 3-27，export pipline data_
-![Image 3-28](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/12.png)\
+![Image 3-28](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/12-1.png)\
 _Image 3-28，Deployment Frequency Report_
 
 ### 3.4.6 Lead time for changes Data
