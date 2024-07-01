@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
@@ -122,6 +121,19 @@ public class ReportService {
 				.overallMetricCompleted(Boolean.FALSE)
 				.isSuccessfulCreateCsvFile(Boolean.FALSE)
 				.build());
+	}
+
+	public List<String> getReportUrl(String uuid) {
+		return asyncReportRequestHandler.getReportFiles(uuid)
+			.stream()
+			.map(it -> it.split("-"))
+			.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
+			.distinct()
+			.toList();
+	}
+
+	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {
+		return "/reports/" + uuid + "/detail" + "?startTime=" + startTime + "&endTime=" + endTime;
 	}
 
 }

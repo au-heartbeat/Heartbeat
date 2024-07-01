@@ -24,9 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -58,13 +56,17 @@ public class ReportController {
 		return result;
 	}
 
-	@GetMapping("/{uuid}")
-	public ResponseEntity<ReportResponse> generateReport(@PathVariable String uuid,
+	@GetMapping("/{uuid}/detail")
+	public ReportResponse generateReport(@PathVariable String uuid,
 			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
 		log.info("Start to generate report_reportId: {}", uuid);
-		ReportResponse reportResponse = generateReporterService.getComposedReportResponse(uuid, startTime, endTime);
-		return ResponseEntity.status(HttpStatus.OK).body(reportResponse);
+		return generateReporterService.getComposedReportResponse(uuid, startTime, endTime);
+	}
+
+	@GetMapping("/{uuid}")
+	public List<String> getReportUrls(@PathVariable String uuid) {
+		return reportService.getReportUrl(uuid);
 	}
 
 	@PostMapping("/{uuid}")
@@ -72,11 +74,11 @@ public class ReportController {
 			@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
 		reportService.generateReport(request, uuid);
-		String callbackUrl = "/reports/" + uuid + "?startTime="
-				+ TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getStartTime()),
-						request.getTimezoneByZoneId())
-				+ "&endTime=" + TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getEndTime()),
-						request.getTimezoneByZoneId());
+		String callbackUrl = reportService.generateReportCallbackUrl(uuid,
+				TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getStartTime()),
+						request.getTimezoneByZoneId()),
+				TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getEndTime()),
+						request.getTimezoneByZoneId()));
 		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());
