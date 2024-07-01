@@ -18,7 +18,7 @@ interface ReportForTwoColumnsProps {
   data: ReportDataWithTwoColumns[];
 }
 
-export const transformEmoji = (row: ReportDataWithTwoColumns) => {
+export const transformEmoji = (row: ReportDataWithTwoColumns, isDeploymentFrequency: boolean = false) => {
   if (typeof row.name != 'string') {
     return row.name;
   }
@@ -36,7 +36,7 @@ export const transformEmoji = (row: ReportDataWithTwoColumns) => {
       </EmojiWrap>
     );
   }
-  return <StyledTypography>{name}</StyledTypography>;
+  return <StyledTypography>{isDeploymentFrequency && name == 'Average' ? 'Total' : name}</StyledTypography>;
 };
 
 export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) => {

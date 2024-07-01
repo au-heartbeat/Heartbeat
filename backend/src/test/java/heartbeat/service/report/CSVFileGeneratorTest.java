@@ -607,7 +607,7 @@ class CSVFileGeneratorTest {
 						"Deployment frequency","Heartbeat / Deploy prod / Deployment frequency(Deployment times)","1"
 						"Deployment frequency","Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)","0.56"
 						"Deployment frequency","Heartbeat / Check Frontend License / Deployment frequency(Deployment times)","0"
-						"Deployment frequency","Average / Deployment frequency(Deployments/Day)","0.67"
+						"Deployment frequency","Total / Deployment frequency(Deployments/Day)","0.67"
 						"Deployment frequency","Total / Deployment frequency(Deployment times)","1"
 						"Lead time for changes","Heartbeat / Deploy prod / PR Lead Time","0"
 						"Lead time for changes","Heartbeat / Deploy prod / Pipeline Lead Time","0.02"

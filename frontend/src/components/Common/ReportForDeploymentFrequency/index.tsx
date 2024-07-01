@@ -22,7 +22,7 @@ export const ReportForDeploymentFrequency = ({ title, tableTitles, data }: Repor
     return data.map((row) => (
       <Fragment key={row.id}>
         <Row aria-label={'tr'}>
-          <ColumnTableCell>{transformEmoji(row)}</ColumnTableCell>
+          <ColumnTableCell>{transformEmoji(row, true)}</ColumnTableCell>
           {row.valueList.map((it) => (
             <BorderTableCell key={`${row.id}-${row.name}-${it.value}`}>{it.value}</BorderTableCell>
           ))}
