@@ -58,7 +58,7 @@ public class KanbanCsvService {
 
 	private final JiraUriGenerator urlGenerator;
 
-	public void generateCsvInfo(GenerateReportRequest request, CardCollection realDoneCardCollection,
+	public void generateCsvInfo(String uuid, GenerateReportRequest request, CardCollection realDoneCardCollection,
 			CardCollection nonDoneCardCollection) {
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 		BoardRequestParam boardRequestParam = BoardRequestParam.builder()
@@ -99,12 +99,12 @@ public class KanbanCsvService {
 				.toList();
 
 		}
-		this.generateCSVForBoard(realDoneCardCollection.getJiraCardDTOList(),
+		this.generateCSVForBoard(uuid, realDoneCardCollection.getJiraCardDTOList(),
 				nonDoneCardCollection.getJiraCardDTOList(), jiraColumns.getJiraColumnResponse(),
 				request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates, jiraBoardSetting);
 	}
 
-	private void generateCSVForBoard(List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,
+	private void generateCSVForBoard(String uuid, List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,
 			List<JiraColumnDTO> jiraColumns, String csvTimeRangeTimeStamp, CardStepsEnum reworkState,
 			List<String> reworkFromStates, JiraBoardSetting jiraBoardSetting) {
 		List<TargetField> targetFields = jiraBoardSetting.getTargetFields();
@@ -181,7 +181,7 @@ public class KanbanCsvService {
 			.mergeBaseInfoAndCycleTimeSheet()
 			.mergeReworkTimesSheet()
 			.generate();
-		csvFileGenerator.writeDataToCSV(csvTimeRangeTimeStamp, sheet);
+		csvFileGenerator.writeDataToCSV(uuid, csvTimeRangeTimeStamp, sheet);
 	}
 
 	private void sortNonDoneCardsByStatusAndTime(List<JiraCardDTO> nonDoneCards, List<JiraColumnDTO> jiraColumns) {

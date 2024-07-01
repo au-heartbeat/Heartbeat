@@ -40,7 +40,7 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
 	public MetricsDataCompleted getMetricsDataCompleted(String timeStamp) {
 		Path targetPath = new File(OUTPUT_FILE_PATH).toPath().normalize();
-		String fileName = targetPath + SLASH + METRICS_DATA_COMPLETED.getPath() + timeStamp;
+		String fileName = targetPath + SLASH + METRICS_DATA_COMPLETED.getPath() + SLASH + timeStamp;
 		return readFileByType(new File(fileName), METRICS_DATA_COMPLETED, timeStamp, MetricsDataCompleted.class);
 	}
 

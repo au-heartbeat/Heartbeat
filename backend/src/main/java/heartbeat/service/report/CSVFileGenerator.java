@@ -65,6 +65,8 @@ public class CSVFileGenerator {
 
 	private static final char FILENAME_SEPARATOR = '-';
 
+	private static final char SLASH = '/';
+
 	private static final String CSV_EXTENSION = ".csv";
 
 	public static final String FILE_LOCAL_PATH = "./app/output/csv";
@@ -98,11 +100,12 @@ public class CSVFileGenerator {
 		}
 	}
 
-	public void convertPipelineDataToCSV(List<PipelineCSVInfo> leadTimeData, String csvTimeStamp) {
+	public void convertPipelineDataToCSV(String uuid, List<PipelineCSVInfo> leadTimeData, String csvTimeStamp) {
 		log.info("Start to create csv directory");
-		createCsvDirToConvertData();
+		createCsvDirToConvertData(uuid);
 
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
+		String fileName = FILE_LOCAL_PATH + SLASH + uuid + SLASH + CSVFileNameEnum.PIPELINE.getValue()
+				+ FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
 		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
@@ -163,32 +166,35 @@ public class CSVFileGenerator {
 				pipelineFinishTime, nonWorkdays, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
-	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeAndTimeStamp) {
+	public InputStreamResource getDataFromCSV(ReportType reportDataType, String uuid, String timeRangeAndTimeStamp) {
 		if (timeRangeAndTimeStamp.contains("..") || timeRangeAndTimeStamp.contains("/")
 				|| timeRangeAndTimeStamp.contains("\\")) {
 			throw new IllegalArgumentException("Invalid time range time stamp");
 		}
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
+			case METRIC -> readStringFromCsvFile(new File(FILE_LOCAL_PATH + SLASH + uuid,
 					ReportType.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			case PIPELINE -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
+			case PIPELINE -> readStringFromCsvFile(new File(FILE_LOCAL_PATH + SLASH + uuid,
 					ReportType.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			default -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
+			default -> readStringFromCsvFile(new File(FILE_LOCAL_PATH + SLASH + uuid,
 					ReportType.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
 		};
 	}
 
-	private void createCsvDirToConvertData() {
-		String directoryPath = FILE_LOCAL_PATH;
-		File directory = new File(directoryPath);
+	private void createCsvDirToConvertData(String uuid) {
+		File directory = new File(FILE_LOCAL_PATH);
 		String message = directory.mkdirs() ? "Successfully create csv directory" : "CSV directory is already exist";
 		log.info(message);
+		String uuidDirectoryPath = FILE_LOCAL_PATH + SLASH + uuid;
+		File uuidDirectory = new File(uuidDirectoryPath);
+		log.info(uuidDirectory.mkdirs() ? "Successfully create uuid directory" : "uuid directory is already exist");
 	}
 
-	public void writeDataToCSV(String csvTimeRangeTimeStamp, String[][] mergedArrays) {
-		createCsvDirToConvertData();
+	public void writeDataToCSV(String uuid, String csvTimeRangeTimeStamp, String[][] mergedArrays) {
+		createCsvDirToConvertData(uuid);
 
-		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeRangeTimeStamp + CSV_EXTENSION;
+		String fileName = FILE_LOCAL_PATH + SLASH + uuid + SLASH + CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR
+				+ csvTimeRangeTimeStamp + CSV_EXTENSION;
 		if (isFormatFileName(fileName)) {
 			try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
 				writer.writeAll(Arrays.asList(mergedArrays));
@@ -391,11 +397,12 @@ public class CSVFileGenerator {
 		return pickDisplayNameFromObj(fieldValue);
 	}
 
-	public void convertMetricDataToCSV(ReportResponse reportResponse, String csvTimeStamp) {
+	public void convertMetricDataToCSV(String uuid, ReportResponse reportResponse, String csvTimeStamp) {
 		log.info("Start to create csv directory");
-		createCsvDirToConvertData();
+		createCsvDirToConvertData(uuid);
 
-		String fileName = CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
+		String fileName = FILE_LOCAL_PATH + SLASH + uuid + SLASH + CSVFileNameEnum.METRIC.getValue()
+				+ FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
 		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 

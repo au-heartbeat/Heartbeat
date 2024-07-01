@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,35 +44,35 @@ public class ReportController {
 	@Value("${callback.interval}")
 	private Integer interval;
 
-	@GetMapping("/{reportType}/{timeStamp}")
+	@GetMapping("/{reportType}/{uuid}")
 	public InputStreamResource exportCSV(
 			@Schema(type = "string", allowableValues = { "metric", "pipeline", "board" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable ReportType reportType,
-			@PathVariable String timeStamp,
+			@PathVariable String uuid,
 			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
-		log.info("Start to export CSV file_reportType: {}, filename: {}", reportType.getValue(), timeStamp);
-		InputStreamResource result = reportService.exportCsv(reportType, timeStamp, startTime, endTime);
-		log.info("Successfully get CSV file_reportType: {}, filename: {}, _result: {}", reportType.getValue(),
-				timeStamp, result);
+		log.info("Start to export CSV file_reportType: {}, uuid: {}", reportType.getValue(), uuid);
+		InputStreamResource result = reportService.exportCsv(reportType, uuid, startTime, endTime);
+		log.info("Successfully get CSV file_reportType: {}, uuid: {}, _result: {}", reportType.getValue(), uuid,
+				result);
 		return result;
 	}
 
-	@GetMapping("/{timeStamp}")
-	public ResponseEntity<ReportResponse> generateReport(@PathVariable String timeStamp,
+	@GetMapping("/{uuid}")
+	public ResponseEntity<ReportResponse> generateReport(@PathVariable String uuid,
 			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
-		log.info("Start to generate report_reportId: {}", timeStamp);
-		ReportResponse reportResponse = generateReporterService.getComposedReportResponse(timeStamp, startTime,
-				endTime);
+		log.info("Start to generate report_reportId: {}", uuid);
+		ReportResponse reportResponse = generateReporterService.getComposedReportResponse(uuid, startTime, endTime);
 		return ResponseEntity.status(HttpStatus.OK).body(reportResponse);
 	}
 
-	@PostMapping
-	public ResponseEntity<CallbackResponse> generateReport(@RequestBody GenerateReportRequest request) {
+	@PostMapping("/{uuid}")
+	public ResponseEntity<CallbackResponse> generateReport(@PathVariable String uuid,
+			@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
-		reportService.generateReport(request);
-		String callbackUrl = "/reports/" + request.getCsvTimeStamp() + "?startTime="
+		reportService.generateReport(request, uuid);
+		String callbackUrl = "/reports/" + uuid + "?startTime="
 				+ TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getStartTime()),
 						request.getTimezoneByZoneId())
 				+ "&endTime=" + TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getEndTime()),
@@ -79,6 +80,11 @@ public class ReportController {
 		log.info("Successfully generate report");
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());
+	}
+
+	@PostMapping
+	public String generateUUID() {
+		return UUID.randomUUID().toString();
 	}
 
 }
