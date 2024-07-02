@@ -2,9 +2,9 @@ package heartbeat.handler;
 
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.exception.GenerateReportException;
+import heartbeat.exception.NotFoundException;
 import heartbeat.util.IdUtil;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -29,16 +31,13 @@ class AsyncReportRequestHandlerTest {
 
 	public static final String END_TIME = "20240418";
 
+	public static final String TEST_UUID = "test-uuid";
+
 	@InjectMocks
 	AsyncReportRequestHandler asyncReportRequestHandler;
 
 	@AfterEach
 	void afterEach() {
-		new File(APP_OUTPUT_REPORT).delete();
-	}
-
-	@AfterAll
-	static void afterAll() {
 		try {
 			FileUtils.cleanDirectory(new File("./app"));
 		}
@@ -68,7 +67,7 @@ class AsyncReportRequestHandlerTest {
 	void shouldGetAsyncReportWhenPuttingReportIntoAsyncReportRequestHandler() throws IOException {
 		long currentTimeMillis = System.currentTimeMillis();
 		String currentTime = Long.toString(currentTimeMillis);
-		String boardReportId = IdUtil.getBoardReportFileId(currentTime);
+		String boardReportId = IdUtil.getBoardReportFileId(TEST_UUID, currentTime);
 
 		asyncReportRequestHandler.putReport(boardReportId, ReportResponse.builder().build());
 
@@ -81,6 +80,31 @@ class AsyncReportRequestHandlerTest {
 	void shouldThrowGenerateReportExceptionGivenFileNameInvalidWhenHandlerPutData() {
 		assertThrows(GenerateReportException.class,
 				() -> asyncReportRequestHandler.putReport("../", ReportResponse.builder().build()));
+	}
+
+	@Test
+	void shouldThrowNotFoundExceptionWhenDictionaryDontExist() {
+		assertThrows(NotFoundException.class, () -> asyncReportRequestHandler.getReportFiles(TEST_UUID));
+	}
+
+	@Test
+	void shouldThrowNotFoundExceptionWhenFileIsNotDictionary() throws IOException {
+		String path = "./app/output/report/test-uuid";
+		Files.createDirectories(Path.of(path).getParent());
+		new File(path).createNewFile();
+
+		assertThrows(NotFoundException.class, () -> asyncReportRequestHandler.getReportFiles(TEST_UUID));
+	}
+
+	@Test
+	void shouldGetFilesList() throws IOException {
+		String path = "./app/output/report/test-uuid/test.txt";
+		Files.createDirectories(Path.of(path).getParent());
+		new File(path).createNewFile();
+
+		List<String> reportFiles = asyncReportRequestHandler.getReportFiles(TEST_UUID);
+		assertEquals(1, reportFiles.size());
+		assertEquals("test.txt", reportFiles.get(0));
 	}
 
 	private String getBoardReportFileId(String timestamp) {

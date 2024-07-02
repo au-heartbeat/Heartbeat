@@ -104,8 +104,8 @@ public class CSVFileGenerator {
 		log.info("Start to create csv directory");
 		createCsvDirToConvertData(uuid);
 
-		String fileName = FILE_LOCAL_PATH + SLASH + uuid + SLASH + CSVFileNameEnum.PIPELINE.getValue()
-				+ FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), uuid) + FILENAME_SEPARATOR + csvTimeStamp
+				+ CSV_EXTENSION;
 		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
@@ -193,7 +193,7 @@ public class CSVFileGenerator {
 	public void writeDataToCSV(String uuid, String csvTimeRangeTimeStamp, String[][] mergedArrays) {
 		createCsvDirToConvertData(uuid);
 
-		String fileName = FILE_LOCAL_PATH + SLASH + uuid + SLASH + CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR
+		String fileName = String.format(CSVFileNameEnum.BOARD.getValue(), uuid) + FILENAME_SEPARATOR
 				+ csvTimeRangeTimeStamp + CSV_EXTENSION;
 		if (isFormatFileName(fileName)) {
 			try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
@@ -401,8 +401,8 @@ public class CSVFileGenerator {
 		log.info("Start to create csv directory");
 		createCsvDirToConvertData(uuid);
 
-		String fileName = FILE_LOCAL_PATH + SLASH + uuid + SLASH + CSVFileNameEnum.METRIC.getValue()
-				+ FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
+		String fileName = String.format(CSVFileNameEnum.METRIC.getValue(), uuid) + FILENAME_SEPARATOR + csvTimeStamp
+				+ CSV_EXTENSION;
 		if (isFormatFileName(fileName)) {
 			File file = new File(fileName);
 

@@ -382,6 +382,7 @@ public class GenerateReporterService {
 		String timeRangeAndTimeStamp = asyncReportRequestHandler.getReportFiles(uuid)
 			.stream()
 			.map(it -> it.split("-"))
+			.filter(it -> it.length == 4)
 			.filter(it -> Objects.equals(it[1], startTime) && Objects.equals(it[2], endTime))
 			.map(it -> it[1] + "-" + it[2] + "-" + it[3])
 			.findFirst()

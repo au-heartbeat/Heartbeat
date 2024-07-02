@@ -48,6 +48,7 @@ public class ReportService {
 		String timeRangeAndTimeStamp = asyncReportRequestHandler.getReportFiles(uuid)
 			.stream()
 			.map(it -> it.split("-"))
+			.filter(it -> it.length == 4)
 			.filter(it -> Objects.equals(it[1], startTime) && Objects.equals(it[2], endTime))
 			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
 			.findFirst()
@@ -133,7 +134,7 @@ public class ReportService {
 	}
 
 	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {
-		return "/reports/" + uuid + "/detail" + "?startTime=" + startTime + "&endTime=" + endTime;
+		return "/reports/" + uuid + "/detail?startTime=" + startTime + "&endTime=" + endTime;
 	}
 
 }

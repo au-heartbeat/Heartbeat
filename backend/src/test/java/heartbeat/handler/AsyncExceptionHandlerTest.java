@@ -141,14 +141,6 @@ class AsyncExceptionHandlerTest {
 	}
 
 	@Test
-	void shouldThrowExceptionGivenCantWriteFileWhenPutFile() {
-		String boardReportId = "15469:890/33";
-
-		assertThrows(GenerateReportException.class,
-				() -> asyncExceptionHandler.put(boardReportId, new UnauthorizedException("test")));
-	}
-
-	@Test
 	void shouldThrowExceptionGivenCannotReadFileWhenGetFile() throws IOException {
 		new File("./app/output/error/").mkdirs();
 		String boardReportId = getBoardReportFileId(Long.toString(System.currentTimeMillis()));

@@ -10,6 +10,7 @@ import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
 import heartbeat.tools.TimeUtils;
 import lombok.extern.log4j.Log4j2;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.List;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,7 +77,7 @@ class ReporterControllerTest {
 			.thenReturn(MockReportResponse);
 
 		String reportResponseString = mockMvc
-			.perform(get("/reports/{reportId}", timeStamp).param("startTime", START_TIME)
+			.perform(get("/reports/{reportId}/detail", timeStamp).param("startTime", START_TIME)
 				.param("endTime", END_TIME)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
@@ -96,7 +99,7 @@ class ReporterControllerTest {
 			.when(generateReporterService)
 			.getComposedReportResponse(any(), any(), any());
 
-		mockMvc.perform(get("/reports/{reportId}", reportId).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/reports/{reportId}/detail", reportId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isInternalServerError())
 			.andExpect(jsonPath("$.message").value("Failed to get report due to report time expires"))
 			.andReturn()
@@ -130,22 +133,52 @@ class ReporterControllerTest {
 
 		String currentTimeStamp = String.valueOf(TimeUtils.mockTimeStamp(2023, 5, 25, 18, 21, 20));
 		String startTime = "20220829";
-		String endTme = "20220909";
+		String endTime = "20220909";
 		request.setCsvTimeStamp(currentTimeStamp);
+		String uuid = "test-uuid";
 
-		doAnswer(invocation -> null).when(reporterService).generateReport(request);
+		doAnswer(invocation -> null).when(reporterService).generateReport(request, uuid);
+		when(reporterService.generateReportCallbackUrl(uuid, startTime, endTime))
+			.thenReturn("/reports/" + uuid + "/detail" + "?startTime=" + startTime + "&endTime=" + endTime);
 
 		mockMvc
-			.perform(post("/reports").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/reports/{uuid}", uuid).contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(request)))
 			.andExpect(status().isAccepted())
 			.andExpect(jsonPath("$.callbackUrl")
-				.value("/reports/" + currentTimeStamp + "?startTime=" + startTime + "&endTime=" + endTme))
+				.value("/reports/" + uuid + "/detail?startTime=" + startTime + "&endTime=" + endTime))
 			.andExpect(jsonPath("$.interval").value("10"))
 			.andReturn()
 			.getResponse();
 
-		verify(reporterService, times(1)).generateReport(request);
+		verify(reporterService, times(1)).generateReport(request, uuid);
+	}
+
+	@Test
+	void shouldReturnUuidWhenCallGenerateUUID() throws Exception {
+		int expectedLength = 32 + 4;
+
+		mockMvc.perform(post("/reports"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(Matchers.hasLength(expectedLength)))
+			.andReturn()
+			.getResponse();
+	}
+
+	@Test
+	void shouldReturnListCallbackWhenCallGetReportUrls() throws Exception {
+		String uuid = "test-uuid";
+		when(reporterService.getReportUrl(uuid))
+			.thenReturn(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"));
+
+		mockMvc.perform(get("/reports/{uuid}", uuid))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()", Matchers.is(1)))
+			.andExpect(jsonPath("$[0]").value("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
+			.andReturn()
+			.getResponse();
+
+		verify(reporterService, times(1)).getReportUrl(uuid);
 	}
 
 }

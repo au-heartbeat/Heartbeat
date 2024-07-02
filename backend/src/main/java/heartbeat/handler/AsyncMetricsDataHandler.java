@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 
@@ -60,11 +61,11 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		if (isCreateCsvSuccess) {
 			previousMetricsCompleted.setIsSuccessfulCreateCsvFile(true);
 		}
-		switch (metricType) {
-			case BOARD -> previousMetricsCompleted.setBoardMetricsCompleted(true);
-			case DORA -> previousMetricsCompleted.setDoraMetricsCompleted(true);
-			default -> {
-			}
+		if (Objects.requireNonNull(metricType) == MetricType.BOARD) {
+			previousMetricsCompleted.setBoardMetricsCompleted(true);
+		}
+		else {
+			previousMetricsCompleted.setDoraMetricsCompleted(true);
 		}
 		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
 	}
