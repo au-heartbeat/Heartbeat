@@ -59,9 +59,9 @@ frontend --> frontend: Render frontend page
 alt There is 1 report at least
   frontend -> backend: GET /reports/:uuid
   backend-> backend: Loop all report under uuid folder
-  backend --> frontend: Response the URL list of report, e.g.   [`/api/v1/reports/:uuid?startTime=20240528&endTime=20240531`]
+  backend --> frontend: Response the URL list of report, e.g.   [`/api/v1/reports/:uuid/detail?startTime=20240528&endTime=20240531`]
   loop URL list
-    frontend-> backend: GET /api/v1/reports/:uuid?startTime=20240528&endTime=20240531
+    frontend-> backend: GET /api/v1/reports/:uuid/detail?startTime=20240528&endTime=20240531
     backend --> frontend: Report result
   end
   frontend -> frontend: Render reports & charts

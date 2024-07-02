@@ -83,18 +83,18 @@ public class GenerateReportRequest {
 	}
 
 	@JsonIgnore
-	public String getPipelineReportFileId() {
-		return IdUtil.getPipelineReportFileId(this.getTimeRangeAndTimeStamp());
+	public String getPipelineReportFileId(String uuid) {
+		return IdUtil.getPipelineReportFileId(uuid, this.getTimeRangeAndTimeStamp());
 	}
 
 	@JsonIgnore
-	public String getSourceControlReportFileId() {
-		return IdUtil.getSourceControlReportFileId(this.getTimeRangeAndTimeStamp());
+	public String getSourceControlReportFileId(String uuid) {
+		return IdUtil.getSourceControlReportFileId(uuid, this.getTimeRangeAndTimeStamp());
 	}
 
 	@JsonIgnore
-	public String getBoardReportFileId() {
-		return IdUtil.getBoardReportFileId(this.getTimeRangeAndTimeStamp());
+	public String getBoardReportFileId(String uuid) {
+		return IdUtil.getBoardReportFileId(uuid, this.getTimeRangeAndTimeStamp());
 	}
 
 	@JsonIgnore

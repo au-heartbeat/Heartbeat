@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test;
 
 public class IdUtilTest {
 
+	public static final String TEST_UUID = "test-uuid";
+
 	@Test
 	void shouldReturnBoardReportId() {
 		String timeStamp = "121322545121";
-		String expected = "board-121322545121";
+		String expected = "test-uuid/board-121322545121";
 
-		String boardReportId = IdUtil.getBoardReportFileId(timeStamp);
+		String boardReportId = IdUtil.getBoardReportFileId(TEST_UUID, timeStamp);
 
 		Assertions.assertEquals(expected, boardReportId);
 	}
@@ -18,9 +20,9 @@ public class IdUtilTest {
 	@Test
 	void shouldReturnPipelineReportId() {
 		String timeStamp = "121322545121";
-		String expected = "pipeline-121322545121";
+		String expected = "test-uuid/pipeline-121322545121";
 
-		String pipelineReportId = IdUtil.getPipelineReportFileId(timeStamp);
+		String pipelineReportId = IdUtil.getPipelineReportFileId(TEST_UUID, timeStamp);
 
 		Assertions.assertEquals(expected, pipelineReportId);
 	}
@@ -28,9 +30,9 @@ public class IdUtilTest {
 	@Test
 	void shouldReturnSourceControlReportId() {
 		String timeStamp = "121322545121";
-		String expected = "sourceControl-121322545121";
+		String expected = "test-uuid/sourceControl-121322545121";
 
-		String sourceControlReportId = IdUtil.getSourceControlReportFileId(timeStamp);
+		String sourceControlReportId = IdUtil.getSourceControlReportFileId(TEST_UUID, timeStamp);
 
 		Assertions.assertEquals(expected, sourceControlReportId);
 	}

@@ -12,11 +12,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Optional;
 
 import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import static heartbeat.util.IdUtil.SLASH;
 
 @Log4j2
 public class AsyncDataBaseHandler {
@@ -30,7 +32,7 @@ public class AsyncDataBaseHandler {
 	public static final String FILENAME_SPLIT_PATTERN = "[-.]";
 
 	protected synchronized void createFileByType(FIleType fIleType, String fileId, String json) {
-		createDirToConvertData(fIleType);
+		createDirToConvertData(fIleType, fileId);
 		String fileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId;
 		String tmpFileName = OUTPUT_FILE_PATH + fIleType.getPath() + fileId + SUFFIX_TMP;
 		if (!fileName.contains("..") && fileName.startsWith(OUTPUT_FILE_PATH + fIleType.getPath())
@@ -52,12 +54,15 @@ public class AsyncDataBaseHandler {
 		}
 	}
 
-	private void createDirToConvertData(FIleType fIleType) {
-		File directory = new File(OUTPUT_FILE_PATH + fIleType.getType());
-		boolean isCreateSucceed = directory.mkdirs();
-		String message = isCreateSucceed ? String.format("Successfully create %s directory", fIleType.getType())
-				: String.format("Failed create %s directory because it already exist", fIleType.getType());
-		log.info(message);
+	private void createDirToConvertData(FIleType fIleType, String fileId) {
+		Path path = Paths.get(OUTPUT_FILE_PATH + fIleType.getType() + SLASH + fileId);
+		try {
+			Files.createDirectories(path.getParent());
+			log.info("Successfully create {} directory", fIleType.getType());
+		}
+		catch (IOException e) {
+			log.info("Failed create {} directory because it already exist", fIleType.getType());
+		}
 	}
 
 	public <T> T readFileByType(File file, FIleType fIleType, String fileId, Class<T> classType) {

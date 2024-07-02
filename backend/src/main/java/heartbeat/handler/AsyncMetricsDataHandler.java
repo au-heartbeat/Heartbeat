@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
 
@@ -40,7 +41,7 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 
 	public MetricsDataCompleted getMetricsDataCompleted(String timeStamp) {
 		Path targetPath = new File(OUTPUT_FILE_PATH).toPath().normalize();
-		String fileName = targetPath + SLASH + METRICS_DATA_COMPLETED.getPath() + timeStamp;
+		String fileName = targetPath + SLASH + METRICS_DATA_COMPLETED.getPath() + SLASH + timeStamp;
 		return readFileByType(new File(fileName), METRICS_DATA_COMPLETED, timeStamp, MetricsDataCompleted.class);
 	}
 
@@ -60,11 +61,11 @@ public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
 		if (isCreateCsvSuccess) {
 			previousMetricsCompleted.setIsSuccessfulCreateCsvFile(true);
 		}
-		switch (metricType) {
-			case BOARD -> previousMetricsCompleted.setBoardMetricsCompleted(true);
-			case DORA -> previousMetricsCompleted.setDoraMetricsCompleted(true);
-			default -> {
-			}
+		if (Objects.requireNonNull(metricType) == MetricType.BOARD) {
+			previousMetricsCompleted.setBoardMetricsCompleted(true);
+		}
+		else {
+			previousMetricsCompleted.setDoraMetricsCompleted(true);
 		}
 		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
 	}

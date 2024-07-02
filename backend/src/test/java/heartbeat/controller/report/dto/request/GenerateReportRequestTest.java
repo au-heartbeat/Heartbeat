@@ -21,6 +21,8 @@ public class GenerateReportRequestTest {
 		.timezone("Asia/Shanghai")
 		.build();
 
+	public static final String TEST_UUID = "test-uuid";
+
 	@Test
 	void shouldReturnAllTheMetrics() {
 		List<String> result = request.getMetrics();
@@ -41,13 +43,13 @@ public class GenerateReportRequestTest {
 
 	@Test
 	void shouldReturnRelatedReportId() {
-		String boardReportId = request.getBoardReportFileId();
-		String pipelineReportId = request.getPipelineReportFileId();
-		String sourceControlReportId = request.getSourceControlReportFileId();
+		String boardReportId = request.getBoardReportFileId(TEST_UUID);
+		String pipelineReportId = request.getPipelineReportFileId(TEST_UUID);
+		String sourceControlReportId = request.getSourceControlReportFileId(TEST_UUID);
 
-		Assertions.assertEquals("board-20240310-20240409-123456789", boardReportId);
-		Assertions.assertEquals("pipeline-20240310-20240409-123456789", pipelineReportId);
-		Assertions.assertEquals("sourceControl-20240310-20240409-123456789", sourceControlReportId);
+		Assertions.assertEquals("test-uuid/board-20240310-20240409-123456789", boardReportId);
+		Assertions.assertEquals("test-uuid/pipeline-20240310-20240409-123456789", pipelineReportId);
+		Assertions.assertEquals("test-uuid/sourceControl-20240310-20240409-123456789", sourceControlReportId);
 	}
 
 }

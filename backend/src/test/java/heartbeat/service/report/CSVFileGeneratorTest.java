@@ -76,6 +76,8 @@ class CSVFileGeneratorTest {
 
 	String mockTimeStamp = "168369327000";
 
+	public static final String TEST_UUID = "test-uuid";
+
 	private static void deleteDirectory(File directory) {
 		if (directory.exists()) {
 			File[] files = directory.listFiles();
@@ -97,8 +99,8 @@ class CSVFileGeneratorTest {
 	void shouldConvertPipelineDataToCsvGivenCommitInfoNotNull() throws IOException {
 
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 
 		assertTrue(file.exists());
@@ -124,9 +126,9 @@ class CSVFileGeneratorTest {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture
 			.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED();
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 		assertTrue(file.exists());
 		FileInputStream fileInputStream = new FileInputStream(file);
@@ -147,10 +149,10 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldConvertPipelineDataToCsvWithoutCreator() throws IOException {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR();
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 		FileInputStream fileInputStream = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
@@ -171,10 +173,10 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldConvertPipelineDataToCsvWithoutCreatorName() throws IOException {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR_NAME();
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 		FileInputStream fileInputStream = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
@@ -196,8 +198,8 @@ class CSVFileGeneratorTest {
 	void shouldConvertPipelineDataToCsvGivenNullCommitInfo() throws IOException {
 
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO();
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 
 		assertTrue(file.exists());
@@ -220,10 +222,10 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldConvertPipelineDataToCsvGivenCommitMessageIsRevert() throws IOException {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_MESSAGE_IS_REVERT();
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 		FileInputStream fileInputStream = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
@@ -244,10 +246,10 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldConvertPipelineDataToCsvGivenAuthorIsNull() throws IOException {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_Author_NAME();
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 		FileInputStream fileInputStream = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
 		String headers = reader.readLine();
@@ -272,9 +274,9 @@ class CSVFileGeneratorTest {
 		deleteDirectory(csvDir);
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 		assertTrue(file.exists());
 		file.delete();
@@ -283,9 +285,10 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsPipeline() throws IOException {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, mockTimeStamp);
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, TEST_UUID,
+				mockTimeStamp);
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String csvPipelineData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
@@ -305,9 +308,10 @@ class CSVFileGeneratorTest {
 		String[] mockBoardDataRow1 = { "Issue Type", "Reporter" };
 		String[] mockBoardDataRow2 = { "ADM-696", "test" };
 		String[][] mockBoardData = { mockBoardDataRow1, mockBoardDataRow2 };
-		csvFileGenerator.writeDataToCSV(mockTimeStamp, mockBoardData);
+		csvFileGenerator.writeDataToCSV(TEST_UUID, mockTimeStamp, mockBoardData);
 
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.BOARD, mockTimeStamp);
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.BOARD, TEST_UUID,
+				mockTimeStamp);
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String csvPipelineData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
@@ -324,9 +328,9 @@ class CSVFileGeneratorTest {
 
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_TWO_ORGANIZATIONS_PIPELINE_CSV_DATA();
 
-		csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, mockTimeStamp);
+		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.PIPELINE.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 		assertTrue(file.exists());
 
@@ -360,18 +364,19 @@ class CSVFileGeneratorTest {
 	@Test
 	void shouldThrowExceptionWhenFileNotExist() {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
-		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, "123456"));
 		assertThrows(FileIOException.class,
-				() -> csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, "15469:89/033"));
+				() -> csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, TEST_UUID, "123456"));
+		assertThrows(FileIOException.class,
+				() -> csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, "15469:89/033"));
 	}
 
 	@Test
 	void shouldConvertMetricDataToCsv() throws IOException {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
 
-		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
+		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		String fileName = CSVFileNameEnum.METRIC.getValue() + "-" + mockTimeStamp + ".csv";
+		String fileName = String.format(CSVFileNameEnum.METRIC.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv";
 		File file = new File(fileName);
 		assertTrue(file.exists());
 
@@ -394,9 +399,10 @@ class CSVFileGeneratorTest {
 		deleteDirectory(csvDir);
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
 
-		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
+		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		Path filePath = Path.of(CSVFileNameEnum.METRIC.getValue() + "-" + mockTimeStamp + ".csv");
+		Path filePath = Path
+			.of(String.format(CSVFileNameEnum.METRIC.getValue(), TEST_UUID) + "-" + mockTimeStamp + ".csv");
 		assertTrue(Files.exists(filePath));
 		Files.deleteIfExists(filePath);
 	}
@@ -405,9 +411,10 @@ class CSVFileGeneratorTest {
 	void shouldThrowExceptionWhenMetricCsvNotExist() {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
 
-		assertThrows(FileIOException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, "1686710104536"));
 		assertThrows(FileIOException.class,
-				() -> csvFileGenerator.convertMetricDataToCSV(reportResponse, "15469:89/033"));
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, "1686710104536"));
+		assertThrows(FileIOException.class,
+				() -> csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, "15469:89/033"));
 	}
 
 	@Test
@@ -416,12 +423,12 @@ class CSVFileGeneratorTest {
 		String mockTimeRangeTimeStampWithSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "/";
 		String mockTimeRangeTimeStampWithPoint = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "..";
 
+		assertThrows(IllegalArgumentException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
+				mockTimeRangeTimeStampWithBackSlash));
 		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStampWithBackSlash));
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithSlash));
 		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStampWithSlash));
-		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStampWithPoint));
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithPoint));
 	}
 
 	@Test
@@ -566,9 +573,10 @@ class CSVFileGeneratorTest {
 				.build())
 			.build();
 
-		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
+		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeStamp);
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
+				mockTimeStamp);
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
@@ -633,8 +641,9 @@ class CSVFileGeneratorTest {
 	void shouldHasNoContentWhenGetDataFromCsvGivenDataTypeIsMetricAndResponseIsEmpty() throws IOException {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_EMPTY_METRIC_CSV_DATA();
 
-		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeStamp);
+		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
+				mockTimeStamp);
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
@@ -703,8 +712,9 @@ class CSVFileGeneratorTest {
 				.build())
 			.build();
 
-		csvFileGenerator.convertMetricDataToCSV(reportResponse, mockTimeStamp);
-		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeStamp);
+		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
+		InputStreamResource inputStreamResource = csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
+				mockTimeStamp);
 		InputStream csvDataInputStream = inputStreamResource.getInputStream();
 		String metricCsvData = new BufferedReader(new InputStreamReader(csvDataInputStream)).lines()
 			.collect(Collectors.joining("\n"));
@@ -730,7 +740,7 @@ class CSVFileGeneratorTest {
 	void shouldThrowGenerateReportExceptionWhenGeneratePipelineCsvAndCsvTimeStampInvalid() {
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
 		assertThrows(GenerateReportException.class,
-				() -> csvFileGenerator.convertPipelineDataToCSV(pipelineCSVInfos, "../"));
+				() -> csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, "../"));
 	}
 
 	@Test
@@ -738,7 +748,7 @@ class CSVFileGeneratorTest {
 		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA_WITH_ONE_PIPELINE();
 
 		assertThrows(GenerateReportException.class,
-				() -> csvFileGenerator.convertMetricDataToCSV(reportResponse, "../"));
+				() -> csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, "../"));
 	}
 
 	@Test
@@ -820,7 +830,7 @@ class CSVFileGeneratorTest {
 		String[][] mockBoardData = { mockBoardDataRow1, mockBoardDataRow2 };
 
 		assertThrows(FileIOException.class, () -> {
-			csvFileGenerator.writeDataToCSV("15469:89/033", mockBoardData);
+			csvFileGenerator.writeDataToCSV(TEST_UUID, "15469:89/033", mockBoardData);
 		});
 
 	}
@@ -832,7 +842,7 @@ class CSVFileGeneratorTest {
 		String[][] mockBoardData = { mockBoardDataRow1, mockBoardDataRow2 };
 
 		assertThrows(GenerateReportException.class, () -> {
-			csvFileGenerator.writeDataToCSV(mockTimeStamp + "..", mockBoardData);
+			csvFileGenerator.writeDataToCSV(TEST_UUID, mockTimeStamp + "..", mockBoardData);
 		});
 	}
 

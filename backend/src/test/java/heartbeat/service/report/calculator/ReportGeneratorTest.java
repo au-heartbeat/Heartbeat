@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,7 +29,7 @@ class ReportGeneratorTest {
 	@Test
 	void shouldSuccessGetReportGeneratorMapWhenCallGetReportGenerator() {
 
-		Map<MetricType, Consumer<GenerateReportRequest>> generator = reportGenerator
+		Map<MetricType, BiConsumer<String, GenerateReportRequest>> generator = reportGenerator
 			.getReportGenerator(generateReporterService);
 
 		assertTrue(generator.containsKey(MetricType.BOARD));
