@@ -31,13 +31,18 @@ interface BoardMetricsProps {
   onShowDetail: () => void;
   boardReport: ReportResponseDTO | undefined;
   errorMessage: string;
+  metrics: string[];
 }
 
-const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, errorMessage }: BoardMetricsProps) => {
-  const configData = useAppSelector(selectConfig);
+const BoardMetrics = ({
+  startToRequestBoardData,
+  onShowDetail,
+  boardReport,
+  errorMessage,
+  metrics,
+}: BoardMetricsProps) => {
   const { cycleTimeSettings } = useAppSelector(selectMetricsContent);
 
-  const { metrics } = configData.basic;
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);

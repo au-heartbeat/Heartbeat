@@ -471,6 +471,7 @@ const ReportContent = (props: ReportContentProps) => {
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={currentDataInfo.reportData}
           errorMessage={getErrorMessage4Board()}
+          metrics={metrics}
         />
       )}
       {shouldShowDoraMetrics && (
@@ -478,6 +479,7 @@ const ReportContent = (props: ReportContentProps) => {
           startToRequestDoraData={startToRequestDoraData}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={currentDataInfo.reportData}
+          metrics={metrics}
           errorMessage={
             currentDataInfo.timeout4Dora.message ||
             currentDataInfo.timeout4Report.message ||
