@@ -78,6 +78,7 @@ export interface ReportContentProps {
   reportInfos: IReportInfo[];
   handleSave: () => void;
   csvTimeStamp: number;
+  hideButtons?: boolean;
 }
 
 const timeoutNotificationMessages = {
@@ -111,6 +112,7 @@ const ReportContent = (props: ReportContentProps) => {
     reportInfos,
     handleSave,
     csvTimeStamp,
+    hideButtons = false,
   } = props;
   const dispatch = useAppDispatch();
   // const configData = useAppSelector(selectConfig);
@@ -655,18 +657,20 @@ const ReportContent = (props: ReportContentProps) => {
         )}
       </HeaderContainer>
       {showPage(pageType, currentDataInfo.reportData)}
-      <ReportButtonGroup
-        isShowSave={isSummaryPage}
-        isShowExportMetrics={isSummaryPage}
-        isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
-        isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
-        isShowExportDoraChartButton={pageType === REPORT_PAGE_TYPE.DORA_CHART}
-        isShowExportBoardChartButton={pageType === REPORT_PAGE_TYPE.BOARD_CHART}
-        handleBack={() => handleBack()}
-        handleSave={() => handleSave()}
-        csvTimeStamp={csvTimeStamp}
-        dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
-      />
+      {!hideButtons && (
+        <ReportButtonGroup
+          isShowSave={isSummaryPage}
+          isShowExportMetrics={isSummaryPage}
+          isShowExportBoardButton={isSummaryPage ? shouldShowBoardMetrics : pageType === REPORT_PAGE_TYPE.BOARD}
+          isShowExportPipelineButton={isSummaryPage ? shouldShowDoraMetrics : pageType === REPORT_PAGE_TYPE.DORA}
+          isShowExportDoraChartButton={pageType === REPORT_PAGE_TYPE.DORA_CHART}
+          isShowExportBoardChartButton={pageType === REPORT_PAGE_TYPE.BOARD_CHART}
+          handleBack={() => handleBack()}
+          handleSave={() => handleSave()}
+          csvTimeStamp={csvTimeStamp}
+          dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
+        />
+      )}
     </>
   );
 };

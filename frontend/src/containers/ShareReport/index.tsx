@@ -21,7 +21,7 @@ const ShareReport = () => {
     handleSave,
     csvTimeStamp,
   };
-  return <ReportContent {...reportContentProps} />;
+  return <ReportContent {...reportContentProps} hideButtons />;
 };
 
 export default ShareReport;
