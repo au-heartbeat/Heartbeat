@@ -8,6 +8,7 @@ import {
   startToRequestDoraData,
 } from './mock';
 import ReportContent from '../ReportStep/ReportContent';
+import { StyledPageContentWrapper } from './style';
 import { useParams } from 'react-router-dom';
 
 const ShareReport = () => {
@@ -21,7 +22,11 @@ const ShareReport = () => {
     handleSave,
     csvTimeStamp,
   };
-  return <ReportContent {...reportContentProps} hideButtons />;
+  return (
+    <StyledPageContentWrapper>
+      <ReportContent {...reportContentProps} hideButtons />
+    </StyledPageContentWrapper>
+  );
 };
 
 export default ShareReport;
