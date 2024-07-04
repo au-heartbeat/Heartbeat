@@ -27,7 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
 
-import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

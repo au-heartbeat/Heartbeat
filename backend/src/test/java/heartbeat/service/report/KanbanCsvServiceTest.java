@@ -18,6 +18,8 @@ import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
+import heartbeat.repository.FilePrefixType;
+import heartbeat.repository.FileRepository;
 import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
 import org.assertj.core.util.Lists;
@@ -65,6 +67,9 @@ class KanbanCsvServiceTest {
 
 	@Mock
 	private JiraUriGenerator urlGenerator;
+
+	@Mock
+	private FileRepository fileRepository;
 
 	@Captor
 	private ArgumentCaptor<List<JiraCardDTO>> jiraCardDTOCaptor;
@@ -755,7 +760,8 @@ class KanbanCsvServiceTest {
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
-		verify(csvFileGenerator).writeDataToCSV(eq(TEST_UUID), anyString(), csvSheetCaptor.capture());
+		verify(fileRepository).createCSVFileByType(eq(TEST_UUID), anyString(), csvSheetCaptor.capture(),
+				eq(FilePrefixType.BOARD_REPORT_PREFIX));
 
 		assertEquals(23, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(22);
@@ -826,7 +832,8 @@ class KanbanCsvServiceTest {
 				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
-		verify(csvFileGenerator).writeDataToCSV(eq(TEST_UUID), anyString(), csvSheetCaptor.capture());
+		verify(fileRepository).createCSVFileByType(eq(TEST_UUID), anyString(), csvSheetCaptor.capture(),
+				eq(FilePrefixType.BOARD_REPORT_PREFIX));
 
 		assertEquals(23, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(22);

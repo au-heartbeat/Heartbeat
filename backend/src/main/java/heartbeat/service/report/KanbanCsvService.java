@@ -9,6 +9,7 @@ import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraCardField;
 import heartbeat.client.dto.board.jira.Status;
+import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
@@ -23,6 +24,7 @@ import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
+import heartbeat.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -57,6 +59,8 @@ public class KanbanCsvService {
 	private final JiraService jiraService;
 
 	private final JiraUriGenerator urlGenerator;
+
+	private final FileRepository fileRepository;
 
 	public void generateCsvInfo(String uuid, GenerateReportRequest request, CardCollection realDoneCardCollection,
 			CardCollection nonDoneCardCollection) {
@@ -181,7 +185,8 @@ public class KanbanCsvService {
 			.mergeBaseInfoAndCycleTimeSheet()
 			.mergeReworkTimesSheet()
 			.generate();
-		csvFileGenerator.writeDataToCSV(uuid, csvTimeRangeTimeStamp, sheet);
+
+		fileRepository.createCSVFileByType(uuid, csvTimeRangeTimeStamp, sheet, FilePrefixType.BOARD_REPORT_PREFIX);
 	}
 
 	private void sortNonDoneCardsByStatusAndTime(List<JiraCardDTO> nonDoneCards, List<JiraColumnDTO> jiraColumns) {

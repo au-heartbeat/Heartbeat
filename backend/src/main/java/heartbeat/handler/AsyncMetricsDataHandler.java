@@ -1,85 +1,88 @@
 package heartbeat.handler;
 
-import com.google.gson.Gson;
+import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
-import heartbeat.handler.base.AsyncDataBaseHandler;
+import heartbeat.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
-import static heartbeat.handler.base.FIleType.METRICS_DATA_COMPLETED;
+import static heartbeat.repository.FilePrefixType.DATA_COMPLETED_PREFIX;
+import static heartbeat.repository.FileType.METRICS_DATA_COMPLETED;
+import static heartbeat.controller.report.dto.request.MetricType.BOARD;
+import static heartbeat.controller.report.dto.request.MetricType.DORA;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class AsyncMetricsDataHandler extends AsyncDataBaseHandler {
+public class AsyncMetricsDataHandler {
 
 	private static final String GENERATE_REPORT_ERROR = "Failed to update metrics data completed through this timestamp.";
 
-	private static final String OUTPUT_FILE_PATH = "./app/output/";
-
-	private static final String SLASH = "/";
-
 	private final Object readWriteLock = new Object();
 
-	public void putMetricsDataCompleted(String timeStamp, MetricsDataCompleted metricsDataCompleted) {
-		try {
-			acquireLock(METRICS_DATA_COMPLETED, timeStamp);
-			createFileByType(METRICS_DATA_COMPLETED, timeStamp, new Gson().toJson(metricsDataCompleted));
-		}
-		finally {
-			unLock(METRICS_DATA_COMPLETED, timeStamp);
-		}
-	}
-
-	public MetricsDataCompleted getMetricsDataCompleted(String timeStamp) {
-		Path targetPath = new File(OUTPUT_FILE_PATH).toPath().normalize();
-		String fileName = targetPath + SLASH + METRICS_DATA_COMPLETED.getPath() + SLASH + timeStamp;
-		return readFileByType(new File(fileName), METRICS_DATA_COMPLETED, timeStamp, MetricsDataCompleted.class);
-	}
-
-	public void deleteExpireMetricsDataCompletedFile(long currentTimeStamp, File directory) {
-		deleteExpireFileByType(METRICS_DATA_COMPLETED, currentTimeStamp, directory);
-	}
+	private final FileRepository fileRepository;
 
 	@Synchronized("readWriteLock")
-	public void updateMetricsDataCompletedInHandler(String metricDataFileId, MetricType metricType,
+	public void updateMetricsDataCompletedInHandler(String uuid, String fileName, MetricType metricType,
 			boolean isCreateCsvSuccess) {
-		MetricsDataCompleted previousMetricsCompleted = getMetricsDataCompleted(metricDataFileId);
+		MetricsDataCompleted previousMetricsCompleted = fileRepository.readFileByType(METRICS_DATA_COMPLETED, uuid,
+				fileName, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
 		if (previousMetricsCompleted == null) {
-			String filename = OUTPUT_FILE_PATH + METRICS_DATA_COMPLETED.getPath() + metricDataFileId;
+			String filename = fileRepository.getFileName(METRICS_DATA_COMPLETED, uuid, fileName);
 			log.error(GENERATE_REPORT_ERROR + "; filename: " + filename);
 			throw new GenerateReportException(GENERATE_REPORT_ERROR);
 		}
 		if (isCreateCsvSuccess) {
 			previousMetricsCompleted.setIsSuccessfulCreateCsvFile(true);
 		}
-		if (Objects.requireNonNull(metricType) == MetricType.BOARD) {
+		if (metricType == MetricType.BOARD) {
 			previousMetricsCompleted.setBoardMetricsCompleted(true);
 		}
 		else {
 			previousMetricsCompleted.setDoraMetricsCompleted(true);
 		}
-		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
+		fileRepository.createFileByType(METRICS_DATA_COMPLETED, uuid, fileName, previousMetricsCompleted,
+				DATA_COMPLETED_PREFIX);
 	}
 
 	@Synchronized("readWriteLock")
-	public void updateOverallMetricsCompletedInHandler(String metricDataFileId) {
-		MetricsDataCompleted previousMetricsCompleted = getMetricsDataCompleted(metricDataFileId);
+	public void updateOverallMetricsCompletedInHandler(String uuid, String timeRangeAndStamp) {
+		MetricsDataCompleted previousMetricsCompleted = fileRepository.readFileByType(METRICS_DATA_COMPLETED, uuid,
+				timeRangeAndStamp, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
 		if (previousMetricsCompleted == null) {
-			String filename = OUTPUT_FILE_PATH + METRICS_DATA_COMPLETED.getPath() + metricDataFileId;
-			log.error(GENERATE_REPORT_ERROR + "; filename: " + filename);
+			String fileName = fileRepository.getFileName(METRICS_DATA_COMPLETED, uuid, timeRangeAndStamp);
+			log.error(GENERATE_REPORT_ERROR + "; filename: " + fileName);
 			throw new GenerateReportException(GENERATE_REPORT_ERROR);
 		}
 		previousMetricsCompleted.setOverallMetricCompleted(true);
-		putMetricsDataCompleted(metricDataFileId, previousMetricsCompleted);
+		fileRepository.createFileByType(METRICS_DATA_COMPLETED, uuid, timeRangeAndStamp, previousMetricsCompleted,
+				DATA_COMPLETED_PREFIX);
+	}
+
+	public void initializeMetricsDataCompletedInHandler(String uuid, List<MetricType> metricTypes,
+			String timeRangeAndTimeStamp) {
+		MetricsDataCompleted previousMetricsDataCompleted = fileRepository.readFileByType(METRICS_DATA_COMPLETED, uuid,
+				timeRangeAndTimeStamp, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
+		Boolean initializeBoardMetricsCompleted = null;
+		Boolean initializeDoraMetricsCompleted = null;
+		if (!Objects.isNull(previousMetricsDataCompleted)) {
+			initializeBoardMetricsCompleted = previousMetricsDataCompleted.boardMetricsCompleted();
+			initializeDoraMetricsCompleted = previousMetricsDataCompleted.doraMetricsCompleted();
+		}
+		fileRepository
+			.createFileByType(METRICS_DATA_COMPLETED, uuid, timeRangeAndTimeStamp, MetricsDataCompleted.builder()
+				.boardMetricsCompleted(metricTypes.contains(BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
+				.doraMetricsCompleted(metricTypes.contains(DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
+				.overallMetricCompleted(Boolean.FALSE)
+				.isSuccessfulCreateCsvFile(Boolean.FALSE)
+				.build(), FilePrefixType.DATA_COMPLETED_PREFIX);
 	}
 
 }
