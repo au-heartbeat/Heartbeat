@@ -231,10 +231,10 @@ class GenerateReporterServiceTest {
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
 				verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
-					eq(cardCollectionInfo.getRealDoneCardCollection()),
-					eq(cardCollectionInfo.getNonDoneCardCollection()));
+						eq(cardCollectionInfo.getRealDoneCardCollection()),
+						eq(cardCollectionInfo.getNonDoneCardCollection()));
 				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
+						eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
 			});
 		}
 
