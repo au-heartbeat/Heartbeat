@@ -472,8 +472,7 @@ public class CSVFileGenerator {
 
 		AvgDeploymentFrequency avgDeploymentFrequency = deploymentFrequency.getAvgDeploymentFrequency();
 		if (deploymentFrequencyOfPipelines.size() > 1) {
-			rows.add(new String[] { deploymentFrequencyTitle,
-					avgDeploymentFrequency.getName() + " / Deployment frequency(Deployments/Day)",
+			rows.add(new String[] { deploymentFrequencyTitle, "Total / Deployment frequency(Deployments/Day)",
 					DecimalUtil.formatDecimalTwo(avgDeploymentFrequency.getDeploymentFrequency()) });
 			rows.add(new String[] { deploymentFrequencyTitle, "Total / Deployment frequency(Deployment times)",
 					String.valueOf(deploymentFrequency.getTotalDeployTimes()) });

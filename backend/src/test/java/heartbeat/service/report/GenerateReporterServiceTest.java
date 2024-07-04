@@ -39,6 +39,7 @@ import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.ReworkCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,7 @@ import org.mockito.quality.Strictness;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
@@ -216,8 +218,6 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateBoardReport(TEST_UUID, request);
 
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
 			verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
 					eq(cardCollectionInfo.getRealDoneCardCollection()),
 					eq(cardCollectionInfo.getNonDoneCardCollection()));
@@ -228,6 +228,14 @@ class GenerateReporterServiceTest {
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertNull(response.getRework());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
+					eq(cardCollectionInfo.getRealDoneCardCollection()),
+					eq(cardCollectionInfo.getNonDoneCardCollection()));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
+			});
 		}
 
 		@Test
