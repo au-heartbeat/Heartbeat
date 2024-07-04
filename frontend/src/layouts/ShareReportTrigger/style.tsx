@@ -56,3 +56,9 @@ export const LinkLine = styled.div({
     padding: '0rem 0.625rem',
   },
 });
+
+export const ShareIconWrapper = styled.span({
+  padding: '0.5rem',
+  cursor: 'pointer',
+  marginLeft: '0.2rem',
+});
