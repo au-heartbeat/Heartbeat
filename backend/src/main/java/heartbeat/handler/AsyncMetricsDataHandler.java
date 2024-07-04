@@ -1,6 +1,5 @@
 package heartbeat.handler;
 
-import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
@@ -42,7 +41,7 @@ public class AsyncMetricsDataHandler {
 		if (isCreateCsvSuccess) {
 			previousMetricsCompleted.setIsSuccessfulCreateCsvFile(true);
 		}
-		if (metricType == MetricType.BOARD) {
+		if (metricType == BOARD) {
 			previousMetricsCompleted.setBoardMetricsCompleted(true);
 		}
 		else {
@@ -69,7 +68,7 @@ public class AsyncMetricsDataHandler {
 	public void initializeMetricsDataCompletedInHandler(String uuid, List<MetricType> metricTypes,
 			String timeRangeAndTimeStamp) {
 		MetricsDataCompleted previousMetricsDataCompleted = fileRepository.readFileByType(METRICS_DATA_COMPLETED, uuid,
-				timeRangeAndTimeStamp, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
+				timeRangeAndTimeStamp, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
 		Boolean initializeBoardMetricsCompleted = null;
 		Boolean initializeDoraMetricsCompleted = null;
 		if (!Objects.isNull(previousMetricsDataCompleted)) {
@@ -82,7 +81,7 @@ public class AsyncMetricsDataHandler {
 				.doraMetricsCompleted(metricTypes.contains(DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
 				.overallMetricCompleted(Boolean.FALSE)
 				.isSuccessfulCreateCsvFile(Boolean.FALSE)
-				.build(), FilePrefixType.DATA_COMPLETED_PREFIX);
+				.build(), DATA_COMPLETED_PREFIX);
 	}
 
 }

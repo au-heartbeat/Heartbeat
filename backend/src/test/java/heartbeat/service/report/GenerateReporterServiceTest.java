@@ -176,11 +176,6 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateBoardReport(TEST_UUID, request);
 
 			verify(kanbanService).fetchDataFromKanban(request);
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
-			verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
-					eq(cardCollectionInfo.getRealDoneCardCollection()),
-					eq(cardCollectionInfo.getNonDoneCardCollection()));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.BOARD_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
@@ -194,6 +189,15 @@ class GenerateReporterServiceTest {
 			assertEquals(4, response.getRework().getTotalReworkTimes());
 			assertEquals(2, response.getRework().getTotalReworkCards());
 			assertNull(response.getRework().getFromDone());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(reworkCalculator, times(1)).calculateRework(any(), any());
+				verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
+						eq(cardCollectionInfo.getRealDoneCardCollection()),
+						eq(cardCollectionInfo.getNonDoneCardCollection()));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
+			});
 		}
 
 		@Test
@@ -330,11 +334,6 @@ class GenerateReporterServiceTest {
 
 			verify(kanbanService, times(1)).fetchDataFromKanban(eq(request));
 			verify(pipelineService, never()).fetchGitHubData(any());
-			verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
-					eq(cardCollectionInfo.getRealDoneCardCollection()),
-					eq(cardCollectionInfo.getNonDoneCardCollection()));
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.BOARD_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
@@ -344,6 +343,15 @@ class GenerateReporterServiceTest {
 			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(10, response.getVelocity().getVelocityForSP());
 			assertEquals(20, response.getVelocity().getVelocityForCards());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
+						eq(cardCollectionInfo.getRealDoneCardCollection()),
+						eq(cardCollectionInfo.getNonDoneCardCollection()));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
+				verify(velocityCalculator, times(1)).calculateVelocity(any());
+			});
 		}
 
 		@Test
@@ -373,13 +381,7 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateBoardReport(TEST_UUID, request);
 
 			verify(kanbanService, times(1)).fetchDataFromKanban(eq(request));
-			verify(cycleTimeCalculator, times(1)).calculateCycleTime(any(), any());
 			verify(pipelineService, never()).fetchGitHubData(any());
-			verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
-					eq(cardCollectionInfo.getRealDoneCardCollection()),
-					eq(cardCollectionInfo.getNonDoneCardCollection()));
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.BOARD_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
@@ -390,6 +392,15 @@ class GenerateReporterServiceTest {
 			assertEquals(10, response.getCycleTime().getAverageCycleTimePerSP());
 			assertEquals(20, response.getCycleTime().getAverageCycleTimePerCard());
 			assertEquals(15, response.getCycleTime().getTotalTimeForCards());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(cycleTimeCalculator, times(1)).calculateCycleTime(any(), any());
+				verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
+						eq(cardCollectionInfo.getRealDoneCardCollection()),
+						eq(cardCollectionInfo.getNonDoneCardCollection()));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
+			});
 		}
 
 		@Test
@@ -416,13 +427,10 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateBoardReport(TEST_UUID, request);
 
 			verify(kanbanService, times(1)).fetchDataFromKanban(eq(request));
-			verify(classificationCalculator, times(1)).calculate(any(), any());
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
 					eq(cardCollectionInfo.getRealDoneCardCollection()),
 					eq(cardCollectionInfo.getNonDoneCardCollection()));
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.BOARD_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
@@ -431,6 +439,15 @@ class GenerateReporterServiceTest {
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(classifications, response.getClassificationList());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(classificationCalculator, times(1)).calculate(any(), any());
+				verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request),
+						eq(cardCollectionInfo.getRealDoneCardCollection()),
+						eq(cardCollectionInfo.getNonDoneCardCollection()));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
+			});
 		}
 
 		@Test
@@ -495,15 +512,19 @@ class GenerateReporterServiceTest {
 			verify(reworkCalculator, times(1)).calculateRework(any(), any());
 			verify(kanbanService, times(1)).fetchDataFromKanban(eq(request));
 			verify(pipelineService, never()).fetchGitHubData(any());
-			verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request), any(), any());
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.BOARD_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					eq(FilePrefixType.BOARD_REPORT_PREFIX));
 
 			assertEquals(2, responseArgumentCaptor.getValue().getRework().getTotalReworkCards());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(reworkCalculator, times(1)).calculateRework(any(), any());
+				verify(kanbanCsvService, times(1)).generateCsvInfo(eq(TEST_UUID), eq(request), any(), any());
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(BOARD), eq(true));
+			});
 
 		}
 
@@ -540,11 +561,14 @@ class GenerateReporterServiceTest {
 					eq(FilePrefixType.SOURCE_CONTROL_PREFIX));
 			verify(fileRepository, times(1)).readFileByType(eq(FileType.METRICS_DATA_COMPLETED), eq(TEST_UUID),
 					eq(timeRangeAndTimeStamp), eq(MetricsDataCompleted.class), eq(DATA_COMPLETED_PREFIX));
-			verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
-			verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
-					eq(timeRangeAndTimeStamp));
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
+				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
+						eq(timeRangeAndTimeStamp));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
+			});
 		}
 
 		@Test
@@ -660,20 +684,12 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(deploymentFrequency, times(1)).calculate(any(), any(), any(), any(), any());
-			verify(devChangeFailureRate, times(1)).calculate(any());
-			verify(meanToRecoveryCalculator, times(1)).calculate(any(), any());
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
 			verify(fileRepository, times(1)).readFileByType(eq(FileType.METRICS_DATA_COMPLETED), eq(TEST_UUID),
 					eq(timeRangeAndTimeStamp), eq(MetricsDataCompleted.class), eq(DATA_COMPLETED_PREFIX));
-			verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
-			verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
-					eq(timeRangeAndTimeStamp));
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
 			verify(asyncMetricsDataHandler, never()).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
 					eq(timeRangeAndTimeStamp), eq(DORA), eq(false));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
@@ -686,6 +702,18 @@ class GenerateReporterServiceTest {
 			assertEquals(fakeMeantime, response.getDevMeanTimeToRecovery());
 			assertEquals(fakeDevChangeFailureRate, response.getDevChangeFailureRate());
 			assertEquals(fakeDeploymentFrequency, response.getDeploymentFrequency());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
+				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
+						eq(timeRangeAndTimeStamp));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
+
+				verify(deploymentFrequency, times(1)).calculate(any(), any(), any(), any(), any());
+				verify(devChangeFailureRate, times(1)).calculate(any());
+				verify(meanToRecoveryCalculator, times(1)).calculate(any(), any());
+			});
 		}
 
 		@Test
@@ -760,18 +788,13 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(leadTimeForChangesCalculator, times(1)).calculate(any());
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
 			verify(fileRepository, times(1)).readFileByType(eq(FileType.METRICS_DATA_COMPLETED), eq(TEST_UUID),
 					eq(timeRangeAndTimeStamp), eq(MetricsDataCompleted.class), eq(DATA_COMPLETED_PREFIX));
-			verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
-			verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
-					eq(timeRangeAndTimeStamp));
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
+
 			verify(asyncMetricsDataHandler, never()).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
 					eq(timeRangeAndTimeStamp), eq(DORA), eq(false));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
@@ -780,6 +803,15 @@ class GenerateReporterServiceTest {
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
+				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
+						eq(timeRangeAndTimeStamp));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
+			});
 		}
 
 		@Test
@@ -812,18 +844,12 @@ class GenerateReporterServiceTest {
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
 			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
-			verify(leadTimeForChangesCalculator, times(1)).calculate(any());
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
 			verify(fileRepository, times(1)).removeFileByType(eq(ERROR), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
 			verify(fileRepository, times(1)).readFileByType(eq(FileType.METRICS_DATA_COMPLETED), eq(TEST_UUID),
 					eq(timeRangeAndTimeStamp), eq(MetricsDataCompleted.class), eq(DATA_COMPLETED_PREFIX));
-			verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
-			verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
-					eq(timeRangeAndTimeStamp));
-			verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
-					eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
 			verify(asyncMetricsDataHandler, never()).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
 					eq(timeRangeAndTimeStamp), eq(DORA), eq(false));
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
@@ -832,6 +858,15 @@ class GenerateReporterServiceTest {
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
+
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
+				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(eq(TEST_UUID), eq(pipelineCSVInfos),
+						eq(timeRangeAndTimeStamp));
+				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(eq(TEST_UUID),
+						eq(timeRangeAndTimeStamp), eq(DORA), eq(true));
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+			});
 		}
 
 		@Test
@@ -911,7 +946,7 @@ class GenerateReporterServiceTest {
 			assertEquals("Failed to get report due to report time expires", generateReportException.getMessage());
 
 			verify(fileRepository, never()).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID,
-					timeRangeAndTimeStamp, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
+					timeRangeAndTimeStamp, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
 		}
 
 		@Test
@@ -949,7 +984,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder()
 					.boardMetricsCompleted(false)
 					.doraMetricsCompleted(true)

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,13 +87,19 @@ public class ReportService {
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
 	}
 
-	public List<String> getReportUrl(String uuid) {
-		return fileRepository.getReportFiles(uuid)
+	public List<String> getReportUrls(String uuid) {
+		List<String> reportUrls = fileRepository.getReportFiles(uuid)
 			.stream()
 			.map(it -> it.split("-"))
+			.filter(it -> it.length > 2)
 			.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
 			.distinct()
 			.toList();
+		if (reportUrls.isEmpty()) {
+			throw new NotFoundException(
+					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
+		}
+		return reportUrls;
 	}
 
 	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {

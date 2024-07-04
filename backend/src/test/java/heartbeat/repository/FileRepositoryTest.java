@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -279,7 +280,7 @@ class FileRepositoryTest {
 	}
 
 	@Nested
-	class createCSVFileByType {
+	class CreateCsvFileByType {
 
 		@BeforeAll
 		static void beforeAll() throws IOException {
@@ -421,27 +422,36 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenDirectoryDontExist() {
 			FileType fileType = FileType.REPORT;
 			long timestamp = 123L;
+			String expectedFilepath = "./app/output/report";
 
 			try (MockedStatic<FileUtils> mockStatic = mockStatic(FileUtils.class)) {
 				fileRepository.removeExpiredFiles(fileType, timestamp);
 
 				mockStatic.verify(() -> FileUtils.deleteDirectory(any(File.class)), never());
+
+				File realFile = new File(expectedFilepath);
+				assertFalse(realFile.exists());
 			}
 		}
 
 		@Test
 		void shouldRemoveErrorWhenPathIsNotDirectory() throws IOException {
-
 			FileType fileType = FileType.REPORT;
 			long timestamp = 123L;
 
-			Path path = Paths.get("./app/output/report");
+			String expectedFilePath = "./app/output/report";
+			Path path = Paths.get(expectedFilePath);
 			Files.createFile(path);
 
 			try (MockedStatic<FileUtils> mockStatic = mockStatic(FileUtils.class)) {
 				fileRepository.removeExpiredFiles(fileType, timestamp);
 
 				mockStatic.verify(() -> FileUtils.deleteDirectory(any(File.class)), never());
+
+				File realFile = new File(expectedFilePath);
+				assertTrue(realFile.exists());
+				File[] listFiles = realFile.listFiles();
+				assertNull(listFiles);
 			}
 			Files.deleteIfExists(path);
 		}
@@ -451,13 +461,20 @@ class FileRepositoryTest {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
 
-			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
+			String expectedFilePath = "./app/output/csv/" + TEST_UUID;
+			Path path = Paths.get(expectedFilePath);
 			Files.createDirectories(path);
 
 			try (MockedStatic<FileUtils> mockStatic = mockStatic(FileUtils.class)) {
 				fileRepository.removeExpiredFiles(fileType, timestamp);
 
 				mockStatic.verify(() -> FileUtils.deleteDirectory(any(File.class)), times(1));
+
+				File realFile = new File(expectedFilePath);
+				assertTrue(realFile.exists());
+				File[] listFiles = realFile.listFiles();
+				assertNotNull(listFiles);
+				assertEquals(0, listFiles.length);
 			}
 			Files.deleteIfExists(path);
 		}
@@ -468,17 +485,20 @@ class FileRepositoryTest {
 			long timestamp = 123L;
 			long currentTimestamp = EXPORT_CSV_VALIDITY_TIME + timestamp + 10000L;
 
-			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
+			String expectedFilePath = "./app/output/csv/" + TEST_UUID;
+			Path path = Paths.get(expectedFilePath);
 			Files.createDirectories(path);
 			Path filePath = Paths.get("./app/output/csv/" + TEST_UUID + "/board-1-2-" + timestamp);
 			Files.createFile(filePath);
 
-			try (MockedStatic<FileUtils> mockStatic = mockStatic(FileUtils.class)) {
-				fileRepository.removeExpiredFiles(fileType, currentTimestamp);
+			fileRepository.removeExpiredFiles(fileType, currentTimestamp);
 
-				mockStatic.verify(() -> FileUtils.deleteDirectory(any(File.class)), times(1));
-			}
-			Files.deleteIfExists(filePath);
+			File realFile = new File("./app/output/csv");
+			assertTrue(realFile.exists());
+			File[] listFiles = realFile.listFiles();
+			assertNotNull(listFiles);
+			assertEquals(0, listFiles.length);
+
 			Files.deleteIfExists(path);
 		}
 
@@ -493,11 +513,14 @@ class FileRepositoryTest {
 			Path filePath = Paths.get("./app/output/csv/" + TEST_UUID + "/board-1-2-" + timestamp);
 			Files.createFile(filePath);
 
-			try (MockedStatic<FileUtils> mockStatic = mockStatic(FileUtils.class)) {
-				fileRepository.removeExpiredFiles(fileType, currentTimestamp);
+			fileRepository.removeExpiredFiles(fileType, currentTimestamp);
 
-				mockStatic.verify(() -> FileUtils.deleteDirectory(any(File.class)), never());
-			}
+			File realFile = new File("./app/output/csv");
+			assertTrue(realFile.exists());
+			File[] listFiles = realFile.listFiles();
+			assertNotNull(listFiles);
+			assertEquals(1, listFiles.length);
+
 			Files.deleteIfExists(filePath);
 			Files.deleteIfExists(path);
 		}
@@ -519,7 +542,14 @@ class FileRepositoryTest {
 				fileRepository.removeExpiredFiles(fileType, currentTimestamp);
 
 				mockStatic.verify(() -> FileUtils.deleteDirectory(any(File.class)), times(1));
+
+				File realFile = new File("./app/output/csv");
+				assertTrue(realFile.exists());
+				File[] listFiles = realFile.listFiles();
+				assertNotNull(listFiles);
+				assertEquals(1, listFiles.length);
 			}
+
 			Files.deleteIfExists(filePath);
 			Files.deleteIfExists(path);
 		}
@@ -581,7 +611,7 @@ class FileRepositoryTest {
 	}
 
 	@Nested
-	class getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime {
+	class GetReportFileTimeRangeAndTimeStampByStartTimeAndEndTime {
 
 		@BeforeAll
 		static void beforeAll() throws IOException {

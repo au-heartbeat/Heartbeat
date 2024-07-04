@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -157,18 +160,27 @@ class ReporterControllerTest {
 	@Test
 	void shouldReturnUuidWhenCallGenerateUUID() throws Exception {
 		int expectedLength = 32 + 4;
+		String expectedResponse = "12345678-1234-1234-1234-123456789012";
+		UUID mockUuid = UUID.fromString(expectedResponse);
 
-		mockMvc.perform(post("/reports"))
-			.andExpect(status().isOk())
-			.andExpect(content().string(Matchers.hasLength(expectedLength)))
-			.andReturn()
-			.getResponse();
+		try (MockedStatic<UUID> uuidMockedStatic = mockStatic(UUID.class)) {
+			uuidMockedStatic.when(UUID::randomUUID).thenReturn(mockUuid);
+			MockHttpServletResponse response = mockMvc.perform(post("/reports"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(Matchers.hasLength(expectedLength)))
+				.andReturn()
+				.getResponse();
+
+			uuidMockedStatic.verify(UUID::randomUUID);
+			assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
+		}
+
 	}
 
 	@Test
 	void shouldReturnListCallbackWhenCallGetReportUrls() throws Exception {
 		String uuid = "test-uuid";
-		when(reporterService.getReportUrl(uuid))
+		when(reporterService.getReportUrls(uuid))
 			.thenReturn(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"));
 
 		mockMvc.perform(get("/reports/{uuid}", uuid))
@@ -178,7 +190,7 @@ class ReporterControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(reporterService, times(1)).getReportUrl(uuid);
+		verify(reporterService, times(1)).getReportUrls(uuid);
 	}
 
 }

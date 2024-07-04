@@ -66,7 +66,7 @@ public class ReportController {
 
 	@GetMapping("/{uuid}")
 	public List<String> getReportUrls(@PathVariable String uuid) {
-		return reportService.getReportUrl(uuid);
+		return reportService.getReportUrls(uuid);
 	}
 
 	@PostMapping("/{uuid}")

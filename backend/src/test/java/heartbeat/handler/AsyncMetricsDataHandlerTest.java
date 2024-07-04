@@ -64,7 +64,7 @@ class AsyncMetricsDataHandlerTest {
 							false));
 
 			assertEquals("Failed to update metrics data completed through this timestamp.", exception.getMessage());
-			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
 		}
 
@@ -75,7 +75,7 @@ class AsyncMetricsDataHandlerTest {
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
 				.boardMetricsCompleted(false)
 				.build();
-			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			when(fileRepository.readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
 				.thenReturn(metricsDataCompleted);
 
@@ -84,9 +84,9 @@ class AsyncMetricsDataHandlerTest {
 			assertTrue(metricsDataCompleted.boardMetricsCompleted());
 			assertNull(metricsDataCompleted.doraMetricsCompleted());
 			assertTrue(metricsDataCompleted.isSuccessfulCreateCsvFile());
-			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
-			verify(fileRepository, times(1)).createFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).createFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					metricsDataCompleted, FilePrefixType.DATA_COMPLETED_PREFIX);
 		}
 
@@ -201,8 +201,8 @@ class AsyncMetricsDataHandlerTest {
 				.overallMetricCompleted(false)
 				.build();
 
-			fileRepository.createFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
-					metricsDataCompleted, FilePrefixType.DATA_COMPLETED_PREFIX);
+			fileRepository.createFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime, metricsDataCompleted,
+					FilePrefixType.DATA_COMPLETED_PREFIX);
 
 			List<CompletableFuture<Void>> threadList = new ArrayList<>();
 
@@ -235,7 +235,7 @@ class AsyncMetricsDataHandlerTest {
 				thread.join();
 			}
 
-			MetricsDataCompleted completed = fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID,
+			MetricsDataCompleted completed = fileRepository.readFileByType(METRICS_DATA_COMPLETED, TEST_UUID,
 					currentTime, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
 			assertTrue(completed.boardMetricsCompleted());
 			assertTrue(completed.doraMetricsCompleted());

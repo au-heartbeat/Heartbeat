@@ -353,4 +353,47 @@ public class ReportServiceTest {
 
 	}
 
+	@Nested
+	class GetReportUrl {
+
+		@Test
+		void shouldGetReportUrlsSuccessfully() {
+			when(fileRepository.getReportFiles(TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
+
+			List<String> reportUrls = reportService.getReportUrls(TEST_UUID);
+
+			verify(fileRepository).getReportFiles(TEST_UUID);
+			assertEquals(2, reportUrls.size());
+			assertEquals("/reports/test-uuid/detail?startTime=1&endTime=2", reportUrls.get(0));
+			assertEquals("/reports/test-uuid/detail?startTime=2&endTime=3", reportUrls.get(1));
+		}
+
+		@Test
+		void shouldThrowExceptionWhenFilenameIsInvalid() {
+			when(fileRepository.getReportFiles(TEST_UUID)).thenReturn(List.of("board-123", "board-234"));
+
+			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getReportUrls(TEST_UUID));
+
+			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
+
+			verify(fileRepository).getReportFiles(TEST_UUID);
+		}
+
+	}
+
+	@Nested
+	class GenerateReportCallbackUrl {
+
+		@Test
+		void shouldGetReportCallbackUrlSuccessfully() {
+			String startTime = "20200101";
+			String endTime = "20200102";
+
+			String result = reportService.generateReportCallbackUrl(TEST_UUID, startTime, endTime);
+
+			assertEquals("/reports/test-uuid/detail?startTime=20200101&endTime=20200102", result);
+		}
+
+	}
+
 }
