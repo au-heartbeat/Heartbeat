@@ -1051,7 +1051,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder()
 					.boardMetricsCompleted(false)
 					.doraMetricsCompleted(true)

@@ -122,7 +122,7 @@ class AsyncMetricsDataHandlerTest {
 				.isSuccessfulCreateCsvFile(false)
 				.build();
 
-			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			when(fileRepository.readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
 				.thenReturn(metricsDataCompleted);
 

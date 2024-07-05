@@ -247,7 +247,7 @@ public class FileRepository {
 	}
 
 	private void isCorrectFilePath(String filepath) {
-		if (filepath.contains("..") || filepath.contains("/") | filepath.contains("\\")) {
+		if (filepath.contains("..") || filepath.contains("/") || filepath.contains("\\")) {
 			throw new IllegalArgumentException("Invalid filepath, filepath: " + filepath);
 		}
 	}
