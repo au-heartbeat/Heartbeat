@@ -1042,6 +1042,11 @@ class GenerateReporterServiceTest {
 			assertNull(composedReportResponse.getLeadTimeForChanges());
 			assertNull(composedReportResponse.getDevChangeFailureRate());
 			assertNull(composedReportResponse.getDevMeanTimeToRecovery());
+			assertFalse(composedReportResponse.getAllMetricsCompleted());
+			assertFalse(composedReportResponse.getBoardMetricsCompleted());
+			assertFalse(composedReportResponse.getDoraMetricsCompleted());
+			assertFalse(composedReportResponse.getIsSuccessfulCreateCsvFile());
+			assertFalse(composedReportResponse.getOverallMetricsCompleted());
 
 		}
 

@@ -327,7 +327,13 @@ public class GenerateReporterService {
 		String timeRangeAndTimeStamp = fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(uuid,
 				startTime, endTime);
 		if (timeRangeAndTimeStamp == null) {
-			return ReportResponse.builder().build();
+			return ReportResponse.builder()
+				.overallMetricsCompleted(false)
+				.boardMetricsCompleted(false)
+				.doraMetricsCompleted(false)
+				.allMetricsCompleted(false)
+				.isSuccessfulCreateCsvFile(false)
+				.build();
 		}
 
 		return getComposedReportResponse(uuid, timeRangeAndTimeStamp);
