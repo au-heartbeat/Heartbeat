@@ -36,6 +36,8 @@ public class FileRepository {
 
 	private static final String BASE_OUTPUT_PATH = "./app/output";
 
+	private static final String NORMALIZE_BASE_OUTPUT_PATH = "app/output";
+
 	private static final String SLASH = "/";
 
 	private static final String FILENAME_SEPARATOR = "-";
@@ -69,7 +71,7 @@ public class FileRepository {
 
 		String realFileName = fileNamePrefix.getPrefix() + fileName;
 		File file = new File(getFileName(fileType, uuid, realFileName));
-		if (file.exists()) {
+		if (file.toPath().normalize().startsWith(NORMALIZE_BASE_OUTPUT_PATH) && file.exists()) {
 			try (JsonReader reader = new JsonReader(new FileReader(file))) {
 				T result = gson.fromJson(reader, classType);
 				log.info("Successfully read file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
