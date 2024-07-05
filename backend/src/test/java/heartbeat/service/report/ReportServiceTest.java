@@ -6,6 +6,7 @@ import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ErrorInfo;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.service.report.calculator.ReportGenerator;
@@ -392,6 +393,18 @@ public class ReportServiceTest {
 			String result = reportService.generateReportCallbackUrl(TEST_UUID, startTime, endTime);
 
 			assertEquals("/reports/test-uuid/detail?startTime=20200101&endTime=20200102", result);
+		}
+
+	}
+
+	@Nested
+	class GenerateReportId {
+
+		@Test
+		void shouldGenerateReportId() {
+			UuidResponse uuidResponse = reportService.generateReportId();
+
+			assertEquals(36, uuidResponse.getReportId().length());
 		}
 
 	}

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
@@ -13,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
-import java.util.UUID;
 
 import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,13 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -159,20 +156,14 @@ class ReporterControllerTest {
 
 	@Test
 	void shouldReturnUuidWhenCallGenerateUUID() throws Exception {
-		String expectedResponse = "12345678-1234-1234-1234-123456789012";
-		UUID mockUuid = UUID.fromString(expectedResponse);
-
-		try (MockedStatic<UUID> uuidMockedStatic = mockStatic(UUID.class)) {
-			uuidMockedStatic.when(UUID::randomUUID).thenReturn(mockUuid);
-			MockHttpServletResponse response = mockMvc.perform(post("/reports"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.reportId").value(expectedResponse))
-				.andReturn()
-				.getResponse();
-
-			uuidMockedStatic.verify(UUID::randomUUID);
-		}
-
+		String expectedResponse = "test";
+		when(reporterService.generateReportId()).thenReturn(UuidResponse.builder().reportId(expectedResponse).build());
+		mockMvc.perform(post("/reports"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.reportId").value(expectedResponse))
+			.andReturn()
+			.getResponse();
+		verify(reporterService).generateReportId();
 	}
 
 	@Test

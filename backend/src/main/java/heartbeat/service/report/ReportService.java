@@ -5,6 +5,7 @@ import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.service.report.calculator.ReportGenerator;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -103,6 +105,10 @@ public class ReportService {
 
 	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {
 		return "/reports/" + uuid + "/detail?startTime=" + startTime + "&endTime=" + endTime;
+	}
+
+	public UuidResponse generateReportId() {
+		return UuidResponse.builder().reportId(UUID.randomUUID().toString()).build();
 	}
 
 }

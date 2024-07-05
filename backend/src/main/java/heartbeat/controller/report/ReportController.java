@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -87,7 +86,7 @@ public class ReportController {
 
 	@PostMapping
 	public UuidResponse generateUUID() {
-		return UuidResponse.builder().reportId(UUID.randomUUID().toString()).build();
+		return reportService.generateReportId();
 	}
 
 }
