@@ -25,11 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 import static heartbeat.repository.FileType.CSV;
-import static heartbeat.repository.FileType.ERROR;
-import static heartbeat.repository.FileType.METRICS_DATA_COMPLETED;
 import static heartbeat.repository.FileType.REPORT;
 
 @Slf4j
@@ -52,6 +49,8 @@ public class FileRepository {
 	private final Gson gson;
 
 	public void createPath(FileType type, String uuid) {
+		isCorrectFilePath(uuid);
+
 		Path path = Path.of(BASE_OUTPUT_PATH + SLASH + type.getType() + SLASH + uuid);
 		try {
 			Files.createDirectories(path);
@@ -65,9 +64,11 @@ public class FileRepository {
 
 	public <T> T readFileByType(FileType fileType, String uuid, String fileName, Class<T> classType,
 			FilePrefixType fileNamePrefix) {
+		isCorrectFilePath(uuid);
+
 		String realFileName = fileNamePrefix.getPrefix() + fileName;
 		File file = new File(getFileName(fileType, uuid, realFileName));
-		if (isCorrectFilePath(file.getPath()) && file.exists()) {
+		if (file.exists()) {
 			try (JsonReader reader = new JsonReader(new FileReader(file))) {
 				T result = gson.fromJson(reader, classType);
 				log.info("Successfully read file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
@@ -85,23 +86,31 @@ public class FileRepository {
 	}
 
 	public String getFileName(FileType fileType, String uuid, String fileName) {
+		isCorrectFilePath(uuid);
+
 		return BASE_OUTPUT_PATH + SLASH + fileType.getType() + SLASH + uuid + SLASH + fileName;
 	}
 
 	public <T> void createFileByType(FileType fileType, String uuid, String fileName, T data,
 			FilePrefixType fileNamePrefix) {
+		isCorrectFilePath(uuid);
+
 		String json = gson.toJson(data);
 		createFileHandler(fileType, uuid, fileName, fileNamePrefix,
 				realFileName -> createNormalFileHandler(fileType, uuid, json, realFileName));
 	}
 
 	public void createCSVFileByType(String uuid, String fileName, String[][] data, FilePrefixType fileNamePrefix) {
-		FileType fileType = FileType.CSV;
+		isCorrectFilePath(uuid);
+
+		FileType fileType = CSV;
 		createFileHandler(fileType, uuid, fileName + CSV_EXTENSION, fileNamePrefix,
 				realFileName -> createCSVFileHandler(fileType, uuid, data, realFileName));
 	}
 
 	public void removeFileByType(FileType fileType, String uuid, String fileName, FilePrefixType fileNamePrefix) {
+		isCorrectFilePath(uuid);
+
 		String realFileName = fileNamePrefix.getPrefix() + fileName;
 		String path = getFileName(fileType, uuid, realFileName);
 
@@ -147,10 +156,12 @@ public class FileRepository {
 	}
 
 	public List<String> getReportFiles(String uuid) {
+		isCorrectFilePath(uuid);
+
 		String fileName = BASE_OUTPUT_PATH + SLASH + REPORT.getPath() + uuid;
 		File folder = new File(fileName);
 
-		if (isCorrectFilePath(folder.getPath()) && folder.exists() && folder.isDirectory()) {
+		if (folder.exists() && folder.isDirectory()) {
 			return Arrays.stream(folder.listFiles()).map(File::getName).toList();
 		}
 		else {
@@ -160,6 +171,8 @@ public class FileRepository {
 
 	public String getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(String uuid, String startTime,
 			String endTime) {
+		isCorrectFilePath(uuid);
+
 		return getReportFiles(uuid).stream()
 			.map(it -> it.split("-"))
 			.filter(it -> it.length == 4)
@@ -176,7 +189,9 @@ public class FileRepository {
 	}
 
 	public InputStreamResource readStringFromCsvFile(String uuid, String fileName, FilePrefixType filePrefixType) {
-		File file = new File(getFileName(FileType.CSV, uuid, filePrefixType.getPrefix() + fileName + CSV_EXTENSION));
+		isCorrectFilePath(uuid);
+
+		File file = new File(getFileName(CSV, uuid, filePrefixType.getPrefix() + fileName + CSV_EXTENSION));
 		try {
 			InputStream inputStream = new FileInputStream(file);
 			return new InputStreamResource(inputStream);
@@ -201,39 +216,35 @@ public class FileRepository {
 	private void createNormalFileHandler(FileType fileType, String uuid, String json, String realFileName) {
 		String tmpFileName = realFileName + SUFFIX_TMP;
 
-		if (isCorrectFilePath(realFileName)) {
-			try (FileWriter writer = new FileWriter(tmpFileName)) {
-				writer.write(json);
-				Files.move(Path.of(tmpFileName), Path.of(realFileName), StandardCopyOption.ATOMIC_MOVE);
-				log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
-						realFileName);
-			}
-			catch (Exception e) {
-				log.error("Failed write file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
-						realFileName, e);
-				throw new GenerateReportException("Failed write " + fileType.getType() + " " + realFileName);
-			}
+		try (FileWriter writer = new FileWriter(tmpFileName)) {
+			writer.write(json);
+			Files.move(Path.of(tmpFileName), Path.of(realFileName), StandardCopyOption.ATOMIC_MOVE);
+			log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+					realFileName);
+		}
+		catch (Exception e) {
+			log.error("Failed write file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
+					realFileName, e);
+			throw new GenerateReportException("Failed write " + fileType.getType() + " " + realFileName);
 		}
 	}
 
 	private void createCSVFileHandler(FileType fileType, String uuid, String[][] json, String realFileName) {
-		if (isCorrectFilePath(realFileName)) {
-			try (CSVWriter writer = new CSVWriter(new FileWriter(realFileName))) {
-				writer.writeAll(Arrays.asList(json));
-				log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
-						realFileName);
-			}
-			catch (IOException e) {
-				log.error("Failed to write {} file", fileType.getType(), e);
-				throw new FileIOException(e);
-			}
+		try (CSVWriter writer = new CSVWriter(new FileWriter(realFileName))) {
+			writer.writeAll(Arrays.asList(json));
+			log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+					realFileName);
 		}
-
+		catch (IOException e) {
+			log.error("Failed to write {} file", fileType.getType(), e);
+			throw new FileIOException(e);
+		}
 	}
 
-	private boolean isCorrectFilePath(String filename) {
-		String regex = "^\\.\\/app\\/output\\/[^\\/]+\\/[^\\/]+[\\/]?[^\\/]*";
-		return Pattern.matches(regex, filename);
+	private void isCorrectFilePath(String uuid) {
+		if (uuid.contains("..") || uuid.contains("/") | uuid.contains("\\")) {
+			throw new IllegalArgumentException("Invalid uuid, uuid: " + uuid);
+		}
 	}
 
 }

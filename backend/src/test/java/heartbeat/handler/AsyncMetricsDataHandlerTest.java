@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -98,7 +97,7 @@ class AsyncMetricsDataHandlerTest {
 				.doraMetricsCompleted(false)
 				.build();
 
-			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			when(fileRepository.readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
 				.thenReturn(metricsDataCompleted);
 
@@ -107,9 +106,9 @@ class AsyncMetricsDataHandlerTest {
 			assertNull(metricsDataCompleted.boardMetricsCompleted());
 			assertTrue(metricsDataCompleted.doraMetricsCompleted());
 			assertTrue(metricsDataCompleted.isSuccessfulCreateCsvFile());
-			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
-			verify(fileRepository, times(1)).createFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).createFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					metricsDataCompleted, FilePrefixType.DATA_COMPLETED_PREFIX);
 
 		}

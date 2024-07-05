@@ -88,6 +88,20 @@ class FileRepositoryTest {
 		}
 
 		@Test
+		void shouldThrowExceptionWhenUuidIsInvalid() {
+			IllegalArgumentException uuidContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createPath(FileType.CSV, "..abc"));
+			IllegalArgumentException uuidContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createPath(FileType.CSV, "aa/abc"));
+			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createPath(FileType.CSV, "aa\\abc"));
+
+			assertEquals("Invalid uuid, uuid: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid uuid, uuid: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid uuid, uuid: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
 		void shouldCreatePathSuccessfully() {
 			FileType fileType = FileType.CSV;
 			String expectedFilepath = "./app/output/" + fileType.getPath() + TEST_UUID;
@@ -165,16 +179,6 @@ class FileRepositoryTest {
 
 			MetricsDataCompleted result = fileRepository.readFileByType(FileType.REPORT, TEST_UUID, dontExistFileName,
 					MetricsDataCompleted.class, FilePrefixType.BOARD_REPORT_PREFIX);
-
-			assertNull(result);
-		}
-
-		@Test
-		void shouldReadFileNullWhenFilenameError() {
-			String dontExistFileName = "dontExistFileName";
-
-			MetricsDataCompleted result = fileRepository.readFileByType(FileType.REPORT, "TEST_UUID/abc",
-					dontExistFileName, MetricsDataCompleted.class, FilePrefixType.BOARD_REPORT_PREFIX);
 
 			assertNull(result);
 		}
@@ -289,25 +293,6 @@ class FileRepositoryTest {
 			}
 		}
 
-		@Test
-		void shouldCreateFileErrorWhenFileNameIsInvalid() {
-			FileType fileType = FileType.REPORT;
-			String fileName = "test-filename";
-			String data = "test-data";
-			FilePrefixType boardReportPrefix = FilePrefixType.BOARD_REPORT_PREFIX;
-			String expectedFilepath = "./app/output/" + fileType.getPath() + "TEST_UUID/a/b/c/d" + "/"
-					+ boardReportPrefix.getPrefix() + fileName;
-
-			when(gson.toJson(data)).thenReturn(data);
-
-			fileRepository.createFileByType(fileType, "TEST_UUID/a/b/c/d", fileName, data, boardReportPrefix);
-
-			verify(gson).toJson(data);
-
-			File realFile = new File(expectedFilepath);
-			assertFalse(realFile.exists());
-		}
-
 	}
 
 	@Nested
@@ -350,22 +335,6 @@ class FileRepositoryTest {
 			for (int i = 0; i < expectedData.size(); i++) {
 				assertEquals(expectedData.get(i), realContent.get(i));
 			}
-		}
-
-		@Test
-		void shouldCreateCsvFileErrorWhenFileNameIsInvalid() throws IOException {
-			String fileName = "test-filename";
-			String[][] data = new String[][] { { "a", "b" }, { "c", "d" } };
-			FilePrefixType boardReportPrefix = FilePrefixType.BOARD_REPORT_PREFIX;
-			String expectedFilepath = "./app/output/csv/" + "TEST_UUID/a/b/c/d" + "/" + boardReportPrefix.getPrefix()
-					+ fileName + ".csv";
-
-			fileRepository.createCSVFileByType("TEST_UUID/a/b/c/d", fileName, data, boardReportPrefix);
-
-			File realFile = new File(expectedFilepath);
-			assertFalse(realFile.exists());
-
-			FileUtils.deleteDirectory(new File("./app/output/csv/TEST_UUID"));
 		}
 
 		@Test
@@ -623,23 +592,6 @@ class FileRepositoryTest {
 					() -> fileRepository.getReportFiles(TEST_UUID));
 
 			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
-		}
-
-		@Test
-		void shouldGetReportListErrorWhenPathIsInvalid() throws IOException {
-			Path directoryPath = Path.of("./app/output/report/" + TEST_UUID + "/abc");
-			Files.createDirectories(directoryPath);
-			Path path = Paths.get("./app/output/report/" + TEST_UUID + "/abc/defg");
-			Files.createFile(path);
-			NotFoundException notFoundException = assertThrows(NotFoundException.class,
-					() -> fileRepository.getReportFiles("test-uuid/abc/defg"));
-
-			assertEquals("Don't find the test-uuid/abc/defg folder in the report files",
-					notFoundException.getMessage());
-
-			Files.deleteIfExists(path);
-			Files.deleteIfExists(directoryPath);
-			Files.deleteIfExists(Path.of("./app/output/report/" + TEST_UUID));
 		}
 
 		@Test

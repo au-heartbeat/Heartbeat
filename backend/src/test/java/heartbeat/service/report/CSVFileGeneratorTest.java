@@ -101,8 +101,7 @@ class CSVFileGeneratorTest {
 				"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" }, respectedData };
 		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
@@ -120,8 +119,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test

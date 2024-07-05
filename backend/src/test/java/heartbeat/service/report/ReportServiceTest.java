@@ -322,8 +322,8 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldSuccessfulGenerateDoraReportGivenBoardReportHasBeenGeneratedWhenRetryGenerateDoraReport() {
-			List<MetricType> metricTypes = List.of(DORA);
-			request.setMetricTypes(metricTypes);
+			List<MetricType> doraMetricType = List.of(DORA);
+			request.setMetricTypes(doraMetricType);
 			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
 			ReportResponse reportResponse = ReportResponse.builder()
 				.reportMetricsError(ReportMetricsError.builder().build())
@@ -336,7 +336,7 @@ public class ReportServiceTest {
 
 			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, metricTypes,
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, doraMetricType,
 					timeRangeAndTimeStamp);
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
