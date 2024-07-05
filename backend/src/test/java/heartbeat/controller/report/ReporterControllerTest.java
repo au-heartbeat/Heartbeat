@@ -159,7 +159,6 @@ class ReporterControllerTest {
 
 	@Test
 	void shouldReturnUuidWhenCallGenerateUUID() throws Exception {
-		int expectedLength = 32 + 4;
 		String expectedResponse = "12345678-1234-1234-1234-123456789012";
 		UUID mockUuid = UUID.fromString(expectedResponse);
 
@@ -167,12 +166,11 @@ class ReporterControllerTest {
 			uuidMockedStatic.when(UUID::randomUUID).thenReturn(mockUuid);
 			MockHttpServletResponse response = mockMvc.perform(post("/reports"))
 				.andExpect(status().isOk())
-				.andExpect(content().string(Matchers.hasLength(expectedLength)))
+				.andExpect(jsonPath("$.reportId").value(expectedResponse))
 				.andReturn()
 				.getResponse();
 
 			uuidMockedStatic.verify(UUID::randomUUID);
-			assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
 		}
 
 	}

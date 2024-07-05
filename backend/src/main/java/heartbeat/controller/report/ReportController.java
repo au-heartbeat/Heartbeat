@@ -4,6 +4,7 @@ import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
 import heartbeat.util.TimeUtil;
@@ -85,8 +86,8 @@ public class ReportController {
 	}
 
 	@PostMapping
-	public String generateUUID() {
-		return UUID.randomUUID().toString();
+	public UuidResponse generateUUID() {
+		return UuidResponse.builder().reportId(UUID.randomUUID().toString()).build();
 	}
 
 }
