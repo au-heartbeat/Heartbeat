@@ -43,6 +43,9 @@ public class ReportService {
 	public InputStreamResource exportCsv(ReportType reportDataType, String uuid, String startTime, String endTime) {
 		String timeRangeAndTimeStamp = fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(uuid,
 				startTime, endTime);
+		if (timeRangeAndTimeStamp == null) {
+			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
+		}
 
 		String csvTimestamp = timeRangeAndTimeStamp.split(FILENAME_SEPARATOR)[2];
 

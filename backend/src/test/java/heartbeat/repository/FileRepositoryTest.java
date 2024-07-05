@@ -820,7 +820,7 @@ class FileRepositoryTest {
 		@ParameterizedTest
 		@ValueSource(strings = { "test-name", "board-20200101-20200102-123", "board-20240100-20240102-123",
 				"board-20240101-20240103-123" })
-		void shouldGetTimeRangesErrorWhenFileNameIsInvalid(String expectedName) throws IOException {
+		void shouldReturnNullWhenFileNameIsInvalid(String expectedName) throws IOException {
 			String startTime = "20240101";
 			String endTime = "20240102";
 			Path path = Paths.get("./app/output/report/" + TEST_UUID);
@@ -828,11 +828,10 @@ class FileRepositoryTest {
 			Path filePath = Paths.get("./app/output/report/" + TEST_UUID + "/" + expectedName);
 			Files.createFile(filePath);
 
-			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> fileRepository
-				.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, startTime, endTime));
+			String result = fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, startTime,
+					endTime);
 
-			assertEquals("Don't find the report, uuid: test-uuid, startTime: 20240101, endTime: 20240102",
-					notFoundException.getMessage());
+			assertNull(result);
 
 			Files.deleteIfExists(filePath);
 			Files.deleteIfExists(path);

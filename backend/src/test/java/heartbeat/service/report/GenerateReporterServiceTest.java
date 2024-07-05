@@ -1028,6 +1028,24 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
+		void shouldThrowNotFoundExceptionWhenFileTimeRangeIsNull() {
+			ReportResponse composedReportResponse = generateReporterService.getComposedReportResponse(TEST_UUID,
+					START_TIME, END_TIME);
+
+			verify(fileRepository).getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
+					END_TIME);
+			assertNull(composedReportResponse.getRework());
+			assertNull(composedReportResponse.getCycleTime());
+			assertNull(composedReportResponse.getVelocity());
+			assertNull(composedReportResponse.getClassificationList());
+			assertNull(composedReportResponse.getDeploymentFrequency());
+			assertNull(composedReportResponse.getLeadTimeForChanges());
+			assertNull(composedReportResponse.getDevChangeFailureRate());
+			assertNull(composedReportResponse.getDevMeanTimeToRecovery());
+
+		}
+
+		@Test
 		void shouldReturnErrorDataWhenExceptionIs404Or403Or401() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
 			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,

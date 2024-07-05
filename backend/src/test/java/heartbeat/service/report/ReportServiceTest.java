@@ -114,6 +114,18 @@ public class ReportServiceTest {
 			verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp);
 		}
 
+		@Test
+		void shouldThrowNotFoundExceptionWhenTimestampIsNull() {
+			long invalidTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L;
+			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + invalidTimestamp;
+
+			assertThrows(NotFoundException.class,
+					() -> reportService.exportCsv(ReportType.METRIC, TEST_UUID, START_TIME, END_TIME));
+			verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp);
+			verify(fileRepository).getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
+					END_TIME);
+		}
+
 	}
 
 	@Nested

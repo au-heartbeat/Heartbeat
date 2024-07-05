@@ -185,8 +185,7 @@ public class FileRepository {
 			.filter(it -> Objects.equals(it[1], startTime) && Objects.equals(it[2], endTime))
 			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
 			.findFirst()
-			.orElseThrow(() -> new NotFoundException(String
-				.format("Don't find the report, uuid: %s, startTime: %s, endTime: %s", uuid, startTime, endTime)));
+			.orElse(null);
 
 	}
 
