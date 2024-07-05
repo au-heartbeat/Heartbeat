@@ -250,7 +250,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateBoardReport(TEST_UUID, request);
 
-			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(kanbanService, never()).fetchDataFromKanban(request);
 			verify(pipelineService, never()).fetchGitHubData(any());
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.BOARD_REPORT_PREFIX));
@@ -542,7 +542,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
-			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(kanbanService, never()).fetchDataFromKanban(request);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
@@ -580,7 +580,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
-			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(kanbanService, never()).fetchDataFromKanban(request);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
@@ -615,7 +615,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
-			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(kanbanService, never()).fetchDataFromKanban(request);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
@@ -656,7 +656,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
-			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(kanbanService, never()).fetchDataFromKanban(request);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
@@ -707,7 +707,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
-			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(kanbanService, never()).fetchDataFromKanban(request);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
