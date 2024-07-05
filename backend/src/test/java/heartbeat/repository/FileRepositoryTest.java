@@ -20,6 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.InputStreamResource;
@@ -45,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -163,6 +165,17 @@ class FileRepositoryTest {
 			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
 			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
 			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
+		void shouldNotReadFileWhenFilePathDontStartWithAppOutput() {
+			try (MockedConstruction<File> fileMockedConstruction = mockConstruction(File.class,
+					(mock, context) -> when(mock.toPath()).thenReturn(Path.of("./abc/efg")))) {
+				String test = fileRepository.readFileByType(FileType.REPORT, TEST_UUID, "test-name", String.class,
+						FilePrefixType.BOARD_REPORT_PREFIX);
+				assertNull(test);
+				assertFalse(fileMockedConstruction.constructed().isEmpty());
+			}
 		}
 
 		@Test

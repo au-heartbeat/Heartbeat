@@ -560,6 +560,42 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
+		void shouldGenerateCsvFileFailedWhenMetricsFileDontExist() {
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.calendarType(CalendarTypeEnum.REGULAR)
+				.metrics(List.of())
+				.buildKiteSetting(BuildKiteSetting.builder().build())
+				.csvTimeStamp(TIMESTAMP)
+				.startTime("1710000000000")
+				.endTime("1712678399999")
+				.timezone("Asia/Shanghai")
+				.build();
+			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+
+			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
+				.thenReturn(null);
+			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
+
+			generateReporterService.generateDoraReport(TEST_UUID, request);
+
+			verify(kanbanService, never()).fetchDataFromKanban(eq(request));
+			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
+					FilePrefixType.PIPELINE_REPORT_PREFIX);
+			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
+					FilePrefixType.SOURCE_CONTROL_PREFIX);
+			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID,
+					timeRangeAndTimeStamp, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
+
+			verify(pipelineService, never()).generateCSVForPipeline(any(), any(), any(), any());
+			verify(csvFileGenerator, never()).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
+					timeRangeAndTimeStamp);
+			verify(asyncMetricsDataHandler, never()).updateMetricsDataCompletedInHandler(TEST_UUID,
+					timeRangeAndTimeStamp, DORA, true);
+		}
+
+		@Test
 		void shouldThrowErrorWhenCodeSettingIsNullButSourceControlMetricsIsNotEmpty() {
 			GenerateReportRequest request = GenerateReportRequest.builder()
 				.calendarType(CalendarTypeEnum.REGULAR)

@@ -187,11 +187,8 @@ public class GenerateReporterService {
 								request.getCalendarType(), request.getTimezoneByZoneId()));
 				case "dev change failure rate" -> reportResponse.setDevChangeFailureRate(
 						devChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
-				case "dev mean time to recovery" -> reportResponse.setDevMeanTimeToRecovery(meanToRecoveryCalculator
+				default -> reportResponse.setDevMeanTimeToRecovery(meanToRecoveryCalculator
 					.calculate(fetchedData.getBuildKiteData().getDeployTimesList(), request));
-				default -> {
-					// TODO
-				}
 			}
 		});
 
@@ -209,10 +206,7 @@ public class GenerateReporterService {
 				case "velocity" -> assembleVelocity(fetchedData, reportResponse);
 				case "cycle time" -> assembleCycleTime(fetchedData, reportResponse, jiraBoardSetting);
 				case "classification" -> assembleClassification(fetchedData, reportResponse, jiraBoardSetting);
-				case "rework times" -> assembleReworkInfo(request, fetchedData, reportResponse);
-				default -> {
-					// TODO
-				}
+				default -> assembleReworkInfo(request, fetchedData, reportResponse);
 			}
 		});
 
@@ -258,15 +252,9 @@ public class GenerateReporterService {
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
-		request.getSourceControlMetrics().forEach(metric -> {
-			switch (metric) {
-				case "lead time for changes" -> reportResponse.setLeadTimeForChanges(
-						leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes()));
-				default -> {
-					// TODO
-				}
-			}
-		});
+		request.getSourceControlMetrics()
+			.forEach(metric -> reportResponse.setLeadTimeForChanges(
+					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes())));
 
 		return reportResponse;
 	}
