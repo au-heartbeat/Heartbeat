@@ -9,6 +9,7 @@ import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.repository.FileType;
 import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
 import org.awaitility.Awaitility;
@@ -83,8 +84,8 @@ public class ReportServiceTest {
 			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + validTimestamp;
 			when(csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp))
 				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME))
 				.thenReturn(START_TIME + "-" + END_TIME + "-" + validTimestamp);
 			when(fileRepository.isExpired(anyLong(), eq(validTimestamp))).thenReturn(false);
 
@@ -95,8 +96,8 @@ public class ReportServiceTest {
 
 			assertEquals(returnData, "csv data");
 			verify(csvFileGenerator).getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp);
-			verify(fileRepository).getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME);
+			verify(fileRepository).getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME);
 			verify(fileRepository).isExpired(anyLong(), eq(validTimestamp));
 		}
 
@@ -104,8 +105,8 @@ public class ReportServiceTest {
 		void shouldThrowNotFoundExceptionWhenTimestampIsValid() {
 			long invalidTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L;
 			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + invalidTimestamp;
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME))
 				.thenReturn(START_TIME + "-" + END_TIME + "-" + invalidTimestamp);
 			when(fileRepository.isExpired(anyLong(), eq(invalidTimestamp))).thenReturn(true);
 
@@ -122,8 +123,8 @@ public class ReportServiceTest {
 			assertThrows(NotFoundException.class,
 					() -> reportService.exportCsv(ReportType.METRIC, TEST_UUID, START_TIME, END_TIME));
 			verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp);
-			verify(fileRepository).getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME);
+			verify(fileRepository).getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME);
 		}
 
 	}
@@ -270,7 +271,7 @@ public class ReportServiceTest {
 		}
 
 		@Test
-		void shouldNotGenerateMetricCsvWhenPiplineMetricsErrorHasError() {
+		void shouldNotGenerateMetricCsvWhenPipelineMetricsErrorHasError() {
 			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
 			metricTypes = List.of(BOARD, DORA);
 			request.setMetricTypes(metricTypes);
@@ -371,11 +372,11 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldGetReportUrlsSuccessfully() {
-			when(fileRepository.getReportFiles(TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
 
 			List<String> reportUrls = reportService.getReportUrls(TEST_UUID);
 
-			verify(fileRepository).getReportFiles(TEST_UUID);
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
 			assertEquals(2, reportUrls.size());
 			assertEquals("/reports/test-uuid/detail?startTime=1&endTime=2", reportUrls.get(0));
 			assertEquals("/reports/test-uuid/detail?startTime=2&endTime=3", reportUrls.get(1));
@@ -383,13 +384,13 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldThrowExceptionWhenFilenameIsInvalid() {
-			when(fileRepository.getReportFiles(TEST_UUID)).thenReturn(List.of("board-123", "board-234"));
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-123", "board-234"));
 
 			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getReportUrls(TEST_UUID));
 
 			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
 
-			verify(fileRepository).getReportFiles(TEST_UUID);
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
 		}
 
 	}

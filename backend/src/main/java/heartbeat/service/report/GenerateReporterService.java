@@ -324,8 +324,8 @@ public class GenerateReporterService {
 	}
 
 	public ReportResponse getComposedReportResponse(String uuid, String startTime, String endTime) {
-		String timeRangeAndTimeStamp = fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(uuid,
-				startTime, endTime);
+		String timeRangeAndTimeStamp = fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(
+				FileType.METRICS_DATA_COMPLETED, uuid, startTime, endTime);
 		if (timeRangeAndTimeStamp == null) {
 			return ReportResponse.builder()
 				.overallMetricsCompleted(false)

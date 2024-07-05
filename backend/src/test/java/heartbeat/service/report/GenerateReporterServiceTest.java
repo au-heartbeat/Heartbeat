@@ -963,9 +963,8 @@ class GenerateReporterServiceTest {
 
 			when(fileRepository.isExpired(anyLong(), eq(1234L))).thenReturn(true);
 
-			GenerateReportException generateReportException = assertThrows(GenerateReportException.class, () -> {
-				generateReporterService.checkReportReadyStatus(TEST_UUID, timeRangeAndTimeStamp);
-			});
+			GenerateReportException generateReportException = assertThrows(GenerateReportException.class,
+					() -> generateReporterService.checkReportReadyStatus(TEST_UUID, timeRangeAndTimeStamp));
 
 			assertEquals("Failed to get report due to report time expires", generateReportException.getMessage());
 
@@ -974,7 +973,7 @@ class GenerateReporterServiceTest {
 		}
 
 		@Test
-		void shouldThrowErrorWhenTimeStampIsvalid() {
+		void shouldThrowErrorWhenTimeStampIsValid() {
 			String timeRangeAndTimeStamp = "20200101-20240101-1234";
 
 			when(fileRepository.isExpired(anyLong(), eq(1234L))).thenReturn(false);
@@ -1003,8 +1002,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGetDataFromCache() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1032,8 +1031,8 @@ class GenerateReporterServiceTest {
 			ReportResponse composedReportResponse = generateReporterService.getComposedReportResponse(TEST_UUID,
 					START_TIME, END_TIME);
 
-			verify(fileRepository).getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME);
+			verify(fileRepository).getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME);
 			assertNull(composedReportResponse.getRework());
 			assertNull(composedReportResponse.getCycleTime());
 			assertNull(composedReportResponse.getVelocity());
@@ -1053,8 +1052,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldReturnErrorDataWhenExceptionIs404Or403Or401() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1079,8 +1078,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowGenerateReportExceptionWhenErrorIs500() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1105,8 +1104,8 @@ class GenerateReporterServiceTest {
 		void shouldThrowServiceUnavailableExceptionWhenErrorIs503() {
 
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1130,8 +1129,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldThrowRequestFailedExceptionWhenErrorIsDefault() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1157,8 +1156,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGetDataWhenBoardMetricsCompletedIsFalseDoraMetricsCompletedIsNull() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1182,8 +1181,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGetDataWhenBoardMetricsCompletedIsNullDoraMetricsCompletedIsFalse() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1207,8 +1206,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGetDataWhenBoardMetricsCompletedIsTrueDoraMetricsCompletedIsTrueOverallMetricCompletedIsTrue() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1233,8 +1232,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGetDataWhenBoardMetricsCompletedIsNullDoraMetricsCompletedIsNullOverallMetricCompletedIsTrue() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
@@ -1255,8 +1254,8 @@ class GenerateReporterServiceTest {
 		@Test
 		void shouldGetDataWhenBoardMetricsCompletedIsNullDoraMetricsCompletedIsNullOverallMetricCompletedIsFalse() {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-1234";
-			when(fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, START_TIME,
-					END_TIME))
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.METRICS_DATA_COMPLETED,
+					TEST_UUID, START_TIME, END_TIME))
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,

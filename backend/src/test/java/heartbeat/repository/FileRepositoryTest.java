@@ -766,7 +766,7 @@ class FileRepositoryTest {
 		@Test
 		void shouldGetReportListErrorWhenReportDontExist() {
 			NotFoundException notFoundException = assertThrows(NotFoundException.class,
-					() -> fileRepository.getReportFiles(TEST_UUID));
+					() -> fileRepository.getFiles(FileType.REPORT, TEST_UUID));
 
 			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
 		}
@@ -777,7 +777,7 @@ class FileRepositoryTest {
 			Files.createFile(path);
 
 			NotFoundException notFoundException = assertThrows(NotFoundException.class,
-					() -> fileRepository.getReportFiles(TEST_UUID));
+					() -> fileRepository.getFiles(FileType.REPORT, TEST_UUID));
 
 			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
 
@@ -792,7 +792,7 @@ class FileRepositoryTest {
 			Path filePath = Paths.get("./app/output/report/" + TEST_UUID + "/" + expectedName);
 			Files.createFile(filePath);
 
-			List<String> reportFiles = fileRepository.getReportFiles(TEST_UUID);
+			List<String> reportFiles = fileRepository.getFiles(FileType.REPORT, TEST_UUID);
 
 			assertEquals(1, reportFiles.size());
 			assertEquals(expectedName, reportFiles.get(0));
@@ -828,8 +828,8 @@ class FileRepositoryTest {
 			Path filePath = Paths.get("./app/output/report/" + TEST_UUID + "/" + expectedName);
 			Files.createFile(filePath);
 
-			String result = fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, startTime,
-					endTime);
+			String result = fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					startTime, endTime);
 
 			assertNull(result);
 
@@ -847,8 +847,8 @@ class FileRepositoryTest {
 			Path filePath = Paths.get("./app/output/report/" + TEST_UUID + "/" + expectedName);
 			Files.createFile(filePath);
 
-			String result = fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, startTime,
-					endTime);
+			String result = fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					startTime, endTime);
 
 			assertEquals("20240101-20240102-123", result);
 

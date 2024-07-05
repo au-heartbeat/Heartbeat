@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static heartbeat.repository.FileType.CSV;
-import static heartbeat.repository.FileType.REPORT;
 
 @Slf4j
 @Component
@@ -161,10 +160,10 @@ public class FileRepository {
 		}
 	}
 
-	public List<String> getReportFiles(String uuid) {
+	public List<String> getFiles(FileType fileType, String uuid) {
 		isCorrectFilePath(uuid);
 
-		String fileName = BASE_OUTPUT_PATH + SLASH + REPORT.getPath() + uuid;
+		String fileName = BASE_OUTPUT_PATH + SLASH + fileType.getPath() + uuid;
 		File folder = new File(fileName);
 
 		if (folder.exists() && folder.isDirectory()) {
@@ -175,11 +174,11 @@ public class FileRepository {
 		}
 	}
 
-	public String getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(String uuid, String startTime,
+	public String getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType fileType, String uuid, String startTime,
 			String endTime) {
 		isCorrectFilePath(uuid);
 
-		return getReportFiles(uuid).stream()
+		return getFiles(fileType, uuid).stream()
 			.map(it -> it.split("-"))
 			.filter(it -> it.length == 4)
 			.filter(it -> Objects.equals(it[1], startTime) && Objects.equals(it[2], endTime))

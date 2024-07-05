@@ -8,6 +8,7 @@ import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.repository.FileType;
 import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
 import heartbeat.util.TimeUtil;
@@ -41,8 +42,8 @@ public class ReportService {
 	private static final String FILENAME_SEPARATOR = "-";
 
 	public InputStreamResource exportCsv(ReportType reportDataType, String uuid, String startTime, String endTime) {
-		String timeRangeAndTimeStamp = fileRepository.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(uuid,
-				startTime, endTime);
+		String timeRangeAndTimeStamp = fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT,
+				uuid, startTime, endTime);
 		if (timeRangeAndTimeStamp == null) {
 			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
 		}
@@ -92,7 +93,7 @@ public class ReportService {
 	}
 
 	public List<String> getReportUrls(String uuid) {
-		List<String> reportUrls = fileRepository.getReportFiles(uuid)
+		List<String> reportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
 			.stream()
 			.map(it -> it.split("-"))
 			.filter(it -> it.length > 2)
