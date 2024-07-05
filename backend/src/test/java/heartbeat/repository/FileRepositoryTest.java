@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -53,9 +55,9 @@ import static org.mockito.Mockito.when;
 @Slf4j
 class FileRepositoryTest {
 
-	private static String BASE_PATH = "./app";
+	private static final String BASE_PATH = "./app";
 
-	private static String TEST_UUID = "test-uuid";
+	private static final String TEST_UUID = "test-uuid";
 
 	@Mock
 	Gson gson;
@@ -98,7 +100,7 @@ class FileRepositoryTest {
 		}
 
 		@Test
-		void shouldCreatePathErrorWhenCreateThrowException() throws IOException {
+		void shouldCreatePathErrorWhenCreateThrowException() {
 
 			FileType fileType = FileType.CSV;
 			String expectedFilepath = "./app/output/" + fileType.getPath() + TEST_UUID;
@@ -134,7 +136,7 @@ class FileRepositoryTest {
 
 		@Test
 		void shouldReadFileSuccessfullyWhenFileExist() throws IOException {
-			String test_file_name = "test";
+			String testFileName = "test";
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(true)
 				.boardMetricsCompleted(true)
@@ -142,13 +144,13 @@ class FileRepositoryTest {
 				.build();
 			String json = objectMapper.writeValueAsString(metricsDataCompleted);
 			try (FileWriter writer = new FileWriter("./app/output/report/" + TEST_UUID + "/"
-					+ FilePrefixType.BOARD_REPORT_PREFIX.getPrefix() + test_file_name)) {
+					+ FilePrefixType.BOARD_REPORT_PREFIX.getPrefix() + testFileName)) {
 				writer.write(json);
 			}
 
 			when(gson.fromJson(any(JsonReader.class), eq(MetricsDataCompleted.class))).thenReturn(metricsDataCompleted);
 
-			MetricsDataCompleted result = fileRepository.readFileByType(FileType.REPORT, TEST_UUID, test_file_name,
+			MetricsDataCompleted result = fileRepository.readFileByType(FileType.REPORT, TEST_UUID, testFileName,
 					MetricsDataCompleted.class, FilePrefixType.BOARD_REPORT_PREFIX);
 
 			assertTrue(result.doraMetricsCompleted());
@@ -158,7 +160,7 @@ class FileRepositoryTest {
 		}
 
 		@Test
-		void shouldReadFileNullWhenFileDontExist() throws IOException {
+		void shouldReadFileNullWhenFileDontExist() {
 			String dontExistFileName = "dontExistFileName";
 
 			MetricsDataCompleted result = fileRepository.readFileByType(FileType.REPORT, TEST_UUID, dontExistFileName,
@@ -168,8 +170,18 @@ class FileRepositoryTest {
 		}
 
 		@Test
+		void shouldReadFileNullWhenFilenameError() {
+			String dontExistFileName = "dontExistFileName";
+
+			MetricsDataCompleted result = fileRepository.readFileByType(FileType.REPORT, "TEST_UUID/abc",
+					dontExistFileName, MetricsDataCompleted.class, FilePrefixType.BOARD_REPORT_PREFIX);
+
+			assertNull(result);
+		}
+
+		@Test
 		void shouldReadFileErrorWhenJsonParseError() throws IOException {
-			String test_file_name = "test";
+			String testFileName = "test";
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
 				.doraMetricsCompleted(true)
 				.boardMetricsCompleted(true)
@@ -177,14 +189,14 @@ class FileRepositoryTest {
 				.build();
 			String json = objectMapper.writeValueAsString(metricsDataCompleted);
 			try (FileWriter writer = new FileWriter("./app/output/report/" + TEST_UUID + "/"
-					+ FilePrefixType.BOARD_REPORT_PREFIX.getPrefix() + test_file_name)) {
+					+ FilePrefixType.BOARD_REPORT_PREFIX.getPrefix() + testFileName)) {
 				writer.write(json);
 			}
 
 			when(gson.fromJson(any(JsonReader.class), any(Class.class))).thenThrow(JsonParseException.class);
 
 			GenerateReportException generateReportException = assertThrows(GenerateReportException.class,
-					() -> fileRepository.readFileByType(FileType.REPORT, TEST_UUID, test_file_name,
+					() -> fileRepository.readFileByType(FileType.REPORT, TEST_UUID, testFileName,
 							MetricsDataCompleted.class, FilePrefixType.BOARD_REPORT_PREFIX));
 			assertEquals("Failed read file report test-uuid board-test", generateReportException.getMessage());
 
@@ -250,7 +262,7 @@ class FileRepositoryTest {
 		}
 
 		@Test
-		void shouldCreateFileErrorWhenMoveFailed() throws IOException {
+		void shouldCreateFileErrorWhenMoveFailed() {
 			FileType fileType = FileType.REPORT;
 			String fileName = "test-filename";
 			String data = "test-data";
@@ -275,6 +287,25 @@ class FileRepositoryTest {
 				File realFile = new File(expectedFilepath);
 				assertFalse(realFile.exists());
 			}
+		}
+
+		@Test
+		void shouldCreateFileErrorWhenFileNameIsInvalid() {
+			FileType fileType = FileType.REPORT;
+			String fileName = "test-filename";
+			String data = "test-data";
+			FilePrefixType boardReportPrefix = FilePrefixType.BOARD_REPORT_PREFIX;
+			String expectedFilepath = "./app/output/" + fileType.getPath() + "TEST_UUID/a/b/c/d" + "/"
+					+ boardReportPrefix.getPrefix() + fileName;
+
+			when(gson.toJson(data)).thenReturn(data);
+
+			fileRepository.createFileByType(fileType, "TEST_UUID/a/b/c/d", fileName, data, boardReportPrefix);
+
+			verify(gson).toJson(data);
+
+			File realFile = new File(expectedFilepath);
+			assertFalse(realFile.exists());
 		}
 
 	}
@@ -319,6 +350,22 @@ class FileRepositoryTest {
 			for (int i = 0; i < expectedData.size(); i++) {
 				assertEquals(expectedData.get(i), realContent.get(i));
 			}
+		}
+
+		@Test
+		void shouldCreateCsvFileErrorWhenFileNameIsInvalid() throws IOException {
+			String fileName = "test-filename";
+			String[][] data = new String[][] { { "a", "b" }, { "c", "d" } };
+			FilePrefixType boardReportPrefix = FilePrefixType.BOARD_REPORT_PREFIX;
+			String expectedFilepath = "./app/output/csv/" + "TEST_UUID/a/b/c/d" + "/" + boardReportPrefix.getPrefix()
+					+ fileName + ".csv";
+
+			fileRepository.createCSVFileByType("TEST_UUID/a/b/c/d", fileName, data, boardReportPrefix);
+
+			File realFile = new File(expectedFilepath);
+			assertFalse(realFile.exists());
+
+			FileUtils.deleteDirectory(new File("./app/output/csv/TEST_UUID"));
 		}
 
 		@Test
@@ -579,6 +626,23 @@ class FileRepositoryTest {
 		}
 
 		@Test
+		void shouldGetReportListErrorWhenPathIsInvalid() throws IOException {
+			Path directoryPath = Path.of("./app/output/report/" + TEST_UUID + "/abc");
+			Files.createDirectories(directoryPath);
+			Path path = Paths.get("./app/output/report/" + TEST_UUID + "/abc/defg");
+			Files.createFile(path);
+			NotFoundException notFoundException = assertThrows(NotFoundException.class,
+					() -> fileRepository.getReportFiles("test-uuid/abc/defg"));
+
+			assertEquals("Don't find the test-uuid/abc/defg folder in the report files",
+					notFoundException.getMessage());
+
+			Files.deleteIfExists(path);
+			Files.deleteIfExists(directoryPath);
+			Files.deleteIfExists(Path.of("./app/output/report/" + TEST_UUID));
+		}
+
+		@Test
 		void shouldGetReportListErrorWhenReportIsNotDirectory() throws IOException {
 			Path path = Paths.get("./app/output/report/" + TEST_UUID);
 			Files.createFile(path);
@@ -624,69 +688,10 @@ class FileRepositoryTest {
 			FileUtils.deleteDirectory(new File("./app/output/report"));
 		}
 
-		@Test
-		void shouldGetTimeRangesErrorWhenFileNameIsInvalid() throws IOException {
-			String expectedName = "test-name";
-			String startTime = "20240101";
-			String endTime = "20240102";
-			Path path = Paths.get("./app/output/report/" + TEST_UUID);
-			Files.createDirectory(path);
-			Path filePath = Paths.get("./app/output/report/" + TEST_UUID + "/" + expectedName);
-			Files.createFile(filePath);
-
-			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> fileRepository
-				.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, startTime, endTime));
-
-			assertEquals("Don't find the report, uuid: test-uuid, startTime: 20240101, endTime: 20240102",
-					notFoundException.getMessage());
-
-			Files.deleteIfExists(filePath);
-			Files.deleteIfExists(path);
-		}
-
-		@Test
-		void shouldGetTimeRangesErrorWhenStartTimeAndEndTimeDontMatch() throws IOException {
-			String expectedName = "board-20200101-20200102-123";
-			String startTime = "20240101";
-			String endTime = "20240102";
-			Path path = Paths.get("./app/output/report/" + TEST_UUID);
-			Files.createDirectory(path);
-			Path filePath = Paths.get("./app/output/report/" + TEST_UUID + "/" + expectedName);
-			Files.createFile(filePath);
-
-			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> fileRepository
-				.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, startTime, endTime));
-
-			assertEquals("Don't find the report, uuid: test-uuid, startTime: 20240101, endTime: 20240102",
-					notFoundException.getMessage());
-
-			Files.deleteIfExists(filePath);
-			Files.deleteIfExists(path);
-		}
-
-		@Test
-		void shouldGetTimeRangesErrorWhenStartTimeDontMatch() throws IOException {
-			String expectedName = "board-20240100-20240102-123";
-			String startTime = "20240101";
-			String endTime = "20240102";
-			Path path = Paths.get("./app/output/report/" + TEST_UUID);
-			Files.createDirectory(path);
-			Path filePath = Paths.get("./app/output/report/" + TEST_UUID + "/" + expectedName);
-			Files.createFile(filePath);
-
-			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> fileRepository
-				.getReportFileTimeRangeAndTimeStampByStartTimeAndEndTime(TEST_UUID, startTime, endTime));
-
-			assertEquals("Don't find the report, uuid: test-uuid, startTime: 20240101, endTime: 20240102",
-					notFoundException.getMessage());
-
-			Files.deleteIfExists(filePath);
-			Files.deleteIfExists(path);
-		}
-
-		@Test
-		void shouldGetTimeRangesErrorWhenEndTimeDontMatch() throws IOException {
-			String expectedName = "board-20240101-20240103-123";
+		@ParameterizedTest
+		@ValueSource(strings = { "test-name", "board-20200101-20200102-123", "board-20240100-20240102-123",
+				"board-20240101-20240103-123" })
+		void shouldGetTimeRangesErrorWhenFileNameIsInvalid(String expectedName) throws IOException {
 			String startTime = "20240101";
 			String endTime = "20240102";
 			Path path = Paths.get("./app/output/report/" + TEST_UUID);

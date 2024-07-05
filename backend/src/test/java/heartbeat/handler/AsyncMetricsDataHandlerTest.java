@@ -115,7 +115,7 @@ class AsyncMetricsDataHandlerTest {
 		}
 
 		@Test
-		void shouldUpdateDoraMetricDataWhenMetricIsDoraAndCreateCsvFileUnsuccessfully() throws IOException {
+		void shouldUpdateDoraMetricDataWhenMetricIsDoraAndCreateCsvFileUnsuccessfully() {
 			long currentTimeMillis = System.currentTimeMillis();
 			String currentTime = Long.toString(currentTimeMillis);
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder()
@@ -188,7 +188,7 @@ class AsyncMetricsDataHandlerTest {
 		// The test should be moved to integration test next.
 		@RepeatedTest(100)
 		@SuppressWarnings("unchecked")
-		void shouldUpdateAllMetricDataAtTheSameTimeWhenPreviousMetricsStatusIsNotNull() throws IOException {
+		void shouldUpdateAllMetricDataAtTheSameTimeWhenPreviousMetricsStatusIsNotNull() {
 			long currentTimeMillis = System.currentTimeMillis();
 			String currentTime = Long.toString(currentTimeMillis);
 			List<Integer> sleepTime = new ArrayList<>();

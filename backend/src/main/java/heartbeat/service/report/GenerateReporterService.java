@@ -221,8 +221,7 @@ public class GenerateReporterService {
 	}
 
 	private void generateCsvForBoard(String uuid, GenerateReportRequest request, FetchedData fetchedData) {
-		kanbanCsvService.generateCsvInfo(uuid, request, fetchedData.getCardCollectionInfo().getRealDoneCardCollection(),
-				fetchedData.getCardCollectionInfo().getNonDoneCardCollection());
+		kanbanCsvService.generateCsvInfo(uuid, request, fetchedData.getCardCollectionInfo());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, request.getTimeRangeAndTimeStamp(), BOARD,
 				true);
 	}

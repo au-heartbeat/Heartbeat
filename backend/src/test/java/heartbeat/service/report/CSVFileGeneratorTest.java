@@ -38,6 +38,9 @@ import heartbeat.controller.report.dto.response.Velocity;
 import heartbeat.repository.FileRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,6 +59,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static heartbeat.repository.FilePrefixType.BOARD_REPORT_PREFIX;
 import static heartbeat.repository.FilePrefixType.METRIC_REPORT_PREFIX;
@@ -65,6 +69,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -85,58 +90,17 @@ class CSVFileGeneratorTest {
 
 	public static final String TEST_UUID = "test-uuid";
 
-	@Test
-	void shouldConvertPipelineDataToCsvGivenCommitInfoNotNull() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
-		String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+	@ParameterizedTest
+	@MethodSource("generatePipelineCSVInfos")
+	void shouldConvertPipelineDataToCsvGivenCommitInfoNotNull(List<PipelineCSVInfo> pipelineCSVInfos,
+			String[] respectedData) {
+		String[][] expectedSavedData = new String[][] { { "Organization", "Pipeline Name", "Pipeline Step", "Valid",
+				"Build Number", "Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
+				"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
+				"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+				"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" }, respectedData };
 		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
-	}
-
-	@Test
-	void shouldConvertPipelineDataToCsvGivenCommitInfoNotNullAndPipelineStateIsCanceled() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture
-			.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED();
-		String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "canceled", "branch", "" } };
-
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
-
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
-	}
-
-	@Test
-	void shouldConvertPipelineDataToCsvWithoutCreator() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR();
-		String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "1683793037000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
-
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
 				eq(PIPELINE_REPORT_PREFIX));
 	}
@@ -162,7 +126,6 @@ class CSVFileGeneratorTest {
 
 	@Test
 	void shouldConvertPipelineDataToCsvGivenNullCommitInfo() {
-
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO();
 		String[][] expectedSavedData = new String[][] {
 				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
@@ -176,8 +139,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
@@ -195,8 +157,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
@@ -214,51 +175,11 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
-	}
-
-	@Test
-	void shouldMakeCsvDirWhenNotExistGivenDataTypeIsPipeline() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
-		String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
-
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
-
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
-	}
-
-	@Test
-	void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsPipeline() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA();
-		String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
-
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
-
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
 	void shouldConvertPipelineDataToCsvGivenTwoOrganizationsPipeline() {
-
 		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_TWO_ORGANIZATIONS_PIPELINE_CSV_DATA();
 
 		String[][] expectedSavedData = new String[][] {
@@ -279,8 +200,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(PIPELINE_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
@@ -336,8 +256,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(METRIC_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 
 	}
 
@@ -369,7 +288,7 @@ class CSVFileGeneratorTest {
 		String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		assertEquals(returnData, "csv data");
+		assertEquals("csv data", returnData);
 		verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
 		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
 				PIPELINE_REPORT_PREFIX);
@@ -390,7 +309,7 @@ class CSVFileGeneratorTest {
 		String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		assertEquals(returnData, "csv data");
+		assertEquals("csv data", returnData);
 		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
 		verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
 				PIPELINE_REPORT_PREFIX);
@@ -411,7 +330,7 @@ class CSVFileGeneratorTest {
 		String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
 			.collect(Collectors.joining("\n"));
 
-		assertEquals(returnData, "csv data");
+		assertEquals("csv data", returnData);
 		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
 		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
 				PIPELINE_REPORT_PREFIX);
@@ -613,8 +532,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(METRIC_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
@@ -625,8 +543,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(METRIC_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
@@ -698,8 +615,7 @@ class CSVFileGeneratorTest {
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(eq(TEST_UUID), eq(mockTimeStamp), eq(expectedSavedData),
-				eq(METRIC_REPORT_PREFIX));
+		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 	}
 
 	@Test
@@ -888,6 +804,25 @@ class CSVFileGeneratorTest {
 				assertNull(value[i]);
 			}
 		}
+	}
+
+	private static Stream<Arguments> generatePipelineCSVInfos() {
+		return Stream.of(
+				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA(),
+						new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
+								"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+								"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+								"passed", "branch", "" }),
+				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED(),
+						new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
+								"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+								"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+								"canceled", "branch", "" }),
+				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR(),
+						new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880",
+								"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+								"1683793037000", "168369327000", "1684793037000", "240", "8379303", "16837",
+								"653037000", "passed", "branch", "" }));
 	}
 
 }

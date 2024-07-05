@@ -25,6 +25,7 @@ import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
 import heartbeat.repository.FileRepository;
+import heartbeat.service.report.calculator.model.FetchedData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -62,8 +63,8 @@ public class KanbanCsvService {
 
 	private final FileRepository fileRepository;
 
-	public void generateCsvInfo(String uuid, GenerateReportRequest request, CardCollection realDoneCardCollection,
-			CardCollection nonDoneCardCollection) {
+	public void generateCsvInfo(String uuid, GenerateReportRequest request,
+			FetchedData.CardCollectionInfo cardCollectionInfo) {
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 		BoardRequestParam boardRequestParam = BoardRequestParam.builder()
 			.boardId(jiraBoardSetting.getBoardId())
@@ -103,18 +104,20 @@ public class KanbanCsvService {
 				.toList();
 
 		}
-		this.generateCSVForBoard(uuid, realDoneCardCollection.getJiraCardDTOList(),
-				nonDoneCardCollection.getJiraCardDTOList(), jiraColumns.getJiraColumnResponse(),
+
+		this.generateCSVForBoard(uuid, cardCollectionInfo, jiraColumns.getJiraColumnResponse(),
 				request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates, jiraBoardSetting);
 	}
 
-	private void generateCSVForBoard(String uuid, List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,
+	private void generateCSVForBoard(String uuid, FetchedData.CardCollectionInfo cardCollectionInfo,
 			List<JiraColumnDTO> jiraColumns, String csvTimeRangeTimeStamp, CardStepsEnum reworkState,
 			List<String> reworkFromStates, JiraBoardSetting jiraBoardSetting) {
 		List<TargetField> targetFields = jiraBoardSetting.getTargetFields();
 		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
 		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
+		List<JiraCardDTO> allDoneCards = cardCollectionInfo.getRealDoneCardCollection().getJiraCardDTOList();
+		List<JiraCardDTO> nonDoneCards = cardCollectionInfo.getNonDoneCardCollection().getJiraCardDTOList();
 
 		if (allDoneCards != null) {
 			sortAllDoneCardsByTime(allDoneCards, jiraColumns);
