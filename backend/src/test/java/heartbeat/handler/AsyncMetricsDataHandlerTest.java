@@ -131,9 +131,9 @@ class AsyncMetricsDataHandlerTest {
 			assertTrue(metricsDataCompleted.boardMetricsCompleted());
 			assertFalse(metricsDataCompleted.doraMetricsCompleted());
 			assertFalse(metricsDataCompleted.isSuccessfulCreateCsvFile());
-			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
-			verify(fileRepository, times(1)).createFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).createFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					metricsDataCompleted, FilePrefixType.DATA_COMPLETED_PREFIX);
 		}
 
@@ -148,16 +148,16 @@ class AsyncMetricsDataHandlerTest {
 			String currentTime = Long.toString(currentTimeMillis);
 			MetricsDataCompleted metricsDataCompleted = MetricsDataCompleted.builder().build();
 
-			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			when(fileRepository.readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
 				.thenReturn(metricsDataCompleted);
 
 			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(TEST_UUID, currentTime);
 
 			assertTrue(metricsDataCompleted.overallMetricCompleted());
-			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).readFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
-			verify(fileRepository, times(1)).createFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
+			verify(fileRepository, times(1)).createFileByType(METRICS_DATA_COMPLETED, TEST_UUID, currentTime,
 					metricsDataCompleted, FilePrefixType.DATA_COMPLETED_PREFIX);
 
 		}

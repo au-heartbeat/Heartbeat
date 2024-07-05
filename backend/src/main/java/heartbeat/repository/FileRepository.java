@@ -65,6 +65,7 @@ public class FileRepository {
 	public <T> T readFileByType(FileType fileType, String uuid, String fileName, Class<T> classType,
 			FilePrefixType fileNamePrefix) {
 		isCorrectFilePath(uuid);
+		isCorrectFilePath(fileName);
 
 		String realFileName = fileNamePrefix.getPrefix() + fileName;
 		File file = new File(getFileName(fileType, uuid, realFileName));
@@ -87,6 +88,7 @@ public class FileRepository {
 
 	public String getFileName(FileType fileType, String uuid, String fileName) {
 		isCorrectFilePath(uuid);
+		isCorrectFilePath(fileName);
 
 		return BASE_OUTPUT_PATH + SLASH + fileType.getType() + SLASH + uuid + SLASH + fileName;
 	}
@@ -94,6 +96,7 @@ public class FileRepository {
 	public <T> void createFileByType(FileType fileType, String uuid, String fileName, T data,
 			FilePrefixType fileNamePrefix) {
 		isCorrectFilePath(uuid);
+		isCorrectFilePath(fileName);
 
 		String json = gson.toJson(data);
 		createFileHandler(fileType, uuid, fileName, fileNamePrefix,
@@ -110,6 +113,7 @@ public class FileRepository {
 
 	public void removeFileByType(FileType fileType, String uuid, String fileName, FilePrefixType fileNamePrefix) {
 		isCorrectFilePath(uuid);
+		isCorrectFilePath(fileName);
 
 		String realFileName = fileNamePrefix.getPrefix() + fileName;
 		String path = getFileName(fileType, uuid, realFileName);
@@ -190,6 +194,7 @@ public class FileRepository {
 
 	public InputStreamResource readStringFromCsvFile(String uuid, String fileName, FilePrefixType filePrefixType) {
 		isCorrectFilePath(uuid);
+		isCorrectFilePath(fileName);
 
 		File file = new File(getFileName(CSV, uuid, filePrefixType.getPrefix() + fileName + CSV_EXTENSION));
 		try {
@@ -241,9 +246,9 @@ public class FileRepository {
 		}
 	}
 
-	private void isCorrectFilePath(String uuid) {
-		if (uuid.contains("..") || uuid.contains("/") | uuid.contains("\\")) {
-			throw new IllegalArgumentException("Invalid uuid, uuid: " + uuid);
+	private void isCorrectFilePath(String filepath) {
+		if (filepath.contains("..") || filepath.contains("/") | filepath.contains("\\")) {
+			throw new IllegalArgumentException("Invalid filepath, filepath: " + filepath);
 		}
 	}
 

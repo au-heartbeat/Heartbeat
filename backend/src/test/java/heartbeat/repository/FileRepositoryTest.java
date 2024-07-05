@@ -96,9 +96,9 @@ class FileRepositoryTest {
 			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
 					() -> fileRepository.createPath(FileType.CSV, "aa\\abc"));
 
-			assertEquals("Invalid uuid, uuid: ..abc", uuidContainsTwoPoint.getMessage());
-			assertEquals("Invalid uuid, uuid: aa/abc", uuidContainsSlash.getMessage());
-			assertEquals("Invalid uuid, uuid: aa\\abc", uuidContainsBackslash.getMessage());
+			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
 		}
 
 		@Test
@@ -146,6 +146,40 @@ class FileRepositoryTest {
 		@AfterAll
 		static void afterAll() throws IOException {
 			FileUtils.deleteDirectory(new File("./app/output/report"));
+		}
+
+		@Test
+		void shouldThrowExceptionWhenUuidIsInvalid() {
+			IllegalArgumentException uuidContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readFileByType(FileType.CSV, "..abc", "test", MetricsDataCompleted.class,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readFileByType(FileType.CSV, "aa/abc", "test", MetricsDataCompleted.class,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readFileByType(FileType.CSV, "aa\\abc", "test", MetricsDataCompleted.class,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
+		void shouldThrowExceptionWhenTimeRangeIsInvalid() {
+			IllegalArgumentException timeRangeContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readFileByType(FileType.CSV, TEST_UUID, "..test", MetricsDataCompleted.class,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readFileByType(FileType.CSV, TEST_UUID, "te/st", MetricsDataCompleted.class,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readFileByType(FileType.CSV, TEST_UUID, "t\\est", MetricsDataCompleted.class,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..test", timeRangeContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: te/st", timeRangeContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: t\\est", timeRangeContainsBackslash.getMessage());
 		}
 
 		@Test
@@ -212,6 +246,34 @@ class FileRepositoryTest {
 	class GetFileName {
 
 		@Test
+		void shouldThrowExceptionWhenUuidIsInvalid() {
+			IllegalArgumentException uuidContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.getFileName(FileType.CSV, "..abc", "test"));
+			IllegalArgumentException uuidContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.getFileName(FileType.CSV, "aa/abc", "test"));
+			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.getFileName(FileType.CSV, "aa\\abc", "test"));
+
+			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
+		void shouldThrowExceptionWhenTimeRangeIsInvalid() {
+			IllegalArgumentException timeRangeContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.getFileName(FileType.CSV, TEST_UUID, "..test"));
+			IllegalArgumentException timeRangeContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.getFileName(FileType.CSV, TEST_UUID, "te/st"));
+			IllegalArgumentException timeRangeContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.getFileName(FileType.CSV, TEST_UUID, "t\\est"));
+
+			assertEquals("Invalid filepath, filepath: ..test", timeRangeContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: te/st", timeRangeContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: t\\est", timeRangeContainsBackslash.getMessage());
+		}
+
+		@Test
 		void shouldGetFileName() {
 			FileType fileType = FileType.REPORT;
 			String fileName = "test-filename";
@@ -239,6 +301,40 @@ class FileRepositoryTest {
 		@AfterEach
 		void afterEach() throws IOException {
 			FileUtils.deleteDirectory(new File("./app/output/report/" + TEST_UUID));
+		}
+
+		@Test
+		void shouldThrowExceptionWhenUuidIsInvalid() {
+			IllegalArgumentException uuidContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createFileByType(FileType.CSV, "..abc", "test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createFileByType(FileType.CSV, "aa/abc", "test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createFileByType(FileType.CSV, "aa\\abc", "test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
+		void shouldThrowExceptionWhenTimeRangeIsInvalid() {
+			IllegalArgumentException timeRangeContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createFileByType(FileType.CSV, TEST_UUID, "..test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createFileByType(FileType.CSV, TEST_UUID, "te/st", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createFileByType(FileType.CSV, TEST_UUID, "t\\est", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..test", timeRangeContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: te/st", timeRangeContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: t\\est", timeRangeContainsBackslash.getMessage());
 		}
 
 		@Test
@@ -315,6 +411,40 @@ class FileRepositoryTest {
 		}
 
 		@Test
+		void shouldThrowExceptionWhenUuidIsInvalid() {
+			IllegalArgumentException uuidContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createCSVFileByType("..abc", "test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createCSVFileByType("aa/abc", "test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createCSVFileByType("aa\\abc", "test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
+		void shouldThrowExceptionWhenTimeRangeIsInvalid() {
+			IllegalArgumentException timeRangeContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createCSVFileByType(TEST_UUID, "..test", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createCSVFileByType(TEST_UUID, "te/st", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.createCSVFileByType(TEST_UUID, "t\\est", null,
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: board-..test.csv", timeRangeContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: board-te/st.csv", timeRangeContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: board-t\\est.csv", timeRangeContainsBackslash.getMessage());
+		}
+
+		@Test
 		void shouldCreateCsvFileSuccessfully() throws IOException {
 			String fileName = "test-filename";
 			String[][] data = new String[][] { { "a", "b" }, { "c", "d" } };
@@ -374,6 +504,40 @@ class FileRepositoryTest {
 		@AfterAll
 		static void afterAll() throws IOException {
 			FileUtils.deleteDirectory(new File("./app/output/csv"));
+		}
+
+		@Test
+		void shouldThrowExceptionWhenUuidIsInvalid() {
+			IllegalArgumentException uuidContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.removeFileByType(FileType.CSV, "..abc", "test",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.removeFileByType(FileType.CSV, "aa/abc", "test",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.removeFileByType(FileType.CSV, "aa\\abc", "test",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
+		void shouldThrowExceptionWhenTimeRangeIsInvalid() {
+			IllegalArgumentException timeRangeContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.removeFileByType(FileType.CSV, TEST_UUID, "..test",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.removeFileByType(FileType.CSV, TEST_UUID, "te/st",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.removeFileByType(FileType.CSV, TEST_UUID, "t\\est",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..test", timeRangeContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: te/st", timeRangeContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: t\\est", timeRangeContainsBackslash.getMessage());
 		}
 
 		@Test
@@ -720,6 +884,36 @@ class FileRepositoryTest {
 		static void afterAll() throws IOException {
 			Path path = Paths.get("./app/output/csv/test-uuid");
 			Files.deleteIfExists(path);
+		}
+
+		@Test
+		void shouldThrowExceptionWhenUuidIsInvalid() {
+			IllegalArgumentException uuidContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readStringFromCsvFile("..abc", "test", FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readStringFromCsvFile("aa/abc", "test", FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException uuidContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readStringFromCsvFile("aa\\abc", "test", FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..abc", uuidContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: aa/abc", uuidContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: aa\\abc", uuidContainsBackslash.getMessage());
+		}
+
+		@Test
+		void shouldThrowExceptionWhenTimeRangeIsInvalid() {
+			IllegalArgumentException timeRangeContainsTwoPoint = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readStringFromCsvFile(TEST_UUID, "..test",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsSlash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readStringFromCsvFile(TEST_UUID, "te/st", FilePrefixType.BOARD_REPORT_PREFIX));
+			IllegalArgumentException timeRangeContainsBackslash = assertThrows(IllegalArgumentException.class,
+					() -> fileRepository.readStringFromCsvFile(TEST_UUID, "t\\est",
+							FilePrefixType.BOARD_REPORT_PREFIX));
+
+			assertEquals("Invalid filepath, filepath: ..test", timeRangeContainsTwoPoint.getMessage());
+			assertEquals("Invalid filepath, filepath: te/st", timeRangeContainsSlash.getMessage());
+			assertEquals("Invalid filepath, filepath: t\\est", timeRangeContainsBackslash.getMessage());
 		}
 
 		@Test
