@@ -1076,7 +1076,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder()
 					.boardMetricsCompleted(false)
 					.doraMetricsCompleted(true)
@@ -1103,7 +1103,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder()
 					.boardMetricsCompleted(false)
 					.overallMetricCompleted(false)
@@ -1128,7 +1128,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder()
 					.doraMetricsCompleted(false)
 					.overallMetricCompleted(false)
@@ -1153,7 +1153,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder()
 					.boardMetricsCompleted(true)
 					.doraMetricsCompleted(true)
@@ -1179,7 +1179,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder().overallMetricCompleted(true).build());
 			when(fileRepository.readFileByType(eq(REPORT), any(), any(), any(), any()))
 				.thenReturn(ReportResponse.builder().build());
@@ -1201,7 +1201,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(timeRangeAndTimeStamp);
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder().overallMetricCompleted(false).build());
 			when(fileRepository.readFileByType(eq(REPORT), any(), any(), any(), any()))
 				.thenReturn(ReportResponse.builder().build());
@@ -1220,7 +1220,7 @@ class GenerateReporterServiceTest {
 			String timeRangeAndTimeStamp = START_TIME + "-" + END_TIME + "-" + reportId;
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
-					MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX))
+					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder()
 					.boardMetricsCompleted(false)
 					.doraMetricsCompleted(true)

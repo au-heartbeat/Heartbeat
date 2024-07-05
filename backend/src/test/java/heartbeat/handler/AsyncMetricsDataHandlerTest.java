@@ -6,7 +6,6 @@ import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.repository.FilePrefixType;
 import heartbeat.repository.FileRepository;
-import heartbeat.repository.FileType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.RepeatedTest;
