@@ -7,9 +7,14 @@ import {
   PopperTitle,
   ShareIconWrapper,
 } from './style';
-import { selectReportId, selectReportPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
+import {
+  selectReportId,
+  selectReportPageFailedTimeRangeInfos,
+  selectStepNumber,
+} from '@src/context/stepper/StepperSlice';
 import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { STEP_NUMBER } from '@src/constants/commons';
 import ShareIcon from '@mui/icons-material/Share';
 import LinkIcon from '@mui/icons-material/Link';
 import { useAppSelector } from '@src/hooks';
@@ -23,12 +28,15 @@ const ShareReportTrigger = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const reportId = useAppSelector(selectReportId);
   const reportPageLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
+  const stepNumber = useAppSelector(selectStepNumber);
+
   const shareReportLink = `${window.location.host}/report/${reportId}`;
   const isReportLoadedSuccess = Object.values(reportPageLoadingStatus)
     .map(Object.values)
     .flat()
     .every((item) => item.isLoaded && !item.isLoadedWithError);
   const canShare = reportId && isReportLoadedSuccess;
+  const showShareIcon = stepNumber === STEP_NUMBER.REPORT_PAGE;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (canShare) {
@@ -50,27 +58,29 @@ const ShareReportTrigger = () => {
 
   return (
     <>
-      <ClickAwayListener onClickAway={handleClickAway}>
-        <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report' disabled={!canShare}>
-          <ShareIcon />
-          <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end'>
-            <PopperContentWrapper>
-              <PopperTitle>Share Report</PopperTitle>
-              <PopperSubTitle>Share content: report list page & report chart page</PopperSubTitle>
-              <LinkLine>
-                <LinkIconWrapper>
-                  <LinkIcon />
-                </LinkIconWrapper>
-                <CopyToClipboard text={shareReportLink} onCopy={handleCopy}>
-                  <Link>Copy Link</Link>
-                </CopyToClipboard>
-                {showAlert && <Alert severity='success'>Link copied to clipboard</Alert>}
-              </LinkLine>
-              <PopperNotes>NOTE: The link is valid for 24 hours. Please regenerate it after the timeout.</PopperNotes>
-            </PopperContentWrapper>
-          </Popper>
-        </ShareIconWrapper>
-      </ClickAwayListener>
+      {showShareIcon && (
+        <ClickAwayListener onClickAway={handleClickAway}>
+          <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report' disabled={!canShare}>
+            <ShareIcon />
+            <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end'>
+              <PopperContentWrapper>
+                <PopperTitle>Share Report</PopperTitle>
+                <PopperSubTitle>Share content: report list page & report chart page</PopperSubTitle>
+                <LinkLine>
+                  <LinkIconWrapper>
+                    <LinkIcon />
+                  </LinkIconWrapper>
+                  <CopyToClipboard text={shareReportLink} onCopy={handleCopy}>
+                    <Link>Copy Link</Link>
+                  </CopyToClipboard>
+                  {showAlert && <Alert severity='success'>Link copied to clipboard</Alert>}
+                </LinkLine>
+                <PopperNotes>NOTE: The link is valid for 24 hours. Please regenerate it after the timeout.</PopperNotes>
+              </PopperContentWrapper>
+            </Popper>
+          </ShareIconWrapper>
+        </ClickAwayListener>
+      )}
     </>
   );
 };
