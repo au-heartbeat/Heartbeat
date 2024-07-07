@@ -76,3 +76,8 @@ export const ShareIconWrapper = styled.span(({ disabled }: { disabled: boolean }
     color: disabled ? theme.main.errorMessage.color : 'white',
   },
 }));
+
+export const ClickAwayContent = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+});

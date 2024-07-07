@@ -1,4 +1,5 @@
 import {
+  ClickAwayContent,
   LinkIconWrapper,
   LinkLine,
   PopperContentWrapper,
@@ -60,8 +61,10 @@ const ShareReportTrigger = () => {
     <>
       {showShareIcon && (
         <ClickAwayListener onClickAway={handleClickAway}>
-          <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report' disabled={!canShare}>
-            <ShareIcon />
+          <ClickAwayContent>
+            <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report' disabled={!canShare}>
+              <ShareIcon />
+            </ShareIconWrapper>
             <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end'>
               <PopperContentWrapper>
                 <PopperTitle>Share Report</PopperTitle>
@@ -78,7 +81,7 @@ const ShareReportTrigger = () => {
                 <PopperNotes>NOTE: The link is valid for 24 hours. Please regenerate it after the timeout.</PopperNotes>
               </PopperContentWrapper>
             </Popper>
-          </ShareIconWrapper>
+          </ClickAwayContent>
         </ClickAwayListener>
       )}
     </>
