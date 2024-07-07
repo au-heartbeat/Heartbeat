@@ -57,8 +57,22 @@ export const LinkLine = styled.div({
   },
 });
 
-export const ShareIconWrapper = styled.span({
+export const TrendContainer = styled('div')(({ color }: { color: string }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  color: color,
+  margin: '0 0.5rem',
+  fontSize: '1.125rem',
+  '&:hover': {
+    cursor: 'pointer',
+  },
+}));
+
+export const ShareIconWrapper = styled.span(({ disabled }: { disabled: boolean }) => ({
   padding: '0.5rem',
-  cursor: 'pointer',
+  cursor: disabled ? 'unset !important' : 'pointer',
   marginLeft: '0.2rem',
-});
+  '> svg': {
+    color: disabled ? theme.main.errorMessage.color : 'white',
+  },
+}));

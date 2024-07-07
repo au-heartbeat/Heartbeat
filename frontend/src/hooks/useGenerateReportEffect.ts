@@ -1,6 +1,8 @@
+import { reportId } from './../context/stepper/StepperSlice';
 import {
   IPageLoadingStatusPayload,
   IReportPageLoadingStatus,
+  updateReportId,
   updateReportPageLoadingStatus,
 } from '@src/context/stepper/StepperSlice';
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -108,6 +110,8 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
     resetReportPageLoadingStatus(dateRangeList);
 
+    const reportIdRes = await reportClient.generateReportId(reportPath);
+
     const res: PromiseSettledResult<ReportCallbackResponse>[] = await Promise.allSettled(
       dateRangeList.map(({ startDate, endDate }) =>
         reportClient.retrieveByUrl(
@@ -116,7 +120,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
             startTime: formatDateToTimestampString(startDate!),
             endTime: formatDateToTimestampString(endDate!),
           },
-          reportPath,
+          `${reportPath}/${reportIdRes.reportId}`,
         ),
       ),
     );
@@ -125,6 +129,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
     const { pollingInfos, pollingInterval } = assemblePollingParams(res);
 
+    dispatch(updateReportId(reportIdRes.reportId));
     resetPollingLoadingStatusBeforePolling(pollingInfos.map((item) => item.id));
     await pollingReport({ pollingInfos, interval: pollingInterval });
   };

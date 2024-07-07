@@ -7,10 +7,12 @@ import {
   PopperTitle,
   ShareIconWrapper,
 } from './style';
+import { selectReportId, selectReportPageFailedTimeRangeInfos } from '@src/context/stepper/StepperSlice';
 import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ShareIcon from '@mui/icons-material/Share';
 import LinkIcon from '@mui/icons-material/Link';
+import { useAppSelector } from '@src/hooks';
 import Popper from '@mui/material/Popper';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
@@ -19,10 +21,19 @@ import { useState } from 'react';
 const ShareReportTrigger = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  const shareReportLink = 'shareReportLink';
+  const reportId = useAppSelector(selectReportId);
+  const reportPageLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
+  const shareReportLink = `${window.location.host}/report/${reportId}`;
+  const isReportLoadedSuccess = Object.values(reportPageLoadingStatus)
+    .map(Object.values)
+    .flat()
+    .every((item) => item.isLoaded && !item.isLoadedWithError);
+  const canShare = reportId && isReportLoadedSuccess;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
+    if (canShare) {
+      setAnchorEl(anchorEl ? null : event.currentTarget);
+    }
   };
 
   const handleCopy = () => {
@@ -40,10 +51,8 @@ const ShareReportTrigger = () => {
   return (
     <>
       <ClickAwayListener onClickAway={handleClickAway}>
-        <div>
-          <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report'>
-            <ShareIcon />
-          </ShareIconWrapper>
+        <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report' disabled={!canShare}>
+          <ShareIcon />
           <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end'>
             <PopperContentWrapper>
               <PopperTitle>Share Report</PopperTitle>
@@ -60,7 +69,7 @@ const ShareReportTrigger = () => {
               <PopperNotes>NOTE: The link is valid for 24 hours. Please regenerate it after the timeout.</PopperNotes>
             </PopperContentWrapper>
           </Popper>
-        </div>
+        </ShareIconWrapper>
       </ClickAwayListener>
     </>
   );

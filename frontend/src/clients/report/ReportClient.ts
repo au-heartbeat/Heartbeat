@@ -1,6 +1,7 @@
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { HttpClient } from '@src/clients/HttpClient';
+import { TurnRightSharp } from '@mui/icons-material';
 
 export interface IPollingRes {
   status: number;
@@ -89,6 +90,10 @@ export class ReportClient extends HttpClient {
     overallMetricsCompleted: false,
     allMetricsCompleted: false,
     isSuccessfulCreateCsvFile: false,
+  };
+
+  generateReportId = async (url: string) => {
+    return this.axiosInstance.post(url).then((res) => res.data);
   };
 
   retrieveByUrl = async (params: ReportRequestDTO, url: string) => {
