@@ -623,7 +623,7 @@ class CSVFileGeneratorTest {
 						"Dev change failure rate","Average / Dev change failure rate","0"
 						"Dev mean time to recovery","Heartbeat / Deploy prod / Dev mean time to recovery","0"
 						"Dev mean time to recovery","Heartbeat / Check Frontend License / Dev mean time to recovery","0"
-						"Dev mean time to recovery","Average / Dev mean time to recovery","0\"""");
+						"Dev mean time to recovery","Total / Dev mean time to recovery","0\"""");
 
 		String fileName = CSVFileNameEnum.METRIC.getValue() + "-" + mockTimeStamp + ".csv";
 		Files.deleteIfExists(Path.of(fileName));
