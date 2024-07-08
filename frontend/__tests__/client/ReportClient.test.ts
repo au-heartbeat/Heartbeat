@@ -1,7 +1,9 @@
 import {
   MOCK_GENERATE_REPORT_REQUEST_PARAMS,
+  MOCK_REPORT_ID,
   MOCK_REPORT_RESPONSE,
   MOCK_RETRIEVE_REPORT_RESPONSE,
+  MOCK_SHARE_REPORT_RESPONSE,
   VerifyErrorMessage,
 } from '../fixtures';
 import { reportClient } from '@src/clients/report/ReportClient';
@@ -10,6 +12,7 @@ import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 
 const MOCK_REPORT_URL = 'http://localhost/api/v1/reports';
+
 const server = setupServer(
   http.post(MOCK_REPORT_URL, () => {
     return new HttpResponse(null, {
@@ -114,5 +117,49 @@ describe('report client', () => {
     );
 
     await expect(reportClient.polling(MOCK_REPORT_URL)).resolves.toEqual(excepted);
+  });
+
+  it('should return response when calling generateReportId given response status 200', async () => {
+    const excepted = MOCK_REPORT_ID;
+    server.use(
+      http.post(MOCK_REPORT_URL, () => {
+        return new HttpResponse(MOCK_REPORT_ID, {
+          status: HttpStatusCode.Accepted,
+        });
+      }),
+    );
+
+    await expect(reportClient.generateReportId()).resolves.toEqual(excepted);
+  });
+
+  it('should return response when calling getReportUrl given response status 200', async () => {
+    const excepted = MOCK_SHARE_REPORT_RESPONSE;
+    server.use(
+      http.get(MOCK_REPORT_URL + '/' + MOCK_REPORT_ID, () => {
+        return HttpResponse.json(MOCK_SHARE_REPORT_RESPONSE, {
+          status: HttpStatusCode.Accepted,
+        });
+      }),
+    );
+
+    await reportClient.getReportUrl(MOCK_REPORT_ID).then((res) => {
+      expect(res.data).toEqual(excepted);
+    });
+  });
+
+  it('should return response when calling getReportDetail given response status 200', async () => {
+    const excepted = MOCK_REPORT_RESPONSE;
+    const reportUrl = MOCK_REPORT_URL + '/7d2c46d6-c447-4011-bb77-76f9c493f8ce/detail?startTime=20240513&endTime=20240526';
+    server.use(
+      http.get(reportUrl, () => {
+        return HttpResponse.json(MOCK_REPORT_RESPONSE, {
+          status: HttpStatusCode.Accepted,
+        });
+      }),
+    );
+
+    await reportClient.getReportDetail(reportUrl).then((res) => {
+      expect(res.data).toEqual(excepted);
+    });
   });
 });

@@ -94,8 +94,8 @@ export class ReportClient extends HttpClient {
     isSuccessfulCreateCsvFile: false,
   };
 
-  generateReportId = async (url: string) => {
-    return this.axiosInstance.post(url).then((res) => res.data);
+  generateReportId = async () => {
+    return this.axiosInstance.post(REPORT_PATH).then((res) => res.data);
   };
 
   retrieveByUrl = async (params: ReportRequestDTO, url: string) => {

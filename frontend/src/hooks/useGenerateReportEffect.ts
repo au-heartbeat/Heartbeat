@@ -115,7 +115,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
     resetReportPageLoadingStatus(dateRangeList);
 
-    const reportIdRes = await reportClient.generateReportId(reportPath);
+    const reportIdRes = await reportClient.generateReportId();
 
     const res: PromiseSettledResult<ReportCallbackResponse>[] = await Promise.allSettled(
       dateRangeList.map(({ startDate, endDate }) =>

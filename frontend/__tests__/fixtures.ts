@@ -876,3 +876,10 @@ export const COMMON_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 export const PIPELINE_TOOL_TOKEN_INPUT_LABEL = 'input token';
 
 export const TIMEOUT_ALERT_ARIA_LABEL = 'timeout alert';
+
+export const MOCK_REPORT_ID = '7d2c46d6-c447-4011-bb77-76f9c493f8ce';
+
+export const MOCK_SHARE_REPORT_RESPONSE = [
+  '/reports/7d2c46d6-c447-4011-bb77-76f9c493f8ce/detail?startTime=20240513&endTime=20240526',
+  '/reports/7d2c46d6-c447-4011-bb77-76f9c493f8ce/detail?startTime=20240527&endTime=20240609',
+];
