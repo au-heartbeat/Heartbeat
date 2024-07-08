@@ -117,7 +117,7 @@ public class ReportService {
 			.flatMap(Collection::stream)
 			.distinct()
 			.toList();
-		return ShareApiDetailsResponse.builder().metrics(metrics).reportUrls(reportUrls).build();
+		return ShareApiDetailsResponse.builder().metrics(metrics).reportURLs(reportUrls).build();
 	}
 
 	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {

@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ShareApiDetailsResponse {
 
-	private List<String> reportUrls;
+	private List<String> reportURLs;
 
 	private List<String> metrics;
 

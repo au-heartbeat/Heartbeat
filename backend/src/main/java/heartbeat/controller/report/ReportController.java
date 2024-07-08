@@ -60,19 +60,24 @@ public class ReportController {
 			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
 		log.info("Start to generate report_reportId: {}", uuid);
-		return generateReporterService.getComposedReportResponse(uuid, startTime, endTime);
+		ReportResponse composedReportResponse = generateReporterService.getComposedReportResponse(uuid, startTime,
+				endTime);
+		log.info("successfully to generate report_reportId: {}", uuid);
+		return composedReportResponse;
 	}
 
 	@GetMapping("/{uuid}")
 	public ShareApiDetailsResponse getShareDetails(@PathVariable String uuid) {
 		log.info("start to get share details, uuid: {}", uuid);
-		return reportService.getShareReportInfo(uuid);
+		ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(uuid);
+		log.info("successfully to get share details, uuid: {}", uuid);
+		return shareReportInfo;
 	}
 
 	@PostMapping("/{uuid}")
 	public ResponseEntity<CallbackResponse> generateReport(@PathVariable String uuid,
 			@RequestBody GenerateReportRequest request) {
-		log.info("Start to generate report");
+		log.info("Start to generate report, uuid: {}", uuid);
 		reportService.generateReport(request, uuid);
 		reportService.saveMetrics(request, uuid);
 		String callbackUrl = reportService.generateReportCallbackUrl(uuid,
@@ -80,14 +85,17 @@ public class ReportController {
 						request.getTimezoneByZoneId()),
 				TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getEndTime()),
 						request.getTimezoneByZoneId()));
-		log.info("Successfully generate report");
+		log.info("Successfully generate report, uuid: {}", uuid);
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());
 	}
 
 	@PostMapping
 	public UuidResponse generateUUID() {
-		return reportService.generateReportId();
+		log.info("start to generate uuid");
+		UuidResponse uuidResponse = reportService.generateReportId();
+		log.info("successfully to generate uuid");
+		return uuidResponse;
 	}
 
 }

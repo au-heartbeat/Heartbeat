@@ -171,15 +171,15 @@ class ReporterControllerTest {
 	void shouldReturnListCallbackWhenCallGetReportUrls() throws Exception {
 		String uuid = "test-uuid";
 		when(reporterService.getShareReportInfo(uuid)).thenReturn(ShareApiDetailsResponse.builder()
-			.reportUrls(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
+			.reportURLs(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
 			.metrics(List.of("board"))
 			.build());
 
 		mockMvc.perform(get("/reports/{uuid}", uuid))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.reportUrls.length()", Matchers.is(1)))
+			.andExpect(jsonPath("$.reportURLs.length()", Matchers.is(1)))
 			.andExpect(
-					jsonPath("$.reportUrls[0]").value("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
+					jsonPath("$.reportURLs[0]").value("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
 			.andExpect(jsonPath("$.metrics.length()", Matchers.is(1)))
 			.andExpect(jsonPath("$.metrics[0]").value("board"))
 			.andReturn()

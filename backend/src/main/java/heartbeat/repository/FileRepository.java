@@ -58,7 +58,7 @@ public class FileRepository {
 			log.info("Successfully create {} directory", path);
 		}
 		catch (IOException e) {
-			log.info("Failed create {} directory", path);
+			log.error("Failed to create {} directory", path);
 			throw new FileIOException(e);
 		}
 	}
@@ -73,15 +73,15 @@ public class FileRepository {
 		if (file.toPath().normalize().startsWith(NORMALIZE_BASE_OUTPUT_PATH) && file.exists()) {
 			try (JsonReader reader = new JsonReader(new FileReader(file))) {
 				T result = gson.fromJson(reader, classType);
-				log.info("Successfully read file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+				log.info("Successfully to read file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
 						realFileName);
 				return result;
 			}
 			catch (Exception e) {
-				log.error("Failed read file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
+				log.error("Failed to read file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
 						realFileName, e);
 				throw new GenerateReportException(
-						"Failed read file " + fileType.getType() + " " + uuid + " " + realFileName);
+						"Failed to read file " + fileType.getType() + " " + uuid + " " + realFileName);
 			}
 		}
 		return null;
@@ -122,12 +122,13 @@ public class FileRepository {
 		log.info("Start to remove file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid, fileName);
 		try {
 			Files.deleteIfExists(Path.of(path));
-			log.info("Successfully remove file type: {}, file name: {}", fileType.getType(), fileName);
+			log.info("Successfully to remove file type: {}, file name: {}", fileType.getType(), fileName);
 		}
 		catch (Exception e) {
-			log.info("Failed remove file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid, realFileName);
+			log.error("Failed to remove file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+					realFileName);
 			throw new GenerateReportException(
-					"Failed remove " + fileType.getType() + ", uuid: " + uuid + " file with file:" + fileName);
+					"Failed to remove " + fileType.getType() + ", uuid: " + uuid + " file with file:" + fileName);
 		}
 	}
 
@@ -179,7 +180,7 @@ public class FileRepository {
 		isCorrectFilePath(uuid);
 
 		return getFiles(fileType, uuid).stream()
-			.map(it -> it.split("-"))
+			.map(it -> it.split(FILENAME_SEPARATOR))
 			.filter(it -> it.length == 4)
 			.filter(it -> Objects.equals(it[1], startTime) && Objects.equals(it[2], endTime))
 			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
@@ -216,6 +217,8 @@ public class FileRepository {
 		synchronized (this) {
 			handler.accept(realFileName);
 		}
+		log.info("Successfully to write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+				realFileName);
 	}
 
 	private void createNormalFileHandler(FileType fileType, String uuid, String json, String realFileName) {
@@ -228,16 +231,16 @@ public class FileRepository {
 					realFileName);
 		}
 		catch (Exception e) {
-			log.error("Failed write file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
+			log.error("Failed to write file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
 					realFileName, e);
-			throw new GenerateReportException("Failed write " + fileType.getType() + " " + realFileName);
+			throw new GenerateReportException("Failed to write " + fileType.getType() + " " + realFileName);
 		}
 	}
 
 	private void createCSVFileHandler(FileType fileType, String uuid, String[][] json, String realFileName) {
 		try (CSVWriter writer = new CSVWriter(new FileWriter(realFileName))) {
 			writer.writeAll(Arrays.asList(json));
-			log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+			log.info("Successfully to write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
 					realFileName);
 		}
 		catch (IOException e) {

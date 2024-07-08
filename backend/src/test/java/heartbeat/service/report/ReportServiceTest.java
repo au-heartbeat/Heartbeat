@@ -396,7 +396,7 @@ public class ReportServiceTest {
 			assertEquals("test-metrics2", metrics.get(1));
 			assertEquals("test-metrics3", metrics.get(2));
 
-			List<String> reportUrls = shareReportInfo.getReportUrls();
+			List<String> reportUrls = shareReportInfo.getReportURLs();
 
 			assertEquals(2, reportUrls.size());
 			assertEquals("/reports/test-uuid/detail?startTime=1&endTime=2", reportUrls.get(0));

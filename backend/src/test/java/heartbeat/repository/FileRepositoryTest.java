@@ -249,7 +249,7 @@ class FileRepositoryTest {
 			GenerateReportException generateReportException = assertThrows(GenerateReportException.class,
 					() -> fileRepository.readFileByType(FileType.REPORT, TEST_UUID, testFileName,
 							MetricsDataCompleted.class, FilePrefixType.BOARD_REPORT_PREFIX));
-			assertEquals("Failed read file report test-uuid board-test", generateReportException.getMessage());
+			assertEquals("Failed to read file report test-uuid board-test", generateReportException.getMessage());
 
 		}
 
@@ -392,7 +392,7 @@ class FileRepositoryTest {
 					fileRepository.createFileByType(fileType, TEST_UUID, fileName, data, boardReportPrefix);
 				});
 
-				assertEquals("Failed write report ./app/output/report/test-uuid/board-test-filename",
+				assertEquals("Failed to write report ./app/output/report/test-uuid/board-test-filename",
 						generateReportException.getMessage());
 
 				verify(gson).toJson(data);
@@ -586,7 +586,7 @@ class FileRepositoryTest {
 					fileRepository.removeFileByType(fileType, TEST_UUID, fileName, boardReportPrefix);
 				});
 
-				assertEquals("Failed remove csv, uuid: test-uuid file with file:test-remove-file",
+				assertEquals("Failed to remove csv, uuid: test-uuid file with file:test-remove-file",
 						generateReportException.getMessage());
 
 				File realFile = new File(expectedFilepath);
