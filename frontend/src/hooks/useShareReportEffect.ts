@@ -13,25 +13,27 @@ export const useShareReportEffect = () => {
   const { reportId } = useParams();
   const [dateRanges, setDateRanges] = useState<DateRangeList>([]);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>([]);
+  const [metrics, setMetrics] = useState<string[]>([]);
 
   const getData = async () => {
     console.log('getData');
-    const reportLinks = await reportClient.getReportUrl(reportId!);
-    const dateRanges = extractDateRanges(reportLinks.data);
+    const reportURLsRes = await reportClient.getReportUrlAndMetrics(reportId!);
+    const dateRanges = extractDateRanges(reportURLsRes.data.reportURLs);
 
     const reportRes = await Promise.allSettled(
-      reportLinks.data.map((reportLink: string) => reportClient.getReportDetail(reportLink)),
+      reportURLsRes.data.reportURLs.map((reportUrl: string) => reportClient.getReportDetail(reportUrl)),
     );
 
     const reportInfos = generateReportInfos(dateRanges, reportRes);
     console.log(dateRanges, reportInfos);
 
+    setMetrics(reportURLsRes.data.metrics);
     setDateRanges(dateRanges);
     setReportInfos(reportInfos);
   };
 
-  const extractDateRanges = (reportLinks: string[]) => {
-    return reportLinks.map((link) => {
+  const extractDateRanges = (reportURLs: string[]) => {
+    return reportURLs.map((link) => {
       const searchString = link.split('/detail')[1];
       const searchParams = new URLSearchParams(searchString);
       return {
@@ -66,6 +68,7 @@ export const useShareReportEffect = () => {
   return {
     dateRanges,
     reportInfos,
+    metrics,
     getData,
   };
 };

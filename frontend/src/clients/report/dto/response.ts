@@ -176,3 +176,8 @@ export interface ReportResponse {
   devChangeFailureRateList?: ReportDataWithTwoColumns[] | null;
   exportValidityTimeMin?: number | null;
 }
+
+export interface ReportURLsResponse {
+  metrics: string[];
+  reportURLs: string[];
+}

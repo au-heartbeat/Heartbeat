@@ -3,7 +3,7 @@ import {
   MOCK_REPORT_ID,
   MOCK_REPORT_RESPONSE,
   MOCK_RETRIEVE_REPORT_RESPONSE,
-  MOCK_SHARE_REPORT_RESPONSE,
+  MOCK_SHARE_REPORT_URLS_RESPONSE,
   VerifyErrorMessage,
 } from '../fixtures';
 import { reportClient } from '@src/clients/report/ReportClient';
@@ -132,24 +132,25 @@ describe('report client', () => {
     await expect(reportClient.generateReportId()).resolves.toEqual(excepted);
   });
 
-  it('should return response when calling getReportUrl given response status 200', async () => {
-    const excepted = MOCK_SHARE_REPORT_RESPONSE;
+  it('should return response when calling getReportUrlAndMetrics given response status 200', async () => {
+    const excepted = MOCK_SHARE_REPORT_URLS_RESPONSE;
     server.use(
       http.get(MOCK_REPORT_URL + '/' + MOCK_REPORT_ID, () => {
-        return HttpResponse.json(MOCK_SHARE_REPORT_RESPONSE, {
+        return HttpResponse.json(MOCK_SHARE_REPORT_URLS_RESPONSE, {
           status: HttpStatusCode.Accepted,
         });
       }),
     );
 
-    await reportClient.getReportUrl(MOCK_REPORT_ID).then((res) => {
+    await reportClient.getReportUrlAndMetrics(MOCK_REPORT_ID).then((res) => {
       expect(res.data).toEqual(excepted);
     });
   });
 
   it('should return response when calling getReportDetail given response status 200', async () => {
     const excepted = MOCK_REPORT_RESPONSE;
-    const reportUrl = MOCK_REPORT_URL + '/7d2c46d6-c447-4011-bb77-76f9c493f8ce/detail?startTime=20240513&endTime=20240526';
+    const reportUrl =
+      MOCK_REPORT_URL + '/7d2c46d6-c447-4011-bb77-76f9c493f8ce/detail?startTime=20240513&endTime=20240526';
     server.use(
       http.get(reportUrl, () => {
         return HttpResponse.json(MOCK_REPORT_RESPONSE, {

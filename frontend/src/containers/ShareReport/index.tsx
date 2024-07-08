@@ -2,10 +2,9 @@ import { useShareReportEffect } from '../../hooks/useShareReportEffect';
 import ReportContent from '../ReportStep/ReportContent';
 import { StyledPageContentWrapper } from './style';
 import { useEffect } from 'react';
-import { metrics } from './mock';
 
 const ShareReport = () => {
-  const { getData, reportInfos, dateRanges } = useShareReportEffect();
+  const { getData, reportInfos, dateRanges, metrics } = useShareReportEffect();
 
   useEffect(() => {
     getData();

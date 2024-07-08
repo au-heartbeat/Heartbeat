@@ -1,4 +1,4 @@
-import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
+import { ReportCallbackResponse, ReportURLsResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { HttpClient } from '@src/clients/HttpClient';
 import { AxiosResponse } from 'axios';
@@ -126,8 +126,10 @@ export class ReportClient extends HttpClient {
     };
   };
 
-  getReportUrl = (reportId: string) => {
-    return this.axiosInstance.get<string[], AxiosResponse<string[]>, unknown>(`${REPORT_PATH}/${reportId}`);
+  getReportUrlAndMetrics = (reportId: string) => {
+    return this.axiosInstance.get<ReportURLsResponse, AxiosResponse<ReportURLsResponse>, unknown>(
+      `${REPORT_PATH}/${reportId}`,
+    );
   };
 
   getReportDetail = (reportUrl: string) => {

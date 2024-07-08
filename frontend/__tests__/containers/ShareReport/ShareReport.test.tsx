@@ -71,6 +71,15 @@ describe('Share Report', () => {
         reportData: { ...EMPTY_REPORT_VALUES },
       },
     ];
+    reportHook.current.metrics = [
+      'Velocity',
+      'Cycle time',
+      'Classification',
+      'Lead time for changes',
+      'Deployment frequency',
+      'Dev change failure rate',
+      'Dev mean time to recovery',
+    ];
   };
 
   const setup = () => {
