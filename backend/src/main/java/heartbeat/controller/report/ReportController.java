@@ -4,6 +4,7 @@ import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.CallbackResponse;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,8 +64,9 @@ public class ReportController {
 	}
 
 	@GetMapping("/{uuid}")
-	public List<String> getReportUrls(@PathVariable String uuid) {
-		return reportService.getReportUrls(uuid);
+	public ShareApiDetailsResponse getShareDetails(@PathVariable String uuid) {
+		log.info("start to get share details, uuid: {}", uuid);
+		return reportService.getShareReportInfo(uuid);
 	}
 
 	@PostMapping("/{uuid}")
@@ -74,6 +74,7 @@ public class ReportController {
 			@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report");
 		reportService.generateReport(request, uuid);
+		reportService.saveMetrics(request, uuid);
 		String callbackUrl = reportService.generateReportCallbackUrl(uuid,
 				TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getStartTime()),
 						request.getTimezoneByZoneId()),

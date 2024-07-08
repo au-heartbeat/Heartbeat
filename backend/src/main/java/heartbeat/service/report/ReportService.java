@@ -5,19 +5,24 @@ import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.repository.FilePrefixType;
 import heartbeat.repository.FileType;
 import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
 import heartbeat.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -92,10 +97,10 @@ public class ReportService {
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
 	}
 
-	public List<String> getReportUrls(String uuid) {
+	public ShareApiDetailsResponse getShareReportInfo(String uuid) {
 		List<String> reportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
 			.stream()
-			.map(it -> it.split("-"))
+			.map(it -> it.split(FILENAME_SEPARATOR))
 			.filter(it -> it.length > 2)
 			.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
 			.distinct()
@@ -104,7 +109,17 @@ public class ReportService {
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}
-		return reportUrls;
+		List<String> metrics = fileRepository.getFiles(FileType.METRICS, uuid)
+			.stream()
+			.map(it -> it.split(FILENAME_SEPARATOR))
+			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
+			.map(it -> fileRepository.readFileByType(FileType.METRICS, uuid, it, List.class,
+					FilePrefixType.ALL_METRICS_PREFIX))
+			.map(it -> new ArrayList<String>(it))
+			.flatMap(Collection::stream)
+			.distinct()
+			.toList();
+		return ShareApiDetailsResponse.builder().metrics(metrics).reportUrls(reportUrls).build();
 	}
 
 	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {
@@ -113,6 +128,11 @@ public class ReportService {
 
 	public UuidResponse generateReportId() {
 		return UuidResponse.builder().reportId(UUID.randomUUID().toString()).build();
+	}
+
+	public void saveMetrics(GenerateReportRequest request, String uuid) {
+		fileRepository.createFileByType(FileType.METRICS, uuid, request.getTimeRangeAndTimeStamp(),
+				request.getMetrics(), FilePrefixType.ALL_METRICS_PREFIX);
 	}
 
 }

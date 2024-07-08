@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum FileType {
 
 	ERROR("error", "error/"), REPORT("report", "report/"), CSV("csv", "csv/"),
-	METRICS_DATA_COMPLETED("metrics-data-completed", "metrics-data-completed/");
+	METRICS_DATA_COMPLETED("metrics-data-completed", "metrics-data-completed/"), METRICS("metrics", "metrics/");
 
 	private final String type;
 

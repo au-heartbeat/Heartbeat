@@ -6,9 +6,11 @@ import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ErrorInfo;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.repository.FilePrefixType;
 import heartbeat.repository.FileType;
 import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
@@ -16,6 +18,8 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -68,6 +72,9 @@ public class ReportServiceTest {
 
 	@Mock
 	ReportGenerator reportGenerator;
+
+	@Captor
+	ArgumentCaptor<List<String>> argumentCaptor;
 
 	public static final String START_TIME = "20240310";
 
@@ -372,21 +379,42 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldGetReportUrlsSuccessfully() {
+			ShareApiDetailsResponse shareApiDetailsResponse = ShareApiDetailsResponse.builder().build();
 			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
+			when(fileRepository.getFiles(FileType.METRICS, TEST_UUID))
+				.thenReturn(List.of("board-0-0-0", "board-9-9-9"));
 
-			List<String> reportUrls = reportService.getReportUrls(TEST_UUID);
+			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
+				.thenReturn(List.of("test-metrics1", "test-metrics2"));
+			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
+				.thenReturn(List.of("test-metrics1", "test-metrics3"));
 
-			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
+			ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(TEST_UUID);
+			List<String> metrics = shareReportInfo.getMetrics();
+
+			assertEquals(3, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+			assertEquals("test-metrics3", metrics.get(2));
+
+			List<String> reportUrls = shareReportInfo.getReportUrls();
+
 			assertEquals(2, reportUrls.size());
 			assertEquals("/reports/test-uuid/detail?startTime=1&endTime=2", reportUrls.get(0));
 			assertEquals("/reports/test-uuid/detail?startTime=2&endTime=3", reportUrls.get(1));
+
+			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
+			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
+			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any());
+			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any());
+
 		}
 
 		@Test
 		void shouldThrowExceptionWhenFilenameIsInvalid() {
 			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-123", "board-234"));
 
-			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getReportUrls(TEST_UUID));
+			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getShareReportInfo(TEST_UUID));
 
 			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
 
@@ -418,6 +446,38 @@ public class ReportServiceTest {
 			UuidResponse uuidResponse = reportService.generateReportId();
 
 			assertEquals(36, uuidResponse.getReportId().length());
+		}
+
+	}
+
+	@Nested
+	class SaveMetrics {
+
+		@Test
+		void shouldSaveMetricsSuccessfully() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveMetrics(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.METRICS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(),
+					eq(FilePrefixType.ALL_METRICS_PREFIX));
+
+			List<String> savedMetrics = argumentCaptor.getValue();
+
+			assertEquals(2, savedMetrics.size());
+			assertEquals("test-metrics1", savedMetrics.get(0));
+			assertEquals("test-metrics2", savedMetrics.get(1));
 		}
 
 	}

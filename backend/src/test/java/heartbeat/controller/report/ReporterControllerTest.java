@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.service.report.GenerateReporterService;
@@ -169,17 +170,22 @@ class ReporterControllerTest {
 	@Test
 	void shouldReturnListCallbackWhenCallGetReportUrls() throws Exception {
 		String uuid = "test-uuid";
-		when(reporterService.getReportUrls(uuid))
-			.thenReturn(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"));
+		when(reporterService.getShareReportInfo(uuid)).thenReturn(ShareApiDetailsResponse.builder()
+			.reportUrls(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
+			.metrics(List.of("board"))
+			.build());
 
 		mockMvc.perform(get("/reports/{uuid}", uuid))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.length()", Matchers.is(1)))
-			.andExpect(jsonPath("$[0]").value("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
+			.andExpect(jsonPath("$.reportUrls.length()", Matchers.is(1)))
+			.andExpect(
+					jsonPath("$.reportUrls[0]").value("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
+			.andExpect(jsonPath("$.metrics.length()", Matchers.is(1)))
+			.andExpect(jsonPath("$.metrics[0]").value("board"))
 			.andReturn()
 			.getResponse();
 
-		verify(reporterService, times(1)).getReportUrls(uuid);
+		verify(reporterService, times(1)).getShareReportInfo(uuid);
 	}
 
 }
