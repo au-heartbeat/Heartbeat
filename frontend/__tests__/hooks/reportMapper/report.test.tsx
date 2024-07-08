@@ -140,7 +140,7 @@ export const EXPECTED_REPORT_VALUES = {
     },
     {
       id: 3,
-      name: 'Average',
+      name: 'Total',
       valueList: [
         {
           value: '4.00',
