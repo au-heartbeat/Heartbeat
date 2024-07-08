@@ -7,9 +7,6 @@ import java.util.List;
 
 public class GenerateReportRequestTest {
 
-	private static final List<String> METRICS = List.of(MetricEnum.VELOCITY.getValue(),
-			MetricEnum.DEPLOYMENT_FREQUENCY.getValue(), MetricEnum.LEAD_TIME_FOR_CHANGES.getValue());
-
 	private static final List<String> UPPER_METRICS = List.of("VELOCITY", "DEPLOYMENT FREQUENCY",
 			"LEAD TIME FOR CHANGES");
 
@@ -25,7 +22,7 @@ public class GenerateReportRequestTest {
 	void shouldReturnAllTheMetrics() {
 		List<String> result = request.getMetrics();
 
-		Assertions.assertEquals(METRICS, result);
+		Assertions.assertEquals(UPPER_METRICS, result);
 	}
 
 	@Test

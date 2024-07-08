@@ -53,10 +53,6 @@ public class GenerateReportRequest {
 			.toList();
 	}
 
-	public List<String> getMetrics() {
-		return this.metrics.stream().map(String::toLowerCase).toList();
-	}
-
 	@JsonIgnore
 	public List<String> getSourceControlMetrics() {
 		return this.metrics.stream()
