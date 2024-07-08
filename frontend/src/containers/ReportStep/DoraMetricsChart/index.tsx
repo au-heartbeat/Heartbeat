@@ -42,6 +42,7 @@ enum DORAMetricsChartType {
 }
 
 const AVERAGE = 'Average';
+const Total = 'Total';
 
 function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valueList
@@ -168,9 +169,9 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
 function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
   const value = data?.map((items) => {
-    const averageItem = items?.find((item) => item.name === AVERAGE);
-    if (!averageItem) return 0;
-    return Number(averageItem.valueList[0].value) || 0;
+    const totalItem = items?.find((item) => item.name === Total);
+    if (!totalItem) return 0;
+    return Number(totalItem.valueList[0].value) || 0;
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevMeanTimeToRecovery);
   return {
@@ -213,7 +214,9 @@ function isDoraMetricsChartFinish({
 }): boolean {
   const valueList = mappedData
     .flatMap((value) => value[type] as unknown as ChartValueSource[])
-    .filter((value) => value?.name === AVERAGE)
+    .filter((value) =>
+      type === DORAMetricsChartType.DevMeanTimeToRecovery ? value?.name === Total : value?.name === AVERAGE,
+    )
     .map((value) => value?.valueList);
 
   return (

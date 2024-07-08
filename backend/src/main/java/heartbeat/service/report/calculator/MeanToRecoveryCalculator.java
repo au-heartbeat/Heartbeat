@@ -40,8 +40,7 @@ public class MeanToRecoveryCalculator {
 
 		BigDecimal avgDevMeanTimeToRecovery = devMeanTimeToRecoveryOfPipelines.stream()
 			.map(DevMeanTimeToRecoveryOfPipeline::getTimeToRecovery)
-			.reduce(BigDecimal.ZERO, BigDecimal::add)
-			.divide(BigDecimal.valueOf(devMeanTimeToRecoveryOfPipelines.size()), 8, RoundingMode.HALF_UP);
+			.reduce(BigDecimal.ZERO, BigDecimal::add);
 		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecoveryObj = AvgDevMeanTimeToRecovery.builder()
 			.timeToRecovery(stripTrailingZeros(avgDevMeanTimeToRecovery))
 			.build();
