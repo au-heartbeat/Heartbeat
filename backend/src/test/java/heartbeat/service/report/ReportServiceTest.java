@@ -379,7 +379,6 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldGetReportUrlsSuccessfully() {
-			ShareApiDetailsResponse shareApiDetailsResponse = ShareApiDetailsResponse.builder().build();
 			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
 			when(fileRepository.getFiles(FileType.METRICS, TEST_UUID))
 				.thenReturn(List.of("board-0-0-0", "board-9-9-9"));
