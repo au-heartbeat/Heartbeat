@@ -85,8 +85,13 @@ export const GeneralErrorKey = {
 const REJECTED = 'rejected';
 const FULFILLED = 'fulfilled';
 
-const getErrorKey = (error: Error, source: MetricTypes): string => {
+export const getErrorKey = (error: Error, source: MetricTypes): string => {
   return error instanceof TimeoutError ? TimeoutErrorKey[source] : GeneralErrorKey[source];
+};
+
+export const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
+  const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
+  return { ...response, exportValidityTime: exportValidityTime };
 };
 
 export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
@@ -152,6 +157,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
         const errorKey = getErrorKey(matchedRes.reason, MetricTypes.All) as keyof IReportError;
         reportInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
       }
+      console.log(reportInfo);
       return reportInfo;
     });
   }
@@ -188,11 +194,6 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   const stopPollingReports = () => {
     window.clearTimeout(timerIdRef.current);
     setHasPollingStarted(false);
-  };
-
-  const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
-    const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
-    return { ...response, exportValidityTime: exportValidityTime };
   };
 
   const resetTimeoutMessage = (metricTypes: string[]) => {

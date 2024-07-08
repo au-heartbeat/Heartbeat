@@ -1,30 +1,29 @@
-import {
-  csvTimeStamp,
-  dateRanges,
-  handleSave,
-  metrics,
-  reportInfos,
-  startToRequestBoardData,
-  startToRequestDoraData,
-} from './mock';
+import { useShareReportEffect } from '../../hooks/useShareReportEffect';
 import ReportContent from '../ReportStep/ReportContent';
 import { StyledPageContentWrapper } from './style';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { metrics } from './mock';
 
 const ShareReport = () => {
-  const { reportId } = useParams();
-  const reportContentProps = {
-    metrics,
-    dateRanges,
-    startToRequestDoraData,
-    startToRequestBoardData,
-    reportInfos,
-    handleSave,
-    csvTimeStamp,
-  };
+  const { getData, reportInfos, dateRanges } = useShareReportEffect();
+
+  useEffect(() => {
+    getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <StyledPageContentWrapper>
-      <ReportContent {...reportContentProps} hideButtons />
+      {reportInfos.length > 0 && (
+        <ReportContent
+          metrics={metrics}
+          dateRanges={dateRanges}
+          reportInfos={reportInfos}
+          startToRequestBoardData={() => getData()}
+          startToRequestDoraData={() => getData()}
+          hideButtons
+        />
+      )}
     </StyledPageContentWrapper>
   );
 };

@@ -76,8 +76,8 @@ export interface ReportContentProps {
   startToRequestDoraData: () => void;
   startToRequestBoardData: () => void;
   reportInfos: IReportInfo[];
-  handleSave: () => void;
-  csvTimeStamp: number;
+  handleSave?: () => void;
+  csvTimeStamp?: number;
   hideButtons?: boolean;
 }
 

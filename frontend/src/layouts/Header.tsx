@@ -36,7 +36,7 @@ const Header = () => {
   };
 
   const shouldShowHomeIcon = () => {
-    return ['/metrics', '/error-page'].includes(location.pathname);
+    return ['/metrics', '/error-page', '/report'].some((path) => location.pathname.includes(path));
   };
 
   useEffect(() => {

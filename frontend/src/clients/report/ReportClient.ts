@@ -1,7 +1,9 @@
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { HttpClient } from '@src/clients/HttpClient';
-import { TurnRightSharp } from '@mui/icons-material';
+import { AxiosResponse } from 'axios';
+
+const REPORT_PATH = '/reports';
 
 export interface IPollingRes {
   status: number;
@@ -122,6 +124,14 @@ export class ReportClient extends HttpClient {
       status: this.status,
       response: this.reportResponse,
     };
+  };
+
+  getReportUrl = (reportId: string) => {
+    return this.axiosInstance.get<string[], AxiosResponse<string[]>, unknown>(`${REPORT_PATH}/${reportId}`);
+  };
+
+  getReportDetail = (reportUrl: string) => {
+    return this.axiosInstance.get<ReportResponseDTO, AxiosResponse<ReportResponseDTO>, unknown>(reportUrl);
   };
 }
 
