@@ -10,7 +10,6 @@ import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
-import heartbeat.repository.FilePrefixType;
 import heartbeat.repository.FileType;
 import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
@@ -40,6 +39,7 @@ import java.util.stream.Collectors;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
+import static heartbeat.repository.FilePrefixType.ALL_METRICS_PREFIX;
 import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -470,8 +470,7 @@ public class ReportServiceTest {
 			reportService.saveMetrics(request, TEST_UUID);
 
 			verify(fileRepository).createFileByType(eq(FileType.METRICS), eq(TEST_UUID),
-					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(),
-					eq(FilePrefixType.ALL_METRICS_PREFIX));
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(ALL_METRICS_PREFIX));
 
 			List<String> savedMetrics = argumentCaptor.getValue();
 

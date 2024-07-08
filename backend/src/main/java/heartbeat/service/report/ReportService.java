@@ -15,14 +15,12 @@ import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
 import heartbeat.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
