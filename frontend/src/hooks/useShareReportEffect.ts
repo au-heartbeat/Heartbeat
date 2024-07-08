@@ -32,7 +32,8 @@ export const useShareReportEffect = () => {
 
   const extractDateRanges = (reportLinks: string[]) => {
     return reportLinks.map((link) => {
-      const searchParams = new URL(`${location.host}${link}`).searchParams;
+      const searchString = link.split('/detail')[1];
+      const searchParams = new URLSearchParams(searchString);
       return {
         startDate: dayjs(searchParams.get('startTime')!, 'YYYYMMDD').startOf('day').format(DATE_RANGE_FORMAT),
         endDate: dayjs(searchParams.get('endTime')!, 'YYYYMMDD').endOf('day').format(DATE_RANGE_FORMAT),
