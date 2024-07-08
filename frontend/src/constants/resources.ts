@@ -386,6 +386,7 @@ export const MESSAGE = {
   PIPELINE_STEP_REQUEST_PARTIAL_FAILED_OTHERS:
     'Failed to get partial Pipeline configuration, you can click "Next" button to go to Report page.',
   DORA_CHART_LOADING_FAILED: 'Dora metrics loading timeout, Please click "Retry"!',
+  SHARE_REPORT_EXPIRED: 'The report has expired. Please go home page and generate it again.',
 };
 
 export const METRICS_CYCLE_SETTING_TABLE_HEADER_BY_COLUMN = [

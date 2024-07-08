@@ -1,19 +1,29 @@
 import { useShareReportEffect } from '../../hooks/useShareReportEffect';
+import { ErrorSectionWrapper, StyledPageContentWrapper } from './style';
 import ReportContent from '../ReportStep/ReportContent';
-import { StyledPageContentWrapper } from './style';
+import { MESSAGE } from '../../constants/resources';
+import ErrorSection from './ErrorSection';
 import { useEffect } from 'react';
 
 const ShareReport = () => {
-  const { getData, reportInfos, dateRanges, metrics } = useShareReportEffect();
+  const { getData, reportInfos, dateRanges, metrics, isExpired } = useShareReportEffect();
 
   useEffect(() => {
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <StyledPageContentWrapper>
-      {reportInfos.length > 0 && (
+  if (isExpired) {
+    return (
+      <StyledPageContentWrapper>
+        <ErrorSectionWrapper>
+          <ErrorSection message={MESSAGE.SHARE_REPORT_EXPIRED} />
+        </ErrorSectionWrapper>
+      </StyledPageContentWrapper>
+    );
+  } else if (reportInfos.length > 0) {
+    return (
+      <StyledPageContentWrapper>
         <ReportContent
           metrics={metrics}
           dateRanges={dateRanges}
@@ -22,9 +32,11 @@ const ShareReport = () => {
           startToRequestDoraData={getData}
           hideButtons
         />
-      )}
-    </StyledPageContentWrapper>
-  );
+      </StyledPageContentWrapper>
+    );
+  } else {
+    return;
+  }
 };
 
 export default ShareReport;

@@ -76,11 +76,7 @@ const ShareReportTrigger = () => {
                   <CopyToClipboard text={shareReportLink} onCopy={handleCopy}>
                     <Link aria-label='Copy Link'>Copy Link</Link>
                   </CopyToClipboard>
-                  {showAlert && (
-                    <Alert severity='success' aria-label='Link Copied to Clipboard'>
-                      Link copied to clipboard
-                    </Alert>
-                  )}
+                  {showAlert && <Alert severity='success'>Link copied to clipboard</Alert>}
                 </LinkLine>
                 <PopperNotes>NOTE: The link is valid for 24 hours. Please regenerate it after the timeout.</PopperNotes>
               </PopperContentWrapper>

@@ -3,6 +3,7 @@ import { FULFILLED, DATA_LOADING_FAILED, DATE_RANGE_FORMAT } from '../constants/
 import { ReportResponseDTO } from '../clients/report/dto/response';
 import { reportClient } from '../clients/report/ReportClient';
 import { DateRangeList } from '../context/config/configSlice';
+import { NotFoundError } from '../errors/NotFoundError';
 import { MetricTypes } from '../constants/commons';
 import { useParams } from 'react-router-dom';
 import { AxiosResponse } from 'axios';
@@ -14,22 +15,28 @@ export const useShareReportEffect = () => {
   const [dateRanges, setDateRanges] = useState<DateRangeList>([]);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>([]);
   const [metrics, setMetrics] = useState<string[]>([]);
+  const [isExpired, setIsExpired] = useState<boolean>(false);
 
   const getData = async () => {
-    console.log('getData');
-    const reportURLsRes = await reportClient.getReportUrlAndMetrics(reportId!);
-    const dateRanges = extractDateRanges(reportURLsRes.data.reportURLs);
+    try {
+      const reportURLsRes = await reportClient.getReportUrlAndMetrics(reportId!);
+      const dateRanges = extractDateRanges(reportURLsRes.data.reportURLs);
 
-    const reportRes = await Promise.allSettled(
-      reportURLsRes.data.reportURLs.map((reportUrl: string) => reportClient.getReportDetail(reportUrl)),
-    );
+      const reportRes = await Promise.allSettled(
+        reportURLsRes.data.reportURLs.map((reportUrl: string) => reportClient.getReportDetail(reportUrl)),
+      );
 
-    const reportInfos = generateReportInfos(dateRanges, reportRes);
-    console.log(dateRanges, reportInfos);
+      const reportInfos = generateReportInfos(dateRanges, reportRes);
 
-    setMetrics(reportURLsRes.data.metrics);
-    setDateRanges(dateRanges);
-    setReportInfos(reportInfos);
+      setMetrics(reportURLsRes.data.metrics);
+      setDateRanges(dateRanges);
+      setReportInfos(reportInfos);
+    } catch (e) {
+      const err = e as Error;
+      if (err instanceof NotFoundError) {
+        setIsExpired(true);
+      }
+    }
   };
 
   const extractDateRanges = (reportURLs: string[]) => {
@@ -69,6 +76,7 @@ export const useShareReportEffect = () => {
     dateRanges,
     reportInfos,
     metrics,
+    isExpired,
     getData,
   };
 };

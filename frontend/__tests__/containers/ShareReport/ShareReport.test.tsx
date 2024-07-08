@@ -1,7 +1,7 @@
 import { EMPTY_REPORT_VALUES, MOCK_REPORT_RESPONSE } from '../../fixtures';
 import { useShareReportEffect } from '@src/hooks/useShareReportEffect';
+import { DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { render, renderHook, screen } from '@testing-library/react';
-import { DEFAULT_MESSAGE } from '@src/constants/resources';
 import { setupStore } from '../../utils/setupStoreUtil';
 import ShareReport from '@src/containers/ShareReport';
 import { Provider } from 'react-redux';
@@ -104,5 +104,11 @@ describe('Share Report', () => {
     expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
 
     expect(reportHook.current.getData).toHaveBeenCalledTimes(1);
+  });
+
+  it('should render report expired error given report is expired', () => {
+    reportHook.current.isExpired = true;
+    setup();
+    expect(screen.getByText(MESSAGE.SHARE_REPORT_EXPIRED)).toBeInTheDocument();
   });
 });

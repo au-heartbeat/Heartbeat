@@ -7,6 +7,8 @@ import { ReactNode } from 'react';
 import clearAllMocks = jest.clearAllMocks;
 import resetAllMocks = jest.resetAllMocks;
 import { useShareReportEffect } from '../../src/hooks/useShareReportEffect';
+import { NotFoundError } from '../../src/errors/NotFoundError';
+import { HttpStatusCode } from 'axios';
 
 let store = setupStore();
 
@@ -73,5 +75,19 @@ describe('use generate report effect', () => {
     expect(result.current.reportInfos).toHaveLength(2);
     expect(result.current.reportInfos[0].id).toEqual('2024-05-13T00:00:00.000+08:00');
     expect(result.current.reportInfos[1].id).toEqual('2024-05-27T00:00:00.000+08:00');
+  });
+
+  it('should set isExpired given report is expired', async () => {
+    reportClient.getReportUrlAndMetrics = jest
+      .fn()
+      .mockRejectedValue(new NotFoundError('not found', HttpStatusCode.NotFound, 'report is expired'));
+    reportClient.getReportDetail = jest.fn().mockResolvedValue({ data: MOCK_REPORT_RESPONSE });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.getData();
+    });
+
+    expect(result.current.isExpired).toBeTruthy();
   });
 });
