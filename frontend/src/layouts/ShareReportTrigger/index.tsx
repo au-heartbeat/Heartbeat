@@ -31,7 +31,7 @@ const ShareReportTrigger = () => {
   const reportPageLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
   const stepNumber = useAppSelector(selectStepNumber);
 
-  const shareReportLink = `${window.location.host}/report/${reportId}`;
+  const shareReportLink = `${window.location.host}/reports/${reportId}`;
   const isReportLoadedSuccess = Object.values(reportPageLoadingStatus)
     .map(Object.values)
     .flat()
@@ -74,9 +74,13 @@ const ShareReportTrigger = () => {
                     <LinkIcon />
                   </LinkIconWrapper>
                   <CopyToClipboard text={shareReportLink} onCopy={handleCopy}>
-                    <Link>Copy Link</Link>
+                    <Link aria-label='Copy Link'>Copy Link</Link>
                   </CopyToClipboard>
-                  {showAlert && <Alert severity='success'>Link copied to clipboard</Alert>}
+                  {showAlert && (
+                    <Alert severity='success' aria-label='Link Copied to Clipboard'>
+                      Link copied to clipboard
+                    </Alert>
+                  )}
                 </LinkLine>
                 <PopperNotes>NOTE: The link is valid for 24 hours. Please regenerate it after the timeout.</PopperNotes>
               </PopperContentWrapper>

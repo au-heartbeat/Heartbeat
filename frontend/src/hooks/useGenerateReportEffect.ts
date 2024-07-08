@@ -156,7 +156,6 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
         const errorKey = getErrorKey(matchedRes.reason, MetricTypes.All) as keyof IReportError;
         reportInfo[errorKey] = { message: DATA_LOADING_FAILED, shouldShow: true };
       }
-      console.log(reportInfo);
       return reportInfo;
     });
   }

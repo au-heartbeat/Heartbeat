@@ -1,4 +1,10 @@
-import stepperReducer, { backStep, nextStep, resetStep, updateTimeStamp } from '@src/context/stepper/StepperSlice';
+import stepperReducer, {
+  backStep,
+  nextStep,
+  resetStep,
+  updateReportId,
+  updateTimeStamp,
+} from '@src/context/stepper/StepperSlice';
 import { ZERO } from '../fixtures';
 
 describe('stepper reducer', () => {
@@ -74,5 +80,21 @@ describe('stepper reducer', () => {
     );
 
     expect(stepper.timeStamp).toEqual(mockTime);
+  });
+
+  it('should get current time when handle updateTimeStamp', () => {
+    const mockReportId = 'reportId';
+    const stepper = stepperReducer(
+      {
+        stepNumber: 2,
+        timeStamp: 0,
+        shouldMetricsLoaded: true,
+        metricsPageTimeRangeLoadingStatus: {},
+        reportPageTimeRangeLoadingStatus: {},
+      },
+      updateReportId(mockReportId),
+    );
+
+    expect(stepper.reportId).toEqual(mockReportId);
   });
 });

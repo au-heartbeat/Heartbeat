@@ -13,7 +13,7 @@ const routes = [
     name: 'Metrics',
   },
   {
-    path: '/report/:reportId',
+    path: '/reports/:reportId',
     component: lazy(() => import('../pages/ShareReportPage')),
     name: 'ShareReportPage',
   },

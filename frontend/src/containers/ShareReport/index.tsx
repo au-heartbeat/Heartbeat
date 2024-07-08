@@ -18,8 +18,8 @@ const ShareReport = () => {
           metrics={metrics}
           dateRanges={dateRanges}
           reportInfos={reportInfos}
-          startToRequestBoardData={() => getData()}
-          startToRequestDoraData={() => getData()}
+          startToRequestBoardData={getData}
+          startToRequestDoraData={getData}
           hideButtons
         />
       )}
