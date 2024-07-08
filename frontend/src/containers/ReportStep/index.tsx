@@ -158,7 +158,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
   // const shouldShowTabs = allDateRanges.length > 1;
   // const onlySelectClassification = useAppSelector(isOnlySelectClassification);
-  const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
+  // const selectDoraMetricsAndClassification = useAppSelector(isSelectDoraMetricsAndClassification);
   // const [chartIndex, setChartIndex] = useState(
   //   selectDoraMetricsAndClassification || !shouldShowBoardMetrics ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
   // );

@@ -1,6 +1,5 @@
 import { MOCK_REPORT_RESPONSE, REQUIRED_DATA_LIST } from '@test/fixtures';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
-import { updateMetrics } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -36,10 +35,10 @@ describe('Report Card', () => {
 
   const setup = () => {
     store = setupStore();
-    store.dispatch(updateMetrics(REQUIRED_DATA_LIST));
     return render(
       <Provider store={store}>
         <DoraMetrics
+          metrics={REQUIRED_DATA_LIST}
           startToRequestDoraData={mockHandleRetry}
           onShowDetail={onShowDetail}
           doraReport={mockData}

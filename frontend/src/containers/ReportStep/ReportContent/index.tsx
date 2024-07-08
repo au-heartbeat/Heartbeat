@@ -666,8 +666,8 @@ const ReportContent = (props: ReportContentProps) => {
           isShowExportDoraChartButton={pageType === REPORT_PAGE_TYPE.DORA_CHART}
           isShowExportBoardChartButton={pageType === REPORT_PAGE_TYPE.BOARD_CHART}
           handleBack={() => handleBack()}
-          handleSave={() => handleSave()}
-          csvTimeStamp={csvTimeStamp}
+          handleSave={() => handleSave!()}
+          csvTimeStamp={csvTimeStamp!}
           dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
         />
       )}
