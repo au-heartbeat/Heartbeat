@@ -475,7 +475,7 @@ export const MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION: ReportResponseDTO = {
   },
   devMeanTimeToRecovery: {
     avgDevMeanTimeToRecovery: {
-      name: 'Average',
+      name: 'Total',
       timeToRecovery: NaN,
     },
     devMeanTimeToRecoveryOfPipelines: [
@@ -611,7 +611,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
   },
   devMeanTimeToRecovery: {
     avgDevMeanTimeToRecovery: {
-      name: 'Average',
+      name: 'Total',
       timeToRecovery: 14396108.777777776,
     },
     devMeanTimeToRecoveryOfPipelines: [
