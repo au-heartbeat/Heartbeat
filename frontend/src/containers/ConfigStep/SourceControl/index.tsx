@@ -13,6 +13,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
+import { useEffect } from 'react';
 
 export const SourceControl = () => {
   const dispatch = useAppDispatch();
@@ -31,6 +32,13 @@ export const SourceControl = () => {
 
   const onSubmit = async () => await verifyToken();
   const closeTimeoutAlert = () => clearErrors(fields[FieldKey.Token].key);
+
+  useEffect(() => {
+    if (!isVerified) {
+      handleSubmit(onSubmit)();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVerified]);
 
   return (
     <ConfigSectionContainer aria-label='Source Control Config'>
