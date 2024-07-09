@@ -510,16 +510,6 @@ export class ConfigStep {
     await confirmButton.click();
   }
 
-  async verifyAllConfig() {
-    await this.boardVerifyButton.click();
-    await this.pipelineToolVerifyButton.click();
-    await this.sourceControlVerifyButton.click();
-  }
-
-  async verifyBoardConfig() {
-    await this.boardVerifyButton.click();
-  }
-
   async addNewTimeRange() {
     await this.newTimeRangeButton.click();
   }
