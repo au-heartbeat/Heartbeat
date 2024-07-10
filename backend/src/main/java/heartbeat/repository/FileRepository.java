@@ -47,6 +47,8 @@ public class FileRepository {
 
 	private static final String CSV_EXTENSION = ".csv";
 
+	private static final String SUCCESSFULLY_WRITE_FILE_LOGS = "Successfully write file type: {}, uuid: {}, file name: {}";
+
 	private final Gson gson;
 
 	public void createPath(FileType type, String uuid) {
@@ -217,7 +219,7 @@ public class FileRepository {
 		synchronized (this) {
 			handler.accept(realFileName);
 		}
-		log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid, realFileName);
+		log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), uuid, realFileName);
 	}
 
 	private void createNormalFileHandler(FileType fileType, String uuid, String json, String realFileName) {
@@ -226,8 +228,7 @@ public class FileRepository {
 		try (FileWriter writer = new FileWriter(tmpFileName)) {
 			writer.write(json);
 			Files.move(Path.of(tmpFileName), Path.of(realFileName), StandardCopyOption.ATOMIC_MOVE);
-			log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
-					realFileName);
+			log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), uuid, realFileName);
 		}
 		catch (Exception e) {
 			log.error("Failed to write file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
@@ -239,8 +240,7 @@ public class FileRepository {
 	private void createCSVFileHandler(FileType fileType, String uuid, String[][] json, String realFileName) {
 		try (CSVWriter writer = new CSVWriter(new FileWriter(realFileName))) {
 			writer.writeAll(Arrays.asList(json));
-			log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
-					realFileName);
+			log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), uuid, realFileName);
 		}
 		catch (IOException e) {
 			log.error("Failed to write {} file", fileType.getType(), e);
