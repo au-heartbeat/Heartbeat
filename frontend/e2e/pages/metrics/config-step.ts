@@ -186,7 +186,7 @@ export class ConfigStep {
   }
 
   async checkRemindImportedDataNotMatched() {
-    await expect(this.page.getByRole('alert')).toContainText(
+    await expect(this.page.getByRole('alert').first()).toContainText(
       'Imported data is not perfectly matched. Please review carefully before going next!',
     );
   }
