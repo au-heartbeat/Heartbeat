@@ -113,7 +113,6 @@ const ReportContent = (props: ReportContentProps) => {
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
 
-
   const startDate = selectedDateRange?.startDate as string;
   const endDate = selectedDateRange?.endDate as string;
   const shouldShowBoardMetrics = metrics.some((metric) => BOARD_METRICS.includes(metric));
@@ -168,8 +167,6 @@ const ReportContent = (props: ReportContentProps) => {
     setErrorNotificationIds([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDateRange]);
-
-
 
   useEffect(() => {
     if (pageType === REPORT_PAGE_TYPE.DORA || pageType === REPORT_PAGE_TYPE.BOARD) {

@@ -20,7 +20,6 @@ import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
-import { selectConfig } from '@src/context/config/configSlice';
 import { onlyEmptyAndDoneState } from '@src/utils/util';
 import { Loading } from '@src/components/Loading';
 import { useAppSelector } from '@src/hooks';

@@ -16,8 +16,8 @@ import {
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
 } from '../../fixtures/create-new/report-result';
 import { BOARD_CHART_VALUE, DORA_CHART_VALUE } from '../../fixtures/import-file/chart-result';
-import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { expect, Locator, Page, Download, BrowserContext } from '@playwright/test';
+import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { parse } from 'csv-parse/sync';
 import path from 'path';
 import fs from 'fs';
