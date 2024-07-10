@@ -4,6 +4,7 @@ import {
   updateReportId,
   updateReportPageLoadingStatus,
 } from '@src/context/stepper/StepperSlice';
+import { getReportPageLoadingStatusWhenGainPollingUrls, getReportPageLoadingStatusWhenPolling } from '../utils/report';
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
@@ -210,40 +211,11 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   };
 
   const resetReportPageLoadingStatus = (dateRangeList: DateRangeList) => {
-    const loadingStatus = {
-      isLoading: false,
-      isLoaded: false,
-      isLoadedWithError: false,
-    };
-    const payload = dateRangeList.map(({ startDate }) => ({
-      startDate: formatDateToTimestampString(startDate!),
-      loadingStatus: {
-        gainPollingUrl: { isLoading: true, isLoaded: false, isLoadedWithError: false },
-        polling: { ...loadingStatus },
-        boardMetrics: { ...loadingStatus },
-        pipelineMetrics: { ...loadingStatus },
-        sourceControlMetrics: { ...loadingStatus },
-      },
-    }));
-    dispatch(updateReportPageLoadingStatus(payload));
+    dispatch(updateReportPageLoadingStatus(getReportPageLoadingStatusWhenGainPollingUrls(dateRangeList)));
   };
 
   function resetPollingLoadingStatusBeforePolling(dates: string[]) {
-    const loadingStatus = {
-      isLoading: true,
-      isLoaded: false,
-      isLoadedWithError: false,
-    };
-    const payload = dates.map((date) => ({
-      startDate: formatDateToTimestampString(date),
-      loadingStatus: {
-        polling: { ...loadingStatus },
-        boardMetrics: { ...loadingStatus },
-        pipelineMetrics: { ...loadingStatus },
-        sourceControlMetrics: { ...loadingStatus },
-      },
-    }));
-    dispatch(updateReportPageLoadingStatus(payload));
+    dispatch(updateReportPageLoadingStatus(getReportPageLoadingStatusWhenPolling(dates)));
   }
 
   const updateErrorAfterFetchReport = (

@@ -57,17 +57,6 @@ export const LinkLine = styled.div({
   },
 });
 
-export const TrendContainer = styled('div')(({ color }: { color: string }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  color: color,
-  margin: '0 0.5rem',
-  fontSize: '1.125rem',
-  '&:hover': {
-    cursor: 'pointer',
-  },
-}));
-
 export const ShareIconWrapper = styled.span(({ disabled }: { disabled: boolean }) => ({
   padding: '0.5rem',
   cursor: disabled ? 'unset !important' : 'pointer',

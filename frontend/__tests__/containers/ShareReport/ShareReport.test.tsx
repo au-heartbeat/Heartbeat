@@ -111,4 +111,12 @@ describe('Share Report', () => {
     setup();
     expect(screen.getByText(MESSAGE.SHARE_REPORT_EXPIRED)).toBeInTheDocument();
   });
+
+  it('should render nothing before data is loaded', () => {
+    reportHook.current.dateRanges = [];
+    reportHook.current.reportInfos = [];
+    reportHook.current.metrics = [];
+    setup();
+    expect(screen.queryByText('Board Metrics')).not.toBeInTheDocument();
+  });
 });

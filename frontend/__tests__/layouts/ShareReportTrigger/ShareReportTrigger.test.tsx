@@ -126,13 +126,17 @@ describe('Header', () => {
     expect(screen.queryByText('Share Report')).not.toBeInTheDocument();
   });
 
-  it('should open share report popper when click share icon', async () => {
+  it('should open or close share report popper when click share icon', async () => {
     prepareSuccessStore();
     const { getByLabelText } = setup();
 
     await userEvent.click(getByLabelText(SHARE_ICON_LABEL));
 
     expect(screen.getByText('Share Report')).toBeInTheDocument();
+
+    await userEvent.click(getByLabelText(SHARE_ICON_LABEL));
+
+    expect(screen.queryByText('Share Report')).not.toBeInTheDocument();
   });
 
   it('should copy share report url when click Copy Link', async () => {
