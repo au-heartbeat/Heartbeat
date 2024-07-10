@@ -7,7 +7,9 @@ import { ReactNode } from 'react';
 import clearAllMocks = jest.clearAllMocks;
 import resetAllMocks = jest.resetAllMocks;
 import { useShareReportEffect } from '../../src/hooks/useShareReportEffect';
+import { AxiosRequestErrorCode } from '../../src/constants/resources';
 import { NotFoundError } from '../../src/errors/NotFoundError';
+import { TimeoutError } from '../../src/errors/TimeoutError';
 import { HttpStatusCode } from 'axios';
 
 let store = setupStore();
@@ -75,6 +77,26 @@ describe('use generate report effect', () => {
     expect(result.current.reportInfos).toHaveLength(2);
     expect(result.current.reportInfos[0].id).toEqual('2024-05-13T00:00:00.000+08:00');
     expect(result.current.reportInfos[1].id).toEqual('2024-05-27T00:00:00.000+08:00');
+  });
+
+  it('should set "Data loading failed" for all board metrics when board data retrieval times out', async () => {
+    reportClient.getReportUrlAndMetrics = jest.fn().mockResolvedValue({ data: MOCK_SHARE_REPORT_URLS_RESPONSE });
+    reportClient.getReportDetail = jest
+      .fn()
+      .mockRejectedValue(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout));
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.getData();
+    });
+
+    expect(result.current.reportInfos).toHaveLength(2);
+    expect(result.current.reportInfos[0].timeout4Report.message).toEqual('Data loading failed');
+    expect(result.current.reportInfos[0].timeout4Report.shouldShow).toBeTruthy();
+    expect(result.current.reportInfos[0].reportData).toBeUndefined();
+    expect(result.current.reportInfos[1].timeout4Report.message).toEqual('Data loading failed');
+    expect(result.current.reportInfos[1].timeout4Report.shouldShow).toBeTruthy();
+    expect(result.current.reportInfos[1].reportData).toBeUndefined();
   });
 
   it('should set isExpired given report is expired', async () => {
