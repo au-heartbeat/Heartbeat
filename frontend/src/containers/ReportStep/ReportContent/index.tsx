@@ -52,8 +52,8 @@ import { Box, Tab } from '@mui/material';
 import { uniqueId } from 'lodash';
 
 export interface ReportContentProps {
-  metrics: string[]; // useAppSelector(selectConfig).basic.metrics
-  dateRanges: DateRangeList; // useAppSelector(selectDateRange);
+  metrics: string[];
+  dateRanges: DateRangeList;
   startToRequestDoraData: () => void;
   startToRequestBoardData: () => void;
   reportInfos: IReportInfo[];
@@ -74,16 +74,6 @@ export interface DateRangeRequestResult {
   reportData: ReportResponseDTO | undefined;
 }
 
-// export function showChart(div: HTMLDivElement | null, isFinished: boolean, options: echarts.EChartsCoreOption) {
-//   if (div) {
-//     const chart = echarts.init(div);
-//     chart.setOption(options);
-//     return () => {
-//       chart.dispose();
-//     };
-//   }
-// }
-
 const ReportContent = (props: ReportContentProps) => {
   const {
     metrics,
@@ -96,8 +86,6 @@ const ReportContent = (props: ReportContentProps) => {
     hideButtons = false,
   } = props;
   const dispatch = useAppDispatch();
-  // const configData = useAppSelector(selectConfig);
-  // const dateRanges = useAppSelector(selectDateRange);
 
   const descendingDateRanges = sortDateRanges(dateRanges);
   const ascendingDateRanges = descendingDateRanges.slice();
@@ -115,43 +103,19 @@ const ReportContent = (props: ReportContentProps) => {
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
 
   const {
-    // startToRequestData,
-    // reportInfos,
-    // stopPollingReports,
     closeReportInfosErrorStatus,
     closeBoardMetricsError,
     closePipelineMetricsError,
     closeSourceControlMetricsError,
-    // hasPollingStarted,
   } = useGenerateReportEffect();
 
-  // const [exportValidityTimeMin, setExportValidityTimeMin] = useState<number | undefined | null>(undefined);
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
-  // const [isCsvFileGeneratedAtEnd, setIsCsvFileGeneratedAtEnd] = useState<boolean>(false);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
 
-  // const csvTimeStamp = useAppSelector(selectTimeStamp);
-  // const {
-  //   cycleTimeSettingsType,
-  //   cycleTimeSettings,
-  //   treatFlagCardAsBlock,
-  //   users,
-  //   targetFields,
-  //   doneColumn,
-  //   assigneeFilter,
-  //   importedData: { importedAdvancedSettings, reworkTimesSettings },
-  //   pipelineCrews,
-  //   deploymentFrequencySettings,
-  //   leadTimeForChanges,
-  // } = useAppSelector(selectMetricsContent);
 
   const startDate = selectedDateRange?.startDate as string;
   const endDate = selectedDateRange?.endDate as string;
-  // const { metrics, calendarType } = configData.basic;
-  // const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
-  // const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);
-  // const includeRework = metrics.includes(RequiredData.ReworkTimes);
   const shouldShowBoardMetrics = metrics.some((metric) => BOARD_METRICS.includes(metric));
   const shouldShowDoraMetrics = metrics.some((metric) => DORA_METRICS.includes(metric));
   const shouldShowTabs = allDateRanges.length > 1;
@@ -192,112 +156,6 @@ const ReportContent = (props: ReportContentProps) => {
     );
   };
 
-  // const getJiraBoardSetting = () => {
-  //   const { token, type, site, projectKey, boardId, email } = configData.board.config;
-
-  //   return {
-  //     token: getJiraBoardToken(token, email),
-  //     type: type.toLowerCase().replace(' ', '-'),
-  //     site,
-  //     projectKey,
-  //     boardId,
-  //     boardColumns: filterAndMapCycleTimeSettings(cycleTimeSettings),
-  //     treatFlagCardAsBlock,
-  //     users,
-  //     assigneeFilter,
-  //     targetFields: formatDuplicatedNameWithSuffix(targetFields),
-  //     doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
-  //     reworkTimesSetting:
-  //       includeRework && !isOnlyEmptyAndDoneState
-  //         ? {
-  //             reworkState: reworkTimesSettings.reworkState,
-  //             excludedStates: reworkTimesSettings.excludeStates,
-  //           }
-  //         : null,
-  //     overrideFields: [
-  //       {
-  //         name: 'Story Points',
-  //         key: importedAdvancedSettings?.storyPoint ?? '',
-  //         flag: true,
-  //       },
-  //       {
-  //         name: 'Flagged',
-  //         key: importedAdvancedSettings?.flag ?? '',
-  //         flag: true,
-  //       },
-  //     ],
-  //   };
-  // };
-
-  // const getDoraSetting = () => {
-  //   const { pipelineTool, sourceControl } = configData;
-
-  //   return {
-  //     buildKiteSetting: {
-  //       pipelineCrews,
-  //       ...pipelineTool.config,
-  //       deploymentEnvList: getPipelineConfig(deploymentFrequencySettings),
-  //     },
-  //     codebaseSetting: {
-  //       type: sourceControl.config.type,
-  //       token: sourceControl.config.token,
-  //       leadTime: getPipelineConfig(leadTimeForChanges),
-  //     },
-  //   };
-  // };
-
-  // const getPipelineConfig = (pipelineConfigs: IPipelineConfig[]) =>
-  //   pipelineConfigs.flatMap(({ organization, pipelineName, step, branches }) => {
-  //     const pipelineConfigFromPipelineList = configData.pipelineTool.verifiedResponse.pipelineList.find(
-  //       (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization,
-  //     );
-  //     if (pipelineConfigFromPipelineList) {
-  //       const { orgName, orgId, name, id, repository } = pipelineConfigFromPipelineList;
-  //       return [
-  //         {
-  //           orgId,
-  //           orgName,
-  //           id,
-  //           name,
-  //           step,
-  //           repository,
-  //           branches,
-  //         },
-  //       ];
-  //     }
-  //     return [];
-  //   });
-
-  // const basicReportRequestBody = {
-  //   startTime: null,
-  //   endTime: null,
-  //   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  //   calendarType,
-  //   csvTimeStamp,
-  //   metrics,
-  //   metricTypes: [
-  //     ...(shouldShowBoardMetrics ? [MetricTypes.Board] : []),
-  //     ...(shouldShowDoraMetrics ? [MetricTypes.DORA] : []),
-  //   ],
-  //   jiraBoardSetting: shouldShowBoardMetrics ? getJiraBoardSetting() : undefined,
-  //   ...(shouldShowDoraMetrics ? getDoraSetting() : {}),
-  // };
-
-  // const boardReportRequestBody = {
-  //   ...basicReportRequestBody,
-  //   metrics: metrics.filter((metric) => BOARD_METRICS.includes(metric)),
-  //   metricTypes: [MetricTypes.Board],
-  //   buildKiteSetting: undefined,
-  //   codebaseSetting: undefined,
-  // };
-
-  // const doraReportRequestBody = {
-  //   ...basicReportRequestBody,
-  //   metrics: metrics.filter((metric) => DORA_METRICS.includes(metric)),
-  //   metricTypes: [MetricTypes.DORA],
-  //   jiraBoardSetting: undefined,
-  // };
-
   useEffect(() => {
     setCurrentDataInfo(reportInfos.find((singleResult) => singleResult.id === selectedDateRange.startDate)!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -311,56 +169,13 @@ const ReportContent = (props: ReportContentProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDateRange]);
 
-  // useEffect(() => {
-  //   exportValidityTimeMin &&
-  //     isCsvFileGeneratedAtEnd &&
-  //     dispatch(
-  //       addNotification({
-  //         message: MESSAGE.EXPIRE_INFORMATION(exportValidityTimeMin),
-  //       }),
-  //     );
-  // }, [dispatch, exportValidityTimeMin, isCsvFileGeneratedAtEnd]);
 
-  // useEffect(() => {
-  //   if (exportValidityTimeMin && isCsvFileGeneratedAtEnd) {
-  //     const startTime = Date.now();
-  //     const timer = setInterval(() => {
-  //       const currentTime = Date.now();
-  //       const elapsedTime = currentTime - startTime;
-
-  //       const remainingExpireTime = 5 * 60 * 1000;
-  //       const remainingTime = exportValidityTimeMin * 60 * 1000 - elapsedTime;
-  //       if (remainingTime <= remainingExpireTime) {
-  //         dispatch(
-  //           addNotification({
-  //             message: MESSAGE.EXPIRE_INFORMATION(5),
-  //           }),
-  //         );
-  //         clearInterval(timer);
-  //       }
-  //     }, 1000);
-
-  //     return () => {
-  //       clearInterval(timer);
-  //     };
-  //   }
-  // }, [dispatch, exportValidityTimeMin, isCsvFileGeneratedAtEnd]);
 
   useEffect(() => {
     if (pageType === REPORT_PAGE_TYPE.DORA || pageType === REPORT_PAGE_TYPE.BOARD) {
       dispatch(closeAllNotifications());
     }
   }, [dispatch, pageType]);
-
-  // useEffect(() => {
-  //   if (hasPollingStarted) return;
-  //   const successfulReportInfos = reportInfos.filter((reportInfo) => reportInfo.reportData);
-  //   if (successfulReportInfos.length === 0) return;
-  //   setExportValidityTimeMin(successfulReportInfos[0].reportData?.exportValidityTime);
-  //   setIsCsvFileGeneratedAtEnd(
-  //     successfulReportInfos.some((reportInfo) => reportInfo.reportData?.isSuccessfulCreateCsvFile),
-  //   );
-  // }, [dispatch, reportInfos, hasPollingStarted]);
 
   useEffect(() => {
     if ((isSummaryPage || isChartPage) && notifications4SummaryPage.length > 0) {
@@ -439,10 +254,6 @@ const ReportContent = (props: ReportContentProps) => {
 
   useEffect(() => {
     setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
-    // startToRequestData(basicReportRequestBody);
-    // return () => {
-    //   stopPollingReports();
-    // };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
