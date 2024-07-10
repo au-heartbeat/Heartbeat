@@ -73,7 +73,7 @@ public class FileRepository {
 		if (file.toPath().normalize().startsWith(NORMALIZE_BASE_OUTPUT_PATH) && file.exists()) {
 			try (JsonReader reader = new JsonReader(new FileReader(file))) {
 				T result = gson.fromJson(reader, classType);
-				log.info("Successfully to read file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+				log.info("Successfully read file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
 						realFileName);
 				return result;
 			}
@@ -122,7 +122,7 @@ public class FileRepository {
 		log.info("Start to remove file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid, fileName);
 		try {
 			Files.deleteIfExists(Path.of(path));
-			log.info("Successfully to remove file type: {}, file name: {}", fileType.getType(), fileName);
+			log.info("Successfully remove file type: {}, file name: {}", fileType.getType(), fileName);
 		}
 		catch (Exception e) {
 			log.error("Failed to remove file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
@@ -152,7 +152,7 @@ public class FileRepository {
 						FileUtils.deleteDirectory(uuidDirectory);
 					}
 				}
-				log.info("Successfully to deleted expired {} file, file path: {}", fileType.getType(), uuidDirectory);
+				log.info("Successfully deleted expired {} file, file path: {}", fileType.getType(), uuidDirectory);
 			}
 			catch (Exception e) {
 				log.error("Failed to deleted expired {} file, file path: {}, reason: {}", fileType.getType(),
@@ -217,8 +217,7 @@ public class FileRepository {
 		synchronized (this) {
 			handler.accept(realFileName);
 		}
-		log.info("Successfully to write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
-				realFileName);
+		log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid, realFileName);
 	}
 
 	private void createNormalFileHandler(FileType fileType, String uuid, String json, String realFileName) {
@@ -240,7 +239,7 @@ public class FileRepository {
 	private void createCSVFileHandler(FileType fileType, String uuid, String[][] json, String realFileName) {
 		try (CSVWriter writer = new CSVWriter(new FileWriter(realFileName))) {
 			writer.writeAll(Arrays.asList(json));
-			log.info("Successfully to write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+			log.info("Successfully write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
 					realFileName);
 		}
 		catch (IOException e) {

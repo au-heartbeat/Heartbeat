@@ -62,7 +62,7 @@ public class ReportController {
 		log.info("Start to generate report_reportId: {}", uuid);
 		ReportResponse composedReportResponse = generateReporterService.getComposedReportResponse(uuid, startTime,
 				endTime);
-		log.info("successfully to generate report_reportId: {}", uuid);
+		log.info("Successfully generate report_reportId: {}", uuid);
 		return composedReportResponse;
 	}
 
@@ -70,7 +70,7 @@ public class ReportController {
 	public ShareApiDetailsResponse getShareDetails(@PathVariable String uuid) {
 		log.info("start to get share details, uuid: {}", uuid);
 		ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(uuid);
-		log.info("successfully to get share details, uuid: {}", uuid);
+		log.info("Successfully get share details, uuid: {}", uuid);
 		return shareReportInfo;
 	}
 
@@ -94,7 +94,7 @@ public class ReportController {
 	public UuidResponse generateUUID() {
 		log.info("start to generate uuid");
 		UuidResponse uuidResponse = reportService.generateReportId();
-		log.info("successfully to generate uuid");
+		log.info("Successfully generate uuid, uuid: {}", uuidResponse.getReportId());
 		return uuidResponse;
 	}
 
