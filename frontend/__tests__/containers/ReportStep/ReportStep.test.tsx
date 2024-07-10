@@ -32,9 +32,9 @@ import { act, render, renderHook, screen, waitFor } from '@testing-library/react
 import { closeNotification } from '@src/context/notification/NotificationSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
+import { backStep, updateReportId } from '@src/context/stepper/StepperSlice';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import ReportStep, { showChart } from '@src/containers/ReportStep';
-import { backStep } from '@src/context/stepper/StepperSlice';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import React, { ReactNode } from 'react';
@@ -170,6 +170,7 @@ describe('Report Step', () => {
         ],
       }),
     );
+    store.dispatch(updateReportId(0));
     return render(
       <Provider store={store}>
         <ReportStep handleSave={handleSaveMock} />
@@ -278,19 +279,19 @@ describe('Report Step', () => {
       setup(['']);
 
       expect(addNotification).not.toBeCalledWith({
-        title: MESSAGE.EXPIRE_INFORMATION(5),
+        title: MESSAGE.EXPIRE_INFORMATION,
       });
 
       jest.advanceTimersByTime(500000);
 
       expect(addNotification).not.toBeCalledWith({
-        title: MESSAGE.EXPIRE_INFORMATION(5),
+        title: MESSAGE.EXPIRE_INFORMATION,
       });
 
       jest.advanceTimersByTime(1000000);
 
       expect(addNotification).toBeCalledWith({
-        message: MESSAGE.EXPIRE_INFORMATION(5),
+        message: MESSAGE.EXPIRE_INFORMATION,
       });
 
       jest.useRealTimers();
@@ -382,7 +383,7 @@ describe('Report Step', () => {
       await userEvent.click(exportButton);
 
       expect(result.current.fetchExportData).toBeCalledWith({
-        csvTimeStamp: 0,
+        reportId: 0,
         dataType: 'pipeline',
         endDate: '2024-02-28T23:59:59.999+08:00',
         startDate: '2024-02-18T00:00:00.000+08:00',
@@ -419,7 +420,7 @@ describe('Report Step', () => {
       await userEvent.click(exportButton);
 
       expect(result.current.fetchExportData).toBeCalledWith({
-        csvTimeStamp: 0,
+        reportId: 0,
         dataType: 'board',
         endDate: '2024-02-28T23:59:59.999+08:00',
         startDate: '2024-02-18T00:00:00.000+08:00',
@@ -445,7 +446,7 @@ describe('Report Step', () => {
       await userEvent.click(exportButton);
 
       expect(result.current.fetchExportData).toBeCalledWith({
-        csvTimeStamp: 0,
+        reportId: 0,
         dataType: 'metric',
         endDate: '2024-02-28T23:59:59.999+08:00',
         startDate: '2024-02-18T00:00:00.000+08:00',
@@ -645,7 +646,7 @@ describe('Report Step', () => {
       reportHook.current.hasPollingStarted = false;
       setup(REQUIRED_DATA_LIST, [fullValueDateRange]);
       expect(addNotification).toHaveBeenCalledWith({
-        message: MESSAGE.EXPIRE_INFORMATION(30),
+        message: MESSAGE.EXPIRE_INFORMATION,
       });
     });
 
@@ -756,7 +757,7 @@ describe('Report Step', () => {
       await userEvent.click(switchChartButton);
 
       expect(addNotification).toHaveBeenCalledWith({
-        message: MESSAGE.EXPIRE_INFORMATION(30),
+        message: MESSAGE.EXPIRE_INFORMATION,
       });
       expect(addNotification).toHaveBeenCalledTimes(1);
     });

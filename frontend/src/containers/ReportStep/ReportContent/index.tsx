@@ -1,12 +1,4 @@
 import {
-  filterAndMapCycleTimeSettings,
-  formatDuplicatedNameWithSuffix,
-  getJiraBoardToken,
-  getRealDoneStatus,
-  onlyEmptyAndDoneState,
-  sortDateRanges,
-} from '@src/utils/util';
-import {
   GeneralErrorKey,
   initReportInfo,
   IReportError,
@@ -14,6 +6,7 @@ import {
   TimeoutErrorKey,
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
+import { sortDateRanges } from '@src/utils/util';
 
 import {
   addNotification,
@@ -22,16 +15,6 @@ import {
   Notification,
 } from '@src/context/notification/NotificationSlice';
 
-import {
-  DateRange,
-  DateRangeList,
-  isOnlySelectClassification,
-  isSelectBoardMetrics,
-  isSelectDoraMetrics,
-  isSelectDoraMetricsAndClassification,
-  selectConfig,
-  selectDateRange,
-} from '@src/context/config/configSlice';
 import {
   BOARD_METRICS,
   BOARD_METRICS_EXCLUDE_CLASSIFICATION,
@@ -49,15 +32,15 @@ import {
   StyledTab,
   StyledTabs,
 } from '@src/containers/ReportStep/style';
-import { IPipelineConfig, ISavedMetricsSettingState, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
-import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { DateRange, DateRangeList } from '@src/context/config/configSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
 import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
+import { backStep } from '@src/context/stepper/StepperSlice';
 import { ReportButtonGroup } from '../../ReportButtonGroup';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
@@ -65,9 +48,7 @@ import { BoardDetail, DoraDetail } from '../ReportDetail';
 import { BoardMetricsChart } from '../BoardMetricsChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { useAppSelector } from '@src/hooks';
 import { Box, Tab } from '@mui/material';
-import * as echarts from 'echarts';
 import { uniqueId } from 'lodash';
 
 export interface ReportContentProps {
@@ -77,7 +58,7 @@ export interface ReportContentProps {
   startToRequestBoardData: () => void;
   reportInfos: IReportInfo[];
   handleSave?: () => void;
-  csvTimeStamp?: number;
+  reportId?: number;
   hideButtons?: boolean;
 }
 
@@ -111,7 +92,7 @@ const ReportContent = (props: ReportContentProps) => {
     startToRequestBoardData,
     reportInfos,
     handleSave,
-    csvTimeStamp,
+    reportId,
     hideButtons = false,
   } = props;
   const dispatch = useAppDispatch();
@@ -667,7 +648,7 @@ const ReportContent = (props: ReportContentProps) => {
           isShowExportBoardChartButton={pageType === REPORT_PAGE_TYPE.BOARD_CHART}
           handleBack={() => handleBack()}
           handleSave={() => handleSave!()}
-          csvTimeStamp={csvTimeStamp!}
+          reportId={reportId!}
           dateRangeRequestResults={mapDateResult(descendingDateRanges, reportInfos)}
         />
       )}

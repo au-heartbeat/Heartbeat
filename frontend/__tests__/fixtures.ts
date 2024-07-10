@@ -124,7 +124,7 @@ export const MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL = `${BASE_URL}/source-control/
 export const MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL = `${BASE_URL}/source-control/:type/repos/branches/verify`;
 export const MOCK_REPORT_URL = `${BASE_URL}/reports`;
 export const MOCK_VERSION_URL = `${BASE_URL}/version`;
-export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:csvTimeStamp`;
+export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:reportId`;
 
 export const VERSION_RESPONSE = {
   version: '1.11',
@@ -287,7 +287,7 @@ export const IMPORTED_NEW_CONFIG_FIXTURE = {
 };
 
 export const MOCK_EXPORT_CSV_REQUEST_PARAMS: CSVReportRequestDTO = {
-  csvTimeStamp: 1613664000000,
+  reportId: 1613664000000,
   dataType: 'pipeline',
   startDate: IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].startDate,
   endDate: IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].endDate,

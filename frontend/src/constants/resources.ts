@@ -369,7 +369,7 @@ export const MESSAGE = {
   NO_STEP_WARNING:
     'There is no step during these periods for this pipeline! Please change the search time in the Config page!',
   ERROR_PAGE: 'Something on internet is not quite right. Perhaps head back to our homepage and try again.',
-  EXPIRE_INFORMATION: (value: number) => `The file will expire in ${value} minutes, please download it in time.`,
+  EXPIRE_INFORMATION: 'The files will be cleaned up irregularly, please download promptly to avoid expiration.',
   REPORT_LOADING: 'The report is being generated, please do not refresh the page or all the data will be disappeared.',
   LOADING_TIMEOUT: (name: string) => `${name} loading timeout, please click "Retry"!`,
   FAILED_TO_GET_DATA: (name: string) => `Failed to get ${name} data, please click "retry"!`,

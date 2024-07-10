@@ -21,7 +21,7 @@ export const dateRanges = [
 export const startToRequestDoraData = () => {};
 export const startToRequestBoardData = () => {};
 export const handleSave = () => {};
-export const csvTimeStamp = 1719909118749;
+export const reportId = 1719909118749;
 
 export const reportInfos = [
   {

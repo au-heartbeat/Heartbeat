@@ -66,7 +66,7 @@ const ShareReportTrigger = () => {
               <ShareIcon />
             </ShareIconWrapper>
             <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end'>
-              <PopperContentWrapper>
+              <PopperContentWrapper aria-label='Share Report Popper'>
                 <PopperTitle>Share Report</PopperTitle>
                 <PopperSubTitle>Share content: report list page & report chart page</PopperSubTitle>
                 <LinkLine>

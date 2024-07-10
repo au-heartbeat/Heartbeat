@@ -51,7 +51,7 @@ import {
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
 import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
-import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
+import { backStep, selectReportId, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
@@ -134,6 +134,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   // const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
 
   const csvTimeStamp = useAppSelector(selectTimeStamp);
+  const reportId = useAppSelector(selectReportId);
   const {
     cycleTimeSettingsType,
     cycleTimeSettings,
@@ -315,7 +316,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       isCsvFileGeneratedAtEnd &&
       dispatch(
         addNotification({
-          message: MESSAGE.EXPIRE_INFORMATION(exportValidityTimeMin),
+          message: MESSAGE.EXPIRE_INFORMATION,
         }),
       );
   }, [dispatch, exportValidityTimeMin, isCsvFileGeneratedAtEnd]);
@@ -332,7 +333,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         if (remainingTime <= remainingExpireTime) {
           dispatch(
             addNotification({
-              message: MESSAGE.EXPIRE_INFORMATION(5),
+              message: MESSAGE.EXPIRE_INFORMATION,
             }),
           );
           clearInterval(timer);
@@ -622,7 +623,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       startToRequestBoardData={() => startToRequestData(boardReportRequestBody)}
       reportInfos={reportInfos}
       handleSave={handleSave}
-      csvTimeStamp={csvTimeStamp}
+      reportId={reportId}
     ></ReportContent>
   );
 };

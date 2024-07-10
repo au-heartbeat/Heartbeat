@@ -15,7 +15,7 @@ import React, { useState } from 'react';
 interface ReportButtonGroupProps {
   handleSave?: () => void;
   handleBack: () => void;
-  csvTimeStamp: number;
+  reportId: number;
   isShowSave: boolean;
   isShowExportBoardButton: boolean;
   isShowExportPipelineButton: boolean;
@@ -34,7 +34,7 @@ const SINGLE_DATE_RANGE_DOWNLOAD_KEY = {
 export const ReportButtonGroup = ({
   handleSave,
   handleBack,
-  csvTimeStamp,
+  reportId,
   isShowSave,
   isShowExportMetrics,
   isShowExportBoardButton,
@@ -95,7 +95,7 @@ export const ReportButtonGroup = ({
 
   const exportCSV = (dataType: ReportTypes, startDate: string, endDate: string): CSVReportRequestDTO => ({
     dataType: dataType,
-    csvTimeStamp: csvTimeStamp,
+    reportId,
     startDate: startDate,
     endDate: endDate,
   });
