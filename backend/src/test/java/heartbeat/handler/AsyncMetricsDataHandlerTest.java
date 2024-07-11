@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.exception.GenerateReportException;
+import heartbeat.exception.InternalServerErrorException;
 import heartbeat.repository.FilePrefixType;
 import heartbeat.repository.FileRepository;
 import org.junit.jupiter.api.Nested;
@@ -208,7 +209,8 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(0)); // NOSONAR
 				}
-				catch (InterruptedException ignored) {
+				catch (InterruptedException e) {
+					throw new InternalServerErrorException(e.getMessage());
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(TEST_UUID, currentTime, BOARD, true);
 			}));
@@ -216,7 +218,8 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(1)); // NOSONAR
 				}
-				catch (InterruptedException ignored) {
+				catch (InterruptedException e) {
+					throw new InternalServerErrorException(e.getMessage());
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(TEST_UUID, currentTime, DORA, true);
 			}));
@@ -224,7 +227,8 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(2)); // NOSONAR
 				}
-				catch (InterruptedException ignored) {
+				catch (InterruptedException e) {
+					throw new InternalServerErrorException(e.getMessage());
 				}
 				asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(TEST_UUID, currentTime);
 			}));
