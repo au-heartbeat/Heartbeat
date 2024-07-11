@@ -60,7 +60,7 @@ const Header = () => {
         <ShareReportTrigger />
         {shouldShowHomeIcon() && (
           // NOSONAR-NEXT-LINE
-          <span title='Home' onClick={goHome} aria-label={'Home'} onKeyDown={() => {}}>
+          <span title='Home' onClick={goHome} aria-label={'Home'} onKeyDown={goHome}>
             <HomeIcon />
           </span>
         )}
