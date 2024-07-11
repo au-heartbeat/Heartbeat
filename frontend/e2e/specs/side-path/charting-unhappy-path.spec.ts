@@ -38,7 +38,6 @@ test('Charting unhappy path on config and metric page', async ({ homePage, confi
 
   await homePage.importProjectFromFile('../fixtures/input-files/charting-unhappy-path-config-file.json');
 
-  await configStep.verifyAllConfig();
   await configStep.addNewTimeRange();
   await configStep.addNewTimeRange();
   await configStep.addNewTimeRange();

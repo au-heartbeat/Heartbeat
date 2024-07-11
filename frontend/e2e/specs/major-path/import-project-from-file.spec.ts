@@ -42,7 +42,6 @@ test('Import project from file with all ranges API succeed', async ({
 
   await homePage.importProjectFromFile('../fixtures/input-files/multiple-done-config-file.json');
   await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
-  await configStep.verifyAllConfig();
   await configStep.goToMetrics();
 
   await metricsStep.waitForShown();
@@ -96,7 +95,6 @@ test('Import project from file with partial ranges API failed', async ({
 
   await homePage.importProjectFromFile('../fixtures/input-files/partial-time-ranges-success.json');
   await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
-  await configStep.verifyAllConfig();
   await configStep.goToMetrics();
 
   await metricsStep.waitForShown();
@@ -142,7 +140,6 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
 
   await homePage.importProjectFromFile('../fixtures/input-files/partial-metrics-show-chart.json');
   await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
-  await configStep.verifyAllConfig();
   await configStep.goToMetrics();
 
   await metricsStep.waitForShown();
@@ -192,7 +189,6 @@ test('Import project from file with holiday', async ({ homePage, configStep, met
 
   await homePage.importProjectFromFile('../fixtures/input-files/calculate-with-holiday-config-file.json');
   await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
-  await configStep.verifyAllConfig();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
 
@@ -250,7 +246,6 @@ test('Import project from flag as block and without block column', async ({
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/add-flag-as-block-config-file.json');
-  await configStep.verifyBoardConfig();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
   await metricsStep.checkCycleTimeConsiderCheckboxChecked();

@@ -186,7 +186,7 @@ export class ConfigStep {
   }
 
   async checkRemindImportedDataNotMatched() {
-    await expect(this.page.getByRole('alert')).toContainText(
+    await expect(this.page.getByRole('alert').first()).toContainText(
       'Imported data is not perfectly matched. Please review carefully before going next!',
     );
   }
@@ -508,16 +508,6 @@ export class ConfigStep {
   async confirmGoToPreviousStep() {
     const confirmButton = this.page.getByRole('button', { name: 'Yes' });
     await confirmButton.click();
-  }
-
-  async verifyAllConfig() {
-    await this.boardVerifyButton.click();
-    await this.pipelineToolVerifyButton.click();
-    await this.sourceControlVerifyButton.click();
-  }
-
-  async verifyBoardConfig() {
-    await this.boardVerifyButton.click();
   }
 
   async addNewTimeRange() {

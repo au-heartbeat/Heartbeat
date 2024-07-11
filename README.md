@@ -455,6 +455,9 @@ _Image 3-30，Dev Change Failure Rate Report_
 ![Image 3-31](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15.png)\
 _Image 3-31，mean time to recovery 
 
+![Image 3-31-multiple-pipeline](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15-1.png)\
+_Image 3-31-1，mean time to recovery when mulitiple pipeline
+
 ## 3.5 Export original data
 
 After generating the report, you can export the original data for your board and pipeline (Image 3-18). Users can click the “Export board data” or “Export pipeline data” button to export the original data.

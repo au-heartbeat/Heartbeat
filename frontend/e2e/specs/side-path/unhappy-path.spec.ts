@@ -19,7 +19,6 @@ test('Error UI should be pipeline with no org config when pipeline token without
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/pipeline-no-org-config-file.json');
-  await configStep.verifyAllConfig();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
 
@@ -45,7 +44,6 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
   await homePage.importProjectFromFile('../fixtures/input-files/unhappy-path-config-file.json');
   await configStep.checkRemindImportedDataNotMatched();
   await configStep.checkProjectName(importUnhappyPathProjectFromFile.projectName);
-  await configStep.verifyAllConfig();
   await configStep.checkAllConfigInvalid();
   await configStep.validateNextButtonNotClickable();
   await configStep.typeInProjectName(modifiedCorrectProjectFromFile.projectName);
