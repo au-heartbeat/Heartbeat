@@ -4,6 +4,7 @@ import ReportForDeploymentFrequency from '@src/components/Common/ReportForDeploy
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { Optional } from '@src/utils/types';
 import { withGoBack } from './withBack';
@@ -11,6 +12,7 @@ import React from 'react';
 
 interface Property {
   data: ReportResponseDTO;
+  selectedPipelines: IPipelineConfig[];
   onBack: () => void;
 }
 
@@ -23,8 +25,8 @@ const showDeploymentSection = (title: string, tableTitles: string[], value: Opti
 const showThreeColumnSection = (title: string, value: Optional<ReportDataWithThreeColumns[]>) =>
   value && <ReportForThreeColumns title={title} fieldName={PIPELINE_STEP} listName={SUBTITLE} data={value} />;
 
-export const DoraDetail = withGoBack(({ data }: Property) => {
-  const mappedData = reportMapper(data);
+export const DoraDetail = withGoBack(({ data, selectedPipelines }: Property) => {
+  const mappedData = reportMapper(data, selectedPipelines);
 
   return (
     <>

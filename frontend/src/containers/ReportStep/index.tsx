@@ -514,7 +514,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} />
+    <DoraMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} selectedPipelines={deploymentFrequencySettings} />
   );
 
   const showBoardChart = (data?: IReportInfo[] | undefined) => (
@@ -524,7 +524,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const showBoardDetail = (data?: ReportResponseDTO) => (
     <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
-  const showDoraDetail = (data: ReportResponseDTO) => <DoraDetail onBack={() => backToSummaryPage()} data={data} />;
+  const showDoraDetail = (data: ReportResponseDTO) => (
+    <DoraDetail onBack={() => backToSummaryPage()} data={data} selectedPipelines={deploymentFrequencySettings} />
+  );
 
   const handleBack = () => {
     setDisplayType(DISPLAY_TYPE.LIST);

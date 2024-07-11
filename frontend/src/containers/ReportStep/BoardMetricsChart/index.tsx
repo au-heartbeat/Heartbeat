@@ -258,7 +258,8 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
   const rework = useRef<HTMLDivElement>(null);
 
   const mappedData: ReportResponse[] | undefined =
-    data && data.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData));
+    data &&
+    data.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData, null) : emptyData));
 
   const cycleTimeAllocationData = extractCycleTimeAllocationData(dateRanges, mappedData);
   const cycleTimeAllocationDataOption = cycleTimeAllocationData && stackedBarOptionMapper(cycleTimeAllocationData);

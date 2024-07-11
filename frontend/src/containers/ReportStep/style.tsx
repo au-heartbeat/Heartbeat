@@ -79,3 +79,11 @@ export const StyledTab = styled(Tab)({
   border: `0.08rem solid ${theme.main.button.borderLine}`,
   minHeight: '2.5rem',
 });
+
+export const PipelinesSelectContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'flex-start',
+  [theme.breakpoints.down('lg')]: {
+    flexDirection: 'column',
+  },
+});

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import {
   ChartType,
@@ -19,9 +19,12 @@ import {
   LEFT_RIGHT_ALIGN_LABEL,
   NO_LABEL,
 } from '@src/containers/ReportStep/BoardMetricsChart';
+import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { PipelinesSelectContainer } from '@src/containers/ReportStep/style';
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
+import { IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { showChart } from '@src/containers/ReportStep';
@@ -32,6 +35,7 @@ interface DoraMetricsChartProps {
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
   metrics: string[];
+  selectedPipelines: IPipelineConfig[];
 }
 
 enum DORAMetricsChartType {
@@ -224,7 +228,7 @@ function isDoraMetricsChartFinish({
   );
 }
 
-export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({ data, dateRanges, metrics, selectedPipelines }: DoraMetricsChartProps) => {
   const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
@@ -234,7 +238,7 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics }: DoraMetricsChart
     if (!currentData?.doraMetricsCompleted) {
       return EMPTY_DATA_MAPPER_DORA_CHART('');
     } else {
-      return reportMapper(currentData);
+      return reportMapper(currentData, selectedPipelines);
     }
   });
 

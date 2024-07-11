@@ -1,9 +1,14 @@
 import { LeadTimeForChangesResponse } from '@src/clients/report/dto/response';
+import { IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 
-export const leadTimeForChangesMapper = ({
-  leadTimeForChangesOfPipelines,
-  avgLeadTimeForChanges,
-}: LeadTimeForChangesResponse) => {
+export const leadTimeForChangesMapper = (
+  { leadTimeForChangesOfPipelines, avgLeadTimeForChanges }: LeadTimeForChangesResponse,
+  selectedPipelines: IPipelineConfig[] | null,
+) => {
+  const nonDataPipelinesName = selectedPipelines
+    ?.map((item) => `${item.pipelineName}/${item.step}`)
+    .filter((it) => leadTimeForChangesOfPipelines.every((item) => `${item.name}/${item.step}` !== it));
+
   const minutesPerHour = 60;
   const formatDuration = (duration: number) => {
     return (duration / minutesPerHour).toFixed(2);
@@ -27,6 +32,27 @@ export const leadTimeForChangesMapper = ({
     };
   });
 
+  nonDataPipelinesName?.forEach((it, index) => {
+    mappedLeadTimeForChangesValue.push({
+      id: mappedLeadTimeForChangesValue.length + index,
+      name: it,
+      valueList: [
+        {
+          name: 'Pipeline Lead Time',
+          value: '0.00',
+        },
+        {
+          name: 'PR Lead Time',
+          value: '0.00',
+        },
+        {
+          name: 'Total Lead Time',
+          value: '0.00',
+        },
+      ],
+    });
+  });
+
   mappedLeadTimeForChangesValue.push({
     id: mappedLeadTimeForChangesValue.length,
     name: avgLeadTimeForChanges.name,
@@ -38,5 +64,6 @@ export const leadTimeForChangesMapper = ({
       })),
   });
 
+  console.log(mappedLeadTimeForChangesValue);
   return mappedLeadTimeForChangesValue;
 };
