@@ -14,8 +14,8 @@ import {
   selectStepNumber,
 } from '@src/context/stepper/StepperSlice';
 import { ClickAwayListener } from '@mui/base/ClickAwayListener';
+import { STEP_NUMBER, Z_INDEX } from '@src/constants/commons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { STEP_NUMBER } from '@src/constants/commons';
 import ShareIcon from '@mui/icons-material/Share';
 import LinkIcon from '@mui/icons-material/Link';
 import { useAppSelector } from '@src/hooks';
@@ -65,7 +65,7 @@ const ShareReportTrigger = () => {
             <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report' disabled={!canShare}>
               <ShareIcon />
             </ShareIconWrapper>
-            <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end'>
+            <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end' sx={{ 'z-index': Z_INDEX.DROPDOWN }}>
               <PopperContentWrapper aria-label='Share Report Popper'>
                 <PopperTitle>Share Report</PopperTitle>
                 <PopperSubTitle>Share content: report list page & report chart page</PopperSubTitle>
