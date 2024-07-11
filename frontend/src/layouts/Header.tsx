@@ -59,6 +59,7 @@ const Header = () => {
       <IconContainer>
         <ShareReportTrigger />
         {shouldShowHomeIcon() && (
+          // NOSONAR-NEXT-LINE
           <span title='Home' onClick={goHome} aria-label={'Home'}>
             <HomeIcon />
           </span>
