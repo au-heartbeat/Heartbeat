@@ -265,7 +265,8 @@ public class GenerateReporterService {
 		request.getSourceControlMetrics().forEach(metric -> {
 			switch (metric) {
 				case "lead time for changes" -> reportResponse.setLeadTimeForChanges(
-						leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes()));
+						leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes(),
+								request.getBuildKiteSetting().getDeploymentEnvList()));
 				default -> {
 					// TODO
 				}

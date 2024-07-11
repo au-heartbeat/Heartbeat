@@ -658,7 +658,7 @@ class GenerateReporterServiceTest {
 			when(pipelineService.fetchGitHubData(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
-			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
+			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
 			generateReporterService.generateDoraReport(request);
 
@@ -698,7 +698,7 @@ class GenerateReporterServiceTest {
 			when(pipelineService.fetchBuildKiteInfo(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
-			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
+			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
 			generateReporterService.generateDoraReport(request);
 
@@ -733,7 +733,7 @@ class GenerateReporterServiceTest {
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(request)).thenReturn(
 					FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).buildInfosList(List.of()).build());
-			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any());
+			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any(), any());
 
 			generateReporterService.generateDoraReport(request);
 
