@@ -88,9 +88,9 @@ const ReportContent = (props: ReportContentProps) => {
   const dispatch = useAppDispatch();
 
   const descendingDateRanges = sortDateRanges(dateRanges);
-  const ascendingDateRanges = descendingDateRanges.slice();
+  const ascendingDateRanges = descendingDateRanges.slice().toReversed();
 
-  const allDateRanges = ascendingDateRanges.reverse().map((range) => {
+  const allDateRanges = ascendingDateRanges.map((range) => {
     const start = new Date(range.startDate!);
     const end = new Date(range.endDate!);
     const formattedStart = `${start.getFullYear()}/${(start.getMonth() + 1).toString().padStart(2, '0')}/${start.getDate().toString().padStart(2, '0')}`;
@@ -368,12 +368,11 @@ const ReportContent = (props: ReportContentProps) => {
   };
 
   const handleClick = (event: React.SyntheticEvent, newValue: number) => {
-    const pageType =
-      newValue === DISPLAY_TYPE.LIST
-        ? REPORT_PAGE_TYPE.SUMMARY
-        : selectDoraMetricsAndClassification || chartIndex === CHART_INDEX.DORA
-          ? REPORT_PAGE_TYPE.DORA_CHART
-          : REPORT_PAGE_TYPE.BOARD_CHART;
+    const chartType =
+      selectDoraMetricsAndClassification || chartIndex === CHART_INDEX.DORA
+        ? REPORT_PAGE_TYPE.DORA_CHART
+        : REPORT_PAGE_TYPE.BOARD_CHART;
+    const pageType = newValue === DISPLAY_TYPE.LIST ? REPORT_PAGE_TYPE.SUMMARY : chartType;
 
     setDisplayType(newValue);
     setPageType(pageType);

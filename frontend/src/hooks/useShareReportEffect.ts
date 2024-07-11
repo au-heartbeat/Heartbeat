@@ -81,8 +81,8 @@ export const useShareReportEffect = () => {
       const searchString = link.split('/detail')[1];
       const searchParams = new URLSearchParams(searchString);
       return {
-        startDate: dayjs(searchParams.get('startTime')!, 'YYYYMMDD').startOf('day').format(DATE_RANGE_FORMAT),
-        endDate: dayjs(searchParams.get('endTime')!, 'YYYYMMDD').endOf('day').format(DATE_RANGE_FORMAT),
+        startDate: dayjs(searchParams.get('startTime'), 'YYYYMMDD').startOf('day').format(DATE_RANGE_FORMAT),
+        endDate: dayjs(searchParams.get('endTime'), 'YYYYMMDD').endOf('day').format(DATE_RANGE_FORMAT),
       };
     });
   };
