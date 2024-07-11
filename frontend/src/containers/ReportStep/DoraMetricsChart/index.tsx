@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import {
   ChartType,
@@ -19,10 +19,9 @@ import {
   LEFT_RIGHT_ALIGN_LABEL,
   NO_LABEL,
 } from '@src/containers/ReportStep/BoardMetricsChart';
-import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
+import PipelineSelector from '@src/containers/ReportStep/DoraMetricsChart/PipelineSelector';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { PipelinesSelectContainer } from '@src/containers/ReportStep/style';
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import { IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
@@ -30,12 +29,15 @@ import { reportMapper } from '@src/hooks/reportMapper/report';
 import { showChart } from '@src/containers/ReportStep';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { theme } from '@src/theme';
+import { isString } from 'lodash';
 
 interface DoraMetricsChartProps {
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
   metrics: string[];
-  selectedPipelines: IPipelineConfig[];
+  allPipelines: IPipelineConfig[];
+  selectedPipeline: string;
+  onUpdatePipeline: (value: string) => void;
 }
 
 enum DORAMetricsChartType {
@@ -47,13 +49,22 @@ enum DORAMetricsChartType {
 
 const AVERAGE = 'Average';
 const Total = 'Total';
+export const DefaultSelectedPipeline = 'Average/Total';
 
-function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
+function extractedStackedBarData(
+  allDateRanges: string[],
+  mappedData: ReportResponse[] | undefined,
+  selectedPipeline: string,
+) {
   const extractedName = mappedData?.[0].leadTimeForChangesList?.[0].valueList
     .map((item) => LEAD_TIME_CHARTS_MAPPING[item.name])
     .slice(0, 2);
   const extractedValues = mappedData?.map((data) => {
-    const averageItem = data.leadTimeForChangesList?.find((leadTimeForChange) => leadTimeForChange.name === AVERAGE);
+    const averageItem = data.leadTimeForChangesList?.find((leadTimeForChange) =>
+      selectedPipeline === DefaultSelectedPipeline
+        ? leadTimeForChange.name === AVERAGE
+        : leadTimeForChange.name === selectedPipeline,
+    );
     if (!averageItem) return [];
 
     return averageItem.valueList.map((item) => Number(item.value));
@@ -87,15 +98,23 @@ function extractedStackedBarData(allDateRanges: string[], mappedData: ReportResp
   };
 }
 
-function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
+function extractedDeploymentFrequencyData(
+  allDateRanges: string[],
+  mappedData: ReportResponse[] | undefined,
+  selectedPipeline: string,
+) {
   const data = mappedData?.map((item) => item.deploymentFrequencyList);
   const averageDeploymentFrequency = data?.map((items) => {
-    const averageItem = items?.find((item) => item.name === AVERAGE);
+    const averageItem = items?.find((item) =>
+      selectedPipeline === DefaultSelectedPipeline ? item.name === AVERAGE : item.name === selectedPipeline,
+    );
     if (!averageItem) return 0;
     return Number(averageItem.valueList[0].value) || 0;
   });
   const deployTimes = data?.map((items) => {
-    const averageItem = items?.find((item) => item.name === AVERAGE);
+    const averageItem = items?.find((item) =>
+      selectedPipeline === DefaultSelectedPipeline ? item.name === AVERAGE : item.name === selectedPipeline,
+    );
     if (!averageItem) return 0;
     return Number(averageItem.valueList[1].value);
   });
@@ -141,12 +160,27 @@ function extractedDeploymentFrequencyData(allDateRanges: string[], mappedData: R
   };
 }
 
-function extractedChangeFailureRateData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
+function extractedChangeFailureRateData(
+  allDateRanges: string[],
+  mappedData: ReportResponse[] | undefined,
+  selectedPipeline: string,
+) {
   const data = mappedData?.map((item) => item.devChangeFailureRateList);
   const value = data?.map((items) => {
-    const averageItem = items?.find((item) => item.name === AVERAGE);
+    const averageItem = items?.find((item) =>
+      selectedPipeline === DefaultSelectedPipeline ? item.name === AVERAGE : item.name === selectedPipeline,
+    );
     if (!averageItem) return 0;
-    return Number(averageItem.valueList[0].value) || 0;
+    const originValue: string | number = averageItem.valueList[0].value;
+    let value: number = 0;
+    if (selectedPipeline === DefaultSelectedPipeline) {
+      value = Number(originValue);
+    } else {
+      if (isString(originValue)) {
+        value = Number(originValue.split('%')[0]);
+      }
+    }
+    return Number(value) || 0;
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevChangeFailureRate);
   return {
@@ -170,10 +204,16 @@ function extractedChangeFailureRateData(allDateRanges: string[], mappedData: Rep
   };
 }
 
-function extractedMeanTimeToRecoveryDataData(allDateRanges: string[], mappedData: ReportResponse[] | undefined) {
+function extractedMeanTimeToRecoveryDataData(
+  allDateRanges: string[],
+  mappedData: ReportResponse[] | undefined,
+  selectedPipeline: string,
+) {
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
   const value = data?.map((items) => {
-    const totalItem = items?.find((item) => item.name === Total);
+    const totalItem = items?.find((item) =>
+      selectedPipeline === DefaultSelectedPipeline ? item.name === Total : item.name === selectedPipeline,
+    );
     if (!totalItem) return 0;
     return Number(totalItem.valueList[0].value) || 0;
   });
@@ -228,7 +268,14 @@ function isDoraMetricsChartFinish({
   );
 }
 
-export const DoraMetricsChart = ({ data, dateRanges, metrics, selectedPipelines }: DoraMetricsChartProps) => {
+export const DoraMetricsChart = ({
+  data,
+  dateRanges,
+  metrics,
+  allPipelines,
+  selectedPipeline,
+  onUpdatePipeline,
+}: DoraMetricsChartProps) => {
   const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
   const changeFailureRate = useRef<HTMLDivElement>(null);
@@ -238,9 +285,11 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics, selectedPipelines 
     if (!currentData?.doraMetricsCompleted) {
       return EMPTY_DATA_MAPPER_DORA_CHART('');
     } else {
-      return reportMapper(currentData, selectedPipelines);
+      return reportMapper(currentData, allPipelines);
     }
   });
+
+  console.log(mappedData);
 
   const dateRangeLength: number = dateRanges.length;
 
@@ -265,13 +314,13 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics, selectedPipelines 
     type: DORAMetricsChartType.DevMeanTimeToRecovery,
   });
 
-  const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData);
+  const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData, selectedPipeline);
   const leadTimeForChangeDataOption = leadTimeForChangeData && stackedBarOptionMapper(leadTimeForChangeData, false);
-  const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData);
+  const deploymentFrequencyData = extractedDeploymentFrequencyData(dateRanges, mappedData, selectedPipeline);
   const deploymentFrequencyDataOption = deploymentFrequencyData && stackedAreaOptionMapper(deploymentFrequencyData);
-  const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData);
+  const changeFailureRateData = extractedChangeFailureRateData(dateRanges, mappedData, selectedPipeline);
   const changeFailureRateDataOption = changeFailureRateData && oneLineOptionMapper(changeFailureRateData);
-  const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData);
+  const meanTimeToRecoveryData = extractedMeanTimeToRecoveryDataData(dateRanges, mappedData, selectedPipeline);
   const meanTimeToRecoveryDataOption = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
 
   useEffect(() => {
@@ -290,36 +339,47 @@ export const DoraMetricsChart = ({ data, dateRanges, metrics, selectedPipelines 
     showChart(meanTimeToRecovery.current, isDevMeanTimeToRecoveryValueListFinished, meanTimeToRecoveryDataOption);
   }, [meanTimeToRecovery, meanTimeToRecoveryDataOption, isDevMeanTimeToRecoveryValueListFinished]);
 
+  const pipelineNameOptions = [DefaultSelectedPipeline];
+  pipelineNameOptions.push(...allPipelines.map((it) => `${it.pipelineName}/${it.step}`));
+
   return (
-    <ChartContainer>
-      {metrics.includes(RequiredData.LeadTimeForChanges) && (
-        <ChartAndTitleWrapper
-          trendInfo={leadTimeForChangeData.trendInfo}
-          ref={leadTimeForChange}
-          isLoading={!isLeadTimeForChangesFinished}
-        />
-      )}
-      {metrics.includes(RequiredData.DeploymentFrequency) && (
-        <ChartAndTitleWrapper
-          trendInfo={deploymentFrequencyData.trendInfo}
-          ref={deploymentFrequency}
-          isLoading={!isDeploymentFrequencyFinished}
-        />
-      )}
-      {metrics.includes(RequiredData.DevChangeFailureRate) && (
-        <ChartAndTitleWrapper
-          trendInfo={changeFailureRateData.trendInfo}
-          ref={changeFailureRate}
-          isLoading={!isDevChangeFailureRateFinished}
-        />
-      )}
-      {metrics.includes(RequiredData.DevMeanTimeToRecovery) && (
-        <ChartAndTitleWrapper
-          trendInfo={meanTimeToRecoveryData.trendInfo}
-          ref={meanTimeToRecovery}
-          isLoading={!isDevMeanTimeToRecoveryValueListFinished}
-        />
-      )}
-    </ChartContainer>
+    <>
+      <PipelineSelector
+        options={pipelineNameOptions}
+        value={selectedPipeline}
+        onUpDatePipeline={(value) => onUpdatePipeline(value)}
+        title={'Pipeline/Step'}
+      />
+      <ChartContainer>
+        {metrics.includes(RequiredData.LeadTimeForChanges) && (
+          <ChartAndTitleWrapper
+            trendInfo={leadTimeForChangeData.trendInfo}
+            ref={leadTimeForChange}
+            isLoading={!isLeadTimeForChangesFinished}
+          />
+        )}
+        {metrics.includes(RequiredData.DeploymentFrequency) && (
+          <ChartAndTitleWrapper
+            trendInfo={deploymentFrequencyData.trendInfo}
+            ref={deploymentFrequency}
+            isLoading={!isDeploymentFrequencyFinished}
+          />
+        )}
+        {metrics.includes(RequiredData.DevChangeFailureRate) && (
+          <ChartAndTitleWrapper
+            trendInfo={changeFailureRateData.trendInfo}
+            ref={changeFailureRate}
+            isLoading={!isDevChangeFailureRateFinished}
+          />
+        )}
+        {metrics.includes(RequiredData.DevMeanTimeToRecovery) && (
+          <ChartAndTitleWrapper
+            trendInfo={meanTimeToRecoveryData.trendInfo}
+            ref={meanTimeToRecovery}
+            isLoading={!isDevMeanTimeToRecoveryValueListFinished}
+          />
+        )}
+      </ChartContainer>
+    </>
   );
 };

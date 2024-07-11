@@ -64,6 +64,5 @@ export const leadTimeForChangesMapper = (
       })),
   });
 
-  console.log(mappedLeadTimeForChangesValue);
   return mappedLeadTimeForChangesValue;
 };

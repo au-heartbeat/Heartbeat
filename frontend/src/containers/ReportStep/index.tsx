@@ -48,9 +48,9 @@ import {
   REPORT_PAGE_TYPE,
   RequiredData,
 } from '@src/constants/resources';
+import { DefaultSelectedPipeline, DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
-import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { backStep, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { ReportButtonGroup } from '@src/containers/ReportButtonGroup';
@@ -114,6 +114,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
+  const [selectedPipeline, setSelectedPipeline] = useState<string>(DefaultSelectedPipeline);
 
   const {
     startToRequestData,
@@ -514,7 +515,16 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} selectedPipelines={deploymentFrequencySettings} />
+    <DoraMetricsChart
+      data={data}
+      dateRanges={allDateRanges}
+      metrics={metrics}
+      allPipelines={deploymentFrequencySettings}
+      selectedPipeline={selectedPipeline}
+      onUpdatePipeline={(value: string) => {
+        setSelectedPipeline(value);
+      }}
+    />
   );
 
   const showBoardChart = (data?: IReportInfo[] | undefined) => (
