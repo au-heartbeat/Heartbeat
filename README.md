@@ -49,7 +49,8 @@
       - [3.5.1.1 Done card exporting](#3511-done-card-exporting)
       - [3.5.1.1 Undone card exporting](#3511-undone-card-exporting)
     - [3.5.2 Export pipeline data](#352-export-pipeline-data)
-  - [3.6 Caching data](#36-caching-data)
+  - [3.6 Share report](#36-share-report)
+  - [3.7 Caching data](#37-caching-data)
 - [4 Known issues](#4-known-issues)
   - [4.1  Change status name in Jira board setting when there are cards in this status](#41--change-status-name-in-jira-board-setting-when-there-are-cards-in-this-status)
 - [5 Instructions](#5-instructions)
@@ -530,7 +531,17 @@ _Image 3-33，Exported Pipeline Data_
 |Pipeline lead time (mins)|--|
 |Status|Status for pipeline (Pass or Failed)|
 
-## 3.6 Caching data
+## 3.6 Share Report
+You can use share report feature to share the report you generated in HeartBeat to other people.
+1. After report generated successfully in HeartBeat, the share report icon, at the right corner of the page header, is clickable.
+2. Click the share report icon, then you will see the share report popper.
+3. Click the 'Copy Link', the share report link will be copied.
+4. Open a new browser tab and paste the link, then you will open the share report page.
+5. You can also share the link to other people.
+   ![Image 3-34](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-34.png)\
+   _Image 3-34，Share Report
+
+## 3.7 Caching data
 
 In HeartBeat tool design, we have a cache setting for verify jira & pipeLine & gitHub config function and pipleLine loading function and generate report function.
 
