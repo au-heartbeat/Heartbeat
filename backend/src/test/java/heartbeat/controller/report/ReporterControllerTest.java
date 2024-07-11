@@ -29,7 +29,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
 
-import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,7 +94,7 @@ class ReporterControllerTest {
 
 	@Test
 	void shouldReturn500StatusWhenRequestGenerateReportGivenReportTimeIsExpired() throws Exception {
-		String reportId = Long.toString(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 200L);
+		String reportId = Long.toString(System.currentTimeMillis());
 		doThrow(new GenerateReportException("Failed to get report due to report time expires"))
 			.when(generateReporterService)
 			.getComposedReportResponse(any(), any(), any());
