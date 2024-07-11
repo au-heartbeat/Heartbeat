@@ -9,6 +9,7 @@ import heartbeat.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +44,10 @@ public class FileRepository {
 
 	public static final String SUFFIX_TMP = ".tmp";
 
-	public static final Long EXPORT_CSV_VALIDITY_TIME = 1000L * 3600 * 24 * 7;
+	@Value("${heartbeat.expiredDays}")
+	public int expiredDays = 1;
+
+	public final Long expiredTimes = 1000L * 3600 * 24 * this.expiredDays;
 
 	private static final String CSV_EXTENSION = ".csv";
 
@@ -192,7 +196,7 @@ public class FileRepository {
 	}
 
 	public boolean isExpired(long currentTimeStamp, long timeStamp) {
-		return timeStamp < currentTimeStamp - EXPORT_CSV_VALIDITY_TIME;
+		return timeStamp < currentTimeStamp - this.expiredTimes;
 	}
 
 	public InputStreamResource readStringFromCsvFile(String uuid, String fileName, FilePrefixType filePrefixType) {
