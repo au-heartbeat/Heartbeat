@@ -28,7 +28,6 @@ test('Import project from file with all ranges API succeed', async ({
   configStep,
   metricsStep,
   reportStep,
-  context,
 }) => {
   const hbStateData = importMultipleDoneProjectFromFile.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
@@ -64,7 +63,7 @@ test('Import project from file with all ranges API succeed', async ({
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkShareReport(context);
+  await reportStep.checkShareReport();
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
