@@ -59,7 +59,7 @@ const Header = () => {
       <IconContainer>
         <ShareReportTrigger />
         {shouldShowHomeIcon() && (
-          <span title='Home' onClick={goHome} aria-label={'Home'}>
+          <span title='Home' onClick={goHome} onKeyDown={goHome} aria-label={'Home'}>
             <HomeIcon />
           </span>
         )}
