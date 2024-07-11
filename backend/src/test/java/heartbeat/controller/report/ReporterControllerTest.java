@@ -65,13 +65,13 @@ class ReporterControllerTest {
 	@Test
 	void shouldGetSuccessDataGivenReportId() throws Exception {
 		String timeStamp = Long.toString(System.currentTimeMillis());
-		ReportResponse MockReportResponse = ReportResponse.builder()
+		ReportResponse mockReportResponse = ReportResponse.builder()
 			.boardMetricsCompleted(true)
 			.allMetricsCompleted(true)
 			.build();
 
 		when(generateReporterService.getComposedReportResponse(timeStamp, START_TIME, END_TIME))
-			.thenReturn(MockReportResponse);
+			.thenReturn(mockReportResponse);
 
 		String reportResponseString = mockMvc
 			.perform(get("/reports/{reportId}", timeStamp).param("startTime", START_TIME)

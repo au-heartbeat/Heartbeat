@@ -27,7 +27,7 @@ export class HttpClient {
           throw new TimeoutError(error?.message, AxiosRequestErrorCode.Timeout);
           //  Can't find any solution to cover below line due to upgrading the msw from v1 to v2
           /* istanbul ignore branch */
-        } else if (response && response.status && response.status > 0) {
+        } else if (response?.status && response.status > 0) {
           const { status, data, statusText } = response;
           const errorMessage = data?.hintInfo ?? statusText;
           const description = data?.message;

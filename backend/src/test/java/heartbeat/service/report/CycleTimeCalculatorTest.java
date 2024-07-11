@@ -46,7 +46,7 @@ class CycleTimeCalculatorTest {
 			.jiraCardDTOList(List.of(JiraCardDTO.builder().cycleTime(cycleTimeInfoList).build(),
 					JiraCardDTO.builder().cycleTime(cycleTimeInfoList).build()))
 			.build();
-		;
+
 		List<RequestJiraBoardColumnSetting> boardColumns = List.of(
 				RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 				RequestJiraBoardColumnSetting.builder().name("Doing").value("In Dev").build(),

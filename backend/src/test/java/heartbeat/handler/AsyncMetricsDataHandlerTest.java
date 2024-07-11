@@ -271,7 +271,8 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(0)); // NOSONAR
 				}
-				catch (InterruptedException ignored) {
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, BOARD, true);
 			}));
@@ -279,7 +280,8 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(1)); // NOSONAR
 				}
-				catch (InterruptedException ignored) {
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
 				}
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(currentTime, DORA, true);
 			}));
@@ -287,7 +289,8 @@ class AsyncMetricsDataHandlerTest {
 				try {
 					TimeUnit.MILLISECONDS.sleep(sleepTime.get(2)); // NOSONAR
 				}
-				catch (InterruptedException ignored) {
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
 				}
 				asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(currentTime);
 			}));
