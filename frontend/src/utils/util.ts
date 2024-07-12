@@ -116,14 +116,14 @@ export const formatDateToTimestampString = (date: string) => {
 
 export const sortDateRanges = (dateRanges: DateRangeList, descending = true) => {
   const result = [...dateRanges].sort((a, b) => {
-    return dayjs(b.startDate as string).diff(dayjs(a.startDate as string));
+    return dayjs(b.startDate).diff(dayjs(a.startDate));
   });
   return descending ? result : result.reverse();
 };
 
 export const sortReportInfos = (reportInfos: IReportInfo[], descending = true) => {
   const result = [...reportInfos].sort((a, b) => {
-    return dayjs(b.id as string).diff(dayjs(a.id as string));
+    return dayjs(b.id).diff(dayjs(a.id));
   });
   return descending ? result : result.reverse();
 };
