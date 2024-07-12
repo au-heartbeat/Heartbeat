@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # shellcheck source=/dev/null
-source ./ops/base.sh
+# source ./ops/base.sh
 
 display_help() {
   echo "Usage: $0 {infra|e2e|prod}" >&2
