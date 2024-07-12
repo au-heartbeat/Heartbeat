@@ -19,9 +19,7 @@ export class CSVClient extends HttpClient {
       .then((res) => {
         const exportedFilename = `${params.dataType}-${this.parseCollectionDateToHumanDate(
           params.startDate,
-        )}-${this.parseCollectionDateToHumanDate(params.endDate)}-${this.parseTimeStampToHumanDate(
-          params.reportId,
-        )}.csv`;
+        )}-${this.parseCollectionDateToHumanDate(params.endDate)}-${params.reportId}.csv`;
         downloadCSV(exportedFilename, res.data);
       })
       .catch((e) => {
