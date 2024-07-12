@@ -34,6 +34,7 @@ interface DoraMetricsChartProps {
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
   metrics: string[];
+  allPipelines: string[];
   selectedPipeline: string;
   onUpdatePipeline: (value: string) => void;
 }
@@ -272,6 +273,7 @@ export const DoraMetricsChart = ({
   metrics,
   selectedPipeline,
   onUpdatePipeline,
+  allPipelines,
 }: DoraMetricsChartProps) => {
   const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
@@ -335,11 +337,7 @@ export const DoraMetricsChart = ({
   }, [meanTimeToRecovery, meanTimeToRecoveryDataOption, isDevMeanTimeToRecoveryValueListFinished]);
 
   const pipelineNameOptions = [DefaultSelectedPipeline];
-  console.log(mappedData);
-  const allMetrics = mappedData?.[0].leadTimeForChangesList
-    ?.filter((it) => it.name !== AVERAGE && it.name !== Total)
-    .map((it) => it.name);
-  allMetrics && pipelineNameOptions.push(...allMetrics);
+  pipelineNameOptions.push(...allPipelines);
 
   return (
     <>

@@ -79,7 +79,7 @@ public class ReportController {
 			@RequestBody GenerateReportRequest request) {
 		log.info("Start to generate report, uuid: {}", uuid);
 		reportService.generateReport(request, uuid);
-		reportService.saveMetrics(request, uuid);
+		reportService.saveRequestInfo(request, uuid);
 		String callbackUrl = reportService.generateReportCallbackUrl(uuid,
 				TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getStartTime()),
 						request.getTimezoneByZoneId()),

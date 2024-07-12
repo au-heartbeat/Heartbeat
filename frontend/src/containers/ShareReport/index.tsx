@@ -6,7 +6,7 @@ import ErrorSection from './ErrorSection';
 import { useEffect } from 'react';
 
 const ShareReport = () => {
-  const { getData, reportInfos, dateRanges, metrics, isExpired } = useShareReportEffect();
+  const { getData, reportInfos, dateRanges, metrics, isExpired, allPipelines } = useShareReportEffect();
 
   useEffect(() => {
     getData();
@@ -26,6 +26,7 @@ const ShareReport = () => {
       <StyledPageContentWrapper>
         <ReportContent
           metrics={metrics}
+          allPipelines={allPipelines}
           dateRanges={dateRanges}
           reportInfos={reportInfos}
           startToRequestBoardData={getData}

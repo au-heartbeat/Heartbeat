@@ -53,6 +53,7 @@ import { uniqueId } from 'lodash';
 
 export interface ReportContentProps {
   metrics: string[];
+  allPipelines: string[];
   dateRanges: DateRangeList;
   startToRequestDoraData: () => void;
   startToRequestBoardData: () => void;
@@ -77,6 +78,7 @@ export interface DateRangeRequestResult {
 const ReportContent = (props: ReportContentProps) => {
   const {
     metrics,
+    allPipelines,
     dateRanges,
     startToRequestDoraData,
     startToRequestBoardData,
@@ -331,6 +333,7 @@ const ReportContent = (props: ReportContentProps) => {
       data={data}
       dateRanges={allDateRanges}
       metrics={metrics}
+      allPipelines={allPipelines}
       selectedPipeline={selectedPipeline}
       onUpdatePipeline={(value: string) => {
         setSelectedPipeline(value);
@@ -404,6 +407,7 @@ const ReportContent = (props: ReportContentProps) => {
   };
 
   const showPage = (pageType: string, reportData: ReportResponseDTO | undefined) => {
+    console.log(reportInfos)
     switch (pageType) {
       case REPORT_PAGE_TYPE.SUMMARY:
         return showSummary();

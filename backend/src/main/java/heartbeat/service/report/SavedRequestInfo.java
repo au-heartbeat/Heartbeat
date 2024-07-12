@@ -1,5 +1,6 @@
-package heartbeat.controller.report.dto.response;
+package heartbeat.service.report;
 
+import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,15 +9,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShareApiDetailsResponse {
-
-	private List<String> reportURLs;
-
+@Builder
+public class SavedRequestInfo {
 	private List<String> metrics;
 
-	private List<String> pipelines;
-
+	private List<DeploymentEnvironment> pipelines;
 }

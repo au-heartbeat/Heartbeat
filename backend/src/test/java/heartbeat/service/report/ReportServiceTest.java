@@ -380,12 +380,12 @@ public class ReportServiceTest {
 		@Test
 		void shouldGetReportUrlsSuccessfully() {
 			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
-			when(fileRepository.getFiles(FileType.METRICS, TEST_UUID))
+			when(fileRepository.getFiles(FileType.REQUEST_INFO, TEST_UUID))
 				.thenReturn(List.of("board-0-0-0", "board-9-9-9"));
 
-			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
+			when(fileRepository.readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("0-0-0"), any(), any()))
 				.thenReturn(List.of("test-metrics1", "test-metrics2"));
-			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
+			when(fileRepository.readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("9-9-9"), any(), any()))
 				.thenReturn(List.of("test-metrics1", "test-metrics3"));
 
 			ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(TEST_UUID);
@@ -402,10 +402,10 @@ public class ReportServiceTest {
 			assertEquals("/reports/test-uuid/detail?startTime=1&endTime=2", reportUrls.get(0));
 			assertEquals("/reports/test-uuid/detail?startTime=2&endTime=3", reportUrls.get(1));
 
-			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
-			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
-			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any());
-			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any());
+			verify(fileRepository).getFiles(FileType.REQUEST_INFO, TEST_UUID);
+			verify(fileRepository).getFiles(FileType.REQUEST_INFO, TEST_UUID);
+			verify(fileRepository).readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("0-0-0"), any(), any());
+			verify(fileRepository).readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("9-9-9"), any(), any());
 
 		}
 
@@ -466,9 +466,9 @@ public class ReportServiceTest {
 				.timezone("Asia/Shanghai")
 				.build();
 
-			reportService.saveMetrics(request, TEST_UUID);
+			reportService.saveRequestInfo(request, TEST_UUID);
 
-			verify(fileRepository).createFileByType(eq(FileType.METRICS), eq(TEST_UUID),
+			verify(fileRepository).createFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID),
 					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(ALL_METRICS_PREFIX));
 
 			List<String> savedMetrics = argumentCaptor.getValue();
