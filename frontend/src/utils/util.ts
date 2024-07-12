@@ -15,6 +15,7 @@ import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice'
 import { ITrendInfo } from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { includes, isEqual, sortBy, uniq, uniqBy } from 'lodash';
 import { DateRangeList } from '@src/context/config/configSlice';
+import { IReportInfo } from '../hooks/useGenerateReportEffect';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import duration from 'dayjs/plugin/duration';
@@ -116,6 +117,13 @@ export const formatDateToTimestampString = (date: string) => {
 export const sortDateRanges = (dateRanges: DateRangeList, descending = true) => {
   const result = [...dateRanges].sort((a, b) => {
     return dayjs(b.startDate as string).diff(dayjs(a.startDate as string));
+  });
+  return descending ? result : result.reverse();
+};
+
+export const sortReportInfos = (reportInfos: IReportInfo[], descending = true) => {
+  const result = [...reportInfos].sort((a, b) => {
+    return dayjs(b.id as string).diff(dayjs(a.id as string));
   });
   return descending ? result : result.reverse();
 };

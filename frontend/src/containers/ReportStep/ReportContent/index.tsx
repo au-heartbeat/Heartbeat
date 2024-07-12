@@ -6,7 +6,7 @@ import {
   TimeoutErrorKey,
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
-import { sortDateRanges } from '@src/utils/util';
+import { sortDateRanges, sortReportInfos } from '@src/utils/util';
 
 import {
   addNotification,
@@ -75,6 +75,7 @@ export interface DateRangeRequestResult {
 
 const ReportContent = (props: ReportContentProps) => {
   const { metrics, dateRanges, reportInfos, handleSave, reportId, startToRequestData, hideButtons = false } = props;
+
   const dispatch = useAppDispatch();
 
   const descendingDateRanges = sortDateRanges(dateRanges);
@@ -88,6 +89,7 @@ const ReportContent = (props: ReportContentProps) => {
 
     return `${formattedStart}-${formattedEnd}`;
   });
+  const ascendingReportInfos = sortReportInfos(reportInfos, false);
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
@@ -389,9 +391,9 @@ const ReportContent = (props: ReportContentProps) => {
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.BOARD_CHART:
-        return showBoardChart(reportInfos);
+        return showBoardChart(ascendingReportInfos);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return showDoraChart(reportInfos.map((infos) => infos.reportData));
+        return showDoraChart(ascendingReportInfos.map((infos) => infos.reportData));
     }
   };
 
