@@ -3,6 +3,7 @@ set -euo pipefail
 
 # shellcheck source=/dev/null
 # source ./ops/base.sh
+AWS_ECR_HOST="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
 display_help() {
   echo "Usage: $0 {infra|e2e|prod}" >&2
