@@ -85,17 +85,18 @@ public class GenerateReporterService {
 		String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
 		fileRepository.removeFileByType(ERROR, uuid, timeRangeAndTimeStamp, FilePrefixType.BOARD_REPORT_PREFIX);
 		log.info(
-			"Start to generate board report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
-			request.getMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(), uuid,
-			timeRangeAndTimeStamp);
-		try {
-			saveReporterInHandler(generateBoardReporter(uuid, request), uuid, timeRangeAndTimeStamp,
-				FilePrefixType.BOARD_REPORT_PREFIX);
-			log.info(
-				"Successfully generate board report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
+				"Start to generate board report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
 				request.getMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(), uuid,
 				timeRangeAndTimeStamp);
-		} catch (BaseException e) {
+		try {
+			saveReporterInHandler(generateBoardReporter(uuid, request), uuid, timeRangeAndTimeStamp,
+					FilePrefixType.BOARD_REPORT_PREFIX);
+			log.info(
+					"Successfully generate board report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
+					request.getMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(), uuid,
+					timeRangeAndTimeStamp);
+		}
+		catch (BaseException e) {
 			fileRepository.createFileByType(ERROR, uuid, timeRangeAndTimeStamp, e, FilePrefixType.BOARD_REPORT_PREFIX);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, timeRangeAndTimeStamp, BOARD, false);
@@ -118,7 +119,7 @@ public class GenerateReporterService {
 		}
 
 		MetricsDataCompleted previousMetricsCompleted = fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED,
-			uuid, timeRangeAndTimeStamp, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
+				uuid, timeRangeAndTimeStamp, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
 
 		if (previousMetricsCompleted != null && Boolean.FALSE.equals(previousMetricsCompleted.doraMetricsCompleted())) {
 			CompletableFuture.runAsync(() -> generateCSVForPipeline(uuid, request, fetchedData.getBuildKiteData()));
@@ -129,20 +130,21 @@ public class GenerateReporterService {
 		String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
 
 		log.info(
-			"Start to generate pipeline report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
-			request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(),
-			uuid, timeRangeAndTimeStamp);
+				"Start to generate pipeline report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
+				request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(), request.getEndTime(),
+				uuid, timeRangeAndTimeStamp);
 		try {
 			fetchBuildKiteData(request, fetchedData);
 			saveReporterInHandler(generatePipelineReporter(request, fetchedData), uuid, timeRangeAndTimeStamp,
-				FilePrefixType.PIPELINE_REPORT_PREFIX);
+					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			log.info(
-				"Successfully generate pipeline report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
-				request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(),
-				request.getEndTime(), uuid, timeRangeAndTimeStamp);
-		} catch (BaseException e) {
+					"Successfully generate pipeline report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {}, _fileName: {}",
+					request.getPipelineMetrics(), request.getCalendarType(), request.getStartTime(),
+					request.getEndTime(), uuid, timeRangeAndTimeStamp);
+		}
+		catch (BaseException e) {
 			fileRepository.createFileByType(ERROR, uuid, timeRangeAndTimeStamp, e,
-				FilePrefixType.PIPELINE_REPORT_PREFIX);
+					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, timeRangeAndTimeStamp, DORA, false);
 		}
@@ -152,38 +154,39 @@ public class GenerateReporterService {
 		String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
 
 		log.info(
-			"Start to generate source control report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {} _fileName: {}",
-			request.getSourceControlMetrics(), request.getCalendarType(), request.getStartTime(),
-			request.getEndTime(), uuid, timeRangeAndTimeStamp);
+				"Start to generate source control report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {} _fileName: {}",
+				request.getSourceControlMetrics(), request.getCalendarType(), request.getStartTime(),
+				request.getEndTime(), uuid, timeRangeAndTimeStamp);
 		try {
 			fetchGitHubData(request, fetchedData);
 			saveReporterInHandler(generateSourceControlReporter(request, fetchedData), uuid, timeRangeAndTimeStamp,
-				FilePrefixType.SOURCE_CONTROL_PREFIX);
+					FilePrefixType.SOURCE_CONTROL_PREFIX);
 			log.info(
-				"Successfully generate source control report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {} _fileName: {}",
-				request.getSourceControlMetrics(), request.getCalendarType(), request.getStartTime(),
-				request.getEndTime(), uuid, timeRangeAndTimeStamp);
-		} catch (BaseException e) {
+					"Successfully generate source control report, _metrics: {}, _country holiday: {}, _startTime: {}, _endTime: {}, _uuid: {} _fileName: {}",
+					request.getSourceControlMetrics(), request.getCalendarType(), request.getStartTime(),
+					request.getEndTime(), uuid, timeRangeAndTimeStamp);
+		}
+		catch (BaseException e) {
 			fileRepository.createFileByType(ERROR, uuid, timeRangeAndTimeStamp, e,
-				FilePrefixType.SOURCE_CONTROL_PREFIX);
+					FilePrefixType.SOURCE_CONTROL_PREFIX);
 			if (List.of(401, 403, 404).contains(e.getStatus()))
 				asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, timeRangeAndTimeStamp, DORA, false);
 		}
 	}
 
 	private synchronized ReportResponse generatePipelineReporter(GenerateReportRequest request,
-																 FetchedData fetchedData) {
+			FetchedData fetchedData) {
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
 		request.getPipelineMetrics().forEach(metric -> {
 			switch (metric) {
 				case "deployment frequency" -> reportResponse.setDeploymentFrequency(
-					deploymentFrequency.calculate(fetchedData.getBuildKiteData().getDeployTimesList(),
-						Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime()),
-						request.getCalendarType(), request.getTimezoneByZoneId()));
+						deploymentFrequency.calculate(fetchedData.getBuildKiteData().getDeployTimesList(),
+								Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime()),
+								request.getCalendarType(), request.getTimezoneByZoneId()));
 				case "dev change failure rate" -> reportResponse.setDevChangeFailureRate(
-					devChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
+						devChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
 				default -> reportResponse.setDevMeanTimeToRecovery(meanToRecoveryCalculator
 					.calculate(fetchedData.getBuildKiteData().getDeployTimesList(), request));
 			}
@@ -214,7 +217,7 @@ public class GenerateReporterService {
 	private void generateCsvForBoard(String uuid, GenerateReportRequest request, FetchedData fetchedData) {
 		kanbanCsvService.generateCsvInfo(uuid, request, fetchedData.getCardCollectionInfo());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, request.getTimeRangeAndTimeStamp(), BOARD,
-			true);
+				true);
 	}
 
 	private void assembleVelocity(FetchedData fetchedData, ReportResponse reportResponse) {
@@ -223,19 +226,19 @@ public class GenerateReporterService {
 	}
 
 	private void assembleCycleTime(FetchedData fetchedData, ReportResponse reportResponse,
-								   JiraBoardSetting jiraBoardSetting) {
+			JiraBoardSetting jiraBoardSetting) {
 		reportResponse.setCycleTime(cycleTimeCalculator.calculateCycleTime(
-			fetchedData.getCardCollectionInfo().getRealDoneCardCollection(), jiraBoardSetting.getBoardColumns()));
+				fetchedData.getCardCollectionInfo().getRealDoneCardCollection(), jiraBoardSetting.getBoardColumns()));
 	}
 
 	private void assembleClassification(FetchedData fetchedData, ReportResponse reportResponse,
-										JiraBoardSetting jiraBoardSetting) {
+			JiraBoardSetting jiraBoardSetting) {
 		reportResponse.setClassificationList(classificationCalculator.calculate(jiraBoardSetting.getTargetFields(),
-			fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
+				fetchedData.getCardCollectionInfo().getRealDoneCardCollection()));
 	}
 
 	private void assembleReworkInfo(GenerateReportRequest request, FetchedData fetchedData,
-									ReportResponse reportResponse) {
+			ReportResponse reportResponse) {
 		if (isNull(request.getJiraBoardSetting().getReworkTimesSetting())) {
 			return;
 		}
@@ -245,15 +248,14 @@ public class GenerateReporterService {
 	}
 
 	private synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request,
-																	  FetchedData fetchedData) {
+			FetchedData fetchedData) {
 
 		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
 
 		request.getSourceControlMetrics()
 			.forEach(metric -> reportResponse.setLeadTimeForChanges(
-				leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes(),
-					request.getBuildKiteSetting().getDeploymentEnvList()
-				)));
+					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes(),
+							request.getBuildKiteSetting().getDeploymentEnvList())));
 
 		return reportResponse;
 	}
@@ -281,11 +283,11 @@ public class GenerateReporterService {
 
 	private void generateCSVForPipeline(String uuid, GenerateReportRequest request, BuildKiteData buildKiteData) {
 		List<PipelineCSVInfo> pipelineData = pipelineService.generateCSVForPipeline(request.getStartTime(),
-			request.getEndTime(), buildKiteData, request.getBuildKiteSetting().getDeploymentEnvList());
+				request.getEndTime(), buildKiteData, request.getBuildKiteSetting().getDeploymentEnvList());
 
 		csvFileGenerator.convertPipelineDataToCSV(uuid, pipelineData, request.getTimeRangeAndTimeStamp());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, request.getTimeRangeAndTimeStamp(), DORA,
-			true);
+				true);
 	}
 
 	public void generateCSVForMetric(String uuid, ReportResponse reportContent, String csvTimeRangeTimeStamp) {
@@ -293,7 +295,7 @@ public class GenerateReporterService {
 	}
 
 	private void saveReporterInHandler(ReportResponse reportContent, String uuid, String fileName,
-									   FilePrefixType filePrefixType) {
+			FilePrefixType filePrefixType) {
 		fileRepository.createFileByType(REPORT, uuid, fileName, reportContent, filePrefixType);
 	}
 
@@ -319,12 +321,12 @@ public class GenerateReporterService {
 			throw new GenerateReportException("Failed to get report due to report time expires");
 		}
 		return fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, uuid, timeRangeAndTimeStamp,
-			MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
+				MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
 	}
 
 	public ReportResponse getComposedReportResponse(String uuid, String startTime, String endTime) {
 		String timeRangeAndTimeStamp = fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(
-			FileType.METRICS_DATA_COMPLETED, uuid, startTime, endTime);
+				FileType.METRICS_DATA_COMPLETED, uuid, startTime, endTime);
 		if (timeRangeAndTimeStamp == null) {
 			return ReportResponse.builder()
 				.overallMetricsCompleted(false)
@@ -348,11 +350,11 @@ public class GenerateReporterService {
 		MetricsDataCompleted reportReadyStatus = checkReportReadyStatus(uuid, timeRangeAndTimeStamp);
 
 		ReportResponse boardReportResponse = fileRepository.readFileByType(REPORT, uuid, timeRangeAndTimeStamp,
-			ReportResponse.class, FilePrefixType.BOARD_REPORT_PREFIX);
+				ReportResponse.class, FilePrefixType.BOARD_REPORT_PREFIX);
 		ReportResponse pipelineReportResponse = fileRepository.readFileByType(REPORT, uuid, timeRangeAndTimeStamp,
-			ReportResponse.class, FilePrefixType.PIPELINE_REPORT_PREFIX);
+				ReportResponse.class, FilePrefixType.PIPELINE_REPORT_PREFIX);
 		ReportResponse sourceControlReportResponse = fileRepository.readFileByType(REPORT, uuid, timeRangeAndTimeStamp,
-			ReportResponse.class, FilePrefixType.SOURCE_CONTROL_PREFIX);
+				ReportResponse.class, FilePrefixType.SOURCE_CONTROL_PREFIX);
 
 		ReportMetricsError reportMetricsError = getReportErrorAndHandleAsyncException(uuid, timeRangeAndTimeStamp);
 		return ReportResponse.builder()
@@ -376,11 +378,11 @@ public class GenerateReporterService {
 
 	private ReportMetricsError getReportErrorAndHandleAsyncException(String uuid, String timeRangeAndTimeStamp) {
 		AsyncExceptionDTO boardException = fileRepository.readFileByType(ERROR, uuid, timeRangeAndTimeStamp,
-			AsyncExceptionDTO.class, FilePrefixType.BOARD_REPORT_PREFIX);
+				AsyncExceptionDTO.class, FilePrefixType.BOARD_REPORT_PREFIX);
 		AsyncExceptionDTO pipelineException = fileRepository.readFileByType(ERROR, uuid, timeRangeAndTimeStamp,
-			AsyncExceptionDTO.class, FilePrefixType.PIPELINE_REPORT_PREFIX);
+				AsyncExceptionDTO.class, FilePrefixType.PIPELINE_REPORT_PREFIX);
 		AsyncExceptionDTO sourceControlException = fileRepository.readFileByType(ERROR, uuid, timeRangeAndTimeStamp,
-			AsyncExceptionDTO.class, FilePrefixType.SOURCE_CONTROL_PREFIX);
+				AsyncExceptionDTO.class, FilePrefixType.SOURCE_CONTROL_PREFIX);
 		return ReportMetricsError.builder()
 			.boardMetricsError(handleAsyncExceptionAndGetErrorInfo(boardException))
 			.pipelineMetricsError(handleAsyncExceptionAndGetErrorInfo(pipelineException))

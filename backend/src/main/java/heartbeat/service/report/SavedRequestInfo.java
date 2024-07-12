@@ -13,7 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class SavedRequestInfo {
+
 	private List<String> metrics;
 
 	private List<DeploymentEnvironment> pipelines;
+
 }

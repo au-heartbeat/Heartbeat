@@ -829,7 +829,7 @@ class GenerateReporterServiceTest {
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
 				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
 						timeRangeAndTimeStamp);
@@ -889,7 +889,7 @@ class GenerateReporterServiceTest {
 						timeRangeAndTimeStamp);
 				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(TEST_UUID,
 						timeRangeAndTimeStamp, DORA, true);
-				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 			});
 		}
 
@@ -918,7 +918,7 @@ class GenerateReporterServiceTest {
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 			verify(kanbanService, never()).fetchDataFromKanban(request);
-			verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+			verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,

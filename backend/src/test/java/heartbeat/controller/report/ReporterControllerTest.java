@@ -173,6 +173,7 @@ class ReporterControllerTest {
 		when(reporterService.getShareReportInfo(uuid)).thenReturn(ShareApiDetailsResponse.builder()
 			.reportURLs(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
 			.metrics(List.of("board"))
+			.pipelines(List.of("pipeline1", "pipeline2"))
 			.build());
 
 		mockMvc.perform(get("/reports/{uuid}", uuid))
@@ -182,6 +183,9 @@ class ReporterControllerTest {
 					jsonPath("$.reportURLs[0]").value("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
 			.andExpect(jsonPath("$.metrics.length()", Matchers.is(1)))
 			.andExpect(jsonPath("$.metrics[0]").value("board"))
+			.andExpect(jsonPath("$.pipelines.length()", Matchers.is(2)))
+			.andExpect(jsonPath("$.pipelines[0]").value("pipeline1"))
+			.andExpect(jsonPath("$.pipelines[1]").value("pipeline2"))
 			.andReturn()
 			.getResponse();
 

@@ -112,15 +112,15 @@ public class ReportService {
 			.map(it -> it.split(FILENAME_SEPARATOR))
 			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
 			.map(it -> fileRepository.readFileByType(FileType.REQUEST_INFO, uuid, it, SavedRequestInfo.class,
-				FilePrefixType.REQUEST_INFO_REPORT_PREFIX))
+					FilePrefixType.REQUEST_INFO_REPORT_PREFIX))
 			.toList();
-		List<String> metrics = savedRequestInfoList
-			.stream()
+		List<String> metrics = savedRequestInfoList.stream()
 			.map(SavedRequestInfo::getMetrics)
 			.flatMap(Collection::stream)
 			.distinct()
 			.toList();
-		List<String> pipelines = savedRequestInfoList.stream().map(SavedRequestInfo::getPipelines)
+		List<String> pipelines = savedRequestInfoList.stream()
+			.map(SavedRequestInfo::getPipelines)
 			.flatMap(Collection::stream)
 			.map(it -> String.format("%s/%s", it.getName(), it.getStep()))
 			.distinct()
@@ -142,7 +142,7 @@ public class ReportService {
 			.pipelines(request.getBuildKiteSetting().getDeploymentEnvList())
 			.build();
 		fileRepository.createFileByType(FileType.REQUEST_INFO, uuid, request.getTimeRangeAndTimeStamp(),
-			savedRequestInfo, FilePrefixType.REQUEST_INFO_REPORT_PREFIX);
+				savedRequestInfo, FilePrefixType.REQUEST_INFO_REPORT_PREFIX);
 	}
 
 }
