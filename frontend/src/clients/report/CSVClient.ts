@@ -4,7 +4,6 @@ import { downloadCSV } from '@src/utils/util';
 import dayjs from 'dayjs';
 
 export class CSVClient extends HttpClient {
-  parseTimeStampToHumanDate = (csvTimeStamp: number | undefined): string => dayjs(csvTimeStamp).format('HHmmSSS');
   parseCollectionDateToHumanDate = (date: string) => dayjs(date).format('YYYYMMDD');
 
   exportCSVData = async (params: CSVReportRequestDTO) => {
