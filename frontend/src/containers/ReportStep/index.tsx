@@ -15,10 +15,10 @@ import {
   selectConfig,
   selectDateRange,
 } from '@src/context/config/configSlice';
-import { BOARD_METRICS, DORA_METRICS, MESSAGE, RequiredData } from '@src/constants/resources';
 import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { selectReportId, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { MESSAGE, RequiredData } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { MetricTypes } from '@src/constants/commons';
 import ReportContent from './ReportContent';
@@ -170,21 +170,6 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     ...(shouldShowDoraMetrics ? getDoraSetting() : {}),
   };
 
-  const boardReportRequestBody = {
-    ...basicReportRequestBody,
-    metrics: metrics.filter((metric) => BOARD_METRICS.includes(metric)),
-    metricTypes: [MetricTypes.Board],
-    buildKiteSetting: undefined,
-    codebaseSetting: undefined,
-  };
-
-  const doraReportRequestBody = {
-    ...basicReportRequestBody,
-    metrics: metrics.filter((metric) => DORA_METRICS.includes(metric)),
-    metricTypes: [MetricTypes.DORA],
-    jiraBoardSetting: undefined,
-  };
-
   useEffect(() => {
     exportValidityTimeMin &&
       isCsvFileGeneratedAtEnd &&
@@ -242,8 +227,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <ReportContent
       metrics={metrics}
       dateRanges={dateRanges}
-      startToRequestDoraData={() => startToRequestData(doraReportRequestBody)}
-      startToRequestBoardData={() => startToRequestData(boardReportRequestBody)}
+      startToRequestData={() => startToRequestData(basicReportRequestBody)}
       reportInfos={reportInfos}
       handleSave={handleSave}
       reportId={reportId}
