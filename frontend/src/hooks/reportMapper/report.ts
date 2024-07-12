@@ -6,24 +6,20 @@ import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidity
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { classificationMapper } from '@src/hooks/reportMapper/classification';
 import { cycleTimeMapper } from '@src/hooks/reportMapper/cycleTime';
-import { IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { velocityMapper } from '@src/hooks/reportMapper/velocity';
 import reworkMapper from '@src/hooks/reportMapper/reworkMapper';
 
-export const reportMapper = (
-  {
-    velocity,
-    cycleTime,
-    classificationList,
-    deploymentFrequency,
-    devMeanTimeToRecovery,
-    leadTimeForChanges,
-    devChangeFailureRate,
-    exportValidityTime,
-    rework,
-  }: ReportResponseDTO,
-  selectedPipelines: IPipelineConfig[] | null,
-): ReportResponse => {
+export const reportMapper = ({
+  velocity,
+  cycleTime,
+  classificationList,
+  deploymentFrequency,
+  devMeanTimeToRecovery,
+  leadTimeForChanges,
+  devChangeFailureRate,
+  exportValidityTime,
+  rework,
+}: ReportResponseDTO): ReportResponse => {
   const velocityList = velocity && velocityMapper(velocity);
 
   const cycleTimeList = cycleTime && cycleTimeMapper(cycleTime);
@@ -36,7 +32,7 @@ export const reportMapper = (
 
   const devMeanTimeToRecoveryList = devMeanTimeToRecovery && devMeanTimeToRecoveryMapper(devMeanTimeToRecovery);
 
-  const leadTimeForChangesList = leadTimeForChanges && leadTimeForChangesMapper(leadTimeForChanges, selectedPipelines);
+  const leadTimeForChangesList = leadTimeForChanges && leadTimeForChangesMapper(leadTimeForChanges);
 
   const devChangeFailureRateList = devChangeFailureRate && devChangeFailureRateMapper(devChangeFailureRate);
 

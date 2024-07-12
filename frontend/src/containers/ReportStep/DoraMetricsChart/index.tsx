@@ -23,7 +23,6 @@ import PipelineSelector from '@src/containers/ReportStep/DoraMetricsChart/Pipeli
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
-import { IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { showChart } from '@src/containers/ReportStep';
@@ -35,7 +34,6 @@ interface DoraMetricsChartProps {
   dateRanges: string[];
   data: (ReportResponseDTO | undefined)[];
   metrics: string[];
-  allPipelines: IPipelineConfig[];
   selectedPipeline: string;
   onUpdatePipeline: (value: string) => void;
 }
@@ -272,7 +270,6 @@ export const DoraMetricsChart = ({
   data,
   dateRanges,
   metrics,
-  allPipelines,
   selectedPipeline,
   onUpdatePipeline,
 }: DoraMetricsChartProps) => {
@@ -285,7 +282,7 @@ export const DoraMetricsChart = ({
     if (!currentData?.doraMetricsCompleted) {
       return EMPTY_DATA_MAPPER_DORA_CHART('');
     } else {
-      return reportMapper(currentData, allPipelines);
+      return reportMapper(currentData);
     }
   });
 
@@ -338,7 +335,11 @@ export const DoraMetricsChart = ({
   }, [meanTimeToRecovery, meanTimeToRecoveryDataOption, isDevMeanTimeToRecoveryValueListFinished]);
 
   const pipelineNameOptions = [DefaultSelectedPipeline];
-  pipelineNameOptions.push(...allPipelines.map((it) => `${it.pipelineName}/${it.step}`));
+  console.log(mappedData);
+  const allMetrics = mappedData?.[0].leadTimeForChangesList
+    ?.filter((it) => it.name !== AVERAGE && it.name !== Total)
+    .map((it) => it.name);
+  allMetrics && pipelineNameOptions.push(...allMetrics);
 
   return (
     <>
