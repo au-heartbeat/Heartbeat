@@ -407,6 +407,7 @@ const ReportContent = (props: ReportContentProps) => {
   };
 
   const showPage = (pageType: string, reportData: ReportResponseDTO | undefined) => {
+    console.log(reportInfos)
     switch (pageType) {
       case REPORT_PAGE_TYPE.SUMMARY:
         return showSummary();
