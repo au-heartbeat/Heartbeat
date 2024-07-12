@@ -2,8 +2,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@src/assets/Logo.svg';
 
 import {
-  HomeIconContainer,
-  HomeIconElement,
   IconContainer,
   LogoContainer,
   LogoImage,
@@ -18,6 +16,8 @@ import { headerClient } from '@src/clients/header/HeaderClient';
 import { resetStep } from '@src/context/stepper/StepperSlice';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { PROJECT_NAME } from '@src/constants/commons';
+import ShareReportTrigger from './ShareReportTrigger';
+import HomeIcon from '@mui/icons-material/Home';
 import { useAppSelector } from '@src/hooks';
 import { useEffect } from 'react';
 import { isEmpty } from 'lodash';
@@ -36,7 +36,7 @@ const Header = () => {
   };
 
   const shouldShowHomeIcon = () => {
-    return ['/metrics', '/error-page'].includes(location.pathname);
+    return ['/metrics', '/error-page', '/report'].some((path) => location.pathname.includes(path));
   };
 
   useEffect(() => {
@@ -57,10 +57,12 @@ const Header = () => {
         {version && <StyledVersion>v{version}</StyledVersion>}
       </StyledHeaderInfo>
       <IconContainer>
+        <ShareReportTrigger />
         {shouldShowHomeIcon() && (
-          <HomeIconContainer title='Home' onClick={goHome} aria-label={'Home'}>
-            <HomeIconElement />
-          </HomeIconContainer>
+          // NOSONAR-NEXT-LINE
+          <span title='Home' onClick={goHome} aria-label={'Home'} onKeyDown={goHome}>
+            <HomeIcon />
+          </span>
         )}
       </IconContainer>
     </LogoWarp>

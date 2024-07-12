@@ -1,8 +1,10 @@
 import {
   IPageLoadingStatusPayload,
   IReportPageLoadingStatus,
+  updateReportId,
   updateReportPageLoadingStatus,
 } from '@src/context/stepper/StepperSlice';
+import { getReportPageLoadingStatusWhenGainPollingUrls, getReportPageLoadingStatusWhenPolling } from '../utils/report';
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
@@ -83,8 +85,13 @@ export const GeneralErrorKey = {
 const REJECTED = 'rejected';
 const FULFILLED = 'fulfilled';
 
-const getErrorKey = (error: Error, source: MetricTypes): string => {
+export const getErrorKey = (error: Error, source: MetricTypes): string => {
   return error instanceof TimeoutError ? TimeoutErrorKey[source] : GeneralErrorKey[source];
+};
+
+export const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
+  const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
+  return { ...response, exportValidityTime: exportValidityTime };
 };
 
 export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
@@ -108,6 +115,8 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
     resetReportPageLoadingStatus(dateRangeList);
 
+    const reportIdRes = await reportClient.generateReportId();
+
     const res: PromiseSettledResult<ReportCallbackResponse>[] = await Promise.allSettled(
       dateRangeList.map(({ startDate, endDate }) =>
         reportClient.retrieveByUrl(
@@ -116,7 +125,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
             startTime: formatDateToTimestampString(startDate!),
             endTime: formatDateToTimestampString(endDate!),
           },
-          reportPath,
+          `${reportPath}/${reportIdRes.reportId}`,
         ),
       ),
     );
@@ -125,6 +134,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
     const { pollingInfos, pollingInterval } = assemblePollingParams(res);
 
+    dispatch(updateReportId(reportIdRes.reportId));
     resetPollingLoadingStatusBeforePolling(pollingInfos.map((item) => item.id));
     await pollingReport({ pollingInfos, interval: pollingInterval });
   };
@@ -185,11 +195,6 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     setHasPollingStarted(false);
   };
 
-  const assembleReportData = (response: ReportResponseDTO): ReportResponseDTO => {
-    const exportValidityTime = exportValidityTimeMapper(response.exportValidityTime);
-    return { ...response, exportValidityTime: exportValidityTime };
-  };
-
   const resetTimeoutMessage = (metricTypes: string[]) => {
     setReportInfos((preReportInfos) => {
       return preReportInfos.map((reportInfo) => {
@@ -206,40 +211,11 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
   };
 
   const resetReportPageLoadingStatus = (dateRangeList: DateRangeList) => {
-    const loadingStatus = {
-      isLoading: false,
-      isLoaded: false,
-      isLoadedWithError: false,
-    };
-    const payload = dateRangeList.map(({ startDate }) => ({
-      startDate: formatDateToTimestampString(startDate!),
-      loadingStatus: {
-        gainPollingUrl: { isLoading: true, isLoaded: false, isLoadedWithError: false },
-        polling: { ...loadingStatus },
-        boardMetrics: { ...loadingStatus },
-        pipelineMetrics: { ...loadingStatus },
-        sourceControlMetrics: { ...loadingStatus },
-      },
-    }));
-    dispatch(updateReportPageLoadingStatus(payload));
+    dispatch(updateReportPageLoadingStatus(getReportPageLoadingStatusWhenGainPollingUrls(dateRangeList)));
   };
 
   function resetPollingLoadingStatusBeforePolling(dates: string[]) {
-    const loadingStatus = {
-      isLoading: true,
-      isLoaded: false,
-      isLoadedWithError: false,
-    };
-    const payload = dates.map((date) => ({
-      startDate: formatDateToTimestampString(date),
-      loadingStatus: {
-        polling: { ...loadingStatus },
-        boardMetrics: { ...loadingStatus },
-        pipelineMetrics: { ...loadingStatus },
-        sourceControlMetrics: { ...loadingStatus },
-      },
-    }));
-    dispatch(updateReportPageLoadingStatus(payload));
+    dispatch(updateReportPageLoadingStatus(getReportPageLoadingStatusWhenPolling(dates)));
   }
 
   const updateErrorAfterFetchReport = (

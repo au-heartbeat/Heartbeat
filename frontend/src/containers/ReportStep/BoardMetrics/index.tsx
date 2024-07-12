@@ -20,7 +20,6 @@ import { ReportTitle } from '@src/components/Common/ReportGrid/ReportTitle';
 import { selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
-import { selectConfig } from '@src/context/config/configSlice';
 import { onlyEmptyAndDoneState } from '@src/utils/util';
 import { Loading } from '@src/components/Loading';
 import { useAppSelector } from '@src/hooks';
@@ -31,13 +30,18 @@ interface BoardMetricsProps {
   onShowDetail: () => void;
   boardReport: ReportResponseDTO | undefined;
   errorMessage: string;
+  metrics: string[];
 }
 
-const BoardMetrics = ({ startToRequestBoardData, onShowDetail, boardReport, errorMessage }: BoardMetricsProps) => {
-  const configData = useAppSelector(selectConfig);
+const BoardMetrics = ({
+  startToRequestBoardData,
+  onShowDetail,
+  boardReport,
+  errorMessage,
+  metrics,
+}: BoardMetricsProps) => {
   const { cycleTimeSettings } = useAppSelector(selectMetricsContent);
 
-  const { metrics } = configData.basic;
   const boardMetrics = metrics.filter((metric) => BOARD_METRICS.includes(metric));
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
   const isOnlyEmptyAndDoneState = onlyEmptyAndDoneState(boardingMappingStates);

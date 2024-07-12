@@ -177,11 +177,11 @@ class CachePageServiceTest {
 		ResponseEntity<List<BuildKitePipelineDTO>> responseEntity = getBuildKitepipelineResponseEntity(httpHeaders);
 		when(buildKiteFeignClient.getPipelineInfo(MOCK_TOKEN, TEST_ORG_ID, "1", "100")).thenReturn(responseEntity);
 
-		var PagePipelineInfoDTO = cachePageService.getPipelineInfoList(TEST_ORG_ID, MOCK_TOKEN, "1", "100");
+		var pagePipelineInfoDTO = cachePageService.getPipelineInfoList(TEST_ORG_ID, MOCK_TOKEN, "1", "100");
 
-		assertNotNull(PagePipelineInfoDTO);
-		assertThat(PagePipelineInfoDTO.getFirstPageInfo()).isEqualTo(responseEntity.getBody());
-		assertThat(PagePipelineInfoDTO.getTotalPage()).isEqualTo(1);
+		assertNotNull(pagePipelineInfoDTO);
+		assertThat(pagePipelineInfoDTO.getFirstPageInfo()).isEqualTo(responseEntity.getBody());
+		assertThat(pagePipelineInfoDTO.getTotalPage()).isEqualTo(1);
 	}
 
 	private static ResponseEntity<List<BuildKitePipelineDTO>> getBuildKitepipelineResponseEntity(

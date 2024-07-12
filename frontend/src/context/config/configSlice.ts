@@ -1,6 +1,5 @@
 import {
   BOARD_METRICS,
-  BOARD_METRICS_EXCLUDE_CLASSIFICATION,
   Calendar,
   DORA_METRICS,
   IMPORT_METRICS_MAPPING,
@@ -239,10 +238,6 @@ export const isSelectDoraMetrics = (state: RootState) =>
   state.config.basic.metrics.some((metric) => DORA_METRICS.includes(metric));
 export const isOnlySelectClassification = (state: RootState) =>
   state.config.basic.metrics.length === 1 && state.config.basic.metrics[0] === RequiredData.Classification;
-export const isSelectDoraMetricsAndClassification = (state: RootState) =>
-  state.config.basic.metrics.some((metric) => DORA_METRICS.includes(metric)) &&
-  state.config.basic.metrics.includes(RequiredData.Classification) &&
-  !state.config.basic.metrics.some((metric) => BOARD_METRICS_EXCLUDE_CLASSIFICATION.includes(metric));
 export const selectBoard = (state: RootState) => state.config.board.config;
 export const selectPipelineTool = (state: RootState) => state.config.pipelineTool.config;
 export const selectSourceControl = (state: RootState) => state.config.sourceControl.config;

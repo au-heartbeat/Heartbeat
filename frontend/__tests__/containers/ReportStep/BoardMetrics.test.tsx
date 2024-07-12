@@ -1,7 +1,6 @@
 import { CLASSIFICATION, LEAD_TIME_FOR_CHANGES, MOCK_REPORT_RESPONSE } from '../../fixtures';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import BoardMetrics from '@src/containers/ReportStep/BoardMetrics';
-import { updateMetrics } from '@src/context/config/configSlice';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -23,6 +22,7 @@ describe('Report Card', () => {
     return render(
       <Provider store={store}>
         <BoardMetrics
+          metrics={[CLASSIFICATION, LEAD_TIME_FOR_CHANGES]}
           startToRequestBoardData={mockHandleRetry}
           onShowDetail={onShowDetail}
           boardReport={boardReport}
@@ -54,7 +54,6 @@ describe('Report Card', () => {
   });
 
   it('should show loading button when board metrics select classification and dora metrics has value too ', async () => {
-    store.dispatch(updateMetrics([CLASSIFICATION, LEAD_TIME_FOR_CHANGES]));
     const mockData = {
       ...MOCK_REPORT_RESPONSE,
       boardMetricsCompleted: false,

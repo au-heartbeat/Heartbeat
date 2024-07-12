@@ -40,21 +40,6 @@ export const StyledStepLabel = styled(StepLabel)({
   },
 });
 
-export const MetricsStepperContent = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  width: '70%',
-  minWidth: theme.main.contentMinWidth,
-  maxWidth: theme.main.contentMaxWidth,
-  margin: '0 auto',
-  textAlign: 'left',
-  [theme.breakpoints.down('lg')]: {
-    width: 'auto',
-    margin: '0 1.25rem',
-    minWidth: 'auto',
-  },
-});
-
 export const basicButtonStyle = {
   height: '2.5rem',
   padding: '0 1rem',

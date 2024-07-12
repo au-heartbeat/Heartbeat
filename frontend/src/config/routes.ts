@@ -13,6 +13,11 @@ const routes = [
     name: 'Metrics',
   },
   {
+    path: '/reports/:reportId',
+    component: lazy(() => import('../pages/ShareReportPage')),
+    name: 'ShareReportPage',
+  },
+  {
     path: '/error-page',
     component: lazy(() => import('../pages/ErrorPage')),
     name: 'ErrorPage',

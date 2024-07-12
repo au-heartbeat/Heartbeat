@@ -1,5 +1,4 @@
 import { Z_INDEX } from '@src/constants/commons';
-import HomeIcon from '@mui/icons-material/Home';
 import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
@@ -49,15 +48,15 @@ export const StyledVersion = styled.div({
 export const IconContainer = styled.div({
   display: 'inherit',
   color: theme.main.color,
+  '> span': {
+    padding: '0.5rem',
+    cursor: 'pointer',
+    marginLeft: '0.2rem',
+  },
+  svg: {
+    fontSize: '1.5rem',
+  },
 });
-
-export const HomeIconContainer = styled.span`
-  cursor: pointer;
-`;
-
-export const HomeIconElement = styled(HomeIcon)`
-  color: ${theme.main.color};
-`;
 
 export const NotificationIconContainer = styled.span({
   left: 0,

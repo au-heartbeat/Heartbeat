@@ -3,13 +3,16 @@ package heartbeat.service.report;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
-import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
+import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.repository.FilePrefixType;
+import heartbeat.repository.FileType;
 import heartbeat.service.report.calculator.ReportGenerator;
-import heartbeat.util.IdUtil;
+import heartbeat.repository.FileRepository;
 import heartbeat.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -17,15 +20,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
-import static heartbeat.controller.report.dto.request.MetricType.BOARD;
-import static heartbeat.controller.report.dto.request.MetricType.DORA;
-import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import java.util.function.BiConsumer;
 
 @Service
 @RequiredArgsConstructor
@@ -39,45 +40,48 @@ public class ReportService {
 
 	private final ReportGenerator reportGenerator;
 
-	private static final char FILENAME_SEPARATOR = '-';
+	private final FileRepository fileRepository;
 
-	public InputStreamResource exportCsv(ReportType reportDataType, String csvTimestamp, String startTime,
-			String endTime) {
+	private static final String FILENAME_SEPARATOR = "-";
 
-		String timeRangeAndTimeStamp = startTime + FILENAME_SEPARATOR + endTime + FILENAME_SEPARATOR + csvTimestamp;
-		if (isExpiredTimeStamp(Long.parseLong(csvTimestamp))) {
+	public InputStreamResource exportCsv(ReportType reportDataType, String uuid, String startTime, String endTime) {
+		String timeRangeAndTimeStamp = fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT,
+				uuid, startTime, endTime);
+		if (timeRangeAndTimeStamp == null) {
 			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
 		}
-		return csvFileGenerator.getDataFromCSV(reportDataType, timeRangeAndTimeStamp);
+
+		String csvTimestamp = timeRangeAndTimeStamp.split(FILENAME_SEPARATOR)[2];
+
+		if (fileRepository.isExpired(System.currentTimeMillis(), Long.parseLong(csvTimestamp))) {
+			throw new NotFoundException("Failed to fetch CSV data due to CSV not found");
+		}
+		return csvFileGenerator.getDataFromCSV(reportDataType, uuid, timeRangeAndTimeStamp);
 	}
 
-	private boolean isExpiredTimeStamp(long timeStamp) {
-		return timeStamp < System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME;
-	}
-
-	public void generateReport(GenerateReportRequest request) {
+	public void generateReport(GenerateReportRequest request, String uuid) {
 		List<MetricType> metricTypes = request.getMetricTypes();
 		String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
-		initializeMetricsDataCompletedInHandler(metricTypes, timeRangeAndTimeStamp);
-		Map<MetricType, Consumer<GenerateReportRequest>> reportGeneratorMap = reportGenerator
+		asyncMetricsDataHandler.initializeMetricsDataCompletedInHandler(uuid, metricTypes, timeRangeAndTimeStamp);
+		Map<MetricType, BiConsumer<String, GenerateReportRequest>> reportGeneratorMap = reportGenerator
 			.getReportGenerator(generateReporterService);
 		List<CompletableFuture<Void>> threadList = new ArrayList<>();
 		for (MetricType metricType : metricTypes) {
 			CompletableFuture<Void> metricTypeThread = CompletableFuture
-				.runAsync(() -> reportGeneratorMap.get(metricType).accept(request));
+				.runAsync(() -> reportGeneratorMap.get(metricType).accept(uuid, request));
 			threadList.add(metricTypeThread);
 		}
 
 		CompletableFuture<Void> allFutures = CompletableFuture.allOf(threadList.toArray(new CompletableFuture[0]));
 		allFutures.thenRun(() -> {
-			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(request.getCsvTimeStamp(),
+			ReportResponse reportResponse = generateReporterService.getComposedReportResponse(uuid,
+					request.getCsvTimeStamp(),
 					convertTimeStampToYYYYMMDD(request.getStartTime(), request.getTimezoneByZoneId()),
 					convertTimeStampToYYYYMMDD(request.getEndTime(), request.getTimezoneByZoneId()));
 			if (isNotGenerateMetricError(reportResponse.getReportMetricsError())) {
-				generateReporterService.generateCSVForMetric(reportResponse, request.getTimeRangeAndTimeStamp());
+				generateReporterService.generateCSVForMetric(uuid, reportResponse, request.getTimeRangeAndTimeStamp());
 			}
-			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(
-					IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+			asyncMetricsDataHandler.updateOverallMetricsCompletedInHandler(uuid, request.getTimeRangeAndTimeStamp());
 		});
 	}
 
@@ -91,23 +95,42 @@ public class ReportService {
 				&& Objects.isNull(reportMetricsError.getPipelineMetricsError());
 	}
 
-	private void initializeMetricsDataCompletedInHandler(List<MetricType> metricTypes, String timeRangeAndTimeStamp) {
-		MetricsDataCompleted previousMetricsDataCompleted = asyncMetricsDataHandler
-			.getMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeAndTimeStamp));
-		Boolean initializeBoardMetricsCompleted = null;
-		Boolean initializeDoraMetricsCompleted = null;
-		if (!Objects.isNull(previousMetricsDataCompleted)) {
-			initializeBoardMetricsCompleted = previousMetricsDataCompleted.boardMetricsCompleted();
-			initializeDoraMetricsCompleted = previousMetricsDataCompleted.doraMetricsCompleted();
+	public ShareApiDetailsResponse getShareReportInfo(String uuid) {
+		List<String> reportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
+			.stream()
+			.map(it -> it.split(FILENAME_SEPARATOR))
+			.filter(it -> it.length > 2)
+			.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
+			.distinct()
+			.toList();
+		if (reportUrls.isEmpty()) {
+			throw new NotFoundException(
+					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}
-		asyncMetricsDataHandler
-			.putMetricsDataCompleted(IdUtil.getDataCompletedPrefix(timeRangeAndTimeStamp), MetricsDataCompleted
-				.builder()
-				.boardMetricsCompleted(metricTypes.contains(BOARD) ? Boolean.FALSE : initializeBoardMetricsCompleted)
-				.doraMetricsCompleted(metricTypes.contains(DORA) ? Boolean.FALSE : initializeDoraMetricsCompleted)
-				.overallMetricCompleted(Boolean.FALSE)
-				.isSuccessfulCreateCsvFile(Boolean.FALSE)
-				.build());
+		List<String> metrics = fileRepository.getFiles(FileType.METRICS, uuid)
+			.stream()
+			.map(it -> it.split(FILENAME_SEPARATOR))
+			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
+			.map(it -> fileRepository.readFileByType(FileType.METRICS, uuid, it, List.class,
+					FilePrefixType.ALL_METRICS_PREFIX))
+			.map(it -> new ArrayList<String>(it))
+			.flatMap(Collection::stream)
+			.distinct()
+			.toList();
+		return ShareApiDetailsResponse.builder().metrics(metrics).reportURLs(reportUrls).build();
+	}
+
+	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {
+		return "/reports/" + uuid + "/detail?startTime=" + startTime + "&endTime=" + endTime;
+	}
+
+	public UuidResponse generateReportId() {
+		return UuidResponse.builder().reportId(UUID.randomUUID().toString()).build();
+	}
+
+	public void saveMetrics(GenerateReportRequest request, String uuid) {
+		fileRepository.createFileByType(FileType.METRICS, uuid, request.getTimeRangeAndTimeStamp(),
+				request.getMetrics(), FilePrefixType.ALL_METRICS_PREFIX);
 	}
 
 }

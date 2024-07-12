@@ -124,7 +124,7 @@ export const MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL = `${BASE_URL}/source-control/
 export const MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL = `${BASE_URL}/source-control/:type/repos/branches/verify`;
 export const MOCK_REPORT_URL = `${BASE_URL}/reports`;
 export const MOCK_VERSION_URL = `${BASE_URL}/version`;
-export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:csvTimeStamp`;
+export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:reportId`;
 
 export const VERSION_RESPONSE = {
   version: '1.11',
@@ -287,7 +287,7 @@ export const IMPORTED_NEW_CONFIG_FIXTURE = {
 };
 
 export const MOCK_EXPORT_CSV_REQUEST_PARAMS: CSVReportRequestDTO = {
-  csvTimeStamp: 1613664000000,
+  reportId: 1613664000000,
   dataType: 'pipeline',
   startDate: IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].startDate,
   endDate: IMPORTED_NEW_CONFIG_FIXTURE.dateRange[0].endDate,
@@ -805,6 +805,8 @@ export const ERROR_PAGE_ROUTE = '/error-page';
 
 export const METRICS_PAGE_ROUTE = '/metrics';
 
+export const SHARE_REPORT_PAGE_ROUTE = '/reports';
+
 export const ERROR_PAGE_MESSAGE =
   'Something on internet is not quite right. Perhaps head back to our homepage and try again.';
 
@@ -876,3 +878,21 @@ export const COMMON_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 export const PIPELINE_TOOL_TOKEN_INPUT_LABEL = 'input token';
 
 export const TIMEOUT_ALERT_ARIA_LABEL = 'timeout alert';
+
+export const MOCK_REPORT_ID = '7d2c46d6-c447-4011-bb77-76f9c493f8ce';
+
+export const MOCK_SHARE_REPORT_URLS_RESPONSE = {
+  reportURLs: [
+    '/reports/7d2c46d6-c447-4011-bb77-76f9c493f8ce/detail?startTime=20240513&endTime=20240526',
+    '/reports/7d2c46d6-c447-4011-bb77-76f9c493f8ce/detail?startTime=20240527&endTime=20240609',
+  ],
+  metrics: [
+    'Velocity',
+    'Cycle time',
+    'Classification',
+    'Lead time for changes',
+    'Deployment frequency',
+    'Dev change failure rate',
+    'Dev mean time to recovery',
+  ],
+};

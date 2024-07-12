@@ -1,4 +1,10 @@
-import { ERROR_PAGE_MESSAGE, ERROR_PAGE_ROUTE, BASE_PAGE_ROUTE, METRICS_PAGE_ROUTE } from './fixtures';
+import {
+  ERROR_PAGE_MESSAGE,
+  ERROR_PAGE_ROUTE,
+  BASE_PAGE_ROUTE,
+  METRICS_PAGE_ROUTE,
+  SHARE_REPORT_PAGE_ROUTE,
+} from './fixtures';
 import { render, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -10,6 +16,11 @@ jest.mock('@src/pages/Metrics', () => ({
   __esModule: true,
   default: () => <div>Mocked Metrics Page</div>,
 }));
+jest.mock('@src/pages/ShareReportPage', () => ({
+  __esModule: true,
+  default: () => <div>Mocked Share Report Page</div>,
+}));
+
 jest.useFakeTimers();
 describe('router', () => {
   const setup = (routeUrl: string) =>
@@ -44,6 +55,14 @@ describe('router', () => {
 
     await waitFor(() => {
       expect(getByText('Mocked Metrics Page')).toBeInTheDocument();
+    });
+  });
+
+  it('should show Share Report page when go Share Report page', async () => {
+    const { getByText } = setup(SHARE_REPORT_PAGE_ROUTE + '/reportId');
+
+    await waitFor(() => {
+      expect(getByText('Mocked Share Report Page')).toBeInTheDocument();
     });
   });
 
