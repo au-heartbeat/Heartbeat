@@ -1,6 +1,6 @@
 import { PipelinesSelectContainer } from '@src/containers/ReportStep/DoraMetricsChart/PipelineSelector/style';
+import { Autocomplete, Box, ListItemText, TextField, Tooltip } from '@mui/material';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
-import { Autocomplete, Box, ListItemText, TextField } from '@mui/material';
 import { EmojiWrap, StyledAvatar } from '@src/constants/emojis/style';
 import { Z_INDEX } from '@src/constants/commons';
 import React, { useState } from 'react';
@@ -15,6 +15,7 @@ interface Props {
 export default function PipelineSelector({ options, value, onUpDatePipeline, title }: Props) {
   const label = '';
   const [inputValue, setInputValue] = useState<string>(value);
+
   const emojiView = (pipelineStepName: string) => {
     const emojiUrls: string[] = getEmojiUrls(pipelineStepName);
     return emojiUrls.map((url) => <StyledAvatar key={url} src={url} />);
@@ -27,20 +28,36 @@ export default function PipelineSelector({ options, value, onUpDatePipeline, tit
         disableClearable
         sx={{
           flex: 1,
+          paddingRight: '0.62rem',
           marginLeft: '1rem',
           minWidth: '22rem',
         }}
         aria-label={'Pipeline Selector'}
         options={options}
         getOptionLabel={(option: string) => removeExtraEmojiName(option).trim()}
-        renderOption={(props, option: string) => (
-          <Box component='li' {...props} key={option}>
-            <EmojiWrap>
-              {emojiView(option)}
-              <ListItemText primary={removeExtraEmojiName(option).trim()} aria-label={'single-option'} />
-            </EmojiWrap>
-          </Box>
-        )}
+        renderOption={(props, option: string) => {
+          const optionContent = removeExtraEmojiName(option).trim();
+          const emojiWrap = <>{emojiView(option)}</>;
+          return (
+            <Tooltip
+              title={
+                <EmojiWrap>
+                  {emojiWrap}
+                  {optionContent}
+                </EmojiWrap>
+              }
+              placement='right'
+              followCursor
+            >
+              <Box component='li' {...props} key={option}>
+                <EmojiWrap>
+                  {emojiWrap}
+                  <ListItemText primary={optionContent} aria-label={'single-option'} />
+                </EmojiWrap>
+              </Box>
+            </Tooltip>
+          );
+        }}
         value={value}
         onChange={(event, newValue: string) => onUpDatePipeline(newValue)}
         inputValue={inputValue}
