@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
 export const PopperContentWrapper = styled.div({
-  width: '24rem',
+  width: '25rem',
   margin: '2rem 0 0',
   padding: '1.5rem',
   boxShadow: theme.main.cardShadow,
