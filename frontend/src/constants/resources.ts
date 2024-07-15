@@ -543,61 +543,68 @@ export enum SortingDateRangeText {
 
 export const DISABLED_DATE_RANGE_MESSAGE = 'Report generated failed during this period.';
 
-export const EMPTY_DATA_MAPPER_DORA_CHART = (value: string) => {
+export const emptyDataMapperDoraChart = (allPipelines: string[], value: string) => {
+  const deploymentFrequencyList = allPipelines.map((it, index) => {
+    return {
+      id: index,
+      name: it,
+      valueList: [
+        {
+          value: value,
+        },
+        {
+          value: value,
+        },
+      ],
+    };
+  });
+  const devMeanTimeToRecoveryList = allPipelines.map((it, index) => {
+    return {
+      id: index,
+      name: it,
+      valueList: [
+        {
+          value: value,
+        },
+      ],
+    };
+  });
+  const leadTimeForChangesList = allPipelines.map((it, index) => {
+    return {
+      id: index,
+      name: it,
+      valueList: [
+        {
+          name: LEAD_TIME_FOR_CHANGES.PR_LEAD_TIME,
+          value: value,
+        },
+        {
+          name: LEAD_TIME_FOR_CHANGES.PIPELINE_LEAD_TIME,
+          value: value,
+        },
+        {
+          name: LEAD_TIME_FOR_CHANGES.TOTAL_LEAD_TIME,
+          value: value,
+        },
+      ],
+    };
+  });
+  const devChangeFailureRateList = allPipelines.map((it, index) => {
+    return {
+      id: index,
+      name: it,
+      valueList: [
+        {
+          value: value + '%(0/0)',
+        },
+      ],
+    };
+  });
   return {
-    deploymentFrequencyList: [
-      {
-        id: 0,
-        name: 'Heartbeat/:rocket: Deploy prod',
-        valueList: [
-          {
-            value: value,
-          },
-        ],
-      },
-    ],
-    devMeanTimeToRecoveryList: [
-      {
-        id: 0,
-        name: 'Heartbeat/:rocket: Deploy prod',
-        valueList: [
-          {
-            value: value,
-          },
-        ],
-      },
-    ],
-    leadTimeForChangesList: [
-      {
-        id: 0,
-        name: 'Average',
-        valueList: [
-          {
-            name: LEAD_TIME_FOR_CHANGES.PR_LEAD_TIME,
-            value: value,
-          },
-          {
-            name: LEAD_TIME_FOR_CHANGES.PIPELINE_LEAD_TIME,
-            value: value,
-          },
-          {
-            name: LEAD_TIME_FOR_CHANGES.TOTAL_LEAD_TIME,
-            value: value,
-          },
-        ],
-      },
-    ],
-    devChangeFailureRateList: [
-      {
-        id: 0,
-        name: 'Heartbeat/:rocket: Deploy prod',
-        valueList: [
-          {
-            value: value + '%(0/0)',
-          },
-        ],
-      },
-    ],
+    deploymentFrequencyList,
+    devMeanTimeToRecoveryList,
+    leadTimeForChangesList,
+    devChangeFailureRateList,
     exportValidityTimeMin: 0.0005,
   };
 };

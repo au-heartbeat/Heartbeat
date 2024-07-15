@@ -32,7 +32,7 @@ import {
   StyledTab,
   StyledTabs,
 } from '@src/containers/ReportStep/style';
-import { DefaultSelectedPipeline, DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
+import { DEFAULT_SELECTED_PIPELINE, DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { DateRange, DateRangeList } from '@src/context/config/configSlice';
@@ -114,7 +114,7 @@ const ReportContent = (props: ReportContentProps) => {
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
-  const [selectedPipeline, setSelectedPipeline] = useState<string>(DefaultSelectedPipeline);
+  const [selectedPipeline, setSelectedPipeline] = useState<string>(DEFAULT_SELECTED_PIPELINE);
 
   const startDate = selectedDateRange?.startDate as string;
   const endDate = selectedDateRange?.endDate as string;
@@ -407,7 +407,6 @@ const ReportContent = (props: ReportContentProps) => {
   };
 
   const showPage = (pageType: string, reportData: ReportResponseDTO | undefined) => {
-    console.log(reportInfos)
     switch (pageType) {
       case REPORT_PAGE_TYPE.SUMMARY:
         return showSummary();

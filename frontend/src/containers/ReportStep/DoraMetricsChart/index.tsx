@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 import {
   ChartType,
-  EMPTY_DATA_MAPPER_DORA_CHART,
+  emptyDataMapperDoraChart,
   LEAD_TIME_CHARTS_MAPPING,
   MetricsSubtitle,
   RequiredData,
@@ -47,8 +47,8 @@ enum DORAMetricsChartType {
 }
 
 const AVERAGE = 'Average';
-const Total = 'Total';
-export const DefaultSelectedPipeline = 'Average/Total';
+const TOTAL = 'Total';
+export const DEFAULT_SELECTED_PIPELINE = 'Average/Total';
 
 function extractedStackedBarData(
   allDateRanges: string[],
@@ -60,7 +60,7 @@ function extractedStackedBarData(
     .slice(0, 2);
   const extractedValues = mappedData?.map((data) => {
     const averageItem = data.leadTimeForChangesList?.find((leadTimeForChange) =>
-      selectedPipeline === DefaultSelectedPipeline
+      selectedPipeline === DEFAULT_SELECTED_PIPELINE
         ? leadTimeForChange.name === AVERAGE
         : leadTimeForChange.name === selectedPipeline,
     );
@@ -105,14 +105,14 @@ function extractedDeploymentFrequencyData(
   const data = mappedData?.map((item) => item.deploymentFrequencyList);
   const averageDeploymentFrequency = data?.map((items) => {
     const averageItem = items?.find((item) =>
-      selectedPipeline === DefaultSelectedPipeline ? item.name === AVERAGE : item.name === selectedPipeline,
+      selectedPipeline === DEFAULT_SELECTED_PIPELINE ? item.name === AVERAGE : item.name === selectedPipeline,
     );
     if (!averageItem) return 0;
     return Number(averageItem.valueList[0].value) || 0;
   });
   const deployTimes = data?.map((items) => {
     const averageItem = items?.find((item) =>
-      selectedPipeline === DefaultSelectedPipeline ? item.name === AVERAGE : item.name === selectedPipeline,
+      selectedPipeline === DEFAULT_SELECTED_PIPELINE ? item.name === AVERAGE : item.name === selectedPipeline,
     );
     if (!averageItem) return 0;
     return Number(averageItem.valueList[1].value);
@@ -167,19 +167,17 @@ function extractedChangeFailureRateData(
   const data = mappedData?.map((item) => item.devChangeFailureRateList);
   const value = data?.map((items) => {
     const averageItem = items?.find((item) =>
-      selectedPipeline === DefaultSelectedPipeline ? item.name === AVERAGE : item.name === selectedPipeline,
+      selectedPipeline === DEFAULT_SELECTED_PIPELINE ? item.name === AVERAGE : item.name === selectedPipeline,
     );
     if (!averageItem) return 0;
     const originValue: string | number = averageItem.valueList[0].value;
-    let value: number = 0;
-    if (selectedPipeline === DefaultSelectedPipeline) {
-      value = Number(originValue);
+    let value: number;
+    if (selectedPipeline !== DEFAULT_SELECTED_PIPELINE && isString(originValue)) {
+      value = Number(originValue.split('%')[0]);
     } else {
-      if (isString(originValue)) {
-        value = Number(originValue.split('%')[0]);
-      }
+      value = Number(originValue);
     }
-    return Number(value) || 0;
+    return value || 0;
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevChangeFailureRate);
   return {
@@ -211,7 +209,7 @@ function extractedMeanTimeToRecoveryDataData(
   const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
   const value = data?.map((items) => {
     const totalItem = items?.find((item) =>
-      selectedPipeline === DefaultSelectedPipeline ? item.name === Total : item.name === selectedPipeline,
+      selectedPipeline === DEFAULT_SELECTED_PIPELINE ? item.name === TOTAL : item.name === selectedPipeline,
     );
     if (!totalItem) return 0;
     return Number(totalItem.valueList[0].value) || 0;
@@ -258,7 +256,7 @@ function isDoraMetricsChartFinish({
   const valueList = mappedData
     .flatMap((value) => value[type] as unknown as ChartValueSource[])
     .filter((value) =>
-      type === DORAMetricsChartType.DevMeanTimeToRecovery ? value?.name === Total : value?.name === AVERAGE,
+      type === DORAMetricsChartType.DevMeanTimeToRecovery ? value?.name === TOTAL : value?.name === AVERAGE,
     )
     .map((value) => value?.valueList);
 
@@ -282,7 +280,7 @@ export const DoraMetricsChart = ({
 
   const mappedData = data.map((currentData) => {
     if (!currentData?.doraMetricsCompleted) {
-      return EMPTY_DATA_MAPPER_DORA_CHART('');
+      return emptyDataMapperDoraChart(allPipelines, '');
     } else {
       return reportMapper(currentData);
     }
@@ -336,8 +334,7 @@ export const DoraMetricsChart = ({
     showChart(meanTimeToRecovery.current, isDevMeanTimeToRecoveryValueListFinished, meanTimeToRecoveryDataOption);
   }, [meanTimeToRecovery, meanTimeToRecoveryDataOption, isDevMeanTimeToRecoveryValueListFinished]);
 
-  const pipelineNameOptions = [DefaultSelectedPipeline];
-  pipelineNameOptions.push(...allPipelines);
+  const pipelineNameOptions = [DEFAULT_SELECTED_PIPELINE, ...allPipelines];
 
   return (
     <>
