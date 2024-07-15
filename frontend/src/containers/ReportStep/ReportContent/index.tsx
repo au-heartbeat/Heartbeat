@@ -6,7 +6,7 @@ import {
   TimeoutErrorKey,
   useGenerateReportEffect,
 } from '@src/hooks/useGenerateReportEffect';
-import { sortDateRanges } from '@src/utils/util';
+import { sortDateRanges, sortReportInfos } from '@src/utils/util';
 
 import {
   addNotification,
@@ -55,8 +55,7 @@ export interface ReportContentProps {
   metrics: string[];
   allPipelines: string[];
   dateRanges: DateRangeList;
-  startToRequestDoraData: () => void;
-  startToRequestBoardData: () => void;
+  startToRequestData: () => void;
   reportInfos: IReportInfo[];
   handleSave?: () => void;
   reportId?: number;
@@ -80,13 +79,13 @@ const ReportContent = (props: ReportContentProps) => {
     metrics,
     allPipelines,
     dateRanges,
-    startToRequestDoraData,
-    startToRequestBoardData,
+    startToRequestData,
     reportInfos,
     handleSave,
     reportId,
     hideButtons = false,
   } = props;
+
   const dispatch = useAppDispatch();
 
   const descendingDateRanges = sortDateRanges(dateRanges);
@@ -100,6 +99,7 @@ const ReportContent = (props: ReportContentProps) => {
 
     return `${formattedStart}-${formattedEnd}`;
   });
+  const ascendingReportInfos = sortReportInfos(reportInfos, false);
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
@@ -261,7 +261,7 @@ const ReportContent = (props: ReportContentProps) => {
     <Box>
       {shouldShowBoardMetrics && (
         <BoardMetrics
-          startToRequestBoardData={startToRequestBoardData}
+          startToRequestBoardData={startToRequestData}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.BOARD)}
           boardReport={currentDataInfo.reportData}
           errorMessage={getErrorMessage4Board()}
@@ -270,7 +270,7 @@ const ReportContent = (props: ReportContentProps) => {
       )}
       {shouldShowDoraMetrics && (
         <DoraMetrics
-          startToRequestDoraData={startToRequestDoraData}
+          startToRequestDoraData={startToRequestData}
           onShowDetail={() => setPageType(REPORT_PAGE_TYPE.DORA)}
           doraReport={currentDataInfo.reportData}
           metrics={metrics}
@@ -395,10 +395,6 @@ const ReportContent = (props: ReportContentProps) => {
     setPageType(newValue === CHART_INDEX.BOARD ? REPORT_PAGE_TYPE.BOARD_CHART : REPORT_PAGE_TYPE.DORA_CHART);
   };
 
-  const handleChartRetry = () => {
-    pageType === REPORT_PAGE_TYPE.DORA_CHART ? startToRequestDoraData() : startToRequestBoardData();
-  };
-
   const tabProps = (index: number) => {
     return {
       id: `simple-tab-${index}`,
@@ -415,9 +411,9 @@ const ReportContent = (props: ReportContentProps) => {
       case REPORT_PAGE_TYPE.DORA:
         return !!reportData && showDoraDetail(reportData);
       case REPORT_PAGE_TYPE.BOARD_CHART:
-        return showBoardChart(reportInfos);
+        return showBoardChart(ascendingReportInfos);
       case REPORT_PAGE_TYPE.DORA_CHART:
-        return showDoraChart(reportInfos.map((infos) => infos.reportData));
+        return showDoraChart(ascendingReportInfos.map((infos) => infos.reportData));
     }
   };
 
@@ -442,7 +438,7 @@ const ReportContent = (props: ReportContentProps) => {
         {startDate && endDate && (
           <StyledCalendarWrapper data-testid={'calendarWrapper'} justCalendar={!shouldShowTabs}>
             {shouldShowChartRetryButton() && (
-              <StyledRetry aria-label='chart retry' onClick={handleChartRetry}>
+              <StyledRetry aria-label='chart retry' onClick={startToRequestData}>
                 <ReplayIcon />
               </StyledRetry>
             )}

@@ -35,4 +35,5 @@ heartbeat:
   swagger:
     host: ${SWAGGER_HOST:http://localhost:4322}
   version: 1.2.0
+  expiredDays: ${EXPIRED_DAYS:7}
 

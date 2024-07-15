@@ -43,7 +43,6 @@ import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
 import static heartbeat.repository.FilePrefixType.REQUEST_INFO_REPORT_PREFIX;
 import static heartbeat.tools.TimeUtils.mockTimeStamp;
-import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,7 +88,7 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldCallCsvFileGeneratorToGotTheStreamWhenTimestampIsValid() throws IOException {
-			long validTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 20000L;
+			long validTimestamp = System.currentTimeMillis() + 20000L;
 			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + validTimestamp;
 			when(csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp))
 				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
@@ -112,7 +111,7 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldThrowNotFoundExceptionWhenTimestampIsValid() {
-			long invalidTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L;
+			long invalidTimestamp = System.currentTimeMillis() - 20000L;
 			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + invalidTimestamp;
 			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
 					START_TIME, END_TIME))
@@ -126,7 +125,7 @@ public class ReportServiceTest {
 
 		@Test
 		void shouldThrowNotFoundExceptionWhenTimestampIsNull() {
-			long invalidTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L;
+			long invalidTimestamp = System.currentTimeMillis() - 20000L;
 			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + invalidTimestamp;
 
 			assertThrows(NotFoundException.class,

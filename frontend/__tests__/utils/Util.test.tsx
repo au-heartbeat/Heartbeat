@@ -16,6 +16,7 @@ import {
   sortDateRanges,
   sortDisabledOptions,
   sortLegend,
+  sortReportInfos,
   transformToCleanedBuildKiteEmoji,
   updateResponseCrews,
   valueFormatter,
@@ -33,6 +34,7 @@ import {
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
+import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { PIPELINE_TOOL_TYPES } from '../fixtures';
@@ -444,6 +446,46 @@ describe('sortDateRanges function', () => {
   it('should ascend dateRanges', () => {
     const sortedDateRanges = sortDateRanges(dateRanges, false);
     expect(sortedDateRanges).toStrictEqual(expectResult.reverse());
+  });
+});
+
+describe('sortReportInfos function', () => {
+  const reportInfos = [
+    {
+      id: '2024-03-19T00:00:00.000+08:00',
+      reportData: {},
+    },
+    {
+      id: '2024-02-01T00:00:00.000+08:00',
+      reportData: {},
+    },
+    {
+      id: '2024-04-01T00:00:00.000+08:00',
+      reportData: {},
+    },
+  ];
+  const expectResult = [
+    {
+      id: '2024-04-01T00:00:00.000+08:00',
+      reportData: {},
+    },
+    {
+      id: '2024-03-19T00:00:00.000+08:00',
+      reportData: {},
+    },
+    {
+      id: '2024-02-01T00:00:00.000+08:00',
+      reportData: {},
+    },
+  ];
+  it('should descend reportInfos', () => {
+    const sortedReportInfos = sortReportInfos(reportInfos as IReportInfo[]);
+    expect(sortedReportInfos).toStrictEqual(expectResult);
+  });
+
+  it('should ascend reportInfos', () => {
+    const sortedReportInfos = sortReportInfos(reportInfos as IReportInfo[], false);
+    expect(sortedReportInfos).toStrictEqual(expectResult.reverse());
   });
 });
 

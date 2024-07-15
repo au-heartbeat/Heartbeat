@@ -37,7 +37,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -676,7 +675,7 @@ class FileRepositoryTest {
 		void shouldRemoveSuccessfullyWhenDirectoryIsNotEmpty() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = EXPORT_CSV_VALIDITY_TIME + timestamp + 10000L;
+			long currentTimestamp = fileRepository.expiredTimes + timestamp + 10000L;
 
 			String expectedFilePath = "./app/output/csv/" + TEST_UUID;
 			Path path = Paths.get(expectedFilePath);
@@ -699,7 +698,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenFileIsNotExpired() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = EXPORT_CSV_VALIDITY_TIME + timestamp - 10000L;
+			long currentTimestamp = fileRepository.expiredTimes + timestamp - 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -722,7 +721,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenDeleteThrowException() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = EXPORT_CSV_VALIDITY_TIME + timestamp + 10000L;
+			long currentTimestamp = fileRepository.expiredTimes + timestamp + 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -864,7 +863,7 @@ class FileRepositoryTest {
 		@Test
 		void shouldExpired() {
 			long startTime = 123L;
-			long endTime = startTime + EXPORT_CSV_VALIDITY_TIME + 10000L;
+			long endTime = startTime + fileRepository.expiredTimes + 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 
@@ -874,7 +873,7 @@ class FileRepositoryTest {
 		@Test
 		void shouldNotExpired() {
 			long startTime = 123L;
-			long endTime = startTime + EXPORT_CSV_VALIDITY_TIME - 10000L;
+			long endTime = startTime + fileRepository.expiredTimes - 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 
