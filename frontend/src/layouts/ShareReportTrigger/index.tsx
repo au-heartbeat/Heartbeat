@@ -19,10 +19,10 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ShareIcon from '@mui/icons-material/Share';
 import LinkIcon from '@mui/icons-material/Link';
 import { useAppSelector } from '@src/hooks';
+import { useEffect, useState } from 'react';
 import Popper from '@mui/material/Popper';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
-import { useEffect, useState } from 'react';
 
 const ShareReportTrigger = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
