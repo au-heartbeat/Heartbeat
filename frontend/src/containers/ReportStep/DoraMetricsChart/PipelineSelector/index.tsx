@@ -28,7 +28,7 @@ export default function PipelineSelector({ options, value, onUpDatePipeline, tit
         sx={{
           flex: 1,
           marginLeft: '1rem',
-          minWidth: '340px',
+          minWidth: '22rem',
         }}
         aria-label={'Pipeline Selector'}
         options={options}
