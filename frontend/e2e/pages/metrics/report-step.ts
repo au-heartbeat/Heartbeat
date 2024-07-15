@@ -54,6 +54,10 @@ export class ReportStep {
   readonly exportBoardData: Locator;
   readonly exportMetricData: Locator;
   readonly homeIcon: Locator;
+  readonly shareReportIcon: Locator;
+  readonly shareReportPopper: Locator;
+  readonly shareReportCopyLink: Locator;
+  readonly shareReportSuccessAlert: Locator;
   readonly velocityRows: Locator;
   readonly cycleTimeRows: Locator;
   readonly classificationRows: Locator;
@@ -134,6 +138,10 @@ export class ReportStep {
     this.exportBoardData = this.page.getByText('Export board data');
     this.exportPipelineDataButton = this.page.getByText('Export pipeline data');
     this.homeIcon = page.getByLabel('Home');
+    this.shareReportIcon = page.getByLabel('Share Report');
+    this.shareReportPopper = page.getByLabel('Share Report Popper');
+    this.shareReportCopyLink = page.getByLabel('Copy Link');
+    this.shareReportSuccessAlert = page.getByText('Link copied to clipboard');
     this.velocityRows = this.page.getByTestId('Velocity').locator('tbody').getByRole('row');
     this.cycleTimeRows = this.page.getByTestId('Cycle Time').locator('tbody').getByRole('row');
     this.deploymentFrequencyRows = this.page.getByLabel('Deployment Frequency').locator('tbody').getByRole('row');
@@ -262,8 +270,34 @@ export class ReportStep {
   async confirmGeneratedReport() {
     await expect(this.page.getByRole('alert').first()).toContainText('Help Information');
     await expect(this.page.getByRole('alert').first()).toContainText(
-      'The file will expire in 30 minutes, please download it in time.',
+      'The files will be cleaned up irregularly, please download promptly to avoid expiration.',
     );
+  }
+
+  async checkShareReport() {
+    // await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await expect(this.shareReportIcon).toHaveCSS('cursor', 'pointer');
+    await this.shareReportIcon.click();
+    await expect(this.shareReportPopper).toBeVisible();
+    await this.shareReportCopyLink.click();
+    await expect(this.shareReportSuccessAlert).toBeVisible();
+
+    // const handle = await this.page.evaluateHandle(() => navigator.clipboard.readText());
+    // const host = await this.page.evaluate(() => document.location.host);
+    // const clipboardContent = await handle.jsonValue();
+    // expect(clipboardContent.startsWith(host + '/reports')).toBeTruthy();
+
+    // const shareReportPage = await context.newPage();
+    // await shareReportPage.goto(clipboardContent);
+    // await expect(shareReportPage.getByLabel('Home')).toBeVisible();
+    // await expect(shareReportPage.getByText('Board Metrics')).toBeVisible();
+    // await expect(shareReportPage.getByLabel('Share Report')).not.toBeVisible();
+    // await expect(shareReportPage.getByText('Back')).not.toBeVisible();
+    // await expect(shareReportPage.getByText('Export metric data')).not.toBeVisible();
+    // await expect(shareReportPage.getByText('Export board data')).not.toBeVisible();
+    // await expect(shareReportPage.getByText('Export pipeline data')).not.toBeVisible();
+
+    // await shareReportPage.close();
   }
 
   async checkBoardMetricsWithoutRework(

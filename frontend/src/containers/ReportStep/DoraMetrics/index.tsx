@@ -16,8 +16,6 @@ import { StyledRetry } from '@src/containers/ReportStep/BoardMetrics/style';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { StyledSpacing } from '@src/containers/ReportStep/style';
 import { ReportGrid } from '@src/components/Common/ReportGrid';
-import { selectConfig } from '@src/context/config/configSlice';
-import { useAppSelector } from '@src/hooks';
 import React from 'react';
 import _ from 'lodash';
 
@@ -26,11 +24,10 @@ interface DoraMetricsProps {
   onShowDetail: () => void;
   doraReport: ReportResponseDTO | undefined;
   errorMessage: string;
+  metrics: string[];
 }
 
-const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMessage }: DoraMetricsProps) => {
-  const configData = useAppSelector(selectConfig);
-  const { metrics } = configData.basic;
+const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMessage, metrics }: DoraMetricsProps) => {
   const shouldShowSourceControl = metrics.includes(RequiredData.LeadTimeForChanges);
   const sourceControlMetricsCompleted = metrics
     .filter((metric) => SOURCE_CONTROL_METRICS.includes(metric))

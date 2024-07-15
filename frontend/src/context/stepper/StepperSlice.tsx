@@ -33,6 +33,7 @@ export interface StepState {
   shouldMetricsLoaded: boolean;
   metricsPageTimeRangeLoadingStatus: Record<string, IMetricsPageLoadingStatus>;
   reportPageTimeRangeLoadingStatus: Record<string, IReportPageLoadingStatus>;
+  reportId?: number;
 }
 
 const initialState: StepState = {
@@ -71,6 +72,9 @@ export const stepperSlice = createSlice({
     updateTimeStamp: (state, action) => {
       state.timeStamp = action.payload;
     },
+    updateReportId: (state, action) => {
+      state.reportId = action.payload;
+    },
     updateMetricsPageLoadingStatus: (state, action) => {
       const loadingStatusList: IPageLoadingStatusPayload<IMetricsPageLoadingStatus>[] = action.payload;
 
@@ -107,12 +111,14 @@ export const {
   backStep,
   updateShouldMetricsLoaded,
   updateTimeStamp,
+  updateReportId,
   updateMetricsPageLoadingStatus,
   updateReportPageLoadingStatus,
 } = stepperSlice.actions;
 
 export const selectStepNumber = (state: RootState) => state.stepper.stepNumber;
 export const selectTimeStamp = (state: RootState) => state.stepper.timeStamp;
+export const selectReportId = (state: RootState) => state.stepper.reportId;
 export const shouldMetricsLoaded = (state: RootState) => state.stepper.shouldMetricsLoaded;
 export const selectMetricsPageFailedTimeRangeInfos = (state: RootState) =>
   state.stepper.metricsPageTimeRangeLoadingStatus;

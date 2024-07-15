@@ -11,7 +11,6 @@ import {
 import {
   BackButton,
   ButtonContainer,
-  MetricsStepperContent,
   NextButton,
   SaveButton,
   StyledStep,
@@ -29,6 +28,7 @@ import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepV
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
 import { selectConfig, selectMetrics, selectPipelineList } from '@src/context/config/configSlice';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { PageContentWrapper } from '@src/components/Common/PageContentWrapper';
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
 import { ConfirmDialog } from '@src/containers/MetricsStepper/ConfirmDialog';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
@@ -323,7 +323,7 @@ const MetricsStepper = () => {
           </StyledStep>
         ))}
       </StyledStepper>
-      <MetricsStepperContent>
+      <PageContentWrapper>
         <Suspense>
           {activeStep === METRICS_STEPS.CONFIG && (
             <ConfigStep
@@ -336,7 +336,7 @@ const MetricsStepper = () => {
           {activeStep === METRICS_STEPS.METRICS && <MetricsStep />}
           {activeStep === METRICS_STEPS.REPORT && <ReportStep handleSave={handleSave} />}
         </Suspense>
-      </MetricsStepperContent>
+      </PageContentWrapper>
       <ButtonContainer>
         {activeStep !== METRICS_STEPS.REPORT && (
           <>

@@ -1,6 +1,9 @@
-import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
+import { ReportCallbackResponse, ReportURLsResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { ReportRequestDTO } from '@src/clients/report/dto/request';
 import { HttpClient } from '@src/clients/HttpClient';
+import { AxiosResponse } from 'axios';
+
+const REPORT_PATH = '/reports';
 
 export interface IPollingRes {
   status: number;
@@ -91,6 +94,10 @@ export class ReportClient extends HttpClient {
     isSuccessfulCreateCsvFile: false,
   };
 
+  generateReportId = async () => {
+    return this.axiosInstance.post(REPORT_PATH).then((res) => res.data);
+  };
+
   retrieveByUrl = async (params: ReportRequestDTO, url: string) => {
     await this.axiosInstance
       .post(url, params, {})
@@ -117,6 +124,16 @@ export class ReportClient extends HttpClient {
       status: this.status,
       response: this.reportResponse,
     };
+  };
+
+  getReportUrlAndMetrics = (reportId: string) => {
+    return this.axiosInstance.get<ReportURLsResponse, AxiosResponse<ReportURLsResponse>, unknown>(
+      `${REPORT_PATH}/${reportId}`,
+    );
+  };
+
+  getReportDetail = (reportUrl: string) => {
+    return this.axiosInstance.get<ReportResponseDTO, AxiosResponse<ReportResponseDTO>, unknown>(reportUrl);
   };
 }
 

@@ -61,6 +61,7 @@ describe('use generate report effect', () => {
   });
 
   it('should set "Data loading failed" for all board metrics when board data retrieval times out', async () => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.retrieveByUrl = jest
       .fn()
       .mockRejectedValue(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout));
@@ -83,6 +84,7 @@ describe('use generate report effect', () => {
   });
 
   it('should set "Data loading failed" for dora metrics when dora data retrieval times out', async () => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.retrieveByUrl = jest
       .fn()
       .mockRejectedValueOnce(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout))
@@ -105,6 +107,7 @@ describe('use generate report effect', () => {
   });
 
   it('should call polling report and setTimeout when request board data given pollingReport response return 200', async () => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.Ok, response: MOCK_REPORT_RESPONSE }));
@@ -124,6 +127,7 @@ describe('use generate report effect', () => {
   });
 
   it('should call polling report more than one time when metrics is loading', async () => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.polling = jest
       .fn()
       .mockReturnValueOnce({
@@ -157,6 +161,7 @@ describe('use generate report effect', () => {
   });
 
   it('should call polling report only once when request board data given dora data retrieval is called before', async () => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.polling = jest
       .fn()
       .mockImplementation(async () => ({ status: HttpStatusCode.Ok, response: MOCK_REPORT_RESPONSE }));
@@ -188,6 +193,7 @@ describe('use generate report effect', () => {
       errorKey: GeneralErrorKey[MetricTypes.All],
     },
   ])('should set "Data loading failed" for board metric when request given UnknownException', async (_) => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.retrieveByUrl = jest.fn().mockRejectedValue(new UnknownError());
 
     const { result } = setup();
@@ -220,6 +226,7 @@ describe('use generate report effect', () => {
       updateMethod: 'closeSourceControlMetricsError',
     },
   ])('should update the report error status when call the update method', async (_) => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.polling = jest.fn().mockImplementation(async () => ({
       status: HttpStatusCode.Ok,
       response: {
@@ -252,6 +259,7 @@ describe('use generate report effect', () => {
   });
 
   it('should update the network error status when call the update method', async () => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.retrieveByUrl = jest.fn().mockImplementation(async () => MOCK_RETRIEVE_REPORT_RESPONSE);
     reportClient.polling = jest
       .fn()
@@ -270,5 +278,35 @@ describe('use generate report effect', () => {
     });
     expect(result.current.reportInfos[0].timeout4Dora.shouldShow).toEqual(false);
     expect(result.current.reportInfos[1].timeout4Dora.shouldShow).toEqual(true);
+  });
+});
+
+describe('generateReportId execution', () => {
+  it('should not call generateReportId when call startToRequestData method given reportId is already generated', async () => {
+    reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
+    reportClient.polling = jest
+      .fn()
+      .mockImplementation(async () => ({ status: HttpStatusCode.Ok, response: MOCK_REPORT_RESPONSE }));
+    reportClient.retrieveByUrl = jest.fn().mockImplementation(async () => MOCK_RETRIEVE_REPORT_RESPONSE);
+
+    const { result } = setup();
+
+    await waitFor(() => {
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+    });
+
+    jest.runOnlyPendingTimers();
+
+    await waitFor(() => {
+      expect(reportClient.generateReportId).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+    });
+
+    await waitFor(() => {
+      expect(reportClient.generateReportId).toHaveBeenCalledTimes(1);
+    });
   });
 });

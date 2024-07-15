@@ -18,11 +18,15 @@ import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
+import heartbeat.repository.FilePrefixType;
+import heartbeat.repository.FileRepository;
 import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
-import org.assertj.core.util.Lists;
+import heartbeat.service.report.calculator.model.FetchedData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -35,6 +39,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.MOCK_JIRA_BOARD_COLUMN_SETTING_LIST;
 import static heartbeat.service.report.BoardCsvFixture.MOCK_JIRA_CARD;
@@ -46,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,6 +71,9 @@ class KanbanCsvServiceTest {
 	@Mock
 	private JiraUriGenerator urlGenerator;
 
+	@Mock
+	private FileRepository fileRepository;
+
 	@Captor
 	private ArgumentCaptor<List<JiraCardDTO>> jiraCardDTOCaptor;
 
@@ -83,90 +92,23 @@ class KanbanCsvServiceTest {
 
 	public static final String END_TIME = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
 
-	@Test
-	void shouldSaveCsvWithoutNonDoneCardsWhenNonDoneCardIsNull() throws URISyntaxException {
+	public static final String TEST_UUID = "test-uuid";
+
+	@ParameterizedTest
+	@MethodSource("generateReportRequest")
+	void shouldSaveCsvWithoutNonDoneCardsWhenPartCards(GenerateReportRequest generateReportRequest)
+			throws URISyntaxException {
 		URI uri = new URI("site-uri");
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
 		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder().build());
 		JiraCardDTO jiraCardDTO = JiraCardDTO.builder().build();
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Doing").build(),
-									TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-					CardCollection.builder().build());
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().build())
+			.build();
 
-		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
-		assertEquals(2, jiraCardDTOCaptor.getValue().size());
-		assertTrue(jiraCardDTOCaptor.getValue().contains(jiraCardDTO));
-	}
-
-	@Test
-	void shouldSaveCsvWhenExistAnalysisDontExistTodo() throws URISyntaxException {
-		URI uri = new URI("site-uri");
-		when(urlGenerator.getUri(any())).thenReturn(uri);
-		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
-		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder().build());
-		JiraCardDTO jiraCardDTO = JiraCardDTO.builder().build();
-		kanbanCsvService.generateCsvInfo(
-				GenerateReportRequest.builder()
-					.jiraBoardSetting(JiraBoardSetting.builder()
-						.boardColumns(List.of(
-								RequestJiraBoardColumnSetting.builder().name("ANALYSIS").value("Analysis").build(),
-								RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-						.targetFields(List.of(TargetField.builder().name("Doing").build(),
-								TargetField.builder().name("Done").build()))
-						.build())
-					.csvTimeStamp(CSV_TIME_STAMP)
-					.startTime(START_TIME)
-					.endTime(END_TIME)
-					.timezone("Asia/Shanghai")
-					.build(),
-				CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-				CardCollection.builder().build());
-
-		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
-		assertEquals(2, jiraCardDTOCaptor.getValue().size());
-		assertTrue(jiraCardDTOCaptor.getValue().contains(jiraCardDTO));
-	}
-
-	@Test
-	void shouldSaveCsvWithoutNonDoneCardsWhenNonDoneCardIsEmpty() throws URISyntaxException {
-
-		URI uri = new URI("site-uri");
-		when(urlGenerator.getUri(any())).thenReturn(uri);
-		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
-		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder().build());
-		JiraCardDTO jiraCardDTO = JiraCardDTO.builder().build();
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Doing").build(),
-									TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-					CardCollection.builder().jiraCardDTOList(Lists.list()).build());
+		kanbanCsvService.generateCsvInfo(TEST_UUID, generateReportRequest, cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
 		assertEquals(2, jiraCardDTOCaptor.getValue().size());
@@ -218,23 +160,22 @@ class KanbanCsvServiceTest {
 				add(testingJiraCard);
 			}
 		};
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Doing").build(),
-									TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-					CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
+			.jiraBoardSetting(JiraBoardSetting.builder()
+				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+				.targetFields(List.of(TargetField.builder().name("Doing").build(),
+						TargetField.builder().name("Done").build()))
+				.build())
+			.csvTimeStamp(CSV_TIME_STAMP)
+			.startTime(START_TIME)
+			.endTime(END_TIME)
+			.timezone("Asia/Shanghai")
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
 		assertEquals(5, jiraCardDTOCaptor.getValue().size());
@@ -288,23 +229,22 @@ class KanbanCsvServiceTest {
 				add(waitingForTestingJiraCard);
 			}
 		};
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Doing").build(),
-									TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-					CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
+			.jiraBoardSetting(JiraBoardSetting.builder()
+				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+				.targetFields(List.of(TargetField.builder().name("Doing").build(),
+						TargetField.builder().name("Done").build()))
+				.build())
+			.csvTimeStamp(CSV_TIME_STAMP)
+			.startTime(START_TIME)
+			.endTime(END_TIME)
+			.timezone("Asia/Shanghai")
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
 		assertEquals(5, jiraCardDTOCaptor.getValue().size());
@@ -340,23 +280,22 @@ class KanbanCsvServiceTest {
 				add(nextDoneJiraCard);
 			}
 		};
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Doing").build(),
-									TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build());
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
+			.jiraBoardSetting(JiraBoardSetting.builder()
+				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+				.targetFields(List.of(TargetField.builder().name("Doing").build(),
+						TargetField.builder().name("Done").build()))
+				.build())
+			.csvTimeStamp(CSV_TIME_STAMP)
+			.startTime(START_TIME)
+			.endTime(END_TIME)
+			.timezone("Asia/Shanghai")
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
 		assertEquals(4, jiraCardDTOCaptor.getValue().size());
@@ -397,22 +336,21 @@ class KanbanCsvServiceTest {
 				add(nextDoneJiraCard);
 			}
 		};
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build());
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(doneJiraCardDTOList).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
+			.jiraBoardSetting(JiraBoardSetting.builder()
+				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+				.targetFields(List.of(TargetField.builder().name("Done").build()))
+				.build())
+			.csvTimeStamp(CSV_TIME_STAMP)
+			.startTime(START_TIME)
+			.endTime(END_TIME)
+			.timezone("Asia/Shanghai")
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
 		assertEquals(4, jiraCardDTOCaptor.getValue().size());
@@ -455,23 +393,22 @@ class KanbanCsvServiceTest {
 				add(testingJiraCard);
 			}
 		};
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Doing").build(),
-									TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-					CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
+			.jiraBoardSetting(JiraBoardSetting.builder()
+				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+				.targetFields(List.of(TargetField.builder().name("Doing").build(),
+						TargetField.builder().name("Done").build()))
+				.build())
+			.csvTimeStamp(CSV_TIME_STAMP)
+			.startTime(START_TIME)
+			.endTime(END_TIME)
+			.timezone("Asia/Shanghai")
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
 		assertEquals(5, jiraCardDTOCaptor.getValue().size());
@@ -512,23 +449,22 @@ class KanbanCsvServiceTest {
 				add(testingJiraCard);
 			}
 		};
-		kanbanCsvService
-			.generateCsvInfo(
-					GenerateReportRequest.builder()
-						.jiraBoardSetting(JiraBoardSetting.builder()
-							.boardColumns(List.of(
-									RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-									RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-							.targetFields(List.of(TargetField.builder().name("Doing").build(),
-									TargetField.builder().name("Done").build()))
-							.build())
-						.csvTimeStamp(CSV_TIME_STAMP)
-						.startTime(START_TIME)
-						.endTime(END_TIME)
-						.timezone("Asia/Shanghai")
-						.build(),
-					CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-					CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
+			.jiraBoardSetting(JiraBoardSetting.builder()
+				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+				.targetFields(List.of(TargetField.builder().name("Doing").build(),
+						TargetField.builder().name("Done").build()))
+				.build())
+			.csvTimeStamp(CSV_TIME_STAMP)
+			.startTime(START_TIME)
+			.endTime(END_TIME)
+			.timezone("Asia/Shanghai")
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(jiraCardDTOCaptor.capture(), anyList(), any());
 		assertEquals(5, jiraCardDTOCaptor.getValue().size());
@@ -557,7 +493,11 @@ class KanbanCsvServiceTest {
 				add(blockedJiraCard);
 			}
 		};
-		kanbanCsvService.generateCsvInfo(GenerateReportRequest.builder()
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
@@ -569,8 +509,7 @@ class KanbanCsvServiceTest {
 			.startTime(START_TIME)
 			.endTime(END_TIME)
 			.timezone("Asia/Shanghai")
-			.build(), CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), csvNewFieldsCaptor.capture());
 		assertEquals(23, csvFieldsCaptor.getValue().size());
@@ -601,7 +540,11 @@ class KanbanCsvServiceTest {
 				add(blockedJiraCard);
 			}
 		};
-		kanbanCsvService.generateCsvInfo(GenerateReportRequest.builder()
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
@@ -613,8 +556,7 @@ class KanbanCsvServiceTest {
 			.startTime(START_TIME)
 			.endTime(END_TIME)
 			.timezone("Asia/Shanghai")
-			.build(), CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
 		assertEquals(24, csvFieldsCaptor.getValue().size());
@@ -646,7 +588,11 @@ class KanbanCsvServiceTest {
 				add(blockedJiraCard);
 			}
 		};
-		kanbanCsvService.generateCsvInfo(GenerateReportRequest.builder()
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
@@ -658,8 +604,7 @@ class KanbanCsvServiceTest {
 			.startTime(START_TIME)
 			.endTime(END_TIME)
 			.timezone("Asia/Shanghai")
-			.build(), CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build(),
-				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
 		assertEquals(23, csvFieldsCaptor.getValue().size());
@@ -693,7 +638,11 @@ class KanbanCsvServiceTest {
 				add(blockedJiraCard);
 			}
 		};
-		kanbanCsvService.generateCsvInfo(GenerateReportRequest.builder()
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(doneJiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
@@ -710,8 +659,7 @@ class KanbanCsvServiceTest {
 			.startTime(START_TIME)
 			.endTime(END_TIME)
 			.timezone("Asia/Shanghai")
-			.build(), CardCollection.builder().jiraCardDTOList(List.of(doneJiraCardDTO)).build(),
-				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), csvNewFieldsCaptor.capture());
 
@@ -763,8 +711,12 @@ class KanbanCsvServiceTest {
 			}
 		};
 		String[][] fakeSringArray = new String[][] { { "cycle time" }, { "1" }, { "2" }, { "3" }, { "4" } };
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
 		when(csvFileGenerator.assembleBoardData(anyList(), anyList(), anyList())).thenReturn(fakeSringArray);
-		kanbanCsvService.generateCsvInfo(GenerateReportRequest.builder()
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
@@ -780,11 +732,11 @@ class KanbanCsvServiceTest {
 			.startTime(START_TIME)
 			.endTime(END_TIME)
 			.timezone("Asia/Shanghai")
-			.build(), CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
-				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
-		verify(csvFileGenerator).writeDataToCSV(anyString(), csvSheetCaptor.capture());
+		verify(fileRepository).createCSVFileByType(eq(TEST_UUID), anyString(), csvSheetCaptor.capture(),
+				eq(FilePrefixType.BOARD_REPORT_PREFIX));
 
 		assertEquals(23, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(22);
@@ -833,9 +785,13 @@ class KanbanCsvServiceTest {
 				add(blockedJiraCard);
 			}
 		};
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
 		String[][] fakeSringArray = new String[][] { { "cycle time" }, { "1" }, { "2" }, { "3" }, { "4" } };
 		when(csvFileGenerator.assembleBoardData(anyList(), anyList(), anyList())).thenReturn(fakeSringArray);
-		kanbanCsvService.generateCsvInfo(GenerateReportRequest.builder()
+		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
@@ -851,11 +807,11 @@ class KanbanCsvServiceTest {
 			.startTime(START_TIME)
 			.endTime(END_TIME)
 			.timezone("Asia/Shanghai")
-			.build(), CardCollection.builder().jiraCardDTOList(jiraCardDTOS).build(),
-				CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build());
+			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
-		verify(csvFileGenerator).writeDataToCSV(anyString(), csvSheetCaptor.capture());
+		verify(fileRepository).createCSVFileByType(eq(TEST_UUID), anyString(), csvSheetCaptor.capture(),
+				eq(FilePrefixType.BOARD_REPORT_PREFIX));
 
 		assertEquals(23, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(22);
@@ -870,6 +826,51 @@ class KanbanCsvServiceTest {
 		assertEquals("Rework: from Waiting for testing", csvSheetCaptor.getValue()[0][3]);
 		assertEquals("Rework: from Testing", csvSheetCaptor.getValue()[0][4]);
 		assertEquals("Rework: from Done", csvSheetCaptor.getValue()[0][5]);
+	}
+
+	private static Stream<GenerateReportRequest> generateReportRequest() {
+		return Stream.of(
+				GenerateReportRequest.builder()
+					.jiraBoardSetting(
+							JiraBoardSetting.builder()
+								.boardColumns(List.of(
+										RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+										RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+								.targetFields(List.of(TargetField.builder().name("Doing").build(),
+										TargetField.builder().name("Done").build()))
+								.build())
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
+					.build(),
+				GenerateReportRequest.builder()
+					.jiraBoardSetting(JiraBoardSetting.builder()
+						.boardColumns(List.of(
+								RequestJiraBoardColumnSetting.builder().name("ANALYSIS").value("Analysis").build(),
+								RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+						.targetFields(List.of(TargetField.builder().name("Doing").build(),
+								TargetField.builder().name("Done").build()))
+						.build())
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
+					.build(),
+				GenerateReportRequest.builder()
+					.jiraBoardSetting(
+							JiraBoardSetting.builder()
+								.boardColumns(List.of(
+										RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+										RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+								.targetFields(List.of(TargetField.builder().name("Doing").build(),
+										TargetField.builder().name("Done").build()))
+								.build())
+					.csvTimeStamp(CSV_TIME_STAMP)
+					.startTime(START_TIME)
+					.endTime(END_TIME)
+					.timezone("Asia/Shanghai")
+					.build());
 	}
 
 }

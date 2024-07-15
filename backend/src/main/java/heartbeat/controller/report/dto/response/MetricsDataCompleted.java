@@ -2,16 +2,16 @@ package heartbeat.controller.report.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Optional;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
+@Data
 @EqualsAndHashCode
 public class MetricsDataCompleted {
 

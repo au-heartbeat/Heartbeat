@@ -2,8 +2,8 @@ package heartbeat.service.report;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.opencsv.CSVWriter;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
+import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
@@ -29,9 +29,8 @@ import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Rework;
 import heartbeat.controller.report.dto.response.Velocity;
-import heartbeat.exception.FileIOException;
-import heartbeat.exception.GenerateReportException;
 import heartbeat.util.DecimalUtil;
+import heartbeat.repository.FileRepository;
 import io.micrometer.core.instrument.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -39,12 +38,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,31 +56,13 @@ import static java.util.concurrent.TimeUnit.HOURS;
 @Log4j2
 public class CSVFileGenerator {
 
-	private static final char FILENAME_SEPARATOR = '-';
-
-	private static final String CSV_EXTENSION = ".csv";
-
 	public static final String FILE_LOCAL_PATH = "./app/output/csv";
-
-	private static final Path FILE_PATH = new File(FILE_LOCAL_PATH).toPath().normalize();
 
 	private static final String CANCELED_STATUS = "canceled";
 
 	private static final String REWORK_FIELD = "Rework";
 
-	public static InputStreamResource readStringFromCsvFile(File file) {
-		if (!file.toPath().normalize().startsWith(FILE_PATH)) {
-			throw new IllegalArgumentException("Invalid file path");
-		}
-		try {
-			InputStream inputStream = new FileInputStream(file);
-			return new InputStreamResource(inputStream);
-		}
-		catch (IOException e) {
-			log.error("Failed to read file", e);
-			throw new FileIOException(e);
-		}
-	}
+	private final FileRepository fileRepository;
 
 	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
 		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
@@ -98,32 +73,19 @@ public class CSVFileGenerator {
 		}
 	}
 
-	public void convertPipelineDataToCSV(List<PipelineCSVInfo> leadTimeData, String csvTimeStamp) {
-		log.info("Start to create csv directory");
-		createCsvDirToConvertData();
+	public void convertPipelineDataToCSV(String uuid, List<PipelineCSVInfo> leadTimeData, String csvTimeStamp) {
+		String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
+				"Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
+				"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
+				"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+				"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
 
-		String fileName = CSVFileNameEnum.PIPELINE.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
-		if (isFormatFileName(fileName)) {
-			File file = new File(fileName);
-			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
-				String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
-						"Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
-						"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
-						"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)",
-						"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
+		List<String[]> pipelineData = new ArrayList<>();
+		pipelineData.add(headers);
+		pipelineData.addAll(leadTimeData.stream().map(this::getRowData).toList());
+		String[][] data = pipelineData.toArray(new String[0][0]);
 
-				csvWriter.writeNext(headers);
-
-				leadTimeData.stream().map(this::getRowData).forEach(csvWriter::writeNext);
-			}
-			catch (IOException e) {
-				log.error("Failed to write pipeline file", e);
-				throw new FileIOException(e);
-			}
-		}
-		else {
-			throw new GenerateReportException("Failed to generate pipeline csv file, invalid csvTimestamp");
-		}
+		fileRepository.createCSVFileByType(uuid, csvTimeStamp, data, FilePrefixType.PIPELINE_REPORT_PREFIX);
 	}
 
 	private String[] getRowData(PipelineCSVInfo csvInfo) {
@@ -163,44 +125,19 @@ public class CSVFileGenerator {
 				pipelineFinishTime, nonWorkdays, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
 	}
 
-	public InputStreamResource getDataFromCSV(ReportType reportDataType, String timeRangeAndTimeStamp) {
+	public InputStreamResource getDataFromCSV(ReportType reportDataType, String uuid, String timeRangeAndTimeStamp) {
 		if (timeRangeAndTimeStamp.contains("..") || timeRangeAndTimeStamp.contains("/")
 				|| timeRangeAndTimeStamp.contains("\\")) {
 			throw new IllegalArgumentException("Invalid time range time stamp");
 		}
 		return switch (reportDataType) {
-			case METRIC -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
-					ReportType.METRIC.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			case PIPELINE -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
-					ReportType.PIPELINE.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
-			default -> readStringFromCsvFile(new File(FILE_LOCAL_PATH,
-					ReportType.BOARD.getValue() + FILENAME_SEPARATOR + timeRangeAndTimeStamp + CSV_EXTENSION));
+			case METRIC ->
+				fileRepository.readStringFromCsvFile(uuid, timeRangeAndTimeStamp, FilePrefixType.METRIC_REPORT_PREFIX);
+			case PIPELINE -> fileRepository.readStringFromCsvFile(uuid, timeRangeAndTimeStamp,
+					FilePrefixType.PIPELINE_REPORT_PREFIX);
+			default ->
+				fileRepository.readStringFromCsvFile(uuid, timeRangeAndTimeStamp, FilePrefixType.BOARD_REPORT_PREFIX);
 		};
-	}
-
-	private void createCsvDirToConvertData() {
-		String directoryPath = FILE_LOCAL_PATH;
-		File directory = new File(directoryPath);
-		String message = directory.mkdirs() ? "Successfully create csv directory" : "CSV directory is already exist";
-		log.info(message);
-	}
-
-	public void writeDataToCSV(String csvTimeRangeTimeStamp, String[][] mergedArrays) {
-		createCsvDirToConvertData();
-
-		String fileName = CSVFileNameEnum.BOARD.getValue() + FILENAME_SEPARATOR + csvTimeRangeTimeStamp + CSV_EXTENSION;
-		if (isFormatFileName(fileName)) {
-			try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
-				writer.writeAll(Arrays.asList(mergedArrays));
-			}
-			catch (IOException e) {
-				log.error("Failed to write board file", e);
-				throw new FileIOException(e);
-			}
-		}
-		else {
-			throw new GenerateReportException("Failed to generate board csv file, invalid csvTimestamp");
-		}
 	}
 
 	public String[][] assembleBoardData(List<JiraCardDTO> cardDTOList, List<BoardCSVConfig> fields,
@@ -391,33 +328,15 @@ public class CSVFileGenerator {
 		return pickDisplayNameFromObj(fieldValue);
 	}
 
-	public void convertMetricDataToCSV(ReportResponse reportResponse, String csvTimeStamp) {
-		log.info("Start to create csv directory");
-		createCsvDirToConvertData();
+	public void convertMetricDataToCSV(String uuid, ReportResponse reportResponse, String csvTimeStamp) {
+		String[] headers = { "Group", "Metrics", "Value" };
 
-		String fileName = CSVFileNameEnum.METRIC.getValue() + FILENAME_SEPARATOR + csvTimeStamp + CSV_EXTENSION;
-		if (isFormatFileName(fileName)) {
-			File file = new File(fileName);
+		List<String[]> pipelineData = new ArrayList<>();
+		pipelineData.add(headers);
+		pipelineData.addAll(convertReportResponseToCSVRows(reportResponse));
+		String[][] data = pipelineData.toArray(new String[0][0]);
 
-			try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
-				String[] headers = { "Group", "Metrics", "Value" };
-
-				csvWriter.writeNext(headers);
-
-				csvWriter.writeAll(convertReportResponseToCSVRows(reportResponse));
-			}
-			catch (IOException e) {
-				log.error("Failed to write metric file", e);
-				throw new FileIOException(e);
-			}
-		}
-		else {
-			throw new GenerateReportException("Failed to generate metric csv file, invalid csvTimestamp");
-		}
-	}
-
-	private boolean isFormatFileName(String fileName) {
-		return !fileName.contains("..");
+		fileRepository.createCSVFileByType(uuid, csvTimeStamp, data, FilePrefixType.METRIC_REPORT_PREFIX);
 	}
 
 	private List<String[]> convertReportResponseToCSVRows(ReportResponse reportResponse) {

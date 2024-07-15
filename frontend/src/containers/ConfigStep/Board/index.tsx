@@ -36,6 +36,13 @@ export const Board = () => {
     }
   }, [isVerifyTimeOut, isBoardVerifyFailed]);
 
+  useEffect(() => {
+    if (!isVerified) {
+      handleSubmit(onSubmit)();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVerified]);
+
   return (
     <ConfigSectionContainer aria-label='Board Config'>
       {isLoading && <Loading />}

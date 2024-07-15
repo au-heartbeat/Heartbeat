@@ -21,7 +21,6 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
   await configStep.cancelGoToPreviousStep();
   await configStep.waitForShown();
 
-  await configStep.verifyAllConfig();
   await configStep.goToMetrics();
   await metricsStep.selectHistoricalAssigneeCrewFilter();
   await metricsStep.selectCrews(modifiedMetricsStepData.crews);

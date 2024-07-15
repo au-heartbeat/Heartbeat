@@ -99,7 +99,6 @@ test('Import project from file with cycle time by status', async ({
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/cycle-time-by-status-config-file.json');
-  await configStep.verifyBoardConfig();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
 
@@ -127,7 +126,6 @@ test('Import project from file with cycle time by status', async ({
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/cycle-time-by-status-config-file.json');
-  await configStep.verifyBoardConfig();
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
 

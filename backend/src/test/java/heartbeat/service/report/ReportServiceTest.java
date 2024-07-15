@@ -1,15 +1,18 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ErrorInfo;
-import heartbeat.controller.report.dto.response.MetricsDataCompleted;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
 import heartbeat.controller.report.dto.response.ReportResponse;
+import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
+import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.NotFoundException;
 import heartbeat.handler.AsyncMetricsDataHandler;
+import heartbeat.repository.FileType;
 import heartbeat.service.report.calculator.ReportGenerator;
-import heartbeat.util.IdUtil;
+import heartbeat.repository.FileRepository;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,14 +39,14 @@ import java.util.stream.Collectors;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
-import static heartbeat.service.report.scheduler.DeleteExpireCSVScheduler.EXPORT_CSV_VALIDITY_TIME;
+import static heartbeat.repository.FilePrefixType.ALL_METRICS_PREFIX;
 import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,41 +64,75 @@ public class ReportServiceTest {
 	AsyncMetricsDataHandler asyncMetricsDataHandler;
 
 	@Mock
+	FileRepository fileRepository;
+
+	@Mock
 	GenerateReporterService generateReporterService;
 
 	@Mock
 	ReportGenerator reportGenerator;
 
 	@Captor
-	ArgumentCaptor<MetricsDataCompleted> metricsDataCompletedArgumentCaptor;
+	ArgumentCaptor<List<String>> argumentCaptor;
 
 	public static final String START_TIME = "20240310";
 
 	public static final String END_TIME = "20240409";
 
-	@Test
-	void exportCsvShouldCallCsvFileGeneratorToGotTheStreamWhenTimestampIsValid() throws IOException {
-		long validTimestamp = System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 20000L;
-		String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + validTimestamp;
-		when(csvFileGenerator.getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp))
-			.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
+	public static final String TEST_UUID = "test-uuid";
 
-		InputStream result = reportService
-			.exportCsv(ReportType.METRIC, String.valueOf(validTimestamp), START_TIME, END_TIME)
-			.getInputStream();
-		String returnData = new BufferedReader(new InputStreamReader(result)).lines().collect(Collectors.joining("\n"));
+	@Nested
+	class ExportCsv {
 
-		assertEquals(returnData, "csv data");
-		verify(csvFileGenerator).getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp);
-	}
+		@Test
+		void shouldCallCsvFileGeneratorToGotTheStreamWhenTimestampIsValid() throws IOException {
+			long validTimestamp = System.currentTimeMillis() + 20000L;
+			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + validTimestamp;
+			when(csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp))
+				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME))
+				.thenReturn(START_TIME + "-" + END_TIME + "-" + validTimestamp);
+			when(fileRepository.isExpired(anyLong(), eq(validTimestamp))).thenReturn(false);
 
-	@Test
-	void exportCsvShouldThrowNotFoundExceptionWhenTimestampIsValid() {
-		String invalidTimestamp = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME - 20000L);
-		String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + invalidTimestamp;
-		assertThrows(NotFoundException.class,
-				() -> reportService.exportCsv(ReportType.METRIC, invalidTimestamp, START_TIME, END_TIME));
-		verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, mockTimeRangeTimeStamp);
+			InputStream result = reportService.exportCsv(ReportType.METRIC, TEST_UUID, START_TIME, END_TIME)
+				.getInputStream();
+			String returnData = new BufferedReader(new InputStreamReader(result)).lines()
+				.collect(Collectors.joining("\n"));
+
+			assertEquals(returnData, "csv data");
+			verify(csvFileGenerator).getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp);
+			verify(fileRepository).getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME);
+			verify(fileRepository).isExpired(anyLong(), eq(validTimestamp));
+		}
+
+		@Test
+		void shouldThrowNotFoundExceptionWhenTimestampIsValid() {
+			long invalidTimestamp = System.currentTimeMillis() - 20000L;
+			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + invalidTimestamp;
+			when(fileRepository.getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME))
+				.thenReturn(START_TIME + "-" + END_TIME + "-" + invalidTimestamp);
+			when(fileRepository.isExpired(anyLong(), eq(invalidTimestamp))).thenReturn(true);
+
+			assertThrows(NotFoundException.class,
+					() -> reportService.exportCsv(ReportType.METRIC, TEST_UUID, START_TIME, END_TIME));
+			verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp);
+		}
+
+		@Test
+		void shouldThrowNotFoundExceptionWhenTimestampIsNull() {
+			long invalidTimestamp = System.currentTimeMillis() - 20000L;
+			String mockTimeRangeTimeStamp = START_TIME + "-" + END_TIME + "-" + invalidTimestamp;
+
+			assertThrows(NotFoundException.class,
+					() -> reportService.exportCsv(ReportType.METRIC, TEST_UUID, START_TIME, END_TIME));
+			verify(csvFileGenerator, never()).getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStamp);
+			verify(fileRepository).getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType.REPORT, TEST_UUID,
+					START_TIME, END_TIME);
+		}
+
 	}
 
 	@Nested
@@ -107,256 +144,337 @@ public class ReportServiceTest {
 
 		String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
 
+		List<MetricType> metricTypes = List.of(BOARD);
+
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.csvTimeStamp(timeStamp)
 			.startTime(startTimeStamp)
 			.endTime(endTimeStamp)
 			.metrics(new ArrayList<>())
-			.metricTypes(List.of(BOARD))
+			.metricTypes(metricTypes)
 			.timezone("Asia/Shanghai")
 			.build();
 
 		@Test
 		void shouldSuccessfulGenerateBoardReportAndInitializeMetricDataWhenMetricTypesListOnlyHasBoardElement() {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(false)
-				.overallMetricCompleted(false)
-				.isSuccessfulCreateCsvFile(false)
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+			ReportResponse reportResponse = ReportResponse.builder()
+				.reportMetricsError(ReportMetricsError.builder().build())
 				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
-			when(generateReporterService.getComposedReportResponse(any(), any(), any()))
-				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
+
+			when(generateReporterService.getComposedReportResponse(any(), any(), any(), any()))
+				.thenReturn(reportResponse);
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
-			reportService.generateReport(request);
+			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
-					metricsDataCompletedArgumentCaptor.capture());
-			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
-			assertEquals(metricsDataCompleted, expected);
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, metricTypes,
+					timeRangeAndTimeStamp);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(generateReporterService).generateBoardReport(request);
-				verify(generateReporterService, never()).generateDoraReport(request);
-				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp(), START_TIME,
-						END_TIME);
-				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+				verify(generateReporterService, never()).generateDoraReport(TEST_UUID, request);
+				verify(generateReporterService).generateBoardReport(TEST_UUID, request);
+				verify(generateReporterService).getComposedReportResponse(TEST_UUID, request.getCsvTimeStamp(),
+						START_TIME, END_TIME);
+				verify(generateReporterService).generateCSVForMetric(TEST_UUID, reportResponse,
+						request.getTimeRangeAndTimeStamp());
+				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(TEST_UUID,
+						timeRangeAndTimeStamp);
 			});
 		}
 
 		@Test
 		void shouldSuccessfulGenerateDoraReportWhenMetricTypesListOnlyHasDoraMetricType() {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.doraMetricsCompleted(false)
-				.overallMetricCompleted(false)
-				.isSuccessfulCreateCsvFile(false)
+			metricTypes = List.of(DORA);
+			request.setMetricTypes(metricTypes);
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+			ReportResponse reportResponse = ReportResponse.builder()
+				.reportMetricsError(ReportMetricsError.builder().build())
 				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(DORA));
-			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
-			when(generateReporterService.getComposedReportResponse(any(), any(), any()))
-				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
+
+			when(generateReporterService.getComposedReportResponse(any(), any(), any(), any()))
+				.thenReturn(reportResponse);
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
-			reportService.generateReport(request);
+			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
-					metricsDataCompletedArgumentCaptor.capture());
-			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
-			assertEquals(metricsDataCompleted, expected);
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, metricTypes,
+					timeRangeAndTimeStamp);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(generateReporterService).generateDoraReport(request);
-				verify(generateReporterService, never()).generateBoardReport(request);
-				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp(), START_TIME,
-						END_TIME);
-				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+				verify(generateReporterService).generateDoraReport(TEST_UUID, request);
+				verify(generateReporterService, never()).generateBoardReport(TEST_UUID, request);
+				verify(generateReporterService).getComposedReportResponse(TEST_UUID, request.getCsvTimeStamp(),
+						START_TIME, END_TIME);
+				verify(generateReporterService).generateCSVForMetric(TEST_UUID, reportResponse,
+						request.getTimeRangeAndTimeStamp());
+				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(TEST_UUID,
+						timeRangeAndTimeStamp);
 			});
 		}
 
 		@Test
 		void shouldSuccessfulGenerateDoraReportAndBoardReportGivenMetricTypesListHasDoraMetricTypeAndBoardMetricType() {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(false)
-				.doraMetricsCompleted(false)
-				.overallMetricCompleted(false)
-				.isSuccessfulCreateCsvFile(false)
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+			metricTypes = List.of(BOARD, DORA);
+			request.setMetricTypes(metricTypes);
+			ReportResponse reportResponse = ReportResponse.builder()
+				.reportMetricsError(ReportMetricsError.builder().build())
 				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(BOARD, DORA));
-			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
-			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
-			when(generateReporterService.getComposedReportResponse(any(), any(), any()))
-				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
+			when(generateReporterService.getComposedReportResponse(any(), any(), any(), any()))
+				.thenReturn(reportResponse);
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
-			reportService.generateReport(request);
+			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
-					metricsDataCompletedArgumentCaptor.capture());
-			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
-			assertEquals(metricsDataCompleted, expected);
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, metricTypes,
+					timeRangeAndTimeStamp);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(generateReporterService).generateDoraReport(request);
-				verify(generateReporterService).generateBoardReport(request);
-				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp(), START_TIME,
-						END_TIME);
-				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+				verify(generateReporterService).generateDoraReport(TEST_UUID, request);
+				verify(generateReporterService).generateBoardReport(TEST_UUID, request);
+				verify(generateReporterService).getComposedReportResponse(TEST_UUID, request.getCsvTimeStamp(),
+						START_TIME, END_TIME);
+				verify(generateReporterService).generateCSVForMetric(TEST_UUID, reportResponse,
+						request.getTimeRangeAndTimeStamp());
+				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(TEST_UUID,
+						timeRangeAndTimeStamp);
 			});
 		}
 
 		@Test
 		void shouldNotGenerateMetricCsvWhenBoardMetricsHasError() {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(false)
-				.doraMetricsCompleted(false)
-				.overallMetricCompleted(false)
-				.isSuccessfulCreateCsvFile(false)
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+			metricTypes = List.of(BOARD, DORA);
+			request.setMetricTypes(metricTypes);
+			ReportResponse reportResponse = ReportResponse.builder()
+				.reportMetricsError(ReportMetricsError.builder().boardMetricsError(ErrorInfo.builder().build()).build())
 				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(BOARD, DORA));
-			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
-			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
-			when(generateReporterService.getComposedReportResponse(any(), any(), any()))
-				.thenReturn(ReportResponse.builder()
-					.reportMetricsError(
-							ReportMetricsError.builder().boardMetricsError(ErrorInfo.builder().build()).build())
-					.build());
+
+			when(generateReporterService.getComposedReportResponse(any(), any(), any(), any()))
+				.thenReturn(reportResponse);
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
-			reportService.generateReport(request);
+			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
-					metricsDataCompletedArgumentCaptor.capture());
-			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
-			assertEquals(metricsDataCompleted, expected);
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, metricTypes,
+					timeRangeAndTimeStamp);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(generateReporterService).generateDoraReport(request);
-				verify(generateReporterService).generateBoardReport(request);
-				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp(), START_TIME,
-						END_TIME);
-				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, times(1)).updateOverallMetricsCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+				verify(generateReporterService).generateDoraReport(TEST_UUID, request);
+				verify(generateReporterService).generateBoardReport(TEST_UUID, request);
+				verify(generateReporterService).getComposedReportResponse(TEST_UUID, request.getCsvTimeStamp(),
+						START_TIME, END_TIME);
+				verify(generateReporterService, never()).generateCSVForMetric(TEST_UUID, reportResponse,
+						request.getTimeRangeAndTimeStamp());
+				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(TEST_UUID,
+						timeRangeAndTimeStamp);
 			});
 		}
 
 		@Test
-		void shouldNotGenerateMetricCsvWhenPiplineMetricsErrorHasError() {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(false)
-				.doraMetricsCompleted(false)
-				.overallMetricCompleted(false)
-				.isSuccessfulCreateCsvFile(false)
+		void shouldNotGenerateMetricCsvWhenPipelineMetricsErrorHasError() {
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+			metricTypes = List.of(BOARD, DORA);
+			request.setMetricTypes(metricTypes);
+			ReportResponse reportResponse = ReportResponse.builder()
+				.reportMetricsError(
+						ReportMetricsError.builder().pipelineMetricsError(ErrorInfo.builder().build()).build())
 				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(BOARD, DORA));
-			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
-			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
-			when(generateReporterService.getComposedReportResponse(any(), any(), any()))
-				.thenReturn(ReportResponse.builder()
-					.reportMetricsError(
-							ReportMetricsError.builder().pipelineMetricsError(ErrorInfo.builder().build()).build())
-					.build());
+
+			when(generateReporterService.getComposedReportResponse(any(), any(), any(), any()))
+				.thenReturn(reportResponse);
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
-			reportService.generateReport(request);
+			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
-					metricsDataCompletedArgumentCaptor.capture());
-			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
-			assertEquals(metricsDataCompleted, expected);
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, metricTypes,
+					timeRangeAndTimeStamp);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(generateReporterService).generateDoraReport(request);
-				verify(generateReporterService).generateBoardReport(request);
-				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp(), START_TIME,
-						END_TIME);
-				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, times(1)).updateOverallMetricsCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+				verify(generateReporterService).generateDoraReport(TEST_UUID, request);
+				verify(generateReporterService).generateBoardReport(TEST_UUID, request);
+				verify(generateReporterService).getComposedReportResponse(TEST_UUID, request.getCsvTimeStamp(),
+						START_TIME, END_TIME);
+				verify(generateReporterService, never()).generateCSVForMetric(TEST_UUID, reportResponse,
+						request.getTimeRangeAndTimeStamp());
+				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(TEST_UUID,
+						timeRangeAndTimeStamp);
 			});
 		}
 
 		@Test
 		void shouldNotGenerateMetricCsvWhenSourceControlMetricsErrorHasError() {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(false)
-				.doraMetricsCompleted(false)
-				.overallMetricCompleted(false)
-				.isSuccessfulCreateCsvFile(false)
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+			metricTypes = List.of(BOARD, DORA);
+			request.setMetricTypes(metricTypes);
+			ReportResponse reportResponse = ReportResponse.builder()
+				.reportMetricsError(
+						ReportMetricsError.builder().sourceControlMetricsError(ErrorInfo.builder().build()).build())
 				.build();
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(BOARD, DORA));
-			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
-			doAnswer(invocation -> null).when(generateReporterService).generateBoardReport(request);
-			when(generateReporterService.getComposedReportResponse(any(), any(), any()))
-				.thenReturn(ReportResponse.builder()
-					.reportMetricsError(
-							ReportMetricsError.builder().sourceControlMetricsError(ErrorInfo.builder().build()).build())
-					.build());
+
+			when(generateReporterService.getComposedReportResponse(any(), any(), any(), any()))
+				.thenReturn(reportResponse);
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
 
-			reportService.generateReport(request);
+			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
-					metricsDataCompletedArgumentCaptor.capture());
-			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
-			assertEquals(metricsDataCompleted, expected);
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, metricTypes,
+					timeRangeAndTimeStamp);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(generateReporterService).generateDoraReport(request);
-				verify(generateReporterService).generateBoardReport(request);
-				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp(), START_TIME,
-						END_TIME);
-				verify(generateReporterService, never()).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, times(1)).updateOverallMetricsCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+				verify(generateReporterService).generateDoraReport(TEST_UUID, request);
+				verify(generateReporterService).generateBoardReport(TEST_UUID, request);
+				verify(generateReporterService).getComposedReportResponse(TEST_UUID, request.getCsvTimeStamp(),
+						START_TIME, END_TIME);
+				verify(generateReporterService, never()).generateCSVForMetric(TEST_UUID, reportResponse,
+						request.getTimeRangeAndTimeStamp());
+				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(TEST_UUID,
+						timeRangeAndTimeStamp);
 			});
 		}
 
 		@Test
 		void shouldSuccessfulGenerateDoraReportGivenBoardReportHasBeenGeneratedWhenRetryGenerateDoraReport() {
-			MetricsDataCompleted expected = MetricsDataCompleted.builder()
-				.boardMetricsCompleted(true)
-				.doraMetricsCompleted(false)
-				.overallMetricCompleted(false)
-				.isSuccessfulCreateCsvFile(false)
+			List<MetricType> doraMetricType = List.of(DORA);
+			request.setMetricTypes(doraMetricType);
+			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
+			ReportResponse reportResponse = ReportResponse.builder()
+				.reportMetricsError(ReportMetricsError.builder().build())
 				.build();
-			when(asyncMetricsDataHandler.getMetricsDataCompleted(any())).thenReturn(MetricsDataCompleted.builder()
-				.boardMetricsCompleted(true)
-				.doraMetricsCompleted(true)
-				.overallMetricCompleted(true)
-				.build());
+
 			when(reportGenerator.getReportGenerator(generateReporterService)).thenReturn(Map.of(BOARD,
 					generateReporterService::generateBoardReport, DORA, generateReporterService::generateDoraReport));
-			doAnswer(invocation -> null).when(asyncMetricsDataHandler).putMetricsDataCompleted(any(), any());
-			request.setMetricTypes(List.of(DORA));
-			doAnswer(invocation -> null).when(generateReporterService).generateDoraReport(request);
-			when(generateReporterService.getComposedReportResponse(any(), any(), any()))
-				.thenReturn(ReportResponse.builder().reportMetricsError(ReportMetricsError.builder().build()).build());
+			when(generateReporterService.getComposedReportResponse(any(), any(), any(), any()))
+				.thenReturn(reportResponse);
 
-			reportService.generateReport(request);
+			reportService.generateReport(request, TEST_UUID);
 
-			verify(asyncMetricsDataHandler).putMetricsDataCompleted(any(),
-					metricsDataCompletedArgumentCaptor.capture());
-			MetricsDataCompleted metricsDataCompleted = metricsDataCompletedArgumentCaptor.getValue();
-			assertEquals(metricsDataCompleted, expected);
+			verify(asyncMetricsDataHandler).initializeMetricsDataCompletedInHandler(TEST_UUID, doraMetricType,
+					timeRangeAndTimeStamp);
+
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(generateReporterService).generateDoraReport(request);
-				verify(generateReporterService, never()).generateBoardReport(request);
-				verify(generateReporterService).getComposedReportResponse(request.getCsvTimeStamp(), START_TIME,
-						END_TIME);
-				verify(generateReporterService).generateCSVForMetric(any(), any());
-				verify(asyncMetricsDataHandler, times(1)).updateOverallMetricsCompletedInHandler(
-						IdUtil.getDataCompletedPrefix(request.getTimeRangeAndTimeStamp()));
+				verify(generateReporterService).generateDoraReport(TEST_UUID, request);
+				verify(generateReporterService, never()).generateBoardReport(TEST_UUID, request);
+				verify(generateReporterService).getComposedReportResponse(TEST_UUID, request.getCsvTimeStamp(),
+						START_TIME, END_TIME);
+				verify(generateReporterService).generateCSVForMetric(TEST_UUID, reportResponse,
+						request.getTimeRangeAndTimeStamp());
+				verify(asyncMetricsDataHandler).updateOverallMetricsCompletedInHandler(TEST_UUID,
+						timeRangeAndTimeStamp);
 			});
+		}
+
+	}
+
+	@Nested
+	class GetReportUrl {
+
+		@Test
+		void shouldGetReportUrlsSuccessfully() {
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
+			when(fileRepository.getFiles(FileType.METRICS, TEST_UUID))
+				.thenReturn(List.of("board-0-0-0", "board-9-9-9"));
+
+			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
+				.thenReturn(List.of("test-metrics1", "test-metrics2"));
+			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
+				.thenReturn(List.of("test-metrics1", "test-metrics3"));
+
+			ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(TEST_UUID);
+			List<String> metrics = shareReportInfo.getMetrics();
+
+			assertEquals(3, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+			assertEquals("test-metrics3", metrics.get(2));
+
+			List<String> reportUrls = shareReportInfo.getReportURLs();
+
+			assertEquals(2, reportUrls.size());
+			assertEquals("/reports/test-uuid/detail?startTime=1&endTime=2", reportUrls.get(0));
+			assertEquals("/reports/test-uuid/detail?startTime=2&endTime=3", reportUrls.get(1));
+
+			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
+			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
+			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any());
+			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any());
+
+		}
+
+		@Test
+		void shouldThrowExceptionWhenFilenameIsInvalid() {
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-123", "board-234"));
+
+			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getShareReportInfo(TEST_UUID));
+
+			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
+
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
+		}
+
+	}
+
+	@Nested
+	class GenerateReportCallbackUrl {
+
+		@Test
+		void shouldGetReportCallbackUrlSuccessfully() {
+			String startTime = "20200101";
+			String endTime = "20200102";
+
+			String result = reportService.generateReportCallbackUrl(TEST_UUID, startTime, endTime);
+
+			assertEquals("/reports/test-uuid/detail?startTime=20200101&endTime=20200102", result);
+		}
+
+	}
+
+	@Nested
+	class GenerateReportId {
+
+		@Test
+		void shouldGenerateReportId() {
+			UuidResponse uuidResponse = reportService.generateReportId();
+
+			assertEquals(36, uuidResponse.getReportId().length());
+		}
+
+	}
+
+	@Nested
+	class SaveMetrics {
+
+		@Test
+		void shouldSaveMetricsSuccessfully() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveMetrics(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.METRICS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(ALL_METRICS_PREFIX));
+
+			List<String> savedMetrics = argumentCaptor.getValue();
+
+			assertEquals(2, savedMetrics.size());
+			assertEquals("test-metrics1", savedMetrics.get(0));
+			assertEquals("test-metrics2", savedMetrics.get(1));
 		}
 
 	}

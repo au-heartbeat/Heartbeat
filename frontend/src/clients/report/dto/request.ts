@@ -65,7 +65,7 @@ export interface IBasicReportRequestDTO {
 
 export interface CSVReportRequestDTO {
   dataType: string;
-  csvTimeStamp: number;
+  reportId: number;
   startDate: string;
   endDate: string;
 }

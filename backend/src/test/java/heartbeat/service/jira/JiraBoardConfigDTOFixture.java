@@ -387,7 +387,7 @@ public class JiraBoardConfigDTOFixture {
 		IssueField sprintIssueField = new IssueField("sprint", "Sprint");
 		IssueField otherSprintIssueField = new IssueField("otherSprint", "Sprint");
 		IssueField storyPointEstimateIssueField = new IssueField("story point estimate", "Story point estimate");
-		IssueField FlaggedIssueField = new IssueField("flagged", "Flagged");
+		IssueField newFlaggedIssueField = new IssueField("flagged", "Flagged");
 		IssueField otherIssueField = new IssueField("other", "Other");
 
 		HashMap<String, IssueField> issueFieldMap = new HashMap<>();
@@ -401,7 +401,7 @@ public class JiraBoardConfigDTOFixture {
 
 		issueFieldMap.put("sprint", sprintIssueField);
 		issueFieldMap.put("storyPointEstimateIssueField", storyPointEstimateIssueField);
-		issueFieldMap.put("flagged", FlaggedIssueField);
+		issueFieldMap.put("flagged", newFlaggedIssueField);
 		issueFieldMap.put("other", otherIssueField);
 
 		return FieldResponseDTO.builder().projects(List.of(new Project(List.of(new Issuetype(issueFieldMap)))));

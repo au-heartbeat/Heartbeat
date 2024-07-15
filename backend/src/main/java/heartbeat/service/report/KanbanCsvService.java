@@ -9,6 +9,7 @@ import heartbeat.client.component.JiraUriGenerator;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
 import heartbeat.client.dto.board.jira.JiraCardField;
 import heartbeat.client.dto.board.jira.Status;
+import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
@@ -23,6 +24,8 @@ import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.service.board.jira.JiraColumnResult;
 import heartbeat.service.board.jira.JiraService;
+import heartbeat.repository.FileRepository;
+import heartbeat.service.report.calculator.model.FetchedData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -58,8 +61,10 @@ public class KanbanCsvService {
 
 	private final JiraUriGenerator urlGenerator;
 
-	public void generateCsvInfo(GenerateReportRequest request, CardCollection realDoneCardCollection,
-			CardCollection nonDoneCardCollection) {
+	private final FileRepository fileRepository;
+
+	public void generateCsvInfo(String uuid, GenerateReportRequest request,
+			FetchedData.CardCollectionInfo cardCollectionInfo) {
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 		BoardRequestParam boardRequestParam = BoardRequestParam.builder()
 			.boardId(jiraBoardSetting.getBoardId())
@@ -99,18 +104,20 @@ public class KanbanCsvService {
 				.toList();
 
 		}
-		this.generateCSVForBoard(realDoneCardCollection.getJiraCardDTOList(),
-				nonDoneCardCollection.getJiraCardDTOList(), jiraColumns.getJiraColumnResponse(),
+
+		this.generateCSVForBoard(uuid, cardCollectionInfo, jiraColumns.getJiraColumnResponse(),
 				request.getTimeRangeAndTimeStamp(), reworkState, reworkFromStates, jiraBoardSetting);
 	}
 
-	private void generateCSVForBoard(List<JiraCardDTO> allDoneCards, List<JiraCardDTO> nonDoneCards,
+	private void generateCSVForBoard(String uuid, FetchedData.CardCollectionInfo cardCollectionInfo,
 			List<JiraColumnDTO> jiraColumns, String csvTimeRangeTimeStamp, CardStepsEnum reworkState,
 			List<String> reworkFromStates, JiraBoardSetting jiraBoardSetting) {
 		List<TargetField> targetFields = jiraBoardSetting.getTargetFields();
 		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
 		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
+		List<JiraCardDTO> allDoneCards = cardCollectionInfo.getRealDoneCardCollection().getJiraCardDTOList();
+		List<JiraCardDTO> nonDoneCards = cardCollectionInfo.getNonDoneCardCollection().getJiraCardDTOList();
 
 		if (allDoneCards != null) {
 			sortAllDoneCardsByTime(allDoneCards, jiraColumns);
@@ -181,7 +188,8 @@ public class KanbanCsvService {
 			.mergeBaseInfoAndCycleTimeSheet()
 			.mergeReworkTimesSheet()
 			.generate();
-		csvFileGenerator.writeDataToCSV(csvTimeRangeTimeStamp, sheet);
+
+		fileRepository.createCSVFileByType(uuid, csvTimeRangeTimeStamp, sheet, FilePrefixType.BOARD_REPORT_PREFIX);
 	}
 
 	private void sortNonDoneCardsByStatusAndTime(List<JiraCardDTO> nonDoneCards, List<JiraColumnDTO> jiraColumns) {
