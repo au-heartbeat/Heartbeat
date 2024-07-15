@@ -86,6 +86,7 @@
 - [Feb 29 2024 - Release Heartbeat - 1.1.5](release-notes/20240229.md)
 - [Apr 2 2024 - Release heartbeat - 1.1.6](release-notes/20240402.md)
 - [June 6 2024 - Release heartbeat - 1.1.7](release-notes/20240605.md)
+- [July 15 2024 - Release heartbeat - 1.2.0](release-notes/20240715.md)
 
 # 1 About Heartbeat
 
@@ -139,15 +140,11 @@ Note: Charts will be generated only by selecting at least 2 time periods.
 
 **Have three items of time period:**
 
-1.  **Regular calendar:** If you select this item, it means all data will exclude the weekend.
-2.  **Calendar with Chinese holiday:** If you select this item, it means all data will exclude the weekend and Chinese holiday. So if the time period you selected contains Chinese holiday, you need to select this item.
-3.  **Calendar with Vietnam holiday:** If you select this item, it means all data will exclude the weekend and Vietnam holiday. So if the time period you selected contains Vietnam holiday, you need to select this item.
+1.  **Regular calendar:** If you select this item, it means calculated metrics will exclude the weekend.
+2.  **Calendar with Chinese holiday:** If you select this item, it means calculated metrics will exclude the weekend and Chinese holiday. 
+3.  **Calendar with Vietnam holiday:** If you select this item, it means calculated metrics will exclude the weekend and Vietnam holiday. 
 
-All need to select which data you want to get, for now, we support seven metrics data (Image 3-3). Those seven metrics are `Deployment Frequency (DF)`, `Lead Time for changes (LTC)`, `Mean Time To Recover (MTTR)`, `Change Failure Rate (CFR)`, and `Velocity`, `Cycle time`, `Classification`, where
-
-- `Velocity` : includes how many story points and cards we have completed within selected time period.
-- `Cycle time`: the time it take for each card start to do until move to done.
-- `Classification`: provide different dimensions to view how much efforts team spent within selected time period.
+All need to select which data you want to get, for now, we support seven metrics data (Image 3-3). Those eight metrics are `Deployment Frequency (DF)`, `Lead Time for changes (LTC)`, `Mean Time To Recover (MTTR)`, `Change Failure Rate (CFR)`, and `Velocity`, `Cycle time`, `Classification`,`Rework`.
 
 ![Image 3-3](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-3.png)\
 _Image 3-3，Metrics Data_

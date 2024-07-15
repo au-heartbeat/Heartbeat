@@ -42,6 +42,7 @@ const ShareReportTrigger = () => {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (canShare) {
       setAnchorEl(anchorEl ? null : event.currentTarget);
+      setShowAlert(false);
     }
   };
 
