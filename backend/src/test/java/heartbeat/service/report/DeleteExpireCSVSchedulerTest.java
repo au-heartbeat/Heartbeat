@@ -35,7 +35,7 @@ class DeleteExpireCSVSchedulerTest {
 		verify(fileRepository, times(1)).removeExpiredFiles(eq(FileType.REPORT), anyLong());
 		verify(fileRepository, times(1)).removeExpiredFiles(eq(FileType.ERROR), anyLong());
 		verify(fileRepository, times(1)).removeExpiredFiles(eq(FileType.METRICS_DATA_COMPLETED), anyLong());
-		verify(fileRepository, times(1)).removeExpiredFiles(eq(FileType.REQUEST_INFO), anyLong());
+		verify(fileRepository, times(1)).removeExpiredFiles(eq(FileType.CONFIGS), anyLong());
 
 	}
 

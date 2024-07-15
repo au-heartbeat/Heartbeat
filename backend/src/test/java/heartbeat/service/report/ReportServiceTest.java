@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
-import static heartbeat.repository.FilePrefixType.REQUEST_INFO_REPORT_PREFIX;
+import static heartbeat.repository.FilePrefixType.USER_CONFIG_REPORT_PREFIX;
 import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -381,16 +381,16 @@ public class ReportServiceTest {
 		@Test
 		void shouldGetReportUrlsSuccessfully() {
 			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
-			when(fileRepository.getFiles(FileType.REQUEST_INFO, TEST_UUID))
+			when(fileRepository.getFiles(FileType.CONFIGS, TEST_UUID))
 				.thenReturn(List.of("board-0-0-0", "board-9-9-9"));
 
-			when(fileRepository.readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("0-0-0"), any(), any()))
+			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
 				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics2")).pipelines(List.of(
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step2").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build()
 				)).build());
-			when(fileRepository.readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("9-9-9"), any(), any()))
+			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
 				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics3")).pipelines(List.of(
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build(),
@@ -418,10 +418,10 @@ public class ReportServiceTest {
 			assertEquals("pipeline2/step1", pipelines.get(2));
 			assertEquals("pipeline2/step2", pipelines.get(3));
 
-			verify(fileRepository).getFiles(FileType.REQUEST_INFO, TEST_UUID);
-			verify(fileRepository).getFiles(FileType.REQUEST_INFO, TEST_UUID);
-			verify(fileRepository).readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("0-0-0"), any(), any());
-			verify(fileRepository).readFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID), eq("9-9-9"), any(), any());
+			verify(fileRepository).getFiles(FileType.CONFIGS, TEST_UUID);
+			verify(fileRepository).getFiles(FileType.CONFIGS, TEST_UUID);
+			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any());
+			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any());
 
 		}
 
@@ -487,8 +487,8 @@ public class ReportServiceTest {
 
 			reportService.saveRequestInfo(request, TEST_UUID);
 
-			verify(fileRepository).createFileByType(eq(FileType.REQUEST_INFO), eq(TEST_UUID),
-					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(REQUEST_INFO_REPORT_PREFIX));
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
 
 			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
 
@@ -496,6 +496,71 @@ public class ReportServiceTest {
 
 			assertEquals(1, pipelines.size());
 			assertEquals("1", pipelines.get(0).getId());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+		}
+
+		@Test
+		void shouldSaveMetricsSuccessfullyWhenBuildKiteSettingIsNull() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(0, pipelines.size());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+		}
+
+		@Test
+		void shouldSaveMetricsSuccessfullyWhenDeploymentEnvListIsNull() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.buildKiteSetting(BuildKiteSetting.builder().build())
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(0, pipelines.size());
 
 			List<String> metrics = savedRequestInfo.getMetrics();
 

@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
@@ -27,6 +28,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+
+import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor
@@ -107,12 +110,12 @@ public class ReportService {
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}
-		List<SavedRequestInfo> savedRequestInfoList = fileRepository.getFiles(FileType.REQUEST_INFO, uuid)
+		List<SavedRequestInfo> savedRequestInfoList = fileRepository.getFiles(FileType.CONFIGS, uuid)
 			.stream()
 			.map(it -> it.split(FILENAME_SEPARATOR))
 			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
-			.map(it -> fileRepository.readFileByType(FileType.REQUEST_INFO, uuid, it, SavedRequestInfo.class,
-					FilePrefixType.REQUEST_INFO_REPORT_PREFIX))
+			.map(it -> fileRepository.readFileByType(FileType.CONFIGS, uuid, it, SavedRequestInfo.class,
+					FilePrefixType.USER_CONFIG_REPORT_PREFIX))
 			.toList();
 		List<String> metrics = savedRequestInfoList.stream()
 			.map(SavedRequestInfo::getMetrics)
@@ -139,10 +142,11 @@ public class ReportService {
 	public void saveRequestInfo(GenerateReportRequest request, String uuid) {
 		SavedRequestInfo savedRequestInfo = SavedRequestInfo.builder()
 			.metrics(request.getMetrics())
-			.pipelines(request.getBuildKiteSetting().getDeploymentEnvList())
+			.pipelines(ofNullable(request.getBuildKiteSetting()).map(BuildKiteSetting::getDeploymentEnvList)
+				.orElse(List.of()))
 			.build();
-		fileRepository.createFileByType(FileType.REQUEST_INFO, uuid, request.getTimeRangeAndTimeStamp(),
-				savedRequestInfo, FilePrefixType.REQUEST_INFO_REPORT_PREFIX);
+		fileRepository.createFileByType(FileType.CONFIGS, uuid, request.getTimeRangeAndTimeStamp(), savedRequestInfo,
+				FilePrefixType.USER_CONFIG_REPORT_PREFIX);
 	}
 
 }

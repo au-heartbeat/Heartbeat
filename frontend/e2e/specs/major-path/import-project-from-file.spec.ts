@@ -120,7 +120,8 @@ test('Import project from file with partial ranges API failed', async ({
     showCycleTimeAllocationChart: true,
   });
   await reportStep.goToCharDoraTab();
-  await reportStep.checkChartDoraTabStatus({
+  await reportStep.checkPipelineSelectorAndDoraChart({
+    pipelines: ['Average/Total', 'Heartbeat/ Deploy prod'],
     showDevMeanTimeToRecoveryTrendContainer: false,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: true,
@@ -165,7 +166,8 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
     showCycleTimeAllocationChart: true,
   });
   await reportStep.goToCharDoraTab();
-  await reportStep.checkChartDoraTabStatus({
+  await reportStep.checkPipelineSelectorAndDoraChart({
+    pipelines: ['Average/Total', 'Heartbeat/ Deploy prod'],
     showDevMeanTimeToRecoveryTrendContainer: false,
     showDevChangeFailureRateChart: false,
     showDevMeanTimeToRecoveryChart: true,
