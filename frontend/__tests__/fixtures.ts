@@ -700,6 +700,132 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
   reportMetricsError,
 };
 
+export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
+  velocity: {
+    velocityForSP: 20,
+    velocityForCards: 14,
+  },
+  cycleTime: {
+    averageCycleTimePerCard: 30.26,
+    averageCycleTimePerSP: 21.18,
+    totalTimeForCards: 423.59,
+    swimlaneList: [
+      {
+        optionalItemName: 'Analysis',
+        averageTimeForSP: 8.36,
+        averageTimeForCards: 11.95,
+        totalTime: 167.27,
+      },
+      {
+        optionalItemName: 'In Dev',
+        averageTimeForSP: 12.13,
+        averageTimeForCards: 17.32,
+        totalTime: 242.51,
+      },
+    ],
+  },
+  deploymentFrequency: {
+    avgDeploymentFrequency: {
+      name: 'Average',
+      deploymentFrequency: 0.4,
+    },
+    deploymentFrequencyOfPipelines: [
+      {
+        name: 'mock pipeline name',
+        step: 'mock step1',
+        deploymentFrequency: 0.3,
+        dailyDeploymentCounts: [
+          {
+            date: '9/9/2022',
+            count: 1,
+          },
+        ],
+        deployTimes: 10,
+      },
+    ],
+    totalDeployTimes: 10,
+  },
+  devMeanTimeToRecovery: {
+    avgDevMeanTimeToRecovery: {
+      name: 'Total',
+      timeToRecovery: 14396108.777777776,
+    },
+    devMeanTimeToRecoveryOfPipelines: [
+      {
+        name: 'mock pipeline name',
+        step: 'mock step1',
+        timeToRecovery: 15560177,
+      },
+    ],
+  },
+  rework: {
+    totalReworkTimes: 111,
+    reworkState: 'In Dev',
+    fromAnalysis: null,
+    fromInDev: null,
+    fromBlock: 111,
+    fromReview: 111,
+    fromWaitingForTesting: 111,
+    fromTesting: null,
+    fromDone: 111,
+    totalReworkCards: 111,
+    reworkCardsRatio: 0.8888,
+    throughput: 1110,
+  },
+  leadTimeForChanges: {
+    leadTimeForChangesOfPipelines: [
+      {
+        name: 'mock pipeline name',
+        step: 'mock step1',
+        prLeadTime: 2702.53,
+        pipelineLeadTime: 2587.42,
+        totalDelayTime: 5289.95,
+      },
+    ],
+    avgLeadTimeForChanges: {
+      name: 'Average',
+      prLeadTime: 3647.51,
+      pipelineLeadTime: 2341.72,
+      totalDelayTime: 5989.22,
+    },
+  },
+  devChangeFailureRate: {
+    avgDevChangeFailureRate: {
+      name: 'Average',
+      totalTimes: 6,
+      totalFailedTimes: 0,
+      failureRate: 0.0,
+    },
+    devChangeFailureRateOfPipelines: [
+      {
+        name: 'mock pipeline name',
+        step: 'mock step1',
+        failedTimesOfPipeline: 0,
+        totalTimesOfPipeline: 2,
+        failureRate: 0.0,
+      },
+    ],
+  },
+  classificationList: [
+    {
+      fieldName: 'FS Work Type',
+      pairList: [
+        {
+          name: 'Feature Work - Planned',
+          value: 0.5714,
+        },
+      ],
+    },
+  ],
+  exportValidityTime: 1800000,
+  boardMetricsCompleted: true,
+  doraMetricsCompleted: true,
+  overallMetricsCompleted: true,
+  allMetricsCompleted: true,
+  isSuccessfulCreateCsvFile: true,
+  reportMetricsError,
+};
+
 export const MOCK_RETRIEVE_REPORT_RESPONSE = {
   callbackUrl: 'reports/123',
   interval: 10,

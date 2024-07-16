@@ -41,5 +41,11 @@ describe('#emojis', () => {
 
       expect(removeExtraEmojiName(input)).toEqual(' one emojis');
     });
+
+    it('should return null when no colons', () => {
+      const input = 'mock pipeline name/mock step1';
+
+      expect(removeExtraEmojiName(input)).toEqual('mock pipeline name/mock step1');
+    });
   });
 });

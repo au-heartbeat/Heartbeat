@@ -27,6 +27,7 @@ public class DeleteExpireCSVScheduler {
 		fileRepository.removeExpiredFiles(FileType.REPORT, currentTimeStamp);
 		fileRepository.removeExpiredFiles(FileType.ERROR, currentTimeStamp);
 		fileRepository.removeExpiredFiles(FileType.METRICS_DATA_COMPLETED, currentTimeStamp);
+		fileRepository.removeExpiredFiles(FileType.CONFIGS, currentTimeStamp);
 	}
 
 }

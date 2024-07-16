@@ -349,7 +349,9 @@ In report `chart` page, heartbeat provide a better visualization on delivery and
 - Board chart 
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1.png)
 - Dora chart
-![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-new.png)
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-1.png)
+
+Heartbeat chart enable customer to drill down  dora metrics to specific pipeline by selecting from pipeline/step dropdown.
 
 Within chart, Hearteat also provide trend indicator which represent last two periods comparison result. The trend indicator includes three key points:
 - Color: From delivery perspective, Green means healthy, Red means unhealthy
@@ -360,6 +362,7 @@ Below trend indicator means that Velocity is pretty health between 2024.5.13-202
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-3.png)
 Below trend indicator means that development time ratio is not so unhealthy between 2024.5.13-2024.5.27 and 2024.4.29-20204.5.12. And the development time ratio decreased 23.17%.
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-4.png)
+
 
 ### 3.4.1 Velocity
 

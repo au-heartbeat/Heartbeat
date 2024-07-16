@@ -253,7 +253,8 @@ public class GenerateReporterService {
 
 		request.getSourceControlMetrics()
 			.forEach(metric -> reportResponse.setLeadTimeForChanges(
-					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes())));
+					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes(),
+							request.getBuildKiteSetting().getDeploymentEnvList())));
 
 		return reportResponse;
 	}

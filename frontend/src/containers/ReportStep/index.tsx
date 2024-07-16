@@ -226,6 +226,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   return (
     <ReportContent
       metrics={metrics}
+      allPipelines={deploymentFrequencySettings.map((it) => `${it.pipelineName}/${it.step}`)}
       dateRanges={dateRanges}
       startToRequestData={() => startToRequestData(basicReportRequestBody)}
       reportInfos={reportInfos}
