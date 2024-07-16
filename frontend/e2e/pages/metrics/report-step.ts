@@ -186,7 +186,7 @@ export class ReportStep {
     this.cycleTimeAllocationTrendIcon = this.cycleTimeAllocationTrendContainer.getByLabel('trend down');
     this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend down');
 
-    this.doraPipelineSelector = this.page.getByLabel('Pipeline Selector');
+    this.doraPipelineSelector = this.page.getByLabel('Pipeline Selector').first();
     this.leadTimeForChangesTrendContainer = this.page.getByLabel('lead time for changes trend container');
     this.deploymentFrequencyTrendContainer = this.page.getByLabel('deployment frequency trend container');
     this.devChangeFailureRateTrendContainer = this.page.getByLabel('dev change failure rate trend container');

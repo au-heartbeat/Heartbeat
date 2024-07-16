@@ -15,6 +15,7 @@ import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cy
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
 import { partialMetricsShowChart } from '../../fixtures/import-file/partial-metrics-show-chart';
+import { DORA_CHART_PIPELINES } from '../../fixtures/import-file/chart-result';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
@@ -121,7 +122,7 @@ test('Import project from file with partial ranges API failed', async ({
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
-    pipelines: ['Average/Total', 'Heartbeat/ Deploy prod'],
+    pipelines: DORA_CHART_PIPELINES,
     showDevMeanTimeToRecoveryTrendContainer: false,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: true,
@@ -167,7 +168,7 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
-    pipelines: ['Average/Total', 'Heartbeat/ Deploy prod'],
+    pipelines: DORA_CHART_PIPELINES,
     showDevMeanTimeToRecoveryTrendContainer: false,
     showDevChangeFailureRateChart: false,
     showDevMeanTimeToRecoveryChart: true,

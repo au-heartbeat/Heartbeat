@@ -48,7 +48,7 @@ enum DORAMetricsChartType {
 
 const AVERAGE = 'Average';
 const TOTAL = 'Total';
-export const DEFAULT_SELECTED_PIPELINE = 'Average/Total';
+export const DEFAULT_SELECTED_PIPELINE = 'All';
 
 function extractedStackedBarData(
   allDateRanges: string[],

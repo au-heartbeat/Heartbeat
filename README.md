@@ -349,9 +349,9 @@ In report `chart` page, heartbeat provide a better visualization on delivery and
 - Board chart 
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1.png)
 - Dora chart
-![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2.png)
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-1.png)
 
-In the Dora chart, you can see the different dora chart by selecting the different pipeline.
+Heartbeat chart enable customer to drill down  dora metrics to specific pipeline by selecting from pipeline/step dropdown.
 
 Within chart, Hearteat also provide trend indicator which represent last two periods comparison result. The trend indicator includes three key points:
 - Color: From delivery perspective, Green means healthy, Red means unhealthy

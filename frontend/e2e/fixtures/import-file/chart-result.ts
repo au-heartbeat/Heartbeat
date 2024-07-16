@@ -32,7 +32,7 @@ export const BOARD_CHART_VALUE = {
 };
 
 export const DORA_CHART_VALUE: DoraChartType = {
-  'Average/Total': {
+  All: {
     'Lead Time For Changes': {
       type: 'trend down',
       color: '#02C4A8',
@@ -77,3 +77,5 @@ export const DORA_CHART_VALUE: DoraChartType = {
     },
   },
 };
+
+export const DORA_CHART_PIPELINES = ['All', 'Heartbeat/ Deploy prod'];

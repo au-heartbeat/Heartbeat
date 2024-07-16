@@ -768,29 +768,27 @@ describe('Report Step', () => {
       const pipelineSelector = screen.getByLabelText('Pipeline Selector');
       expect(pipelineSelector).toBeInTheDocument();
 
-      await act(async () => {
-        await userEvent.click(screen.getByRole('button', { name: LIST_OPEN }));
-      });
+      const pipelineSelectorText = screen.getByLabelText('Pipeline Selector Text');
+      expect(pipelineSelectorText).toBeInTheDocument();
 
-      let listBox = screen.getByRole('listbox');
-      expect(listBox).toBeInTheDocument();
-
-      await act(async () => {
-        await userEvent.click(within(listBox).getByText('Average/Total'));
-      });
+      const pipelineSelectorInput = pipelineSelectorText.getElementsByTagName('input')[0];
+      expect(pipelineSelectorInput).toHaveValue('All');
 
       await act(async () => {
         await userEvent.click(screen.getByRole('button', { name: LIST_OPEN }));
       });
 
-      listBox = screen.getByRole('listbox');
+      const listBox = screen.getByRole('listbox');
       expect(listBox).toBeInTheDocument();
+
+      expect(screen.getByText('All')).toBeInTheDocument();
+      expect(screen.getByText('mock pipeline name/mock step1')).toBeInTheDocument();
 
       await act(async () => {
         const pipelineSelector = within(listBox).getByText('mock pipeline name/mock step1');
-        expect(pipelineSelector).toBeInTheDocument();
         await userEvent.click(pipelineSelector);
       });
+      expect(pipelineSelectorInput).toHaveValue('mock pipeline name/mock step1');
 
       expect(addNotification).toHaveBeenCalledWith({
         message: MESSAGE.EXPIRE_INFORMATION,

@@ -2,18 +2,18 @@ import { PipelinesSelectContainer } from '@src/containers/ReportStep/DoraMetrics
 import { Autocomplete, Box, ListItemText, TextField, Tooltip } from '@mui/material';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { EmojiWrap, StyledAvatar } from '@src/constants/emojis/style';
-import { Z_INDEX } from '@src/constants/commons';
+import { EMPTY_STRING, Z_INDEX } from '@src/constants/commons';
 import React, { useState } from 'react';
 
 interface Props {
-  options: string[];
-  value: string;
-  onUpDatePipeline: (value: string) => void;
-  title: string;
+  readonly options: string[];
+  readonly value: string;
+  readonly onUpDatePipeline: (value: string) => void;
+  readonly title: string;
 }
 
 export default function PipelineSelector({ options, value, onUpDatePipeline, title }: Props) {
-  const label = '';
+  const label = EMPTY_STRING;
   const [inputValue, setInputValue] = useState<string>(value);
 
   const emojiView = (pipelineStepName: string) => {
@@ -62,7 +62,9 @@ export default function PipelineSelector({ options, value, onUpDatePipeline, tit
         onChange={(event, newValue: string) => onUpDatePipeline(newValue)}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
-        renderInput={(params) => <TextField required {...params} label={label} variant='standard' />}
+        renderInput={(params) => (
+          <TextField aria-label={'Pipeline Selector Text'} required {...params} label={label} variant='standard' />
+        )}
         slotProps={{
           popper: {
             sx: {
