@@ -25,7 +25,6 @@ import ReportContent from './ReportContent';
 import { useAppSelector } from '@src/hooks';
 import { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
-import { ECharts } from 'echarts';
 
 export interface ReportStepProps {
   handleSave: () => void;
@@ -37,20 +36,17 @@ export interface DateRangeRequestResult {
   reportData: ReportResponseDTO | undefined;
 }
 
-export const resizeChart = (chart: ECharts) => {
-  return () => {
-    chart.resize();
-  };
-};
-
 export function showChart(div: HTMLDivElement | null, isFinished: boolean, options: echarts.EChartsCoreOption) {
   if (div) {
     const chart = echarts.init(div);
     chart.setOption(options);
-    const resize = resizeChart(chart);
+    const resize = () => {
+      chart.resize();
+    };
     window.addEventListener('resize', resize);
     return () => {
       chart.dispose();
+      window.removeEventListener('resize', resize);
     };
   }
 }
