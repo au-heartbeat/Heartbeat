@@ -20,6 +20,7 @@ export const useShareReportEffect = () => {
   const [dateRanges, setDateRanges] = useState<DateRange[]>([]);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>([]);
   const [metrics, setMetrics] = useState<string[]>([]);
+  const [allPipelines, setAllPipelines] = useState<string[]>([]);
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
   const getData = async () => {
@@ -36,6 +37,7 @@ export const useShareReportEffect = () => {
       updateReportPageLoadingStatusInfoAfterGetReports(dateRanges, reportRes);
 
       setMetrics(reportURLsRes.data.metrics);
+      setAllPipelines(reportURLsRes.data.pipelines);
       setDateRanges(dateRanges);
       setReportInfos(reportInfos);
     } catch (e) {
@@ -115,5 +117,6 @@ export const useShareReportEffect = () => {
     metrics,
     isExpired,
     getData,
+    allPipelines,
   };
 };

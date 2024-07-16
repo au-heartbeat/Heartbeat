@@ -10,7 +10,9 @@ import {
   EXPORT_METRIC_DATA,
   EXPORT_PIPELINE_DATA,
   LEAD_TIME_FOR_CHANGES,
+  LIST_OPEN,
   MOCK_JIRA_VERIFY_RESPONSE,
+  MOCK_REPORT_MOCK_PIPELINE_RESPONSE,
   MOCK_REPORT_RESPONSE,
   MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION,
   PREVIOUS,
@@ -27,8 +29,8 @@ import {
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
 import { addADeploymentFrequencySetting, updateDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
+import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
-import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import { closeNotification } from '@src/context/notification/NotificationSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
@@ -73,7 +75,9 @@ jest.mock('@src/hooks/useGenerateReportEffect', () => ({
 
 jest.mock('@src/constants/emojis/emoji', () => ({
   getEmojiUrls: jest.fn().mockReturnValue(['']),
-  removeExtraEmojiName: jest.fn(),
+  removeExtraEmojiName: jest.fn((param) => {
+    return param;
+  }),
 }));
 
 jest.mock('@src/utils/util', () => ({
@@ -751,10 +755,40 @@ describe('Report Step', () => {
     });
 
     it('should correctly render dora chart', async () => {
+      reportHook.current.reportInfos[0].reportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
+
       setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
       const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
       await userEvent.click(switchChartButton);
+
+      const switchDoraChartButton = screen.getByText(CHART_TYPE.DORA);
+      await userEvent.click(switchDoraChartButton);
+
+      const pipelineSelector = screen.getByLabelText('Pipeline Selector');
+      expect(pipelineSelector).toBeInTheDocument();
+
+      const pipelineSelectorText = screen.getByLabelText('Pipeline Selector Text');
+      expect(pipelineSelectorText).toBeInTheDocument();
+
+      const pipelineSelectorInput = pipelineSelectorText.getElementsByTagName('input')[0];
+      expect(pipelineSelectorInput).toHaveValue('All');
+
+      await act(async () => {
+        await userEvent.click(screen.getByRole('button', { name: LIST_OPEN }));
+      });
+
+      const listBox = screen.getByRole('listbox');
+      expect(listBox).toBeInTheDocument();
+
+      expect(screen.getByText('All')).toBeInTheDocument();
+      expect(screen.getByText('mock pipeline name/mock step1')).toBeInTheDocument();
+
+      await act(async () => {
+        const pipelineSelector = within(listBox).getByText('mock pipeline name/mock step1');
+        await userEvent.click(pipelineSelector);
+      });
+      expect(pipelineSelectorInput).toHaveValue('mock pipeline name/mock step1');
 
       expect(addNotification).toHaveBeenCalledWith({
         message: MESSAGE.EXPIRE_INFORMATION,
