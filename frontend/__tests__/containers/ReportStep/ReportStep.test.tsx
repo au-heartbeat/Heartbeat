@@ -32,11 +32,11 @@ import { addADeploymentFrequencySetting, updateDeploymentFrequencySettings } fro
 import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { closeNotification } from '@src/context/notification/NotificationSlice';
+import ReportStep, { resizeChart, showChart } from '@src/containers/ReportStep';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { backStep, updateReportId } from '@src/context/stepper/StepperSlice';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
-import ReportStep, { showChart } from '@src/containers/ReportStep';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import React, { ReactNode } from 'react';
@@ -693,6 +693,27 @@ describe('Report Step', () => {
         type: 'error',
       });
       expect(closeNotification).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('resizeChart', () => {
+    beforeEach(() => {
+      jest.spyOn(echarts, 'init').mockImplementation(
+        () =>
+          ({
+            setOption: jest.fn(),
+            resize: jest.fn(),
+            dispatchAction: jest.fn(),
+            dispose: jest.fn(),
+          }) as unknown as echarts.ECharts,
+      );
+    });
+    it('should resize', () => {
+      const chart = echarts.init();
+      const resizeFunction = resizeChart(chart);
+
+      resizeFunction();
+      expect(chart.resize).toHaveBeenCalledTimes(1);
     });
   });
 
