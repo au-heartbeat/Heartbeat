@@ -3,11 +3,16 @@ import { theme } from '@src/theme';
 
 export const StyledChartAndTitleWrapper = styled('div')({
   position: 'relative',
+  flex: '0 0 calc(50% - 1.25rem)',
   height: '25rem',
+  marginBottom: '1.25rem',
   borderRadius: '0.75rem',
   border: theme.main.cardBorder,
   background: theme.main.color,
   boxShadow: theme.main.cardShadow,
+  [theme.breakpoints.down('lg')]: {
+    flex: '0 0 100%',
+  },
 });
 
 export const ChartTitle = styled('div')({
