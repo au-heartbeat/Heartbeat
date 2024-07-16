@@ -721,7 +721,7 @@ describe('Report Step', () => {
 
       const disposeFunction = showChart(div, false, {});
       window.dispatchEvent(new Event('resize'));
-      disposeFunction && disposeFunction();
+      disposeFunction!();
 
       expect(disposeFunction).not.toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(1);
@@ -734,7 +734,7 @@ describe('Report Step', () => {
       const div = document.createElement('div');
 
       const disposeFunction = showChart(div, false, {});
-      disposeFunction && disposeFunction();
+      disposeFunction!();
       window.dispatchEvent(new Event('resize'));
 
       expect(disposeFunction).not.toBeUndefined();
@@ -748,7 +748,7 @@ describe('Report Step', () => {
       const div = document.createElement('div');
 
       const disposeFunction = showChart(div, true, {});
-      disposeFunction && disposeFunction();
+      disposeFunction!();
 
       expect(disposeFunction).not.toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(1);
