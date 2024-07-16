@@ -369,8 +369,14 @@ Below trend indicator means that development time ratio is not so unhealthy betw
 In Velocity Report, it will list the corresponding data by Story Point and the number of story tickets. (image 3-19)
 - `Velocity` : includes how many story points and cards we have completed within selected time period.
 - Definition for 'Velocity(Story Point)‘: how many story point we have completed within selected time period.
+  - Factors
+    - Collection date type (exclude weekend & holidays)
+    - Selected crews
 - Formula for 'Velocity(Story Point): sum of story points for done cards in selected time period
 - Definition for 'Throughput(Cards Count): how many story cards we have completed within selected time period.
+  - Factors
+    - Collection date type (exclude weekend & holidays)
+    - Selected board crews
 - Formula for 'Throughput(Cards Count): sum of cards count for done cards in selected time period
   
 
@@ -380,11 +386,25 @@ _Image 3-23，Velocity Report_
 ### 3.4.2 Cycle Time
 
 The calculation process data and final result of Cycle Time are calculated by rounding method, and two digits are kept after the decimal point. Such as: 3.567... Is 3.56; 3.564... Is 3.56.
-- `Cycle time`: the time it take for each card start ‘to do’ until move to ‘done’.
-- Definition for ‘Average Cycle Time(Days/SP)’: how many days does it take on average to complete a point?
-- Formula for ‘Average Cycle Time(Days/SP)’: sum of cycle time for done cards/done cards story points
-- Definition for ‘Average Cycle Time(Days/Card)’: how many days does it take on average to complete a card?
-- Formula for ‘Average Cycle Time(Days/Card)’: sum of cycle time for done cards/done cards count
+- `Cycle time`: the time it take for each card from start to end. Heartbeat has 8 states (as below) for board card and it will sum up the time for states, excluding `To do` and `Done` as cycle time. So it's important that client map Jira column/status to the heartbeat state correctly.  
+  - To do
+  - Analysis
+  - In dev
+  - Block
+  - Review
+  - Waiting for testing
+  - testing
+  - Done
+- Definition for ‘Average Cycle Time(Days/SP)’: how many days does it take on average to complete a point
+  - Factors
+    - Collection date type (exclude weekend & holidays)
+    - Selected crews
+- Formula for ‘Average Cycle Time(Days/SP)’: `sum of cycle time for done cards`/`sum of story points of done cards`
+- Definition for ‘Average Cycle Time(Days/Card)’: how many days does it take on average to complete a card
+  - Factors
+    - Collection date type (exclude weekend & holidays)
+    - Selected board crews
+- Formula for ‘Average Cycle Time(Days/Card)’: `sum of cycle time for done cards`/`done cards count`
 
 ![Image 3-24](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/10.png)\
 _Image 3-24，Cycle Time Report_
@@ -402,6 +422,9 @@ _Image 3-25，Classification Report_
 ### 3.4.4 Rework
 
 - Definition for ‘Rework': cards roll back from a later state to a previous state, for example, one card move from 'testing' state to 'in dev' state, which means this card is reworked.
+  - Factors
+    - Collection date type (exclude weekend & holidays)
+    - Selected board crews
 - Formula for 'Total rework times': the total number of rework times in all done cards
 - Formula for 'Total rework cards': the total number of rework cards in all done cards
 - Formula for 'Rework cards ratio': total rework cards/throughput
@@ -417,15 +440,33 @@ _Image 3-26，Rework Report_
 
 ### 3.4.5 Deployment Frequency
 - Definition for ‘Deployment Frequency': this metrics records how often you deploy code to production on a daily basis.
-- Definition for ‘Deployment times': this times how many you deploy code to production on a daily basis.
-- Formula for ‘Deployment Frequency': the number of build for（Status = passed & Valid = true）/working days. If multiple pipeline: the sum of every pipeline.
-- Formula for ‘Deployment times': the number of build for（Status = passed & Valid = true. If multiple pipeline: the sum of every pipeline.
+  - Factors
+    - Added pipelines
+    - Selected pipeline steps 
+    - Selected Github branch for pipeline
+    - Selected pipeline crews
+- Formula for ‘Deployment Frequency': `the sum of builds for（Status = passed & Valid = true）`/`working days`
+- Definition for ‘Deployment times': how many times you deploy code to production.
+  - Factors
+    - Added pipelines
+    - Selected pipeline steps
+    - Selected Github branch for pipeline
+    - Selected pipeline crews
+- Formula for ‘Deployment times': `the sum of builds for（Status = passed & Valid = true`
+
 ![Image 3-27](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/export/export-pipline-data.png)\
 _Image 3-27，export pipline data_
 ![Image 3-28](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/12-1.png)\
 _Image 3-28，Deployment Frequency Report_
 
 ### 3.4.6 Lead time for changes Data
+- Definition of 'Lead time for change': the time from first code commit of PR until the PR deployed to production. In heartbeat, `Lead time for change` = `PR lead time` + `Pipleline lead time`
+  - Factors
+    - Collection date type (exclude weekend & holidays)
+    - Added pipelines
+    - Selected pipeline steps
+    - Selected Github branch for pipeline
+    - Selected pipeline crews
 - Formula for ‘PR lead time':
   - if PR exist : `PR lead time` = `PR merged time` - `first code committed time` - `non-workday`
     - if the PR merge time is a non-working day, such as weekends or holidays, we will treat the non-working days in the PR merge time as working days.
@@ -433,8 +474,8 @@ _Image 3-28，Deployment Frequency Report_
   - if no PR or revert PR: PR lead time = 0
 
 - Formula for ‘Pipeline lead time':
-  - if PR exist: Pipeline lead time = Job Complete Time - PR merged time
-  - if no PR: Pipeline lead time = Job Complete Time - Job Start Time
+  - if PR exist: `Pipeline lead time` = `Job Complete Time` - `PR merged time`
+  - if no PR: `Pipeline lead time` = `Job Complete Time` - `Job Start Time`
 
 
 
@@ -442,16 +483,26 @@ _Image 3-28，Deployment Frequency Report_
 _Image 3-29，Lead time for changes Report_
 
 ### 3.4.7 Dev Change Failure Rate
-- Definition for ‘Dev Change Failure Rate': this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on development，which is the percentage of failed pipelines in the total pipelines, and you chan select different pipeline as your final step,and this value is lower means failed pipeline is fewer.
-- Formula for ‘Dev Change Failure Rate': the number of build for (Status = failed)/the number of build for [（Status = passed & Valid = true）+ the number of build for (status=failed)]
+- Definition for ‘Dev Change Failure Rate': this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on pipeline，which is the percentage of failed pipeline builds in the total pipeline builds
+  - Factors
+    - Added pipelines
+    - Selected pipeline steps
+    - Selected Github branch for pipeline
+    - Selected pipeline crews
+- Formula for `Dev Change Failure Rate` : `the number of build for (Status = failed)`/`the number of build for [（Status = passed & Valid = true）`+ `the number of build for (status=failed)]`
 
 ![Image 3-30](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/14.png)\
 _Image 3-30，Dev Change Failure Rate Report_
 
 ### 3.4.8 Dev Mean time to recovery
-- Definition for ‘Dev Mean time to recovery': this metrics is also different from the official definition of Mean time to recovery. This metrics comes from pipeline, and it records how long it generally takes to restore when pipeline failed, and If this value is less than 8 hours, it means ‘red does not last overnight’, which means our repair speed is relatively good.
-- Formula for ‘Dev Mean time to recovery': sum[the time difference from the first fail to the first pass for deployment completed time]/ the number of repairs
-  - for the time difference from the first fail to the first pass for deployment completed time, we still exclude the weekend and holiday
+- Definition for ‘Dev Mean time to recovery': this metrics is also different from the official definition of Mean time to recovery. This metrics comes from pipeline, and it records how long it generally takes to restore a pipeline when pipeline failed.
+  - Factors
+    - Collection date type (exclude weekend & holidays)
+    - Added pipelines
+    - Selected pipeline steps
+    - Selected Github branch for pipeline
+    - Selected pipeline crews
+- Formula for ‘Dev Mean time to recovery': `sum[the time difference between the first build fail and the last pass]`/ `the number of repairs`
 
 ![Image 3-31](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15.png)\
 _Image 3-31，mean time to recovery 
