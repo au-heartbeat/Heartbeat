@@ -230,6 +230,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   return (
     <ReportContent
+      isSharePage={false}
       metrics={metrics}
       allPipelines={deploymentFrequencySettings.map((it) => `${it.pipelineName}/${it.step}`)}
       dateRanges={dateRanges}

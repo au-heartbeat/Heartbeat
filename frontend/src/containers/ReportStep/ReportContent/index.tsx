@@ -60,6 +60,7 @@ export interface ReportContentProps {
   handleSave?: () => void;
   reportId?: number;
   hideButtons?: boolean;
+  isSharePage: boolean;
 }
 
 const timeoutNotificationMessages = {
@@ -84,6 +85,7 @@ const ReportContent = (props: ReportContentProps) => {
     handleSave,
     reportId,
     hideButtons = false,
+    isSharePage,
   } = props;
 
   const dispatch = useAppDispatch();
@@ -345,10 +347,22 @@ const ReportContent = (props: ReportContentProps) => {
     <BoardMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} />
   );
 
-  const showBoardDetail = (data?: ReportResponseDTO) => (
-    <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
+  const showBoardDetail = (data?: ReportResponseDTO) => {
+    const onlySelectClassification = metrics.length === 1 && metrics[0] === RequiredData.Classification;
+
+    return (
+      <BoardDetail
+        isShowBack={!onlySelectClassification || !isSharePage}
+        metrics={metrics}
+        onBack={() => handleBack()}
+        data={data}
+        errorMessage={getErrorMessage4Board()}
+      />
+    );
+  };
+  const showDoraDetail = (data: ReportResponseDTO) => (
+    <DoraDetail isShowBack={true} onBack={() => backToSummaryPage()} data={data} />
   );
-  const showDoraDetail = (data: ReportResponseDTO) => <DoraDetail onBack={() => backToSummaryPage()} data={data} />;
 
   const handleBack = () => {
     setDisplayType(DISPLAY_TYPE.LIST);
