@@ -189,7 +189,7 @@ public class FileRepository {
 			return Arrays.stream(folder.listFiles()).map(File::getName).toList();
 		}
 		else {
-			log.error("Don't find the {} folder in the report files", fileName);
+			log.error("Failed to find the {} folder in the report files", fileName);
 			throw new NotFoundException(String.format("Don't find the %s folder in the report files", fileName));
 		}
 	}
