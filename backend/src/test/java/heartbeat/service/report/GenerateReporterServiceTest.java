@@ -1011,7 +1011,7 @@ class GenerateReporterServiceTest {
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(fileRepository.expiredTimes, res.getExportValidityTime());
+			assertEquals(fileRepository.oneDateMilliseconds, res.getExportValidityTime());
 			assertFalse(res.getBoardMetricsCompleted());
 			assertTrue(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());
