@@ -184,12 +184,12 @@ public class FileRepository {
 		File folder = new File(fileName);
 
 		if (folder.exists() && folder.isDirectory()) {
-			log.info("Successfully get the {} folder in the report files", uuid);
+			log.info("Successfully get the {} folder in the report files", fileName);
 			return Arrays.stream(folder.listFiles()).map(File::getName).toList();
 		}
 		else {
-			log.error("Don't find the {} folder in the report files", uuid);
-			throw new NotFoundException(String.format("Don't find the %s folder in the report files", uuid));
+			log.error("Don't find the {} folder in the report files", fileName);
+			throw new NotFoundException(String.format("Don't find the %s folder in the report files", fileName));
 		}
 	}
 

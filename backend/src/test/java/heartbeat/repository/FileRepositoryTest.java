@@ -766,7 +766,8 @@ class FileRepositoryTest {
 			NotFoundException notFoundException = assertThrows(NotFoundException.class,
 					() -> fileRepository.getFiles(FileType.REPORT, TEST_UUID));
 
-			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
+			assertEquals("Don't find the ./app/output/report/test-uuid folder in the report files",
+					notFoundException.getMessage());
 		}
 
 		@Test
@@ -777,7 +778,8 @@ class FileRepositoryTest {
 			NotFoundException notFoundException = assertThrows(NotFoundException.class,
 					() -> fileRepository.getFiles(FileType.REPORT, TEST_UUID));
 
-			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
+			assertEquals("Don't find the ./app/output/report/test-uuid folder in the report files",
+					notFoundException.getMessage());
 
 			Files.deleteIfExists(path);
 		}
