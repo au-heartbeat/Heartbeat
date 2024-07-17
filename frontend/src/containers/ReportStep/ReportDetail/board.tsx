@@ -15,6 +15,7 @@ interface Property {
   onBack: () => void;
   errorMessage: string;
   metrics: string[];
+  isShowBack: boolean;
 }
 
 const showSectionWith2Columns = (title: string, value: Optional<ReportDataWithTwoColumns[]>) =>
@@ -37,7 +38,7 @@ export const BoardDetail = withGoBack(({ data, errorMessage, metrics }: Property
   }, [dispatch, onlySelectClassification, errorMessage]);
 
   return (
-    <>
+    <div style={{ margin: '2.25rem 0 0 0' }}>
       {showSectionWith2Columns(MetricsTitle.Velocity, mappedData?.velocityList)}
       {showSectionWith2Columns(MetricsTitle.CycleTime, mappedData?.cycleTimeList)}
       {metrics.includes(RequiredData.Classification) && (
@@ -50,6 +51,6 @@ export const BoardDetail = withGoBack(({ data, errorMessage, metrics }: Property
         />
       )}
       {showSectionWith2Columns(MetricsTitle.Rework, mappedData?.reworkList)}
-    </>
+    </div>
   );
 });

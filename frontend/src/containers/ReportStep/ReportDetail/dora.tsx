@@ -12,6 +12,7 @@ import React from 'react';
 interface Property {
   data: ReportResponseDTO;
   onBack: () => void;
+  isShowBack: boolean;
 }
 
 const showTwoColumnSection = (title: string, value: Optional<ReportDataWithTwoColumns[]>) =>
@@ -27,7 +28,7 @@ export const DoraDetail = withGoBack(({ data }: Property) => {
   const mappedData = reportMapper(data);
 
   return (
-    <>
+    <div style={{ margin: '2.25rem 0 0 0' }}>
       {showDeploymentSection(
         MetricsTitle.DeploymentFrequency,
         [ReportSuffixUnits.DeploymentsPerDay, ReportSuffixUnits.DeploymentsTimes],
@@ -36,6 +37,6 @@ export const DoraDetail = withGoBack(({ data }: Property) => {
       {showThreeColumnSection(MetricsTitle.LeadTimeForChanges, mappedData.leadTimeForChangesList)}
       {showTwoColumnSection(MetricsTitle.DevChangeFailureRate, mappedData.devChangeFailureRateList)}
       {showTwoColumnSection(MetricsTitle.DevMeanTimeToRecovery, mappedData.devMeanTimeToRecoveryList)}
-    </>
+    </div>
   );
 });

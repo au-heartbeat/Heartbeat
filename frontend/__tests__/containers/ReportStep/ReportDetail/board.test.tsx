@@ -27,7 +27,7 @@ describe('board', () => {
 
     render(
       <Provider store={setupStore()}>
-        <BoardDetail metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
+        <BoardDetail isShowBack={true} metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
       </Provider>,
     );
 
@@ -46,7 +46,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -63,7 +63,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -83,7 +83,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -100,7 +100,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -123,7 +123,13 @@ describe('board', () => {
 
       render(
         <Provider store={store}>
-          <BoardDetail metrics={['Classification', 'Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail
+            isShowBack={true}
+            metrics={['Classification', 'Cycle Time']}
+            data={data}
+            onBack={() => 'back'}
+            errorMessage={''}
+          />
         </Provider>,
       );
 
@@ -140,7 +146,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} isShowBack={true} />
         </Provider>,
       );
 
@@ -159,6 +165,7 @@ describe('board', () => {
             data={data}
             onBack={() => 'back'}
             errorMessage={'Data loading failed'}
+            isShowBack={false}
           />
         </Provider>,
       );
@@ -191,6 +198,7 @@ describe('board', () => {
           metrics={['Velocity', 'Classification', 'Cycle Time', 'Rework times']}
           data={data}
           onBack={() => 'back'}
+          isShowBack={true}
           errorMessage={''}
         />
       </Provider>,
