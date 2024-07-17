@@ -48,7 +48,7 @@ public class FileRepository {
 	@Value("${heartbeat.expiredDays}")
 	public int expiredDays = 1;
 
-	public final long oneDateMilliseconds = 1000L * 3600 * 24;
+	public static final long oneDateMilliseconds = 1000L * 3600 * 24;
 
 	private static final String CSV_EXTENSION = ".csv";
 
@@ -212,7 +212,7 @@ public class FileRepository {
 	}
 
 	public long getExpiredTime() {
-		return this.expiredDays * this.oneDateMilliseconds;
+		return this.expiredDays * oneDateMilliseconds;
 	}
 
 	public InputStreamResource readStringFromCsvFile(String uuid, String fileName, FilePrefixType filePrefixType) {
