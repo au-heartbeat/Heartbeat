@@ -173,7 +173,7 @@ public class FileRepository {
 						uuidDirectory, e);
 			}
 		}
-		log.info("Successfully deleted expired {} file, expired files: {}, don't expired files: {}", fileType.getType(),
+		log.info("Successfully deleted expired {} file, expired files: {}, no expired files: {}", fileType.getType(),
 				expiredDirectories, dontExpiredDirectories);
 	}
 
