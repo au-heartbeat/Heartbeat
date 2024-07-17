@@ -1,4 +1,3 @@
-import { isOnlySelectClassification, selectMetrics } from '@src/context/config/configSlice';
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
 import { MESSAGE, MetricsTitle, RequiredData } from '@src/constants/resources';
@@ -8,7 +7,6 @@ import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { Optional } from '@src/utils/types';
-import { useAppSelector } from '@src/hooks';
 import React, { useEffect } from 'react';
 import { withGoBack } from './withBack';
 
@@ -16,15 +14,15 @@ interface Property {
   data: ReportResponseDTO | undefined;
   onBack: () => void;
   errorMessage: string;
+  metrics: string[];
 }
 
 const showSectionWith2Columns = (title: string, value: Optional<ReportDataWithTwoColumns[]>) =>
   value && <ReportForTwoColumns title={title} data={value} />;
 
-export const BoardDetail = withGoBack(({ data, errorMessage }: Property) => {
+export const BoardDetail = withGoBack(({ data, errorMessage, metrics }: Property) => {
   const dispatch = useAppDispatch();
-  const metrics = useAppSelector(selectMetrics);
-  const onlySelectClassification = useAppSelector(isOnlySelectClassification);
+  const onlySelectClassification = metrics.length === 1 && metrics[0] === RequiredData.Classification;
   const mappedData = data && reportMapper(data);
 
   useEffect(() => {

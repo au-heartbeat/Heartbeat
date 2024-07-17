@@ -346,7 +346,7 @@ const ReportContent = (props: ReportContentProps) => {
   );
 
   const showBoardDetail = (data?: ReportResponseDTO) => (
-    <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
+    <BoardDetail metrics={metrics} onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
   );
   const showDoraDetail = (data: ReportResponseDTO) => <DoraDetail onBack={() => backToSummaryPage()} data={data} />;
 
