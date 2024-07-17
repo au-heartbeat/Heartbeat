@@ -1,5 +1,6 @@
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
+import { DetailContainer } from '@src/containers/ReportStep/ReportDetail/style';
 import { MESSAGE, MetricsTitle, RequiredData } from '@src/constants/resources';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
@@ -38,7 +39,7 @@ export const BoardDetail = withGoBack(({ data, errorMessage, metrics }: Property
   }, [dispatch, onlySelectClassification, errorMessage]);
 
   return (
-    <div style={{ margin: '2.25rem 0 0 0' }}>
+    <DetailContainer>
       {showSectionWith2Columns(MetricsTitle.Velocity, mappedData?.velocityList)}
       {showSectionWith2Columns(MetricsTitle.CycleTime, mappedData?.cycleTimeList)}
       {metrics.includes(RequiredData.Classification) && (
@@ -51,6 +52,6 @@ export const BoardDetail = withGoBack(({ data, errorMessage, metrics }: Property
         />
       )}
       {showSectionWith2Columns(MetricsTitle.Rework, mappedData?.reworkList)}
-    </div>
+    </DetailContainer>
   );
 });

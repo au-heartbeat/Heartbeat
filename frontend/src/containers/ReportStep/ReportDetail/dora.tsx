@@ -2,6 +2,7 @@ import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks
 import { MetricsTitle, PIPELINE_STEP, ReportSuffixUnits, SUBTITLE } from '@src/constants/resources';
 import ReportForDeploymentFrequency from '@src/components/Common/ReportForDeploymentFrequency';
 import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
+import { DetailContainer } from '@src/containers/ReportStep/ReportDetail/style';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { reportMapper } from '@src/hooks/reportMapper/report';
@@ -28,7 +29,7 @@ export const DoraDetail = withGoBack(({ data }: Property) => {
   const mappedData = reportMapper(data);
 
   return (
-    <div style={{ margin: '2.25rem 0 0 0' }}>
+    <DetailContainer>
       {showDeploymentSection(
         MetricsTitle.DeploymentFrequency,
         [ReportSuffixUnits.DeploymentsPerDay, ReportSuffixUnits.DeploymentsTimes],
@@ -37,6 +38,6 @@ export const DoraDetail = withGoBack(({ data }: Property) => {
       {showThreeColumnSection(MetricsTitle.LeadTimeForChanges, mappedData.leadTimeForChangesList)}
       {showTwoColumnSection(MetricsTitle.DevChangeFailureRate, mappedData.devChangeFailureRateList)}
       {showTwoColumnSection(MetricsTitle.DevMeanTimeToRecovery, mappedData.devMeanTimeToRecoveryList)}
-    </div>
+    </DetailContainer>
   );
 });
