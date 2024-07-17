@@ -60,6 +60,10 @@ class FileRepositoryTest {
 
 	private static final String TEST_UUID = "test-uuid";
 
+	private static final int EXPIRED_DAYS = 7;
+
+	private static final long ONE_DAY_MILLISECONDS = 1000L * 3600 * 24 * EXPIRED_DAYS;
+
 	@Mock
 	Gson gson;
 
@@ -670,7 +674,7 @@ class FileRepositoryTest {
 		void shouldRemoveSuccessfullyWhenDirectoryIsNotEmpty() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = FileRepository.ONE_DAY_MILLISECONDS + timestamp + 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS + timestamp + 10000L;
 
 			String expectedFilePath = "./app/output/csv/" + TEST_UUID;
 			Path path = Paths.get(expectedFilePath);
@@ -693,7 +697,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenFileIsNotExpired() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = FileRepository.ONE_DAY_MILLISECONDS + timestamp - 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS + timestamp - 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -716,7 +720,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenDeleteThrowException() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = FileRepository.ONE_DAY_MILLISECONDS + timestamp + 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS + timestamp + 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -858,7 +862,7 @@ class FileRepositoryTest {
 		@Test
 		void shouldExpired() {
 			long startTime = 123L;
-			long endTime = startTime + FileRepository.ONE_DAY_MILLISECONDS + 10000L;
+			long endTime = startTime + ONE_DAY_MILLISECONDS + 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 
@@ -868,7 +872,7 @@ class FileRepositoryTest {
 		@Test
 		void shouldNotExpired() {
 			long startTime = 123L;
-			long endTime = startTime + FileRepository.ONE_DAY_MILLISECONDS - 10000L;
+			long endTime = startTime + ONE_DAY_MILLISECONDS - 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 
