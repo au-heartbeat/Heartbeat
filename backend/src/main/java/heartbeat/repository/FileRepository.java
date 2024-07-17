@@ -154,8 +154,8 @@ public class FileRepository {
 			File[] files = uuidDirectory.listFiles();
 			try {
 				if (files.length == 0) {
-					expiredDirectories.add(uuidDirectory.getName());
 					FileUtils.deleteDirectory(uuidDirectory);
+					expiredDirectories.add(uuidDirectory.getName());
 				}
 				else {
 					String timeStamp = files[0].getName().split("[-.]")[3];
