@@ -1,0 +1,2 @@
+heartbeat:
+  expiredDays: ${EXPIRED_DAYS:7}

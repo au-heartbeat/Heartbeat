@@ -112,12 +112,12 @@ public class ReportService {
 				.toList();
 		}
 		catch (NotFoundException e) {
-			log.error("Get share details result: failed, reportId: {}", uuid);
+			log.error("Failed to get share details result, reportId: {}", uuid);
 			throw new NotFoundException(String.format("Don't find the %s folder in the report files", uuid));
 		}
 
 		if (reportUrls.isEmpty()) {
-			log.error("Get share details result: failed, reportId: {}", uuid);
+			log.error("Failed to get share details result, reportId: {}", uuid);
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}

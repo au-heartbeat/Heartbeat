@@ -14,7 +14,3 @@ jira:
 
 buildKite:
   url: https://api.buildkite.com
-
-calendar:
-  url: https://raw.githubusercontent.com/au-heartbeat/calendars/main
-

@@ -23,7 +23,9 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,15 +56,17 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
+@ActiveProfiles("test")
 class FileRepositoryTest {
 
 	private static final String BASE_PATH = "./app";
 
 	private static final String TEST_UUID = "test-uuid";
 
-	private static final int EXPIRED_DAYS = 7;
+	@Value("${heartbeat.expiredDays}")
+	private int expiredDays = 7;
 
-	private static final long ONE_DAY_MILLISECONDS = 1000L * 3600 * 24 * EXPIRED_DAYS;
+	private static final long ONE_DAY_MILLISECONDS = 1000L * 3600 * 24;
 
 	@Mock
 	Gson gson;
@@ -584,7 +588,7 @@ class FileRepositoryTest {
 				GenerateReportException generateReportException = assertThrows(GenerateReportException.class,
 						() -> fileRepository.removeFileByType(fileType, TEST_UUID, fileName, boardReportPrefix));
 
-				assertEquals("Failed to remove csv, uuid: test-uuid file with file:test-remove-file",
+				assertEquals("Failed to remove csv, reportId: test-uuid file with file:test-remove-file",
 						generateReportException.getMessage());
 
 				File realFile = new File(expectedFilepath);
@@ -674,7 +678,7 @@ class FileRepositoryTest {
 		void shouldRemoveSuccessfullyWhenDirectoryIsNotEmpty() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = ONE_DAY_MILLISECONDS + timestamp + 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS * expiredDays + timestamp + 10000L;
 
 			String expectedFilePath = "./app/output/csv/" + TEST_UUID;
 			Path path = Paths.get(expectedFilePath);
@@ -697,7 +701,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenFileIsNotExpired() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = ONE_DAY_MILLISECONDS + timestamp - 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS * expiredDays + timestamp - 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -720,7 +724,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenDeleteThrowException() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = ONE_DAY_MILLISECONDS + timestamp + 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS * expiredDays + timestamp + 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -864,7 +868,7 @@ class FileRepositoryTest {
 		@Test
 		void shouldExpired() {
 			long startTime = 123L;
-			long endTime = startTime + ONE_DAY_MILLISECONDS + 10000L;
+			long endTime = startTime + ONE_DAY_MILLISECONDS * expiredDays + 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 
@@ -873,8 +877,9 @@ class FileRepositoryTest {
 
 		@Test
 		void shouldNotExpired() {
+			System.out.println(expiredDays);
 			long startTime = 123L;
-			long endTime = startTime + ONE_DAY_MILLISECONDS - 10000L;
+			long endTime = startTime + ONE_DAY_MILLISECONDS * expiredDays - 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 

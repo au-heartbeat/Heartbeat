@@ -41,51 +41,51 @@ public class ReportController {
 	@Value("${callback.interval}")
 	private Integer interval;
 
-	@GetMapping("/{reportType}/{uuid}")
+	@GetMapping("/{reportType}/{reportId}")
 	public InputStreamResource exportCSV(
 			@Schema(type = "string", allowableValues = { "metric", "pipeline", "board" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable ReportType reportType,
-			@PathVariable String uuid,
+			@PathVariable String reportId,
 			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
-		log.info("Start to export CSV file_reportType: {}, reportId: {}", reportType.getValue(), uuid);
-		InputStreamResource result = reportService.exportCsv(reportType, uuid, startTime, endTime);
-		log.info("Successfully get CSV file_reportType: {}, reportId: {}, _result: {}", reportType.getValue(), uuid,
+		log.info("Start to export CSV file_reportType: {}, reportId: {}", reportType.getValue(), reportId);
+		InputStreamResource result = reportService.exportCsv(reportType, reportId, startTime, endTime);
+		log.info("Successfully get CSV file_reportType: {}, reportId: {}, _result: {}", reportType.getValue(), reportId,
 				result);
 		return result;
 	}
 
-	@GetMapping("/{uuid}/detail")
-	public ReportResponse generateReport(@PathVariable String uuid,
+	@GetMapping("/{reportId}/detail")
+	public ReportResponse generateReport(@PathVariable String reportId,
 			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
-		log.info("Start to generate report_reportId: {}", uuid);
-		ReportResponse composedReportResponse = generateReporterService.getComposedReportResponse(uuid, startTime,
+		log.info("Start to generate report_reportId: {}", reportId);
+		ReportResponse composedReportResponse = generateReporterService.getComposedReportResponse(reportId, startTime,
 				endTime);
-		log.info("Successfully generate report_reportId: {}", uuid);
+		log.info("Successfully generate report_reportId: {}", reportId);
 		return composedReportResponse;
 	}
 
-	@GetMapping("/{uuid}")
-	public ShareApiDetailsResponse getShareDetails(@PathVariable String uuid) {
-		log.info("Start to get share details, reportId: {}", uuid);
-		ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(uuid);
-		log.info("Get share details result: success, reportId: {}", uuid);
+	@GetMapping("/{reportId}")
+	public ShareApiDetailsResponse getShareDetails(@PathVariable String reportId) {
+		log.info("Start to get share details, reportId: {}", reportId);
+		ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(reportId);
+		log.info("Successfully get share details result, reportId: {}", reportId);
 		return shareReportInfo;
 	}
 
-	@PostMapping("/{uuid}")
-	public ResponseEntity<CallbackResponse> generateReport(@PathVariable String uuid,
+	@PostMapping("/{reportId}")
+	public ResponseEntity<CallbackResponse> generateReport(@PathVariable String reportId,
 			@RequestBody GenerateReportRequest request) {
-		log.info("Start to generate report, reportId: {}", uuid);
-		reportService.generateReport(request, uuid);
-		reportService.saveRequestInfo(request, uuid);
-		String callbackUrl = reportService.generateReportCallbackUrl(uuid,
+		log.info("Start to generate report, reportId: {}", reportId);
+		reportService.generateReport(request, reportId);
+		reportService.saveRequestInfo(request, reportId);
+		String callbackUrl = reportService.generateReportCallbackUrl(reportId,
 				TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getStartTime()),
 						request.getTimezoneByZoneId()),
 				TimeUtil.convertToUserSimpleISOFormat(Long.parseLong(request.getEndTime()),
 						request.getTimezoneByZoneId()));
-		log.info("Successfully generate report, reportId: {}", uuid);
+		log.info("Successfully generate report, reportId: {}", reportId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED)
 			.body(CallbackResponse.builder().callbackUrl(callbackUrl).interval(interval).build());
 	}
