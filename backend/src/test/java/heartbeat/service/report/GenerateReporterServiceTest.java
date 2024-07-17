@@ -1008,10 +1008,11 @@ class GenerateReporterServiceTest {
 			when(fileRepository.readFileByType(eq(REPORT), any(), any(), any(), any()))
 				.thenReturn(ReportResponse.builder().build());
 			when(fileRepository.readFileByType(eq(ERROR), any(), any(), any(), any())).thenReturn(null);
+			when(fileRepository.getExpiredTime()).thenReturn(240000L);
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(fileRepository.oneDateMilliseconds, res.getExportValidityTime());
+			assertEquals(240000, res.getExportValidityTime());
 			assertFalse(res.getBoardMetricsCompleted());
 			assertTrue(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());
