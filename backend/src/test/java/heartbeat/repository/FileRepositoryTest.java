@@ -64,7 +64,7 @@ class FileRepositoryTest {
 	private static final String TEST_UUID = "test-uuid";
 
 	@Value("${heartbeat.expiredDays}")
-	private int expiredDays = 7;
+	private int expiredDays;
 
 	private static final long ONE_DAY_MILLISECONDS = 1000L * 3600 * 24;
 
