@@ -1,2 +1,2 @@
 heartbeat:
-  expiredDays: ${EXPIRED_DAYS:7}
+  expiredDays: ${EXPIRED_DAYS:9}

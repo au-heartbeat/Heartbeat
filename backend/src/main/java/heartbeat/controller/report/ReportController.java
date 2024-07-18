@@ -50,8 +50,8 @@ public class ReportController {
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
 		log.info("Start to export CSV file_reportType: {}, reportId: {}", reportType.getValue(), reportId);
 		InputStreamResource result = reportService.exportCsv(reportType, reportId, startTime, endTime);
-		log.info("Successfully get CSV file_reportType: {}, reportId: {}, _result: {}", reportType.getValue(), reportId,
-				result);
+		log.info("Successfully get CSV file_reportType: {}, reportId: {}, result description: {}",
+				reportType.getValue(), reportId, result.getDescription());
 		return result;
 	}
 
@@ -59,10 +59,10 @@ public class ReportController {
 	public ReportResponse generateReport(@PathVariable String reportId,
 			@Schema(type = "string", example = "20240310", pattern = "^[0-9]{8}$") @Parameter String startTime,
 			@Schema(type = "string", example = "20240409", pattern = "^[0-9]{8}$") @Parameter String endTime) {
-		log.info("Start to generate report_reportId: {}", reportId);
+		log.info("Start to generate report, reportId: {}", reportId);
 		ReportResponse composedReportResponse = generateReporterService.getComposedReportResponse(reportId, startTime,
 				endTime);
-		log.info("Successfully generate report_reportId: {}", reportId);
+		log.info("Successfully generate report, reportId: {}", reportId);
 		return composedReportResponse;
 	}
 
