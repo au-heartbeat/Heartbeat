@@ -1,12 +1,12 @@
-import { useShareReportEffect } from '../../hooks/useShareReportEffect';
 import { ErrorSectionWrapper, StyledPageContentWrapper } from './style';
+import { useShareReportEffect } from '@src/hooks/useShareReportEffect';
 import ReportContent from '../ReportStep/ReportContent';
-import { MESSAGE } from '../../constants/resources';
+import { MESSAGE } from '@src/constants/resources';
 import ErrorSection from './ErrorSection';
 import { useEffect } from 'react';
 
 const ShareReport = () => {
-  const { getData, reportInfos, dateRanges, metrics, isExpired } = useShareReportEffect();
+  const { getData, reportInfos, dateRanges, metrics, isExpired, allPipelines } = useShareReportEffect();
 
   useEffect(() => {
     getData();
@@ -25,11 +25,12 @@ const ShareReport = () => {
     return (
       <StyledPageContentWrapper>
         <ReportContent
+          isSharePage={true}
           metrics={metrics}
+          allPipelines={allPipelines}
           dateRanges={dateRanges}
           reportInfos={reportInfos}
-          startToRequestBoardData={getData}
-          startToRequestDoraData={getData}
+          startToRequestData={getData}
           hideButtons
         />
       </StyledPageContentWrapper>

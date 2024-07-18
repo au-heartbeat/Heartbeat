@@ -60,7 +60,6 @@ import java.util.concurrent.TimeUnit;
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
 import static heartbeat.repository.FilePrefixType.DATA_COMPLETED_PREFIX;
-import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static heartbeat.repository.FileType.ERROR;
 import static heartbeat.repository.FileType.REPORT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -258,7 +257,6 @@ class GenerateReporterServiceTest {
 					FilePrefixType.BOARD_REPORT_PREFIX);
 
 			ReportResponse response = responseArgumentCaptor.getValue();
-			assertEquals(604800000L, response.getExportValidityTime());
 			assertNull(response.getCycleTime());
 			assertNull(response.getVelocity());
 			assertNull(response.getClassificationList());
@@ -337,7 +335,6 @@ class GenerateReporterServiceTest {
 					FilePrefixType.BOARD_REPORT_PREFIX);
 
 			ReportResponse response = responseArgumentCaptor.getValue();
-			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(10, response.getVelocity().getVelocityForSP());
 			assertEquals(20, response.getVelocity().getVelocityForCards());
 
@@ -383,7 +380,6 @@ class GenerateReporterServiceTest {
 					FilePrefixType.BOARD_REPORT_PREFIX);
 
 			ReportResponse response = responseArgumentCaptor.getValue();
-			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(10, response.getCycleTime().getAverageCycleTimePerSP());
 			assertEquals(20, response.getCycleTime().getAverageCycleTimePerCard());
 			assertEquals(15, response.getCycleTime().getTotalTimeForCards());
@@ -427,7 +423,6 @@ class GenerateReporterServiceTest {
 					FilePrefixType.BOARD_REPORT_PREFIX);
 
 			ReportResponse response = responseArgumentCaptor.getValue();
-			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(classifications, response.getClassificationList());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
@@ -721,7 +716,6 @@ class GenerateReporterServiceTest {
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 
-			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(fakeDevChangeFailureRate, response.getDevChangeFailureRate());
 			assertEquals(fakeMeantime, response.getDevMeanTimeToRecovery());
 			assertEquals(fakeDevChangeFailureRate, response.getDevChangeFailureRate());
@@ -807,7 +801,7 @@ class GenerateReporterServiceTest {
 			when(pipelineService.fetchGitHubData(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
-			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
+			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -825,11 +819,10 @@ class GenerateReporterServiceTest {
 					responseArgumentCaptor.capture(), eq(FilePrefixType.SOURCE_CONTROL_PREFIX));
 
 			ReportResponse response = responseArgumentCaptor.getValue();
-			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
 				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
 						timeRangeAndTimeStamp);
@@ -863,7 +856,7 @@ class GenerateReporterServiceTest {
 			when(pipelineService.fetchBuildKiteInfo(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
-			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
+			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -880,7 +873,6 @@ class GenerateReporterServiceTest {
 					responseArgumentCaptor.capture(), eq(FilePrefixType.SOURCE_CONTROL_PREFIX));
 
 			ReportResponse response = responseArgumentCaptor.getValue();
-			assertEquals(604800000L, response.getExportValidityTime());
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
@@ -889,7 +881,7 @@ class GenerateReporterServiceTest {
 						timeRangeAndTimeStamp);
 				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(TEST_UUID,
 						timeRangeAndTimeStamp, DORA, true);
-				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 			});
 		}
 
@@ -914,11 +906,11 @@ class GenerateReporterServiceTest {
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(request)).thenReturn(
 					FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).buildInfosList(List.of()).build());
-			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any());
+			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any(), any());
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 			verify(kanbanService, never()).fetchDataFromKanban(request);
-			verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+			verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
@@ -995,7 +987,7 @@ class GenerateReporterServiceTest {
 
 		@BeforeEach
 		void setUp() {
-			reportId = String.valueOf(System.currentTimeMillis() - EXPORT_CSV_VALIDITY_TIME + 2000000);
+			reportId = String.valueOf(System.currentTimeMillis() + 2000000);
 			dataCompletedId = FileType.METRICS_DATA_COMPLETED + START_TIME + "-" + END_TIME + "-" + reportId;
 		}
 
@@ -1016,10 +1008,11 @@ class GenerateReporterServiceTest {
 			when(fileRepository.readFileByType(eq(REPORT), any(), any(), any(), any()))
 				.thenReturn(ReportResponse.builder().build());
 			when(fileRepository.readFileByType(eq(ERROR), any(), any(), any(), any())).thenReturn(null);
+			when(fileRepository.getExpiredTime()).thenReturn(240000L);
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(EXPORT_CSV_VALIDITY_TIME, res.getExportValidityTime());
+			assertEquals(240000, res.getExportValidityTime());
 			assertFalse(res.getBoardMetricsCompleted());
 			assertTrue(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());
@@ -1070,7 +1063,6 @@ class GenerateReporterServiceTest {
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(604800000L, res.getExportValidityTime());
 			assertFalse(res.getAllMetricsCompleted());
 			assertEquals(404, res.getReportMetricsError().getBoardMetricsError().getStatus());
 		}
@@ -1172,7 +1164,6 @@ class GenerateReporterServiceTest {
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(604800000L, res.getExportValidityTime());
 			assertFalse(res.getBoardMetricsCompleted());
 			assertNull(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());
@@ -1197,7 +1188,6 @@ class GenerateReporterServiceTest {
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(604800000L, res.getExportValidityTime());
 			assertNull(res.getBoardMetricsCompleted());
 			assertFalse(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());
@@ -1223,7 +1213,6 @@ class GenerateReporterServiceTest {
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(604800000L, res.getExportValidityTime());
 			assertTrue(res.getBoardMetricsCompleted());
 			assertTrue(res.getDoraMetricsCompleted());
 			assertTrue(res.getAllMetricsCompleted());
@@ -1245,7 +1234,6 @@ class GenerateReporterServiceTest {
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(604800000L, res.getExportValidityTime());
 			assertNull(res.getBoardMetricsCompleted());
 			assertNull(res.getDoraMetricsCompleted());
 			assertTrue(res.getAllMetricsCompleted());
@@ -1267,7 +1255,6 @@ class GenerateReporterServiceTest {
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(604800000L, res.getExportValidityTime());
 			assertNull(res.getBoardMetricsCompleted());
 			assertNull(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());
@@ -1291,7 +1278,6 @@ class GenerateReporterServiceTest {
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, reportId, START_TIME,
 					END_TIME);
 
-			assertEquals(604800000L, res.getExportValidityTime());
 			assertFalse(res.getBoardMetricsCompleted());
 			assertTrue(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());

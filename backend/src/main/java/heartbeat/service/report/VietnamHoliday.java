@@ -1,7 +1,7 @@
 package heartbeat.service.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import heartbeat.client.CalendarificFeignClient;
+import heartbeat.client.CalendarFeignClient;
 import heartbeat.client.dto.board.jira.CalendarificHolidayResponseDTO;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.exception.NotFoundException;
@@ -17,12 +17,12 @@ import java.util.Map;
 @Slf4j
 public class VietnamHoliday extends AbstractCountryHoliday {
 
-	private final CalendarificFeignClient calendarificFeignClient;
+	private final CalendarFeignClient calendarFeignClient;
 
 	@Autowired
-	public VietnamHoliday(ObjectMapper objectMapper, CalendarificFeignClient calendarificFeignClient) {
+	public VietnamHoliday(ObjectMapper objectMapper, CalendarFeignClient calendarFeignClient) {
 		super(objectMapper);
-		this.calendarificFeignClient = calendarificFeignClient;
+		this.calendarFeignClient = calendarFeignClient;
 	}
 
 	public Map<String, Boolean> loadHolidayList(String year) {
@@ -31,7 +31,7 @@ public class VietnamHoliday extends AbstractCountryHoliday {
 
 		try {
 			List<CalendarificHolidayResponseDTO.Response.CalendarificHolidayDetail> holidays = decoder(
-					calendarificFeignClient.getHolidays(CalendarTypeEnum.VN.getValue().toLowerCase(), year),
+					calendarFeignClient.getHolidays(CalendarTypeEnum.VN.getValue().toLowerCase(), year),
 					CalendarTypeEnum.VN, year, CalendarificHolidayResponseDTO.class)
 				.getResponse()
 				.getHolidays();

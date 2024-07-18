@@ -74,9 +74,10 @@ export const ChartWrapper = styled('div')({
 });
 
 export const ChartContainer = styled('div')({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: '1.25rem',
+  display: 'flex',
+  width: '100%',
+  flexWrap: 'wrap',
+  justifyContent: 'space-around',
   marginTop: '1.25rem',
   [theme.breakpoints.down('lg')]: {
     gridTemplateColumns: '1fr',

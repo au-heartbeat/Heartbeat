@@ -42,7 +42,6 @@ import static heartbeat.repository.FileType.ERROR;
 import static heartbeat.repository.FileType.REPORT;
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
-import static heartbeat.repository.FileRepository.EXPORT_CSV_VALIDITY_TIME;
 import static heartbeat.util.ValueUtil.getValueOrNull;
 import static java.util.Objects.isNull;
 
@@ -177,7 +176,7 @@ public class GenerateReporterService {
 	private synchronized ReportResponse generatePipelineReporter(GenerateReportRequest request,
 			FetchedData fetchedData) {
 
-		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
+		ReportResponse reportResponse = new ReportResponse(fileRepository.getExpiredTime());
 
 		request.getPipelineMetrics().forEach(metric -> {
 			switch (metric) {
@@ -198,7 +197,7 @@ public class GenerateReporterService {
 	private synchronized ReportResponse generateBoardReporter(String uuid, GenerateReportRequest request) {
 		FetchedData fetchedData = fetchJiraBoardData(request, new FetchedData());
 
-		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
+		ReportResponse reportResponse = new ReportResponse(fileRepository.getExpiredTime());
 		JiraBoardSetting jiraBoardSetting = request.getJiraBoardSetting();
 
 		request.getBoardMetrics().forEach(metric -> {
@@ -250,11 +249,12 @@ public class GenerateReporterService {
 	private synchronized ReportResponse generateSourceControlReporter(GenerateReportRequest request,
 			FetchedData fetchedData) {
 
-		ReportResponse reportResponse = new ReportResponse(EXPORT_CSV_VALIDITY_TIME);
+		ReportResponse reportResponse = new ReportResponse(fileRepository.getExpiredTime());
 
 		request.getSourceControlMetrics()
 			.forEach(metric -> reportResponse.setLeadTimeForChanges(
-					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes())));
+					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes(),
+							request.getBuildKiteSetting().getDeploymentEnvList())));
 
 		return reportResponse;
 	}
@@ -361,7 +361,7 @@ public class GenerateReporterService {
 			.classificationList(getValueOrNull(boardReportResponse, ReportResponse::getClassificationList))
 			.cycleTime(getValueOrNull(boardReportResponse, ReportResponse::getCycleTime))
 			.rework(getValueOrNull(boardReportResponse, ReportResponse::getRework))
-			.exportValidityTime(EXPORT_CSV_VALIDITY_TIME)
+			.exportValidityTime(fileRepository.getExpiredTime())
 			.deploymentFrequency(getValueOrNull(pipelineReportResponse, ReportResponse::getDeploymentFrequency))
 			.devChangeFailureRate(getValueOrNull(pipelineReportResponse, ReportResponse::getDevChangeFailureRate))
 			.devMeanTimeToRecovery(getValueOrNull(pipelineReportResponse, ReportResponse::getDevMeanTimeToRecovery))

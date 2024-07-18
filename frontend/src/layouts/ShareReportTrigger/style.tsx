@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { theme } from '@src/theme';
 
 export const PopperContentWrapper = styled.div({
-  width: '24rem',
+  width: '25rem',
   margin: '2rem 0 0',
   padding: '1.5rem',
   boxShadow: theme.main.cardShadow,
@@ -48,6 +48,7 @@ export const LinkLine = styled.div({
   display: 'flex',
   alignItems: 'center',
   margin: '1.5rem 0',
+  height: '2.125rem',
   a: {
     cursor: 'pointer',
     marginRight: '0.625rem',
@@ -59,7 +60,7 @@ export const LinkLine = styled.div({
 
 export const ShareIconWrapper = styled.span(({ disabled }: { disabled: boolean }) => ({
   padding: '0.5rem',
-  cursor: disabled ? 'unset !important' : 'pointer',
+  cursor: disabled ? 'not-allowed !important' : 'pointer',
   marginLeft: '0.2rem',
   '> svg': {
     color: disabled ? theme.main.errorMessage.color : 'white',

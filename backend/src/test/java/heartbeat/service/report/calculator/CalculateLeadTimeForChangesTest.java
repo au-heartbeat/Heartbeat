@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
+import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
@@ -47,7 +48,7 @@ public class CalculateLeadTimeForChangesTest {
 
 	@Test
 	void shouldReturnEmptyWhenPipelineLeadTimeIsEmpty() {
-		LeadTimeForChanges result = calculator.calculate(List.of());
+		LeadTimeForChanges result = calculator.calculate(List.of(), List.of());
 		LeadTimeForChanges expect = LeadTimeForChanges.builder()
 			.leadTimeForChangesOfPipelines(List.of())
 			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder().name("Average").build())
@@ -56,18 +57,37 @@ public class CalculateLeadTimeForChangesTest {
 	}
 
 	@Test
-	void shouldReturnLeadTimeForChangesPipelineLeadTimeIsNotEmpty() {
+	void shouldReturnLeadTimeForChangesPipelineIsNotEmpty() {
 		List<PipelineLeadTime> pipelineLeadTimes = List.of(pipelineLeadTime);
+		List<DeploymentEnvironment> deploymentEnvironmentList = List.of(
+				DeploymentEnvironment.builder().id("1").name("Name").step("Step").build(),
+				DeploymentEnvironment.builder().id("2").name("Pipeline Name").step("Pipeline Step").build(),
+				DeploymentEnvironment.builder().id("3").name("Name").step("Pipeline Step").build());
 
-		LeadTimeForChanges result = calculator.calculate(pipelineLeadTimes);
+		LeadTimeForChanges result = calculator.calculate(pipelineLeadTimes, deploymentEnvironmentList);
 		LeadTimeForChanges expect = LeadTimeForChanges.builder()
-			.leadTimeForChangesOfPipelines(List.of(LeadTimeForChangesOfPipelines.builder()
-				.name("Name")
-				.step("Step")
-				.prLeadTime(1.0)
-				.pipelineLeadTime(1.0)
-				.totalDelayTime(2.0)
-				.build()))
+			.leadTimeForChangesOfPipelines(List.of(
+					LeadTimeForChangesOfPipelines.builder()
+						.name("Name")
+						.step("Step")
+						.prLeadTime(1.0)
+						.pipelineLeadTime(1.0)
+						.totalDelayTime(2.0)
+						.build(),
+					LeadTimeForChangesOfPipelines.builder()
+						.name("Pipeline Name")
+						.step("Pipeline Step")
+						.prLeadTime(0.0)
+						.pipelineLeadTime(0.0)
+						.totalDelayTime(0.0)
+						.build(),
+					LeadTimeForChangesOfPipelines.builder()
+						.name("Name")
+						.step("Pipeline Step")
+						.prLeadTime(0.0)
+						.pipelineLeadTime(0.0)
+						.totalDelayTime(0.0)
+						.build()))
 			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 				.name("Average")
 				.prLeadTime(1.0)
@@ -80,11 +100,32 @@ public class CalculateLeadTimeForChangesTest {
 	}
 
 	@Test
+	void shouldReturnEmptyWhenLeadTimeIsNull() {
+		PipelineLeadTime mockPipelineLeadTime = PipelineLeadTime.builder()
+			.pipelineStep("Step")
+			.pipelineName("Name")
+			.build();
+		LeadTimeForChanges expect = LeadTimeForChanges.builder()
+			.leadTimeForChangesOfPipelines(List.of())
+			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
+				.name("Average")
+				.prLeadTime(0.0)
+				.pipelineLeadTime(0.0)
+				.totalDelayTime(0.0)
+				.build())
+			.build();
+
+		LeadTimeForChanges result = calculator.calculate(List.of(mockPipelineLeadTime), List.of());
+
+		assertEquals(expect, result);
+	}
+
+	@Test
 	void shouldReturnEmptyWhenLeadTimeIsEmpty() {
 		pipelineLeadTime.setLeadTimes(List.of());
 		List<PipelineLeadTime> pipelineLeadTimes = List.of(pipelineLeadTime);
 
-		LeadTimeForChanges result = calculator.calculate(pipelineLeadTimes);
+		LeadTimeForChanges result = calculator.calculate(pipelineLeadTimes, List.of());
 		LeadTimeForChanges expect = LeadTimeForChanges.builder()
 			.leadTimeForChangesOfPipelines(List.of())
 			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
@@ -103,8 +144,9 @@ public class CalculateLeadTimeForChangesTest {
 		PipelineLeadTime noMergedTime = PipelineLeadTime.builder()
 			.pipelineStep("Step")
 			.pipelineName("Name")
-			.leadTimes(List.of(LeadTime.builder().prMergedTime(0L).build(),
+			.leadTimes(List.of(LeadTime.builder().prMergedTime(0L).build(), LeadTime.builder().build(),
 					LeadTime.builder().prMergedTime(1L).prLeadTime(0L).build(),
+					LeadTime.builder().prMergedTime(1L).build(),
 					LeadTime.builder()
 						.commitId("111")
 						.prCreatedTime(165854910000L)
@@ -118,20 +160,20 @@ public class CalculateLeadTimeForChangesTest {
 						.build()))
 			.build();
 
-		LeadTimeForChanges result = calculator.calculate(List.of(noMergedTime));
+		LeadTimeForChanges result = calculator.calculate(List.of(noMergedTime), List.of());
 		LeadTimeForChanges expect = LeadTimeForChanges.builder()
 			.leadTimeForChangesOfPipelines(List.of(LeadTimeForChangesOfPipelines.builder()
 				.name("Name")
 				.step("Step")
-				.prLeadTime(0.33)
-				.pipelineLeadTime(0.33)
-				.totalDelayTime(0.66)
+				.prLeadTime(0.2)
+				.pipelineLeadTime(0.2)
+				.totalDelayTime(0.4)
 				.build()))
 			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 				.name("Average")
-				.prLeadTime(0.33)
-				.pipelineLeadTime(0.33)
-				.totalDelayTime(0.66)
+				.prLeadTime(0.2)
+				.pipelineLeadTime(0.2)
+				.totalDelayTime(0.4)
 				.build())
 			.build();
 

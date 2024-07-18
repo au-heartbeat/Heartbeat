@@ -21,11 +21,15 @@ public class DeleteExpireCSVScheduler {
 	@Scheduled(fixedRate = DELETE_INTERVAL_IN_MINUTES, timeUnit = TimeUnit.MINUTES)
 	public void triggerBatchDelete() {
 		long currentTimeStamp = System.currentTimeMillis();
-		log.info("Start to delete expired files, currentTimeStamp: {}", currentTimeStamp);
+		log.info("Start to delete expired files, currentTimeStamp: {}, expired days:{}", currentTimeStamp,
+				fileRepository.expiredDays);
 		fileRepository.removeExpiredFiles(FileType.CSV, currentTimeStamp);
 		fileRepository.removeExpiredFiles(FileType.REPORT, currentTimeStamp);
 		fileRepository.removeExpiredFiles(FileType.ERROR, currentTimeStamp);
 		fileRepository.removeExpiredFiles(FileType.METRICS_DATA_COMPLETED, currentTimeStamp);
+		fileRepository.removeExpiredFiles(FileType.CONFIGS, currentTimeStamp);
+		log.info("Successfully delete expired files, currentTimeStamp: {}, expired days:{}", currentTimeStamp,
+				fileRepository.expiredDays);
 	}
 
 }

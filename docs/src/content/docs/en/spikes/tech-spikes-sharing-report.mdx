@@ -43,6 +43,7 @@ frontend -> backend: POST /reports when jumping into report page
 backend --> frontend: uuid
 loop Sprint list
   frontend -> backend: POST /reports/:uuid with the previous/same payload
+  backend -> backend: save config to files
   backend --> frontend: Callback URL
 end
 
@@ -59,7 +60,7 @@ frontend --> frontend: Render frontend page
 alt There is 1 report at least
   frontend -> backend: GET /reports/:uuid
   backend-> backend: Loop all report under uuid folder
-  backend --> frontend: Response the URL list of report, e.g.   [`/api/v1/reports/:uuid/detail?startTime=20240528&endTime=20240531`]
+  backend --> frontend: Response the share infomation, including the URL list , the metrics list and the pipelines of report, e.g.   [{'reportURLs': [`/api/v1/reports/:uuid/detail?startTime=20240528&endTime=20240531`], 'metrics': ['Velocity'], 'pipelines': ['pipeline name/pipeline step']}]
   loop URL list
     frontend-> backend: GET /api/v1/reports/:uuid/detail?startTime=20240528&endTime=20240531
     backend --> frontend: Report result

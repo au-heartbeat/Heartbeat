@@ -19,10 +19,10 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ShareIcon from '@mui/icons-material/Share';
 import LinkIcon from '@mui/icons-material/Link';
 import { useAppSelector } from '@src/hooks';
+import { useEffect, useState } from 'react';
 import Popper from '@mui/material/Popper';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
-import { useState } from 'react';
 
 const ShareReportTrigger = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -42,6 +42,7 @@ const ShareReportTrigger = () => {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (canShare) {
       setAnchorEl(anchorEl ? null : event.currentTarget);
+      setShowAlert(false);
     }
   };
 
@@ -49,10 +50,14 @@ const ShareReportTrigger = () => {
     setShowAlert(true);
   };
 
-  const handleClickAway = () => {
+  const resetStatus = () => {
     setAnchorEl(null);
     setShowAlert(false);
   };
+
+  useEffect(() => {
+    resetStatus();
+  }, [showShareIcon]);
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
@@ -60,7 +65,7 @@ const ShareReportTrigger = () => {
   return (
     <>
       {showShareIcon && (
-        <ClickAwayListener onClickAway={handleClickAway}>
+        <ClickAwayListener onClickAway={resetStatus}>
           <ClickAwayContent>
             <ShareIconWrapper title='Share' onClick={handleClick} aria-label='Share Report' disabled={!canShare}>
               <ShareIcon />
@@ -78,7 +83,9 @@ const ShareReportTrigger = () => {
                   </CopyToClipboard>
                   {showAlert && <Alert severity='success'>Link copied to clipboard</Alert>}
                 </LinkLine>
-                <PopperNotes>NOTE: The link is valid for 24 hours. Please regenerate it after the timeout.</PopperNotes>
+                <PopperNotes>
+                  NOTE: The link is valid for <b>24 hours</b>. Please regenerate it after the timeout.
+                </PopperNotes>
               </PopperContentWrapper>
             </Popper>
           </ClickAwayContent>

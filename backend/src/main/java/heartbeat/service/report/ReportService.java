@@ -1,5 +1,6 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
@@ -15,6 +16,8 @@ import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
 import heartbeat.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +31,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
+import static java.util.Optional.ofNullable;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReportService {
+
+	public static final String GET_SHARE_DETAIL_ERROR_LOG = "Failed to get share details result, reportId: {}";
 
 	private final CSVFileGenerator csvFileGenerator;
 
@@ -96,28 +104,57 @@ public class ReportService {
 	}
 
 	public ShareApiDetailsResponse getShareReportInfo(String uuid) {
-		List<String> reportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
-			.stream()
-			.map(it -> it.split(FILENAME_SEPARATOR))
-			.filter(it -> it.length > 2)
-			.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
-			.distinct()
-			.toList();
-		if (reportUrls.isEmpty()) {
+		List<Pair<String, String>> timestampAndReportUrls;
+		try {
+			timestampAndReportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
+				.stream()
+				.map(it -> it.split(FILENAME_SEPARATOR))
+				.filter(it -> it.length == 4)
+				.map(it -> Pair.of(it[3], this.generateReportCallbackUrl(uuid, it[1], it[2])))
+				.toList();
+		}
+		catch (NotFoundException e) {
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
+			throw new NotFoundException(String.format("Don't find the %s folder in the report files", uuid));
+		}
+
+		if (timestampAndReportUrls.isEmpty()) {
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}
-		List<String> metrics = fileRepository.getFiles(FileType.METRICS, uuid)
+
+		boolean isExpired = timestampAndReportUrls.stream()
+			.map(Pair::getLeft)
+			.distinct()
+			.map(Long::parseLong)
+			.anyMatch(it -> fileRepository.isExpired(System.currentTimeMillis(), it));
+		if (isExpired) {
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
+			throw new NotFoundException(
+					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
+		}
+		List<String> reportUrls = timestampAndReportUrls.stream().map(Pair::getRight).distinct().toList();
+
+		List<SavedRequestInfo> savedRequestInfoList = fileRepository.getFiles(FileType.CONFIGS, uuid)
 			.stream()
 			.map(it -> it.split(FILENAME_SEPARATOR))
 			.map(it -> it[1] + FILENAME_SEPARATOR + it[2] + FILENAME_SEPARATOR + it[3])
-			.map(it -> fileRepository.readFileByType(FileType.METRICS, uuid, it, List.class,
-					FilePrefixType.ALL_METRICS_PREFIX))
-			.map(it -> new ArrayList<String>(it))
+			.map(it -> fileRepository.readFileByType(FileType.CONFIGS, uuid, it, SavedRequestInfo.class,
+					FilePrefixType.USER_CONFIG_REPORT_PREFIX))
+			.toList();
+		List<String> metrics = savedRequestInfoList.stream()
+			.map(SavedRequestInfo::getMetrics)
 			.flatMap(Collection::stream)
 			.distinct()
 			.toList();
-		return ShareApiDetailsResponse.builder().metrics(metrics).reportURLs(reportUrls).build();
+		List<String> pipelines = savedRequestInfoList.stream()
+			.map(SavedRequestInfo::getPipelines)
+			.flatMap(Collection::stream)
+			.map(it -> String.format("%s/%s", it.getName(), it.getStep()))
+			.distinct()
+			.toList();
+		return ShareApiDetailsResponse.builder().metrics(metrics).pipelines(pipelines).reportURLs(reportUrls).build();
 	}
 
 	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {
@@ -128,9 +165,14 @@ public class ReportService {
 		return UuidResponse.builder().reportId(UUID.randomUUID().toString()).build();
 	}
 
-	public void saveMetrics(GenerateReportRequest request, String uuid) {
-		fileRepository.createFileByType(FileType.METRICS, uuid, request.getTimeRangeAndTimeStamp(),
-				request.getMetrics(), FilePrefixType.ALL_METRICS_PREFIX);
+	public void saveRequestInfo(GenerateReportRequest request, String uuid) {
+		SavedRequestInfo savedRequestInfo = SavedRequestInfo.builder()
+			.metrics(request.getMetrics())
+			.pipelines(ofNullable(request.getBuildKiteSetting()).map(BuildKiteSetting::getDeploymentEnvList)
+				.orElse(List.of()))
+			.build();
+		fileRepository.createFileByType(FileType.CONFIGS, uuid, request.getTimeRangeAndTimeStamp(), savedRequestInfo,
+				FilePrefixType.USER_CONFIG_REPORT_PREFIX);
 	}
 
 }

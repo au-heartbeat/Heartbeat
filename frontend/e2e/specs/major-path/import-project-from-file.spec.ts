@@ -15,6 +15,7 @@ import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cy
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
 import { partialMetricsShowChart } from '../../fixtures/import-file/partial-metrics-show-chart';
+import { DORA_CHART_PIPELINES } from '../../fixtures/import-file/chart-result';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
@@ -28,7 +29,6 @@ test('Import project from file with all ranges API succeed', async ({
   configStep,
   metricsStep,
   reportStep,
-  context,
 }) => {
   const hbStateData = importMultipleDoneProjectFromFile.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
@@ -64,7 +64,7 @@ test('Import project from file with all ranges API succeed', async ({
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
-  await reportStep.checkShareReport(context);
+  await reportStep.checkShareReport();
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
@@ -121,7 +121,8 @@ test('Import project from file with partial ranges API failed', async ({
     showCycleTimeAllocationChart: true,
   });
   await reportStep.goToCharDoraTab();
-  await reportStep.checkChartDoraTabStatus({
+  await reportStep.checkPipelineSelectorAndDoraChart({
+    pipelines: DORA_CHART_PIPELINES,
     showDevMeanTimeToRecoveryTrendContainer: false,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: true,
@@ -166,7 +167,8 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
     showCycleTimeAllocationChart: true,
   });
   await reportStep.goToCharDoraTab();
-  await reportStep.checkChartDoraTabStatus({
+  await reportStep.checkPipelineSelectorAndDoraChart({
+    pipelines: DORA_CHART_PIPELINES,
     showDevMeanTimeToRecoveryTrendContainer: false,
     showDevChangeFailureRateChart: false,
     showDevMeanTimeToRecoveryChart: true,

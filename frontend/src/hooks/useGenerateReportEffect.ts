@@ -104,6 +104,7 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     dateRangeList.map((dateRange) => ({ ...initReportInfo(), id: dateRange.startDate as string })),
   );
   const [hasPollingStarted, setHasPollingStarted] = useState<boolean>(false);
+  const [reportId, setReportId] = useState<string>('');
   let nextHasPollingStarted = false;
 
   const startToRequestData = async (params: ReportRequestDTO) => {
@@ -115,8 +116,17 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
 
     resetReportPageLoadingStatus(dateRangeList);
 
-    const reportIdRes = await reportClient.generateReportId();
+    if (!reportId) {
+      const reportIdRes = await reportClient.generateReportId();
+      setReportId(reportIdRes.reportId);
+      dispatch(updateReportId(reportIdRes.reportId));
+      await retrieveUrlAndPolling(params, reportIdRes.reportId);
+    } else {
+      await retrieveUrlAndPolling(params, reportId);
+    }
+  };
 
+  const retrieveUrlAndPolling = async (params: ReportRequestDTO, reportId: string) => {
     const res: PromiseSettledResult<ReportCallbackResponse>[] = await Promise.allSettled(
       dateRangeList.map(({ startDate, endDate }) =>
         reportClient.retrieveByUrl(
@@ -125,16 +135,15 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
             startTime: formatDateToTimestampString(startDate!),
             endTime: formatDateToTimestampString(endDate!),
           },
-          `${reportPath}/${reportIdRes.reportId}`,
+          `${reportPath}/${reportId}`,
         ),
       ),
     );
 
-    updateErrorAfterFetchReport(res, metricTypes);
+    updateErrorAfterFetchReport(res, params.metricTypes);
 
     const { pollingInfos, pollingInterval } = assemblePollingParams(res);
 
-    dispatch(updateReportId(reportIdRes.reportId));
     resetPollingLoadingStatusBeforePolling(pollingInfos.map((item) => item.id));
     await pollingReport({ pollingInfos, interval: pollingInterval });
   };
