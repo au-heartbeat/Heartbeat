@@ -110,7 +110,7 @@ importers:
         version: 0.35.3(astro@4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2))
       astro-og-canvas:
         specifier: ^0.5.1
-        version: 0.5.1(astro@4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2))
+        version: 0.5.3(astro@4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2))
       bcp-47-normalize:
         specifier: ^2.3.0
         version: 2.3.0
@@ -1384,8 +1384,8 @@ packages:
     peerDependencies:
       astro: ^4.0.0-beta || ^3.3.0
 
-  astro-og-canvas@0.5.1:
-    resolution: {integrity: sha512-Xm37vqyMu3kNRU5tm7nheJf2n8+gweuaDX4efMxPSKEggSF8UznvgreOomzAPqDbcs8LM2fQsyOcMbJFtb3aZg==}
+  astro-og-canvas@0.5.3:
+    resolution: {integrity: sha512-xy4k3D/fq4vq71B8CKsqBRuAd2kRJjMaeOMH9EFVtPPqudrDGXG2k87SdxPr5FATvttWpIjYplqK/vYJAoZ2DA==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       astro: ^3.0.0 || ^4.0.0
@@ -1606,7 +1606,7 @@ packages:
     resolution: {integrity: sha512-L3sHRo1pXXEqX8VU28kfgUY+YGsk09hPqZiZmLacNib6XNTCM8ubYeT7ryXQw8asB1sKgcU5lkB7ONug08aB8w==}
 
   concat-map@0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   confbox@0.1.7:
     resolution: {integrity: sha512-uJcB/FKZtBMCJpK8MQji6bJHgu1tixKPxRLeGkNzBoOZzpnZUJm0jm2/sBDWcuBx1dYgxV4JU+g5hmNxCyAmdA==}
@@ -5430,7 +5430,7 @@ snapshots:
       astro: 4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2)
       rehype-expressive-code: 0.35.3
 
-  astro-og-canvas@0.5.1(astro@4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2)):
+  astro-og-canvas@0.5.3(astro@4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2)):
     dependencies:
       astro: 4.11.3(@types/node@20.14.9)(sass@1.77.6)(typescript@5.5.2)
       canvaskit-wasm: 0.39.1
