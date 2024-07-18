@@ -49,6 +49,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -396,6 +397,7 @@ public class ReportServiceTest {
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step2").build()
 				)).build());
+			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 
 			ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(TEST_UUID);
 			List<String> metrics = shareReportInfo.getMetrics();
@@ -418,10 +420,11 @@ public class ReportServiceTest {
 			assertEquals("pipeline2/step1", pipelines.get(2));
 			assertEquals("pipeline2/step2", pipelines.get(3));
 
-			verify(fileRepository).getFiles(FileType.CONFIGS, TEST_UUID);
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
 			verify(fileRepository).getFiles(FileType.CONFIGS, TEST_UUID);
 			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any());
 			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any());
+			verify(fileRepository, times(2)).isExpired(anyLong(), anyLong());
 
 		}
 
@@ -445,6 +448,19 @@ public class ReportServiceTest {
 			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
 
 			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
+		}
+
+		@Test
+		void shouldThrowExceptionWhenFileIsExpired() {
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
+			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(true);
+
+			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getShareReportInfo(TEST_UUID));
+
+			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
+
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
+			verify(fileRepository).isExpired(anyLong(), anyLong());
 		}
 
 	}

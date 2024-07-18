@@ -17,6 +17,7 @@ import heartbeat.repository.FileRepository;
 import heartbeat.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,8 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 @Slf4j
 public class ReportService {
+
+	public static final String GET_SHARE_DETAIL_ERROR_LOG = "Failed to get share details result, reportId: {}";
 
 	private final CSVFileGenerator csvFileGenerator;
 
@@ -101,26 +104,38 @@ public class ReportService {
 	}
 
 	public ShareApiDetailsResponse getShareReportInfo(String uuid) {
-		List<String> reportUrls;
+		List<Pair<String, String>> timestampAndReportUrls;
 		try {
-			reportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
+			timestampAndReportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
 				.stream()
 				.map(it -> it.split(FILENAME_SEPARATOR))
-				.filter(it -> it.length > 2)
-				.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
-				.distinct()
+				.filter(it -> it.length == 4)
+				.map(it -> Pair.of(it[3], this.generateReportCallbackUrl(uuid, it[1], it[2])))
 				.toList();
 		}
 		catch (NotFoundException e) {
-			log.error("Failed to get share details result, reportId: {}", uuid);
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
 			throw new NotFoundException(String.format("Don't find the %s folder in the report files", uuid));
 		}
 
-		if (reportUrls.isEmpty()) {
-			log.error("Failed to get share details result, reportId: {}", uuid);
+		if (timestampAndReportUrls.isEmpty()) {
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}
+
+		boolean isExpired = timestampAndReportUrls.stream()
+			.map(Pair::getLeft)
+			.distinct()
+			.map(Long::parseLong)
+			.anyMatch(it -> fileRepository.isExpired(System.currentTimeMillis(), it));
+		if (isExpired) {
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
+			throw new NotFoundException(
+					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
+		}
+		List<String> reportUrls = timestampAndReportUrls.stream().map(Pair::getRight).distinct().toList();
+
 		List<SavedRequestInfo> savedRequestInfoList = fileRepository.getFiles(FileType.CONFIGS, uuid)
 			.stream()
 			.map(it -> it.split(FILENAME_SEPARATOR))
