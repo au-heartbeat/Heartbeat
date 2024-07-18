@@ -38,6 +38,8 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class ReportService {
 
+	public static final String GET_SHARE_DETAIL_ERROR_LOG = "Failed to get share details result, reportId: {}";
+
 	private final CSVFileGenerator csvFileGenerator;
 
 	private final AsyncMetricsDataHandler asyncMetricsDataHandler;
@@ -112,12 +114,12 @@ public class ReportService {
 				.toList();
 		}
 		catch (NotFoundException e) {
-			log.error("Failed to get share details result, reportId: {}", uuid);
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
 			throw new NotFoundException(String.format("Don't find the %s folder in the report files", uuid));
 		}
 
 		if (timestampAndReportUrls.isEmpty()) {
-			log.error("Failed to get share details result, reportId: {}", uuid);
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}
@@ -128,7 +130,7 @@ public class ReportService {
 			.map(Long::parseLong)
 			.anyMatch(it -> fileRepository.isExpired(System.currentTimeMillis(), it));
 		if (isExpired) {
-			log.error("Failed to get share details result, reportId: {}", uuid);
+			log.error(GET_SHARE_DETAIL_ERROR_LOG, uuid);
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}
