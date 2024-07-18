@@ -376,7 +376,7 @@ public class ReportServiceTest {
 	}
 
 	@Nested
-	class GetReportUrl {
+	class GetShareReportInfo {
 
 		@Test
 		void shouldGetReportUrlsSuccessfully() {
@@ -423,6 +423,17 @@ public class ReportServiceTest {
 			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any());
 			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any());
 
+		}
+
+		@Test
+		void shouldThrowExceptionWhenGetFilesThrowNotFoundException() {
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenThrow(NotFoundException.class);
+
+			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getShareReportInfo(TEST_UUID));
+
+			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
+
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
 		}
 
 		@Test

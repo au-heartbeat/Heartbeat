@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -45,20 +46,20 @@ public class FileRepository {
 	public static final String SUFFIX_TMP = ".tmp";
 
 	@Value("${heartbeat.expiredDays}")
-	public int expiredDays = 1;
+	public int expiredDays;
 
-	public final Long expiredTimes = 1000L * 3600 * 24 * this.expiredDays;
+	private static final long ONE_DAY_MILLISECONDS = 1000L * 3600 * 24;
 
 	private static final String CSV_EXTENSION = ".csv";
 
-	private static final String SUCCESSFULLY_WRITE_FILE_LOGS = "Successfully write file type: {}, uuid: {}, file name: {}";
+	private static final String SUCCESSFULLY_WRITE_FILE_LOGS = "Successfully write file type: {}, reportId: {}, file name: {}";
 
 	private final Gson gson;
 
-	public void createPath(FileType type, String uuid) {
-		isCorrectFilePath(uuid);
+	public void createPath(FileType type, String reportId) {
+		isCorrectFilePath(reportId);
 
-		Path path = Path.of(BASE_OUTPUT_PATH + SLASH + type.getType() + SLASH + uuid);
+		Path path = Path.of(BASE_OUTPUT_PATH + SLASH + type.getType() + SLASH + reportId);
 		try {
 			Files.createDirectories(path);
 			log.info("Successfully create {} directory", path);
@@ -69,72 +70,73 @@ public class FileRepository {
 		}
 	}
 
-	public <T> T readFileByType(FileType fileType, String uuid, String fileName, Class<T> classType,
+	public <T> T readFileByType(FileType fileType, String reportId, String fileName, Class<T> classType,
 			FilePrefixType fileNamePrefix) {
-		isCorrectFilePath(uuid);
+		isCorrectFilePath(reportId);
 		isCorrectFilePath(fileName);
 
 		String realFileName = fileNamePrefix.getPrefix() + fileName;
-		File file = new File(getFileName(fileType, uuid, realFileName));
+		File file = new File(getFileName(fileType, reportId, realFileName));
 		if (file.toPath().normalize().startsWith(NORMALIZE_BASE_OUTPUT_PATH) && file.exists()) {
 			try (JsonReader reader = new JsonReader(new FileReader(file))) {
 				T result = gson.fromJson(reader, classType);
-				log.info("Successfully read file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+				log.info("Successfully read file folder: {}, reportId: {}, file name: {}", fileType.getType(), reportId,
 						realFileName);
 				return result;
 			}
 			catch (Exception e) {
-				log.error("Failed to read file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
-						realFileName, e);
+				log.error("Failed to read file folder: {}, reportId: {}, file name: {}, reason: {}", fileType.getType(),
+						reportId, realFileName, e);
 				throw new GenerateReportException(
-						"Failed to read file " + fileType.getType() + " " + uuid + " " + realFileName);
+						"Failed to read file " + fileType.getType() + " " + reportId + " " + realFileName);
 			}
 		}
 		return null;
 	}
 
-	public String getFileName(FileType fileType, String uuid, String fileName) {
-		isCorrectFilePath(uuid);
+	public String getFileName(FileType fileType, String reportId, String fileName) {
+		isCorrectFilePath(reportId);
 		isCorrectFilePath(fileName);
 
-		return BASE_OUTPUT_PATH + SLASH + fileType.getType() + SLASH + uuid + SLASH + fileName;
+		return BASE_OUTPUT_PATH + SLASH + fileType.getType() + SLASH + reportId + SLASH + fileName;
 	}
 
-	public <T> void createFileByType(FileType fileType, String uuid, String fileName, T data,
+	public <T> void createFileByType(FileType fileType, String reportId, String fileName, T data,
 			FilePrefixType fileNamePrefix) {
-		isCorrectFilePath(uuid);
+		isCorrectFilePath(reportId);
 		isCorrectFilePath(fileName);
 
 		String json = gson.toJson(data);
-		createFileHandler(fileType, uuid, fileName, fileNamePrefix,
-				realFileName -> createNormalFileHandler(fileType, uuid, json, realFileName));
+		createFileHandler(fileType, reportId, fileName, fileNamePrefix,
+				realFileName -> createNormalFileHandler(fileType, reportId, json, realFileName));
 	}
 
-	public void createCSVFileByType(String uuid, String fileName, String[][] data, FilePrefixType fileNamePrefix) {
-		isCorrectFilePath(uuid);
+	public void createCSVFileByType(String reportId, String fileName, String[][] data, FilePrefixType fileNamePrefix) {
+		isCorrectFilePath(reportId);
 
 		FileType fileType = CSV;
-		createFileHandler(fileType, uuid, fileName + CSV_EXTENSION, fileNamePrefix,
-				realFileName -> createCSVFileHandler(fileType, uuid, data, realFileName));
+		createFileHandler(fileType, reportId, fileName + CSV_EXTENSION, fileNamePrefix,
+				realFileName -> createCSVFileHandler(fileType, reportId, data, realFileName));
 	}
 
-	public void removeFileByType(FileType fileType, String uuid, String fileName, FilePrefixType fileNamePrefix) {
-		isCorrectFilePath(uuid);
+	public void removeFileByType(FileType fileType, String reportId, String fileName, FilePrefixType fileNamePrefix) {
+		isCorrectFilePath(reportId);
 		isCorrectFilePath(fileName);
 
 		String realFileName = fileNamePrefix.getPrefix() + fileName;
-		String path = getFileName(fileType, uuid, realFileName);
+		String path = getFileName(fileType, reportId, realFileName);
 
-		log.info("Start to remove file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid, fileName);
+		log.info("Start to remove file folder: {}, reportId: {}, file name: {}", fileType.getType(), reportId,
+				fileName);
 		try {
 			Files.deleteIfExists(Path.of(path));
-			log.info("Successfully remove file type: {}, file name: {}", fileType.getType(), fileName);
+			log.info("Successfully remove file folder: {}, file name: {}", fileType.getType(), fileName);
 		}
 		catch (Exception e) {
-			log.error("Failed to remove file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid,
+			log.error("Failed to remove file folder: {}, reportId: {}, file name: {}", fileType.getType(), reportId,
 					realFileName);
-			throw new GenerateReportException(
-					"Failed to remove " + fileType.getType() + ", uuid: " + uuid + " file with file:" + fileName);
+			throw new GenerateReportException("Failed to remove " + fileType.getType() + ", reportId: " + reportId
+					+ " file with file:" + fileName);
 		}
 	}
 
@@ -142,50 +144,61 @@ public class FileRepository {
 		String pathname = BASE_OUTPUT_PATH + SLASH + fileType.getType();
 		File baseFile = new File(pathname);
 		if (!baseFile.exists() || !baseFile.isDirectory()) {
+			log.info("{} path don't exist", pathname);
 			return;
 		}
-		File[] uuidDirectories = baseFile.listFiles();
-		for (File uuidDirectory : uuidDirectories) {
-			log.info("Start to deleted expired {} file, file path: {}", fileType.getType(), uuidDirectory);
-			File[] files = uuidDirectory.listFiles();
+		List<String> expiredDirectories = new ArrayList<>();
+		List<String> dontExpiredDirectories = new ArrayList<>();
+		File[] reportIdDirectories = baseFile.listFiles();
+		log.info("Start to deleted expired {} file", fileType.getType());
+		for (File reportIdDirectory : reportIdDirectories) {
+			File[] files = reportIdDirectory.listFiles();
 			try {
 				if (files.length == 0) {
-					FileUtils.deleteDirectory(uuidDirectory);
+					FileUtils.deleteDirectory(reportIdDirectory);
+					expiredDirectories.add(reportIdDirectory.getName());
 				}
 				else {
 					String timeStamp = files[0].getName().split("[-.]")[3];
 					if (isExpired(currentTimeStamp, Long.parseLong(timeStamp))) {
-						FileUtils.deleteDirectory(uuidDirectory);
+						FileUtils.deleteDirectory(reportIdDirectory);
+						expiredDirectories.add(reportIdDirectory.getName());
+					}
+					else {
+						dontExpiredDirectories.add(reportIdDirectory.getName());
 					}
 				}
-				log.info("Successfully deleted expired {} file, file path: {}", fileType.getType(), uuidDirectory);
 			}
 			catch (Exception e) {
 				log.error("Failed to deleted expired {} file, file path: {}, reason: {}", fileType.getType(),
-						uuidDirectory, e);
+						reportIdDirectory, e);
 			}
 		}
+		log.info("Successfully deleted expired {} file, expired files: {}, no expired files: {}", fileType.getType(),
+				expiredDirectories, dontExpiredDirectories);
 	}
 
-	public List<String> getFiles(FileType fileType, String uuid) {
-		isCorrectFilePath(uuid);
+	public List<String> getFiles(FileType fileType, String reportId) {
+		isCorrectFilePath(reportId);
 
-		String fileName = BASE_OUTPUT_PATH + SLASH + fileType.getPath() + uuid;
+		String fileName = BASE_OUTPUT_PATH + SLASH + fileType.getPath() + reportId;
 		File folder = new File(fileName);
 
 		if (folder.exists() && folder.isDirectory()) {
+			log.info("Successfully get the {} folder in the report files", fileName);
 			return Arrays.stream(folder.listFiles()).map(File::getName).toList();
 		}
 		else {
-			throw new NotFoundException(String.format("Don't find the %s folder in the report files", uuid));
+			log.error("Failed to find the {} folder in the report files", fileName);
+			throw new NotFoundException(String.format("Don't find the %s folder in the report files", fileName));
 		}
 	}
 
-	public String getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType fileType, String uuid, String startTime,
-			String endTime) {
-		isCorrectFilePath(uuid);
+	public String getFileTimeRangeAndTimeStampByStartTimeAndEndTime(FileType fileType, String reportId,
+			String startTime, String endTime) {
+		isCorrectFilePath(reportId);
 
-		return getFiles(fileType, uuid).stream()
+		return getFiles(fileType, reportId).stream()
 			.map(it -> it.split(FILENAME_SEPARATOR))
 			.filter(it -> it.length == 4)
 			.filter(it -> Objects.equals(it[1], startTime) && Objects.equals(it[2], endTime))
@@ -196,14 +209,18 @@ public class FileRepository {
 	}
 
 	public boolean isExpired(long currentTimeStamp, long timeStamp) {
-		return timeStamp < currentTimeStamp - this.expiredTimes;
+		return timeStamp < currentTimeStamp - this.getExpiredTime();
 	}
 
-	public InputStreamResource readStringFromCsvFile(String uuid, String fileName, FilePrefixType filePrefixType) {
-		isCorrectFilePath(uuid);
+	public long getExpiredTime() {
+		return this.expiredDays * ONE_DAY_MILLISECONDS;
+	}
+
+	public InputStreamResource readStringFromCsvFile(String reportId, String fileName, FilePrefixType filePrefixType) {
+		isCorrectFilePath(reportId);
 		isCorrectFilePath(fileName);
 
-		File file = new File(getFileName(CSV, uuid, filePrefixType.getPrefix() + fileName + CSV_EXTENSION));
+		File file = new File(getFileName(CSV, reportId, filePrefixType.getPrefix() + fileName + CSV_EXTENSION));
 		try {
 			InputStream inputStream = new FileInputStream(file);
 			return new InputStreamResource(inputStream);
@@ -214,37 +231,38 @@ public class FileRepository {
 		}
 	}
 
-	private void createFileHandler(FileType fileType, String uuid, String fileName, FilePrefixType fileNamePrefix,
+	private void createFileHandler(FileType fileType, String reportId, String fileName, FilePrefixType fileNamePrefix,
 			Consumer<String> handler) {
-		createPath(fileType, uuid);
+		createPath(fileType, reportId);
 		String realBaseFileName = fileNamePrefix.getPrefix() + fileName;
-		String realFileName = getFileName(fileType, uuid, realBaseFileName);
-		log.info("Start to write file type: {}, uuid: {}, file name: {}", fileType.getType(), uuid, realFileName);
+		String realFileName = getFileName(fileType, reportId, realBaseFileName);
+		log.info("Start to write file folder: {}, reportId: {}, file name: {}", fileType.getType(), reportId,
+				realFileName);
 		synchronized (this) {
 			handler.accept(realFileName);
 		}
-		log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), uuid, realFileName);
+		log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), reportId, realFileName);
 	}
 
-	private void createNormalFileHandler(FileType fileType, String uuid, String json, String realFileName) {
+	private void createNormalFileHandler(FileType fileType, String reportId, String json, String realFileName) {
 		String tmpFileName = realFileName + SUFFIX_TMP;
 
 		try (FileWriter writer = new FileWriter(tmpFileName)) {
 			writer.write(json);
 			Files.move(Path.of(tmpFileName), Path.of(realFileName), StandardCopyOption.ATOMIC_MOVE);
-			log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), uuid, realFileName);
+			log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), reportId, realFileName);
 		}
 		catch (Exception e) {
-			log.error("Failed to write file type: {}, uuid: {}, file name: {}, reason: {}", fileType.getType(), uuid,
-					realFileName, e);
+			log.error("Failed to write file folder: {}, reportId: {}, file name: {}, reason: {}", fileType.getType(),
+					reportId, realFileName, e);
 			throw new GenerateReportException("Failed to write " + fileType.getType() + " " + realFileName);
 		}
 	}
 
-	private void createCSVFileHandler(FileType fileType, String uuid, String[][] json, String realFileName) {
+	private void createCSVFileHandler(FileType fileType, String reportId, String[][] json, String realFileName) {
 		try (CSVWriter writer = new CSVWriter(new FileWriter(realFileName))) {
 			writer.writeAll(Arrays.asList(json));
-			log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), uuid, realFileName);
+			log.info(SUCCESSFULLY_WRITE_FILE_LOGS, fileType.getType(), reportId, realFileName);
 		}
 		catch (IOException e) {
 			log.error("Failed to write {} file", fileType.getType(), e);

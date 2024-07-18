@@ -16,6 +16,7 @@ import heartbeat.service.report.calculator.ReportGenerator;
 import heartbeat.repository.FileRepository;
 import heartbeat.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReportService {
 
 	private final CSVFileGenerator csvFileGenerator;
@@ -99,14 +101,23 @@ public class ReportService {
 	}
 
 	public ShareApiDetailsResponse getShareReportInfo(String uuid) {
-		List<String> reportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
-			.stream()
-			.map(it -> it.split(FILENAME_SEPARATOR))
-			.filter(it -> it.length > 2)
-			.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
-			.distinct()
-			.toList();
+		List<String> reportUrls;
+		try {
+			reportUrls = fileRepository.getFiles(FileType.REPORT, uuid)
+				.stream()
+				.map(it -> it.split(FILENAME_SEPARATOR))
+				.filter(it -> it.length > 2)
+				.map(it -> this.generateReportCallbackUrl(uuid, it[1], it[2]))
+				.distinct()
+				.toList();
+		}
+		catch (NotFoundException e) {
+			log.error("Failed to get share details result, reportId: {}", uuid);
+			throw new NotFoundException(String.format("Don't find the %s folder in the report files", uuid));
+		}
+
 		if (reportUrls.isEmpty()) {
+			log.error("Failed to get share details result, reportId: {}", uuid);
 			throw new NotFoundException(
 					String.format("Don't get the data, please check the uuid: %s, maybe it's expired or error", uuid));
 		}

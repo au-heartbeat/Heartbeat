@@ -23,7 +23,9 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,11 +56,17 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
+@ActiveProfiles("test")
 class FileRepositoryTest {
 
 	private static final String BASE_PATH = "./app";
 
 	private static final String TEST_UUID = "test-uuid";
+
+	@Value("${heartbeat.expiredDays}")
+	private int expiredDays;
+
+	private static final long ONE_DAY_MILLISECONDS = 1000L * 3600 * 24;
 
 	@Mock
 	Gson gson;
@@ -124,9 +132,7 @@ class FileRepositoryTest {
 				mockStatic.when(() -> Files.createDirectories(Paths.get(expectedFilepath)))
 					.thenThrow(IOException.class);
 
-				assertThrows(FileIOException.class, () -> {
-					fileRepository.createPath(fileType, TEST_UUID);
-				});
+				assertThrows(FileIOException.class, () -> fileRepository.createPath(fileType, TEST_UUID));
 
 				File realFile = new File(expectedFilepath);
 				assertFalse(realFile.exists());
@@ -387,9 +393,8 @@ class FileRepositoryTest {
 			try (MockedStatic<Files> mockStatic = mockStatic(Files.class)) {
 				mockStatic.when(() -> Files.move(any(), any(), any())).thenThrow(IOException.class);
 
-				GenerateReportException generateReportException = assertThrows(GenerateReportException.class, () -> {
-					fileRepository.createFileByType(fileType, TEST_UUID, fileName, data, boardReportPrefix);
-				});
+				GenerateReportException generateReportException = assertThrows(GenerateReportException.class,
+						() -> fileRepository.createFileByType(fileType, TEST_UUID, fileName, data, boardReportPrefix));
 
 				assertEquals("Failed to write report ./app/output/report/test-uuid/board-test-filename",
 						generateReportException.getMessage());
@@ -489,9 +494,8 @@ class FileRepositoryTest {
 			Path path = Paths.get(expectedFilepath);
 			Files.createDirectories(path);
 
-			FileIOException fileIOException = assertThrows(FileIOException.class, () -> {
-				fileRepository.createCSVFileByType(TEST_UUID, fileName, data, boardReportPrefix);
-			});
+			FileIOException fileIOException = assertThrows(FileIOException.class,
+					() -> fileRepository.createCSVFileByType(TEST_UUID, fileName, data, boardReportPrefix));
 
 			assertEquals("File handle error: ./app/output/csv/test-uuid/board-test-filename.csv (Is a directory)",
 					fileIOException.getMessage());
@@ -581,11 +585,10 @@ class FileRepositoryTest {
 			try (MockedStatic<Files> mockStatic = mockStatic(Files.class)) {
 				mockStatic.when(() -> Files.deleteIfExists(Paths.get(expectedFilepath))).thenThrow(IOException.class);
 
-				GenerateReportException generateReportException = assertThrows(GenerateReportException.class, () -> {
-					fileRepository.removeFileByType(fileType, TEST_UUID, fileName, boardReportPrefix);
-				});
+				GenerateReportException generateReportException = assertThrows(GenerateReportException.class,
+						() -> fileRepository.removeFileByType(fileType, TEST_UUID, fileName, boardReportPrefix));
 
-				assertEquals("Failed to remove csv, uuid: test-uuid file with file:test-remove-file",
+				assertEquals("Failed to remove csv, reportId: test-uuid file with file:test-remove-file",
 						generateReportException.getMessage());
 
 				File realFile = new File(expectedFilepath);
@@ -675,7 +678,7 @@ class FileRepositoryTest {
 		void shouldRemoveSuccessfullyWhenDirectoryIsNotEmpty() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = fileRepository.expiredTimes + timestamp + 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS * expiredDays + timestamp + 10000L;
 
 			String expectedFilePath = "./app/output/csv/" + TEST_UUID;
 			Path path = Paths.get(expectedFilePath);
@@ -698,7 +701,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenFileIsNotExpired() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = fileRepository.expiredTimes + timestamp - 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS * expiredDays + timestamp - 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -721,7 +724,7 @@ class FileRepositoryTest {
 		void shouldRemoveErrorWhenDeleteThrowException() throws IOException {
 			FileType fileType = FileType.CSV;
 			long timestamp = 123L;
-			long currentTimestamp = fileRepository.expiredTimes + timestamp + 10000L;
+			long currentTimestamp = ONE_DAY_MILLISECONDS * expiredDays + timestamp + 10000L;
 
 			Path path = Paths.get("./app/output/csv/" + TEST_UUID);
 			Files.createDirectories(path);
@@ -767,7 +770,8 @@ class FileRepositoryTest {
 			NotFoundException notFoundException = assertThrows(NotFoundException.class,
 					() -> fileRepository.getFiles(FileType.REPORT, TEST_UUID));
 
-			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
+			assertEquals("Don't find the ./app/output/report/test-uuid folder in the report files",
+					notFoundException.getMessage());
 		}
 
 		@Test
@@ -778,7 +782,8 @@ class FileRepositoryTest {
 			NotFoundException notFoundException = assertThrows(NotFoundException.class,
 					() -> fileRepository.getFiles(FileType.REPORT, TEST_UUID));
 
-			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
+			assertEquals("Don't find the ./app/output/report/test-uuid folder in the report files",
+					notFoundException.getMessage());
 
 			Files.deleteIfExists(path);
 		}
@@ -863,7 +868,7 @@ class FileRepositoryTest {
 		@Test
 		void shouldExpired() {
 			long startTime = 123L;
-			long endTime = startTime + fileRepository.expiredTimes + 10000L;
+			long endTime = startTime + ONE_DAY_MILLISECONDS * expiredDays + 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 
@@ -872,8 +877,9 @@ class FileRepositoryTest {
 
 		@Test
 		void shouldNotExpired() {
+			System.out.println(expiredDays);
 			long startTime = 123L;
-			long endTime = startTime + fileRepository.expiredTimes - 10000L;
+			long endTime = startTime + ONE_DAY_MILLISECONDS * expiredDays - 10000L;
 
 			boolean expired = fileRepository.isExpired(endTime, startTime);
 

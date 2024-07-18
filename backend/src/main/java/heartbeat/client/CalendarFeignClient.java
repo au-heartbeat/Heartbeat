@@ -6,11 +6,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(value = "CalendarificFeignClient", url = "${calendarific.url}",
-		configuration = CalendarFeignClientDecoder.class)
-public interface CalendarificFeignClient {
+@FeignClient(value = "CalendarFeignClient", url = "${calendar.url}", configuration = CalendarFeignClientDecoder.class)
+public interface CalendarFeignClient {
 
-	@Cacheable(cacheNames = "calendarificResult", key = "'calendarific-' + #country + '-' + #year")
+	@Cacheable(cacheNames = "calendarResult", key = "'calendar-' + #country + '-' + #year")
 	@GetMapping(path = "/{country}/{year}.json")
 	String getHolidays(@PathVariable String country, @PathVariable String year);
 
