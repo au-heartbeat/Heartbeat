@@ -34,7 +34,7 @@ import {
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
 import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
-import { IReportInfo } from '../../src/hooks/useGenerateReportEffect';
+import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { PIPELINE_TOOL_TYPES } from '../fixtures';

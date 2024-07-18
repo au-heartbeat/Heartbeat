@@ -40,8 +40,13 @@ export function showChart(div: HTMLDivElement | null, isFinished: boolean, optio
   if (div) {
     const chart = echarts.init(div);
     chart.setOption(options);
+    const resize = () => {
+      chart.resize();
+    };
+    window.addEventListener('resize', resize);
     return () => {
       chart.dispose();
+      window.removeEventListener('resize', resize);
     };
   }
 }
@@ -225,7 +230,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
 
   return (
     <ReportContent
+      isSharePage={false}
       metrics={metrics}
+      allPipelines={deploymentFrequencySettings.map((it) => `${it.pipelineName}/${it.step}`)}
       dateRanges={dateRanges}
       startToRequestData={() => startToRequestData(basicReportRequestBody)}
       reportInfos={reportInfos}

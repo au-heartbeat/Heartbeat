@@ -801,7 +801,7 @@ class GenerateReporterServiceTest {
 			when(pipelineService.fetchGitHubData(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
-			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
+			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -822,7 +822,7 @@ class GenerateReporterServiceTest {
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
 				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
 						timeRangeAndTimeStamp);
@@ -856,7 +856,7 @@ class GenerateReporterServiceTest {
 			when(pipelineService.fetchBuildKiteInfo(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
-			when(leadTimeForChangesCalculator.calculate(any())).thenReturn(fakeLeadTimeForChange);
+			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -881,7 +881,7 @@ class GenerateReporterServiceTest {
 						timeRangeAndTimeStamp);
 				verify(asyncMetricsDataHandler, times(1)).updateMetricsDataCompletedInHandler(TEST_UUID,
 						timeRangeAndTimeStamp, DORA, true);
-				verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+				verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 			});
 		}
 
@@ -906,11 +906,11 @@ class GenerateReporterServiceTest {
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(request)).thenReturn(
 					FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).buildInfosList(List.of()).build());
-			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any());
+			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any(), any());
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 			verify(kanbanService, never()).fetchDataFromKanban(request);
-			verify(leadTimeForChangesCalculator, times(1)).calculate(any());
+			verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
@@ -1008,10 +1008,11 @@ class GenerateReporterServiceTest {
 			when(fileRepository.readFileByType(eq(REPORT), any(), any(), any(), any()))
 				.thenReturn(ReportResponse.builder().build());
 			when(fileRepository.readFileByType(eq(ERROR), any(), any(), any(), any())).thenReturn(null);
+			when(fileRepository.getExpiredTime()).thenReturn(240000L);
 
 			ReportResponse res = generateReporterService.getComposedReportResponse(TEST_UUID, START_TIME, END_TIME);
 
-			assertEquals(fileRepository.expiredTimes, res.getExportValidityTime());
+			assertEquals(240000, res.getExportValidityTime());
 			assertFalse(res.getBoardMetricsCompleted());
 			assertTrue(res.getDoraMetricsCompleted());
 			assertFalse(res.getAllMetricsCompleted());

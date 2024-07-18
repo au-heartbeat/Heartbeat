@@ -2,7 +2,7 @@ package heartbeat.service.report;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import heartbeat.client.CalendarificFeignClient;
+import heartbeat.client.CalendarFeignClient;
 import heartbeat.client.dto.board.jira.CalendarificHolidayResponseDTO;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.exception.DecodeCalendarException;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 class VietnamHolidayTest {
 
 	@Mock
-	private CalendarificFeignClient calendarificFeignClient;
+	private CalendarFeignClient calendarFeignClient;
 
 	@Mock
 	private ObjectMapper objectMapper;
@@ -46,7 +46,7 @@ class VietnamHolidayTest {
 		CalendarificHolidayResponseDTO calendarificHolidayResponseDTO = JsonFileReader.readJsonFile(
 				"./src/test/resources/VietnamCalendarHolidayResponse.json", CalendarificHolidayResponseDTO.class);
 		String calendarificHolidayResponseDTOString = calendarificHolidayResponseDTO.toString();
-		when(calendarificFeignClient.getHolidays(country.getValue().toLowerCase(), year))
+		when(calendarFeignClient.getHolidays(country.getValue().toLowerCase(), year))
 			.thenReturn(calendarificHolidayResponseDTOString);
 		when(objectMapper.readValue(eq(calendarificHolidayResponseDTOString), any(Class.class)))
 			.thenReturn(calendarificHolidayResponseDTO);
@@ -54,7 +54,7 @@ class VietnamHolidayTest {
 		Map<String, Boolean> result = vietnamHoliday.loadHolidayList(year);
 
 		assertEquals(Map.of("2024-01-01", true), result);
-		verify(calendarificFeignClient).getHolidays(country.getValue().toLowerCase(), year);
+		verify(calendarFeignClient).getHolidays(country.getValue().toLowerCase(), year);
 		verify(objectMapper).readValue(eq(calendarificHolidayResponseDTOString), any(Class.class));
 	}
 
@@ -65,7 +65,7 @@ class VietnamHolidayTest {
 		CalendarificHolidayResponseDTO calendarificHolidayResponseDTO = JsonFileReader.readJsonFile(
 				"./src/test/resources/VietnamCalendarHolidayResponse.json", CalendarificHolidayResponseDTO.class);
 		String calendarificHolidayResponseDTOString = calendarificHolidayResponseDTO.toString();
-		when(calendarificFeignClient.getHolidays(country.getValue().toLowerCase(), year))
+		when(calendarFeignClient.getHolidays(country.getValue().toLowerCase(), year))
 			.thenReturn(calendarificHolidayResponseDTOString);
 		when(objectMapper.readValue(eq(calendarificHolidayResponseDTOString), any(Class.class)))
 			.thenThrow(JsonMappingException.class);
@@ -74,7 +74,7 @@ class VietnamHolidayTest {
 			vietnamHoliday.loadHolidayList(year);
 		});
 
-		verify(calendarificFeignClient).getHolidays(country.getValue().toLowerCase(), year);
+		verify(calendarFeignClient).getHolidays(country.getValue().toLowerCase(), year);
 		verify(objectMapper).readValue(eq(calendarificHolidayResponseDTOString), any(Class.class));
 
 	}
@@ -83,7 +83,7 @@ class VietnamHolidayTest {
 	void loadHolidayListErrorWhenNotFoundError() {
 		CalendarTypeEnum country = CalendarTypeEnum.VN;
 		String year = "2024";
-		when(calendarificFeignClient.getHolidays(country.getValue().toLowerCase(), year))
+		when(calendarFeignClient.getHolidays(country.getValue().toLowerCase(), year))
 			.thenThrow(NotFoundException.class);
 
 		assertEquals(new HashMap<String, Boolean>(), vietnamHoliday.loadHolidayList(year));

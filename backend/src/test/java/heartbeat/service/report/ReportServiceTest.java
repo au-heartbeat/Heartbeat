@@ -1,5 +1,7 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
+import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
 
 import static heartbeat.controller.report.dto.request.MetricType.BOARD;
 import static heartbeat.controller.report.dto.request.MetricType.DORA;
-import static heartbeat.repository.FilePrefixType.ALL_METRICS_PREFIX;
+import static heartbeat.repository.FilePrefixType.USER_CONFIG_REPORT_PREFIX;
 import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,6 +49,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +76,7 @@ public class ReportServiceTest {
 	ReportGenerator reportGenerator;
 
 	@Captor
-	ArgumentCaptor<List<String>> argumentCaptor;
+	ArgumentCaptor<SavedRequestInfo> argumentCaptor;
 
 	public static final String START_TIME = "20240310";
 
@@ -374,18 +377,27 @@ public class ReportServiceTest {
 	}
 
 	@Nested
-	class GetReportUrl {
+	class GetShareReportInfo {
 
 		@Test
 		void shouldGetReportUrlsSuccessfully() {
 			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
-			when(fileRepository.getFiles(FileType.METRICS, TEST_UUID))
+			when(fileRepository.getFiles(FileType.CONFIGS, TEST_UUID))
 				.thenReturn(List.of("board-0-0-0", "board-9-9-9"));
 
-			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
-				.thenReturn(List.of("test-metrics1", "test-metrics2"));
-			when(fileRepository.readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
-				.thenReturn(List.of("test-metrics1", "test-metrics3"));
+			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
+				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics2")).pipelines(List.of(
+					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
+					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step2").build(),
+					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build()
+				)).build());
+			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
+				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics3")).pipelines(List.of(
+					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
+					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build(),
+					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step2").build()
+				)).build());
+			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 
 			ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(TEST_UUID);
 			List<String> metrics = shareReportInfo.getMetrics();
@@ -401,11 +413,30 @@ public class ReportServiceTest {
 			assertEquals("/reports/test-uuid/detail?startTime=1&endTime=2", reportUrls.get(0));
 			assertEquals("/reports/test-uuid/detail?startTime=2&endTime=3", reportUrls.get(1));
 
-			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
-			verify(fileRepository).getFiles(FileType.METRICS, TEST_UUID);
-			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("0-0-0"), any(), any());
-			verify(fileRepository).readFileByType(eq(FileType.METRICS), eq(TEST_UUID), eq("9-9-9"), any(), any());
+			List<String> pipelines = shareReportInfo.getPipelines();
+			assertEquals(4, pipelines.size());
+			assertEquals("pipeline1/step1", pipelines.get(0));
+			assertEquals("pipeline1/step2", pipelines.get(1));
+			assertEquals("pipeline2/step1", pipelines.get(2));
+			assertEquals("pipeline2/step2", pipelines.get(3));
 
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
+			verify(fileRepository).getFiles(FileType.CONFIGS, TEST_UUID);
+			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any());
+			verify(fileRepository).readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any());
+			verify(fileRepository, times(2)).isExpired(anyLong(), anyLong());
+
+		}
+
+		@Test
+		void shouldThrowExceptionWhenGetFilesThrowNotFoundException() {
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenThrow(NotFoundException.class);
+
+			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getShareReportInfo(TEST_UUID));
+
+			assertEquals("Don't find the test-uuid folder in the report files", notFoundException.getMessage());
+
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
 		}
 
 		@Test
@@ -417,6 +448,19 @@ public class ReportServiceTest {
 			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
 
 			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
+		}
+
+		@Test
+		void shouldThrowExceptionWhenFileIsExpired() {
+			when(fileRepository.getFiles(FileType.REPORT, TEST_UUID)).thenReturn(List.of("board-1-2-3", "board-2-3-4"));
+			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(true);
+
+			NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> reportService.getShareReportInfo(TEST_UUID));
+
+			assertEquals("Don't get the data, please check the uuid: test-uuid, maybe it's expired or error", notFoundException.getMessage());
+
+			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
+			verify(fileRepository).isExpired(anyLong(), anyLong());
 		}
 
 	}
@@ -462,19 +506,94 @@ public class ReportServiceTest {
 				.startTime(startTimeStamp)
 				.endTime(endTimeStamp)
 				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.buildKiteSetting(BuildKiteSetting.builder()
+					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("1").build()))
+					.build())
 				.timezone("Asia/Shanghai")
 				.build();
 
-			reportService.saveMetrics(request, TEST_UUID);
+			reportService.saveRequestInfo(request, TEST_UUID);
 
-			verify(fileRepository).createFileByType(eq(FileType.METRICS), eq(TEST_UUID),
-					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(ALL_METRICS_PREFIX));
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
 
-			List<String> savedMetrics = argumentCaptor.getValue();
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
 
-			assertEquals(2, savedMetrics.size());
-			assertEquals("test-metrics1", savedMetrics.get(0));
-			assertEquals("test-metrics2", savedMetrics.get(1));
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(1, pipelines.size());
+			assertEquals("1", pipelines.get(0).getId());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+		}
+
+		@Test
+		void shouldSaveMetricsSuccessfullyWhenBuildKiteSettingIsNull() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(0, pipelines.size());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+		}
+
+		@Test
+		void shouldSaveMetricsSuccessfullyWhenDeploymentEnvListIsNull() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.buildKiteSetting(BuildKiteSetting.builder().build())
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(0, pipelines.size());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
 		}
 
 	}

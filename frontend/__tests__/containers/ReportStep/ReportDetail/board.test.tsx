@@ -27,7 +27,7 @@ describe('board', () => {
 
     render(
       <Provider store={setupStore()}>
-        <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+        <BoardDetail isShowBack={true} metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
       </Provider>,
     );
 
@@ -46,7 +46,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -63,7 +63,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Velocity']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -83,7 +83,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -100,7 +100,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail isShowBack={true} metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} />
         </Provider>,
       );
 
@@ -123,7 +123,13 @@ describe('board', () => {
 
       render(
         <Provider store={store}>
-          <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail
+            isShowBack={true}
+            metrics={['Classification', 'Cycle Time']}
+            data={data}
+            onBack={() => 'back'}
+            errorMessage={''}
+          />
         </Provider>,
       );
 
@@ -140,7 +146,7 @@ describe('board', () => {
 
       render(
         <Provider store={setupStore()}>
-          <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+          <BoardDetail metrics={['Cycle Time']} data={data} onBack={() => 'back'} errorMessage={''} isShowBack={true} />
         </Provider>,
       );
 
@@ -151,12 +157,16 @@ describe('board', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         classification: null,
       });
-      const store = setupStore();
-      store.dispatch(updateMetrics([REQUIRED_DATA_LIST[3]]));
 
       render(
-        <Provider store={store}>
-          <BoardDetail data={data} onBack={() => 'back'} errorMessage={'Data loading failed'} />
+        <Provider store={setupStore()}>
+          <BoardDetail
+            metrics={['Classification']}
+            data={data}
+            onBack={() => 'back'}
+            errorMessage={'Data loading failed'}
+            isShowBack={false}
+          />
         </Provider>,
       );
 
@@ -181,12 +191,16 @@ describe('board', () => {
         { id: 2, name: 'name3', valuesList: [{ name: 'test3', value: 3 }] },
       ],
     });
-    const store = setupStore();
-    store.dispatch(updateMetrics(REQUIRED_DATA_LIST));
 
     render(
-      <Provider store={store}>
-        <BoardDetail data={data} onBack={() => 'back'} errorMessage={''} />
+      <Provider store={setupStore()}>
+        <BoardDetail
+          metrics={['Velocity', 'Classification', 'Cycle Time', 'Rework times']}
+          data={data}
+          onBack={() => 'back'}
+          isShowBack={true}
+          errorMessage={''}
+        />
       </Provider>,
     );
 

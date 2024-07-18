@@ -12,7 +12,7 @@ describe('DoraDetail', () => {
 
   it('should render a back link', () => {
     (reportMapper as jest.Mock).mockReturnValue({});
-    render(<DoraDetail data={data} onBack={jest.fn()} />);
+    render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
     expect(screen.getByTestId('ArrowBackIcon')).toBeInTheDocument();
     expect(screen.getByText('Back')).toBeInTheDocument();
   });
@@ -22,7 +22,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         deploymentFrequencyList: [{ id: 0, name: 'name1', valueList: [{ value: 1 }] }],
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       const deploymentFrequencyTable = screen.getByLabelText('Deployment Frequency');
       expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
       expect(deploymentFrequencyTable).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         deploymentFrequencyList: null,
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       expect(screen.queryAllByText('Deployment Frequency').length).toEqual(0);
     });
   });
@@ -43,7 +43,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         leadTimeForChangesList: [{ id: 0, name: 'name1', valuesList: [{ name: 'test1', value: 1 }] }],
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       const leadTimeForChangesTable = screen.getByTestId('Lead Time For Changes');
       expect(screen.getByText('Lead Time For Changes')).toBeInTheDocument();
       expect(leadTimeForChangesTable).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         leadTimeForChangesList: null,
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       expect(screen.queryAllByText('Lead Time For Changes').length).toEqual(0);
     });
   });
@@ -64,7 +64,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         devChangeFailureRateList: [{ id: 0, name: 'name1', valueList: [{ value: 1 }] }],
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       const devChangeFailureRateTable = screen.getByTestId('Dev Change Failure Rate');
       expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
       expect(devChangeFailureRateTable).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         devChangeFailureRateList: null,
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       expect(screen.queryAllByText('Dev Change Failure Rate').length).toEqual(0);
     });
   });
@@ -85,7 +85,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         devMeanTimeToRecoveryList: [{ id: 0, name: 'name1', valueList: [{ value: 1 }] }],
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       const devMeanTimeToRecoveryTable = screen.getByTestId('Dev Mean Time To Recovery');
       expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
       expect(devMeanTimeToRecoveryTable).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('DoraDetail', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         devMeanTimeToRecoveryList: null,
       });
-      render(<DoraDetail data={data} onBack={jest.fn()} />);
+      render(<DoraDetail data={data} onBack={jest.fn()} isShowBack={true} />);
       expect(screen.queryAllByText('Dev Mean Time To Recovery').length).toEqual(0);
     });
   });

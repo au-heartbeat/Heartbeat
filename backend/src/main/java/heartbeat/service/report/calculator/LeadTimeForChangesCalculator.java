@@ -2,6 +2,7 @@ package heartbeat.service.report.calculator;
 
 import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
+import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.LongStream;
 
 @Log4j2
@@ -20,7 +22,8 @@ import java.util.stream.LongStream;
 @Component
 public class LeadTimeForChangesCalculator {
 
-	public LeadTimeForChanges calculate(List<PipelineLeadTime> pipelineLeadTime) {
+	public LeadTimeForChanges calculate(List<PipelineLeadTime> pipelineLeadTime,
+			List<DeploymentEnvironment> deploymentEnvironmentList) {
 		int pipelineCount = pipelineLeadTime.size();
 		List<LeadTimeForChangesOfPipelines> leadTimeForChangesOfPipelines = new ArrayList<>();
 		AvgLeadTimeForChanges avgLeadTimeForChanges = new AvgLeadTimeForChanges();
@@ -80,6 +83,22 @@ public class LeadTimeForChangesCalculator {
 		avgLeadTimeForChanges.setPrLeadTime(avgPrLeadTime);
 		avgLeadTimeForChanges.setPipelineLeadTime(avgPipelineLeadTime);
 		avgLeadTimeForChanges.setTotalDelayTime(avgPrLeadTime + avgPipelineLeadTime);
+
+		List<LeadTimeForChangesOfPipelines> leftOverPipelines = deploymentEnvironmentList.stream()
+			.filter(deploymentEnvironment -> leadTimeForChangesOfPipelines.stream()
+				.noneMatch(leadTimeForChangesOfPipeline -> Objects.equals(deploymentEnvironment.getName(),
+						leadTimeForChangesOfPipeline.getName())
+						&& Objects.equals(deploymentEnvironment.getStep(), leadTimeForChangesOfPipeline.getStep())))
+			.map(it -> LeadTimeForChangesOfPipelines.builder()
+				.name(it.getName())
+				.step(it.getStep())
+				.pipelineLeadTime(0.0)
+				.prLeadTime(0.0)
+				.totalDelayTime(0.0)
+				.build())
+			.toList();
+
+		leadTimeForChangesOfPipelines.addAll(leftOverPipelines);
 
 		return new LeadTimeForChanges(leadTimeForChangesOfPipelines, avgLeadTimeForChanges);
 	}

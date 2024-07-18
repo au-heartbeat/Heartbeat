@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 
 @Component
-@Profile(value = "e2e")
+@Profile(value = { "e2e", "test" })
 public class MockJiraUriGenerator implements JiraUriGenerator {
 
 	@Value("${jira.url}")

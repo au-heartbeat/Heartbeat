@@ -56,7 +56,7 @@ public class CacheConfig {
 		cacheManager.createCache("commitInfo", getCacheConfiguration(CommitInfo.class));
 		cacheManager.createCache("pullRequestCommitInfo", getCacheConfiguration(List.class));
 		cacheManager.createCache("pullRequestListInfo", getCacheConfiguration(List.class));
-		cacheManager.createCache("calendarificResult", getCacheConfiguration(String.class, true));
+		cacheManager.createCache("calendarResult", getCacheConfiguration(String.class, true));
 		return cacheManager;
 	}
 

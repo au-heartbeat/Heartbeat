@@ -32,8 +32,8 @@ import {
   StyledTab,
   StyledTabs,
 } from '@src/containers/ReportStep/style';
+import { DEFAULT_SELECTED_PIPELINE, DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
-import { DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { DateRange, DateRangeList } from '@src/context/config/configSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
@@ -53,12 +53,14 @@ import { uniqueId } from 'lodash';
 
 export interface ReportContentProps {
   metrics: string[];
+  allPipelines: string[];
   dateRanges: DateRangeList;
   startToRequestData: () => void;
   reportInfos: IReportInfo[];
   handleSave?: () => void;
   reportId?: number;
   hideButtons?: boolean;
+  isSharePage: boolean;
 }
 
 const timeoutNotificationMessages = {
@@ -74,7 +76,17 @@ export interface DateRangeRequestResult {
 }
 
 const ReportContent = (props: ReportContentProps) => {
-  const { metrics, dateRanges, reportInfos, handleSave, reportId, startToRequestData, hideButtons = false } = props;
+  const {
+    metrics,
+    allPipelines,
+    dateRanges,
+    startToRequestData,
+    reportInfos,
+    handleSave,
+    reportId,
+    hideButtons = false,
+    isSharePage,
+  } = props;
 
   const dispatch = useAppDispatch();
 
@@ -104,6 +116,7 @@ const ReportContent = (props: ReportContentProps) => {
   const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
+  const [selectedPipeline, setSelectedPipeline] = useState<string>(DEFAULT_SELECTED_PIPELINE);
 
   const startDate = selectedDateRange?.startDate as string;
   const endDate = selectedDateRange?.endDate as string;
@@ -318,17 +331,38 @@ const ReportContent = (props: ReportContentProps) => {
   );
 
   const showDoraChart = (data: (ReportResponseDTO | undefined)[]) => (
-    <DoraMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} />
+    <DoraMetricsChart
+      data={data}
+      dateRanges={allDateRanges}
+      metrics={metrics}
+      allPipelines={allPipelines}
+      selectedPipeline={selectedPipeline}
+      onUpdatePipeline={(value: string) => {
+        setSelectedPipeline(value);
+      }}
+    />
   );
 
   const showBoardChart = (data?: IReportInfo[] | undefined) => (
     <BoardMetricsChart data={data} dateRanges={allDateRanges} metrics={metrics} />
   );
 
-  const showBoardDetail = (data?: ReportResponseDTO) => (
-    <BoardDetail onBack={() => handleBack()} data={data} errorMessage={getErrorMessage4Board()} />
+  const showBoardDetail = (data?: ReportResponseDTO) => {
+    const onlySelectClassification = metrics.length === 1 && metrics[0] === RequiredData.Classification;
+
+    return (
+      <BoardDetail
+        isShowBack={!onlySelectClassification || !isSharePage}
+        metrics={metrics}
+        onBack={() => handleBack()}
+        data={data}
+        errorMessage={getErrorMessage4Board()}
+      />
+    );
+  };
+  const showDoraDetail = (data: ReportResponseDTO) => (
+    <DoraDetail isShowBack={true} onBack={() => backToSummaryPage()} data={data} />
   );
-  const showDoraDetail = (data: ReportResponseDTO) => <DoraDetail onBack={() => backToSummaryPage()} data={data} />;
 
   const handleBack = () => {
     setDisplayType(DISPLAY_TYPE.LIST);
