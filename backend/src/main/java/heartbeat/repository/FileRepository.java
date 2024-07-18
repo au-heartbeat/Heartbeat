@@ -46,7 +46,7 @@ public class FileRepository {
 	public static final String SUFFIX_TMP = ".tmp";
 
 	@Value("${heartbeat.expiredDays}")
-	public int expiredDays = 7;
+	public int expiredDays;
 
 	private static final long ONE_DAY_MILLISECONDS = 1000L * 3600 * 24;
 
