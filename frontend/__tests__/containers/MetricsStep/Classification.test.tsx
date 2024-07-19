@@ -18,6 +18,7 @@ const mockTargetFields = [
   { flag: true, key: 'custom_field10060', name: 'Story testing' },
   { flag: false, key: 'custom_field10061', name: 'Story testing' },
 ];
+const classificationChartOptionLabelPrefix = 'Classification Generate Charts Option';
 
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
@@ -36,7 +37,7 @@ const RenderComponent = () => {
 
 const setup = async (initField: ITargetFieldType[]) => {
   const store = setupStore();
-  await store.dispatch(saveTargetFields(initField));
+  store.dispatch(saveTargetFields(initField));
   return render(
     <Provider store={store}>
       <RenderComponent />
@@ -55,6 +56,111 @@ describe('Classification', () => {
     expect(screen.getByText(mockTitle)).toBeInTheDocument();
     expect(screen.getByText(mockClassificationLabel)).toBeInTheDocument();
     expect(screen.getByText(mockClassificationChartLabel)).toBeInTheDocument();
+  });
+
+  describe('Classification Generate charts (optional)', () => {
+    it('should disable classification charts when classification is not selected', async () => {
+      await setup([
+        { flag: false, key: 'issue', name: 'Issue' },
+        { flag: false, key: 'type', name: 'Type' },
+        { flag: false, key: 'custom_field10060', name: 'Story testing' },
+        { flag: false, key: 'custom_field10061', name: 'Story testing' },
+      ]);
+
+      expect(screen.getByRole('combobox', { name: mockClassificationChartLabel })).toBeDisabled();
+    });
+
+    it('should enable classification charts when classification is selected', async () => {
+      await setup(mockTargetFields);
+
+      expect(screen.getByRole('combobox', { name: mockClassificationChartLabel })).not.toBeDisabled();
+    });
+
+    it('should show selected classification options when classification is selected', async () => {
+      await setup(mockTargetFields);
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+
+      await waitFor(() => {
+        const listBox = within(screen.getByRole('listbox'));
+        expect(screen.queryAllByRole('option')).toHaveLength(3);
+        expect(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} Issue`)).toBeInTheDocument();
+        expect(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} Story testing-1`)).toBeInTheDocument();
+      });
+    });
+
+    it('should show selected classification options when select a new classification', async () => {
+      await setup(mockTargetFields);
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+
+      expect(screen.queryAllByRole('option')).toHaveLength(3);
+
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationLabel }));
+      await userEvent.click(screen.getByRole('option', { name: /Type/i }));
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+
+      await waitFor(() => {
+        expect(screen.queryAllByRole('option')).toHaveLength(4);
+      });
+    });
+
+    it('should enable all option given selected classification is less than 4', async () => {
+      await setup(mockTargetFields);
+
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+      const listBox = within(screen.getByRole('listbox'));
+
+      await waitFor(() => {
+        expect(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`)).not.toHaveAttribute(
+          'aria-disabled',
+          'true',
+        );
+      });
+    });
+
+    it('should disable all option given selected classification is more than 4', async () => {
+      await setup([
+        { flag: true, key: 'issue', name: 'Issue' },
+        { flag: true, key: 'type', name: 'Type' },
+        { flag: true, key: 'custom_field10060', name: 'Story testing' },
+        { flag: true, key: 'custom_field10061', name: 'Story testing' },
+        { flag: true, key: 'more_than_four', name: 'Test' },
+      ]);
+
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+      const listBox = within(screen.getByRole('listbox'));
+
+      await waitFor(() => {
+        expect(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`)).toHaveAttribute(
+          'aria-disabled',
+          'true',
+        );
+      });
+    });
+
+    it('should disable other options given when select 4 classification charts', async () => {
+      const mockStatus = [
+        { flag: true, key: 'issue', name: 'Issue' },
+        { flag: true, key: 'type', name: 'Type' },
+        { flag: true, key: 'custom_field10060', name: 'Story testing' },
+        { flag: true, key: 'custom_field10061', name: 'Story testing' },
+        { flag: true, key: 'more_than_four', name: 'Test' },
+      ];
+      await setup(mockStatus);
+
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+      const listBox = within(screen.getByRole('listbox'));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} ${mockStatus[0].name}`));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} ${mockStatus[1].name}`));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} ${mockStatus[2].name}-1`));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} ${mockStatus[3].name}-2`));
+
+      await waitFor(() => {
+        expect(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} ${mockStatus[4].name}`)).toHaveAttribute(
+          'aria-disabled',
+          'true',
+        );
+      });
+    });
   });
 
   describe('Classification Distinguished by', () => {
@@ -176,99 +282,5 @@ describe('Classification', () => {
     });
   });
 
-  describe('Classification Generate charts (optional)', () => {
-    it('should disable classification charts when classification is not selected', async () => {
-      await setup([
-        { flag: false, key: 'issue', name: 'Issue' },
-        { flag: false, key: 'type', name: 'Type' },
-        { flag: false, key: 'custom_field10060', name: 'Story testing' },
-        { flag: false, key: 'custom_field10061', name: 'Story testing' },
-      ]);
 
-      expect(screen.getByRole('combobox', { name: mockClassificationChartLabel })).toBeDisabled();
-    });
-
-    it('should enable classification charts when classification is selected', async () => {
-      await setup(mockTargetFields);
-
-      expect(screen.getByRole('combobox', { name: mockClassificationChartLabel })).not.toBeDisabled();
-    });
-
-    it('should show selected classification options when classification is selected', async () => {
-      await setup(mockTargetFields);
-      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
-
-      expect(screen.queryAllByRole('option')).toHaveLength(3);
-      expect(screen.getByRole('option', { name: 'Issue' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Story testing-1' })).toBeInTheDocument();
-    });
-
-    it('should show selected classification options when select a new classification', async () => {
-      await setup(mockTargetFields);
-      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
-
-      expect(screen.queryAllByRole('option')).toHaveLength(3);
-
-      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationLabel }));
-      await userEvent.click(screen.getByRole('option', { name: /Type/i }));
-      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
-
-      await waitFor(() => {
-        expect(screen.queryAllByRole('option')).toHaveLength(4);
-      });
-    });
-
-    it('should enable all option given selected classification is less than 4', async () => {
-      await setup(mockTargetFields);
-
-      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
-      const listBox = within(screen.getByRole('listbox'));
-
-      expect(listBox.getByLabelText('Classification Generate Charts Option All')).not.toHaveAttribute(
-        'aria-disabled',
-        'true',
-      );
-    });
-
-    it('should disable all option given selected classification is more than 4', async () => {
-      await setup([
-        { flag: true, key: 'issue', name: 'Issue' },
-        { flag: true, key: 'type', name: 'Type' },
-        { flag: true, key: 'custom_field10060', name: 'Story testing' },
-        { flag: true, key: 'custom_field10061', name: 'Story testing' },
-        { flag: true, key: 'more_than_four', name: 'Test' },
-      ]);
-
-      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
-      const listBox = within(screen.getByRole('listbox'));
-
-      expect(listBox.getByLabelText('Classification Generate Charts Option All')).toHaveAttribute(
-        'aria-disabled',
-        'true',
-      );
-    });
-
-    it('should disable other options given when select 4 classification charts', async () => {
-      const mockStatus = [
-        { flag: true, key: 'issue', name: 'Issue' },
-        { flag: true, key: 'type', name: 'Type' },
-        { flag: true, key: 'custom_field10060', name: 'Story testing' },
-        { flag: true, key: 'custom_field10061', name: 'Story testing' },
-        { flag: true, key: 'more_than_four', name: 'Test' },
-      ];
-      await setup(mockStatus);
-
-      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
-      const listBox = within(screen.getByRole('listbox'));
-      await userEvent.click(listBox.getByLabelText(`Classification Generate Charts Option ${mockStatus[0].name}`));
-      await userEvent.click(listBox.getByLabelText(`Classification Generate Charts Option ${mockStatus[1].name}`));
-      await userEvent.click(listBox.getByLabelText(`Classification Generate Charts Option ${mockStatus[2].name}-1`));
-      await userEvent.click(listBox.getByLabelText(`Classification Generate Charts Option ${mockStatus[3].name}-2`));
-
-      expect(listBox.getByLabelText(`Classification Generate Charts Option ${mockStatus[4].name}`)).toHaveAttribute(
-        'aria-disabled',
-        'true',
-      );
-    });
-  });
 });
