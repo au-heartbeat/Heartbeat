@@ -127,7 +127,6 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       cycleTime,
       doneStatus,
       classifications,
-      classificationCharts,
       deployment,
       pipelineCrews,
       reworkTimesSettings,
@@ -161,7 +160,6 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
       doneStatus,
       reworkTimesSettings: filterExcludeReworkStatus(reworkTimesSettings),
       classification: classifications,
-      classificationCharts: classificationCharts,
       deployment: deployment?.map((item, index) => ({
         id: index,
         organization: item?.orgId,
