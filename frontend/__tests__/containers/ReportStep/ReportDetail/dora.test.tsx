@@ -12,7 +12,9 @@ describe('DoraDetail', () => {
 
   it('should render a back link', () => {
     (reportMapper as jest.Mock).mockReturnValue({});
+
     render(<DoraDetail data={data} onBack={jest.fn()} isShowBack />);
+
     expect(screen.getByTestId('ArrowBackIcon')).toBeInTheDocument();
     expect(screen.getByText('Back')).toBeInTheDocument();
   });
