@@ -77,9 +77,6 @@ export const ChartContainer = styled('div')({
   display: 'flex',
   width: '100%',
   flexWrap: 'wrap',
-  justifyContent: 'space-around',
+  justifyContent: 'space-between',
   marginTop: '1.25rem',
-  [theme.breakpoints.down('lg')]: {
-    gridTemplateColumns: '1fr',
-  },
 });
