@@ -38,6 +38,8 @@ public class JiraBoardSetting {
 
 	private List<TargetField> targetFields;
 
+	private List<String> classificationCharts;
+
 	private List<TargetField> overrideFields;
 
 	private ReworkTimesSetting reworkTimesSetting;
