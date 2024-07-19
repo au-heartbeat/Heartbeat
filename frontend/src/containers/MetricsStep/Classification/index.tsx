@@ -61,7 +61,6 @@ export const Classification = ({ targetFields, title, label }: classificationPro
       nextSelectedOptions =
         value[value.length - 1].key === ALL_OPTION_KEY ? (isChartAllSelected ? [] : chartOptions) : value;
     }
-    console.log(value, nextSelectedOptions);
     dispatch(saveClassificationCharts(nextSelectedOptions));
   };
 

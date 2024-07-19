@@ -18,7 +18,6 @@ const mockTargetFields = [
   { flag: true, key: 'custom_field10060', name: 'Story testing' },
   { flag: false, key: 'custom_field10061', name: 'Story testing' },
 ];
-const mockAllLabel = 'All';
 
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
