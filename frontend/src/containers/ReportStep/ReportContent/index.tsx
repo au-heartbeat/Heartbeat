@@ -337,9 +337,7 @@ const ReportContent = (props: ReportContentProps) => {
       metrics={metrics}
       allPipelines={allPipelines}
       selectedPipeline={selectedPipeline}
-      onUpdatePipeline={(value: string) => {
-        setSelectedPipeline(value);
-      }}
+      onUpdatePipeline={setSelectedPipeline}
     />
   );
 
@@ -354,14 +352,14 @@ const ReportContent = (props: ReportContentProps) => {
       <BoardDetail
         isShowBack={!onlySelectClassification || !isSharePage}
         metrics={metrics}
-        onBack={() => handleBack()}
+        onBack={handleBack}
         data={data}
         errorMessage={getErrorMessage4Board()}
       />
     );
   };
   const showDoraDetail = (data: ReportResponseDTO) => (
-    <DoraDetail isShowBack={true} onBack={() => backToSummaryPage()} data={data} />
+    <DoraDetail isShowBack={true} onBack={backToSummaryPage} data={data} />
   );
 
   const handleBack = () => {
