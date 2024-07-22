@@ -223,6 +223,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
     site: '2',
     projectKey: '2',
     boardId: '2',
+    classificationNames: ['Issue Type'],
     boardColumns: [{ name: 'In Analysis', value: 'In Analysis' }],
     treatFlagCardAsBlock: true,
     users: ['user1', 'user2'],
