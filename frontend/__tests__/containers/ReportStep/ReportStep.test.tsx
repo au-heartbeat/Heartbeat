@@ -822,7 +822,7 @@ describe('Report Step', () => {
       expect(addNotification).toHaveBeenCalledTimes(1);
     });
 
-    it('should correctly render dora chart when ', async () => {
+    it('should correctly render dora chart when classification names is not same completely', async () => {
       const mockReportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
       mockReportData.classificationList = [
         {
