@@ -103,6 +103,65 @@ describe('Classification', () => {
       });
     });
 
+    it('should remove selected classification charts when remove a classification', async () => {
+      await setup(mockTargetFields);
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+      const listBox = within(screen.getByRole('listbox'));
+      const chartFormItem = within(screen.getByLabelText('Classification Generate Charts'));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} Issue`));
+
+      await waitFor(() => {
+        expect(chartFormItem.getByRole('button', { name: 'Issue' })).toBeVisible();
+      });
+
+      const classificationFormItem = within(screen.getByLabelText('Classification Setting AutoComplete'));
+      await userEvent.click(
+        within(classificationFormItem.getByRole('button', { name: 'Issue' })).getByTestId('CancelIcon'),
+      );
+
+      await waitFor(() => {
+        expect(chartFormItem.queryByRole('button', { name: 'Issue' })).toBeNull();
+      });
+    });
+
+    it('should select classification charts correctly', async () => {
+      await setup(mockTargetFields);
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+      const listBox = within(screen.getByRole('listbox'));
+      const chartFormItem = within(screen.getByLabelText('Classification Generate Charts'));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} Issue`));
+
+      await waitFor(() => {
+        expect(chartFormItem.getByRole('button', { name: 'Issue' })).toBeVisible();
+      });
+
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} Issue`));
+
+      await waitFor(() => {
+        expect(chartFormItem.queryByRole('button', { name: 'Issue' })).toBeNull();
+      });
+    });
+
+    it('should select all classification charts correctly', async () => {
+      await setup(mockTargetFields);
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+      const listBox = within(screen.getByRole('listbox'));
+      const chartFormItem = within(screen.getByLabelText('Classification Generate Charts'));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`));
+
+      await waitFor(() => {
+        expect(chartFormItem.getByRole('button', { name: 'Issue' })).toBeVisible();
+        expect(chartFormItem.getByRole('button', { name: 'Story testing-1' })).toBeVisible();
+      });
+
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`));
+
+      await waitFor(() => {
+        expect(chartFormItem.queryByRole('button', { name: 'Issue' })).toBeNull();
+        expect(chartFormItem.queryByRole('button', { name: 'Story testing-1' })).toBeNull();
+      });
+    });
+
     it('should enable all option given selected classification is less than 4', async () => {
       await setup(mockTargetFields);
 
