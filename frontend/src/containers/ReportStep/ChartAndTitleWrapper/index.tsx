@@ -85,6 +85,7 @@ const ChartAndTitleWrapper = forwardRef(
             <RepeatIcon
               color='secondary'
               fontSize='large'
+              aria-label={`classification ${subTitle!.toLowerCase()} switch chart`}
               sx={{
                 position: 'absolute',
                 right: '1.75rem',
@@ -109,7 +110,10 @@ const ChartAndTitleWrapper = forwardRef(
             </Tooltip>
           )}
         </ChartTitle>
-        <ChartWrapper ref={ref} aria-label={trendInfo.type.toLowerCase() + ' chart'}></ChartWrapper>
+        <ChartWrapper
+          ref={ref}
+          aria-label={trendInfo.type.toLowerCase() + (subTitle ? ` ${subTitle!.toLowerCase()}` : '') + ' chart'}
+        ></ChartWrapper>
       </StyledChartAndTitleWrapper>
     );
   },

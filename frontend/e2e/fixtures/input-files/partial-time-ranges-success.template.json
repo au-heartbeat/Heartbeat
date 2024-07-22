@@ -92,6 +92,7 @@
     "customfield_10027",
     "customfield_10060"
   ],
+  "classificationCharts": ["issuetype", "parent", "customfield_10021", "project"],
   "deployment": [
     {
       "id": 0,
