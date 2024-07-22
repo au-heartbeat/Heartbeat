@@ -1137,6 +1137,7 @@ describe('saveMetricsSetting reducer', () => {
               { key: 'issuetype', name: 'Issue Type', flag: false },
               { key: 'parent', name: 'Parent', flag: true },
             ],
+            classificationCharts: [{ key: 'parent', name: 'Parent', flag: true }],
           },
           updateMetricsState({
             ...mockJiraResponse,
@@ -1159,6 +1160,7 @@ describe('saveMetricsSetting reducer', () => {
           { key: 'parent', name: 'Parent', flag: true },
           { key: 'customfield_10061', name: 'Story testing', flag: false },
         ]);
+        expect(savedMetricsSetting.classificationCharts).toEqual([{ key: 'parent', name: 'Parent', flag: true }]);
       },
     );
 
