@@ -3,6 +3,7 @@ import saveMetricsSettingReducer, {
   deleteADeploymentFrequencySetting,
   initDeploymentFrequencySettings,
   resetMetricData,
+  saveClassificationCharts,
   saveDoneColumn,
   savePipelineCrews,
   saveTargetFields,
@@ -54,6 +55,7 @@ const initState = {
   shouldRetryPipelineConfig: false,
   jiraColumns: [],
   targetFields: [],
+  classificationCharts: [],
   users: [],
   pipelineCrews: [],
   doneColumn: [],
@@ -75,6 +77,7 @@ const initState = {
     },
     importedDoneStatus: [],
     importedClassification: [],
+    importedClassificationCharts: [],
     importedDeployment: [],
     importedLeadTime: [],
     importedAdvancedSettings: null,
@@ -123,6 +126,7 @@ describe('saveMetricsSetting reducer', () => {
 
     expect(savedMetricsSetting.users).toEqual([]);
     expect(savedMetricsSetting.targetFields).toEqual([]);
+    expect(savedMetricsSetting.classificationCharts).toEqual([]);
     expect(savedMetricsSetting.jiraColumns).toEqual([]);
     expect(savedMetricsSetting.doneColumn).toEqual([]);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([]);
@@ -138,6 +142,7 @@ describe('saveMetricsSetting reducer', () => {
       },
       importedDoneStatus: [],
       importedClassification: [],
+      importedClassificationCharts: [],
       importedDeployment: [],
       importedPipelineCrews: [],
       importedAdvancedSettings: null,
@@ -163,6 +168,16 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.targetFields).toEqual(mockUpdatedTargetFields);
     expect(savedMetricsSetting.users).toEqual([]);
     expect(savedMetricsSetting.jiraColumns).toEqual([]);
+  });
+
+  it('should store updated classification charts when its value changed', () => {
+    const mockClassificationCharts = [{ key: 'issuetype', name: 'Issue Type', flag: true }];
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      initState,
+      saveClassificationCharts(mockClassificationCharts),
+    );
+
+    expect(savedMetricsSetting.classificationCharts).toEqual(mockClassificationCharts);
   });
 
   it('should store updated doneColumn when its value changed', () => {
@@ -217,6 +232,7 @@ describe('saveMetricsSetting reducer', () => {
       },
       doneStatus: ['mockDoneStatus'],
       classification: ['mockClassification'],
+      classificationCharts: ['mockClassification'],
       deployment: [{ id: 0, organization: 'organization', pipelineName: 'pipelineName', step: 'step' }],
       leadTime: [],
       pipelineCrews: [],
@@ -241,6 +257,7 @@ describe('saveMetricsSetting reducer', () => {
       },
       importedDoneStatus: mockMetricsImportedData.doneStatus,
       importedClassification: mockMetricsImportedData.classification,
+      importedClassificationCharts: mockMetricsImportedData.classificationCharts,
       importedDeployment: mockMetricsImportedData.deployment,
       importedLeadTime: mockMetricsImportedData.leadTime,
       importedAdvancedSettings: mockMetricsImportedData.advancedSettings,
@@ -287,6 +304,7 @@ describe('saveMetricsSetting reducer', () => {
           ...initState.importedData,
           importedCrews: ['User B', 'User C'],
           importedClassification: ['issuetype'],
+          importedClassificationCharts: ['issuetype'],
           importedCycleTime: {
             importedCycleTimeSettings: [{ Done: 'Done' }, { Testing: 'mockOption' }],
             importedTreatFlagCardAsBlock: true,
@@ -298,6 +316,7 @@ describe('saveMetricsSetting reducer', () => {
     );
 
     expect(savedMetricsSetting.targetFields).toEqual([{ key: 'issuetype', name: 'Issue Type', flag: true }]);
+    expect(savedMetricsSetting.classificationCharts).toEqual([{ key: 'issuetype', name: 'Issue Type', flag: true }]);
     expect(savedMetricsSetting.users).toEqual(['User B']);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([
       { column: 'Done', status: 'DONE', value: 'Done' },
@@ -382,6 +401,7 @@ describe('saveMetricsSetting reducer', () => {
           ...initState.importedData,
           importedCrews: ['User B', 'User C'],
           importedClassification: ['issuetype'],
+          importedClassificationCharts: [],
           importedCycleTime: {
             importedCycleTimeSettings: [{ Done: 'Done' }, { Testing: 'mockOption' }],
             importedTreatFlagCardAsBlock: true,
@@ -393,6 +413,7 @@ describe('saveMetricsSetting reducer', () => {
     );
 
     expect(savedMetricsSetting.targetFields).toEqual([{ key: 'issuetype', name: 'Issue Type', flag: true }]);
+    expect(savedMetricsSetting.classificationCharts).toEqual([]);
     expect(savedMetricsSetting.users).toEqual(['User B']);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([
       { column: 'Done', status: 'DONE', value: NO_RESULT_DASH },
@@ -463,6 +484,7 @@ describe('saveMetricsSetting reducer', () => {
     );
 
     expect(savedMetricsSetting.targetFields).toEqual([{ key: 'issuetype', name: 'Issue Type', flag: false }]);
+    expect(savedMetricsSetting.classificationCharts).toEqual([]);
     expect(savedMetricsSetting.users).toEqual(['User A', 'User B']);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([
       { column: 'Done', status: 'DONE', value: NO_RESULT_DASH },
@@ -1132,6 +1154,7 @@ describe('saveMetricsSetting reducer', () => {
               { key: 'issuetype', name: 'Issue Type', flag: false },
               { key: 'parent', name: 'Parent', flag: true },
             ],
+            classificationCharts: [{ key: 'parent', name: 'Parent', flag: true }],
           },
           updateMetricsState({
             ...mockJiraResponse,
@@ -1154,6 +1177,7 @@ describe('saveMetricsSetting reducer', () => {
           { key: 'parent', name: 'Parent', flag: true },
           { key: 'customfield_10061', name: 'Story testing', flag: false },
         ]);
+        expect(savedMetricsSetting.classificationCharts).toEqual([{ key: 'parent', name: 'Parent', flag: true }]);
       },
     );
 

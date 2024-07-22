@@ -63,6 +63,7 @@ export const partialMetricsShowChart = {
   },
   doneStatus: ['DONE'],
   classification: [],
+  classificationCharts: [],
   deployment: [
     {
       id: 0,
