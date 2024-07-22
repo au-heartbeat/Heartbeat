@@ -319,8 +319,8 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics, classificationCha
       {metrics.includes(RequiredData.ReworkTimes) && (
         <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} isLoading={!isReworkFinished} />
       )}
-      {classificationCharts.map((it, index) => (
-        <ClassificationChart key={index} classification={it} mappedData={mappedData} dateRanges={dateRanges} />
+      {classificationCharts.map((it) => (
+        <ClassificationChart key={it} classification={it} mappedData={mappedData} dateRanges={dateRanges} />
       ))}
     </ChartContainer>
   );

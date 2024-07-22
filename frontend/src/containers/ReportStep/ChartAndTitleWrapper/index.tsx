@@ -112,7 +112,7 @@ const ChartAndTitleWrapper = forwardRef(
         </ChartTitle>
         <ChartWrapper
           ref={ref}
-          aria-label={trendInfo.type.toLowerCase() + (subTitle ? ` ${subTitle!.toLowerCase()}` : '') + ' chart'}
+          aria-label={trendInfo.type.toLowerCase() + (subTitle ? ` ${subTitle.toLowerCase()}` : '') + ' chart'}
         ></ChartWrapper>
       </StyledChartAndTitleWrapper>
     );

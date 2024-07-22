@@ -24,8 +24,8 @@ function extractClassificationData(classification: string, dateRanges: string[],
     .map((it) => it!.valueList)
     .forEach((it) => {
       allSubtitle.map((subtitle) => {
-        if (it!.every((item) => item.name !== subtitle)) {
-          it!.push({ name: subtitle, value: '0.00%' });
+        if (it.every((item) => item.name !== subtitle)) {
+          it.push({ name: subtitle, value: '0.00%' });
         }
       });
     });
@@ -63,12 +63,10 @@ function extractClassificationData(classification: string, dateRanges: string[],
 }
 
 export const ClassificationChart = ({
-  key,
   classification,
   mappedData,
   dateRanges,
 }: {
-  key: number;
   classification: string;
   mappedData: ReportResponse[];
   dateRanges: string[];
@@ -86,15 +84,12 @@ export const ClassificationChart = ({
   }, [classificationRef, classificationDataOption]);
 
   return (
-    <>
-      <ChartAndTitleWrapper
-        subTitle={classification}
-        isLoading={!isClassificationFinished}
-        trendInfo={classificationData.trendInfo}
-        key={key}
-        ref={classificationRef}
-        isShowRepeat
-      />
-    </>
+    <ChartAndTitleWrapper
+      subTitle={classification}
+      isLoading={!isClassificationFinished}
+      trendInfo={classificationData.trendInfo}
+      ref={classificationRef}
+      isShowRepeat
+    />
   );
 };
