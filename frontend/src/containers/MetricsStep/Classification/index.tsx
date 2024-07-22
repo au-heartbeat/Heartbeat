@@ -42,8 +42,9 @@ export const Classification = ({ targetFields, title, label }: classificationPro
     if (value.length === 0) {
       nextSelectedOptions = [];
     } else {
+      const checkAll = isAllSelected ? [] : targetFieldsWithSuffix;
       nextSelectedOptions =
-        value[value.length - 1].key === ALL_OPTION_KEY ? (isAllSelected ? [] : targetFieldsWithSuffix) : value;
+        value[value.length - 1].key === ALL_OPTION_KEY ? checkAll : value;
     }
     const updatedTargetFields = targetFields.map((targetField) => ({
       ...targetField,
@@ -58,8 +59,8 @@ export const Classification = ({ targetFields, title, label }: classificationPro
     if (value.length === 0) {
       nextSelectedOptions = [];
     } else {
-      nextSelectedOptions =
-        value[value.length - 1].key === ALL_OPTION_KEY ? (isChartAllSelected ? [] : chartOptions) : value;
+      const checkAll = isChartAllSelected ? [] : chartOptions;
+      nextSelectedOptions = value[value.length - 1].key === ALL_OPTION_KEY ? checkAll : value;
     }
     dispatch(saveClassificationCharts(nextSelectedOptions));
   };
