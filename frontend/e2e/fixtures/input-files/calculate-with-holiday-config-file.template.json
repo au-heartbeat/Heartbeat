@@ -82,6 +82,7 @@
     "customfield_10027",
     "customfield_10060"
   ],
+  "classificationCharts": ["issuetype", "assignee"],
   "advancedSettings": null,
   "deployment": [
     {
