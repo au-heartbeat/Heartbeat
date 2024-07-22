@@ -78,9 +78,7 @@ export class ReportStep {
   readonly cycleTimeAllocationChart: Locator;
   readonly reworkChart: Locator;
   readonly classificationIssueTypeChart: Locator;
-  readonly classificationParentChart: Locator;
-  readonly classificationProjectChart: Locator;
-  readonly classificationFlaggedChart: Locator;
+  readonly classificationAssigneeChart: Locator;
   readonly leadTimeForChangeChart: Locator;
   readonly deploymentFrequencyChart: Locator;
   readonly changeFailureRateChart: Locator;
@@ -111,9 +109,7 @@ export class ReportStep {
   readonly deploymentFrequencyTrendIcon: Locator;
   readonly leadTimeForChangesTrendIcon: Locator;
   readonly classificationIssueTypeChartSwitchIcon: Locator;
-  readonly classificationParentChartSwitchIcon: Locator;
-  readonly classificationProjectChartSwitchIcon: Locator;
-  readonly classificationFlaggedChartSwitchIcon: Locator;
+  readonly classificationAssigneeChartSwitchIcon: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -174,9 +170,7 @@ export class ReportStep {
     this.cycleTimeAllocationChart = this.page.getByLabel('cycle time allocation chart');
     this.reworkChart = this.page.getByLabel('rework chart');
     this.classificationIssueTypeChart = this.page.getByLabel('classification issue type chart');
-    this.classificationParentChart = this.page.getByLabel('classification parent chart');
-    this.classificationFlaggedChart = this.page.getByLabel('classification flagged chart');
-    this.classificationProjectChart = this.page.getByLabel('classification project chart');
+    this.classificationAssigneeChart = this.page.getByLabel('classification assignee chart');
     this.leadTimeForChangeChart = this.page.getByLabel('lead time for changes chart');
     this.deploymentFrequencyChart = this.page.getByLabel('deployment frequency chart');
     this.changeFailureRateChart = this.page.getByLabel('change failure rate chart');
@@ -199,9 +193,7 @@ export class ReportStep {
     this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend down');
 
     this.classificationIssueTypeChartSwitchIcon = this.page.getByLabel('classification issue type switch chart');
-    this.classificationParentChartSwitchIcon = this.page.getByLabel('classification parent switch chart');
-    this.classificationFlaggedChartSwitchIcon = this.page.getByLabel('classification flagged switch chart');
-    this.classificationProjectChartSwitchIcon = this.page.getByLabel('classification project switch chart');
+    this.classificationAssigneeChartSwitchIcon = this.page.getByLabel('classification assignee switch chart');
 
     this.doraPipelineSelector = this.page.getByLabel('Pipeline Selector').first();
     this.leadTimeForChangesTrendContainer = this.page.getByLabel('lead time for changes trend container');
@@ -729,18 +721,14 @@ export class ReportStep {
     showCycleTimeAllocationChart,
     showReworkChart,
     showClassificationIssueTypeChart = false,
-    showClassificationProjectChart = false,
-    showClassificationFlaggedChart = false,
-    showClassificationParentChart = false,
+    showClassificationAssigneeChart = false,
   }: {
     showVelocityChart: boolean;
     showCycleTimeChart: boolean;
     showCycleTimeAllocationChart: boolean;
     showReworkChart: boolean;
     showClassificationIssueTypeChart?: boolean;
-    showClassificationProjectChart?: boolean;
-    showClassificationFlaggedChart?: boolean;
-    showClassificationParentChart?: boolean;
+    showClassificationAssigneeChart?: boolean;
   }) {
     expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('true');
@@ -816,26 +804,12 @@ export class ReportStep {
       await expect(this.classificationIssueTypeChart).not.toBeVisible();
       await expect(this.classificationIssueTypeChartSwitchIcon).not.toBeVisible();
     }
-    if (showClassificationProjectChart) {
-      await expect(this.classificationProjectChart).toBeVisible();
-      await expect(this.classificationProjectChartSwitchIcon).toBeVisible();
+    if (showClassificationAssigneeChart) {
+      await expect(this.classificationAssigneeChart).toBeVisible();
+      await expect(this.classificationAssigneeChartSwitchIcon).toBeVisible();
     } else {
-      await expect(this.classificationProjectChart).not.toBeVisible();
-      await expect(this.classificationProjectChartSwitchIcon).not.toBeVisible();
-    }
-    if (showClassificationFlaggedChart) {
-      await expect(this.classificationFlaggedChart).toBeVisible();
-      await expect(this.classificationFlaggedChartSwitchIcon).toBeVisible();
-    } else {
-      await expect(this.classificationFlaggedChart).not.toBeVisible();
-      await expect(this.classificationFlaggedChartSwitchIcon).not.toBeVisible();
-    }
-    if (showClassificationParentChart) {
-      await expect(this.classificationParentChart).toBeVisible();
-      await expect(this.classificationParentChartSwitchIcon).toBeVisible();
-    } else {
-      await expect(this.classificationParentChart).not.toBeVisible();
-      await expect(this.classificationParentChartSwitchIcon).not.toBeVisible();
+      await expect(this.classificationAssigneeChart).not.toBeVisible();
+      await expect(this.classificationAssigneeChartSwitchIcon).not.toBeVisible();
     }
   }
 
