@@ -261,6 +261,7 @@ const MetricsStepper = () => {
       pipelineCrews,
       doneColumn,
       targetFields,
+      classificationCharts,
       cycleTimeSettings,
       cycleTimeSettingsType,
       treatFlagCardAsBlock,
@@ -283,6 +284,7 @@ const MetricsStepper = () => {
       classification: targetFields
         ?.filter((item: { name: string; key: string; flag: boolean }) => item.flag)
         ?.map((item: { name: string; key: string; flag: boolean }) => item.key),
+      classificationCharts: classificationCharts?.map(({ key }: { key: string }) => key),
       advancedSettings: importedData.importedAdvancedSettings,
       deployment: deploymentFrequencySettings,
       leadTime: leadTimeForChanges,

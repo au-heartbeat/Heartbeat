@@ -26,7 +26,7 @@ const ShareReport = () => {
     return (
       <StyledPageContentWrapper>
         <ReportContent
-          isSharePage={true}
+          isSharePage
           metrics={metrics}
           classificationCharts={classificationCharts}
           allPipelines={allPipelines}

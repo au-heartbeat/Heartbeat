@@ -91,6 +91,7 @@ export interface NewFileConfig {
   };
   doneStatus?: string[];
   classification?: string[];
+  classificationCharts?: string[];
   deployment?: NewConfigSetting[];
   leadTime?: NewConfigSetting[];
   pipelineCrews?: string[];

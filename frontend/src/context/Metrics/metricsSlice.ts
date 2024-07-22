@@ -67,6 +67,7 @@ export interface ISavedMetricsSettingState {
     };
     importedDoneStatus: string[];
     importedClassification: string[];
+    importedClassificationCharts: string[];
     importedDeployment: IPipelineConfig[];
     importedAdvancedSettings: { storyPoint: string; flag: string } | null;
     reworkTimesSettings: IReworkConfig;
@@ -105,6 +106,7 @@ const initialState: ISavedMetricsSettingState = {
     },
     importedDoneStatus: [],
     importedClassification: [],
+    importedClassificationCharts: [],
     importedDeployment: [],
     importedAdvancedSettings: null,
     reworkTimesSettings: {
@@ -176,33 +178,40 @@ const setPipelineCrews = (isProjectCreated: boolean, pipelineCrews: string[], cu
   return intersection(pipelineCrews, currentCrews);
 };
 
-const setSelectTargetFields = (
+const getClassifications = (
   state: ISavedMetricsSettingState,
   targetFields: { name: string; key: string; flag: boolean }[],
   isProjectCreated: boolean,
 ) => {
   if (isProjectCreated) {
-    return setCreateSelectTargetFields(state, targetFields);
+    return getCreateSelectClassifications(state, targetFields);
   } else {
-    return setImportSelectTargetFields(state, targetFields);
+    return getImportSelectClassifications(state, targetFields);
   }
 };
 
-const setImportSelectTargetFields = (
+const getImportSelectClassifications = (
   state: ISavedMetricsSettingState,
   targetFields: { name: string; key: string; flag: boolean }[],
 ) => {
   if (state.firstTimeRoadMetricData) {
-    return targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
+    const newTargetFields = targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
       ...item,
       flag: state.importedData.importedClassification.includes(item.key),
     }));
+    const newClassificationCharts = newTargetFields.filter(
+      ({ key, flag }) => state.importedData.importedClassificationCharts.includes(key) && flag,
+    );
+    return {
+      targetFields: newTargetFields,
+      classificationCharts: newClassificationCharts,
+    };
   } else {
     return getTargetFieldsIntersection(state, targetFields);
   }
 };
 
-const setCreateSelectTargetFields = (
+const getCreateSelectClassifications = (
   state: ISavedMetricsSettingState,
   targetFields: {
     name: string;
@@ -211,7 +220,10 @@ const setCreateSelectTargetFields = (
   }[],
 ) => {
   if (state.firstTimeRoadMetricData) {
-    return targetFields;
+    return {
+      targetFields,
+      classificationCharts: [],
+    };
   } else {
     return getTargetFieldsIntersection(state, targetFields);
   }
@@ -226,10 +238,17 @@ const getTargetFieldsIntersection = (
   }[],
 ) => {
   const selectedFields = state.targetFields.filter((value) => value.flag).map((value) => value.key);
-  return targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
+  const newTargetFields = targetFields.map((item: { name: string; key: string; flag: boolean }) => ({
     ...item,
     flag: selectedFields.includes(item.key),
   }));
+  const newClassificationCharts = state.classificationCharts.filter(({ key }) =>
+    newTargetFields.find(({ key: targetKey, flag }) => key === targetKey && flag),
+  );
+  return {
+    targetFields: newTargetFields,
+    classificationCharts: newClassificationCharts,
+  };
 };
 
 const getCycleTimeSettingsByColumn = (
@@ -362,6 +381,7 @@ export const metricsSlice = createSlice({
         cycleTime,
         doneStatus,
         classification,
+        classificationCharts,
         deployment,
         advancedSettings,
         leadTime,
@@ -378,6 +398,8 @@ export const metricsSlice = createSlice({
       state.importedData.importedAssigneeFilter = assigneeFilter || state.importedData.importedAssigneeFilter;
       state.importedData.importedDoneStatus = doneStatus || state.importedData.importedDoneStatus;
       state.importedData.importedClassification = classification || state.importedData.importedClassification;
+      state.importedData.importedClassificationCharts =
+        classificationCharts || state.importedData.importedClassificationCharts;
       state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
       state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvancedSettings;
       state.importedData.reworkTimesSettings = reworkTimesSettings || state.importedData.reworkTimesSettings;
@@ -396,7 +418,9 @@ export const metricsSlice = createSlice({
       state.users = isProjectCreated
         ? setCreateSelectUsers(state, users)
         : setImportSelectUsers(state, users, importedCrews);
-      state.targetFields = setSelectTargetFields(state, targetFields, isProjectCreated);
+      const classification = getClassifications(state, targetFields, isProjectCreated);
+      state.targetFields = classification.targetFields;
+      state.classificationCharts = classification.classificationCharts;
 
       if (!isProjectCreated && importedCycleTime?.importedCycleTimeSettings?.length > 0) {
         const importedCycleTimeSettingsKeys = importedCycleTime.importedCycleTimeSettings.flatMap((obj) =>
@@ -691,6 +715,7 @@ export const selectShouldGetPipelineConfig = (state: RootState) => state.metrics
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
 export const selectReworkTimesSettings = (state: RootState) => state.metrics.importedData.reworkTimesSettings;
+
 export const selectClassificationCharts = (state: RootState) => state.metrics.classificationCharts;
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings;
 export const selectMetricsContent = (state: RootState) => state.metrics;
