@@ -101,6 +101,7 @@ export enum ChartType {
   CycleTime = 'Cycle Time',
   CycleTimeAllocation = 'Cycle Time Allocation',
   Rework = 'Rework',
+  Classification = 'Classification',
   LeadTimeForChanges = 'Lead Time For Changes',
   DeploymentFrequency = 'Deployment Frequency',
   DevChangeFailureRate = 'Dev Change Failure Rate',
@@ -126,6 +127,7 @@ export const CHART_TREND_TIP = {
   [ChartType.DeploymentFrequency]: 'Mean Time To Recovery',
   [ChartType.DevChangeFailureRate]: 'Dev Change Failure Rate',
   [ChartType.DevMeanTimeToRecovery]: 'Dev Mean Time To Recovery',
+  [ChartType.Classification]: 'Classification',
 };
 
 export const UP_TREND_IS_BETTER: ChartType[] = [

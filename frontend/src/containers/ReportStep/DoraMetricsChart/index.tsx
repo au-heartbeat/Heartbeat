@@ -319,20 +319,20 @@ export const DoraMetricsChart = ({
   const meanTimeToRecoveryDataOption = meanTimeToRecoveryData && oneLineOptionMapper(meanTimeToRecoveryData);
 
   useEffect(() => {
-    showChart(leadTimeForChange.current, isLeadTimeForChangesFinished, leadTimeForChangeDataOption);
-  }, [leadTimeForChange, leadTimeForChangeDataOption, isLeadTimeForChangesFinished]);
+    showChart(leadTimeForChange.current, leadTimeForChangeDataOption);
+  }, [leadTimeForChange, leadTimeForChangeDataOption]);
 
   useEffect(() => {
-    showChart(deploymentFrequency.current, isDeploymentFrequencyFinished, deploymentFrequencyDataOption);
-  }, [deploymentFrequency, deploymentFrequencyDataOption, isDeploymentFrequencyFinished]);
+    showChart(deploymentFrequency.current, deploymentFrequencyDataOption);
+  }, [deploymentFrequency, deploymentFrequencyDataOption]);
 
   useEffect(() => {
-    showChart(changeFailureRate.current, isDevChangeFailureRateFinished, changeFailureRateDataOption);
-  }, [changeFailureRate, changeFailureRateDataOption, isDevChangeFailureRateFinished]);
+    showChart(changeFailureRate.current, changeFailureRateDataOption);
+  }, [changeFailureRate, changeFailureRateDataOption]);
 
   useEffect(() => {
-    showChart(meanTimeToRecovery.current, isDevMeanTimeToRecoveryValueListFinished, meanTimeToRecoveryDataOption);
-  }, [meanTimeToRecovery, meanTimeToRecoveryDataOption, isDevMeanTimeToRecoveryValueListFinished]);
+    showChart(meanTimeToRecovery.current, meanTimeToRecoveryDataOption);
+  }, [meanTimeToRecovery, meanTimeToRecoveryDataOption]);
 
   const pipelineNameOptions = [DEFAULT_SELECTED_PIPELINE, ...allPipelines];
 

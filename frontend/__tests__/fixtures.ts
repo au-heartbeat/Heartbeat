@@ -808,7 +808,7 @@ export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
   },
   classificationList: [
     {
-      fieldName: 'FS Work Type',
+      fieldName: 'Issue Type',
       pairList: [
         {
           name: 'Feature Work - Planned',

@@ -20,6 +20,7 @@ export const useShareReportEffect = () => {
   const [dateRanges, setDateRanges] = useState<DateRange[]>([]);
   const [reportInfos, setReportInfos] = useState<IReportInfo[]>([]);
   const [metrics, setMetrics] = useState<string[]>([]);
+  const [classificationCharts, setClassificationCharts] = useState<string[]>([]);
   const [allPipelines, setAllPipelines] = useState<string[]>([]);
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
@@ -38,6 +39,7 @@ export const useShareReportEffect = () => {
 
       setMetrics(reportURLsRes.data.metrics);
       setAllPipelines(reportURLsRes.data.pipelines);
+      setClassificationCharts(reportURLsRes.data.classificationCharts);
       setDateRanges(dateRanges);
       setReportInfos(reportInfos);
     } catch (e) {
@@ -115,6 +117,7 @@ export const useShareReportEffect = () => {
     dateRanges,
     reportInfos,
     metrics,
+    classificationCharts,
     isExpired,
     getData,
     allPipelines,

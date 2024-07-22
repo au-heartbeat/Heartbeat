@@ -28,7 +28,11 @@ import {
   updateMetrics,
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
-import { addADeploymentFrequencySetting, updateDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
+import {
+  addADeploymentFrequencySetting,
+  saveClassificationCharts,
+  updateDeploymentFrequencySettings,
+} from '@src/context/Metrics/metricsSlice';
 import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { closeNotification } from '@src/context/notification/NotificationSlice';
@@ -155,6 +159,12 @@ describe('Report Step', () => {
     store.dispatch(addADeploymentFrequencySetting());
     store.dispatch(
       updateDeploymentFrequencySettings({ updateId: 1, label: 'organization', value: 'mock organization' }),
+    );
+    store.dispatch(
+      saveClassificationCharts([
+        { key: 'issuetype', name: 'Issue Type', flag: true },
+        { key: 'parent', name: 'Parent', flag: true },
+      ]),
     );
     store.dispatch(
       updateDeploymentFrequencySettings({ updateId: 1, label: 'pipelineName', value: 'mock pipeline name' }),
@@ -708,7 +718,7 @@ describe('Report Step', () => {
     });
 
     it('should return undefined when div is null', async () => {
-      const result = showChart(null, false, {});
+      const result = showChart(null, {});
 
       expect(result).toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(0);
@@ -719,7 +729,7 @@ describe('Report Step', () => {
     it('should return function when div is not null', async () => {
       const div = document.createElement('div');
 
-      const disposeFunction = showChart(div, false, {});
+      const disposeFunction = showChart(div, {});
       window.dispatchEvent(new Event('resize'));
       disposeFunction!();
 
@@ -733,7 +743,7 @@ describe('Report Step', () => {
     it('should not resize when dispatch resize event after dispose', async () => {
       const div = document.createElement('div');
 
-      const disposeFunction = showChart(div, false, {});
+      const disposeFunction = showChart(div, {});
       disposeFunction!();
       window.dispatchEvent(new Event('resize'));
 
@@ -747,7 +757,7 @@ describe('Report Step', () => {
     it('should return hide loading when finished', async () => {
       const div = document.createElement('div');
 
-      const disposeFunction = showChart(div, true, {});
+      const disposeFunction = showChart(div, {});
       disposeFunction!();
 
       expect(disposeFunction).not.toBeUndefined();
@@ -809,6 +819,43 @@ describe('Report Step', () => {
       expect(addNotification).toHaveBeenCalledWith({
         message: MESSAGE.EXPIRE_INFORMATION,
       });
+      expect(addNotification).toHaveBeenCalledTimes(1);
+    });
+
+    it('should correctly render dora chart when ', async () => {
+      const mockReportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
+      mockReportData.classificationList = [
+        {
+          fieldName: 'Issue Type',
+          pairList: [
+            {
+              name: 'Feature Work - Planned',
+              value: 0.5714,
+            },
+          ],
+        },
+        {
+          fieldName: 'Issue Type',
+          pairList: [
+            {
+              name: 'Feature Work - Planned',
+              value: 0.5714,
+            },
+            {
+              name: 'Feature Work - Planned2',
+              value: 0.5714,
+            },
+          ],
+        },
+      ];
+
+      reportHook.current.reportInfos[0].reportData = mockReportData;
+
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      await userEvent.click(switchChartButton);
+
       expect(addNotification).toHaveBeenCalledTimes(1);
     });
 

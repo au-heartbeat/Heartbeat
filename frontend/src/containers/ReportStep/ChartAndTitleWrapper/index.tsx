@@ -43,9 +43,11 @@ const ChartAndTitleWrapper = forwardRef(
     {
       trendInfo,
       isLoading,
+      subTitle,
     }: {
       trendInfo: ITrendInfo;
       isLoading: boolean;
+      subTitle?: string;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
@@ -75,7 +77,7 @@ const ChartAndTitleWrapper = forwardRef(
       <StyledChartAndTitleWrapper>
         {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
         <ChartTitle>
-          {trendInfo.type}
+          {trendInfo.type} {subTitle && `: ${subTitle}`}
           {trendInfo.trendNumber !== undefined && !isLoading && (
             <Tooltip title={tipContent} arrow>
               <TrendContainer

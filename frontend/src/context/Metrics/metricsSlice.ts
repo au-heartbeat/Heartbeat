@@ -45,6 +45,7 @@ export interface ISavedMetricsSettingState {
   shouldRetryPipelineConfig: boolean;
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[];
   targetFields: { name: string; key: string; flag: boolean }[];
+  classificationCharts: { name: string; key: string; flag: boolean }[];
   users: string[];
   pipelineCrews: string[];
   doneColumn: string[];
@@ -82,6 +83,7 @@ const initialState: ISavedMetricsSettingState = {
   shouldRetryPipelineConfig: false,
   jiraColumns: [],
   targetFields: [],
+  classificationCharts: [],
   users: [],
   pipelineCrews: [],
   doneColumn: [],
@@ -301,6 +303,9 @@ export const metricsSlice = createSlice({
   reducers: {
     saveTargetFields: (state, action) => {
       state.targetFields = action.payload;
+    },
+    saveClassificationCharts: (state, action) => {
+      state.classificationCharts = action.payload;
     },
     saveDoneColumn: (state, action) => {
       state.doneColumn = action.payload;
@@ -654,6 +659,7 @@ export const metricsSlice = createSlice({
 
 export const {
   saveTargetFields,
+  saveClassificationCharts,
   saveDoneColumn,
   saveUsers,
   savePipelineCrews,
@@ -685,7 +691,7 @@ export const selectShouldGetPipelineConfig = (state: RootState) => state.metrics
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
 export const selectReworkTimesSettings = (state: RootState) => state.metrics.importedData.reworkTimesSettings;
-
+export const selectClassificationCharts = (state: RootState) => state.metrics.classificationCharts;
 export const selectCycleTimeSettings = (state: RootState) => state.metrics.cycleTimeSettings;
 export const selectMetricsContent = (state: RootState) => state.metrics;
 export const selectAdvancedSettings = (state: RootState) => state.metrics.importedData.importedAdvancedSettings;

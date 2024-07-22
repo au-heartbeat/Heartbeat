@@ -15,7 +15,7 @@ import {
   selectConfig,
   selectDateRange,
 } from '@src/context/config/configSlice';
-import { IPipelineConfig, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { IPipelineConfig, selectClassificationCharts, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { selectReportId, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { MESSAGE, RequiredData } from '@src/constants/resources';
@@ -36,7 +36,7 @@ export interface DateRangeRequestResult {
   reportData: ReportResponseDTO | undefined;
 }
 
-export function showChart(div: HTMLDivElement | null, isFinished: boolean, options: echarts.EChartsCoreOption) {
+export function showChart(div: HTMLDivElement | null, options: echarts.EChartsCoreOption) {
   if (div) {
     const chart = echarts.init(div);
     chart.setOption(options);
@@ -76,6 +76,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     deploymentFrequencySettings,
     leadTimeForChanges,
   } = useAppSelector(selectMetricsContent);
+  const classificationCharts = useAppSelector(selectClassificationCharts);
 
   const { metrics, calendarType } = configData.basic;
   const boardingMappingStates = [...new Set(cycleTimeSettings.map((item) => item.value))];
@@ -98,6 +99,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       users,
       assigneeFilter,
       targetFields: formatDuplicatedNameWithSuffix(targetFields),
+      classificationCharts,
       doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
       reworkTimesSetting:
         includeRework && !isOnlyEmptyAndDoneState
@@ -232,6 +234,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <ReportContent
       isSharePage={false}
       metrics={metrics}
+      classificationCharts={classificationCharts.map((it) => it.name)}
       allPipelines={deploymentFrequencySettings.map((it) => `${it.pipelineName}/${it.step}`)}
       dateRanges={dateRanges}
       startToRequestData={() => startToRequestData(basicReportRequestBody)}
