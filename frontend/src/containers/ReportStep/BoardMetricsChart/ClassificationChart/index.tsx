@@ -93,6 +93,7 @@ export const ClassificationChart = ({
         trendInfo={classificationData.trendInfo}
         key={key}
         ref={classificationRef}
+        isShowRepeat
       />
     </>
   );

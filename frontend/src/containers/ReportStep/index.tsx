@@ -85,6 +85,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
 
+  const classificationChartsOnlyName = classificationCharts.map((it) => it.name);
+
   const getJiraBoardSetting = () => {
     const { token, type, site, projectKey, boardId, email } = configData.board.config;
 
@@ -99,7 +101,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       users,
       assigneeFilter,
       targetFields: formatDuplicatedNameWithSuffix(targetFields),
-      classificationCharts,
+      classificationCharts: classificationChartsOnlyName,
       doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
       reworkTimesSetting:
         includeRework && !isOnlyEmptyAndDoneState
@@ -234,7 +236,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     <ReportContent
       isSharePage={false}
       metrics={metrics}
-      classificationCharts={classificationCharts.map((it) => it.name)}
+      classificationCharts={classificationChartsOnlyName}
       allPipelines={deploymentFrequencySettings.map((it) => `${it.pipelineName}/${it.step}`)}
       dateRanges={dateRanges}
       startToRequestData={() => startToRequestData(basicReportRequestBody)}
