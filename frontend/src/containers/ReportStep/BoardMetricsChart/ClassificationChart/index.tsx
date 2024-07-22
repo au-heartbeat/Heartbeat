@@ -13,8 +13,8 @@ function extractClassificationData(classification: string, dateRanges: string[],
     ...new Set(
       data
         .filter((it) => it !== undefined)
-        .flatMap((it) => it?.valueList)
-        .map((it) => it!.name),
+        .flatMap((it) => it!.valueList)
+        .map((it) => it.name),
     ),
   ];
   const indicators: { data: number[]; name: string; type: string }[] = [];

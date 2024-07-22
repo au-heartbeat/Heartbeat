@@ -181,5 +181,5 @@ export interface ReportURLsResponse {
   metrics: string[];
   pipelines: string[];
   reportURLs: string[];
-  classificationCharts: string[];
+  classificationNames: string[];
 }

@@ -412,7 +412,7 @@ public class ReportServiceTest {
 			assertEquals("test-metrics2", metrics.get(1));
 			assertEquals("test-metrics3", metrics.get(2));
 
-			List<String> classificationCharts = shareReportInfo.getClassificationCharts();
+			List<String> classificationCharts = shareReportInfo.getClassificationNames();
 
 			assertEquals(3, classificationCharts.size());
 			assertEquals("test-classification-chart1", classificationCharts.get(0));
@@ -522,7 +522,7 @@ public class ReportServiceTest {
 					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("1").build()))
 					.build())
 				.jiraBoardSetting(JiraBoardSetting.builder()
-					.classificationCharts(List.of("test-classification-chart1", "test-classification-chart2"))
+					.classificationNames(List.of("test-classification-chart1", "test-classification-chart2"))
 					.build())
 				.timezone("Asia/Shanghai")
 				.build();

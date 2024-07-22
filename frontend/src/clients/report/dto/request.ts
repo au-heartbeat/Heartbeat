@@ -52,6 +52,7 @@ export interface IBasicReportRequestDTO {
     boardId: string;
     boardColumns: { name: string; value: string }[];
     treatFlagCardAsBlock: boolean;
+    classificationNames: string[];
     users: string[];
     assigneeFilter: string;
     targetFields: { key: string; name: string; flag: boolean }[];

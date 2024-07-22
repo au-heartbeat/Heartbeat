@@ -19,6 +19,6 @@ public class ShareApiDetailsResponse {
 
 	private List<String> pipelines;
 
-	private List<String> classificationCharts;
+	private List<String> classificationNames;
 
 }

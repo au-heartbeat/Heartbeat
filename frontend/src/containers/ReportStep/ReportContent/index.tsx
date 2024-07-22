@@ -54,7 +54,7 @@ import { uniqueId } from 'lodash';
 export interface ReportContentProps {
   metrics: string[];
   allPipelines: string[];
-  classificationCharts: string[];
+  classificationNames: string[];
   dateRanges: DateRangeList;
   startToRequestData: () => void;
   reportInfos: IReportInfo[];
@@ -87,7 +87,7 @@ const ReportContent = (props: ReportContentProps) => {
     reportId,
     hideButtons = false,
     isSharePage,
-    classificationCharts,
+    classificationNames,
   } = props;
 
   const dispatch = useAppDispatch();
@@ -348,7 +348,7 @@ const ReportContent = (props: ReportContentProps) => {
       data={data}
       dateRanges={allDateRanges}
       metrics={metrics}
-      classificationCharts={classificationCharts}
+      classificationCharts={classificationNames}
     />
   );
 

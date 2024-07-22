@@ -50,8 +50,8 @@ const ChartAndTitleWrapper = forwardRef(
     }: {
       trendInfo: ITrendInfo;
       isLoading: boolean;
-      isShowRepeat?: boolean;
       subTitle?: string;
+      isShowRepeat?: boolean;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {

@@ -174,7 +174,7 @@ class ReporterControllerTest {
 			.reportURLs(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
 			.metrics(List.of("board"))
 			.pipelines(List.of("pipeline1", "pipeline2"))
-			.classificationCharts(List.of("classification1", "classification2"))
+			.classificationNames(List.of("classification1", "classification2"))
 			.build());
 
 		mockMvc.perform(get("/reports/{uuid}", uuid))
@@ -187,9 +187,9 @@ class ReporterControllerTest {
 			.andExpect(jsonPath("$.pipelines.length()", Matchers.is(2)))
 			.andExpect(jsonPath("$.pipelines[0]").value("pipeline1"))
 			.andExpect(jsonPath("$.pipelines[1]").value("pipeline2"))
-			.andExpect(jsonPath("$.classificationCharts.length()", Matchers.is(2)))
-			.andExpect(jsonPath("$.classificationCharts[0]").value("classification1"))
-			.andExpect(jsonPath("$.classificationCharts[1]").value("classification2"))
+			.andExpect(jsonPath("$.classificationNames.length()", Matchers.is(2)))
+			.andExpect(jsonPath("$.classificationNames[0]").value("classification1"))
+			.andExpect(jsonPath("$.classificationNames[1]").value("classification2"))
 			.andReturn()
 			.getResponse();
 

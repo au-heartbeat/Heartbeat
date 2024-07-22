@@ -162,7 +162,7 @@ public class ReportService {
 			.toList();
 		return ShareApiDetailsResponse.builder()
 			.metrics(metrics)
-			.classificationCharts(classificationCharts)
+			.classificationNames(classificationCharts)
 			.pipelines(pipelines)
 			.reportURLs(reportUrls)
 			.build();
@@ -182,7 +182,7 @@ public class ReportService {
 			.pipelines(ofNullable(request.getBuildKiteSetting()).map(BuildKiteSetting::getDeploymentEnvList)
 				.orElse(List.of()))
 			.classificationCharts(
-					ofNullable(request.getJiraBoardSetting()).map(JiraBoardSetting::getClassificationCharts)
+					ofNullable(request.getJiraBoardSetting()).map(JiraBoardSetting::getClassificationNames)
 						.orElse(List.of()))
 			.build();
 		fileRepository.createFileByType(FileType.CONFIGS, uuid, request.getTimeRangeAndTimeStamp(), savedRequestInfo,
