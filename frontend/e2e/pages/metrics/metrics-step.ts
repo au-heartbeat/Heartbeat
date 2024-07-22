@@ -362,7 +362,7 @@ export class MetricsStep {
       }
     }
 
-    await this.checkClassifications(classificationChartKeys);
+    await this.checkClassificationCharts(classificationChartKeys);
     await this.page.keyboard.press('Escape');
   }
 
