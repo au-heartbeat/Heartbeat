@@ -96,6 +96,7 @@ export const config = {
     'customfield_10027',
     'customfield_10060',
   ],
+  classificationCharts: ['issuetype', 'assignee'],
   advancedSettings: null,
   deployment: [
     {
@@ -190,6 +191,7 @@ export const modifiedConfig = {
     'customfield_10027',
     'customfield_10060',
   ],
+  classificationCharts: ['issuetype', 'assignee'],
   deployment: [
     {
       id: 0,

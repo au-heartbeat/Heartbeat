@@ -138,7 +138,11 @@ export const Classification = ({ targetFields, title, label }: classificationPro
           renderOption={(props, option: ITargetFieldType, state) => {
             const selectAllProps = option.key === ALL_OPTION_KEY ? { checked: isChartAllSelected } : {};
             return (
-              <li {...props} aria-label={'Classification Generate Charts Option ' + option.name}>
+              <li
+                {...props}
+                aria-label={'Classification Generate Charts Option ' + option.name}
+                data-testid={option.key}
+              >
                 <Checkbox
                   style={{ marginRight: '0.5rem' }}
                   checked={state.selected}

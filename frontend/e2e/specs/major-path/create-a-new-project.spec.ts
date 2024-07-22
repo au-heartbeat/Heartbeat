@@ -68,6 +68,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
   await metricsStep.selectClassifications(metricsStepData.classification);
+  await metricsStep.selectClassificationCharts(metricsStepData.classificationCharts);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectAllPipelineCrews();
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
@@ -115,6 +116,7 @@ test('Create a new project without block column in boarding mapping', async ({
   await metricsStep.checkBoardConfigurationVisible();
   await metricsStep.checkPipelineConfigurationInvisible();
   await metricsStep.checkClassificationSettingInvisible();
+  await metricsStep.checkClassificationChartSettingInvisible();
   await metricsStep.selectCrews(metricsStepWithoutBlockColumnData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepWithoutBlockColumnData.cycleTime.type);
   await metricsStep.checkCycleTimeConsiderCheckboxChecked();

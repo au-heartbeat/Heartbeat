@@ -68,6 +68,7 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
   await metricsStep.checkClassifications(importUnhappyPathProjectFromFile.classification);
+  await metricsStep.checkClassificationCharts(importUnhappyPathProjectFromFile.classificationCharts);
   await metricsStep.checkPipelineConfigurationAreChanged(importUnhappyPathProjectFromFile.deployment);
   await metricsStep.selectCrews(modifiedCorrectProjectFromFile.crews);
   await metricsStep.addNewPipelineAndSelectSamePipeline(importUnhappyPathProjectFromFile.deployment);
