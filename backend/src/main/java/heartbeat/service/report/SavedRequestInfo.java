@@ -18,6 +18,6 @@ public class SavedRequestInfo {
 
 	private List<DeploymentEnvironment> pipelines;
 
-	private List<String> classificationCharts;
+	private List<String> classificationNames;
 
 }

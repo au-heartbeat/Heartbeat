@@ -388,7 +388,7 @@ public class ReportServiceTest {
 
 			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
 				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics2"))
-					.classificationCharts(List.of("test-classification-chart1", "test-classification-chart2"))
+					.classificationNames(List.of("test-classification-chart1", "test-classification-chart2"))
 					.pipelines(List.of(
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step2").build(),
@@ -396,7 +396,7 @@ public class ReportServiceTest {
 				)).build());
 			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
 				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics3"))
-					.classificationCharts(List.of("test-classification-chart1", "test-classification-chart3"))
+					.classificationNames(List.of("test-classification-chart1", "test-classification-chart3"))
 					.pipelines(List.of(
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build(),
@@ -545,7 +545,7 @@ public class ReportServiceTest {
 			assertEquals("test-metrics1", metrics.get(0));
 			assertEquals("test-metrics2", metrics.get(1));
 
-			List<String> classificationCharts = savedRequestInfo.getClassificationCharts();
+			List<String> classificationCharts = savedRequestInfo.getClassificationNames();
 			assertEquals(2, classificationCharts.size());
 			assertEquals("test-classification-chart1", classificationCharts.get(0));
 			assertEquals("test-classification-chart2", classificationCharts.get(1));
@@ -651,7 +651,7 @@ public class ReportServiceTest {
 			assertEquals("test-metrics1", metrics.get(0));
 			assertEquals("test-metrics2", metrics.get(1));
 
-			List<String> classificationCharts = savedRequestInfo.getClassificationCharts();
+			List<String> classificationCharts = savedRequestInfo.getClassificationNames();
 			assertEquals(0, classificationCharts.size());
 		}
 
@@ -691,7 +691,7 @@ public class ReportServiceTest {
 			assertEquals("test-metrics1", metrics.get(0));
 			assertEquals("test-metrics2", metrics.get(1));
 
-			List<String> classificationCharts = savedRequestInfo.getClassificationCharts();
+			List<String> classificationCharts = savedRequestInfo.getClassificationNames();
 			assertEquals(0, classificationCharts.size());
 		}
 

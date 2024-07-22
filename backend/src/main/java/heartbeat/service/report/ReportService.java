@@ -150,7 +150,7 @@ public class ReportService {
 			.distinct()
 			.toList();
 		List<String> classificationCharts = savedRequestInfoList.stream()
-			.map(SavedRequestInfo::getClassificationCharts)
+			.map(SavedRequestInfo::getClassificationNames)
 			.flatMap(Collection::stream)
 			.distinct()
 			.toList();
@@ -181,9 +181,8 @@ public class ReportService {
 			.metrics(request.getMetrics())
 			.pipelines(ofNullable(request.getBuildKiteSetting()).map(BuildKiteSetting::getDeploymentEnvList)
 				.orElse(List.of()))
-			.classificationCharts(
-					ofNullable(request.getJiraBoardSetting()).map(JiraBoardSetting::getClassificationNames)
-						.orElse(List.of()))
+			.classificationNames(ofNullable(request.getJiraBoardSetting()).map(JiraBoardSetting::getClassificationNames)
+				.orElse(List.of()))
 			.build();
 		fileRepository.createFileByType(FileType.CONFIGS, uuid, request.getTimeRangeAndTimeStamp(), savedRequestInfo,
 				FilePrefixType.USER_CONFIG_REPORT_PREFIX);
