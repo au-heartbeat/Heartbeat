@@ -60,6 +60,7 @@ test('Import project from file with all ranges API succeed', async ({
   await metricsStep.selectGivenPipelineCrews(importMultipleDoneProjectFromFile.pipelineCrews);
   await metricsStep.selectReworkSettings(importMultipleDoneProjectFromFile.reworkTimesSettings);
   await metricsStep.checkClassifications(importMultipleDoneProjectFromFile.classification);
+  await metricsStep.checkClassificationCharts(importMultipleDoneProjectFromFile.classificationCharts);
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
 
   await metricsStep.goToReportPage();
@@ -107,6 +108,7 @@ test('Import project from file with partial ranges API failed', async ({
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
   await metricsStep.selectAllPipelineCrews();
   await metricsStep.checkClassifications(partialTimeRangesSuccess.classification);
+  await metricsStep.checkClassificationCharts(partialTimeRangesSuccess.classificationCharts);
   await metricsStep.validateNextButtonClickable();
   await metricsStep.goToReportPage();
 
@@ -157,6 +159,7 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
   await metricsStep.selectAllPipelineCrews();
   await metricsStep.checkClassifications(partialMetricsShowChart.classification);
+  await metricsStep.checkClassificationCharts(partialMetricsShowChart.classificationCharts);
   await metricsStep.validateNextButtonClickable();
   await metricsStep.goToReportPage();
 
@@ -217,6 +220,7 @@ test('Import project from file with holiday', async ({ homePage, configStep, met
   await metricsStep.selectReworkSettings(calculateWithHolidayConfigFile.reworkTimesSettings);
 
   await metricsStep.checkClassifications(calculateWithHolidayConfigFile.classification);
+  await metricsStep.checkClassificationCharts(calculateWithHolidayConfigFile.classificationCharts);
   await metricsStep.checkPipelineConfigurationAreChanged(calculateWithHolidayConfigFile.deployment);
 
   await metricsStep.goToReportPage();

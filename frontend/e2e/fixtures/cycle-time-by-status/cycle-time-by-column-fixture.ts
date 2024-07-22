@@ -75,6 +75,7 @@ export const cycleTimeByColumnFixture = {
     'assignee',
     'customfield_10062',
   ],
+  classificationCharts: ['issuetype', 'assignee'],
   deployment: [
     {
       id: 0,

@@ -29,6 +29,7 @@ test('Only select velocity metrics on config page', async ({ homePage, configSte
   await metricsStep.checkBoardConfigurationVisible();
   await metricsStep.checkPipelineConfigurationInvisible();
   await metricsStep.checkClassificationSettingInvisible();
+  await metricsStep.checkClassificationChartSettingInvisible();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData, true);
@@ -63,6 +64,7 @@ test('Only select cycle time metrics on config page', async ({ homePage, configS
   await metricsStep.checkBoardConfigurationVisible();
   await metricsStep.checkPipelineConfigurationInvisible();
   await metricsStep.checkClassificationSettingInvisible();
+  await metricsStep.checkClassificationChartSettingInvisible();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData, true);
@@ -97,10 +99,12 @@ test('Only select classification metrics on config page', async ({ homePage, con
   await metricsStep.checkBoardConfigurationVisible();
   await metricsStep.checkPipelineConfigurationInvisible();
   await metricsStep.checkClassificationSettingVisible();
+  await metricsStep.checkClassificationChartSettingVisible();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.selectClassifications(metricsStepData.classification);
+  await metricsStep.selectClassificationCharts(metricsStepData.classificationCharts);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
@@ -130,6 +134,7 @@ test('Only select rework times metrics on config page', async ({ homePage, confi
   await metricsStep.checkBoardConfigurationVisible();
   await metricsStep.checkPipelineConfigurationInvisible();
   await metricsStep.checkClassificationSettingInvisible();
+  await metricsStep.checkClassificationChartSettingInvisible();
   await metricsStep.selectCrews(metricsStepData.crews);
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData, true);

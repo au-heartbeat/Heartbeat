@@ -27,6 +27,7 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectCycleTimeSettingsType(modifiedMetricsStepData.cycleTime.type);
   await metricsStep.selectModifiedHeartbeatState(modifiedHbStateData);
   await metricsStep.selectClassifications(modifiedMetricsStepData.classification);
+  await metricsStep.checkClassificationCharts(modifiedMetricsStepData.classificationCharts);
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
   await metricsStep.goToReportPage();
   await reportStep.goToPreviousStep();
@@ -36,6 +37,7 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkBoardByStatusRadioBoxChecked();
   await metricsStep.checkModifiedHeartbeatState(modifiedHbStateData);
   await metricsStep.checkClassifications(modifiedMetricsStepData.classification);
+  await metricsStep.checkClassificationCharts(modifiedMetricsStepData.classificationCharts);
   await metricsStep.checkReworkSettings(metricsStepData.reworkTimesSettings);
 
   await metricsStep.selectDefaultGivenPipelineSetting(modifiedMetricsStepData.deployment, false);
@@ -80,6 +82,7 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectCycleTimeSettingsType(metricsStepData.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.selectClassifications(metricsStepData.classification);
+  await metricsStep.selectClassificationCharts(metricsStepData.classificationCharts);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectGivenPipelineCrews(metricsStepData.pipelineCrews);
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
@@ -92,6 +95,7 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkCrews(metricsStepData.crews);
   await metricsStep.checkBoardByColumnRadioBoxChecked();
   await metricsStep.checkClassifications(metricsStepData.classification);
+  await metricsStep.checkClassificationCharts(metricsStepData.classificationCharts);
   await metricsStep.checkReworkSettings(metricsStepData.reworkTimesSettings);
 
   await metricsStep.selectCrews(modifiedMetricsStepData.crews);
@@ -105,6 +109,7 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.checkCrews(modifiedMetricsStepData.crews);
   await metricsStep.checkBoardByStatusRadioBoxChecked();
   await metricsStep.checkClassifications(modifiedMetricsStepData.classification);
+  await metricsStep.checkClassificationCharts(modifiedMetricsStepData.classificationCharts);
   await metricsStep.checkReworkSettings(modifiedMetricsStepData.reworkTimesSettings);
 
   await metricsStep.selectDefaultGivenPipelineSetting(modifiedMetricsStepData.deployment, false);

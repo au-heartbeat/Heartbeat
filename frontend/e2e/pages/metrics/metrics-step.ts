@@ -53,6 +53,9 @@ export class MetricsStep {
   readonly boardClassificationLabel: Locator;
   readonly boardClassificationChipsContainer: Locator;
   readonly boardClassificationSelectedChips: Locator;
+  readonly boardClassificationChartLabel: Locator;
+  readonly boardClassificationChartSelection: Locator;
+  readonly boardClassificationChartSelectedItems: Locator;
   readonly boardReworkTimeSettingSingleInput: Locator;
   readonly boardReworkTimeSettingSingleSelected: Locator;
   readonly boardReworkTimeSettingExcludeSelect: Locator;
@@ -179,6 +182,12 @@ export class MetricsStep {
     this.boardClassificationLabel = page.getByLabel('Distinguished By *');
     this.boardClassificationChipsContainer = page.getByLabel('Classification Setting AutoComplete');
     this.boardClassificationSelectedChips = this.boardClassificationChipsContainer
+      .getByRole('button')
+      .filter({ hasText: /.+/ });
+
+    this.boardClassificationChartLabel = page.getByLabel('Generate charts (optional)');
+    this.boardClassificationChartSelection = page.getByLabel('Classification Generate Charts');
+    this.boardClassificationChartSelectedItems = this.boardClassificationChartSelection
       .getByRole('button')
       .filter({ hasText: /.+/ });
 
@@ -336,8 +345,33 @@ export class MetricsStep {
     await this.page.keyboard.press('Escape');
   }
 
+  async selectClassificationCharts(classificationChartKeys: string[]) {
+    await this.boardClassificationChartLabel.click();
+    const options = this.page.getByRole('option');
+    for (const option of (await options.all()).slice(1)) {
+      const optionKey = (await option.getAttribute('data-testid')) as string;
+      const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (classificationChartKeys.includes(optionKey)) {
+        if (!isOptionSelected) {
+          await option.click();
+        }
+      } else {
+        if (isOptionSelected) {
+          await option.click();
+        }
+      }
+    }
+
+    await this.checkClassifications(classificationChartKeys);
+    await this.page.keyboard.press('Escape');
+  }
+
   async checkClassifications(classificationKeys: string[]) {
     await expect(this.boardClassificationSelectedChips).toHaveCount(classificationKeys.length);
+  }
+
+  async checkClassificationCharts(classificationChartKeys: string[]) {
+    await expect(this.boardClassificationChartSelectedItems).toHaveCount(classificationChartKeys.length);
   }
 
   async checkReworkSettings(reworkTimesSettings: typeof metricsStepData.reworkTimesSettings) {
@@ -355,6 +389,14 @@ export class MetricsStep {
 
   async checkClassificationSettingInvisible() {
     await expect(this.boardClassificationLabel).toBeHidden();
+  }
+
+  async checkClassificationChartSettingVisible() {
+    await expect(this.boardClassificationChartLabel).toBeVisible();
+  }
+
+  async checkClassificationChartSettingInvisible() {
+    await expect(this.boardClassificationChartLabel).toBeHidden();
   }
 
   async selectHistoricalAssigneeCrewFilter() {

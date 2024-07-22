@@ -36,6 +36,7 @@ test('Create a new project with cycle time by status', async ({ homePage, config
   await metricsStep.selectHeartbeatStateByStatus(hbStateDataByStatus, false);
 
   await metricsStep.selectClassifications(cycleTimeByStatusFixture.classification);
+  await metricsStep.selectClassificationCharts(cycleTimeByStatusFixture.classificationCharts);
 
   await metricsStep.goToReportPage();
 
@@ -73,6 +74,7 @@ test('Create a new project with cycle time by status', async ({ homePage, config
   await metricsStep.selectHeartbeatStateByStatus(hbStateDataByStatus, true);
 
   await metricsStep.selectClassifications(cycleTimeByColumnFixture.classification);
+  await metricsStep.selectClassificationCharts(cycleTimeByColumnFixture.classificationCharts);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
@@ -111,6 +113,7 @@ test('Import project from file with cycle time by status', async ({
   await metricsStep.selectHeartbeatStateByStatus(hbStateDataByStatus, false);
 
   await metricsStep.checkClassifications(cycleTimeByStatusFixture.classification);
+  await metricsStep.checkClassificationCharts(cycleTimeByStatusFixture.classificationCharts);
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
@@ -138,6 +141,7 @@ test('Import project from file with cycle time by status', async ({
   await metricsStep.selectHeartbeatStateByStatus(hbStateDataByStatus, true);
 
   await metricsStep.checkClassifications(cycleTimeByColumnFixture.classification);
+  await metricsStep.checkClassificationCharts(cycleTimeByColumnFixture.classificationCharts);
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();
