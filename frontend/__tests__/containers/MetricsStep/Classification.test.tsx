@@ -142,6 +142,26 @@ describe('Classification', () => {
       });
     });
 
+    it('should select all classification charts correctly', async () => {
+      await setup(mockTargetFields);
+      await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
+      const listBox = within(screen.getByRole('listbox'));
+      const chartFormItem = within(screen.getByLabelText('Classification Generate Charts'));
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`));
+
+      await waitFor(() => {
+        expect(chartFormItem.getByRole('button', { name: 'Issue' })).toBeVisible();
+        expect(chartFormItem.getByRole('button', { name: 'Story testing-1' })).toBeVisible();
+      });
+
+      await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`));
+
+      await waitFor(() => {
+        expect(chartFormItem.queryByRole('button', { name: 'Issue' })).toBeNull();
+        expect(chartFormItem.queryByRole('button', { name: 'Story testing-1' })).toBeNull();
+      });
+    });
+
     it('should enable all option given selected classification is less than 4', async () => {
       await setup(mockTargetFields);
 
