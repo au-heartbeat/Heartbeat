@@ -35,8 +35,7 @@ function extractClassificationData(classification: string, dateRanges: string[],
       .filter((it) => it !== undefined)
       .flatMap((it) => it!.valueList)
       .filter((it) => it.name === item)
-      .map((it) => it.value)
-      .map((it) => parseFloat(it));
+      .map((it) => parseFloat(it.value));
     indicators.push({ data: classificationValue, name: item, type: 'bar' });
   });
 
