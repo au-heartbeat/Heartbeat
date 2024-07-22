@@ -347,7 +347,7 @@ You could find the drill down from `show more >` link from dashboard.
 In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.  
 
 - Board chart 
-![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1.png)
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1-new.png)
 - Dora chart
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-1.png)
 
