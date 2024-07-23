@@ -454,7 +454,7 @@ const ReportContent = (props: ReportContentProps) => {
 
   return (
     <>
-      {projectName && <StyledProjectHeader>{projectName}</StyledProjectHeader>}
+      {projectName && <StyledProjectHeader aria-label='project name'>{projectName}</StyledProjectHeader>}
       <HeaderContainer shouldShowTabs={shouldShowTabs}>
         {shouldShowTabs && showTabs()}
         {shouldShowTabs && displayType === DISPLAY_TYPE.CHART && showChartTabs()}
