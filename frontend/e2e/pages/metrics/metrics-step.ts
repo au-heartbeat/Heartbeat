@@ -347,8 +347,9 @@ export class MetricsStep {
 
   async selectClassificationCharts(classificationChartKeys: string[]) {
     await this.boardClassificationChartLabel.click();
-    const options = this.page.getByRole('option');
-    for (const option of (await options.all()).slice(1)) {
+    const options = await this.page.getByRole('option').all();
+    const optionsWithoutAll = (await options[0].getAttribute('data-testid')) === 'all' ? options.slice(1) : options;
+    for (const option of optionsWithoutAll) {
       const optionKey = (await option.getAttribute('data-testid')) as string;
       const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
       if (classificationChartKeys.includes(optionKey)) {
