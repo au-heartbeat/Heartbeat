@@ -185,8 +185,8 @@ export class MetricsStep {
       .getByRole('button')
       .filter({ hasText: /.+/ });
 
-    this.boardClassificationChartLabel = page.getByLabel('Generate charts (optional)');
-    this.boardClassificationChartSelection = page.getByLabel('Classification Generate Charts');
+    this.boardClassificationChartLabel = page.getByLabel('Visible in charts (optional)');
+    this.boardClassificationChartSelection = page.getByLabel('Classification Visible Charts');
     this.boardClassificationChartSelectedItems = this.boardClassificationChartSelection
       .getByRole('button')
       .filter({ hasText: /.+/ });
