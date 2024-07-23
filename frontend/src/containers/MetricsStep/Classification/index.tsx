@@ -31,9 +31,9 @@ export const Classification = ({ targetFields, title, label }: classificationPro
   const selectedOptions = targetFieldsWithSuffix.filter(({ flag }) => flag);
   const chartOptions = selectedOptions;
   const storedSelectedCharts = useAppSelector(selectClassificationCharts);
-  const selectedCharts = chartOptions.filter(({ key }) =>
-    storedSelectedCharts.find(({ key: matchedKey }) => matchedKey === key),
-  );
+  const selectedCharts = storedSelectedCharts
+    .map(({ key }) => chartOptions.find(({ key: matchedKey }) => matchedKey === key))
+    .filter((item) => !!item);
   const isAllSelected = selectedOptions.length > 0 && selectedOptions.length === targetFieldsWithSuffix.length;
   const isChartAllSelected = selectedCharts.length > 0 && selectedCharts.length === chartOptions.length;
 

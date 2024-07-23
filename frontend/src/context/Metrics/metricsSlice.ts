@@ -199,9 +199,9 @@ const getImportSelectClassifications = (
       ...item,
       flag: state.importedData.importedClassification.includes(item.key),
     }));
-    const newClassificationCharts = newTargetFields.filter(
-      ({ key, flag }) => state.importedData.importedClassificationCharts.includes(key) && flag,
-    );
+    const newClassificationCharts = state.importedData.importedClassificationCharts
+      .map((key) => newTargetFields.find(({ key: targetKey, flag }) => key === targetKey && flag))
+      .filter((item) => !!item);
     return {
       targetFields: newTargetFields,
       classificationCharts: newClassificationCharts,
