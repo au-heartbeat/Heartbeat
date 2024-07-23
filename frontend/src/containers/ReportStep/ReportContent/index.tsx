@@ -28,6 +28,7 @@ import {
   HeaderContainer,
   StyledCalendarWrapper,
   StyledChartTabs,
+  StyledProjectHeader,
   StyledRetry,
   StyledTab,
   StyledTabs,
@@ -62,6 +63,7 @@ export interface ReportContentProps {
   reportId?: number;
   hideButtons?: boolean;
   isSharePage: boolean;
+  projectName: string;
 }
 
 const timeoutNotificationMessages = {
@@ -88,6 +90,7 @@ const ReportContent = (props: ReportContentProps) => {
     hideButtons = false,
     isSharePage,
     classificationNames,
+    projectName,
   } = props;
 
   const dispatch = useAppDispatch();
@@ -451,6 +454,7 @@ const ReportContent = (props: ReportContentProps) => {
 
   return (
     <>
+      {projectName && <StyledProjectHeader>{projectName}</StyledProjectHeader>}
       <HeaderContainer shouldShowTabs={shouldShowTabs}>
         {shouldShowTabs && showTabs()}
         {shouldShowTabs && displayType === DISPLAY_TYPE.CHART && showChartTabs()}

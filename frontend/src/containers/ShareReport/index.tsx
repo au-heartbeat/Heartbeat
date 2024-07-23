@@ -5,9 +5,17 @@ import { MESSAGE } from '@src/constants/resources';
 import ErrorSection from './ErrorSection';
 import { useEffect } from 'react';
 
+const getProjectName = () => {
+  const searchString = window.location.href.split('?')[1];
+  const searchParams = new URLSearchParams(searchString);
+  const projectName = searchParams.get('projectName') || '';
+  return decodeURI(projectName);
+};
+
 const ShareReport = () => {
   const { getData, reportInfos, dateRanges, metrics, isExpired, allPipelines, classificationNames } =
     useShareReportEffect();
+  const projectName = getProjectName();
 
   useEffect(() => {
     getData();
@@ -33,6 +41,7 @@ const ShareReport = () => {
           dateRanges={dateRanges}
           reportInfos={reportInfos}
           startToRequestData={getData}
+          projectName={projectName}
           hideButtons
         />
       </StyledPageContentWrapper>
