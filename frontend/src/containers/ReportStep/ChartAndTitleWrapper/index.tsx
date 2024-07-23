@@ -13,7 +13,9 @@ import { ChartWrapper } from '@src/containers/MetricsStep/style';
 import { convertNumberToPercent } from '@src/utils/util';
 import React, { ForwardedRef, forwardRef } from 'react';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import RepeatIcon from '@mui/icons-material/Repeat';
 import { Loading } from '@src/components/Loading';
+import { Z_INDEX } from '@src/constants/commons';
 import { Tooltip } from '@mui/material';
 import { theme } from '@src/theme';
 
@@ -43,9 +45,13 @@ const ChartAndTitleWrapper = forwardRef(
     {
       trendInfo,
       isLoading,
+      subTitle,
+      isShowRepeat = false,
     }: {
       trendInfo: ITrendInfo;
       isLoading: boolean;
+      subTitle?: string;
+      isShowRepeat?: boolean;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
@@ -74,8 +80,24 @@ const ChartAndTitleWrapper = forwardRef(
     return (
       <StyledChartAndTitleWrapper>
         {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
+        {isShowRepeat && (
+          <Tooltip title='Switch this chart' placement='right' followCursor>
+            <RepeatIcon
+              color='secondary'
+              fontSize='large'
+              aria-label={`classification ${subTitle!.toLowerCase()} switch chart`}
+              sx={{
+                position: 'absolute',
+                right: '1.75rem',
+                top: '1rem',
+                cursor: 'pointer',
+                zIndex: Z_INDEX.BUTTONS,
+              }}
+            />
+          </Tooltip>
+        )}
         <ChartTitle>
-          {trendInfo.type}
+          {trendInfo.type} {subTitle && `: ${subTitle}`}
           {trendInfo.trendNumber !== undefined && !isLoading && (
             <Tooltip title={tipContent} arrow>
               <TrendContainer
@@ -88,7 +110,10 @@ const ChartAndTitleWrapper = forwardRef(
             </Tooltip>
           )}
         </ChartTitle>
-        <ChartWrapper ref={ref} aria-label={trendInfo.type.toLowerCase() + ' chart'}></ChartWrapper>
+        <ChartWrapper
+          ref={ref}
+          aria-label={trendInfo.type.toLowerCase() + (subTitle ? ` ${subTitle.toLowerCase()}` : '') + ' chart'}
+        ></ChartWrapper>
       </StyledChartAndTitleWrapper>
     );
   },

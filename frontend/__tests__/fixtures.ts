@@ -223,6 +223,7 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
     site: '2',
     projectKey: '2',
     boardId: '2',
+    classificationNames: ['Issue Type'],
     boardColumns: [{ name: 'In Analysis', value: 'In Analysis' }],
     treatFlagCardAsBlock: true,
     users: ['user1', 'user2'],
@@ -808,7 +809,7 @@ export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
   },
   classificationList: [
     {
-      fieldName: 'FS Work Type',
+      fieldName: 'Issue Type',
       pairList: [
         {
           name: 'Feature Work - Planned',

@@ -1,6 +1,7 @@
 import { ChartType, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS, RequiredData } from '@src/constants/resources';
 import { calculateTrendInfo, sortLegend, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { stackedAreaOptionMapper, stackedBarOptionMapper } from '@src/containers/ReportStep/ChartOption';
+import { ClassificationChart } from '@src/containers/ReportStep/BoardMetricsChart/ClassificationChart';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
@@ -12,8 +13,9 @@ import { theme } from '@src/theme';
 
 interface BoardMetricsChartProps {
   dateRanges: string[];
-  data: IReportInfo[] | undefined;
+  data: IReportInfo[];
   metrics: string[];
+  classificationCharts: string[];
 }
 
 type Result = {
@@ -251,14 +253,15 @@ const emptyData: EmptyData = ['velocityList', 'cycleTimeList', 'reworkList', 'cl
   return obj;
 }, {} as EmptyData);
 
-export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsChartProps) => {
+export const BoardMetricsChart = ({ data, dateRanges, metrics, classificationCharts }: BoardMetricsChartProps) => {
   const cycleTimeAllocation = useRef<HTMLDivElement>(null);
   const cycleTime = useRef<HTMLDivElement>(null);
   const velocity = useRef<HTMLDivElement>(null);
   const rework = useRef<HTMLDivElement>(null);
 
-  const mappedData: ReportResponse[] | undefined =
-    data && data.map((item) => (item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData));
+  const mappedData: ReportResponse[] = data.map((item) =>
+    item.reportData?.boardMetricsCompleted ? reportMapper(item.reportData) : emptyData,
+  );
 
   const cycleTimeAllocationData = extractCycleTimeAllocationData(dateRanges, mappedData);
   const cycleTimeAllocationDataOption = cycleTimeAllocationData && stackedBarOptionMapper(cycleTimeAllocationData);
@@ -269,10 +272,10 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
   const reworkData = extractReworkData(dateRanges, mappedData);
   const reworkDataOption = reworkData && stackedAreaOptionMapper(reworkData);
 
-  const isVelocityFinished = mappedData?.flatMap((value) => value.velocityList)?.length === dateRanges.length * 2;
+  const isVelocityFinished = mappedData.flatMap((value) => value.velocityList)?.length === dateRanges.length * 2;
   const isCycleTimeFinished =
-    mappedData?.flatMap((value) => value.cycleTimeList?.[0]?.valueList)?.length === dateRanges.length * 2;
-  const reworkList = mappedData?.map((values) => values.rework).filter((value) => value);
+    mappedData.flatMap((value) => value.cycleTimeList?.[0]?.valueList)?.length === dateRanges.length * 2;
+  const reworkList = mappedData.map((values) => values.rework).filter((value) => value);
   const isReworkFinished =
     reworkList?.length === dateRanges.length &&
     reworkList?.every(
@@ -283,20 +286,20 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
     );
 
   useEffect(() => {
-    showChart(velocity.current, isVelocityFinished, velocityDataOption);
-  }, [velocity, velocityDataOption, isVelocityFinished]);
+    showChart(velocity.current, velocityDataOption);
+  }, [velocity, velocityDataOption]);
 
   useEffect(() => {
-    showChart(cycleTime.current, isCycleTimeFinished, cycleTimeDataOption);
-  }, [cycleTime, cycleTimeDataOption, isCycleTimeFinished]);
+    showChart(cycleTime.current, cycleTimeDataOption);
+  }, [cycleTime, cycleTimeDataOption]);
 
   useEffect(() => {
-    showChart(cycleTimeAllocation.current, isCycleTimeFinished, cycleTimeAllocationDataOption);
-  }, [cycleTimeAllocation, cycleTimeAllocationDataOption, isCycleTimeFinished]);
+    showChart(cycleTimeAllocation.current, cycleTimeAllocationDataOption);
+  }, [cycleTimeAllocation, cycleTimeAllocationDataOption]);
 
   useEffect(() => {
-    showChart(rework.current, isReworkFinished, reworkDataOption);
-  }, [rework, reworkDataOption, isReworkFinished]);
+    showChart(rework.current, reworkDataOption);
+  }, [rework, reworkDataOption]);
 
   return (
     <ChartContainer>
@@ -316,6 +319,9 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics }: BoardMetricsCha
       {metrics.includes(RequiredData.ReworkTimes) && (
         <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} isLoading={!isReworkFinished} />
       )}
+      {classificationCharts.map((it) => (
+        <ClassificationChart key={it} classification={it} mappedData={mappedData} dateRanges={dateRanges} />
+      ))}
     </ChartContainer>
   );
 };

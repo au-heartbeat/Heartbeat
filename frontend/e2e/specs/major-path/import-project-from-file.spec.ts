@@ -121,6 +121,8 @@ test('Import project from file with partial ranges API failed', async ({
     showReworkChart: true,
     showCycleTimeChart: true,
     showCycleTimeAllocationChart: true,
+    showClassificationIssueTypeChart: true,
+    showClassificationAssigneeChart: true,
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({

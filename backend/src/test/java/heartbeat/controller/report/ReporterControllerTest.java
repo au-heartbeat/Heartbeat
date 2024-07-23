@@ -8,6 +8,7 @@ import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.ShareApiDetailsResponse;
 import heartbeat.controller.report.dto.response.UuidResponse;
 import heartbeat.exception.GenerateReportException;
+import heartbeat.exception.NotFoundException;
 import heartbeat.service.report.GenerateReporterService;
 import heartbeat.service.report.ReportService;
 import heartbeat.tools.TimeUtils;
@@ -167,12 +168,13 @@ class ReporterControllerTest {
 	}
 
 	@Test
-	void shouldReturnListCallbackWhenCallGetReportUrls() throws Exception {
+	void shouldReturnListCallbackWhenCallShareInfoApi() throws Exception {
 		String uuid = "test-uuid";
 		when(reporterService.getShareReportInfo(uuid)).thenReturn(ShareApiDetailsResponse.builder()
 			.reportURLs(List.of("/reports/test-uuid/detail?startTime=startTime&endTime=endTime"))
 			.metrics(List.of("board"))
 			.pipelines(List.of("pipeline1", "pipeline2"))
+			.classificationNames(List.of("classification1", "classification2"))
 			.build());
 
 		mockMvc.perform(get("/reports/{uuid}", uuid))
@@ -185,6 +187,25 @@ class ReporterControllerTest {
 			.andExpect(jsonPath("$.pipelines.length()", Matchers.is(2)))
 			.andExpect(jsonPath("$.pipelines[0]").value("pipeline1"))
 			.andExpect(jsonPath("$.pipelines[1]").value("pipeline2"))
+			.andExpect(jsonPath("$.classificationNames.length()", Matchers.is(2)))
+			.andExpect(jsonPath("$.classificationNames[0]").value("classification1"))
+			.andExpect(jsonPath("$.classificationNames[1]").value("classification2"))
+			.andReturn()
+			.getResponse();
+
+		verify(reporterService, times(1)).getShareReportInfo(uuid);
+	}
+
+	@Test
+	void shouldReturn404ErrorWhenCallShareInfoApiAndExpired() throws Exception {
+		String uuid = "test-uuid";
+
+		when(reporterService.getShareReportInfo(uuid))
+			.thenThrow(new NotFoundException(String.format("Don't find the %s folder in the report files", uuid)));
+
+		mockMvc.perform(get("/reports/{uuid}", uuid))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("Don't find the test-uuid folder in the report files"))
 			.andReturn()
 			.getResponse();
 

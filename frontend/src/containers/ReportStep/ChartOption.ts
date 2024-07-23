@@ -222,9 +222,10 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
 };
 
 export const stackedBarOptionMapper = (props: BarOptionProps, showPercentage: boolean = true) => {
+  const series = props.series;
   return {
     legend: {
-      data: props.series?.map((item) => item.name),
+      data: series?.length === 1 ? [] : series?.map((item) => item.name),
       ...commonConfig.legend,
     },
     tooltip: {
@@ -253,7 +254,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps, showPercentage: bo
       },
     },
     color: props.color,
-    series: props.series?.map((item) => {
+    series: series?.map((item) => {
       return {
         name: item.name,
         data: item.data,

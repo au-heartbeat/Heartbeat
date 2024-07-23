@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ReportMetricsError;
@@ -148,13 +149,23 @@ public class ReportService {
 			.flatMap(Collection::stream)
 			.distinct()
 			.toList();
+		List<String> classificationCharts = savedRequestInfoList.stream()
+			.map(SavedRequestInfo::getClassificationNames)
+			.flatMap(Collection::stream)
+			.distinct()
+			.toList();
 		List<String> pipelines = savedRequestInfoList.stream()
 			.map(SavedRequestInfo::getPipelines)
 			.flatMap(Collection::stream)
 			.map(it -> String.format("%s/%s", it.getName(), it.getStep()))
 			.distinct()
 			.toList();
-		return ShareApiDetailsResponse.builder().metrics(metrics).pipelines(pipelines).reportURLs(reportUrls).build();
+		return ShareApiDetailsResponse.builder()
+			.metrics(metrics)
+			.classificationNames(classificationCharts)
+			.pipelines(pipelines)
+			.reportURLs(reportUrls)
+			.build();
 	}
 
 	public String generateReportCallbackUrl(String uuid, String startTime, String endTime) {
@@ -169,6 +180,8 @@ public class ReportService {
 		SavedRequestInfo savedRequestInfo = SavedRequestInfo.builder()
 			.metrics(request.getMetrics())
 			.pipelines(ofNullable(request.getBuildKiteSetting()).map(BuildKiteSetting::getDeploymentEnvList)
+				.orElse(List.of()))
+			.classificationNames(ofNullable(request.getJiraBoardSetting()).map(JiraBoardSetting::getClassificationNames)
 				.orElse(List.of()))
 			.build();
 		fileRepository.createFileByType(FileType.CONFIGS, uuid, request.getTimeRangeAndTimeStamp(), savedRequestInfo,

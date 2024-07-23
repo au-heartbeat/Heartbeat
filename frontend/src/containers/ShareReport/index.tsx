@@ -6,7 +6,8 @@ import ErrorSection from './ErrorSection';
 import { useEffect } from 'react';
 
 const ShareReport = () => {
-  const { getData, reportInfos, dateRanges, metrics, isExpired, allPipelines } = useShareReportEffect();
+  const { getData, reportInfos, dateRanges, metrics, isExpired, allPipelines, classificationNames } =
+    useShareReportEffect();
 
   useEffect(() => {
     getData();
@@ -27,6 +28,7 @@ const ShareReport = () => {
         <ReportContent
           isSharePage
           metrics={metrics}
+          classificationNames={classificationNames}
           allPipelines={allPipelines}
           dateRanges={dateRanges}
           reportInfos={reportInfos}

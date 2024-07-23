@@ -3,6 +3,7 @@ package heartbeat.service.report;
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.request.MetricType;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.ErrorInfo;
@@ -386,13 +387,17 @@ public class ReportServiceTest {
 				.thenReturn(List.of("board-0-0-0", "board-9-9-9"));
 
 			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("0-0-0"), any(), any()))
-				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics2")).pipelines(List.of(
+				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics2"))
+					.classificationNames(List.of("test-classification-chart1", "test-classification-chart2"))
+					.pipelines(List.of(
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step2").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build()
 				)).build());
 			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
-				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics3")).pipelines(List.of(
+				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics3"))
+					.classificationNames(List.of("test-classification-chart1", "test-classification-chart3"))
+					.pipelines(List.of(
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step2").build()
@@ -406,6 +411,13 @@ public class ReportServiceTest {
 			assertEquals("test-metrics1", metrics.get(0));
 			assertEquals("test-metrics2", metrics.get(1));
 			assertEquals("test-metrics3", metrics.get(2));
+
+			List<String> classificationCharts = shareReportInfo.getClassificationNames();
+
+			assertEquals(3, classificationCharts.size());
+			assertEquals("test-classification-chart1", classificationCharts.get(0));
+			assertEquals("test-classification-chart2", classificationCharts.get(1));
+			assertEquals("test-classification-chart3", classificationCharts.get(2));
 
 			List<String> reportUrls = shareReportInfo.getReportURLs();
 
@@ -493,10 +505,119 @@ public class ReportServiceTest {
 	}
 
 	@Nested
-	class SaveMetrics {
+	class SaveRequestInfo {
 
 		@Test
-		void shouldSaveMetricsSuccessfully() {
+		void shouldSaveRequestInfoSuccessfully() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.buildKiteSetting(BuildKiteSetting.builder()
+					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("1").build()))
+					.build())
+				.jiraBoardSetting(JiraBoardSetting.builder()
+					.classificationNames(List.of("test-classification-chart1", "test-classification-chart2"))
+					.build())
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(1, pipelines.size());
+			assertEquals("1", pipelines.get(0).getId());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+
+			List<String> classificationCharts = savedRequestInfo.getClassificationNames();
+			assertEquals(2, classificationCharts.size());
+			assertEquals("test-classification-chart1", classificationCharts.get(0));
+			assertEquals("test-classification-chart2", classificationCharts.get(1));
+		}
+
+		@Test
+		void shouldSaveRequestInfoSuccessfullyWhenBuildKiteSettingIsNull() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(0, pipelines.size());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+		}
+
+		@Test
+		void shouldSaveRequestInfoSuccessfullyWhenDeploymentEnvListIsNull() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.buildKiteSetting(BuildKiteSetting.builder().build())
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+
+			assertEquals(0, pipelines.size());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+		}
+
+		@Test
+		void shouldSaveRequestInfoSuccessfullyWhenJiraBoardSettingIsNull() {
 			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
 			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
 			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
@@ -529,10 +650,13 @@ public class ReportServiceTest {
 			assertEquals(2, metrics.size());
 			assertEquals("test-metrics1", metrics.get(0));
 			assertEquals("test-metrics2", metrics.get(1));
+
+			List<String> classificationCharts = savedRequestInfo.getClassificationNames();
+			assertEquals(0, classificationCharts.size());
 		}
 
 		@Test
-		void shouldSaveMetricsSuccessfullyWhenBuildKiteSettingIsNull() {
+		void shouldSaveRequestInfoSuccessfullyWhenClassificationChartsIsNull() {
 			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
 			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
 			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
@@ -542,6 +666,10 @@ public class ReportServiceTest {
 				.startTime(startTimeStamp)
 				.endTime(endTimeStamp)
 				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.buildKiteSetting(BuildKiteSetting.builder()
+					.deploymentEnvList(List.of(DeploymentEnvironment.builder().id("1").build()))
+					.build())
+				.jiraBoardSetting(JiraBoardSetting.builder().build())
 				.timezone("Asia/Shanghai")
 				.build();
 
@@ -554,46 +682,17 @@ public class ReportServiceTest {
 
 			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
 
-			assertEquals(0, pipelines.size());
+			assertEquals(1, pipelines.size());
+			assertEquals("1", pipelines.get(0).getId());
 
 			List<String> metrics = savedRequestInfo.getMetrics();
 
 			assertEquals(2, metrics.size());
 			assertEquals("test-metrics1", metrics.get(0));
 			assertEquals("test-metrics2", metrics.get(1));
-		}
 
-		@Test
-		void shouldSaveMetricsSuccessfullyWhenDeploymentEnvListIsNull() {
-			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
-			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
-			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
-
-			GenerateReportRequest request = GenerateReportRequest.builder()
-				.csvTimeStamp(timeStamp)
-				.startTime(startTimeStamp)
-				.endTime(endTimeStamp)
-				.metrics(List.of("test-metrics1", "test-metrics2"))
-				.buildKiteSetting(BuildKiteSetting.builder().build())
-				.timezone("Asia/Shanghai")
-				.build();
-
-			reportService.saveRequestInfo(request, TEST_UUID);
-
-			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
-					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
-
-			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
-
-			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
-
-			assertEquals(0, pipelines.size());
-
-			List<String> metrics = savedRequestInfo.getMetrics();
-
-			assertEquals(2, metrics.size());
-			assertEquals("test-metrics1", metrics.get(0));
-			assertEquals("test-metrics2", metrics.get(1));
+			List<String> classificationCharts = savedRequestInfo.getClassificationNames();
+			assertEquals(0, classificationCharts.size());
 		}
 
 	}
