@@ -11,9 +11,8 @@ import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.response.Classification;
-import heartbeat.controller.report.dto.response.ClassificationNameValuePair;
+import heartbeat.controller.report.dto.response.ClassificationInfo;
 import heartbeat.service.report.ClassificationFixture;
-import heartbeat.service.report.calculator.ClassificationCalculator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,13 +59,15 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				ClassificationFixture.GENERAL_CARD_COLLECTION);
 
-		List<ClassificationNameValuePair> classificationList = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Fix versions", classifications.get(0).getFieldName());
 		assertEquals("sprint1", classificationList.get(0).getName());
 		assertEquals(0.5, classificationList.get(0).getValue());
+		assertEquals(2, classificationList.get(0).getCardCount());
 		assertEquals("sprint2", classificationList.get(1).getName());
 		assertEquals(0.5, classificationList.get(1).getValue());
+		assertEquals(2, classificationList.get(1).getCardCount());
 	}
 
 	@Test
@@ -76,6 +77,7 @@ class ClassificationCalculatorTest {
 		jsonObject.addProperty("id", 23);
 		jsonObject.addProperty("name", "Tool Sprint 6");
 		jsonArray.add(jsonObject);
+		jsonArray.add("123");
 		Map<String, JsonElement> customFields = new HashMap<>();
 		customFields.put("customfield_10020", jsonArray);
 		CardCollection cardCollectionWithJsonArray = CardCollection.builder()
@@ -95,13 +97,15 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				cardCollectionWithJsonArray);
 
-		List<ClassificationNameValuePair> classificationList = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Sprint", classifications.get(0).getFieldName());
 		assertEquals("None", classificationList.get(0).getName());
 		assertEquals(0.5, classificationList.get(0).getValue());
+		assertEquals(1, classificationList.get(0).getCardCount());
 		assertEquals("Tool Sprint 6", classificationList.get(1).getName());
 		assertEquals(0.5, classificationList.get(1).getValue());
+		assertEquals(1, classificationList.get(1).getCardCount());
 	}
 
 	@Test
@@ -130,13 +134,15 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				cardCollectionWithJsonArray);
 
-		List<ClassificationNameValuePair> classificationList = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Partner", classifications.get(0).getFieldName());
 		assertEquals("Shawn", classificationList.get(0).getName());
 		assertEquals(0.5, classificationList.get(0).getValue());
+		assertEquals(1, classificationList.get(0).getCardCount());
 		assertEquals("None", classificationList.get(1).getName());
 		assertEquals(0.5, classificationList.get(1).getValue());
+		assertEquals(1, classificationList.get(1).getCardCount());
 	}
 
 	@Test
@@ -165,13 +171,15 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				cardCollectionWithJsonArray);
 
-		List<ClassificationNameValuePair> classificationList = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Rank", classifications.get(0).getFieldName());
 		assertEquals("bug", classificationList.get(0).getName());
 		assertEquals(0.5, classificationList.get(0).getValue());
+		assertEquals(1, classificationList.get(0).getCardCount());
 		assertEquals("None", classificationList.get(1).getName());
 		assertEquals(0.5, classificationList.get(1).getValue());
+		assertEquals(1, classificationList.get(1).getCardCount());
 	}
 
 	@Test
@@ -199,11 +207,12 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				cardCollectionWithJsonArray);
 
-		List<ClassificationNameValuePair> classificationList = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Issue Color", classifications.get(0).getFieldName());
 		assertEquals("None", classificationList.get(0).getName());
 		assertEquals(1, classificationList.get(0).getValue());
+		assertEquals(2, classificationList.get(0).getCardCount());
 	}
 
 	@Test
@@ -228,11 +237,12 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				cardCollectionWithJsonArray);
 
-		List<ClassificationNameValuePair> classificationList = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Start date", classifications.get(0).getFieldName());
 		assertEquals("None", classificationList.get(0).getName());
 		assertEquals(1, classificationList.get(0).getValue());
+		assertEquals(2, classificationList.get(0).getCardCount());
 	}
 
 	@Test
@@ -256,11 +266,12 @@ class ClassificationCalculatorTest {
 
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				cardCollectionWithJsonArray);
-		List<ClassificationNameValuePair> classificationList = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("development", classifications.get(0).getFieldName());
 		assertEquals("test", classificationList.get(0).getName());
 		assertEquals(0.5, classificationList.get(0).getValue());
+		assertEquals(1, classificationList.get(0).getCardCount());
 	}
 
 	@Test
@@ -274,18 +285,21 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				ClassificationFixture.GENERAL_CARD_COLLECTION);
 
-		List<ClassificationNameValuePair> classificationListForReporter = classifications.get(0).getPairList();
-		List<ClassificationNameValuePair> classificationListForAssignee = classifications.get(1).getPairList();
+		List<ClassificationInfo> classificationListForReporter = classifications.get(0).getClassificationInfos();
+		List<ClassificationInfo> classificationListForAssignee = classifications.get(1).getClassificationInfos();
 
 		assertEquals(2, classifications.size());
 		assertEquals("Assignee", classifications.get(1).getFieldName());
 		assertEquals("Shawn", classificationListForAssignee.get(0).getName());
 		assertEquals(0.25, classificationListForAssignee.get(0).getValue());
+		assertEquals(1, classificationListForAssignee.get(0).getCardCount());
 		assertEquals("Tom", classificationListForAssignee.get(1).getName());
 		assertEquals(0.25, classificationListForAssignee.get(1).getValue());
+		assertEquals(1, classificationListForAssignee.get(1).getCardCount());
 		assertEquals("Reporter", classifications.get(0).getFieldName());
 		assertEquals("Jack", classificationListForReporter.get(0).getName());
 		assertEquals(0.5, classificationListForReporter.get(0).getValue());
+		assertEquals(2, classificationListForReporter.get(0).getCardCount());
 	}
 
 	@Test
@@ -299,20 +313,23 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				ClassificationFixture.GENERAL_CARD_COLLECTION);
 
-		List<ClassificationNameValuePair> classificationListForIssueType = classifications.get(0).getPairList();
-		List<ClassificationNameValuePair> classificationListForCardParent = classifications.get(1).getPairList();
-		List<ClassificationNameValuePair> classificationListForProject = classifications.get(2).getPairList();
+		List<ClassificationInfo> classificationListForIssueType = classifications.get(0).getClassificationInfos();
+		List<ClassificationInfo> classificationListForCardParent = classifications.get(1).getClassificationInfos();
+		List<ClassificationInfo> classificationListForProject = classifications.get(2).getClassificationInfos();
 
 		assertEquals(3, classifications.size());
 		assertEquals("IssueType", classifications.get(0).getFieldName());
 		assertEquals("Task", classificationListForIssueType.get(0).getName());
 		assertEquals(0.5, classificationListForIssueType.get(0).getValue());
+		assertEquals(2, classificationListForIssueType.get(0).getCardCount());
 		assertEquals("Card Parent", classifications.get(1).getFieldName());
 		assertEquals("test", classificationListForCardParent.get(0).getName());
 		assertEquals(0.25, classificationListForCardParent.get(0).getValue());
+		assertEquals(1, classificationListForCardParent.get(0).getCardCount());
 		assertEquals("Project", classifications.get(2).getFieldName());
 		assertEquals("heartBeat", classificationListForProject.get(0).getName());
 		assertEquals(0.5, classificationListForProject.get(0).getValue());
+		assertEquals(2, classificationListForProject.get(0).getCardCount());
 
 	}
 
@@ -326,7 +343,7 @@ class ClassificationCalculatorTest {
 
 		assertEquals(1, classifications.size());
 		assertEquals("Status", classifications.get(0).getFieldName());
-		assertEquals("Doing", classifications.get(0).getPairList().get(0).getName());
+		assertEquals("Doing", classifications.get(0).getClassificationInfos().get(0).getName());
 	}
 
 	@Test
@@ -337,14 +354,16 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				ClassificationFixture.GENERAL_CARD_COLLECTION);
 
-		List<ClassificationNameValuePair> classificationListForLabels = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationListForLabels = classifications.get(0).getClassificationInfos();
 
 		assertEquals(1, classifications.size());
 		assertEquals("Labels", classifications.get(0).getFieldName());
-		assertEquals("backend", classifications.get(0).getPairList().get(0).getName());
+		assertEquals("backend", classifications.get(0).getClassificationInfos().get(0).getName());
 		assertEquals(0.5, classificationListForLabels.get(0).getValue());
+		assertEquals(2, classificationListForLabels.get(0).getCardCount());
 		assertEquals("frontend", classificationListForLabels.get(2).getName());
 		assertEquals(0.5, classificationListForLabels.get(2).getValue());
+		assertEquals(2, classificationListForLabels.get(2).getCardCount());
 
 	}
 
@@ -392,14 +411,16 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				ClassificationFixture.SAME_CONTENT_CARD_COLLECTION);
 
-		List<ClassificationNameValuePair> classificationListForFixVersions = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationListForFixVersions = classifications.get(0).getClassificationInfos();
 
 		assertEquals(1, classifications.size());
 		assertEquals("Fix Versions", classifications.get(0).getFieldName());
 		assertEquals("sprint1", classificationListForFixVersions.get(0).getName());
 		assertEquals(0.5, classificationListForFixVersions.get(0).getValue());
+		assertEquals(2, classificationListForFixVersions.get(0).getCardCount());
 		assertEquals("sprint2", classificationListForFixVersions.get(1).getName());
 		assertEquals(0.5, classificationListForFixVersions.get(1).getValue());
+		assertEquals(2, classificationListForFixVersions.get(1).getCardCount());
 	}
 
 	@Test
@@ -410,12 +431,13 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				ClassificationFixture.CARD_COLLECTION_WITH_EMPTY_CONTENT);
 
-		List<ClassificationNameValuePair> classificationListForFixVersions = classifications.get(0).getPairList();
+		List<ClassificationInfo> classificationListForFixVersions = classifications.get(0).getClassificationInfos();
 
 		assertEquals(1, classifications.size());
 		assertEquals("Fix Versions", classifications.get(0).getFieldName());
 		assertEquals("None", classificationListForFixVersions.get(0).getName());
 		assertEquals(1, classificationListForFixVersions.get(0).getValue());
+		assertEquals(2, classificationListForFixVersions.get(0).getCardCount());
 	}
 
 }

@@ -13,7 +13,7 @@ import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.controller.report.dto.response.Classification;
-import heartbeat.controller.report.dto.response.ClassificationNameValuePair;
+import heartbeat.controller.report.dto.response.ClassificationInfo;
 import heartbeat.controller.report.dto.response.CycleTime;
 import heartbeat.controller.report.dto.response.CycleTimeForSelectedStepItem;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
@@ -446,7 +446,7 @@ public class CSVFileGenerator {
 	private List<String[]> getRowsFormClassification(Classification classificationList) {
 		List<String[]> rows = new ArrayList<>();
 		String fieldName = String.valueOf((classificationList.getFieldName()));
-		List<ClassificationNameValuePair> pairList = classificationList.getPairList();
+		List<ClassificationInfo> pairList = classificationList.getClassificationInfos();
 		pairList.forEach(
 				nameValuePair -> rows.add(new String[] { "Classifications", fieldName + " / " + nameValuePair.getName(),
 						DecimalUtil.formatDecimalTwo(nameValuePair.getValue() * 100) }));

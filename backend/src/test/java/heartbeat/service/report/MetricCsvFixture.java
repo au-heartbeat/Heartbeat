@@ -1,7 +1,7 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.response.Classification;
-import heartbeat.controller.report.dto.response.ClassificationNameValuePair;
+import heartbeat.controller.report.dto.response.ClassificationInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Rework;
 import heartbeat.controller.report.dto.response.Velocity;
@@ -32,8 +32,8 @@ public class MetricCsvFixture {
 			.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
 			.classificationList(List.of(Classification.builder()
 				.fieldName("Issue Type")
-				.pairList(List.of(ClassificationNameValuePair.builder().name("Bug").value(0.3333333333333333).build(),
-						ClassificationNameValuePair.builder().name("Story").value(0.6666666666666666).build()))
+				.classificationInfos(List.of(ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
+						ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
 				.build()))
 			.cycleTime(CycleTime.builder()
 				.totalTimeForCards(29.26)

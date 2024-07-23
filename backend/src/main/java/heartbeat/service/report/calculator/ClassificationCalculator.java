@@ -10,7 +10,7 @@ import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.response.Classification;
-import heartbeat.controller.report.dto.response.ClassificationNameValuePair;
+import heartbeat.controller.report.dto.response.ClassificationInfo;
 import heartbeat.service.report.ICardFieldDisplayName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -50,16 +50,16 @@ public class ClassificationCalculator {
 		}
 
 		resultMap.forEach((fieldName, valueMap) -> {
-			List<ClassificationNameValuePair> classificationNameValuePair = new ArrayList<>();
+			List<ClassificationInfo> classificationInfo = new ArrayList<>();
 
 			if (valueMap.get(NONE_KEY) == 0) {
 				valueMap.remove(NONE_KEY);
 			}
 
-			valueMap.forEach((displayName, count) -> classificationNameValuePair
-				.add(new ClassificationNameValuePair(displayName, (double) count / cards.getCardsNumber())));
+			valueMap.forEach((displayName, count) -> classificationInfo
+				.add(new ClassificationInfo(displayName, (double) count / cards.getCardsNumber(), count)));
 
-			classificationFields.add(new Classification(nameMap.get(fieldName), classificationNameValuePair));
+			classificationFields.add(new Classification(nameMap.get(fieldName), classificationInfo));
 		});
 
 		return classificationFields;
@@ -75,10 +75,10 @@ public class ClassificationCalculator {
 						objectList.add(jsonObject);
 					}
 				});
-				mapArrayField(resultMap, tempFieldsKey, (List.of(objectList)));
+				mapArrayField(resultMap, tempFieldsKey, List.of(objectList));
 			}
 			else if (object instanceof List) {
-				mapArrayField(resultMap, tempFieldsKey, (List.of(object)));
+				mapArrayField(resultMap, tempFieldsKey, List.of(object));
 			}
 			else if (object != null) {
 				Map<String, Integer> countMap = resultMap.get(tempFieldsKey);
@@ -100,7 +100,7 @@ public class ClassificationCalculator {
 				Integer count = countMap.getOrDefault(displayName, 0);
 				countMap.put(displayName, count > 0 ? count + 1 : 1);
 			}
-			if (!objects.isEmpty() && objects.get(0) instanceof List && ((List<?>) objects.get(0)).isEmpty()) {
+			if (((List<?>) objects.get(0)).isEmpty()) {
 				countMap.put(NONE_KEY, countMap.get(NONE_KEY));
 			}
 			else {

@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ClassificationNameValuePair {
+public class ClassificationInfo {
 
 	private String name;
 
 	private Double value;
+
+	private int cardCount;
 
 }
