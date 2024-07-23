@@ -11,14 +11,14 @@ type State<T> = Record<string, Record<string, T>>;
 
 const mockTitle = 'Classification Setting';
 const mockClassificationLabel = 'Distinguished by';
-const mockClassificationChartLabel = 'Generate charts (optional)';
+const mockClassificationChartLabel = 'Visible in charts (optional)';
 const mockTargetFields = [
   { flag: true, key: 'issue', name: 'Issue' },
   { flag: false, key: 'type', name: 'Type' },
   { flag: true, key: 'custom_field10060', name: 'Story testing' },
   { flag: false, key: 'custom_field10061', name: 'Story testing' },
 ];
-const classificationChartOptionLabelPrefix = 'Classification Generate Charts Option';
+const classificationChartOptionLabelPrefix = 'Classification Visible Charts Option';
 
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
@@ -58,7 +58,7 @@ describe('Classification', () => {
     expect(screen.getByText(mockClassificationChartLabel)).toBeInTheDocument();
   });
 
-  describe('Classification Generate charts (optional)', () => {
+  describe('Classification Visible in charts (optional)', () => {
     it('should disable classification charts when classification is not selected', async () => {
       await setup([
         { flag: false, key: 'issue', name: 'Issue' },
@@ -107,7 +107,7 @@ describe('Classification', () => {
       await setup(mockTargetFields);
       await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
       const listBox = within(screen.getByRole('listbox'));
-      const chartFormItem = within(screen.getByLabelText('Classification Generate Charts'));
+      const chartFormItem = within(screen.getByLabelText('Classification Visible Charts'));
       await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} Issue`));
 
       await waitFor(() => {
@@ -128,7 +128,7 @@ describe('Classification', () => {
       await setup(mockTargetFields);
       await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
       const listBox = within(screen.getByRole('listbox'));
-      const chartFormItem = within(screen.getByLabelText('Classification Generate Charts'));
+      const chartFormItem = within(screen.getByLabelText('Classification Visible Charts'));
       await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} Issue`));
 
       await waitFor(() => {
@@ -146,7 +146,7 @@ describe('Classification', () => {
       await setup(mockTargetFields);
       await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
       const listBox = within(screen.getByRole('listbox'));
-      const chartFormItem = within(screen.getByLabelText('Classification Generate Charts'));
+      const chartFormItem = within(screen.getByLabelText('Classification Visible Charts'));
       await userEvent.click(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`));
 
       await waitFor(() => {
@@ -162,7 +162,7 @@ describe('Classification', () => {
       });
     });
 
-    it('should enable all option given selected classification is less than 4', async () => {
+    it('should enable and display all option given selected classification is less than 4', async () => {
       await setup(mockTargetFields);
 
       await userEvent.click(screen.getByRole('combobox', { name: mockClassificationChartLabel }));
@@ -176,7 +176,7 @@ describe('Classification', () => {
       });
     });
 
-    it('should disable all option given selected classification is more than 4', async () => {
+    it('should not show all option given selected classification is more than 4', async () => {
       await setup([
         { flag: true, key: 'issue', name: 'Issue' },
         { flag: true, key: 'type', name: 'Type' },
@@ -189,10 +189,7 @@ describe('Classification', () => {
       const listBox = within(screen.getByRole('listbox'));
 
       await waitFor(() => {
-        expect(listBox.getByLabelText(`${classificationChartOptionLabelPrefix} All`)).toHaveAttribute(
-          'aria-disabled',
-          'true',
-        );
+        expect(listBox.queryByLabelText(`${classificationChartOptionLabelPrefix} All`)).toBeNull();
       });
     });
 

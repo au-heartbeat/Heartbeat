@@ -253,10 +253,10 @@ _Image 3-10，By Status_
 
 #### 3.2.2 Setting Classification
 
-![Image 3-11](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-11.png)\
+![Image 3-11](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-11-1.png)\
 _Image 3-11，Classification Settings_
 
-In classification settings, it will list all Context fields for your jira board. Users can select anyone in distinguished by form filed to get the data for them, and anyone in generate charts form filed to generate chart. And according to your selection, in the export page, you will see the classification report and chart to provide more insight with your board data.
+In classification settings, it will list all Context fields for your jira board. Users can select anyone in distinguished by form filed to get the data for them, and anyone in visible in charts form filed to generate chart. And according to your selection, in the export page, you will see the classification report and chart to provide more insight with your board data.
 
 #### 3.2.3 Rework times Setting
 ![Image 3-12](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/rework-setting-image/rework-times-settings.png)\

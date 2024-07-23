@@ -31,9 +31,9 @@ export const Classification = ({ targetFields, title, label }: classificationPro
   const selectedOptions = targetFieldsWithSuffix.filter(({ flag }) => flag);
   const chartOptions = selectedOptions;
   const storedSelectedCharts = useAppSelector(selectClassificationCharts);
-  const selectedCharts = chartOptions.filter(({ key }) =>
-    storedSelectedCharts.find(({ key: matchedKey }) => matchedKey === key),
-  );
+  const selectedCharts = storedSelectedCharts
+    .map(({ key }) => chartOptions.find(({ key: matchedKey }) => matchedKey === key))
+    .filter((item) => !!item) as ITargetFieldType[];
   const isAllSelected = selectedOptions.length > 0 && selectedOptions.length === targetFieldsWithSuffix.length;
   const isChartAllSelected = selectedCharts.length > 0 && selectedCharts.length === chartOptions.length;
 
@@ -72,9 +72,13 @@ export const Classification = ({ targetFields, title, label }: classificationPro
   };
 
   const filterOptions =
-    (isAllSelected: boolean) =>
+    (isAllSelected: boolean, showAll: boolean = true) =>
     (options: ITargetFieldType[], params: FilterOptionsState<ITargetFieldType>): ITargetFieldType[] => {
       const filtered = createFilterOptions<ITargetFieldType>()(options, params);
+
+      if (!showAll) {
+        return [...filtered];
+      }
       const allOption = {
         flag: isAllSelected,
         name: ALL_OPTION_META.label,
@@ -125,13 +129,13 @@ export const Classification = ({ targetFields, title, label }: classificationPro
           }}
         />
         <TypedStyledAutocompleted
-          aria-label='Classification Generate Charts'
+          aria-label='Classification Visible Charts'
           multiple
           options={chartOptions}
           disableCloseOnSelect
           disabled={chartOptions?.length === 0}
           value={selectedCharts}
-          filterOptions={filterOptions(isChartAllSelected)}
+          filterOptions={filterOptions(isChartAllSelected, chartOptions.length <= 4)}
           getOptionLabel={(option) => option.name}
           getOptionDisabled={disableChartOption}
           onChange={(event, value) => handleChartChange(event, value as ITargetFieldType[])}
@@ -140,7 +144,7 @@ export const Classification = ({ targetFields, title, label }: classificationPro
             return (
               <li
                 {...props}
-                aria-label={'Classification Generate Charts Option ' + option.name}
+                aria-label={'Classification Visible Charts Option ' + option.name}
                 data-testid={option.key}
               >
                 <Checkbox
@@ -153,7 +157,7 @@ export const Classification = ({ targetFields, title, label }: classificationPro
               </li>
             );
           }}
-          renderInput={(params) => <TextField {...params} variant='standard' label='Generate charts (optional)' />}
+          renderInput={(params) => <TextField {...params} variant='standard' label='Visible in charts (optional)' />}
           slotProps={{
             popper: {
               sx: {
