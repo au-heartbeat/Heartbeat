@@ -22,17 +22,18 @@ import {
   SHOW_MORE,
 } from '../../fixtures';
 import {
+  addADeploymentFrequencySetting,
+  saveClassificationCharts,
+  saveTargetFields,
+  updateDeploymentFrequencySettings,
+} from '@src/context/Metrics/metricsSlice';
+import {
   DateRangeList,
   updateDateRange,
   updateJiraVerifyResponse,
   updateMetrics,
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
-import {
-  addADeploymentFrequencySetting,
-  saveClassificationCharts,
-  updateDeploymentFrequencySettings,
-} from '@src/context/Metrics/metricsSlice';
 import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { closeNotification } from '@src/context/notification/NotificationSlice';
@@ -162,6 +163,12 @@ describe('Report Step', () => {
     );
     store.dispatch(
       saveClassificationCharts([
+        { key: 'issuetype', name: 'Issue Type', flag: true },
+        { key: 'parent', name: 'Parent', flag: true },
+      ]),
+    );
+    store.dispatch(
+      saveTargetFields([
         { key: 'issuetype', name: 'Issue Type', flag: true },
         { key: 'parent', name: 'Parent', flag: true },
       ]),
@@ -857,6 +864,90 @@ describe('Report Step', () => {
       await userEvent.click(switchChartButton);
 
       expect(addNotification).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render board chart classification when name is duplicate', async () => {
+      const mockTargetFields = [
+        {
+          key: 'mock1',
+          name: 'name1',
+          flag: true,
+        },
+        {
+          key: 'mock2',
+          name: 'name1',
+          flag: true,
+        },
+        {
+          key: 'mock3',
+          name: 'name1',
+          flag: true,
+        },
+      ];
+      const mockClassificationCharts = [
+        {
+          key: 'mock1',
+          name: 'name1',
+          flag: true,
+        },
+        {
+          key: 'mock3',
+          name: 'name1',
+          flag: true,
+        },
+      ];
+      const mockReportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
+      mockReportData.classificationList = [
+        {
+          fieldName: 'name1-1',
+          pairList: [
+            {
+              name: 'name1-1 - Planned',
+              value: 0.5714,
+            },
+          ],
+        },
+        {
+          fieldName: 'name1-2',
+          pairList: [
+            {
+              name: 'name1-2 - Planned',
+              value: 0.5714,
+            },
+          ],
+        },
+        {
+          fieldName: 'name1-3',
+          pairList: [
+            {
+              name: 'name1-3 - Planned',
+              value: 0.5714,
+            },
+          ],
+        },
+      ];
+      reportHook.current.reportInfos[0].reportData = mockReportData;
+
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+      store.dispatch(saveTargetFields(mockTargetFields));
+      store.dispatch(saveClassificationCharts(mockClassificationCharts));
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      await userEvent.click(switchChartButton);
+
+      const classificationName1Chart = screen.queryByLabelText('classification name1-1 chart');
+      const classificationName1SwitchIcon = screen.queryByLabelText('classification name1-1 switch chart');
+      const classificationName2Chart = screen.queryByLabelText('classification name1-2 chart');
+      const classificationName2SwitchIcon = screen.queryByLabelText('classification name1-2 switch chart');
+      const classificationName3Chart = screen.queryByLabelText('classification name1-3 chart');
+      const classificationName3SwitchIcon = screen.queryByLabelText('classification name1-3 switch chart');
+
+      expect(classificationName1Chart).toBeInTheDocument();
+      expect(classificationName1SwitchIcon).toBeInTheDocument();
+      expect(classificationName2Chart).not.toBeInTheDocument();
+      expect(classificationName2SwitchIcon).not.toBeInTheDocument();
+      expect(classificationName3Chart).toBeInTheDocument();
+      expect(classificationName3SwitchIcon).toBeInTheDocument();
     });
 
     it('should render dora chart with empty value when exception was thrown', async () => {
