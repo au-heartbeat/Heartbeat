@@ -85,7 +85,10 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const shouldShowBoardMetrics = useAppSelector(isSelectBoardMetrics);
   const shouldShowDoraMetrics = useAppSelector(isSelectDoraMetrics);
 
-  const classificationNames = formatDuplicatedNameWithSuffix(classificationCharts).map((it) => it.name);
+  const targetFieldsWithSuffix = formatDuplicatedNameWithSuffix(targetFields);
+  const classificationNames = classificationCharts
+    .map((it) => targetFieldsWithSuffix.find((targetField) => targetField.key === it.key))
+    .map((it) => it!.name);
 
   const getJiraBoardSetting = () => {
     const { token, type, site, projectKey, boardId, email } = configData.board.config;
@@ -100,7 +103,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       treatFlagCardAsBlock,
       users,
       assigneeFilter,
-      targetFields: formatDuplicatedNameWithSuffix(targetFields),
+      targetFields: targetFieldsWithSuffix,
       classificationNames,
       doneColumn: getRealDoneStatus(cycleTimeSettings, cycleTimeSettingsType, doneColumn),
       reworkTimesSetting:

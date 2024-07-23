@@ -22,17 +22,18 @@ import {
   SHOW_MORE,
 } from '../../fixtures';
 import {
+  addADeploymentFrequencySetting,
+  saveClassificationCharts,
+  saveTargetFields,
+  updateDeploymentFrequencySettings,
+} from '@src/context/Metrics/metricsSlice';
+import {
   DateRangeList,
   updateDateRange,
   updateJiraVerifyResponse,
   updateMetrics,
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
-import {
-  addADeploymentFrequencySetting,
-  saveClassificationCharts,
-  updateDeploymentFrequencySettings,
-} from '@src/context/Metrics/metricsSlice';
 import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { closeNotification } from '@src/context/notification/NotificationSlice';
@@ -162,6 +163,12 @@ describe('Report Step', () => {
     );
     store.dispatch(
       saveClassificationCharts([
+        { key: 'issuetype', name: 'Issue Type', flag: true },
+        { key: 'parent', name: 'Parent', flag: true },
+      ]),
+    );
+    store.dispatch(
+      saveTargetFields([
         { key: 'issuetype', name: 'Issue Type', flag: true },
         { key: 'parent', name: 'Parent', flag: true },
       ]),
