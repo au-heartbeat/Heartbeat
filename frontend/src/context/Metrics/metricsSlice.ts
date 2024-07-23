@@ -6,6 +6,7 @@ import {
   METRICS_CONSTANTS,
 } from '@src/constants/resources';
 import { convertCycleTimeSettings, getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
+import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import _, { omit, uniqWith, isEqual, intersection, concat } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
@@ -201,7 +202,7 @@ const getImportSelectClassifications = (
     }));
     const newClassificationCharts = state.importedData.importedClassificationCharts
       .map((key) => newTargetFields.find(({ key: targetKey, flag }) => key === targetKey && flag))
-      .filter((item) => !!item);
+      .filter((item) => !!item) as ITargetFieldType[];
     return {
       targetFields: newTargetFields,
       classificationCharts: newClassificationCharts,
