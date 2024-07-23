@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 const getProjectName = () => {
   const searchString = window.location.href.split('?')[1];
   const searchParams = new URLSearchParams(searchString);
-  const projectName = searchParams.get('projectName') || '';
+  const projectName = searchParams.get('projectName') ?? '';
   return decodeURI(projectName);
 };
 
