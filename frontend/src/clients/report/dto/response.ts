@@ -60,6 +60,7 @@ export interface ReworkTimeResponse {
 
 export interface ClassificationResponse {
   fieldName: string;
+  totalCardCounts: number;
   classificationInfos: Array<ClassificationInfos>;
 }
 

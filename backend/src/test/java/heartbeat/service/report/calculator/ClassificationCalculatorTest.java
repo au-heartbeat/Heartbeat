@@ -46,6 +46,7 @@ class ClassificationCalculatorTest {
 
 		Classification classification = classifications.get(0);
 		assertEquals("Priority", classification.getFieldName());
+		assertEquals(4, classification.getTotalCardCounts());
 	}
 
 	@Test
@@ -343,6 +344,7 @@ class ClassificationCalculatorTest {
 
 		assertEquals(1, classifications.size());
 		assertEquals("Status", classifications.get(0).getFieldName());
+		assertEquals(4, classifications.get(0).getTotalCardCounts());
 		assertEquals("Doing", classifications.get(0).getClassificationInfos().get(0).getName());
 	}
 
@@ -358,6 +360,7 @@ class ClassificationCalculatorTest {
 
 		assertEquals(1, classifications.size());
 		assertEquals("Labels", classifications.get(0).getFieldName());
+		assertEquals(4, classifications.get(0).getTotalCardCounts());
 		assertEquals("backend", classifications.get(0).getClassificationInfos().get(0).getName());
 		assertEquals(0.5, classificationListForLabels.get(0).getValue());
 		assertEquals(2, classificationListForLabels.get(0).getCardCount());
@@ -401,6 +404,7 @@ class ClassificationCalculatorTest {
 
 		assertEquals(1, classifications.size());
 		assertEquals("Assignee", classifications.get(0).getFieldName());
+		assertEquals(2, classifications.get(0).getTotalCardCounts());
 	}
 
 	@Test
@@ -415,6 +419,7 @@ class ClassificationCalculatorTest {
 
 		assertEquals(1, classifications.size());
 		assertEquals("Fix Versions", classifications.get(0).getFieldName());
+		assertEquals(4, classifications.get(0).getTotalCardCounts());
 		assertEquals("sprint1", classificationListForFixVersions.get(0).getName());
 		assertEquals(0.5, classificationListForFixVersions.get(0).getValue());
 		assertEquals(2, classificationListForFixVersions.get(0).getCardCount());
@@ -435,6 +440,7 @@ class ClassificationCalculatorTest {
 
 		assertEquals(1, classifications.size());
 		assertEquals("Fix Versions", classifications.get(0).getFieldName());
+		assertEquals(2, classifications.get(0).getTotalCardCounts());
 		assertEquals("None", classificationListForFixVersions.get(0).getName());
 		assertEquals(1, classificationListForFixVersions.get(0).getValue());
 		assertEquals(2, classificationListForFixVersions.get(0).getCardCount());

@@ -51,6 +51,7 @@ export class ReportClient extends HttpClient {
     classificationList: [
       {
         fieldName: '',
+        totalCardCounts: 1,
         classificationInfos: [],
       },
     ],

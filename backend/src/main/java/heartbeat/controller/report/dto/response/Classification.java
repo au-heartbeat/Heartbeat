@@ -15,6 +15,8 @@ public class Classification {
 
 	private String fieldName;
 
+	private int totalCardCounts;
+
 	private List<ClassificationInfo> classificationInfos;
 
 }
