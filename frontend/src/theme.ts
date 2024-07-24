@@ -30,6 +30,10 @@ declare module '@mui/material/styles' {
         barColorD: string;
         barColorE: string;
         barColorF: string;
+        barColorG: string;
+        barColorH: string;
+        barColorI: string;
+        barColorJ: string;
         lineColorA: string;
         lineColorB: string;
         gridColor: string;
@@ -143,6 +147,10 @@ export const theme = createTheme({
       barColorD: '#769D7B',
       barColorE: '#C28830',
       barColorF: '#5078e6',
+      barColorG: '#634F7D',
+      barColorH: '#666666',
+      barColorI: '#D9EAD3',
+      barColorJ: '#FFF2CC',
       lineColorA: '#163C4D',
       lineColorB: '#E16A7C',
       gridColor: '#D9D9D9',
