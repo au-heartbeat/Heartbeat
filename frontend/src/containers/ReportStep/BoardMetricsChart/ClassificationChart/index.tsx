@@ -1,4 +1,8 @@
-import { pieOptionMapper, stackedBarOptionMapper } from '@src/containers/ReportStep/ChartOption';
+import {
+  pieOptionMapper,
+  stackedAreaOptionMapper,
+  stackedBarOptionMapper,
+} from '@src/containers/ReportStep/ChartOption';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { LABEL_PERCENT } from '@src/containers/ReportStep/BoardMetricsChart';
 import { ReportResponse } from '@src/clients/report/dto/response';
@@ -6,6 +10,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { showChart } from '@src/containers/ReportStep';
 import { ChartType } from '@src/constants/resources';
 import { theme } from '@src/theme';
+
+enum ClassificationChartType {
+  Pie = 'pie',
+  Bar = 'bar',
+}
 
 function extractClassificationData(classification: string, dateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData.flatMap((item) => item.classification?.filter((it) => it.name === classification));
@@ -65,30 +74,52 @@ function extractClassificationData(classification: string, dateRanges: string[],
   };
 }
 
-function extractClassificationCardCountsData(
-  classification: string,
-  dateRanges: string[],
-  mappedData: ReportResponse[],
-) {
-  const data = mappedData
+function getTotalCardCounts(mappedData: ReportResponse[], classification: string) {
+  return mappedData
+    .flatMap((it) => it.classificationCardCount)
+    .filter((it) => it?.name === classification)
+    .map((it) => it!.totalCounts!)
+    .reduce((res, it) => res + it, 0);
+}
+
+function extractedValueList(mappedData: ReportResponse[], classification: string) {
+  return mappedData
     .flatMap((it) => it.classificationCardCount)
     .filter((it) => it?.name === classification)
     .flatMap((it) => it?.valueList);
-  console.log('extractClassificationCardCountsData');
-  console.log(data);
+}
 
-  const allSubtitle = [...new Set(data.filter((it) => it !== undefined).map((it) => it!.name))];
-  const totalCardCounts = data
+function getAllSubtitles(mappedData: ReportResponse[], classification: string) {
+  const data = extractedValueList(mappedData, classification);
+  return [...new Set(data.filter((it) => it !== undefined).map((it) => it!.name))];
+}
+
+function getCardCountForSubtitle(data: ({ name: string; value: string } | undefined)[], subtitle: string) {
+  return data
     .filter((it) => it !== undefined)
-    .reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
+    .filter((it) => it!.name === subtitle)
+    .reduce((res, cardInfo) => {
+      return res + Number(cardInfo!.value);
+    }, 0);
+}
 
+function checkClassificationChartType(classification: string, mappedData: ReportResponse[]) {
+  const totalCardCounts = getTotalCardCounts(mappedData, classification);
+
+  const data = extractedValueList(mappedData, classification);
+
+  const totalCounts = data.filter((it) => it !== undefined).reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
+  return totalCounts === totalCardCounts ? ClassificationChartType.Pie : ClassificationChartType.Bar;
+}
+
+function extractClassificationCardCountsPieData(classification: string, mappedData: ReportResponse[]) {
+  const totalCardCounts = getTotalCardCounts(mappedData, classification);
+
+  const data = extractedValueList(mappedData, classification);
+
+  const allSubtitle = getAllSubtitles(mappedData, classification);
   const indicators: { value: string; name: string }[] = allSubtitle.map((subtitle) => {
-    const cardCount = data
-      .filter((it) => it !== undefined)
-      .filter((it) => it!.name === subtitle)
-      .reduce((res, cardInfo) => {
-        return res + Number(cardInfo!.value);
-      }, 0);
+    const cardCount = getCardCountForSubtitle(data, subtitle);
     return {
       name: subtitle,
       value: `${((cardCount * 100) / totalCardCounts).toFixed(2)}`,
@@ -99,6 +130,62 @@ function extractClassificationCardCountsData(
 
   return {
     series: indicators,
+    color: [
+      theme.main.boardChart.barColorA,
+      theme.main.boardChart.barColorB,
+      theme.main.boardChart.barColorC,
+      theme.main.boardChart.barColorD,
+      theme.main.boardChart.barColorE,
+      theme.main.boardChart.barColorF,
+      theme.main.boardChart.barColorG,
+      theme.main.boardChart.barColorH,
+      theme.main.boardChart.barColorI,
+      theme.main.boardChart.barColorJ,
+    ],
+    trendInfo,
+  };
+}
+
+function extractClassificationCardCountsBarData(classification: string, mappedData: ReportResponse[]) {
+  const totalCardCounts = getTotalCardCounts(mappedData, classification);
+
+  const data = extractedValueList(mappedData, classification);
+
+  const allSubtitle = getAllSubtitles(mappedData, classification);
+  const indicators = allSubtitle.map((subtitle) => {
+    const cardCount = getCardCountForSubtitle(data, subtitle);
+    return Number(((cardCount * 100) / totalCardCounts).toFixed(2));
+  });
+
+  const trendInfo = { type: ChartType.Classification };
+
+  return {
+    xAxis: {
+      data: allSubtitle,
+      boundaryGap: true,
+      axisLabel: {
+        color: 'black',
+        alignMaxLabel: 'center',
+        alignMinLabel: 'center',
+      },
+    },
+    yAxis: [
+      {
+        name: '',
+        alignTick: false,
+        axisLabel: LABEL_PERCENT,
+      },
+    ],
+    series: [
+      {
+        name: 'reverse',
+        type: 'bar',
+        data: indicators!,
+        yAxisIndex: 0,
+        setAreaStyle: false,
+        smooth: false,
+      },
+    ],
     color: [
       theme.main.boardChart.barColorA,
       theme.main.boardChart.barColorB,
@@ -132,8 +219,14 @@ export const ClassificationChart = ({
     classificationData = extractClassificationData(classification, dateRanges, mappedData);
     classificationDataOption = classificationData && stackedBarOptionMapper(classificationData);
   } else {
-    classificationData = extractClassificationCardCountsData(classification, dateRanges, mappedData);
-    classificationDataOption = classificationData && pieOptionMapper(classificationData);
+    const chartType = checkClassificationChartType(classification, mappedData);
+    if (chartType === ClassificationChartType.Pie) {
+      classificationData = extractClassificationCardCountsPieData(classification, mappedData);
+      classificationDataOption = classificationData && pieOptionMapper(classificationData);
+    } else {
+      classificationData = extractClassificationCardCountsBarData(classification, mappedData);
+      classificationDataOption = classificationData && stackedAreaOptionMapper(classificationData, true);
+    }
   }
   const isClassificationFinished =
     mappedData.flatMap((value) => value.classification).filter((it) => it?.name === classification)?.length ===

@@ -719,6 +719,7 @@ describe('Report Step', () => {
       resize: jest.fn(),
       dispatchAction: jest.fn(),
       dispose: jest.fn(),
+      clear: jest.fn(),
     };
     beforeEach(() => {
       jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
@@ -730,6 +731,7 @@ describe('Report Step', () => {
       expect(result).toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(0);
       expect(chart.setOption).toHaveBeenCalledTimes(0);
+      expect(chart.clear).toHaveBeenCalledTimes(0);
       expect(chart.dispose).toHaveBeenCalledTimes(0);
     });
 
@@ -743,6 +745,7 @@ describe('Report Step', () => {
       expect(disposeFunction).not.toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(1);
       expect(chart.setOption).toHaveBeenCalledTimes(1);
+      expect(chart.clear).toHaveBeenCalledTimes(1);
       expect(chart.dispose).toHaveBeenCalledTimes(1);
       expect(chart.resize).toHaveBeenCalledTimes(1);
     });
@@ -757,6 +760,7 @@ describe('Report Step', () => {
       expect(disposeFunction).not.toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(1);
       expect(chart.setOption).toHaveBeenCalledTimes(1);
+      expect(chart.clear).toHaveBeenCalledTimes(1);
       expect(chart.dispose).toHaveBeenCalledTimes(1);
       expect(chart.resize).toHaveBeenCalledTimes(0);
     });
@@ -770,21 +774,21 @@ describe('Report Step', () => {
       expect(disposeFunction).not.toBeUndefined();
       expect(echarts.init).toHaveBeenCalledTimes(1);
       expect(chart.setOption).toHaveBeenCalledTimes(1);
+      expect(chart.clear).toHaveBeenCalledTimes(1);
       expect(chart.dispose).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Dora chart test', () => {
+    const chart = {
+      setOption: jest.fn(),
+      resize: jest.fn(),
+      dispatchAction: jest.fn(),
+      dispose: jest.fn(),
+      clear: jest.fn(),
+    };
     beforeEach(() => {
-      jest.spyOn(echarts, 'init').mockImplementation(
-        () =>
-          ({
-            setOption: jest.fn(),
-            resize: jest.fn(),
-            dispatchAction: jest.fn(),
-            dispose: jest.fn(),
-          }) as unknown as echarts.ECharts,
-      );
+      jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
     });
 
     it('should correctly render dora chart', async () => {
@@ -834,23 +838,28 @@ describe('Report Step', () => {
       mockReportData.classificationList = [
         {
           fieldName: 'Issue Type',
-          pairList: [
+          totalCardCounts: 3,
+          classificationInfos: [
             {
               name: 'Feature Work - Planned',
               value: 0.5714,
+              cardCount: 3,
             },
           ],
         },
         {
           fieldName: 'Issue Type',
-          pairList: [
+          totalCardCounts: 3,
+          classificationInfos: [
             {
               name: 'Feature Work - Planned',
               value: 0.5714,
+              cardCount: 1,
             },
             {
               name: 'Feature Work - Planned2',
               value: 0.5714,
+              cardCount: 2,
             },
           ],
         },
@@ -866,7 +875,7 @@ describe('Report Step', () => {
       expect(addNotification).toHaveBeenCalledTimes(1);
     });
 
-    it('should render board chart classification when name is duplicate', async () => {
+    it('should render board classification chart when name is duplicate', async () => {
       const mockTargetFields = [
         {
           key: 'mock1',
@@ -900,28 +909,34 @@ describe('Report Step', () => {
       mockReportData.classificationList = [
         {
           fieldName: 'name1-1',
-          pairList: [
+          totalCardCounts: 3,
+          classificationInfos: [
             {
               name: 'name1-1 - Planned',
               value: 0.5714,
+              cardCount: 3,
             },
           ],
         },
         {
           fieldName: 'name1-2',
-          pairList: [
+          totalCardCounts: 3,
+          classificationInfos: [
             {
               name: 'name1-2 - Planned',
               value: 0.5714,
+              cardCount: 3,
             },
           ],
         },
         {
           fieldName: 'name1-3',
-          pairList: [
+          totalCardCounts: 3,
+          classificationInfos: [
             {
               name: 'name1-3 - Planned',
               value: 0.5714,
+              cardCount: 3,
             },
           ],
         },
@@ -948,6 +963,65 @@ describe('Report Step', () => {
       expect(classificationName2SwitchIcon).not.toBeInTheDocument();
       expect(classificationName3Chart).toBeInTheDocument();
       expect(classificationName3SwitchIcon).toBeInTheDocument();
+    });
+
+    it('should render board classification chart when click switch button', async () => {
+      const mockReportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
+      mockReportData.classificationList = [
+        {
+          fieldName: 'Issue Type',
+          totalCardCounts: 3,
+          classificationInfos: [
+            {
+              name: 'Feature Work - Planned',
+              value: 0.5714,
+              cardCount: 3,
+            },
+          ],
+        },
+        {
+          fieldName: 'Parent',
+          totalCardCounts: 3,
+          classificationInfos: [
+            {
+              name: 'Feature Work - Planned',
+              value: 0.5714,
+              cardCount: 3,
+            },
+            {
+              name: 'Feature Work - Planned2',
+              value: 0.5714,
+              cardCount: 2,
+            },
+          ],
+        },
+      ];
+
+      reportHook.current.reportInfos[0].reportData = mockReportData;
+
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      await userEvent.click(switchChartButton);
+
+      const classificationIssueTypeChart = screen.queryByLabelText('classification issue type chart');
+      const classificationIssueTypeSwitchIcon = screen.queryByLabelText('classification issue type switch chart');
+      const classificationParentChart = screen.queryByLabelText('classification parent chart');
+      const classificationParentSwitchIcon = screen.queryByLabelText('classification parent switch chart');
+
+      expect(classificationIssueTypeChart).toBeInTheDocument();
+      expect(classificationIssueTypeSwitchIcon).toBeInTheDocument();
+      expect(classificationParentChart).toBeInTheDocument();
+      expect(classificationParentSwitchIcon).toBeInTheDocument();
+
+      expect(chart.setOption).toHaveBeenCalledTimes(6);
+      expect(chart.clear).toHaveBeenCalledTimes(6);
+
+      await userEvent.click(classificationIssueTypeSwitchIcon!);
+      await userEvent.click(classificationParentSwitchIcon!);
+
+      expect(chart.setOption).toHaveBeenCalledTimes(8);
+      expect(chart.clear).toHaveBeenCalledTimes(8);
     });
 
     it('should render dora chart with empty value when exception was thrown', async () => {

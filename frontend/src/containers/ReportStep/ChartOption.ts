@@ -186,13 +186,17 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
   };
 };
 
-export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
+export const stackedAreaOptionMapper = (props: AreaOptionProps, showPercentage: boolean = false) => {
+  const series = props.series;
   return {
     legend: {
-      data: props.series?.map((item) => item.name),
+      data: series?.length === 1 ? [] : series?.map((item) => item.name),
       ...commonConfig.legend,
     },
-    tooltip: commonConfig.tooltip,
+    tooltip: {
+      valueFormatter: percentageFormatter(showPercentage),
+      ...commonConfig.tooltip,
+    },
     grid: commonConfig.grid,
     xAxis: {
       data: props.xAxis.data,
@@ -217,7 +221,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps) => {
       };
     }),
     color: props.color,
-    series: props.series?.map((item) => {
+    series: series?.map((item) => {
       return {
         name: item.name,
         data: item.data,

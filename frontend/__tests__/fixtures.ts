@@ -548,10 +548,12 @@ export const MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION: ReportResponseDTO = {
   classificationList: [
     {
       fieldName: 'FS Work Type',
-      pairList: [
+      totalCardCounts: 3,
+      classificationInfos: [
         {
           name: 'Feature Work - Planned',
           value: 0.5714,
+          cardCount: 3,
         },
       ],
     },
@@ -684,10 +686,12 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
   classificationList: [
     {
       fieldName: 'FS Work Type',
-      pairList: [
+      totalCardCounts: 3,
+      classificationInfos: [
         {
           name: 'Feature Work - Planned',
           value: 0.5714,
+          cardCount: 3,
         },
       ],
     },
@@ -810,10 +814,12 @@ export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
   classificationList: [
     {
       fieldName: 'Issue Type',
-      pairList: [
+      totalCardCounts: 3,
+      classificationInfos: [
         {
           name: 'Feature Work - Planned',
           value: 0.5714,
+          cardCount: 3,
         },
       ],
     },
