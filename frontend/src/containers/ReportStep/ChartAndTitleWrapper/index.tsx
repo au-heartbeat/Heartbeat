@@ -47,11 +47,13 @@ const ChartAndTitleWrapper = forwardRef(
       isLoading,
       subTitle,
       isShowRepeat = false,
+      clickRepeat,
     }: {
       trendInfo: ITrendInfo;
       isLoading: boolean;
       subTitle?: string;
       isShowRepeat?: boolean;
+      clickRepeat?: () => void;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
@@ -93,6 +95,7 @@ const ChartAndTitleWrapper = forwardRef(
                 cursor: 'pointer',
                 zIndex: Z_INDEX.BUTTONS,
               }}
+              onClick={clickRepeat}
             />
           </Tooltip>
         )}

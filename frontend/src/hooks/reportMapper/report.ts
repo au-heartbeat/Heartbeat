@@ -1,3 +1,4 @@
+import { classificationCardCountMapper } from '@src/hooks/reportMapper/classificationCardCount';
 import { devMeanTimeToRecoveryMapper } from '@src/hooks/reportMapper/devMeanTimeToRecovery';
 import { devChangeFailureRateMapper } from '@src/hooks/reportMapper/devChangeFailureRate';
 import { deploymentFrequencyMapper } from '@src/hooks/reportMapper/deploymentFrequency';
@@ -38,6 +39,8 @@ export const reportMapper = ({
 
   const exportValidityTimeMin = exportValidityTimeMapper(exportValidityTime);
 
+  const classificationCardCount = classificationList && classificationCardCountMapper(classificationList);
+
   return {
     velocityList,
     cycleTimeList,
@@ -50,5 +53,6 @@ export const reportMapper = ({
     leadTimeForChangesList,
     devChangeFailureRateList,
     exportValidityTimeMin,
+    classificationCardCount,
   };
 };

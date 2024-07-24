@@ -88,6 +88,16 @@ export interface BarOptionProps {
   color: string[];
 }
 
+interface PieSeries {
+  name: string;
+  value: string | number;
+}
+export interface PieOptionProps {
+  legend?: string;
+  series: PieSeries[] | undefined;
+  color: string[];
+}
+
 export interface LineOptionProps {
   legend: string;
   xAxis: string[];
@@ -263,5 +273,28 @@ export const stackedBarOptionMapper = (props: BarOptionProps, showPercentage: bo
         stack: 'x',
       };
     }),
+  };
+};
+
+export const pieOptionMapper = (props: PieOptionProps, showPercentage: boolean = true) => {
+  const series = props.series;
+  return {
+    legend: {
+      data: series?.map((item) => item.name),
+      ...commonConfig.legend,
+      top: 'center',
+      orient: 'vertical',
+    },
+    tooltip: {
+      valueFormatter: percentageFormatter(showPercentage),
+      trigger: 'item',
+    },
+    color: props.color,
+    series: [
+      {
+        type: 'pie',
+        data: series,
+      },
+    ],
   };
 };
