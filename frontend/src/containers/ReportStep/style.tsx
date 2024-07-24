@@ -79,3 +79,8 @@ export const StyledTab = styled(Tab)({
   border: `0.08rem solid ${theme.main.button.borderLine}`,
   minHeight: '2.5rem',
 });
+
+export const StyledProjectHeader = styled('p')({
+  fontSize: '1.5rem',
+  marginBottom: '1.5rem',
+});

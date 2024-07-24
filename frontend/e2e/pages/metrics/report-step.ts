@@ -30,6 +30,7 @@ export enum ProjectCreationType {
 export class ReportStep {
   readonly page: Page;
   readonly pageHeader: Locator;
+  readonly projectName: Locator;
   readonly dateRangeViewerContainer: Locator;
   readonly dateRangeViewerExpandTrigger: Locator;
   readonly dateRangeViewerOptions: Locator;
@@ -114,6 +115,7 @@ export class ReportStep {
   constructor(page: Page) {
     this.page = page;
     this.pageHeader = this.page.locator('[data-test-id="Header"]');
+    this.projectName = this.page.getByLabel('project name');
     this.dateRangeViewerContainer = this.page.getByLabel('date range viewer');
     this.dateRangeViewerExpandTrigger = this.dateRangeViewerContainer.getByLabel('expandMore');
     this.dateRangeViewerOptions = this.dateRangeViewerContainer.getByLabel('date range viewer options');
@@ -215,6 +217,10 @@ export class ReportStep {
 
   async goToPreviousStep() {
     await this.previousButton.click();
+  }
+
+  async checkProjectName(projectName: string) {
+    await expect(this.projectName).toContainText(projectName);
   }
 
   async checkDoraMetricsReportDetails(doraMetricsDetailData: IDoraMetricsResultItem) {

@@ -12,6 +12,7 @@ import { addNotification } from '@src/context/notification/NotificationSlice';
 import {
   isSelectBoardMetrics,
   isSelectDoraMetrics,
+  selectBasicInfo,
   selectConfig,
   selectDateRange,
 } from '@src/context/config/configSlice';
@@ -55,6 +56,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const dispatch = useAppDispatch();
   const configData = useAppSelector(selectConfig);
   const dateRanges = useAppSelector(selectDateRange);
+  const projectName = useAppSelector(selectBasicInfo).projectName;
 
   const { startToRequestData, reportInfos, stopPollingReports, hasPollingStarted } = useGenerateReportEffect();
 
@@ -246,6 +248,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       reportInfos={reportInfos}
       handleSave={handleSave}
       reportId={reportId}
+      projectName={projectName}
     ></ReportContent>
   );
 };

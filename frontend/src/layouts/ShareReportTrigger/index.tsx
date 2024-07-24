@@ -13,6 +13,7 @@ import {
   selectReportPageFailedTimeRangeInfos,
   selectStepNumber,
 } from '@src/context/stepper/StepperSlice';
+import { selectBasicInfo } from '@src/context/config/configSlice';
 import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import { STEP_NUMBER, Z_INDEX } from '@src/constants/commons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -29,9 +30,10 @@ const ShareReportTrigger = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const reportId = useAppSelector(selectReportId);
   const reportPageLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
+  const projectName = useAppSelector(selectBasicInfo).projectName;
   const stepNumber = useAppSelector(selectStepNumber);
 
-  const shareReportLink = `${window.location.host}/reports/${reportId}`;
+  const shareReportLink = `${window.location.host}/reports/${reportId}?projectName=${encodeURI(projectName)}`;
   const isReportLoadedSuccess = Object.values(reportPageLoadingStatus)
     .map(Object.values)
     .flat()

@@ -76,6 +76,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+  await reportStep.checkProjectName(configStepData.projectName);
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
@@ -129,5 +130,6 @@ test('Create a new project without block column in boarding mapping', async ({
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+  await reportStep.checkProjectName(configStepData.projectName);
   await reportStep.checkBoardDownloadDataWithoutBlockForMultipleRanges(3);
 });
