@@ -231,6 +231,10 @@ export const ClassificationChart = ({
   const isClassificationFinished =
     mappedData.flatMap((value) => value.classification).filter((it) => it?.name === classification)?.length ===
     dateRanges.length;
+  const isOnlyOneLegend = classificationDataOption.legend.data?.length === 0;
+  // if (isOnlyOneLegend && isShowTimePeriodChart) return false;
+  // if (!isShowTimePeriodChart) return true;
+  // if (isShowTimePeriodChart && !isOnlyOneLegend) return true
 
   const switchChart = () => {
     setIsShowTimePeriodChart(!isShowTimePeriodChart);
@@ -246,7 +250,7 @@ export const ClassificationChart = ({
       isLoading={!isClassificationFinished}
       trendInfo={classificationData.trendInfo}
       ref={classificationRef}
-      isShowRepeat
+      isShowRepeat={!isOnlyOneLegend || !isShowTimePeriodChart}
       clickRepeat={switchChart}
     />
   );

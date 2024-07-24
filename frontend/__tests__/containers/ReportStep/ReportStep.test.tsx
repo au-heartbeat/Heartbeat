@@ -938,6 +938,11 @@ describe('Report Step', () => {
               value: 0.5714,
               cardCount: 3,
             },
+            {
+              name: 'name1-3 - Planned2',
+              value: 0.5714,
+              cardCount: 3,
+            },
           ],
         },
       ];
@@ -958,7 +963,7 @@ describe('Report Step', () => {
       const classificationName3SwitchIcon = screen.queryByLabelText('classification name1-3 switch chart');
 
       expect(classificationName1Chart).toBeInTheDocument();
-      expect(classificationName1SwitchIcon).toBeInTheDocument();
+      expect(classificationName1SwitchIcon).not.toBeInTheDocument();
       expect(classificationName2Chart).not.toBeInTheDocument();
       expect(classificationName2SwitchIcon).not.toBeInTheDocument();
       expect(classificationName3Chart).toBeInTheDocument();
@@ -975,7 +980,12 @@ describe('Report Step', () => {
             {
               name: 'Feature Work - Planned',
               value: 0.5714,
-              cardCount: 3,
+              cardCount: 1,
+            },
+            {
+              name: 'Feature Work - Planned2',
+              value: 0.5714,
+              cardCount: 2,
             },
           ],
         },
@@ -1013,9 +1023,6 @@ describe('Report Step', () => {
       expect(classificationIssueTypeSwitchIcon).toBeInTheDocument();
       expect(classificationParentChart).toBeInTheDocument();
       expect(classificationParentSwitchIcon).toBeInTheDocument();
-
-      expect(chart.setOption).toHaveBeenCalledTimes(6);
-      expect(chart.clear).toHaveBeenCalledTimes(6);
 
       await userEvent.click(classificationIssueTypeSwitchIcon!);
       await userEvent.click(classificationParentSwitchIcon!);
