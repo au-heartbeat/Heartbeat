@@ -103,3 +103,4 @@ export const DOWNLOAD_DIALOG_TITLE = {
 };
 
 export const AnimationSeconds = 1;
+export const EveryFrameMilliSecond = 17;

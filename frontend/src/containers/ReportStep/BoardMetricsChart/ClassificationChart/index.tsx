@@ -4,10 +4,10 @@ import {
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/ChartOption';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
+import { AnimationSeconds, EveryFrameMilliSecond } from '@src/constants/commons';
 import { LABEL_PERCENT } from '@src/containers/ReportStep/BoardMetricsChart';
 import { ReportResponse } from '@src/clients/report/dto/response';
 import React, { useEffect, useRef, useState } from 'react';
-import { AnimationSeconds } from '@src/constants/commons';
 import { showChart } from '@src/containers/ReportStep';
 import { ChartType } from '@src/constants/resources';
 import { theme } from '@src/theme';
@@ -15,11 +15,6 @@ import { theme } from '@src/theme';
 enum ClassificationChartType {
   Pie = 'pie',
   Bar = 'bar',
-}
-
-enum ClassificationChartAnimationType {
-  Start = 0,
-  Mid = 1,
 }
 
 function extractClassificationData(classification: string, dateRanges: string[], mappedData: ReportResponse[]) {
@@ -219,10 +214,8 @@ export const ClassificationChart = ({
 }) => {
   const [isFirstIntoClassification, setIsFirstIntoClassification] = useState<boolean>(true);
   const [isShowTimePeriodChart, setIsShowTimePeriodChart] = useState<boolean>(true);
-  const [animationType, setAnimationType] = useState<ClassificationChartAnimationType>(
-    ClassificationChartAnimationType.Start,
-  );
   const [canSwitchChart, setCanSwitchChart] = useState<boolean>(true);
+  const [rotate, setRotate] = useState<number>(0);
   const classificationRef = useRef<HTMLDivElement>(null);
   let classificationData;
   let classificationDataOption;
@@ -246,39 +239,49 @@ export const ClassificationChart = ({
     dateRanges.length;
   const isOnlyOneLegend = classificationDataOption.legend.data?.length === 0;
 
-  const switchChart = () => {
-    if (canSwitchChart) {
-      setIsFirstIntoClassification(false);
-      setCanSwitchChart(false);
-      setAnimationType(ClassificationChartAnimationType.Mid);
-      const animationTimeout = setTimeout(
-        () => {
-          setIsShowTimePeriodChart(!isShowTimePeriodChart);
-          setAnimationType(ClassificationChartAnimationType.Start);
-          clearTimeout(animationTimeout);
-        },
-        (AnimationSeconds * 1000) / 2,
-      );
-      const canSwitchChartTimeout = setTimeout(() => {
-        setCanSwitchChart(true);
-        clearTimeout(canSwitchChartTimeout);
-      }, AnimationSeconds * 1000);
+  const transition = {
+    transform: `rotateY(${rotate}deg)`,
+  };
+
+  const maxRotateDeg = 90;
+  let id: number;
+  let start: number = 0;
+  function step(timestamp: number) {
+    if (start === 0) {
+      start = timestamp;
     }
+    const elapsed = timestamp - start;
+
+    const everyRotate = (maxRotateDeg * 2) / (AnimationSeconds * 1000);
+
+    if (elapsed < (AnimationSeconds * 1000) / 2) {
+      setRotate(everyRotate * elapsed);
+    } else {
+      setRotate(maxRotateDeg);
+      const newRotate = maxRotateDeg - everyRotate * (elapsed - (AnimationSeconds * 1000) / 2);
+      setRotate(newRotate < 0 ? 0 : newRotate);
+    }
+
+    if (Math.abs(elapsed - (AnimationSeconds * 1000) / 2) < EveryFrameMilliSecond) {
+      setIsShowTimePeriodChart(!isShowTimePeriodChart);
+    }
+
+    if (elapsed < AnimationSeconds * 1000 + EveryFrameMilliSecond) {
+      id = window.requestAnimationFrame(step);
+    } else {
+      window.cancelAnimationFrame(id);
+      setCanSwitchChart(true);
+    }
+  }
+  const switchChart = () => {
+    setIsFirstIntoClassification(false);
+    setCanSwitchChart(false);
+    id = window.requestAnimationFrame(step);
   };
 
   useEffect(() => {
     showChart(classificationRef.current, classificationDataOption);
   }, [classificationRef, classificationDataOption]);
-
-  const transition = {
-    transform: 'rotateY(0deg)',
-    transition: `transform ${AnimationSeconds / 2}s linear`,
-  };
-  if (animationType === ClassificationChartAnimationType.Start) {
-    transition.transform = 'rotateY(0deg)';
-  } else {
-    transition.transform = 'rotateY(90deg)';
-  }
 
   return (
     <ChartAndTitleWrapper
