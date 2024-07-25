@@ -338,7 +338,7 @@ Users can switch dates to view the dashboard for the corresponding time period. 
 
 #### List view
 
-![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-new.png)
+![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-0-1.png)
 _Image 3-22, Report page_
 
 You could find the drill down from `show more >` link from dashboard.
@@ -347,13 +347,13 @@ You could find the drill down from `show more >` link from dashboard.
 In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.  
 
 - Board chart 
-![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1-new.png)
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1-2.png)
 - Dora chart
-![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-1.png)
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-2.png)
 
 Heartbeat chart enable customer to drill down  dora metrics to specific pipeline by selecting from pipeline/step dropdown.
 
-Within chart, Hearteat also provide trend indicator which represent last two periods comparison result. The trend indicator includes three key points:
+Within chart, Heartbeat also provide trend indicator which represent last two periods comparison result. The trend indicator includes three key points:
 - Color: From delivery perspective, Green means healthy, Red means unhealthy
 - Trend direction: Increased or decreased compared between last two periods  
 - Value: Changed value in percentage format 
@@ -589,7 +589,7 @@ You can use share report feature to share the report you generated in HeartBeat 
 3. Click the 'Copy Link', the share report link will be copied.
 4. Open a new browser tab and paste the link, then you will open the share report page.
 5. You can also share the link to other people.
-   ![Image 3-34](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-34.png)\
+   ![Image 3-34](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-34-1.png)\
    _Image 3-34，Share Report
 
 ## 3.7 Caching data

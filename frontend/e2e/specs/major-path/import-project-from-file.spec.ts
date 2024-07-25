@@ -64,6 +64,7 @@ test('Import project from file with all ranges API succeed', async ({
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
 
   await metricsStep.goToReportPage();
+  await reportStep.checkProjectName(importMultipleDoneProjectFromFile.projectName);
   await reportStep.confirmGeneratedReport();
   await reportStep.checkShareReport();
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
@@ -112,6 +113,7 @@ test('Import project from file with partial ranges API failed', async ({
   await metricsStep.validateNextButtonClickable();
   await metricsStep.goToReportPage();
 
+  await reportStep.checkProjectName(partialTimeRangesSuccess.projectName);
   await reportStep.confirmGeneratedReport();
 
   await reportStep.checkSelectListTab();
@@ -162,6 +164,8 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+
+  await reportStep.checkProjectName(partialMetricsShowChart.projectName);
 
   await reportStep.checkSelectListTab();
   await reportStep.goToChartBoardTab();
@@ -222,6 +226,7 @@ test('Import project from file with holiday', async ({ homePage, configStep, met
   await metricsStep.checkPipelineConfigurationAreChanged(calculateWithHolidayConfigFile.deployment);
 
   await metricsStep.goToReportPage();
+  await reportStep.checkProjectName(calculateWithHolidayConfigFile.projectName);
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics({
     velocity: BOARD_METRICS_WITH_HOLIDAY_RESULT.Velocity,
