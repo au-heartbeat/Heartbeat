@@ -348,6 +348,9 @@ In report `chart` page, heartbeat provide a better visualization on delivery and
 
 - Board chart 
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1-2.png)
+In the classification chart in the board chart, if the legend is more than 1, you can click the switch button to reverse the chart. the reversed chart will show the sum of each legend in all time periods.
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reverse-classification-chart.png)
+
 - Dora chart
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-2.png)
 
