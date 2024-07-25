@@ -17,6 +17,8 @@ public class Classification {
 
 	private int totalCardCounts;
 
+	private double storyPoints;
+
 	private List<ClassificationInfo> classificationInfos;
 
 }

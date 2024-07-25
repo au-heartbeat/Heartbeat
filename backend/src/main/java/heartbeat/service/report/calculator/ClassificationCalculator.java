@@ -12,6 +12,7 @@ import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.response.Classification;
 import heartbeat.controller.report.dto.response.ClassificationInfo;
 import heartbeat.service.report.ICardFieldDisplayName;
+import heartbeat.service.report.calculator.model.CardCountAndStoryPointsPairInClassification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -32,12 +33,16 @@ public class ClassificationCalculator {
 
 	public List<Classification> calculate(List<TargetField> targetFields, CardCollection cards) {
 		List<Classification> classificationFields = new ArrayList<>();
-		Map<String, Map<String, Integer>> resultMap = new HashMap<>();
+		Map<String, Map<String, CardCountAndStoryPointsPairInClassification>> resultMap = new HashMap<>();
 		Map<String, String> nameMap = new HashMap<>();
 
 		targetFields.stream().filter(TargetField::isFlag).forEach(targetField -> {
-			Map<String, Integer> innerMap = new HashMap<>();
-			innerMap.put(NONE_KEY, cards.getCardsNumber());
+			Map<String, CardCountAndStoryPointsPairInClassification> innerMap = new HashMap<>();
+			innerMap.put(NONE_KEY,
+					CardCountAndStoryPointsPairInClassification.builder()
+						.cardCount(cards.getCardsNumber())
+						.storyPoints(cards.getStoryPointSum())
+						.build());
 			resultMap.put(targetField.getKey(), innerMap);
 			nameMap.put(targetField.getKey(), targetField.getName());
 		});
@@ -46,27 +51,29 @@ public class ClassificationCalculator {
 			JiraCardField jiraCardFields = jiraCardResponse.getBaseInfo().getFields();
 			Map<String, Object> tempFields = extractFields(jiraCardFields);
 
-			mapFields(tempFields, resultMap);
+			mapFields(jiraCardFields.getStoryPoints(), tempFields, resultMap);
 		}
 
 		resultMap.forEach((fieldName, valueMap) -> {
 			List<ClassificationInfo> classificationInfo = new ArrayList<>();
 
-			if (valueMap.get(NONE_KEY) == 0) {
+			if (valueMap.get(NONE_KEY).getCardCount() == 0 && valueMap.get(NONE_KEY).getStoryPoints() == 0) {
 				valueMap.remove(NONE_KEY);
 			}
 
 			valueMap.forEach((displayName, count) -> classificationInfo
-				.add(new ClassificationInfo(displayName, (double) count / cards.getCardsNumber(), count)));
+				.add(new ClassificationInfo(displayName, (double) count.getCardCount() / cards.getCardsNumber(),
+						count.getCardCount(), count.getStoryPoints())));
 
-			classificationFields
-				.add(new Classification(nameMap.get(fieldName), cards.getCardsNumber(), classificationInfo));
+			classificationFields.add(new Classification(nameMap.get(fieldName), cards.getCardsNumber(),
+					cards.getStoryPointSum(), classificationInfo));
 		});
 
 		return classificationFields;
 	}
 
-	private void mapFields(Map<String, Object> tempFields, Map<String, Map<String, Integer>> resultMap) {
+	private void mapFields(double storyPoints, Map<String, Object> tempFields,
+			Map<String, Map<String, CardCountAndStoryPointsPairInClassification>> resultMap) {
 		tempFields.forEach((tempFieldsKey, object) -> {
 			if (object instanceof JsonArray objectArray) {
 				List<JsonObject> objectList = new ArrayList<>();
@@ -76,36 +83,50 @@ public class ClassificationCalculator {
 						objectList.add(jsonObject);
 					}
 				});
-				mapArrayField(resultMap, tempFieldsKey, List.of(objectList));
+				mapArrayField(storyPoints, resultMap, tempFieldsKey, List.of(objectList));
 			}
 			else if (object instanceof List) {
-				mapArrayField(resultMap, tempFieldsKey, List.of(object));
+				mapArrayField(storyPoints, resultMap, tempFieldsKey, List.of(object));
 			}
 			else if (object != null) {
-				Map<String, Integer> countMap = resultMap.get(tempFieldsKey);
+				Map<String, CardCountAndStoryPointsPairInClassification> countMap = resultMap.get(tempFieldsKey);
 				if (countMap != null) {
 					String displayName = pickDisplayNameFromObj(object);
-					Integer count = countMap.getOrDefault(displayName, 0);
-					countMap.put(displayName, count > 0 ? count + 1 : 1);
-					countMap.put(NONE_KEY, countMap.get(NONE_KEY) - 1);
+					CardCountAndStoryPointsPairInClassification count = countMap.getOrDefault(displayName,
+							CardCountAndStoryPointsPairInClassification.of());
+					count.addCardCount();
+					count.addStoryPoints(storyPoints);
+					countMap.put(displayName, count);
+					CardCountAndStoryPointsPairInClassification noneCount = countMap.get(NONE_KEY);
+					noneCount.reduceCardCount();
+					noneCount.reduceStoryPoints(storyPoints);
+					countMap.put(NONE_KEY, noneCount);
 				}
 			}
 		});
 	}
 
-	private void mapArrayField(Map<String, Map<String, Integer>> resultMap, String fieldsKey, List<Object> objects) {
-		Map<String, Integer> countMap = resultMap.get(fieldsKey);
+	private void mapArrayField(double storyPoints,
+			Map<String, Map<String, CardCountAndStoryPointsPairInClassification>> resultMap, String fieldsKey,
+			List<Object> objects) {
+		Map<String, CardCountAndStoryPointsPairInClassification> countMap = resultMap.get(fieldsKey);
 		if (countMap != null) {
 			for (Object object : (List) objects.get(0)) {
 				String displayName = pickDisplayNameFromObj(object);
-				Integer count = countMap.getOrDefault(displayName, 0);
-				countMap.put(displayName, count > 0 ? count + 1 : 1);
+				CardCountAndStoryPointsPairInClassification count = countMap.getOrDefault(displayName,
+						CardCountAndStoryPointsPairInClassification.of());
+				count.addCardCount();
+				count.addStoryPoints(storyPoints);
+				countMap.put(displayName, count);
 			}
 			if (((List<?>) objects.get(0)).isEmpty()) {
 				countMap.put(NONE_KEY, countMap.get(NONE_KEY));
 			}
 			else {
-				countMap.put(NONE_KEY, countMap.get(NONE_KEY) - 1);
+				CardCountAndStoryPointsPairInClassification noneCount = countMap.get(NONE_KEY);
+				noneCount.reduceCardCount();
+				noneCount.reduceStoryPoints(storyPoints);
+				countMap.put(NONE_KEY, noneCount);
 			}
 		}
 	}

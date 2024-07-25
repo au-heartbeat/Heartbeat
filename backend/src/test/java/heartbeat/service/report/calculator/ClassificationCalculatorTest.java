@@ -47,6 +47,7 @@ class ClassificationCalculatorTest {
 		Classification classification = classifications.get(0);
 		assertEquals("Priority", classification.getFieldName());
 		assertEquals(4, classification.getTotalCardCounts());
+		assertEquals(3, classification.getStoryPoints());
 	}
 
 	@Test
@@ -60,15 +61,27 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				ClassificationFixture.GENERAL_CARD_COLLECTION);
 
-		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Fix versions", classifications.get(0).getFieldName());
+		assertEquals(3, classifications.get(0).getStoryPoints());
+
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
+		assertEquals(3, classificationList.size());
+
 		assertEquals("sprint1", classificationList.get(0).getName());
 		assertEquals(0.5, classificationList.get(0).getValue());
 		assertEquals(2, classificationList.get(0).getCardCount());
+		assertEquals(6, classificationList.get(0).getStoryPoints(), 0.0001);
+
 		assertEquals("sprint2", classificationList.get(1).getName());
 		assertEquals(0.5, classificationList.get(1).getValue());
 		assertEquals(2, classificationList.get(1).getCardCount());
+		assertEquals(6, classificationList.get(1).getStoryPoints(), 0.0001);
+
+		assertEquals("None", classificationList.get(2).getName());
+		assertEquals(0.5, classificationList.get(2).getValue());
+		assertEquals(2, classificationList.get(2).getCardCount());
+		assertEquals(0, classificationList.get(2).getStoryPoints(), 0.0001);
 	}
 
 	@Test
@@ -98,15 +111,21 @@ class ClassificationCalculatorTest {
 		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
 				cardCollectionWithJsonArray);
 
-		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
 		assertEquals(1, classifications.size());
 		assertEquals("Sprint", classifications.get(0).getFieldName());
+
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
+		assertEquals(2, classificationList.size());
+
 		assertEquals("None", classificationList.get(0).getName());
 		assertEquals(0.5, classificationList.get(0).getValue());
 		assertEquals(1, classificationList.get(0).getCardCount());
+		assertEquals(3, classificationList.get(0).getStoryPoints(), 0.0001);
+
 		assertEquals("Tool Sprint 6", classificationList.get(1).getName());
 		assertEquals(0.5, classificationList.get(1).getValue());
 		assertEquals(1, classificationList.get(1).getCardCount());
+		assertEquals(0, classificationList.get(1).getStoryPoints(), 0.0001);
 	}
 
 	@Test
@@ -444,6 +463,81 @@ class ClassificationCalculatorTest {
 		assertEquals("None", classificationListForFixVersions.get(0).getName());
 		assertEquals(1, classificationListForFixVersions.get(0).getValue());
 		assertEquals(2, classificationListForFixVersions.get(0).getCardCount());
+	}
+
+	@Test
+	void shouldReturnClassificationWithoutNoneKeyWhenCardCountsAndStoryPointAreZero() {
+		JsonPrimitive jsonPrimitive = new JsonPrimitive("test");
+		Map<String, JsonElement> customFields = new HashMap<>();
+		customFields.put("customfield_10000", jsonPrimitive);
+		CardCollection cardCollectionWithJsonArray = CardCollection.builder()
+			.cardsNumber(1)
+			.storyPointSum(3)
+			.jiraCardDTOList(List.of(JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.key("key1")
+					.fields(JiraCardField.builder().storyPoints(3).customFields(customFields).build())
+					.build())
+				.build()))
+			.build();
+		List<TargetField> mockTargetFields = List.of(
+				TargetField.builder().key("customfield_10000").name("development").flag(true).build(),
+				TargetField.builder().key("customfield_10020").name("Sprint").flag(false).build());
+
+		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
+				cardCollectionWithJsonArray);
+
+		assertEquals(1, classifications.size());
+		assertEquals("development", classifications.get(0).getFieldName());
+
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
+
+		assertEquals(1, classificationList.size());
+
+		assertEquals("test", classificationList.get(0).getName());
+		assertEquals(1, classificationList.get(0).getValue());
+		assertEquals(1, classificationList.get(0).getCardCount());
+		assertEquals(3, classificationList.get(0).getStoryPoints(), 0.0001);
+	}
+
+	@Test
+	void shouldReturnClassificationWithNoneKeyWhenStoryPointIsNotZero() {
+		JsonPrimitive jsonPrimitive = new JsonPrimitive("test");
+		Map<String, JsonElement> customFields = new HashMap<>();
+		customFields.put("customfield_10000", jsonPrimitive);
+		CardCollection cardCollectionWithJsonArray = CardCollection.builder()
+			.cardsNumber(1)
+			.storyPointSum(6)
+			.jiraCardDTOList(List.of(JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.key("key1")
+					.fields(JiraCardField.builder().storyPoints(3).customFields(customFields).build())
+					.build())
+				.build()))
+			.build();
+		List<TargetField> mockTargetFields = List.of(
+				TargetField.builder().key("customfield_10000").name("development").flag(true).build(),
+				TargetField.builder().key("customfield_10020").name("Sprint").flag(false).build());
+
+		List<Classification> classifications = classificationCalculator.calculate(mockTargetFields,
+				cardCollectionWithJsonArray);
+
+		assertEquals(1, classifications.size());
+		assertEquals("development", classifications.get(0).getFieldName());
+
+		List<ClassificationInfo> classificationList = classifications.get(0).getClassificationInfos();
+
+		assertEquals(2, classificationList.size());
+
+		assertEquals("test", classificationList.get(0).getName());
+		assertEquals(1, classificationList.get(0).getValue());
+		assertEquals(1, classificationList.get(0).getCardCount());
+		assertEquals(3, classificationList.get(0).getStoryPoints(), 0.0001);
+
+		assertEquals("None", classificationList.get(1).getName());
+		assertEquals(0, classificationList.get(1).getValue());
+		assertEquals(0, classificationList.get(1).getCardCount());
+		assertEquals(3, classificationList.get(1).getStoryPoints(), 0.0001);
 	}
 
 }
