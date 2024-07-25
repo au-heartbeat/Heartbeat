@@ -274,9 +274,11 @@ export const ClassificationChart = ({
     }
   }
   const switchChart = () => {
-    setIsFirstIntoClassification(false);
-    setCanSwitchChart(false);
-    id = window.requestAnimationFrame(step);
+    if (canSwitchChart) {
+      setIsFirstIntoClassification(false);
+      setCanSwitchChart(false);
+      id = window.requestAnimationFrame(step);
+    }
   };
 
   useEffect(() => {
