@@ -1027,7 +1027,7 @@ describe('Report Step', () => {
       await userEvent.click(classificationIssueTypeSwitchIcon!);
       await userEvent.click(classificationParentSwitchIcon!);
       const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-      await wait(1000);
+      await wait(1500);
       await waitFor(async () => {
         expect(chart.setOption).toHaveBeenCalledTimes(12);
         expect(chart.clear).toHaveBeenCalledTimes(12);
@@ -1167,6 +1167,24 @@ describe('Report Step', () => {
       const exportBoardButton = screen.getByText(EXPORT_BOARD_DATA);
       await userEvent.click(exportBoardButton);
       expect(exportBoardButton).toBeInTheDocument();
+    });
+
+    it('should render detail page when metrics only select classification and click the list button', async () => {
+      setup([CLASSIFICATION], [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+
+      expect(screen.queryByText(BACK)).toBeInTheDocument();
+      expect(switchListButton).toBeInTheDocument();
+      expect(switchChartButton).toBeInTheDocument();
+
+      await userEvent.click(switchChartButton);
+
+      expect(screen.queryByText(BACK)).not.toBeInTheDocument();
+
+      await userEvent.click(switchListButton);
+      expect(screen.queryByText(BACK)).toBeInTheDocument();
     });
   });
 });
