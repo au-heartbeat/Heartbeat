@@ -1026,9 +1026,12 @@ describe('Report Step', () => {
 
       await userEvent.click(classificationIssueTypeSwitchIcon!);
       await userEvent.click(classificationParentSwitchIcon!);
-
-      expect(chart.setOption).toHaveBeenCalledTimes(8);
-      expect(chart.clear).toHaveBeenCalledTimes(8);
+      const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+      await wait(1000);
+      await waitFor(async () => {
+        expect(chart.setOption).toHaveBeenCalledTimes(12);
+        expect(chart.clear).toHaveBeenCalledTimes(12);
+      });
     });
 
     it('should render dora chart with empty value when exception was thrown', async () => {

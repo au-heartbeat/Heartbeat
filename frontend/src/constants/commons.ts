@@ -101,3 +101,5 @@ export const DOWNLOAD_DIALOG_TITLE = {
   [ReportTypes.Board]: 'Board',
   [ReportTypes.Pipeline]: 'Pipeline',
 };
+
+export const AnimationSeconds = 1;

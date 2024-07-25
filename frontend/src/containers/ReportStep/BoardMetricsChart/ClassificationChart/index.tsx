@@ -7,6 +7,7 @@ import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrappe
 import { LABEL_PERCENT } from '@src/containers/ReportStep/BoardMetricsChart';
 import { ReportResponse } from '@src/clients/report/dto/response';
 import React, { useEffect, useRef, useState } from 'react';
+import { AnimationSeconds } from '@src/constants/commons';
 import { showChart } from '@src/containers/ReportStep';
 import { ChartType } from '@src/constants/resources';
 import { theme } from '@src/theme';
@@ -14,6 +15,11 @@ import { theme } from '@src/theme';
 enum ClassificationChartType {
   Pie = 'pie',
   Bar = 'bar',
+}
+
+enum ClassificationChartAnimationType {
+  Start = 0,
+  Mid = 1,
 }
 
 function extractClassificationData(classification: string, dateRanges: string[], mappedData: ReportResponse[]) {
@@ -211,13 +217,19 @@ export const ClassificationChart = ({
   mappedData: ReportResponse[];
   dateRanges: string[];
 }) => {
+  const [isFirstIntoClassification, setIsFirstIntoClassification] = useState<boolean>(true);
   const [isShowTimePeriodChart, setIsShowTimePeriodChart] = useState<boolean>(true);
+  const [animationType, setAnimationType] = useState<ClassificationChartAnimationType>(
+    ClassificationChartAnimationType.Start,
+  );
+  const [canSwitchChart, setCanSwitchChart] = useState<boolean>(true);
   const classificationRef = useRef<HTMLDivElement>(null);
   let classificationData;
   let classificationDataOption;
   if (isShowTimePeriodChart) {
     classificationData = extractClassificationData(classification, dateRanges, mappedData);
-    classificationDataOption = classificationData && stackedBarOptionMapper(classificationData);
+    classificationDataOption =
+      classificationData && stackedBarOptionMapper(classificationData, true, isFirstIntoClassification);
   } else {
     const chartType = checkClassificationChartType(classification, mappedData);
     if (chartType === ClassificationChartType.Pie) {
@@ -225,24 +237,48 @@ export const ClassificationChart = ({
       classificationDataOption = classificationData && pieOptionMapper(classificationData);
     } else {
       classificationData = extractClassificationCardCountsBarData(classification, mappedData);
-      classificationDataOption = classificationData && stackedAreaOptionMapper(classificationData, true);
+      classificationDataOption =
+        classificationData && stackedAreaOptionMapper(classificationData, true, isFirstIntoClassification);
     }
   }
   const isClassificationFinished =
     mappedData.flatMap((value) => value.classification).filter((it) => it?.name === classification)?.length ===
     dateRanges.length;
   const isOnlyOneLegend = classificationDataOption.legend.data?.length === 0;
-  // if (isOnlyOneLegend && isShowTimePeriodChart) return false;
-  // if (!isShowTimePeriodChart) return true;
-  // if (isShowTimePeriodChart && !isOnlyOneLegend) return true
 
   const switchChart = () => {
-    setIsShowTimePeriodChart(!isShowTimePeriodChart);
+    if (canSwitchChart) {
+      setIsFirstIntoClassification(false);
+      setCanSwitchChart(false);
+      setAnimationType(ClassificationChartAnimationType.Mid);
+      const animationTimeout = setTimeout(
+        () => {
+          setIsShowTimePeriodChart(!isShowTimePeriodChart);
+          setAnimationType(ClassificationChartAnimationType.Start);
+          clearTimeout(animationTimeout);
+        },
+        (AnimationSeconds * 1000) / 2,
+      );
+      const canSwitchChartTimeout = setTimeout(() => {
+        setCanSwitchChart(true);
+        clearTimeout(canSwitchChartTimeout);
+      }, AnimationSeconds * 1000);
+    }
   };
 
   useEffect(() => {
     showChart(classificationRef.current, classificationDataOption);
   }, [classificationRef, classificationDataOption]);
+
+  const transition = {
+    transform: 'rotateY(0deg)',
+    transition: `transform ${AnimationSeconds / 2}s linear`,
+  };
+  if (animationType === ClassificationChartAnimationType.Start) {
+    transition.transform = 'rotateY(0deg)';
+  } else {
+    transition.transform = 'rotateY(90deg)';
+  }
 
   return (
     <ChartAndTitleWrapper
@@ -252,6 +288,8 @@ export const ClassificationChart = ({
       ref={classificationRef}
       isShowRepeat={!isOnlyOneLegend || !isShowTimePeriodChart}
       clickRepeat={switchChart}
+      animationStyle={transition}
+      disabledClickRepeatButton={!canSwitchChart}
     />
   );
 };

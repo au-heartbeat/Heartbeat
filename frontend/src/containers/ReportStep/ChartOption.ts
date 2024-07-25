@@ -186,7 +186,11 @@ export const oneLineOptionMapper = (props: LineOptionProps) => {
   };
 };
 
-export const stackedAreaOptionMapper = (props: AreaOptionProps, showPercentage: boolean = false) => {
+export const stackedAreaOptionMapper = (
+  props: AreaOptionProps,
+  showPercentage: boolean = false,
+  animation: boolean = true,
+) => {
   const series = props.series;
   return {
     legend: {
@@ -221,6 +225,7 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps, showPercentage: 
       };
     }),
     color: props.color,
+    animation: animation,
     series: series?.map((item) => {
       return {
         name: item.name,
@@ -235,7 +240,11 @@ export const stackedAreaOptionMapper = (props: AreaOptionProps, showPercentage: 
   };
 };
 
-export const stackedBarOptionMapper = (props: BarOptionProps, showPercentage: boolean = true) => {
+export const stackedBarOptionMapper = (
+  props: BarOptionProps,
+  showPercentage: boolean = true,
+  animation: boolean = true,
+) => {
   const series = props.series;
   return {
     legend: {
@@ -268,6 +277,7 @@ export const stackedBarOptionMapper = (props: BarOptionProps, showPercentage: bo
       },
     },
     color: props.color,
+    animation: animation,
     series: series?.map((item) => {
       return {
         name: item.name,
@@ -294,10 +304,12 @@ export const pieOptionMapper = (props: PieOptionProps, showPercentage: boolean =
       trigger: 'item',
     },
     color: props.color,
+    animation: false,
     series: [
       {
         type: 'pie',
         data: series,
+        center: ['60%', '50%'],
       },
     ],
   };
