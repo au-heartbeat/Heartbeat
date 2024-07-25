@@ -403,12 +403,8 @@ const ReportContent = (props: ReportContentProps) => {
       selectDoraMetricsAndClassification || chartIndex === CHART_INDEX.DORA
         ? REPORT_PAGE_TYPE.DORA_CHART
         : REPORT_PAGE_TYPE.BOARD_CHART;
-    const pageType =
-      newValue === DISPLAY_TYPE.LIST
-        ? onlySelectClassification
-          ? REPORT_PAGE_TYPE.BOARD
-          : REPORT_PAGE_TYPE.SUMMARY
-        : chartType;
+    const reportListPageType = onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY;
+    const pageType = newValue === DISPLAY_TYPE.LIST ? reportListPageType : chartType;
 
     setDisplayType(newValue);
     setPageType(pageType);

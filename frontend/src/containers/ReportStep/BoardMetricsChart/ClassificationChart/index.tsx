@@ -186,7 +186,7 @@ function extractClassificationCardCountsBarData(classification: string, mappedDa
       {
         name: 'reverse',
         type: 'bar',
-        data: indicators!,
+        data: indicators,
         yAxisIndex: 0,
         setAreaStyle: false,
         smooth: false,

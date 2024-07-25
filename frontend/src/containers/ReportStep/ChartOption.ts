@@ -1,6 +1,11 @@
 import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
+enum EchartsLegendType {
+  Scroll = 'scroll',
+  Plain = 'plain',
+}
+
 const commonConfig = {
   legend: {
     icon: 'circle',
@@ -92,6 +97,7 @@ interface PieSeries {
   name: string;
   value: string | number;
 }
+
 export interface PieOptionProps {
   legend?: string;
   series: PieSeries[] | undefined;
@@ -105,6 +111,13 @@ export interface LineOptionProps {
   series: Series;
   color: string;
   valueType?: string;
+}
+
+export function getEchartsLegendType(series: Series[] | undefined): EchartsLegendType {
+  if (series !== undefined && series.length > 10) {
+    return EchartsLegendType.Scroll;
+  }
+  return EchartsLegendType.Plain;
 }
 
 export const oneLineOptionMapper = (props: LineOptionProps) => {
@@ -196,6 +209,7 @@ export const stackedAreaOptionMapper = (
     legend: {
       data: series?.length === 1 ? [] : series?.map((item) => item.name),
       ...commonConfig.legend,
+      type: getEchartsLegendType(series),
     },
     tooltip: {
       valueFormatter: percentageFormatter(showPercentage),
@@ -250,6 +264,7 @@ export const stackedBarOptionMapper = (
     legend: {
       data: series?.length === 1 ? [] : series?.map((item) => item.name),
       ...commonConfig.legend,
+      type: getEchartsLegendType(series),
     },
     tooltip: {
       valueFormatter: percentageFormatter(showPercentage),
@@ -294,7 +309,7 @@ export const pieOptionMapper = (props: PieOptionProps, showPercentage: boolean =
   const series = props.series;
   return {
     legend: {
-      data: series?.map((item) => item.name),
+      data: [],
       ...commonConfig.legend,
       top: 'center',
       orient: 'vertical',
