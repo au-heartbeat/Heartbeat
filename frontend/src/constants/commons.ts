@@ -102,5 +102,5 @@ export const DOWNLOAD_DIALOG_TITLE = {
   [ReportTypes.Pipeline]: 'Pipeline',
 };
 
-export const AnimationSeconds = 1;
+export const ANIMATION_SECONDS = 1;
 export const EveryFrameMilliSecond = 17;

@@ -4,7 +4,7 @@ import {
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/ChartOption';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { AnimationSeconds, EveryFrameMilliSecond } from '@src/constants/commons';
+import { ANIMATION_SECONDS, EveryFrameMilliSecond } from '@src/constants/commons';
 import { LABEL_PERCENT } from '@src/containers/ReportStep/BoardMetricsChart';
 import { ReportResponse } from '@src/clients/report/dto/response';
 import React, { useEffect, useRef, useState } from 'react';
@@ -13,8 +13,8 @@ import { ChartType } from '@src/constants/resources';
 import { theme } from '@src/theme';
 
 enum ClassificationChartType {
-  PIE = 'pie',
-  BAR = 'bar',
+  Pie = 'pie',
+  Bar = 'bar',
 }
 
 const PERCENTAGE = 100;
@@ -112,7 +112,7 @@ function checkClassificationChartType(classification: string, mappedData: Report
   const data = extractedValueList(mappedData, classification);
 
   const totalCounts = data.filter((it) => it !== undefined).reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
-  return totalCounts === totalCardCounts ? ClassificationChartType.PIE : ClassificationChartType.BAR;
+  return totalCounts === totalCardCounts ? ClassificationChartType.Pie : ClassificationChartType.Bar;
 }
 
 function extractClassificationCardCountsPieData(classification: string, mappedData: ReportResponse[]) {
@@ -227,7 +227,7 @@ export const ClassificationChart = ({
       classificationData && stackedBarOptionMapper(classificationData, true, isFirstIntoClassification);
   } else {
     const chartType = checkClassificationChartType(classification, mappedData);
-    if (chartType === ClassificationChartType.PIE) {
+    if (chartType === ClassificationChartType.Pie) {
       classificationData = extractClassificationCardCountsPieData(classification, mappedData);
       classificationDataOption = classificationData && pieOptionMapper(classificationData);
     } else {
@@ -246,7 +246,7 @@ export const ClassificationChart = ({
   };
   const MilliSecondsPerSecond = 1000;
   const maxRotateDeg = 90;
-  const everyRotate = (maxRotateDeg * 2) / (AnimationSeconds * MilliSecondsPerSecond);
+  const everyRotate = (maxRotateDeg * 2) / (ANIMATION_SECONDS * MilliSecondsPerSecond);
 
   let id: number;
   let start: number = 0;
@@ -256,19 +256,19 @@ export const ClassificationChart = ({
     }
     const elapsed = timestamp - start;
 
-    if (elapsed < (AnimationSeconds * MilliSecondsPerSecond) / 2) {
+    if (elapsed < (ANIMATION_SECONDS * MilliSecondsPerSecond) / 2) {
       setRotate(everyRotate * elapsed);
     } else {
       setRotate(maxRotateDeg);
-      const newRotate = maxRotateDeg - everyRotate * (elapsed - (AnimationSeconds * MilliSecondsPerSecond) / 2);
+      const newRotate = maxRotateDeg - everyRotate * (elapsed - (ANIMATION_SECONDS * MilliSecondsPerSecond) / 2);
       setRotate(newRotate < 0 ? 0 : newRotate);
     }
 
-    if (Math.abs(elapsed - (AnimationSeconds * MilliSecondsPerSecond) / 2) < EveryFrameMilliSecond) {
+    if (Math.abs(elapsed - (ANIMATION_SECONDS * MilliSecondsPerSecond) / 2) < EveryFrameMilliSecond) {
       setIsShowTimePeriodChart(!isShowTimePeriodChart);
     }
 
-    if (elapsed < AnimationSeconds * MilliSecondsPerSecond + EveryFrameMilliSecond) {
+    if (elapsed < ANIMATION_SECONDS * MilliSecondsPerSecond + EveryFrameMilliSecond) {
       id = window.requestAnimationFrame(animationStep);
     } else {
       setRotate(0);

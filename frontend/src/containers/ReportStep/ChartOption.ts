@@ -2,8 +2,8 @@ import { percentageFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { theme } from '@src/theme';
 
 enum EchartsLegendType {
-  SCROLL = 'scroll',
-  PLAIN = 'plain',
+  Scroll = 'scroll',
+  Plain = 'plain',
 }
 
 const commonConfig = {
@@ -115,9 +115,9 @@ export interface LineOptionProps {
 
 export function getEchartsLegendType(series: Series[] | undefined): EchartsLegendType {
   if (series && series.length > 10) {
-    return EchartsLegendType.SCROLL;
+    return EchartsLegendType.Scroll;
   }
-  return EchartsLegendType.PLAIN;
+  return EchartsLegendType.Plain;
 }
 
 export const oneLineOptionMapper = (props: LineOptionProps) => {
