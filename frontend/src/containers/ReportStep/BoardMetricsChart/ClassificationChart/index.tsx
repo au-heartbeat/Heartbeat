@@ -271,6 +271,7 @@ export const ClassificationChart = ({
     if (elapsed < AnimationSeconds * MilliSecondsPerSecond + EveryFrameMilliSecond) {
       id = window.requestAnimationFrame(step);
     } else {
+      setRotate(0);
       window.cancelAnimationFrame(id);
       setCanSwitchChart(true);
     }
