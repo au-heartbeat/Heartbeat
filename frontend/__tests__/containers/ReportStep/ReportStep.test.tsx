@@ -970,71 +970,74 @@ describe('Report Step', () => {
       expect(classificationName3SwitchIcon).toBeInTheDocument();
     });
 
-    test('should render board classification chart when click switch button', async () => {
-      const mockReportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
-      mockReportData.classificationList = [
-        {
-          fieldName: 'Issue Type',
-          totalCardCount: 3,
-          classificationInfos: [
-            {
-              name: 'Feature Work - Planned',
-              value: 0.5714,
-              cardCount: 1,
-            },
-            {
-              name: 'Feature Work - Planned2',
-              value: 0.5714,
-              cardCount: 2,
-            },
-          ],
-        },
-        {
-          fieldName: 'Parent',
-          totalCardCount: 3,
-          classificationInfos: [
-            {
-              name: 'Feature Work - Planned',
-              value: 0.5714,
-              cardCount: 3,
-            },
-            {
-              name: 'Feature Work - Planned2',
-              value: 0.5714,
-              cardCount: 2,
-            },
-          ],
-        },
-      ];
+    test.each(Array.from({ length: 10 }))(
+      'should render board classification chart when click switch button',
+      async () => {
+        const mockReportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
+        mockReportData.classificationList = [
+          {
+            fieldName: 'Issue Type',
+            totalCardCount: 3,
+            classificationInfos: [
+              {
+                name: 'Feature Work - Planned',
+                value: 0.5714,
+                cardCount: 1,
+              },
+              {
+                name: 'Feature Work - Planned2',
+                value: 0.5714,
+                cardCount: 2,
+              },
+            ],
+          },
+          {
+            fieldName: 'Parent',
+            totalCardCount: 3,
+            classificationInfos: [
+              {
+                name: 'Feature Work - Planned',
+                value: 0.5714,
+                cardCount: 3,
+              },
+              {
+                name: 'Feature Work - Planned2',
+                value: 0.5714,
+                cardCount: 2,
+              },
+            ],
+          },
+        ];
 
-      reportHook.current.reportInfos[0].reportData = mockReportData;
+        reportHook.current.reportInfos[0].reportData = mockReportData;
 
-      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+        setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
-      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
-      await userEvent.click(switchChartButton);
+        const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+        await userEvent.click(switchChartButton);
 
-      const classificationIssueTypeChart = screen.queryByLabelText('classification issue type chart');
-      const classificationIssueTypeSwitchIcon = screen.queryByLabelText('classification issue type switch chart');
-      const classificationParentChart = screen.queryByLabelText('classification parent chart');
-      const classificationParentSwitchIcon = screen.queryByLabelText('classification parent switch chart');
+        const classificationIssueTypeChart = screen.queryByLabelText('classification issue type chart');
+        const classificationIssueTypeSwitchIcon = screen.queryByLabelText('classification issue type switch chart');
+        const classificationParentChart = screen.queryByLabelText('classification parent chart');
+        const classificationParentSwitchIcon = screen.queryByLabelText('classification parent switch chart');
 
-      expect(classificationIssueTypeChart).toBeInTheDocument();
-      expect(classificationIssueTypeSwitchIcon).toBeInTheDocument();
-      expect(classificationParentChart).toBeInTheDocument();
-      expect(classificationParentSwitchIcon).toBeInTheDocument();
+        expect(classificationIssueTypeChart).toBeInTheDocument();
+        expect(classificationIssueTypeSwitchIcon).toBeInTheDocument();
+        expect(classificationParentChart).toBeInTheDocument();
+        expect(classificationParentSwitchIcon).toBeInTheDocument();
 
-      await userEvent.click(classificationIssueTypeSwitchIcon!);
-      await userEvent.click(classificationParentSwitchIcon!);
-      const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-      await wait(1500);
-      await waitFor(async () => {
-        const setOptionCalledTimes = chart.setOption.mock.calls.length;
-        const clearCalledTimes = chart.clear.mock.calls.length;
-        expect(setOptionCalledTimes).toBeGreaterThan(6);
-        expect(clearCalledTimes).toBeGreaterThan(6);
-      });
-    });
+        await userEvent.click(classificationIssueTypeSwitchIcon!);
+        await userEvent.click(classificationParentSwitchIcon!);
+        const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+        await wait(1500);
+        await waitFor(async () => {
+          const setOptionCalledTimes = chart.setOption.mock.calls.length;
+          const clearCalledTimes = chart.clear.mock.calls.length;
+          expect(setOptionCalledTimes).toBeGreaterThan(6);
+          expect(clearCalledTimes).toBeGreaterThan(6);
+        });
+      },
+    );
 
     it('should render dora chart with empty value when exception was thrown', async () => {
       reportHook.current.reportInfos = [
