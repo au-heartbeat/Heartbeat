@@ -325,6 +325,9 @@ export const pieOptionMapper = (props: PieOptionProps, showPercentage: boolean =
         type: 'pie',
         data: series,
         center: ['50%', '50%'],
+        label: {
+          formatter: '{b} ({c}%)',
+        },
       },
     ],
   };

@@ -124,7 +124,7 @@ function extractClassificationCardCountsPieData(classification: string, mappedDa
   const indicators: { value: string; name: string }[] = allSubtitle.map((subtitle) => {
     const cardCount = getCardCountForSubtitle(data, subtitle);
     return {
-      name: subtitle,
+      name: `${subtitle}: ${cardCount}`,
       value: `${((cardCount * PERCENTAGE) / totalCardCounts).toFixed(2)}`,
     };
   });
