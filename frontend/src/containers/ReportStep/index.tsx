@@ -40,6 +40,7 @@ export interface DateRangeRequestResult {
 export function showChart(div: HTMLDivElement | null, options: echarts.EChartsCoreOption) {
   if (div) {
     const chart = echarts.init(div);
+    chart.clear();
     chart.setOption(options);
     const resize = () => {
       chart.resize();

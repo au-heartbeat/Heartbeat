@@ -15,6 +15,10 @@ public class Classification {
 
 	private String fieldName;
 
-	private List<ClassificationNameValuePair> pairList;
+	private int totalCardCount;
+
+	private double storyPoints;
+
+	private List<ClassificationInfo> classificationInfos;
 
 }

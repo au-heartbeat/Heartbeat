@@ -16,15 +16,6 @@ import {
 } from '@src/context/notification/NotificationSlice';
 
 import {
-  BOARD_METRICS,
-  BOARD_METRICS_EXCLUDE_CLASSIFICATION,
-  CHART_TAB_STYLE,
-  DORA_METRICS,
-  MESSAGE,
-  REPORT_PAGE_TYPE,
-  RequiredData,
-} from '@src/constants/resources';
-import {
   HeaderContainer,
   StyledCalendarWrapper,
   StyledChartTabs,
@@ -33,6 +24,14 @@ import {
   StyledTab,
   StyledTabs,
 } from '@src/containers/ReportStep/style';
+import {
+  BOARD_METRICS,
+  CHART_TAB_STYLE,
+  DORA_METRICS,
+  MESSAGE,
+  REPORT_PAGE_TYPE,
+  RequiredData,
+} from '@src/constants/resources';
 import { DEFAULT_SELECTED_PIPELINE, DoraMetricsChart } from '@src/containers/ReportStep/DoraMetricsChart';
 import { CHART_INDEX, DISPLAY_TYPE, MetricTypes } from '@src/constants/commons';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
@@ -131,8 +130,7 @@ const ReportContent = (props: ReportContentProps) => {
   const onlySelectClassification = metrics.length === 1 && metrics[0] === RequiredData.Classification;
   const selectDoraMetricsAndClassification =
     metrics.some((metric) => DORA_METRICS.includes(metric)) &&
-    metrics.includes(RequiredData.Classification) &&
-    !metrics.some((metric) => BOARD_METRICS_EXCLUDE_CLASSIFICATION.includes(metric));
+    !metrics.some((metric) => BOARD_METRICS.includes(metric));
   const [chartIndex, setChartIndex] = useState(
     selectDoraMetricsAndClassification || !shouldShowBoardMetrics ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
   );
@@ -313,7 +311,6 @@ const ReportContent = (props: ReportContentProps) => {
         icon={<BarChartIcon />}
         iconPosition='start'
         label='Chart'
-        disabled={onlySelectClassification}
       />
     </StyledTabs>
   );
@@ -406,7 +403,8 @@ const ReportContent = (props: ReportContentProps) => {
       selectDoraMetricsAndClassification || chartIndex === CHART_INDEX.DORA
         ? REPORT_PAGE_TYPE.DORA_CHART
         : REPORT_PAGE_TYPE.BOARD_CHART;
-    const pageType = newValue === DISPLAY_TYPE.LIST ? REPORT_PAGE_TYPE.SUMMARY : chartType;
+    const reportListPageType = onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY;
+    const pageType = newValue === DISPLAY_TYPE.LIST ? reportListPageType : chartType;
 
     setDisplayType(newValue);
     setPageType(pageType);

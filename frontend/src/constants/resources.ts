@@ -182,12 +182,6 @@ export const BOARD_METRICS: string[] = [
   RequiredData.ReworkTimes,
 ];
 
-export const BOARD_METRICS_EXCLUDE_CLASSIFICATION: string[] = [
-  RequiredData.Velocity,
-  RequiredData.CycleTime,
-  RequiredData.ReworkTimes,
-];
-
 export enum ConfigTitle {
   Board = 'Board',
   PipelineTool = 'Pipeline Tool',

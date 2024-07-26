@@ -60,7 +60,8 @@ export interface ReworkTimeResponse {
 
 export interface ClassificationResponse {
   fieldName: string;
-  pairList: Array<ClassificationNameValuePair>;
+  totalCardCount: number;
+  classificationInfos: Array<ClassificationInfoList>;
 }
 
 export interface DeploymentFrequencyResponse {
@@ -153,9 +154,10 @@ export interface DevMeanTimeToRecoveryResponse {
   devMeanTimeToRecoveryOfPipelines: DevMeanTimeToRecoveryOfPipeline[];
 }
 
-export interface ClassificationNameValuePair {
+export interface ClassificationInfoList {
   name: string;
   value: number;
+  cardCount: number;
 }
 
 export interface ReportCallbackResponse {
@@ -175,6 +177,7 @@ export interface ReportResponse {
   leadTimeForChangesList?: ReportDataWithThreeColumns[] | null;
   devChangeFailureRateList?: ReportDataWithTwoColumns[] | null;
   exportValidityTimeMin?: number | null;
+  classificationCardCount?: ReportDataWithThreeColumns[] | null;
 }
 
 export interface ReportURLsResponse {

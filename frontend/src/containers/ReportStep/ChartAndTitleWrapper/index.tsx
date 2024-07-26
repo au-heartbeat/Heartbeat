@@ -47,11 +47,17 @@ const ChartAndTitleWrapper = forwardRef(
       isLoading,
       subTitle,
       isShowRepeat = false,
+      clickRepeat,
+      animationStyle = {},
+      disabledClickRepeatButton = false,
     }: {
       trendInfo: ITrendInfo;
       isLoading: boolean;
       subTitle?: string;
       isShowRepeat?: boolean;
+      clickRepeat?: () => void;
+      animationStyle?: object;
+      disabledClickRepeatButton?: boolean;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
@@ -78,7 +84,11 @@ const ChartAndTitleWrapper = forwardRef(
     );
 
     return (
-      <StyledChartAndTitleWrapper>
+      <StyledChartAndTitleWrapper
+        style={{
+          ...animationStyle,
+        }}
+      >
         {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
         {isShowRepeat && (
           <Tooltip title='Switch this chart' placement='right' followCursor>
@@ -90,9 +100,10 @@ const ChartAndTitleWrapper = forwardRef(
                 position: 'absolute',
                 right: '1.75rem',
                 top: '1rem',
-                cursor: 'pointer',
+                cursor: disabledClickRepeatButton ? 'not-allowed' : 'pointer',
                 zIndex: Z_INDEX.BUTTONS,
               }}
+              onClick={clickRepeat}
             />
           </Tooltip>
         )}

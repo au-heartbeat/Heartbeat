@@ -51,7 +51,8 @@ export class ReportClient extends HttpClient {
     classificationList: [
       {
         fieldName: '',
-        pairList: [],
+        totalCardCount: 1,
+        classificationInfos: [],
       },
     ],
     deploymentFrequency: {
