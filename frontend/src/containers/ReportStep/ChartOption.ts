@@ -113,7 +113,7 @@ export interface LineOptionProps {
   valueType?: string;
 }
 
-export function getEchartsLegendType(series: Series[] | undefined): EchartsLegendType {
+export function getEchartsLegendType(series?: Series[]): EchartsLegendType {
   if (series && series.length > 10) {
     return EchartsLegendType.Scroll;
   }
