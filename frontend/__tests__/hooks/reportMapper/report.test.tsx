@@ -281,7 +281,7 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 0,
       name: 'FS Work Type',
-      totalCounts: 3,
+      totalCount: 3,
       valueList: [
         {
           name: 'Feature Work - Planned',

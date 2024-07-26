@@ -15,7 +15,7 @@ public class Classification {
 
 	private String fieldName;
 
-	private int totalCardCounts;
+	private int totalCardCount;
 
 	private double storyPoints;
 

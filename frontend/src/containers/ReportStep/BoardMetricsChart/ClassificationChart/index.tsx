@@ -13,9 +13,11 @@ import { ChartType } from '@src/constants/resources';
 import { theme } from '@src/theme';
 
 enum ClassificationChartType {
-  Pie = 'pie',
-  Bar = 'bar',
+  PIE = 'pie',
+  BAR = 'bar',
 }
+
+const PERCENTAGE = 100;
 
 function extractClassificationData(classification: string, dateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData.flatMap((item) => item.classification?.filter((it) => it.name === classification));
@@ -79,7 +81,7 @@ function getTotalCardCounts(mappedData: ReportResponse[], classification: string
   return mappedData
     .flatMap((it) => it.classificationCardCount)
     .filter((it) => it?.name === classification)
-    .map((it) => it!.totalCounts!)
+    .map((it) => it!.totalCount!)
     .reduce((res, it) => res + it, 0);
 }
 
@@ -110,7 +112,7 @@ function checkClassificationChartType(classification: string, mappedData: Report
   const data = extractedValueList(mappedData, classification);
 
   const totalCounts = data.filter((it) => it !== undefined).reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
-  return totalCounts === totalCardCounts ? ClassificationChartType.Pie : ClassificationChartType.Bar;
+  return totalCounts === totalCardCounts ? ClassificationChartType.PIE : ClassificationChartType.BAR;
 }
 
 function extractClassificationCardCountsPieData(classification: string, mappedData: ReportResponse[]) {
@@ -123,7 +125,7 @@ function extractClassificationCardCountsPieData(classification: string, mappedDa
     const cardCount = getCardCountForSubtitle(data, subtitle);
     return {
       name: subtitle,
-      value: `${((cardCount * 100) / totalCardCounts).toFixed(2)}`,
+      value: `${((cardCount * PERCENTAGE) / totalCardCounts).toFixed(2)}`,
     };
   });
 
@@ -155,7 +157,7 @@ function extractClassificationCardCountsBarData(classification: string, mappedDa
   const allSubtitle = getAllSubtitles(mappedData, classification);
   const indicators = allSubtitle.map((subtitle) => {
     const cardCount = getCardCountForSubtitle(data, subtitle);
-    return Number(((cardCount * 100) / totalCardCounts).toFixed(2));
+    return Number(((cardCount * PERCENTAGE) / totalCardCounts).toFixed(2));
   });
 
   const trendInfo = { type: ChartType.Classification };
@@ -225,7 +227,7 @@ export const ClassificationChart = ({
       classificationData && stackedBarOptionMapper(classificationData, true, isFirstIntoClassification);
   } else {
     const chartType = checkClassificationChartType(classification, mappedData);
-    if (chartType === ClassificationChartType.Pie) {
+    if (chartType === ClassificationChartType.PIE) {
       classificationData = extractClassificationCardCountsPieData(classification, mappedData);
       classificationDataOption = classificationData && pieOptionMapper(classificationData);
     } else {
@@ -242,8 +244,10 @@ export const ClassificationChart = ({
   const transition = {
     transform: `rotateY(${rotate}deg)`,
   };
-
+  const MilliSecondsPerSecond = 1000;
   const maxRotateDeg = 90;
+  const everyRotate = (maxRotateDeg * 2) / (AnimationSeconds * MilliSecondsPerSecond);
+
   let id: number;
   let start: number = 0;
   function step(timestamp: number) {
@@ -252,21 +256,19 @@ export const ClassificationChart = ({
     }
     const elapsed = timestamp - start;
 
-    const everyRotate = (maxRotateDeg * 2) / (AnimationSeconds * 1000);
-
-    if (elapsed < (AnimationSeconds * 1000) / 2) {
+    if (elapsed < (AnimationSeconds * MilliSecondsPerSecond) / 2) {
       setRotate(everyRotate * elapsed);
     } else {
       setRotate(maxRotateDeg);
-      const newRotate = maxRotateDeg - everyRotate * (elapsed - (AnimationSeconds * 1000) / 2);
+      const newRotate = maxRotateDeg - everyRotate * (elapsed - (AnimationSeconds * MilliSecondsPerSecond) / 2);
       setRotate(newRotate < 0 ? 0 : newRotate);
     }
 
-    if (Math.abs(elapsed - (AnimationSeconds * 1000) / 2) < EveryFrameMilliSecond) {
+    if (Math.abs(elapsed - (AnimationSeconds * MilliSecondsPerSecond) / 2) < EveryFrameMilliSecond) {
       setIsShowTimePeriodChart(!isShowTimePeriodChart);
     }
 
-    if (elapsed < AnimationSeconds * 1000 + EveryFrameMilliSecond) {
+    if (elapsed < AnimationSeconds * MilliSecondsPerSecond + EveryFrameMilliSecond) {
       id = window.requestAnimationFrame(step);
     } else {
       window.cancelAnimationFrame(id);

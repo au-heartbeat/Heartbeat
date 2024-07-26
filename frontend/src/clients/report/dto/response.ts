@@ -60,8 +60,8 @@ export interface ReworkTimeResponse {
 
 export interface ClassificationResponse {
   fieldName: string;
-  totalCardCounts: number;
-  classificationInfos: Array<ClassificationInfos>;
+  totalCardCount: number;
+  classificationInfos: Array<ClassificationInfoList>;
 }
 
 export interface DeploymentFrequencyResponse {
@@ -154,7 +154,7 @@ export interface DevMeanTimeToRecoveryResponse {
   devMeanTimeToRecoveryOfPipelines: DevMeanTimeToRecoveryOfPipeline[];
 }
 
-export interface ClassificationInfos {
+export interface ClassificationInfoList {
   name: string;
   value: number;
   cardCount: number;

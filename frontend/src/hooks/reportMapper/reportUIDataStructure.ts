@@ -14,7 +14,7 @@ export interface ValueWithUnits {
 export interface ReportDataWithThreeColumns {
   id: number;
   name: string;
-  totalCounts?: number;
+  totalCount?: number;
   valueList: {
     name: string;
     value: string;

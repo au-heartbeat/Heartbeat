@@ -14,7 +14,7 @@ export const classificationCardCountMapper = (
     return {
       id: index,
       name: it.fieldName,
-      totalCounts: it.totalCardCounts,
+      totalCount: it.totalCardCount,
       valueList: pairsValues,
     };
   });

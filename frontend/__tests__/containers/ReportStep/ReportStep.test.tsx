@@ -838,7 +838,7 @@ describe('Report Step', () => {
       mockReportData.classificationList = [
         {
           fieldName: 'Issue Type',
-          totalCardCounts: 3,
+          totalCardCount: 3,
           classificationInfos: [
             {
               name: 'Feature Work - Planned',
@@ -849,7 +849,7 @@ describe('Report Step', () => {
         },
         {
           fieldName: 'Issue Type',
-          totalCardCounts: 3,
+          totalCardCount: 3,
           classificationInfos: [
             {
               name: 'Feature Work - Planned',
@@ -909,7 +909,7 @@ describe('Report Step', () => {
       mockReportData.classificationList = [
         {
           fieldName: 'name1-1',
-          totalCardCounts: 3,
+          totalCardCount: 3,
           classificationInfos: [
             {
               name: 'name1-1 - Planned',
@@ -920,7 +920,7 @@ describe('Report Step', () => {
         },
         {
           fieldName: 'name1-2',
-          totalCardCounts: 3,
+          totalCardCount: 3,
           classificationInfos: [
             {
               name: 'name1-2 - Planned',
@@ -931,7 +931,7 @@ describe('Report Step', () => {
         },
         {
           fieldName: 'name1-3',
-          totalCardCounts: 3,
+          totalCardCount: 3,
           classificationInfos: [
             {
               name: 'name1-3 - Planned',
@@ -977,7 +977,7 @@ describe('Report Step', () => {
         mockReportData.classificationList = [
           {
             fieldName: 'Issue Type',
-            totalCardCounts: 3,
+            totalCardCount: 3,
             classificationInfos: [
               {
                 name: 'Feature Work - Planned',
@@ -993,7 +993,7 @@ describe('Report Step', () => {
           },
           {
             fieldName: 'Parent',
-            totalCardCounts: 3,
+            totalCardCount: 3,
             classificationInfos: [
               {
                 name: 'Feature Work - Planned',
