@@ -3,8 +3,8 @@ import {
   stackedAreaOptionMapper,
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/ChartOption';
+import { ANIMATION_SECONDS, EVERY_FRAME_MILLISECOND, MILLISECONDS_PER_SECOND } from '@src/constants/commons';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { ANIMATION_SECONDS, EveryFrameMilliSecond } from '@src/constants/commons';
 import { LABEL_PERCENT } from '@src/containers/ReportStep/BoardMetricsChart';
 import { ReportResponse } from '@src/clients/report/dto/response';
 import React, { useEffect, useRef, useState } from 'react';
@@ -17,7 +17,7 @@ enum ClassificationChartType {
   Bar = 'bar',
 }
 
-const PERCENTAGE = 100;
+const PERCENTAGE_NUMBER = 100;
 
 function extractClassificationData(classification: string, dateRanges: string[], mappedData: ReportResponse[]) {
   const data = mappedData.flatMap((item) => item.classification?.filter((it) => it.name === classification));
@@ -125,7 +125,7 @@ function extractClassificationCardCountsPieData(classification: string, mappedDa
     const cardCount = getCardCountForSubtitle(data, subtitle);
     return {
       name: `${subtitle}: ${cardCount}`,
-      value: `${((cardCount * PERCENTAGE) / totalCardCounts).toFixed(2)}`,
+      value: `${((cardCount * PERCENTAGE_NUMBER) / totalCardCounts).toFixed(2)}`,
     };
   });
 
@@ -157,7 +157,7 @@ function extractClassificationCardCountsBarData(classification: string, mappedDa
   const allSubtitle = getAllSubtitles(mappedData, classification);
   const indicators = allSubtitle.map((subtitle) => {
     const cardCount = getCardCountForSubtitle(data, subtitle);
-    return Number(((cardCount * PERCENTAGE) / totalCardCounts).toFixed(2));
+    return Number(((cardCount * PERCENTAGE_NUMBER) / totalCardCounts).toFixed(2));
   });
 
   const trendInfo = { type: ChartType.Classification };
@@ -244,9 +244,8 @@ export const ClassificationChart = ({
   const transition = {
     transform: `rotateY(${rotate}deg)`,
   };
-  const MilliSecondsPerSecond = 1000;
   const maxRotateDeg = 90;
-  const everyRotate = (maxRotateDeg * 2) / (ANIMATION_SECONDS * MilliSecondsPerSecond);
+  const everyRotate = (maxRotateDeg * 2) / (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND);
 
   let id: number;
   let start: number = 0;
@@ -256,19 +255,19 @@ export const ClassificationChart = ({
     }
     const elapsed = timestamp - start;
 
-    if (elapsed < (ANIMATION_SECONDS * MilliSecondsPerSecond) / 2) {
+    if (elapsed < (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND) / 2) {
       setRotate(everyRotate * elapsed);
     } else {
       setRotate(maxRotateDeg);
-      const newRotate = maxRotateDeg - everyRotate * (elapsed - (ANIMATION_SECONDS * MilliSecondsPerSecond) / 2);
+      const newRotate = maxRotateDeg - everyRotate * (elapsed - (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND) / 2);
       setRotate(newRotate < 0 ? 0 : newRotate);
     }
 
-    if (Math.abs(elapsed - (ANIMATION_SECONDS * MilliSecondsPerSecond) / 2) < EveryFrameMilliSecond) {
+    if (Math.abs(elapsed - (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND) / 2) < EVERY_FRAME_MILLISECOND) {
       setIsShowTimePeriodChart(!isShowTimePeriodChart);
     }
 
-    if (elapsed < ANIMATION_SECONDS * MilliSecondsPerSecond + EveryFrameMilliSecond) {
+    if (elapsed < ANIMATION_SECONDS * MILLISECONDS_PER_SECOND + EVERY_FRAME_MILLISECOND) {
       id = window.requestAnimationFrame(animationStep);
     } else {
       setRotate(0);
