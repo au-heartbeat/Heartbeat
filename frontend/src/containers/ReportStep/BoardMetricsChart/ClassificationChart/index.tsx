@@ -239,13 +239,16 @@ export const ClassificationChart = ({
   const isClassificationFinished =
     mappedData.flatMap((value) => value.classification).filter((it) => it?.name === classification)?.length ===
     dateRanges.length;
-  const isOnlyOneLegend = classificationDataOption.legend.data?.length === 0;
 
   const transition = {
     transform: `rotateY(${rotate}deg)`,
   };
   const maxRotateDeg = 90;
-  const everyRotate = (maxRotateDeg * 2) / (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND);
+
+  const getAccelerate = (maxRotation: number, seconds: number) => {
+    return maxRotation / Math.pow(seconds / 2, 2);
+  };
+  const accelerate = getAccelerate(maxRotateDeg, ANIMATION_SECONDS);
 
   let id: number;
   let start: number = 0;
@@ -255,11 +258,13 @@ export const ClassificationChart = ({
     }
     const elapsed = timestamp - start;
 
+    const newRotate = accelerate * Math.pow(elapsed / 1000, 2);
     if (elapsed < (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND) / 2) {
-      setRotate(everyRotate * elapsed);
+      setRotate(newRotate);
     } else {
       setRotate(maxRotateDeg);
-      const newRotate = maxRotateDeg - everyRotate * (elapsed - (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND) / 2);
+      const newRotate =
+        maxRotateDeg - accelerate * Math.pow((elapsed - (ANIMATION_SECONDS * MILLISECONDS_PER_SECOND) / 2) / 1000, 2);
       setRotate(newRotate < 0 ? 0 : newRotate);
     }
 
@@ -293,10 +298,10 @@ export const ClassificationChart = ({
       isLoading={!isClassificationFinished}
       trendInfo={classificationData.trendInfo}
       ref={classificationRef}
-      isShowRepeat={!isOnlyOneLegend || !isShowTimePeriodChart}
-      clickRepeat={switchChart}
+      clickSwitch={switchChart}
       animationStyle={transition}
       disabledClickRepeatButton={!canSwitchChart}
+      isShowSwitch
     />
   );
 };

@@ -128,11 +128,11 @@ const ReportContent = (props: ReportContentProps) => {
   const shouldShowDoraMetrics = metrics.some((metric) => DORA_METRICS.includes(metric));
   const shouldShowTabs = allDateRanges.length > 1;
   const onlySelectClassification = metrics.length === 1 && metrics[0] === RequiredData.Classification;
-  const selectDoraMetricsAndClassification =
+  const onlySelectDoraMetrics =
     metrics.some((metric) => DORA_METRICS.includes(metric)) &&
     !metrics.some((metric) => BOARD_METRICS.includes(metric));
   const [chartIndex, setChartIndex] = useState(
-    selectDoraMetricsAndClassification || !shouldShowBoardMetrics ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
+    onlySelectDoraMetrics || !shouldShowBoardMetrics ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
   );
   const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
@@ -326,7 +326,7 @@ const ReportContent = (props: ReportContentProps) => {
         aria-label='board chart'
         label='Board'
         {...tabProps(0)}
-        disabled={selectDoraMetricsAndClassification || !shouldShowBoardMetrics}
+        disabled={onlySelectDoraMetrics || !shouldShowBoardMetrics}
       />
       <Tab label='DORA' aria-label='dora chart' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
     </StyledChartTabs>
@@ -400,7 +400,7 @@ const ReportContent = (props: ReportContentProps) => {
 
   const handleClick = (event: React.SyntheticEvent, newValue: number) => {
     const chartType =
-      selectDoraMetricsAndClassification || chartIndex === CHART_INDEX.DORA
+      onlySelectDoraMetrics || chartIndex === CHART_INDEX.DORA
         ? REPORT_PAGE_TYPE.DORA_CHART
         : REPORT_PAGE_TYPE.BOARD_CHART;
     const reportListPageType = onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY;

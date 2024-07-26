@@ -1,5 +1,18 @@
+import { Z_INDEX } from '@src/constants/commons';
 import { styled } from '@mui/material/styles';
 import { theme } from '@src/theme';
+
+export const SwitchIconWrapper = styled('img')(
+  ({ disabledClickRepeatButton }: { disabledClickRepeatButton: boolean }) => ({
+    width: '1.5rem',
+    color: theme.main.backgroundColor,
+    position: 'absolute',
+    right: '1.75rem',
+    top: '1.75rem',
+    cursor: disabledClickRepeatButton ? 'not-allowed' : 'pointer',
+    zIndex: Z_INDEX.BUTTONS,
+  }),
+);
 
 export const StyledChartAndTitleWrapper = styled('div')({
   position: 'relative',

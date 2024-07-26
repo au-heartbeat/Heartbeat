@@ -2,6 +2,7 @@ import {
   ChartTitle,
   StyledChartAndTitleWrapper,
   StyledTooltipContent,
+  SwitchIconWrapper,
   TrendContainer,
   TrendIconSpan,
   TrendTypeIcon,
@@ -13,9 +14,8 @@ import { ChartWrapper } from '@src/containers/MetricsStep/style';
 import { convertNumberToPercent } from '@src/utils/util';
 import React, { ForwardedRef, forwardRef } from 'react';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import RepeatIcon from '@mui/icons-material/Repeat';
 import { Loading } from '@src/components/Loading';
-import { Z_INDEX } from '@src/constants/commons';
+import SwitchIcon from '@src/assets/Switch.svg';
 import { Tooltip } from '@mui/material';
 import { theme } from '@src/theme';
 
@@ -46,16 +46,16 @@ const ChartAndTitleWrapper = forwardRef(
       trendInfo,
       isLoading,
       subTitle,
-      isShowRepeat = false,
-      clickRepeat,
+      isShowSwitch = false,
+      clickSwitch,
       animationStyle = {},
       disabledClickRepeatButton = false,
     }: {
       trendInfo: ITrendInfo;
       isLoading: boolean;
       subTitle?: string;
-      isShowRepeat?: boolean;
-      clickRepeat?: () => void;
+      isShowSwitch?: boolean;
+      clickSwitch?: () => void;
       animationStyle?: object;
       disabledClickRepeatButton?: boolean;
     },
@@ -90,20 +90,13 @@ const ChartAndTitleWrapper = forwardRef(
         }}
       >
         {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
-        {isShowRepeat && (
+        {isShowSwitch && (
           <Tooltip title='Switch this chart' placement='right' followCursor>
-            <RepeatIcon
-              color='secondary'
-              fontSize='large'
+            <SwitchIconWrapper
+              src={SwitchIcon}
+              disabledClickRepeatButton={disabledClickRepeatButton}
               aria-label={`classification ${subTitle!.toLowerCase()} switch chart`}
-              sx={{
-                position: 'absolute',
-                right: '1.75rem',
-                top: '1rem',
-                cursor: disabledClickRepeatButton ? 'not-allowed' : 'pointer',
-                zIndex: Z_INDEX.BUTTONS,
-              }}
-              onClick={clickRepeat}
+              onClick={clickSwitch}
             />
           </Tooltip>
         )}

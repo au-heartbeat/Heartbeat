@@ -963,7 +963,7 @@ describe('Report Step', () => {
       const classificationName3SwitchIcon = screen.queryByLabelText('classification name1-3 switch chart');
 
       expect(classificationName1Chart).toBeInTheDocument();
-      expect(classificationName1SwitchIcon).not.toBeInTheDocument();
+      expect(classificationName1SwitchIcon).toBeInTheDocument();
       expect(classificationName2Chart).not.toBeInTheDocument();
       expect(classificationName2SwitchIcon).not.toBeInTheDocument();
       expect(classificationName3Chart).toBeInTheDocument();
