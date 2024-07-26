@@ -250,7 +250,7 @@ export const ClassificationChart = ({
 
   let id: number;
   let start: number = 0;
-  function step(timestamp: number) {
+  function animationStep(timestamp: number) {
     if (start === 0) {
       start = timestamp;
     }
@@ -269,7 +269,7 @@ export const ClassificationChart = ({
     }
 
     if (elapsed < AnimationSeconds * MilliSecondsPerSecond + EveryFrameMilliSecond) {
-      id = window.requestAnimationFrame(step);
+      id = window.requestAnimationFrame(animationStep);
     } else {
       setRotate(0);
       window.cancelAnimationFrame(id);
@@ -280,7 +280,7 @@ export const ClassificationChart = ({
     if (canSwitchChart) {
       setIsFirstIntoClassification(false);
       setCanSwitchChart(false);
-      id = window.requestAnimationFrame(step);
+      id = window.requestAnimationFrame(animationStep);
     }
   };
 
