@@ -239,7 +239,6 @@ export const ClassificationChart = ({
   const isClassificationFinished =
     mappedData.flatMap((value) => value.classification).filter((it) => it?.name === classification)?.length ===
     dateRanges.length;
-  const isOnlyOneLegend = classificationDataOption.legend.data?.length === 0;
 
   const transition = {
     transform: `rotateY(${rotate}deg)`,
@@ -293,10 +292,10 @@ export const ClassificationChart = ({
       isLoading={!isClassificationFinished}
       trendInfo={classificationData.trendInfo}
       ref={classificationRef}
-      isShowRepeat={!isOnlyOneLegend || !isShowTimePeriodChart}
-      clickRepeat={switchChart}
+      clickSwitch={switchChart}
       animationStyle={transition}
       disabledClickRepeatButton={!canSwitchChart}
+      isShowSwitch
     />
   );
 };
