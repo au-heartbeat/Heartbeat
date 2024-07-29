@@ -104,8 +104,8 @@ export enum ChartType {
   Classification = 'Classification',
   LeadTimeForChanges = 'Lead Time For Changes',
   DeploymentFrequency = 'Deployment Frequency',
-  DevChangeFailureRate = 'Dev Change Failure Rate',
-  DevMeanTimeToRecovery = 'Dev Mean Time To Recovery',
+  PipelineChangeFailureRate = 'Pipeline Change Failure Rate',
+  PipelineMeanTimeToRecovery = 'Pipeline Mean Time To Recovery',
 }
 
 export enum TrendIcon {
@@ -124,9 +124,9 @@ export const CHART_TREND_TIP = {
   [ChartType.CycleTimeAllocation]: 'Total development time/Total cycle time',
   [ChartType.Rework]: 'Total rework times',
   [ChartType.LeadTimeForChanges]: 'Lead Time',
-  [ChartType.DeploymentFrequency]: 'Mean Time To Recovery',
-  [ChartType.DevChangeFailureRate]: 'Dev Change Failure Rate',
-  [ChartType.DevMeanTimeToRecovery]: 'Dev Mean Time To Recovery',
+  [ChartType.DeploymentFrequency]: 'Deployment Frequency',
+  [ChartType.PipelineChangeFailureRate]: 'Pipeline Change Failure Rate',
+  [ChartType.PipelineMeanTimeToRecovery]: 'Pipeline Mean Time To Recovery',
   [ChartType.Classification]: 'Classification',
 };
 
@@ -139,8 +139,8 @@ export const DOWN_TREND_IS_BETTER: ChartType[] = [
   ChartType.Rework,
   ChartType.CycleTime,
   ChartType.LeadTimeForChanges,
-  ChartType.DevMeanTimeToRecovery,
-  ChartType.DevChangeFailureRate,
+  ChartType.PipelineMeanTimeToRecovery,
+  ChartType.PipelineChangeFailureRate,
 ];
 
 export enum MetricsSubtitle {

@@ -179,7 +179,7 @@ function extractedChangeFailureRateData(
     }
     return value || 0;
   });
-  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevChangeFailureRate);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.PipelineChangeFailureRate);
   return {
     legend: RequiredData.PipelineChangeFailureRate,
     xAxis: allDateRanges,
@@ -214,7 +214,7 @@ function extractedMeanTimeToRecoveryDataData(
     if (!totalItem) return 0;
     return Number(totalItem.valueList[0].value) || 0;
   });
-  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevMeanTimeToRecovery);
+  const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.PipelineMeanTimeToRecovery);
   return {
     legend: RequiredData.PipelineMeanTimeToRecovery,
     xAxis: allDateRanges,
