@@ -80,6 +80,7 @@ describe('Share Report', () => {
       'Dev change failure rate',
       'Dev mean time to recovery',
     ];
+    reportHook.current.classificationNames = [];
   };
 
   const setup = () => {

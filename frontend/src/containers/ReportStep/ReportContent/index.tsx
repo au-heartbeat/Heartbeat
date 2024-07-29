@@ -124,16 +124,25 @@ const ReportContent = (props: ReportContentProps) => {
 
   const startDate = selectedDateRange?.startDate as string;
   const endDate = selectedDateRange?.endDate as string;
-  const shouldShowBoardMetrics = metrics.some((metric) => BOARD_METRICS.includes(metric));
-  const shouldShowDoraMetrics = metrics.some((metric) => DORA_METRICS.includes(metric));
-  const shouldShowTabs = allDateRanges.length > 1;
-  const onlySelectClassification = metrics.length === 1 && metrics[0] === RequiredData.Classification;
-  const onlySelectDoraMetrics =
-    metrics.some((metric) => DORA_METRICS.includes(metric)) &&
-    !metrics.some((metric) => BOARD_METRICS.includes(metric));
-  const [chartIndex, setChartIndex] = useState(
-    onlySelectDoraMetrics || !shouldShowBoardMetrics ? CHART_INDEX.DORA : CHART_INDEX.BOARD,
+
+  const selectBoardMetricsWithoutClassification = metrics.some(
+    (metric) => BOARD_METRICS.includes(metric) && metric !== RequiredData.Classification,
   );
+  const selectBoardOnlyClassification = metrics.some(
+    (metric) => BOARD_METRICS.includes(metric) && metric === RequiredData.Classification,
+  );
+  const selectClassificationCharts = classificationNames.length > 0;
+  const selectDora = metrics.some((metric) => DORA_METRICS.includes(metric));
+
+  const shouldShowBoardMetrics = selectBoardMetricsWithoutClassification || selectBoardOnlyClassification;
+  const shouldShowBoardMetricsChart =
+    selectBoardMetricsWithoutClassification || (selectBoardOnlyClassification && selectClassificationCharts);
+  const shouldShowDoraMetrics = selectDora;
+  const metricsOnlySelectClassification =
+    !selectBoardMetricsWithoutClassification && !selectDora && selectBoardOnlyClassification;
+  const shouldShowTabs = allDateRanges.length > 1;
+
+  const [chartIndex, setChartIndex] = useState(shouldShowBoardMetricsChart ? CHART_INDEX.BOARD : CHART_INDEX.DORA);
   const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
   const isChartPage = useMemo(
@@ -258,7 +267,7 @@ const ReportContent = (props: ReportContentProps) => {
   ]);
 
   useEffect(() => {
-    setPageType(onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
+    setPageType(metricsOnlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -311,6 +320,7 @@ const ReportContent = (props: ReportContentProps) => {
         icon={<BarChartIcon />}
         iconPosition='start'
         label='Chart'
+        disabled={metricsOnlySelectClassification && !selectClassificationCharts}
       />
     </StyledTabs>
   );
@@ -322,12 +332,7 @@ const ReportContent = (props: ReportContentProps) => {
       onChange={handleChange}
       aria-label='chart tabs'
     >
-      <Tab
-        aria-label='board chart'
-        label='Board'
-        {...tabProps(0)}
-        disabled={onlySelectDoraMetrics || !shouldShowBoardMetrics}
-      />
+      <Tab aria-label='board chart' label='Board' {...tabProps(0)} disabled={!shouldShowBoardMetricsChart} />
       <Tab label='DORA' aria-label='dora chart' {...tabProps(1)} disabled={!shouldShowDoraMetrics} />
     </StyledChartTabs>
   );
@@ -352,26 +357,22 @@ const ReportContent = (props: ReportContentProps) => {
     />
   );
 
-  const showBoardDetail = (data?: ReportResponseDTO) => {
-    const onlySelectClassification = metrics.length === 1 && metrics[0] === RequiredData.Classification;
-
-    return (
-      <BoardDetail
-        isShowBack={!onlySelectClassification || !isSharePage}
-        metrics={metrics}
-        onBack={handleBack}
-        data={data}
-        errorMessage={getErrorMessage4Board()}
-      />
-    );
-  };
+  const showBoardDetail = (data?: ReportResponseDTO) => (
+    <BoardDetail
+      isShowBack={!metricsOnlySelectClassification || !isSharePage}
+      metrics={metrics}
+      onBack={handleBack}
+      data={data}
+      errorMessage={getErrorMessage4Board()}
+    />
+  );
   const showDoraDetail = (data: ReportResponseDTO) => (
     <DoraDetail isShowBack={true} onBack={backToSummaryPage} data={data} />
   );
 
   const handleBack = () => {
     setDisplayType(DISPLAY_TYPE.LIST);
-    isSummaryPage || onlySelectClassification ? dispatch(backStep()) : backToSummaryPage();
+    isSummaryPage || metricsOnlySelectClassification ? dispatch(backStep()) : backToSummaryPage();
   };
 
   const backToSummaryPage = () => {
@@ -400,10 +401,10 @@ const ReportContent = (props: ReportContentProps) => {
 
   const handleClick = (event: React.SyntheticEvent, newValue: number) => {
     const chartType =
-      onlySelectDoraMetrics || chartIndex === CHART_INDEX.DORA
+      !shouldShowBoardMetricsChart || chartIndex === CHART_INDEX.DORA
         ? REPORT_PAGE_TYPE.DORA_CHART
         : REPORT_PAGE_TYPE.BOARD_CHART;
-    const reportListPageType = onlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY;
+    const reportListPageType = metricsOnlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY;
     const pageType = newValue === DISPLAY_TYPE.LIST ? reportListPageType : chartType;
 
     setDisplayType(newValue);
