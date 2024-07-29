@@ -21,9 +21,9 @@ import heartbeat.handler.base.AsyncExceptionDTO;
 import heartbeat.service.report.calculator.ClassificationCalculator;
 import heartbeat.service.report.calculator.CycleTimeCalculator;
 import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
-import heartbeat.service.report.calculator.DevChangeFailureRateCalculator;
+import heartbeat.service.report.calculator.PipelineChangeFailureRateCalculator;
 import heartbeat.service.report.calculator.LeadTimeForChangesCalculator;
-import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
+import heartbeat.service.report.calculator.PipelineMeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.ReworkCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
@@ -60,9 +60,9 @@ public class GenerateReporterService {
 
 	private final DeploymentFrequencyCalculator deploymentFrequency;
 
-	private final DevChangeFailureRateCalculator devChangeFailureRate;
+	private final PipelineChangeFailureRateCalculator pipelineChangeFailureRate;
 
-	private final MeanToRecoveryCalculator meanToRecoveryCalculator;
+	private final PipelineMeanToRecoveryCalculator pipelineMeanToRecoveryCalculator;
 
 	private final CycleTimeCalculator cycleTimeCalculator;
 
@@ -184,9 +184,9 @@ public class GenerateReporterService {
 						deploymentFrequency.calculate(fetchedData.getBuildKiteData().getDeployTimesList(),
 								Long.parseLong(request.getStartTime()), Long.parseLong(request.getEndTime()),
 								request.getCalendarType(), request.getTimezoneByZoneId()));
-				case "dev change failure rate" -> reportResponse.setDevChangeFailureRate(
-						devChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
-				default -> reportResponse.setDevMeanTimeToRecovery(meanToRecoveryCalculator
+				case "pipeline change failure rate" -> reportResponse.setPipelineChangeFailureRate(
+						pipelineChangeFailureRate.calculate(fetchedData.getBuildKiteData().getDeployTimesList()));
+				default -> reportResponse.setPipelineMeanTimeToRecovery(pipelineMeanToRecoveryCalculator
 					.calculate(fetchedData.getBuildKiteData().getDeployTimesList(), request));
 			}
 		});
@@ -363,8 +363,10 @@ public class GenerateReporterService {
 			.rework(getValueOrNull(boardReportResponse, ReportResponse::getRework))
 			.exportValidityTime(fileRepository.getExpiredTime())
 			.deploymentFrequency(getValueOrNull(pipelineReportResponse, ReportResponse::getDeploymentFrequency))
-			.devChangeFailureRate(getValueOrNull(pipelineReportResponse, ReportResponse::getDevChangeFailureRate))
-			.devMeanTimeToRecovery(getValueOrNull(pipelineReportResponse, ReportResponse::getDevMeanTimeToRecovery))
+			.pipelineChangeFailureRate(
+					getValueOrNull(pipelineReportResponse, ReportResponse::getPipelineChangeFailureRate))
+			.pipelineMeanTimeToRecovery(
+					getValueOrNull(pipelineReportResponse, ReportResponse::getPipelineMeanTimeToRecovery))
 			.leadTimeForChanges(getValueOrNull(sourceControlReportResponse, ReportResponse::getLeadTimeForChanges))
 			.boardMetricsCompleted(reportReadyStatus.boardMetricsCompleted())
 			.doraMetricsCompleted(reportReadyStatus.doraMetricsCompleted())

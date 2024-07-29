@@ -129,4 +129,15 @@ describe('#fileConfig', () => {
       }),
     ).toEqual(expected);
   });
+
+  it('should convert metrics from dev to pipeline', () => {
+    const expected = {
+      ...BASIC_NEW_CONFIG,
+      metrics: ['Dev mean time to recovery', 'Dev change failure rate'],
+      calendarType: Calendar.China,
+      reworkTimesSettings: { reworkState: 'In Dev', excludeStates: ['Review'] },
+    };
+    const actual = convertToNewFileConfig(expected).metrics;
+    expect(actual).toStrictEqual(['Pipeline mean time to recovery', 'Pipeline change failure rate']);
+  });
 });

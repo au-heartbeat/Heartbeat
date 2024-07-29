@@ -212,8 +212,8 @@ describe('Report Step', () => {
       expect(screen.getByText('DORA Metrics')).toBeInTheDocument();
       expect(screen.getByText('Lead Time For Changes')).toBeInTheDocument();
       expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
-      expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
-      expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
+      expect(screen.getByText('Pipeline Change Failure Rate')).toBeInTheDocument();
+      expect(screen.getByText('Pipeline Mean Time To Recovery')).toBeInTheDocument();
     });
 
     it('should render loading page when report data is empty', () => {
@@ -1108,8 +1108,8 @@ describe('Report Step', () => {
       expect(screen.getByText('DORA Metrics')).toBeInTheDocument();
       expect(screen.getByText('Lead Time For Changes')).toBeInTheDocument();
       expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
-      expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
-      expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
+      expect(screen.getByText('Pipeline Change Failure Rate')).toBeInTheDocument();
+      expect(screen.getByText('Pipeline Mean Time To Recovery')).toBeInTheDocument();
     });
 
     it('should select DORA tab when click DORA tab from chart page again', async () => {

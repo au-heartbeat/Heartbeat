@@ -15,7 +15,7 @@ export interface IDoraMetricsResultItem {
   deploymentTimes: string;
   deploymentFrequency: string;
   failureRate: string;
-  devMeanTimeToRecovery: string;
+  pipelineMeanTimeToRecovery: string;
 }
 
 export interface IBoardMetricsDetailItem {
@@ -584,7 +584,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     deploymentFrequency: '0.00',
     deploymentTimes: '0',
     failureRate: '0.00% (0/0)',
-    devMeanTimeToRecovery: '0.00',
+    pipelineMeanTimeToRecovery: '0.00',
   },
   {
     prLeadTime: '1.86',
@@ -593,7 +593,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     deploymentFrequency: '0.50',
     deploymentTimes: '1',
     failureRate: '0.00% (0/1)',
-    devMeanTimeToRecovery: '0.00',
+    pipelineMeanTimeToRecovery: '0.00',
   },
   {
     prLeadTime: '10.78',
@@ -602,7 +602,7 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     deploymentFrequency: '2.00',
     deploymentTimes: '4',
     failureRate: '0.00% (0/4)',
-    devMeanTimeToRecovery: '0.00',
+    pipelineMeanTimeToRecovery: '0.00',
   },
 ];
 

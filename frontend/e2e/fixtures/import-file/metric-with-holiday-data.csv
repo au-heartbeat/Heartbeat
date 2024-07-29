@@ -41,5 +41,5 @@
 "Lead time for changes","Heartbeat / Deploy prod / PR Lead Time","45.48"
 "Lead time for changes","Heartbeat / Deploy prod / Pipeline Lead Time","0.83"
 "Lead time for changes","Heartbeat / Deploy prod / Total Lead Time","46.31"
-"Dev change failure rate","Heartbeat / Deploy prod / Dev change failure rate","0.1667"
-"Dev mean time to recovery","Heartbeat / Deploy prod / Dev mean time to recovery","0.78"
+"Pipeline change failure rate","Heartbeat / Deploy prod / Pipeline change failure rate","0.1667"
+"Pipeline mean time to recovery","Heartbeat / Deploy prod / Pipeline mean time to recovery","0.78"

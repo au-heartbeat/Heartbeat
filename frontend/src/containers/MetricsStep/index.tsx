@@ -173,9 +173,9 @@ const MetricsStep = () => {
       )}
 
       {(requiredData.includes(RequiredData.DeploymentFrequency) ||
-        requiredData.includes(RequiredData.DevChangeFailureRate) ||
+        requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
         requiredData.includes(RequiredData.LeadTimeForChanges) ||
-        requiredData.includes(RequiredData.DevMeanTimeToRecovery)) && (
+        requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) && (
         <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
           <MetricsSelectionTitle aria-label='Pipeline configuration title'>
             Pipeline configuration

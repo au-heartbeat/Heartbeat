@@ -3,10 +3,10 @@ package heartbeat.service.report;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
-import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
-import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
+import heartbeat.controller.report.dto.response.AvgPipelineMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecoveryOfPipeline;
+import heartbeat.service.report.calculator.PipelineMeanToRecoveryCalculator;
 import heartbeat.service.report.model.WorkInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,10 +30,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MeanToRecoveryCalculatorTest {
+class PipelineMeanToRecoveryCalculatorTest {
 
 	@InjectMocks
-	private MeanToRecoveryCalculator calculator;
+	private PipelineMeanToRecoveryCalculator calculator;
 
 	@Mock
 	private WorkDay workday;
@@ -44,10 +44,10 @@ class MeanToRecoveryCalculatorTest {
 
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 
-		DevMeanTimeToRecovery result = calculator.calculate(deployTimes, request);
+		PipelineMeanTimeToRecovery result = calculator.calculate(deployTimes, request);
 
-		Assertions.assertEquals(BigDecimal.ZERO, result.getAvgDevMeanTimeToRecovery().getTimeToRecovery());
-		Assertions.assertTrue(result.getDevMeanTimeToRecoveryOfPipelines().isEmpty());
+		Assertions.assertEquals(BigDecimal.ZERO, result.getAvgPipelineMeanTimeToRecovery().getTimeToRecovery());
+		Assertions.assertTrue(result.getPipelineMeanTimeToRecoveryOfPipelines().isEmpty());
 	}
 
 	@Test
@@ -72,26 +72,27 @@ class MeanToRecoveryCalculatorTest {
 				return WorkInfo.builder().workTime(secondParam - firstParam).build();
 			});
 
-		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
+		PipelineMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 
-		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = result.getAvgDevMeanTimeToRecovery();
-		Assertions.assertEquals(1, avgDevMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(100000)));
+		AvgPipelineMeanTimeToRecovery avgPipelineMeanTimeToRecovery = result.getAvgPipelineMeanTimeToRecovery();
+		Assertions.assertEquals(1,
+				avgPipelineMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(100000)));
 
-		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = result
-			.getDevMeanTimeToRecoveryOfPipelines();
-		Assertions.assertEquals(3, devMeanTimeToRecoveryOfPipelines.size());
+		List<PipelineMeanTimeToRecoveryOfPipeline> pipelineMeanTimeToRecoveryOfPipelines = result
+			.getPipelineMeanTimeToRecoveryOfPipelines();
+		Assertions.assertEquals(3, pipelineMeanTimeToRecoveryOfPipelines.size());
 
-		DevMeanTimeToRecoveryOfPipeline deploy1Result = devMeanTimeToRecoveryOfPipelines.get(0);
+		PipelineMeanTimeToRecoveryOfPipeline deploy1Result = pipelineMeanTimeToRecoveryOfPipelines.get(0);
 		Assertions.assertEquals("Pipeline 1", deploy1Result.getName());
 		Assertions.assertEquals("Step 1", deploy1Result.getStep());
 		Assertions.assertEquals(0, deploy1Result.getTimeToRecovery().compareTo(BigDecimal.valueOf(180000)));
 
-		DevMeanTimeToRecoveryOfPipeline deploy2Result = devMeanTimeToRecoveryOfPipelines.get(1);
+		PipelineMeanTimeToRecoveryOfPipeline deploy2Result = pipelineMeanTimeToRecoveryOfPipelines.get(1);
 		Assertions.assertEquals("Pipeline 2", deploy2Result.getName());
 		Assertions.assertEquals("Step 2", deploy2Result.getStep());
 		Assertions.assertEquals(0, deploy2Result.getTimeToRecovery().compareTo(BigDecimal.valueOf(120000)));
 
-		DevMeanTimeToRecoveryOfPipeline deploy3Result = devMeanTimeToRecoveryOfPipelines.get(2);
+		PipelineMeanTimeToRecoveryOfPipeline deploy3Result = pipelineMeanTimeToRecoveryOfPipelines.get(2);
 		Assertions.assertEquals("Pipeline 3", deploy3Result.getName());
 		Assertions.assertEquals("Step 3", deploy3Result.getStep());
 		Assertions.assertEquals(BigDecimal.ZERO, deploy3Result.getTimeToRecovery());
@@ -121,26 +122,27 @@ class MeanToRecoveryCalculatorTest {
 				return WorkInfo.builder().workTime(secondParam - firstParam).build();
 			});
 
-		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
+		PipelineMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 
-		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = result.getAvgDevMeanTimeToRecovery();
-		Assertions.assertEquals(1, avgDevMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(80000)));
+		AvgPipelineMeanTimeToRecovery avgPipelineMeanTimeToRecovery = result.getAvgPipelineMeanTimeToRecovery();
+		Assertions.assertEquals(1,
+				avgPipelineMeanTimeToRecovery.getTimeToRecovery().compareTo(BigDecimal.valueOf(80000)));
 
-		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = result
-			.getDevMeanTimeToRecoveryOfPipelines();
-		Assertions.assertEquals(3, devMeanTimeToRecoveryOfPipelines.size());
+		List<PipelineMeanTimeToRecoveryOfPipeline> pipelineMeanTimeToRecoveryOfPipelines = result
+			.getPipelineMeanTimeToRecoveryOfPipelines();
+		Assertions.assertEquals(3, pipelineMeanTimeToRecoveryOfPipelines.size());
 
-		DevMeanTimeToRecoveryOfPipeline deploy1Result = devMeanTimeToRecoveryOfPipelines.get(0);
+		PipelineMeanTimeToRecoveryOfPipeline deploy1Result = pipelineMeanTimeToRecoveryOfPipelines.get(0);
 		Assertions.assertEquals("Pipeline 1", deploy1Result.getName());
 		Assertions.assertEquals("Step 1", deploy1Result.getStep());
 		Assertions.assertEquals(0, deploy1Result.getTimeToRecovery().compareTo(BigDecimal.valueOf(240000)));
 
-		DevMeanTimeToRecoveryOfPipeline deploy2Result = devMeanTimeToRecoveryOfPipelines.get(1);
+		PipelineMeanTimeToRecoveryOfPipeline deploy2Result = pipelineMeanTimeToRecoveryOfPipelines.get(1);
 		Assertions.assertEquals("Pipeline 2", deploy2Result.getName());
 		Assertions.assertEquals("Step 2", deploy2Result.getStep());
 		Assertions.assertEquals(BigDecimal.ZERO, deploy2Result.getTimeToRecovery());
 
-		DevMeanTimeToRecoveryOfPipeline deploy3Result = devMeanTimeToRecoveryOfPipelines.get(2);
+		PipelineMeanTimeToRecoveryOfPipeline deploy3Result = pipelineMeanTimeToRecoveryOfPipelines.get(2);
 		Assertions.assertEquals("Pipeline 3", deploy3Result.getName());
 		Assertions.assertEquals("Step 3", deploy3Result.getStep());
 		Assertions.assertEquals(BigDecimal.ZERO, deploy3Result.getTimeToRecovery());
@@ -172,9 +174,9 @@ class MeanToRecoveryCalculatorTest {
 				return WorkInfo.builder().workTime(secondParam - firstParam).build();
 			});
 
-		DevMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
+		PipelineMeanTimeToRecovery result = calculator.calculate(deployTimesList, request);
 
-		BigDecimal timeToRecovery = result.getAvgDevMeanTimeToRecovery().getTimeToRecovery();
+		BigDecimal timeToRecovery = result.getAvgPipelineMeanTimeToRecovery().getTimeToRecovery();
 		String logs = outputStream.toString();
 
 		assertEquals(BigDecimal.ZERO, timeToRecovery);

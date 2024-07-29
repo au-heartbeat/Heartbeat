@@ -17,7 +17,8 @@ public enum MetricsUtil {
 				.toList()),
 
 	BUILDKITE_METRICS(Stream
-		.of(MetricEnum.DEV_CHANGE_FAILURE_RATE, MetricEnum.DEPLOYMENT_FREQUENCY, MetricEnum.DEV_MEAN_TIME_TO_RECOVERY)
+		.of(MetricEnum.PIPELINE_CHANGE_FAILURE_RATE, MetricEnum.DEPLOYMENT_FREQUENCY,
+				MetricEnum.PIPELINE_MEAN_TIME_TO_RECOVERY)
 		.map(MetricEnum::getValue)
 		.toList()),
 

@@ -68,8 +68,8 @@ const getMetricsInfo = (metrics: string[]) => {
     Classification: CLASSIFICATION,
     LeadTimeForChanges: LEAD_TIME_FOR_CHANGES,
     DeploymentFrequency: DEPLOYMENT_FREQUENCY,
-    DevChangeFailureRate: DEV_CHANGE_FAILURE_RATE,
-    DevMeanTimeToRecovery: DEV_MEAN_TIME_TO_RECOVERY,
+    PipelineChangeFailureRate: PIPELINE_CHANGE_FAILURE_RATE,
+    PipelineMeanTimeToRecovery: PIPELINE_MEAN_TIME_TO_RECOVERY,
     ReworkTimes: REWORK_TIMES,
   } = RequiredData;
   return {
@@ -80,8 +80,8 @@ const getMetricsInfo = (metrics: string[]) => {
     shouldPipelineToolShow: [
       LEAD_TIME_FOR_CHANGES,
       DEPLOYMENT_FREQUENCY,
-      DEV_CHANGE_FAILURE_RATE,
-      DEV_MEAN_TIME_TO_RECOVERY,
+      PIPELINE_CHANGE_FAILURE_RATE,
+      PIPELINE_MEAN_TIME_TO_RECOVERY,
     ].some((metric) => metrics.includes(metric)),
     shouldSourceControlShow: [LEAD_TIME_FOR_CHANGES].some((metric) => metrics.includes(metric)),
   };

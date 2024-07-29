@@ -88,7 +88,7 @@ test('unhappy path when import file', async ({ homePage, configStep, metricsStep
     totalLeadTime: DORA_METRICS_RESULT.TotalLeadTime,
     deploymentFrequency: DORA_METRICS_RESULT.DeploymentFrequency,
     failureRate: DORA_METRICS_RESULT.FailureRate,
-    devMeanTimeToRecovery: DORA_METRICS_RESULT.DevMeanTimeToRecovery,
+    pipelineMeanTimeToRecovery: DORA_METRICS_RESULT.DevMeanTimeToRecovery,
     deploymentTimes: DORA_METRICS_RESULT.DeploymentTimes,
   });
 });

@@ -3,9 +3,9 @@ package heartbeat.service.report.calculator;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
-import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
+import heartbeat.controller.report.dto.response.AvgPipelineMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.TotalTimeAndRecoveryTimes;
 import heartbeat.service.report.WorkDay;
 import lombok.RequiredArgsConstructor;
@@ -24,34 +24,34 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Component
 @Log4j2
-public class MeanToRecoveryCalculator {
+public class PipelineMeanToRecoveryCalculator {
 
 	private final WorkDay workDay;
 
-	public DevMeanTimeToRecovery calculate(List<DeployTimes> deployTimes, GenerateReportRequest request) {
+	public PipelineMeanTimeToRecovery calculate(List<DeployTimes> deployTimes, GenerateReportRequest request) {
 		if (deployTimes.isEmpty()) {
-			return new DevMeanTimeToRecovery(
-					AvgDevMeanTimeToRecovery.builder().timeToRecovery(stripTrailingZeros(BigDecimal.ZERO)).build(),
+			return new PipelineMeanTimeToRecovery(
+					AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(stripTrailingZeros(BigDecimal.ZERO)).build(),
 					Collections.emptyList());
 		}
-		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = deployTimes.stream()
+		List<PipelineMeanTimeToRecoveryOfPipeline> pipelineMeanTimeToRecoveryOfPipelines = deployTimes.stream()
 			.map(it -> convertToDevMeanTimeToRecoveryOfPipeline(it, request))
 			.collect(Collectors.toList());
 
-		BigDecimal avgDevMeanTimeToRecovery = devMeanTimeToRecoveryOfPipelines.stream()
-			.map(DevMeanTimeToRecoveryOfPipeline::getTimeToRecovery)
+		BigDecimal avgDevMeanTimeToRecovery = pipelineMeanTimeToRecoveryOfPipelines.stream()
+			.map(PipelineMeanTimeToRecoveryOfPipeline::getTimeToRecovery)
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
-		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecoveryObj = AvgDevMeanTimeToRecovery.builder()
+		AvgPipelineMeanTimeToRecovery avgPipelineMeanTimeToRecoveryObj = AvgPipelineMeanTimeToRecovery.builder()
 			.timeToRecovery(stripTrailingZeros(avgDevMeanTimeToRecovery))
 			.build();
 
-		return new DevMeanTimeToRecovery(avgDevMeanTimeToRecoveryObj, devMeanTimeToRecoveryOfPipelines);
+		return new PipelineMeanTimeToRecovery(avgPipelineMeanTimeToRecoveryObj, pipelineMeanTimeToRecoveryOfPipelines);
 	}
 
-	private DevMeanTimeToRecoveryOfPipeline convertToDevMeanTimeToRecoveryOfPipeline(DeployTimes deploy,
+	private PipelineMeanTimeToRecoveryOfPipeline convertToDevMeanTimeToRecoveryOfPipeline(DeployTimes deploy,
 			GenerateReportRequest request) {
 		if (deploy.getFailed().isEmpty()) {
-			return new DevMeanTimeToRecoveryOfPipeline(deploy.getPipelineName(), deploy.getPipelineStep(),
+			return new PipelineMeanTimeToRecoveryOfPipeline(deploy.getPipelineName(), deploy.getPipelineStep(),
 					BigDecimal.ZERO);
 		}
 		else {
@@ -61,7 +61,7 @@ public class MeanToRecoveryCalculator {
 				devMeanTimeToRecovery = stripTrailingZeros(new BigDecimal(result.getTotalTimeToRecovery())
 					.divide(new BigDecimal(result.getRecoveryTimes()), 8, RoundingMode.HALF_UP));
 			}
-			return new DevMeanTimeToRecoveryOfPipeline(deploy.getPipelineName(), deploy.getPipelineStep(),
+			return new PipelineMeanTimeToRecoveryOfPipeline(deploy.getPipelineName(), deploy.getPipelineStep(),
 					devMeanTimeToRecovery);
 		}
 	}

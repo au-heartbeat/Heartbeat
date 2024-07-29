@@ -68,8 +68,8 @@ export enum RequiredData {
   ReworkTimes = 'Rework times',
   LeadTimeForChanges = 'Lead time for changes',
   DeploymentFrequency = 'Deployment frequency',
-  DevChangeFailureRate = 'Dev change failure rate',
-  DevMeanTimeToRecovery = 'Dev mean time to recovery',
+  PipelineChangeFailureRate = 'Pipeline change failure rate',
+  PipelineMeanTimeToRecovery = 'Pipeline mean time to recovery',
 }
 
 export const IMPORT_METRICS_MAPPING: Record<string, string> = {
@@ -79,10 +79,10 @@ export const IMPORT_METRICS_MAPPING: Record<string, string> = {
   'Rework times': 'Rework times',
   'Lead time for changes': 'Lead time for changes',
   'Deployment frequency': 'Deployment frequency',
-  'Dev change failure rate': 'Dev change failure rate',
-  'Dev mean time to recovery': 'Dev mean time to recovery',
-  'Change failure rate': 'Dev change failure rate',
-  'Mean time to recovery': 'Dev mean time to recovery',
+  'Pipeline change failure rate': 'Pipeline change failure rate',
+  'Pipeline mean time to recovery': 'Pipeline mean time to recovery',
+  'Change failure rate': 'Pipeline change failure rate',
+  'Mean time to recovery': 'Pipeline mean time to recovery',
 };
 
 export enum MetricsTitle {
@@ -92,8 +92,8 @@ export enum MetricsTitle {
   Rework = 'Rework',
   LeadTimeForChanges = 'Lead Time For Changes',
   DeploymentFrequency = 'Deployment Frequency',
-  DevChangeFailureRate = 'Dev Change Failure Rate',
-  DevMeanTimeToRecovery = 'Dev Mean Time To Recovery',
+  PipelineChangeFailureRate = 'Pipeline Change Failure Rate',
+  PipelineMeanTimeToRecovery = 'Pipeline Mean Time To Recovery',
 }
 
 export enum ChartType {
@@ -164,15 +164,15 @@ export const SOURCE_CONTROL_METRICS: string[] = [RequiredData.LeadTimeForChanges
 
 export const PIPELINE_METRICS: string[] = [
   RequiredData.DeploymentFrequency,
-  RequiredData.DevChangeFailureRate,
-  RequiredData.DevMeanTimeToRecovery,
+  RequiredData.PipelineChangeFailureRate,
+  RequiredData.PipelineMeanTimeToRecovery,
 ];
 
 export const DORA_METRICS: string[] = [
   RequiredData.LeadTimeForChanges,
   RequiredData.DeploymentFrequency,
-  RequiredData.DevChangeFailureRate,
-  RequiredData.DevMeanTimeToRecovery,
+  RequiredData.PipelineChangeFailureRate,
+  RequiredData.PipelineMeanTimeToRecovery,
 ];
 
 export const BOARD_METRICS: string[] = [

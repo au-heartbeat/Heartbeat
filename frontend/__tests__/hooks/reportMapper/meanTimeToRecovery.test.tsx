@@ -1,12 +1,12 @@
-import { devMeanTimeToRecoveryMapper } from '@src/hooks/reportMapper/devMeanTimeToRecovery';
+import { pipelineMeanTimeToRecoveryMapper } from '@src/hooks/reportMapper/devMeanTimeToRecovery';
 
 describe('dev mean time to recovery data mapper', () => {
-  const mockDevMeanTimeToRecovery = {
-    avgDevMeanTimeToRecovery: {
+  const mockPipelineMeanTimeToRecovery = {
+    avgPipelineMeanTimeToRecovery: {
       name: 'Average',
       timeToRecovery: 162120031.8,
     },
-    devMeanTimeToRecoveryOfPipelines: [
+    pipelineMeanTimeToRecoveryOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
@@ -15,7 +15,7 @@ describe('dev mean time to recovery data mapper', () => {
     ],
   };
   it('maps response dev change failure rate values to ui display value', () => {
-    const expectedDevMeanTimeToRecovery = [
+    const expectedPipelineMeanTimeToRecovery = [
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
@@ -35,18 +35,18 @@ describe('dev mean time to recovery data mapper', () => {
         ],
       },
     ];
-    const mappedDevMeanTimeToRecovery = devMeanTimeToRecoveryMapper(mockDevMeanTimeToRecovery);
+    const mappedPipelineMeanTimeToRecovery = pipelineMeanTimeToRecoveryMapper(mockPipelineMeanTimeToRecovery);
 
-    expect(mappedDevMeanTimeToRecovery).toEqual(expectedDevMeanTimeToRecovery);
+    expect(mappedPipelineMeanTimeToRecovery).toEqual(expectedPipelineMeanTimeToRecovery);
   });
 
   it('should format time when timeToRecovery is greater than 0 but less than 1', () => {
-    const mockDevMeanTimeToRecovery = {
-      avgDevMeanTimeToRecovery: {
+    const mockPipelineMeanTimeToRecovery = {
+      avgPipelineMeanTimeToRecovery: {
         name: 'Average',
         timeToRecovery: 0.32,
       },
-      devMeanTimeToRecoveryOfPipelines: [
+      pipelineMeanTimeToRecoveryOfPipelines: [
         {
           name: 'fs-platform-onboarding',
           step: ' :shipit: deploy to PROD',
@@ -54,7 +54,7 @@ describe('dev mean time to recovery data mapper', () => {
         },
       ],
     };
-    const expectedDevMeanTimeToRecovery = [
+    const expectedPipelineMeanTimeToRecovery = [
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
@@ -74,18 +74,18 @@ describe('dev mean time to recovery data mapper', () => {
         ],
       },
     ];
-    const mappedDevMeanTimeToRecovery = devMeanTimeToRecoveryMapper(mockDevMeanTimeToRecovery);
+    const mappedPipelineMeanTimeToRecovery = pipelineMeanTimeToRecoveryMapper(mockPipelineMeanTimeToRecovery);
 
-    expect(mappedDevMeanTimeToRecovery).toEqual(expectedDevMeanTimeToRecovery);
+    expect(mappedPipelineMeanTimeToRecovery).toEqual(expectedPipelineMeanTimeToRecovery);
   });
 
   it('should map time to 0 minute when it is 0', () => {
-    const mockDevMeanTimeToRecovery = {
-      avgDevMeanTimeToRecovery: {
+    const mockPipelineMeanTimeToRecovery = {
+      avgPipelineMeanTimeToRecovery: {
         name: 'Average',
         timeToRecovery: 0,
       },
-      devMeanTimeToRecoveryOfPipelines: [
+      pipelineMeanTimeToRecoveryOfPipelines: [
         {
           name: 'fs-platform-onboarding',
           step: ' :shipit: deploy to PROD',
@@ -93,7 +93,7 @@ describe('dev mean time to recovery data mapper', () => {
         },
       ],
     };
-    const expectedDevMeanTimeToRecovery = [
+    const expectedPipelineMeanTimeToRecovery = [
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
@@ -113,8 +113,8 @@ describe('dev mean time to recovery data mapper', () => {
         ],
       },
     ];
-    const mappedDevMeanTimeToRecovery = devMeanTimeToRecoveryMapper(mockDevMeanTimeToRecovery);
+    const mappedPipelineMeanTimeToRecovery = pipelineMeanTimeToRecoveryMapper(mockPipelineMeanTimeToRecovery);
 
-    expect(mappedDevMeanTimeToRecovery).toEqual(expectedDevMeanTimeToRecovery);
+    expect(mappedPipelineMeanTimeToRecovery).toEqual(expectedPipelineMeanTimeToRecovery);
   });
 });

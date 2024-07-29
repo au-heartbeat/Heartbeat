@@ -149,9 +149,9 @@ const MetricsStepper = () => {
     metricsConfig.cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).length > 1;
   const isShowDeploymentFrequency =
     requiredData.includes(RequiredData.DeploymentFrequency) ||
-    requiredData.includes(RequiredData.DevChangeFailureRate) ||
+    requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
     requiredData.includes(RequiredData.LeadTimeForChanges) ||
-    requiredData.includes(RequiredData.DevMeanTimeToRecovery);
+    requiredData.includes(RequiredData.PipelineMeanTimeToRecovery);
   const isCrewsSettingValid = metricsConfig.users.length > 0;
   const isRealDoneValid = metricsConfig.doneColumn.length > 0;
 

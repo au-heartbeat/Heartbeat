@@ -1,7 +1,12 @@
 package heartbeat.service.report;
 
+import heartbeat.controller.report.dto.response.AvgPipelineChangeFailureRate;
+import heartbeat.controller.report.dto.response.AvgPipelineMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.Classification;
 import heartbeat.controller.report.dto.response.ClassificationInfo;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRate;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRateOfPipeline;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Rework;
 import heartbeat.controller.report.dto.response.Velocity;
@@ -11,12 +16,7 @@ import heartbeat.controller.report.dto.response.DeploymentFrequency;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequencyOfPipeline;
 import heartbeat.controller.report.dto.response.DailyDeploymentCount;
-import heartbeat.controller.report.dto.response.DevChangeFailureRate;
-import heartbeat.controller.report.dto.response.AvgDevChangeFailureRate;
-import heartbeat.controller.report.dto.response.DevChangeFailureRateOfPipeline;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
 import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
@@ -96,22 +96,22 @@ public class MetricCsvFixture {
 									List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
 							.build()))
 				.build())
-			.devChangeFailureRate(DevChangeFailureRate.builder()
-				.avgDevChangeFailureRate(AvgDevChangeFailureRate.builder()
+			.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
+				.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
 					.name("Average")
 					.totalTimes(12)
 					.totalFailedTimes(0)
 					.failureRate(0.0F)
 					.build())
-				.devChangeFailureRateOfPipelines(List.of(
-						DevChangeFailureRateOfPipeline.builder()
+				.pipelineChangeFailureRateOfPipelines(List.of(
+						PipelineChangeFailureRateOfPipeline.builder()
 							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
 							.failedTimesOfPipeline(0)
 							.totalTimesOfPipeline(7)
 							.failureRate(0.0F)
 							.build(),
-						DevChangeFailureRateOfPipeline.builder()
+						PipelineChangeFailureRateOfPipeline.builder()
 							.name("Heartbeat")
 							.step(":mag: Check Frontend License")
 							.failedTimesOfPipeline(0)
@@ -119,16 +119,16 @@ public class MetricCsvFixture {
 							.failureRate(0.0F)
 							.build()))
 				.build())
-			.devMeanTimeToRecovery(DevMeanTimeToRecovery.builder()
-				.avgDevMeanTimeToRecovery(
-						AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
-				.devMeanTimeToRecoveryOfPipelines(List.of(
-						DevMeanTimeToRecoveryOfPipeline.builder()
+			.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
+				.avgPipelineMeanTimeToRecovery(
+						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+				.pipelineMeanTimeToRecoveryOfPipelines(List.of(
+						PipelineMeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
 							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
 							.build(),
-						DevMeanTimeToRecoveryOfPipeline.builder()
+						PipelineMeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
 							.name("Heartbeat")
 							.step(":mag: Check Frontend License")
@@ -177,14 +177,14 @@ public class MetricCsvFixture {
 					.dailyDeploymentCounts(List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
 					.build()))
 				.build())
-			.devChangeFailureRate(DevChangeFailureRate.builder()
-				.avgDevChangeFailureRate(AvgDevChangeFailureRate.builder()
+			.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
+				.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
 					.name("Average")
 					.totalTimes(12)
 					.totalFailedTimes(0)
 					.failureRate(0.0F)
 					.build())
-				.devChangeFailureRateOfPipelines(List.of(DevChangeFailureRateOfPipeline.builder()
+				.pipelineChangeFailureRateOfPipelines(List.of(PipelineChangeFailureRateOfPipeline.builder()
 					.name("Heartbeat")
 					.step(":rocket: Deploy prod")
 					.failedTimesOfPipeline(0)
@@ -192,10 +192,10 @@ public class MetricCsvFixture {
 					.failureRate(0.0F)
 					.build()))
 				.build())
-			.devMeanTimeToRecovery(DevMeanTimeToRecovery.builder()
-				.avgDevMeanTimeToRecovery(
-						AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
-				.devMeanTimeToRecoveryOfPipelines(List.of(DevMeanTimeToRecoveryOfPipeline.builder()
+			.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
+				.avgPipelineMeanTimeToRecovery(
+						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+				.pipelineMeanTimeToRecoveryOfPipelines(List.of(PipelineMeanTimeToRecoveryOfPipeline.builder()
 					.timeToRecovery(BigDecimal.valueOf(0))
 					.name("Heartbeat")
 					.step(":rocket: Deploy prod")

@@ -244,7 +244,7 @@ test('Import project from file with holiday', async ({ homePage, configStep, met
     totalLeadTime: DORA_METRICS_WITH_HOLIDAY_RESULT.TotalLeadTime,
     deploymentFrequency: DORA_METRICS_WITH_HOLIDAY_RESULT.DeploymentFrequency,
     failureRate: DORA_METRICS_WITH_HOLIDAY_RESULT.FailureRate,
-    devMeanTimeToRecovery: DORA_METRICS_WITH_HOLIDAY_RESULT.DevMeanTimeToRecovery,
+    pipelineMeanTimeToRecovery: DORA_METRICS_WITH_HOLIDAY_RESULT.DevMeanTimeToRecovery,
     deploymentTimes: DORA_METRICS_WITH_HOLIDAY_RESULT.DeploymentTimes,
   });
   await reportStep.checkDownloadWithHolidayReports();

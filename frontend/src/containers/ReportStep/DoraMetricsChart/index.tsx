@@ -42,8 +42,8 @@ interface DoraMetricsChartProps {
 enum DORAMetricsChartType {
   LeadTimeForChanges = 'leadTimeForChangesList',
   DeploymentFrequency = 'deploymentFrequencyList',
-  DevChangeFailureRate = 'devChangeFailureRateList',
-  DevMeanTimeToRecovery = 'devMeanTimeToRecoveryList',
+  PipelineChangeFailureRate = 'pipelineChangeFailureRateList',
+  PipelineMeanTimeToRecovery = 'pipelineMeanTimeToRecoveryList',
 }
 
 const AVERAGE = 'Average';
@@ -164,7 +164,7 @@ function extractedChangeFailureRateData(
   mappedData: ReportResponse[] | undefined,
   selectedPipeline: string,
 ) {
-  const data = mappedData?.map((item) => item.devChangeFailureRateList);
+  const data = mappedData?.map((item) => item.pipelineChangeFailureRateList);
   const value = data?.map((items) => {
     const averageItem = items?.find((item) =>
       selectedPipeline === DEFAULT_SELECTED_PIPELINE ? item.name === AVERAGE : item.name === selectedPipeline,
@@ -181,7 +181,7 @@ function extractedChangeFailureRateData(
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevChangeFailureRate);
   return {
-    legend: RequiredData.DevChangeFailureRate,
+    legend: RequiredData.PipelineChangeFailureRate,
     xAxis: allDateRanges,
     yAxis: {
       name: 'Failed/Total',
@@ -189,7 +189,7 @@ function extractedChangeFailureRateData(
       alignTick: false,
     },
     series: {
-      name: RequiredData.DevChangeFailureRate,
+      name: RequiredData.PipelineChangeFailureRate,
       type: 'line',
       data: value!,
       tooltip: {
@@ -206,7 +206,7 @@ function extractedMeanTimeToRecoveryDataData(
   mappedData: ReportResponse[] | undefined,
   selectedPipeline: string,
 ) {
-  const data = mappedData?.map((item) => item.devMeanTimeToRecoveryList);
+  const data = mappedData?.map((item) => item.pipelineMeanTimeToRecoveryList);
   const value = data?.map((items) => {
     const totalItem = items?.find((item) =>
       selectedPipeline === DEFAULT_SELECTED_PIPELINE ? item.name === TOTAL : item.name === selectedPipeline,
@@ -216,7 +216,7 @@ function extractedMeanTimeToRecoveryDataData(
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.DevMeanTimeToRecovery);
   return {
-    legend: RequiredData.DevMeanTimeToRecovery,
+    legend: RequiredData.PipelineMeanTimeToRecovery,
     xAxis: allDateRanges,
     yAxis: {
       name: 'Hours',
@@ -224,7 +224,7 @@ function extractedMeanTimeToRecoveryDataData(
       axisLabel: NO_LABEL,
     },
     series: {
-      name: RequiredData.DevMeanTimeToRecovery,
+      name: RequiredData.PipelineMeanTimeToRecovery,
       type: 'line',
       data: value!,
     },
@@ -245,8 +245,8 @@ function isDoraMetricsChartFinish({
     | ReportResponse
     | {
         deploymentFrequencyList: ChartValueSource[];
-        devChangeFailureRateList: ChartValueSource[];
-        devMeanTimeToRecoveryList: ChartValueSource[];
+        pipelineChangeFailureRateList: ChartValueSource[];
+        pipelineMeanTimeToRecoveryList: ChartValueSource[];
         exportValidityTimeMin: number;
         leadTimeForChangesList: ChartValueSource[];
       }
@@ -256,7 +256,7 @@ function isDoraMetricsChartFinish({
   const valueList = mappedData
     .flatMap((value) => value[type] as unknown as ChartValueSource[])
     .filter((value) =>
-      type === DORAMetricsChartType.DevMeanTimeToRecovery ? value?.name === TOTAL : value?.name === AVERAGE,
+      type === DORAMetricsChartType.PipelineMeanTimeToRecovery ? value?.name === TOTAL : value?.name === AVERAGE,
     )
     .map((value) => value?.valueList);
 
@@ -301,12 +301,12 @@ export const DoraMetricsChart = ({
   const isDevChangeFailureRateFinished: boolean = isDoraMetricsChartFinish({
     dateRangeLength,
     mappedData,
-    type: DORAMetricsChartType.DevChangeFailureRate,
+    type: DORAMetricsChartType.PipelineChangeFailureRate,
   });
   const isDevMeanTimeToRecoveryValueListFinished: boolean = isDoraMetricsChartFinish({
     dateRangeLength,
     mappedData,
-    type: DORAMetricsChartType.DevMeanTimeToRecovery,
+    type: DORAMetricsChartType.PipelineMeanTimeToRecovery,
   });
 
   const leadTimeForChangeData = extractedStackedBarData(dateRanges, mappedData, selectedPipeline);
@@ -359,14 +359,14 @@ export const DoraMetricsChart = ({
             isLoading={!isDeploymentFrequencyFinished}
           />
         )}
-        {metrics.includes(RequiredData.DevChangeFailureRate) && (
+        {metrics.includes(RequiredData.PipelineChangeFailureRate) && (
           <ChartAndTitleWrapper
             trendInfo={changeFailureRateData.trendInfo}
             ref={changeFailureRate}
             isLoading={!isDevChangeFailureRateFinished}
           />
         )}
-        {metrics.includes(RequiredData.DevMeanTimeToRecovery) && (
+        {metrics.includes(RequiredData.PipelineMeanTimeToRecovery) && (
           <ChartAndTitleWrapper
             trendInfo={meanTimeToRecoveryData.trendInfo}
             ref={meanTimeToRecovery}

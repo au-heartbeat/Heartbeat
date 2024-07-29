@@ -2,7 +2,7 @@ package heartbeat.service.report.calculator;
 
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
-import heartbeat.controller.report.dto.response.DevChangeFailureRate;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRate;
 import heartbeat.service.pipeline.buildkite.builder.DeployInfoBuilder;
 import heartbeat.service.pipeline.buildkite.builder.DeployTimesBuilder;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class CalculateDevChangeFailureRateTest {
+class CalculatePipelineChangeFailureRateTest {
 
 	private static final String JOB_FINISH_TIME_2022 = "2022-09-08T22:45:33.981Z";
 
@@ -30,39 +30,41 @@ class CalculateDevChangeFailureRateTest {
 	private static final String OTHER_JOB_NAME = "JobName";
 
 	@InjectMocks
-	private DevChangeFailureRateCalculator devChangeFailureRate;
+	private PipelineChangeFailureRateCalculator pipelineChangeFailureRate;
 
 	@Test
-	void testCalculateDevChangeFailureRate() {
+	void testCalculatePipelineChangeFailureRate() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
 			.withPassed(List.of(DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build(),
 					DeployInfoBuilder.withDefault().withJobFinishTime(JOB_FINISH_TIME_2023).build()))
 			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
 			.build();
 
-		DevChangeFailureRate devChangeFailureRate = this.devChangeFailureRate.calculate(List.of(mockedDeployTimes));
+		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRate
+			.calculate(List.of(mockedDeployTimes));
 
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getFailureRate()).isEqualTo(0.3333F);
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalFailedTimes()).isEqualTo(1);
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalTimes()).isEqualTo(3);
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getFailureRate()).isEqualTo(0.3333F);
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getTotalFailedTimes()).isEqualTo(1);
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getTotalTimes()).isEqualTo(3);
 	}
 
 	@Test
-	void testCalculateDevChangeFailureRateWhenTotalDeployInfosTimesIsZero() {
+	void testCalculatePipelineChangeFailureRateWhenTotalDeployInfosTimesIsZero() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
 			.withPassed(Collections.emptyList())
 			.withFailed(Collections.emptyList())
 			.build();
 
-		DevChangeFailureRate devChangeFailureRate = this.devChangeFailureRate.calculate(List.of(mockedDeployTimes));
+		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRate
+			.calculate(List.of(mockedDeployTimes));
 
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getFailureRate()).isEqualTo(0.0F);
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalFailedTimes()).isZero();
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalTimes()).isZero();
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getFailureRate()).isEqualTo(0.0F);
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getTotalFailedTimes()).isZero();
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getTotalTimes()).isZero();
 	}
 
 	@Test
-	void testCalculateDevChangeFailureRateWhenHavePassedDeployInfoWhoseJobNameIsNotEqualToPipelineStep() {
+	void testCalculatePipelineChangeFailureRateWhenHavePassedDeployInfoWhoseJobNameIsNotEqualToPipelineStep() {
 		DeployTimes mockedDeployTimes = DeployTimesBuilder.withDefault()
 			.withPassed(List.of(DeployInfoBuilder.withDefault()
 				.withJobName(OTHER_JOB_NAME)
@@ -71,11 +73,12 @@ class CalculateDevChangeFailureRateTest {
 			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
 			.build();
 
-		DevChangeFailureRate devChangeFailureRate = this.devChangeFailureRate.calculate(List.of(mockedDeployTimes));
+		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRate
+			.calculate(List.of(mockedDeployTimes));
 
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getFailureRate()).isEqualTo(0.5F);
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalFailedTimes()).isEqualTo(1);
-		assertThat(devChangeFailureRate.getAvgDevChangeFailureRate().getTotalTimes()).isEqualTo(2);
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getFailureRate()).isEqualTo(0.5F);
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getTotalFailedTimes()).isEqualTo(1);
+		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getTotalTimes()).isEqualTo(2);
 	}
 
 }

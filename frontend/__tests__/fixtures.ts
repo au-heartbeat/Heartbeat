@@ -75,8 +75,8 @@ export const REQUIRED_DATA_LIST = [
   'Rework times',
   'Lead time for changes',
   'Deployment frequency',
-  'Dev change failure rate',
-  'Dev mean time to recovery',
+  'Pipeline change failure rate',
+  'Pipeline mean time to recovery',
 ];
 export const ALL = 'All';
 export const VELOCITY = 'Velocity';
@@ -85,8 +85,8 @@ export const CLASSIFICATION = 'Classification';
 export const REWORK_TIMES = 'Rework times';
 export const LEAD_TIME_FOR_CHANGES = 'Lead time for changes';
 export const DEPLOYMENT_FREQUENCY = 'Deployment frequency';
-export const DEV_CHANGE_FAILURE_RATE = 'Dev change failure rate';
-export const DEV_MEAN_TIME_TO_RECOVERY = 'Dev mean time to recovery';
+export const PIPELINE_CHANGE_FAILURE_RATE = 'Pipeline change failure rate';
+export const PIPELINE_MEAN_TIME_TO_RECOVERY = 'Pipeline mean time to recovery';
 export const REQUIRED_DATA = 'Required metrics';
 export const TEST_PROJECT_NAME = 'test project Name';
 export const ERROR_MESSAGE_COLOR = 'color: #d32f2f';
@@ -474,12 +474,12 @@ export const MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION: ReportResponseDTO = {
     ],
     totalDeployTimes: 10,
   },
-  devMeanTimeToRecovery: {
-    avgDevMeanTimeToRecovery: {
+  pipelineMeanTimeToRecovery: {
+    avgPipelineMeanTimeToRecovery: {
       name: 'Total',
       timeToRecovery: NaN,
     },
-    devMeanTimeToRecoveryOfPipelines: [
+    pipelineMeanTimeToRecoveryOfPipelines: [
       {
         name: 'Heartbeat',
         step: ':react: Build Frontend',
@@ -528,14 +528,14 @@ export const MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION: ReportResponseDTO = {
       totalDelayTime: 5989.22,
     },
   },
-  devChangeFailureRate: {
-    avgDevChangeFailureRate: {
+  pipelineChangeFailureRate: {
+    avgPipelineChangeFailureRate: {
       name: 'Average',
       totalTimes: 6,
       totalFailedTimes: 0,
       failureRate: 0.0,
     },
-    devChangeFailureRateOfPipelines: [
+    pipelineChangeFailureRateOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
@@ -612,12 +612,12 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
     ],
     totalDeployTimes: 10,
   },
-  devMeanTimeToRecovery: {
-    avgDevMeanTimeToRecovery: {
+  pipelineMeanTimeToRecovery: {
+    avgPipelineMeanTimeToRecovery: {
       name: 'Total',
       timeToRecovery: 14396108.777777776,
     },
-    devMeanTimeToRecoveryOfPipelines: [
+    pipelineMeanTimeToRecoveryOfPipelines: [
       {
         name: 'Heartbeat',
         step: ':react: Build Frontend',
@@ -666,14 +666,14 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
       totalDelayTime: 5989.22,
     },
   },
-  devChangeFailureRate: {
-    avgDevChangeFailureRate: {
+  pipelineChangeFailureRate: {
+    avgPipelineChangeFailureRate: {
       name: 'Average',
       totalTimes: 6,
       totalFailedTimes: 0,
       failureRate: 0.0,
     },
-    devChangeFailureRateOfPipelines: [
+    pipelineChangeFailureRateOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
@@ -750,12 +750,12 @@ export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
     ],
     totalDeployTimes: 10,
   },
-  devMeanTimeToRecovery: {
-    avgDevMeanTimeToRecovery: {
+  pipelineMeanTimeToRecovery: {
+    avgPipelineMeanTimeToRecovery: {
       name: 'Total',
       timeToRecovery: 14396108.777777776,
     },
-    devMeanTimeToRecoveryOfPipelines: [
+    pipelineMeanTimeToRecoveryOfPipelines: [
       {
         name: 'mock pipeline name',
         step: 'mock step1',
@@ -794,14 +794,14 @@ export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
       totalDelayTime: 5989.22,
     },
   },
-  devChangeFailureRate: {
-    avgDevChangeFailureRate: {
+  pipelineChangeFailureRate: {
+    avgPipelineChangeFailureRate: {
       name: 'Average',
       totalTimes: 6,
       totalFailedTimes: 0,
       failureRate: 0.0,
     },
-    devChangeFailureRateOfPipelines: [
+    pipelineChangeFailureRateOfPipelines: [
       {
         name: 'mock pipeline name',
         step: 'mock step1',
@@ -844,8 +844,8 @@ export const EMPTY_REPORT_VALUES: ReportResponseDTO = {
   cycleTime: null,
   rework: null,
   deploymentFrequency: null,
-  devChangeFailureRate: null,
-  devMeanTimeToRecovery: null,
+  pipelineChangeFailureRate: null,
+  pipelineMeanTimeToRecovery: null,
   leadTimeForChanges: null,
   exportValidityTime: null,
   boardMetricsCompleted: false,
@@ -862,8 +862,8 @@ export const DORA_DATA_FAILED_REPORT_VALUES: ReportResponseDTO = {
   cycleTime: null,
   rework: null,
   deploymentFrequency: null,
-  devChangeFailureRate: null,
-  devMeanTimeToRecovery: null,
+  pipelineChangeFailureRate: null,
+  pipelineMeanTimeToRecovery: null,
   leadTimeForChanges: null,
   exportValidityTime: null,
   boardMetricsCompleted: true,
