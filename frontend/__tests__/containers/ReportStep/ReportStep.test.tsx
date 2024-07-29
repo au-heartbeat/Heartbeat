@@ -289,6 +289,8 @@ describe('Report Step', () => {
       setup(['']);
 
       const save = screen.getByText(SAVE);
+
+      expect(save).toBeInTheDocument();
       await userEvent.click(save);
 
       expect(handleSaveMock).toHaveBeenCalledTimes(1);
