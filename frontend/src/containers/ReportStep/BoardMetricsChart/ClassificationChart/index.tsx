@@ -174,14 +174,14 @@ function extractClassificationCardCountsBarData(classification: string, mappedDa
     },
     yAxis: [
       {
-        name: '',
+        name: 'Value/Total cards',
         alignTick: false,
         axisLabel: LABEL_PERCENT,
       },
     ],
     series: [
       {
-        name: 'reverse',
+        name: classification,
         type: 'bar',
         data: indicators,
         yAxisIndex: 0,
