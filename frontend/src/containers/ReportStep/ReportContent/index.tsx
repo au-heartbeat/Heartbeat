@@ -374,7 +374,7 @@ const ReportContent = (props: ReportContentProps) => {
 
   const handleBack = () => {
     setDisplayType(DISPLAY_TYPE.CHART);
-    isSummaryPage || metricsOnlySelectClassification ? dispatch(backStep()) : backToSummaryPage();
+    isChartPage || metricsOnlySelectClassification ? dispatch(backStep()) : setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
   };
 
   const backToSummaryPage = () => {
