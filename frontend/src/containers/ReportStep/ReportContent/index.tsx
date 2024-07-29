@@ -43,6 +43,7 @@ import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { backStep } from '@src/context/stepper/StepperSlice';
 import { ReportButtonGroup } from '../../ReportButtonGroup';
 import React, { useEffect, useMemo, useState } from 'react';
+import { REAL_DONE } from '../../../../__tests__/fixtures';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from '../ReportDetail';
 import { BoardMetricsChart } from '../BoardMetricsChart';
@@ -117,7 +118,6 @@ const ReportContent = (props: ReportContentProps) => {
     closeSourceControlMetricsError,
   } = useGenerateReportEffect();
 
-  const [pageType, setPageType] = useState<string>(REPORT_PAGE_TYPE.SUMMARY);
   const [notifications4SummaryPage, setNotifications4SummaryPage] = useState<Omit<Notification, 'id'>[]>([]);
   const [errorNotificationIds, setErrorNotificationIds] = useState<string[]>([]);
   const [selectedPipeline, setSelectedPipeline] = useState<string>(DEFAULT_SELECTED_PIPELINE);
@@ -142,8 +142,15 @@ const ReportContent = (props: ReportContentProps) => {
     !selectBoardMetricsWithoutClassification && !selectDora && selectBoardOnlyClassification;
   const shouldShowTabs = allDateRanges.length > 1;
 
+  const [displayType, setDisplayType] = useState(shouldShowTabs ? DISPLAY_TYPE.CHART : DISPLAY_TYPE.LIST);
   const [chartIndex, setChartIndex] = useState(shouldShowBoardMetricsChart ? CHART_INDEX.BOARD : CHART_INDEX.DORA);
-  const [displayType, setDisplayType] = useState(DISPLAY_TYPE.LIST);
+  const [pageType, setPageType] = useState<string>(
+    shouldShowTabs
+      ? shouldShowBoardMetricsChart
+        ? REPORT_PAGE_TYPE.BOARD_CHART
+        : REPORT_PAGE_TYPE.DORA_CHART
+      : REPORT_PAGE_TYPE.SUMMARY,
+  );
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
   const isChartPage = useMemo(
     () => pageType === REPORT_PAGE_TYPE.DORA_CHART || pageType === REPORT_PAGE_TYPE.BOARD_CHART,
@@ -266,11 +273,6 @@ const ReportContent = (props: ReportContentProps) => {
     currentDataInfo.generalError4Report,
   ]);
 
-  useEffect(() => {
-    setPageType(metricsOnlySelectClassification ? REPORT_PAGE_TYPE.BOARD : REPORT_PAGE_TYPE.SUMMARY);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const showSummary = () => (
     <Box>
       {shouldShowBoardMetrics && (
@@ -302,25 +304,25 @@ const ReportContent = (props: ReportContentProps) => {
   const showTabs = () => (
     <StyledTabs value={displayType} onChange={handleClick} aria-label='display types'>
       <StyledTab
-        aria-label='display list tab'
+        aria-label='display chart tab'
         sx={{
           borderRight: 'none',
           borderRadius: '0.16rem 0 0 0.16rem',
-        }}
-        icon={<FormatListBulletedIcon />}
-        iconPosition='start'
-        label='List'
-      />
-      <StyledTab
-        aria-label='display chart tab'
-        sx={{
-          borderLeft: 'none',
-          borderRadius: '0 0.16rem 0.16rem 0',
         }}
         icon={<BarChartIcon />}
         iconPosition='start'
         label='Chart'
         disabled={metricsOnlySelectClassification && !selectClassificationCharts}
+      />
+      <StyledTab
+        aria-label='display list tab'
+        sx={{
+          borderLeft: 'none',
+          borderRadius: '0 0.16rem 0.16rem 0',
+        }}
+        icon={<FormatListBulletedIcon />}
+        iconPosition='start'
+        label='List'
       />
     </StyledTabs>
   );
@@ -371,7 +373,7 @@ const ReportContent = (props: ReportContentProps) => {
   );
 
   const handleBack = () => {
-    setDisplayType(DISPLAY_TYPE.LIST);
+    setDisplayType(DISPLAY_TYPE.CHART);
     isSummaryPage || metricsOnlySelectClassification ? dispatch(backStep()) : backToSummaryPage();
   };
 

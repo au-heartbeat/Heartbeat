@@ -16,8 +16,8 @@ export const CHART_INDEX = {
 };
 
 export const DISPLAY_TYPE = {
-  LIST: 0,
-  CHART: 1,
+  LIST: 1,
+  CHART: 0,
 };
 
 export const EMPTY_STRING = '';
