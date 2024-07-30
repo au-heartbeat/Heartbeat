@@ -1,6 +1,7 @@
 import {
   DefinitionTitle,
-  StyledDialogMain,
+  StyledDialogLi,
+  StyledDialogUl,
 } from '@src/components/Common/ReportGrid/ReportCard/DoraMetricsDialog/style';
 import {
   StyledDialogContainer,
@@ -44,35 +45,36 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
         >
           <DefinitionTitle>{title}</DefinitionTitle>
           <div>insight: {DORA_METRICS_EXPLAINATION[title.toLowerCase()].insight}</div>
-          <StyledDialogMain aria-label={'definition'}>
-            <span>1. Definitions: </span> {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.definition}
-            {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.details.map((it, index) => (
-              <div key={`definitions-${it}`}>
-                1.{index + 1} {it}
-              </div>
-            ))}
-          </StyledDialogMain>
-
-          <StyledDialogMain aria-label={'influenced factors'}>
-            <span>2. Influenced factors: </span>
-            {DORA_METRICS_EXPLAINATION[title.toLowerCase()]['influenced factors'].details.map((it, index) => (
-              <div key={`influenced factors-${it}`}>
-                2.{index + 1} {it}
-              </div>
-            ))}
-          </StyledDialogMain>
-          <StyledDialogMain aria-label={'formula'}>
-            <a
-              href={
-                'https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file#' +
-                TITLE_FORMULA_MAPPING[title.toLowerCase()]
-              }
-              target={'_blank'}
-              rel='noreferrer'
-            >
-              3. Formula
-            </a>
-          </StyledDialogMain>
+          <StyledDialogUl>
+            <StyledDialogLi aria-label={'definition'}>
+              <span>Definitions: </span> {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.definition}
+              <ul>
+                {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.details.map((it) => (
+                  <li key={`definitions-${it}`}>{it}</li>
+                ))}
+              </ul>
+            </StyledDialogLi>
+            <StyledDialogLi aria-label={'influenced factors'}>
+              <span>Influenced factors: </span>
+              <ul>
+                {DORA_METRICS_EXPLAINATION[title.toLowerCase()]['influenced factors'].details.map((it) => (
+                  <li key={`influenced factors-${it}`}>{it}</li>
+                ))}
+              </ul>
+            </StyledDialogLi>
+            <StyledDialogLi aria-label={'formula'}>
+              <a
+                href={
+                  'https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file#' +
+                  TITLE_FORMULA_MAPPING[title.toLowerCase()]
+                }
+                target={'_blank'}
+                rel='noreferrer'
+              >
+                <span>Formula</span>
+              </a>
+            </StyledDialogLi>
+          </StyledDialogUl>
         </DialogContent>
       </StyledDialogContainer>
     </Dialog>

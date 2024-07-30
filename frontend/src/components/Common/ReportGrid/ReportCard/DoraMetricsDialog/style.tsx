@@ -6,11 +6,17 @@ export const DefinitionTitle = styled('div')({
   lineHeight: '2.5rem',
 });
 
-export const StyledDialogMain = styled('div')({
-  margin: '2rem 0 0 1rem',
+export const StyledDialogUl = styled('ul')({
   lineHeight: '1.5rem',
   '& span': {
     fontWeight: 1000,
     fontSize: '1.25rem',
+  },
+});
+
+export const StyledDialogLi = styled('li')({
+  margin: '2rem 0 0 1rem',
+  '& ul': {
+    margin: '0 1rem',
   },
 });
