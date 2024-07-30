@@ -47,7 +47,7 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
           <StyledDialogMain aria-label={'definition'}>
             <span>1. Definitions: </span> {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.definition}
             {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.details.map((it, index) => (
-              <div key={`definitions-${index}`}>
+              <div key={`definitions-${it}`}>
                 1.{index + 1} {it}
               </div>
             ))}
@@ -56,7 +56,7 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
           <StyledDialogMain aria-label={'influenced factors'}>
             <span>2. Influenced factors: </span>
             {DORA_METRICS_EXPLAINATION[title.toLowerCase()]['influenced factors'].details.map((it, index) => (
-              <div key={`influenced factors-${index}`}>
+              <div key={`influenced factors-${it}`}>
                 2.{index + 1} {it}
               </div>
             ))}
