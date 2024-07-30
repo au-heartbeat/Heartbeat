@@ -42,8 +42,8 @@
     - [3.4.4 Rework](#344-rework)
     - [3.4.5 Deployment Frequency](#345-deployment-frequency)
     - [3.4.6 Lead time for changes Data](#346-lead-time-for-changes-data)
-    - [3.4.7 Dev Change Failure Rate](#347-dev-change-failure-rate)
-    - [3.4.8 Dev Mean time to recovery](#348-dev-mean-time-to-recovery)
+    - [3.4.7 Pipeline Change Failure Rate](#347-pipeline-change-failure-rate)
+    - [3.4.8 Pipeline Mean time to recovery](#348-pipeline-mean-time-to-recovery)
   - [3.5 Export original data](#35-export-original-data)
     - [3.5.1 Export board data](#351-export-board-data)
       - [3.5.1.1 Done card exporting](#3511-done-card-exporting)
@@ -103,8 +103,8 @@ State of DevOps Report is launching in 2019. In this webinar, The 4 key metrics 
 4.  [Rework](#344-rework)
 5.  [Deployment Frequency](#345-deployment-frequency) 
 6.  [Lead Time for changes](#346-lead-time-for-changes-data)
-7.  [Dev Change Failure Rate](#347-dev-change-failure-rate)
-8.  [Dev Mean Time To Recovery](#348-dev-mean-time-to-recovery)
+7.  [Pipeline Change Failure Rate](#347-pipeline-change-failure-rate)
+8.  [Pipeline Mean Time To Recovery](#348-pipeline-mean-time-to-recovery)
 
 
 # 2 Support tools
@@ -163,16 +163,16 @@ Because all metrics data from different tools that your projects use. Need to ha
 
 According to your selected required data, you need to input account settings for the respective data source. Below is the mapping between your selected data to data source.
 
-| Required Data             | Datasource     |
-|---------------------------| -------------- |
-| Velocity                  | Board          |
-| Cycle time                | Board          |
-| Classification            | Board          |
-| Rework times              | Board          |
-| Lead time for changes     | Repo，Pipeline |
-| Deployment frequency      | Pipeline       |
-| Dev change failure rate   | Pipeline       |
-| Dev mean time to recovery | Pipeline       |
+| Required Data                | Datasource     |
+|------------------------------| -------------- |
+| Velocity                     | Board          |
+| Cycle time                   | Board          |
+| Classification               | Board          |
+| Rework times                 | Board          |
+| Lead time for changes        | Repo，Pipeline |
+| Deployment frequency         | Pipeline       |
+| Pipeline change failure rate | Pipeline       |
+| Pipeline mean time to recovery    | Pipeline       |
 
 ![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4-1.png)\
 Image 3-4，Project config
@@ -338,10 +338,15 @@ Users can switch dates to view the dashboard for the corresponding time period. 
 
 #### List view
 
-![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-0-1.png)
+![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/report-page.png)
 _Image 3-22, Report page_
 
 You could find the drill down from `show more >` link from dashboard.
+
+You can click the help button next to each dora metric to open the dialog to see the explanation.
+![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/dora-metrics-explanation-dialog.png)
+
+You can click the `Formula` link to go to the readme to see the more information.
 
 #### chart view
 In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.  
@@ -480,32 +485,30 @@ _Image 3-28，Deployment Frequency Report_
   - if PR exist: `Pipeline lead time` = `Job Complete Time` - `PR merged time`
   - if no PR: `Pipeline lead time` = `Job Complete Time` - `Job Start Time`
 
-
-
 ![Image 3-29](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/13.png)\
 _Image 3-29，Lead time for changes Report_
 
-### 3.4.7 Dev Change Failure Rate
-- Definition for ‘Dev Change Failure Rate': this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on pipeline，which is the percentage of failed pipeline builds in the total pipeline builds
+### 3.4.7 Pipeline Change Failure Rate
+- Definition for ‘Pipeline Change Failure Rate': this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on pipeline，which is the percentage of failed pipeline builds in the total pipeline builds
   - Factors
     - Added pipelines
     - Selected pipeline steps
     - Selected Github branch for pipeline
     - Selected pipeline crews
-- Formula for `Dev Change Failure Rate` : `the number of build for (Status = failed)`/`the number of build for [（Status = passed & Valid = true）`+ `the number of build for (status=failed)]`
+- Formula for `Pipeline Change Failure Rate` : `the number of build for (Status = failed)`/`the number of build for [（Status = passed & Valid = true）`+ `the number of build for (status=failed)]`
 
 ![Image 3-30](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/14.png)\
-_Image 3-30，Dev Change Failure Rate Report_
+_Image 3-30，Pipeline Change Failure Rate Report_
 
-### 3.4.8 Dev Mean time to recovery
-- Definition for ‘Dev Mean time to recovery': this metrics is also different from the official definition of Mean time to recovery. This metrics comes from pipeline, and it records how long it generally takes to restore a pipeline when pipeline failed.
+### 3.4.8 Pipeline Mean time to recovery
+- Definition for ‘Pipeline Mean time to recovery': this metrics is also different from the official definition of Mean time to recovery. This metrics comes from pipeline, and it records how long it generally takes to restore a pipeline when pipeline failed.
   - Factors
     - Collection date type (exclude weekend & holidays)
     - Added pipelines
     - Selected pipeline steps
     - Selected Github branch for pipeline
     - Selected pipeline crews
-- Formula for ‘Dev Mean time to recovery': `sum[the time difference between the first build fail and the last pass]`/ `the number of repairs`
+- Formula for ‘Pipeline Mean time to recovery': `sum[the time difference between the first build fail and the last pass]`/ `the number of repairs`
 
 ![Image 3-31](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15.png)\
 _Image 3-31，mean time to recovery 
