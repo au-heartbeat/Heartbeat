@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 export const DefinitionTitle = styled('div')({
-  fontWeight: 1000,
+  fontWeight: 'bolder',
   fontSize: '1.25rem',
   lineHeight: '2.5rem',
 });
@@ -9,7 +9,7 @@ export const DefinitionTitle = styled('div')({
 export const StyledDialogUl = styled('ul')({
   lineHeight: '1.5rem',
   '& span': {
-    fontWeight: 1000,
+    fontWeight: 'bolder',
     fontSize: '1.25rem',
   },
 });
