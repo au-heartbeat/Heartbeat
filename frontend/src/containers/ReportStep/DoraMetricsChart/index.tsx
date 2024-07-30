@@ -37,6 +37,7 @@ interface DoraMetricsChartProps {
   allPipelines: string[];
   selectedPipeline: string;
   onUpdatePipeline: (value: string) => void;
+  allDateRangeLoadingFinished: boolean;
 }
 
 enum DORAMetricsChartType {
@@ -272,6 +273,7 @@ export const DoraMetricsChart = ({
   selectedPipeline,
   onUpdatePipeline,
   allPipelines,
+  allDateRangeLoadingFinished,
 }: DoraMetricsChartProps) => {
   const leadTimeForChange = useRef<HTMLDivElement>(null);
   const deploymentFrequency = useRef<HTMLDivElement>(null);
@@ -349,28 +351,28 @@ export const DoraMetricsChart = ({
           <ChartAndTitleWrapper
             trendInfo={leadTimeForChangeData.trendInfo}
             ref={leadTimeForChange}
-            isLoading={!isLeadTimeForChangesFinished}
+            isLoading={!isLeadTimeForChangesFinished && !allDateRangeLoadingFinished}
           />
         )}
         {metrics.includes(RequiredData.DeploymentFrequency) && (
           <ChartAndTitleWrapper
             trendInfo={deploymentFrequencyData.trendInfo}
             ref={deploymentFrequency}
-            isLoading={!isDeploymentFrequencyFinished}
+            isLoading={!isDeploymentFrequencyFinished && !allDateRangeLoadingFinished}
           />
         )}
         {metrics.includes(RequiredData.PipelineChangeFailureRate) && (
           <ChartAndTitleWrapper
             trendInfo={changeFailureRateData.trendInfo}
             ref={changeFailureRate}
-            isLoading={!isDevChangeFailureRateFinished}
+            isLoading={!isDevChangeFailureRateFinished && !allDateRangeLoadingFinished}
           />
         )}
         {metrics.includes(RequiredData.PipelineMeanTimeToRecovery) && (
           <ChartAndTitleWrapper
             trendInfo={meanTimeToRecoveryData.trendInfo}
             ref={meanTimeToRecovery}
-            isLoading={!isDevMeanTimeToRecoveryValueListFinished}
+            isLoading={!isDevMeanTimeToRecoveryValueListFinished && !allDateRangeLoadingFinished}
           />
         )}
       </ChartContainer>

@@ -13,8 +13,16 @@ const getProjectName = () => {
 };
 
 const ShareReport = () => {
-  const { getData, reportInfos, dateRanges, metrics, isExpired, allPipelines, classificationNames } =
-    useShareReportEffect();
+  const {
+    getData,
+    reportInfos,
+    dateRanges,
+    metrics,
+    isExpired,
+    allPipelines,
+    classificationNames,
+    allDateRangeLoadingFinished,
+  } = useShareReportEffect();
   const projectName = getProjectName();
 
   useEffect(() => {
@@ -43,6 +51,7 @@ const ShareReport = () => {
           startToRequestData={getData}
           projectName={projectName}
           hideButtons
+          allDateRangeLoadingFinished={allDateRangeLoadingFinished}
         />
       </StyledPageContentWrapper>
     );

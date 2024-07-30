@@ -43,7 +43,6 @@ import DoraMetrics from '@src/containers/ReportStep/DoraMetrics';
 import { backStep } from '@src/context/stepper/StepperSlice';
 import { ReportButtonGroup } from '../../ReportButtonGroup';
 import React, { useEffect, useMemo, useState } from 'react';
-import { REAL_DONE } from '../../../../__tests__/fixtures';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { BoardDetail, DoraDetail } from '../ReportDetail';
 import { BoardMetricsChart } from '../BoardMetricsChart';
@@ -64,6 +63,7 @@ export interface ReportContentProps {
   hideButtons?: boolean;
   isSharePage: boolean;
   projectName: string;
+  allDateRangeLoadingFinished: boolean;
 }
 
 const timeoutNotificationMessages = {
@@ -91,7 +91,10 @@ const ReportContent = (props: ReportContentProps) => {
     isSharePage,
     classificationNames,
     projectName,
+    allDateRangeLoadingFinished,
   } = props;
+
+  console.log(reportInfos);
 
   const dispatch = useAppDispatch();
 
@@ -347,6 +350,7 @@ const ReportContent = (props: ReportContentProps) => {
       allPipelines={allPipelines}
       selectedPipeline={selectedPipeline}
       onUpdatePipeline={setSelectedPipeline}
+      allDateRangeLoadingFinished={allDateRangeLoadingFinished}
     />
   );
 
@@ -356,6 +360,7 @@ const ReportContent = (props: ReportContentProps) => {
       dateRanges={allDateRanges}
       metrics={metrics}
       classificationCharts={classificationNames}
+      allDateRangeLoadingFinished={allDateRangeLoadingFinished}
     />
   );
 

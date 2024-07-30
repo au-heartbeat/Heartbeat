@@ -1,11 +1,11 @@
+import { selectReportPageFailedTimeRangeInfos, updateReportPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { IReportError, IReportInfo, assembleReportData, getErrorKey, initReportInfo } from './useGenerateReportEffect';
+import { getReportPageLoadingStatusWhenPolling, getTotalDateRangeLoadingStatus } from '../utils/report';
 import { FULFILLED, DATA_LOADING_FAILED, DATE_RANGE_FORMAT } from '../constants/resources';
-import { updateReportPageLoadingStatus } from '@src/context/stepper/StepperSlice';
-import { getReportPageLoadingStatusWhenPolling } from '../utils/report';
+import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
 import { ReportResponseDTO } from '../clients/report/dto/response';
 import { reportClient } from '../clients/report/ReportClient';
 import { formatDateToTimestampString } from '../utils/util';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { DateRange } from '../context/config/configSlice';
 import { NotFoundError } from '../errors/NotFoundError';
 import { MetricTypes } from '../constants/commons';
@@ -23,6 +23,10 @@ export const useShareReportEffect = () => {
   const [classificationNames, setClassificationNames] = useState<string[]>([]);
   const [allPipelines, setAllPipelines] = useState<string[]>([]);
   const [isExpired, setIsExpired] = useState<boolean>(false);
+
+  const reportPageTimeRangeLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
+  const allDateRangeLoadingFinished = !getTotalDateRangeLoadingStatus(dateRanges, reportPageTimeRangeLoadingStatus)
+    .isLoading;
 
   const getData = async () => {
     try {
@@ -121,5 +125,6 @@ export const useShareReportEffect = () => {
     isExpired,
     getData,
     allPipelines,
+    allDateRangeLoadingFinished,
   };
 };
