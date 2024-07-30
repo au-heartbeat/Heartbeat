@@ -1,10 +1,14 @@
 import {
+  getReportPageLoadingStatusWhenGainPollingUrls,
+  getReportPageLoadingStatusWhenGenerateReportIdFailed,
+  getReportPageLoadingStatusWhenPolling,
+} from '../utils/report';
+import {
   IPageLoadingStatusPayload,
   IReportPageLoadingStatus,
   updateReportId,
   updateReportPageLoadingStatus,
 } from '@src/context/stepper/StepperSlice';
-import { getReportPageLoadingStatusWhenGainPollingUrls, getReportPageLoadingStatusWhenPolling } from '../utils/report';
 import { ReportCallbackResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
 import { DATA_LOADING_FAILED, DEFAULT_MESSAGE } from '@src/constants/resources';
@@ -117,13 +121,32 @@ export const useGenerateReportEffect = (): IUseGenerateReportEffect => {
     resetReportPageLoadingStatus(dateRangeList);
 
     if (!reportId) {
-      const reportIdRes = await reportClient.generateReportId();
-      setReportId(reportIdRes.reportId);
-      dispatch(updateReportId(reportIdRes.reportId));
-      await retrieveUrlAndPolling(params, reportIdRes.reportId);
+      try {
+        const reportIdRes = await reportClient.generateReportId();
+        setReportId(reportIdRes.reportId);
+        dispatch(updateReportId(reportIdRes.reportId));
+        await retrieveUrlAndPolling(params, reportIdRes.reportId);
+      } catch (error) {
+        updateErrorWhenGenerateReportIdFailed(metricTypes, error as Error);
+      }
     } else {
       await retrieveUrlAndPolling(params, reportId);
     }
+  };
+
+  const updateErrorWhenGenerateReportIdFailed = (metricTypes: MetricTypes[], error: Error) => {
+    dispatch(updateReportPageLoadingStatus(getReportPageLoadingStatusWhenGenerateReportIdFailed(dateRangeList)));
+
+    const source: MetricTypes = metricTypes.length === 2 ? MetricTypes.All : metricTypes[0];
+    const errorKey = getErrorKey(error, source) as keyof IReportError;
+    setReportInfos((preReportInfos: IReportInfo[]) => {
+      return preReportInfos.map((reportInfo) => {
+        return {
+          ...reportInfo,
+          [errorKey]: { message: DATA_LOADING_FAILED, shouldShow: true },
+        };
+      });
+    });
   };
 
   const retrieveUrlAndPolling = async (params: ReportRequestDTO, reportId: string) => {

@@ -40,6 +40,26 @@ export const getReportPageLoadingStatusWhenPolling = (dates: string[]) => {
   return pageLoadingStatus;
 };
 
+export const getReportPageLoadingStatusWhenGenerateReportIdFailed = (dateRangeList: DateRangeList) => {
+  const notLoadingStatus = {
+    isLoading: false,
+    isLoaded: false,
+    isLoadedWithError: false,
+  };
+  const pageLoadingStatus = dateRangeList.map(({ startDate }) => ({
+    startDate: formatDateToTimestampString(startDate!),
+    loadingStatus: {
+      gainPollingUrl: { isLoading: false, isLoaded: true, isLoadedWithError: true },
+      polling: { ...notLoadingStatus },
+      boardMetrics: { ...notLoadingStatus },
+      pipelineMetrics: { ...notLoadingStatus },
+      sourceControlMetrics: { ...notLoadingStatus },
+    },
+  }));
+
+  return pageLoadingStatus;
+};
+
 export const getDateRangeLoadingStatus = (
   startDate: string,
   pageLoadingStatus: Record<string, IMetricsPageLoadingStatus> | Record<string, IReportPageLoadingStatus>,
