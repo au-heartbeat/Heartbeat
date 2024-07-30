@@ -36,7 +36,7 @@ public class PipelineMeanToRecoveryCalculator {
 		}
 		List<PipelineMeanTimeToRecoveryOfPipeline> pipelineMeanTimeToRecoveryOfPipelines = deployTimes.stream()
 			.map(it -> convertToDevMeanTimeToRecoveryOfPipeline(it, request))
-			.collect(Collectors.toList());
+			.toList();
 
 		BigDecimal avgDevMeanTimeToRecovery = pipelineMeanTimeToRecoveryOfPipelines.stream()
 			.map(PipelineMeanTimeToRecoveryOfPipeline::getTimeToRecovery)

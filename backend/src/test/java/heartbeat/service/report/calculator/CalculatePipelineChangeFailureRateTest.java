@@ -30,7 +30,7 @@ class CalculatePipelineChangeFailureRateTest {
 	private static final String OTHER_JOB_NAME = "JobName";
 
 	@InjectMocks
-	private PipelineChangeFailureRateCalculator pipelineChangeFailureRate;
+	private PipelineChangeFailureRateCalculator pipelineChangeFailureRateCalculator;
 
 	@Test
 	void testCalculatePipelineChangeFailureRate() {
@@ -40,7 +40,7 @@ class CalculatePipelineChangeFailureRateTest {
 			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
 			.build();
 
-		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRate
+		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRateCalculator
 			.calculate(List.of(mockedDeployTimes));
 
 		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getFailureRate()).isEqualTo(0.3333F);
@@ -55,7 +55,7 @@ class CalculatePipelineChangeFailureRateTest {
 			.withFailed(Collections.emptyList())
 			.build();
 
-		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRate
+		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRateCalculator
 			.calculate(List.of(mockedDeployTimes));
 
 		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getFailureRate()).isEqualTo(0.0F);
@@ -73,7 +73,7 @@ class CalculatePipelineChangeFailureRateTest {
 			.withFailed(List.of(DeployInfo.builder().jobFinishTime(JOB_FINISH_TIME_2022).state(FAILED_STATE).build()))
 			.build();
 
-		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRate
+		PipelineChangeFailureRate pipelineChangeFailureRate = this.pipelineChangeFailureRateCalculator
 			.calculate(List.of(mockedDeployTimes));
 
 		assertThat(pipelineChangeFailureRate.getAvgPipelineChangeFailureRate().getFailureRate()).isEqualTo(0.5F);
