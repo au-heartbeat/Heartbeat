@@ -112,6 +112,18 @@ export class ReportStep {
   readonly classificationIssueTypeChartSwitchIcon: Locator;
   readonly classificationAssigneeChartSwitchIcon: Locator;
 
+  readonly leadTimeForChangesExplanationIcon: Locator;
+  readonly deploymentFrequencyExplanationIcon: Locator;
+  readonly pipelineChangeFailureRateExplanationIcon: Locator;
+  readonly pipelineMeanTimeToRecoveryExplanationIcon: Locator;
+
+  readonly doraMetricsDialog: Locator;
+  readonly doraMetricsDialogContainer: Locator;
+  readonly doraMetricsDialogClose: Locator;
+  readonly doraMetricsDialogDefinition: Locator;
+  readonly doraMetricsDialogInfluencedFactors: Locator;
+  readonly doraMetricsDialogFormula: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.pageHeader = this.page.locator('[data-test-id="Header"]');
@@ -213,6 +225,18 @@ export class ReportStep {
     this.deploymentFrequencyTrendIcon = this.deploymentFrequencyTrendContainer.getByLabel('trend down');
     this.pipelineChangeFailureRateTrendIcon = this.pipelineChangeFailureRateTrendContainer.getByLabel('trend down');
     this.pipelineMeanTimeToRecoveryTrendIcon = this.pipelineMeanTimeToRecoveryTrendContainer.getByLabel('trend down');
+
+    this.leadTimeForChangesExplanationIcon = this.page.getByLabel('lead time for changes explanation');
+    this.deploymentFrequencyExplanationIcon = this.page.getByLabel('deployment frequency explanation');
+    this.pipelineChangeFailureRateExplanationIcon = this.page.getByLabel('pipeline change failure rate explanation');
+    this.pipelineMeanTimeToRecoveryExplanationIcon = this.page.getByLabel('pipeline mean time to recovery explanation');
+
+    this.doraMetricsDialog = this.page.getByLabel('dora metrics dialog').nth(0);
+    this.doraMetricsDialogContainer = this.doraMetricsDialog.getByLabel('dora metrics dialog container');
+    this.doraMetricsDialogClose = this.doraMetricsDialog.getByLabel('close');
+    this.doraMetricsDialogDefinition = this.doraMetricsDialog.getByLabel('definition');
+    this.doraMetricsDialogInfluencedFactors = this.doraMetricsDialog.getByLabel('influenced factors');
+    this.doraMetricsDialogFormula = this.doraMetricsDialog.getByLabel('formula');
   }
   combineStrings(arr: string[]): string {
     return arr.join('');
@@ -1006,5 +1030,55 @@ export class ReportStep {
         showPipelineMeanTimeToRecoveryChart: showDevMeanTimeToRecoveryChart,
       });
     }
+  }
+
+  async checkExplanation() {
+    await expect(this.leadTimeForChangesExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.leadTimeForChangesExplanationIcon);
+
+    await expect(this.deploymentFrequencyExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.deploymentFrequencyExplanationIcon);
+
+    await expect(this.pipelineChangeFailureRateExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.pipelineChangeFailureRateExplanationIcon);
+
+    await expect(this.pipelineMeanTimeToRecoveryExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.pipelineMeanTimeToRecoveryExplanationIcon);
+  }
+
+  async clickExplanationAndCheckDialog(explanationIcon: Locator) {
+    await expect(this.doraMetricsDialog).not.toBeVisible();
+    await expect(this.doraMetricsDialogContainer).not.toBeVisible();
+    await expect(this.doraMetricsDialogClose).not.toBeVisible();
+    await expect(this.doraMetricsDialogDefinition).not.toBeVisible();
+    await expect(this.doraMetricsDialogInfluencedFactors).not.toBeVisible();
+    await expect(this.doraMetricsDialogFormula).not.toBeVisible();
+
+    await explanationIcon.click();
+
+    await expect(this.doraMetricsDialog).toBeVisible();
+    await expect(this.doraMetricsDialogContainer).toBeVisible();
+    await expect(this.doraMetricsDialogClose).toBeVisible();
+    await expect(this.doraMetricsDialogDefinition).toBeVisible();
+    await expect(this.doraMetricsDialogInfluencedFactors).toBeVisible();
+    await expect(this.doraMetricsDialogFormula).toBeVisible();
+
+    await this.doraMetricsDialogFormula.locator('a').click();
+
+    const newPage = await this.page.waitForEvent('popup');
+    const newPageUrl = newPage.url();
+
+    expect(newPageUrl).toContain('https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file'); // Check if the new page URL contains a specific string
+
+    await newPage.close();
+
+    await this.doraMetricsDialogClose.click();
+
+    await expect(this.doraMetricsDialog).not.toBeVisible();
+    await expect(this.doraMetricsDialogContainer).not.toBeVisible();
+    await expect(this.doraMetricsDialogClose).not.toBeVisible();
+    await expect(this.doraMetricsDialogDefinition).not.toBeVisible();
+    await expect(this.doraMetricsDialogInfluencedFactors).not.toBeVisible();
+    await expect(this.doraMetricsDialogFormula).not.toBeVisible();
   }
 }

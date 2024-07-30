@@ -1,4 +1,5 @@
 import { Divider } from '@src/components/Common/MetricsSettingTitle/style';
+import { Z_INDEX } from '@src/constants/commons';
 import { styled } from '@mui/material/styles';
 import { Link } from '@mui/material';
 import { theme } from '@src/theme';
@@ -55,6 +56,7 @@ export const StyledLink = styled(Link)({
   gap: '0.25rem',
   textDecoration: 'none',
   cursor: 'pointer',
+  zIndex: Z_INDEX.MODAL_BACKDROP,
 });
 
 export const StyledAlertWrapper = styled('div')({

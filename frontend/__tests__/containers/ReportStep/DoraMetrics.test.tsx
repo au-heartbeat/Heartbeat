@@ -58,4 +58,30 @@ describe('Report Card', () => {
 
     expect(mockHandleRetry).toHaveBeenCalled();
   });
+
+  it('should show explanation button and show the dialog when click explanation icon', async () => {
+    setup();
+
+    const leadTimeForChangesExplanationIcon = screen.queryByLabelText('lead time for changes explanation');
+    expect(leadTimeForChangesExplanationIcon).toBeInTheDocument();
+    expect(screen.queryByLabelText('deployment frequency explanation')).toBeInTheDocument();
+    expect(screen.queryByLabelText('pipeline change failure rate explanation')).toBeInTheDocument();
+    expect(screen.queryByLabelText('pipeline mean time to recovery explanation')).toBeInTheDocument();
+
+    await userEvent.click(leadTimeForChangesExplanationIcon!);
+
+    const closeButton = screen.queryByLabelText('close');
+
+    expect(screen.queryByLabelText('dora metrics dialog')).toBeInTheDocument();
+    expect(screen.queryByLabelText('dora metrics dialog container')).toBeInTheDocument();
+    expect(closeButton).toBeInTheDocument();
+    expect(screen.queryByText('Dora metrics')).toBeInTheDocument();
+    expect(screen.queryByLabelText('definition')).toBeInTheDocument();
+    expect(screen.queryByLabelText('influenced factors')).toBeInTheDocument();
+    expect(screen.queryByLabelText('formula')).toBeInTheDocument();
+
+    await userEvent.click(closeButton!);
+
+    expect(screen.queryByLabelText('dora metrics dialog')).not.toBeInTheDocument();
+  });
 });
