@@ -246,10 +246,12 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
 				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
 				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
-				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate", "0.0000" },
+				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
+						"0.0000" },
 				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
 				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
-				{ "Pipeline mean time to recovery", "Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+				{ "Pipeline mean time to recovery",
+						"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
 				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" }, };
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
@@ -522,10 +524,12 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
 				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
 				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
-				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate", "0.0000" },
+				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
+						"0.0000" },
 				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
 				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
-				{ "Pipeline mean time to recovery", "Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+				{ "Pipeline mean time to recovery",
+						"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
 				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" } };
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
@@ -609,7 +613,8 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
 				{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
 				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
-				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" }, };
+				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
+						"0" }, };
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 

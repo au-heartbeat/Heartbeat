@@ -679,7 +679,8 @@ class GenerateReporterServiceTest {
 				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(List.of("deployment frequency", "pipeline change failure rate", "pipeline mean time to recovery"))
+				.metrics(List.of("deployment frequency", "pipeline change failure rate",
+						"pipeline mean time to recovery"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
 				.timezone("Asia/Shanghai")
