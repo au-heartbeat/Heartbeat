@@ -6,6 +6,12 @@ export const StyledReportCard = styled.div({
   position: 'relative',
   padding: '0.8rem 1.5rem 0.8rem 1.5rem',
   height: '6.5rem',
+  [theme.breakpoints.down('lg')]: {
+    height: '8.5rem',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+  },
   borderRadius: '1rem',
   border: theme.main.cardBorder,
   background: theme.main.color,

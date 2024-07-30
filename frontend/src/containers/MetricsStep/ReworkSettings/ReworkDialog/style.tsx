@@ -5,7 +5,7 @@ import { theme } from '@src/theme';
 
 export const StyledDialogContainer = styled('div')({
   padding: '2rem',
-  width: '47rem',
+  maxWidth: '47rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'start',
