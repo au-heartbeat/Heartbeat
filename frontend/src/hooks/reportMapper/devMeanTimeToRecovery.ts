@@ -6,16 +6,16 @@ export const pipelineMeanTimeToRecoveryMapper = ({
   avgPipelineMeanTimeToRecovery,
 }: PipelineMeanTimeToRecoveryResponse) => {
   const minutesPerHour = 60;
-  const milliscondMinute = 60000;
+  const millisecondMinute = 60000;
   const formatDuration = (duration: number) => {
-    const minutesDuration = duration / milliscondMinute;
+    const minutesDuration = duration / millisecondMinute;
     return (minutesDuration / minutesPerHour).toFixed(2);
   };
 
-  const mappedDevMeanTimeToRecoveryValue: ReportDataWithTwoColumns[] = [];
+  const mappedPipelineMeanTimeToRecoveryValue: ReportDataWithTwoColumns[] = [];
 
   pipelineMeanTimeToRecoveryOfPipelines.map((item, index) => {
-    const devMeanTimeToRecoveryValue: ReportDataWithTwoColumns = {
+    const pipelineMeanTimeToRecoveryValue: ReportDataWithTwoColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
       valueList: [
@@ -24,11 +24,11 @@ export const pipelineMeanTimeToRecoveryMapper = ({
         },
       ],
     };
-    mappedDevMeanTimeToRecoveryValue.push(devMeanTimeToRecoveryValue);
+    mappedPipelineMeanTimeToRecoveryValue.push(pipelineMeanTimeToRecoveryValue);
   });
 
-  mappedDevMeanTimeToRecoveryValue.push({
-    id: mappedDevMeanTimeToRecoveryValue.length,
+  mappedPipelineMeanTimeToRecoveryValue.push({
+    id: mappedPipelineMeanTimeToRecoveryValue.length,
     name: avgPipelineMeanTimeToRecovery.name,
     valueList: [
       {
@@ -37,5 +37,5 @@ export const pipelineMeanTimeToRecoveryMapper = ({
     ],
   });
 
-  return mappedDevMeanTimeToRecoveryValue;
+  return mappedPipelineMeanTimeToRecoveryValue;
 };

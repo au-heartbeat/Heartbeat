@@ -5,10 +5,10 @@ export const pipelineChangeFailureRateMapper = ({
   pipelineChangeFailureRateOfPipelines,
   avgPipelineChangeFailureRate,
 }: PipelineChangeFailureRateResponse) => {
-  const mappedDevChangeFailureRateValue: ReportDataWithTwoColumns[] = [];
+  const mappedPipelineChangeFailureRateValue: ReportDataWithTwoColumns[] = [];
 
   pipelineChangeFailureRateOfPipelines.map((item, index) => {
-    const devChangeFailureRateValue: ReportDataWithTwoColumns = {
+    const pipelineChangeFailureRateValue: ReportDataWithTwoColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
       valueList: [
@@ -17,11 +17,11 @@ export const pipelineChangeFailureRateMapper = ({
         },
       ],
     };
-    mappedDevChangeFailureRateValue.push(devChangeFailureRateValue);
+    mappedPipelineChangeFailureRateValue.push(pipelineChangeFailureRateValue);
   });
 
-  mappedDevChangeFailureRateValue.push({
-    id: mappedDevChangeFailureRateValue.length,
+  mappedPipelineChangeFailureRateValue.push({
+    id: mappedPipelineChangeFailureRateValue.length,
     name: avgPipelineChangeFailureRate.name,
     valueList: [
       {
@@ -30,5 +30,5 @@ export const pipelineChangeFailureRateMapper = ({
     ],
   });
 
-  return mappedDevChangeFailureRateValue;
+  return mappedPipelineChangeFailureRateValue;
 };
