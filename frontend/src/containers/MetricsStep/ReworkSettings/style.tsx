@@ -3,7 +3,7 @@ import { theme } from '@src/theme';
 
 export const ReworkHeaderWrapper = styled('div')({
   display: 'flex',
-  gap: '1rem',
+  gap: '0.3125rem',
   marginTop: '1rem',
 });
 
