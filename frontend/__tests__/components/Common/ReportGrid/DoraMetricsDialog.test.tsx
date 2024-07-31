@@ -3,19 +3,26 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 describe('Dora Metrics Dialog', () => {
-  it('should render dialog successfully when show dialog', () => {
+  it('should render dialog successfully when show dialog and contains Definitions', () => {
     const title = 'Lead time for changes';
 
     render(<DoraMetricsDialog isShowDialog={true} hiddenDialog={() => {}} title={title} />);
+
+    const definition = screen.queryByLabelText('definition');
 
     expect(screen.queryByLabelText('dora metrics dialog')).toBeInTheDocument();
     expect(screen.queryByLabelText('dora metrics dialog container')).toBeInTheDocument();
     expect(screen.queryByLabelText('close')).toBeInTheDocument();
     expect(screen.queryByText('DORA Metrics')).toBeInTheDocument();
     expect(screen.queryByText(title)).toBeInTheDocument();
-    expect(screen.queryByLabelText('definition')).toBeInTheDocument();
+    expect(definition).toBeInTheDocument();
     expect(screen.queryByLabelText('influenced factors')).toBeInTheDocument();
     expect(screen.queryByLabelText('formula')).toBeInTheDocument();
+
+    const innerHtml = definition!.innerHTML;
+
+    expect(innerHtml.includes('Definition')).toEqual(true);
+    expect(innerHtml.includes('Definitions')).toEqual(true);
   });
 
   it('should hidden the dialog when click close button', async () => {
@@ -67,5 +74,21 @@ describe('Dora Metrics Dialog', () => {
     fireEvent.click(linkElement!);
 
     expect(window.location.href).toEqual('http://localhost/');
+  });
+
+  it('should show Definition when no definition detail', async () => {
+    const title = 'Pipeline Mean Time To Recovery';
+    const handleHidden = jest.fn();
+
+    render(<DoraMetricsDialog isShowDialog={true} hiddenDialog={handleHidden} title={title} />);
+
+    const definition = screen.queryByLabelText('definition');
+
+    expect(definition).toBeInTheDocument();
+
+    const innerHtml = definition!.innerHTML;
+
+    expect(innerHtml.includes('Definition')).toEqual(true);
+    expect(innerHtml.includes('Definitions')).toEqual(false);
   });
 });

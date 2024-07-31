@@ -53,7 +53,7 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
           dividers
           sx={{
             padding: '1rem 0',
-            fontWeight: 'lighter',
+            fontWeight: 'light',
             borderBottom: 0,
           }}
         >
@@ -62,7 +62,10 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
           <StyledDialogUl>
             <StyledDialogLi aria-label={'definition'}>
               <span>
-                Definitions{DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition && ` for '${title}'`}:
+                {DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.details.length === 0
+                  ? 'Definition'
+                  : 'Definitions'}
+                {DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition && ` for '${title}'`}:
               </span>{' '}
               {DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition}
               <ul>
