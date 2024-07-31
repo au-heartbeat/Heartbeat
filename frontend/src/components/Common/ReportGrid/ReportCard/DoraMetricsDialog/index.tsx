@@ -7,9 +7,10 @@ import {
   StyledDialogContainer,
   StyledDialogTitle,
 } from '@src/containers/MetricsStep/ReworkSettings/ReworkDialog/style';
-import { DORA_METRICS_EXPLAINATION, RequiredData } from '@src/constants/resources';
+import { DORA_METRICS_EXPLANATION, RequiredData } from '@src/constants/resources';
 import { Dialog, DialogContent } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { theme } from '@src/theme';
 import React from 'react';
 
 const TITLE_FORMULA_MAPPING = {
@@ -24,9 +25,20 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
 
   return (
     <Dialog open={isShowDialog} maxWidth={'md'} onClose={hiddenDialog} aria-label={'dora metrics dialog'}>
-      <StyledDialogContainer aria-label={'dora metrics dialog container'}>
-        <StyledDialogTitle>
-          <p>Dora metrics</p>
+      <StyledDialogContainer
+        sx={{
+          fontFamily: theme.main.font.secondary,
+        }}
+        aria-label={'dora metrics dialog container'}
+      >
+        <StyledDialogTitle
+          sx={{
+            '& p': {
+              fontWeight: 600,
+            },
+          }}
+        >
+          <p>DORA Metrics</p>
           <CloseIcon
             onClick={hiddenDialog}
             aria-label='close'
@@ -41,15 +53,20 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
           dividers
           sx={{
             padding: '1rem 0',
+            fontWeight: 'lighter',
+            borderBottom: 0,
           }}
         >
           <DefinitionTitle>{title}</DefinitionTitle>
-          <div>insight: {DORA_METRICS_EXPLAINATION[title.toLowerCase()].insight}</div>
+          <div>Insight: {DORA_METRICS_EXPLANATION[title.toLowerCase()].insight}</div>
           <StyledDialogUl>
             <StyledDialogLi aria-label={'definition'}>
-              <span>Definitions: </span> {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.definition}
+              <span>
+                Definitions{DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition && ` for '${title}'`}:{' '}
+              </span>{' '}
+              {DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition}
               <ul>
-                {DORA_METRICS_EXPLAINATION[title.toLowerCase()].definitions.details.map((it) => (
+                {DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.details.map((it) => (
                   <li key={`definitions-${it}`}>{it}</li>
                 ))}
               </ul>
@@ -57,7 +74,7 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
             <StyledDialogLi aria-label={'influenced factors'}>
               <span>Influenced factors: </span>
               <ul>
-                {DORA_METRICS_EXPLAINATION[title.toLowerCase()]['influenced factors'].details.map((it) => (
+                {DORA_METRICS_EXPLANATION[title.toLowerCase()]['influenced factors'].details.map((it) => (
                   <li key={`influenced factors-${it}`}>{it}</li>
                 ))}
               </ul>
