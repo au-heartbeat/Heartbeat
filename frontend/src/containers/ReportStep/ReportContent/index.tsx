@@ -94,8 +94,6 @@ const ReportContent = (props: ReportContentProps) => {
     allDateRangeLoadingFinished,
   } = props;
 
-  console.log(reportInfos);
-
   const dispatch = useAppDispatch();
 
   const descendingDateRanges = sortDateRanges(dateRanges);
@@ -144,15 +142,20 @@ const ReportContent = (props: ReportContentProps) => {
   const metricsOnlySelectClassification =
     !selectBoardMetricsWithoutClassification && !selectDora && selectBoardOnlyClassification;
   const shouldShowTabs = allDateRanges.length > 1;
+  const disableChartTab = metricsOnlySelectClassification && !selectClassificationCharts;
 
-  const [displayType, setDisplayType] = useState(shouldShowTabs ? DISPLAY_TYPE.CHART : DISPLAY_TYPE.LIST);
+  const [displayType, setDisplayType] = useState(
+    shouldShowTabs && !disableChartTab ? DISPLAY_TYPE.CHART : DISPLAY_TYPE.LIST,
+  );
   const [chartIndex, setChartIndex] = useState(shouldShowBoardMetricsChart ? CHART_INDEX.BOARD : CHART_INDEX.DORA);
   const [pageType, setPageType] = useState<string>(
-    shouldShowTabs
+    shouldShowTabs && !disableChartTab
       ? shouldShowBoardMetricsChart
         ? REPORT_PAGE_TYPE.BOARD_CHART
         : REPORT_PAGE_TYPE.DORA_CHART
-      : REPORT_PAGE_TYPE.SUMMARY,
+      : metricsOnlySelectClassification
+        ? REPORT_PAGE_TYPE.BOARD
+        : REPORT_PAGE_TYPE.SUMMARY,
   );
   const isSummaryPage = useMemo(() => pageType === REPORT_PAGE_TYPE.SUMMARY, [pageType]);
   const isChartPage = useMemo(
@@ -315,7 +318,7 @@ const ReportContent = (props: ReportContentProps) => {
         icon={<BarChartIcon />}
         iconPosition='start'
         label='Chart'
-        disabled={metricsOnlySelectClassification && !selectClassificationCharts}
+        disabled={disableChartTab}
       />
       <StyledTab
         aria-label='display list tab'
@@ -368,7 +371,7 @@ const ReportContent = (props: ReportContentProps) => {
     <BoardDetail
       isShowBack={!metricsOnlySelectClassification || !isSharePage}
       metrics={metrics}
-      onBack={handleBack}
+      onBack={backOnBoardDetail}
       data={data}
       errorMessage={getErrorMessage4Board()}
     />
@@ -378,12 +381,23 @@ const ReportContent = (props: ReportContentProps) => {
   );
 
   const handleBack = () => {
-    setDisplayType(DISPLAY_TYPE.CHART);
-    isChartPage || metricsOnlySelectClassification ? dispatch(backStep()) : setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
+    if (isChartPage || metricsOnlySelectClassification || (!shouldShowTabs && isSummaryPage)) {
+      dispatch(backStep());
+    } else if (!isSummaryPage) {
+      setDisplayType(DISPLAY_TYPE.LIST);
+      setPageType(REPORT_PAGE_TYPE.SUMMARY);
+    } else {
+      setDisplayType(DISPLAY_TYPE.CHART);
+      setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
+    }
   };
 
   const backToSummaryPage = () => {
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
+  };
+
+  const backOnBoardDetail = () => {
+    metricsOnlySelectClassification ? dispatch(backStep()) : setPageType(REPORT_PAGE_TYPE.SUMMARY);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {

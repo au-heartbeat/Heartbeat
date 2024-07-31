@@ -113,6 +113,14 @@ describe('Report Step', () => {
     },
   });
   beforeEach(() => {
+    const chart = {
+      setOption: jest.fn(),
+      resize: jest.fn(),
+      dispatchAction: jest.fn(),
+      dispose: jest.fn(),
+      clear: jest.fn(),
+    };
+    jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
     store = setupStore();
     resetReportHook();
   });
@@ -277,7 +285,7 @@ describe('Report Step', () => {
 
   describe('behavior', () => {
     it('should call handleBack method when clicking back button given back button enabled', async () => {
-      setup(['']);
+      setup([LEAD_TIME_FOR_CHANGES], [fullValueDateRange, emptyValueDateRange]);
 
       const back = screen.getByText(PREVIOUS);
       await userEvent.click(back);
@@ -696,6 +704,10 @@ describe('Report Step', () => {
     it('should close error notification when change dateRange', async () => {
       reportHook.current.reportInfos[1].timeout4Board = { shouldShow: true, message: 'error' };
       const { getByTestId, getAllByText } = setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchListButton);
+
       const expandMoreIcon = getByTestId('ExpandMoreIcon');
       await act(async () => {
         await userEvent.click(expandMoreIcon);
@@ -1182,16 +1194,16 @@ describe('Report Step', () => {
       const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
       const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
 
-      expect(screen.queryByText(BACK)).toBeInTheDocument();
+      expect(screen.queryByText(BACK)).not.toBeInTheDocument();
       expect(switchListButton).toBeInTheDocument();
       expect(switchChartButton).toBeInTheDocument();
+
+      await userEvent.click(switchListButton);
+      expect(screen.queryByText(BACK)).toBeInTheDocument();
 
       await userEvent.click(switchChartButton);
 
       expect(screen.queryByText(BACK)).not.toBeInTheDocument();
-
-      await userEvent.click(switchListButton);
-      expect(screen.queryByText(BACK)).toBeInTheDocument();
     });
   });
 });
