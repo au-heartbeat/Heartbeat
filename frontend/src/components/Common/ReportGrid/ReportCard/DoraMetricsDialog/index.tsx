@@ -62,9 +62,9 @@ export const DoraMetricsDialog = (props: { isShowDialog: boolean; hiddenDialog: 
           <StyledDialogUl>
             <StyledDialogLi aria-label={'definition'}>
               <span>
-                Definitions{DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition && ` for '${title}'`}:{' '}
-              </span>{' '}
-              {DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition}
+                Definitions{DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition && ` for '${title}'`}:
+              </span>
+              {` ${DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.definition}`}
               <ul>
                 {DORA_METRICS_EXPLANATION[title.toLowerCase()].definitions.details.map((it) => (
                   <li key={`definitions-${it}`}>{it}</li>
