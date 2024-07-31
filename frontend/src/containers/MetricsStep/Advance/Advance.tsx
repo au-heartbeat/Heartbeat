@@ -1,9 +1,16 @@
+import {
+  AdvancedContainer,
+  AdvancedForm,
+  AdvancedTitleContainer,
+  AdvancedWrapper,
+  TitleAndTooltipContainer,
+  TooltipContainer,
+} from './style';
 import { selectAdvancedSettings, updateAdvancedSettings } from '@src/context/Metrics/metricsSlice';
-import { AdvancedContainer, AdvancedForm, AdvancedTitleContainer, AdvancedWrapper } from './style';
-import { ItemCheckbox, TitleAndTooltipContainer, TooltipContainer } from '../CycleTime/style';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import { StyledLink } from '@src/containers/MetricsStep/style';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
+import { ItemCheckbox } from '../CycleTime/style';
 import { useAppSelector } from '@src/hooks';
 import { TextField } from '@mui/material';
 import React, { useState } from 'react';
