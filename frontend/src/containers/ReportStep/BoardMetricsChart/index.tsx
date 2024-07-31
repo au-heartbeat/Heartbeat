@@ -340,7 +340,13 @@ export const BoardMetricsChart = ({
       )}
       {metrics.includes(RequiredData.Classification) &&
         classificationCharts.map((it) => (
-          <ClassificationChart key={it} classification={it} mappedData={mappedData} dateRanges={dateRanges} allDateRangeLoadingFinished={allDateRangeLoadingFinished}/>
+          <ClassificationChart
+            key={it}
+            classification={it}
+            mappedData={mappedData}
+            dateRanges={dateRanges}
+            allDateRangeLoadingFinished={allDateRangeLoadingFinished}
+          />
         ))}
     </ChartContainer>
   );
