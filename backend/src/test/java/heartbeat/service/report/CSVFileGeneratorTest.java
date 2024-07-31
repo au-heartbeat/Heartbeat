@@ -14,8 +14,8 @@ import heartbeat.controller.board.dto.response.Priority;
 import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
-import heartbeat.controller.report.dto.response.AvgDevChangeFailureRate;
-import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.AvgPipelineChangeFailureRate;
+import heartbeat.controller.report.dto.response.AvgPipelineMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.Classification;
@@ -25,10 +25,10 @@ import heartbeat.controller.report.dto.response.CycleTimeForSelectedStepItem;
 import heartbeat.controller.report.dto.response.DailyDeploymentCount;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequencyOfPipeline;
-import heartbeat.controller.report.dto.response.DevChangeFailureRate;
-import heartbeat.controller.report.dto.response.DevChangeFailureRateOfPipeline;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRate;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRateOfPipeline;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
@@ -245,12 +245,14 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Average / PR Lead Time", "0" },
 				{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
 				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
-				{ "Dev change failure rate", "Heartbeat / Deploy prod / Dev change failure rate", "0.0000" },
-				{ "Dev change failure rate", "Heartbeat / Check Frontend License / Dev change failure rate", "0.0000" },
-				{ "Dev change failure rate", "Average / Dev change failure rate", "0" },
-				{ "Dev mean time to recovery", "Heartbeat / Deploy prod / Dev mean time to recovery", "0" },
-				{ "Dev mean time to recovery", "Heartbeat / Check Frontend License / Dev mean time to recovery", "0" },
-				{ "Dev mean time to recovery", "Total / Dev mean time to recovery", "0" }, };
+				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
+				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
+						"0.0000" },
+				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
+				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
+				{ "Pipeline mean time to recovery",
+						"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" }, };
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
@@ -414,22 +416,22 @@ class CSVFileGeneratorTest {
 									List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
 							.build()))
 				.build())
-			.devChangeFailureRate(DevChangeFailureRate.builder()
-				.avgDevChangeFailureRate(AvgDevChangeFailureRate.builder()
+			.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
+				.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
 					.name("Average")
 					.totalTimes(12)
 					.totalFailedTimes(0)
 					.failureRate(0.0F)
 					.build())
-				.devChangeFailureRateOfPipelines(List.of(
-						DevChangeFailureRateOfPipeline.builder()
+				.pipelineChangeFailureRateOfPipelines(List.of(
+						PipelineChangeFailureRateOfPipeline.builder()
 							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
 							.failedTimesOfPipeline(0)
 							.totalTimesOfPipeline(7)
 							.failureRate(0.0F)
 							.build(),
-						DevChangeFailureRateOfPipeline.builder()
+						PipelineChangeFailureRateOfPipeline.builder()
 							.name("Heartbeat")
 							.step(":mag: Check Frontend License")
 							.failedTimesOfPipeline(0)
@@ -437,16 +439,16 @@ class CSVFileGeneratorTest {
 							.failureRate(0.0F)
 							.build()))
 				.build())
-			.devMeanTimeToRecovery(DevMeanTimeToRecovery.builder()
-				.avgDevMeanTimeToRecovery(
-						AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
-				.devMeanTimeToRecoveryOfPipelines(List.of(
-						DevMeanTimeToRecoveryOfPipeline.builder()
+			.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
+				.avgPipelineMeanTimeToRecovery(
+						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+				.pipelineMeanTimeToRecoveryOfPipelines(List.of(
+						PipelineMeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
 							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
 							.build(),
-						DevMeanTimeToRecoveryOfPipeline.builder()
+						PipelineMeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
 							.name("Heartbeat")
 							.step(":mag: Check Frontend License")
@@ -521,12 +523,14 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Average / PR Lead Time", "0" },
 				{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
 				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
-				{ "Dev change failure rate", "Heartbeat / Deploy prod / Dev change failure rate", "0.0000" },
-				{ "Dev change failure rate", "Heartbeat / Check Frontend License / Dev change failure rate", "0.0000" },
-				{ "Dev change failure rate", "Average / Dev change failure rate", "0" },
-				{ "Dev mean time to recovery", "Heartbeat / Deploy prod / Dev mean time to recovery", "0" },
-				{ "Dev mean time to recovery", "Heartbeat / Check Frontend License / Dev mean time to recovery", "0" },
-				{ "Dev mean time to recovery", "Total / Dev mean time to recovery", "0" } };
+				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
+				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
+						"0.0000" },
+				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
+				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
+				{ "Pipeline mean time to recovery",
+						"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" } };
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
@@ -560,14 +564,14 @@ class CSVFileGeneratorTest {
 					.build()))
 				.totalDeployTimes(1)
 				.build())
-			.devChangeFailureRate(DevChangeFailureRate.builder()
-				.avgDevChangeFailureRate(AvgDevChangeFailureRate.builder()
+			.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
+				.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
 					.name("Average")
 					.totalTimes(12)
 					.totalFailedTimes(0)
 					.failureRate(0.0F)
 					.build())
-				.devChangeFailureRateOfPipelines(List.of(DevChangeFailureRateOfPipeline.builder()
+				.pipelineChangeFailureRateOfPipelines(List.of(PipelineChangeFailureRateOfPipeline.builder()
 					.name("Heartbeat")
 					.step(":rocket: Deploy prod")
 					.failedTimesOfPipeline(0)
@@ -575,10 +579,10 @@ class CSVFileGeneratorTest {
 					.failureRate(0.0F)
 					.build()))
 				.build())
-			.devMeanTimeToRecovery(DevMeanTimeToRecovery.builder()
-				.avgDevMeanTimeToRecovery(
-						AvgDevMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
-				.devMeanTimeToRecoveryOfPipelines(List.of(DevMeanTimeToRecoveryOfPipeline.builder()
+			.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
+				.avgPipelineMeanTimeToRecovery(
+						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+				.pipelineMeanTimeToRecoveryOfPipelines(List.of(PipelineMeanTimeToRecoveryOfPipeline.builder()
 					.timeToRecovery(BigDecimal.valueOf(0))
 					.name("Heartbeat")
 					.step(":rocket: Deploy prod")
@@ -608,8 +612,9 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
 				{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
 				{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
-				{ "Dev change failure rate", "Heartbeat / Deploy prod / Dev change failure rate", "0.0000" },
-				{ "Dev mean time to recovery", "Heartbeat / Deploy prod / Dev mean time to recovery", "0" }, };
+				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
+				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
+						"0" }, };
 
 		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 

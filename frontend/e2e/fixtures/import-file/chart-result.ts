@@ -43,12 +43,12 @@ export const DORA_CHART_VALUE: DoraChartType = {
       color: '#E82107',
       value: '75.00%',
     },
-    'Dev Change Failure Rate': {
+    'Pipeline Change Failure Rate': {
       type: 'trend down',
       color: '#02C4A8',
       value: '59.99%',
     },
-    'Dev Mean Time To Recovery': {
+    'Pipeline Mean Time To Recovery': {
       type: 'trend down',
       color: '#02C4A8',
       value: '22.19%',
@@ -65,12 +65,12 @@ export const DORA_CHART_VALUE: DoraChartType = {
       color: '#E82107',
       value: '75.00%',
     },
-    'Dev Change Failure Rate': {
+    'Pipeline Change Failure Rate': {
       type: 'trend down',
       color: '#02C4A8',
       value: '59.99%',
     },
-    'Dev Mean Time To Recovery': {
+    'Pipeline Mean Time To Recovery': {
       type: 'trend down',
       color: '#02C4A8',
       value: '22.19%',

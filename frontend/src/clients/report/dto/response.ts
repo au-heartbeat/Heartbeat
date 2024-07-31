@@ -7,9 +7,9 @@ export interface ReportResponseDTO {
   rework: Nullable<ReworkTimeResponse>;
   classificationList: Nullable<ClassificationResponse[]>;
   deploymentFrequency: Nullable<DeploymentFrequencyResponse>;
-  devMeanTimeToRecovery: Nullable<DevMeanTimeToRecoveryResponse>;
+  pipelineMeanTimeToRecovery: Nullable<PipelineMeanTimeToRecoveryResponse>;
   leadTimeForChanges: Nullable<LeadTimeForChangesResponse>;
-  devChangeFailureRate: Nullable<DevChangeFailureRateResponse>;
+  pipelineChangeFailureRate: Nullable<PipelineChangeFailureRateResponse>;
   exportValidityTime: Nullable<number>;
   boardMetricsCompleted: boolean | null;
   doraMetricsCompleted: boolean | null;
@@ -75,9 +75,9 @@ export interface LeadTimeForChangesResponse {
   avgLeadTimeForChanges: AvgLeadTime;
 }
 
-export interface DevChangeFailureRateResponse {
-  avgDevChangeFailureRate: AvgFailureRate;
-  devChangeFailureRateOfPipelines: FailureRateOfPipeline[];
+export interface PipelineChangeFailureRateResponse {
+  avgPipelineChangeFailureRate: AvgFailureRate;
+  pipelineChangeFailureRateOfPipelines: FailureRateOfPipeline[];
 }
 
 export interface Swimlane {
@@ -138,20 +138,20 @@ export interface AvgFailureRate {
   failureRate: number;
 }
 
-export interface DevMeanTimeToRecoveryOfPipeline {
+export interface PipelineMeanTimeToRecoveryOfPipeline {
   name: string;
   step: string;
   timeToRecovery: number;
 }
 
-export interface AvgDevMeanTimeToRecovery {
+export interface AvgPipelineMeanTimeToRecovery {
   name: string;
   timeToRecovery: number;
 }
 
-export interface DevMeanTimeToRecoveryResponse {
-  avgDevMeanTimeToRecovery: AvgDevMeanTimeToRecovery;
-  devMeanTimeToRecoveryOfPipelines: DevMeanTimeToRecoveryOfPipeline[];
+export interface PipelineMeanTimeToRecoveryResponse {
+  avgPipelineMeanTimeToRecovery: AvgPipelineMeanTimeToRecovery;
+  pipelineMeanTimeToRecoveryOfPipelines: PipelineMeanTimeToRecoveryOfPipeline[];
 }
 
 export interface ClassificationInfoList {
@@ -173,9 +173,9 @@ export interface ReportResponse {
   reworkList?: ReportDataWithTwoColumns[] | null;
   classification?: ReportDataWithThreeColumns[] | null;
   deploymentFrequencyList?: ReportDataWithTwoColumns[] | null;
-  devMeanTimeToRecoveryList?: ReportDataWithTwoColumns[] | null;
+  pipelineMeanTimeToRecoveryList?: ReportDataWithTwoColumns[] | null;
   leadTimeForChangesList?: ReportDataWithThreeColumns[] | null;
-  devChangeFailureRateList?: ReportDataWithTwoColumns[] | null;
+  pipelineChangeFailureRateList?: ReportDataWithTwoColumns[] | null;
   exportValidityTimeMin?: number | null;
   classificationCardCount?: ReportDataWithThreeColumns[] | null;
 }

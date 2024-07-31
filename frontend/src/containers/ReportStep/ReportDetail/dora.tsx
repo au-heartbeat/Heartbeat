@@ -36,8 +36,8 @@ export const DoraDetail = withGoBack(({ data }: Property) => {
         mappedData.deploymentFrequencyList,
       )}
       {showThreeColumnSection(MetricsTitle.LeadTimeForChanges, mappedData.leadTimeForChangesList)}
-      {showTwoColumnSection(MetricsTitle.DevChangeFailureRate, mappedData.devChangeFailureRateList)}
-      {showTwoColumnSection(MetricsTitle.DevMeanTimeToRecovery, mappedData.devMeanTimeToRecoveryList)}
+      {showTwoColumnSection(MetricsTitle.PipelineChangeFailureRate, mappedData.pipelineChangeFailureRateList)}
+      {showTwoColumnSection(MetricsTitle.PipelineMeanTimeToRecovery, mappedData.pipelineMeanTimeToRecoveryList)}
     </DetailContainer>
   );
 });

@@ -47,7 +47,7 @@ export class ReportStep {
   readonly totalLeadTime: Locator;
   readonly deploymentFrequency: Locator;
   readonly failureRate: Locator;
-  readonly devMeanTimeToRecovery: Locator;
+  readonly pipelineMeanTimeToRecovery: Locator;
   readonly showMoreLinks: Locator;
   readonly previousButton: Locator;
   readonly backButton: Locator;
@@ -63,9 +63,9 @@ export class ReportStep {
   readonly cycleTimeRows: Locator;
   readonly classificationRows: Locator;
   readonly leadTimeForChangesRows: Locator;
-  readonly devChangeFailureRateRows: Locator;
+  readonly pipelineChangeFailureRateRows: Locator;
   readonly deploymentFrequencyRows: Locator;
-  readonly devMeanTimeToRecoveryRows: Locator;
+  readonly pipelineMeanTimeToRecoveryRows: Locator;
   readonly reworkRows: Locator;
   readonly downloadDialog: Locator;
   readonly displayTabsContainer: Locator;
@@ -101,16 +101,28 @@ export class ReportStep {
   readonly cycleTimeAllocationTrendIcon: Locator;
   readonly cycleTimeTrendIcon: Locator;
   readonly doraPipelineSelector: Locator;
-  readonly devMeanTimeToRecoveryTrendContainer: Locator;
-  readonly devChangeFailureRateTrendContainer: Locator;
+  readonly pipelineMeanTimeToRecoveryTrendContainer: Locator;
+  readonly pipelineChangeFailureRateTrendContainer: Locator;
   readonly deploymentFrequencyTrendContainer: Locator;
   readonly leadTimeForChangesTrendContainer: Locator;
-  readonly devMeanTimeToRecoveryTrendIcon: Locator;
-  readonly devChangeFailureRateTrendIcon: Locator;
+  readonly pipelineMeanTimeToRecoveryTrendIcon: Locator;
+  readonly pipelineChangeFailureRateTrendIcon: Locator;
   readonly deploymentFrequencyTrendIcon: Locator;
   readonly leadTimeForChangesTrendIcon: Locator;
   readonly classificationIssueTypeChartSwitchIcon: Locator;
   readonly classificationAssigneeChartSwitchIcon: Locator;
+
+  readonly leadTimeForChangesExplanationIcon: Locator;
+  readonly deploymentFrequencyExplanationIcon: Locator;
+  readonly pipelineChangeFailureRateExplanationIcon: Locator;
+  readonly pipelineMeanTimeToRecoveryExplanationIcon: Locator;
+
+  readonly doraMetricsDialog: Locator;
+  readonly doraMetricsDialogContainer: Locator;
+  readonly doraMetricsDialogClose: Locator;
+  readonly doraMetricsDialogDefinition: Locator;
+  readonly doraMetricsDialogInfluencedFactors: Locator;
+  readonly doraMetricsDialogFormula: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -134,9 +146,11 @@ export class ReportStep {
     this.deploymentFrequency = this.page.locator(
       '[data-test-id="Deployment Frequency"] [data-test-id="report-section"]',
     );
-    this.failureRate = this.page.locator('[data-test-id="Dev Change Failure Rate"] [data-test-id="report-section"]');
-    this.devMeanTimeToRecovery = this.page.locator(
-      '[data-test-id="Dev Mean Time To Recovery"] [data-test-id="report-section"]',
+    this.failureRate = this.page.locator(
+      '[data-test-id="Pipeline Change Failure Rate"] [data-test-id="report-section"]',
+    );
+    this.pipelineMeanTimeToRecovery = this.page.locator(
+      '[data-test-id="Pipeline Mean Time To Recovery"] [data-test-id="report-section"]',
     );
     this.showMoreLinks = this.page.getByText('show more >');
     this.previousButton = page.getByRole('button', { name: 'Previous' });
@@ -154,9 +168,12 @@ export class ReportStep {
     this.deploymentFrequencyRows = this.page.getByLabel('Deployment Frequency').locator('tbody').getByRole('row');
     this.classificationRows = this.page.getByTestId('Classification').locator('tbody').getByRole('row');
     this.leadTimeForChangesRows = this.page.getByTestId('Lead Time For Changes').getByRole('row');
-    this.devChangeFailureRateRows = this.page.getByTestId('Dev Change Failure Rate').locator('tbody').getByRole('row');
-    this.devMeanTimeToRecoveryRows = this.page
-      .getByTestId('Dev Mean Time To Recovery')
+    this.pipelineChangeFailureRateRows = this.page
+      .getByTestId('Pipeline Change Failure Rate')
+      .locator('tbody')
+      .getByRole('row');
+    this.pipelineMeanTimeToRecoveryRows = this.page
+      .getByTestId('Pipeline Mean Time To Recovery')
       .locator('tbody')
       .getByRole('row');
     this.reworkRows = this.page.getByTestId('Rework').getByRole('row');
@@ -200,12 +217,26 @@ export class ReportStep {
     this.doraPipelineSelector = this.page.getByLabel('Pipeline Selector').first();
     this.leadTimeForChangesTrendContainer = this.page.getByLabel('lead time for changes trend container');
     this.deploymentFrequencyTrendContainer = this.page.getByLabel('deployment frequency trend container');
-    this.devChangeFailureRateTrendContainer = this.page.getByLabel('dev change failure rate trend container');
-    this.devMeanTimeToRecoveryTrendContainer = this.page.getByLabel('dev mean time to recovery trend container');
+    this.pipelineChangeFailureRateTrendContainer = this.page.getByLabel('pipeline change failure rate trend container');
+    this.pipelineMeanTimeToRecoveryTrendContainer = this.page.getByLabel(
+      'pipeline mean time to recovery trend container',
+    );
     this.leadTimeForChangesTrendIcon = this.leadTimeForChangesTrendContainer.getByLabel('trend down');
     this.deploymentFrequencyTrendIcon = this.deploymentFrequencyTrendContainer.getByLabel('trend down');
-    this.devChangeFailureRateTrendIcon = this.devChangeFailureRateTrendContainer.getByLabel('trend down');
-    this.devMeanTimeToRecoveryTrendIcon = this.devMeanTimeToRecoveryTrendContainer.getByLabel('trend down');
+    this.pipelineChangeFailureRateTrendIcon = this.pipelineChangeFailureRateTrendContainer.getByLabel('trend down');
+    this.pipelineMeanTimeToRecoveryTrendIcon = this.pipelineMeanTimeToRecoveryTrendContainer.getByLabel('trend down');
+
+    this.leadTimeForChangesExplanationIcon = this.page.getByLabel('lead time for changes explanation');
+    this.deploymentFrequencyExplanationIcon = this.page.getByLabel('deployment frequency explanation');
+    this.pipelineChangeFailureRateExplanationIcon = this.page.getByLabel('pipeline change failure rate explanation');
+    this.pipelineMeanTimeToRecoveryExplanationIcon = this.page.getByLabel('pipeline mean time to recovery explanation');
+
+    this.doraMetricsDialog = this.page.getByLabel('dora metrics dialog').nth(0);
+    this.doraMetricsDialogContainer = this.doraMetricsDialog.getByLabel('dora metrics dialog container');
+    this.doraMetricsDialogClose = this.doraMetricsDialog.getByLabel('close');
+    this.doraMetricsDialogDefinition = this.doraMetricsDialog.getByLabel('definition');
+    this.doraMetricsDialogInfluencedFactors = this.doraMetricsDialog.getByLabel('influenced factors');
+    this.doraMetricsDialogFormula = this.doraMetricsDialog.getByLabel('formula');
   }
   combineStrings(arr: string[]): string {
     return arr.join('');
@@ -242,13 +273,13 @@ export class ReportStep {
       this.combineStrings(['Total Lead Time', doraMetricsDetailData.totalLeadTime]),
     );
 
-    await expect(this.devChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.devChangeFailureRateRows.getByRole('cell').nth(1)).toContainText(
+    await expect(this.pipelineChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
+    await expect(this.pipelineChangeFailureRateRows.getByRole('cell').nth(1)).toContainText(
       doraMetricsDetailData.failureRate.replace(' ', ''),
     );
-    await expect(this.devMeanTimeToRecoveryRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.devMeanTimeToRecoveryRows.getByRole('cell').nth(1)).toContainText(
-      doraMetricsDetailData.devMeanTimeToRecovery,
+    await expect(this.pipelineMeanTimeToRecoveryRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
+    await expect(this.pipelineMeanTimeToRecoveryRows.getByRole('cell').nth(1)).toContainText(
+      doraMetricsDetailData.pipelineMeanTimeToRecovery,
     );
   }
 
@@ -474,28 +505,28 @@ export class ReportStep {
     await expect(this.totalLeadTime).toBeVisible();
     await expect(this.deploymentFrequency).toBeHidden();
     await expect(this.failureRate).toBeHidden();
-    await expect(this.devMeanTimeToRecovery).toBeHidden();
+    await expect(this.pipelineMeanTimeToRecovery).toBeHidden();
   }
 
   async checkOnlyDeploymentFrequencyPartVisible() {
     await expect(this.totalLeadTime).toBeHidden();
     await expect(this.deploymentFrequency).toBeVisible();
     await expect(this.failureRate).toBeHidden();
-    await expect(this.devMeanTimeToRecovery).toBeHidden();
+    await expect(this.pipelineMeanTimeToRecovery).toBeHidden();
   }
 
   async checkOnlyChangeFailureRatePartVisible() {
     await expect(this.totalLeadTime).toBeHidden();
     await expect(this.deploymentFrequency).toBeHidden();
     await expect(this.failureRate).toBeVisible();
-    await expect(this.devMeanTimeToRecovery).toBeHidden();
+    await expect(this.pipelineMeanTimeToRecovery).toBeHidden();
   }
 
   async checkOnlyMeanTimeToRecoveryPartVisible() {
     await expect(this.totalLeadTime).toBeHidden();
     await expect(this.deploymentFrequency).toBeHidden();
     await expect(this.failureRate).toBeHidden();
-    await expect(this.devMeanTimeToRecovery).toBeVisible();
+    await expect(this.pipelineMeanTimeToRecovery).toBeVisible();
   }
 
   async checkExportMetricDataButtonClickable() {
@@ -626,7 +657,7 @@ export class ReportStep {
     totalLeadTime,
     deploymentFrequency,
     failureRate,
-    devMeanTimeToRecovery,
+    pipelineMeanTimeToRecovery,
     deploymentTimes,
   }: IDoraMetricsResultItem) {
     await expect(this.prLeadTime).toContainText(`${prLeadTime}PR Lead Time(Hours)`);
@@ -636,7 +667,7 @@ export class ReportStep {
       `${deploymentFrequency}Deployments/Days${deploymentTimes}Deployment times`,
     );
     await expect(this.failureRate).toContainText(failureRate);
-    await expect(this.devMeanTimeToRecovery).toContainText(`${devMeanTimeToRecovery}(Hours)`);
+    await expect(this.pipelineMeanTimeToRecovery).toContainText(`${pipelineMeanTimeToRecovery}(Hours)`);
   }
 
   async checkDoraMetricsForMultipleRanges(data: IDoraMetricsResultItem[]) {
@@ -827,18 +858,18 @@ export class ReportStep {
     pipeline,
     showLeadTimeForChangeChart,
     showDeploymentFrequencyChart,
-    showDevChangeFailureRateTrendContainer,
-    showDevChangeFailureRateChart,
-    showDevMeanTimeToRecoveryChart,
-    showDevMeanTimeToRecoveryTrendContainer,
+    showPipelineChangeFailureRateTrendContainer,
+    showPipelineChangeFailureRateChart,
+    showPipelineMeanTimeToRecoveryChart,
+    showPipelineMeanTimeToRecoveryTrendContainer,
   }: {
     pipeline: string;
     showLeadTimeForChangeChart: boolean;
     showDeploymentFrequencyChart: boolean;
-    showDevChangeFailureRateTrendContainer: boolean;
-    showDevChangeFailureRateChart: boolean;
-    showDevMeanTimeToRecoveryTrendContainer: boolean;
-    showDevMeanTimeToRecoveryChart: boolean;
+    showPipelineChangeFailureRateTrendContainer: boolean;
+    showPipelineChangeFailureRateChart: boolean;
+    showPipelineMeanTimeToRecoveryTrendContainer: boolean;
+    showPipelineMeanTimeToRecoveryChart: boolean;
   }) {
     const pipelineDoraChartValue = DORA_CHART_VALUE[pipeline];
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
@@ -887,48 +918,48 @@ export class ReportStep {
       await expect(this.deploymentFrequencyTrendIcon).not.toBeVisible();
     }
 
-    if (showDevChangeFailureRateChart) {
+    if (showPipelineChangeFailureRateChart) {
       await expect(this.changeFailureRateChart).toBeVisible();
-      if (showDevChangeFailureRateTrendContainer) {
-        await expect(this.devChangeFailureRateTrendContainer).toBeVisible();
-        await expect(this.devChangeFailureRateTrendContainer).toHaveAttribute(
+      if (showPipelineChangeFailureRateTrendContainer) {
+        await expect(this.pipelineChangeFailureRateTrendContainer).toBeVisible();
+        await expect(this.pipelineChangeFailureRateTrendContainer).toHaveAttribute(
           'color',
-          pipelineDoraChartValue['Dev Change Failure Rate'].color,
+          pipelineDoraChartValue['Pipeline Change Failure Rate'].color,
         );
-        await expect(this.devChangeFailureRateTrendIcon).toBeVisible();
-        await expect(this.devChangeFailureRateTrendContainer).toContainText(
-          pipelineDoraChartValue['Dev Change Failure Rate'].value,
+        await expect(this.pipelineChangeFailureRateTrendIcon).toBeVisible();
+        await expect(this.pipelineChangeFailureRateTrendContainer).toContainText(
+          pipelineDoraChartValue['Pipeline Change Failure Rate'].value,
         );
       } else {
-        await expect(this.devChangeFailureRateTrendContainer).not.toBeVisible();
-        await expect(this.devChangeFailureRateTrendIcon).not.toBeVisible();
+        await expect(this.pipelineChangeFailureRateTrendContainer).not.toBeVisible();
+        await expect(this.pipelineChangeFailureRateTrendIcon).not.toBeVisible();
       }
     } else {
       await expect(this.changeFailureRateChart).not.toBeVisible();
-      await expect(this.devChangeFailureRateTrendContainer).not.toBeVisible();
-      await expect(this.devChangeFailureRateTrendIcon).not.toBeVisible();
+      await expect(this.pipelineChangeFailureRateTrendContainer).not.toBeVisible();
+      await expect(this.pipelineChangeFailureRateTrendIcon).not.toBeVisible();
     }
 
-    if (showDevMeanTimeToRecoveryChart) {
+    if (showPipelineMeanTimeToRecoveryChart) {
       await expect(this.meanTimeToRecoveryChart).toBeVisible();
-      if (showDevMeanTimeToRecoveryTrendContainer) {
-        await expect(this.devMeanTimeToRecoveryTrendContainer).toBeVisible();
-        await expect(this.devMeanTimeToRecoveryTrendContainer).toHaveAttribute(
+      if (showPipelineMeanTimeToRecoveryTrendContainer) {
+        await expect(this.pipelineMeanTimeToRecoveryTrendContainer).toBeVisible();
+        await expect(this.pipelineMeanTimeToRecoveryTrendContainer).toHaveAttribute(
           'color',
-          pipelineDoraChartValue['Dev Mean Time To Recovery'].color,
+          pipelineDoraChartValue['Pipeline Mean Time To Recovery'].color,
         );
-        await expect(this.devMeanTimeToRecoveryTrendIcon).toBeVisible();
-        await expect(this.devMeanTimeToRecoveryTrendContainer).toContainText(
-          pipelineDoraChartValue['Dev Mean Time To Recovery'].value,
+        await expect(this.pipelineMeanTimeToRecoveryTrendIcon).toBeVisible();
+        await expect(this.pipelineMeanTimeToRecoveryTrendContainer).toContainText(
+          pipelineDoraChartValue['Pipeline Mean Time To Recovery'].value,
         );
       } else {
-        await expect(this.devMeanTimeToRecoveryTrendContainer).not.toBeVisible();
-        await expect(this.devMeanTimeToRecoveryTrendIcon).not.toBeVisible();
+        await expect(this.pipelineMeanTimeToRecoveryTrendContainer).not.toBeVisible();
+        await expect(this.pipelineMeanTimeToRecoveryTrendIcon).not.toBeVisible();
       }
     } else {
       await expect(this.meanTimeToRecoveryChart).not.toBeVisible();
-      await expect(this.devMeanTimeToRecoveryTrendContainer).not.toBeVisible();
-      await expect(this.devMeanTimeToRecoveryTrendIcon).not.toBeVisible();
+      await expect(this.pipelineMeanTimeToRecoveryTrendContainer).not.toBeVisible();
+      await expect(this.pipelineMeanTimeToRecoveryTrendIcon).not.toBeVisible();
     }
   }
 
@@ -991,13 +1022,63 @@ export class ReportStep {
       await singleOption.nth(i).click();
       this.checkChartDoraTabStatus({
         pipeline: pipelines[i],
-        showDevMeanTimeToRecoveryTrendContainer: showDevMeanTimeToRecoveryTrendContainer,
+        showPipelineMeanTimeToRecoveryTrendContainer: showDevMeanTimeToRecoveryTrendContainer,
         showLeadTimeForChangeChart: showLeadTimeForChangeChart,
         showDeploymentFrequencyChart: showDeploymentFrequencyChart,
-        showDevChangeFailureRateTrendContainer: showDevChangeFailureRateTrendContainer,
-        showDevChangeFailureRateChart: showDevChangeFailureRateChart,
-        showDevMeanTimeToRecoveryChart: showDevMeanTimeToRecoveryChart,
+        showPipelineChangeFailureRateTrendContainer: showDevChangeFailureRateTrendContainer,
+        showPipelineChangeFailureRateChart: showDevChangeFailureRateChart,
+        showPipelineMeanTimeToRecoveryChart: showDevMeanTimeToRecoveryChart,
       });
     }
+  }
+
+  async checkExplanation() {
+    await expect(this.leadTimeForChangesExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.leadTimeForChangesExplanationIcon);
+
+    await expect(this.deploymentFrequencyExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.deploymentFrequencyExplanationIcon);
+
+    await expect(this.pipelineChangeFailureRateExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.pipelineChangeFailureRateExplanationIcon);
+
+    await expect(this.pipelineMeanTimeToRecoveryExplanationIcon).toBeVisible();
+    await this.clickExplanationAndCheckDialog(this.pipelineMeanTimeToRecoveryExplanationIcon);
+  }
+
+  async clickExplanationAndCheckDialog(explanationIcon: Locator) {
+    await expect(this.doraMetricsDialog).not.toBeVisible();
+    await expect(this.doraMetricsDialogContainer).not.toBeVisible();
+    await expect(this.doraMetricsDialogClose).not.toBeVisible();
+    await expect(this.doraMetricsDialogDefinition).not.toBeVisible();
+    await expect(this.doraMetricsDialogInfluencedFactors).not.toBeVisible();
+    await expect(this.doraMetricsDialogFormula).not.toBeVisible();
+
+    await explanationIcon.click();
+
+    await expect(this.doraMetricsDialog).toBeVisible();
+    await expect(this.doraMetricsDialogContainer).toBeVisible();
+    await expect(this.doraMetricsDialogClose).toBeVisible();
+    await expect(this.doraMetricsDialogDefinition).toBeVisible();
+    await expect(this.doraMetricsDialogInfluencedFactors).toBeVisible();
+    await expect(this.doraMetricsDialogFormula).toBeVisible();
+
+    await this.doraMetricsDialogFormula.locator('a').click();
+
+    const newPage = await this.page.waitForEvent('popup');
+    const newPageUrl = newPage.url();
+
+    expect(newPageUrl).toContain('https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file'); // Check if the new page URL contains a specific string
+
+    await newPage.close();
+
+    await this.doraMetricsDialogClose.click();
+
+    await expect(this.doraMetricsDialog).not.toBeVisible();
+    await expect(this.doraMetricsDialogContainer).not.toBeVisible();
+    await expect(this.doraMetricsDialogClose).not.toBeVisible();
+    await expect(this.doraMetricsDialogDefinition).not.toBeVisible();
+    await expect(this.doraMetricsDialogInfluencedFactors).not.toBeVisible();
+    await expect(this.doraMetricsDialogFormula).not.toBeVisible();
   }
 }

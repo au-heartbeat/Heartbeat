@@ -1,19 +1,24 @@
 package heartbeat.controller.report.dto.response;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class DevMeanTimeToRecovery {
+public class PipelineChangeFailureRateOfPipeline {
 
-	private AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery;
+	private String name;
 
-	private List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines;
+	private String step;
+
+	private int failedTimesOfPipeline;
+
+	private int totalTimesOfPipeline;
+
+	private float failureRate;
 
 }

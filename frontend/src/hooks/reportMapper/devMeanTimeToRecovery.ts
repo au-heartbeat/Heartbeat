@@ -1,21 +1,21 @@
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-import { DevMeanTimeToRecoveryResponse } from '@src/clients/report/dto/response';
+import { PipelineMeanTimeToRecoveryResponse } from '@src/clients/report/dto/response';
 
-export const devMeanTimeToRecoveryMapper = ({
-  devMeanTimeToRecoveryOfPipelines,
-  avgDevMeanTimeToRecovery,
-}: DevMeanTimeToRecoveryResponse) => {
+export const pipelineMeanTimeToRecoveryMapper = ({
+  pipelineMeanTimeToRecoveryOfPipelines,
+  avgPipelineMeanTimeToRecovery,
+}: PipelineMeanTimeToRecoveryResponse) => {
   const minutesPerHour = 60;
-  const milliscondMinute = 60000;
+  const millisecondMinute = 60000;
   const formatDuration = (duration: number) => {
-    const minutesDuration = duration / milliscondMinute;
+    const minutesDuration = duration / millisecondMinute;
     return (minutesDuration / minutesPerHour).toFixed(2);
   };
 
-  const mappedDevMeanTimeToRecoveryValue: ReportDataWithTwoColumns[] = [];
+  const mappedPipelineMeanTimeToRecoveryValue: ReportDataWithTwoColumns[] = [];
 
-  devMeanTimeToRecoveryOfPipelines.map((item, index) => {
-    const devMeanTimeToRecoveryValue: ReportDataWithTwoColumns = {
+  pipelineMeanTimeToRecoveryOfPipelines.map((item, index) => {
+    const pipelineMeanTimeToRecoveryValue: ReportDataWithTwoColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
       valueList: [
@@ -24,18 +24,18 @@ export const devMeanTimeToRecoveryMapper = ({
         },
       ],
     };
-    mappedDevMeanTimeToRecoveryValue.push(devMeanTimeToRecoveryValue);
+    mappedPipelineMeanTimeToRecoveryValue.push(pipelineMeanTimeToRecoveryValue);
   });
 
-  mappedDevMeanTimeToRecoveryValue.push({
-    id: mappedDevMeanTimeToRecoveryValue.length,
-    name: avgDevMeanTimeToRecovery.name,
+  mappedPipelineMeanTimeToRecoveryValue.push({
+    id: mappedPipelineMeanTimeToRecoveryValue.length,
+    name: avgPipelineMeanTimeToRecovery.name,
     valueList: [
       {
-        value: `${formatDuration(avgDevMeanTimeToRecovery.timeToRecovery)}`,
+        value: `${formatDuration(avgPipelineMeanTimeToRecovery.timeToRecovery)}`,
       },
     ],
   });
 
-  return mappedDevMeanTimeToRecoveryValue;
+  return mappedPipelineMeanTimeToRecoveryValue;
 };

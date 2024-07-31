@@ -77,7 +77,7 @@ export const ReportForTwoColumns = ({ title, data }: ReportForTwoColumnsProps) =
 };
 
 const getTitleUnit = (title: string) => {
-  if (title === MetricsTitle.DevMeanTimeToRecovery) {
+  if (title === MetricsTitle.PipelineMeanTimeToRecovery) {
     return ReportSuffixUnits.Hours;
   } else {
     return '';

@@ -3,12 +3,14 @@ package heartbeat.service.report;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRateOfPipeline;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
 import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
-import heartbeat.controller.report.dto.response.AvgDevChangeFailureRate;
-import heartbeat.controller.report.dto.response.AvgDevMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.AvgPipelineChangeFailureRate;
+import heartbeat.controller.report.dto.response.AvgPipelineMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.AvgLeadTimeForChanges;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
@@ -18,10 +20,8 @@ import heartbeat.controller.report.dto.response.CycleTime;
 import heartbeat.controller.report.dto.response.CycleTimeForSelectedStepItem;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
 import heartbeat.controller.report.dto.response.DeploymentFrequencyOfPipeline;
-import heartbeat.controller.report.dto.response.DevChangeFailureRate;
-import heartbeat.controller.report.dto.response.DevChangeFailureRateOfPipeline;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecoveryOfPipeline;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRate;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecoveryOfPipeline;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfPipelines;
 import heartbeat.controller.report.dto.response.LeadTimeInfo;
@@ -367,13 +367,13 @@ public class CSVFileGenerator {
 		if (leadTimeForChanges != null)
 			rows.addAll(getRowsFromLeadTimeForChanges(leadTimeForChanges));
 
-		DevChangeFailureRate devChangeFailureRate = reportResponse.getDevChangeFailureRate();
-		if (devChangeFailureRate != null)
-			rows.addAll(getRowsFromDevChangeFailureRate(devChangeFailureRate));
+		PipelineChangeFailureRate pipelineChangeFailureRate = reportResponse.getPipelineChangeFailureRate();
+		if (pipelineChangeFailureRate != null)
+			rows.addAll(getRowsFromPipelineChangeFailureRate(pipelineChangeFailureRate));
 
-		DevMeanTimeToRecovery devMeanTimeToRecovery = reportResponse.getDevMeanTimeToRecovery();
-		if (devMeanTimeToRecovery != null)
-			rows.addAll(getRowsFromDevMeanTimeToRecovery(devMeanTimeToRecovery));
+		PipelineMeanTimeToRecovery pipelineMeanTimeToRecovery = reportResponse.getPipelineMeanTimeToRecovery();
+		if (pipelineMeanTimeToRecovery != null)
+			rows.addAll(getRowsFromPipelineMeanTimeToRecovery(pipelineMeanTimeToRecovery));
 
 		return rows;
 	}
@@ -520,38 +520,44 @@ public class CSVFileGenerator {
 		return rows;
 	}
 
-	private List<String[]> getRowsFromDevChangeFailureRate(DevChangeFailureRate devChangeFailureRate) {
+	private List<String[]> getRowsFromPipelineChangeFailureRate(PipelineChangeFailureRate pipelineChangeFailureRate) {
 		List<String[]> rows = new ArrayList<>();
-		List<DevChangeFailureRateOfPipeline> devChangeFailureRateOfPipelines = devChangeFailureRate
-			.getDevChangeFailureRateOfPipelines();
-		devChangeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Dev change failure rate",
-				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev change failure rate",
+		List<PipelineChangeFailureRateOfPipeline> pipelineChangeFailureRateOfPipelines = pipelineChangeFailureRate
+			.getPipelineChangeFailureRateOfPipelines();
+		pipelineChangeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Pipeline change failure rate",
+				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
+						+ " / Pipeline change failure rate",
 				DecimalUtil.formatDecimalFour(pipeline.getFailureRate()) }));
 
-		AvgDevChangeFailureRate avgDevChangeFailureRate = devChangeFailureRate.getAvgDevChangeFailureRate();
-		if (devChangeFailureRateOfPipelines.size() > 1)
-			rows.add(new String[] { "Dev change failure rate",
-					avgDevChangeFailureRate.getName() + " / Dev change failure rate",
-					DecimalUtil.formatDecimalTwo(avgDevChangeFailureRate.getFailureRate() * 100) });
+		AvgPipelineChangeFailureRate avgPipelineChangeFailureRate = pipelineChangeFailureRate
+			.getAvgPipelineChangeFailureRate();
+		if (pipelineChangeFailureRateOfPipelines.size() > 1)
+			rows.add(new String[] { "Pipeline change failure rate",
+					avgPipelineChangeFailureRate.getName() + " / Pipeline change failure rate",
+					DecimalUtil.formatDecimalTwo(avgPipelineChangeFailureRate.getFailureRate() * 100) });
 
 		return rows;
 	}
 
-	private List<String[]> getRowsFromDevMeanTimeToRecovery(DevMeanTimeToRecovery devMeanTimeToRecovery) {
+	private List<String[]> getRowsFromPipelineMeanTimeToRecovery(
+			PipelineMeanTimeToRecovery pipelineMeanTimeToRecovery) {
 		List<String[]> rows = new ArrayList<>();
-		List<DevMeanTimeToRecoveryOfPipeline> devMeanTimeToRecoveryOfPipelines = devMeanTimeToRecovery
-			.getDevMeanTimeToRecoveryOfPipelines();
-		devMeanTimeToRecoveryOfPipelines.forEach(pipeline -> rows.add(new String[] { "Dev mean time to recovery",
-				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep()) + " / Dev mean time to recovery",
-				DecimalUtil
-					.formatDecimalTwo(TimeUtils.millisToUnit(pipeline.getTimeToRecovery().doubleValue(), HOURS)) }));
+		List<PipelineMeanTimeToRecoveryOfPipeline> pipelineMeanTimeToRecoveryOfPipelines = pipelineMeanTimeToRecovery
+			.getPipelineMeanTimeToRecoveryOfPipelines();
+		pipelineMeanTimeToRecoveryOfPipelines
+			.forEach(pipeline -> rows.add(new String[] { "Pipeline mean time to recovery",
+					pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
+							+ " / Pipeline mean time to recovery",
+					DecimalUtil.formatDecimalTwo(
+							TimeUtils.millisToUnit(pipeline.getTimeToRecovery().doubleValue(), HOURS)) }));
 
-		AvgDevMeanTimeToRecovery avgDevMeanTimeToRecovery = devMeanTimeToRecovery.getAvgDevMeanTimeToRecovery();
-		if (devMeanTimeToRecoveryOfPipelines.size() > 1)
-			rows.add(new String[] { "Dev mean time to recovery",
-					avgDevMeanTimeToRecovery.getName() + " / Dev mean time to recovery",
+		AvgPipelineMeanTimeToRecovery avgPipelineMeanTimeToRecovery = pipelineMeanTimeToRecovery
+			.getAvgPipelineMeanTimeToRecovery();
+		if (pipelineMeanTimeToRecoveryOfPipelines.size() > 1)
+			rows.add(new String[] { "Pipeline mean time to recovery",
+					avgPipelineMeanTimeToRecovery.getName() + " / Pipeline mean time to recovery",
 					DecimalUtil.formatDecimalTwo(TimeUtils
-						.millisToUnit(avgDevMeanTimeToRecovery.getTimeToRecovery().doubleValue(), HOURS)) });
+						.millisToUnit(avgPipelineMeanTimeToRecovery.getTimeToRecovery().doubleValue(), HOURS)) });
 
 		return rows;
 	}

@@ -21,9 +21,9 @@ public class ReportResponse {
 
 	private DeploymentFrequency deploymentFrequency;
 
-	private DevChangeFailureRate devChangeFailureRate;
+	private PipelineChangeFailureRate pipelineChangeFailureRate;
 
-	private DevMeanTimeToRecovery devMeanTimeToRecovery;
+	private PipelineMeanTimeToRecovery pipelineMeanTimeToRecovery;
 
 	private LeadTimeForChanges leadTimeForChanges;
 

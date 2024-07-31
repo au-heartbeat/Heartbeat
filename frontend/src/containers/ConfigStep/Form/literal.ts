@@ -15,8 +15,8 @@ export const METRICS_LITERAL = [
   'Rework times',
   'Lead time for changes',
   'Deployment frequency',
-  'Dev change failure rate',
-  'Dev mean time to recovery',
+  'Pipeline change failure rate',
+  'Pipeline mean time to recovery',
 ];
 export const BOARD_TYPE_LITERAL = ['Jira'];
 export const PIPELINE_TOOL_TYPE_LITERAL = ['BuildKite'];

@@ -1,14 +1,14 @@
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-import { DevChangeFailureRateResponse } from '@src/clients/report/dto/response';
+import { PipelineChangeFailureRateResponse } from '@src/clients/report/dto/response';
 
-export const devChangeFailureRateMapper = ({
-  devChangeFailureRateOfPipelines,
-  avgDevChangeFailureRate,
-}: DevChangeFailureRateResponse) => {
-  const mappedDevChangeFailureRateValue: ReportDataWithTwoColumns[] = [];
+export const pipelineChangeFailureRateMapper = ({
+  pipelineChangeFailureRateOfPipelines,
+  avgPipelineChangeFailureRate,
+}: PipelineChangeFailureRateResponse) => {
+  const mappedPipelineChangeFailureRateValue: ReportDataWithTwoColumns[] = [];
 
-  devChangeFailureRateOfPipelines.map((item, index) => {
-    const devChangeFailureRateValue: ReportDataWithTwoColumns = {
+  pipelineChangeFailureRateOfPipelines.map((item, index) => {
+    const pipelineChangeFailureRateValue: ReportDataWithTwoColumns = {
       id: index,
       name: `${item.name}/${item.step}`,
       valueList: [
@@ -17,18 +17,18 @@ export const devChangeFailureRateMapper = ({
         },
       ],
     };
-    mappedDevChangeFailureRateValue.push(devChangeFailureRateValue);
+    mappedPipelineChangeFailureRateValue.push(pipelineChangeFailureRateValue);
   });
 
-  mappedDevChangeFailureRateValue.push({
-    id: mappedDevChangeFailureRateValue.length,
-    name: avgDevChangeFailureRate.name,
+  mappedPipelineChangeFailureRateValue.push({
+    id: mappedPipelineChangeFailureRateValue.length,
+    name: avgPipelineChangeFailureRate.name,
     valueList: [
       {
-        value: `${(avgDevChangeFailureRate.failureRate * 100).toFixed(2)}`,
+        value: `${(avgPipelineChangeFailureRate.failureRate * 100).toFixed(2)}`,
       },
     ],
   });
 
-  return mappedDevChangeFailureRateValue;
+  return mappedPipelineChangeFailureRateValue;
 };

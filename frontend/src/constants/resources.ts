@@ -68,8 +68,8 @@ export enum RequiredData {
   ReworkTimes = 'Rework times',
   LeadTimeForChanges = 'Lead time for changes',
   DeploymentFrequency = 'Deployment frequency',
-  DevChangeFailureRate = 'Dev change failure rate',
-  DevMeanTimeToRecovery = 'Dev mean time to recovery',
+  PipelineChangeFailureRate = 'Pipeline change failure rate',
+  PipelineMeanTimeToRecovery = 'Pipeline mean time to recovery',
 }
 
 export const IMPORT_METRICS_MAPPING: Record<string, string> = {
@@ -79,10 +79,10 @@ export const IMPORT_METRICS_MAPPING: Record<string, string> = {
   'Rework times': 'Rework times',
   'Lead time for changes': 'Lead time for changes',
   'Deployment frequency': 'Deployment frequency',
-  'Dev change failure rate': 'Dev change failure rate',
-  'Dev mean time to recovery': 'Dev mean time to recovery',
-  'Change failure rate': 'Dev change failure rate',
-  'Mean time to recovery': 'Dev mean time to recovery',
+  'Pipeline change failure rate': 'Pipeline change failure rate',
+  'Pipeline mean time to recovery': 'Pipeline mean time to recovery',
+  'Change failure rate': 'Pipeline change failure rate',
+  'Mean time to recovery': 'Pipeline mean time to recovery',
 };
 
 export enum MetricsTitle {
@@ -92,8 +92,8 @@ export enum MetricsTitle {
   Rework = 'Rework',
   LeadTimeForChanges = 'Lead Time For Changes',
   DeploymentFrequency = 'Deployment Frequency',
-  DevChangeFailureRate = 'Dev Change Failure Rate',
-  DevMeanTimeToRecovery = 'Dev Mean Time To Recovery',
+  PipelineChangeFailureRate = 'Pipeline Change Failure Rate',
+  PipelineMeanTimeToRecovery = 'Pipeline Mean Time To Recovery',
 }
 
 export enum ChartType {
@@ -104,8 +104,8 @@ export enum ChartType {
   Classification = 'Classification',
   LeadTimeForChanges = 'Lead Time For Changes',
   DeploymentFrequency = 'Deployment Frequency',
-  DevChangeFailureRate = 'Dev Change Failure Rate',
-  DevMeanTimeToRecovery = 'Dev Mean Time To Recovery',
+  PipelineChangeFailureRate = 'Pipeline Change Failure Rate',
+  PipelineMeanTimeToRecovery = 'Pipeline Mean Time To Recovery',
 }
 
 export enum TrendIcon {
@@ -124,9 +124,9 @@ export const CHART_TREND_TIP = {
   [ChartType.CycleTimeAllocation]: 'Total development time/Total cycle time',
   [ChartType.Rework]: 'Total rework times',
   [ChartType.LeadTimeForChanges]: 'Lead Time',
-  [ChartType.DeploymentFrequency]: 'Mean Time To Recovery',
-  [ChartType.DevChangeFailureRate]: 'Dev Change Failure Rate',
-  [ChartType.DevMeanTimeToRecovery]: 'Dev Mean Time To Recovery',
+  [ChartType.DeploymentFrequency]: 'Deployment Frequency',
+  [ChartType.PipelineChangeFailureRate]: 'Pipeline Change Failure Rate',
+  [ChartType.PipelineMeanTimeToRecovery]: 'Pipeline Mean Time To Recovery',
   [ChartType.Classification]: 'Classification',
 };
 
@@ -139,8 +139,8 @@ export const DOWN_TREND_IS_BETTER: ChartType[] = [
   ChartType.Rework,
   ChartType.CycleTime,
   ChartType.LeadTimeForChanges,
-  ChartType.DevMeanTimeToRecovery,
-  ChartType.DevChangeFailureRate,
+  ChartType.PipelineMeanTimeToRecovery,
+  ChartType.PipelineChangeFailureRate,
 ];
 
 export enum MetricsSubtitle {
@@ -164,15 +164,15 @@ export const SOURCE_CONTROL_METRICS: string[] = [RequiredData.LeadTimeForChanges
 
 export const PIPELINE_METRICS: string[] = [
   RequiredData.DeploymentFrequency,
-  RequiredData.DevChangeFailureRate,
-  RequiredData.DevMeanTimeToRecovery,
+  RequiredData.PipelineChangeFailureRate,
+  RequiredData.PipelineMeanTimeToRecovery,
 ];
 
 export const DORA_METRICS: string[] = [
   RequiredData.LeadTimeForChanges,
   RequiredData.DeploymentFrequency,
-  RequiredData.DevChangeFailureRate,
-  RequiredData.DevMeanTimeToRecovery,
+  RequiredData.PipelineChangeFailureRate,
+  RequiredData.PipelineMeanTimeToRecovery,
 ];
 
 export const BOARD_METRICS: string[] = [
@@ -603,4 +603,75 @@ export const emptyDataMapperDoraChart = (allPipelines: string[], value: string) 
     devChangeFailureRateList,
     exportValidityTimeMin: 0.0005,
   };
+};
+
+export const DORA_METRICS_EXPLAINATION = {
+  [RequiredData.LeadTimeForChanges.toLowerCase()]: {
+    insight:
+      'this value is lower is better, means that your team is more efficient and flexible in responding to changes.',
+    definitions: {
+      definition:
+        'is the time from code committed to code successfully running in production(in Heartbeat, this means running in pipelines/steps rather than actual production) .',
+      details: [
+        'Definition for ‘PR Lead Time’ :  is the time from code committed to PR merge.',
+        'Definition for ‘Pipeline Lead Time’ : is the time from PR merge to Job complete.',
+      ],
+    },
+    'influenced factors': {
+      details: [
+        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
+        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
+        'Passed builds: only passed builds will be counted.',
+        'Working days: non-working days, such as weekends or holidays will be excluded.',
+      ],
+    },
+  },
+  [RequiredData.DeploymentFrequency.toLowerCase()]: {
+    insight:
+      'this value is higher is better, means that your team is capable of responding to changes, iterating, and updating products in a rapid and efficient manner.',
+    definitions: {
+      details: [
+        'Definition for ‘Deployments/Day’ : how often you deploy code to production (in Heartbeat, this means deploying to pipelines/steps rather than actual production) on a daily basis.',
+        'Definition for ‘Deployment Times’ : the total deployment times in the selected time period.',
+      ],
+    },
+    'influenced factors': {
+      details: [
+        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
+        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
+        'Passed builds: only passed builds will be counted.',
+        'Working days: non-working days, such as weekends or holidays will be excluded.',
+      ],
+    },
+  },
+  [RequiredData.PipelineChangeFailureRate.toLowerCase()]: {
+    insight:
+      'this value is lower is better, means that the failed pipelines are fewer, and your team is able to deploy updates successfully in a more reliable manner.',
+    definitions: {
+      details: [
+        'Pipeline Change Failure Rate: this metrics based on development, which is the percentage of failed pipelines in the total pipelines, and you can select different pipeline as your final step.',
+      ],
+    },
+    'influenced factors': {
+      details: [
+        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
+        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
+      ],
+    },
+  },
+  [RequiredData.PipelineMeanTimeToRecovery.toLowerCase()]: {
+    insight:
+      'this value is lower is better, means that your team possesses capabilities of efficiency, professionalism, and continuous improvement in fault management and system recovery.',
+    definitions: {
+      details: [
+        'Pipeline Mean time to recovery : in Heartbeat, it comes from pipeline, and it records how long it generally takes to restore when pipeline failed.',
+      ],
+    },
+    'influenced factors': {
+      details: [
+        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
+        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
+      ],
+    },
+  },
 };

@@ -1,6 +1,6 @@
+import { pipelineMeanTimeToRecoveryMapper } from '@src/hooks/reportMapper/devMeanTimeToRecovery';
 import { classificationCardCountMapper } from '@src/hooks/reportMapper/classificationCardCount';
-import { devMeanTimeToRecoveryMapper } from '@src/hooks/reportMapper/devMeanTimeToRecovery';
-import { devChangeFailureRateMapper } from '@src/hooks/reportMapper/devChangeFailureRate';
+import { pipelineChangeFailureRateMapper } from '@src/hooks/reportMapper/devChangeFailureRate';
 import { deploymentFrequencyMapper } from '@src/hooks/reportMapper/deploymentFrequency';
 import { leadTimeForChangesMapper } from '@src/hooks/reportMapper/leadTimeForChanges';
 import { exportValidityTimeMapper } from '@src/hooks/reportMapper/exportValidityTime';
@@ -15,9 +15,9 @@ export const reportMapper = ({
   cycleTime,
   classificationList,
   deploymentFrequency,
-  devMeanTimeToRecovery,
+  pipelineMeanTimeToRecovery,
   leadTimeForChanges,
-  devChangeFailureRate,
+  pipelineChangeFailureRate,
   exportValidityTime,
   rework,
 }: ReportResponseDTO): ReportResponse => {
@@ -31,11 +31,13 @@ export const reportMapper = ({
 
   const deploymentFrequencyList = deploymentFrequency && deploymentFrequencyMapper(deploymentFrequency);
 
-  const devMeanTimeToRecoveryList = devMeanTimeToRecovery && devMeanTimeToRecoveryMapper(devMeanTimeToRecovery);
+  const pipelineMeanTimeToRecoveryList =
+    pipelineMeanTimeToRecovery && pipelineMeanTimeToRecoveryMapper(pipelineMeanTimeToRecovery);
 
   const leadTimeForChangesList = leadTimeForChanges && leadTimeForChangesMapper(leadTimeForChanges);
 
-  const devChangeFailureRateList = devChangeFailureRate && devChangeFailureRateMapper(devChangeFailureRate);
+  const pipelineChangeFailureRateList =
+    pipelineChangeFailureRate && pipelineChangeFailureRateMapper(pipelineChangeFailureRate);
 
   const exportValidityTimeMin = exportValidityTimeMapper(exportValidityTime);
 
@@ -49,9 +51,9 @@ export const reportMapper = ({
     reworkList,
     classification,
     deploymentFrequencyList,
-    devMeanTimeToRecoveryList,
+    pipelineMeanTimeToRecoveryList,
     leadTimeForChangesList,
-    devChangeFailureRateList,
+    pipelineChangeFailureRateList,
     exportValidityTimeMin,
     classificationCardCount,
   };

@@ -110,7 +110,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
   ],
-  devMeanTimeToRecoveryList: [
+  pipelineMeanTimeToRecoveryList: [
     {
       id: 0,
       name: 'Heartbeat/:react: Build Frontend',
@@ -168,7 +168,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
   ],
-  devChangeFailureRateList: [
+  pipelineChangeFailureRateList: [
     {
       id: 0,
       name: 'fs-platform-onboarding/ :shipit: deploy to PROD',

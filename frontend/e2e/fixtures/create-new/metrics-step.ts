@@ -23,8 +23,8 @@ export const config = {
     'Rework times',
     'Lead time for changes',
     'Deployment frequency',
-    'Dev change failure rate',
-    'Dev mean time to recovery',
+    'Pipeline change failure rate',
+    'Pipeline mean time to recovery',
   ],
   board: {
     type: 'Jira',

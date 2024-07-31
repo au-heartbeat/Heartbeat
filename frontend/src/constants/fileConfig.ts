@@ -174,8 +174,21 @@ export const convertToNewFileConfig = (fileConfig: OldFileConfig | NewFileConfig
   } else if (fileConfig.calendarType?.toLocaleLowerCase() === CALENDAR_LABEL[Calendar.China].toLocaleLowerCase()) {
     fileConfig.calendarType = Calendar.China;
   }
+  const metrics: string[] = [];
+  if (fileConfig.metrics) {
+    fileConfig.metrics.forEach((it) => {
+      if (it === 'Dev mean time to recovery') {
+        metrics.push('Pipeline mean time to recovery');
+      } else if (it === 'Dev change failure rate') {
+        metrics.push('Pipeline change failure rate');
+      } else {
+        metrics.push(it);
+      }
+    });
+  }
   return {
     ...fileConfig,
+    metrics,
     reworkTimesSettings: filterExcludeReworkStatus(fileConfig.reworkTimesSettings),
   } as NewFileConfig;
 };

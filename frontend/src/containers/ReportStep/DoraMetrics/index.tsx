@@ -84,16 +84,16 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
   };
 
   const getPipelineItems = () => {
-    const devMeanTimeToRecovery = doraReport?.devMeanTimeToRecovery;
-    const devChangeFailureRate = doraReport?.devChangeFailureRate;
+    const devMeanTimeToRecovery = doraReport?.pipelineMeanTimeToRecovery;
+    const devChangeFailureRate = doraReport?.pipelineChangeFailureRate;
 
-    const devMeanTimeToRecoveryList = metrics.includes(RequiredData.DevMeanTimeToRecovery)
+    const devMeanTimeToRecoveryList = metrics.includes(RequiredData.PipelineMeanTimeToRecovery)
       ? [
           {
-            title: MetricsTitle.DevMeanTimeToRecovery,
+            title: MetricsTitle.PipelineMeanTimeToRecovery,
             items: devMeanTimeToRecovery && [
               {
-                value: formatMillisecondsToHours(devMeanTimeToRecovery.avgDevMeanTimeToRecovery.timeToRecovery),
+                value: formatMillisecondsToHours(devMeanTimeToRecovery.avgPipelineMeanTimeToRecovery.timeToRecovery),
                 subtitle: MetricsSubtitle.DevMeanTimeToRecoveryHours,
               },
             ],
@@ -101,14 +101,14 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
         ]
       : [];
 
-    const devChangeFailureRateList = metrics.includes(RequiredData.DevChangeFailureRate)
+    const devChangeFailureRateList = metrics.includes(RequiredData.PipelineChangeFailureRate)
       ? [
           {
-            title: MetricsTitle.DevChangeFailureRate,
+            title: MetricsTitle.PipelineChangeFailureRate,
             items: devChangeFailureRate && [
               {
-                value: devChangeFailureRate.avgDevChangeFailureRate.failureRate * 100,
-                extraValue: `% (${devChangeFailureRate.avgDevChangeFailureRate.totalFailedTimes}/${devChangeFailureRate.avgDevChangeFailureRate.totalTimes})`,
+                value: devChangeFailureRate.avgPipelineChangeFailureRate.failureRate * 100,
+                extraValue: `% (${devChangeFailureRate.avgPipelineChangeFailureRate.totalFailedTimes}/${devChangeFailureRate.avgPipelineChangeFailureRate.totalTimes})`,
                 subtitle: MetricsSubtitle.FailureRate,
               },
             ],

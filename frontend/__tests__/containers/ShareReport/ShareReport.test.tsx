@@ -77,8 +77,8 @@ describe('Share Report', () => {
       'Classification',
       'Lead time for changes',
       'Deployment frequency',
-      'Dev change failure rate',
-      'Dev mean time to recovery',
+      'Pipeline change failure rate',
+      'Pipeline mean time to recovery',
     ];
     reportHook.current.classificationNames = [];
   };
@@ -101,8 +101,8 @@ describe('Share Report', () => {
     expect(screen.getByText('DORA Metrics')).toBeInTheDocument();
     expect(screen.getByText('Lead Time For Changes')).toBeInTheDocument();
     expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
-    expect(screen.getByText('Dev Change Failure Rate')).toBeInTheDocument();
-    expect(screen.getByText('Dev Mean Time To Recovery')).toBeInTheDocument();
+    expect(screen.getByText('Pipeline Change Failure Rate')).toBeInTheDocument();
+    expect(screen.getByText('Pipeline Mean Time To Recovery')).toBeInTheDocument();
 
     expect(reportHook.current.getData).toHaveBeenCalledTimes(1);
   });

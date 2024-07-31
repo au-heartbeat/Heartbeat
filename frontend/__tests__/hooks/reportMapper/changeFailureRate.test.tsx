@@ -1,14 +1,14 @@
-import { devChangeFailureRateMapper } from '@src/hooks/reportMapper/devChangeFailureRate';
+import { pipelineChangeFailureRateMapper } from '@src/hooks/reportMapper/devChangeFailureRate';
 
 describe('dev change failure rate data mapper', () => {
-  const mockDevChangeFailureRateRes = {
-    avgDevChangeFailureRate: {
+  const mockPipelineChangeFailureRateRes = {
+    avgPipelineChangeFailureRate: {
       name: 'Average',
       totalTimes: 12,
       totalFailedTimes: 0,
       failureRate: 0.0,
     },
-    devChangeFailureRateOfPipelines: [
+    pipelineChangeFailureRateOfPipelines: [
       {
         name: 'fs-platform-onboarding',
         step: ' :shipit: deploy to PROD',
@@ -19,7 +19,7 @@ describe('dev change failure rate data mapper', () => {
     ],
   };
   it('maps response dev change failure rate values to ui display value', () => {
-    const expectedDevChangeFailureRateValues = [
+    const expectedPipelineChangeFailureRateValues = [
       {
         id: 0,
         name: 'fs-platform-onboarding/ :shipit: deploy to PROD',
@@ -39,8 +39,8 @@ describe('dev change failure rate data mapper', () => {
         ],
       },
     ];
-    const mappedDevChangeFailureRate = devChangeFailureRateMapper(mockDevChangeFailureRateRes);
+    const mappedPipelineChangeFailureRate = pipelineChangeFailureRateMapper(mockPipelineChangeFailureRateRes);
 
-    expect(mappedDevChangeFailureRate).toEqual(expectedDevChangeFailureRateValues);
+    expect(mappedPipelineChangeFailureRate).toEqual(expectedPipelineChangeFailureRateValues);
   });
 });

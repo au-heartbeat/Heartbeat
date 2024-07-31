@@ -2,6 +2,7 @@ package heartbeat.service.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import heartbeat.controller.report.dto.response.MetricsDataCompleted;
+import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
 import heartbeat.exception.GenerateReportException;
 import heartbeat.exception.RequestFailedException;
 import heartbeat.exception.ServiceUnavailableException;
@@ -20,8 +21,7 @@ import heartbeat.controller.report.dto.request.MetricEnum;
 import heartbeat.controller.report.dto.response.Classification;
 import heartbeat.controller.report.dto.response.CycleTime;
 import heartbeat.controller.report.dto.response.DeploymentFrequency;
-import heartbeat.controller.report.dto.response.DevChangeFailureRate;
-import heartbeat.controller.report.dto.response.DevMeanTimeToRecovery;
+import heartbeat.controller.report.dto.response.PipelineChangeFailureRate;
 import heartbeat.controller.report.dto.response.LeadTimeForChanges;
 import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.controller.report.dto.response.ReportResponse;
@@ -33,9 +33,9 @@ import heartbeat.handler.AsyncMetricsDataHandler;
 import heartbeat.service.report.calculator.ClassificationCalculator;
 import heartbeat.service.report.calculator.CycleTimeCalculator;
 import heartbeat.service.report.calculator.DeploymentFrequencyCalculator;
-import heartbeat.service.report.calculator.DevChangeFailureRateCalculator;
+import heartbeat.service.report.calculator.PipelineChangeFailureRateCalculator;
 import heartbeat.service.report.calculator.LeadTimeForChangesCalculator;
-import heartbeat.service.report.calculator.MeanToRecoveryCalculator;
+import heartbeat.service.report.calculator.PipelineMeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.ReworkCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
@@ -107,10 +107,10 @@ class GenerateReporterServiceTest {
 	VelocityCalculator velocityCalculator;
 
 	@Mock
-	DevChangeFailureRateCalculator devChangeFailureRate;
+	PipelineChangeFailureRateCalculator pipelineChangeFailureRate;
 
 	@Mock
-	MeanToRecoveryCalculator meanToRecoveryCalculator;
+	PipelineMeanToRecoveryCalculator pipelineMeanToRecoveryCalculator;
 
 	@Mock
 	CycleTimeCalculator cycleTimeCalculator;
@@ -679,7 +679,8 @@ class GenerateReporterServiceTest {
 				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(List.of("deployment frequency", "dev change failure rate", "dev mean time to recovery"))
+				.metrics(List.of("deployment frequency", "pipeline change failure rate",
+						"pipeline mean time to recovery"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
 				.timezone("Asia/Shanghai")
@@ -694,11 +695,11 @@ class GenerateReporterServiceTest {
 			when(pipelineService.fetchBuildKiteInfo(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			DeploymentFrequency fakeDeploymentFrequency = DeploymentFrequency.builder().build();
-			DevChangeFailureRate fakeDevChangeFailureRate = DevChangeFailureRate.builder().build();
-			DevMeanTimeToRecovery fakeMeantime = DevMeanTimeToRecovery.builder().build();
+			PipelineChangeFailureRate fakePipelineChangeFailureRate = PipelineChangeFailureRate.builder().build();
+			PipelineMeanTimeToRecovery fakeMeantime = PipelineMeanTimeToRecovery.builder().build();
 			when(deploymentFrequency.calculate(any(), any(), any(), any(), any())).thenReturn(fakeDeploymentFrequency);
-			when(devChangeFailureRate.calculate(any())).thenReturn(fakeDevChangeFailureRate);
-			when(meanToRecoveryCalculator.calculate(any(), any())).thenReturn(fakeMeantime);
+			when(pipelineChangeFailureRate.calculate(any())).thenReturn(fakePipelineChangeFailureRate);
+			when(pipelineMeanToRecoveryCalculator.calculate(any(), any())).thenReturn(fakeMeantime);
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -716,9 +717,9 @@ class GenerateReporterServiceTest {
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 
-			assertEquals(fakeDevChangeFailureRate, response.getDevChangeFailureRate());
-			assertEquals(fakeMeantime, response.getDevMeanTimeToRecovery());
-			assertEquals(fakeDevChangeFailureRate, response.getDevChangeFailureRate());
+			assertEquals(fakePipelineChangeFailureRate, response.getPipelineChangeFailureRate());
+			assertEquals(fakeMeantime, response.getPipelineMeanTimeToRecovery());
+			assertEquals(fakePipelineChangeFailureRate, response.getPipelineChangeFailureRate());
 			assertEquals(fakeDeploymentFrequency, response.getDeploymentFrequency());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
@@ -729,8 +730,8 @@ class GenerateReporterServiceTest {
 						timeRangeAndTimeStamp, DORA, true);
 
 				verify(deploymentFrequency, times(1)).calculate(any(), any(), any(), any(), any());
-				verify(devChangeFailureRate, times(1)).calculate(any());
-				verify(meanToRecoveryCalculator, times(1)).calculate(any(), any());
+				verify(pipelineChangeFailureRate, times(1)).calculate(any());
+				verify(pipelineMeanToRecoveryCalculator, times(1)).calculate(any(), any());
 			});
 		}
 
@@ -740,7 +741,7 @@ class GenerateReporterServiceTest {
 				.calendarType(CalendarTypeEnum.REGULAR)
 				.startTime("10000")
 				.endTime("20000")
-				.metrics(List.of("dev change failure rate"))
+				.metrics(List.of("pipeline change failure rate"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
 				.timezone("Asia/Shanghai")
@@ -753,12 +754,12 @@ class GenerateReporterServiceTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
 			when(pipelineService.fetchBuildKiteInfo(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
-			when(devChangeFailureRate.calculate(any())).thenThrow(new NotFoundException(""));
+			when(pipelineChangeFailureRate.calculate(any())).thenThrow(new NotFoundException(""));
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
 			verify(kanbanService, never()).fetchDataFromKanban(request);
-			verify(devChangeFailureRate, times(1)).calculate(any());
+			verify(pipelineChangeFailureRate, times(1)).calculate(any());
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,
@@ -838,7 +839,7 @@ class GenerateReporterServiceTest {
 				.startTime("10000")
 				.endTime("20000")
 				.metrics(List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue(),
-						MetricEnum.DEV_CHANGE_FAILURE_RATE.getValue()))
+						MetricEnum.PIPELINE_CHANGE_FAILURE_RATE.getValue()))
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
@@ -1032,8 +1033,8 @@ class GenerateReporterServiceTest {
 			assertNull(composedReportResponse.getClassificationList());
 			assertNull(composedReportResponse.getDeploymentFrequency());
 			assertNull(composedReportResponse.getLeadTimeForChanges());
-			assertNull(composedReportResponse.getDevChangeFailureRate());
-			assertNull(composedReportResponse.getDevMeanTimeToRecovery());
+			assertNull(composedReportResponse.getPipelineChangeFailureRate());
+			assertNull(composedReportResponse.getPipelineMeanTimeToRecovery());
 			assertFalse(composedReportResponse.getAllMetricsCompleted());
 			assertFalse(composedReportResponse.getBoardMetricsCompleted());
 			assertFalse(composedReportResponse.getDoraMetricsCompleted());
