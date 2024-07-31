@@ -664,7 +664,7 @@ export class ReportStep {
     await expect(this.pipelineLeadTime).toContainText(`${pipelineLeadTime}Pipeline Lead Time(Hours)`);
     await expect(this.totalLeadTime).toContainText(`${totalLeadTime}Total Lead Time(Hours)`);
     await expect(this.deploymentFrequency).toContainText(
-      `${deploymentFrequency}Deployments/Days${deploymentTimes}Deployment times`,
+      `${deploymentFrequency}Deployment Frequency(Times/Days)${deploymentTimes}Deployment Times(Times)`,
     );
     await expect(this.failureRate).toContainText(failureRate);
     await expect(this.pipelineMeanTimeToRecovery).toContainText(`${pipelineMeanTimeToRecovery}(Hours)`);

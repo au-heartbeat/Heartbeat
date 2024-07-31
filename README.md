@@ -41,7 +41,7 @@
     - [3.4.3 Classification](#343-classification)
     - [3.4.4 Rework](#344-rework)
     - [3.4.5 Deployment Frequency](#345-deployment-frequency)
-    - [3.4.6 Lead time for changes Data](#346-lead-time-for-changes-data)
+    - [3.4.6 Lead Time For Changes Data](#346-lead-time-for-changes-data)
     - [3.4.7 Pipeline Change Failure Rate](#347-pipeline-change-failure-rate)
     - [3.4.8 Pipeline Mean time to recovery](#348-pipeline-mean-time-to-recovery)
   - [3.5 Export original data](#35-export-original-data)
@@ -102,7 +102,7 @@ State of DevOps Report is launching in 2019. In this webinar, The 4 key metrics 
 3.  [Classification](#343-classification)
 4.  [Rework](#344-rework)
 5.  [Deployment Frequency](#345-deployment-frequency) 
-6.  [Lead Time for changes](#346-lead-time-for-changes-data)
+6.  [Lead Time for Changes](#346-lead-time-for-changes-data)
 7.  [Pipeline Change Failure Rate](#347-pipeline-change-failure-rate)
 8.  [Pipeline Mean Time To Recovery](#348-pipeline-mean-time-to-recovery)
 
@@ -377,12 +377,12 @@ Below trend indicator means that development time ratio is not so unhealthy betw
 In Velocity Report, it will list the corresponding data by Story Point and the number of story tickets. (image 3-19)
 - `Velocity` : includes how many story points and cards we have completed within selected time period.
 - Definition for 'Velocity(Story Point)‘: how many story point we have completed within selected time period.
-  - Factors
+  - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Selected crews
 - Formula for 'Velocity(Story Point): sum of story points for done cards in selected time period
 - Definition for 'Throughput(Cards Count): how many story cards we have completed within selected time period.
-  - Factors
+  - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Selected board crews
 - Formula for 'Throughput(Cards Count): sum of cards count for done cards in selected time period
@@ -404,12 +404,12 @@ The calculation process data and final result of Cycle Time are calculated by ro
   - testing
   - Done
 - Definition for ‘Average Cycle Time(Days/SP)’: how many days does it take on average to complete a point
-  - Factors
+  - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Selected crews
 - Formula for ‘Average Cycle Time(Days/SP)’: `sum of cycle time for done cards`/`sum of story points of done cards`
 - Definition for ‘Average Cycle Time(Days/Card)’: how many days does it take on average to complete a card
-  - Factors
+  - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Selected board crews
 - Formula for ‘Average Cycle Time(Days/Card)’: `sum of cycle time for done cards`/`done cards count`
@@ -430,7 +430,7 @@ _Image 3-25，Classification Report_
 ### 3.4.4 Rework
 
 - Definition for ‘Rework': cards roll back from a later state to a previous state, for example, one card move from 'testing' state to 'in dev' state, which means this card is reworked.
-  - Factors
+  - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Selected board crews
 - Formula for 'Total rework times': the total number of rework times in all done cards
@@ -448,18 +448,20 @@ _Image 3-26，Rework Report_
 
 ### 3.4.5 Deployment Frequency
 - Definition for ‘Deployment Frequency': this metrics records how often you deploy code to production on a daily basis.
-  - Factors
+  - Influenced factors
     - Added pipelines
     - Selected pipeline steps 
     - Selected Github branch for pipeline
     - Selected pipeline crews
+    - Passed builds
 - Formula for ‘Deployment Frequency': `the sum of builds for（Status = passed & Valid = true）`/`working days`
 - Definition for ‘Deployment times': how many times you deploy code to production.
-  - Factors
+  - Influenced factors
     - Added pipelines
     - Selected pipeline steps
     - Selected Github branch for pipeline
     - Selected pipeline crews
+    - Passed builds
 - Formula for ‘Deployment times': `the sum of builds for（Status = passed & Valid = true`
 
 ![Image 3-27](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/export/export-pipline-data.png)\
@@ -467,9 +469,9 @@ _Image 3-27，export pipline data_
 ![Image 3-28](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/12-1.png)\
 _Image 3-28，Deployment Frequency Report_
 
-### 3.4.6 Lead time for changes Data
-- Definition of 'Lead time for change': the time from first code commit of PR until the PR deployed to production. In heartbeat, `Lead time for change` = `PR lead time` + `Pipleline lead time`
-  - Factors
+### 3.4.6 Lead Time For Changes Data
+- Definition for 'Lead Time For Changes': the time from first code commit of PR until the PR deployed to production. In heartbeat, `Lead time for change` = `PR lead time` + `Pipleline lead time`
+  - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Added pipelines
     - Selected pipeline steps
@@ -490,7 +492,7 @@ _Image 3-29，Lead time for changes Report_
 
 ### 3.4.7 Pipeline Change Failure Rate
 - Definition for ‘Pipeline Change Failure Rate': this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on pipeline，which is the percentage of failed pipeline builds in the total pipeline builds
-  - Factors
+  - Influenced factors
     - Added pipelines
     - Selected pipeline steps
     - Selected Github branch for pipeline
@@ -502,7 +504,7 @@ _Image 3-30，Pipeline Change Failure Rate Report_
 
 ### 3.4.8 Pipeline Mean time to recovery
 - Definition for ‘Pipeline Mean time to recovery': this metrics is also different from the official definition of Mean time to recovery. This metrics comes from pipeline, and it records how long it generally takes to restore a pipeline when pipeline failed.
-  - Factors
+  - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Added pipelines
     - Selected pipeline steps

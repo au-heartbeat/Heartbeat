@@ -11,7 +11,7 @@ describe('Dora Metrics Dialog', () => {
     expect(screen.queryByLabelText('dora metrics dialog')).toBeInTheDocument();
     expect(screen.queryByLabelText('dora metrics dialog container')).toBeInTheDocument();
     expect(screen.queryByLabelText('close')).toBeInTheDocument();
-    expect(screen.queryByText('Dora metrics')).toBeInTheDocument();
+    expect(screen.queryByText('DORA Metrics')).toBeInTheDocument();
     expect(screen.queryByText(title)).toBeInTheDocument();
     expect(screen.queryByLabelText('definition')).toBeInTheDocument();
     expect(screen.queryByLabelText('influenced factors')).toBeInTheDocument();

@@ -5,7 +5,6 @@ export const AdvancedTitleContainer = styled.div({
   fontSize: '1rem',
   lineHeight: '1.25rem',
   fontWeight: '600',
-  marginRight: '1rem',
 });
 
 export const AdvancedContainer = styled('div')({
@@ -38,3 +37,14 @@ export const AdvancedWrapper = styled('div')`
   flex-direction: column;
   gap: 1rem;
 `;
+
+export const TitleAndTooltipContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: '0.3125rem',
+});
+
+export const TooltipContainer = styled('div')({
+  marginLeft: '0.25rem',
+});

@@ -29,4 +29,5 @@ export const StyledReportCardTitle = styled(Typography)({
   fontWeight: 500,
   fontSize: '1rem',
   display: 'flex',
+  gap: '0.3125rem',
 });

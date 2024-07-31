@@ -147,8 +147,8 @@ export enum MetricsSubtitle {
   PRLeadTime = 'PR Lead Time(Hours)',
   PipelineLeadTime = 'Pipeline Lead Time(Hours)',
   TotalDelayTime = 'Total Lead Time(Hours)',
-  DeploymentFrequency = 'Deployments/Days',
-  DeploymentTimes = 'Deployment times',
+  DeploymentFrequency = 'Deployment Frequency(Times/Days)',
+  DeploymentTimes = 'Deployment Times(Times)',
   DevMeanTimeToRecoveryHours = '(Hours)',
   FailureRate = '',
   AverageCycleTimePerSP = 'Average Cycle Time(Days/SP)',
@@ -605,24 +605,25 @@ export const emptyDataMapperDoraChart = (allPipelines: string[], value: string) 
   };
 };
 
-export const DORA_METRICS_EXPLAINATION = {
+export const DORA_METRICS_EXPLANATION = {
   [RequiredData.LeadTimeForChanges.toLowerCase()]: {
     insight:
       'this value is lower is better, means that your team is more efficient and flexible in responding to changes.',
     definitions: {
       definition:
-        'is the time from code committed to code successfully running in production(in Heartbeat, this means running in pipelines/steps rather than actual production) .',
+        'the time from first code commit of PR until the PR deployed to production. In heartbeat, Lead time for change = PR lead time + Pipleline lead time',
       details: [
-        'Definition for ‘PR Lead Time’ :  is the time from code committed to PR merge.',
-        'Definition for ‘Pipeline Lead Time’ : is the time from PR merge to Job complete.',
+        'Definition for ‘PR lead time’ :  is the time from code committed to PR merge.',
+        'Definition for ‘Pipeline lead time’ : is the time from PR merge to Job complete.',
       ],
     },
     'influenced factors': {
       details: [
-        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
-        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
-        'Passed builds: only passed builds will be counted.',
-        'Working days: non-working days, such as weekends or holidays will be excluded.',
+        'Collection date type (exclude weekend & holidays)',
+        'Added pipelines',
+        'Selected pipeline steps',
+        'Selected Github branch for pipeline',
+        'Selected pipeline crews',
       ],
     },
   },
@@ -631,16 +632,17 @@ export const DORA_METRICS_EXPLAINATION = {
       'this value is higher is better, means that your team is capable of responding to changes, iterating, and updating products in a rapid and efficient manner.',
     definitions: {
       details: [
-        'Definition for ‘Deployments/Day’ : how often you deploy code to production (in Heartbeat, this means deploying to pipelines/steps rather than actual production) on a daily basis.',
+        'Definition for "Deployment Frequency": this metrics records how often you deploy code to production on a daily basis.',
         'Definition for ‘Deployment Times’ : the total deployment times in the selected time period.',
       ],
     },
     'influenced factors': {
       details: [
-        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
-        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
-        'Passed builds: only passed builds will be counted.',
-        'Working days: non-working days, such as weekends or holidays will be excluded.',
+        'Added pipelines',
+        'Selected pipeline steps',
+        'Selected Github branch for pipeline',
+        'Selected pipeline crews',
+        'Passed builds',
       ],
     },
   },
@@ -648,14 +650,16 @@ export const DORA_METRICS_EXPLAINATION = {
     insight:
       'this value is lower is better, means that the failed pipelines are fewer, and your team is able to deploy updates successfully in a more reliable manner.',
     definitions: {
-      details: [
-        'Pipeline Change Failure Rate: this metrics based on development, which is the percentage of failed pipelines in the total pipelines, and you can select different pipeline as your final step.',
-      ],
+      definition:
+        'this metrics is different from the official definition of change failure rate, in heartbeat, we definite this metrics based on pipeline, which is the percentage of failed pipeline builds in the total pipeline builds.',
+      details: [],
     },
     'influenced factors': {
       details: [
-        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
-        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
+        'Added pipelines',
+        'Selected pipeline steps',
+        'Selected Github branch for pipeline',
+        'Selected pipeline crews',
       ],
     },
   },
@@ -663,14 +667,17 @@ export const DORA_METRICS_EXPLAINATION = {
     insight:
       'this value is lower is better, means that your team possesses capabilities of efficiency, professionalism, and continuous improvement in fault management and system recovery.',
     definitions: {
-      details: [
-        'Pipeline Mean time to recovery : in Heartbeat, it comes from pipeline, and it records how long it generally takes to restore when pipeline failed.',
-      ],
+      definition:
+        'this metrics is also different from the official definition of Mean time to recovery. This metrics comes from pipeline, and it records how long it generally takes to restore a pipeline when pipeline failed.',
+      details: [],
     },
     'influenced factors': {
       details: [
-        'Pipeline crew setting: only the builds created by the pipeline crew members you selected will be counted.',
-        'Pipeline step & branches: only the pipeline steps & branches you selected will be counted.',
+        'Collection date type (exclude weekend & holidays)',
+        'Added pipelines',
+        'Selected pipeline steps',
+        'Selected Github branch for pipeline',
+        'Selected pipeline crews',
       ],
     },
   },

@@ -75,7 +75,9 @@ describe('Report Card', () => {
     expect(screen.queryByLabelText('dora metrics dialog')).toBeInTheDocument();
     expect(screen.queryByLabelText('dora metrics dialog container')).toBeInTheDocument();
     expect(closeButton).toBeInTheDocument();
-    expect(screen.queryByText('Dora metrics')).toBeInTheDocument();
+    screen.queryAllByText('DORA Metrics').forEach((it) => {
+      expect(it).toBeInTheDocument();
+    });
     expect(screen.queryByLabelText('definition')).toBeInTheDocument();
     expect(screen.queryByLabelText('influenced factors')).toBeInTheDocument();
     expect(screen.queryByLabelText('formula')).toBeInTheDocument();
