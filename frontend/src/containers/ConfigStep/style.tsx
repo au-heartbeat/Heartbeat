@@ -5,10 +5,10 @@ export const ConfigStepWrapper = styled('div')({
 });
 export const StyledAlterWrapper = styled('div')({
   display: 'flex',
-  width: '100%',
+  width: '90%',
   alignItems: 'center',
   justifyContent: 'center',
   height: '2.5rem',
   position: 'absolute',
-  top: '1rem',
+  top: '0.5rem',
 });
