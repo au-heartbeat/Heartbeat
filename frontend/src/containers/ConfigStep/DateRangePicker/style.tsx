@@ -74,6 +74,9 @@ export const SortingTextButton = styled(Button)({
     backgroundColor: theme.main.button.disabled.color,
   },
   color: theme.main.color,
+  [theme.breakpoints.down('md')]: {
+    fontSize: '0.75rem',
+  },
 });
 
 export const SortingButton = styled(IconButton)({
@@ -84,6 +87,9 @@ export const SortingButton = styled(IconButton)({
     margin: '-0.9rem 0',
   },
   marginRight: '2.4rem',
+  [theme.breakpoints.down('md')]: {
+    marginRight: '0',
+  },
   fontSize: '2.4rem',
   color: theme.main.button.disabled.color,
 });
