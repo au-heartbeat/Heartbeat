@@ -19,6 +19,7 @@ import { IReportInfo } from '../hooks/useGenerateReportEffect';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
 import { DATE_FORMAT_TEMPLATE } from '@src/constants/template';
 import duration from 'dayjs/plugin/duration';
+import { theme } from '@src/theme';
 import dayjs from 'dayjs';
 
 dayjs.extend(duration);
@@ -294,4 +295,11 @@ export function sortLegend<T extends { data: number[]; name: string; type: strin
     }
   });
   return indicators;
+}
+
+export function getDeviceSize() {
+  if (screen.width <= theme.breakpoints.values.md) {
+    return 'md';
+  }
+  return 'lg';
 }

@@ -1,6 +1,7 @@
 import { ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem';
 import { ReportCard } from '@src/components/Common/ReportGrid/ReportCard';
 import { GRID_CONFIG } from '@src/constants/commons';
+import { getDeviceSize } from '@src/utils/util';
 import { Grid } from '@mui/material';
 import React from 'react';
 
@@ -17,6 +18,9 @@ export interface ReportDetailProps {
 
 export const ReportGrid = ({ lastGrid, reportDetails, errorMessage }: ReportGridProps) => {
   const getXS = (index: number) => {
+    if (getDeviceSize() === 'md') {
+      return GRID_CONFIG.FULL.XS;
+    }
     if (needTakeUpAWholeLine(index)) {
       return GRID_CONFIG.FULL.XS;
     } else if (reportDetails.length > 1) {

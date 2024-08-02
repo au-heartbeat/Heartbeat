@@ -7,6 +7,15 @@ export const StyledItem = styled.div({
   alignItems: 'center',
   width: '100%',
   overflow: 'hidden',
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'row',
+    flexShrink: 0,
+    flexBasis: '50%',
+    flexGrow: 0,
+    '&:nth-child(3)': {
+      marginTop: '1rem',
+    },
+  },
 });
 
 export const StyledContent = styled('div')({
@@ -44,6 +53,9 @@ export const StyledSubtitle = styled('div')({
   fontStyle: 'normal',
   color: theme.main.secondColor,
   opacity: 0.65,
+  [theme.breakpoints.down('md')]: {
+    whiteSpace: 'wrap',
+  },
 });
 
 export const StyledDividingLine = styled.img({

@@ -8,6 +8,11 @@ import { Provider } from 'react-redux';
 import React from 'react';
 import clearAllMocks = jest.clearAllMocks;
 
+jest.mock('@src/utils/util', () => ({
+  ...jest.requireActual('@src/utils/util'),
+  getDeviceSize: jest.fn().mockReturnValue('lg'),
+}));
+
 describe('Report Card', () => {
   afterEach(() => {
     clearAllMocks();
@@ -50,6 +55,10 @@ describe('Report Card', () => {
 
   it('should show retry button when have reportMetricsError and click retry will triger api call', async () => {
     setup();
+    jest.mock('@src/utils/util', () => ({
+      ...jest.requireActual('@src/utils/util'),
+      getDeviceSize: jest.fn().mockReturnValue('lg'),
+    }));
 
     expect(screen.getByText(RETRY)).toBeInTheDocument();
     expect(screen.getByText('Failed to get GitHub info, status: 404')).toBeInTheDocument();
@@ -61,6 +70,10 @@ describe('Report Card', () => {
 
   it('should show explanation button and show the dialog when click explanation icon', async () => {
     setup();
+    jest.mock('@src/utils/util', () => ({
+      ...jest.requireActual('@src/utils/util'),
+      getDeviceSize: jest.fn().mockReturnValue('lg'),
+    }));
 
     const leadTimeForChangesExplanationIcon = screen.queryByLabelText('lead time for changes explanation');
     expect(leadTimeForChangesExplanationIcon).toBeInTheDocument();

@@ -5,12 +5,10 @@ import { theme } from '@src/theme';
 export const StyledReportCard = styled.div({
   position: 'relative',
   padding: '0.8rem 1.5rem 0.8rem 1.5rem',
-  height: '6.5rem',
+  minHeight: '6.5rem',
   [theme.breakpoints.down('md')]: {
-    height: '8.5rem',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-around',
   },
   borderRadius: '1rem',
   border: theme.main.cardBorder,
@@ -23,6 +21,10 @@ export const StyledItemSection = styled.div({
   alignItems: 'center',
   minWidth: '25%',
   padding: '0.75rem 0',
+  [theme.breakpoints.down('md')]: {
+    flexWrap: 'wrap',
+    alignItems: 'stretch',
+  },
 });
 
 export const StyledReportCardTitle = styled(Typography)({
