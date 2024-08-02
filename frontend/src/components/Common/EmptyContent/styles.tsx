@@ -17,6 +17,9 @@ export const StyledImgSection = styled.img({
 export const StyledErrorMessage = styled.div({
   color: theme.main.button.disabled.color,
   fontSize: '0.875rem',
+  [theme.breakpoints.down('md')]: {
+    textAlign: 'center',
+  },
 });
 
 export const StyledErrorTitle = styled.div({

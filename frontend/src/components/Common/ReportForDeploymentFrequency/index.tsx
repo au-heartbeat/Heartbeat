@@ -39,7 +39,12 @@ export const ReportForDeploymentFrequency = ({ title, tableTitles, data }: Repor
           <TableRow id={tableTitles.toString()}>
             <StyledTableCell>Name</StyledTableCell>
             {tableTitles.map((title, index) => (
-              <StyledTableCell key={`${index}-${title}`}>{`Value${title}`}</StyledTableCell>
+              <StyledTableCell
+                sx={{
+                  wordBreak: 'break-all',
+                }}
+                key={`${index}-${title}`}
+              >{`Value${title}`}</StyledTableCell>
             ))}
           </TableRow>
         </TableHead>
