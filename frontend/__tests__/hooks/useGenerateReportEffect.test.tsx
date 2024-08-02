@@ -60,6 +60,28 @@ describe('use generate report effect', () => {
     jest.useRealTimers();
   });
 
+  it('should set "Data loading failed" for all metrics when generate report id time out', async () => {
+    reportClient.generateReportId = jest
+      .fn()
+      .mockRejectedValue(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout));
+    reportClient.retrieveByUrl = jest.fn();
+    reportClient.polling = jest.fn();
+
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS);
+    });
+
+    expect(result.current.reportInfos[0][TimeoutErrorKey[MetricTypes.All] as keyof IReportError].message).toEqual(
+      'Data loading failed',
+    );
+    expect(result.current.reportInfos[0][TimeoutErrorKey[MetricTypes.All] as keyof IReportError].shouldShow).toEqual(
+      true,
+    );
+    expect(reportClient.polling).toHaveBeenCalledTimes(0);
+  });
+
   it('should set "Data loading failed" for all board metrics when generate report id time out', async () => {
     reportClient.generateReportId = jest
       .fn()

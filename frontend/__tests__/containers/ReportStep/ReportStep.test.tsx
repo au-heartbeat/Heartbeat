@@ -399,6 +399,37 @@ describe('Report Step', () => {
         expect(switchChartButton).toHaveAttribute('aria-selected', 'true');
       });
     });
+
+    it('should return to summary page given metrics not only select classification when clicking back button in board report detail page', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+
+      await userEvent.click(switchListButton);
+
+      await userEvent.click(screen.getAllByText(SHOW_MORE)[0]);
+
+      await waitFor(() => {
+        expect(screen.queryByText(SHOW_MORE)).toBeNull();
+      });
+
+      await userEvent.click(screen.getByText(BACK));
+
+      await waitFor(() => {
+        expect(screen.getAllByText(SHOW_MORE)[0]).toBeInTheDocument();
+      });
+    });
+
+    it('should return to metrics page given metrics only select classification when clicking back button in board report detail page', async () => {
+      setup([CLASSIFICATION], [fullValueDateRange, emptyValueDateRange]);
+
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchListButton);
+
+      await userEvent.click(screen.getByText(BACK));
+
+      expect(backStep).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('export pipeline data', () => {
