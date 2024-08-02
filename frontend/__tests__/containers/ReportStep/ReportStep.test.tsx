@@ -383,6 +383,22 @@ describe('Report Step', () => {
         });
       },
     );
+
+    it('should return to chart page when clicking previous button in summary page', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchListButton);
+
+      const previous = screen.getByText(PREVIOUS);
+
+      await userEvent.click(previous);
+
+      await waitFor(() => {
+        expect(switchChartButton).toHaveAttribute('aria-selected', 'true');
+      });
+    });
   });
 
   describe('export pipeline data', () => {
