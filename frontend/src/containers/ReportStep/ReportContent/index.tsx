@@ -142,14 +142,14 @@ const ReportContent = (props: ReportContentProps) => {
   const metricsOnlySelectClassification =
     !selectBoardMetricsWithoutClassification && !selectDora && selectBoardOnlyClassification;
   const shouldShowTabs = allDateRanges.length > 1;
-  const disableChartTab = metricsOnlySelectClassification && !selectClassificationCharts;
+  const disabledChartTab = metricsOnlySelectClassification && !selectClassificationCharts;
 
   const [displayType, setDisplayType] = useState(
-    shouldShowTabs && !disableChartTab ? DISPLAY_TYPE.CHART : DISPLAY_TYPE.LIST,
+    shouldShowTabs && !disabledChartTab ? DISPLAY_TYPE.CHART : DISPLAY_TYPE.LIST,
   );
   const [chartIndex, setChartIndex] = useState(shouldShowBoardMetricsChart ? CHART_INDEX.BOARD : CHART_INDEX.DORA);
   const [pageType, setPageType] = useState<string>(
-    shouldShowTabs && !disableChartTab
+    shouldShowTabs && !disabledChartTab
       ? shouldShowBoardMetricsChart
         ? REPORT_PAGE_TYPE.BOARD_CHART
         : REPORT_PAGE_TYPE.DORA_CHART
@@ -318,7 +318,7 @@ const ReportContent = (props: ReportContentProps) => {
         icon={<BarChartIcon />}
         iconPosition='start'
         label='Chart'
-        disabled={disableChartTab}
+        disabled={disabledChartTab}
       />
       <StyledTab
         aria-label='display list tab'
