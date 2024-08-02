@@ -126,7 +126,7 @@ const CycleTimeTable = () => {
                     },
                   }}
                   length={header.length}
-                  key={index}
+                  key={`${index}-${text}`}
                 >
                   {emphasis ? (
                     <>
