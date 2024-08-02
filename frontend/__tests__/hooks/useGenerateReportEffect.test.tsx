@@ -60,7 +60,30 @@ describe('use generate report effect', () => {
     jest.useRealTimers();
   });
 
-  it('should set "Data loading failed" for all board metrics when board data retrieval times out', async () => {
+  it('should set "Data loading failed" for all board metrics when generate report id time out', async () => {
+    reportClient.generateReportId = jest
+      .fn()
+      .mockRejectedValue(new TimeoutError('timeout error', AxiosRequestErrorCode.Timeout));
+    reportClient.retrieveByUrl = jest.fn();
+    reportClient.polling = jest.fn();
+
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.startToRequestData(MOCK_GENERATE_REPORT_REQUEST_PARAMS_WITH_BOARD_METRIC_TYPE);
+    });
+
+    expect(result.current.reportInfos.length).toEqual(2);
+    expect(result.current.reportInfos[0].timeout4Board.message).toEqual('Data loading failed');
+    expect(result.current.reportInfos[0].timeout4Board.shouldShow).toEqual(true);
+    expect(result.current.reportInfos[0].reportData).toEqual(undefined);
+    expect(result.current.reportInfos[1].timeout4Board.message).toEqual('Data loading failed');
+    expect(result.current.reportInfos[1].timeout4Board.shouldShow).toEqual(true);
+    expect(result.current.reportInfos[1].reportData).toEqual(undefined);
+    expect(reportClient.polling).toHaveBeenCalledTimes(0);
+  });
+
+  it('should set "Data loading failed" for all board metrics when board data retrieval time out', async () => {
     reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.retrieveByUrl = jest
       .fn()
@@ -83,7 +106,7 @@ describe('use generate report effect', () => {
     expect(reportClient.polling).toHaveBeenCalledTimes(0);
   });
 
-  it('should set "Data loading failed" for dora metrics when dora data retrieval times out', async () => {
+  it('should set "Data loading failed" for dora metrics when dora data retrieval time out', async () => {
     reportClient.generateReportId = jest.fn().mockResolvedValue({ reportId: 'mockReportId' });
     reportClient.retrieveByUrl = jest
       .fn()
