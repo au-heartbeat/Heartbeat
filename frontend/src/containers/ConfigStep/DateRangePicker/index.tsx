@@ -6,6 +6,7 @@ import { TitleContainer } from '@src/containers/ConfigStep/DateRangePicker/style
 import { selectDateRange } from '@src/context/config/configSlice';
 import { TIME_RANGE_TITLE, TIPS } from '@src/constants/resources';
 import { useAppSelector } from '@src/hooks/useAppDispatch';
+import { theme } from '@src/theme';
 import { useState } from 'react';
 
 export const DateRangePickerSection = () => {
@@ -23,6 +24,9 @@ export const DateRangePickerSection = () => {
           tooltipText={TIPS.TIME_RANGE_PICKER}
           titleStyle={{
             margin: '1rem 0',
+            [theme.breakpoints.down('md')]: {
+              fontSize: '0.875rem',
+            },
           }}
         />
         {dateRangeGroup.length > 1 && <SortingDateRange disabled={hasError} />}

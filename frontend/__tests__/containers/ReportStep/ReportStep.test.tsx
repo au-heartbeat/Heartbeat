@@ -92,6 +92,7 @@ jest.mock('@src/utils/util', () => ({
   filterAndMapCycleTimeSettings: jest.fn(),
   formatMinToHours: jest.fn().mockImplementation((time) => time / 60),
   formatMillisecondsToHours: jest.fn().mockImplementation((time) => time / 60 / 60 / 1000),
+  getDeviceSize: jest.fn().mockReturnValue('lg'),
 }));
 
 let store = setupStore();

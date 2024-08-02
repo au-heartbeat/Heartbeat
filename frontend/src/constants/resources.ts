@@ -611,7 +611,7 @@ export const DORA_METRICS_EXPLANATION = {
       'this value is lower is better, means that your team is more efficient and flexible in responding to changes.',
     definitions: {
       definition:
-        'the time from first code commit of PR until the PR deployed to production. In heartbeat, Lead time for change = PR lead time + Pipleline lead time',
+        'the time from first code commit of PR until the PR deployed to production. In heartbeat, Lead time for changes = PR lead time + Pipleline lead time',
       details: [
         'Definition for ‘PR lead time’ :  is the time from code committed to PR merge.',
         'Definition for ‘Pipeline lead time’ : is the time from PR merge to Job complete.',
@@ -632,8 +632,8 @@ export const DORA_METRICS_EXPLANATION = {
       'this value is higher is better, means that your team is capable of responding to changes, iterating, and updating products in a rapid and efficient manner.',
     definitions: {
       details: [
-        'Definition for "Deployment Frequency": this metrics records how often you deploy code to production on a daily basis.',
-        'Definition for ‘Deployment Times’ : the total deployment times in the selected time period.',
+        "Definition for 'Deployment Frequency': this metrics records how often you deploy code to production on a daily basis.",
+        "Definition for 'Deployment Times': how many times you deploy code to production.",
       ],
     },
     'influenced factors': {

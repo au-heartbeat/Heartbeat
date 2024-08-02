@@ -12,6 +12,7 @@ import { DORA_METRICS } from '@src/constants/resources';
 import React, { HTMLAttributes, useState } from 'react';
 import { GRID_CONFIG } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
+import { getDeviceSize } from '@src/utils/util';
 
 interface ReportCardProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -35,6 +36,9 @@ export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) 
     }
 
     const getFlex = (length: number) => {
+      if (getDeviceSize() === 'md') {
+        return 0;
+      }
       if (length <= 1) {
         return defaultFlex;
       } else {
@@ -47,6 +51,13 @@ export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) 
       }
     };
 
+    const isShowDividingLine = (index: number): boolean => {
+      if (getDeviceSize() === 'lg') {
+        return items!.length > 1 && index > 0;
+      }
+      return index % 2 !== 0;
+    };
+
     return (
       <StyledItemSection data-test-id={'report-section'}>
         {items?.map((item, index) =>
@@ -57,8 +68,8 @@ export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) 
               isToFixed={item.isToFixed}
               extraValue={item.extraValue}
               subtitle={item.subtitle}
-              showDividingLine={items.length > 1 && index > 0}
-              style={{ flex: getFlex(items.length) }}
+              showDividingLine={isShowDividingLine(index)}
+              style={{ flexGrow: getFlex(items.length) }}
             />
           ) : (
             <></>

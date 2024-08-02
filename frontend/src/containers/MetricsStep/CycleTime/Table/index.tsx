@@ -119,7 +119,15 @@ const CycleTimeTable = () => {
           <TableHead>
             <TableRow>
               {header.map(({ emphasis, text }, index) => (
-                <StyledTableHeaderCell length={header.length} key={index}>
+                <StyledTableHeaderCell
+                  sx={{
+                    [theme.breakpoints.down('md')]: {
+                      width: index === header.length - 1 ? '50%' : 'auto',
+                    },
+                  }}
+                  length={header.length}
+                  key={`${index}-${text}`}
+                >
                   {emphasis ? (
                     <>
                       <span>{text}</span>
@@ -141,7 +149,13 @@ const CycleTimeTable = () => {
                     <EllipsisText fitContent>{boardSupplement.toUpperCase()}</EllipsisText>
                   </Tooltip>
                 </StyledTableRowCell>
-                <StyledTableRowCell>
+                <StyledTableRowCell
+                  sx={{
+                    [theme.breakpoints.down('md')]: {
+                      width: '50%',
+                    },
+                  }}
+                >
                   <CellAutoComplete name={boardKey} defaultSelected={state} onSelect={saveCycleTimeOptions} />
                 </StyledTableRowCell>
               </TableRow>

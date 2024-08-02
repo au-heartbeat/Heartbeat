@@ -470,7 +470,7 @@ _Image 3-27，export pipline data_
 _Image 3-28，Deployment Frequency Report_
 
 ### 3.4.6 Lead Time For Changes Data
-- Definition for 'Lead Time For Changes': the time from first code commit of PR until the PR deployed to production. In heartbeat, `Lead time for change` = `PR lead time` + `Pipleline lead time`
+- Definition for 'Lead Time For Changes': the time from first code commit of PR until the PR deployed to production. In heartbeat, `Lead time for changes` = `PR lead time` + `Pipleline lead time`
   - Influenced factors
     - Collection date type (exclude weekend & holidays)
     - Added pipelines

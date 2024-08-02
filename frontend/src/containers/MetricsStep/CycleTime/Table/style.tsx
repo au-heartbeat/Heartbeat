@@ -63,6 +63,15 @@ export const StyledTextField = styled(TextField)({
 });
 
 export const StyledRadioGroup = styled(RadioGroup)({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
+  display: 'flex',
+  flexDirection: 'row',
+  '& > *': {
+    flexBasis: '25%',
+    margin: 0,
+  },
+  paddingBottom: '1rem',
+  [theme.breakpoints.down('md')]: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 });

@@ -10,6 +10,7 @@ export const StyledAvatar = styled(Avatar)({
 export const EmojiWrap = styled('div')({
   display: 'flex',
   alignItems: 'center',
+  flexWrap: 'wrap',
 });
 
 export const StyledTypography = styled(Typography)({

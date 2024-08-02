@@ -8,6 +8,7 @@ import {
   formatDuplicatedNameWithSuffix,
   formatMillisecondsToHours,
   formatMinToHours,
+  getDeviceSize,
   getDisabledOptions,
   getJiraBoardToken,
   getRealDoneStatus,
@@ -844,5 +845,27 @@ describe('sortLegend function', () => {
     sortLegend(data, 'Development time');
 
     expect(data).toStrictEqual(expectData);
+  });
+});
+
+describe('get device size', () => {
+  const originScreenWidth = screen.width;
+
+  afterEach(() => {
+    jest.spyOn(window, 'screen', 'get').mockReturnValue({ ...screen, width: originScreenWidth });
+  });
+
+  it('should return md size when screen width is less than md', async () => {
+    jest.spyOn(window, 'screen', 'get').mockReturnValue({ ...screen, width: 1 });
+
+    const size = getDeviceSize();
+    expect(size).toEqual('md');
+  });
+
+  it('should return lg size when screen width is more than md', async () => {
+    jest.spyOn(window, 'screen', 'get').mockReturnValue({ ...screen, width: 1024 });
+
+    const size = getDeviceSize();
+    expect(size).toEqual('lg');
   });
 });

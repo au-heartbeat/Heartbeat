@@ -1,5 +1,6 @@
 import { Tooltip, TooltipProps } from '@mui/material';
 import styled from '@emotion/styled';
+import { theme } from '@src/theme';
 import React from 'react';
 
 export const StyledContainer = styled('div')({
@@ -22,10 +23,13 @@ export const TooltipContainer = styled('div')({
 
 export const StyledTooltip = styled(({ className, ...props }: { className?: string } & TooltipProps) => (
   <Tooltip placement='right-start' {...props} componentsProps={{ tooltip: { className: className } }} />
-))(`
-    max-width: 31.25rem;
-    margin-top: 0.625rem;
-`);
+))(() => ({
+  maxWidth: '31.25rem',
+  marginTop: '0.625rem',
+  [theme.breakpoints.down('md')]: {
+    width: '7.5rem',
+  },
+}));
 
 export const StyledTitle = (props: { title: string; style?: React.CSSProperties }) => (
   <StyledTitleContainer style={props.style || {}}>{props.title}</StyledTitleContainer>
