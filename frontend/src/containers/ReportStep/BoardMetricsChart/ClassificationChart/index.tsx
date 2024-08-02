@@ -209,10 +209,12 @@ export const ClassificationChart = ({
   classification,
   mappedData,
   dateRanges,
+  allDateRangeLoadingFinished,
 }: {
   classification: string;
   mappedData: ReportResponse[];
   dateRanges: string[];
+  allDateRangeLoadingFinished: boolean;
 }) => {
   const [isFirstIntoClassification, setIsFirstIntoClassification] = useState<boolean>(true);
   const [isShowTimePeriodChart, setIsShowTimePeriodChart] = useState<boolean>(true);
@@ -295,7 +297,7 @@ export const ClassificationChart = ({
   return (
     <ChartAndTitleWrapper
       subTitle={classification}
-      isLoading={!isClassificationFinished}
+      isLoading={!isClassificationFinished && !allDateRangeLoadingFinished}
       trendInfo={classificationData.trendInfo}
       ref={classificationRef}
       clickSwitch={switchChart}

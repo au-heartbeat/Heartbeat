@@ -36,6 +36,7 @@ test('Only select velocity metrics on config page', async ({ homePage, configSte
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+  await reportStep.goToReportListTab();
   await reportStep.checkExportMetricDataButtonClickable();
   await reportStep.checkExportBoardDataButtonClickable();
   await reportStep.clickShowMoreLink();
@@ -71,6 +72,7 @@ test('Only select cycle time metrics on config page', async ({ homePage, configS
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+  await reportStep.goToReportListTab();
   await reportStep.checkExportMetricDataButtonClickable();
   await reportStep.checkExportBoardDataButtonClickable();
   await reportStep.clickShowMoreLink();
@@ -108,6 +110,7 @@ test('Only select classification metrics on config page', async ({ homePage, con
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+  await reportStep.goToReportListTab();
   await reportStep.checkExportBoardDataButtonClickable();
   await reportStep.checkOnlyClassificationPartVisible();
 });
@@ -142,6 +145,7 @@ test('Only select rework times metrics on config page', async ({ homePage, confi
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
+  await reportStep.goToReportListTab();
   await reportStep.checkExportBoardDataButtonClickable();
   await reportStep.clickShowMoreLink();
   await reportStep.checkOnlyReworkTimesPartVisible();
@@ -173,6 +177,7 @@ test('Only select lead time for changes metrics on config page', async ({
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.goToReportPage();
 
+  await reportStep.goToReportListTab();
   await reportStep.checkOnlyLeadTimeForChangesPartVisible();
   await reportStep.checkExportMetricDataButtonClickable();
   await reportStep.checkExportPipelineDataButtonClickable();
@@ -203,6 +208,7 @@ test('Only select deployment frequency metrics on config page', async ({
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.goToReportPage();
 
+  await reportStep.goToReportListTab();
   await reportStep.checkOnlyDeploymentFrequencyPartVisible();
   await reportStep.checkExportMetricDataButtonClickable();
   await reportStep.checkExportPipelineDataButtonClickable();
@@ -233,6 +239,7 @@ test('Only select change failure rate metrics on config page', async ({
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.goToReportPage();
 
+  await reportStep.goToReportListTab();
   await reportStep.checkOnlyChangeFailureRatePartVisible();
   await reportStep.checkExportMetricDataButtonClickable();
   await reportStep.checkExportPipelineDataButtonClickable();
@@ -263,6 +270,7 @@ test('Only select mean time to recovery metrics on config page', async ({
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.goToReportPage();
 
+  await reportStep.goToReportListTab();
   await reportStep.checkOnlyMeanTimeToRecoveryPartVisible();
   await reportStep.checkExportMetricDataButtonClickable();
   await reportStep.checkExportPipelineDataButtonClickable();

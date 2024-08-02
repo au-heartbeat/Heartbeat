@@ -743,9 +743,9 @@ export class ReportStep {
   }
 
   async checkSelectListTab() {
-    expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('true');
-    expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('false');
-    await expect(this.chartTabsContainer).not.toBeVisible();
+    expect(await this.displayListTab.getAttribute('aria-selected')).toEqual('false');
+    expect(await this.displayChartTab.getAttribute('aria-selected')).toEqual('true');
+    await expect(this.chartTabsContainer).toBeVisible();
   }
 
   async goToChartBoardTab() {
@@ -1030,6 +1030,10 @@ export class ReportStep {
         showPipelineMeanTimeToRecoveryChart: showDevMeanTimeToRecoveryChart,
       });
     }
+  }
+
+  async goToReportListTab() {
+    await this.displayListTab.click();
   }
 
   async checkExplanation() {

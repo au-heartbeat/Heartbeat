@@ -152,12 +152,12 @@ describe('ReportButtonGroup', () => {
     },
   );
 
-  it('should export data buttons be not clickable given the CSV file for one of the dataRanges is still in the process of generating.', () => {
+  it('should export data buttons be clickable given the CSV file for one of the dataRanges is generated.', () => {
     setup(pendingMockData);
 
-    expect(screen.getByRole('button', { name: EXPORT_METRIC_DATA })).toBeDisabled();
-    expect(screen.getByRole('button', { name: EXPORT_BOARD_DATA })).toBeDisabled();
-    expect(screen.getByRole('button', { name: EXPORT_PIPELINE_DATA })).toBeDisabled();
+    expect(screen.getByRole('button', { name: EXPORT_METRIC_DATA })).toBeEnabled();
+    expect(screen.getByRole('button', { name: EXPORT_BOARD_DATA })).toBeEnabled();
+    expect(screen.getByRole('button', { name: EXPORT_PIPELINE_DATA })).toBeEnabled();
   });
 
   it.each(buttonNames)(

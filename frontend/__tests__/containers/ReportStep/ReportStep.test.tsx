@@ -114,6 +114,14 @@ describe('Report Step', () => {
     },
   });
   beforeEach(() => {
+    const chart = {
+      setOption: jest.fn(),
+      resize: jest.fn(),
+      dispatchAction: jest.fn(),
+      dispose: jest.fn(),
+      clear: jest.fn(),
+    };
+    jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
     store = setupStore();
     resetReportHook();
   });
@@ -278,7 +286,7 @@ describe('Report Step', () => {
 
   describe('behavior', () => {
     it('should call handleBack method when clicking back button given back button enabled', async () => {
-      setup(['']);
+      setup([LEAD_TIME_FOR_CHANGES], [fullValueDateRange, emptyValueDateRange]);
 
       const back = screen.getByText(PREVIOUS);
       await userEvent.click(back);
@@ -376,6 +384,53 @@ describe('Report Step', () => {
         });
       },
     );
+
+    it('should return to chart page when clicking previous button in summary page', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchListButton);
+
+      const previous = screen.getByText(PREVIOUS);
+
+      await userEvent.click(previous);
+
+      await waitFor(() => {
+        expect(switchChartButton).toHaveAttribute('aria-selected', 'true');
+      });
+    });
+
+    it('should return to summary page given metrics not only select classification when clicking back button in board report detail page', async () => {
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+
+      await userEvent.click(switchListButton);
+
+      await userEvent.click(screen.getAllByText(SHOW_MORE)[0]);
+
+      await waitFor(() => {
+        expect(screen.queryByText(SHOW_MORE)).toBeNull();
+      });
+
+      await userEvent.click(screen.getByText(BACK));
+
+      await waitFor(() => {
+        expect(screen.getAllByText(SHOW_MORE)[0]).toBeInTheDocument();
+      });
+    });
+
+    it('should return to metrics page given metrics only select classification when clicking back button in board report detail page', async () => {
+      setup([CLASSIFICATION], [fullValueDateRange, emptyValueDateRange]);
+
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchListButton);
+
+      await userEvent.click(screen.getByText(BACK));
+
+      expect(backStep).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('export pipeline data', () => {
@@ -697,6 +752,10 @@ describe('Report Step', () => {
     it('should close error notification when change dateRange', async () => {
       reportHook.current.reportInfos[1].timeout4Board = { shouldShow: true, message: 'error' };
       const { getByTestId, getAllByText } = setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchListButton);
+
       const expandMoreIcon = getByTestId('ExpandMoreIcon');
       await act(async () => {
         await userEvent.click(expandMoreIcon);
@@ -1183,16 +1242,16 @@ describe('Report Step', () => {
       const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
       const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
 
-      expect(screen.queryByText(BACK)).toBeInTheDocument();
+      expect(screen.queryByText(BACK)).not.toBeInTheDocument();
       expect(switchListButton).toBeInTheDocument();
       expect(switchChartButton).toBeInTheDocument();
+
+      await userEvent.click(switchListButton);
+      expect(screen.queryByText(BACK)).toBeInTheDocument();
 
       await userEvent.click(switchChartButton);
 
       expect(screen.queryByText(BACK)).not.toBeInTheDocument();
-
-      await userEvent.click(switchListButton);
-      expect(screen.queryByText(BACK)).toBeInTheDocument();
     });
   });
 });

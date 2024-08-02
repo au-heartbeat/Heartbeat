@@ -16,9 +16,14 @@ import {
   selectConfig,
   selectDateRange,
 } from '@src/context/config/configSlice';
+import {
+  selectReportId,
+  selectReportPageFailedTimeRangeInfos,
+  selectTimeStamp,
+} from '@src/context/stepper/StepperSlice';
 import { IPipelineConfig, selectClassificationCharts, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
-import { selectReportId, selectTimeStamp } from '@src/context/stepper/StepperSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
+import { getTotalDateRangeLoadingStatus } from '../../utils/report';
 import { MESSAGE, RequiredData } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { MetricTypes } from '@src/constants/commons';
@@ -58,6 +63,9 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const configData = useAppSelector(selectConfig);
   const dateRanges = useAppSelector(selectDateRange);
   const projectName = useAppSelector(selectBasicInfo).projectName;
+  const reportPageTimeRangeLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
+  const allDateRangeLoadingFinished = !getTotalDateRangeLoadingStatus(dateRanges, reportPageTimeRangeLoadingStatus)
+    .isLoading;
 
   const { startToRequestData, reportInfos, stopPollingReports, hasPollingStarted } = useGenerateReportEffect();
 
@@ -250,6 +258,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       handleSave={handleSave}
       reportId={reportId}
       projectName={projectName}
+      allDateRangeLoadingFinished={allDateRangeLoadingFinished}
     ></ReportContent>
   );
 };

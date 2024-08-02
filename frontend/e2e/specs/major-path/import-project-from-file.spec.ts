@@ -67,6 +67,7 @@ test('Import project from file with all ranges API succeed', async ({
   await reportStep.checkProjectName(importMultipleDoneProjectFromFile.projectName);
   await reportStep.confirmGeneratedReport();
   await reportStep.checkShareReport();
+  await reportStep.goToReportListTab();
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,

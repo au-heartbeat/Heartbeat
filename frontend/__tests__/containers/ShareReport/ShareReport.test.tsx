@@ -1,10 +1,12 @@
-import { EMPTY_REPORT_VALUES, MOCK_REPORT_RESPONSE } from '../../fixtures';
+import { DISPLAY_TYPE, EMPTY_REPORT_VALUES, MOCK_REPORT_RESPONSE } from '../../fixtures';
 import { useShareReportEffect } from '@src/hooks/useShareReportEffect';
 import { DEFAULT_MESSAGE, MESSAGE } from '@src/constants/resources';
 import { render, renderHook, screen } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import ShareReport from '@src/containers/ShareReport';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
+import * as echarts from 'echarts';
 import { ReactNode } from 'react';
 
 jest.mock('react-router-dom', () => ({
@@ -29,6 +31,14 @@ describe('Share Report', () => {
   });
 
   beforeEach(() => {
+    const chart = {
+      setOption: jest.fn(),
+      resize: jest.fn(),
+      dispatchAction: jest.fn(),
+      dispose: jest.fn(),
+      clear: jest.fn(),
+    };
+    jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
     store = setupStore();
   });
 
@@ -91,9 +101,17 @@ describe('Share Report', () => {
     );
   };
 
-  it('should render report content given data is ready', () => {
+  it('should render report content given data is ready', async () => {
     setReportHook();
     setup();
+
+    const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+    const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+
+    expect(switchChartButton).toBeInTheDocument();
+    expect(switchListButton).toBeInTheDocument();
+
+    await userEvent.click(switchListButton);
 
     expect(screen.getByText('Board Metrics')).toBeInTheDocument();
     expect(screen.getByText('Velocity')).toBeInTheDocument();
@@ -120,6 +138,6 @@ describe('Share Report', () => {
     reportHook.current.isExpired = false;
     setup();
     expect(screen.queryByText(MESSAGE.SHARE_REPORT_EXPIRED)).not.toBeInTheDocument();
-    expect(screen.queryByText('Board Metrics')).not.toBeInTheDocument();
+    expect(screen.queryByText(DISPLAY_TYPE.CHART)).not.toBeInTheDocument();
   });
 });

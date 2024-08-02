@@ -77,6 +77,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
 
   await reportStep.confirmGeneratedReport();
   await reportStep.checkProjectName(configStepData.projectName);
+  await reportStep.goToReportListTab();
   await reportStep.checkExplanation();
   await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({

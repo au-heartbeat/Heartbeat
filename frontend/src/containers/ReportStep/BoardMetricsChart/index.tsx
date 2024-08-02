@@ -16,6 +16,7 @@ interface BoardMetricsChartProps {
   data: IReportInfo[];
   metrics: string[];
   classificationCharts: string[];
+  allDateRangeLoadingFinished: boolean;
 }
 
 type Result = {
@@ -253,7 +254,13 @@ const emptyData: EmptyData = ['velocityList', 'cycleTimeList', 'reworkList', 'cl
   return obj;
 }, {} as EmptyData);
 
-export const BoardMetricsChart = ({ data, dateRanges, metrics, classificationCharts }: BoardMetricsChartProps) => {
+export const BoardMetricsChart = ({
+  data,
+  dateRanges,
+  metrics,
+  classificationCharts,
+  allDateRangeLoadingFinished,
+}: BoardMetricsChartProps) => {
   const cycleTimeAllocation = useRef<HTMLDivElement>(null);
   const cycleTime = useRef<HTMLDivElement>(null);
   const velocity = useRef<HTMLDivElement>(null);
@@ -304,24 +311,42 @@ export const BoardMetricsChart = ({ data, dateRanges, metrics, classificationCha
   return (
     <ChartContainer>
       {metrics.includes(RequiredData.Velocity) && (
-        <ChartAndTitleWrapper trendInfo={velocityData.trendInfo} ref={velocity} isLoading={!isVelocityFinished} />
+        <ChartAndTitleWrapper
+          trendInfo={velocityData.trendInfo}
+          ref={velocity}
+          isLoading={!isVelocityFinished && !allDateRangeLoadingFinished}
+        />
       )}
       {metrics.includes(RequiredData.CycleTime) && (
-        <ChartAndTitleWrapper trendInfo={cycleTimeData.trendInfo} ref={cycleTime} isLoading={!isCycleTimeFinished} />
+        <ChartAndTitleWrapper
+          trendInfo={cycleTimeData.trendInfo}
+          ref={cycleTime}
+          isLoading={!isCycleTimeFinished && !allDateRangeLoadingFinished}
+        />
       )}
       {metrics.includes(RequiredData.CycleTime) && (
         <ChartAndTitleWrapper
           trendInfo={cycleTimeAllocationData.trendInfo}
           ref={cycleTimeAllocation}
-          isLoading={!isCycleTimeFinished}
+          isLoading={!isCycleTimeFinished && !allDateRangeLoadingFinished}
         />
       )}
       {metrics.includes(RequiredData.ReworkTimes) && (
-        <ChartAndTitleWrapper trendInfo={reworkData.trendInfo} ref={rework} isLoading={!isReworkFinished} />
+        <ChartAndTitleWrapper
+          trendInfo={reworkData.trendInfo}
+          ref={rework}
+          isLoading={!isReworkFinished && !allDateRangeLoadingFinished}
+        />
       )}
       {metrics.includes(RequiredData.Classification) &&
         classificationCharts.map((it) => (
-          <ClassificationChart key={it} classification={it} mappedData={mappedData} dateRanges={dateRanges} />
+          <ClassificationChart
+            key={it}
+            classification={it}
+            mappedData={mappedData}
+            dateRanges={dateRanges}
+            allDateRangeLoadingFinished={allDateRangeLoadingFinished}
+          />
         ))}
     </ChartContainer>
   );

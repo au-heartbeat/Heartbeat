@@ -79,18 +79,10 @@ export const ReportButtonGroup = ({
       [SINGLE_DATE_RANGE_DOWNLOAD_KEY.ENABLE_EXPORT_PIPELINE_DATA]: enableExportPipelineData,
     };
   });
-
-  const successRequestResults = dateRangeRequestResults.filter((result) => result.reportData);
   const exportButtonsClickable = {
-    exportMetricData:
-      successRequestResults.every(({ reportData }) => reportData!.overallMetricsCompleted) &&
-      dateRangeListWithStatus.some(({ enableExportMetricData }) => enableExportMetricData),
-    exportBoardData:
-      successRequestResults.every(({ reportData }) => reportData!.boardMetricsCompleted) &&
-      dateRangeListWithStatus.some(({ enableExportBoardData }) => enableExportBoardData),
-    exportPipelineData:
-      successRequestResults.every(({ reportData }) => reportData!.doraMetricsCompleted) &&
-      dateRangeListWithStatus.some(({ enableExportPipelineData }) => enableExportPipelineData),
+    exportMetricData: dateRangeListWithStatus.some(({ enableExportMetricData }) => enableExportMetricData),
+    exportBoardData: dateRangeListWithStatus.some(({ enableExportBoardData }) => enableExportBoardData),
+    exportPipelineData: dateRangeListWithStatus.some(({ enableExportPipelineData }) => enableExportPipelineData),
   };
 
   const exportCSV = (dataType: ReportTypes, startDate: string, endDate: string): CSVReportRequestDTO => ({
