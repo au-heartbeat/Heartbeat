@@ -120,19 +120,16 @@ class KanbanCsvServiceTest {
 	}
 
 	@Test
-	void shouldSaveCsvWithoutAllDoneCards()
-		throws URISyntaxException {
+	void shouldSaveCsvWithoutAllDoneCards() throws URISyntaxException {
 		GenerateReportRequest generateReportRequest = GenerateReportRequest.builder()
-			.jiraBoardSetting(
-				JiraBoardSetting.builder()
-					.boardColumns(List.of(
-						RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+			.jiraBoardSetting(JiraBoardSetting.builder()
+				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
 						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
-					.targetFields(List.of(TargetField.builder().name("Doing").build(),
+				.targetFields(List.of(TargetField.builder().name("Doing").build(),
 						TargetField.builder().name("Done").build(),
 						TargetField.builder().name("Done").key("cardCycleTime.steps.blocked").flag(true).build(),
 						TargetField.builder().name("otherName").key("otherKey").flag(true).build()))
-					.build())
+				.build())
 			.csvTimeStamp(CSV_TIME_STAMP)
 			.startTime(START_TIME)
 			.endTime(END_TIME)
@@ -244,9 +241,7 @@ class KanbanCsvServiceTest {
 		JiraCardDTO preWaitingForTestingJiraCard = JiraCardDTO.builder()
 			.baseInfo(JiraCard.builder()
 				.key("preWaitingForTestingJiraCard")
-				.fields(JiraCardField.builder()
-					.status(Status.builder().name("WAITING FOR TESTING").build())
-					.build())
+				.fields(JiraCardField.builder().status(Status.builder().name("WAITING FOR TESTING").build()).build())
 				.build())
 			.build();
 		JiraCardDTO nextWaitingForTestingJiraCard = JiraCardDTO.builder()
@@ -416,8 +411,7 @@ class KanbanCsvServiceTest {
 	}
 
 	@Test
-	void shouldSaveCsvWithOrderedDoneCardsByJiraColumnDescendingWhenNextStatusIsNull()
-		throws URISyntaxException {
+	void shouldSaveCsvWithOrderedDoneCardsByJiraColumnDescendingWhenNextStatusIsNull() throws URISyntaxException {
 		URI uri = new URI("site-uri");
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
@@ -438,9 +432,7 @@ class KanbanCsvServiceTest {
 		JiraCardDTO nextDoneJiraCard = JiraCardDTO.builder()
 			.baseInfo(JiraCard.builder()
 				.key("nextDoneJiraCard")
-				.fields(JiraCardField.builder()
-					.lastStatusChangeDate(1701151323000L)
-					.build())
+				.fields(JiraCardField.builder().lastStatusChangeDate(1701151323000L).build())
 				.build())
 			.build();
 		List<JiraCardDTO> doneJiraCardDTOList = new ArrayList<>() {
@@ -456,7 +448,7 @@ class KanbanCsvServiceTest {
 		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-					RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
 				.targetFields(List.of(TargetField.builder().name("Done").build()))
 				.build())
 			.csvTimeStamp(CSV_TIME_STAMP)
@@ -473,7 +465,7 @@ class KanbanCsvServiceTest {
 
 	@Test
 	void shouldSaveCsvWithOrderedDoneCardsByJiraColumnDescendingWhenPreLastStatusChangeDateIsNull()
-		throws URISyntaxException {
+			throws URISyntaxException {
 		URI uri = new URI("site-uri");
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
@@ -485,9 +477,7 @@ class KanbanCsvServiceTest {
 		JiraCardDTO preDoneJiraCard = JiraCardDTO.builder()
 			.baseInfo(JiraCard.builder()
 				.key("preDoneJiraCard")
-				.fields(JiraCardField.builder()
-					.status(Status.builder().name("Done").build())
-					.build())
+				.fields(JiraCardField.builder().status(Status.builder().name("Done").build()).build())
 				.build())
 			.build();
 		JiraCardDTO nextDoneJiraCard = JiraCardDTO.builder()
@@ -512,7 +502,7 @@ class KanbanCsvServiceTest {
 		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-					RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
 				.targetFields(List.of(TargetField.builder().name("Done").build()))
 				.build())
 			.csvTimeStamp(CSV_TIME_STAMP)
@@ -529,7 +519,7 @@ class KanbanCsvServiceTest {
 
 	@Test
 	void shouldSaveCsvWithOrderedDoneCardsByJiraColumnDescendingWhenNextLastStatusChangeDateIsNull()
-		throws URISyntaxException {
+			throws URISyntaxException {
 		URI uri = new URI("site-uri");
 		when(urlGenerator.getUri(any())).thenReturn(uri);
 		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
@@ -550,9 +540,7 @@ class KanbanCsvServiceTest {
 		JiraCardDTO nextDoneJiraCard = JiraCardDTO.builder()
 			.baseInfo(JiraCard.builder()
 				.key("nextDoneJiraCard")
-				.fields(JiraCardField.builder()
-					.status(Status.builder().name("Done").build())
-					.build())
+				.fields(JiraCardField.builder().status(Status.builder().name("Done").build()).build())
 				.build())
 			.build();
 		List<JiraCardDTO> doneJiraCardDTOList = new ArrayList<>() {
@@ -568,7 +556,7 @@ class KanbanCsvServiceTest {
 		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-					RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
 				.targetFields(List.of(TargetField.builder().name("Done").build()))
 				.build())
 			.csvTimeStamp(CSV_TIME_STAMP)
@@ -810,6 +798,7 @@ class KanbanCsvServiceTest {
 		Map<String, JsonElement> customFields = blockedJiraCard.getBaseInfo().getFields().getCustomFields();
 		customFields.put("customfield_1001", JsonNull.INSTANCE);
 		customFields.put("customfield_1010", new JsonPrimitive(true));
+		customFields.put("customfield_1234", new JsonArray());
 
 		List<JiraCardDTO> NonDoneJiraCardDTOList = new ArrayList<>() {
 			{
@@ -823,15 +812,16 @@ class KanbanCsvServiceTest {
 		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
 				.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
-					RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+						RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
 				.targetFields(List.of(
-					TargetField.builder().name("fake-issuetype").flag(true).key("customfield_1001").build(),
-					TargetField.builder().name("fake-issuetype2").flag(true).key("customfield_1002").build(),
-					TargetField.builder().name("fake-issuetype3").flag(true).key("customfield_1008").build(),
-					TargetField.builder().name("fake-issuetype4").flag(true).key("customfield_1010").build(),
-					TargetField.builder().name("assignee").flag(true).key("key-assignee").build(),
-					TargetField.builder().name("fake-target1").flag(true).key("key-target1").build()
-					))
+						TargetField.builder().name("fake-issuetype").flag(true).key("customfield_1001").build(),
+						TargetField.builder().name("fake-issuetype2").flag(true).key("customfield_1002").build(),
+						TargetField.builder().name("fake-issuetype3").flag(true).key("customfield_1008").build(),
+						TargetField.builder().name("fake-issuetype4").flag(true).key("customfield_1010").build(),
+						TargetField.builder().name("fake-issuetype5").flag(true).key("customfield_1003").build(),
+						TargetField.builder().name("fake-issuetype6").flag(true).key("customfield_1234").build(),
+						TargetField.builder().name("assignee").flag(true).key("key-assignee").build(),
+						TargetField.builder().name("fake-target1").flag(true).key("key-target1").build()))
 				.build())
 			.csvTimeStamp(CSV_TIME_STAMP)
 			.startTime(START_TIME)
@@ -842,7 +832,7 @@ class KanbanCsvServiceTest {
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
 		List<BoardCSVConfig> value = csvFieldsCaptor.getValue();
 
-		assertEquals(29, value.size());
+		assertEquals(31, value.size());
 
 		BoardCSVConfig issueTypeValue = value.get(14);
 		assertEquals("fake-issuetype", issueTypeValue.getLabel());
@@ -864,12 +854,21 @@ class KanbanCsvServiceTest {
 		assertEquals("baseInfo.fields.customFields.customfield_1010", issueType4Value.getValue());
 		assertEquals("customfield_1010", issueType4Value.getOriginKey());
 
-		BoardCSVConfig reworkValue = value.get(27);
+		BoardCSVConfig issueType5Value = value.get(18);
+		assertEquals("fake-issuetype5", issueType5Value.getLabel());
+		assertEquals("baseInfo.fields.customFields.customfield_1003", issueType5Value.getValue());
+		assertEquals("customfield_1003", issueType5Value.getOriginKey());
+
+		BoardCSVConfig issueType6Value = value.get(19);
+		assertEquals("fake-issuetype6", issueType6Value.getLabel());
+		assertEquals("baseInfo.fields.customFields.customfield_1234", issueType6Value.getValue());
+		assertEquals("customfield_1234", issueType6Value.getOriginKey());
+
+		BoardCSVConfig reworkValue = value.get(29);
 		assertEquals("cardCycleTime.steps.review", reworkValue.getValue());
 		assertEquals("Review Days", reworkValue.getLabel());
 		assertNull(reworkValue.getOriginKey());
 	}
-
 	@Test
 	void shouldAddFixedFieldsWhenItIsNotInSettingsFieldsAndCardHasOriginCycleTimeAndColumnIsDone()
 			throws URISyntaxException {

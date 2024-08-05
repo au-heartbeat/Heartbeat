@@ -223,9 +223,7 @@ public class KanbanCsvService {
 				Status nextStatus = nextCard.getBaseInfo().getFields().getStatus();
 				Long preDateTimeStamp = preCard.getBaseInfo().getFields().getLastStatusChangeDate();
 				Long nextDateTimeStamp = nextCard.getBaseInfo().getFields().getLastStatusChangeDate();
-				if (Objects.isNull(preStatus)
-					|| Objects.isNull(nextStatus)
-					|| Objects.isNull(preDateTimeStamp)
+				if (Objects.isNull(preStatus) || Objects.isNull(nextStatus) || Objects.isNull(preDateTimeStamp)
 						|| Objects.isNull(nextDateTimeStamp)) {
 					return jiraColumns.size() + 1;
 				}
@@ -239,7 +237,10 @@ public class KanbanCsvService {
 	private List<BoardCSVConfig> insertExtraFieldsAfterCycleTime(final List<BoardCSVConfig> extraFields,
 			final List<BoardCSVConfig> fixedBoardFields) {
 		List<BoardCSVConfig> modifiedFields = new ArrayList<>(fixedBoardFields);
-		BoardCSVConfig cycleTime = modifiedFields.stream().filter(it -> it.getLabel().equals("Cycle Time")).findFirst().get();
+		BoardCSVConfig cycleTime = modifiedFields.stream()
+			.filter(it -> it.getLabel().equals("Cycle Time"))
+			.findFirst()
+			.get();
 		int insertIndex = modifiedFields.indexOf(cycleTime);
 		modifiedFields.addAll(insertIndex, extraFields);
 		return modifiedFields;
@@ -327,18 +328,14 @@ public class KanbanCsvService {
 	private String getFieldDisplayValue(Object object) {
 		Gson gson = new Gson();
 		String result = "";
-		if (object == null
-			|| object instanceof JsonNull
-			|| object instanceof Double
-			|| object instanceof String
+		if (object == null || object instanceof JsonNull || object instanceof Double || object instanceof String
 				|| object instanceof JsonPrimitive) {
 			return result;
 		}
 
 		Object tempObject = object;
 
-		if (tempObject instanceof List<?> list
-			&& !list.isEmpty()) {
+		if (tempObject instanceof List<?> list && !list.isEmpty()) {
 			tempObject = list.get(0);
 			result = "[0]";
 		}

@@ -102,12 +102,13 @@ class CSVFileGeneratorTest {
 		@ParameterizedTest
 		@MethodSource("generatePipelineCSVInfos")
 		void shouldConvertPipelineDataToCsvGivenCommitInfoNotNull(List<PipelineCSVInfo> pipelineCSVInfos,
-																  String[] respectedData) {
+				String[] respectedData) {
 			String[][] expectedSavedData = new String[][] { { "Organization", "Pipeline Name", "Pipeline Step", "Valid",
-				"Build Number", "Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
-				"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
-				"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-				"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" }, respectedData };
+					"Build Number", "Code Committer", "Build Creator", "First Code Committed Time In PR",
+					"PR Created Time", "PR Merged Time", "No PR Committed Time", "Job Start Time",
+					"Pipeline Start Time", "Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)",
+					"PR Lead Time (HH:mm:ss)", "Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					respectedData };
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
 			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
@@ -117,14 +118,15 @@ class CSVFileGeneratorTest {
 		void shouldConvertPipelineDataToCsvWithoutCreatorName() {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR_NAME();
 			String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", null, null,
-					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
+							"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", null, null,
+							"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
+							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
+							"" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -135,14 +137,15 @@ class CSVFileGeneratorTest {
 		void shouldConvertPipelineDataToCsvGivenNullCommitInfo() {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO();
 			String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
+							"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
+							"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
+							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
+							"" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -153,14 +156,15 @@ class CSVFileGeneratorTest {
 		void shouldConvertPipelineDataToCsvGivenCommitMessageIsRevert() {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_MESSAGE_IS_REVERT();
 			String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", "XXXX", null,
-					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "true" } };
+					{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
+							"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", "XXXX", null,
+							"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
+							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
+							"true" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -171,14 +175,15 @@ class CSVFileGeneratorTest {
 		void shouldConvertPipelineDataToCsvGivenAuthorIsNull() {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_Author_NAME();
 			String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", null, "XXX",
-					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
+							"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", null, "XXX",
+							"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
+							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
+							"" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -190,20 +195,23 @@ class CSVFileGeneratorTest {
 			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_TWO_ORGANIZATIONS_PIPELINE_CSV_DATA();
 
 			String[][] expectedSavedData = new String[][] {
-				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", null, "XXXX",
-					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" },
-				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" },
-				{ "Thoughtworks-Foxtel", "Heartbeat1", ":rocket: Deploy prod", "true", "880", null, "XXXX",
-					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
+							"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+							"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+							"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+							"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", null, "XXXX",
+							"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
+							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
+							"" },
+					{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
+							"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
+							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
+							"" },
+					{ "Thoughtworks-Foxtel", "Heartbeat1", ":rocket: Deploy prod", "true", "880", null, "XXXX",
+							"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000",
+							"168369327000", "1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch",
+							"" } };
 
 			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
@@ -212,22 +220,23 @@ class CSVFileGeneratorTest {
 
 		private static Stream<Arguments> generatePipelineCSVInfos() {
 			return Stream.of(
-				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA(),
-					new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
-						"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
-						"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
-						"passed", "branch", "" }),
-				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED(),
-					new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
-						"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
-						"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
-						"canceled", "branch", "" }),
-				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR(),
-					new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880",
-						"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
-						"1683793037000", "168369327000", "1684793037000", "240", "8379303", "16837",
-						"653037000", "passed", "branch", "" }));
+					Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA(),
+							new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
+									"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+									"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837",
+									"653037000", "passed", "branch", "" }),
+					Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED(),
+							new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
+									"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+									"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837",
+									"653037000", "canceled", "branch", "" }),
+					Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR(),
+							new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880",
+									"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+									"1683793037000", "168369327000", "1684793037000", "240", "8379303", "16837",
+									"653037000", "passed", "branch", "" }));
 		}
+
 	}
 
 	@Nested
@@ -239,12 +248,12 @@ class CSVFileGeneratorTest {
 			String mockTimeRangeTimeStampWithSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "/";
 			String mockTimeRangeTimeStampWithPoint = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "..";
 
-			assertThrows(IllegalArgumentException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
-				mockTimeRangeTimeStampWithBackSlash));
-			assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithSlash));
-			assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithPoint));
+			assertThrows(IllegalArgumentException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC,
+					TEST_UUID, mockTimeRangeTimeStampWithBackSlash));
+			assertThrows(IllegalArgumentException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC,
+					TEST_UUID, mockTimeRangeTimeStampWithSlash));
+			assertThrows(IllegalArgumentException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC,
+					TEST_UUID, mockTimeRangeTimeStampWithPoint));
 		}
 
 		@Test
@@ -255,17 +264,19 @@ class CSVFileGeneratorTest {
 				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
 
 			InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
-				mockTimeRangeTimeStamp);
+					mockTimeRangeTimeStamp);
 
 			InputStream inputStream = dataFromCSV.getInputStream();
 			String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
 				.collect(Collectors.joining("\n"));
 
 			assertEquals("csv data", returnData);
-			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
+			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+					METRIC_REPORT_PREFIX);
 			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
-				PIPELINE_REPORT_PREFIX);
-			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
+					PIPELINE_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+					BOARD_REPORT_PREFIX);
 		}
 
 		@Test
@@ -276,17 +287,19 @@ class CSVFileGeneratorTest {
 				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
 
 			InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, TEST_UUID,
-				mockTimeRangeTimeStamp);
+					mockTimeRangeTimeStamp);
 
 			InputStream inputStream = dataFromCSV.getInputStream();
 			String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
 				.collect(Collectors.joining("\n"));
 
 			assertEquals("csv data", returnData);
-			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+					METRIC_REPORT_PREFIX);
 			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
-				PIPELINE_REPORT_PREFIX);
-			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
+					PIPELINE_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+					BOARD_REPORT_PREFIX);
 		}
 
 		@Test
@@ -297,18 +310,21 @@ class CSVFileGeneratorTest {
 				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
 
 			InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.BOARD, TEST_UUID,
-				mockTimeRangeTimeStamp);
+					mockTimeRangeTimeStamp);
 
 			InputStream inputStream = dataFromCSV.getInputStream();
 			String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
 				.collect(Collectors.joining("\n"));
 
 			assertEquals("csv data", returnData);
-			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
 			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
-				PIPELINE_REPORT_PREFIX);
-			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
+					METRIC_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+					PIPELINE_REPORT_PREFIX);
+			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+					BOARD_REPORT_PREFIX);
 		}
+
 	}
 
 	@Nested
@@ -335,8 +351,7 @@ class CSVFileGeneratorTest {
 						.lastStatusChangeDate(123L)
 						.assignee(Assignee.builder().displayName("test-assignee").build())
 						.reporter(Reporter.builder().displayName("test-reporter").build())
-						.parent(CardParent.builder()
-							.fields(Fields.builder().summary("parent-summary").build()).build())
+						.parent(CardParent.builder().fields(Fields.builder().summary("parent-summary").build()).build())
 						.sprint(Sprint.builder().name("test-sprint").build())
 						.build())
 					.build())
@@ -348,9 +363,7 @@ class CSVFileGeneratorTest {
 				.cardCycleTime(cardCycleTime)
 				.build();
 			JiraCardDTO noFieldsCard = JiraCardDTO.builder()
-				.baseInfo(JiraCard.builder()
-					.key("ADM-489")
-					.build())
+				.baseInfo(JiraCard.builder().key("ADM-489").build())
 				.totalCycleTimeDivideStoryPoints("0.90")
 				.cardCycleTime(cardCycleTime)
 				.build();
@@ -374,22 +387,24 @@ class CSVFileGeneratorTest {
 			List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
 			List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
 			String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
-				"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint", "Labels",
-				"Cycle Time", "Story point estimate", "Flagged", "1010", "1011", "Cycle Time / Story Points",
-				"Todo Days", "Analysis Days", "In Dev Days", "Waiting For Testing Days", "Testing Days", "Block Days",
-				"Review Days", "OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
-			String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, "1970-01-01", "2.0", "test-assignee", "test-reporter", "ADM",
-				"Auto Dora Metrics", "Medium", "parent-summary", "test-sprint", "", "0.90", null, null, null, null, "0.45", "0", "0", "0.90",
-				"0", "0", "0", "0", null, null };
-			String[] expectNoBaseInfoCardValue = { null, null, null, null, null, null, null, null, null,
-				null, null, null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90",
-				"0", "0", "0", "0", null, null };
-			String[] expectNoFieldsCardValue = { "ADM-489", null, null, null, null, null, null, null, null,
-				null, null, null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90",
-				"0", "0", "0", "0", null, null };
-			String[] expectNoCycleTimeCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null, "ADM",
-				"Auto Dora Metrics", "Medium", null, null, "", null, null, null, null, null, null, null,null, null,
-				null, null, null, null, null, null };
+					"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint",
+					"Labels", "Cycle Time", "Story point estimate", "Flagged", "1010", "1011",
+					"Cycle Time / Story Points", "Todo Days", "Analysis Days", "In Dev Days",
+					"Waiting For Testing Days", "Testing Days", "Block Days", "Review Days", "OriginCycleTime: DOING",
+					"OriginCycleTime: BLOCKED" };
+			String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, "1970-01-01", "2.0",
+					"test-assignee", "test-reporter", "ADM", "Auto Dora Metrics", "Medium", "parent-summary",
+					"test-sprint", "", "0.90", null, null, null, null, "0.45", "0", "0", "0.90", "0", "0", "0", "0",
+					null, null };
+			String[] expectNoBaseInfoCardValue = { null, null, null, null, null, null, null, null, null, null, null,
+					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90", "0", "0", "0", "0", null,
+					null };
+			String[] expectNoFieldsCardValue = { "ADM-489", null, null, null, null, null, null, null, null, null, null,
+					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90", "0", "0", "0", "0", null,
+					null };
+			String[] expectNoCycleTimeCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null,
+					"ADM", "Auto Dora Metrics", "Medium", null, null, "", null, null, null, null, null, null, null,
+					null, null, null, null, null, null, null, null };
 
 			String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
 
@@ -514,9 +529,10 @@ class CSVFileGeneratorTest {
 			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
 
 			assertEquals(
-				"{hasEpicLinkFieldDependency=false, showField=false, nonEditableReason={reason=reason, message=message}}",
-				extraDataPerRow);
+					"{hasEpicLinkFieldDependency=false, showField=false, nonEditableReason={reason=reason, message=message}}",
+					extraDataPerRow);
 		}
+
 	}
 
 	@Nested
@@ -526,54 +542,57 @@ class CSVFileGeneratorTest {
 		void shouldConvertMetricDataToCsv() {
 			ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
 			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
-				{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
-				{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
-				{ "Cycle time", "Average cycle time(days/card)", "9.75" },
-				{ "Cycle time", "Total development time / Total cycle time", "62.10" },
-				{ "Cycle time", "Total analysis time / Total cycle time", "1087.39" },
-				{ "Cycle time", "Total block time / Total cycle time", "0.34" },
-				{ "Cycle time", "Total review time / Total cycle time", "37.39" },
-				{ "Cycle time", "Total testing time / Total cycle time", "0.17" },
-				{ "Cycle time", "Total  time / Total cycle time", "0.17" },
-				{ "Cycle time", "Average development time(days/storyPoint)", "2.60" },
-				{ "Cycle time", "Average development time(days/card)", "6.06" },
-				{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
-				{ "Cycle time", "Average analysis time(days/card)", "26.06" },
-				{ "Cycle time", "Average block time(days/storyPoint)", "0.01" },
-				{ "Cycle time", "Average block time(days/card)", "0.03" },
-				{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
-				{ "Cycle time", "Average review time(days/card)", "3.65" },
-				{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
-				{ "Cycle time", "Average testing time(days/card)", "0.02" },
-				{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
-				{ "Cycle time", "Average  time(days/card)", "0.02" },
-				{ "Classifications", "Issue Type / Bug", "33.33" },
-				{ "Classifications", "Issue Type / Story", "66.67" },
-				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)", "0.78" },
-				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "0" },
-				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)",
-					"0.56" },
-				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployment times)",
-					"0" },
-				{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
-				{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "0" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
-				{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
-				{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
-				{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
-				{ "Lead time for changes", "Average / PR Lead Time", "0" },
-				{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
-				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
-				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
-				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
-					"0.0000" },
-				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
-				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
-				{ "Pipeline mean time to recovery",
-					"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
-				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" }, };
+					{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
+					{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
+					{ "Cycle time", "Average cycle time(days/card)", "9.75" },
+					{ "Cycle time", "Total development time / Total cycle time", "62.10" },
+					{ "Cycle time", "Total analysis time / Total cycle time", "1087.39" },
+					{ "Cycle time", "Total block time / Total cycle time", "0.34" },
+					{ "Cycle time", "Total review time / Total cycle time", "37.39" },
+					{ "Cycle time", "Total testing time / Total cycle time", "0.17" },
+					{ "Cycle time", "Total  time / Total cycle time", "0.17" },
+					{ "Cycle time", "Average development time(days/storyPoint)", "2.60" },
+					{ "Cycle time", "Average development time(days/card)", "6.06" },
+					{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
+					{ "Cycle time", "Average analysis time(days/card)", "26.06" },
+					{ "Cycle time", "Average block time(days/storyPoint)", "0.01" },
+					{ "Cycle time", "Average block time(days/card)", "0.03" },
+					{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
+					{ "Cycle time", "Average review time(days/card)", "3.65" },
+					{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
+					{ "Cycle time", "Average testing time(days/card)", "0.02" },
+					{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
+					{ "Cycle time", "Average  time(days/card)", "0.02" },
+					{ "Classifications", "Issue Type / Bug", "33.33" },
+					{ "Classifications", "Issue Type / Story", "66.67" },
+					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
+							"0.78" },
+					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "0" },
+					{ "Deployment frequency",
+							"Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)", "0.56" },
+					{ "Deployment frequency",
+							"Heartbeat / Check Frontend License / Deployment frequency(Deployment times)", "0" },
+					{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
+					{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "0" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
+					{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
+					{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
+					{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
+					{ "Lead time for changes", "Average / PR Lead Time", "0" },
+					{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
+					{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
+					{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate",
+							"0.0000" },
+					{ "Pipeline change failure rate",
+							"Heartbeat / Check Frontend License / Pipeline change failure rate", "0.0000" },
+					{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
+					{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
+							"0" },
+					{ "Pipeline mean time to recovery",
+							"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+					{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" }, };
 
 			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
@@ -585,81 +604,84 @@ class CSVFileGeneratorTest {
 		void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsMetric() {
 			ReportResponse reportResponse = ReportResponse.builder()
 				.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
-				.classificationList(List.of(Classification.builder()
-					.fieldName("Issue Type")
-					.classificationInfos(List.of(ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
-						ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
-					.build()))
+				.classificationList(
+						List.of(Classification.builder()
+							.fieldName("Issue Type")
+							.classificationInfos(List.of(
+									ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
+									ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
+							.build()))
 				.cycleTime(CycleTime.builder()
 					.totalTimeForCards(29.26)
 					.averageCycleTimePerCard(9.75)
 					.averageCycleTimePerSP(4.18)
 					.swimlaneList(new ArrayList<>(List.of(
-						CycleTimeForSelectedStepItem.builder()
-							.optionalItemName("In Dev")
-							.averageTimeForSP(2.6)
-							.averageTimeForCards(6.06)
-							.totalTime(18.17)
-							.build(),
-						CycleTimeForSelectedStepItem.builder()
-							.optionalItemName("Analysis")
-							.averageTimeForSP(12.6)
-							.averageTimeForCards(26.06)
-							.totalTime(318.17)
-							.build(),
-						CycleTimeForSelectedStepItem.builder()
-							.optionalItemName("Block")
-							.averageTimeForSP(0.01)
-							.averageTimeForCards(0.03)
-							.totalTime(0.1)
-							.build(),
-						CycleTimeForSelectedStepItem.builder()
-							.optionalItemName("Review")
-							.averageTimeForSP(1.56)
-							.averageTimeForCards(3.65)
-							.totalTime(10.94)
-							.build(),
-						CycleTimeForSelectedStepItem.builder()
-							.optionalItemName("Testing")
-							.averageTimeForSP(0.01)
-							.averageTimeForCards(0.02)
-							.totalTime(0.05)
-							.build(),
-						CycleTimeForSelectedStepItem.builder()
-							.optionalItemName("Other step name")
-							.averageTimeForSP(0.01)
-							.averageTimeForCards(0.02)
-							.totalTime(0.05)
-							.build(),
-						CycleTimeForSelectedStepItem.builder()
-							.optionalItemName("Waiting for testing")
-							.averageTimeForSP(2.6)
-							.averageTimeForCards(6.06)
-							.totalTime(18.17)
-							.build())))
+							CycleTimeForSelectedStepItem.builder()
+								.optionalItemName("In Dev")
+								.averageTimeForSP(2.6)
+								.averageTimeForCards(6.06)
+								.totalTime(18.17)
+								.build(),
+							CycleTimeForSelectedStepItem.builder()
+								.optionalItemName("Analysis")
+								.averageTimeForSP(12.6)
+								.averageTimeForCards(26.06)
+								.totalTime(318.17)
+								.build(),
+							CycleTimeForSelectedStepItem.builder()
+								.optionalItemName("Block")
+								.averageTimeForSP(0.01)
+								.averageTimeForCards(0.03)
+								.totalTime(0.1)
+								.build(),
+							CycleTimeForSelectedStepItem.builder()
+								.optionalItemName("Review")
+								.averageTimeForSP(1.56)
+								.averageTimeForCards(3.65)
+								.totalTime(10.94)
+								.build(),
+							CycleTimeForSelectedStepItem.builder()
+								.optionalItemName("Testing")
+								.averageTimeForSP(0.01)
+								.averageTimeForCards(0.02)
+								.totalTime(0.05)
+								.build(),
+							CycleTimeForSelectedStepItem.builder()
+								.optionalItemName("Other step name")
+								.averageTimeForSP(0.01)
+								.averageTimeForCards(0.02)
+								.totalTime(0.05)
+								.build(),
+							CycleTimeForSelectedStepItem.builder()
+								.optionalItemName("Waiting for testing")
+								.averageTimeForSP(2.6)
+								.averageTimeForCards(6.06)
+								.totalTime(18.17)
+								.build())))
 					.build())
-				.deploymentFrequency(DeploymentFrequency.builder()
-					.totalDeployTimes(1)
-					.avgDeploymentFrequency(
-						AvgDeploymentFrequency.builder().name("Average").deploymentFrequency(0.67F).build())
-					.deploymentFrequencyOfPipelines(List.of(
-						DeploymentFrequencyOfPipeline.builder()
-							.name("Heartbeat")
-							.step(":rocket: Deploy prod")
-							.deploymentFrequency(0.78F)
-							.deployTimes(1)
-							.dailyDeploymentCounts(
-								List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
-							.build(),
-						DeploymentFrequencyOfPipeline.builder()
-							.name("Heartbeat")
-							.step(":mag: Check Frontend License")
-							.deploymentFrequency(0.56F)
-							.deployTimes(0)
-							.dailyDeploymentCounts(
-								List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
-							.build()))
-					.build())
+				.deploymentFrequency(
+						DeploymentFrequency.builder()
+							.totalDeployTimes(1)
+							.avgDeploymentFrequency(
+									AvgDeploymentFrequency.builder().name("Average").deploymentFrequency(0.67F).build())
+							.deploymentFrequencyOfPipelines(List.of(
+									DeploymentFrequencyOfPipeline.builder()
+										.name("Heartbeat")
+										.step(":rocket: Deploy prod")
+										.deploymentFrequency(0.78F)
+										.deployTimes(1)
+										.dailyDeploymentCounts(List
+											.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+										.build(),
+									DeploymentFrequencyOfPipeline.builder()
+										.name("Heartbeat")
+										.step(":mag: Check Frontend License")
+										.deploymentFrequency(0.56F)
+										.deployTimes(0)
+										.dailyDeploymentCounts(List
+											.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+										.build()))
+							.build())
 				.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
 					.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
 						.name("Average")
@@ -668,52 +690,52 @@ class CSVFileGeneratorTest {
 						.failureRate(0.0F)
 						.build())
 					.pipelineChangeFailureRateOfPipelines(List.of(
-						PipelineChangeFailureRateOfPipeline.builder()
-							.name("Heartbeat")
-							.step(":rocket: Deploy prod")
-							.failedTimesOfPipeline(0)
-							.totalTimesOfPipeline(7)
-							.failureRate(0.0F)
-							.build(),
-						PipelineChangeFailureRateOfPipeline.builder()
-							.name("Heartbeat")
-							.step(":mag: Check Frontend License")
-							.failedTimesOfPipeline(0)
-							.totalTimesOfPipeline(5)
-							.failureRate(0.0F)
-							.build()))
+							PipelineChangeFailureRateOfPipeline.builder()
+								.name("Heartbeat")
+								.step(":rocket: Deploy prod")
+								.failedTimesOfPipeline(0)
+								.totalTimesOfPipeline(7)
+								.failureRate(0.0F)
+								.build(),
+							PipelineChangeFailureRateOfPipeline.builder()
+								.name("Heartbeat")
+								.step(":mag: Check Frontend License")
+								.failedTimesOfPipeline(0)
+								.totalTimesOfPipeline(5)
+								.failureRate(0.0F)
+								.build()))
 					.build())
 				.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
 					.avgPipelineMeanTimeToRecovery(
-						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+							AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
 					.pipelineMeanTimeToRecoveryOfPipelines(List.of(
-						PipelineMeanTimeToRecoveryOfPipeline.builder()
-							.timeToRecovery(BigDecimal.valueOf(0))
-							.name("Heartbeat")
-							.step(":rocket: Deploy prod")
-							.build(),
-						PipelineMeanTimeToRecoveryOfPipeline.builder()
-							.timeToRecovery(BigDecimal.valueOf(0))
-							.name("Heartbeat")
-							.step(":mag: Check Frontend License")
-							.build()))
+							PipelineMeanTimeToRecoveryOfPipeline.builder()
+								.timeToRecovery(BigDecimal.valueOf(0))
+								.name("Heartbeat")
+								.step(":rocket: Deploy prod")
+								.build(),
+							PipelineMeanTimeToRecoveryOfPipeline.builder()
+								.timeToRecovery(BigDecimal.valueOf(0))
+								.name("Heartbeat")
+								.step(":mag: Check Frontend License")
+								.build()))
 					.build())
 				.leadTimeForChanges(LeadTimeForChanges.builder()
 					.leadTimeForChangesOfPipelines(List.of(
-						LeadTimeForChangesOfPipelines.builder()
-							.name("Heartbeat")
-							.step(":rocket: Deploy prod")
-							.prLeadTime(0.0)
-							.pipelineLeadTime(1.01)
-							.totalDelayTime(1.01)
-							.build(),
-						LeadTimeForChangesOfPipelines.builder()
-							.name("Heartbeat")
-							.step(":mag: Check Frontend License")
-							.prLeadTime(0.0)
-							.pipelineLeadTime(5.18)
-							.totalDelayTime(5.18)
-							.build()))
+							LeadTimeForChangesOfPipelines.builder()
+								.name("Heartbeat")
+								.step(":rocket: Deploy prod")
+								.prLeadTime(0.0)
+								.pipelineLeadTime(1.01)
+								.totalDelayTime(1.01)
+								.build(),
+							LeadTimeForChangesOfPipelines.builder()
+								.name("Heartbeat")
+								.step(":mag: Check Frontend License")
+								.prLeadTime(0.0)
+								.pipelineLeadTime(5.18)
+								.totalDelayTime(5.18)
+								.build()))
 					.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 						.name("Average")
 						.prLeadTime(0.0)
@@ -724,57 +746,60 @@ class CSVFileGeneratorTest {
 				.build();
 
 			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
-				{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
-				{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
-				{ "Cycle time", "Average cycle time(days/card)", "9.75" },
-				{ "Cycle time", "Total development time / Total cycle time", "62.10" },
-				{ "Cycle time", "Total analysis time / Total cycle time", "1087.39" },
-				{ "Cycle time", "Total block time / Total cycle time", "0.34" },
-				{ "Cycle time", "Total review time / Total cycle time", "37.39" },
-				{ "Cycle time", "Total testing time / Total cycle time", "0.17" },
-				{ "Cycle time", "Total  time / Total cycle time", "0.17" },
-				{ "Cycle time", "Total waiting for testing time / Total cycle time", "62.10" },
-				{ "Cycle time", "Average development time(days/storyPoint)", "2.60" },
-				{ "Cycle time", "Average development time(days/card)", "6.06" },
-				{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
-				{ "Cycle time", "Average analysis time(days/card)", "26.06" },
-				{ "Cycle time", "Average block time(days/storyPoint)", "0.01" },
-				{ "Cycle time", "Average block time(days/card)", "0.03" },
-				{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
-				{ "Cycle time", "Average review time(days/card)", "3.65" },
-				{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
-				{ "Cycle time", "Average testing time(days/card)", "0.02" },
-				{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
-				{ "Cycle time", "Average  time(days/card)", "0.02" },
-				{ "Cycle time", "Average waiting for testing time(days/storyPoint)", "2.60" },
-				{ "Cycle time", "Average waiting for testing time(days/card)", "6.06" },
-				{ "Classifications", "Issue Type / Bug", "33.33" },
-				{ "Classifications", "Issue Type / Story", "66.67" },
-				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)", "0.78" },
-				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "1" },
-				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)",
-					"0.56" },
-				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployment times)",
-					"0" },
-				{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
-				{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "1" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
-				{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
-				{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
-				{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
-				{ "Lead time for changes", "Average / PR Lead Time", "0" },
-				{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
-				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
-				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
-				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
-					"0.0000" },
-				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
-				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
-				{ "Pipeline mean time to recovery",
-					"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
-				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" } };
+					{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
+					{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
+					{ "Cycle time", "Average cycle time(days/card)", "9.75" },
+					{ "Cycle time", "Total development time / Total cycle time", "62.10" },
+					{ "Cycle time", "Total analysis time / Total cycle time", "1087.39" },
+					{ "Cycle time", "Total block time / Total cycle time", "0.34" },
+					{ "Cycle time", "Total review time / Total cycle time", "37.39" },
+					{ "Cycle time", "Total testing time / Total cycle time", "0.17" },
+					{ "Cycle time", "Total  time / Total cycle time", "0.17" },
+					{ "Cycle time", "Total waiting for testing time / Total cycle time", "62.10" },
+					{ "Cycle time", "Average development time(days/storyPoint)", "2.60" },
+					{ "Cycle time", "Average development time(days/card)", "6.06" },
+					{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
+					{ "Cycle time", "Average analysis time(days/card)", "26.06" },
+					{ "Cycle time", "Average block time(days/storyPoint)", "0.01" },
+					{ "Cycle time", "Average block time(days/card)", "0.03" },
+					{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
+					{ "Cycle time", "Average review time(days/card)", "3.65" },
+					{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
+					{ "Cycle time", "Average testing time(days/card)", "0.02" },
+					{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
+					{ "Cycle time", "Average  time(days/card)", "0.02" },
+					{ "Cycle time", "Average waiting for testing time(days/storyPoint)", "2.60" },
+					{ "Cycle time", "Average waiting for testing time(days/card)", "6.06" },
+					{ "Classifications", "Issue Type / Bug", "33.33" },
+					{ "Classifications", "Issue Type / Story", "66.67" },
+					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
+							"0.78" },
+					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "1" },
+					{ "Deployment frequency",
+							"Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)", "0.56" },
+					{ "Deployment frequency",
+							"Heartbeat / Check Frontend License / Deployment frequency(Deployment times)", "0" },
+					{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
+					{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "1" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
+					{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
+					{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
+					{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
+					{ "Lead time for changes", "Average / PR Lead Time", "0" },
+					{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
+					{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
+					{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate",
+							"0.0000" },
+					{ "Pipeline change failure rate",
+							"Heartbeat / Check Frontend License / Pipeline change failure rate", "0.0000" },
+					{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
+					{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
+							"0" },
+					{ "Pipeline mean time to recovery",
+							"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+					{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" } };
 
 			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
@@ -798,13 +823,14 @@ class CSVFileGeneratorTest {
 				.rework(Rework.builder().totalReworkTimes(3).totalReworkCards(3).reworkCardsRatio(0.99).build())
 				.deploymentFrequency(DeploymentFrequency.builder()
 					.avgDeploymentFrequency(
-						AvgDeploymentFrequency.builder().name("Average").deploymentFrequency(0.67F).build())
+							AvgDeploymentFrequency.builder().name("Average").deploymentFrequency(0.67F).build())
 					.deploymentFrequencyOfPipelines(List.of(DeploymentFrequencyOfPipeline.builder()
 						.name("Heartbeat")
 						.step(":rocket: Deploy prod")
 						.deploymentFrequency(0.78F)
 						.deployTimes(1)
-						.dailyDeploymentCounts(List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+						.dailyDeploymentCounts(
+								List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
 						.build()))
 					.totalDeployTimes(1)
 					.build())
@@ -825,7 +851,7 @@ class CSVFileGeneratorTest {
 					.build())
 				.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
 					.avgPipelineMeanTimeToRecovery(
-						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+							AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
 					.pipelineMeanTimeToRecoveryOfPipelines(List.of(PipelineMeanTimeToRecoveryOfPipeline.builder()
 						.timeToRecovery(BigDecimal.valueOf(0))
 						.name("Heartbeat")
@@ -849,20 +875,24 @@ class CSVFileGeneratorTest {
 					.build())
 				.build();
 			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
-				{ "Rework", "Total rework times", "3" }, { "Rework", "Total rework cards", "3" },
-				{ "Rework", "Rework cards ratio(Total rework cards/Throughput)", "0.9900" },
-				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)", "0.78" },
-				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "1" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
-				{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
-				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
-				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
-					"0" }, };
+					{ "Rework", "Total rework times", "3" }, { "Rework", "Total rework cards", "3" },
+					{ "Rework", "Rework cards ratio(Total rework cards/Throughput)", "0.9900" },
+					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
+							"0.78" },
+					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "1" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
+					{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
+					{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate",
+							"0.0000" },
+					{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
+							"0" }, };
 
 			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
 			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 		}
+
 	}
+
 }

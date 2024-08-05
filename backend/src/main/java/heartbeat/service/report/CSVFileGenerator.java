@@ -63,8 +63,7 @@ public class CSVFileGenerator {
 	private final FileRepository fileRepository;
 
 	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
-		if (perRowCardDTO.getBaseInfo() != null
-			&& perRowCardDTO.getBaseInfo().getFields() != null) {
+		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
 			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
 		}
 		else {
