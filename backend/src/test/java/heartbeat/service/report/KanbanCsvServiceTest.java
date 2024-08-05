@@ -869,6 +869,7 @@ class KanbanCsvServiceTest {
 		assertEquals("Review Days", reworkValue.getLabel());
 		assertNull(reworkValue.getOriginKey());
 	}
+
 	@Test
 	void shouldAddFixedFieldsWhenItIsNotInSettingsFieldsAndCardHasOriginCycleTimeAndColumnIsDone()
 			throws URISyntaxException {
