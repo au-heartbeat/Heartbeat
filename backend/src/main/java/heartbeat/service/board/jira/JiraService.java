@@ -933,7 +933,7 @@ public class JiraService {
 						total += cycleTimeInfo.getDay();
 					}
 					case WAITING -> {
-						stepsDay.setWaiting(stepsDay.getWaiting() + cycleTimeInfo.getDay());
+						stepsDay.setWaitingForTesting(stepsDay.getWaitingForTesting() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
 					case TESTING -> {

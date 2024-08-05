@@ -3,14 +3,19 @@ package heartbeat.service.report;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import heartbeat.client.dto.board.jira.Assignee;
 import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraCardField;
+import heartbeat.client.dto.board.jira.Sprint;
 import heartbeat.client.dto.board.jira.Status;
 import heartbeat.controller.board.dto.response.CardCycleTime;
+import heartbeat.controller.board.dto.response.CardParent;
+import heartbeat.controller.board.dto.response.Fields;
 import heartbeat.controller.board.dto.response.IssueType;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.JiraProject;
 import heartbeat.controller.board.dto.response.Priority;
+import heartbeat.controller.board.dto.response.Reporter;
 import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.report.dto.request.ReportType;
 import heartbeat.controller.report.dto.response.AvgDeploymentFrequency;
@@ -36,6 +41,7 @@ import heartbeat.controller.report.dto.response.ReportResponse;
 import heartbeat.controller.report.dto.response.Rework;
 import heartbeat.controller.report.dto.response.Velocity;
 import heartbeat.repository.FileRepository;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -90,121 +96,436 @@ class CSVFileGeneratorTest {
 
 	public static final String TEST_UUID = "test-uuid";
 
-	@ParameterizedTest
-	@MethodSource("generatePipelineCSVInfos")
-	void shouldConvertPipelineDataToCsvGivenCommitInfoNotNull(List<PipelineCSVInfo> pipelineCSVInfos,
-			String[] respectedData) {
-		String[][] expectedSavedData = new String[][] { { "Organization", "Pipeline Name", "Pipeline Step", "Valid",
+	@Nested
+	class ConvertPipelineDataToCSV {
+
+		@ParameterizedTest
+		@MethodSource("generatePipelineCSVInfos")
+		void shouldConvertPipelineDataToCsvGivenCommitInfoNotNull(List<PipelineCSVInfo> pipelineCSVInfos,
+																  String[] respectedData) {
+			String[][] expectedSavedData = new String[][] { { "Organization", "Pipeline Name", "Pipeline Step", "Valid",
 				"Build Number", "Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
 				"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
 				"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
 				"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" }, respectedData };
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
 
-	@Test
-	void shouldConvertPipelineDataToCsvWithoutCreatorName() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR_NAME();
-		String[][] expectedSavedData = new String[][] {
+		@Test
+		void shouldConvertPipelineDataToCsvWithoutCreatorName() {
+			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR_NAME();
+			String[][] expectedSavedData = new String[][] {
 				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", null, null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
+					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
 
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
 
-	@Test
-	void shouldConvertPipelineDataToCsvGivenNullCommitInfo() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO();
-		String[][] expectedSavedData = new String[][] {
+		@Test
+		void shouldConvertPipelineDataToCsvGivenNullCommitInfo() {
+			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_NULL_COMMIT_INFO();
+			String[][] expectedSavedData = new String[][] {
 				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
+					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
 
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
 
-	@Test
-	void shouldConvertPipelineDataToCsvGivenCommitMessageIsRevert() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_MESSAGE_IS_REVERT();
-		String[][] expectedSavedData = new String[][] {
+		@Test
+		void shouldConvertPipelineDataToCsvGivenCommitMessageIsRevert() {
+			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_MESSAGE_IS_REVERT();
+			String[][] expectedSavedData = new String[][] {
 				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "true" } };
+					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
+					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "true" } };
 
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
 
-	@Test
-	void shouldConvertPipelineDataToCsvGivenAuthorIsNull() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_Author_NAME();
-		String[][] expectedSavedData = new String[][] {
+		@Test
+		void shouldConvertPipelineDataToCsvGivenAuthorIsNull() {
+			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_Author_NAME();
+			String[][] expectedSavedData = new String[][] {
 				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880", null, "XXX",
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
+					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
 
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
 
-	@Test
-	void shouldConvertPipelineDataToCsvGivenTwoOrganizationsPipeline() {
-		List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_TWO_ORGANIZATIONS_PIPELINE_CSV_DATA();
+		@Test
+		void shouldConvertPipelineDataToCsvGivenTwoOrganizationsPipeline() {
+			List<PipelineCSVInfo> pipelineCSVInfos = PipelineCsvFixture.MOCK_TWO_ORGANIZATIONS_PIPELINE_CSV_DATA();
 
-		String[][] expectedSavedData = new String[][] {
+			String[][] expectedSavedData = new String[][] {
 				{ "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number", "Code Committer",
-						"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
-						"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
-						"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
-						"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
+					"Build Creator", "First Code Committed Time In PR", "PR Created Time", "PR Merged Time",
+					"No PR Committed Time", "Job Start Time", "Pipeline Start Time", "Pipeline Finish Time",
+					"Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
+					"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" },
 				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", null, "XXXX",
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" },
+					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
+					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" },
 				{ "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880", "XXXX", null,
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" },
+					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
+					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" },
 				{ "Thoughtworks-Foxtel", "Heartbeat1", ":rocket: Deploy prod", "true", "880", null, "XXXX",
-						"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
-						"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
+					"2023-05-08T07:18:18Z", "168369327000", "1683793037000", null, "168369327000", "168369327000",
+					"1684793037000", "240", "8379303", "16837", "653037000", "passed", "branch", "" } };
 
-		csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
+			csvFileGenerator.convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
+
+		private static Stream<Arguments> generatePipelineCSVInfos() {
+			return Stream.of(
+				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA(),
+					new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
+						"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+						"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+						"passed", "branch", "" }),
+				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED(),
+					new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
+						"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+						"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
+						"canceled", "branch", "" }),
+				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR(),
+					new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880",
+						"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
+						"1683793037000", "168369327000", "1684793037000", "240", "8379303", "16837",
+						"653037000", "passed", "branch", "" }));
+		}
 	}
 
-	@Test
-	void shouldConvertMetricDataToCsv() {
-		ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
-		String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
+	@Nested
+	class GetDataFromCSV {
+
+		@Test
+		void shouldThrowExceptionWhenTimeStampIsIllegal() {
+			String mockTimeRangeTimeStampWithBackSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "\\";
+			String mockTimeRangeTimeStampWithSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "/";
+			String mockTimeRangeTimeStampWithPoint = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "..";
+
+			assertThrows(IllegalArgumentException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
+				mockTimeRangeTimeStampWithBackSlash));
+			assertThrows(IllegalArgumentException.class,
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithSlash));
+			assertThrows(IllegalArgumentException.class,
+				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithPoint));
+		}
+
+		@Test
+		void shouldReadMetricCsvDataWhenReportTypeIsMetric() throws IOException {
+			String mockTimeRangeTimeStamp = "123-456-789";
+
+			when(fileRepository.readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX))
+				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
+
+			InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
+				mockTimeRangeTimeStamp);
+
+			InputStream inputStream = dataFromCSV.getInputStream();
+			String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
+				.collect(Collectors.joining("\n"));
+
+			assertEquals("csv data", returnData);
+			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+				PIPELINE_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
+		}
+
+		@Test
+		void shouldReadPipelineCsvDataWhenReportTypeIsPipeline() throws IOException {
+			String mockTimeRangeTimeStamp = "123-456-789";
+
+			when(fileRepository.readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, PIPELINE_REPORT_PREFIX))
+				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
+
+			InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, TEST_UUID,
+				mockTimeRangeTimeStamp);
+
+			InputStream inputStream = dataFromCSV.getInputStream();
+			String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
+				.collect(Collectors.joining("\n"));
+
+			assertEquals("csv data", returnData);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
+			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+				PIPELINE_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
+		}
+
+		@Test
+		void shouldReadBoardCsvDataWhenReportTypeIsBoard() throws IOException {
+			String mockTimeRangeTimeStamp = "123-456-789";
+
+			when(fileRepository.readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX))
+				.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
+
+			InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.BOARD, TEST_UUID,
+				mockTimeRangeTimeStamp);
+
+			InputStream inputStream = dataFromCSV.getInputStream();
+			String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
+				.collect(Collectors.joining("\n"));
+
+			assertEquals("csv data", returnData);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
+			verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
+				PIPELINE_REPORT_PREFIX);
+			verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
+		}
+	}
+
+	@Nested
+	class AssembleBoardData {
+
+		@Test
+		void shouldAssembleBoardDataSuccess() {
+			CardCycleTime cardCycleTime = CardCycleTime.builder()
+				.name("ADM-489")
+				.total(0.90)
+				.steps(StepsDay.builder().development(0.90).build())
+				.build();
+			JiraCardDTO normalCard = JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.key("ADM-489")
+					.fields(JiraCardField.builder()
+						.summary("summary")
+						.issuetype(IssueType.builder().name("issue type").build())
+						.status(Status.builder().displayValue("done").build())
+						.storyPoints(2)
+						.project(JiraProject.builder().id("10001").key("ADM").name("Auto Dora Metrics").build())
+						.priority(Priority.builder().name("Medium").build())
+						.labels(Collections.emptyList())
+						.lastStatusChangeDate(123L)
+						.assignee(Assignee.builder().displayName("test-assignee").build())
+						.reporter(Reporter.builder().displayName("test-reporter").build())
+						.parent(CardParent.builder()
+							.fields(Fields.builder().summary("parent-summary").build()).build())
+						.sprint(Sprint.builder().name("test-sprint").build())
+						.build())
+					.build())
+				.totalCycleTimeDivideStoryPoints("0.90")
+				.cardCycleTime(cardCycleTime)
+				.build();
+			JiraCardDTO noBaseInfoCard = JiraCardDTO.builder()
+				.totalCycleTimeDivideStoryPoints("0.90")
+				.cardCycleTime(cardCycleTime)
+				.build();
+			JiraCardDTO noFieldsCard = JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.key("ADM-489")
+					.build())
+				.totalCycleTimeDivideStoryPoints("0.90")
+				.cardCycleTime(cardCycleTime)
+				.build();
+			JiraCardDTO noCycleTimeCard = JiraCardDTO.builder()
+				.baseInfo(JiraCard.builder()
+					.key("ADM-489")
+					.fields(JiraCardField.builder()
+						.summary("summary")
+						.issuetype(IssueType.builder().name("issue type").build())
+						.status(Status.builder().displayValue("done").build())
+						.storyPoints(2)
+						.project(JiraProject.builder().id("10001").key("ADM").name("Auto Dora Metrics").build())
+						.priority(Priority.builder().name("Medium").build())
+						.labels(Collections.emptyList())
+						.build())
+					.build())
+				.totalCycleTimeDivideStoryPoints("0.90")
+				.build();
+
+			List<JiraCardDTO> cardDTOList = List.of(normalCard, noBaseInfoCard, noFieldsCard, noCycleTimeCard);
+			List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
+			List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+			String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
+				"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint", "Labels",
+				"Cycle Time", "Story point estimate", "Flagged", "1010", "1011", "Cycle Time / Story Points",
+				"Todo Days", "Analysis Days", "In Dev Days", "Waiting For Testing Days", "Testing Days", "Block Days",
+				"Review Days", "OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
+			String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, "1970-01-01", "2.0", "test-assignee", "test-reporter", "ADM",
+				"Auto Dora Metrics", "Medium", "parent-summary", "test-sprint", "", "0.90", null, null, null, null, "0.45", "0", "0", "0.90",
+				"0", "0", "0", "0", null, null };
+			String[] expectNoBaseInfoCardValue = { null, null, null, null, null, null, null, null, null,
+				null, null, null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90",
+				"0", "0", "0", "0", null, null };
+			String[] expectNoFieldsCardValue = { "ADM-489", null, null, null, null, null, null, null, null,
+				null, null, null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90",
+				"0", "0", "0", "0", null, null };
+			String[] expectNoCycleTimeCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null, "ADM",
+				"Auto Dora Metrics", "Medium", null, null, "", null, null, null, null, null, null, null,null, null,
+				null, null, null, null, null, null };
+
+			String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
+
+			assertEquals(5, result.length);
+			assertArrayEquals(expectKey, result[0]);
+			assertArrayEquals(expectNormalCardValue, result[1]);
+			assertArrayEquals(expectNoBaseInfoCardValue, result[2]);
+			assertArrayEquals(expectNoFieldsCardValue, result[3]);
+			assertArrayEquals(expectNoCycleTimeCardValue, result[4]);
+		}
+
+	}
+
+	@Nested
+	class GetExtraDataPerRow {
+
+		@Test
+		void shouldGetExtraDataPerRowIsNullWhenElementMapIsNull() {
+			List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
+			BoardCSVConfig extraField = extraFields.get(0);
+
+			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(null, extraField);
+
+			assertNull(extraDataPerRow);
+		}
+
+		@Test
+		void shouldGetExtraDataPerRowWhenFieldIsNull() {
+			List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+			Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+			BoardCSVConfig extraField = BoardCSVConfig.builder()
+				.label("Story point estimate")
+				.value("baseInfo.fields.customFields.customfield_1001")
+				.originKey("customfield_1001")
+				.build();
+
+			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+			assertEquals("", extraDataPerRow);
+		}
+
+		@Test
+		void shouldGetExtraDataPerRowWhenFieldIsNullAndExtraFieldContainOriginCycleTime() {
+			List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+			Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+			BoardCSVConfig extraField = BoardCSVConfig.builder()
+				.label("OriginCycleTime")
+				.value("baseInfo.fields.customFields.customfield_1001")
+				.originKey("customfield_1001")
+				.build();
+
+			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+			assertEquals("0", extraDataPerRow);
+		}
+
+		@Test
+		void shouldGetExtraDataPerRowWhenFieldValueIsDouble() {
+			List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+			Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+			BoardCSVConfig extraField = BoardCSVConfig.builder()
+				.label("Story point estimate")
+				.value("baseInfo.fields.customFields.customfield_1008")
+				.originKey("customfield_1008")
+				.build();
+
+			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+			assertEquals("1.00", extraDataPerRow);
+		}
+
+		@Test
+		void shouldGetExtraDataPerRowWhenFieldValueIsNull() {
+			List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+			Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+			BoardCSVConfig extraField = BoardCSVConfig.builder()
+				.label("Story point estimate")
+				.value("baseInfo.fields.customFields.customfield_1010")
+				.originKey("customfield_1010")
+				.build();
+
+			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+			assertEquals("", extraDataPerRow);
+		}
+
+		@Test
+		void shouldGetExtraDataPerRowWhenFieldValueIsArray() {
+			List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+			Map<String, JsonElement> elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+			JsonArray jsonElements = new JsonArray();
+			jsonElements.add(new JsonObject());
+			jsonElements.add(1);
+			elementMap.put("customfield_1005", jsonElements);
+			BoardCSVConfig extraField = BoardCSVConfig.builder()
+				.label("Story point estimate")
+				.value("baseInfo.fields.customFields.customfield_1005")
+				.originKey("customfield_1005")
+				.build();
+
+			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+			assertEquals("None", extraDataPerRow);
+		}
+
+		@Test
+		void shouldGetExtraDataPerRowWhenFieldValueIsOther() {
+			List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
+
+			Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
+			BoardCSVConfig extraField = BoardCSVConfig.builder()
+				.label("Story point estimate")
+				.value("baseInfo.fields.customFields.customfield_1009")
+				.originKey("customfield_1009")
+				.build();
+
+			String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
+
+			assertEquals(
+				"{hasEpicLinkFieldDependency=false, showField=false, nonEditableReason={reason=reason, message=message}}",
+				extraDataPerRow);
+		}
+	}
+
+	@Nested
+	class ConvertMetricDataToCSV {
+
+		@Test
+		void shouldConvertMetricDataToCsv() {
+			ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
+			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
 				{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
 				{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
 				{ "Cycle time", "Average cycle time(days/card)", "9.75" },
@@ -231,9 +552,9 @@ class CSVFileGeneratorTest {
 				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)", "0.78" },
 				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "0" },
 				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)",
-						"0.56" },
+					"0.56" },
 				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployment times)",
-						"0" },
+					"0" },
 				{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
 				{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "0" },
 				{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
@@ -247,110 +568,33 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
 				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
 				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
-						"0.0000" },
+					"0.0000" },
 				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
 				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
 				{ "Pipeline mean time to recovery",
-						"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+					"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
 				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" }, };
 
-		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
+			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 
-	}
+		}
 
-	@Test
-	void shouldThrowExceptionWhenTimeStampIsIllegal() {
-		String mockTimeRangeTimeStampWithBackSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "\\";
-		String mockTimeRangeTimeStampWithSlash = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "/";
-		String mockTimeRangeTimeStampWithPoint = mockTimeStamp(2021, 4, 9, 0, 0, 0) + "..";
-
-		assertThrows(IllegalArgumentException.class, () -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
-				mockTimeRangeTimeStampWithBackSlash));
-		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithSlash));
-		assertThrows(IllegalArgumentException.class,
-				() -> csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID, mockTimeRangeTimeStampWithPoint));
-	}
-
-	@Test
-	void shouldReadMetricCsvDataWhenReportTypeIsMetric() throws IOException {
-		String mockTimeRangeTimeStamp = "123-456-789";
-
-		when(fileRepository.readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX))
-			.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
-
-		InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.METRIC, TEST_UUID,
-				mockTimeRangeTimeStamp);
-
-		InputStream inputStream = dataFromCSV.getInputStream();
-		String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
-			.collect(Collectors.joining("\n"));
-
-		assertEquals("csv data", returnData);
-		verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
-		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
-				PIPELINE_REPORT_PREFIX);
-		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
-	}
-
-	@Test
-	void shouldReadPipelineCsvDataWhenReportTypeIsPipeline() throws IOException {
-		String mockTimeRangeTimeStamp = "123-456-789";
-
-		when(fileRepository.readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, PIPELINE_REPORT_PREFIX))
-			.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
-
-		InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.PIPELINE, TEST_UUID,
-				mockTimeRangeTimeStamp);
-
-		InputStream inputStream = dataFromCSV.getInputStream();
-		String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
-			.collect(Collectors.joining("\n"));
-
-		assertEquals("csv data", returnData);
-		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
-		verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
-				PIPELINE_REPORT_PREFIX);
-		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
-	}
-
-	@Test
-	void shouldReadBoardCsvDataWhenReportTypeIsBoard() throws IOException {
-		String mockTimeRangeTimeStamp = "123-456-789";
-
-		when(fileRepository.readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX))
-			.thenReturn(new InputStreamResource(new ByteArrayInputStream("csv data".getBytes())));
-
-		InputStreamResource dataFromCSV = csvFileGenerator.getDataFromCSV(ReportType.BOARD, TEST_UUID,
-				mockTimeRangeTimeStamp);
-
-		InputStream inputStream = dataFromCSV.getInputStream();
-		String returnData = new BufferedReader(new InputStreamReader(inputStream)).lines()
-			.collect(Collectors.joining("\n"));
-
-		assertEquals("csv data", returnData);
-		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, METRIC_REPORT_PREFIX);
-		verify(fileRepository, never()).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp,
-				PIPELINE_REPORT_PREFIX);
-		verify(fileRepository, times(1)).readStringFromCsvFile(TEST_UUID, mockTimeRangeTimeStamp, BOARD_REPORT_PREFIX);
-	}
-
-	@Test
-	void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsMetric() {
-		ReportResponse reportResponse = ReportResponse.builder()
-			.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
-			.classificationList(List.of(Classification.builder()
-				.fieldName("Issue Type")
-				.classificationInfos(List.of(ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
+		@Test
+		void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsMetric() {
+			ReportResponse reportResponse = ReportResponse.builder()
+				.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
+				.classificationList(List.of(Classification.builder()
+					.fieldName("Issue Type")
+					.classificationInfos(List.of(ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
 						ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
-				.build()))
-			.cycleTime(CycleTime.builder()
-				.totalTimeForCards(29.26)
-				.averageCycleTimePerCard(9.75)
-				.averageCycleTimePerSP(4.18)
-				.swimlaneList(new ArrayList<>(List.of(
+					.build()))
+				.cycleTime(CycleTime.builder()
+					.totalTimeForCards(29.26)
+					.averageCycleTimePerCard(9.75)
+					.averageCycleTimePerSP(4.18)
+					.swimlaneList(new ArrayList<>(List.of(
 						CycleTimeForSelectedStepItem.builder()
 							.optionalItemName("In Dev")
 							.averageTimeForSP(2.6)
@@ -393,19 +637,19 @@ class CSVFileGeneratorTest {
 							.averageTimeForCards(6.06)
 							.totalTime(18.17)
 							.build())))
-				.build())
-			.deploymentFrequency(DeploymentFrequency.builder()
-				.totalDeployTimes(1)
-				.avgDeploymentFrequency(
+					.build())
+				.deploymentFrequency(DeploymentFrequency.builder()
+					.totalDeployTimes(1)
+					.avgDeploymentFrequency(
 						AvgDeploymentFrequency.builder().name("Average").deploymentFrequency(0.67F).build())
-				.deploymentFrequencyOfPipelines(List.of(
+					.deploymentFrequencyOfPipelines(List.of(
 						DeploymentFrequencyOfPipeline.builder()
 							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
 							.deploymentFrequency(0.78F)
 							.deployTimes(1)
 							.dailyDeploymentCounts(
-									List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+								List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
 							.build(),
 						DeploymentFrequencyOfPipeline.builder()
 							.name("Heartbeat")
@@ -413,17 +657,17 @@ class CSVFileGeneratorTest {
 							.deploymentFrequency(0.56F)
 							.deployTimes(0)
 							.dailyDeploymentCounts(
-									List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+								List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
 							.build()))
-				.build())
-			.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
-				.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
-					.name("Average")
-					.totalTimes(12)
-					.totalFailedTimes(0)
-					.failureRate(0.0F)
 					.build())
-				.pipelineChangeFailureRateOfPipelines(List.of(
+				.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
+					.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
+						.name("Average")
+						.totalTimes(12)
+						.totalFailedTimes(0)
+						.failureRate(0.0F)
+						.build())
+					.pipelineChangeFailureRateOfPipelines(List.of(
 						PipelineChangeFailureRateOfPipeline.builder()
 							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
@@ -438,11 +682,11 @@ class CSVFileGeneratorTest {
 							.totalTimesOfPipeline(5)
 							.failureRate(0.0F)
 							.build()))
-				.build())
-			.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
-				.avgPipelineMeanTimeToRecovery(
+					.build())
+				.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
+					.avgPipelineMeanTimeToRecovery(
 						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
-				.pipelineMeanTimeToRecoveryOfPipelines(List.of(
+					.pipelineMeanTimeToRecoveryOfPipelines(List.of(
 						PipelineMeanTimeToRecoveryOfPipeline.builder()
 							.timeToRecovery(BigDecimal.valueOf(0))
 							.name("Heartbeat")
@@ -453,9 +697,9 @@ class CSVFileGeneratorTest {
 							.name("Heartbeat")
 							.step(":mag: Check Frontend License")
 							.build()))
-				.build())
-			.leadTimeForChanges(LeadTimeForChanges.builder()
-				.leadTimeForChangesOfPipelines(List.of(
+					.build())
+				.leadTimeForChanges(LeadTimeForChanges.builder()
+					.leadTimeForChangesOfPipelines(List.of(
 						LeadTimeForChangesOfPipelines.builder()
 							.name("Heartbeat")
 							.step(":rocket: Deploy prod")
@@ -470,16 +714,16 @@ class CSVFileGeneratorTest {
 							.pipelineLeadTime(5.18)
 							.totalDelayTime(5.18)
 							.build()))
-				.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
-					.name("Average")
-					.prLeadTime(0.0)
-					.pipelineLeadTime(3.0949999999999998)
-					.totalDelayTime(3.0949999999999998)
+					.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
+						.name("Average")
+						.prLeadTime(0.0)
+						.pipelineLeadTime(3.0949999999999998)
+						.totalDelayTime(3.0949999999999998)
+						.build())
 					.build())
-				.build())
-			.build();
+				.build();
 
-		String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
+			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
 				{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
 				{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
 				{ "Cycle time", "Average cycle time(days/card)", "9.75" },
@@ -509,9 +753,9 @@ class CSVFileGeneratorTest {
 				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)", "0.78" },
 				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "1" },
 				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)",
-						"0.56" },
+					"0.56" },
 				{ "Deployment frequency", "Heartbeat / Check Frontend License / Deployment frequency(Deployment times)",
-						"0" },
+					"0" },
 				{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
 				{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "1" },
 				{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
@@ -525,86 +769,86 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
 				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
 				{ "Pipeline change failure rate", "Heartbeat / Check Frontend License / Pipeline change failure rate",
-						"0.0000" },
+					"0.0000" },
 				{ "Pipeline change failure rate", "Average / Pipeline change failure rate", "0" },
 				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery", "0" },
 				{ "Pipeline mean time to recovery",
-						"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+					"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
 				{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" } };
 
-		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
+			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
 
-	@Test
-	void shouldHasNoContentWhenGetDataFromCsvGivenDataTypeIsMetricAndResponseIsEmpty() {
-		ReportResponse reportResponse = MetricCsvFixture.MOCK_EMPTY_METRIC_CSV_DATA();
+		@Test
+		void shouldHasNoContentWhenGetDataFromCsvGivenDataTypeIsMetricAndResponseIsEmpty() {
+			ReportResponse reportResponse = MetricCsvFixture.MOCK_EMPTY_METRIC_CSV_DATA();
 
-		String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" } };
+			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" } };
 
-		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
+			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+		}
 
-	@Test
-	void shouldHasNoContentForAveragesWhenGetDataFromCsvGivenDataTypeIsMetricAndTheQuantityOfPipelineIsEqualToOne() {
-		ReportResponse reportResponse = ReportResponse.builder()
-			.rework(Rework.builder().totalReworkTimes(3).totalReworkCards(3).reworkCardsRatio(0.99).build())
-			.deploymentFrequency(DeploymentFrequency.builder()
-				.avgDeploymentFrequency(
+		@Test
+		void shouldHasNoContentForAveragesWhenGetDataFromCsvGivenDataTypeIsMetricAndTheQuantityOfPipelineIsEqualToOne() {
+			ReportResponse reportResponse = ReportResponse.builder()
+				.rework(Rework.builder().totalReworkTimes(3).totalReworkCards(3).reworkCardsRatio(0.99).build())
+				.deploymentFrequency(DeploymentFrequency.builder()
+					.avgDeploymentFrequency(
 						AvgDeploymentFrequency.builder().name("Average").deploymentFrequency(0.67F).build())
-				.deploymentFrequencyOfPipelines(List.of(DeploymentFrequencyOfPipeline.builder()
-					.name("Heartbeat")
-					.step(":rocket: Deploy prod")
-					.deploymentFrequency(0.78F)
-					.deployTimes(1)
-					.dailyDeploymentCounts(List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
-					.build()))
-				.totalDeployTimes(1)
-				.build())
-			.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
-				.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
-					.name("Average")
-					.totalTimes(12)
-					.totalFailedTimes(0)
-					.failureRate(0.0F)
+					.deploymentFrequencyOfPipelines(List.of(DeploymentFrequencyOfPipeline.builder()
+						.name("Heartbeat")
+						.step(":rocket: Deploy prod")
+						.deploymentFrequency(0.78F)
+						.deployTimes(1)
+						.dailyDeploymentCounts(List.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+						.build()))
+					.totalDeployTimes(1)
 					.build())
-				.pipelineChangeFailureRateOfPipelines(List.of(PipelineChangeFailureRateOfPipeline.builder()
-					.name("Heartbeat")
-					.step(":rocket: Deploy prod")
-					.failedTimesOfPipeline(0)
-					.totalTimesOfPipeline(7)
-					.failureRate(0.0F)
-					.build()))
-				.build())
-			.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
-				.avgPipelineMeanTimeToRecovery(
+				.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
+					.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
+						.name("Average")
+						.totalTimes(12)
+						.totalFailedTimes(0)
+						.failureRate(0.0F)
+						.build())
+					.pipelineChangeFailureRateOfPipelines(List.of(PipelineChangeFailureRateOfPipeline.builder()
+						.name("Heartbeat")
+						.step(":rocket: Deploy prod")
+						.failedTimesOfPipeline(0)
+						.totalTimesOfPipeline(7)
+						.failureRate(0.0F)
+						.build()))
+					.build())
+				.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
+					.avgPipelineMeanTimeToRecovery(
 						AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
-				.pipelineMeanTimeToRecoveryOfPipelines(List.of(PipelineMeanTimeToRecoveryOfPipeline.builder()
-					.timeToRecovery(BigDecimal.valueOf(0))
-					.name("Heartbeat")
-					.step(":rocket: Deploy prod")
-					.build()))
-				.build())
-			.leadTimeForChanges(LeadTimeForChanges.builder()
-				.leadTimeForChangesOfPipelines(List.of(LeadTimeForChangesOfPipelines.builder()
-					.name("Heartbeat")
-					.step(":rocket: Deploy prod")
-					.prLeadTime(0.0)
-					.pipelineLeadTime(1.01)
-					.totalDelayTime(1.01)
-					.build()))
-				.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
-					.name("Average")
-					.prLeadTime(0.0)
-					.pipelineLeadTime(3.0949999999999998)
-					.totalDelayTime(3.0949999999999998)
+					.pipelineMeanTimeToRecoveryOfPipelines(List.of(PipelineMeanTimeToRecoveryOfPipeline.builder()
+						.timeToRecovery(BigDecimal.valueOf(0))
+						.name("Heartbeat")
+						.step(":rocket: Deploy prod")
+						.build()))
 					.build())
-				.build())
-			.build();
-		String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
+				.leadTimeForChanges(LeadTimeForChanges.builder()
+					.leadTimeForChangesOfPipelines(List.of(LeadTimeForChangesOfPipelines.builder()
+						.name("Heartbeat")
+						.step(":rocket: Deploy prod")
+						.prLeadTime(0.0)
+						.pipelineLeadTime(1.01)
+						.totalDelayTime(1.01)
+						.build()))
+					.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
+						.name("Average")
+						.prLeadTime(0.0)
+						.pipelineLeadTime(3.0949999999999998)
+						.totalDelayTime(3.0949999999999998)
+						.build())
+					.build())
+				.build();
+			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
 				{ "Rework", "Total rework times", "3" }, { "Rework", "Total rework cards", "3" },
 				{ "Rework", "Rework cards ratio(Total rework cards/Throughput)", "0.9900" },
 				{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)", "0.78" },
@@ -614,218 +858,11 @@ class CSVFileGeneratorTest {
 				{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
 				{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate", "0.0000" },
 				{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
-						"0" }, };
+					"0" }, };
 
-		csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
+			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-		verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
-	}
-
-	@Test
-	void shouldAssembleBoardDataSuccess() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-		String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
-				"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint", "Labels",
-				"Cycle Time", "Story point estimate", "Flagged", "1010", "1011", "Cycle Time / Story Points",
-				"Analysis Days", "In Dev Days", "Waiting Days", "Testing Days", "Block Days", "Review Days",
-				"OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
-		String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, "2023-11-28", "2.0", "name",
-				"name", "ADM", "Auto Dora Metrics", "Medium", "parent", "sprint 1", "", "0.90", "1.00", "", "", "{}",
-				"0.45", "0", "0.90", "0", "0", "0", "0", "0", "0" };
-
-		String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
-
-		assertEquals(4, result.length);
-		assertArrayEquals(expectKey, result[0]);
-		assertArrayEquals(expectNormalCardValue, result[1]);
-		assertNonNullValue(result[2], List.of(), List.of());
-		assertNonNullValue(result[3], List.of(0), List.of("ADM-489"));
-	}
-
-	@Test
-	void shouldAssembleBoardDataSuccessWhenExistTodoAndNullFields() {
-		CardCycleTime cardCycleTime = CardCycleTime.builder()
-			.name("ADM-489")
-			.total(0.90)
-			.steps(StepsDay.builder().development(0.90).build())
-			.build();
-		List<JiraCardDTO> cardDTOList = List.of(JiraCardDTO.builder()
-			.baseInfo(JiraCard.builder()
-				.key("ADM-489")
-				.fields(JiraCardField.builder()
-					.summary("summary")
-					.issuetype(IssueType.builder().name("issue type").build())
-					.status(Status.builder().displayValue("done").build())
-					.storyPoints(2)
-					.project(JiraProject.builder().id("10001").key("ADM").name("Auto Dora Metrics").build())
-					.priority(Priority.builder().name("Medium").build())
-					.labels(Collections.emptyList())
-					.build())
-				.build())
-			.totalCycleTimeDivideStoryPoints("0.90")
-			.cardCycleTime(cardCycleTime)
-			.build());
-		List<BoardCSVConfig> fields = BoardCsvFixture.MOCK_ALL_WITH_TODO_FIELDS();
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-		String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
-				"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint", "Labels",
-				"Cycle Time", "Story point estimate", "Flagged", "1010", "1011", "Cycle Time / Story Points",
-				"Todo Days", "In Dev Days", "Waiting Days", "Testing Days", "Block Days", "Review Days",
-				"OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
-		String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null, "ADM",
-				"Auto Dora Metrics", "Medium", null, null, "", "0.90", null, null, null, null, "0.45", "0", "0.90", "0",
-				"0", "0", "0", null, null };
-
-		String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
-
-		assertEquals(2, result.length);
-		assertArrayEquals(expectKey, result[0]);
-		assertArrayEquals(expectNormalCardValue, result[1]);
-	}
-
-	@Test
-	void shouldGetExtraDataPerRowIsNullWhenElementMapIsNull() {
-		List<BoardCSVConfig> extraFields = BoardCsvFixture.MOCK_EXTRA_FIELDS();
-		BoardCSVConfig extraField = extraFields.get(0);
-
-		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(null, extraField);
-
-		assertNull(extraDataPerRow);
-	}
-
-	@Test
-	void shouldGetExtraDataPerRowWhenFieldIsNull() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-
-		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
-		BoardCSVConfig extraField = BoardCSVConfig.builder()
-			.label("Story point estimate")
-			.value("baseInfo.fields.customFields.customfield_1001")
-			.originKey("customfield_1001")
-			.build();
-
-		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
-
-		assertEquals("", extraDataPerRow);
-	}
-
-	@Test
-	void shouldGetExtraDataPerRowWhenFieldIsNullAndExtraFieldContainOriginCycleTime() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-
-		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
-		BoardCSVConfig extraField = BoardCSVConfig.builder()
-			.label("OriginCycleTime")
-			.value("baseInfo.fields.customFields.customfield_1001")
-			.originKey("customfield_1001")
-			.build();
-
-		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
-
-		assertEquals("0", extraDataPerRow);
-	}
-
-	@Test
-	void shouldGetExtraDataPerRowWhenFieldValueIsDouble() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-
-		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
-		BoardCSVConfig extraField = BoardCSVConfig.builder()
-			.label("Story point estimate")
-			.value("baseInfo.fields.customFields.customfield_1008")
-			.originKey("customfield_1008")
-			.build();
-
-		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
-
-		assertEquals("1.00", extraDataPerRow);
-	}
-
-	@Test
-	void shouldGetExtraDataPerRowWhenFieldValueIsNull() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-
-		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
-		BoardCSVConfig extraField = BoardCSVConfig.builder()
-			.label("Story point estimate")
-			.value("baseInfo.fields.customFields.customfield_1010")
-			.originKey("customfield_1010")
-			.build();
-
-		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
-
-		assertEquals("", extraDataPerRow);
-	}
-
-	@Test
-	void shouldGetExtraDataPerRowWhenFieldValueIsArray() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-
-		Map<String, JsonElement> elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
-		JsonArray jsonElements = new JsonArray();
-		jsonElements.add(new JsonObject());
-		jsonElements.add(1);
-		elementMap.put("customfield_1005", jsonElements);
-		BoardCSVConfig extraField = BoardCSVConfig.builder()
-			.label("Story point estimate")
-			.value("baseInfo.fields.customFields.customfield_1005")
-			.originKey("customfield_1005")
-			.build();
-
-		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
-
-		assertEquals("None", extraDataPerRow);
-	}
-
-	@Test
-	void shouldGetExtraDataPerRowWhenFieldValueIsOther() {
-		List<JiraCardDTO> cardDTOList = BoardCsvFixture.MOCK_JIRA_CARD_DTO();
-
-		Object elementMap = cardDTOList.get(0).getBaseInfo().getFields().getCustomFields();
-		BoardCSVConfig extraField = BoardCSVConfig.builder()
-			.label("Story point estimate")
-			.value("baseInfo.fields.customFields.customfield_1009")
-			.originKey("customfield_1009")
-			.build();
-
-		String extraDataPerRow = csvFileGenerator.getExtraDataPerRow(elementMap, extraField);
-
-		assertEquals(
-				"{hasEpicLinkFieldDependency=false, showField=false, nonEditableReason={reason=reason, message=message}}",
-				extraDataPerRow);
-	}
-
-	private void assertNonNullValue(String[] value, List<Integer> nonNullIndex, List<String> otherValue) {
-		for (int i = 0; i < value.length; i++) {
-			int pos = nonNullIndex.indexOf(i);
-			if (pos != -1) {
-				assertEquals(otherValue.get(pos), value[i]);
-			}
-			else {
-				assertNull(value[i]);
-			}
+			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
 		}
 	}
-
-	private static Stream<Arguments> generatePipelineCSVInfos() {
-		return Stream.of(
-				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA(),
-						new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
-								"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
-								"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
-								"passed", "branch", "" }),
-				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITH_PIPELINE_STATUS_IS_CANCELED(),
-						new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "true", "880",
-								"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
-								"168369327000", "168369327000", "1684793037000", "240", "8379303", "16837", "653037000",
-								"canceled", "branch", "" }),
-				Arguments.of(PipelineCsvFixture.MOCK_PIPELINE_CSV_DATA_WITHOUT_CREATOR(),
-						new String[] { "Thoughtworks-Heartbeat", "Heartbeat", ":rocket: Deploy prod", "null", "880",
-								"XXXX", null, "2023-05-08T07:18:18Z", "168369327000", "1683793037000", null,
-								"1683793037000", "168369327000", "1684793037000", "240", "8379303", "16837",
-								"653037000", "passed", "branch", "" }));
-	}
-
 }

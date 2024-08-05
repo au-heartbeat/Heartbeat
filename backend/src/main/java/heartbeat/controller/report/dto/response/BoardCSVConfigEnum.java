@@ -16,7 +16,7 @@ public enum BoardCSVConfigEnum {
 	CYCLE_TIME_STORY_POINTS("Cycle Time / Story Points", "totalCycleTimeDivideStoryPoints"),
 	TODO_DAYS("Todo Days", "cardCycleTime.steps.todo"), ANALYSIS_DAYS("Analysis Days", "cardCycleTime.steps.analyse"),
 	IN_DEV_DAYS("In Dev Days", "cardCycleTime.steps.development"),
-	WAITING_DAYS("Waiting Days", "cardCycleTime.steps.waiting"),
+	WAITING_FOR_TESTING_DAYS("Waiting For Testing Days", "cardCycleTime.steps.waitingForTesting"),
 	TESTING_DAYS("Testing Days", "cardCycleTime.steps.testing"),
 	BLOCK_DAYS("Block Days", "cardCycleTime.steps.blocked"), REVIEW_DAYS("Review Days", "cardCycleTime.steps.review");
 

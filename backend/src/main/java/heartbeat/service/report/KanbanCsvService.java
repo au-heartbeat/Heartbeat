@@ -13,7 +13,6 @@ import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
-import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.board.dto.response.CycleTimeInfo;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.JiraColumnDTO;
@@ -113,7 +112,6 @@ public class KanbanCsvService {
 			List<JiraColumnDTO> jiraColumns, String csvTimeRangeTimeStamp, CardStepsEnum reworkState,
 			List<String> reworkFromStates, JiraBoardSetting jiraBoardSetting) {
 		List<TargetField> targetFields = jiraBoardSetting.getTargetFields();
-		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
 		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
 		List<JiraCardDTO> allDoneCards = cardCollectionInfo.getRealDoneCardCollection().getJiraCardDTOList();
@@ -133,8 +131,7 @@ public class KanbanCsvService {
 
 		List<TargetField> enabledTargetFields = targetFields.stream().filter(TargetField::isFlag).toList();
 
-		boolean existTodo = boardColumns.stream().anyMatch(it -> it.getValue().equals("To do"));
-		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields(existTodo);
+		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields();
 		List<BoardCSVConfig> extraFields = getExtraFields(enabledTargetFields, fixedBoardFields);
 
 		List<BoardCSVConfig> newExtraFields = updateExtraFieldsWithCardField(extraFields, cardDTOList);
@@ -226,7 +223,9 @@ public class KanbanCsvService {
 				Status nextStatus = nextCard.getBaseInfo().getFields().getStatus();
 				Long preDateTimeStamp = preCard.getBaseInfo().getFields().getLastStatusChangeDate();
 				Long nextDateTimeStamp = nextCard.getBaseInfo().getFields().getLastStatusChangeDate();
-				if (Objects.isNull(preStatus) || Objects.isNull(nextStatus) || Objects.isNull(preDateTimeStamp)
+				if (Objects.isNull(preStatus)
+					|| Objects.isNull(nextStatus)
+					|| Objects.isNull(preDateTimeStamp)
 						|| Objects.isNull(nextDateTimeStamp)) {
 					return jiraColumns.size() + 1;
 				}
@@ -240,14 +239,8 @@ public class KanbanCsvService {
 	private List<BoardCSVConfig> insertExtraFieldsAfterCycleTime(final List<BoardCSVConfig> extraFields,
 			final List<BoardCSVConfig> fixedBoardFields) {
 		List<BoardCSVConfig> modifiedFields = new ArrayList<>(fixedBoardFields);
-		int insertIndex = 0;
-		for (int i = 0; i < modifiedFields.size(); i++) {
-			BoardCSVConfig currentField = modifiedFields.get(i);
-			if (currentField.getLabel().equals("Cycle Time")) {
-				insertIndex = i + 1;
-				break;
-			}
-		}
+		BoardCSVConfig cycleTime = modifiedFields.stream().filter(it -> it.getLabel().equals("Cycle Time")).findFirst().get();
+		int insertIndex = modifiedFields.indexOf(cycleTime);
 		modifiedFields.addAll(insertIndex, extraFields);
 		return modifiedFields;
 	}
@@ -263,10 +256,8 @@ public class KanbanCsvService {
 					Map<String, Object> tempFields = extractFields(card.getBaseInfo().getFields());
 					if (!hasUpdated) {
 						String extendField = getFieldDisplayValue(tempFields.get(field.getOriginKey()));
-						if (extendField != null) {
-							field.setValue(field.getValue() + extendField);
-							hasUpdated = true;
-						}
+						field.setValue(field.getValue() + extendField);
+						hasUpdated = true;
 					}
 				}
 			}
@@ -327,26 +318,27 @@ public class KanbanCsvService {
 		return extraFields;
 	}
 
-	private List<BoardCSVConfig> getFixedBoardFields(boolean existTodo) {
-		List<BoardCSVConfig> fields = new ArrayList<>(Arrays.stream(BoardCSVConfigEnum.values())
+	private List<BoardCSVConfig> getFixedBoardFields() {
+		return new ArrayList<>(Arrays.stream(BoardCSVConfigEnum.values())
 			.map(field -> BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build())
 			.toList());
-		int removeIndex = existTodo ? 17 : 16;
-		fields.remove(removeIndex);
-		return fields;
 	}
 
 	private String getFieldDisplayValue(Object object) {
 		Gson gson = new Gson();
 		String result = "";
-		if (object == null || object instanceof JsonNull || object instanceof Double || object instanceof String
+		if (object == null
+			|| object instanceof JsonNull
+			|| object instanceof Double
+			|| object instanceof String
 				|| object instanceof JsonPrimitive) {
 			return result;
 		}
 
 		Object tempObject = object;
 
-		if (tempObject instanceof List<?> list && !list.isEmpty()) {
+		if (tempObject instanceof List<?> list
+			&& !list.isEmpty()) {
 			tempObject = list.get(0);
 			result = "[0]";
 		}

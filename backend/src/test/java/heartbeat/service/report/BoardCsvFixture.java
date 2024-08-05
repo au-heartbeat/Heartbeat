@@ -20,7 +20,6 @@ import heartbeat.controller.board.dto.response.StepsDay;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
 import heartbeat.util.JsonFileReader;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -183,9 +182,9 @@ public class BoardCsvFixture {
 		.originKey(null)
 		.build();
 
-	private static final BoardCSVConfig WAITING_DAYS_CONFIG = BoardCSVConfig.builder()
-		.label("Waiting Days")
-		.value("cardCycleTime.steps.waiting")
+	private static final BoardCSVConfig WAITING_FOR_TESTING_DAYS_CONFIG = BoardCSVConfig.builder()
+		.label("Waiting For Testing Days")
+		.value("cardCycleTime.steps.waitingForTesting")
 		.originKey(null)
 		.build();
 
@@ -216,36 +215,17 @@ public class BoardCsvFixture {
 	public static HashMap<String, JsonElement> CUSTOM_FIELDS = JsonFileReader
 		.readJsonFile("./src/test/resources/fields.json");
 
-	public static List<BoardCSVConfig> MOCK_FIXED_FIELDS() {
-		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STATUS_DATE_CONFIG,
-				STORY_POINTS_CONFIG, ASSIGNEE_CONFIG, REPORTER_CONFIG, PROJECT_KEY_CONFIG, PROJECT_NAME_CONFIG,
-				PRIORITY_CONFIG, PARENT_SUMMARY_CONFIG, SPRINT_CONFIG, LABELS_CONFIG, CYCLE_TIME_CONFIG,
-				CYCLE_TIME_STORY_POINTS_CONFIG, ANALYSIS_DAYS_CONFIG, IN_DEV_DAYS_CONFIG, WAITING_DAYS_CONFIG,
-				TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG, REVIEW_DAYS_CONFIG, ORIGIN_CYCLE_TIME_DOING_CONFIG,
-				ORIGIN_CYCLE_BLOCKED_CONFIG);
-	}
-
-	public static List<BoardCSVConfig> MOCK_EXTRA_FIELDS_WITH_CUSTOM() {
-		return List.of(CUSTOM_FIELD_10052_CONFIG, CUSTOM_FIELD_10053_CONFIG);
-	}
-
 	public static List<BoardCSVConfig> MOCK_EXTRA_FIELDS() {
 		return List.of(STORY_POINT_ESTIMATE_CONFIG, FLAGGED, CUSTOM_FIELD_1010_CONFIG, CUSTOM_FIELD_1011_CONFIG);
 	}
 
 	public static List<BoardCSVConfig> MOCK_ALL_FIELDS() {
-		List<BoardCSVConfig> allFields = new ArrayList<>(MOCK_FIXED_FIELDS());
-		allFields.addAll(MOCK_EXTRA_FIELDS());
-		return allFields;
-	}
-
-	public static List<BoardCSVConfig> MOCK_ALL_WITH_TODO_FIELDS() {
 		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STATUS_DATE_CONFIG,
 				STORY_POINTS_CONFIG, ASSIGNEE_CONFIG, REPORTER_CONFIG, PROJECT_KEY_CONFIG, PROJECT_NAME_CONFIG,
 				PRIORITY_CONFIG, PARENT_SUMMARY_CONFIG, SPRINT_CONFIG, LABELS_CONFIG, CYCLE_TIME_CONFIG,
-				CYCLE_TIME_STORY_POINTS_CONFIG, TO_DO_DAYS_CONFIG, IN_DEV_DAYS_CONFIG, WAITING_DAYS_CONFIG,
-				TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG, REVIEW_DAYS_CONFIG, ORIGIN_CYCLE_TIME_DOING_CONFIG,
-				ORIGIN_CYCLE_BLOCKED_CONFIG);
+				CYCLE_TIME_STORY_POINTS_CONFIG, TO_DO_DAYS_CONFIG, ANALYSIS_DAYS_CONFIG, IN_DEV_DAYS_CONFIG,
+				WAITING_FOR_TESTING_DAYS_CONFIG, TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG, REVIEW_DAYS_CONFIG,
+				ORIGIN_CYCLE_TIME_DOING_CONFIG, ORIGIN_CYCLE_BLOCKED_CONFIG);
 	}
 
 	public static List<JiraCardDTO> MOCK_JIRA_CARD_DTO() {

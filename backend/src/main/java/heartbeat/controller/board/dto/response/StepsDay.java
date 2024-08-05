@@ -15,7 +15,7 @@ public class StepsDay {
 
 	private double development;
 
-	private double waiting;
+	private double waitingForTesting;
 
 	private double testing;
 

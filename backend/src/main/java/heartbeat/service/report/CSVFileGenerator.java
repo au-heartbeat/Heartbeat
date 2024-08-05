@@ -56,8 +56,6 @@ import static java.util.concurrent.TimeUnit.HOURS;
 @Log4j2
 public class CSVFileGenerator {
 
-	public static final String FILE_LOCAL_PATH = "./app/output/csv";
-
 	private static final String CANCELED_STATUS = "canceled";
 
 	private static final String REWORK_FIELD = "Rework";
@@ -65,7 +63,8 @@ public class CSVFileGenerator {
 	private final FileRepository fileRepository;
 
 	private static Map<String, JsonElement> getCustomFields(JiraCardDTO perRowCardDTO) {
-		if (perRowCardDTO.getBaseInfo() != null && perRowCardDTO.getBaseInfo().getFields() != null) {
+		if (perRowCardDTO.getBaseInfo() != null
+			&& perRowCardDTO.getBaseInfo().getFields() != null) {
 			return perRowCardDTO.getBaseInfo().getFields().getCustomFields();
 		}
 		else {
@@ -156,7 +155,7 @@ public class CSVFileGenerator {
 		return mergeArrays(fixedFieldsData, extraFieldsData, targetIndex);
 	}
 
-	public String[][] mergeArrays(String[][] fixedFieldsData, String[][] extraFieldsData, int fixedColumnCount) {
+	private String[][] mergeArrays(String[][] fixedFieldsData, String[][] extraFieldsData, int fixedColumnCount) {
 		int mergedColumnLength = fixedFieldsData[0].length + extraFieldsData[0].length;
 		String[][] mergedArray = new String[fixedFieldsData.length][mergedColumnLength];
 		for (int i = 0; i < fixedFieldsData.length; i++) {
@@ -196,9 +195,6 @@ public class CSVFileGenerator {
 		List<BoardCSVConfig> originCycleTimeFields = getOriginCycleTimeFields(fixedFields);
 		int fixedFieldColumnCount = columnCount - originCycleTimeFields.size();
 
-		boolean existTodo = fixedFields.stream()
-			.anyMatch(it -> it.getLabel().equals(BoardCSVConfigEnum.TODO_DAYS.getLabel()));
-
 		String[][] data = new String[rowCount][columnCount];
 
 		for (int column = 0; column < columnCount; column++) {
@@ -207,7 +203,7 @@ public class CSVFileGenerator {
 		for (int row = 0; row < cardDTOList.size(); row++) {
 			JiraCardDTO cardDTO = cardDTOList.get(row);
 
-			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO, fixedFieldColumnCount, existTodo);
+			String[] fixedDataPerRow = getFixedDataPerRow(cardDTO, fixedFieldColumnCount);
 			String[] originCycleTimePerRow = getOriginCycleTimePerRow(cardDTO, originCycleTimeFields);
 			data[row + 1] = Stream.concat(Arrays.stream(fixedDataPerRow), Arrays.stream(originCycleTimePerRow))
 				.toArray(String[]::new);
@@ -241,7 +237,7 @@ public class CSVFileGenerator {
 		return originCycleTimeFields;
 	}
 
-	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount, boolean existTodo) {
+	private String[] getFixedDataPerRow(JiraCardDTO cardDTO, int columnCount) {
 		String[] rowData = new String[columnCount];
 		if (cardDTO.getBaseInfo() != null) {
 			rowData[0] = cardDTO.getBaseInfo().getKey();
@@ -254,13 +250,13 @@ public class CSVFileGenerator {
 		if (cardDTO.getCardCycleTime() != null) {
 			rowData[14] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getTotal());
 			rowData[15] = cardDTO.getTotalCycleTimeDivideStoryPoints();
-			rowData[16] = DecimalUtil.formatDecimalTwo(existTodo ? cardDTO.getCardCycleTime().getSteps().getTodo()
-					: cardDTO.getCardCycleTime().getSteps().getAnalyse());
-			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
-			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaiting());
-			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
-			rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
-			rowData[21] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
+			rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTodo());
+			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
+			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
+			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaitingForTesting());
+			rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
+			rowData[21] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
+			rowData[22] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
 		}
 		return rowData;
 	}
