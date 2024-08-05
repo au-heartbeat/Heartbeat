@@ -421,8 +421,24 @@ describe('Report Step', () => {
       });
     });
 
-    it('should return to metrics page given metrics only select classification when clicking back button in board report detail page', async () => {
+    it('should return to metrics page given metrics only select classification and select classification charts when clicking back button in board report detail page', async () => {
       setup([CLASSIFICATION], [fullValueDateRange, emptyValueDateRange]);
+
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      await userEvent.click(switchListButton);
+
+      await userEvent.click(screen.getByText(BACK));
+
+      await waitFor(() => {
+        expect(screen.getByText(DISPLAY_TYPE.CHART)).toHaveAttribute('aria-selected', 'true');
+      });
+    });
+
+    it('should return to metrics page given metrics only select classification and not select classification charts when clicking back button in board report detail page', async () => {
+      setup([CLASSIFICATION], [fullValueDateRange, emptyValueDateRange]);
+      act(() => {
+        store.dispatch(saveClassificationCharts([]));
+      });
 
       const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
       await userEvent.click(switchListButton);
