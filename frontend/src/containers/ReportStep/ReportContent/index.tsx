@@ -371,7 +371,7 @@ const ReportContent = (props: ReportContentProps) => {
     <BoardDetail
       isShowBack={!metricsOnlySelectClassification || !isSharePage}
       metrics={metrics}
-      onBack={backOnBoardDetail}
+      onBack={handleBack}
       data={data}
       errorMessage={getErrorMessage4Board()}
     />
@@ -381,8 +381,15 @@ const ReportContent = (props: ReportContentProps) => {
   );
 
   const handleBack = () => {
-    if (isChartPage || metricsOnlySelectClassification || (!shouldShowTabs && isSummaryPage)) {
+    if (isChartPage || (!shouldShowTabs && isSummaryPage)) {
       dispatch(backStep());
+    } else if (metricsOnlySelectClassification) {
+      if (selectClassificationCharts) {
+        setDisplayType(DISPLAY_TYPE.CHART);
+        setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
+      } else {
+        dispatch(backStep());
+      }
     } else if (!isSummaryPage) {
       setDisplayType(DISPLAY_TYPE.LIST);
       setPageType(REPORT_PAGE_TYPE.SUMMARY);
@@ -394,10 +401,6 @@ const ReportContent = (props: ReportContentProps) => {
 
   const backToSummaryPage = () => {
     setPageType(REPORT_PAGE_TYPE.SUMMARY);
-  };
-
-  const backOnBoardDetail = () => {
-    metricsOnlySelectClassification ? dispatch(backStep()) : setPageType(REPORT_PAGE_TYPE.SUMMARY);
   };
 
   const handleTimeoutAndGeneralError = (value: string) => {
