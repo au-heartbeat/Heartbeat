@@ -334,30 +334,18 @@ _Image 3-21, Warning message_
 
 After setup and configuration, then it will generate the heartbeat dashboard.
 
-Users can switch dates to view the dashboard for the corresponding time period. And users can switch between dashboard and chart by clicking on `List` and `Chart` button.
-
-#### List view
-
-![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/report-page.png)
-_Image 3-22, Report page_
-
-You could find the drill down from `show more >` link from dashboard.
-
-You can click the help button next to each dora metric to open the dialog to see the explanation.
-![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/dora-metrics-explanation-dialog.png)
-
-You can click the `Formula` link to go to the readme to see the more information.
+Users can switch dates to view the dashboard for the corresponding time period. And users can switch between dashboard and chart by clicking on `Chart` and `List` button.
 
 #### chart view
 In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.  
 
 - Board chart 
-![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/board-chart.png)
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1-board-chart-1.png)
 In the classification chart of the board chart, you can click the switch button to reverse the chart. the reversed chart will show the sum of each legend in all time periods.
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reverse-classification-chart-1.png)
 
 - Dora chart
-![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-2.png)
+![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-3.png)
 
 Heartbeat chart enable customer to drill down  dora metrics to specific pipeline by selecting from pipeline/step dropdown.
 
@@ -370,6 +358,18 @@ Below trend indicator means that Velocity is pretty health between 2024.5.13-202
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-3.png)
 Below trend indicator means that development time ratio is not so unhealthy between 2024.5.13-2024.5.27 and 2024.4.29-20204.5.12. And the development time ratio decreased 23.17%.
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-4.png)
+
+#### List view
+
+![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-5.png)
+_Image 3-22, Report page_
+
+You could find the drill down from `show more >` link from dashboard.
+
+You can click the help button next to each dora metric to open the dialog to see the explanation.
+![Image 3-22](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/dora-metrics-explanation-dialog.png)
+
+You can click the `Formula` link to go to the readme to see the more information.
 
 
 ### 3.4.1 Velocity
@@ -597,7 +597,7 @@ You can use share report feature to share the report you generated in HeartBeat 
 3. Click the 'Copy Link', the share report link will be copied.
 4. Open a new browser tab and paste the link, then you will open the share report page.
 5. You can also share the link to other people.
-   ![Image 3-34](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-34-1.png)\
+   ![Image 3-34](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-34-2.png)\
    _Image 3-34，Share Report
 
 ## 3.7 Caching data
