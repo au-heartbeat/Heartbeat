@@ -13,7 +13,6 @@ import heartbeat.repository.FilePrefixType;
 import heartbeat.controller.board.dto.request.BoardRequestParam;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.board.dto.request.RequestJiraBoardColumnSetting;
-import heartbeat.controller.board.dto.response.CardCollection;
 import heartbeat.controller.board.dto.response.CycleTimeInfo;
 import heartbeat.controller.board.dto.response.JiraCardDTO;
 import heartbeat.controller.board.dto.response.JiraColumnDTO;
@@ -113,7 +112,6 @@ public class KanbanCsvService {
 			List<JiraColumnDTO> jiraColumns, String csvTimeRangeTimeStamp, CardStepsEnum reworkState,
 			List<String> reworkFromStates, JiraBoardSetting jiraBoardSetting) {
 		List<TargetField> targetFields = jiraBoardSetting.getTargetFields();
-		List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 		List<JiraCardDTO> cardDTOList = new ArrayList<>();
 		List<JiraCardDTO> emptyJiraCard = List.of(JiraCardDTO.builder().build());
 		List<JiraCardDTO> allDoneCards = cardCollectionInfo.getRealDoneCardCollection().getJiraCardDTOList();
@@ -133,8 +131,7 @@ public class KanbanCsvService {
 
 		List<TargetField> enabledTargetFields = targetFields.stream().filter(TargetField::isFlag).toList();
 
-		boolean existTodo = boardColumns.stream().anyMatch(it -> it.getValue().equals("To do"));
-		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields(existTodo);
+		List<BoardCSVConfig> fixedBoardFields = getFixedBoardFields();
 		List<BoardCSVConfig> extraFields = getExtraFields(enabledTargetFields, fixedBoardFields);
 
 		List<BoardCSVConfig> newExtraFields = updateExtraFieldsWithCardField(extraFields, cardDTOList);
@@ -263,10 +260,8 @@ public class KanbanCsvService {
 					Map<String, Object> tempFields = extractFields(card.getBaseInfo().getFields());
 					if (!hasUpdated) {
 						String extendField = getFieldDisplayValue(tempFields.get(field.getOriginKey()));
-						if (extendField != null) {
-							field.setValue(field.getValue() + extendField);
-							hasUpdated = true;
-						}
+						field.setValue(field.getValue() + extendField);
+						hasUpdated = true;
 					}
 				}
 			}
@@ -327,13 +322,10 @@ public class KanbanCsvService {
 		return extraFields;
 	}
 
-	private List<BoardCSVConfig> getFixedBoardFields(boolean existTodo) {
-		List<BoardCSVConfig> fields = new ArrayList<>(Arrays.stream(BoardCSVConfigEnum.values())
+	private List<BoardCSVConfig> getFixedBoardFields() {
+		return new ArrayList<>(Arrays.stream(BoardCSVConfigEnum.values())
 			.map(field -> BoardCSVConfig.builder().label(field.getLabel()).value(field.getValue()).build())
 			.toList());
-		int removeIndex = existTodo ? 17 : 16;
-		fields.remove(removeIndex);
-		return fields;
 	}
 
 	private String getFieldDisplayValue(Object object) {
