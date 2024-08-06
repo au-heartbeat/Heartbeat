@@ -626,3 +626,14 @@ export const DORA_METRICS_WITH_HOLIDAY_RESULT = {
   DevMeanTimeToRecovery: '0.78',
   DeploymentTimes: '5',
 };
+
+export const CYCLE_TIME_WITH_ANALYSIS_STATUS_PROJECT_BOARD_METRICS_RESULT: IBoardMetricsResult = {
+  velocity: '5.5',
+  throughput: '3',
+  averageCycleTimeForSP: '5.39',
+  averageCycleTimeForCard: '9.88',
+  totalReworkTimes: '1',
+  totalReworkCards: '1',
+  reworkCardsRatio: '0.3333',
+  reworkThroughput: '3',
+};
