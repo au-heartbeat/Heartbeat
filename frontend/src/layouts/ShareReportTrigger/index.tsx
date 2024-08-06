@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react';
 import Popper from '@mui/material/Popper';
 import Alert from '@mui/material/Alert';
 import Link from '@mui/material/Link';
+import { theme } from '@src/theme';
 
 const ShareReportTrigger = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -83,7 +84,19 @@ const ShareReportTrigger = () => {
                   <CopyToClipboard text={shareReportLink} onCopy={handleCopy}>
                     <Link aria-label='Copy Link'>Copy Link</Link>
                   </CopyToClipboard>
-                  {showAlert && <Alert severity='success'>Link copied to clipboard</Alert>}
+                  {showAlert && (
+                    <Alert
+                      sx={{
+                        [theme.breakpoints.down('md')]: {
+                          position: 'absolute',
+                          right: '0.5rem',
+                        },
+                      }}
+                      severity='success'
+                    >
+                      Link copied to clipboard
+                    </Alert>
+                  )}
                 </LinkLine>
                 <PopperNotes>
                   NOTE: The link is valid for <b>24 hours</b>. Please regenerate it after the timeout.
