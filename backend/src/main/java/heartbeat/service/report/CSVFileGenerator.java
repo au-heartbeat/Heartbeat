@@ -403,7 +403,7 @@ public class CSVFileGenerator {
 		swimlaneList.forEach(cycleTimeForSelectedStepItem -> {
 			String stepName = formatStepName(cycleTimeForSelectedStepItem);
 			double proportion = cycleTimeForSelectedStepItem.getTotalTime() / cycleTime.getTotalTimeForCards();
-			rows.add(new String[] { cycleTimeTitle, "Total " + stepName + " time / Total cycle time",
+			rows.add(new String[] { cycleTimeTitle, "Total " + stepName + " time / Total cycle time(%)",
 					DecimalUtil.formatDecimalTwo(proportion * 100) });
 			rowsForSelectedStepItemAverageTime
 				.add(new String[] { cycleTimeTitle, "Average " + stepName + " time(days/storyPoint)",
@@ -421,7 +421,7 @@ public class CSVFileGenerator {
 		List<String[]> rows = new ArrayList<>();
 		rows.add(new String[] { REWORK_FIELD, "Total rework times", String.valueOf(rework.getTotalReworkTimes()) });
 		rows.add(new String[] { REWORK_FIELD, "Total rework cards", String.valueOf(rework.getTotalReworkCards()) });
-		rows.add(new String[] { REWORK_FIELD, "Rework cards ratio(Total rework cards/Throughput)",
+		rows.add(new String[] { REWORK_FIELD, "Rework cards ratio(Total rework cards/Throughput%)",
 				formatDecimalFour(rework.getReworkCardsRatio()) });
 		return rows;
 	}
@@ -442,9 +442,9 @@ public class CSVFileGenerator {
 		List<String[]> rows = new ArrayList<>();
 		String fieldName = String.valueOf((classificationList.getFieldName()));
 		List<ClassificationInfo> pairList = classificationList.getClassificationInfos();
-		pairList.forEach(
-				nameValuePair -> rows.add(new String[] { "Classifications", fieldName + " / " + nameValuePair.getName(),
-						DecimalUtil.formatDecimalTwo(nameValuePair.getValue() * 100) }));
+		pairList.forEach(nameValuePair -> rows
+			.add(new String[] { "Classifications", fieldName + " / " + nameValuePair.getName() + "(%)",
+					DecimalUtil.formatDecimalTwo(nameValuePair.getValue() * 100) }));
 		return rows;
 	}
 
@@ -521,14 +521,14 @@ public class CSVFileGenerator {
 			.getPipelineChangeFailureRateOfPipelines();
 		pipelineChangeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Pipeline change failure rate",
 				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
-						+ " / Pipeline change failure rate",
-				DecimalUtil.formatDecimalFour(pipeline.getFailureRate()) }));
+						+ " / Pipeline change failure rate(%)",
+				DecimalUtil.formatDecimalFour(pipeline.getFailureRate() * 100) }));
 
 		AvgPipelineChangeFailureRate avgPipelineChangeFailureRate = pipelineChangeFailureRate
 			.getAvgPipelineChangeFailureRate();
 		if (pipelineChangeFailureRateOfPipelines.size() > 1)
 			rows.add(new String[] { "Pipeline change failure rate",
-					avgPipelineChangeFailureRate.getName() + " / Pipeline change failure rate",
+					avgPipelineChangeFailureRate.getName() + " / Pipeline change failure rate(%)",
 					DecimalUtil.formatDecimalTwo(avgPipelineChangeFailureRate.getFailureRate() * 100) });
 
 		return rows;
