@@ -632,15 +632,20 @@ export class ReportStep {
     }
   }
 
-  async checkBoardDownloadDataWithoutBlock(fileName: string) {
+  async checkBoardDownloadDataWithoutBlock(fileName: string, csvCompareLines?: number) {
+    console.log(fileName);
     await downloadFileAndCheck(
       this.page,
       this.exportBoardData,
       'board-data-without-block-column.csv',
       async (fileDataString) => {
         const localCsvFile = fs.readFileSync(path.resolve(__dirname, fileName));
-        const localCsv = parse(localCsvFile);
-        const downloadCsv = parse(fileDataString);
+        const localCsv = parse(localCsvFile, {
+          to: csvCompareLines,
+        });
+        const downloadCsv = parse(fileDataString, {
+          to: csvCompareLines,
+        });
 
         expect(localCsv).toStrictEqual(downloadCsv);
       },
