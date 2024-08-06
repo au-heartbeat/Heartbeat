@@ -1201,14 +1201,14 @@ class KanbanCsvServiceTest {
 			.originCycleTime(List.of(CycleTimeInfo.builder().column("BLOCKED").day(30.7859).build()))
 			.build();
 
-		List<JiraCardDTO> NonDoneJiraCardDTOList = new ArrayList<>() {
+		List<JiraCardDTO> nonDoneJiraCardDTOList = new ArrayList<>() {
 			{
 				add(blockedJiraCard);
 			}
 		};
 		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
 			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
-			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(nonDoneJiraCardDTOList).build())
 			.build();
 
 		try (MockedStatic<BoardCSVConfigEnum> mockStatic = mockStatic(BoardCSVConfigEnum.class)) {
