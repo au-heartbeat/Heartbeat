@@ -9,6 +9,7 @@ import {
   BOARD_METRICS_REWORK_MULTIPLE_RANGES,
   BAORD_CSV_COMPARED_LINES,
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
+  CYCLE_TIME_WITH_ANALYSIS_STATUS_PROJECT_BOARD_METRICS_RESULT,
 } from '../../fixtures/create-new/report-result';
 import { calculateWithHolidayConfigFile } from '../../fixtures/import-file/calculate-with-holiday-config-file';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
@@ -268,4 +269,26 @@ test('Import project from flag as block and without block column', async ({
   await reportStep.confirmGeneratedReport();
   await reportStep.checkBoardMetrics(FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT);
   await reportStep.checkBoardDownloadDataWithoutBlock('../../fixtures/import-file/board-data-without-block-column.csv');
+});
+
+test('Import project from file with analysis board status', async ({
+  homePage,
+  configStep,
+  metricsStep,
+  reportStep,
+}) => {
+  await homePage.goto();
+
+  await homePage.importProjectFromFile('../fixtures/input-files/cycle-time-with-analysis-status.json');
+  await configStep.goToMetrics();
+  await metricsStep.waitForShown();
+  await metricsStep.checkCycleTimeConsiderCheckboxChecked();
+  await metricsStep.goToReportPage();
+
+  await reportStep.confirmGeneratedReport();
+  await reportStep.checkBoardMetrics(CYCLE_TIME_WITH_ANALYSIS_STATUS_PROJECT_BOARD_METRICS_RESULT);
+  await reportStep.checkBoardDownloadDataWithoutBlock(
+    '../../fixtures/import-file/board-data-with-analysis-board-status.csv',
+    4,
+  );
 });
