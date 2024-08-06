@@ -9,6 +9,10 @@ export const PopperContentWrapper = styled.div({
   border: theme.main.cardBorder,
   background: 'white',
   borderRadius: '0.75rem',
+  [theme.breakpoints.down('md')]: {
+    width: '20rem',
+    marginLeft: '0.5rem',
+  },
 });
 
 export const PopperTitle = styled.p({
