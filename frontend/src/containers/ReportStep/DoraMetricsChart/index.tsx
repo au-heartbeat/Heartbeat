@@ -28,7 +28,6 @@ import { reportMapper } from '@src/hooks/reportMapper/report';
 import { showChart } from '@src/containers/ReportStep';
 import { EMPTY_STRING } from '@src/constants/commons';
 import { theme } from '@src/theme';
-import { isString } from 'lodash';
 
 interface DoraMetricsChartProps {
   dateRanges: string[];
@@ -172,12 +171,7 @@ function extractedChangeFailureRateData(
     );
     if (!averageItem) return 0;
     const originValue: string | number = averageItem.valueList[0].value;
-    let value: number;
-    if (selectedPipeline !== DEFAULT_SELECTED_PIPELINE && isString(originValue)) {
-      value = Number(originValue.split('%')[0]);
-    } else {
-      value = Number(originValue);
-    }
+    const value: number = Number(`${originValue}`.split('%')[0]);
     return value || 0;
   });
   const trendInfo = calculateTrendInfo(value, allDateRanges, ChartType.PipelineChangeFailureRate);
