@@ -21,6 +21,7 @@ import heartbeat.controller.board.dto.response.TargetField;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.response.BoardCSVConfig;
+import heartbeat.controller.report.dto.response.BoardCSVConfigEnum;
 import heartbeat.repository.FilePrefixType;
 import heartbeat.repository.FileRepository;
 import heartbeat.service.board.jira.JiraColumnResult;
@@ -34,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -45,17 +47,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static heartbeat.controller.report.dto.response.BoardCSVConfigEnum.ISSUE_KEY;
+import static heartbeat.controller.report.dto.response.BoardCSVConfigEnum.REVIEW_DAYS;
+import static heartbeat.controller.report.dto.response.BoardCSVConfigEnum.SUMMARY;
 import static heartbeat.service.jira.JiraBoardConfigDTOFixture.MOCK_JIRA_BOARD_COLUMN_SETTING_LIST;
 import static heartbeat.service.report.BoardCsvFixture.MOCK_JIRA_CARD;
 import static heartbeat.service.report.BoardCsvFixture.MOCK_REWORK_TIMES_INFO_LIST;
 import static heartbeat.tools.TimeUtils.mockTimeStamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -800,14 +807,14 @@ class KanbanCsvServiceTest {
 		customFields.put("customfield_1010", new JsonPrimitive(true));
 		customFields.put("customfield_1234", new JsonArray());
 
-		List<JiraCardDTO> NonDoneJiraCardDTOList = new ArrayList<>() {
+		List<JiraCardDTO> nonDoneJiraCardDTOList = new ArrayList<>() {
 			{
 				add(blockedJiraCard);
 			}
 		};
 		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
 			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
-			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(nonDoneJiraCardDTOList).build())
 			.build();
 		kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
 			.jiraBoardSetting(JiraBoardSetting.builder()
@@ -834,32 +841,32 @@ class KanbanCsvServiceTest {
 
 		assertEquals(31, value.size());
 
-		BoardCSVConfig issueTypeValue = value.get(14);
+		BoardCSVConfig issueTypeValue = value.get(15);
 		assertEquals("fake-issuetype", issueTypeValue.getLabel());
 		assertEquals("baseInfo.fields.customFields.customfield_1001", issueTypeValue.getValue());
 		assertEquals("customfield_1001", issueTypeValue.getOriginKey());
 
-		BoardCSVConfig issueType2Value = value.get(15);
+		BoardCSVConfig issueType2Value = value.get(16);
 		assertEquals("fake-issuetype2", issueType2Value.getLabel());
 		assertEquals("baseInfo.fields.customFields.customfield_1002", issueType2Value.getValue());
 		assertEquals("customfield_1002", issueType2Value.getOriginKey());
 
-		BoardCSVConfig issueType3Value = value.get(16);
+		BoardCSVConfig issueType3Value = value.get(17);
 		assertEquals("fake-issuetype3", issueType3Value.getLabel());
 		assertEquals("baseInfo.fields.customFields.customfield_1008", issueType3Value.getValue());
 		assertEquals("customfield_1008", issueType3Value.getOriginKey());
 
-		BoardCSVConfig issueType4Value = value.get(17);
+		BoardCSVConfig issueType4Value = value.get(18);
 		assertEquals("fake-issuetype4", issueType4Value.getLabel());
 		assertEquals("baseInfo.fields.customFields.customfield_1010", issueType4Value.getValue());
 		assertEquals("customfield_1010", issueType4Value.getOriginKey());
 
-		BoardCSVConfig issueType5Value = value.get(18);
+		BoardCSVConfig issueType5Value = value.get(19);
 		assertEquals("fake-issuetype5", issueType5Value.getLabel());
 		assertEquals("baseInfo.fields.customFields.customfield_1003", issueType5Value.getValue());
 		assertEquals("customfield_1003", issueType5Value.getOriginKey());
 
-		BoardCSVConfig issueType6Value = value.get(19);
+		BoardCSVConfig issueType6Value = value.get(20);
 		assertEquals("fake-issuetype6", issueType6Value.getLabel());
 		assertEquals("baseInfo.fields.customFields.customfield_1234", issueType6Value.getValue());
 		assertEquals("customfield_1234", issueType6Value.getOriginKey());
@@ -1175,6 +1182,86 @@ class KanbanCsvServiceTest {
 					.endTime(END_TIME)
 					.timezone("Asia/Shanghai")
 					.build());
+	}
+
+	@Test
+	void shouldAddFixedFieldsToFirstWhenCycleTimeDontExist() throws URISyntaxException {
+		URI uri = new URI("site-uri");
+		when(urlGenerator.getUri(any())).thenReturn(uri);
+		when(jiraService.getJiraBoardConfig(any(), any(), any())).thenReturn(JiraBoardConfigDTO.builder().build());
+		when(jiraService.getJiraColumns(any(), any(), any())).thenReturn(JiraColumnResult.builder()
+			.jiraColumnResponse(List
+				.of(JiraColumnDTO.builder().value(ColumnValue.builder().statuses(List.of("BLOCKED")).build()).build()))
+			.build());
+		JiraCardDTO jiraCardDTO = JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder().fields(MOCK_JIRA_CARD()).build())
+			.build();
+		JiraCardDTO blockedJiraCard = JiraCardDTO.builder()
+			.baseInfo(JiraCard.builder().fields(MOCK_JIRA_CARD()).build())
+			.originCycleTime(List.of(CycleTimeInfo.builder().column("BLOCKED").day(30.7859).build()))
+			.build();
+
+		List<JiraCardDTO> NonDoneJiraCardDTOList = new ArrayList<>() {
+			{
+				add(blockedJiraCard);
+			}
+		};
+		FetchedData.CardCollectionInfo cardCollectionInfo = FetchedData.CardCollectionInfo.builder()
+			.realDoneCardCollection(CardCollection.builder().jiraCardDTOList(List.of(jiraCardDTO)).build())
+			.nonDoneCardCollection(CardCollection.builder().jiraCardDTOList(NonDoneJiraCardDTOList).build())
+			.build();
+
+		try (MockedStatic<BoardCSVConfigEnum> mockStatic = mockStatic(BoardCSVConfigEnum.class)) {
+			BoardCSVConfigEnum[] boardCSVConfigEnumArray = new BoardCSVConfigEnum[] { ISSUE_KEY, SUMMARY, REVIEW_DAYS };
+			mockStatic.when(BoardCSVConfigEnum::values).thenReturn(boardCSVConfigEnumArray);
+			kanbanCsvService.generateCsvInfo(TEST_UUID, GenerateReportRequest.builder()
+				.jiraBoardSetting(JiraBoardSetting.builder()
+					.boardColumns(List.of(RequestJiraBoardColumnSetting.builder().name("TODO").value("To do").build(),
+							RequestJiraBoardColumnSetting.builder().name("DOING").value("In dev").build()))
+					.targetFields(List.of(TargetField.builder().name("assignee").flag(true).key("key-assignee").build(),
+							TargetField.builder().name("fake-target1").flag(true).key("key-target1").build()))
+					.build())
+				.csvTimeStamp(CSV_TIME_STAMP)
+				.startTime(START_TIME)
+				.endTime(END_TIME)
+				.timezone("Asia/Shanghai")
+				.build(), cardCollectionInfo);
+
+			verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
+			List<BoardCSVConfig> value = csvFieldsCaptor.getValue();
+
+			assertEquals(6, value.size());
+
+			BoardCSVConfig assigneeValue = value.get(0);
+			assertEquals("baseInfo.fields.customFields.key-assignee", assigneeValue.getValue());
+			assertEquals("assignee", assigneeValue.getLabel());
+			assertNotNull(assigneeValue.getOriginKey());
+
+			BoardCSVConfig targetValue = value.get(1);
+			assertEquals("baseInfo.fields.customFields.key-target1", targetValue.getValue());
+			assertEquals("fake-target1", targetValue.getLabel());
+			assertNotNull(targetValue.getOriginKey());
+
+			BoardCSVConfig issueValue = value.get(2);
+			assertEquals("baseInfo.key", issueValue.getValue());
+			assertEquals("Issue key", issueValue.getLabel());
+			assertNull(issueValue.getOriginKey());
+
+			BoardCSVConfig summaryValue = value.get(3);
+			assertEquals("baseInfo.fields.summary", summaryValue.getValue());
+			assertEquals("Summary", summaryValue.getLabel());
+			assertNull(summaryValue.getOriginKey());
+
+			BoardCSVConfig reworkValue = value.get(4);
+			assertEquals("cardCycleTime.steps.review", reworkValue.getValue());
+			assertEquals("Review Days", reworkValue.getLabel());
+			assertNull(reworkValue.getOriginKey());
+
+			BoardCSVConfig originBlockValue = value.get(5);
+			assertEquals("cycleTimeFlat.BLOCKED", originBlockValue.getValue());
+			assertEquals("OriginCycleTime: BLOCKED", originBlockValue.getLabel());
+			assertNull(originBlockValue.getOriginKey());
+		}
 	}
 
 }

@@ -140,18 +140,6 @@ public class BoardCsvFixture {
 		.originKey("customfield_1011")
 		.build();
 
-	private static final BoardCSVConfig CUSTOM_FIELD_10052_CONFIG = BoardCSVConfig.builder()
-		.label("DevCommit")
-		.value("baseInfo.fields.customFields.customfield_10052")
-		.originKey("customfield_10052")
-		.build();
-
-	private static final BoardCSVConfig CUSTOM_FIELD_10053_CONFIG = BoardCSVConfig.builder()
-		.label("10053")
-		.value("baseInfo.fields.customFields.customfield_10053")
-		.originKey("customfield_10053")
-		.build();
-
 	private static final BoardCSVConfig ORIGIN_CYCLE_BLOCKED_CONFIG = BoardCSVConfig.builder()
 		.label("OriginCycleTime: BLOCKED")
 		.value("cycleTimeFlat.BLOCKED")

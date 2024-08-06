@@ -237,11 +237,14 @@ public class KanbanCsvService {
 	private List<BoardCSVConfig> insertExtraFieldsAfterCycleTime(final List<BoardCSVConfig> extraFields,
 			final List<BoardCSVConfig> fixedBoardFields) {
 		List<BoardCSVConfig> modifiedFields = new ArrayList<>(fixedBoardFields);
-		BoardCSVConfig cycleTime = modifiedFields.stream()
-			.filter(it -> it.getLabel().equals("Cycle Time"))
-			.findFirst()
-			.get();
-		int insertIndex = modifiedFields.indexOf(cycleTime);
+		int insertIndex = 0;
+		for (int i = 0; i < modifiedFields.size(); i++) {
+			BoardCSVConfig currentField = modifiedFields.get(i);
+			if (currentField.getLabel().equals("Cycle Time")) {
+				insertIndex = i + 1;
+				break;
+			}
+		}
 		modifiedFields.addAll(insertIndex, extraFields);
 		return modifiedFields;
 	}
