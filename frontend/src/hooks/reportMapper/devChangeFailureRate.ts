@@ -25,7 +25,7 @@ export const pipelineChangeFailureRateMapper = ({
     name: avgPipelineChangeFailureRate.name,
     valueList: [
       {
-        value: `${(avgPipelineChangeFailureRate.failureRate * 100).toFixed(2)}`,
+        value: `${(avgPipelineChangeFailureRate.failureRate * 100).toFixed(2)}%`,
       },
     ],
   });

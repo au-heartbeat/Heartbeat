@@ -183,7 +183,7 @@ export const EXPECTED_REPORT_VALUES = {
       name: 'Average',
       valueList: [
         {
-          value: '0.00',
+          value: '0.00%',
         },
       ],
     },

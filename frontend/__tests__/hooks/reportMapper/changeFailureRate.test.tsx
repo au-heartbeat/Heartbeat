@@ -34,7 +34,7 @@ describe('dev change failure rate data mapper', () => {
         name: 'Average',
         valueList: [
           {
-            value: '0.00',
+            value: '0.00%',
           },
         ],
       },
