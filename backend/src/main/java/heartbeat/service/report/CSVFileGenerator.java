@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static heartbeat.service.report.calculator.ClassificationCalculator.pickDisplayNameFromObj;
-import static heartbeat.util.DecimalUtil.formatDecimalFour;
 import static heartbeat.util.TimeUtil.convertToSimpleISOFormat;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.HOURS;
@@ -422,7 +421,7 @@ public class CSVFileGenerator {
 		rows.add(new String[] { REWORK_FIELD, "Total rework times", String.valueOf(rework.getTotalReworkTimes()) });
 		rows.add(new String[] { REWORK_FIELD, "Total rework cards", String.valueOf(rework.getTotalReworkCards()) });
 		rows.add(new String[] { REWORK_FIELD, "Rework cards ratio(Total rework cards/Throughput%)",
-				formatDecimalFour(rework.getReworkCardsRatio()) });
+				DecimalUtil.formatDecimalTwo(rework.getReworkCardsRatio() * 100) });
 		return rows;
 	}
 
@@ -522,7 +521,7 @@ public class CSVFileGenerator {
 		pipelineChangeFailureRateOfPipelines.forEach(pipeline -> rows.add(new String[] { "Pipeline change failure rate",
 				pipeline.getName() + " / " + extractPipelineStep(pipeline.getStep())
 						+ " / Pipeline change failure rate(%)",
-				DecimalUtil.formatDecimalFour(pipeline.getFailureRate() * 100) }));
+				DecimalUtil.formatDecimalTwo(pipeline.getFailureRate() * 100) }));
 
 		AvgPipelineChangeFailureRate avgPipelineChangeFailureRate = pipelineChangeFailureRate
 			.getAvgPipelineChangeFailureRate();
