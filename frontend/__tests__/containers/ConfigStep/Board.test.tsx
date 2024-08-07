@@ -29,10 +29,25 @@ import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 
 export const fillBoardFieldsInformation = async () => {
-  await userEvent.type(screen.getByLabelText(/board id/i), '1');
-  await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
-  await userEvent.type(screen.getByLabelText(/site/i), 'fake');
-  await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
+  const boardIdInput = screen.getByLabelText(/board id/i) as HTMLInputElement;
+  const boardIdInputValue = '1';
+  await userEvent.type(boardIdInput, boardIdInputValue);
+  expect(boardIdInput.value).toEqual(boardIdInputValue);
+
+  const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
+  const emailInputValue = 'fake@qq.com';
+  await userEvent.type(emailInput, emailInputValue);
+  expect(emailInput.value).toEqual(emailInputValue);
+
+  const siteInput = screen.getByLabelText(/site/i) as HTMLInputElement;
+  const siteInputValue = 'fake';
+  await userEvent.type(siteInput, siteInputValue);
+  expect(siteInput.value).toEqual(siteInputValue);
+
+  const tokenInput = within(screen.getByLabelText('Board Config')).getByLabelText(/token/i) as HTMLInputElement;
+  const tokenInputValue = FAKE_TOKEN;
+  await userEvent.type(tokenInput, tokenInputValue);
+  expect(tokenInput.value).toEqual(tokenInputValue);
 };
 
 let store = null;
@@ -60,13 +75,15 @@ describe('Board', () => {
   });
   afterAll(() => server.close());
 
+  const onReset = jest.fn();
+  const onSetResetFields = jest.fn();
   store = setupStore();
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
         <FormProvider schema={boardConfigSchema} defaultValues={boardConfigDefaultValues}>
-          <Board />
+          <Board onReset={onReset} onSetResetFields={onSetResetFields} />
         </FormProvider>
       </Provider>,
     );
@@ -145,7 +162,7 @@ describe('Board', () => {
     });
   });
 
-  it('should clear all fields information when click reset button', async () => {
+  it('should run the reset and setResetField func when click reset button', async () => {
     setup();
     mockVerifySuccess();
     await fillBoardFieldsInformation();
@@ -163,34 +180,8 @@ describe('Board', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /reset/i }));
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/board id/i)).not.toHaveValue();
-    });
-    expect(screen.getByLabelText(/email/i)).not.toHaveValue();
-    expect(screen.getByLabelText(/site/i)).not.toHaveValue();
-    expect(screen.getByLabelText(/token/i)).not.toHaveValue();
-
-    await userEvent.click(screen.getByRole('combobox', { name: /board/i }));
-
-    await waitFor(() => {
-      expect(screen.getByRole('option', { name: /jira/i })).toBeInTheDocument();
-    });
-    await userEvent.click(screen.getByRole('option', { name: /jira/i }));
-  });
-
-  it('should hidden timeout alert when click reset button', async () => {
-    const { getByLabelText, queryByLabelText } = setup();
-    await fillBoardFieldsInformation();
-    const mockedError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
-    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
-
-    await userEvent.click(screen.getByText(VERIFY));
-
-    expect(getByLabelText(TIMEOUT_ALERT)).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    expect(queryByLabelText(TIMEOUT_ALERT)).not.toBeInTheDocument();
+    expect(onReset).toHaveBeenCalledTimes(1);
+    expect(onSetResetFields).toHaveBeenCalledTimes(1);
   });
 
   it('should hidden timeout alert when the error type of api call becomes other', async () => {

@@ -57,13 +57,15 @@ describe('PipelineTool', () => {
     pipelineToolClient.verify = originalVerify;
   });
 
+  const onReset = jest.fn();
+  const onSetResetFields = jest.fn();
   store = setupStore();
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
         <FormProvider schema={pipelineToolSchema} defaultValues={pipelineToolDefaultValues}>
-          <PipelineTool />
+          <PipelineTool onReset={onReset} onSetResetFields={onSetResetFields} />
         </FormProvider>
       </Provider>,
     );
@@ -86,35 +88,16 @@ describe('PipelineTool', () => {
     expect(pipelineToolType).toBeInTheDocument();
   });
 
-  it('should clear all fields information when click reset button', async () => {
+  it('should run the reset and setResetField func when click reset button', async () => {
     setup();
-    const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
-      PIPELINE_TOOL_TOKEN_INPUT_LABEL,
-    ) as HTMLInputElement;
     await fillPipelineToolFieldsInformation();
 
     await userEvent.click(screen.getByText(VERIFY));
 
     await userEvent.click(screen.getByRole('button', { name: RESET }));
 
-    expect(tokenInput.value).toEqual('');
-    expect(screen.getByText(PIPELINE_TOOL_TYPES.BUILD_KITE)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: RESET })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: VERIFY })).toBeDisabled();
-  });
-
-  it('should hidden timeout alert when click reset button', async () => {
-    setup();
-    await fillPipelineToolFieldsInformation();
-    pipelineToolClient.verify = jest.fn().mockResolvedValue({ code: AxiosRequestErrorCode.Timeout });
-
-    await userEvent.click(screen.getByText(VERIFY));
-
-    expect(screen.getByLabelText(TIMEOUT_ALERT_ARIA_LABEL)).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    expect(screen.queryByLabelText(TIMEOUT_ALERT_ARIA_LABEL)).not.toBeInTheDocument();
+    expect(onReset).toHaveBeenCalledTimes(1);
+    expect(onSetResetFields).toHaveBeenCalledTimes(1);
   });
 
   it('should hidden timeout alert when the error type of api call becomes other', async () => {
