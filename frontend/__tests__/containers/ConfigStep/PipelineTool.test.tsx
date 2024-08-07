@@ -57,15 +57,13 @@ describe('PipelineTool', () => {
     pipelineToolClient.verify = originalVerify;
   });
 
-  const onReset = jest.fn();
-  const onSetResetFields = jest.fn();
   store = setupStore();
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
         <FormProvider schema={pipelineToolSchema} defaultValues={pipelineToolDefaultValues}>
-          <PipelineTool onReset={onReset} onSetResetFields={onSetResetFields} />
+          <PipelineTool />
         </FormProvider>
       </Provider>,
     );
@@ -86,18 +84,6 @@ describe('PipelineTool', () => {
     const pipelineToolType = screen.getByText(PIPELINE_TOOL_TYPES.BUILD_KITE);
 
     expect(pipelineToolType).toBeInTheDocument();
-  });
-
-  it('should run the reset and setResetField func when click reset button', async () => {
-    setup();
-    await fillPipelineToolFieldsInformation();
-
-    await userEvent.click(screen.getByText(VERIFY));
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    expect(onReset).toHaveBeenCalledTimes(1);
-    expect(onSetResetFields).toHaveBeenCalledTimes(1);
   });
 
   it('should hidden timeout alert when the error type of api call becomes other', async () => {

@@ -75,15 +75,13 @@ describe('Board', () => {
   });
   afterAll(() => server.close());
 
-  const onReset = jest.fn();
-  const onSetResetFields = jest.fn();
   store = setupStore();
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
         <FormProvider schema={boardConfigSchema} defaultValues={boardConfigDefaultValues}>
-          <Board onReset={onReset} onSetResetFields={onSetResetFields} />
+          <Board />
         </FormProvider>
       </Provider>,
     );
@@ -160,28 +158,6 @@ describe('Board', () => {
     await waitFor(() => {
       expect(screen.getByText('Email is required!')).toBeVisible();
     });
-  });
-
-  it('should run the reset and setResetField func when click reset button', async () => {
-    setup();
-    mockVerifySuccess();
-    await fillBoardFieldsInformation();
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /verify/i })).not.toBeDisabled();
-    });
-
-    await userEvent.click(screen.getByText(/verify/i));
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
-    });
-    expect(screen.queryByRole('button', { name: /verified/i })).toBeDisabled();
-
-    await userEvent.click(screen.getByRole('button', { name: /reset/i }));
-
-    expect(onReset).toHaveBeenCalledTimes(1);
-    expect(onSetResetFields).toHaveBeenCalledTimes(1);
   });
 
   it('should hidden timeout alert when the error type of api call becomes other', async () => {

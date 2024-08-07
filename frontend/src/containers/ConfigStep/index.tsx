@@ -5,15 +5,14 @@ import {
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
-import { ResetConfirmDialog } from '@src/containers/ConfigStep/ResetConfirmDialog';
 import { useAppSelector, useAppDispatch } from '@src/hooks/useAppDispatch';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
 import { selectConfig } from '@src/context/config/configSlice';
 import { FormProvider, UseFormReturn } from 'react-hook-form';
 import BasicInfo from '@src/containers/ConfigStep/BasicInfo';
-import { useEffect, useLayoutEffect, useState } from 'react';
 import { Board } from '@src/containers/ConfigStep/Board';
+import { useEffect, useLayoutEffect } from 'react';
 import { ConfigStepWrapper } from './style';
 
 interface IConfigStepProps {
@@ -45,24 +44,6 @@ const ConfigStep = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [isShowResetConfirmDialog, setIsShowResetConfirmDialog] = useState<boolean>(false);
-  const [resetFields, setResetFields] = useState<() => void>(() => {});
-  const onReset = () => {
-    setIsShowResetConfirmDialog(true);
-  };
-  const onResetCancel = () => {
-    setIsShowResetConfirmDialog(false);
-  };
-  const onResetConfirm = () => {
-    resetFields();
-    setIsShowResetConfirmDialog(false);
-  };
-  const onSetResetFields = (resetFunc: () => void) => {
-    setResetFields(() => {
-      return resetFunc;
-    });
-  };
-
   return (
     <ConfigStepWrapper>
       <FormProvider {...basicInfoMethods}>
@@ -70,20 +51,19 @@ const ConfigStep = ({
       </FormProvider>
       {isShowBoard && (
         <FormProvider {...boardConfigMethods}>
-          <Board onReset={onReset} onSetResetFields={onSetResetFields} />
+          <Board />
         </FormProvider>
       )}
       {isShowPipeline && (
         <FormProvider {...pipelineToolMethods}>
-          <PipelineTool onReset={onReset} onSetResetFields={onSetResetFields} />
+          <PipelineTool />
         </FormProvider>
       )}
       {isShowSourceControl && (
         <FormProvider {...sourceControlMethods}>
-          <SourceControl onReset={onReset} onSetResetFields={onSetResetFields} />
+          <SourceControl />
         </FormProvider>
       )}
-      <ResetConfirmDialog isShowDialog={isShowResetConfirmDialog} onConfirm={onResetConfirm} onClose={onResetCancel} />
     </ConfigStepWrapper>
   );
 };
