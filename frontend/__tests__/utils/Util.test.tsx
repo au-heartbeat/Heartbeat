@@ -293,7 +293,7 @@ describe('getSortedAndDeduplicationBoardingMapping function', () => {
       METRICS_CONSTANTS.blockValue,
       METRICS_CONSTANTS.inDevValue,
       METRICS_CONSTANTS.reviewValue,
-      METRICS_CONSTANTS.waitingValue,
+      METRICS_CONSTANTS.waitingForTestingValue,
       METRICS_CONSTANTS.reviewValue,
     ].map((value) => ({
       value: value,
@@ -307,7 +307,7 @@ describe('getSortedAndDeduplicationBoardingMapping function', () => {
       METRICS_CONSTANTS.inDevValue,
       METRICS_CONSTANTS.blockValue,
       METRICS_CONSTANTS.reviewValue,
-      METRICS_CONSTANTS.waitingValue,
+      METRICS_CONSTANTS.waitingForTestingValue,
       METRICS_CONSTANTS.testingValue,
       METRICS_CONSTANTS.doneValue,
     ];

@@ -224,13 +224,13 @@ export const METRICS_CONSTANTS = {
   analysisValue: 'Analysis',
   inDevValue: 'In Dev',
   blockValue: 'Block',
-  waitingValue: 'Waiting for testing',
+  waitingForTestingValue: 'Waiting for testing',
   testingValue: 'Testing',
   reviewValue: 'Review',
 };
 
 export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
-  [METRICS_CONSTANTS.waitingValue]: 'Waiting for testing time',
+  [METRICS_CONSTANTS.waitingForTestingValue]: 'Waiting for testing time',
   [METRICS_CONSTANTS.inDevValue]: 'Development time',
   [METRICS_CONSTANTS.analysisValue]: 'Analysis time',
   [METRICS_CONSTANTS.reviewValue]: 'Review time',
@@ -257,7 +257,7 @@ export const CYCLE_TIME_LIST = [
   METRICS_CONSTANTS.inDevValue,
   METRICS_CONSTANTS.blockValue,
   METRICS_CONSTANTS.reviewValue,
-  METRICS_CONSTANTS.waitingValue,
+  METRICS_CONSTANTS.waitingForTestingValue,
   METRICS_CONSTANTS.testingValue,
   METRICS_CONSTANTS.doneValue,
 ];
@@ -268,7 +268,7 @@ export const REWORK_TIME_LIST = [
   METRICS_CONSTANTS.inDevValue,
   METRICS_CONSTANTS.blockValue,
   METRICS_CONSTANTS.reviewValue,
-  METRICS_CONSTANTS.waitingValue,
+  METRICS_CONSTANTS.waitingForTestingValue,
   METRICS_CONSTANTS.testingValue,
 ];
 
