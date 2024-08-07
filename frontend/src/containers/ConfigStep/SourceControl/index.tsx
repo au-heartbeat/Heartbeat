@@ -1,7 +1,6 @@
 import { FieldKey, useVerifySourceControlTokenEffect } from '@src/hooks/useVerifySourceControlTokenEffect';
 import { ConfigSectionContainer, StyledForm, StyledTextField } from '@src/components/Common/ConfigForms';
 import { SOURCE_CONTROL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
-import { ResetConfirmDialog } from '@src/containers/ConfigStep/ResetConfirmDialog';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { ISourceControlData } from '@src/containers/ConfigStep/Form/schema';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
@@ -14,9 +13,15 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-export const SourceControl = () => {
+export const SourceControl = ({
+  onReset,
+  onSetResetFields,
+}: {
+  onReset: () => void;
+  onSetResetFields: (resetFunc: () => void) => void;
+}) => {
   const dispatch = useAppDispatch();
   const { fields, verifyToken, isLoading, resetFields } = useVerifySourceControlTokenEffect();
   const {
@@ -30,19 +35,8 @@ export const SourceControl = () => {
   } = useFormContext();
   const isVerifyTimeOut = errors.token?.message === SOURCE_CONTROL_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
-  const [isShowResetConfirmDialog, setIsShowResetConfirmDialog] = useState<boolean>(false);
 
   const onSubmit = async () => await verifyToken();
-  const onReset = () => {
-    setIsShowResetConfirmDialog(true);
-  };
-  const onResetCancel = () => {
-    setIsShowResetConfirmDialog(false);
-  };
-  const onResetConfirm = () => {
-    resetFields();
-    setIsShowResetConfirmDialog(false);
-  };
   const closeTimeoutAlert = () => clearErrors(fields[FieldKey.Token].key);
 
   useEffect(() => {
@@ -64,7 +58,13 @@ export const SourceControl = () => {
           formAlertType={formAlertTypes.Timeout}
         />
       </StyledAlterWrapper>
-      <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={onReset}>
+      <StyledForm
+        onSubmit={handleSubmit(onSubmit)}
+        onReset={() => {
+          onSetResetFields(resetFields);
+          onReset();
+        }}
+      >
         <FormSingleSelect
           key={fields[FieldKey.Type].key}
           name={fields[FieldKey.Type].key}
@@ -122,7 +122,6 @@ export const SourceControl = () => {
           isLoading={isLoading}
         />
       </StyledForm>
-      <ResetConfirmDialog isShowDialog={isShowResetConfirmDialog} onConfirm={onResetConfirm} onClose={onResetCancel} />
     </ConfigSectionContainer>
   );
 };

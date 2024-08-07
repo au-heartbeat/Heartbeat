@@ -1,6 +1,5 @@
 import { ConfigSectionContainer, StyledForm } from '@src/components/Common/ConfigForms';
 import { BOARD_CONFIG_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
-import { ResetConfirmDialog } from '@src/containers/ConfigStep/ResetConfirmDialog';
 import { FormTextField } from '@src/containers/ConfigStep/Board/FormTextField';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
@@ -14,14 +13,19 @@ import { Loading } from '@src/components/Loading';
 import { useFormContext } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 
-export const Board = () => {
+export const Board = ({
+  onReset,
+  onSetResetFields,
+}: {
+  onReset: () => void;
+  onSetResetFields: (resetFunc: () => void) => void;
+}) => {
   const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
   const {
     formState: { isValid, isSubmitSuccessful, errors },
     handleSubmit,
   } = useFormContext();
   const [alertVisible, setAlertVisible] = useState(false);
-  const [isShowResetConfirmDialog, setIsShowResetConfirmDialog] = useState<boolean>(false);
   const isVerifyTimeOut = errors.token?.message === BOARD_CONFIG_ERROR_MESSAGE.token.timeout;
   const isBoardVerifyFailed =
     errors.email?.message === BOARD_CONFIG_ERROR_MESSAGE.email.verifyFailed ||
@@ -30,16 +34,6 @@ export const Board = () => {
   const showAlert = alertVisible && (isVerifyTimeOut || isBoardVerifyFailed);
   const formAlertType = isVerifyTimeOut ? formAlertTypes.Timeout : formAlertTypes.BoardVerify;
   const onSubmit = async () => await verifyJira();
-  const onReset = () => {
-    setIsShowResetConfirmDialog(true);
-  };
-  const onResetCancel = () => {
-    setIsShowResetConfirmDialog(false);
-  };
-  const onResetConfirm = () => {
-    resetFields();
-    setIsShowResetConfirmDialog(false);
-  };
   const closeAlert = () => setAlertVisible(false);
 
   useEffect(() => {
@@ -64,7 +58,13 @@ export const Board = () => {
           <FormAlert showAlert={showAlert} onClose={closeAlert} moduleType={'Board'} formAlertType={formAlertType} />
         )}
       </StyledAlterWrapper>
-      <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={onReset}>
+      <StyledForm
+        onSubmit={handleSubmit(onSubmit)}
+        onReset={() => {
+          onSetResetFields(resetFields);
+          onReset();
+        }}
+      >
         {fields.map(({ key, col, label }) =>
           key === 'type' ? (
             <FormSingleSelect
@@ -86,7 +86,6 @@ export const Board = () => {
           isLoading={isLoading}
         />
       </StyledForm>
-      <ResetConfirmDialog isShowDialog={isShowResetConfirmDialog} onConfirm={onResetConfirm} onClose={onResetCancel} />
     </ConfigSectionContainer>
   );
 };

@@ -1,7 +1,6 @@
 import { ConfigSectionContainer, StyledForm, StyledTextField } from '@src/components/Common/ConfigForms';
 import { FieldKey, useVerifyPipelineToolEffect } from '@src/hooks/useVerifyPipelineToolEffect';
 import { PIPELINE_TOOL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
-import { ResetConfirmDialog } from '@src/containers/ConfigStep/ResetConfirmDialog';
 import { FormSingleSelect } from '@src/containers/ConfigStep/Form/FormSelect';
 import { ConfigTitle, PIPELINE_TOOL_TYPES } from '@src/constants/resources';
 import { ConfigButtonGrop } from '@src/containers/ConfigStep/ConfigButton';
@@ -14,9 +13,15 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-export const PipelineTool = () => {
+export const PipelineTool = ({
+  onReset,
+  onSetResetFields,
+}: {
+  onReset: () => void;
+  onSetResetFields: (resetFunc: () => void) => void;
+}) => {
   const dispatch = useAppDispatch();
   const { fields, verifyPipelineTool, isLoading, resetFields } = useVerifyPipelineToolEffect();
   const {
@@ -30,19 +35,8 @@ export const PipelineTool = () => {
   } = useFormContext();
   const isVerifyTimeOut = errors.token?.message === PIPELINE_TOOL_ERROR_MESSAGE.token.timeout;
   const isVerified = isValid && isSubmitSuccessful;
-  const [isShowResetConfirmDialog, setIsShowResetConfirmDialog] = useState<boolean>(false);
 
   const onSubmit = async () => await verifyPipelineTool();
-  const onReset = () => {
-    setIsShowResetConfirmDialog(true);
-  };
-  const onResetCancel = () => {
-    setIsShowResetConfirmDialog(false);
-  };
-  const onResetConfirm = () => {
-    resetFields();
-    setIsShowResetConfirmDialog(false);
-  };
   const closeTimeoutAlert = () => clearErrors(fields[FieldKey.Token].key);
 
   useEffect(() => {
@@ -64,7 +58,13 @@ export const PipelineTool = () => {
           formAlertType={formAlertTypes.Timeout}
         />
       </StyledAlterWrapper>
-      <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={onReset}>
+      <StyledForm
+        onSubmit={handleSubmit(onSubmit)}
+        onReset={() => {
+          onSetResetFields(resetFields);
+          onReset();
+        }}
+      >
         <FormSingleSelect
           key={fields[FieldKey.Type].key}
           name={fields[FieldKey.Type].key}
@@ -123,7 +123,6 @@ export const PipelineTool = () => {
           isLoading={isLoading}
         />
       </StyledForm>
-      <ResetConfirmDialog isShowDialog={isShowResetConfirmDialog} onConfirm={onResetConfirm} onClose={onResetCancel} />
     </ConfigSectionContainer>
   );
 };
