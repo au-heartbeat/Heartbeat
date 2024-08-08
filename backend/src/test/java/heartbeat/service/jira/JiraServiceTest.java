@@ -642,8 +642,8 @@ class JiraServiceTest {
 
 			BoardConfigDTO boardConfigDTO = jiraService.getInfo(boardTypeJira, boardRequestParam);
 			assertThat(boardConfigDTO.getTargetFields()).hasSize(3);
-			assertThat(boardConfigDTO.getTargetFields()
-				.contains(new TargetField("customfield_10000", "Development", false))).isFalse();
+			assertThat(boardConfigDTO.getTargetFields())
+				.doesNotContain(new TargetField("customfield_10000", "Development", false));
 			assertThat(boardConfigDTO.getTargetFields().contains(new TargetField("customfield_10019", "Rank", false)))
 				.isFalse();
 			assertThat(boardConfigDTO.getTargetFields()).isEqualTo(expectTargetField);
@@ -1034,8 +1034,8 @@ class JiraServiceTest {
 			BoardConfigDTO boardConfigDTO = jiraService.getJiraConfiguration(boardTypeClassicJira, boardRequestParam);
 
 			assertThat(boardConfigDTO.getTargetFields()).hasSize(3);
-			assertThat(boardConfigDTO.getTargetFields()
-				.contains(new TargetField("customfield_10000", "Development", false))).isFalse();
+			assertThat(boardConfigDTO.getTargetFields())
+				.doesNotContain(new TargetField("customfield_10000", "Development", false));
 			assertThat(boardConfigDTO.getTargetFields().contains(new TargetField("customfield_10019", "Rank", false)))
 				.isFalse();
 			assertThat(boardConfigDTO.getTargetFields()).isEqualTo(expectTargetField);
