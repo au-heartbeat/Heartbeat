@@ -222,11 +222,13 @@ export const METRICS_CONSTANTS = {
   doneKeyFromBackend: 'done',
   todoValue: 'To do',
   analysisValue: 'Analysis',
+  designValue: 'Design',
   inDevValue: 'In Dev',
   blockValue: 'Block',
   waitingForTestingValue: 'Waiting for testing',
   testingValue: 'Testing',
   reviewValue: 'Review',
+  waitingForDevelopmentValue: 'Waiting for development',
 };
 
 export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
@@ -254,11 +256,13 @@ export const CYCLE_TIME_LIST = [
   METRICS_CONSTANTS.cycleTimeEmptyStr,
   METRICS_CONSTANTS.todoValue,
   METRICS_CONSTANTS.analysisValue,
+  METRICS_CONSTANTS.designValue,
   METRICS_CONSTANTS.inDevValue,
   METRICS_CONSTANTS.blockValue,
   METRICS_CONSTANTS.reviewValue,
   METRICS_CONSTANTS.waitingForTestingValue,
   METRICS_CONSTANTS.testingValue,
+  METRICS_CONSTANTS.waitingForDevelopmentValue,
   METRICS_CONSTANTS.doneValue,
 ];
 
