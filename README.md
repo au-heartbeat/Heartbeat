@@ -178,7 +178,8 @@ According to your selected required data, you need to input account settings for
 Image 3-4，Project config
 
 If you click `Reset` button, the `Reset Confirm Dialog` will be shown. And then, if you click `Confirm` button, the configurations will be cleared.
-![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reset-token-confirm-dialog.png)
+
+![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reset-token-confirm-dialog-1.png)
 
 **The details for board:**
 
