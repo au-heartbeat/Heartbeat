@@ -27,6 +27,6 @@ public class StepsDay {
 
 	private double design;
 
-	private double waitingForDevelopment;
+	private double waitingForDeployment;
 
 }

@@ -52,7 +52,7 @@ export interface ReworkTimeResponse {
   fromBlock: number | null;
   fromWaitingForTesting: number | null;
   fromTesting: number | null;
-  fromWaitingForDevelopment: number | null;
+  fromWaitingForDeployment: number | null;
   fromReview: number | null;
   fromDone: number | null;
   totalReworkCards: number;

@@ -939,8 +939,8 @@ public class JiraService {
 						stepsDay.setTesting(stepsDay.getTesting() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
-					case WAITING_FOR_DEVELOPMENT -> {
-						stepsDay.setWaitingForDevelopment(stepsDay.getWaitingForDevelopment() + cycleTimeInfo.getDay());
+					case WAITING_FOR_DEPLOYMENT -> {
+						stepsDay.setWaitingForDeployment(stepsDay.getWaitingForDeployment() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
 					case BLOCK -> {

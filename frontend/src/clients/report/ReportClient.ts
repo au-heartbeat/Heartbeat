@@ -44,7 +44,7 @@ export class ReportClient extends HttpClient {
       fromWaitingForTesting: 0,
       fromTesting: 0,
       fromReview: 0,
-      fromWaitingForDevelopment: 0,
+      fromWaitingForDeployment: 0,
       fromDone: 0,
       totalReworkCards: 0,
       throughput: 1,

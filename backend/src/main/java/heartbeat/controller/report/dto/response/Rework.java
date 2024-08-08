@@ -25,7 +25,7 @@ public class Rework {
 
 	private Integer fromTesting;
 
-	private Integer fromWaitingForDevelopment;
+	private Integer fromWaitingForDeployment;
 
 	private Integer fromReview;
 

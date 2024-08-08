@@ -14,14 +14,14 @@ import static heartbeat.controller.board.dto.request.CardStepsEnum.DONE;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.REVIEW;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.TESTING;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.TODO;
-import static heartbeat.controller.board.dto.request.CardStepsEnum.WAITING_FOR_DEVELOPMENT;
+import static heartbeat.controller.board.dto.request.CardStepsEnum.WAITING_FOR_DEPLOYMENT;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.WAITING_FOR_TESTING;
 
 public class ReworkFixture {
 
 	public static CardCollection MOCK_CARD_COLLECTION() {
 		List<ReworkTimesInfo> reworkTimesInfos = List.of(
-				ReworkTimesInfo.builder().state(WAITING_FOR_DEVELOPMENT).times(1).build(),
+				ReworkTimesInfo.builder().state(WAITING_FOR_DEPLOYMENT).times(1).build(),
 				ReworkTimesInfo.builder().state(ANALYSE).times(1).build(),
 				ReworkTimesInfo.builder().state(DESIGN).times(1).build(),
 				ReworkTimesInfo.builder().state(DEVELOPMENT).times(1).build(),

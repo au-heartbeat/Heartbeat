@@ -37,8 +37,8 @@ public class ReworkCalculator {
 					case TESTING ->
 						rework.setFromTesting(Optional.ofNullable(rework.getFromTesting()).orElse(0) + times);
 					case REVIEW -> rework.setFromReview(Optional.ofNullable(rework.getFromReview()).orElse(0) + times);
-					case WAITING_FOR_DEVELOPMENT -> rework.setFromWaitingForDevelopment(
-							Optional.ofNullable(rework.getFromWaitingForDevelopment()).orElse(0) + times);
+					case WAITING_FOR_DEPLOYMENT -> rework.setFromWaitingForDeployment(
+							Optional.ofNullable(rework.getFromWaitingForDeployment()).orElse(0) + times);
 					case DONE -> rework.setFromDone(Optional.ofNullable(rework.getFromDone()).orElse(0) + times);
 					default -> throw new IllegalStateException("Unexpected value: " + reworkTimesInfo.getState());
 				}

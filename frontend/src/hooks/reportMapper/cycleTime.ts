@@ -47,8 +47,8 @@ export const cycleTimeMapper = ({
     [CycleTimeMetricsName.BLOCK_PROPORTION]: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.blockValue),
     [CycleTimeMetricsName.REVIEW_PROPORTION]: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.reviewValue),
     [CycleTimeMetricsName.TESTING_PROPORTION]: calPerColumnTotalTimeDivTotalTime(METRICS_CONSTANTS.testingValue),
-    [CycleTimeMetricsName.WAITING_FOR_DEVELOPMENT_PROPORTION]: calPerColumnTotalTimeDivTotalTime(
-      METRICS_CONSTANTS.waitingForDevelopmentValue,
+    [CycleTimeMetricsName.WAITING_FOR_DEPLOYMENT_PROPORTION]: calPerColumnTotalTimeDivTotalTime(
+      METRICS_CONSTANTS.waitingForDeploymentValue,
     ),
     [CycleTimeMetricsName.AVERAGE_ANALYSIS_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.analysisValue),
     [CycleTimeMetricsName.AVERAGE_DESIGN_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.designValue),
@@ -59,8 +59,8 @@ export const cycleTimeMapper = ({
     [CycleTimeMetricsName.AVERAGE_BLOCK_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.blockValue),
     [CycleTimeMetricsName.AVERAGE_REVIEW_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.reviewValue),
     [CycleTimeMetricsName.AVERAGE_TESTING_TIME]: getAverageTimeForPerColumn(METRICS_CONSTANTS.testingValue),
-    [CycleTimeMetricsName.AVERAGE_WAITING_FOR_DEVELOPMENT_TIME]: getAverageTimeForPerColumn(
-      METRICS_CONSTANTS.waitingForDevelopmentValue,
+    [CycleTimeMetricsName.AVERAGE_WAITING_FOR_DEPLOYMENT_TIME]: getAverageTimeForPerColumn(
+      METRICS_CONSTANTS.waitingForDeploymentValue,
     ),
   };
 

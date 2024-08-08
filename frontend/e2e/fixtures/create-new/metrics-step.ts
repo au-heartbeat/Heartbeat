@@ -244,7 +244,7 @@ export const configWithDesignAndWaitingForDevelopmentStatus = {
         Review: 'Review',
       },
       {
-        'READY FOR TESTING': 'Waiting for development',
+        'READY FOR TESTING': 'Waiting for deployment',
       },
       {
         Testing: 'Testing',

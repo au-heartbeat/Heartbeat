@@ -73,7 +73,7 @@ export const EXPECTED_REPORT_VALUES = {
     fromReview: 111,
     fromWaitingForTesting: 111,
     fromTesting: null,
-    fromWaitingForDevelopment: null,
+    fromWaitingForDeployment: null,
     fromDone: 111,
     totalReworkCards: 111,
     reworkCardsRatio: 0.8888,

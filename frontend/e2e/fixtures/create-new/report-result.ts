@@ -79,7 +79,7 @@ export const BOARD_METRICS_RESULT_MULTIPLE_RANGES: IBoardMetricsResult[] = [
   },
 ];
 
-export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_RESULT_MULTIPLE_RANGES: IBoardMetricsResult[] = [
+export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_RESULT_MULTIPLE_RANGES: IBoardMetricsResult[] = [
   {
     velocity: '1',
     throughput: '1',
@@ -278,7 +278,7 @@ export const BOARD_METRICS_CYCLE_TIME_MULTIPLE_RANGES: IBoardCycletimeDetailItem
   ],
 ];
 
-export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: IBoardCycletimeDetailItem[][] = [
+export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME: IBoardCycletimeDetailItem[][] = [
   [
     {
       name: 'Average cycle time',
@@ -301,7 +301,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: I
       lines: ['0%'],
     },
     {
-      name: 'Total waiting for development time / Total cycle time',
+      name: 'Total waiting for deployment time / Total cycle time',
       lines: ['84.85%'],
     },
     {
@@ -322,7 +322,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: I
       lines: ['0.00(Days/SP)', '0.00(Days/Card)'],
     },
     {
-      name: 'Average waiting for development time',
+      name: 'Average waiting for deployment time',
       lines: ['0.84(Days/SP)', '0.84(Days/Card)'],
     },
   ],
@@ -352,7 +352,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: I
       lines: ['10.77%'],
     },
     {
-      name: 'Total waiting for development time / Total cycle time',
+      name: 'Total waiting for deployment time / Total cycle time',
       lines: ['2.04%'],
     },
     {
@@ -376,7 +376,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: I
       lines: ['0.74(Days/SP)', '0.74(Days/Card)'],
     },
     {
-      name: 'Average waiting for development time',
+      name: 'Average waiting for deployment time',
       lines: ['0.14(Days/SP)', '0.14(Days/Card)'],
     },
   ],
@@ -406,7 +406,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: I
       lines: ['1.57%'],
     },
     {
-      name: 'Total waiting for development time / Total cycle time',
+      name: 'Total waiting for deployment time / Total cycle time',
       lines: ['1.59%'],
     },
     {
@@ -430,7 +430,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: I
       lines: ['0.18(Days/SP)', '0.33(Days/Card)'],
     },
     {
-      name: 'Average waiting for development time',
+      name: 'Average waiting for deployment time',
       lines: ['0.18(Days/SP)', '0.33(Days/Card)'],
     },
   ],

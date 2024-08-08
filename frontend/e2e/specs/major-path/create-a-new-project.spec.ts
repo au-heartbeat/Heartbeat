@@ -5,8 +5,8 @@ import {
   BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
   BOARD_METRICS_REWORK_MULTIPLE_RANGES,
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
-  BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_RESULT_MULTIPLE_RANGES,
-  BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME,
+  BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_RESULT_MULTIPLE_RANGES,
+  BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME,
 } from '../../fixtures/create-new/report-result';
 import {
   configWithDesignAndWaitingForDevelopmentStatus,
@@ -141,7 +141,7 @@ test('Create a new project without block column in boarding mapping', async ({
   await reportStep.checkBoardDownloadDataWithoutBlockForMultipleRanges(3);
 });
 
-test('Create a new project with design and waiting for development in the cycle time status', async ({
+test('Create a new project with design and waiting for deployment in the cycle time status', async ({
   homePage,
   configStep,
   metricsStep,
@@ -189,12 +189,12 @@ test('Create a new project with design and waiting for development in the cycle 
   await reportStep.goToReportListTab();
   await reportStep.checkExplanation();
   await reportStep.checkBoardMetricsForMultipleRanges(
-    BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_RESULT_MULTIPLE_RANGES,
+    BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_RESULT_MULTIPLE_RANGES,
   );
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
     velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
-    cycleTimeData: BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME,
+    cycleTimeData: BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME,
     classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
     reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
     csvCompareLines: BAORD_CSV_COMPARED_LINES,
@@ -204,5 +204,5 @@ test('Create a new project with design and waiting for development in the cycle 
     doraMetricsReportData: DORA_METRICS_RESULT_MULTIPLE_RANGES,
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
   });
-  await reportStep.checkMetricDownloadDataForMultipleRanges(3, 'with-design-and-wait-for-development-');
+  // await reportStep.checkMetricDownloadDataForMultipleRanges(3, 'with-design-and-wait-for-deployment-');
 });

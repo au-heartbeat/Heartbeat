@@ -68,7 +68,7 @@ public class JiraBoardConfigDTOFixture {
 
 	public static final String WAITING_FOR_TESTING = "Waiting for testing";
 
-	public static final String WAITING_FOR_DEVELOPMENT = "Waiting for development";
+	public static final String WAITING_FOR_DEPLOYMENT = "Waiting for deployment";
 
 	public static final String ASSIGNEE_NAME = "Zhang San";
 
@@ -454,8 +454,8 @@ public class JiraBoardConfigDTOFixture {
 					RequestJiraBoardColumnSetting.builder().name(ANALYSE).value(ANALYSE).build(),
 					RequestJiraBoardColumnSetting.builder().name(DESIGN).value(DESIGN).build(),
 					RequestJiraBoardColumnSetting.builder()
-						.name(WAITING_FOR_DEVELOPMENT)
-						.value(WAITING_FOR_DEVELOPMENT)
+						.name(WAITING_FOR_DEPLOYMENT)
+						.value(WAITING_FOR_DEPLOYMENT)
 						.build(),
 					RequestJiraBoardColumnSetting.builder()
 						.name(WAITING_FOR_TESTING)
@@ -660,7 +660,7 @@ public class JiraBoardConfigDTOFixture {
 				CycleTimeInfo.builder().column("REVIEW").day(4.0).build(),
 				CycleTimeInfo.builder().column("ANALYSIS").day(9.0).build(),
 				CycleTimeInfo.builder().column("DESIGN").day(1.0).build(),
-				CycleTimeInfo.builder().column("WAITING FOR DEVELOPMENT").day(2.0).build(),
+				CycleTimeInfo.builder().column("WAITING FOR DEPLOYMENT").day(2.0).build(),
 				CycleTimeInfo.builder().column(UNKNOWN).day(5.0).build(),
 				CycleTimeInfo.builder().column("BLOCK").day(6.0).build());
 	}
