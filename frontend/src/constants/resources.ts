@@ -232,12 +232,14 @@ export const METRICS_CONSTANTS = {
 };
 
 export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
-  [METRICS_CONSTANTS.waitingForTestingValue]: 'Waiting for testing time',
   [METRICS_CONSTANTS.inDevValue]: 'Development time',
+  [METRICS_CONSTANTS.waitingForTestingValue]: 'Waiting for testing time',
+  [METRICS_CONSTANTS.designValue]: 'Design time',
   [METRICS_CONSTANTS.analysisValue]: 'Analysis time',
   [METRICS_CONSTANTS.reviewValue]: 'Review time',
   [METRICS_CONSTANTS.blockValue]: 'Block time',
   [METRICS_CONSTANTS.testingValue]: 'Testing time',
+  [METRICS_CONSTANTS.waitingForDevelopmentValue]: 'Waiting for development time',
 };
 
 export const LEAD_TIME_FOR_CHANGES = {
@@ -298,17 +300,21 @@ export enum VelocityMetricsName {
 export enum CycleTimeMetricsName {
   AVERAGE_CYCLE_TIME = 'Average cycle time',
   ANALYSIS_PROPORTION = 'Total analysis time / Total cycle time',
+  DESIGN_PROPORTION = 'Total design time / Total cycle time',
   DEVELOPMENT_PROPORTION = 'Total development time / Total cycle time',
-  WAITING_PROPORTION = 'Total waiting for testing time / Total cycle time',
   BLOCK_PROPORTION = 'Total block time / Total cycle time',
   REVIEW_PROPORTION = 'Total review time / Total cycle time',
+  WAITING_FOR_TESTING_PROPORTION = 'Total waiting for testing time / Total cycle time',
   TESTING_PROPORTION = 'Total testing time / Total cycle time',
+  WAITING_FOR_DEVELOPMENT_PROPORTION = 'Total waiting for development time / Total cycle time',
   AVERAGE_ANALYSIS_TIME = 'Average analysis time',
+  AVERAGE_DESIGN_TIME = 'Average design time',
   AVERAGE_DEVELOPMENT_TIME = 'Average development time',
-  AVERAGE_WAITING_TIME = 'Average waiting for testing time',
   AVERAGE_BLOCK_TIME = 'Average block time',
   AVERAGE_REVIEW_TIME = 'Average review time',
+  AVERAGE_WAITING_FOR_TESTING_TIME = 'Average waiting for testing time',
   AVERAGE_TESTING_TIME = 'Average testing time',
+  AVERAGE_WAITING_FOR_DEVELOPMENT_TIME = 'Average waiting for development time',
 }
 
 export const REWORK_TIME_MAPPING = {
