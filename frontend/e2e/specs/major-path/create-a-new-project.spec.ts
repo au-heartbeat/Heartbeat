@@ -1,12 +1,17 @@
 import {
   BOARD_METRICS_RESULT_MULTIPLE_RANGES,
   BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
-  BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
+  BOARD_METRICS_CYCLE_TIME_MULTIPLE_RANGES,
   BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
   BOARD_METRICS_REWORK_MULTIPLE_RANGES,
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
+  BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_RESULT_MULTIPLE_RANGES,
+  BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME,
 } from '../../fixtures/create-new/report-result';
-import { configWithoutBlockColumn as metricsStepWithoutBlockColumnData } from '../../fixtures/create-new/metrics-step';
+import {
+  configWithDesignAndWaitingForDevelopmentStatus,
+  configWithoutBlockColumn as metricsStepWithoutBlockColumnData,
+} from '../../fixtures/create-new/metrics-step';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { BAORD_CSV_COMPARED_LINES } from '../../fixtures/create-new/report-result';
@@ -83,7 +88,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await reportStep.checkBoardMetricsDetailsForMultipleRanges({
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
     velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
-    cycleTimeData: BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES,
+    cycleTimeData: BOARD_METRICS_CYCLE_TIME_MULTIPLE_RANGES,
     classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
     reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
     csvCompareLines: BAORD_CSV_COMPARED_LINES,
@@ -134,4 +139,70 @@ test('Create a new project without block column in boarding mapping', async ({
   await reportStep.confirmGeneratedReport();
   await reportStep.checkProjectName(configStepData.projectName);
   await reportStep.checkBoardDownloadDataWithoutBlockForMultipleRanges(3);
+});
+
+test('Create a new project with design and waiting for development in the cycle time status', async ({
+  homePage,
+  configStep,
+  metricsStep,
+  reportStep,
+}) => {
+  const hbStateData = configWithDesignAndWaitingForDevelopmentStatus.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+
+  await homePage.goto();
+  await homePage.createANewProject();
+  await configStep.waitForShown();
+  await configStep.typeInProjectName(configStepData.projectName);
+  await configStep.selectRegularCalendar(configStepData.calendarType);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
+  await configStep.selectAllRequiredMetrics();
+  await configStep.checkBoardFormVisible();
+  await configStep.checkPipelineToolFormVisible();
+  await configStep.checkSourceControlFormVisible();
+  await configStep.fillAndVerifyBoardConfig(configStepData.board);
+  await configStep.fillAndVerifyPipelineToolForm(configStepData.pipelineTool);
+  await configStep.fillAndVerifySourceControlForm(configStepData.sourceControl);
+  await configStep.validateNextButtonClickable();
+  await configStep.goToMetrics();
+
+  await metricsStep.checkBoardConfigurationVisible();
+  await metricsStep.checkPipelineConfigurationVisible();
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+  await metricsStep.waitForHiddenLoading();
+  await metricsStep.selectCrews(configWithDesignAndWaitingForDevelopmentStatus.crews);
+  await metricsStep.selectCycleTimeSettingsType(configWithDesignAndWaitingForDevelopmentStatus.cycleTime.type);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+  await metricsStep.selectClassifications(configWithDesignAndWaitingForDevelopmentStatus.classification);
+  await metricsStep.selectClassificationCharts(configWithDesignAndWaitingForDevelopmentStatus.classificationCharts);
+  await metricsStep.selectDefaultGivenPipelineSetting(configWithDesignAndWaitingForDevelopmentStatus.deployment);
+  await metricsStep.selectAllPipelineCrews();
+  await metricsStep.selectReworkSettings(configWithDesignAndWaitingForDevelopmentStatus.reworkTimesSettings);
+  await metricsStep.saveConfigStepAsJSONThenVerifyDownloadFile(configWithDesignAndWaitingForDevelopmentStatus);
+  await metricsStep.goToReportPage();
+
+  await reportStep.confirmGeneratedReport();
+  await reportStep.checkProjectName(configWithDesignAndWaitingForDevelopmentStatus.projectName);
+  await reportStep.goToReportListTab();
+  await reportStep.checkExplanation();
+  await reportStep.checkBoardMetricsForMultipleRanges(
+    BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_RESULT_MULTIPLE_RANGES,
+  );
+  await reportStep.checkBoardMetricsDetailsForMultipleRanges({
+    projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
+    velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
+    cycleTimeData: BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME,
+    classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
+    reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
+    csvCompareLines: BAORD_CSV_COMPARED_LINES,
+  });
+  await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_MULTIPLE_RANGES);
+  await reportStep.checkDoraMetricsDetailsForMultipleRanges({
+    doraMetricsReportData: DORA_METRICS_RESULT_MULTIPLE_RANGES,
+    projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
+  });
+  await reportStep.checkMetricDownloadDataForMultipleRanges(3, 'with-design-and-wait-for-development-');
 });

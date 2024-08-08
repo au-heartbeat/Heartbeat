@@ -581,10 +581,12 @@ export class ReportStep {
     trigger,
     rangeCount,
     csvCompareLines,
+    fileNamePrefix,
   }: {
     trigger: Locator;
     rangeCount: number;
     csvCompareLines?: ICsvComparedLines;
+    fileNamePrefix?: string;
   }) {
     const isNeedToCompareCsvLines = csvCompareLines !== undefined;
     const isRangesCountAndCsvCountEqual = isNeedToCompareCsvLines && rangeCount !== csvCompareLines.length;
@@ -621,7 +623,13 @@ export class ReportStep {
       await download.saveAs(savePath);
       const downloadPath = await download.path();
       const fileDataString = fs.readFileSync(downloadPath, 'utf8');
-      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new', `./${fileName}.csv`));
+      const localCsvFile = fs.readFileSync(
+        path.resolve(
+          __dirname,
+          '../../fixtures/create-new',
+          `./${fileNamePrefix ? fileNamePrefix + fileName : fileName}.csv`,
+        ),
+      );
       const localCsv = parse(localCsvFile, { to: isNeedToCompareCsvLines ? csvCompareLines[fileName] : undefined });
       const downloadCsv = parse(fileDataString, {
         to: isNeedToCompareCsvLines ? csvCompareLines[fileName] : undefined,
@@ -692,8 +700,12 @@ export class ReportStep {
     });
   }
 
-  async checkMetricDownloadDataForMultipleRanges(rangeCount: number) {
-    await this.downloadFileAndCheckForMultipleRanges({ trigger: this.exportMetricData, rangeCount });
+  async checkMetricDownloadDataForMultipleRanges(rangeCount: number, fileNamePrefix?: string) {
+    await this.downloadFileAndCheckForMultipleRanges({
+      trigger: this.exportMetricData,
+      rangeCount,
+      fileNamePrefix,
+    });
   }
 
   async checkMetricDownloadDataByStatus() {

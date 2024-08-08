@@ -79,6 +79,39 @@ export const BOARD_METRICS_RESULT_MULTIPLE_RANGES: IBoardMetricsResult[] = [
   },
 ];
 
+export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_RESULT_MULTIPLE_RANGES: IBoardMetricsResult[] = [
+  {
+    velocity: '1',
+    throughput: '1',
+    averageCycleTimeForSP: '0.99',
+    averageCycleTimeForCard: '0.99',
+    totalReworkTimes: '0',
+    totalReworkCards: '0',
+    reworkCardsRatio: '0.0000',
+    reworkThroughput: '1',
+  },
+  {
+    velocity: '1',
+    throughput: '1',
+    averageCycleTimeForSP: '6.87',
+    averageCycleTimeForCard: '6.87',
+    totalReworkTimes: '1',
+    totalReworkCards: '1',
+    reworkCardsRatio: '1.0000',
+    reworkThroughput: '1',
+  },
+  {
+    velocity: '5.5',
+    throughput: '3',
+    averageCycleTimeForSP: '11.35',
+    averageCycleTimeForCard: '20.81',
+    totalReworkTimes: '1',
+    totalReworkCards: '1',
+    reworkCardsRatio: '0.3333',
+    reworkThroughput: '3',
+  },
+];
+
 export const BOARD_METRICS_VELOCITY_MULTIPLE_RANGES: IBoardMetricsDetailItem[][] = [
   [
     {
@@ -112,7 +145,7 @@ export const BOARD_METRICS_VELOCITY_MULTIPLE_RANGES: IBoardMetricsDetailItem[][]
   ],
 ];
 
-export const BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES: IBoardCycletimeDetailItem[][] = [
+export const BOARD_METRICS_CYCLE_TIME_MULTIPLE_RANGES: IBoardCycletimeDetailItem[][] = [
   [
     {
       name: 'Average cycle time',
@@ -240,6 +273,164 @@ export const BOARD_METRICS_CYCLETIME_MULTIPLE_RANGES: IBoardCycletimeDetailItem[
     },
     {
       name: 'Average testing time',
+      lines: ['0.18(Days/SP)', '0.33(Days/Card)'],
+    },
+  ],
+];
+
+export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEVELOPMENT_CYCLE_TIME: IBoardCycletimeDetailItem[][] = [
+  [
+    {
+      name: 'Average cycle time',
+      lines: ['0.99(Days/SP)', '0.99(Days/Card)'],
+    },
+    {
+      name: 'Total design time / Total cycle time',
+      lines: ['1.01%'],
+    },
+    {
+      name: 'Total development time / Total cycle time',
+      lines: ['14.14%'],
+    },
+    {
+      name: 'Total review time / Total cycle time',
+      lines: ['0%'],
+    },
+    {
+      name: 'Total testing time / Total cycle time',
+      lines: ['0%'],
+    },
+    {
+      name: 'Total waiting for development time / Total cycle time',
+      lines: ['84.85%'],
+    },
+    {
+      name: 'Average design time',
+      lines: ['0.01(Days/SP)', '0.01(Days/Card)'],
+    },
+    {
+      name: 'Average development time',
+      lines: ['0.14(Days/SP)', '0.14(Days/Card)'],
+    },
+
+    {
+      name: 'Average review time',
+      lines: ['0.00(Days/SP)', '0.00(Days/Card)'],
+    },
+    {
+      name: 'Average testing time',
+      lines: ['0.00(Days/SP)', '0.00(Days/Card)'],
+    },
+    {
+      name: 'Average waiting for development time',
+      lines: ['0.84(Days/SP)', '0.84(Days/Card)'],
+    },
+  ],
+  [
+    {
+      name: 'Average cycle time',
+      lines: ['6.87(Days/SP)', '6.87(Days/Card)'],
+    },
+    {
+      name: 'Total design time / Total cycle time',
+      lines: ['55.9%'],
+    },
+    {
+      name: 'Total development time / Total cycle time',
+      lines: ['29.11%'],
+    },
+    {
+      name: 'Total block time / Total cycle time',
+      lines: ['2.18%'],
+    },
+    {
+      name: 'Total review time / Total cycle time',
+      lines: ['0%'],
+    },
+    {
+      name: 'Total testing time / Total cycle time',
+      lines: ['10.77%'],
+    },
+    {
+      name: 'Total waiting for development time / Total cycle time',
+      lines: ['2.04%'],
+    },
+    {
+      name: 'Average design time',
+      lines: ['3.84(Days/SP)', '3.84(Days/Card)'],
+    },
+    {
+      name: 'Average development time',
+      lines: ['2.00(Days/SP)', '2.00(Days/Card)'],
+    },
+    {
+      name: 'Average block time',
+      lines: ['0.15(Days/SP)', '0.15(Days/Card)'],
+    },
+    {
+      name: 'Average review time',
+      lines: ['0.00(Days/SP)', '0.00(Days/Card)'],
+    },
+    {
+      name: 'Average testing time',
+      lines: ['0.74(Days/SP)', '0.74(Days/Card)'],
+    },
+    {
+      name: 'Average waiting for development time',
+      lines: ['0.14(Days/SP)', '0.14(Days/Card)'],
+    },
+  ],
+  [
+    {
+      name: 'Average cycle time',
+      lines: ['11.35(Days/SP)', '20.81(Days/Card)'],
+    },
+    {
+      name: 'Total design time / Total cycle time',
+      lines: ['52.52%'],
+    },
+    {
+      name: 'Total development time / Total cycle time',
+      lines: ['35.27%'],
+    },
+    {
+      name: 'Total block time / Total cycle time',
+      lines: ['3.19%'],
+    },
+    {
+      name: 'Total review time / Total cycle time',
+      lines: ['5.86%'],
+    },
+    {
+      name: 'Total testing time / Total cycle time',
+      lines: ['1.57%'],
+    },
+    {
+      name: 'Total waiting for development time / Total cycle time',
+      lines: ['1.59%'],
+    },
+    {
+      name: 'Average design time',
+      lines: ['5.96(Days/SP)', '10.93(Days/Card)'],
+    },
+    {
+      name: 'Average development time',
+      lines: ['4.00(Days/SP)', '7.34(Days/Card)'],
+    },
+    {
+      name: 'Average block time',
+      lines: ['0.36(Days/SP)', '0.66(Days/Card)'],
+    },
+    {
+      name: 'Average review time',
+      lines: ['0.67(Days/SP)', '1.22(Days/Card)'],
+    },
+    {
+      name: 'Average testing time',
+      lines: ['0.18(Days/SP)', '0.33(Days/Card)'],
+    },
+    {
+      name: 'Average waiting for development time',
       lines: ['0.18(Days/SP)', '0.33(Days/Card)'],
     },
   ],
