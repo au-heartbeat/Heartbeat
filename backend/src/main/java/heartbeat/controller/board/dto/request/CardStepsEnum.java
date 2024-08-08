@@ -5,9 +5,11 @@ import java.util.Set;
 
 public enum CardStepsEnum {
 
-	TODO("To do", "To do"), ANALYSE("Analysis", "Analysis"), DEVELOPMENT("In Dev", "In dev"), BLOCK("Block", "Block"),
-	FLAG("FLAG", "Flag"), REMOVEFLAG("removeFlag", "Remove flag"), REVIEW("Review", "Review"),
-	WAITING("Waiting for testing", "Waiting for testing"), TESTING("Testing", "Testing"), DONE("Done", "Done"),
+	TODO("To do", "To do"), ANALYSE("Analysis", "Analysis"), DESIGN("Design", "Design"),
+	DEVELOPMENT("In Dev", "In dev"), BLOCK("Block", "Block"), FLAG("FLAG", "Flag"),
+	REMOVEFLAG("removeFlag", "Remove flag"), REVIEW("Review", "Review"),
+	WAITING_FOR_TESTING("Waiting for testing", "Waiting for testing"), TESTING("Testing", "Testing"),
+	WAITING_FOR_DEVELOPMENT("Waiting for development", "Waiting for development"), DONE("Done", "Done"),
 	CLOSED("Closed", "Closed"), UNKNOWN("UNKNOWN", "Unknown");
 
 	private final String value;
@@ -37,9 +39,17 @@ public enum CardStepsEnum {
 	}
 
 	public static final Map<CardStepsEnum, Set<CardStepsEnum>> reworkJudgmentMap = Map.of(TODO,
-			Set.of(ANALYSE, DEVELOPMENT, BLOCK, FLAG, REVIEW, WAITING, TESTING, DONE), ANALYSE,
-			Set.of(DEVELOPMENT, BLOCK, FLAG, REVIEW, WAITING, TESTING, DONE), DEVELOPMENT,
-			Set.of(BLOCK, FLAG, REVIEW, WAITING, TESTING, DONE), BLOCK, Set.of(REVIEW, WAITING, TESTING, DONE), REVIEW,
-			Set.of(WAITING, TESTING, DONE), WAITING, Set.of(TESTING, DONE), TESTING, Set.of(DONE));
+			Set.of(ANALYSE, DESIGN, DEVELOPMENT, BLOCK, FLAG, REVIEW, WAITING_FOR_TESTING, TESTING,
+					WAITING_FOR_DEVELOPMENT, DONE),
+			ANALYSE,
+			Set.of(DESIGN, DEVELOPMENT, BLOCK, FLAG, REVIEW, WAITING_FOR_TESTING, TESTING, WAITING_FOR_DEVELOPMENT,
+					DONE),
+			DESIGN,
+			Set.of(DEVELOPMENT, BLOCK, FLAG, REVIEW, WAITING_FOR_TESTING, TESTING, WAITING_FOR_DEVELOPMENT, DONE),
+			DEVELOPMENT, Set.of(BLOCK, FLAG, REVIEW, WAITING_FOR_TESTING, TESTING, WAITING_FOR_DEVELOPMENT, DONE),
+			BLOCK, Set.of(REVIEW, WAITING_FOR_TESTING, TESTING, WAITING_FOR_DEVELOPMENT, DONE), REVIEW,
+			Set.of(WAITING_FOR_TESTING, TESTING, WAITING_FOR_DEVELOPMENT, DONE), WAITING_FOR_TESTING,
+			Set.of(TESTING, WAITING_FOR_DEVELOPMENT, DONE), TESTING, Set.of(WAITING_FOR_DEVELOPMENT, DONE),
+			WAITING_FOR_DEVELOPMENT, Set.of(DONE));
 
 }

@@ -15,6 +15,8 @@ public class Rework {
 
 	private Integer fromAnalysis;
 
+	private Integer fromDesign;
+
 	private Integer fromInDev;
 
 	private Integer fromBlock;
@@ -22,6 +24,8 @@ public class Rework {
 	private Integer fromWaitingForTesting;
 
 	private Integer fromTesting;
+
+	private Integer fromWaitingForDevelopment;
 
 	private Integer fromReview;
 

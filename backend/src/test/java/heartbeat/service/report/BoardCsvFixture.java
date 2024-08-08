@@ -262,7 +262,7 @@ public class BoardCsvFixture {
 	public static List<ReworkTimesInfo> MOCK_REWORK_TIMES_INFO_LIST() {
 		return List.of(ReworkTimesInfo.builder().state(CardStepsEnum.BLOCK).times(2).build(),
 				ReworkTimesInfo.builder().state(CardStepsEnum.REVIEW).times(0).build(),
-				ReworkTimesInfo.builder().state(CardStepsEnum.WAITING).times(1).build(),
+				ReworkTimesInfo.builder().state(CardStepsEnum.WAITING_FOR_TESTING).times(1).build(),
 				ReworkTimesInfo.builder().state(CardStepsEnum.TESTING).times(0).build(),
 				ReworkTimesInfo.builder().state(CardStepsEnum.DONE).times(0).build());
 	}
