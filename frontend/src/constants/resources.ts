@@ -320,10 +320,12 @@ export enum CycleTimeMetricsName {
 export const REWORK_TIME_MAPPING = {
   totalReworkTimes: 'Total rework',
   fromAnalysis: 'analysis',
+  fromDesign: 'design',
   fromInDev: 'in dev',
   fromBlock: 'block',
   fromReview: 'review',
   fromWaitingForTesting: 'waiting for testing',
+  fromWaitingForDevelopment: 'waiting for development',
   fromTesting: 'testing',
   fromDone: 'done',
   totalReworkCards: 'Total rework cards',
@@ -332,11 +334,13 @@ export const REWORK_TIME_MAPPING = {
 
 export const REWORK_BOARD_STATUS: string[] = [
   REWORK_TIME_MAPPING.fromAnalysis,
+  REWORK_TIME_MAPPING.fromDesign,
   REWORK_TIME_MAPPING.fromInDev,
   REWORK_TIME_MAPPING.fromBlock,
   REWORK_TIME_MAPPING.fromWaitingForTesting,
   REWORK_TIME_MAPPING.fromTesting,
   REWORK_TIME_MAPPING.fromReview,
+  REWORK_TIME_MAPPING.fromWaitingForDevelopment,
   REWORK_TIME_MAPPING.fromDone,
 ];
 

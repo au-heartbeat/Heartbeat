@@ -47,10 +47,12 @@ export interface ReworkTimeResponse {
   totalReworkTimes: number;
   reworkState: string;
   fromAnalysis: number | null;
+  fromDesign: number | null;
   fromInDev: number | null;
   fromBlock: number | null;
   fromWaitingForTesting: number | null;
   fromTesting: number | null;
+  fromWaitingForDevelopment: number | null;
   fromReview: number | null;
   fromDone: number | null;
   totalReworkCards: number;
