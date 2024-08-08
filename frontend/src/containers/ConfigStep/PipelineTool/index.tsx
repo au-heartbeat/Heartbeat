@@ -15,7 +15,13 @@ import { formAlertTypes } from '@src/constants/commons';
 import { Loading } from '@src/components/Loading';
 import { useEffect } from 'react';
 
-export const PipelineTool = () => {
+export const PipelineTool = ({
+  onReset,
+  onSetResetFields,
+}: {
+  onReset: () => void;
+  onSetResetFields: (resetFunc: () => void) => void;
+}) => {
   const dispatch = useAppDispatch();
   const { fields, verifyPipelineTool, isLoading, resetFields } = useVerifyPipelineToolEffect();
   const {
@@ -52,7 +58,13 @@ export const PipelineTool = () => {
           formAlertType={formAlertTypes.Timeout}
         />
       </StyledAlterWrapper>
-      <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
+      <StyledForm
+        onSubmit={handleSubmit(onSubmit)}
+        onReset={() => {
+          onSetResetFields(resetFields);
+          onReset();
+        }}
+      >
         <FormSingleSelect
           key={fields[FieldKey.Type].key}
           name={fields[FieldKey.Type].key}

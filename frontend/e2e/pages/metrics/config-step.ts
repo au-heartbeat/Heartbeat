@@ -75,6 +75,12 @@ export class ConfigStep {
   readonly boardVerifyButton: Locator;
   readonly boardVerifiedButton: Locator;
   readonly boardResetButton: Locator;
+  readonly resetConfirmDialog: Locator;
+  readonly resetConfirmDialogTitle: Locator;
+  readonly resetConfirmDialogClose: Locator;
+  readonly resetConfirmDialogContent: Locator;
+  readonly resetConfirmDialogCancelButton: Locator;
+  readonly resetConfirmDialogConfirmButton: Locator;
   readonly boardTokenErrorMessage: Locator;
   readonly boardVerifyFailedPopupMessage: Locator;
   readonly pipelineToolContainer: Locator;
@@ -154,6 +160,12 @@ export class ConfigStep {
     this.boardVerifyButton = this.boardContainer.getByRole('button', { name: 'Verify' });
     this.boardVerifiedButton = this.boardContainer.getByRole('button', { name: 'Verified' });
     this.boardResetButton = this.boardContainer.getByRole('button', { name: 'Reset' });
+    this.resetConfirmDialog = this.page.getByLabel('reset confirm dialog').first();
+    this.resetConfirmDialogTitle = this.page.getByLabel('reset confirm dialog title');
+    this.resetConfirmDialogClose = this.page.getByLabel('reset confirm dialog close');
+    this.resetConfirmDialogContent = this.page.getByLabel('reset confirm dialog content');
+    this.resetConfirmDialogCancelButton = this.page.getByLabel('reset confirm dialog cancel button');
+    this.resetConfirmDialogConfirmButton = this.page.getByLabel('reset confirm dialog confirm button');
     this.boardTokenErrorMessage = this.boardContainer.getByText(
       'Token is invalid, please change your token with correct access permission!',
     );
@@ -453,6 +465,40 @@ export class ConfigStep {
     await expect(this.boardResetButton).toBeEnabled();
 
     await this.boardResetButton.click();
+
+    await this.resetDialogShow();
+
+    await this.resetConfirmDialogClose.click();
+
+    await expect(this.resetConfirmDialog).not.toBeVisible();
+    await expect(this.boardResetButton).toBeEnabled();
+
+    await this.boardResetButton.click();
+
+    await this.resetDialogShow();
+
+    await this.resetConfirmDialogCancelButton.click();
+
+    await expect(this.resetConfirmDialog).not.toBeVisible();
+    await expect(this.boardResetButton).toBeEnabled();
+
+    await this.boardResetButton.click();
+
+    await this.resetDialogShow();
+
+    await this.resetConfirmDialogConfirmButton.click();
+
+    await expect(this.resetConfirmDialog).not.toBeVisible();
+    await expect(this.boardResetButton).not.toBeVisible();
+  }
+
+  async resetDialogShow() {
+    await expect(this.resetConfirmDialog).toBeVisible();
+    await expect(this.resetConfirmDialogTitle).toBeVisible();
+    await expect(this.resetConfirmDialogClose).toBeVisible();
+    await expect(this.resetConfirmDialogContent).toBeVisible();
+    await expect(this.resetConfirmDialogCancelButton).toBeVisible();
+    await expect(this.resetConfirmDialogConfirmButton).toBeVisible();
   }
 
   async fillPipelineToolForm({ token }: IPipelineToolData) {

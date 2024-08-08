@@ -177,7 +177,11 @@ According to your selected required data, you need to input account settings for
 ![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4-1.png)\
 Image 3-4，Project config
 
+If you click `Reset` button, the `Reset Confirm Dialog` will be shown. And then, if you click `Confirm` button, the token will be cleared.
+![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reset-token-confirm-dialog.png)
+
 **The details for board:**
+
 |Items|Description|
 |---|---|
 |Board Type|Support two types of board: Classic Jira and Next-gen Jira|
@@ -186,11 +190,13 @@ Image 3-4，Project config
 |Site|Site is the domain for your jira board, like below URL, `dorametrics` is the site <br/> https://dorametrics.atlassian.net/jira/software/projects/ADM/boards/2 |
 |Email|The email can access to the Jira board |
 |Token|Generate a new token with below link, https://id.atlassian.com/manage-profile/security/api-tokens |
+
 ##### 3.1.3.1 Guideline for generating Jira token
 ![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/guideline-for-generating-token/generate-jira-token.png)
 _Image 3-5, create Jira token_
 
 **The details for Pipeline:**
+
 |Items|Description|
 |---|---|
 |PipelineTool| The pipeline tool you team use, currently heartbeat only support buildkite|
@@ -203,6 +209,7 @@ Choose "Read Builds","Read Organizations" and "Read Pipelines".
 _Image 3-6, generate Buildkite token_
 
 **The details for SourceControl:**
+
 |Items|Description|
 |---|---|
 |SourceControl|The source control tool you team use, currently heartbeat only support Github|
