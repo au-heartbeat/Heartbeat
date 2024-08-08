@@ -14,7 +14,9 @@ export const ConfirmDialog = (props: { onConfirm: () => void; onClose: () => voi
       <ConformationDialog>All the filled data will be cleared. Continue to Home page?</ConformationDialog>
       <DialogButtonGroup>
         <YesButton onClick={onConfirm}>Yes</YesButton>
-        <CancelButton onClick={onClose}>Cancel</CancelButton>
+        <CancelButton variant='outlined' onClick={onClose}>
+          Cancel
+        </CancelButton>
       </DialogButtonGroup>
     </Dialog>
   );

@@ -32,7 +32,7 @@ export const ResetConfirmDialog = (props: { onConfirm: () => void; onClose: () =
           Are you sure you want to reset the configurations?
         </DialogContent>
         <ResetConfirmDialogButtonGroup>
-          <CancelButton onClick={onClose} aria-label={'reset confirm dialog cancel button'}>
+          <CancelButton variant='outlined' onClick={onClose} aria-label={'reset confirm dialog cancel button'}>
             Cancel
           </CancelButton>
           <YesButton onClick={onConfirm} aria-label={'reset confirm dialog confirm button'}>
