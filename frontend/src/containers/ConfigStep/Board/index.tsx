@@ -13,7 +13,13 @@ import { Loading } from '@src/components/Loading';
 import { useFormContext } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 
-export const Board = () => {
+export const Board = ({
+  onReset,
+  onSetResetFields,
+}: {
+  onReset: () => void;
+  onSetResetFields: (resetFunc: () => void) => void;
+}) => {
   const { verifyJira, isLoading, fields, resetFields } = useVerifyBoardEffect();
   const {
     formState: { isValid, isSubmitSuccessful, errors },
@@ -52,7 +58,13 @@ export const Board = () => {
           <FormAlert showAlert={showAlert} onClose={closeAlert} moduleType={'Board'} formAlertType={formAlertType} />
         )}
       </StyledAlterWrapper>
-      <StyledForm onSubmit={handleSubmit(onSubmit)} onReset={resetFields}>
+      <StyledForm
+        onSubmit={handleSubmit(onSubmit)}
+        onReset={() => {
+          onSetResetFields(resetFields);
+          onReset();
+        }}
+      >
         {fields.map(({ key, col, label }) =>
           key === 'type' ? (
             <FormSingleSelect

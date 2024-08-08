@@ -13,7 +13,6 @@ import {
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { AxiosRequestErrorCode, SourceControlTypes } from '@src/constants/resources';
-import { updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
 import { render, screen, act, waitFor } from '@testing-library/react';
@@ -64,13 +63,15 @@ describe('SourceControl', () => {
     sourceControlClient.verifyToken = originalVerifyToken;
   });
 
+  const onReset = jest.fn();
+  const onSetResetFields = jest.fn();
   store = setupStore();
   const setup = () => {
     store = setupStore();
     return render(
       <Provider store={store}>
         <FormProvider schema={sourceControlSchema} defaultValues={sourceControlDefaultValues}>
-          <SourceControl />
+          <SourceControl onReset={onReset} onSetResetFields={onSetResetFields} />
         </FormProvider>
       </Provider>,
     );
@@ -92,10 +93,8 @@ describe('SourceControl', () => {
     expect(sourceControlType).toBeInTheDocument();
   });
 
-  it('should clear all fields information when click reset button', async () => {
+  it('should run the reset and setResetField func when click reset button', async () => {
     setup();
-    const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
-
     await fillSourceControlFieldsInformation();
 
     await userEvent.click(screen.getByRole('button', { name: VERIFY }));
@@ -105,25 +104,8 @@ describe('SourceControl', () => {
       await userEvent.click(screen.getByRole('button', { name: RESET }));
     });
 
-    expect(tokenInput.value).toEqual('');
-    expect(screen.getByText(SourceControlTypes.GitHub)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: RESET })).not.toBeTruthy();
-    expect(screen.getByRole('button', { name: VERIFY })).toBeDisabled();
-  });
-
-  it('should hidden timeout alert when click reset button', async () => {
-    const { getByLabelText, queryByLabelText } = setup();
-    await fillSourceControlFieldsInformation();
-    sourceControlClient.verifyToken = jest.fn().mockResolvedValue({
-      code: AxiosRequestErrorCode.Timeout,
-    });
-
-    await userEvent.click(screen.getByText(VERIFY));
-    expect(getByLabelText('timeout alert')).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    expect(queryByLabelText('timeout alert')).not.toBeInTheDocument();
+    expect(onReset).toHaveBeenCalledTimes(1);
+    expect(onSetResetFields).toHaveBeenCalledTimes(1);
   });
 
   it('should hidden timeout alert when the error type of api call becomes other', async () => {
@@ -172,19 +154,6 @@ describe('SourceControl', () => {
     await waitFor(() => {
       expect(screen.getByText(VERIFIED)).toBeTruthy();
     });
-  });
-
-  it('should reload pipeline config when reset fields', async () => {
-    setup();
-    await fillSourceControlFieldsInformation();
-
-    await userEvent.click(screen.getByText(VERIFY));
-
-    await userEvent.click(screen.getByRole('button', { name: RESET }));
-
-    await fillSourceControlFieldsInformation();
-
-    expect(updateShouldGetPipelineConfig).toHaveBeenCalledWith(true);
   });
 
   it('should show error message and error style when token is empty', async () => {

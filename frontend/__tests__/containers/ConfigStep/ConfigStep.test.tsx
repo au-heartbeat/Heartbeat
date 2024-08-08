@@ -14,11 +14,11 @@ import {
   VERIFIED,
   VERIFY,
   ALL,
-  FAKE_TOKEN,
   PIPELINE_TOOL_TOKEN_INPUT_LABEL,
   REGULAR_CALENDAR,
   CHINA_CALENDAR,
   VIETNAM_CALENDAR,
+  TIMEOUT_ALERT,
 } from '../../fixtures';
 import {
   basicInfoSchema,
@@ -36,8 +36,14 @@ import {
   pipelineToolDefaultValues,
   sourceControlDefaultValues,
 } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { fillSourceControlFieldsInformation } from '@test/containers/ConfigStep/SourceControl.test';
+import { fillPipelineToolFieldsInformation } from '@test/containers/ConfigStep/PipelineTool.test';
+import { fillBoardFieldsInformation } from '@test/containers/ConfigStep/Board.test';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { AxiosRequestErrorCode } from '@src/constants/resources';
+import { boardClient } from '@src/clients/board/BoardClient';
 import { setupStore } from '../../utils/setupStoreUtil';
+import { TimeoutError } from '@src/errors/TimeoutError';
 import { yupResolver } from '@hookform/resolvers/yup';
 import userEvent from '@testing-library/user-event';
 import ConfigStep from '@src/containers/ConfigStep';
@@ -66,13 +72,6 @@ const server = setupServer(
     );
   }),
 );
-
-export const fillBoardFieldsInformation = async () => {
-  await userEvent.type(screen.getByLabelText(/board id/i), '1');
-  await userEvent.type(screen.getByLabelText(/email/i), 'fake@qq.com');
-  await userEvent.type(screen.getByLabelText(/site/i), 'fake');
-  await userEvent.type(screen.getByLabelText(/token/i), FAKE_TOKEN);
-};
 
 let store = null;
 jest.mock('@src/context/config/configSlice', () => ({
@@ -354,5 +353,183 @@ describe('ConfigStep', () => {
     expect(screen.getByLabelText('Board Config')).toBeInTheDocument();
     expect(screen.getByLabelText('Pipeline Tool Config')).toBeInTheDocument();
     expect(screen.getByLabelText('Source Control Config')).toBeInTheDocument();
+  });
+
+  it('should show reset dialog when click reset button and click cancel button dont reset and click confirm will reset', async () => {
+    setup();
+
+    await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
+    const requireDateSelection = within(screen.getByRole('listbox'));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: ALL }));
+    await closeMuiModal(userEvent);
+    await fillBoardFieldsInformation();
+    await fillPipelineToolFieldsInformation();
+    await fillSourceControlFieldsInformation();
+    const boardTokenInput = within(screen.getByLabelText('Board Config')).getByLabelText(/token/i) as HTMLInputElement;
+    const boardIdInput = screen.getByLabelText(/board id/i) as HTMLInputElement;
+    const boardEmailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
+    const boardSiteInput = screen.getByLabelText(/site/i) as HTMLInputElement;
+    const pipelineTokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
+      PIPELINE_TOOL_TOKEN_INPUT_LABEL,
+    ) as HTMLInputElement;
+    const sourceControlTokenInput = screen
+      .getByTestId('sourceControlTextField')
+      .querySelector('input') as HTMLInputElement;
+
+    await waitFor(() => {
+      expect(within(screen.getByLabelText('Board Config')).getByRole('button', { name: /verify/i })).not.toBeDisabled();
+      expect(
+        within(screen.getByLabelText('Pipeline Tool Config')).getByRole('button', { name: /verify/i }),
+      ).not.toBeDisabled();
+      expect(
+        within(screen.getByLabelText('Source Control Config')).getByRole('button', { name: /verify/i }),
+      ).not.toBeDisabled();
+    });
+
+    await userEvent.click(within(screen.getByLabelText('Board Config')).getByText(/verify/i));
+    await userEvent.click(within(screen.getByLabelText('Pipeline Tool Config')).getByText(/verify/i));
+    await userEvent.click(within(screen.getByLabelText('Source Control Config')).getByText(/verify/i));
+
+    await waitFor(() => {
+      expect(within(screen.getByLabelText('Board Config')).getByRole('button', { name: /reset/i })).toBeInTheDocument();
+      expect(
+        within(screen.getByLabelText('Pipeline Tool Config')).getByRole('button', { name: /reset/i }),
+      ).toBeInTheDocument();
+      expect(
+        within(screen.getByLabelText('Source Control Config')).getByRole('button', { name: /reset/i }),
+      ).toBeInTheDocument();
+    });
+
+    await userEvent.click(within(screen.getByLabelText('Board Config')).getByRole('button', { name: /reset/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('reset confirm dialog')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog title')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog close')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog content')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog cancel button')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog confirm button')).toBeInTheDocument();
+
+      expect(boardIdInput.value).not.toEqual('');
+      expect(boardEmailInput.value).not.toEqual('');
+      expect(boardSiteInput.value).not.toEqual('');
+      expect(boardTokenInput.value).not.toEqual('');
+      expect(pipelineTokenInput.value).not.toEqual('');
+      expect(sourceControlTokenInput.value).not.toEqual('');
+    });
+
+    await userEvent.click(screen.getByLabelText('reset confirm dialog cancel button'));
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('reset confirm dialog')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog title')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog close')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog content')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog cancel button')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog confirm button')).not.toBeInTheDocument();
+
+      expect(boardIdInput.value).not.toEqual('');
+      expect(boardEmailInput.value).not.toEqual('');
+      expect(boardSiteInput.value).not.toEqual('');
+      expect(boardTokenInput.value).not.toEqual('');
+      expect(pipelineTokenInput.value).not.toEqual('');
+      expect(sourceControlTokenInput.value).not.toEqual('');
+    });
+
+    await userEvent.click(
+      within(screen.getByLabelText('Pipeline Tool Config')).getByRole('button', { name: /reset/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('reset confirm dialog')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog title')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog close')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog content')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog cancel button')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog confirm button')).toBeInTheDocument();
+
+      expect(boardIdInput.value).not.toEqual('');
+      expect(boardEmailInput.value).not.toEqual('');
+      expect(boardSiteInput.value).not.toEqual('');
+      expect(boardTokenInput.value).not.toEqual('');
+      expect(pipelineTokenInput.value).not.toEqual('');
+      expect(sourceControlTokenInput.value).not.toEqual('');
+    });
+
+    await userEvent.click(screen.getByLabelText('reset confirm dialog close'));
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('reset confirm dialog')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog title')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog close')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog content')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog cancel button')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog confirm button')).not.toBeInTheDocument();
+
+      expect(boardIdInput.value).not.toEqual('');
+      expect(boardEmailInput.value).not.toEqual('');
+      expect(boardSiteInput.value).not.toEqual('');
+      expect(boardTokenInput.value).not.toEqual('');
+      expect(pipelineTokenInput.value).not.toEqual('');
+      expect(sourceControlTokenInput.value).not.toEqual('');
+    });
+
+    await userEvent.click(
+      within(screen.getByLabelText('Source Control Config')).getByRole('button', { name: /reset/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('reset confirm dialog')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog title')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog close')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog content')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog cancel button')).toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog confirm button')).toBeInTheDocument();
+
+      expect(boardIdInput.value).not.toEqual('');
+      expect(boardEmailInput.value).not.toEqual('');
+      expect(boardSiteInput.value).not.toEqual('');
+      expect(boardTokenInput.value).not.toEqual('');
+      expect(pipelineTokenInput.value).not.toEqual('');
+      expect(sourceControlTokenInput.value).not.toEqual('');
+    });
+    await userEvent.click(screen.getByLabelText('reset confirm dialog confirm button'));
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('reset confirm dialog')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog title')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog close')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog content')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog cancel button')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('reset confirm dialog confirm button')).not.toBeInTheDocument();
+
+      expect(boardIdInput.value).not.toEqual('');
+      expect(boardEmailInput.value).not.toEqual('');
+      expect(boardSiteInput.value).not.toEqual('');
+      expect(boardTokenInput.value).not.toEqual('');
+      expect(pipelineTokenInput.value).not.toEqual('');
+      expect(sourceControlTokenInput.value).toEqual('');
+    });
+  });
+
+  it('should hidden timeout alert when click reset button and click confirm button', async () => {
+    setup();
+    await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
+    const requireDateSelection = within(screen.getByRole('listbox'));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: VELOCITY }));
+    await closeMuiModal(userEvent);
+    await fillBoardFieldsInformation();
+
+    const mockedError = new TimeoutError('', AxiosRequestErrorCode.Timeout);
+    boardClient.getVerifyBoard = jest.fn().mockImplementation(() => Promise.reject(mockedError));
+
+    await userEvent.click(screen.getByText(VERIFY));
+
+    expect(screen.getByLabelText(TIMEOUT_ALERT)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: RESET }));
+    await userEvent.click(screen.getByLabelText('reset confirm dialog confirm button'));
+
+    expect(screen.queryByLabelText(TIMEOUT_ALERT)).not.toBeInTheDocument();
   });
 });
