@@ -165,6 +165,10 @@ class JiraServiceTest {
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
+	String token = "token";
+
+	ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
 	@BeforeEach
 	public void setUp() {
 		jiraService = new JiraService(executor = getTaskExecutor(), jiraFeignClient, urlGenerator, boardUtil,
@@ -191,22 +195,22 @@ class JiraServiceTest {
 	class Verify {
 
 		@Test
-		void shouldCallJiraFeignClientAndReturnBoardVerifyResponseWhenVerifyJiraBoard() {
+		void shouldReturnBoardVerifyResponseWhenVerifyJiraBoardAndCallJiraFeignClient() {
 			JiraBoardVerifyDTO jiraBoardVerifyDTO = JIRA_BOARD_VERIFY_RESPONSE_BUILDER().build();
 			BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-
 			doReturn(jiraBoardVerifyDTO).when(jiraFeignClient)
 				.getBoard(baseUrl, boardVerifyRequestParam.getBoardId(), boardVerifyRequestParam.getToken());
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 
 			String projectKey = jiraService.verify(BoardType.JIRA, boardVerifyRequestParam);
 			jiraService.shutdownExecutor();
+
 			assertThat(Objects.requireNonNull(projectKey)).isEqualTo("ADM");
 		}
 
 		@Test
-		void shouldThrowExceptionWhenVerifyJiraBoardTypeNotCorrect() {
+		void shouldThrowExceptionWhenBoardTypeNotCorrect() {
 			BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
 
 			assertThatThrownBy(() -> jiraService.verify(BoardType.CLASSIC_JIRA, boardVerifyRequestParam))
@@ -215,57 +219,54 @@ class JiraServiceTest {
 		}
 
 		@Test
-		void shouldCallJiraFeignClientAndThrowNonColumnWhenVerifyJiraBoard() {
+		void shouldThrowInternalExceptionWhenCallJiraFeignClientAndNoColumn() {
 			JiraBoardVerifyDTO jiraBoardVerifyDTO = JIRA_BOARD_VERIFY_FAILED_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doReturn(jiraBoardVerifyDTO).when(jiraFeignClient).getBoard(baseUrl, BOARD_ID, token);
 
 			Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
+
 			assertThat(thrown).isInstanceOf(InternalServerErrorException.class)
 				.hasMessageContaining("Failed to call Jira to verify board, cause is");
 		}
 
 		@Test
-		void shouldCallJiraFeignClientAndThrowBaseExceptionWhenVerifyJiraBoard() {
+		void shouldThrowBaseExceptionWhenVerifyJiraBoardGivenUnauthorizedOfCallingJiraFeignClient() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doThrow(new UnauthorizedException("")).when(jiraFeignClient)
 				.getBoard(baseUrl, boardVerifyRequestParam.getBoardId(), boardVerifyRequestParam.getToken());
 
 			Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
+
 			assertThat(thrown).isInstanceOf(BaseException.class);
 		}
 
 		@Test
-		void shouldCallJiraFeignClientBoardAndThrowNotFoundWhenVerifyJiraBoard() {
+		void shouldThrowNotFoundWhenVerifyJiraBoardAndBoardIdIsError() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doThrow(new NotFoundException("boardId is incorrect")).when(jiraFeignClient)
 				.getBoard(baseUrl, BOARD_ID, token);
 
 			Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
+
 			assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("boardId is incorrect");
 		}
 
 		@Test
-		void shouldCallJiraFeignClientBoardAndThrowNotFoundWhenVerifyJiraBoardSite() {
+		void shouldThrowNotFoundWhenVerifyJiraBoardSiteIsError() {
 			URI baseUrl = URI.create(INVALID_SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardVerifyRequestParam boardVerifyRequestParam = BOARD_VERIFY_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(INVALID_SITE_ATLASSIAN_NET));
 			doThrow(new NotFoundException("site is incorrect")).when(jiraFeignClient).getDashboard(baseUrl, token);
 
 			Throwable thrown = catchThrowable(() -> jiraService.verify(boardTypeJira, boardVerifyRequestParam));
+
 			assertThat(thrown).isInstanceOf(RuntimeException.class).hasMessageContaining("site is incorrect");
 		}
 
@@ -275,12 +276,11 @@ class JiraServiceTest {
 	class GetInfo {
 
 		@Test
-		void shouldCallJiraFeignClientAndReturnBoardInfoResponseWhenGetJiraBoardInfo() throws JsonProcessingException {
+		void shouldReturnBoardInfoResponseWhenGetJiraBoardInfoSuccessfully() throws JsonProcessingException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(
@@ -293,7 +293,6 @@ class JiraServiceTest {
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
@@ -308,6 +307,7 @@ class JiraServiceTest {
 
 			BoardConfigDTO boardConfigDTO = jiraService.getInfo(boardTypeJira, boardRequestParam);
 			jiraService.shutdownExecutor();
+
 			assertThat(boardConfigDTO.getJiraColumnResponse()).hasSize(1);
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getName()).isEqualTo("TODO");
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getStatuses().get(0)).isEqualTo("DONE");
@@ -319,12 +319,11 @@ class JiraServiceTest {
 		}
 
 		@Test
-		void shouldCallJiraFeignClientAndReturnBoardInfoResponseWhenGetJiraBoardInfoHasTwoPage() throws IOException {
+		void shouldReturnBoardInfoResponseWhenGetJiraBoardInfoHasTwoPage() throws IOException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(
@@ -333,7 +332,6 @@ class JiraServiceTest {
 					new TargetField("customfield_10021", "Flagged", false));
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_TWO_PAGES_CARDS_RESPONSE_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
@@ -349,6 +347,7 @@ class JiraServiceTest {
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 			BoardConfigDTO boardConfigDTO = jiraService.getInfo(boardTypeJira, boardRequestParam);
+
 			assertThat(boardConfigDTO.getJiraColumnResponse()).hasSize(1);
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getName()).isEqualTo("TODO");
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getStatuses().get(0)).isEqualTo("DONE");
@@ -361,14 +360,12 @@ class JiraServiceTest {
 		}
 
 		@Test
-		void shouldCallJiraFeignClientAndReturnBoardInfoResponseWhenGetClassicJiraBoardInfo()
-				throws JsonProcessingException {
+		void shouldReturnBoardInfoResponseSuccessfullyWhenJiraBoardStyleIsClassic() throws JsonProcessingException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = CLASSIC_JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO completeStatusSelf = COMPLETE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(
@@ -378,7 +375,6 @@ class JiraServiceTest {
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
@@ -394,6 +390,7 @@ class JiraServiceTest {
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 			BoardConfigDTO boardConfigDTO = jiraService.getInfo(boardTypeJira, boardRequestParam);
+
 			assertThat(boardConfigDTO.getJiraColumnResponse()).hasSize(1);
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getName()).isEqualTo("TODO");
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getStatuses().get(0)).isEqualTo("DONE");
@@ -406,7 +403,7 @@ class JiraServiceTest {
 		}
 
 		@Test
-		void shouldCallJiraFeignClientAndThrowParamExceptionWhenGetJiraBoardInfo() {
+		void shouldThrowParamExceptionWhenGetJiraBoardInfoThrowBadRequest() {
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 
 			assertThatThrownBy(() -> jiraService.getInfo(null, boardRequestParam))
@@ -415,15 +412,13 @@ class JiraServiceTest {
 		}
 
 		@Test
-		void shouldCallJiraFeignClientAndThrowNonContentCodeWhenGetJiraBoardInfo() throws JsonProcessingException {
+		void shouldThrowNonContentExceptionWhenGetJiraBoardInfoAndJiraBoardIsNoCards() throws JsonProcessingException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
@@ -441,14 +436,12 @@ class JiraServiceTest {
 		}
 
 		@Test
-		void shouldCallJiraFeignClientAndThrowNonColumnWhenGetJiraBoardInfo() {
+		void shouldThrowInternalExceptionWhenGetJiraCardsReturnNull() {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO noneStatusSelf = NONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
@@ -459,6 +452,7 @@ class JiraServiceTest {
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 			Throwable thrown = catchThrowable(() -> jiraService.getInfo(boardTypeJira, boardRequestParam));
+
 			assertThat(thrown).isInstanceOf(InternalServerErrorException.class)
 				.hasMessageContaining("Failed to call Jira to get board info, cause is");
 		}
@@ -466,9 +460,7 @@ class JiraServiceTest {
 		@Test
 		void shouldThrowExceptionWhenGetJiraInfoThrowsUnExpectedException() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-
 			when(jiraFeignClient.getJiraBoardConfiguration(any(URI.class), any(), any()))
 				.thenThrow(new CompletionException(new Exception("UnExpected Exception")));
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
@@ -488,13 +480,11 @@ class JiraServiceTest {
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
@@ -508,6 +498,7 @@ class JiraServiceTest {
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 			BoardConfigDTO boardConfigDTO = jiraService.getInfo(boardTypeJira, boardRequestParam);
+
 			assertThat(boardConfigDTO.getUsers()).hasSize(1);
 			assertThat(boardConfigDTO.getUsers().get(0)).isEqualTo("Zhang San");
 		}
@@ -515,9 +506,7 @@ class JiraServiceTest {
 		@Test
 		void shouldThrowExceptionWhenGetBoardInfoAndGetTargetFieldFailed() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
 				.thenReturn(JiraBoardProject.builder().style("next-gen").build());
@@ -532,9 +521,7 @@ class JiraServiceTest {
 		@Test
 		void shouldThrowExceptionWhenGetBoardInfoAndGetTargetFieldReturnNull() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
 				.thenReturn(JiraBoardProject.builder().style("next-gen").build());
@@ -548,12 +535,10 @@ class JiraServiceTest {
 		@Test
 		void shouldThrowExceptionWhenGetBoardInfoAndGetTargetFieldReturnEmpty() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			FieldResponseDTO emptyProjectFieldResponse = FieldResponseDTO.builder()
 				.projects(Collections.emptyList())
 				.build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
 				.thenReturn(JiraBoardProject.builder().style("next-gen").build());
@@ -566,10 +551,8 @@ class JiraServiceTest {
 		}
 
 		@Test
-		void shouldThrowCustomExceptionWhenGetJiraBoardInfo() {
+		void shouldThrowCustomExceptionWhenGetTargetFieldIsNull() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
 				.thenReturn(JiraBoardProject.builder().style("next-gen").build());
@@ -582,8 +565,6 @@ class JiraServiceTest {
 		@Test
 		void shouldThrowCustomExceptionWhenCallJiraFeignClientToGetBoardInfoFailed() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
 				.thenReturn(JiraBoardProject.builder().style("next-gen").build());
@@ -593,14 +574,13 @@ class JiraServiceTest {
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 			assertThatThrownBy(() -> jiraService.getInfo(boardTypeJira, BoardRequestParam.builder().build()))
-				.isInstanceOf(Exception.class)
+				.isInstanceOf(InternalServerErrorException.class)
 				.hasMessageContaining("exception");
 		}
 
 		@Test
 		void shouldReturnBadRequestExceptionWhenBoardStyleIsNotCorrect() {
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-
 			when(jiraFeignClient.getProject(any(), any(), any()))
 				.thenReturn(JiraBoardProject.builder().style("unknown").build());
 
@@ -616,7 +596,6 @@ class JiraServiceTest {
 			StatusSelfDTO completeStatusSelf = COMPLETE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(new TargetField("customfield_10021", "Flagged", false),
@@ -625,7 +604,6 @@ class JiraServiceTest {
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
@@ -641,6 +619,7 @@ class JiraServiceTest {
 				.thenReturn(INCLUDE_UNREASONABLE_FIELD_RESPONSE_BUILDER().build());
 
 			BoardConfigDTO boardConfigDTO = jiraService.getInfo(boardTypeJira, boardRequestParam);
+
 			assertThat(boardConfigDTO.getTargetFields()).hasSize(3);
 			assertThat(boardConfigDTO.getTargetFields())
 				.doesNotContain(new TargetField("customfield_10000", "Development", false));
@@ -656,27 +635,23 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldCallJiraFeignClientAndReturnBoardConfigResponseWhenGetJiraBoardConfig()
-				throws JsonProcessingException {
+		void shouldReturnBoardConfigResponseSuccessfullyWhenGetJiraBoardConfig() throws JsonProcessingException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(
 					new TargetField("customfield_10016", "Story point estimate", false),
 					new TargetField("customfield_10020", "Sprint", false),
 					new TargetField("customfield_10021", "Flagged", false));
-
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("sprint", "customfield_10020")
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
@@ -686,6 +661,7 @@ class JiraServiceTest {
 				.thenReturn(CARD_HISTORY_RESPONSE_BUILDER().build());
 			when(jiraFeignClient.getTargetField(baseUrl, "project key", token))
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
+
 			BoardConfigDTO boardConfigDTO = jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam);
 			jiraService.shutdownExecutor();
 
@@ -701,13 +677,11 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldCallJiraFeignClientAndReturnBoardConfigResponseWhenGetJiraBoardConfigHasTwoPage()
-				throws IOException {
+		void shouldReturnBoardConfigResponseSuccessfullyWhenGetJiraBoardConfigHasTwoPage() throws IOException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(
@@ -716,7 +690,6 @@ class JiraServiceTest {
 					new TargetField("customfield_10021", "Flagged", false));
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_TWO_PAGES_CARDS_RESPONSE_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
@@ -730,6 +703,7 @@ class JiraServiceTest {
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 			BoardConfigDTO boardConfigDTO = jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam);
+
 			assertThat(boardConfigDTO.getJiraColumnResponse()).hasSize(1);
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getName()).isEqualTo("TODO");
 			assertThat(boardConfigDTO.getJiraColumnResponse().get(0).getValue().getStatuses().get(0)).isEqualTo("DONE");
@@ -743,14 +717,12 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldCallJiraFeignClientAndReturnBoardConfigResponseWhenGetClassicJiraBoardConfig()
-				throws JsonProcessingException {
+		void shouldReturnBoardConfigResponseSuccessfullyWhenJiraBoardConfigIsClassic() throws JsonProcessingException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = CLASSIC_JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO completeStatusSelf = COMPLETE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(
@@ -760,7 +732,6 @@ class JiraServiceTest {
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
@@ -788,12 +759,11 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldCallJiraFeignClientAndThrowParamExceptionWhenGetJiraBoardConfig() {
+		void shouldThrowParamExceptionWhenGetJiraBoardInfoThrowBadRequest() {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
@@ -809,17 +779,16 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldCallJiraFeignClientAndThrowNotFoundExceptionWhenGetJiraBoardConfig() throws JsonProcessingException {
+		void shouldReturnBoardConfigResponseSuccessfullyWhenGetColumnStatusCategoryThrowNotFoundException()
+				throws JsonProcessingException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
@@ -837,15 +806,13 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldCallJiraFeignClientAndThrowNonContentCodeWhenGetJiraBoardConfig() throws JsonProcessingException {
+		void shouldThrowNonContentExceptionWhenGetJiraBoardConfigIsNoCards() throws JsonProcessingException {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
@@ -862,12 +829,11 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldCallJiraFeignClientAndThrowNonColumnWhenGetJiraBoardConfig() {
+		void shouldThrowInternalExceptionWhenGetJiraCardsReturnNull() {
 			JiraBoardConfigDTO jiraBoardConfigDTO = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 			StatusSelfDTO noneStatusSelf = NONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
@@ -877,6 +843,7 @@ class JiraServiceTest {
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
 			Throwable thrown = catchThrowable(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam));
+
 			assertThat(thrown).isInstanceOf(InternalServerErrorException.class)
 				.hasMessageContaining("Failed to call Jira to get board config, cause is");
 		}
@@ -891,6 +858,7 @@ class JiraServiceTest {
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getTargetField(baseUrl, "project key", "token"))
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
+
 			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 				.isInstanceOf(InternalServerErrorException.class)
 				.hasMessageContaining("UnExpected Exception");
@@ -903,13 +871,11 @@ class JiraServiceTest {
 			StatusSelfDTO doneStatusSelf = DONE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
@@ -930,9 +896,7 @@ class JiraServiceTest {
 		@Deprecated
 		void shouldThrowExceptionWhenGetTargetFieldFailed() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getTargetField(baseUrl, boardRequestParam.getProjectKey(), token))
 				.thenThrow(new CustomFeignClientException(500, "exception"));
@@ -946,9 +910,7 @@ class JiraServiceTest {
 		@Deprecated
 		void shouldThrowExceptionWhenGetTargetFieldReturnNull() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getTargetField(baseUrl, boardRequestParam.getProjectKey(), token)).thenReturn(null);
 
@@ -961,12 +923,10 @@ class JiraServiceTest {
 		@Deprecated
 		void shouldThrowExceptionWhenGetTargetFieldReturnEmpty() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			FieldResponseDTO emptyProjectFieldResponse = FieldResponseDTO.builder()
 				.projects(Collections.emptyList())
 				.build();
-
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getTargetField(baseUrl, boardRequestParam.getProjectKey(), token))
 				.thenReturn(emptyProjectFieldResponse);
@@ -978,7 +938,7 @@ class JiraServiceTest {
 
 		@Test
 		@Deprecated
-		void shouldThrowCustomExceptionWhenGetJiraBoardConfig() {
+		void shouldThrowCustomExceptionWhenGetTargetFieldIsNull() {
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 
 			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BOARD_REQUEST_BUILDER().build()))
@@ -995,6 +955,7 @@ class JiraServiceTest {
 				.thenThrow(new CustomFeignClientException(400, "exception"));
 			when(jiraFeignClient.getTargetField(baseUrl, "project key", "token"))
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
+
 			assertThatThrownBy(
 					() -> jiraService.getJiraConfiguration(boardTypeJira, BoardRequestParam.builder().build()))
 				.isInstanceOf(Exception.class)
@@ -1009,7 +970,6 @@ class JiraServiceTest {
 			StatusSelfDTO completeStatusSelf = COMPLETE_STATUS_SELF_RESPONSE_BUILDER().build();
 			StatusSelfDTO doingStatusSelf = DOING_STATUS_SELF_RESPONSE_BUILDER().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format(ALL_CARDS_JQL, boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			List<TargetField> expectTargetField = List.of(new TargetField("customfield_10021", "Flagged", false),
@@ -1018,7 +978,6 @@ class JiraServiceTest {
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
 			doReturn(jiraBoardConfigDTO).when(jiraFeignClient).getJiraBoardConfiguration(baseUrl, BOARD_ID, token);
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getColumnStatusCategory(baseUrl, COLUM_SELF_ID_1, token)).thenReturn(doneStatusSelf);
@@ -1049,15 +1008,11 @@ class JiraServiceTest {
 		@Test
 		void shouldCallJiraFeignClientTwiceGivenTwoPageHistoryDataWhenGetJiraBoardConfig()
 				throws JsonProcessingException {
-			// given
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
-
 			JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
 				.build();
 			String allDoneCards = objectMapper.writeValueAsString(NEED_FILTERED_ALL_DONE_CARDS_BUILDER().build());
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "1", 0, 100, token))
@@ -1070,11 +1025,10 @@ class JiraServiceTest {
 					.of(new HistoryDetail(2, "assignee", new Status("In Dev"), new Status("To do"), null, null)))));
 			when(jiraFeignClient.getTargetField(baseUrl, "PLL", token))
 				.thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
-			// when
+
 			jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-					jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
-			// then
+					jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", CalendarTypeEnum.REGULAR, zoneId);
+
 			verify(jiraFeignClient, times(2)).getJiraCardHistoryByCount(any(), eq("2"), anyInt(), anyInt(), any());
 		}
 
@@ -1082,18 +1036,21 @@ class JiraServiceTest {
 		void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeGivenStoryPointKeyFromEnvironmentVariable()
 				throws JsonProcessingException {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format("status in ('%s') AND status changed during (%s, %s)", "DONE",
 					boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			Map<String, String> envMap = new HashMap<>();
 			envMap.put("STORY_POINT_KEY", "customfield_10016");
-
 			AllCardsResponseDTO allCardsResponseDTO = ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build();
 			String allDoneCards = objectMapper.writeValueAsString(allCardsResponseDTO)
 				.replaceAll("\"storyPoints\":5.0", "\"customfield_10016\":null")
 				.replaceAll("storyPoints", "customfield_10016");
-
+			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+			jiraBoardSetting
+				.setOverrideFields(List.of(TargetField.builder().key("").name("Story Points").flag(true).build(),
+						TargetField.builder().key("").name("Flagged").flag(true).build()));
+			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+			storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 				.thenReturn(allDoneCards);
@@ -1105,15 +1062,9 @@ class JiraServiceTest {
 				.thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 			when(systemUtil.getEnvMap()).thenReturn(envMap);
 
-			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
-			jiraBoardSetting
-				.setOverrideFields(List.of(TargetField.builder().key("").name("Story Points").flag(true).build(),
-						TargetField.builder().key("").name("Flagged").flag(true).build()));
-			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
-			storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getStoryPointSum()).isEqualTo(6.0);
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(4);
@@ -1123,13 +1074,11 @@ class JiraServiceTest {
 		void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeGivenStoryPointKeyFromEnvironmentVariableWhenTargetFieldIsTrue()
 				throws JsonProcessingException {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format("status in ('%s') AND status changed during (%s, %s)", "DONE",
 					boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			Map<String, String> envMap = new HashMap<>();
 			envMap.put("STORY_POINT_KEY", "storyPoints");
-
 			AllCardsResponseDTO allCardsResponseDTO = ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build();
 			allCardsResponseDTO.getIssues()
 				.add(JiraCard.builder()
@@ -1137,7 +1086,12 @@ class JiraServiceTest {
 					.fields(JiraCardField.builder().assignee(new Assignee("Test 1")).storyPoints(0).build())
 					.build());
 			String allDoneCards = objectMapper.writeValueAsString(allCardsResponseDTO);
-
+			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+			jiraBoardSetting
+				.setOverrideFields(List.of(TargetField.builder().key("summary").name("Story Points").flag(true).build(),
+						TargetField.builder().key("").name("Flagged").flag(true).build()));
+			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+			storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 				.thenReturn(allDoneCards);
@@ -1149,16 +1103,9 @@ class JiraServiceTest {
 				.thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 			when(systemUtil.getEnvMap()).thenReturn(envMap);
 
-			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
-			jiraBoardSetting
-				.setOverrideFields(List.of(TargetField.builder().key("summary").name("Story Points").flag(true).build(),
-						TargetField.builder().key("").name("Flagged").flag(true).build()));
-			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
-			storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
-
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getStoryPointSum()).isEqualTo(0.0);
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -1167,7 +1114,6 @@ class JiraServiceTest {
 		@Test
 		void shouldGetCardsWhenCallGetStoryPointsWhenStartTimeIsTooBig() throws JsonProcessingException {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			CardHistoryResponseDTO cardHistoryResponseDTO = CardHistoryResponseDTO.builder()
 				.isLast(true)
 				.items(List.of(new HistoryDetail(1, "status", new Status("To do"), new Status("Done"), null, null)))
@@ -1181,10 +1127,8 @@ class JiraServiceTest {
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format("status in ('%s') AND status changed during (%s, %s)", "DONE",
 					storyPointsAndCycleTimeRequest.getStartTime(), storyPointsAndCycleTimeRequest.getEndTime());
-
 			Map<String, String> envMap = new HashMap<>();
 			envMap.put("STORY_POINT_KEY", "storyPoints");
-
 			AllCardsResponseDTO allCardsResponseDTO = ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build();
 			allCardsResponseDTO.getIssues()
 				.add(JiraCard.builder()
@@ -1192,7 +1136,6 @@ class JiraServiceTest {
 					.fields(JiraCardField.builder().assignee(new Assignee("Test 1")).storyPoints(0).build())
 					.build());
 			String allDoneCards = objectMapper.writeValueAsString(allCardsResponseDTO);
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 				.thenReturn(allDoneCards);
@@ -1206,7 +1149,7 @@ class JiraServiceTest {
 
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getStoryPointSum()).isEqualTo(0.0);
 			assertThat(cardCollection.getCardsNumber()).isZero();
@@ -1215,8 +1158,6 @@ class JiraServiceTest {
 		@Test
 		void shouldGetCardCollection() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
-
 			JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
 			jiraBoardSetting
 				.setOverrideFields(List.of(TargetField.builder().key("summary").name("Story Points").flag(true).build(),
@@ -1227,7 +1168,6 @@ class JiraServiceTest {
 			String allDoneCards = """
 					{"total":"2","issues":[{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":5.0,"story point estimate":null,"sprint":null,"flagged":null}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{},otherSprint:1}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":1,otherSprint:[]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":"s",otherSprint:[{"key":1}]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"story point estimate":{"test":1}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":{}}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":0}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"flagged":[{"value":1}]}},{"key":"1","fields":{"assignee":{"displayName":"Zhang San"},"storyPoints":1.0,"Story point estimate":{"test":1},"Flagged":[null]}}]}
 					""";
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "1", 0, 100, token))
@@ -1236,8 +1176,7 @@ class JiraServiceTest {
 				.thenReturn(ALL_FIELD_RESPONSE_CONTAIN_CUSTOMER_FIELDS().build());
 
 			jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-					jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
+					jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "", CalendarTypeEnum.REGULAR, zoneId);
 
 			verify(jiraFeignClient, times(10)).getJiraCardHistoryByCount(any(), eq("1"), anyInt(), anyInt(), any());
 		}
@@ -1246,18 +1185,18 @@ class JiraServiceTest {
 		void shouldGetCardsWhenCallGetStoryPointsRealDoneAndCycleTimeGivenStoryPointKeyFromEnvironmentVariable()
 				throws JsonProcessingException {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format("status in ('%s','%s') AND status changed during (%s, %s)", "Testing", "DONE",
 					boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
 			Map<String, String> envMap = new HashMap<>();
 			envMap.put("STORY_POINT_KEY", "customfield_10016");
-
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_REAL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("\"storyPoints\":0", "\"customfield_10016\":null")
 				.replaceAll("storyPoints", "customfield_10016");
-
+			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_REAL_DONE_CARD()
+				.build();
+			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_REAL_DONE_SETTING_BUILD().build();
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 				.thenReturn(allDoneCards);
@@ -1269,12 +1208,9 @@ class JiraServiceTest {
 				.thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 			when(systemUtil.getEnvMap()).thenReturn(envMap);
 
-			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_REAL_DONE_CARD()
-				.build();
-			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_REAL_DONE_SETTING_BUILD().build();
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getStoryPointSum()).isEqualTo(5);
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -1284,16 +1220,19 @@ class JiraServiceTest {
 		void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeGivenNotEmptyStoryPointKeyAndFlaggedFromOverrideFields()
 				throws JsonProcessingException {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format("status in ('%s') AND status changed during (%s, %s)", "DONE",
 					boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
-
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("\"storyPoints\":0", "\"customfield_10016\":null")
 				.replaceAll("storyPoints", "customfield_10016");
-
+			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
+			jiraBoardSetting.setOverrideFields(
+					List.of(TargetField.builder().key("customfield_10016").name("Story Points").flag(true).build(),
+							TargetField.builder().key("customfield_10017").name("Flagged").flag(true).build()));
+			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+			storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 				.thenReturn(allDoneCards);
@@ -1305,15 +1244,9 @@ class JiraServiceTest {
 				.thenReturn(ALL_FIELD_RESPONSE_BUILDER_HAS_STORY_POINT().build());
 			when(systemUtil.getEnvMap()).thenReturn(Map.of());
 
-			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
-			jiraBoardSetting.setOverrideFields(
-					List.of(TargetField.builder().key("customfield_10016").name("Story Points").flag(true).build(),
-							TargetField.builder().key("customfield_10017").name("Flagged").flag(true).build()));
-			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
-			storyPointsAndCycleTimeRequest.setOverrideFields(jiraBoardSetting.getOverrideFields());
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getStoryPointSum()).isEqualTo(11);
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(4);
@@ -1322,16 +1255,15 @@ class JiraServiceTest {
 		@Test
 		void shouldGetCardsWhenCallGetStoryPointsAndCycleTime() throws JsonProcessingException {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			String jql = String.format("status in ('%s') AND status changed during (%s, %s)", "DONE",
 					boardRequestParam.getStartTime(), boardRequestParam.getEndTime());
-
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("\"storyPoints\":0", "\"customfield_10016\":null")
 				.replaceAll("storyPoints", "customfield_10016");
-
+			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
+			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 				.thenReturn(allDoneCards);
@@ -1342,11 +1274,9 @@ class JiraServiceTest {
 			when(jiraFeignClient.getTargetField(baseUrl, "PLL", token))
 				.thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 
-			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
-			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getStoryPointSum()).isEqualTo(0);
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
@@ -1355,10 +1285,7 @@ class JiraServiceTest {
 		@Test
 		void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeWhenBoardTypeIsClassicJira()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
-
 			JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
 				.build();
@@ -1368,7 +1295,6 @@ class JiraServiceTest {
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "1", 0, 100, token))
@@ -1380,7 +1306,7 @@ class JiraServiceTest {
 
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
 		}
@@ -1388,10 +1314,7 @@ class JiraServiceTest {
 		@Test
 		void shouldGetCardsWhenCallGetStoryPointsAndCycleTimeWhenDoneTimeGreaterThanSelectedEndTime()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
-
 			JiraBoardSetting jiraBoardSetting = CLASSIC_JIRA_BOARD_SETTING_BUILD().build();
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = CLASSIC_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
 				.build();
@@ -1407,21 +1330,19 @@ class JiraServiceTest {
 
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(0);
 		}
 
 		@Test
 		void shouldReturnBadRequestExceptionWhenBoardTypeIsNotCorrect() {
-
 			JiraBoardSetting jiraBoardSetting = INCORRECT_JIRA_BOARD_SETTING_BUILD().build();
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = INCORRECT_JIRA_STORY_POINTS_FORM_ALL_DONE_CARD()
 				.build();
-
 			List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
 			List<String> users = List.of("Zhang San");
-			ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
 			assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, boardColumns, users, null, CalendarTypeEnum.REGULAR, zoneId))
 				.isInstanceOf(IllegalArgumentException.class)
@@ -1433,7 +1354,6 @@ class JiraServiceTest {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
 					"{\"total\":1,\"issues\":[{\"expand\":\"expand\",\"id\":\"1\",\"self\":\"https:xxxx/issue/1\",\"key\":\"ADM-455\",\"fields\":{\"customfield_10020\":[{\"id\":16,\"name\":\"Tool Sprint 11\",\"state\":\"closed\",\"boardId\":2,\"goal\":\"goals\",\"startDate\":\"2023-05-15T03:09:23.000Z\",\"endDate\":\"2023-05-28T16:00:00.000Z\",\"completeDate\":\"2023-05-29T03:51:24.898Z\"}],\"customfield_10021\":[{\"self\":\"https:xxxx/10019\",\"value\":\"Impediment\",\"id\":\"10019\"}],\"customfield_10016\":1,\"assignee\":{\"displayName\":\"Zhang San\"}}}]}");
@@ -1445,17 +1365,17 @@ class JiraServiceTest {
 
 			CardCollection doneCards = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), "",
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
+
 			assertThat(doneCards.getStoryPointSum()).isEqualTo(1);
 			assertThat(doneCards.getCardsNumber()).isEqualTo(1);
 		}
 
 		@Test
-		public void shouldReturnNullWhenCallGetStoryPointsAndCycleTimeAndHistoryISNull() {
+		public void shouldReturnNullWhenCallGetStoryPointsAndCycleTimeAndHistoryIsNull() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
 					"{\"total\":1,\"issues\":[{\"expand\":\"expand\",\"id\":\"1\",\"self\":\"https:xxxx/issue/1\",\"key\":\"ADM-455\",\"fields\":{\"customfield_10020\":[{\"id\":16,\"name\":\"Tool Sprint 11\",\"state\":\"closed\",\"boardId\":2,\"goal\":\"goals\",\"startDate\":\"2023-05-15T03:09:23.000Z\",\"endDate\":\"2023-05-28T16:00:00.000Z\",\"completeDate\":\"2023-05-29T03:51:24.898Z\"}],\"customfield_10021\":[{\"self\":\"https:xxxx/10019\",\"value\":\"Impediment\",\"id\":\"10019\"}],\"customfield_10016\":1,\"assignee\":{\"displayName\":\"Zhang San\"}}}]}");
@@ -1465,14 +1385,14 @@ class JiraServiceTest {
 
 			CardCollection doneCards = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"), null,
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
+
 			assertThat(doneCards.getStoryPointSum()).isEqualTo(0);
 			assertThat(doneCards.getCardsNumber()).isEqualTo(0);
 		}
 
 		@Test
 		void shouldReturnIllegalArgumentExceptionWhenHaveUnknownColumn() throws JsonProcessingException {
-			String token = "token";
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_HAVE_UNKNOWN_COLUMN_BUILD().build();
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD()
 				.startTime("5")
@@ -1484,15 +1404,13 @@ class JiraServiceTest {
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build())
 				.replaceAll("storyPoints", "customfield_10016");
-
+			List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
+			List<String> users = List.of("Zhang San");
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(baseUrl, BOARD_ID, QUERY_COUNT, 0, jql, boardRequestParam.getToken()))
 				.thenReturn(allDoneCards);
 			when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(FIELD_RESPONSE_BUILDER().build());
 
-			List<RequestJiraBoardColumnSetting> boardColumns = jiraBoardSetting.getBoardColumns();
-			List<String> users = List.of("Zhang San");
-			ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 			assertThatThrownBy(() -> {
 				jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
 						boardColumns, users, null, CalendarTypeEnum.REGULAR, zoneId);
@@ -1502,16 +1420,10 @@ class JiraServiceTest {
 		@Test
 		void shouldGetRealDoneCardGivenCallGetStoryPointsAndCycleTimeWhenUseHistoricalAssigneeFilter()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = AssigneeFilterMethod.HISTORICAL_ASSIGNEE.getDescription();
-
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_ASSIGNEE_FILTER_METHOD().build();
-
-			// return value
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_ASSIGNEE_FILTER_TEST().build())
 				.replaceAll("sprint", "customfield_10020")
@@ -1531,29 +1443,23 @@ class JiraServiceTest {
 
 			CardCollection cardCollection1 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
+					zoneId);
 			CardCollection cardCollection2 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of("song"), assigneeFilter, CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
+					zoneId);
 
 			assertThat(cardCollection1.getCardsNumber()).isEqualTo(0);
 			assertThat(cardCollection2.getCardsNumber()).isEqualTo(1);
 			assertThat(cardCollection2.getJiraCardDTOList().get(0).getBaseInfo().getKey()).isEqualTo("ADM-475");
-
 		}
 
 		@Test
 		void shouldGetRealDoneCardGivenCallGetStoryPointsAndCycleTimeWhenUseLastAssigneeFilter()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = AssigneeFilterMethod.LAST_ASSIGNEE.getDescription();
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_ASSIGNEE_FILTER_METHOD().build();
-
-			// return value
 			String allDoneCards = objectMapper
 				.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_ASSIGNEE_FILTER_TEST().build())
 				.replaceAll("sprint", "customfield_10020")
@@ -1573,10 +1479,10 @@ class JiraServiceTest {
 
 			CardCollection cardCollection1 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of("yun"), assigneeFilter, CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
+					zoneId);
 			CardCollection cardCollection2 = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
+					zoneId);
 
 			assertThat(cardCollection1.getCardsNumber()).isEqualTo(1);
 			assertThat(cardCollection1.getJiraCardDTOList().get(0).getBaseInfo().getKey()).isEqualTo("ADM-520");
@@ -1587,22 +1493,15 @@ class JiraServiceTest {
 		@Test
 		void shouldGetRealDoneCardsGivenMultipleStatuesMappingToDoneStatusWhenCallGetStoryPointsAndCycleTime()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = "lastAssignee";
-
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES().build();
-
-			// return value
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_MULTIPLE_STATUS().build())
 				.replaceAll("sprint", "customfield_10020")
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-475", 0, 100, token))
@@ -1614,7 +1513,7 @@ class JiraServiceTest {
 
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
+					zoneId);
 
 			assertThat(cardCollection.getCardsNumber()).isEqualTo(1);
 			assertThat(cardCollection.getJiraCardDTOList().get(0).getBaseInfo().getKey()).isEqualTo("ADM-475");
@@ -1623,22 +1522,15 @@ class JiraServiceTest {
 		@Test
 		void shouldGetRealDoneCardsGivenHistoryWithNoStatusFieldWhenCallGetStoryPointsAndCycleTime()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = "lastAssignee";
-
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES().build();
-
-			// return value
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_MULTIPLE_STATUS().build())
 				.replaceAll("sprint", "customfield_10020")
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-475", 0, 100, token))
@@ -1650,7 +1542,7 @@ class JiraServiceTest {
 
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of("Da Pei"), assigneeFilter, CalendarTypeEnum.REGULAR,
-					ZoneId.of("Asia/Shanghai"));
+					zoneId);
 
 			assertThat(cardCollection.getCardsNumber()).isZero();
 		}
@@ -1658,26 +1550,19 @@ class JiraServiceTest {
 		@Test
 		void shouldGetRealDoneCardsReworkToInDevTimesGivenNotConsiderFlagIsBlockAndNoExclude()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = "lastAssignee";
-
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
 				.treatFlagCardAsBlock(false)
 				.reworkTimesSetting(
 						ReworkTimesSetting.builder().reworkState("In Dev").excludedStates(List.of()).build())
 				.build();
-
-			// return value
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_MULTIPLE_STATUS().build())
 				.replaceAll("sprint", "customfield_10020")
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-475", 0, 100, token))
@@ -1690,7 +1575,7 @@ class JiraServiceTest {
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(),
 					List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE, JiraBoardConfigDTOFixture.DISPLAY_NAME_TWO),
-					assigneeFilter, CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					assigneeFilter, CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 			assertThat(cardCollection.getReworkRatio()).isEqualTo(0.5);
@@ -1708,26 +1593,19 @@ class JiraServiceTest {
 
 		@Test
 		void shouldGetRealDoneCardsReworkTimesToInDevGivenConsiderFlagAsBlock() throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = "lastAssignee";
-
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
 				.treatFlagCardAsBlock(true)
 				.reworkTimesSetting(
 						ReworkTimesSetting.builder().reworkState("In Dev").excludedStates(List.of()).build())
 				.build();
-
-			// return value
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_MULTIPLE_STATUS().build())
 				.replaceAll("sprint", "customfield_10020")
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-475", 0, 100, token))
@@ -1739,7 +1617,7 @@ class JiraServiceTest {
 
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE),
-					assigneeFilter, CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					assigneeFilter, CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 			assertThat(cardCollection.getReworkRatio()).isEqualTo(1);
@@ -1754,26 +1632,19 @@ class JiraServiceTest {
 		@Test
 		void shouldGetRealDoneCardsReworkToInDevTimesGivenNotConsiderFlagIsBlockAndExcludeState()
 				throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = "lastAssignee";
-
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
 				.treatFlagCardAsBlock(false)
 				.reworkTimesSetting(
 						ReworkTimesSetting.builder().reworkState("In Dev").excludedStates(List.of("Block")).build())
 				.build();
-
-			// return value
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_MULTIPLE_STATUS().build())
 				.replaceAll("sprint", "customfield_10020")
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-475", 0, 100, token))
@@ -1786,7 +1657,7 @@ class JiraServiceTest {
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(),
 					List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE, JiraBoardConfigDTOFixture.DISPLAY_NAME_TWO),
-					assigneeFilter, CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					assigneeFilter, CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getReworkCardNumber()).isEqualTo(1);
 			assertThat(cardCollection.getReworkRatio()).isEqualTo(0.5);
@@ -1804,26 +1675,19 @@ class JiraServiceTest {
 
 		@Test
 		void shouldGetRealDoneCardsReworkTimesToTestingGivenConsiderFlagAsBlock() throws JsonProcessingException {
-
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
-			String token = "token";
 			String assigneeFilter = "lastAssignee";
-
-			// request param
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_WITH_HISTORICAL_ASSIGNEE_FILTER_METHOD().build();
 			StoryPointsAndCycleTimeRequest request = STORY_POINTS_REQUEST_WITH_MULTIPLE_REAL_DONE_STATUSES()
 				.treatFlagCardAsBlock(true)
 				.reworkTimesSetting(
 						ReworkTimesSetting.builder().reworkState("Testing").excludedStates(List.of()).build())
 				.build();
-
-			// return value
 			String allDoneCards = objectMapper.writeValueAsString(ALL_DONE_CARDS_RESPONSE_FOR_MULTIPLE_STATUS().build())
 				.replaceAll("sprint", "customfield_10020")
 				.replaceAll("partner", "customfield_10037")
 				.replaceAll("flagged", "customfield_10021")
 				.replaceAll("development", "customfield_10000");
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(allDoneCards);
 			when(jiraFeignClient.getJiraCardHistoryByCount(baseUrl, "ADM-475", 0, 100, token))
@@ -1835,7 +1699,7 @@ class JiraServiceTest {
 
 			CardCollection cardCollection = jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(request,
 					jiraBoardSetting.getBoardColumns(), List.of(JiraBoardConfigDTOFixture.DISPLAY_NAME_ONE),
-					assigneeFilter, CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					assigneeFilter, CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(cardCollection.getReworkCardNumber()).isZero();
 			assertThat(cardCollection.getReworkRatio()).isZero();
@@ -1852,7 +1716,6 @@ class JiraServiceTest {
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
 					objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
@@ -1862,7 +1725,8 @@ class JiraServiceTest {
 
 			CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
+
 			assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 			assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
 		}
@@ -1873,14 +1737,11 @@ class JiraServiceTest {
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
-
 			CardHistoryResponseDTO cardHistoryResponseDTO = CardHistoryResponseDTO.builder()
 				.isLast(true)
 				.items(List.of(new HistoryDetail(1, "assignee", Status.builder().name("nonToDisplay").build(),
 						Status.builder().name("nonFromDisplay").build(), null, null)))
 				.build();
-
-			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			AllCardsResponseDTO allCardsResponseDTO = AllCardsResponseDTO.builder()
 				.total("3")
 				.issues(List.of(
@@ -1905,7 +1766,7 @@ class JiraServiceTest {
 									.status(new Status(CardStepsEnum.TESTING.getValue()))
 									.build())))
 				.build();
-
+			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
 				.thenReturn(objectMapper.writeValueAsString(allCardsResponseDTO));
 			when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
@@ -1914,7 +1775,8 @@ class JiraServiceTest {
 
 			CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
+
 			assertThat(nonDoneCards.getStoryPointSum()).isZero();
 			assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
 		}
@@ -1929,13 +1791,10 @@ class JiraServiceTest {
 			FieldResponseDTO targetField = FieldResponseDTO.builder()
 				.projects(List.of(new Project(List.of(new Issuetype(issueFieldMap)))))
 				.build();
-
 			CardHistoryResponseDTO cardHistoryResponseDTO = CardHistoryResponseDTO.builder()
 				.isLast(true)
 				.items(List.of())
 				.build();
-
-			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			AllCardsResponseDTO allCardsResponseDTO = AllCardsResponseDTO.builder()
 				.total("3")
 				.issues(List.of(
@@ -1960,7 +1819,7 @@ class JiraServiceTest {
 									.status(new Status(CardStepsEnum.TESTING.getValue()))
 									.build())))
 				.build();
-
+			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any()))
 				.thenReturn(objectMapper.writeValueAsString(allCardsResponseDTO));
 			when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
@@ -1969,7 +1828,8 @@ class JiraServiceTest {
 
 			CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
+
 			assertThat(nonDoneCards.getStoryPointSum()).isZero();
 			assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
 		}
@@ -1981,7 +1841,6 @@ class JiraServiceTest {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD_WITH_EMPTY_STATUS()
 				.build();
-
 			when(urlGenerator.getUri(any())).thenReturn(baseUrl);
 			when(jiraFeignClient.getJiraCards(any(), any(), anyInt(), anyInt(), any(), any())).thenReturn(
 					objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
@@ -1991,7 +1850,7 @@ class JiraServiceTest {
 
 			CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 			assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
@@ -2016,14 +1875,13 @@ class JiraServiceTest {
 					boardRequestParam.getToken()))
 				.thenReturn(
 						objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
-
 			when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 			when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
 				.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
 			CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 			assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
@@ -2047,14 +1905,13 @@ class JiraServiceTest {
 					boardRequestParam.getToken()))
 				.thenReturn(
 						objectMapper.writeValueAsString(ALL_NON_DONE_CARDS_RESPONSE_FOR_STORY_POINT_BUILDER().build()));
-
 			when(jiraFeignClient.getTargetField(any(), any(), any())).thenReturn(ALL_FIELD_RESPONSE_BUILDER().build());
 			when(jiraFeignClient.getJiraCardHistoryByCount(any(), any(), anyInt(), anyInt(), any()))
 				.thenReturn(CARD_HISTORY_MULTI_RESPONSE_BUILDER().build());
 
 			CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 			assertThat(nonDoneCards.getCardsNumber()).isEqualTo(3);
@@ -2079,7 +1936,7 @@ class JiraServiceTest {
 
 			CardCollection nonDoneCards = jiraService.getStoryPointsAndCycleTimeForNonDoneCards(
 					storyPointsAndCycleTimeRequest, jiraBoardSetting.getBoardColumns(), List.of("Zhang San"),
-					CalendarTypeEnum.REGULAR, ZoneId.of("Asia/Shanghai"));
+					CalendarTypeEnum.REGULAR, zoneId);
 
 			assertThat(nonDoneCards.getStoryPointSum()).isEqualTo(0);
 			assertThat(nonDoneCards.getCardsNumber()).isEqualTo(1);
@@ -2094,7 +1951,6 @@ class JiraServiceTest {
 
 		@Test
 		public void shouldReturnJiraBoardConfigDTOWhenCallGetJiraBoardConfig() {
-			String token = "token";
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			JiraBoardConfigDTO mockResponse = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 
