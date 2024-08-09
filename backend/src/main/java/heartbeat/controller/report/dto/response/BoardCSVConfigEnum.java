@@ -15,10 +15,12 @@ public enum BoardCSVConfigEnum {
 	CYCLE_TIME("Cycle Time", "cardCycleTime.total"),
 	CYCLE_TIME_STORY_POINTS("Cycle Time / Story Points", "totalCycleTimeDivideStoryPoints"),
 	TODO_DAYS("Todo Days", "cardCycleTime.steps.todo"), ANALYSIS_DAYS("Analysis Days", "cardCycleTime.steps.analyse"),
+	DESIGN_DAYS("Design Days", "cardCycleTime.steps.design"),
 	IN_DEV_DAYS("In Dev Days", "cardCycleTime.steps.development"),
+	BLOCK_DAYS("Block Days", "cardCycleTime.steps.blocked"), REVIEW_DAYS("Review Days", "cardCycleTime.steps.review"),
 	WAITING_FOR_TESTING_DAYS("Waiting For Testing Days", "cardCycleTime.steps.waitingForTesting"),
 	TESTING_DAYS("Testing Days", "cardCycleTime.steps.testing"),
-	BLOCK_DAYS("Block Days", "cardCycleTime.steps.blocked"), REVIEW_DAYS("Review Days", "cardCycleTime.steps.review");
+	WAITING_FOR_DEPLOYMENT_DAYS("Waiting For Deployment Days", "cardCycleTime.steps.waitingForDeployment");
 
 	private final String label;
 

@@ -1,7 +1,7 @@
 import { ChartType, CYCLE_TIME_CHARTS_MAPPING, METRICS_CONSTANTS, RequiredData } from '@src/constants/resources';
-import { calculateTrendInfo, sortLegend, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import { stackedAreaOptionMapper, stackedBarOptionMapper } from '@src/containers/ReportStep/ChartOption';
 import { ClassificationChart } from '@src/containers/ReportStep/BoardMetricsChart/ClassificationChart';
+import { calculateTrendInfo, valueFormatter, xAxisLabelDateFormatter } from '@src/utils/util';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ReportResponse, Swimlane } from '@src/clients/report/dto/response';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
@@ -157,14 +157,27 @@ function extractCycleTimeAllocationData(dateRanges: string[], mappedData?: Repor
   const totalCycleTime = mappedData?.map((item) => item.cycleTime?.totalTimeForCards as number);
   const cycleTimeByStatus = transformArrayToObject(data, totalCycleTime!);
 
-  const indicators = [];
+  const noSortIndicators = [];
   for (const [name, data] of Object.entries(cycleTimeByStatus)) {
-    indicators.push({ data, name: CYCLE_TIME_CHARTS_MAPPING[name], type: 'bar' });
+    noSortIndicators.push({
+      data,
+      name: CYCLE_TIME_CHARTS_MAPPING[name].name,
+      type: 'bar',
+      order: CYCLE_TIME_CHARTS_MAPPING[name].order,
+    });
   }
-  sortLegend(indicators, CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue]);
 
-  const developmentPercentageList = indicators.find(
-    ({ name }) => name === CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue],
+  const indicators = noSortIndicators
+    .toSorted((pre, next) => next.order - pre.order)
+    .toReversed()
+    .map((it) => ({
+      data: it.data,
+      name: it.name,
+      type: it.type,
+    }));
+
+  const developmentPercentageList = noSortIndicators.find(
+    ({ name }) => name === CYCLE_TIME_CHARTS_MAPPING[METRICS_CONSTANTS.inDevValue].name,
   )?.data;
   const trendInfo = calculateTrendInfo(developmentPercentageList, dateRanges, ChartType.CycleTimeAllocation);
 

@@ -16,7 +16,6 @@ import {
   percentageFormatter,
   sortDateRanges,
   sortDisabledOptions,
-  sortLegend,
   sortReportInfos,
   transformToCleanedBuildKiteEmoji,
   updateResponseCrews,
@@ -781,70 +780,6 @@ describe('valueFormatter function', () => {
     const result: string = valueFormatter(NaN);
 
     expect(result).toEqual('-');
-  });
-});
-
-describe('sortLegend function', () => {
-  it('should return list and development time is first', () => {
-    const data = [
-      {
-        data: [1, 2, 3],
-        name: 'a',
-        type: 'bar',
-      },
-      {
-        data: [4, 5, 6],
-        name: 'b',
-        type: 'bar',
-      },
-      {
-        data: [7, 8, 9],
-        name: 'Development time',
-        type: 'bar',
-      },
-      {
-        data: [10, 20, 30],
-        name: 'd',
-        type: 'bar',
-      },
-      {
-        data: [100, 200, 300],
-        name: 'e',
-        type: 'bar',
-      },
-    ];
-
-    const expectData = [
-      {
-        data: [7, 8, 9],
-        name: 'Development time',
-        type: 'bar',
-      },
-      {
-        data: [1, 2, 3],
-        name: 'a',
-        type: 'bar',
-      },
-      {
-        data: [4, 5, 6],
-        name: 'b',
-        type: 'bar',
-      },
-      {
-        data: [10, 20, 30],
-        name: 'd',
-        type: 'bar',
-      },
-      {
-        data: [100, 200, 300],
-        name: 'e',
-        type: 'bar',
-      },
-    ];
-
-    sortLegend(data, 'Development time');
-
-    expect(data).toStrictEqual(expectData);
   });
 });
 

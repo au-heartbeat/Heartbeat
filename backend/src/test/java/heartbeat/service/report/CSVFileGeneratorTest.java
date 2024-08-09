@@ -8,6 +8,7 @@ import heartbeat.client.dto.board.jira.JiraCard;
 import heartbeat.client.dto.board.jira.JiraCardField;
 import heartbeat.client.dto.board.jira.Sprint;
 import heartbeat.client.dto.board.jira.Status;
+import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.board.dto.response.CardCycleTime;
 import heartbeat.controller.board.dto.response.CardParent;
 import heartbeat.controller.board.dto.response.Fields;
@@ -49,6 +50,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -77,6 +79,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -389,22 +392,22 @@ class CSVFileGeneratorTest {
 			String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
 					"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint",
 					"Labels", "Cycle Time", "Story point estimate", "Flagged", "1010", "1011",
-					"Cycle Time / Story Points", "Todo Days", "Analysis Days", "In Dev Days",
-					"Waiting For Testing Days", "Testing Days", "Block Days", "Review Days", "OriginCycleTime: DOING",
-					"OriginCycleTime: BLOCKED" };
+					"Cycle Time / Story Points", "Todo Days", "Analysis Days", "Design Days", "In Dev Days",
+					"Waiting For Testing Days", "Testing Days", "Block Days", "Review Days",
+					"Waiting For Deployment Days", "OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
 			String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, "1970-01-01", "2.0",
 					"test-assignee", "test-reporter", "ADM", "Auto Dora Metrics", "Medium", "parent-summary",
-					"test-sprint", "", "0.90", null, null, null, null, "0.45", "0", "0", "0.90", "0", "0", "0", "0",
-					null, null };
+					"test-sprint", "", "0.90", null, null, null, null, "0.45", "0", "0", "0", "0.90", "0", "0", "0",
+					"0", "0", null, null };
 			String[] expectNoBaseInfoCardValue = { null, null, null, null, null, null, null, null, null, null, null,
-					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90", "0", "0", "0", "0", null,
-					null };
+					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0", "0.90", "0", "0", "0", "0",
+					"0", null, null };
 			String[] expectNoFieldsCardValue = { "ADM-489", null, null, null, null, null, null, null, null, null, null,
-					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90", "0", "0", "0", "0", null,
-					null };
+					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0", "0.90", "0", "0", "0", "0",
+					"0", null, null };
 			String[] expectNoCycleTimeCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null,
 					"ADM", "Auto Dora Metrics", "Medium", null, null, "", null, null, null, null, null, null, null,
-					null, null, null, null, null, null, null, null };
+					null, null, null, null, null, null, null, null, null, null };
 
 			String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
 
@@ -540,270 +543,302 @@ class CSVFileGeneratorTest {
 
 		@Test
 		void shouldConvertMetricDataToCsv() {
-			ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
-			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
-					{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
-					{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
-					{ "Cycle time", "Average cycle time(days/card)", "9.75" },
-					{ "Cycle time", "Total development time / Total cycle time(%)", "62.10" },
-					{ "Cycle time", "Total analysis time / Total cycle time(%)", "1087.39" },
-					{ "Cycle time", "Total block time / Total cycle time(%)", "0.34" },
-					{ "Cycle time", "Total review time / Total cycle time(%)", "37.39" },
-					{ "Cycle time", "Total testing time / Total cycle time(%)", "0.17" },
-					{ "Cycle time", "Total  time / Total cycle time(%)", "0.17" },
-					{ "Cycle time", "Average development time(days/storyPoint)", "2.60" },
-					{ "Cycle time", "Average development time(days/card)", "6.06" },
-					{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
-					{ "Cycle time", "Average analysis time(days/card)", "26.06" },
-					{ "Cycle time", "Average block time(days/storyPoint)", "0.01" },
-					{ "Cycle time", "Average block time(days/card)", "0.03" },
-					{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
-					{ "Cycle time", "Average review time(days/card)", "3.65" },
-					{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
-					{ "Cycle time", "Average testing time(days/card)", "0.02" },
-					{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
-					{ "Cycle time", "Average  time(days/card)", "0.02" },
-					{ "Classifications", "Issue Type / Bug(%)", "33.33" },
-					{ "Classifications", "Issue Type / Story(%)", "66.67" },
-					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
-							"0.78" },
-					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "0" },
-					{ "Deployment frequency",
-							"Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)", "0.56" },
-					{ "Deployment frequency",
-							"Heartbeat / Check Frontend License / Deployment frequency(Deployment times)", "0" },
-					{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
-					{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "0" },
-					{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
-					{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
-					{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
-					{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
-					{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
-					{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
-					{ "Lead time for changes", "Average / PR Lead Time", "0" },
-					{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
-					{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
-					{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate(%)",
-							"0" },
-					{ "Pipeline change failure rate",
-							"Heartbeat / Check Frontend License / Pipeline change failure rate(%)", "0" },
-					{ "Pipeline change failure rate", "Average / Pipeline change failure rate(%)", "0" },
-					{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
-							"0" },
-					{ "Pipeline mean time to recovery",
-							"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
-					{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" }, };
+			try (MockedStatic<CardStepsEnum> cardStepsEnumMockedStatic = mockStatic(CardStepsEnum.class)) {
+				ReportResponse reportResponse = MetricCsvFixture.MOCK_METRIC_CSV_DATA();
+				String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
+						{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
+						{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
+						{ "Cycle time", "Average cycle time(days/card)", "9.75" },
+						{ "Cycle time", "Total analysis time / Total cycle time(%)", "1087.39" },
+						{ "Cycle time", "Total development time / Total cycle time(%)", "62.10" },
+						{ "Cycle time", "Total block time / Total cycle time(%)", "0.34" },
+						{ "Cycle time", "Total review time / Total cycle time(%)", "37.39" },
+						{ "Cycle time", "Total testing time / Total cycle time(%)", "0.17" },
+						{ "Cycle time", "Total  time / Total cycle time(%)", "0.17" },
+						{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
+						{ "Cycle time", "Average analysis time(days/card)", "26.06" },
+						{ "Cycle time", "Average development time(days/storyPoint)", "2.60" },
+						{ "Cycle time", "Average development time(days/card)", "6.06" },
+						{ "Cycle time", "Average block time(days/storyPoint)", "0.01" },
+						{ "Cycle time", "Average block time(days/card)", "0.03" },
+						{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
+						{ "Cycle time", "Average review time(days/card)", "3.65" },
+						{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
+						{ "Cycle time", "Average testing time(days/card)", "0.02" },
+						{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
+						{ "Cycle time", "Average  time(days/card)", "0.02" },
+						{ "Classifications", "Issue Type / Bug(%)", "33.33" },
+						{ "Classifications", "Issue Type / Story(%)", "66.67" },
+						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
+								"0.78" },
+						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)",
+								"0" },
+						{ "Deployment frequency",
+								"Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)", "0.56" },
+						{ "Deployment frequency",
+								"Heartbeat / Check Frontend License / Deployment frequency(Deployment times)", "0" },
+						{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
+						{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "0" },
+						{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
+						{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
+						{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
+						{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
+						{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
+						{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
+						{ "Lead time for changes", "Average / PR Lead Time", "0" },
+						{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
+						{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
+						{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate(%)",
+								"0" },
+						{ "Pipeline change failure rate",
+								"Heartbeat / Check Frontend License / Pipeline change failure rate(%)", "0" },
+						{ "Pipeline change failure rate", "Average / Pipeline change failure rate(%)", "0" },
+						{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
+								"0" },
+						{ "Pipeline mean time to recovery",
+								"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+						{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" }, };
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("In Dev"))
+					.thenReturn(CardStepsEnum.DEVELOPMENT);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Analysis"))
+					.thenReturn(CardStepsEnum.ANALYSE);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Block")).thenReturn(CardStepsEnum.BLOCK);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Review"))
+					.thenReturn(CardStepsEnum.REVIEW);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Testing"))
+					.thenReturn(CardStepsEnum.TESTING);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Other step name"))
+					.thenReturn(CardStepsEnum.UNKNOWN);
 
-			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
+				csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+				verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+			}
 
 		}
 
 		@Test
 		void shouldHasContentWhenGetDataFromCsvGivenDataTypeIsMetric() {
-			ReportResponse reportResponse = ReportResponse.builder()
-				.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
-				.classificationList(
-						List.of(Classification.builder()
-							.fieldName("Issue Type")
-							.classificationInfos(List.of(
-									ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
-									ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
-							.build()))
-				.cycleTime(CycleTime.builder()
-					.totalTimeForCards(29.26)
-					.averageCycleTimePerCard(9.75)
-					.averageCycleTimePerSP(4.18)
-					.swimlaneList(new ArrayList<>(List.of(
-							CycleTimeForSelectedStepItem.builder()
-								.optionalItemName("In Dev")
-								.averageTimeForSP(2.6)
-								.averageTimeForCards(6.06)
-								.totalTime(18.17)
-								.build(),
-							CycleTimeForSelectedStepItem.builder()
-								.optionalItemName("Analysis")
-								.averageTimeForSP(12.6)
-								.averageTimeForCards(26.06)
-								.totalTime(318.17)
-								.build(),
-							CycleTimeForSelectedStepItem.builder()
-								.optionalItemName("Block")
-								.averageTimeForSP(0.01)
-								.averageTimeForCards(0.03)
-								.totalTime(0.1)
-								.build(),
-							CycleTimeForSelectedStepItem.builder()
-								.optionalItemName("Review")
-								.averageTimeForSP(1.56)
-								.averageTimeForCards(3.65)
-								.totalTime(10.94)
-								.build(),
-							CycleTimeForSelectedStepItem.builder()
-								.optionalItemName("Testing")
-								.averageTimeForSP(0.01)
-								.averageTimeForCards(0.02)
-								.totalTime(0.05)
-								.build(),
-							CycleTimeForSelectedStepItem.builder()
-								.optionalItemName("Other step name")
-								.averageTimeForSP(0.01)
-								.averageTimeForCards(0.02)
-								.totalTime(0.05)
-								.build(),
-							CycleTimeForSelectedStepItem.builder()
-								.optionalItemName("Waiting for testing")
-								.averageTimeForSP(2.6)
-								.averageTimeForCards(6.06)
-								.totalTime(18.17)
-								.build())))
-					.build())
-				.deploymentFrequency(
-						DeploymentFrequency.builder()
-							.totalDeployTimes(1)
-							.avgDeploymentFrequency(
-									AvgDeploymentFrequency.builder().name("Average").deploymentFrequency(0.67F).build())
-							.deploymentFrequencyOfPipelines(List.of(
-									DeploymentFrequencyOfPipeline.builder()
-										.name("Heartbeat")
-										.step(":rocket: Deploy prod")
-										.deploymentFrequency(0.78F)
-										.deployTimes(1)
-										.dailyDeploymentCounts(List
-											.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
-										.build(),
-									DeploymentFrequencyOfPipeline.builder()
-										.name("Heartbeat")
-										.step(":mag: Check Frontend License")
-										.deploymentFrequency(0.56F)
-										.deployTimes(0)
-										.dailyDeploymentCounts(List
-											.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
-										.build()))
+			try (MockedStatic<CardStepsEnum> cardStepsEnumMockedStatic = mockStatic(CardStepsEnum.class)) {
+				ReportResponse reportResponse = ReportResponse.builder()
+					.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
+					.classificationList(
+							List.of(Classification.builder()
+								.fieldName("Issue Type")
+								.classificationInfos(List.of(
+										ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
+										ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
+								.build()))
+					.cycleTime(CycleTime.builder()
+						.totalTimeForCards(29.26)
+						.averageCycleTimePerCard(9.75)
+						.averageCycleTimePerSP(4.18)
+						.swimlaneList(new ArrayList<>(List.of(
+								CycleTimeForSelectedStepItem.builder()
+									.optionalItemName("Waiting for deployment")
+									.averageTimeForSP(2.6)
+									.averageTimeForCards(6.06)
+									.totalTime(18.17)
+									.build(),
+								CycleTimeForSelectedStepItem.builder()
+									.optionalItemName("Analysis")
+									.averageTimeForSP(12.6)
+									.averageTimeForCards(26.06)
+									.totalTime(318.17)
+									.build(),
+								CycleTimeForSelectedStepItem.builder()
+									.optionalItemName("Design")
+									.averageTimeForSP(0.01)
+									.averageTimeForCards(0.03)
+									.totalTime(0.1)
+									.build(),
+								CycleTimeForSelectedStepItem.builder()
+									.optionalItemName("Review")
+									.averageTimeForSP(1.56)
+									.averageTimeForCards(3.65)
+									.totalTime(10.94)
+									.build(),
+								CycleTimeForSelectedStepItem.builder()
+									.optionalItemName("Testing")
+									.averageTimeForSP(0.01)
+									.averageTimeForCards(0.02)
+									.totalTime(0.05)
+									.build(),
+								CycleTimeForSelectedStepItem.builder()
+									.optionalItemName("Other step name")
+									.averageTimeForSP(0.01)
+									.averageTimeForCards(0.02)
+									.totalTime(0.05)
+									.build(),
+								CycleTimeForSelectedStepItem.builder()
+									.optionalItemName("Waiting for testing")
+									.averageTimeForSP(2.6)
+									.averageTimeForCards(6.06)
+									.totalTime(18.17)
+									.build())))
+						.build())
+					.deploymentFrequency(
+							DeploymentFrequency.builder()
+								.totalDeployTimes(1)
+								.avgDeploymentFrequency(AvgDeploymentFrequency.builder()
+									.name("Average")
+									.deploymentFrequency(0.67F)
+									.build())
+								.deploymentFrequencyOfPipelines(List.of(
+										DeploymentFrequencyOfPipeline.builder()
+											.name("Heartbeat")
+											.step(":rocket: Deploy prod")
+											.deploymentFrequency(0.78F)
+											.deployTimes(1)
+											.dailyDeploymentCounts(List
+												.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+											.build(),
+										DeploymentFrequencyOfPipeline.builder()
+											.name("Heartbeat")
+											.step(":mag: Check Frontend License")
+											.deploymentFrequency(0.56F)
+											.deployTimes(0)
+											.dailyDeploymentCounts(List
+												.of(DailyDeploymentCount.builder().date("10/16/2023").count(1).build()))
+											.build()))
+								.build())
+					.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
+						.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
+							.name("Average")
+							.totalTimes(12)
+							.totalFailedTimes(0)
+							.failureRate(0.0F)
 							.build())
-				.pipelineChangeFailureRate(PipelineChangeFailureRate.builder()
-					.avgPipelineChangeFailureRate(AvgPipelineChangeFailureRate.builder()
-						.name("Average")
-						.totalTimes(12)
-						.totalFailedTimes(0)
-						.failureRate(0.0F)
+						.pipelineChangeFailureRateOfPipelines(List.of(
+								PipelineChangeFailureRateOfPipeline.builder()
+									.name("Heartbeat")
+									.step(":rocket: Deploy prod")
+									.failedTimesOfPipeline(0)
+									.totalTimesOfPipeline(7)
+									.failureRate(0.0F)
+									.build(),
+								PipelineChangeFailureRateOfPipeline.builder()
+									.name("Heartbeat")
+									.step(":mag: Check Frontend License")
+									.failedTimesOfPipeline(0)
+									.totalTimesOfPipeline(5)
+									.failureRate(0.0F)
+									.build()))
 						.build())
-					.pipelineChangeFailureRateOfPipelines(List.of(
-							PipelineChangeFailureRateOfPipeline.builder()
-								.name("Heartbeat")
-								.step(":rocket: Deploy prod")
-								.failedTimesOfPipeline(0)
-								.totalTimesOfPipeline(7)
-								.failureRate(0.0F)
-								.build(),
-							PipelineChangeFailureRateOfPipeline.builder()
-								.name("Heartbeat")
-								.step(":mag: Check Frontend License")
-								.failedTimesOfPipeline(0)
-								.totalTimesOfPipeline(5)
-								.failureRate(0.0F)
-								.build()))
-					.build())
-				.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
-					.avgPipelineMeanTimeToRecovery(
-							AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
-					.pipelineMeanTimeToRecoveryOfPipelines(List.of(
-							PipelineMeanTimeToRecoveryOfPipeline.builder()
-								.timeToRecovery(BigDecimal.valueOf(0))
-								.name("Heartbeat")
-								.step(":rocket: Deploy prod")
-								.build(),
-							PipelineMeanTimeToRecoveryOfPipeline.builder()
-								.timeToRecovery(BigDecimal.valueOf(0))
-								.name("Heartbeat")
-								.step(":mag: Check Frontend License")
-								.build()))
-					.build())
-				.leadTimeForChanges(LeadTimeForChanges.builder()
-					.leadTimeForChangesOfPipelines(List.of(
-							LeadTimeForChangesOfPipelines.builder()
-								.name("Heartbeat")
-								.step(":rocket: Deploy prod")
-								.prLeadTime(0.0)
-								.pipelineLeadTime(1.01)
-								.totalDelayTime(1.01)
-								.build(),
-							LeadTimeForChangesOfPipelines.builder()
-								.name("Heartbeat")
-								.step(":mag: Check Frontend License")
-								.prLeadTime(0.0)
-								.pipelineLeadTime(5.18)
-								.totalDelayTime(5.18)
-								.build()))
-					.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
-						.name("Average")
-						.prLeadTime(0.0)
-						.pipelineLeadTime(3.0949999999999998)
-						.totalDelayTime(3.0949999999999998)
+					.pipelineMeanTimeToRecovery(PipelineMeanTimeToRecovery.builder()
+						.avgPipelineMeanTimeToRecovery(
+								AvgPipelineMeanTimeToRecovery.builder().timeToRecovery(BigDecimal.valueOf(0)).build())
+						.pipelineMeanTimeToRecoveryOfPipelines(List.of(
+								PipelineMeanTimeToRecoveryOfPipeline.builder()
+									.timeToRecovery(BigDecimal.valueOf(0))
+									.name("Heartbeat")
+									.step(":rocket: Deploy prod")
+									.build(),
+								PipelineMeanTimeToRecoveryOfPipeline.builder()
+									.timeToRecovery(BigDecimal.valueOf(0))
+									.name("Heartbeat")
+									.step(":mag: Check Frontend License")
+									.build()))
 						.build())
-					.build())
-				.build();
+					.leadTimeForChanges(LeadTimeForChanges.builder()
+						.leadTimeForChangesOfPipelines(List.of(
+								LeadTimeForChangesOfPipelines.builder()
+									.name("Heartbeat")
+									.step(":rocket: Deploy prod")
+									.prLeadTime(0.0)
+									.pipelineLeadTime(1.01)
+									.totalDelayTime(1.01)
+									.build(),
+								LeadTimeForChangesOfPipelines.builder()
+									.name("Heartbeat")
+									.step(":mag: Check Frontend License")
+									.prLeadTime(0.0)
+									.pipelineLeadTime(5.18)
+									.totalDelayTime(5.18)
+									.build()))
+						.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
+							.name("Average")
+							.prLeadTime(0.0)
+							.pipelineLeadTime(3.0949999999999998)
+							.totalDelayTime(3.0949999999999998)
+							.build())
+						.build())
+					.build();
+				String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
+						{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
+						{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
+						{ "Cycle time", "Average cycle time(days/card)", "9.75" },
+						{ "Cycle time", "Total analysis time / Total cycle time(%)", "1087.39" },
+						{ "Cycle time", "Total design time / Total cycle time(%)", "0.34" },
+						{ "Cycle time", "Total review time / Total cycle time(%)", "37.39" },
+						{ "Cycle time", "Total waiting for testing time / Total cycle time(%)", "62.10" },
+						{ "Cycle time", "Total testing time / Total cycle time(%)", "0.17" },
+						{ "Cycle time", "Total waiting for deployment time / Total cycle time(%)", "62.10" },
+						{ "Cycle time", "Total  time / Total cycle time(%)", "0.17" },
+						{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
+						{ "Cycle time", "Average analysis time(days/card)", "26.06" },
+						{ "Cycle time", "Average design time(days/storyPoint)", "0.01" },
+						{ "Cycle time", "Average design time(days/card)", "0.03" },
+						{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
+						{ "Cycle time", "Average review time(days/card)", "3.65" },
+						{ "Cycle time", "Average waiting for testing time(days/storyPoint)", "2.60" },
+						{ "Cycle time", "Average waiting for testing time(days/card)", "6.06" },
+						{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
+						{ "Cycle time", "Average testing time(days/card)", "0.02" },
+						{ "Cycle time", "Average waiting for deployment time(days/storyPoint)", "2.60" },
+						{ "Cycle time", "Average waiting for deployment time(days/card)", "6.06" },
+						{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
+						{ "Cycle time", "Average  time(days/card)", "0.02" },
+						{ "Classifications", "Issue Type / Bug(%)", "33.33" },
+						{ "Classifications", "Issue Type / Story(%)", "66.67" },
+						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
+								"0.78" },
+						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)",
+								"1" },
+						{ "Deployment frequency",
+								"Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)", "0.56" },
+						{ "Deployment frequency",
+								"Heartbeat / Check Frontend License / Deployment frequency(Deployment times)", "0" },
+						{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
+						{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "1" },
+						{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
+						{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
+						{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
+						{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
+						{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
+						{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
+						{ "Lead time for changes", "Average / PR Lead Time", "0" },
+						{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
+						{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
+						{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate(%)",
+								"0" },
+						{ "Pipeline change failure rate",
+								"Heartbeat / Check Frontend License / Pipeline change failure rate(%)", "0" },
+						{ "Pipeline change failure rate", "Average / Pipeline change failure rate(%)", "0" },
+						{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
+								"0" },
+						{ "Pipeline mean time to recovery",
+								"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
+						{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" } };
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Waiting for deployment"))
+					.thenReturn(CardStepsEnum.WAITING_FOR_DEPLOYMENT);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Analysis"))
+					.thenReturn(CardStepsEnum.ANALYSE);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Design"))
+					.thenReturn(CardStepsEnum.DESIGN);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Review"))
+					.thenReturn(CardStepsEnum.REVIEW);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Testing"))
+					.thenReturn(CardStepsEnum.TESTING);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Waiting for testing"))
+					.thenReturn(CardStepsEnum.WAITING_FOR_TESTING);
+				cardStepsEnumMockedStatic.when(() -> CardStepsEnum.fromValue("Other step name"))
+					.thenReturn(CardStepsEnum.UNKNOWN);
 
-			String[][] expectedSavedData = new String[][] { { "Group", "Metrics", "Value" },
-					{ "Velocity", "Velocity(Story Point)", "7.0" }, { "Velocity", "Throughput(Cards Count)", "2" },
-					{ "Cycle time", "Average cycle time(days/storyPoint)", "4.18" },
-					{ "Cycle time", "Average cycle time(days/card)", "9.75" },
-					{ "Cycle time", "Total development time / Total cycle time(%)", "62.10" },
-					{ "Cycle time", "Total analysis time / Total cycle time(%)", "1087.39" },
-					{ "Cycle time", "Total block time / Total cycle time(%)", "0.34" },
-					{ "Cycle time", "Total review time / Total cycle time(%)", "37.39" },
-					{ "Cycle time", "Total testing time / Total cycle time(%)", "0.17" },
-					{ "Cycle time", "Total  time / Total cycle time(%)", "0.17" },
-					{ "Cycle time", "Total waiting for testing time / Total cycle time(%)", "62.10" },
-					{ "Cycle time", "Average development time(days/storyPoint)", "2.60" },
-					{ "Cycle time", "Average development time(days/card)", "6.06" },
-					{ "Cycle time", "Average analysis time(days/storyPoint)", "12.60" },
-					{ "Cycle time", "Average analysis time(days/card)", "26.06" },
-					{ "Cycle time", "Average block time(days/storyPoint)", "0.01" },
-					{ "Cycle time", "Average block time(days/card)", "0.03" },
-					{ "Cycle time", "Average review time(days/storyPoint)", "1.56" },
-					{ "Cycle time", "Average review time(days/card)", "3.65" },
-					{ "Cycle time", "Average testing time(days/storyPoint)", "0.01" },
-					{ "Cycle time", "Average testing time(days/card)", "0.02" },
-					{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
-					{ "Cycle time", "Average  time(days/card)", "0.02" },
-					{ "Cycle time", "Average waiting for testing time(days/storyPoint)", "2.60" },
-					{ "Cycle time", "Average waiting for testing time(days/card)", "6.06" },
-					{ "Classifications", "Issue Type / Bug(%)", "33.33" },
-					{ "Classifications", "Issue Type / Story(%)", "66.67" },
-					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
-							"0.78" },
-					{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)", "1" },
-					{ "Deployment frequency",
-							"Heartbeat / Check Frontend License / Deployment frequency(Deployments/Day)", "0.56" },
-					{ "Deployment frequency",
-							"Heartbeat / Check Frontend License / Deployment frequency(Deployment times)", "0" },
-					{ "Deployment frequency", "Total / Deployment frequency(Deployments/Day)", "0.67" },
-					{ "Deployment frequency", "Total / Deployment frequency(Deployment times)", "1" },
-					{ "Lead time for changes", "Heartbeat / Deploy prod / PR Lead Time", "0" },
-					{ "Lead time for changes", "Heartbeat / Deploy prod / Pipeline Lead Time", "0.02" },
-					{ "Lead time for changes", "Heartbeat / Deploy prod / Total Lead Time", "0.02" },
-					{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
-					{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
-					{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
-					{ "Lead time for changes", "Average / PR Lead Time", "0" },
-					{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
-					{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
-					{ "Pipeline change failure rate", "Heartbeat / Deploy prod / Pipeline change failure rate(%)",
-							"0" },
-					{ "Pipeline change failure rate",
-							"Heartbeat / Check Frontend License / Pipeline change failure rate(%)", "0" },
-					{ "Pipeline change failure rate", "Average / Pipeline change failure rate(%)", "0" },
-					{ "Pipeline mean time to recovery", "Heartbeat / Deploy prod / Pipeline mean time to recovery",
-							"0" },
-					{ "Pipeline mean time to recovery",
-							"Heartbeat / Check Frontend License / Pipeline mean time to recovery", "0" },
-					{ "Pipeline mean time to recovery", "Total / Pipeline mean time to recovery", "0" } };
+				csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
 
-			csvFileGenerator.convertMetricDataToCSV(TEST_UUID, reportResponse, mockTimeStamp);
-
-			verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+				verify(fileRepository, times(1)).createCSVFileByType(any(), any(), eq(expectedSavedData), any());
+			}
 		}
 
 		@Test

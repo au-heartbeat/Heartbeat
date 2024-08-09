@@ -150,6 +150,7 @@ test('Create a new project with design and waiting for deployment in the cycle t
   const hbStateData = configWithDesignAndWaitingForDevelopmentStatus.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
+  const fileNamePrefix = 'with-design-and-wait-for-deployment-';
 
   await homePage.goto();
   await homePage.createANewProject();
@@ -198,11 +199,12 @@ test('Create a new project with design and waiting for deployment in the cycle t
     classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
     reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
     csvCompareLines: BAORD_CSV_COMPARED_LINES,
+    fileNamePrefix,
   });
   await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkDoraMetricsDetailsForMultipleRanges({
     doraMetricsReportData: DORA_METRICS_RESULT_MULTIPLE_RANGES,
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
   });
-  // await reportStep.checkMetricDownloadDataForMultipleRanges(3, 'with-design-and-wait-for-deployment-');
+  await reportStep.checkMetricDownloadDataForMultipleRanges(3, fileNamePrefix);
 });
