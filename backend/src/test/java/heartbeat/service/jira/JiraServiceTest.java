@@ -565,6 +565,7 @@ class JiraServiceTest {
 		@Test
 		void shouldThrowCustomExceptionWhenCallJiraFeignClientToGetBoardInfoFailed() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+			BoardRequestParam boardRequestParam = BoardRequestParam.builder().build();
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getProject(baseUrl, "project key", token))
 				.thenReturn(JiraBoardProject.builder().style("next-gen").build());
@@ -573,7 +574,7 @@ class JiraServiceTest {
 			when(jiraFeignClient.getTargetField(baseUrl, "project key", "token"))
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
-			assertThatThrownBy(() -> jiraService.getInfo(boardTypeJira, BoardRequestParam.builder().build()))
+			assertThatThrownBy(() -> jiraService.getInfo(boardTypeJira, boardRequestParam))
 				.isInstanceOf(InternalServerErrorException.class)
 				.hasMessageContaining("exception");
 		}
@@ -901,7 +902,7 @@ class JiraServiceTest {
 			when(jiraFeignClient.getTargetField(baseUrl, boardRequestParam.getProjectKey(), token))
 				.thenThrow(new CustomFeignClientException(500, "exception"));
 
-			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BOARD_REQUEST_BUILDER().build()))
+			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 				.isInstanceOf(Exception.class)
 				.hasMessageContaining("exception");
 		}
@@ -914,7 +915,7 @@ class JiraServiceTest {
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getTargetField(baseUrl, boardRequestParam.getProjectKey(), token)).thenReturn(null);
 
-			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BOARD_REQUEST_BUILDER().build()))
+			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 				.isInstanceOf(PermissionDenyException.class)
 				.hasMessageContaining("There is no enough permission.");
 		}
@@ -931,7 +932,7 @@ class JiraServiceTest {
 			when(jiraFeignClient.getTargetField(baseUrl, boardRequestParam.getProjectKey(), token))
 				.thenReturn(emptyProjectFieldResponse);
 
-			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BOARD_REQUEST_BUILDER().build()))
+			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 				.isInstanceOf(PermissionDenyException.class)
 				.hasMessageContaining("There is no enough permission.");
 		}
@@ -939,9 +940,10 @@ class JiraServiceTest {
 		@Test
 		@Deprecated
 		void shouldThrowCustomExceptionWhenGetTargetFieldIsNull() {
+			BoardRequestParam boardRequestParam = BOARD_REQUEST_BUILDER().build();
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 
-			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, BOARD_REQUEST_BUILDER().build()))
+			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 				.isInstanceOf(PermissionDenyException.class)
 				.hasMessageContaining("There is no enough permission.");
 		}
@@ -950,14 +952,14 @@ class JiraServiceTest {
 		@Deprecated
 		void shouldThrowCustomExceptionWhenCallJiraFeignClientToGetBoardConfigFailed() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
+			BoardRequestParam boardRequestParam = BoardRequestParam.builder().build();
 			when(urlGenerator.getUri(any())).thenReturn(URI.create(SITE_ATLASSIAN_NET));
 			when(jiraFeignClient.getJiraBoardConfiguration(any(), any(), any()))
 				.thenThrow(new CustomFeignClientException(400, "exception"));
 			when(jiraFeignClient.getTargetField(baseUrl, "project key", "token"))
 				.thenReturn(FIELD_RESPONSE_BUILDER().build());
 
-			assertThatThrownBy(
-					() -> jiraService.getJiraConfiguration(boardTypeJira, BoardRequestParam.builder().build()))
+			assertThatThrownBy(() -> jiraService.getJiraConfiguration(boardTypeJira, boardRequestParam))
 				.isInstanceOf(Exception.class)
 				.hasMessageContaining("exception");
 		}
@@ -1350,7 +1352,7 @@ class JiraServiceTest {
 		}
 
 		@Test
-		public void shouldProcessCustomFieldsForCardsWhenCallGetStoryPointsAndCycleTime() {
+		void shouldProcessCustomFieldsForCardsWhenCallGetStoryPointsAndCycleTime() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
@@ -1372,7 +1374,7 @@ class JiraServiceTest {
 		}
 
 		@Test
-		public void shouldReturnNullWhenCallGetStoryPointsAndCycleTimeAndHistoryIsNull() {
+		void shouldReturnNullWhenCallGetStoryPointsAndCycleTimeAndHistoryIsNull() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			StoryPointsAndCycleTimeRequest storyPointsAndCycleTimeRequest = STORY_POINTS_FORM_ALL_DONE_CARD().build();
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
@@ -1411,10 +1413,10 @@ class JiraServiceTest {
 				.thenReturn(allDoneCards);
 			when(jiraFeignClient.getTargetField(baseUrl, "PLL", token)).thenReturn(FIELD_RESPONSE_BUILDER().build());
 
-			assertThatThrownBy(() -> {
-				jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(storyPointsAndCycleTimeRequest,
-						boardColumns, users, null, CalendarTypeEnum.REGULAR, zoneId);
-			}).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Type does not find!");
+			assertThatThrownBy(() -> jiraService.getStoryPointsAndCycleTimeAndReworkInfoForDoneCards(
+					storyPointsAndCycleTimeRequest, boardColumns, users, null, CalendarTypeEnum.REGULAR, zoneId))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Type does not find!");
 		}
 
 		@Test
@@ -1711,7 +1713,7 @@ class JiraServiceTest {
 	class GetStoryPointsAndCycleTimeForNonDoneCards {
 
 		@Test
-		public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForActiveSprint()
+		void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForActiveSprint()
 				throws JsonProcessingException {
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
@@ -1857,7 +1859,7 @@ class JiraServiceTest {
 		}
 
 		@Test
-		public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForKanban()
+		void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForKanban()
 				throws JsonProcessingException {
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
@@ -1888,7 +1890,7 @@ class JiraServiceTest {
 		}
 
 		@Test
-		public void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForKanbanWithStatusIsEmpty()
+		void shouldReturnCardsWhenCallGetStoryPointsAndCycleTimeForNonDoneCardsForKanbanWithStatusIsEmpty()
 				throws JsonProcessingException {
 			JiraBoardSetting jiraBoardSetting = JIRA_BOARD_SETTING_BUILD().build();
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
@@ -1950,7 +1952,7 @@ class JiraServiceTest {
 	class GetJiraBoardConfig {
 
 		@Test
-		public void shouldReturnJiraBoardConfigDTOWhenCallGetJiraBoardConfig() {
+		void shouldReturnJiraBoardConfigDTOWhenCallGetJiraBoardConfig() {
 			URI baseUrl = URI.create(SITE_ATLASSIAN_NET);
 			JiraBoardConfigDTO mockResponse = JIRA_BOARD_CONFIG_RESPONSE_BUILDER().build();
 
