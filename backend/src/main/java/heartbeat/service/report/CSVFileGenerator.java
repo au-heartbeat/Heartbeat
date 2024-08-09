@@ -3,6 +3,7 @@ package heartbeat.service.report;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
+import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.report.dto.response.PipelineChangeFailureRateOfPipeline;
 import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
 import heartbeat.repository.FilePrefixType;
@@ -35,13 +36,14 @@ import io.micrometer.core.instrument.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -390,16 +392,13 @@ public class CSVFileGenerator {
 				String.valueOf(cycleTime.getAverageCycleTimePerCard()) });
 		List<CycleTimeForSelectedStepItem> swimlaneList = cycleTime.getSwimlaneList();
 
-		swimlaneList.stream()
-			.filter(it -> Objects.equals(it.getOptionalItemName(), "Analysis"))
-			.findFirst()
-			.ifPresent(analysisItem -> {
-				swimlaneList
-					.removeIf(it -> Objects.equals(it.getOptionalItemName(), analysisItem.getOptionalItemName()));
-				swimlaneList.add(1, analysisItem);
-			});
+		List<CycleTimeForSelectedStepItem> sortedSwimlaneList = swimlaneList.stream()
+			.map(it -> Pair.of(it, CardStepsEnum.fromValue(it.getOptionalItemName()).getOrder()))
+			.sorted(Comparator.comparing(Pair::getRight))
+			.map(Pair::getLeft)
+			.toList();
 
-		swimlaneList.forEach(cycleTimeForSelectedStepItem -> {
+		sortedSwimlaneList.forEach(cycleTimeForSelectedStepItem -> {
 			String stepName = formatStepName(cycleTimeForSelectedStepItem);
 			double proportion = cycleTimeForSelectedStepItem.getTotalTime() / cycleTime.getTotalTimeForCards();
 			rows.add(new String[] { cycleTimeTitle, "Total " + stepName + " time / Total cycle time(%)",
@@ -433,6 +432,8 @@ public class CSVFileGenerator {
 			case "Testing" -> "testing";
 			case "Analysis" -> "analysis";
 			case "Waiting for testing" -> "waiting for testing";
+			case "Design" -> "design";
+			case "Waiting for deployment" -> "waiting for deployment";
 			default -> "";
 		};
 	}
