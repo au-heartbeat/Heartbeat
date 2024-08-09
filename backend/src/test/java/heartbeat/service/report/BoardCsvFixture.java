@@ -188,6 +188,18 @@ public class BoardCsvFixture {
 		.originKey(null)
 		.build();
 
+	private static final BoardCSVConfig DESIGN_DAYS_CONFIG = BoardCSVConfig.builder()
+		.label("Design Days")
+		.value("cardCycleTime.steps.design")
+		.originKey(null)
+		.build();
+
+	private static final BoardCSVConfig WAITING_FOR_DEPLOYMENT_DAYS_CONFIG = BoardCSVConfig.builder()
+		.label("Waiting For Deployment Days")
+		.value("cardCycleTime.steps.waitingForDeployment")
+		.originKey(null)
+		.build();
+
 	private static final BoardCSVConfig REVIEW_DAYS_CONFIG = BoardCSVConfig.builder()
 		.label("Review Days")
 		.value("cardCycleTime.steps.review")
@@ -211,9 +223,10 @@ public class BoardCsvFixture {
 		return List.of(ISSUE_KEY_CONFIG, SUMMARY_CONFIG, ISSUE_TYPE_CONFIG, STATUS_CONFIG, STATUS_DATE_CONFIG,
 				STORY_POINTS_CONFIG, ASSIGNEE_CONFIG, REPORTER_CONFIG, PROJECT_KEY_CONFIG, PROJECT_NAME_CONFIG,
 				PRIORITY_CONFIG, PARENT_SUMMARY_CONFIG, SPRINT_CONFIG, LABELS_CONFIG, CYCLE_TIME_CONFIG,
-				CYCLE_TIME_STORY_POINTS_CONFIG, TO_DO_DAYS_CONFIG, ANALYSIS_DAYS_CONFIG, IN_DEV_DAYS_CONFIG,
-				WAITING_FOR_TESTING_DAYS_CONFIG, TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG, REVIEW_DAYS_CONFIG,
-				ORIGIN_CYCLE_TIME_DOING_CONFIG, ORIGIN_CYCLE_BLOCKED_CONFIG);
+				CYCLE_TIME_STORY_POINTS_CONFIG, TO_DO_DAYS_CONFIG, ANALYSIS_DAYS_CONFIG, DESIGN_DAYS_CONFIG,
+				IN_DEV_DAYS_CONFIG, WAITING_FOR_TESTING_DAYS_CONFIG, TESTING_DAYS_CONFIG, BLOCK_DAYS_CONFIG,
+				REVIEW_DAYS_CONFIG, WAITING_FOR_DEPLOYMENT_DAYS_CONFIG, ORIGIN_CYCLE_TIME_DOING_CONFIG,
+				ORIGIN_CYCLE_BLOCKED_CONFIG);
 	}
 
 	public static List<JiraCardDTO> MOCK_JIRA_CARD_DTO() {

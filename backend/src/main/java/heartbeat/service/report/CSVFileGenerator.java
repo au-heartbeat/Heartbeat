@@ -252,11 +252,13 @@ public class CSVFileGenerator {
 			rowData[15] = cardDTO.getTotalCycleTimeDivideStoryPoints();
 			rowData[16] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTodo());
 			rowData[17] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getAnalyse());
-			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
-			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaitingForTesting());
-			rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
-			rowData[21] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
-			rowData[22] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
+			rowData[18] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDesign());
+			rowData[19] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getDevelopment());
+			rowData[20] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getBlocked());
+			rowData[21] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getReview());
+			rowData[22] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaitingForTesting());
+			rowData[23] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getTesting());
+			rowData[24] = DecimalUtil.formatDecimalTwo(cardDTO.getCardCycleTime().getSteps().getWaitingForDeployment());
 		}
 		return rowData;
 	}

@@ -392,22 +392,22 @@ class CSVFileGeneratorTest {
 			String[] expectKey = { "Issue key", "Summary", "Issue Type", "Status", "Status Date", "Story Points",
 					"assignee", "Reporter", "Project Key", "Project Name", "Priority", "Parent Summary", "Sprint",
 					"Labels", "Cycle Time", "Story point estimate", "Flagged", "1010", "1011",
-					"Cycle Time / Story Points", "Todo Days", "Analysis Days", "In Dev Days",
-					"Waiting For Testing Days", "Testing Days", "Block Days", "Review Days", "OriginCycleTime: DOING",
-					"OriginCycleTime: BLOCKED" };
+					"Cycle Time / Story Points", "Todo Days", "Analysis Days", "Design Days", "In Dev Days",
+					"Waiting For Testing Days", "Testing Days", "Block Days", "Review Days",
+					"Waiting For Deployment Days", "OriginCycleTime: DOING", "OriginCycleTime: BLOCKED" };
 			String[] expectNormalCardValue = { "ADM-489", "summary", "issue type", null, "1970-01-01", "2.0",
 					"test-assignee", "test-reporter", "ADM", "Auto Dora Metrics", "Medium", "parent-summary",
-					"test-sprint", "", "0.90", null, null, null, null, "0.45", "0", "0", "0.90", "0", "0", "0", "0",
-					null, null };
+					"test-sprint", "", "0.90", null, null, null, null, "0.45", "0", "0", "0", "0.90", "0", "0", "0",
+					"0", "0", null, null };
 			String[] expectNoBaseInfoCardValue = { null, null, null, null, null, null, null, null, null, null, null,
-					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90", "0", "0", "0", "0", null,
-					null };
+					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0", "0.90", "0", "0", "0", "0",
+					"0", null, null };
 			String[] expectNoFieldsCardValue = { "ADM-489", null, null, null, null, null, null, null, null, null, null,
-					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0.90", "0", "0", "0", "0", null,
-					null };
+					null, null, null, "0.90", null, null, null, null, "", "0", "0", "0", "0.90", "0", "0", "0", "0",
+					"0", null, null };
 			String[] expectNoCycleTimeCardValue = { "ADM-489", "summary", "issue type", null, null, "2.0", null, null,
 					"ADM", "Auto Dora Metrics", "Medium", null, null, "", null, null, null, null, null, null, null,
-					null, null, null, null, null, null, null, null };
+					null, null, null, null, null, null, null, null, null, null };
 
 			String[][] result = csvFileGenerator.assembleBoardData(cardDTOList, fields, extraFields);
 

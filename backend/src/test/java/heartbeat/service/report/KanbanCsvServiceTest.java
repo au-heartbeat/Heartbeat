@@ -732,7 +732,7 @@ class KanbanCsvServiceTest {
 			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), csvNewFieldsCaptor.capture());
-		assertEquals(24, csvFieldsCaptor.getValue().size());
+		assertEquals(26, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue = csvNewFieldsCaptor.getValue().get(0);
 		assertEquals("baseInfo.fields.customFields.key-target1", targetValue.getValue());
 		assertEquals("fake-target1", targetValue.getLabel());
@@ -779,10 +779,10 @@ class KanbanCsvServiceTest {
 			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
-		assertEquals(25, csvFieldsCaptor.getValue().size());
-		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(23);
-		assertEquals("cardCycleTime.steps.review", targetValue.getValue());
-		assertEquals("Review Days", targetValue.getLabel());
+		assertEquals(27, csvFieldsCaptor.getValue().size());
+		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(25);
+		assertEquals("cardCycleTime.steps.waitingForDeployment", targetValue.getValue());
+		assertEquals("Waiting For Deployment Days", targetValue.getLabel());
 		assertNull(targetValue.getOriginKey());
 	}
 
@@ -839,7 +839,7 @@ class KanbanCsvServiceTest {
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
 		List<BoardCSVConfig> value = csvFieldsCaptor.getValue();
 
-		assertEquals(31, value.size());
+		assertEquals(33, value.size());
 
 		BoardCSVConfig issueTypeValue = value.get(15);
 		assertEquals("fake-issuetype", issueTypeValue.getLabel());
@@ -871,10 +871,10 @@ class KanbanCsvServiceTest {
 		assertEquals("baseInfo.fields.customFields.customfield_1234", issueType6Value.getValue());
 		assertEquals("customfield_1234", issueType6Value.getOriginKey());
 
-		BoardCSVConfig reworkValue = value.get(29);
-		assertEquals("cardCycleTime.steps.review", reworkValue.getValue());
-		assertEquals("Review Days", reworkValue.getLabel());
-		assertNull(reworkValue.getOriginKey());
+		BoardCSVConfig waitingForDeploymentDays = value.get(31);
+		assertEquals("cardCycleTime.steps.waitingForDeployment", waitingForDeploymentDays.getValue());
+		assertEquals("Waiting For Deployment Days", waitingForDeploymentDays.getLabel());
+		assertNull(waitingForDeploymentDays.getOriginKey());
 	}
 
 	@Test
@@ -918,10 +918,10 @@ class KanbanCsvServiceTest {
 			.build(), cardCollectionInfo);
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), anyList());
-		assertEquals(24, csvFieldsCaptor.getValue().size());
-		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(23);
-		assertEquals("cardCycleTime.steps.review", targetValue.getValue());
-		assertEquals("Review Days", targetValue.getLabel());
+		assertEquals(26, csvFieldsCaptor.getValue().size());
+		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(25);
+		assertEquals("cardCycleTime.steps.waitingForDeployment", targetValue.getValue());
+		assertEquals("Waiting For Deployment Days", targetValue.getLabel());
 		assertNull(targetValue.getOriginKey());
 	}
 
@@ -974,7 +974,7 @@ class KanbanCsvServiceTest {
 
 		verify(csvFileGenerator).assembleBoardData(anyList(), csvFieldsCaptor.capture(), csvNewFieldsCaptor.capture());
 
-		assertEquals(29, csvFieldsCaptor.getValue().size());
+		assertEquals(31, csvFieldsCaptor.getValue().size());
 		BoardCSVConfig targetValue1 = csvNewFieldsCaptor.getValue().get(0);
 		BoardCSVConfig targetValue2 = csvNewFieldsCaptor.getValue().get(1);
 		BoardCSVConfig targetValue3 = csvNewFieldsCaptor.getValue().get(2);
@@ -1049,10 +1049,10 @@ class KanbanCsvServiceTest {
 		verify(fileRepository).createCSVFileByType(eq(TEST_UUID), anyString(), csvSheetCaptor.capture(),
 				eq(FilePrefixType.BOARD_REPORT_PREFIX));
 
-		assertEquals(24, csvFieldsCaptor.getValue().size());
-		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(23);
-		assertEquals("cardCycleTime.steps.review", targetValue.getValue());
-		assertEquals("Review Days", targetValue.getLabel());
+		assertEquals(26, csvFieldsCaptor.getValue().size());
+		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(25);
+		assertEquals("cardCycleTime.steps.waitingForDeployment", targetValue.getValue());
+		assertEquals("Waiting For Deployment Days", targetValue.getLabel());
 		assertNull(targetValue.getOriginKey());
 
 		assertEquals(5, csvSheetCaptor.getValue().length);
@@ -1124,10 +1124,10 @@ class KanbanCsvServiceTest {
 		verify(fileRepository).createCSVFileByType(eq(TEST_UUID), anyString(), csvSheetCaptor.capture(),
 				eq(FilePrefixType.BOARD_REPORT_PREFIX));
 
-		assertEquals(24, csvFieldsCaptor.getValue().size());
-		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(23);
-		assertEquals("cardCycleTime.steps.review", targetValue.getValue());
-		assertEquals("Review Days", targetValue.getLabel());
+		assertEquals(26, csvFieldsCaptor.getValue().size());
+		BoardCSVConfig targetValue = csvFieldsCaptor.getValue().get(25);
+		assertEquals("cardCycleTime.steps.waitingForDeployment", targetValue.getValue());
+		assertEquals("Waiting For Deployment Days", targetValue.getLabel());
 		assertNull(targetValue.getOriginKey());
 
 		assertEquals(5, csvSheetCaptor.getValue().length);
