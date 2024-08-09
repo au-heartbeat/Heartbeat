@@ -231,15 +231,44 @@ export const METRICS_CONSTANTS = {
   waitingForDeploymentValue: 'Waiting for deployment',
 };
 
-export const CYCLE_TIME_CHARTS_MAPPING: Record<string, string> = {
-  [METRICS_CONSTANTS.inDevValue]: 'Development time',
-  [METRICS_CONSTANTS.waitingForTestingValue]: 'Waiting for testing time',
-  [METRICS_CONSTANTS.designValue]: 'Design time',
-  [METRICS_CONSTANTS.analysisValue]: 'Analysis time',
-  [METRICS_CONSTANTS.reviewValue]: 'Review time',
-  [METRICS_CONSTANTS.blockValue]: 'Block time',
-  [METRICS_CONSTANTS.testingValue]: 'Testing time',
-  [METRICS_CONSTANTS.waitingForDeploymentValue]: 'Waiting for deployment time',
+interface CycleTimeChartOrder {
+  name: string;
+  order: number;
+}
+
+export const CYCLE_TIME_CHARTS_MAPPING: Record<string, CycleTimeChartOrder> = {
+  [METRICS_CONSTANTS.inDevValue]: {
+    name: 'Development time',
+    order: 0,
+  },
+  [METRICS_CONSTANTS.analysisValue]: {
+    name: 'Analysis time',
+    order: 1,
+  },
+  [METRICS_CONSTANTS.designValue]: {
+    name: 'Design time',
+    order: 2,
+  },
+  [METRICS_CONSTANTS.blockValue]: {
+    name: 'Block time',
+    order: 3,
+  },
+  [METRICS_CONSTANTS.reviewValue]: {
+    name: 'Review time',
+    order: 4,
+  },
+  [METRICS_CONSTANTS.waitingForTestingValue]: {
+    name: 'Waiting for testing time',
+    order: 5,
+  },
+  [METRICS_CONSTANTS.testingValue]: {
+    name: 'Testing time',
+    order: 6,
+  },
+  [METRICS_CONSTANTS.waitingForDeploymentValue]: {
+    name: 'Waiting for deployment time',
+    order: 7,
+  },
 };
 
 export const LEAD_TIME_FOR_CHANGES = {
