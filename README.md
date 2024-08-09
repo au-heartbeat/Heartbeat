@@ -242,17 +242,19 @@ _Image 3-9, Crews/Board Mappings config_
 
 **Cycle Time:** It will list all columns for the current active jira board. Then users need to map the each column to the supported columns. Like, if your board have “in progress” column, it means developer doing this ticket, so it should be mapping with “In Dev” for the list we provide.
 
-| Status              | Description                                                                                                                            |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| To do               | It means the ticket needs to be done, waiting for Dev to pick it. Cycle time doesn't include this time.                                |
-| Analysis            | BA or other people still need to analyze the ticket. Cycle time doesn't include this time.                                             |
-| In Dev              | It means dev is doing the ticket. This time should be a part of cycle time. And it is named development time.                          |
-| Block               | It means the tickets blocked by some issues, cannot be done now. This time should be a part of cycle time. And it is named block time. |
-| Waiting for testing | It means waiting for Dev to pick or QA to testing. This time should be a part of cycle time. And it is named waiting time.             |
-| Testing             | It means QA is testing the tickets. This time should be a part of cycle time. And it is named testing time.                            |
-| Review              | It means PO or other people are reviewing the tickets. This time should be a part of cycle time. And it is named review time.          |
-| Done                | It means the tickets are already done. Cycle time doesn't include this time.                                                           |
-| --                  | If you don't need to map, you can select --                                                                                            |
+| Status                 | Description                                                                                                                                                          |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| To do                  | It means the ticket needs to be done, waiting for Dev to pick it. Cycle time doesn't include this time.                                                              |
+| Analysis               | BA or other people still need to analyze the ticket. Cycle time doesn't include this time.                                                                           |
+| Design                 | UX or other people still need to design the prototype.Cycle time doesn’t include this time.                                                                          |
+| In Dev                 | It means dev is doing the ticket. This time should be a part of cycle time. And it is named development time.                                                        |
+| Block                  | It means the tickets blocked by some issues, cannot be done now. This time should be a part of cycle time. And it is named block time.                               |
+| Waiting for testing    | It means waiting for Dev to pick or QA to testing. This time should be a part of cycle time. And it is named waiting time.                                           |
+| Testing                | It means QA is testing the tickets. This time should be a part of cycle time. And it is named testing time.                                                          |
+| Review                 | It means PO or other people are reviewing the tickets. This time should be a part of cycle time. And it is named review time.                                        |
+| Waiting for deployment | it means that the ticket has passed the test and is waiting to be deployment. This time should be a part of cycle time. And it is named waiting for deployment time. |
+| Done                   | It means the tickets are already done. Cycle time doesn't include this time.                                                                                         |
+| --                     | If you don't need to map, you can select --                                                                                                                          |
 
 **By Status**: user can click the toggle selected button to choose the mapping relationship by column or by status. It support multiple status map in to one column, just as the picture shows the TODO and INPROGRESS board  status can be mapped to different heartbeat states.
 

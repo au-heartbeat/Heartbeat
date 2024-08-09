@@ -68,10 +68,12 @@ export const EXPECTED_REPORT_VALUES = {
     reworkState: 'In Dev',
     fromAnalysis: null,
     fromInDev: null,
+    fromDesign: 111,
     fromBlock: 111,
     fromReview: 111,
     fromWaitingForTesting: 111,
     fromTesting: null,
+    fromWaitingForDeployment: null,
     fromDone: 111,
     totalReworkCards: 111,
     reworkCardsRatio: 0.8888,
@@ -201,10 +203,10 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 3,
+      id: 2,
       name: (
         <React.Fragment>
-          From <BoldText>block</BoldText> to<BoldText> in dev</BoldText>
+          From <BoldText>design</BoldText> to<BoldText> in dev</BoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -218,7 +220,7 @@ export const EXPECTED_REPORT_VALUES = {
       id: 4,
       name: (
         <React.Fragment>
-          From <BoldText>review</BoldText> to<BoldText> in dev</BoldText>
+          From <BoldText>block</BoldText> to<BoldText> in dev</BoldText>
         </React.Fragment>
       ),
       valueList: [
@@ -232,6 +234,20 @@ export const EXPECTED_REPORT_VALUES = {
       id: 5,
       name: (
         <React.Fragment>
+          From <BoldText>review</BoldText> to<BoldText> in dev</BoldText>
+        </React.Fragment>
+      ),
+      valueList: [
+        {
+          value: 111,
+          unit: ' (times)',
+        },
+      ],
+    },
+    {
+      id: 6,
+      name: (
+        <React.Fragment>
           From <BoldText>waiting for testing</BoldText> to<BoldText> in dev</BoldText>
         </React.Fragment>
       ),
@@ -243,7 +259,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 7,
+      id: 9,
       name: (
         <React.Fragment>
           From <BoldText>done</BoldText> to<BoldText> in dev</BoldText>
@@ -257,7 +273,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 8,
+      id: 10,
       name: <React.Fragment>Total rework cards</React.Fragment>,
       valueList: [
         {
@@ -267,7 +283,7 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
     {
-      id: 9,
+      id: 11,
       name: <React.Fragment>Rework cards ratio</React.Fragment>,
       valueList: [
         {

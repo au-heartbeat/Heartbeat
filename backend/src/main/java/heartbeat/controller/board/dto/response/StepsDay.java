@@ -25,4 +25,8 @@ public class StepsDay {
 
 	private double todo;
 
+	private double design;
+
+	private double waitingForDeployment;
+
 }

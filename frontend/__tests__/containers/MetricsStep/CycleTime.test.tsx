@@ -234,7 +234,7 @@ describe('CycleTime', () => {
 
       const listBox = within(screen.getByRole('listbox'));
       await act(async () => {
-        await userEvent.click(listBox.getAllByRole('option')[8]);
+        await userEvent.click(listBox.getAllByRole('option')[10]);
       });
 
       const inputElements = screen.getAllByRole('combobox');
@@ -254,7 +254,7 @@ describe('CycleTime', () => {
 
       const listBox = within(screen.getByRole('listbox'));
       await act(async () => {
-        await userEvent.click(listBox.getAllByRole('option')[8]);
+        await userEvent.click(listBox.getAllByRole('option')[10]);
       });
 
       await act(async () => {
@@ -263,7 +263,7 @@ describe('CycleTime', () => {
 
       const newListBox = within(screen.getByRole('listbox'));
       await act(async () => {
-        await userEvent.click(newListBox.getAllByRole('option')[7]);
+        await userEvent.click(newListBox.getAllByRole('option')[8]);
       });
 
       const inputElements = screen.getAllByRole('combobox');
@@ -383,7 +383,7 @@ describe('CycleTime', () => {
       const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
       await userEvent.click(columnsArray[0]);
       const listBox = within(screen.getByRole('listbox'));
-      await userEvent.click(listBox.getAllByRole('option')[8]);
+      await userEvent.click(listBox.getAllByRole('option')[10]);
 
       const inputElements = screen.getAllByRole('combobox');
       const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[0];
@@ -396,10 +396,10 @@ describe('CycleTime', () => {
       const columnsArray = screen.getAllByRole('button', { name: LIST_OPEN });
       await userEvent.click(columnsArray[0]);
       const listBox = within(screen.getByRole('listbox'));
-      await userEvent.click(listBox.getAllByRole('option')[8]);
+      await userEvent.click(listBox.getAllByRole('option')[10]);
       await userEvent.click(columnsArray[0]);
       const newListBox = within(screen.getByRole('listbox'));
-      await userEvent.click(newListBox.getAllByRole('option')[7]);
+      await userEvent.click(newListBox.getAllByRole('option')[8]);
 
       const inputElements = screen.getAllByRole('combobox');
       const selectedInputValue = inputElements.map((option) => option.getAttribute('value'))[0];

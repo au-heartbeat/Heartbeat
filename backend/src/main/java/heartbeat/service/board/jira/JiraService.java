@@ -910,7 +910,6 @@ public class JiraService {
 				});
 		}
 		return statusChangedArray;
-
 	}
 
 	private CardCycleTime calculateCardCycleTime(String cardId, List<CycleTimeInfo> cycleTimeInfos,
@@ -932,12 +931,16 @@ public class JiraService {
 						stepsDay.setDevelopment(stepsDay.getDevelopment() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
-					case WAITING -> {
+					case WAITING_FOR_TESTING -> {
 						stepsDay.setWaitingForTesting(stepsDay.getWaitingForTesting() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
 					case TESTING -> {
 						stepsDay.setTesting(stepsDay.getTesting() + cycleTimeInfo.getDay());
+						total += cycleTimeInfo.getDay();
+					}
+					case WAITING_FOR_DEPLOYMENT -> {
+						stepsDay.setWaitingForDeployment(stepsDay.getWaitingForDeployment() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
 					case BLOCK -> {
@@ -946,6 +949,10 @@ public class JiraService {
 					}
 					case REVIEW -> {
 						stepsDay.setReview(stepsDay.getReview() + cycleTimeInfo.getDay());
+						total += cycleTimeInfo.getDay();
+					}
+					case DESIGN -> {
+						stepsDay.setDesign(stepsDay.getDesign() + cycleTimeInfo.getDay());
 						total += cycleTimeInfo.getDay();
 					}
 					case ANALYSE -> {

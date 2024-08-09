@@ -225,3 +225,34 @@ export const configWithoutBlockColumn = {
   },
   reworkTimesSettings: { excludeStates: [], reworkState: 'In Dev' },
 };
+
+export const configWithDesignAndWaitingForDevelopmentStatus = {
+  ...config,
+  cycleTime: {
+    type: 'byColumn',
+    jiraColumns: [
+      {
+        TODO: 'Design',
+      },
+      {
+        Doing: 'In Dev',
+      },
+      {
+        Blocked: 'Block',
+      },
+      {
+        Review: 'Review',
+      },
+      {
+        'READY FOR TESTING': 'Waiting for deployment',
+      },
+      {
+        Testing: 'Testing',
+      },
+      {
+        Done: 'Done',
+      },
+    ],
+    treatFlagCardAsBlock: false,
+  },
+};

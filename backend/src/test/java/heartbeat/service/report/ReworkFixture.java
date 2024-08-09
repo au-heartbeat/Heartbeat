@@ -8,20 +8,25 @@ import java.util.List;
 
 import static heartbeat.controller.board.dto.request.CardStepsEnum.ANALYSE;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.BLOCK;
+import static heartbeat.controller.board.dto.request.CardStepsEnum.DESIGN;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.DEVELOPMENT;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.DONE;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.REVIEW;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.TESTING;
 import static heartbeat.controller.board.dto.request.CardStepsEnum.TODO;
-import static heartbeat.controller.board.dto.request.CardStepsEnum.WAITING;
+import static heartbeat.controller.board.dto.request.CardStepsEnum.WAITING_FOR_DEPLOYMENT;
+import static heartbeat.controller.board.dto.request.CardStepsEnum.WAITING_FOR_TESTING;
 
 public class ReworkFixture {
 
 	public static CardCollection MOCK_CARD_COLLECTION() {
-		List<ReworkTimesInfo> reworkTimesInfos = List.of(ReworkTimesInfo.builder().state(ANALYSE).times(1).build(),
+		List<ReworkTimesInfo> reworkTimesInfos = List.of(
+				ReworkTimesInfo.builder().state(WAITING_FOR_DEPLOYMENT).times(1).build(),
+				ReworkTimesInfo.builder().state(ANALYSE).times(1).build(),
+				ReworkTimesInfo.builder().state(DESIGN).times(1).build(),
 				ReworkTimesInfo.builder().state(DEVELOPMENT).times(1).build(),
 				ReworkTimesInfo.builder().state(BLOCK).times(1).build(),
-				ReworkTimesInfo.builder().state(WAITING).times(1).build(),
+				ReworkTimesInfo.builder().state(WAITING_FOR_TESTING).times(1).build(),
 				ReworkTimesInfo.builder().state(REVIEW).times(1).build(),
 				ReworkTimesInfo.builder().state(TESTING).times(1).build(),
 				ReworkTimesInfo.builder().state(DONE).times(1).build());
@@ -39,7 +44,7 @@ public class ReworkFixture {
 		List<ReworkTimesInfo> reworkTimesInfos = List.of(ReworkTimesInfo.builder().state(TODO).times(1).build(),
 				ReworkTimesInfo.builder().state(DEVELOPMENT).times(1).build(),
 				ReworkTimesInfo.builder().state(BLOCK).times(1).build(),
-				ReworkTimesInfo.builder().state(WAITING).times(1).build(),
+				ReworkTimesInfo.builder().state(WAITING_FOR_TESTING).times(1).build(),
 				ReworkTimesInfo.builder().state(REVIEW).times(1).build(),
 				ReworkTimesInfo.builder().state(DONE).times(1).build());
 		List<JiraCardDTO> jiraCardList = List.of(JiraCardDTO.builder().reworkTimesInfos(reworkTimesInfos).build(),
