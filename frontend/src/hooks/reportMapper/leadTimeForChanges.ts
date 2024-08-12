@@ -1,3 +1,4 @@
+import { ReportDataForMultipleValueColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { LeadTimeForChangesResponse } from '@src/clients/report/dto/response';
 
 export const leadTimeForChangesMapper = ({
@@ -14,18 +15,20 @@ export const leadTimeForChangesMapper = ({
     if (name == 'totalDelayTime') return 'Total Lead Time';
   };
 
-  const mappedLeadTimeForChangesValue = leadTimeForChangesOfPipelines.map((item, index) => {
-    return {
-      id: index,
-      name: `${item.name}/${item.step}`,
-      valueList: Object.entries(item)
-        .slice(-3)
-        .map(([name, value]) => ({
-          name: formatNameDisplay(name) as string,
-          value: formatDuration(value),
-        })),
-    };
-  });
+  const mappedLeadTimeForChangesValue: ReportDataForMultipleValueColumns[] = leadTimeForChangesOfPipelines.map(
+    (item, index) => {
+      return {
+        id: index,
+        name: `${item.name}/${item.step}`,
+        valueList: Object.entries(item)
+          .slice(-3)
+          .map(([name, value]) => ({
+            name: formatNameDisplay(name) as string,
+            values: [formatDuration(value)],
+          })),
+      };
+    },
+  );
 
   mappedLeadTimeForChangesValue.push({
     id: mappedLeadTimeForChangesValue.length,
@@ -34,7 +37,7 @@ export const leadTimeForChangesMapper = ({
       .slice(-3)
       .map(([name, value]) => ({
         name: formatNameDisplay(name) as string,
-        value: formatDuration(value),
+        values: [formatDuration(value)],
       })),
   });
 

@@ -37,7 +37,7 @@ function extractClassificationData(classification: string, dateRanges: string[],
     .forEach((it) => {
       allSubtitle.map((subtitle) => {
         if (it.every((item) => item.name !== subtitle)) {
-          it.push({ name: subtitle, value: '0.00%' });
+          it.push({ name: subtitle, values: ['0.00%', '0.00%'] });
         }
       });
     });
@@ -47,7 +47,7 @@ function extractClassificationData(classification: string, dateRanges: string[],
       .filter((it) => it !== undefined)
       .flatMap((it) => it!.valueList)
       .filter((it) => it.name === item)
-      .map((it) => parseFloat(it.value));
+      .map((it) => parseFloat(it.values[0]));
     indicators.push({ data: classificationValue, name: item, type: 'bar' });
   });
 

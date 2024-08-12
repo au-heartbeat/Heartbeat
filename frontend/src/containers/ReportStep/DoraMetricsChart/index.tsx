@@ -66,7 +66,7 @@ function extractedStackedBarData(
     );
     if (!averageItem) return [];
 
-    return averageItem.valueList.map((item) => Number(item.value));
+    return averageItem.valueList.map((item) => Number(item.values[0]));
   });
 
   const leadTimeValues = extractedValues?.map((value) => value![2]);
@@ -236,16 +236,7 @@ function isDoraMetricsChartFinish({
   type,
 }: {
   dateRangeLength: number;
-  mappedData: (
-    | ReportResponse
-    | {
-        deploymentFrequencyList: ChartValueSource[];
-        pipelineChangeFailureRateList: ChartValueSource[];
-        pipelineMeanTimeToRecoveryList: ChartValueSource[];
-        exportValidityTimeMin: number;
-        leadTimeForChangesList: ChartValueSource[];
-      }
-  )[];
+  mappedData: ReportResponse[];
   type: DORAMetricsChartType;
 }): boolean {
   const valueList = mappedData

@@ -27,15 +27,15 @@ describe('lead time for changes data mapper', () => {
         valueList: [
           {
             name: 'PR Lead Time',
-            value: '374.69',
+            values: ['374.69'],
           },
           {
             name: 'Pipeline Lead Time',
-            value: '69.47',
+            values: ['69.47'],
           },
           {
             name: 'Total Lead Time',
-            value: '305.23',
+            values: ['305.23'],
           },
         ],
       },
@@ -45,15 +45,15 @@ describe('lead time for changes data mapper', () => {
         valueList: [
           {
             name: 'PR Lead Time',
-            value: '374.69',
+            values: ['374.69'],
           },
           {
             name: 'Pipeline Lead Time',
-            value: '69.47',
+            values: ['69.47'],
           },
           {
             name: 'Total Lead Time',
-            value: '305.23',
+            values: ['305.23'],
           },
         ],
       },
@@ -87,18 +87,18 @@ describe('lead time for changes data mapper', () => {
         id: 0,
         name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
         valueList: [
-          { name: PR_LEAD_TIME, value: '0.00' },
-          { name: PIPELINE_LEAD_TIME, value: '0.00' },
-          { name: TOTAL_DELAY_TIME, value: '0.00' },
+          { name: PR_LEAD_TIME, values: ['0.00'] },
+          { name: PIPELINE_LEAD_TIME, values: ['0.00'] },
+          { name: TOTAL_DELAY_TIME, values: ['0.00'] },
         ],
       },
       {
         id: 1,
         name: 'Average',
         valueList: [
-          { name: PR_LEAD_TIME, value: '0.00' },
-          { name: PIPELINE_LEAD_TIME, value: '0.00' },
-          { name: TOTAL_DELAY_TIME, value: '0.00' },
+          { name: PR_LEAD_TIME, values: ['0.00'] },
+          { name: PIPELINE_LEAD_TIME, values: ['0.00'] },
+          { name: TOTAL_DELAY_TIME, values: ['0.00'] },
         ],
       },
     ];

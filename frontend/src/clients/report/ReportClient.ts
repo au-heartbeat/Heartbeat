@@ -54,6 +54,7 @@ export class ReportClient extends HttpClient {
       {
         fieldName: '',
         totalCardCount: 1,
+        storyPoints: 1,
         classificationInfos: [],
       },
     ],

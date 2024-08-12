@@ -5,24 +5,25 @@ import {
   Row,
   StyledTableCell,
 } from '@src/components/Common/ReportForTwoColumns/style';
-import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-import { AVERAGE_FIELD, MetricsTitle, ReportSuffixUnits } from '@src/constants/resources';
+import { ReportDataForMultipleValueColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import { EmojiWrap, StyledAvatar, StyledTypography } from '@src/constants/emojis/style';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { ReportSelectionTitle } from '@src/containers/MetricsStep/style';
 import { ErrorMessagePrompt } from '@src/components/ErrorMessagePrompt';
 import { Table, TableBody, TableHead, TableRow } from '@mui/material';
+import { AVERAGE_FIELD } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { styled } from '@mui/material/styles';
 import { Optional } from '@src/utils/types';
 import React, { Fragment } from 'react';
 import { isEmpty } from 'lodash';
 
-interface ReportForThreeColumnsProps {
+interface ReportDetailTableContainsSubtitleProps {
   title: string;
+  units: string[];
   fieldName: string;
   listName: string;
-  data: Optional<ReportDataWithThreeColumns[]>;
+  data: Optional<ReportDataForMultipleValueColumns[]>;
   errorMessage?: string;
 }
 
@@ -32,14 +33,15 @@ export const StyledLoadingWrapper = styled('div')({
   width: '100%',
 });
 
-export const ReportForThreeColumns = ({
+export const ReportDetailTableContainsSubtitle = ({
   title,
+  units,
   fieldName,
   listName,
   data,
   errorMessage,
-}: ReportForThreeColumnsProps) => {
-  const emojiRow = (row: ReportDataWithThreeColumns) => {
+}: ReportDetailTableContainsSubtitleProps) => {
+  const emojiRow = (row: ReportDataForMultipleValueColumns) => {
     const { name } = row;
     const emojiUrls: string[] = getEmojiUrls(name);
     if (name.includes(':') && emojiUrls.length > 0) {
@@ -63,28 +65,26 @@ export const ReportForThreeColumns = ({
         row.valueList = [
           {
             name: '--',
-            value: '--',
+            values: ['--', '--'],
           },
         ];
       }
       return (
         <Fragment key={row.id}>
-          <TableRow data-testid={'tr'}>
+          <TableRow aria-label={'tr'}>
             <ColumnTableCell rowSpan={row.valueList.length + 1}>{emojiRow(row)}</ColumnTableCell>
           </TableRow>
           {row.valueList.map((valuesList) => (
-            <Row data-testid={'tr'} key={valuesList.name}>
+            <Row aria-label={'tr'} key={valuesList.name}>
               <BorderTableCell>{valuesList.name}</BorderTableCell>
-              <BorderTableCell>{valuesList.value}</BorderTableCell>
+              {valuesList.values.map((it, index) => (
+                <BorderTableCell key={`${index}-${it}`}>{it}</BorderTableCell>
+              ))}
             </Row>
           ))}
         </Fragment>
       );
     });
-
-  const getTitleUnit = (title: string) => {
-    return title === MetricsTitle.LeadTimeForChanges ? ReportSuffixUnits.Hours : '';
-  };
 
   const renderLoading = () => (
     <>
@@ -99,12 +99,14 @@ export const ReportForThreeColumns = ({
   const renderData = () => (
     <>
       {!errorMessage && data && (
-        <Table data-test-id={title} data-testid={title}>
+        <Table aria-label={title}>
           <TableHead>
             <TableRow>
               <StyledTableCell>{fieldName}</StyledTableCell>
               <StyledTableCell>{listName}</StyledTableCell>
-              <StyledTableCell>{`Value${getTitleUnit(title)}`}</StyledTableCell>
+              {units.map((it, index) => (
+                <StyledTableCell key={`${index}-${it}`}>{`Value${it}`}</StyledTableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>{renderRows()}</TableBody>
@@ -125,4 +127,4 @@ export const ReportForThreeColumns = ({
   );
 };
 
-export default ReportForThreeColumns;
+export default ReportDetailTableContainsSubtitle;

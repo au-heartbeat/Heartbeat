@@ -917,27 +917,35 @@ describe('Report Step', () => {
         {
           fieldName: 'Issue Type',
           totalCardCount: 3,
+          storyPoints: 1,
           classificationInfos: [
             {
               name: 'Feature Work - Planned',
-              value: 0.5714,
+              cardCountValue: 0.5714,
               cardCount: 3,
+              storyPoints: 1,
+              storyPointsValue: 0.1,
             },
           ],
         },
         {
           fieldName: 'Issue Type',
           totalCardCount: 3,
+          storyPoints: 1,
           classificationInfos: [
             {
               name: 'Feature Work - Planned',
-              value: 0.5714,
+              cardCountValue: 0.5714,
               cardCount: 1,
+              storyPoints: 1,
+              storyPointsValue: 0.1,
             },
             {
               name: 'Feature Work - Planned2',
-              value: 0.5714,
+              cardCountValue: 0.5714,
               cardCount: 2,
+              storyPoints: 2,
+              storyPointsValue: 0.2,
             },
           ],
         },
@@ -988,38 +996,49 @@ describe('Report Step', () => {
         {
           fieldName: 'name1-1',
           totalCardCount: 3,
+          storyPoints: 1,
           classificationInfos: [
             {
               name: 'name1-1 - Planned',
-              value: 0.5714,
+              cardCountValue: 0.5714,
               cardCount: 3,
+              storyPoints: 1,
+              storyPointsValue: 0.1,
             },
           ],
         },
         {
           fieldName: 'name1-2',
           totalCardCount: 3,
+          storyPoints: 1,
           classificationInfos: [
             {
               name: 'name1-2 - Planned',
-              value: 0.5714,
+              cardCountValue: 0.5714,
               cardCount: 3,
+              storyPoints: 1,
+              storyPointsValue: 0.1,
             },
           ],
         },
         {
           fieldName: 'name1-3',
           totalCardCount: 3,
+          storyPoints: 1,
           classificationInfos: [
             {
               name: 'name1-3 - Planned',
-              value: 0.5714,
+              cardCountValue: 0.5714,
               cardCount: 3,
+              storyPoints: 1,
+              storyPointsValue: 0.1,
             },
             {
               name: 'name1-3 - Planned2',
-              value: 0.5714,
+              cardCountValue: 0.5714,
               cardCount: 3,
+              storyPoints: 1,
+              storyPointsValue: 0.1,
             },
           ],
         },
@@ -1056,32 +1075,42 @@ describe('Report Step', () => {
           {
             fieldName: 'Issue Type',
             totalCardCount: 3,
+            storyPoints: 1,
             classificationInfos: [
               {
                 name: 'Feature Work - Planned',
-                value: 0.5714,
+                cardCountValue: 0.5714,
                 cardCount: 1,
+                storyPoints: 1,
+                storyPointsValue: 0.1,
               },
               {
                 name: 'Feature Work - Planned2',
-                value: 0.5714,
+                cardCountValue: 0.5714,
                 cardCount: 2,
+                storyPoints: 1,
+                storyPointsValue: 0.1,
               },
             ],
           },
           {
             fieldName: 'Parent',
             totalCardCount: 3,
+            storyPoints: 1,
             classificationInfos: [
               {
                 name: 'Feature Work - Planned',
-                value: 0.5714,
+                cardCountValue: 0.5714,
                 cardCount: 3,
+                storyPoints: 1,
+                storyPointsValue: 0.1,
               },
               {
                 name: 'Feature Work - Planned2',
-                value: 0.5714,
+                cardCountValue: 0.5714,
                 cardCount: 2,
+                storyPoints: 1,
+                storyPointsValue: 0.1,
               },
             ],
           },

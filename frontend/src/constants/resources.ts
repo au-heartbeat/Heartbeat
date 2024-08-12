@@ -1,3 +1,4 @@
+import { ReportResponse } from '@src/clients/report/dto/response';
 import { AxiosError } from 'axios';
 
 export enum Calendar {
@@ -391,6 +392,8 @@ export enum ReportSuffixUnits {
   Hours = '(Hours)',
   DeploymentsPerDay = '(Deployments/Day)',
   DeploymentsTimes = '(Deployment times)',
+  ClassificationCardCounts = '/Cards count',
+  ClassificationStoryPoint = '/Story point',
 }
 
 export const MESSAGE = {
@@ -582,7 +585,7 @@ export enum SortingDateRangeText {
 
 export const DISABLED_DATE_RANGE_MESSAGE = 'Report generated failed during this period.';
 
-export const emptyDataMapperDoraChart = (allPipelines: string[], value: string) => {
+export const emptyDataMapperDoraChart = (allPipelines: string[], value: string): ReportResponse => {
   const deploymentFrequencyList = allPipelines.map((it, index) => {
     return {
       id: index,
@@ -597,7 +600,7 @@ export const emptyDataMapperDoraChart = (allPipelines: string[], value: string) 
       ],
     };
   });
-  const devMeanTimeToRecoveryList = allPipelines.map((it, index) => {
+  const pipelineMeanTimeToRecoveryList = allPipelines.map((it, index) => {
     return {
       id: index,
       name: it,
@@ -615,20 +618,20 @@ export const emptyDataMapperDoraChart = (allPipelines: string[], value: string) 
       valueList: [
         {
           name: LEAD_TIME_FOR_CHANGES.PR_LEAD_TIME,
-          value: value,
+          values: [value],
         },
         {
           name: LEAD_TIME_FOR_CHANGES.PIPELINE_LEAD_TIME,
-          value: value,
+          values: [value],
         },
         {
           name: LEAD_TIME_FOR_CHANGES.TOTAL_LEAD_TIME,
-          value: value,
+          values: [value],
         },
       ],
     };
   });
-  const devChangeFailureRateList = allPipelines.map((it, index) => {
+  const pipelineChangeFailureRateList = allPipelines.map((it, index) => {
     return {
       id: index,
       name: it,
@@ -641,9 +644,9 @@ export const emptyDataMapperDoraChart = (allPipelines: string[], value: string) 
   });
   return {
     deploymentFrequencyList,
-    devMeanTimeToRecoveryList,
+    pipelineMeanTimeToRecoveryList,
     leadTimeForChangesList,
-    devChangeFailureRateList,
+    pipelineChangeFailureRateList,
     exportValidityTimeMin: 0.0005,
   };
 };
