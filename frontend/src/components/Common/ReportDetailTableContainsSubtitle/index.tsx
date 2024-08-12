@@ -59,6 +59,19 @@ export const ReportDetailTableContainsSubtitle = ({
     return <StyledTypography>{name}</StyledTypography>;
   };
 
+  const renderRowValueColumn = (values: string[]) => {
+    return values.map((it, index) => (
+      <BorderTableCell
+        key={`${index}-${it}`}
+        sx={{
+          wordBreak: 'break-all',
+        }}
+      >
+        {it}
+      </BorderTableCell>
+    ));
+  };
+
   const renderRows = () =>
     data?.slice(0, data?.length === 2 && data[1]?.name === AVERAGE_FIELD ? 1 : data?.length).map((row) => {
       if (isEmpty(row.valueList)) {
@@ -90,16 +103,7 @@ export const ReportDetailTableContainsSubtitle = ({
               >
                 {valuesList.name}
               </BorderTableCell>
-              {valuesList.values.map((it, index) => (
-                <BorderTableCell
-                  key={`${index}-${it}`}
-                  sx={{
-                    wordBreak: 'break-all',
-                  }}
-                >
-                  {it}
-                </BorderTableCell>
-              ))}
+              {renderRowValueColumn(valuesList.values)}
             </Row>
           ))}
         </Fragment>
@@ -141,14 +145,12 @@ export const ReportDetailTableContainsSubtitle = ({
   );
 
   return (
-    <>
-      <Container>
-        <ReportSelectionTitle>{title}</ReportSelectionTitle>
-        {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} style={{ marginBottom: '1.5rem' }} />}
-        {renderLoading()}
-        {renderData()}
-      </Container>
-    </>
+    <Container>
+      <ReportSelectionTitle>{title}</ReportSelectionTitle>
+      {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} style={{ marginBottom: '1.5rem' }} />}
+      {renderLoading()}
+      {renderData()}
+    </Container>
   );
 };
 
