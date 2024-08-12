@@ -567,8 +567,10 @@ class CSVFileGeneratorTest {
 						{ "Cycle time", "Average testing time(days/card)", "0.02" },
 						{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
 						{ "Cycle time", "Average  time(days/card)", "0.02" },
-						{ "Classifications", "Issue Type / Bug(%)", "33.33" },
-						{ "Classifications", "Issue Type / Story(%)", "66.67" },
+						{ "Classifications", "Issue Type / Bug(Value/Cards count%)", "33.33" },
+						{ "Classifications", "Issue Type / Bug(Value/Story point%)", "50.00" },
+						{ "Classifications", "Issue Type / Story(Value/Cards count%)", "66.67" },
+						{ "Classifications", "Issue Type / Story(Value/Story point%)", "50.00" },
 						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
 								"0.78" },
 						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)",
@@ -622,13 +624,20 @@ class CSVFileGeneratorTest {
 			try (MockedStatic<CardStepsEnum> cardStepsEnumMockedStatic = mockStatic(CardStepsEnum.class)) {
 				ReportResponse reportResponse = ReportResponse.builder()
 					.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
-					.classificationList(
-							List.of(Classification.builder()
-								.fieldName("Issue Type")
-								.classificationInfos(List.of(
-										ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
-										ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
-								.build()))
+					.classificationList(List.of(Classification.builder()
+						.fieldName("Issue Type")
+						.classificationInfos(List.of(
+								ClassificationInfo.builder()
+									.name("Bug")
+									.cardCountValue(0.3333333333333333)
+									.storyPointsValue(0.6)
+									.build(),
+								ClassificationInfo.builder()
+									.name("Story")
+									.cardCountValue(0.6666666666666666)
+									.storyPointsValue(0.4)
+									.build()))
+						.build()))
 					.cycleTime(CycleTime.builder()
 						.totalTimeForCards(29.26)
 						.averageCycleTimePerCard(9.75)
@@ -789,8 +798,10 @@ class CSVFileGeneratorTest {
 						{ "Cycle time", "Average waiting for deployment time(days/card)", "6.06" },
 						{ "Cycle time", "Average  time(days/storyPoint)", "0.01" },
 						{ "Cycle time", "Average  time(days/card)", "0.02" },
-						{ "Classifications", "Issue Type / Bug(%)", "33.33" },
-						{ "Classifications", "Issue Type / Story(%)", "66.67" },
+						{ "Classifications", "Issue Type / Bug(Value/Cards count%)", "33.33" },
+						{ "Classifications", "Issue Type / Bug(Value/Story point%)", "60.00" },
+						{ "Classifications", "Issue Type / Story(Value/Cards count%)", "66.67" },
+						{ "Classifications", "Issue Type / Story(Value/Story point%)", "40.00" },
 						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployments/Day)",
 								"0.78" },
 						{ "Deployment frequency", "Heartbeat / Deploy prod / Deployment frequency(Deployment times)",
