@@ -46,7 +46,7 @@ export const BoardDetail = withGoBack(({ data, errorMessage, metrics }: Property
         <ReportDetailTableContainsSubtitle
           title={MetricsTitle.Classification}
           units={[ReportSuffixUnits.ClassificationCardCounts, ReportSuffixUnits.ClassificationStoryPoint]}
-          fieldName={'Field Name'}
+          fieldName={'Name'}
           listName={'Subtitle'}
           data={mappedData?.classification}
           errorMessage={errorMessage}

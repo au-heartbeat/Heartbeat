@@ -72,13 +72,33 @@ export const ReportDetailTableContainsSubtitle = ({
       return (
         <Fragment key={row.id}>
           <TableRow aria-label={'tr'}>
-            <ColumnTableCell rowSpan={row.valueList.length + 1}>{emojiRow(row)}</ColumnTableCell>
+            <ColumnTableCell
+              rowSpan={row.valueList.length + 1}
+              sx={{
+                wordBreak: 'break-all',
+              }}
+            >
+              {emojiRow(row)}
+            </ColumnTableCell>
           </TableRow>
           {row.valueList.map((valuesList) => (
             <Row aria-label={'tr'} key={valuesList.name}>
-              <BorderTableCell>{valuesList.name}</BorderTableCell>
+              <BorderTableCell
+                sx={{
+                  wordBreak: 'break-all',
+                }}
+              >
+                {valuesList.name}
+              </BorderTableCell>
               {valuesList.values.map((it, index) => (
-                <BorderTableCell key={`${index}-${it}`}>{it}</BorderTableCell>
+                <BorderTableCell
+                  key={`${index}-${it}`}
+                  sx={{
+                    wordBreak: 'break-all',
+                  }}
+                >
+                  {it}
+                </BorderTableCell>
               ))}
             </Row>
           ))}
@@ -105,7 +125,12 @@ export const ReportDetailTableContainsSubtitle = ({
               <StyledTableCell>{fieldName}</StyledTableCell>
               <StyledTableCell>{listName}</StyledTableCell>
               {units.map((it, index) => (
-                <StyledTableCell key={`${index}-${it}`}>{`Value${it}`}</StyledTableCell>
+                <StyledTableCell
+                  sx={{
+                    wordBreak: 'break-all',
+                  }}
+                  key={`${index}-${it}`}
+                >{`Value${it}`}</StyledTableCell>
               ))}
             </TableRow>
           </TableHead>
