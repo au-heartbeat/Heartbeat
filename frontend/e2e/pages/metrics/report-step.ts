@@ -293,9 +293,11 @@ export class ReportStep {
   async checkDoraMetricsDetailsForMultipleRanges({
     projectCreationType,
     doraMetricsReportData,
+    fileNamePrefix,
   }: {
     projectCreationType: ProjectCreationType;
     doraMetricsReportData: IDoraMetricsResultItem[];
+    fileNamePrefix?: string;
   }) {
     await this.showMoreLinks.nth(1).click();
     if (
@@ -310,6 +312,7 @@ export class ReportStep {
     await this.downloadFileAndCheckForMultipleRanges({
       trigger: this.exportPipelineDataButton,
       rangeCount: DORA_METRICS_RESULT_MULTIPLE_RANGES.length,
+      fileNamePrefix,
     });
 
     await this.backButton.click();
@@ -548,6 +551,7 @@ export class ReportStep {
     cycleTimeData,
     classificationData,
     reworkData,
+    fileNamePrefix,
   }: {
     projectCreationType: ProjectCreationType;
     csvCompareLines: ICsvComparedLines;
@@ -555,6 +559,7 @@ export class ReportStep {
     cycleTimeData: IBoardCycletimeDetailItem[][];
     classificationData: IBoardClassificationDetailItem[][];
     reworkData: IBoardMetricsDetailItem[][];
+    fileNamePrefix?: string;
   }) {
     await this.showMoreLinks.first().click();
     if (
@@ -573,6 +578,7 @@ export class ReportStep {
       trigger: this.exportBoardData,
       rangeCount: csvCompareLines.length,
       csvCompareLines,
+      fileNamePrefix,
     });
     await this.backButton.click();
   }
