@@ -2,11 +2,14 @@ import {
   ChartTitle,
   StyledChartAndTitleWrapper,
   StyledTooltipContent,
+  SwitchButtonGroup,
   SwitchIconWrapper,
+  SwitchModelButton,
   TrendContainer,
   TrendIconSpan,
   TrendTypeIcon,
 } from '@src/containers/ReportStep/ChartAndTitleWrapper/style';
+import { ClassificationChartModelType } from '@src/containers/ReportStep/BoardMetricsChart/ClassificationChart';
 import { CHART_TREND_TIP, ChartType, TrendIcon, TrendType, UP_TREND_IS_BETTER } from '@src/constants/resources';
 import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
 import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
@@ -50,6 +53,8 @@ const ChartAndTitleWrapper = forwardRef(
       clickSwitch,
       animationStyle = {},
       disabledClickRepeatButton = false,
+      classificationChartModel = ClassificationChartModelType.CardCount,
+      clickSwitchClassificationModel,
     }: {
       trendInfo: ITrendInfo;
       isLoading: boolean;
@@ -58,6 +63,8 @@ const ChartAndTitleWrapper = forwardRef(
       clickSwitch?: () => void;
       animationStyle?: object;
       disabledClickRepeatButton?: boolean;
+      classificationChartModel?: ClassificationChartModelType;
+      clickSwitchClassificationModel?: (newModel: ClassificationChartModelType) => void;
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
@@ -82,6 +89,14 @@ const ChartAndTitleWrapper = forwardRef(
         </TrendTypeIcon>
       </StyledTooltipContent>
     );
+
+    const clickStoryPointsButton = () => {
+      clickSwitchClassificationModel && clickSwitchClassificationModel(ClassificationChartModelType.StoryPoints);
+    };
+
+    const clickCardCountButton = () => {
+      clickSwitchClassificationModel && clickSwitchClassificationModel(ClassificationChartModelType.CardCount);
+    };
 
     return (
       <StyledChartAndTitleWrapper
@@ -114,6 +129,24 @@ const ChartAndTitleWrapper = forwardRef(
             </Tooltip>
           )}
         </ChartTitle>
+        {trendInfo.type === ChartType.Classification && (
+          <SwitchButtonGroup aria-label={`classification ${subTitle!.toLowerCase()} switch model button group`}>
+            <SwitchModelButton
+              aria-label={`classification ${subTitle!.toLowerCase()} switch card count model button`}
+              onClick={clickCardCountButton}
+              selected={classificationChartModel === ClassificationChartModelType.CardCount}
+            >
+              Value/Cards count
+            </SwitchModelButton>
+            <SwitchModelButton
+              aria-label={`classification ${subTitle!.toLowerCase()} switch story points model button`}
+              onClick={clickStoryPointsButton}
+              selected={classificationChartModel === ClassificationChartModelType.StoryPoints}
+            >
+              Value/Story point
+            </SwitchModelButton>
+          </SwitchButtonGroup>
+        )}
         <ChartWrapper
           ref={ref}
           aria-label={trendInfo.type.toLowerCase() + (subTitle ? ` ${subTitle.toLowerCase()}` : '') + ' chart'}

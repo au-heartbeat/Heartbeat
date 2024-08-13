@@ -305,7 +305,7 @@ export const stackedBarOptionMapper = (
   };
 };
 
-export const pieOptionMapper = (props: PieOptionProps, showPercentage: boolean = true) => {
+export const pieOptionMapper = (props: PieOptionProps, animation: boolean) => {
   const series = props.series;
   return {
     legend: {
@@ -315,11 +315,11 @@ export const pieOptionMapper = (props: PieOptionProps, showPercentage: boolean =
       orient: 'vertical',
     },
     tooltip: {
-      valueFormatter: percentageFormatter(showPercentage),
+      valueFormatter: percentageFormatter(true),
       trigger: 'item',
     },
     color: props.color,
-    animation: false,
+    animation,
     series: [
       {
         type: 'pie',

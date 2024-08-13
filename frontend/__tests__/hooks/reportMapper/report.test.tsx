@@ -306,6 +306,19 @@ export const EXPECTED_REPORT_VALUES = {
       ],
     },
   ],
+  classificationStoryPoints: [
+    {
+      id: 0,
+      name: 'FS Work Type',
+      totalCount: 1,
+      valueList: [
+        {
+          name: 'Feature Work - Planned',
+          value: '1',
+        },
+      ],
+    },
+  ],
 };
 describe('report response data mapper', () => {
   it('maps response velocity values to ui display value', () => {

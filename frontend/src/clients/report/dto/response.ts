@@ -187,6 +187,7 @@ export interface ReportResponse {
   pipelineChangeFailureRateList?: ReportDataWithTwoColumns[] | null;
   exportValidityTimeMin?: number | null;
   classificationCardCount?: ReportDataWithThreeColumns[] | null;
+  classificationStoryPoints?: ReportDataWithThreeColumns[] | null;
 }
 
 export interface ReportURLsResponse {

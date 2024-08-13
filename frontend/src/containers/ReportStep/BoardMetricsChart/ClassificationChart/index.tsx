@@ -12,6 +12,11 @@ import { showChart } from '@src/containers/ReportStep';
 import { ChartType } from '@src/constants/resources';
 import { theme } from '@src/theme';
 
+export enum ClassificationChartModelType {
+  CardCount = 'cound count',
+  StoryPoints = 'story points',
+}
+
 enum ClassificationChartType {
   Pie = 'pie',
   Bar = 'bar',
@@ -19,7 +24,12 @@ enum ClassificationChartType {
 
 const PERCENTAGE_NUMBER = 100;
 
-function extractClassificationData(classification: string, dateRanges: string[], mappedData: ReportResponse[]) {
+function extractClassificationData(
+  classification: string,
+  classificationChartModelType: ClassificationChartModelType,
+  dateRanges: string[],
+  mappedData: ReportResponse[],
+) {
   const data = mappedData.flatMap((item) => item.classification?.filter((it) => it.name === classification));
   const allSubtitle = [
     ...new Set(
@@ -47,7 +57,10 @@ function extractClassificationData(classification: string, dateRanges: string[],
       .filter((it) => it !== undefined)
       .flatMap((it) => it!.valueList)
       .filter((it) => it.name === item)
-      .map((it) => parseFloat(it.values[0]));
+      .map((it) =>
+        classificationChartModelType === ClassificationChartModelType.CardCount ? it.values[0] : it.values[1],
+      )
+      .map((it) => parseFloat(it));
     indicators.push({ data: classificationValue, name: item, type: 'bar' });
   });
 
@@ -56,7 +69,7 @@ function extractClassificationData(classification: string, dateRanges: string[],
   return {
     xAxis: dateRanges,
     yAxis: {
-      name: 'Value/Total cards',
+      name: '',
       alignTick: false,
       axisLabel: LABEL_PERCENT,
     },
@@ -77,27 +90,47 @@ function extractClassificationData(classification: string, dateRanges: string[],
   };
 }
 
-function getTotalCardCounts(mappedData: ReportResponse[], classification: string) {
+function getTotalValues(
+  mappedData: ReportResponse[],
+  classificationChartModel: ClassificationChartModelType,
+  classification: string,
+) {
   return mappedData
-    .flatMap((it) => it.classificationCardCount)
+    .flatMap((it) =>
+      classificationChartModel === ClassificationChartModelType.CardCount
+        ? it.classificationCardCount
+        : it.classificationStoryPoints,
+    )
     .filter((it) => it?.name === classification)
     .map((it) => it!.totalCount!)
     .reduce((res, it) => res + it, 0);
 }
 
-function extractedValueList(mappedData: ReportResponse[], classification: string) {
+function extractedValueList(
+  mappedData: ReportResponse[],
+  classificationChartModel: ClassificationChartModelType,
+  classification: string,
+) {
   return mappedData
-    .flatMap((it) => it.classificationCardCount)
+    .flatMap((it) =>
+      classificationChartModel === ClassificationChartModelType.CardCount
+        ? it.classificationCardCount
+        : it.classificationStoryPoints,
+    )
     .filter((it) => it?.name === classification)
     .flatMap((it) => it?.valueList);
 }
 
-function getAllSubtitles(mappedData: ReportResponse[], classification: string) {
-  const data = extractedValueList(mappedData, classification);
+function getAllSubtitles(
+  mappedData: ReportResponse[],
+  classificationChartModel: ClassificationChartModelType,
+  classification: string,
+) {
+  const data = extractedValueList(mappedData, classificationChartModel, classification);
   return [...new Set(data.filter((it) => it !== undefined).map((it) => it!.name))];
 }
 
-function getCardCountForSubtitle(data: ({ name: string; value: string } | undefined)[], subtitle: string) {
+function getValueForSubtitle(data: ({ name: string; value: string } | undefined)[], subtitle: string) {
   return data
     .filter((it) => it !== undefined)
     .filter((it) => it!.name === subtitle)
@@ -106,26 +139,34 @@ function getCardCountForSubtitle(data: ({ name: string; value: string } | undefi
     }, 0);
 }
 
-function checkClassificationChartType(classification: string, mappedData: ReportResponse[]) {
-  const totalCardCounts = getTotalCardCounts(mappedData, classification);
+function checkClassificationChartType(
+  classification: string,
+  classificationChartModel: ClassificationChartModelType,
+  mappedData: ReportResponse[],
+) {
+  const totalCardCounts = getTotalValues(mappedData, classificationChartModel, classification);
 
-  const data = extractedValueList(mappedData, classification);
+  const data = extractedValueList(mappedData, classificationChartModel, classification);
 
   const totalCounts = data.filter((it) => it !== undefined).reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
   return totalCounts === totalCardCounts ? ClassificationChartType.Pie : ClassificationChartType.Bar;
 }
 
-function extractClassificationCardCountsPieData(classification: string, mappedData: ReportResponse[]) {
-  const totalCardCounts = getTotalCardCounts(mappedData, classification);
+function extractClassificationValuesPieData(
+  classification: string,
+  classificationChartModel: ClassificationChartModelType,
+  mappedData: ReportResponse[],
+) {
+  const totalValues = getTotalValues(mappedData, classificationChartModel, classification);
 
-  const data = extractedValueList(mappedData, classification);
+  const data = extractedValueList(mappedData, classificationChartModel, classification);
 
-  const allSubtitle = getAllSubtitles(mappedData, classification);
+  const allSubtitle = getAllSubtitles(mappedData, classificationChartModel, classification);
   const indicators: { value: string; name: string }[] = allSubtitle.map((subtitle) => {
-    const cardCount = getCardCountForSubtitle(data, subtitle);
+    const value = getValueForSubtitle(data, subtitle);
     return {
-      name: `${subtitle}: ${cardCount}`,
-      value: `${((cardCount * PERCENTAGE_NUMBER) / totalCardCounts).toFixed(2)}`,
+      name: `${subtitle}: ${value}`,
+      value: `${((value * PERCENTAGE_NUMBER) / totalValues).toFixed(2)}`,
     };
   });
 
@@ -149,15 +190,19 @@ function extractClassificationCardCountsPieData(classification: string, mappedDa
   };
 }
 
-function extractClassificationCardCountsBarData(classification: string, mappedData: ReportResponse[]) {
-  const totalCardCounts = getTotalCardCounts(mappedData, classification);
+function extractClassificationCardCountsBarData(
+  classification: string,
+  classificationChartModel: ClassificationChartModelType,
+  mappedData: ReportResponse[],
+) {
+  const totalValues = getTotalValues(mappedData, classificationChartModel, classification);
 
-  const data = extractedValueList(mappedData, classification);
+  const data = extractedValueList(mappedData, classificationChartModel, classification);
 
-  const allSubtitle = getAllSubtitles(mappedData, classification);
+  const allSubtitle = getAllSubtitles(mappedData, classificationChartModel, classification);
   const indicators = allSubtitle.map((subtitle) => {
-    const cardCount = getCardCountForSubtitle(data, subtitle);
-    return Number(((cardCount * PERCENTAGE_NUMBER) / totalCardCounts).toFixed(2));
+    const value = getValueForSubtitle(data, subtitle);
+    return Number(((value * PERCENTAGE_NUMBER) / totalValues).toFixed(2));
   });
 
   const trendInfo = { type: ChartType.Classification };
@@ -174,7 +219,7 @@ function extractClassificationCardCountsBarData(classification: string, mappedDa
     },
     yAxis: [
       {
-        name: 'Value/Total cards',
+        name: '',
         alignTick: false,
         axisLabel: LABEL_PERCENT,
       },
@@ -216,26 +261,29 @@ export const ClassificationChart = ({
   dateRanges: string[];
   allDateRangeLoadingFinished: boolean;
 }) => {
-  const [isFirstIntoClassification, setIsFirstIntoClassification] = useState<boolean>(true);
+  const [isShowAnimation, setIsShowAnimation] = useState<boolean>(true);
   const [isShowTimePeriodChart, setIsShowTimePeriodChart] = useState<boolean>(true);
   const [canSwitchChart, setCanSwitchChart] = useState<boolean>(true);
   const [rotate, setRotate] = useState<number>(0);
   const classificationRef = useRef<HTMLDivElement>(null);
+  const [classificationChartModel, setClassificationChartModel] = useState<ClassificationChartModelType>(
+    ClassificationChartModelType.CardCount,
+  );
+
   let classificationData;
   let classificationDataOption;
   if (isShowTimePeriodChart) {
-    classificationData = extractClassificationData(classification, dateRanges, mappedData);
-    classificationDataOption =
-      classificationData && stackedBarOptionMapper(classificationData, true, isFirstIntoClassification);
+    classificationData = extractClassificationData(classification, classificationChartModel, dateRanges, mappedData);
+    classificationDataOption = classificationData && stackedBarOptionMapper(classificationData, true, isShowAnimation);
   } else {
-    const chartType = checkClassificationChartType(classification, mappedData);
+    const chartType = checkClassificationChartType(classification, classificationChartModel, mappedData);
     if (chartType === ClassificationChartType.Pie) {
-      classificationData = extractClassificationCardCountsPieData(classification, mappedData);
-      classificationDataOption = classificationData && pieOptionMapper(classificationData);
+      classificationData = extractClassificationValuesPieData(classification, classificationChartModel, mappedData);
+      classificationDataOption = classificationData && pieOptionMapper(classificationData, isShowAnimation);
     } else {
-      classificationData = extractClassificationCardCountsBarData(classification, mappedData);
+      classificationData = extractClassificationCardCountsBarData(classification, classificationChartModel, mappedData);
       classificationDataOption =
-        classificationData && stackedAreaOptionMapper(classificationData, true, isFirstIntoClassification);
+        classificationData && stackedAreaOptionMapper(classificationData, true, isShowAnimation);
     }
   }
   const isClassificationFinished =
@@ -284,10 +332,15 @@ export const ClassificationChart = ({
   }
   const switchChart = () => {
     if (canSwitchChart) {
-      setIsFirstIntoClassification(false);
+      setIsShowAnimation(false);
       setCanSwitchChart(false);
       id = window.requestAnimationFrame(animationStep);
     }
+  };
+
+  const switchModel = (newModel: ClassificationChartModelType) => {
+    setClassificationChartModel(newModel);
+    setIsShowAnimation(true);
   };
 
   useEffect(() => {
@@ -304,6 +357,8 @@ export const ClassificationChart = ({
       animationStyle={transition}
       disabledClickRepeatButton={!canSwitchChart}
       isShowSwitch
+      classificationChartModel={classificationChartModel}
+      clickSwitchClassificationModel={switchModel}
     />
   );
 };

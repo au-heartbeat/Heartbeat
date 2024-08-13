@@ -1,3 +1,4 @@
+import { classificationStoryPointsMapper } from '@src/hooks/reportMapper/classificationStoryPoints';
 import { pipelineMeanTimeToRecoveryMapper } from '@src/hooks/reportMapper/devMeanTimeToRecovery';
 import { classificationCardCountMapper } from '@src/hooks/reportMapper/classificationCardCount';
 import { pipelineChangeFailureRateMapper } from '@src/hooks/reportMapper/devChangeFailureRate';
@@ -43,6 +44,8 @@ export const reportMapper = ({
 
   const classificationCardCount = classificationList && classificationCardCountMapper(classificationList);
 
+  const classificationStoryPoints = classificationList && classificationStoryPointsMapper(classificationList);
+
   return {
     velocityList,
     cycleTimeList,
@@ -56,5 +59,6 @@ export const reportMapper = ({
     pipelineChangeFailureRateList,
     exportValidityTimeMin,
     classificationCardCount,
+    classificationStoryPoints,
   };
 };
