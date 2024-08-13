@@ -30,7 +30,7 @@ export interface IBoardCycletimeDetailItem {
 
 export interface IBoardClassificationDetailItem {
   name: string;
-  lines: [string, string][];
+  lines: [string, string, string][];
 }
 
 export interface ICsvComparedLines extends Record<string, number> {}
@@ -440,244 +440,244 @@ export const BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES: IBoardClassificationD
   [
     {
       name: 'Issue Type',
-      lines: [['Bug', '100.00%']],
+      lines: [['Bug', '100.00%', '100.00%']],
     },
     {
       name: 'Parent',
-      lines: [['ADM-319', '100.00%']],
+      lines: [['ADM-319', '100.00%', '100.00%']],
     },
     {
       name: 'Story testing-2',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Story testing-1',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Design',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Vulnerability',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Sprint',
-      lines: [['Sprint37', '100.00%']],
+      lines: [['Sprint37', '100.00%', '100.00%']],
     },
     {
       name: 'Project',
-      lines: [['Auto Dora Metrics', '100.00%']],
+      lines: [['Auto Dora Metrics', '100.00%', '100.00%']],
     },
     {
       name: 'Flagged',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Fix versions',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Priority',
-      lines: [['Medium', '100.00%']],
+      lines: [['Medium', '100.00%', '100.00%']],
     },
     {
       name: 'Partner',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Labels',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Time tracking',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Story point estimate',
-      lines: [['1.0', '100.00%']],
+      lines: [['1.0', '100.00%', '100.00%']],
     },
     {
       name: 'QA',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Feature/Operation',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Assignee',
-      lines: [['YinYuan Zhou', '100.00%']],
+      lines: [['YinYuan Zhou', '100.00%', '100.00%']],
     },
   ],
   [
     {
       name: 'Issue Type',
-      lines: [['Bug', '100.00%']],
+      lines: [['Bug', '100.00%', '100.00%']],
     },
     {
       name: 'Parent',
-      lines: [['ADM-868', '100.00%']],
+      lines: [['ADM-868', '100.00%', '100.00%']],
     },
     {
       name: 'Story testing-2',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Story testing-1',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Design',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Vulnerability',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Sprint',
-      lines: [['Sprint37', '100.00%']],
+      lines: [['Sprint37', '100.00%', '100.00%']],
     },
     {
       name: 'Project',
-      lines: [['Auto Dora Metrics', '100.00%']],
+      lines: [['Auto Dora Metrics', '100.00%', '100.00%']],
     },
     {
       name: 'Flagged',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Fix versions',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Priority',
-      lines: [['High', '100.00%']],
+      lines: [['High', '100.00%', '100.00%']],
     },
     {
       name: 'Partner',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Labels',
-      lines: [['1.1.7', '100.00%']],
+      lines: [['1.1.7', '100.00%', '100.00%']],
     },
     {
       name: 'Time tracking',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Story point estimate',
-      lines: [['1.0', '100.00%']],
+      lines: [['1.0', '100.00%', '100.00%']],
     },
     {
       name: 'QA',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Feature/Operation',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Assignee',
-      lines: [['Man Tang', '100.00%']],
+      lines: [['Man Tang', '100.00%', '100.00%']],
     },
   ],
   [
     {
       name: 'Issue Type',
       lines: [
-        ['Task', '66.67%'],
-        ['Story', '33.33%'],
+        ['Task', '66.67%', '63.64%'],
+        ['Story', '33.33%', '36.36%'],
       ],
     },
     {
       name: 'Parent',
-      lines: [['ADM-868', '100.00%']],
+      lines: [['ADM-868', '100.00%', '100.00%']],
     },
     {
       name: 'Story testing-2',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Story testing-1',
       lines: [
-        ['1.0', '66.67%'],
-        ['None', '33.33%'],
+        ['1.0', '66.67%', '63.64%'],
+        ['None', '33.33%', '36.36%'],
       ],
     },
     {
       name: 'Design',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Vulnerability',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Sprint',
       lines: [
-        ['Sprint37', '100.00%'],
-        ['Sprint 35', '33.33%'],
-        ['Sprint 36', '66.67%'],
-        ['Sprint34', '33.33%'],
+        ['Sprint37', '100.00%', '100.00%'],
+        ['Sprint 35', '33.33%', '54.55%'],
+        ['Sprint 36', '66.67%', '90.91%'],
+        ['Sprint34', '33.33%', '54.55%'],
       ],
     },
     {
       name: 'Project',
-      lines: [['Auto Dora Metrics', '100.00%']],
+      lines: [['Auto Dora Metrics', '100.00%', '100.00%']],
     },
     {
       name: 'Flagged',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Fix versions',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Priority',
-      lines: [['Medium', '100.00%']],
+      lines: [['Medium', '100.00%', '100.00%']],
     },
     {
       name: 'Partner',
       lines: [
-        ['YinYuan Zhou', '33.33%'],
-        ['None', '66.67%'],
+        ['YinYuan Zhou', '33.33%', '54.55%'],
+        ['None', '66.67%', '45.45%'],
       ],
     },
     {
       name: 'Labels',
-      lines: [['1.1.7', '100.00%']],
+      lines: [['1.1.7', '100.00%', '100.00%']],
     },
     {
       name: 'Time tracking',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Story point estimate',
       lines: [
-        ['2.0', '33.33%'],
-        ['3.0', '33.33%'],
-        ['0.5', '33.33%'],
+        ['2.0', '33.33%', '36.36%'],
+        ['3.0', '33.33%', '54.55%'],
+        ['0.5', '33.33%', '9.09%'],
       ],
     },
     {
       name: 'QA',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Feature/Operation',
-      lines: [['None', '100.00%']],
+      lines: [['None', '100.00%', '100.00%']],
     },
     {
       name: 'Assignee',
       lines: [
-        ['Chao Wang', '33.33%'],
-        ['YinYuan Zhou', '33.33%'],
-        ['Qiuhong Lei', '33.33%'],
+        ['Chao Wang', '33.33%', '54.55%'],
+        ['YinYuan Zhou', '33.33%', '9.09%'],
+        ['Qiuhong Lei', '33.33%', '36.36%'],
       ],
     },
   ],
