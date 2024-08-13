@@ -4,6 +4,7 @@ import {
   stackedBarOptionMapper,
 } from '@src/containers/ReportStep/ChartOption';
 import { ANIMATION_SECONDS, EVERY_FRAME_MILLISECOND, MILLISECONDS_PER_SECOND } from '@src/constants/commons';
+import { ReportDataWithThreeColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { LABEL_PERCENT } from '@src/containers/ReportStep/BoardMetricsChart';
 import { ReportResponse } from '@src/clients/report/dto/response';
@@ -40,7 +41,6 @@ function extractClassificationData(
     ),
   ];
   const indicators: { data: number[]; name: string; type: string }[] = [];
-
   data
     .filter((it) => it !== undefined)
     .map((it) => it!.valueList)
@@ -51,7 +51,6 @@ function extractClassificationData(
         }
       });
     });
-
   allSubtitle.forEach((item) => {
     const classificationValue: number[] = data
       .filter((it) => it !== undefined)
@@ -63,9 +62,7 @@ function extractClassificationData(
       .map((it) => parseFloat(it));
     indicators.push({ data: classificationValue, name: item, type: 'bar' });
   });
-
   const trendInfo = { type: ChartType.Classification };
-
   return {
     xAxis: dateRanges,
     yAxis: {
@@ -91,42 +88,27 @@ function extractClassificationData(
 }
 
 function getTotalValues(
-  mappedData: ReportResponse[],
-  classificationChartModel: ClassificationChartModelType,
+  classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
   classification: string,
 ) {
-  return mappedData
-    .flatMap((it) =>
-      classificationChartModel === ClassificationChartModelType.CardCount
-        ? it.classificationCardCount
-        : it.classificationStoryPoints,
-    )
+  return classificationDataByModel
     .filter((it) => it?.name === classification)
     .map((it) => it!.totalCount!)
     .reduce((res, it) => res + it, 0);
 }
 
 function extractedValueList(
-  mappedData: ReportResponse[],
-  classificationChartModel: ClassificationChartModelType,
+  classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
   classification: string,
 ) {
-  return mappedData
-    .flatMap((it) =>
-      classificationChartModel === ClassificationChartModelType.CardCount
-        ? it.classificationCardCount
-        : it.classificationStoryPoints,
-    )
-    .filter((it) => it?.name === classification)
-    .flatMap((it) => it?.valueList);
+  return classificationDataByModel.filter((it) => it?.name === classification).flatMap((it) => it?.valueList);
 }
 
 function getAllSubtitles(
-  mappedData: ReportResponse[],
-  classificationChartModel: ClassificationChartModelType,
+  classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
   classification: string,
 ) {
-  const data = extractedValueList(mappedData, classificationChartModel, classification);
+  const data = extractedValueList(classificationDataByModel, classification);
   return [...new Set(data.filter((it) => it !== undefined).map((it) => it!.name))];
 }
 
@@ -141,27 +123,21 @@ function getValueForSubtitle(data: ({ name: string; value: string } | undefined)
 
 function checkClassificationChartType(
   classification: string,
-  classificationChartModel: ClassificationChartModelType,
-  mappedData: ReportResponse[],
+  classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
 ) {
-  const totalCardCounts = getTotalValues(mappedData, classificationChartModel, classification);
-
-  const data = extractedValueList(mappedData, classificationChartModel, classification);
-
+  const totalCardCounts = getTotalValues(classificationDataByModel, classification);
+  const data = extractedValueList(classificationDataByModel, classification);
   const totalCounts = data.filter((it) => it !== undefined).reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
   return totalCounts === totalCardCounts ? ClassificationChartType.Pie : ClassificationChartType.Bar;
 }
 
 function extractClassificationValuesPieData(
   classification: string,
-  classificationChartModel: ClassificationChartModelType,
-  mappedData: ReportResponse[],
+  classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
 ) {
-  const totalValues = getTotalValues(mappedData, classificationChartModel, classification);
-
-  const data = extractedValueList(mappedData, classificationChartModel, classification);
-
-  const allSubtitle = getAllSubtitles(mappedData, classificationChartModel, classification);
+  const totalValues = getTotalValues(classificationDataByModel, classification);
+  const data = extractedValueList(classificationDataByModel, classification);
+  const allSubtitle = getAllSubtitles(classificationDataByModel, classification);
   const indicators: { value: string; name: string }[] = allSubtitle.map((subtitle) => {
     const value = getValueForSubtitle(data, subtitle);
     return {
@@ -169,9 +145,7 @@ function extractClassificationValuesPieData(
       value: `${((value * PERCENTAGE_NUMBER) / totalValues).toFixed(2)}`,
     };
   });
-
   const trendInfo = { type: ChartType.Classification };
-
   return {
     series: indicators,
     color: [
@@ -192,21 +166,16 @@ function extractClassificationValuesPieData(
 
 function extractClassificationCardCountsBarData(
   classification: string,
-  classificationChartModel: ClassificationChartModelType,
-  mappedData: ReportResponse[],
+  classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
 ) {
-  const totalValues = getTotalValues(mappedData, classificationChartModel, classification);
-
-  const data = extractedValueList(mappedData, classificationChartModel, classification);
-
-  const allSubtitle = getAllSubtitles(mappedData, classificationChartModel, classification);
+  const totalValues = getTotalValues(classificationDataByModel, classification);
+  const data = extractedValueList(classificationDataByModel, classification);
+  const allSubtitle = getAllSubtitles(classificationDataByModel, classification);
   const indicators = allSubtitle.map((subtitle) => {
     const value = getValueForSubtitle(data, subtitle);
     return Number(((value * PERCENTAGE_NUMBER) / totalValues).toFixed(2));
   });
-
   const trendInfo = { type: ChartType.Classification };
-
   return {
     xAxis: {
       data: allSubtitle,
@@ -276,12 +245,17 @@ export const ClassificationChart = ({
     classificationData = extractClassificationData(classification, classificationChartModel, dateRanges, mappedData);
     classificationDataOption = classificationData && stackedBarOptionMapper(classificationData, true, isShowAnimation);
   } else {
-    const chartType = checkClassificationChartType(classification, classificationChartModel, mappedData);
+    const classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[] = mappedData.flatMap((it) =>
+      classificationChartModel === ClassificationChartModelType.CardCount
+        ? it.classificationCardCount
+        : it.classificationStoryPoints,
+    );
+    const chartType = checkClassificationChartType(classification, classificationDataByModel);
     if (chartType === ClassificationChartType.Pie) {
-      classificationData = extractClassificationValuesPieData(classification, classificationChartModel, mappedData);
+      classificationData = extractClassificationValuesPieData(classification, classificationDataByModel);
       classificationDataOption = classificationData && pieOptionMapper(classificationData, isShowAnimation);
     } else {
-      classificationData = extractClassificationCardCountsBarData(classification, classificationChartModel, mappedData);
+      classificationData = extractClassificationCardCountsBarData(classification, classificationDataByModel);
       classificationDataOption =
         classificationData && stackedAreaOptionMapper(classificationData, true, isShowAnimation);
     }
