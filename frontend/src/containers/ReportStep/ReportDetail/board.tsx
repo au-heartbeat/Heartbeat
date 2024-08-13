@@ -1,7 +1,7 @@
+import ReportDetailTableContainsSubtitle from '@src/components/Common/ReportDetailTableContainsSubtitle';
+import { MESSAGE, MetricsTitle, ReportSuffixUnits, RequiredData } from '@src/constants/resources';
 import { ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
-import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
 import { DetailContainer } from '@src/containers/ReportStep/ReportDetail/style';
-import { MESSAGE, MetricsTitle, RequiredData } from '@src/constants/resources';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -43,9 +43,10 @@ export const BoardDetail = withGoBack(({ data, errorMessage, metrics }: Property
       {showSectionWith2Columns(MetricsTitle.Velocity, mappedData?.velocityList)}
       {showSectionWith2Columns(MetricsTitle.CycleTime, mappedData?.cycleTimeList)}
       {metrics.includes(RequiredData.Classification) && (
-        <ReportForThreeColumns
+        <ReportDetailTableContainsSubtitle
           title={MetricsTitle.Classification}
-          fieldName={'Field Name'}
+          units={[ReportSuffixUnits.ClassificationCardCounts, ReportSuffixUnits.ClassificationStoryPoint]}
+          fieldName={'Name'}
           listName={'Subtitle'}
           data={mappedData?.classification}
           errorMessage={errorMessage}

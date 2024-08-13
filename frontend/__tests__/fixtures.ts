@@ -551,11 +551,14 @@ export const MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION: ReportResponseDTO = {
     {
       fieldName: 'FS Work Type',
       totalCardCount: 3,
+      storyPoints: 1,
       classificationInfos: [
         {
           name: 'Feature Work - Planned',
-          value: 0.5714,
+          cardCountValue: 0.5714,
           cardCount: 3,
+          storyPoints: 1,
+          storyPointsValue: 0.1,
         },
       ],
     },
@@ -691,11 +694,14 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
     {
       fieldName: 'FS Work Type',
       totalCardCount: 3,
+      storyPoints: 1,
       classificationInfos: [
         {
           name: 'Feature Work - Planned',
-          value: 0.5714,
+          cardCountValue: 0.5714,
           cardCount: 3,
+          storyPoints: 1,
+          storyPointsValue: 0.1,
         },
       ],
     },
@@ -821,10 +827,13 @@ export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
     {
       fieldName: 'Issue Type',
       totalCardCount: 3,
+      storyPoints: 1,
       classificationInfos: [
         {
           name: 'Feature Work - Planned',
-          value: 0.5714,
+          cardCountValue: 0.5714,
+          storyPoints: 1,
+          storyPointsValue: 0.1,
           cardCount: 3,
         },
       ],

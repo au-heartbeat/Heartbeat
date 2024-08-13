@@ -1,7 +1,10 @@
-import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
+import {
+  ReportDataForMultipleValueColumns,
+  ReportDataWithTwoColumns,
+} from '@src/hooks/reportMapper/reportUIDataStructure';
+import ReportDetailTableContainsSubtitle from '@src/components/Common/ReportDetailTableContainsSubtitle';
 import { MetricsTitle, PIPELINE_STEP, ReportSuffixUnits, SUBTITLE } from '@src/constants/resources';
 import ReportForDeploymentFrequency from '@src/components/Common/ReportForDeploymentFrequency';
-import ReportForThreeColumns from '@src/components/Common/ReportForThreeColumns';
 import { DetailContainer } from '@src/containers/ReportStep/ReportDetail/style';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
@@ -22,8 +25,16 @@ const showTwoColumnSection = (title: string, value: Optional<ReportDataWithTwoCo
 const showDeploymentSection = (title: string, tableTitles: string[], value: Optional<ReportDataWithTwoColumns[]>) =>
   value && <ReportForDeploymentFrequency title={title} tableTitles={tableTitles} data={value} />;
 
-const showThreeColumnSection = (title: string, value: Optional<ReportDataWithThreeColumns[]>) =>
-  value && <ReportForThreeColumns title={title} fieldName={PIPELINE_STEP} listName={SUBTITLE} data={value} />;
+const showThreeColumnSection = (title: string, value: Optional<ReportDataForMultipleValueColumns[]>) =>
+  value && (
+    <ReportDetailTableContainsSubtitle
+      title={title}
+      units={[ReportSuffixUnits.Hours]}
+      fieldName={PIPELINE_STEP}
+      listName={SUBTITLE}
+      data={value}
+    />
+  );
 
 export const DoraDetail = withGoBack(({ data }: Property) => {
   const mappedData = reportMapper(data);

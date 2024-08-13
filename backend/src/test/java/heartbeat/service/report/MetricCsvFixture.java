@@ -32,8 +32,17 @@ public class MetricCsvFixture {
 			.velocity(Velocity.builder().velocityForCards(2).velocityForSP(7).build())
 			.classificationList(List.of(Classification.builder()
 				.fieldName("Issue Type")
-				.classificationInfos(List.of(ClassificationInfo.builder().name("Bug").value(0.3333333333333333).build(),
-						ClassificationInfo.builder().name("Story").value(0.6666666666666666).build()))
+				.classificationInfos(List.of(
+						ClassificationInfo.builder()
+							.name("Bug")
+							.cardCountValue(0.3333333333333333)
+							.storyPointsValue(0.5)
+							.build(),
+						ClassificationInfo.builder()
+							.name("Story")
+							.cardCountValue(0.6666666666666666)
+							.storyPointsValue(0.5)
+							.build()))
 				.build()))
 			.cycleTime(CycleTime.builder()
 				.totalTimeForCards(29.26)

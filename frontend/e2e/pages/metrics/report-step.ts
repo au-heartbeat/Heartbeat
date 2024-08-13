@@ -110,7 +110,11 @@ export class ReportStep {
   readonly deploymentFrequencyTrendIcon: Locator;
   readonly leadTimeForChangesTrendIcon: Locator;
   readonly classificationIssueTypeChartSwitchIcon: Locator;
+  readonly classificationIssueTypeChartSwitchCardCountModel: Locator;
+  readonly classificationIssueTypeChartSwitchStoryPointsModel: Locator;
   readonly classificationAssigneeChartSwitchIcon: Locator;
+  readonly classificationAssigneeChartSwitchCardCountModel: Locator;
+  readonly classificationAssigneeChartSwitchStoryPointsModel: Locator;
 
   readonly leadTimeForChangesExplanationIcon: Locator;
   readonly deploymentFrequencyExplanationIcon: Locator;
@@ -137,7 +141,7 @@ export class ReportStep {
     this.boardMetricRework = this.page.locator('[data-test-id="Rework"] [data-test-id="report-section"]');
     this.boardMetricsDetailVelocityPart = this.page.locator('[data-test-id="Velocity"]');
     this.boardMetricsDetailCycleTimePart = this.page.locator('[data-test-id="Cycle Time"]');
-    this.boardMetricsDetailClassificationPart = this.page.locator('[data-test-id="Classification"]');
+    this.boardMetricsDetailClassificationPart = this.page.getByLabel('classification');
     this.boardMetricsDetailReworkTimesPart = this.page.locator('[data-test-id="Rework"]');
 
     this.prLeadTime = this.page.locator('[data-test-id="Lead Time For Changes"] [data-test-id="report-section"]');
@@ -166,8 +170,8 @@ export class ReportStep {
     this.velocityRows = this.page.getByTestId('Velocity').locator('tbody').getByRole('row');
     this.cycleTimeRows = this.page.getByTestId('Cycle Time').locator('tbody').getByRole('row');
     this.deploymentFrequencyRows = this.page.getByLabel('Deployment Frequency').locator('tbody').getByRole('row');
-    this.classificationRows = this.page.getByTestId('Classification').locator('tbody').getByRole('row');
-    this.leadTimeForChangesRows = this.page.getByTestId('Lead Time For Changes').getByRole('row');
+    this.classificationRows = this.page.getByLabel('Classification').locator('tbody').getByRole('row');
+    this.leadTimeForChangesRows = this.page.getByLabel('Lead Time For Changes').getByRole('row');
     this.pipelineChangeFailureRateRows = this.page
       .getByTestId('Pipeline Change Failure Rate')
       .locator('tbody')
@@ -212,7 +216,19 @@ export class ReportStep {
     this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend down');
 
     this.classificationIssueTypeChartSwitchIcon = this.page.getByLabel('classification issue type switch chart');
+    this.classificationIssueTypeChartSwitchCardCountModel = this.page.getByLabel(
+      'classification issue type switch card count model button',
+    );
+    this.classificationIssueTypeChartSwitchStoryPointsModel = this.page.getByLabel(
+      'classification issue type switch story points model button',
+    );
     this.classificationAssigneeChartSwitchIcon = this.page.getByLabel('classification assignee switch chart');
+    this.classificationAssigneeChartSwitchCardCountModel = this.page.getByLabel(
+      'classification assignee switch card count model button',
+    );
+    this.classificationAssigneeChartSwitchStoryPointsModel = this.page.getByLabel(
+      'classification assignee switch story points model button',
+    );
 
     this.doraPipelineSelector = this.page.getByLabel('Pipeline Selector').first();
     this.leadTimeForChangesTrendContainer = this.page.getByLabel('lead time for changes trend container');
@@ -446,9 +462,10 @@ export class ReportStep {
         if (restLines.length < currentMetric.lines.length) {
           currentDataRow = currentDataRow.locator('+tr');
         }
-        const [subtitle, value] = restLines.shift()!;
+        const [subtitle, value1, value2] = restLines.shift()!;
         expect(await currentDataRow.getByRole('cell').first().innerHTML()).toEqual(subtitle);
-        expect(await currentDataRow.getByRole('cell').nth(1).innerHTML()).toEqual(value);
+        expect(await currentDataRow.getByRole('cell').nth(1).innerHTML()).toEqual(value1);
+        expect(await currentDataRow.getByRole('cell').nth(2).innerHTML()).toEqual(value2);
       }
     }
   }
@@ -696,16 +713,6 @@ export class ReportStep {
     }
   }
 
-  async checkMetricDownloadData() {
-    await downloadFileAndCheck(this.page, this.exportMetricData, 'metricData.csv', async (fileDataString) => {
-      const localCsvFile = fs.readFileSync(path.resolve(__dirname, '../../fixtures/create-new/metric-data.csv'));
-      const localCsv = parse(localCsvFile);
-      const downloadCsv = parse(fileDataString);
-
-      expect(localCsv).toStrictEqual(downloadCsv);
-    });
-  }
-
   async checkMetricDownloadDataForMultipleRanges(rangeCount: number, fileNamePrefix?: string) {
     await this.downloadFileAndCheckForMultipleRanges({
       trigger: this.exportMetricData,
@@ -857,19 +864,34 @@ export class ReportStep {
       await expect(this.reworkTrendContainer).not.toBeVisible();
       await expect(this.reworkTrendIcon).not.toBeVisible();
     }
+
     if (showClassificationIssueTypeChart) {
       await expect(this.classificationIssueTypeChart).toBeVisible();
       await expect(this.classificationIssueTypeChartSwitchIcon).toBeVisible();
+      await expect(this.classificationIssueTypeChartSwitchCardCountModel).toBeVisible();
+      await expect(this.classificationIssueTypeChartSwitchStoryPointsModel).toBeVisible();
+
+      await this.classificationIssueTypeChartSwitchCardCountModel.click();
+      await this.classificationIssueTypeChartSwitchStoryPointsModel.click();
     } else {
       await expect(this.classificationIssueTypeChart).not.toBeVisible();
       await expect(this.classificationIssueTypeChartSwitchIcon).not.toBeVisible();
+      await expect(this.classificationIssueTypeChartSwitchCardCountModel).not.toBeVisible();
+      await expect(this.classificationIssueTypeChartSwitchStoryPointsModel).not.toBeVisible();
     }
     if (showClassificationAssigneeChart) {
       await expect(this.classificationAssigneeChart).toBeVisible();
       await expect(this.classificationAssigneeChartSwitchIcon).toBeVisible();
+      await expect(this.classificationAssigneeChartSwitchCardCountModel).toBeVisible();
+      await expect(this.classificationAssigneeChartSwitchStoryPointsModel).toBeVisible();
+
+      await this.classificationAssigneeChartSwitchCardCountModel.click();
+      await this.classificationAssigneeChartSwitchStoryPointsModel.click();
     } else {
       await expect(this.classificationAssigneeChart).not.toBeVisible();
       await expect(this.classificationAssigneeChartSwitchIcon).not.toBeVisible();
+      await expect(this.classificationAssigneeChartSwitchCardCountModel).not.toBeVisible();
+      await expect(this.classificationAssigneeChartSwitchStoryPointsModel).not.toBeVisible();
     }
   }
 
@@ -1095,7 +1117,7 @@ export class ReportStep {
     const newPage = await this.page.waitForEvent('popup');
     const newPageUrl = newPage.url();
 
-    expect(newPageUrl).toContain('https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file'); // Check if the new page URL contains a specific string
+    expect(newPageUrl).toContain('https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file');
 
     await newPage.close();
 

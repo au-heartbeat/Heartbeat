@@ -13,7 +13,9 @@ public class ClassificationInfo {
 
 	private String name;
 
-	private Double value;
+	private Double cardCountValue;
+
+	private Double storyPointsValue;
 
 	private int cardCount;
 

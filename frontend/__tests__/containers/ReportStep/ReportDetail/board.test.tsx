@@ -112,10 +112,10 @@ describe('board', () => {
     it('should show classifications when classifications data is existing', () => {
       (reportMapper as jest.Mock).mockReturnValue({
         classification: [
-          { id: 0, name: 'name1', valuesList: [{ name: 'test1', value: 1 }] },
-          { id: 1, name: 'name2', valuesList: [{ name: 'test2', value: 2 }] },
-          { id: 2, name: 'name3', valuesList: [{ name: 'test3', value: 3 }] },
-          { id: 3, name: 'name4', valuesList: [{ name: 'test4', value: 4 }] },
+          { id: 0, name: 'name1', valuesList: [{ name: 'test1', values: [1, 1] }] },
+          { id: 1, name: 'name2', valuesList: [{ name: 'test2', values: [2, 2] }] },
+          { id: 2, name: 'name3', valuesList: [{ name: 'test3', values: [3, 3] }] },
+          { id: 3, name: 'name4', valuesList: [{ name: 'test4', values: [4, 4] }] },
         ],
       });
       const store = setupStore();
@@ -133,10 +133,10 @@ describe('board', () => {
         </Provider>,
       );
 
-      const classificationTable = screen.getByTestId('Classification');
+      const classificationTable = screen.getByLabelText('Classification');
       expect(screen.getByText('Classification')).toBeInTheDocument();
       expect(classificationTable).toBeInTheDocument();
-      expect(within(classificationTable).queryAllByTestId('tr').length).toBe(8);
+      expect(within(classificationTable).queryAllByLabelText('tr').length).toBe(8);
     });
 
     it('should not show classifications when classifications data is not existing', () => {
@@ -186,9 +186,9 @@ describe('board', () => {
         { id: 1, name: 'name2', valueList: [{ value: 2 }] },
       ],
       classification: [
-        { id: 0, name: 'name1', valuesList: [{ name: 'test1', value: 1 }] },
-        { id: 1, name: 'name2', valuesList: [{ name: 'test2', value: 2 }] },
-        { id: 2, name: 'name3', valuesList: [{ name: 'test3', value: 3 }] },
+        { id: 0, name: 'name1', valuesList: [{ name: 'test1', values: [1, 1] }] },
+        { id: 1, name: 'name2', valuesList: [{ name: 'test2', values: [2, 2] }] },
+        { id: 2, name: 'name3', valuesList: [{ name: 'test3', values: [3, 3] }] },
       ],
     });
 
@@ -206,7 +206,7 @@ describe('board', () => {
 
     const velocityTable = screen.getByTestId('Velocity');
     const cycleTimeTable = screen.getByTestId('Cycle Time');
-    const classificationTable = screen.getByTestId('Classification');
+    const classificationTable = screen.getByLabelText('Classification');
     expect(screen.getByText('Velocity')).toBeInTheDocument();
     expect(velocityTable).toBeInTheDocument();
     expect(screen.getByText('Cycle Time')).toBeInTheDocument();
@@ -216,6 +216,6 @@ describe('board', () => {
 
     expect(within(velocityTable).queryAllByTestId('tr').length).toBe(1);
     expect(within(cycleTimeTable).queryAllByTestId('tr').length).toBe(2);
-    expect(within(classificationTable).queryAllByTestId('tr').length).toBe(6);
+    expect(within(classificationTable).queryAllByLabelText('tr').length).toBe(6);
   });
 });

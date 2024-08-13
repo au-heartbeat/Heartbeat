@@ -20,3 +20,13 @@ export interface ReportDataWithThreeColumns {
     value: string;
   }[];
 }
+
+export interface ReportDataForMultipleValueColumns {
+  id: number;
+  name: string;
+  totalCount?: number;
+  valueList: {
+    name: string;
+    values: string[];
+  }[];
+}

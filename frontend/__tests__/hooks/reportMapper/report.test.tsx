@@ -83,7 +83,7 @@ export const EXPECTED_REPORT_VALUES = {
     {
       id: 0,
       name: 'FS Work Type',
-      valueList: [{ name: 'Feature Work - Planned', value: '57.14%' }],
+      valueList: [{ name: 'Feature Work - Planned', values: ['57.14%', '10.00%'] }],
     },
   ],
   deploymentFrequencyList: [
@@ -155,18 +155,18 @@ export const EXPECTED_REPORT_VALUES = {
       id: 0,
       name: 'fs-platform-payment-selector/RECORD RELEASE TO PROD',
       valueList: [
-        { name: PR_LEAD_TIME, value: '45.04' },
-        { name: PIPELINE_LEAD_TIME, value: '43.12' },
-        { name: TOTAL_DELAY_TIME, value: '88.17' },
+        { name: PR_LEAD_TIME, values: ['45.04'] },
+        { name: PIPELINE_LEAD_TIME, values: ['43.12'] },
+        { name: TOTAL_DELAY_TIME, values: ['88.17'] },
       ],
     },
     {
       id: 1,
       name: 'Average',
       valueList: [
-        { name: PR_LEAD_TIME, value: '60.79' },
-        { name: PIPELINE_LEAD_TIME, value: '39.03' },
-        { name: TOTAL_DELAY_TIME, value: '99.82' },
+        { name: PR_LEAD_TIME, values: ['60.79'] },
+        { name: PIPELINE_LEAD_TIME, values: ['39.03'] },
+        { name: TOTAL_DELAY_TIME, values: ['99.82'] },
       ],
     },
   ],
@@ -302,6 +302,19 @@ export const EXPECTED_REPORT_VALUES = {
         {
           name: 'Feature Work - Planned',
           value: '3',
+        },
+      ],
+    },
+  ],
+  classificationStoryPoints: [
+    {
+      id: 0,
+      name: 'FS Work Type',
+      totalCount: 1,
+      valueList: [
+        {
+          name: 'Feature Work - Planned',
+          value: '1',
         },
       ],
     },

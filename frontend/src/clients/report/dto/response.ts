@@ -1,4 +1,8 @@
-import { ReportDataWithThreeColumns, ReportDataWithTwoColumns } from '@src/hooks/reportMapper/reportUIDataStructure';
+import {
+  ReportDataForMultipleValueColumns,
+  ReportDataWithThreeColumns,
+  ReportDataWithTwoColumns,
+} from '@src/hooks/reportMapper/reportUIDataStructure';
 import { Nullable } from '@src/utils/types';
 
 export interface ReportResponseDTO {
@@ -63,6 +67,7 @@ export interface ReworkTimeResponse {
 export interface ClassificationResponse {
   fieldName: string;
   totalCardCount: number;
+  storyPoints: number;
   classificationInfos: Array<ClassificationInfoList>;
 }
 
@@ -158,8 +163,10 @@ export interface PipelineMeanTimeToRecoveryResponse {
 
 export interface ClassificationInfoList {
   name: string;
-  value: number;
+  cardCountValue: number;
   cardCount: number;
+  storyPointsValue: number;
+  storyPoints: number;
 }
 
 export interface ReportCallbackResponse {
@@ -173,13 +180,14 @@ export interface ReportResponse {
   rework?: Nullable<ReworkTimeResponse>;
   cycleTime?: Nullable<CycleTimeResponse>;
   reworkList?: ReportDataWithTwoColumns[] | null;
-  classification?: ReportDataWithThreeColumns[] | null;
+  classification?: ReportDataForMultipleValueColumns[] | null;
   deploymentFrequencyList?: ReportDataWithTwoColumns[] | null;
   pipelineMeanTimeToRecoveryList?: ReportDataWithTwoColumns[] | null;
-  leadTimeForChangesList?: ReportDataWithThreeColumns[] | null;
+  leadTimeForChangesList?: ReportDataForMultipleValueColumns[] | null;
   pipelineChangeFailureRateList?: ReportDataWithTwoColumns[] | null;
   exportValidityTimeMin?: number | null;
   classificationCardCount?: ReportDataWithThreeColumns[] | null;
+  classificationStoryPoints?: ReportDataWithThreeColumns[] | null;
 }
 
 export interface ReportURLsResponse {

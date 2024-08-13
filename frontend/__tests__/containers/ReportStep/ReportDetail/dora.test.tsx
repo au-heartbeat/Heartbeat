@@ -43,13 +43,13 @@ describe('DoraDetail', () => {
   describe('Lead Time For Changes', () => {
     it('should show leadTimeForChangesList when leadTimeForChangesList data is existing', () => {
       (reportMapper as jest.Mock).mockReturnValue({
-        leadTimeForChangesList: [{ id: 0, name: 'name1', valuesList: [{ name: 'test1', value: 1 }] }],
+        leadTimeForChangesList: [{ id: 0, name: 'name1', valuesList: [{ name: 'test1', values: [1] }] }],
       });
       render(<DoraDetail data={data} onBack={jest.fn()} isShowBack />);
-      const leadTimeForChangesTable = screen.getByTestId('Lead Time For Changes');
+      const leadTimeForChangesTable = screen.getByLabelText('Lead Time For Changes');
       expect(screen.getByText('Lead Time For Changes')).toBeInTheDocument();
       expect(leadTimeForChangesTable).toBeInTheDocument();
-      expect(within(leadTimeForChangesTable).queryAllByTestId('tr').length).toBe(2);
+      expect(within(leadTimeForChangesTable).queryAllByLabelText('tr').length).toBe(2);
     });
 
     it('should not show leadTimeForChangesList when leadTimeForChangesList data is not existing', () => {

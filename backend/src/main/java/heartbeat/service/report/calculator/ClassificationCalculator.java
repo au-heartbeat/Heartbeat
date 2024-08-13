@@ -61,9 +61,9 @@ public class ClassificationCalculator {
 				valueMap.remove(NONE_KEY);
 			}
 
-			valueMap.forEach((displayName, count) -> classificationInfo
-				.add(new ClassificationInfo(displayName, (double) count.getCardCount() / cards.getCardsNumber(),
-						count.getCardCount(), count.getStoryPoints())));
+			valueMap.forEach((displayName, count) -> classificationInfo.add(new ClassificationInfo(displayName,
+					(double) count.getCardCount() / cards.getCardsNumber(),
+					count.getStoryPoints() / cards.getStoryPointSum(), count.getCardCount(), count.getStoryPoints())));
 
 			classificationFields.add(new Classification(nameMap.get(fieldName), cards.getCardsNumber(),
 					cards.getStoryPointSum(), classificationInfo));

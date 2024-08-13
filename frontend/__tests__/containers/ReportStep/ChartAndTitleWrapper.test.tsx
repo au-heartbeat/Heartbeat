@@ -1,6 +1,7 @@
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
 import { ChartType, TrendIcon, TrendType } from '@src/constants/resources';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { theme } from '@src/theme';
 
 describe('ChartAndTitleWrapper', () => {
@@ -42,5 +43,33 @@ describe('ChartAndTitleWrapper', () => {
     render(<ChartAndTitleWrapper trendInfo={testedTrendInfo} isLoading={false} />);
 
     expect(screen.getByLabelText('trend number')).toHaveTextContent('83.72%');
+  });
+
+  it('should show the switch button group when chart type is classification', async () => {
+    const testedTrendInfo = {
+      type: ChartType.Classification,
+    };
+    const clickSwitchClassificationModel = jest.fn();
+    render(
+      <ChartAndTitleWrapper
+        trendInfo={testedTrendInfo}
+        clickSwitchClassificationModel={clickSwitchClassificationModel}
+        isLoading={false}
+        subTitle={'test'}
+      />,
+    );
+
+    expect(screen.getByLabelText('classification test switch model button group')).toBeInTheDocument();
+
+    const cardCountSwitchButton = screen.getByLabelText('classification test switch card count model button');
+    const storyPointsSwitchButton = screen.getByLabelText('classification test switch story points model button');
+
+    expect(cardCountSwitchButton).toBeInTheDocument();
+    expect(storyPointsSwitchButton).toBeInTheDocument();
+
+    await userEvent.click(cardCountSwitchButton);
+    await userEvent.click(storyPointsSwitchButton);
+
+    expect(clickSwitchClassificationModel).toHaveBeenCalledTimes(2);
   });
 });

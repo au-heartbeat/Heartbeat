@@ -40,6 +40,29 @@ export const ChartTitle = styled('div')({
   height: '1.5rem',
 });
 
+export const SwitchButtonGroup = styled('div')({
+  position: 'absolute',
+  left: '12%',
+  top: '15%',
+  display: 'flex',
+  width: '30%',
+  gap: '0.5rem',
+  zIndex: Z_INDEX.BUTTONS,
+});
+
+export const SwitchModelButton = styled('button')(({ selected }: { selected: boolean }) => {
+  return {
+    appearance: 'none',
+    border: 'none',
+    outline: 'none',
+    background: 'none',
+    cursor: 'pointer',
+    padding: '0.3rem',
+    backgroundColor: selected ? theme.main.boardChart.classificationModelColor : 'white',
+    borderRadius: selected ? '0.5rem' : 0,
+  };
+});
+
 export const TrendIconSpan = styled('span')({
   position: 'relative',
   fontSize: '1rem',
