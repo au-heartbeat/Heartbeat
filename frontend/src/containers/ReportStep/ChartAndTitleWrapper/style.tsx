@@ -45,7 +45,7 @@ export const SwitchButtonGroup = styled('div')({
   left: '12%',
   top: '15%',
   display: 'flex',
-  width: '30%',
+  width: '40%',
   gap: '0.5rem',
   zIndex: Z_INDEX.BUTTONS,
 });
@@ -58,7 +58,8 @@ export const SwitchModelButton = styled('button')(({ selected }: { selected: boo
     background: 'none',
     cursor: 'pointer',
     padding: '0.3rem',
-    backgroundColor: selected ? theme.main.boardChart.classificationModelColor : 'white',
+    color: theme.main.boardChart.classificationModelColor,
+    backgroundColor: selected ? theme.main.boardChart.classificationModelBackgroundColor : 'white',
     borderRadius: selected ? '0.5rem' : 0,
   };
 });

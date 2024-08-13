@@ -324,7 +324,8 @@ export const pieOptionMapper = (props: PieOptionProps, animation: boolean) => {
       {
         type: 'pie',
         data: series,
-        center: ['50%', '55%'],
+        radius: '55%',
+        center: ['50%', '58%'],
         label: {
           formatter: '{b} ({c}%)',
         },
