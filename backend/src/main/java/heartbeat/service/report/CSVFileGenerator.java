@@ -443,13 +443,13 @@ public class CSVFileGenerator {
 	private List<String[]> getRowsFormClassification(Classification classificationList) {
 		List<String[]> rows = new ArrayList<>();
 		String fieldName = String.valueOf((classificationList.getFieldName()));
+		final String CLASSIFICATION = "Classifications";
 		List<ClassificationInfo> pairList = classificationList.getClassificationInfos();
 		pairList.forEach(nameValuePair -> {
-			rows.add(new String[] { "Classifications",
-					fieldName + " / " + nameValuePair.getName() + "(Value/Cards count%)",
+			String classificationName = nameValuePair.getName();
+			rows.add(new String[] { CLASSIFICATION, fieldName + " / " + classificationName + "(Value/Cards count%)",
 					DecimalUtil.formatDecimalTwo(nameValuePair.getCardCountValue() * 100) });
-			rows.add(new String[] { "Classifications",
-					fieldName + " / " + nameValuePair.getName() + "(Value/Story point%)",
+			rows.add(new String[] { CLASSIFICATION, fieldName + " / " + classificationName + "(Value/Story point%)",
 					DecimalUtil.formatDecimalTwo(nameValuePair.getStoryPointsValue() * 100) });
 		});
 		return rows;
