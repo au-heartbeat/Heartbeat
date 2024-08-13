@@ -37,6 +37,7 @@ declare module '@mui/material/styles' {
         lineColorA: string;
         lineColorB: string;
         gridColor: string;
+        classificationModelBackgroundColor: string;
         classificationModelColor: string;
       };
       backgroundColor: string;
@@ -155,7 +156,8 @@ export const theme = createTheme({
       lineColorA: '#163C4D',
       lineColorB: '#E16A7C',
       gridColor: '#D9D9D9',
-      classificationModelColor: '#E8EAF6',
+      classificationModelBackgroundColor: '#E8EAF6',
+      classificationModelColor: '#A1A29D',
     },
     backgroundColor: indigo[FIVE_HUNDRED],
     color: '#fff',
