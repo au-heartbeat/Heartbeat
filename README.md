@@ -350,9 +350,11 @@ Users can switch dates to view the dashboard for the corresponding time period. 
 In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.  
 
 - Board chart 
-![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-1-board-chart-1.png)
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/board-chart.png)
 In the classification chart of the board chart, you can click the switch button to reverse the chart. the reversed chart will show the sum of each legend in all time periods.
-![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reverse-classification-chart-1.png)
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reverse-classification-chart.png)
+In the classification chart of the board chart, you can click the button of `Value/Cards count` or `Value/Story point` to see the relative data.
+![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/switch-model-classification-chart.png)
 
 - Dora chart
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-2-3.png)

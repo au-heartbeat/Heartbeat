@@ -45,7 +45,7 @@ export const SwitchButtonGroup = styled('div')({
   left: '12%',
   top: '15%',
   display: 'flex',
-  width: '30%',
+  width: '40%',
   gap: '0.5rem',
   zIndex: Z_INDEX.BUTTONS,
 });
