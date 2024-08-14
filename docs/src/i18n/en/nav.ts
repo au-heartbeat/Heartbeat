@@ -104,6 +104,11 @@ export default [
 		slug: 'issue-solutions/solution-of-buildkite-issue',
 		key: 'issue-solutions/solution-of-buildkite-issue',
 	},
+	{
+		text: 'Solution of e2e timed issue',
+		slug: 'issue-solutions/solution-of-e2e-timed-issue',
+		key: 'issue-solutions/solution-of-e2e-timed-issue',
+	},
 
 	{ text: 'Spikes', header: true, type: 'tech', key: 'spikes' },
 	{
