@@ -740,7 +740,7 @@ export const BOARD_METRICS_REWORK_MULTIPLE_RANGES: IBoardMetricsDetailItem[][] =
   ],
 ];
 
-export const BAORD_CSV_COMPARED_LINES: ICsvComparedLines = {
+export const BOARD_CSV_COMPARED_LINES: ICsvComparedLines = {
   'board-20240603-20240604': 4,
   'board-20240605-20240606': 2,
   'board-20240607-20240607': 2,
