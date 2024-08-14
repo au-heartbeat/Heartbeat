@@ -1,0 +1,102 @@
+---
+title: Solution of e2e timed issue
+description: Solution of e2e timed issue
+---
+
+**Issue**
+
+When running the e2e tests, all e2e tests failed because we can't get build data from BuildKite.
+
+**Reason**
+
+![BuildKite Expired](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/issue-solution/buildkite-expired.png)
+
+- for `free user` on BuildKite, BuildKite will save pipeline build data only for 90 days. So after 90 days of the time selected in e2e test, we will not get build data from BuildKite.
+
+**Solution**
+
+- Modify e2e test regularly
+
+**Estimated the time of next modification**
+
+- the time we select mainly is from `2024-06-03` to `2024-06-07` in the e2e test, so according to my personal estimate that next modified time should be around `2024-09-01`.
+- From `2024-09-01` to `2024-09-05`, the steps are obtained but the result will be changed, because the e2e test can get only partial build data.
+- After `2024-09-05`, the e2e test can't get any build data from the `2024-06-03` to `2024-06-07` time range.
+
+> Tips: The estimated time may not be completely accurate
+
+**Summary steps**
+
+> Tips: The following steps are based on our experience and are not required to be followed. If there is any more excellent experience, you can modify the following steps.
+> 
+<table>
+	<tr>
+	    <th>Step</th>
+	    <th>Content</th>
+	    <th>Comments</th>  
+	</tr >
+	<tr >
+	    <td rowspan="5">Step 1. Configure the latest time period in the local browser and get the report data</td>
+	    <td>1. Change the time period to a time period that can get <code>BuildKite</code> build data</td>
+	    <td>It's recommended to change to a time period close to the current date, because this can reduce the number of e2e test modifications. And select multiple time periods, because only selecting one time range can't go to chart page</td>
+	</tr>
+	<tr>
+	    <td>2. According to the time period, input all tokens</td>
+	    <td>Select all the metrics and input all tokens. If any metrics are not required in the e2e test, we can modify the configuration file</td>
+	</tr>
+	<tr>
+	    <td>3. Input all information that are required, for example, classification, crews and cycle time. Next go to report page</td>
+	    <td>It's recommended to select all</td>
+	</tr>
+	<tr>
+	    <td>4. Export the config file and all the csv file</td>
+	    <td>In the e2e test, we can directly use the config file to e2e test, and the local csv file can also use these csv files</td>
+	</tr>
+	<tr>
+      <td>5. Save the report data to local file, such as images</td>
+	    <td>When you use the config file to e2e test, you will change the report data to assert the report data. And you can directly get these data in the local file without getting the data by executing e2e test multiple times</td>
+	</tr>
+  <tr>
+	    <td rowspan="8">Step 2. Modify the e2e test</td>
+	    <td>1. For the e2e test about <code>create a new project</code>, we will modify the time periods and all the information by config file and modify the report result data from the Step 1</td>
+	    <td>None</td>
+	</tr>
+  <tr>
+	    <td>2. For the e2e test about <code>import from config file</code>, change the config file name to the e2e test config file name, and replace origin <code>input-files/*.template.json</code> file</td>
+	    <td>If we directly use the origin file name, we will not need to modify the code. And we only upload <code>input-files/*.template.json</code> file to repo rather than <code>input-files/*.json</code>, so we must modify the <code>*.template.json</code> file</td>
+	</tr>
+  <tr>
+	    <td>3. In the <code>*.template.json</code> file, for data security, we must replace token with placeholder of <code>&lt;E2E_TOKEN_JIRA&gt;</code> , <code>&lt;E2E_TOKEN_BUILD_KITE&gt;</code>，<code>&lt;E2E_TOKEN_GITHUB&gt;</code> like the previous file</td>
+	    <td>We can copy the previous placeholder to use the new placeholder, And when we run <code>pnpm e2e:local</code>, the <code>generate-config-files.sh</code> file will replace the placeholder with the real token. Tips: there is an e2e test to test the pipeline that is no organization in the unhappy path, and the placeholder is <code>&lt;E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE&gt;</code>, maybe you need to check if the token is correct</td>
+	</tr>
+  <tr>
+	    <td>4. Modify local token file. We will modify the origin token to the new token in the <code>.env.local</code> file to ensure that the e2e test can be passed locally</td>
+	    <td>In the local, the placeholder from the <code>*.template.json</code> file will be replaced with the token in the <code>.env.local</code> file. And the <code>generate-config-files.sh</code> file will create a new json file with the same name by <code>*.template.json</code> file.</td>
+	</tr>
+  <tr>
+	    <td>5. Run the e2e test, and change the report data and local csv files by the Step 1</td>
+	    <td>If the previous steps are correct, the e2e test will go to the report page as in the browser. So you can input the data by Step 1</td>
+	</tr>
+  <tr>
+	    <td>6. If the download csv files are not equal to local csv files, change the local csv files to download files</td>
+	    <td>When these files are not equal, you can print the download filename, and replace the local csv file with download file saved to temp directory. For board csv file, the current jira cards will be added after the blank line in the file, but at different times, these cards are not same, so when we parse the local csv file and download csv file, we set the number of the lines that need to be parsed, so the value that is usually equal to 1 + the number of non-done cards in the <code>BOARD_CSV_COMPARED_LINES</code> of <code>create-new/report-result.ts</code> file may be modified</td>
+	</tr>
+  <tr>
+	    <td>7. Repeat Step 1 and Step 2, until all e2e tests are passed in the local</td>
+	    <td>Tips: For special tests, we need to prepare special time periods. For example, in the unhappy path when import file, we will test the function that board configuration don't exist in the metrics page, so the board data should not exist in the time periods that we select, and the time periods usually are holiday, such as from 2024-05-01 to 2024-05-05</td>
+	</tr>
+  <tr>
+	    <td>8. Close the playwright and rerun the cmd of <code>pnpm e2e:local</code> to re-test the e2e test</td>
+	    <td>The reason is to ensure that all e2e tests are passed in the local env. Becausethe changes of <code>*.template.json</code> will not be hot replacement, however, when we run the <code>pnpm e2e:local</code> command, the json file will be generated by <code>generate-config-files.sh</code> file</td>
+	</tr>
+  <tr>
+      <td rowspan="3">Step 3. Modify the remote env to ensure that all e2e tests are passed in the remote env</td>
+	    <td>1. Change the <code>Github</code> token to the correct token</td>
+	    <td>Not sure if permissions are needed</td>
+	</tr>
+  <tr>
+	    <td>2. Change the <code>AWS</code> token to the correct token</td>
+	    <td>login to <code>AWS</code> by <code>HeartBeatKeyPair.pem</code> in the <code>google drive</code>, and by the cmd of <code>vim /etc/buildkite-agent/hooks/environment</code> to change the env and modify the token to the correct token. Permissions are needed</td>
+	</tr>
+
+</table>

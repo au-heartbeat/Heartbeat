@@ -14,7 +14,7 @@ import {
 } from '../../fixtures/create-new/metrics-step';
 import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../fixtures/create-new/config-step';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
-import { BAORD_CSV_COMPARED_LINES } from '../../fixtures/create-new/report-result';
+import { BOARD_CSV_COMPARED_LINES } from '../../fixtures/create-new/report-result';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
 import { config as configStepData } from '../../fixtures/create-new/config-step';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
@@ -91,7 +91,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
     cycleTimeData: BOARD_METRICS_CYCLE_TIME_MULTIPLE_RANGES,
     classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
     reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
-    csvCompareLines: BAORD_CSV_COMPARED_LINES,
+    csvCompareLines: BOARD_CSV_COMPARED_LINES,
   });
   await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_MULTIPLE_RANGES);
   await reportStep.checkDoraMetricsDetailsForMultipleRanges({
@@ -198,7 +198,7 @@ test('Create a new project with design and waiting for deployment in the cycle t
     cycleTimeData: BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME,
     classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
     reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
-    csvCompareLines: BAORD_CSV_COMPARED_LINES,
+    csvCompareLines: BOARD_CSV_COMPARED_LINES,
     fileNamePrefix,
   });
   await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_MULTIPLE_RANGES);
