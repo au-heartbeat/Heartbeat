@@ -1,7 +1,8 @@
 import { StyledTextField } from '@src/containers/MetricsStep/CycleTime/Table/style';
 import React, { useState, useCallback, SyntheticEvent, useEffect } from 'react';
-import { CYCLE_TIME_LIST } from '@src/constants/resources';
-import { Z_INDEX } from '@src/constants/commons';
+import { CYCLE_TIME_LIST, METRICS_CONSTANTS } from '@src/constants/resources';
+import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
+import { NEW_FUNCTIONS_VERSIONS, Z_INDEX } from '@src/constants/commons';
 import { Autocomplete } from '@mui/material';
 
 interface ICellAutoCompleteProps {
@@ -44,6 +45,15 @@ const CellAutoComplete = ({ name, defaultSelected, onSelect, customRenderInput }
       onChange={handleSelectOnChange}
       inputValue={inputValue}
       onInputChange={handleInputOnChange}
+      renderOption={(props, option: string) => {
+        const value =
+          option === METRICS_CONSTANTS.designValue || option === METRICS_CONSTANTS.waitingForDeploymentValue ? (
+            <NewFunctionsLabel createVersion={NEW_FUNCTIONS_VERSIONS['1.3.0']}>{option}</NewFunctionsLabel>
+          ) : (
+            option
+          );
+        return <li {...props}>{value}</li>;
+      }}
       renderInput={renderInput}
       slotProps={{
         popper: {

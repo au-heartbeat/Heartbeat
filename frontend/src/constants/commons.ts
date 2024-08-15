@@ -107,3 +107,7 @@ export const ANIMATION_SECONDS = 0.5;
 export const EVERY_FRAME_MILLISECOND = 17;
 
 export const MILLISECONDS_PER_SECOND = 1000;
+
+export const NEW_FUNCTIONS_VERSIONS = {
+  '1.3.0': '1.3.0',
+};

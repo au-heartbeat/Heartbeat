@@ -12,8 +12,10 @@ import {
 import { ClassificationChartModelType } from '@src/containers/ReportStep/BoardMetricsChart/ClassificationChart';
 import { CHART_TREND_TIP, ChartType, TrendIcon, TrendType, UP_TREND_IS_BETTER } from '@src/constants/resources';
 import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
+import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
 import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
 import { ChartWrapper } from '@src/containers/MetricsStep/style';
+import { NEW_FUNCTIONS_VERSIONS } from '@src/constants/commons';
 import { convertNumberToPercent } from '@src/utils/util';
 import React, { ForwardedRef, forwardRef } from 'react';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -116,7 +118,13 @@ const ChartAndTitleWrapper = forwardRef(
           </Tooltip>
         )}
         <ChartTitle>
-          {trendInfo.type} {subTitle && `: ${subTitle}`}
+          {subTitle === undefined ? (
+            trendInfo.type
+          ) : (
+            <NewFunctionsLabel createVersion={NEW_FUNCTIONS_VERSIONS['1.3.0']}>
+              {trendInfo.type} {`: ${subTitle}`}
+            </NewFunctionsLabel>
+          )}
           {trendInfo.trendNumber !== undefined && !isLoading && (
             <Tooltip title={tipContent} arrow>
               <TrendContainer

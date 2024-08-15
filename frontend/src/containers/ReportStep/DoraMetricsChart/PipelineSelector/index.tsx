@@ -28,7 +28,6 @@ export default function PipelineSelector({ options, value, onUpDatePipeline, tit
         disableClearable
         sx={{
           flex: 1,
-          paddingRight: '1.25rem',
           marginLeft: '1rem',
           minWidth: '22rem',
         }}
