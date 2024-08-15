@@ -4,6 +4,9 @@ import { theme } from '@src/theme';
 export const NewFunctionsContent = styled('div')({
   display: 'flex',
   gap: '1rem',
+  [theme.breakpoints.down('md')]: {
+    gap: '0.2rem',
+  },
 });
 
 export const NewLabel = styled('div')({

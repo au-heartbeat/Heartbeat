@@ -107,16 +107,6 @@ const ChartAndTitleWrapper = forwardRef(
         }}
       >
         {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
-        {isShowSwitch && (
-          <Tooltip title='Switch this chart' placement='right' followCursor>
-            <SwitchIconWrapper
-              src={SwitchIcon}
-              disabledClickRepeatButton={disabledClickRepeatButton}
-              aria-label={`classification ${subTitle!.toLowerCase()} switch chart`}
-              onClick={clickSwitch}
-            />
-          </Tooltip>
-        )}
         <ChartTitle>
           {subTitle === undefined ? (
             trendInfo.type
@@ -134,6 +124,16 @@ const ChartAndTitleWrapper = forwardRef(
                 <TrendIconSpan>{TREND_ICON_MAPPING[trendInfo.icon!]}</TrendIconSpan>
                 <span aria-label='trend number'>{convertNumberToPercent(trendInfo.trendNumber)}</span>
               </TrendContainer>
+            </Tooltip>
+          )}
+          {isShowSwitch && (
+            <Tooltip title='Switch this chart' placement='right' followCursor>
+              <SwitchIconWrapper
+                src={SwitchIcon}
+                disabledClickRepeatButton={disabledClickRepeatButton}
+                aria-label={`classification ${subTitle!.toLowerCase()} switch chart`}
+                onClick={clickSwitch}
+              />
             </Tooltip>
           )}
         </ChartTitle>
