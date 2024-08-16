@@ -1,11 +1,12 @@
 import {
   ResetConfirmDialogButtonGroup,
+  ResetConfirmDialogContent,
   ResetConfirmDialogTitle,
 } from '@src/containers/ConfigStep/ResetConfirmDialog/style';
 import { StyledDialogContainer } from '@src/containers/MetricsStep/ReworkSettings/ReworkDialog/style';
 import { CancelButton, YesButton } from '@src/containers/MetricsStepper/ConfirmDialog/style';
-import { Dialog, DialogContent } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { Dialog } from '@mui/material';
 import React from 'react';
 
 export const ResetConfirmDialog = (props: { onConfirm: () => void; onClose: () => void; isShowDialog: boolean }) => {
@@ -14,7 +15,6 @@ export const ResetConfirmDialog = (props: { onConfirm: () => void; onClose: () =
     <Dialog open={isShowDialog} maxWidth={'md'} onClose={onClose} aria-label={'reset confirm dialog'}>
       <StyledDialogContainer>
         <ResetConfirmDialogTitle aria-label={'reset confirm dialog title'}>
-          <p>Confirm reset</p>
           <CloseIcon
             onClick={onClose}
             aria-label='reset confirm dialog close'
@@ -28,9 +28,9 @@ export const ResetConfirmDialog = (props: { onConfirm: () => void; onClose: () =
             }}
           />
         </ResetConfirmDialogTitle>
-        <DialogContent aria-label={'reset confirm dialog content'}>
+        <ResetConfirmDialogContent aria-label={'reset confirm dialog content'}>
           Are you sure you want to reset the configurations?
-        </DialogContent>
+        </ResetConfirmDialogContent>
         <ResetConfirmDialogButtonGroup>
           <CancelButton variant='outlined' onClick={onClose} aria-label={'reset confirm dialog cancel button'}>
             Cancel

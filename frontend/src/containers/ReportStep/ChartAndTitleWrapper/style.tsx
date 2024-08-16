@@ -25,10 +25,15 @@ export const StyledChartAndTitleWrapper = styled('div')({
   },
 });
 
+export const ChartName = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
 export const ChartTitle = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
   alignItems: 'center',
+  justifyContent: 'space-between',
   position: 'absolute',
   top: '1.75rem',
   left: '1.75rem',

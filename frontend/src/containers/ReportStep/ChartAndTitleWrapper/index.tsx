@@ -1,4 +1,5 @@
 import {
+  ChartName,
   ChartTitle,
   StyledChartAndTitleWrapper,
   StyledTooltipContent,
@@ -91,6 +92,23 @@ const ChartAndTitleWrapper = forwardRef(
       </StyledTooltipContent>
     );
 
+    const chartName = (
+      <ChartName>
+        {trendInfo.type} {subTitle && `: ${subTitle}`}
+        {trendInfo.trendNumber !== undefined && !isLoading && (
+          <Tooltip title={tipContent} arrow>
+            <TrendContainer
+              color={TREND_COLOR_MAP[trendInfo.trendType!]}
+              aria-label={trendInfo.type + ' trend container'}
+            >
+              <TrendIconSpan>{TREND_ICON_MAPPING[trendInfo.icon!]}</TrendIconSpan>
+              <span aria-label='trend number'>{convertNumberToPercent(trendInfo.trendNumber)}</span>
+            </TrendContainer>
+          </Tooltip>
+        )}
+      </ChartName>
+    );
+
     const clickStoryPointsButton = () => {
       clickSwitchClassificationModel && clickSwitchClassificationModel(ClassificationChartModelType.StoryPoints);
     };
@@ -107,24 +125,7 @@ const ChartAndTitleWrapper = forwardRef(
       >
         {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
         <ChartTitle>
-          {subTitle === undefined ? (
-            trendInfo.type
-          ) : (
-            <NewFunctionsLabel initVersion={'1.3.0'}>
-              {trendInfo.type} {`: ${subTitle}`}
-            </NewFunctionsLabel>
-          )}
-          {trendInfo.trendNumber !== undefined && !isLoading && (
-            <Tooltip title={tipContent} arrow>
-              <TrendContainer
-                color={TREND_COLOR_MAP[trendInfo.trendType!]}
-                aria-label={trendInfo.type + ' trend container'}
-              >
-                <TrendIconSpan>{TREND_ICON_MAPPING[trendInfo.icon!]}</TrendIconSpan>
-                <span aria-label='trend number'>{convertNumberToPercent(trendInfo.trendNumber)}</span>
-              </TrendContainer>
-            </Tooltip>
-          )}
+          {subTitle ? <NewFunctionsLabel initVersion={'1.3.0'}>{chartName}</NewFunctionsLabel> : chartName}
           {isShowSwitch && (
             <Tooltip title='Switch this chart' placement='right' followCursor>
               <SwitchIconWrapper
