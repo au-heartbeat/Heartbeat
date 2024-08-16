@@ -60,7 +60,9 @@ const mockedUseAppDispatch = jest.fn();
 jest.mock('@src/hooks/useAppDispatch', () => ({
   useAppDispatch: () => mockedUseAppDispatch,
 }));
-
+jest.mock('semver', () => ({
+  gt: jest.fn((version, initVersion) => version > initVersion),
+}));
 const setup = () =>
   render(
     <Provider store={store}>

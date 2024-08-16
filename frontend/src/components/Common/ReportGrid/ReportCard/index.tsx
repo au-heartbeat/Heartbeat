@@ -6,6 +6,7 @@ import {
 import { ReportCardItem, ReportCardItemProps } from '@src/components/Common/ReportGrid/ReportCardItem';
 import { DoraMetricsDialog } from '@src/components/Common/ReportGrid/ReportCard/DoraMetricsDialog';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
 import { ErrorMessagePrompt } from '@src/components/ErrorMessagePrompt';
 import { StyledLink } from '@src/containers/MetricsStep/style';
 import { DORA_METRICS } from '@src/constants/resources';
@@ -94,9 +95,11 @@ export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) 
       <StyledReportCardTitle>
         {title}
         {DORA_METRICS.some((it) => it.toLowerCase() === title.toLowerCase()) && (
-          <StyledLink onClick={handleOpenDialog} aria-label={`${title.toLowerCase()} explanation`}>
-            <HelpOutlineOutlinedIcon fontSize='small' />
-          </StyledLink>
+          <NewFunctionsLabel initVersion={'1.3.0'}>
+            <StyledLink onClick={handleOpenDialog} aria-label={`${title.toLowerCase()} explanation`}>
+              <HelpOutlineOutlinedIcon fontSize='small' />
+            </StyledLink>
+          </NewFunctionsLabel>
         )}
       </StyledReportCardTitle>
       {errorMessage && <ErrorMessagePrompt errorMessage={errorMessage} />}

@@ -110,6 +110,10 @@ declare module '@mui/material/styles' {
     tip: {
       color: string;
     };
+    newFunctionsLabel: {
+      color: string;
+      backgroundColor: string;
+    };
   }
 }
 
@@ -242,6 +246,10 @@ export const theme = createTheme({
     },
     tip: {
       color: '#ED6D03CC',
+    },
+    newFunctionsLabel: {
+      color: '#4350AF',
+      backgroundColor: '#DCDEEB',
     },
   },
 });

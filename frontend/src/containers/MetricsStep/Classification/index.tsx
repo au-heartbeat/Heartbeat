@@ -9,6 +9,7 @@ import { Checkbox, createFilterOptions, FilterOptionsState, TextField } from '@m
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { FormGroupWrapper } from '@src/components/Common/FormGroupWrapper';
+import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
 import { formatDuplicatedNameWithSuffix } from '@src/utils/util';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { ALL_OPTION_META } from '@src/constants/resources';
@@ -157,7 +158,13 @@ export const Classification = ({ targetFields, title, label }: classificationPro
               </li>
             );
           }}
-          renderInput={(params) => <TextField {...params} variant='standard' label='Visible in charts (optional)' />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant='standard'
+              label={<NewFunctionsLabel initVersion={'1.3.0'}>Visible in charts (optional)</NewFunctionsLabel>}
+            />
+          )}
           slotProps={{
             popper: {
               sx: {

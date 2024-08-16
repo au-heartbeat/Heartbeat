@@ -9,5 +9,6 @@ export const PipelinesSelectContainer = styled('div')({
   lineHeight: '2rem',
   [theme.breakpoints.down('md')]: {
     flexDirection: 'column',
+    width: '7rem',
   },
 });

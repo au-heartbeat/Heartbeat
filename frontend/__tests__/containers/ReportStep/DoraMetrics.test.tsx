@@ -7,10 +7,15 @@ import { RETRY } from '@src/constants/resources';
 import { Provider } from 'react-redux';
 import React from 'react';
 import clearAllMocks = jest.clearAllMocks;
+import { saveVersion } from '@src/context/meta/metaSlice';
 
 jest.mock('@src/utils/util', () => ({
   ...jest.requireActual('@src/utils/util'),
   getDeviceSize: jest.fn().mockReturnValue('lg'),
+}));
+
+jest.mock('semver', () => ({
+  gt: jest.fn((version, initVersion) => version > initVersion),
 }));
 
 describe('Report Card', () => {
@@ -38,8 +43,9 @@ describe('Report Card', () => {
   const mockHandleRetry = jest.fn();
   const onShowDetail = jest.fn();
 
-  const setup = () => {
+  const setup = (version: string = '1.2.1') => {
     store = setupStore();
+    store.dispatch(saveVersion(version));
     return render(
       <Provider store={store}>
         <DoraMetrics
@@ -98,5 +104,22 @@ describe('Report Card', () => {
     await userEvent.click(closeButton!);
 
     expect(screen.queryByLabelText('dora metrics dialog')).not.toBeInTheDocument();
+  });
+
+  it('should show four new labels in the dora metrics when version is less than 1.3.0', () => {
+    setup();
+
+    const newLabels = screen.queryAllByLabelText('new label');
+
+    expect(newLabels.length).toEqual(4);
+    newLabels.forEach((it) => expect(it).toBeInTheDocument());
+  });
+
+  it('should not show any new label in the dora metrics when version is more than 1.3.0', () => {
+    setup('1.3.0.1');
+
+    const newLabels = screen.queryAllByLabelText('new label');
+
+    expect(newLabels.length).toEqual(0);
   });
 });

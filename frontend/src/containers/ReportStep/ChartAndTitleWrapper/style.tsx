@@ -6,9 +6,6 @@ export const SwitchIconWrapper = styled('img')(
   ({ disabledClickRepeatButton }: { disabledClickRepeatButton: boolean }) => ({
     width: '1.5rem',
     color: theme.main.backgroundColor,
-    position: 'absolute',
-    right: '1.75rem',
-    top: '1.75rem',
     cursor: disabledClickRepeatButton ? 'not-allowed' : 'pointer',
     zIndex: Z_INDEX.BUTTONS,
   }),
@@ -30,10 +27,16 @@ export const StyledChartAndTitleWrapper = styled('div')({
 
 export const ChartTitle = styled('div')({
   display: 'flex',
+  justifyContent: 'space-between',
   alignItems: 'center',
   position: 'absolute',
   top: '1.75rem',
   left: '1.75rem',
+  right: '1.75rem',
+  [theme.breakpoints.down('md')]: {
+    left: '0.75rem',
+    right: '0.75rem',
+  },
   zIndex: '1',
   fontSize: '1.2rem',
   fontWeight: 'bold',

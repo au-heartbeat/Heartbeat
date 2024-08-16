@@ -42,6 +42,7 @@ import { useGenerateReportEffect } from '@src/hooks/useGenerateReportEffect';
 import { backStep, updateReportId } from '@src/context/stepper/StepperSlice';
 import { useExportCsvEffect } from '@src/hooks/useExportCsvEffect';
 import ReportStep, { showChart } from '@src/containers/ReportStep';
+import { saveVersion } from '@src/context/meta/metaSlice';
 import { setupStore } from '../../utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import React, { ReactNode } from 'react';
@@ -156,8 +157,9 @@ describe('Report Step', () => {
     ];
   };
   const handleSaveMock = jest.fn();
-  const setup = (params: string[], dateRange: DateRangeList = [fullValueDateRange]) => {
+  const setup = (params: string[], dateRange: DateRangeList = [fullValueDateRange], version: string = '1.2.1') => {
     dateRange && store.dispatch(updateDateRange(dateRange));
+    store.dispatch(saveVersion(version));
     store.dispatch(
       updateJiraVerifyResponse({
         jiraColumns: MOCK_JIRA_VERIFY_RESPONSE.jiraColumns,
@@ -869,13 +871,18 @@ describe('Report Step', () => {
       jest.spyOn(echarts, 'init').mockImplementation(() => chart as unknown as echarts.ECharts);
     });
 
-    it('should correctly render dora chart', async () => {
+    it('should correctly render dora chart and show new label when version is less than 1.3.0', async () => {
       reportHook.current.reportInfos[0].reportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
 
       setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 
       const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
       await userEvent.click(switchChartButton);
+
+      const classificationNewLabels = screen.getAllByLabelText('new label');
+
+      expect(classificationNewLabels.length).toEqual(2);
+      classificationNewLabels.forEach((it) => expect(it).toBeInTheDocument());
 
       const switchDoraChartButton = screen.getByText(CHART_TYPE.DORA);
       await userEvent.click(switchDoraChartButton);
@@ -904,6 +911,9 @@ describe('Report Step', () => {
         await userEvent.click(pipelineSelector);
       });
       expect(pipelineSelectorInput).toHaveValue('mock pipeline name/mock step1');
+      const pipelineNewLabels = screen.getAllByLabelText('new label');
+      expect(pipelineNewLabels.length).toEqual(1);
+      pipelineNewLabels.forEach((it) => expect(it).toBeInTheDocument());
 
       expect(addNotification).toHaveBeenCalledWith({
         message: MESSAGE.EXPIRE_INFORMATION,

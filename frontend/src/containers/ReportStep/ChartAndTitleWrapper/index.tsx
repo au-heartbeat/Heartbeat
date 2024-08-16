@@ -12,6 +12,7 @@ import {
 import { ClassificationChartModelType } from '@src/containers/ReportStep/BoardMetricsChart/ClassificationChart';
 import { CHART_TREND_TIP, ChartType, TrendIcon, TrendType, UP_TREND_IS_BETTER } from '@src/constants/resources';
 import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
+import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
 import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
 import { ChartWrapper } from '@src/containers/MetricsStep/style';
 import { convertNumberToPercent } from '@src/utils/util';
@@ -105,18 +106,14 @@ const ChartAndTitleWrapper = forwardRef(
         }}
       >
         {isLoading && <Loading size='1.5rem' aria-label={trendInfo.type.toLowerCase() + ' loading'} />}
-        {isShowSwitch && (
-          <Tooltip title='Switch this chart' placement='right' followCursor>
-            <SwitchIconWrapper
-              src={SwitchIcon}
-              disabledClickRepeatButton={disabledClickRepeatButton}
-              aria-label={`classification ${subTitle!.toLowerCase()} switch chart`}
-              onClick={clickSwitch}
-            />
-          </Tooltip>
-        )}
         <ChartTitle>
-          {trendInfo.type} {subTitle && `: ${subTitle}`}
+          {subTitle === undefined ? (
+            trendInfo.type
+          ) : (
+            <NewFunctionsLabel initVersion={'1.3.0'}>
+              {trendInfo.type} {`: ${subTitle}`}
+            </NewFunctionsLabel>
+          )}
           {trendInfo.trendNumber !== undefined && !isLoading && (
             <Tooltip title={tipContent} arrow>
               <TrendContainer
@@ -126,6 +123,16 @@ const ChartAndTitleWrapper = forwardRef(
                 <TrendIconSpan>{TREND_ICON_MAPPING[trendInfo.icon!]}</TrendIconSpan>
                 <span aria-label='trend number'>{convertNumberToPercent(trendInfo.trendNumber)}</span>
               </TrendContainer>
+            </Tooltip>
+          )}
+          {isShowSwitch && (
+            <Tooltip title='Switch this chart' placement='right' followCursor>
+              <SwitchIconWrapper
+                src={SwitchIcon}
+                disabledClickRepeatButton={disabledClickRepeatButton}
+                aria-label={`classification ${subTitle!.toLowerCase()} switch chart`}
+                onClick={clickSwitch}
+              />
             </Tooltip>
           )}
         </ChartTitle>

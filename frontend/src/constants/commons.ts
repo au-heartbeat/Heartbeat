@@ -107,3 +107,8 @@ export const ANIMATION_SECONDS = 0.5;
 export const EVERY_FRAME_MILLISECOND = 17;
 
 export const MILLISECONDS_PER_SECOND = 1000;
+
+export enum NewLabelType {
+  General = 'general',
+  CustomizeMarginAndHeight = 'customize margin and height',
+}
