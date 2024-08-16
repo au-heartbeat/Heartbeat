@@ -76,7 +76,6 @@ export class ConfigStep {
   readonly boardVerifiedButton: Locator;
   readonly boardResetButton: Locator;
   readonly resetConfirmDialog: Locator;
-  readonly resetConfirmDialogTitle: Locator;
   readonly resetConfirmDialogClose: Locator;
   readonly resetConfirmDialogContent: Locator;
   readonly resetConfirmDialogCancelButton: Locator;
@@ -136,8 +135,8 @@ export class ConfigStep {
     this.previousButton = page.getByRole('button', { name: 'Previous' });
     this.nextButton = page.getByRole('button', { name: 'Next' });
     this.previousModal = page.getByText('All the filled data will be cleared. Continue to Home page?');
-    this.previousModalYesButton = page.getByRole('button', { name: 'Yes' });
-    this.previousModalCancelButton = page.getByRole('button', { name: 'Cancel' });
+    this.previousModalYesButton = page.getByLabel('return to home page confirm dialog confirm button');
+    this.previousModalCancelButton = page.getByLabel('return to home page confirm dialog cancel button');
 
     this.requiredMetricsLabel = page.getByLabel('Required metrics *');
     this.requiredMetricsAllOption = page.getByRole('option', { name: 'All' });
@@ -161,7 +160,6 @@ export class ConfigStep {
     this.boardVerifiedButton = this.boardContainer.getByRole('button', { name: 'Verified' });
     this.boardResetButton = this.boardContainer.getByRole('button', { name: 'Reset' });
     this.resetConfirmDialog = this.page.getByLabel('reset confirm dialog').first();
-    this.resetConfirmDialogTitle = this.page.getByLabel('reset confirm dialog title');
     this.resetConfirmDialogClose = this.page.getByLabel('reset confirm dialog close');
     this.resetConfirmDialogContent = this.page.getByLabel('reset confirm dialog content');
     this.resetConfirmDialogCancelButton = this.page.getByLabel('reset confirm dialog cancel button');
@@ -259,22 +257,6 @@ export class ConfigStep {
     await this.toDateInputButton.click();
     await this.toDateInputValueSelect(toDay).click();
     expect(this.page.getByText(covertToDateString(toDay))).toBeTruthy();
-  }
-
-  async selectVelocityAndClassificationInRequireData() {
-    await this.requireDataButton.click();
-    await this.velocityCheckbox.check();
-    await this.classificationCheckbox.check();
-    await this.page.keyboard.press('Escape');
-
-    await expect(this.requireDataButton).toHaveText('Velocity, Classification');
-
-    await this.requireDataButton.click();
-    await this.velocityCheckbox.uncheck();
-    await this.classificationCheckbox.uncheck();
-    await this.page.keyboard.press('Escape');
-
-    expect(this.requiredDataErrorMessage).toBeTruthy();
   }
 
   async typeInDateRange({ startDate, endDate, number = 0 }: { startDate: string; endDate: string; number?: number }) {
@@ -494,7 +476,6 @@ export class ConfigStep {
 
   async resetDialogShow() {
     await expect(this.resetConfirmDialog).toBeVisible();
-    await expect(this.resetConfirmDialogTitle).toBeVisible();
     await expect(this.resetConfirmDialogClose).toBeVisible();
     await expect(this.resetConfirmDialogContent).toBeVisible();
     await expect(this.resetConfirmDialogCancelButton).toBeVisible();
@@ -547,13 +528,11 @@ export class ConfigStep {
   }
 
   async cancelGoToPreviousStep() {
-    const cancelButton = this.page.getByRole('button', { name: 'Cancel' });
-    await cancelButton.click();
+    await this.previousModalCancelButton.click();
   }
 
   async confirmGoToPreviousStep() {
-    const confirmButton = this.page.getByRole('button', { name: 'Yes' });
-    await confirmButton.click();
+    await this.previousModalYesButton.click();
   }
 
   async addNewTimeRange() {
