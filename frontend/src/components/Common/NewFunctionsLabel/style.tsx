@@ -12,7 +12,7 @@ export const NewFunctionsContent = styled('div')({
 
 export const NewLabel = styled('div')({
   padding: '0 0.3rem',
-  fontSize: '0.8rem',
+  fontSize: '0.7rem',
   height: '1rem',
   lineHeight: '1rem',
   color: theme.components?.newFunctionsLabel.color,
