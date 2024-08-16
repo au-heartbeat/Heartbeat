@@ -10,10 +10,10 @@ import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle'
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { FormGroupWrapper } from '@src/components/Common/FormGroupWrapper';
 import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
-import { NEW_FUNCTIONS_VERSIONS, Z_INDEX } from '@src/constants/commons';
 import { formatDuplicatedNameWithSuffix } from '@src/utils/util';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { ALL_OPTION_META } from '@src/constants/resources';
+import { Z_INDEX } from '@src/constants/commons';
 import { useAppSelector } from '@src/hooks';
 import React from 'react';
 
@@ -162,11 +162,7 @@ export const Classification = ({ targetFields, title, label }: classificationPro
             <TextField
               {...params}
               variant='standard'
-              label={
-                <NewFunctionsLabel createVersion={NEW_FUNCTIONS_VERSIONS['1.3.0']}>
-                  Visible in charts (optional)
-                </NewFunctionsLabel>
-              }
+              label={<NewFunctionsLabel initVersion={'1.3.0'}>Visible in charts (optional)</NewFunctionsLabel>}
             />
           )}
           slotProps={{

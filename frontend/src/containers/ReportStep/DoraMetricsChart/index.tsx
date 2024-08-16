@@ -10,8 +10,8 @@ import {
 import {
   oneLineOptionMapper,
   Series,
-  stackedBarOptionMapper,
   stackedAreaOptionMapper,
+  stackedBarOptionMapper,
 } from '@src/containers/ReportStep/ChartOption';
 import {
   AREA_STYLE,
@@ -22,9 +22,9 @@ import {
 import PipelineSelector from '@src/containers/ReportStep/DoraMetricsChart/PipelineSelector';
 import { ReportResponse, ReportResponseDTO } from '@src/clients/report/dto/response';
 import ChartAndTitleWrapper from '@src/containers/ReportStep/ChartAndTitleWrapper';
-import { EMPTY_STRING, NEW_FUNCTIONS_VERSIONS } from '@src/constants/commons';
 import { calculateTrendInfo, percentageFormatter } from '@src/utils/util';
 import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
+import { EMPTY_STRING, NewLabelType } from '@src/constants/commons';
 import { ChartContainer } from '@src/containers/MetricsStep/style';
 import { reportMapper } from '@src/hooks/reportMapper/report';
 import { showChart } from '@src/containers/ReportStep';
@@ -326,14 +326,7 @@ export const DoraMetricsChart = ({
 
   return (
     <>
-      <NewFunctionsLabel
-        style={{
-          margin: '1rem 0 0',
-          height: '2rem',
-          lineHeight: '2rem',
-        }}
-        createVersion={NEW_FUNCTIONS_VERSIONS['1.3.0']}
-      >
+      <NewFunctionsLabel newLabelType={NewLabelType.CustomizeMarginAndHeight} initVersion={'1.3.0'}>
         <PipelineSelector
           options={pipelineNameOptions}
           value={selectedPipeline}

@@ -14,6 +14,10 @@ jest.mock('@src/utils/util', () => ({
   getDeviceSize: jest.fn().mockReturnValue('lg'),
 }));
 
+jest.mock('semver', () => ({
+  gt: jest.fn((version, initVersion) => version > initVersion),
+}));
+
 describe('Report Card', () => {
   afterEach(() => {
     clearAllMocks();

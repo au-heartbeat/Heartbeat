@@ -15,7 +15,6 @@ import TrendingDownSharpIcon from '@mui/icons-material/TrendingDownSharp';
 import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
 import TrendingUpSharpIcon from '@mui/icons-material/TrendingUpSharp';
 import { ChartWrapper } from '@src/containers/MetricsStep/style';
-import { NEW_FUNCTIONS_VERSIONS } from '@src/constants/commons';
 import { convertNumberToPercent } from '@src/utils/util';
 import React, { ForwardedRef, forwardRef } from 'react';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -111,7 +110,7 @@ const ChartAndTitleWrapper = forwardRef(
           {subTitle === undefined ? (
             trendInfo.type
           ) : (
-            <NewFunctionsLabel createVersion={NEW_FUNCTIONS_VERSIONS['1.3.0']}>
+            <NewFunctionsLabel initVersion={'1.3.0'}>
               {trendInfo.type} {`: ${subTitle}`}
             </NewFunctionsLabel>
           )}

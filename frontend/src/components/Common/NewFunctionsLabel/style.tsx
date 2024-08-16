@@ -17,3 +17,9 @@ export const NewLabel = styled('div')({
   color: theme.components?.newFunctionsLabel.color,
   backgroundColor: theme.components?.newFunctionsLabel.backgroundColor,
 });
+
+export const NewLabelWithCustomizeMarginAndHeight = styled(NewLabel)({
+  margin: '1rem 0 0',
+  height: '2rem',
+  lineHeight: '2rem',
+});

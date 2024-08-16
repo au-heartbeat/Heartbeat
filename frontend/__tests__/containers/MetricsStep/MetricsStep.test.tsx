@@ -38,6 +38,9 @@ jest.mock('@src/context/notification/NotificationSlice', () => ({
   ...jest.requireActual('@src/context/notification/NotificationSlice'),
   closeAllNotifications: jest.fn().mockReturnValue({ type: 'CLOSE_ALL_NOTIFICATIONS' }),
 }));
+jest.mock('semver', () => ({
+  gt: jest.fn((version, initVersion) => version > initVersion),
+}));
 
 let store = setupStore();
 const server = setupServer(
