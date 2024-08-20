@@ -36,7 +36,7 @@ export const FormSingleSelect = ({
             <InputLabel id={labelId}>{labelText}</InputLabel>
             <Select
               {...field}
-              value={value || field.value}
+              value={value ?? field.value}
               labelId={selectLabelId}
               aria-label={selectAriaLabel}
               onChange={(e) => {
