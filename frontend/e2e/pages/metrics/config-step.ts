@@ -394,10 +394,15 @@ export class ConfigStep {
     await expect(this.boardTokenInput).toBeHidden();
   }
 
-  async checkPipelineToolFormVisible() {
+  async checkPipelineToolFormVisible(selectName: string = 'BuildKite') {
     await expect(this.pipelineToolContainer).toBeVisible();
     await expect(this.pipelineToolTypeSelect).toBeVisible();
-    await expect(this.pipelineToolTokenInput).toBeVisible();
+    await expect(await this.pipelineToolTypeSelect.textContent()).toContain(selectName);
+    if (selectName !== 'None') {
+      await expect(this.pipelineToolTokenInput).toBeVisible();
+    } else {
+      await expect(this.pipelineToolTokenInput).not.toBeVisible();
+    }
   }
 
   async checkPipelineToolFormInvisible() {
