@@ -93,7 +93,7 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
-		assertThat(response.getContentAsString()).isEqualTo("");
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
-		assertThat(response.getContentAsString()).isEqualTo("");
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
-		assertThat(response.getContentAsString()).isEqualTo("");
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
-		assertThat(response.getContentAsString()).isEqualTo("");
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 
 }
