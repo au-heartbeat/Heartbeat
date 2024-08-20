@@ -16,6 +16,13 @@ public class PipelineTypeTest {
 	}
 
 	@Test
+	public void shouldConvertValueToTypeWhenTypeIsNone() {
+		PipelineType buildKiteType = PipelineType.fromValue("none");
+
+		assertEquals(buildKiteType, PipelineType.NONE);
+	}
+
+	@Test
 	public void shouldThrowExceptionWhenDateTypeNotSupported() {
 		assertThatThrownBy(() -> PipelineType.fromValue("unknown")).isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Pipeline type does not find!");

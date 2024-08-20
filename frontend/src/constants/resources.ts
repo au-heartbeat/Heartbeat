@@ -197,6 +197,8 @@ export const PIPELINE_TOOL_TYPES = {
   BUILD_KITE: 'BuildKite',
 };
 
+export const PIPELINE_TOOL_NONE_OPTION = 'None';
+
 export enum SourceControlTypes {
   GitHub = 'GitHub',
 }

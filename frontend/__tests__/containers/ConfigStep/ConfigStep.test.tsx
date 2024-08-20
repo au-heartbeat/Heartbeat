@@ -19,6 +19,8 @@ import {
   CHINA_CALENDAR,
   VIETNAM_CALENDAR,
   TIMEOUT_ALERT,
+  LEAD_TIME_FOR_CHANGES,
+  PIPELINE_TOOL_TYPES,
 } from '../../fixtures';
 import {
   basicInfoSchema,
@@ -38,10 +40,11 @@ import {
 } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { fillSourceControlFieldsInformation } from '@test/containers/ConfigStep/SourceControl.test';
 import { fillPipelineToolFieldsInformation } from '@test/containers/ConfigStep/PipelineTool.test';
+import { AxiosRequestErrorCode, PIPELINE_TOOL_NONE_OPTION } from '@src/constants/resources';
 import { fillBoardFieldsInformation } from '@test/containers/ConfigStep/Board.test';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
-import { AxiosRequestErrorCode } from '@src/constants/resources';
 import { boardClient } from '@src/clients/board/BoardClient';
+import { saveVersion } from '@src/context/meta/metaSlice';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { TimeoutError } from '@src/errors/TimeoutError';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -114,8 +117,9 @@ const ConfigStepWithFormInstances = () => {
 };
 
 describe('ConfigStep', () => {
-  const setup = () => {
+  const setup = (version: string = '1.2.1') => {
     store = setupStore();
+    store.dispatch(saveVersion(version));
     return render(
       <Provider store={store}>
         <ConfigStepWithFormInstances />
@@ -531,5 +535,47 @@ describe('ConfigStep', () => {
     await userEvent.click(screen.getByLabelText('reset confirm dialog confirm button'));
 
     expect(screen.queryByLabelText(TIMEOUT_ALERT)).not.toBeInTheDocument();
+  });
+
+  it('should switch to buildKite when add a new dora metrics after pipeline tool is none', async () => {
+    setup();
+    await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
+    let requireDateSelection = within(screen.getByRole('listbox'));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: LEAD_TIME_FOR_CHANGES }));
+    await closeMuiModal(userEvent);
+
+    await userEvent.click(screen.getByRole('combobox', { name: 'Pipeline Tool' }));
+    let listBox = within(screen.getByRole('listbox'));
+    let options = listBox.getAllByRole('option');
+
+    expect(options.length).toEqual(2);
+
+    const buildKiteOption = options[0];
+    const noneOption = options[1];
+
+    expect(buildKiteOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_TYPES.BUILD_KITE);
+    expect(noneOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_NONE_OPTION);
+
+    await userEvent.click(noneOption);
+    await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));
+    requireDateSelection = within(screen.getByRole('listbox'));
+    await userEvent.click(requireDateSelection.getByRole('option', { name: DEPLOYMENT_FREQUENCY }));
+    await closeMuiModal(userEvent);
+    await userEvent.click(screen.getByRole('combobox', { name: 'Pipeline Tool' }));
+    listBox = within(screen.getByRole('listbox'));
+    options = listBox.getAllByRole('option');
+
+    expect(options.length).toEqual(1);
+    expect(options[0].getAttribute('data-value')).toEqual(PIPELINE_TOOL_TYPES.BUILD_KITE);
+
+    const tokenInput = within(screen.getByTestId('pipelineToolTextField')).getByLabelText(
+      PIPELINE_TOOL_TOKEN_INPUT_LABEL,
+    ) as HTMLInputElement;
+
+    await waitFor(() => {
+      expect(within(screen.getByLabelText('Pipeline Tool Config')).getByText('Verify')).toBeDisabled();
+      expect(tokenInput).toBeInTheDocument();
+      expect(tokenInput.value).toEqual('');
+    });
   });
 });
