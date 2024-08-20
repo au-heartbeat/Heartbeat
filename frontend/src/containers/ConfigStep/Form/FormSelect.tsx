@@ -1,11 +1,15 @@
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { StyledTypeSelections } from '@src/components/Common/ConfigForms';
+import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
+import { PIPELINE_TOOL_NONE_OPTION } from '@src/constants/resources';
 import { Controller, useFormContext } from 'react-hook-form';
 
 interface IFormSingleSelect {
   name: string;
   options: string[];
   labelText: string;
+  value?: string;
+  updateValue?: (value: string) => void;
   labelId?: string;
   selectLabelId?: string;
   selectAriaLabel?: string;
@@ -18,6 +22,8 @@ export const FormSingleSelect = ({
   labelId,
   selectLabelId,
   selectAriaLabel,
+  value,
+  updateValue,
 }: IFormSingleSelect) => {
   const { control } = useFormContext();
   return (
@@ -28,12 +34,27 @@ export const FormSingleSelect = ({
         return (
           <StyledTypeSelections variant='standard' required>
             <InputLabel id={labelId}>{labelText}</InputLabel>
-            <Select {...field} labelId={selectLabelId} aria-label={selectAriaLabel}>
-              {options.map((data) => (
-                <MenuItem key={data} value={data}>
-                  <ListItemText primary={data} />
-                </MenuItem>
-              ))}
+            <Select
+              {...field}
+              value={value ?? field.value}
+              labelId={selectLabelId}
+              aria-label={selectAriaLabel}
+              onChange={(e) => {
+                updateValue && updateValue(e.target.value);
+              }}
+            >
+              {options.map((data) => {
+                const listItem = <ListItemText primary={data} />;
+                return (
+                  <MenuItem key={data} value={data}>
+                    {data === PIPELINE_TOOL_NONE_OPTION ? (
+                      <NewFunctionsLabel initVersion={'1.3.0'}>{listItem}</NewFunctionsLabel>
+                    ) : (
+                      listItem
+                    )}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </StyledTypeSelections>
         );

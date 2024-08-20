@@ -9,6 +9,14 @@ import {
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
 import {
+  CycleTimeSettingsTypes,
+  DONE,
+  METRICS_CONSTANTS,
+  PIPELINE_TOOL_NONE_OPTION,
+  RequiredData,
+  TIPS,
+} from '@src/constants/resources';
+import {
   BackButton,
   ButtonContainer,
   NextButton,
@@ -22,7 +30,6 @@ import {
   selectCycleTimeSettings,
   selectMetricsContent,
 } from '@src/context/Metrics/metricsSlice';
-import { CycleTimeSettingsTypes, DONE, METRICS_CONSTANTS, RequiredData, TIPS } from '@src/constants/resources';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
@@ -102,7 +109,12 @@ const MetricsStepper = () => {
   const configPageFormMeta = useMemo(
     () => [
       { isShow: isShowBoard, isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful },
-      { isShow: isShowPipeline, isValid: isPipelineToolValid, isSubmitSuccessful: isPipelineToolSubmitSuccessful },
+      {
+        isShow: isShowPipeline,
+        isValid: config.pipelineTool.config.type === PIPELINE_TOOL_NONE_OPTION ? true : isPipelineToolValid,
+        isSubmitSuccessful:
+          config.pipelineTool.config.type === PIPELINE_TOOL_NONE_OPTION ? true : isPipelineToolSubmitSuccessful,
+      },
       {
         isShow: isShowSourceControl,
         isValid: isSourceControlValid,
@@ -114,6 +126,7 @@ const MetricsStepper = () => {
       isBoardConfigValid,
       isBoardConfigSubmitSuccessful,
       isShowPipeline,
+      config.pipelineTool.config.type,
       isPipelineToolValid,
       isPipelineToolSubmitSuccessful,
       isShowSourceControl,
@@ -240,6 +253,11 @@ const MetricsStepper = () => {
   /* istanbul ignore next */
   const handleSave = () => {
     const { projectName, dateRange, calendarType, metrics, sortType } = config.basic;
+    const pipelineConfig = config.pipelineTool.config;
+    const savedPipelineConfig = { ...pipelineConfig };
+    if (savedPipelineConfig.type === PIPELINE_TOOL_NONE_OPTION) {
+      savedPipelineConfig.token = '';
+    }
     const configData = {
       projectName,
       dateRange,
@@ -249,7 +267,7 @@ const MetricsStepper = () => {
 
       board: isShowBoard ? omit(config.board.config, ['projectKey']) : undefined,
       /* istanbul ignore next */
-      pipelineTool: isShowPipeline ? config.pipelineTool.config : undefined,
+      pipelineTool: isShowPipeline ? savedPipelineConfig : undefined,
       /* istanbul ignore next */
       sourceControl: isShowSourceControl ? config.sourceControl.config : undefined,
     };

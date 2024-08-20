@@ -174,6 +174,8 @@ According to your selected required data, you need to input account settings for
 | Pipeline change failure rate | Pipeline       |
 | Pipeline mean time to recovery    | Pipeline       |
 
+If only `Lead time for changes` is selected among the four DORA metrics - `Lead time for changes`, `Deployment frequency`, `Pipeline change failure rate`, and `Pipeline mean time to recovery`, you will see an option for `None` in the pipeline tool configuration. If you choose the `None` option, when calculating `Lead time for changes`, only the `PR lead time` will be considered, and `pipeline lead time` will not be calculated.
+
 ![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4-1.png)\
 Image 3-4，Project config
 
@@ -198,10 +200,13 @@ _Image 3-5, create Jira token_
 
 **The details for Pipeline:**
 
-|Items|Description|
-|---|---|
-|PipelineTool| The pipeline tool you team use, currently heartbeat only support buildkite|
-|Token|Generate buildkite token with below link, https://buildkite.com/user/api-access-tokens|
+|Items| Description                                                                                                                                           |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+|PipelineTool| The pipeline tool you team use, currently heartbeat only support buildkite. If only `Lead time for changes` is selected among the four DORA metrics, the `None` option will appear, indicating that when calculating `Lead time for changes`, only `PR lead time` will be considered, and `pipeline lead time` will not be calculated. |
+|Token| Generate buildkite token with below link, https://buildkite.com/user/api-access-tokens                                                                |
+
+![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/select-none-option-in-the-pipeline-configuration.png)
+
 ##### 3.1.3.2 Guideline for generating Buildkite token
 Select organization for you pipeline
 ![Image 3-6](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/guideline-for-generating-token/generate-buildkite-token-org.png)

@@ -14,11 +14,13 @@ import {
   TIMEOUT_ALERT_ARIA_LABEL,
 } from '../../fixtures';
 import { pipelineToolDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { AxiosRequestErrorCode, PIPELINE_TOOL_NONE_OPTION } from '@src/constants/resources';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { pipelineToolSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { PipelineTool } from '@src/containers/ConfigStep/PipelineTool';
-import { AxiosRequestErrorCode } from '@src/constants/resources';
+import { updateMetrics } from '@src/context/config/configSlice';
+import { saveVersion } from '@src/context/meta/metaSlice';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { FormProvider } from '@test/utils/FormProvider';
 import { TimeoutError } from '@src/errors/TimeoutError';
@@ -60,8 +62,10 @@ describe('PipelineTool', () => {
   const onReset = jest.fn();
   const onSetResetFields = jest.fn();
   store = setupStore();
-  const setup = () => {
+  const setup = (doraMetrics: string[] = ['Lead time for changes', 'Deployment frequency']) => {
     store = setupStore();
+    store.dispatch(updateMetrics(doraMetrics));
+    store.dispatch(saveVersion('1.2.1'));
     return render(
       <Provider store={store}>
         <FormProvider schema={pipelineToolSchema} defaultValues={pipelineToolDefaultValues}>
@@ -274,5 +278,28 @@ describe('PipelineTool', () => {
     const verifyButton = await screen.findByRole('button', { name: /verify/i });
 
     expect(verifyButton).toBeEnabled();
+  });
+
+  it('should not show token when select none', async () => {
+    setup(['Lead time for changes']);
+
+    await userEvent.click(screen.getByRole('combobox', { name: 'Pipeline Tool' }));
+    const listBox = within(screen.getByRole('listbox'));
+    const options = listBox.getAllByRole('option');
+
+    expect(options.length).toEqual(2);
+
+    const buildKiteOption = options[0];
+    const noneOption = options[1];
+
+    expect(buildKiteOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_TYPES.BUILD_KITE);
+    expect(noneOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_NONE_OPTION);
+
+    await userEvent.click(noneOption);
+
+    expect(screen.queryByRole('button', { name: /verify/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /reset/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /verified/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('Token *') as HTMLInputElement).not.toBeInTheDocument();
   });
 });

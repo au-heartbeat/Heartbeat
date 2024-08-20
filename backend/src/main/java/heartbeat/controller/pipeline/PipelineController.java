@@ -35,10 +35,12 @@ public class PipelineController {
 
 	@PostMapping("/{pipelineType}/verify")
 	public ResponseEntity<Void> verifyBuildKiteToken(
-			@Schema(type = "string", allowableValues = { "buildkite" },
+			@Schema(type = "string", allowableValues = { "buildkite", "none" },
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable PipelineType pipelineType,
 			@Valid @RequestBody TokenParam tokenParam) {
-		buildKiteService.verifyToken(tokenParam.getToken());
+		if (!pipelineType.equals(PipelineType.NONE)) {
+			buildKiteService.verifyToken(tokenParam.getToken());
+		}
 		return ResponseEntity.noContent().build();
 	}
 

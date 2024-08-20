@@ -9,14 +9,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PipelineTypeTest {
 
 	@Test
-	public void shouldConvertValueToType() {
+	void shouldConvertValueToType() {
 		PipelineType buildKiteType = PipelineType.fromValue("buildkite");
 
-		assertEquals(buildKiteType, PipelineType.BUILDKITE);
+		assertEquals(PipelineType.BUILDKITE, buildKiteType);
 	}
 
 	@Test
-	public void shouldThrowExceptionWhenDateTypeNotSupported() {
+	void shouldConvertValueToTypeWhenTypeIsNone() {
+		PipelineType buildKiteType = PipelineType.fromValue("none");
+
+		assertEquals(PipelineType.NONE, buildKiteType);
+	}
+
+	@Test
+	void shouldThrowExceptionWhenDateTypeNotSupported() {
 		assertThatThrownBy(() -> PipelineType.fromValue("unknown")).isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Pipeline type does not find!");
 	}

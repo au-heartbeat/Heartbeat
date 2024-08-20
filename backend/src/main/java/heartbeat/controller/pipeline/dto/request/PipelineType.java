@@ -5,7 +5,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public enum PipelineType {
 
-	BUILDKITE("buildkite");
+	BUILDKITE("buildkite"),
+
+	NONE("none");
 
 	public final String pipelineType;
 
@@ -16,6 +18,7 @@ public enum PipelineType {
 	public static PipelineType fromValue(String type) {
 		return switch (type) {
 			case "buildkite" -> BUILDKITE;
+			case "none" -> NONE;
 			default -> {
 				log.error("Failed to match Pipeline type: {} ", type);
 				throw new IllegalArgumentException("Pipeline type does not find!");

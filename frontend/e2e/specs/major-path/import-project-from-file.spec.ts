@@ -292,3 +292,14 @@ test('Import project from file with analysis board status', async ({
     4,
   );
 });
+
+test('Import project from file when select none in pipeline tool configuration', async ({ homePage, configStep }) => {
+  await homePage.goto();
+
+  await homePage.importProjectFromFile('../fixtures/input-files/select-none-in-pipeline-tool-configuration.json');
+  await configStep.checkPipelineToolFormVisible('None');
+  await configStep.verifiedButtonNotInPipelineToolForm();
+  await configStep.verifyButtonNotExistInPipelineToolForm();
+  await configStep.validateNextButtonClickable();
+  await configStep.goToMetrics();
+});

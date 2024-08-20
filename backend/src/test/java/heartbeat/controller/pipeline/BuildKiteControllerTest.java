@@ -93,7 +93,7 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
-		assertThat(response.getContentAsString()).isEqualTo("");
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 
 	@Test
@@ -109,7 +109,23 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
-		assertThat(response.getContentAsString()).isEqualTo("");
+		assertThat(response.getContentAsString()).isEmpty();
+	}
+
+	@Test
+	void shouldReturnNoContentWhenCorrectTokenCallNone() throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		TokenParam tokenParam = TokenParam.builder().token(TEST_TOKEN).build();
+		doNothing().when(buildKiteService).verifyToken(any());
+
+		MockHttpServletResponse response = mockMvc
+			.perform(post("/pipelines/{pipelineType}/verify", "none").contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(tokenParam)))
+			.andExpect(status().isNoContent())
+			.andReturn()
+			.getResponse();
+
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 
 	@Test
@@ -153,7 +169,7 @@ public class BuildKiteControllerTest {
 			.andReturn()
 			.getResponse();
 
-		assertThat(response.getContentAsString()).isEqualTo("");
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 
 }
