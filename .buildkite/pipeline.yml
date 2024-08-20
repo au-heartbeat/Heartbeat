@@ -52,7 +52,7 @@ steps:
       - "deploy-e2e"
     command: ./ops/check.sh e2e-container
     plugins:
-      - artifacts#v1.9.3:
+      - artifacts#v1.9.4:
           upload: "./e2e-reports.tar.gz"
           expire_in: "${RETENTION_DAYS} days"
 
