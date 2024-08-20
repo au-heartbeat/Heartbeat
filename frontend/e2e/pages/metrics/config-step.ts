@@ -85,6 +85,7 @@ export class ConfigStep {
   readonly pipelineToolContainer: Locator;
   readonly pipelineToolTypeSelect: Locator;
   readonly pipelineToolTypeBuildKiteOption: Locator;
+  readonly pipelineToolTypeNoneOption: Locator;
   readonly pipelineToolTokenInput: Locator;
   readonly pipelineToolVerifyButton: Locator;
   readonly pipelineToolVerifiedButton: Locator;
@@ -174,6 +175,7 @@ export class ConfigStep {
     this.pipelineToolContainer = page.getByLabel('Pipeline Tool Config');
     this.pipelineToolTypeSelect = this.pipelineToolContainer.getByLabel('Pipeline Tool *');
     this.pipelineToolTypeBuildKiteOption = page.getByRole('option', { name: 'BuildKite' });
+    this.pipelineToolTypeNoneOption = page.getByRole('option', { name: 'None' });
     this.pipelineToolTokenInput = this.pipelineToolContainer.getByLabel('Token');
     this.pipelineToolVerifyButton = this.pipelineToolContainer.getByRole('button', { name: 'Verify' });
     this.pipelineToolVerifiedButton = this.pipelineToolContainer.getByRole('button', { name: 'Verified' });
@@ -357,7 +359,7 @@ export class ConfigStep {
   }
 
   async selectDeploymentFrequencyMetrics() {
-    await this.requiredMetricsLabel.click();
+    await this.requiredMetricsLabel.first().click();
     await this.requiredMetricsDeploymentFrequencyOption.click();
     await this.page.keyboard.press('Escape');
   }
@@ -483,9 +485,23 @@ export class ConfigStep {
   }
 
   async fillPipelineToolForm({ token }: IPipelineToolData) {
-    await this.pipelineToolTokenInput.fill(token);
     await this.pipelineToolTypeSelect.click();
     await this.pipelineToolTypeBuildKiteOption.click();
+    await this.pipelineToolTokenInput.fill(token);
+  }
+
+  async clickNoneOptionInPipelineToolForm() {
+    await this.pipelineToolTypeSelect.click();
+    await expect(this.pipelineToolTypeNoneOption).toBeVisible();
+    await this.pipelineToolTypeNoneOption.click();
+  }
+
+  async verifiedButtonInPipelineToolForm() {
+    await expect(this.pipelineToolVerifiedButton).toBeVisible();
+  }
+
+  async verifiedButtonNotInPipelineToolForm() {
+    await expect(this.pipelineToolVerifiedButton).not.toBeVisible();
   }
 
   async fillAndVerifyPipelineToolForm(pipelineToolData: IPipelineToolData) {
@@ -495,7 +511,15 @@ export class ConfigStep {
 
     await this.pipelineToolVerifyButton.click();
 
-    await expect(this.pipelineToolVerifiedButton).toBeVisible();
+    await this.verifiedButtonInPipelineToolForm();
+  }
+
+  async verifyButtonNotClickableInPipelineToolForm() {
+    await expect(this.pipelineToolVerifyButton).toBeDisabled();
+  }
+
+  async verifyButtonNotExistInPipelineToolForm() {
+    await expect(this.pipelineToolVerifyButton).not.toBeVisible();
   }
 
   async fillSourceControlForm({ token }: ISourceControlData) {
