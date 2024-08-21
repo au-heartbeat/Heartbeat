@@ -174,7 +174,7 @@ According to your selected required data, you need to input account settings for
 | Pipeline change failure rate | Pipeline       |
 | Pipeline mean time to recovery    | Pipeline       |
 
-If only `Lead time for changes` is selected among the four DORA metrics - `Lead time for changes`, `Deployment frequency`, `Pipeline change failure rate`, and `Pipeline mean time to recovery`, you will see an option for `None` in the pipeline tool configuration. If you choose the `None` option, when calculating `Lead time for changes`, only the `PR lead time` will be considered, and `pipeline lead time` will not be calculated.
+If only `Lead time for changes` is selected among the four DORA metrics - `Lead time for changes`, `Deployment frequency`, `Pipeline change failure rate`, and `Pipeline mean time to recovery`, you will see another option `None` in the pipeline tool configuration. If you choose the `None` option, when calculating `Lead time for changes`, only the `PR lead time` will be considered, and `pipeline lead time` will not be calculated.
 
 ![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4-1.png)\
 Image 3-4，Project config
