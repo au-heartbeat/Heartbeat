@@ -112,6 +112,11 @@ export default [
 
 	{ text: 'Spikes', header: true, type: 'tech', key: 'spikes' },
 	{
+		text: 'Github api for pull request info by token',
+		slug: 'spikes/tech-spikes-github-api-for-pull-request-info-by-token',
+		key: 'spikes/tech-spikes-github-api-for-pull-request-info-by-token',
+	},
+	{
 		text: 'Calculating pipeline metrics with selected user',
 		slug: 'spikes/tech-spikes-calculating-pipeline-metrics-with-selected-user',
 		key: 'spikes/tech-spikes-calculating-pipeline-metrics-with-selected-user',
