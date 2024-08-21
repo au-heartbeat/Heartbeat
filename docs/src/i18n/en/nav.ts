@@ -196,6 +196,11 @@ export default [
 		slug: 'spikes/tech-spikes-sharing-report',
 		key: 'spikes/tech-spikes-sharing-report',
 	},
+	{
+		text: 'Github api for pull request info by token',
+		slug: 'spikes/tech-spikes-github-api-for-pull-request-info-by-token',
+		key: 'spikes/tech-spikes-github-api-for-pull-request-info-by-token',
+	},
 
 	{ text: 'Biz', header: true, type: 'biz', key: 'Biz' },
 	{ text: 'Biz context', slug: 'biz/business-context', key: 'biz/business-context' },
