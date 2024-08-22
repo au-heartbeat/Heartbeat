@@ -19,6 +19,7 @@ We want to use the GitHub APi to retrieve the key information we need. With the 
 
 ```plantuml
 @startuml
+autonumber
 participant frontend as frontend
 participant backend as backend
 participant githubClient as githubClient
@@ -27,7 +28,7 @@ participant githubClient as githubClient
 frontend -> backend: call POST /source/{sourceType}/organizations to get all organizations
 backend -> githubClient: get all organizations for user
 githubClient -> backend: return all organizations info
-backend -> frontend: all organization names and avatars(thinking)
+backend -> frontend: all organization names
 frontend -> frontend: select organization
 frontend -> backend: call POST /source/{sourceType}/repos to get all repos
 backend -> githubClient: get all repos for organization
@@ -39,14 +40,12 @@ backend -> githubClient: get all branches by organization and repository
 githubClient -> backend: return all branches
 backend -> frontend: all branch names
 frontend -> frontend: select branch
-frontend -> backend: call POST /source/{sourceType}/repos/branches/verify to verify branch
-backend -> githubClient: verify branch
-githubClient -> backend: return ok
-backend --> frontend: return verify successfully
 frontend -> backend: call POST /source/{sourceType}/crews to get all crews
-backend -> githubClient: get all pull requests by base branch
-githubClient -> backend: return all pull requests
-backend -> backend: filter pull requests by time period
+loop until pull request not in time period
+    backend -> githubClient: get pull requests by base branch and desc
+    githubClient -> backend: return pull requests
+    backend -> backend: filter pull requests by time period
+end
 backend -> backend: get all crews
 backend -> frontend: return all crews
 
@@ -91,8 +90,7 @@ backend -> frontend: return pr lead time
   [
     {
       "id": 1,
-      "name": "organization name",
-      "avatar_url": "https://avatars.githubusercontent.com/u/110084685?v=4"
+      "name": "organization name"
     }
   ]
   ```
@@ -1008,17 +1006,3 @@ backend -> frontend: return pr lead time
 
 ##### 4.7 More Info
 - [More info](https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests)
-
-### Other questions
-
-#### 1. When the backend returns the organization to the frontend, should the avatar be returned for display on the frontend?
-  - Advantage
-    - user-friendly
-  - Disadvantage
-    - more efforts
-
-#### 2. When the user selects a branch, does the operation of getting crews need to wait until the branch is verified?
-  - Advantage
-    - Asynchronous execution, no need to wait for branch verification to complete before getting crews, faster
-  - Disadvantage
-    - If the verification fails and user selects another branch, the crews that user selects may be changed.
