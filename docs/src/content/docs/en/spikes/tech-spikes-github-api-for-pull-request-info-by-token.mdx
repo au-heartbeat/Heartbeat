@@ -1,6 +1,6 @@
 ---
-title: Github api for pull request info by token
-description: Github api for pull request info by token
+title: Github API for pull request info by token
+description: Github API for pull request info by token
 ---
 
 ## Background
@@ -9,7 +9,7 @@ Currently, for some users who do not use buildKite deployment, we will migrate s
 
 ## Expect
 
-We want to use the GitHub APi to retrieve the key information we need. With the data obtained this way, we can calculate pr lead time.
+We want to use the GitHub API to retrieve the key information we need. With the data obtained this way, we can calculate pr lead time.
 
 ## Design
 
@@ -19,41 +19,41 @@ We want to use the GitHub APi to retrieve the key information we need. With the 
 
 ```plantuml
 @startuml
+autonumber
+skin rose
 participant frontend as frontend
 participant backend as backend
-participant githubClient as githubClient
+participant GitHubClient as GitHubClient
 
 == Source Control Configurations in the metrics page ==
 frontend -> backend: call POST /source/{sourceType}/organizations to get all organizations
-backend -> githubClient: get all organizations for user
-githubClient -> backend: return all organizations info
-backend -> frontend: all organization names and avatars(thinking)
+backend -> GitHubClient: get all organizations for user
+GitHubClient --> backend: return all organizations info
+backend --> frontend: all organization names and avatars(thinking)
 frontend -> frontend: select organization
 frontend -> backend: call POST /source/{sourceType}/repos to get all repos
-backend -> githubClient: get all repos for organization
-githubClient -> backend: return all repos
-backend -> frontend: all repo names
+backend -> GitHubClient: get all repos for organization
+GitHubClient --> backend: return all repos
+backend --> frontend: all repo names
 frontend -> frontend: select repo
 frontend -> backend: call POST /source/{sourceType}/branches to get all branches
-backend -> githubClient: get all branches by organization and repository
-githubClient -> backend: return all branches
-backend -> frontend: all branch names
+backend -> GitHubClient: get all branches by organization and repository
+GitHubClient --> backend: return all branches
+backend --> frontend: all branch names
 frontend -> frontend: select branch
-frontend -> backend: call POST /source/{sourceType}/repos/branches/verify to verify branch
-backend -> githubClient: verify branch
-githubClient -> backend: return ok
-backend --> frontend: return verify successfully
 frontend -> backend: call POST /source/{sourceType}/crews to get all crews
-backend -> githubClient: get all pull requests by base branch
-githubClient -> backend: return all pull requests
-backend -> backend: filter pull requests by time period
+loop until pull request not in time period
+    backend -> GitHubClient: get pull requests by base branch and desc
+    GitHubClient --> backend: return pull requests
+    backend -> backend: filter pull requests by time period
+end
 backend -> backend: get all crews
-backend -> frontend: return all crews
+backend --> frontend: return all crews
 
 == Calculate PR lead time in the report page ==
 frontend -> backend: call POST /reports/{report-id} to get lead time for changes
-backend -> githubClient: get all pull requests by base branch
-githubClient -> backend: return all pull requests
+backend -> GitHubClient: get all pull requests by base branch
+GitHubClient -> backend: return all pull requests
 backend -> backend: filter pull requests by time period and crews
 backend -> backend: calculate pr lead time
 backend -> frontend: return pr lead time
@@ -74,7 +74,7 @@ backend -> frontend: return pr lead time
 
   ```json
   {
-    "token": "github token"
+    "token": "GitHub token"
   }
   ```
 
@@ -91,8 +91,7 @@ backend -> frontend: return pr lead time
   [
     {
       "id": 1,
-      "name": "organization name",
-      "avatar_url": "https://avatars.githubusercontent.com/u/110084685?v=4"
+      "name": "organization name"
     }
   ]
   ```
@@ -109,7 +108,7 @@ backend -> frontend: return pr lead time
 
   ```json
   {
-    "token": "github token",
+    "token": "GitHub token",
     "organization": "organization name"
   }
   ```
@@ -144,7 +143,7 @@ backend -> frontend: return pr lead time
 
   ```json
   {
-    "token": "github token",
+    "token": "GitHub token",
     "organization": "organization name",
     "repo": "repo name"
   }
@@ -180,7 +179,7 @@ backend -> frontend: return pr lead time
 
   ```json
   {
-    "token": "github token",
+    "token": "GitHub token",
     "organization": "organization name",
     "repo": "repo name",
     "branch": ["branch name"],
@@ -208,7 +207,7 @@ backend -> frontend: return pr lead time
 
 ##### 1. Modify
 
-- For report api `POST /reports/{report-id}`, modify the request body, and add below key-value:
+- For report API `POST /reports/{report-id}`, modify the request body, and add below key-value:
   
   ```json
   {
@@ -227,11 +226,11 @@ backend -> frontend: return pr lead time
   }
   ```
 
-### Github API
+### GitHub API
 
 #### 1. Get all organizations for user
 
-##### 1.1 Api
+##### 1.1 API
    ```shell
    curl -L \
    -H "Accept: application/vnd.github+json" \
@@ -289,7 +288,7 @@ backend -> frontend: return pr lead time
 
 #### 2. Get all repos for organization
 
-##### 2.1 Api
+##### 2.1 API
 
    ```shell
    curl -L \
@@ -469,7 +468,7 @@ backend -> frontend: return pr lead time
 
 #### 3. Get all branches by organization and repository
 
-##### 3.1 Api
+##### 3.1 API
 
    ```shell
    curl -L \
@@ -585,7 +584,7 @@ backend -> frontend: return pr lead time
 
 #### 4. Get all pull requests by base branch
 
-##### 4.1 Api
+##### 4.1 API
 
    ```shell
    curl -L \
@@ -1008,17 +1007,3 @@ backend -> frontend: return pr lead time
 
 ##### 4.7 More Info
 - [More info](https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests)
-
-### Other questions
-
-#### 1. When the backend returns the organization to the frontend, should the avatar be returned for display on the frontend?
-  - Advantage
-    - user-friendly
-  - Disadvantage
-    - more efforts
-
-#### 2. When the user selects a branch, does the operation of getting crews need to wait until the branch is verified?
-  - Advantage
-    - Asynchronous execution, no need to wait for branch verification to complete before getting crews, faster
-  - Disadvantage
-    - If the verification fails and user selects another branch, the crews that user selects may be changed.
