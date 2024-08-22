@@ -29,7 +29,7 @@ participant GitHubClient as GitHubClient
 frontend -> backend: call POST /source/{sourceType}/organizations to get all organizations
 backend -> GitHubClient: get all organizations for user
 GitHubClient --> backend: return all organizations info
-backend --> frontend: all organization names and avatars(thinking)
+backend --> frontend: all organization names
 frontend -> frontend: select organization
 frontend -> backend: call POST /source/{sourceType}/repos to get all repos
 backend -> GitHubClient: get all repos for organization
@@ -42,21 +42,21 @@ GitHubClient --> backend: return all branches
 backend --> frontend: all branch names
 frontend -> frontend: select branch
 frontend -> backend: call POST /source/{sourceType}/crews to get all crews
-loop until pull request not in time period
-    backend -> GitHubClient: get pull requests by base branch and desc
+loop pull request in time period
+    backend -> GitHubClient: get pull requests by base branch and sort by desc
     GitHubClient --> backend: return pull requests
     backend -> backend: filter pull requests by time period
 end
-backend -> backend: get all crews
+backend -> backend: aggregate crews with pull requests
 backend --> frontend: return all crews
 
 == Calculate PR lead time in the report page ==
 frontend -> backend: call POST /reports/{report-id} to get lead time for changes
 backend -> GitHubClient: get all pull requests by base branch
-GitHubClient -> backend: return all pull requests
+GitHubClient --> backend: return all pull requests
 backend -> backend: filter pull requests by time period and crews
 backend -> backend: calculate pr lead time
-backend -> frontend: return pr lead time
+backend --> frontend: return pr lead time
 @enduml
 ```
 
@@ -67,7 +67,7 @@ backend -> frontend: return pr lead time
 ##### 1.1. API
 
   ```shell
-  POST /source/{sourceType}/organizations
+  POST /source-control/{sourceType}/organizations
   ```
 
 ##### 1.2. Request body
@@ -84,16 +84,14 @@ backend -> frontend: return pr lead time
 |-------------|-------------------------|
 | 200         | OK                      |
 | 401         | Requires authentication |
+| 403         | Forbidden               |
 
 ##### 1.4. Response body
 
   ```json
-  [
-    {
-      "id": 1,
-      "name": "organization name"
-    }
-  ]
+  {
+    "name": ["organization name"]
+  }
   ```
 
 #### 2. Get all repositories
@@ -101,7 +99,7 @@ backend -> frontend: return pr lead time
 ##### 2.1. API
 
   ```shell
-  POST /source/{sourceType}/repos
+  POST /source-control/{sourceType}/repos
   ```
 
 ##### 2.2. Request body
@@ -119,16 +117,14 @@ backend -> frontend: return pr lead time
 |-------------|-------------------------|
 | 200         | OK                      |
 | 401         | Requires authentication |
+| 403         | Forbidden               |
 
 ##### 2.4. Response body
 
   ```json
-  [
-    {
-      "id": 1,
-      "name": "repo name"
-    }
-  ]
+  {
+    "name": ["repo name"]
+  }
   ```
 
 #### 3. Get all branches
@@ -136,7 +132,7 @@ backend -> frontend: return pr lead time
 ##### 3.1. API
 
   ```shell
-  POST /source/{sourceType}/branches
+  POST /source-control/{sourceType}/branches
   ```
 
 ##### 3.2. Request body
@@ -155,16 +151,15 @@ backend -> frontend: return pr lead time
 |-------------|-------------------------|
 | 200         | OK                      |
 | 401         | Requires authentication |
+| 403         | Forbidden               |
+
 
 ##### 3.4. Response body
 
   ```json
-  [
-    {
-      "id": 1,
-      "name": "branch name"
-    }
-  ]
+  {
+    "name": ["branch name"]
+  }
   ```
 
 #### 4. Get all crews
@@ -172,7 +167,7 @@ backend -> frontend: return pr lead time
 ##### 4.1. API
 
   ```shell
-  POST /source/{sourceType}/crews
+  POST /source-control/{sourceType}/crews
   ```
 
 ##### 4.2. Request body
@@ -182,7 +177,7 @@ backend -> frontend: return pr lead time
     "token": "GitHub token",
     "organization": "organization name",
     "repo": "repo name",
-    "branch": ["branch name"],
+    "branch": "branch name",
     "startTime": "1717171200000",
     "endTime": "1717171200000"
   }
@@ -194,6 +189,7 @@ backend -> frontend: return pr lead time
 |-------------|-------------------------|
 | 200         | OK                      |
 | 401         | Requires authentication |
+| 403         | Forbidden               |
 
 ##### 4.4. Response body
 
