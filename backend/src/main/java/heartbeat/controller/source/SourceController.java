@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,14 +45,10 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid SourceControlDTO sourceControlDTO) {
 		log.info("Start to verify source type: {} token.", sourceType);
-		switch (sourceType) {
-			case GITHUB -> {
-				gitHubService.verifyToken(sourceControlDTO.getToken());
-				log.info("Successfully verify source type: {} token.", sourceType);
-			}
-			default -> {
-			}
+		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
+			gitHubService.verifyToken(sourceControlDTO.getToken());
 		}
+		log.info("Successfully verify source type: {} token.", sourceType);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
@@ -61,15 +58,10 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid VerifyBranchRequest request) {
 		log.info("Start to verify source type: {} branch: {}.", sourceType, request.getBranch());
-		switch (sourceType) {
-			case GITHUB -> {
-				gitHubService.verifyCanReadTargetBranch(request.getRepository(), request.getBranch(),
-						request.getToken());
-				log.info("Successfully verify source type: {} branch: {}.", sourceType, request.getBranch());
-			}
-			default -> {
-			}
+		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
+			gitHubService.verifyCanReadTargetBranch(request.getRepository(), request.getBranch(), request.getToken());
 		}
+		log.info("Successfully verify source type: {} branch: {}.", sourceType, request.getBranch());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
@@ -80,14 +72,10 @@ public class SourceController {
 			@RequestBody @Valid OrganizationRequest organizationRequest) {
 		log.info("Start to get organizations, source type: {}", sourceType);
 		List<String> allOrganizations = List.of();
-		switch (sourceType) {
-			case GITHUB -> {
-				allOrganizations = gitHubService.getAllOrganizations(organizationRequest.getToken());
-				log.info("Successfully get organizations, source type: {}", sourceType);
-			}
-			default -> {
-			}
+		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
+			allOrganizations = gitHubService.getAllOrganizations(organizationRequest.getToken());
 		}
+		log.info("Successfully get organizations, source type: {}", sourceType);
 		return new OrganizationResponse(allOrganizations);
 	}
 
@@ -98,14 +86,10 @@ public class SourceController {
 			@RequestBody @Valid RepoRequest repoRequest) {
 		log.info("Start to get repos, source type: {}", sourceType);
 		List<String> allRepos = List.of();
-		switch (sourceType) {
-			case GITHUB -> {
-				allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization());
-				log.info("Successfully get repos, source type: {}", sourceType);
-			}
-			default -> {
-			}
+		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
+			allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization());
 		}
+		log.info("Successfully get repos, source type: {}", sourceType);
 		return new RepoResponse(allRepos);
 	}
 
@@ -116,15 +100,11 @@ public class SourceController {
 			@RequestBody @Valid BranchRequest branchRequest) {
 		log.info("Start to get branches, source type: {}", sourceType);
 		List<String> allBranches = List.of();
-		switch (sourceType) {
-			case GITHUB -> {
-				allBranches = gitHubService.getAllBranches(branchRequest.getToken(), branchRequest.getOrganization(),
-						branchRequest.getRepo());
-				log.info("Successfully get branches, source type: {}", sourceType);
-			}
-			default -> {
-			}
+		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
+			allBranches = gitHubService.getAllBranches(branchRequest.getToken(), branchRequest.getOrganization(),
+					branchRequest.getRepo());
 		}
+		log.info("Successfully get branches, source type: {}", sourceType);
 		return new BranchResponse(allBranches);
 	}
 

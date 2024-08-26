@@ -1,6 +1,5 @@
 package heartbeat.controller.source.dto;
 
-import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

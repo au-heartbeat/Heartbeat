@@ -30,6 +30,8 @@ public class CachePageService {
 
 	public static final String BUILD_KITE_LINK_HEADER = HttpHeaders.LINK;
 
+	public static final String PARSE_TOTAL_PAGE_LOG = "Successfully parse the total page_total page: {}";
+
 	private final BuildKiteFeignClient buildKiteFeignClient;
 
 	private final GitHubFeignClient gitHubFeignClient;
@@ -46,7 +48,7 @@ public class CachePageService {
 				orgId, pipelineId, createdFrom, createdTo, pipelineStepsInfo.getStatusCode(), page);
 
 		int totalPage = parseTotalPage(pipelineStepsInfo.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info("Successfully parse the total page_total page: {}", totalPage);
+		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 		List<BuildKiteBuildInfo> firstPageStepsInfo = pipelineStepsInfo.getBody();
 		return PageStepsInfoDto.builder().firstPageStepsInfo(firstPageStepsInfo).totalPage(totalPage).build();
 	}
@@ -58,7 +60,7 @@ public class CachePageService {
 		log.info("Successfully get paginated pipeline info pagination info, orgSlug: {}, page:{}", orgSlug, 1);
 
 		int totalPage = parseTotalPage(pipelineInfoResponse.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info("Successfully parse the total page_total page: {}", totalPage);
+		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 
 		return PageBuildKitePipelineInfoDTO.builder()
 			.firstPageInfo(pipelineInfoResponse.getBody())
@@ -74,7 +76,7 @@ public class CachePageService {
 		log.info("Successfully get paginated github organization info, page: {}", page);
 
 		int totalPage = parseTotalPage(allOrganizations.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info("Successfully parse the total page_total page: {}", totalPage);
+		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 
 		return PageOrganizationsInfoDTO.builder().pageInfo(allOrganizations.getBody()).totalPage(totalPage).build();
 	}
@@ -86,7 +88,7 @@ public class CachePageService {
 		log.info("Successfully get paginated github repo info, page: {}", page);
 
 		int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info("Successfully parse the total page_total page: {}", totalPage);
+		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 
 		return PageReposInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
 	}
@@ -100,7 +102,7 @@ public class CachePageService {
 		log.info("Successfully get paginated github branch info, page: {}", page);
 
 		int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info("Successfully parse the total page_total page: {}", totalPage);
+		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 
 		return PageBranchesInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
 	}
