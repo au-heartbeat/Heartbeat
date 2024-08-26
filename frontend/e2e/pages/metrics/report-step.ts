@@ -1112,13 +1112,13 @@ export class ReportStep {
     await expect(this.doraMetricsDialogInfluencedFactors).toBeVisible();
     await expect(this.doraMetricsDialogFormula).toBeVisible();
 
-    await this.doraMetricsDialogFormula.locator('a').click();
-
-    const newPage = await this.page.waitForEvent('popup');
+    const [newPage] = await Promise.all([
+      this.page.waitForEvent('popup'),
+      this.doraMetricsDialogFormula.locator('a').click(),
+    ]);
+    await newPage.waitForLoadState('domcontentloaded');
     const newPageUrl = newPage.url();
-
     expect(newPageUrl).toContain('https://github.com/au-heartbeat/Heartbeat?tab=readme-ov-file');
-
     await newPage.close();
 
     await this.doraMetricsDialogClose.click();
