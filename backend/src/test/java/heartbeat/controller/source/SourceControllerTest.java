@@ -2,6 +2,9 @@ package heartbeat.controller.source;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import heartbeat.controller.source.dto.BranchRequest;
+import heartbeat.controller.source.dto.OrganizationRequest;
+import heartbeat.controller.source.dto.RepoRequest;
 import heartbeat.controller.source.dto.SourceControlDTO;
 import heartbeat.controller.source.dto.VerifyBranchRequest;
 import heartbeat.service.source.github.GitHubService;
@@ -18,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static heartbeat.TestFixtures.GITHUB_REPOSITORY;
 import static heartbeat.TestFixtures.GITHUB_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +30,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SourceController.class)
@@ -42,14 +49,14 @@ class SourceControllerTest {
 	public static final String EMPTY_BRANCH_NAME = "  ";
 
 	@MockBean
-	private GitHubService gitHubVerifyService;
+	private GitHubService gitHubService;
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@Test
 	void shouldReturnNoContentStatusWhenVerifyToken() throws Exception {
-		doNothing().when(gitHubVerifyService).verifyToken(GITHUB_TOKEN);
+		doNothing().when(gitHubService).verifyToken(GITHUB_TOKEN);
 		SourceControlDTO sourceControlDTO = SourceControlDTO.builder().token(GITHUB_TOKEN).build();
 
 		mockMvc
@@ -58,7 +65,7 @@ class SourceControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent());
 
-		verify(gitHubVerifyService, times(1)).verifyToken(GITHUB_TOKEN);
+		verify(gitHubService, times(1)).verifyToken(GITHUB_TOKEN);
 	}
 
 	@Test
@@ -68,7 +75,7 @@ class SourceControllerTest {
 			.token(GITHUB_TOKEN)
 			.branch(MAIN_BRANCH)
 			.build();
-		doNothing().when(gitHubVerifyService).verifyCanReadTargetBranch(any(), any(), any());
+		doNothing().when(gitHubService).verifyCanReadTargetBranch(any(), any(), any());
 
 		mockMvc
 			.perform(post("/source-control/{sourceType}/repos/branches/verify", NORMAL_SOURCE_TYPE)
@@ -76,7 +83,7 @@ class SourceControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNoContent());
 
-		verify(gitHubVerifyService, times(1)).verifyCanReadTargetBranch(GITHUB_REPOSITORY, MAIN_BRANCH, GITHUB_TOKEN);
+		verify(gitHubService, times(1)).verifyCanReadTargetBranch(GITHUB_REPOSITORY, MAIN_BRANCH, GITHUB_TOKEN);
 	}
 
 	@Test
@@ -223,6 +230,65 @@ class SourceControllerTest {
 		final var content = response.getContentAsString();
 		final var result = JsonPath.parse(content).read("$.token").toString();
 		assertThat(result).isEqualTo("token's pattern is incorrect");
+	}
+
+	@Test
+	void shouldReturnAllOrganizationsWhenAllSuccess() throws Exception {
+		OrganizationRequest request = OrganizationRequest.builder().token(GITHUB_TOKEN).build();
+
+		when(gitHubService.getAllOrganizations(GITHUB_TOKEN)).thenReturn(List.of("test-org1"));
+
+		mockMvc
+			.perform(post("/source-control/{sourceType}/organizations", NORMAL_SOURCE_TYPE)
+				.content(new ObjectMapper().writeValueAsString(request))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.name.length()").value(1))
+			.andExpect(jsonPath("$.name[0]").value("test-org1"))
+			.andReturn()
+			.getResponse();
+	}
+
+	@Test
+	void shouldReturnAllReposWhenAllSuccess() throws Exception {
+		String mockOrganization = "organization";
+		RepoRequest request = RepoRequest.builder().token(GITHUB_TOKEN).organization(mockOrganization).build();
+
+		when(gitHubService.getAllRepos(GITHUB_TOKEN, mockOrganization)).thenReturn(List.of("test-repo1"));
+
+		mockMvc
+			.perform(post("/source-control/{sourceType}/repos", NORMAL_SOURCE_TYPE)
+				.content(new ObjectMapper().writeValueAsString(request))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.name.length()").value(1))
+			.andExpect(jsonPath("$.name[0]").value("test-repo1"))
+			.andReturn()
+			.getResponse();
+	}
+
+	@Test
+	void shouldReturnAllBranchesWhenAllSuccess() throws Exception {
+		String mockOrganization = "organization";
+		String mockRepo = "repo";
+		BranchRequest request = BranchRequest.builder()
+			.token(GITHUB_TOKEN)
+			.repo(mockRepo)
+			.organization(mockOrganization)
+			.build();
+
+		when(gitHubService.getAllBranches(GITHUB_TOKEN, mockOrganization, mockRepo))
+			.thenReturn(List.of("test-branch1"));
+
+		mockMvc
+			.perform(post("/source-control/{sourceType}/branches", NORMAL_SOURCE_TYPE)
+				.content(new ObjectMapper().writeValueAsString(request))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.name.length()").value(1))
+			.andExpect(jsonPath("$.name[0]").value("test-branch1"))
+			.andReturn()
+			.getResponse();
 	}
 
 }

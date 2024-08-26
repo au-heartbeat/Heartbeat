@@ -9,6 +9,9 @@ import heartbeat.client.dto.board.jira.JiraBoardProject;
 import heartbeat.client.dto.board.jira.JiraBoardVerifyDTO;
 import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.client.dto.codebase.github.CommitInfo;
+import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
+import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
+import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteTokenInfo;
 import heartbeat.client.dto.pipeline.buildkite.PageBuildKitePipelineInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
@@ -57,6 +60,9 @@ public class CacheConfig {
 		cacheManager.createCache("pullRequestCommitInfo", getCacheConfiguration(List.class));
 		cacheManager.createCache("pullRequestListInfo", getCacheConfiguration(List.class));
 		cacheManager.createCache("calendarResult", getCacheConfiguration(String.class, true));
+		cacheManager.createCache("pageOrganization", getCacheConfiguration(PageOrganizationsInfoDTO.class));
+		cacheManager.createCache("pageRepo", getCacheConfiguration(PageReposInfoDTO.class));
+		cacheManager.createCache("pageBranch", getCacheConfiguration(PageBranchesInfoDTO.class));
 		return cacheManager;
 	}
 

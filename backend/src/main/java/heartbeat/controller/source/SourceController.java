@@ -1,5 +1,11 @@
 package heartbeat.controller.source;
 
+import heartbeat.controller.source.dto.BranchRequest;
+import heartbeat.controller.source.dto.BranchResponse;
+import heartbeat.controller.source.dto.OrganizationRequest;
+import heartbeat.controller.source.dto.OrganizationResponse;
+import heartbeat.controller.source.dto.RepoRequest;
+import heartbeat.controller.source.dto.RepoResponse;
 import heartbeat.controller.source.dto.SourceControlDTO;
 import heartbeat.controller.source.dto.VerifyBranchRequest;
 import heartbeat.service.source.github.GitHubService;
@@ -17,6 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,6 +71,61 @@ public class SourceController {
 			}
 		}
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PostMapping("/{sourceType}/organizations")
+	public OrganizationResponse getAllOrganizations(
+			@Schema(type = "string", allowableValues = { "github" },
+					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
+			@RequestBody @Valid OrganizationRequest organizationRequest) {
+		log.info("Start to get organizations, source type: {}", sourceType);
+		List<String> allOrganizations = List.of();
+		switch (sourceType) {
+			case GITHUB -> {
+				allOrganizations = gitHubService.getAllOrganizations(organizationRequest.getToken());
+				log.info("Successfully get organizations, source type: {}", sourceType);
+			}
+			default -> {
+			}
+		}
+		return new OrganizationResponse(allOrganizations);
+	}
+
+	@PostMapping("/{sourceType}/repos")
+	public RepoResponse getAllRepos(
+			@Schema(type = "string", allowableValues = { "github" },
+					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
+			@RequestBody @Valid RepoRequest repoRequest) {
+		log.info("Start to get repos, source type: {}", sourceType);
+		List<String> allRepos = List.of();
+		switch (sourceType) {
+			case GITHUB -> {
+				allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization());
+				log.info("Successfully get repos, source type: {}", sourceType);
+			}
+			default -> {
+			}
+		}
+		return new RepoResponse(allRepos);
+	}
+
+	@PostMapping("/{sourceType}/branches")
+	public BranchResponse getAllBranches(
+			@Schema(type = "string", allowableValues = { "github" },
+					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
+			@RequestBody @Valid BranchRequest branchRequest) {
+		log.info("Start to get branches, source type: {}", sourceType);
+		List<String> allBranches = List.of();
+		switch (sourceType) {
+			case GITHUB -> {
+				allBranches = gitHubService.getAllBranches(branchRequest.getToken(), branchRequest.getOrganization(),
+						branchRequest.getRepo());
+				log.info("Successfully get branches, source type: {}", sourceType);
+			}
+			default -> {
+			}
+		}
+		return new BranchResponse(allBranches);
 	}
 
 }
