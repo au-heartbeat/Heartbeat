@@ -247,6 +247,8 @@ class SourceControllerTest {
 			.andExpect(jsonPath("$.name[0]").value("test-org1"))
 			.andReturn()
 			.getResponse();
+
+		verify(gitHubService).getAllOrganizations(GITHUB_TOKEN);
 	}
 
 	@Test
@@ -265,6 +267,8 @@ class SourceControllerTest {
 			.andExpect(jsonPath("$.name[0]").value("test-repo1"))
 			.andReturn()
 			.getResponse();
+
+		verify(gitHubService).getAllRepos(GITHUB_TOKEN, mockOrganization);
 	}
 
 	@Test
@@ -289,6 +293,8 @@ class SourceControllerTest {
 			.andExpect(jsonPath("$.name[0]").value("test-branch1"))
 			.andReturn()
 			.getResponse();
+
+		verify(gitHubService).getAllBranches(GITHUB_TOKEN, mockOrganization, mockRepo);
 	}
 
 }

@@ -45,9 +45,7 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid SourceControlDTO sourceControlDTO) {
 		log.info("Start to verify source type: {} token.", sourceType);
-		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
-			gitHubService.verifyToken(sourceControlDTO.getToken());
-		}
+		gitHubService.verifyToken(sourceControlDTO.getToken());
 		log.info("Successfully verify source type: {} token.", sourceType);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
@@ -58,9 +56,7 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid VerifyBranchRequest request) {
 		log.info("Start to verify source type: {} branch: {}.", sourceType, request.getBranch());
-		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
-			gitHubService.verifyCanReadTargetBranch(request.getRepository(), request.getBranch(), request.getToken());
-		}
+		gitHubService.verifyCanReadTargetBranch(request.getRepository(), request.getBranch(), request.getToken());
 		log.info("Successfully verify source type: {} branch: {}.", sourceType, request.getBranch());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
@@ -71,10 +67,7 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid OrganizationRequest organizationRequest) {
 		log.info("Start to get organizations, source type: {}", sourceType);
-		List<String> allOrganizations = List.of();
-		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
-			allOrganizations = gitHubService.getAllOrganizations(organizationRequest.getToken());
-		}
+		List<String> allOrganizations = gitHubService.getAllOrganizations(organizationRequest.getToken());
 		log.info("Successfully get organizations, source type: {}", sourceType);
 		return new OrganizationResponse(allOrganizations);
 	}
@@ -85,10 +78,7 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid RepoRequest repoRequest) {
 		log.info("Start to get repos, source type: {}", sourceType);
-		List<String> allRepos = List.of();
-		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
-			allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization());
-		}
+		List<String> allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization());
 		log.info("Successfully get repos, source type: {}", sourceType);
 		return new RepoResponse(allRepos);
 	}
@@ -99,11 +89,8 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid BranchRequest branchRequest) {
 		log.info("Start to get branches, source type: {}", sourceType);
-		List<String> allBranches = List.of();
-		if (Objects.requireNonNull(sourceType) == SourceType.GITHUB) {
-			allBranches = gitHubService.getAllBranches(branchRequest.getToken(), branchRequest.getOrganization(),
-					branchRequest.getRepo());
-		}
+		List<String> allBranches = gitHubService.getAllBranches(branchRequest.getToken(),
+				branchRequest.getOrganization(), branchRequest.getRepo());
 		log.info("Successfully get branches, source type: {}", sourceType);
 		return new BranchResponse(allBranches);
 	}
