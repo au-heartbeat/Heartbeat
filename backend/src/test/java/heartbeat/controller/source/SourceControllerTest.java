@@ -3,6 +3,7 @@ package heartbeat.controller.source;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import heartbeat.controller.source.dto.BranchRequest;
+import heartbeat.controller.source.dto.CrewRequest;
 import heartbeat.controller.source.dto.OrganizationRequest;
 import heartbeat.controller.source.dto.RepoRequest;
 import heartbeat.controller.source.dto.SourceControlDTO;
@@ -295,6 +296,38 @@ class SourceControllerTest {
 			.getResponse();
 
 		verify(gitHubService).getAllBranches(GITHUB_TOKEN, mockOrganization, mockRepo);
+	}
+
+	@Test
+	void shouldReturnAllCrewsWhenAllSuccess() throws Exception {
+		String mockOrganization = "organization";
+		String mockRepo = "repo";
+		String mockBranch = "branch";
+		long startTime = 1717171200000L;
+		long endTime = 1719763199999L;
+		CrewRequest request = CrewRequest.builder()
+			.token(GITHUB_TOKEN)
+			.repo(mockRepo)
+			.organization(mockOrganization)
+			.branch(mockBranch)
+			.startTime(startTime)
+			.endTime(endTime)
+			.build();
+
+		when(gitHubService.getAllCrews(GITHUB_TOKEN, mockOrganization, mockRepo, mockBranch, startTime, endTime))
+			.thenReturn(List.of("test-crew1"));
+
+		mockMvc
+			.perform(post("/source-control/{sourceType}/crews", NORMAL_SOURCE_TYPE)
+				.content(new ObjectMapper().writeValueAsString(request))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.crews.length()").value(1))
+			.andExpect(jsonPath("$.crews[0]").value("test-crew1"))
+			.andReturn()
+			.getResponse();
+
+		verify(gitHubService).getAllCrews(GITHUB_TOKEN, mockOrganization, mockRepo, mockBranch, startTime, endTime);
 	}
 
 }
