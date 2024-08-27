@@ -8,7 +8,9 @@ import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
+import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
@@ -212,7 +214,7 @@ class CachePageServiceTest {
 	}
 
 	@Test
-	void shouldReturnPageReposInfoDtoWhenFetchPageOrganizationsInfoSuccessGivenExist() throws IOException {
+	void shouldReturnPageReposInfoDtoWhenFetchPageReposInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
 		HttpHeaders httpHeaders = buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
 		ResponseEntity<List<ReposInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
@@ -227,12 +229,12 @@ class CachePageServiceTest {
 	}
 
 	@Test
-	void shouldReturnPageBranchesInfoDtoWhenFetchPageOrganizationsInfoSuccessGivenExist() throws IOException {
+	void shouldReturnPageBranchesInfoDtoWhenFetchPageBranchesInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
 		String repo = "test-repo";
 		HttpHeaders httpHeaders = buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
 		ResponseEntity<List<BranchesInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
-				"src/test/java/heartbeat/controller/pipeline/githubRepo.json");
+				"src/test/java/heartbeat/controller/pipeline/githubBranch.json");
 		when(gitHubFeignClient.getAllBranches(MOCK_TOKEN, organization, repo, 100, 1)).thenReturn(responseEntity);
 
 		PageBranchesInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubBranches(MOCK_TOKEN, organization, repo, 1,
@@ -241,6 +243,25 @@ class CachePageServiceTest {
 		assertNotNull(pageBranchesInfoDTO);
 		assertThat(pageBranchesInfoDTO.getPageInfo()).isEqualTo(responseEntity.getBody());
 		assertThat(pageBranchesInfoDTO.getTotalPage()).isEqualTo(2);
+	}
+
+	@Test
+	void shouldReturnPagePullRequestInfoDtoWhenFetchPullRequestInfoSuccessGivenExist() throws IOException {
+		String organization = "test-org";
+		String repo = "test-repo";
+		String branch = "test-branch";
+		HttpHeaders httpHeaders = buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
+		ResponseEntity<List<PullRequestInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
+				"src/test/java/heartbeat/controller/pipeline/githubPullRequest.json");
+		when(gitHubFeignClient.getAllPullRequests(MOCK_TOKEN, organization, repo, 100, 1, branch, "all"))
+			.thenReturn(responseEntity);
+
+		PagePullRequestInfoDTO pagePullRequestInfoDTO = cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization,
+				repo, branch, 1, 100);
+
+		assertNotNull(pagePullRequestInfoDTO);
+		assertThat(pagePullRequestInfoDTO.getPageInfo()).isEqualTo(responseEntity.getBody());
+		assertThat(pagePullRequestInfoDTO.getTotalPage()).isEqualTo(2);
 	}
 
 	private static <T> ResponseEntity<List<T>> getResponseEntity(HttpHeaders httpHeaders, String pathname)
