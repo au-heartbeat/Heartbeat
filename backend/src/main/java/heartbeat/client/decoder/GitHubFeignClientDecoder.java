@@ -20,6 +20,7 @@ public class GitHubFeignClientDecoder implements ErrorDecoder {
 			case "getAllOrganizations" -> "Failed to get all organizations";
 			case "getAllRepos" -> "Failed to get all repositories";
 			case "getAllBranches" -> "Failed to get all branches";
+			case "getAllPullRequests" -> "Failed to get all pull requests";
 			default -> "Failed to get github info";
 		};
 

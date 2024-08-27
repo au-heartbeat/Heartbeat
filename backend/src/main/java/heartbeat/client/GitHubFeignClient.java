@@ -6,6 +6,7 @@ import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
 
+import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -62,5 +63,11 @@ public interface GitHubFeignClient {
 	ResponseEntity<List<BranchesInfoDTO>> getAllBranches(@RequestHeader("Authorization") String token,
 			@PathVariable("org") String org, @PathVariable("repo") String repo, @RequestParam("per_page") int perPage,
 			@RequestParam("page") int page);
+
+	@GetMapping(path = "/repos/{org}/{repo}/pulls")
+	@ResponseStatus(HttpStatus.OK)
+	ResponseEntity<List<PullRequestInfoDTO>> getAllPullRequests(@RequestHeader("Authorization") String token,
+			@PathVariable("org") String org, @PathVariable("repo") String repo, @RequestParam("per_page") int perPage,
+			@RequestParam("page") int page, @RequestParam("base") String base, @RequestParam("state") String state);
 
 }

@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 
 import static heartbeat.controller.source.SourceController.TOKEN_PATTER;
 
-@Builder
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class BranchRequest {
+@AllArgsConstructor
+public class CrewRequest {
 
 	@NotNull(message = "Token cannot be empty.")
 	@Pattern(regexp = TOKEN_PATTER, message = "token's pattern is incorrect")
@@ -25,5 +25,12 @@ public class BranchRequest {
 
 	@NotBlank(message = "repo is required")
 	private String repo;
+
+	@NotBlank(message = "branch is required")
+	private String branch;
+
+	private long startTime;
+
+	private long endTime;
 
 }

@@ -6,7 +6,9 @@ import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
+import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.PageBuildKitePipelineInfoDTO;
@@ -76,7 +78,6 @@ public class CachePageService {
 		log.info("Successfully get paginated github organization info, page: {}", page);
 
 		int totalPage = parseTotalPage(allOrganizations.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 
 		return PageOrganizationsInfoDTO.builder().pageInfo(allOrganizations.getBody()).totalPage(totalPage).build();
 	}
@@ -88,7 +89,6 @@ public class CachePageService {
 		log.info("Successfully get paginated github repo info, page: {}", page);
 
 		int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 
 		return PageReposInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
 	}
@@ -102,9 +102,22 @@ public class CachePageService {
 		log.info("Successfully get paginated github branch info, page: {}", page);
 
 		int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
-		log.info(PARSE_TOTAL_PAGE_LOG, totalPage);
 
 		return PageBranchesInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
+	}
+
+	@Cacheable(cacheNames = "pagePullRequest",
+			key = "#token+'-'+#organization+'-'+#repo+'-'+#branch+'-'+#page+'-'+#perPage")
+	public PagePullRequestInfoDTO getGitHubPullRequest(String token, String organization, String repo, String branch,
+			int page, int perPage) {
+		log.info("Start to get paginated github pull request info, page: {}", page);
+		ResponseEntity<List<PullRequestInfoDTO>> allPullRequests = gitHubFeignClient.getAllPullRequests(token,
+				organization, repo, perPage, page, branch, "all");
+		log.info("Successfully get paginated github pull request info, page: {}", page);
+
+		int totalPage = parseTotalPage(allPullRequests.getHeaders().get(BUILD_KITE_LINK_HEADER));
+
+		return PagePullRequestInfoDTO.builder().pageInfo(allPullRequests.getBody()).totalPage(totalPage).build();
 	}
 
 	private int parseTotalPage(@Nullable List<String> linkHeader) {

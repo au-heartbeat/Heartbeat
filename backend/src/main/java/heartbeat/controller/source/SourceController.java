@@ -2,6 +2,8 @@ package heartbeat.controller.source;
 
 import heartbeat.controller.source.dto.BranchRequest;
 import heartbeat.controller.source.dto.BranchResponse;
+import heartbeat.controller.source.dto.CrewRequest;
+import heartbeat.controller.source.dto.CrewResponse;
 import heartbeat.controller.source.dto.OrganizationRequest;
 import heartbeat.controller.source.dto.OrganizationResponse;
 import heartbeat.controller.source.dto.RepoRequest;
@@ -93,6 +95,18 @@ public class SourceController {
 				branchRequest.getOrganization(), branchRequest.getRepo());
 		log.info("Successfully get branches, source type: {}", sourceType);
 		return new BranchResponse(allBranches);
+	}
+
+	@PostMapping("/{sourceType}/crews")
+	public CrewResponse getAllCrews(
+			@Schema(type = "string", allowableValues = { "github" },
+					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
+			@RequestBody @Valid CrewRequest crewRequest) {
+		log.info("Start to get crews, source type: {}", sourceType);
+		List<String> allCrews = gitHubService.getAllCrews(crewRequest.getToken(), crewRequest.getOrganization(),
+				crewRequest.getRepo(), crewRequest.getBranch(), crewRequest.getStartTime(), crewRequest.getEndTime());
+		log.info("Successfully get crews, source type: {}", sourceType);
+		return new CrewResponse(allCrews);
 	}
 
 }

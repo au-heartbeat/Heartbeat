@@ -10,9 +10,11 @@ import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
+import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
@@ -54,7 +56,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -957,7 +961,7 @@ class GithubServiceTest {
 	}
 
 	@Test
-	void shouldReturnNoReposWhenOrganizationIsNullInTheFirstPage() {
+	void shouldReturnNoReposWhenRepoIsNullInTheFirstPage() {
 		String mockToken = "mockToken";
 		String mockOrganization = "organization";
 		PageReposInfoDTO pageReposInfoDTO = PageReposInfoDTO.builder().totalPage(0).build();
@@ -1021,7 +1025,7 @@ class GithubServiceTest {
 	}
 
 	@Test
-	void shouldReturnNoBranchesWhenOrganizationIsNullInTheFirstPage() {
+	void shouldReturnNoBranchesWhenBranchIsNullInTheFirstPage() {
 		String mockToken = "mockToken";
 		String mockOrganization = "organization";
 		String mockRepo = "repo";
@@ -1032,6 +1036,175 @@ class GithubServiceTest {
 		List<String> allBranches = githubService.getAllBranches(mockToken, mockOrganization, mockRepo);
 
 		assertEquals(0, allBranches.size());
+	}
+
+	@Test
+	void shouldReturnAllCrewsWhenPageMoreThan1() {
+		String mockToken = "mockToken";
+		String mockOrganization = "organization";
+		String mockRepo = "repo";
+		String mockBranch = "branch";
+		long startTime = 1717171200000L;
+		long endTime = 1719763199999L;
+		PullRequestInfoDTO pullRequestWhenMergeIsNull = PullRequestInfoDTO.builder()
+			.number(1)
+			.createdAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.build();
+		PullRequestInfoDTO pullRequestWhenCreateAndMergeTimeIsSuccess = PullRequestInfoDTO.builder()
+			.number(2)
+			.createdAt("2024-06-30T15:59:59Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test2").build())
+			.build();
+		PullRequestInfoDTO pullRequestWhenCreateIsAfterEndTime = PullRequestInfoDTO.builder()
+			.number(3)
+			.createdAt("2024-06-30T16:59:59Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test3").build())
+			.build();
+		PullRequestInfoDTO pullRequestWhenMergeIsBeforeStartTime = PullRequestInfoDTO.builder()
+			.number(4)
+			.createdAt("2024-06-30T15:59:59Z")
+			.mergedAt("2024-05-31T15:00:00Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test4").build())
+			.build();
+		PullRequestInfoDTO pullRequestWhenMergeIsAfterEndTime = PullRequestInfoDTO.builder()
+			.number(5)
+			.createdAt("2024-06-30T15:59:59Z")
+			.mergedAt("2024-06-30T16:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test5").build())
+			.build();
+		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder()
+			.totalPage(22)
+			.pageInfo(List.of(pullRequestWhenMergeIsNull, pullRequestWhenCreateAndMergeTimeIsSuccess,
+					pullRequestWhenCreateIsAfterEndTime, pullRequestWhenMergeIsBeforeStartTime,
+					pullRequestWhenMergeIsAfterEndTime))
+			.build();
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
+				eq(mockBranch), anyInt(), eq(100)))
+			.thenReturn(pagePullRequestInfoDTO);
+
+		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
+				endTime);
+
+		assertEquals(List.of("test2"), allCrews);
+	}
+
+	@Test
+	void shouldReturnAllCrewsWhenPageIsEqualTo1() {
+		String mockToken = "mockToken";
+		String mockOrganization = "organization";
+		String mockRepo = "repo";
+		String mockBranch = "branch";
+		long startTime = 1717171200000L;
+		long endTime = 1719763199999L;
+		PullRequestInfoDTO pullRequestWhenCreateIsBeforeStartTime = PullRequestInfoDTO.builder()
+			.number(1)
+			.createdAt("2024-05-31T15:00:00Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.build();
+		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder()
+			.totalPage(1)
+			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
+			.build();
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
+				eq(mockBranch), anyInt(), eq(100)))
+			.thenReturn(pagePullRequestInfoDTO);
+
+		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
+				endTime);
+
+		assertEquals(0, allCrews.size());
+	}
+
+	@Test
+	void shouldReturnAllCrewsWhenPageIsMoreThan1AndDontGoToNextPage() {
+		String mockToken = "mockToken";
+		String mockOrganization = "organization";
+		String mockRepo = "repo";
+		String mockBranch = "branch";
+		long startTime = 1717171200000L;
+		long endTime = 1719763199999L;
+		PullRequestInfoDTO pullRequestWhenCreateIsBeforeStartTime = PullRequestInfoDTO.builder()
+			.number(1)
+			.createdAt("2024-05-31T15:00:00Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.build();
+		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder()
+			.totalPage(2)
+			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
+			.build();
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
+				eq(mockBranch), anyInt(), eq(100)))
+			.thenReturn(pagePullRequestInfoDTO);
+
+		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
+				endTime);
+
+		assertEquals(0, allCrews.size());
+	}
+
+	@Test
+	void shouldReturnAllCrewsWhenPageIsMoreThan1AndGoToNextPageAndDontGoToNextPageTwice() {
+		String mockToken = "mockToken";
+		String mockOrganization = "organization";
+		String mockRepo = "repo";
+		String mockBranch = "branch";
+		long startTime = 1717171200000L;
+		long endTime = 1719763199999L;
+		PullRequestInfoDTO pullRequestWhenCreateIsAfterEndTime = PullRequestInfoDTO.builder()
+			.number(3)
+			.createdAt("2024-06-30T16:59:59Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test3").build())
+			.build();
+		PullRequestInfoDTO pullRequestWhenCreateIsBeforeStartTime = PullRequestInfoDTO.builder()
+			.number(1)
+			.createdAt("2024-05-31T15:00:00Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.build();
+		PagePullRequestInfoDTO pagePullRequestInfoDTO1 = PagePullRequestInfoDTO.builder()
+			.totalPage(2)
+			.pageInfo(List.of(pullRequestWhenCreateIsAfterEndTime))
+			.build();
+		PagePullRequestInfoDTO pagePullRequestInfoDTO2 = PagePullRequestInfoDTO.builder()
+			.totalPage(2)
+			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
+			.build();
+		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 1,
+				100))
+			.thenReturn(pagePullRequestInfoDTO1);
+		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 2,
+				100))
+			.thenReturn(pagePullRequestInfoDTO2);
+
+		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
+				endTime);
+
+		assertEquals(0, allCrews.size());
+	}
+
+	@Test
+	void shouldReturnNoCrewsWhenPullRequestIsNullInTheFirstPage() {
+		String mockToken = "mockToken";
+		String mockOrganization = "organization";
+		String mockRepo = "repo";
+		String mockBranch = "branch";
+		long startTime = 1717171200000L;
+		long endTime = 1719763199999L;
+		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder().totalPage(0).build();
+		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 1,
+				100))
+			.thenReturn(pagePullRequestInfoDTO);
+
+		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
+				endTime);
+
+		assertEquals(0, allCrews.size());
 	}
 
 }

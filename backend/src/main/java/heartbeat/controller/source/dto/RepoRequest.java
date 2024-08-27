@@ -1,5 +1,6 @@
 package heartbeat.controller.source.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class RepoRequest {
 	@Pattern(regexp = TOKEN_PATTER, message = "token's pattern is incorrect")
 	private String token;
 
+	@NotBlank(message = "organization is required")
 	private String organization;
 
 }

@@ -104,7 +104,7 @@ class GitHubFeignClientDecoderTest {
 			"getPullRequestCommitInfo,Failed to get pull request commit info",
 			"getPullRequestListInfo,Failed to get pull request list info",
 			"getAllOrganizations,Failed to get all organizations", "getAllRepos,Failed to get all repositories",
-			"getAllBranches,Failed to get all branches", })
+			"getAllBranches,Failed to get all branches", "getAllPullRequests,Failed to get all pull requests", })
 	void shouldDecodeExceptionErrorMessage(String methodKey, String expectMsg) {
 		int statusCode = HttpStatus.NOT_FOUND.value();
 
