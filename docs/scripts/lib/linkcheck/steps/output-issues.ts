@@ -69,7 +69,7 @@ export function outputIssues(linkIssues: LinkIssue[], state: LinkCheckerState) {
 		const warningText = dedentMd`*** Warning:
 			${formatCount(issuesNotFoundInSource, 'issue was|issues were')}
 			found in the build output, but not the Markdown source.
-			
+
 			If you just changed or autofixed the source, please perform a fresh build.
 
 			If not, search for issues in non-Markdown sources (e.g. components, HTML).`;

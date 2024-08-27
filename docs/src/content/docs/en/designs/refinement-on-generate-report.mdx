@@ -4,12 +4,12 @@ description: Solve 504 timeout issue on M Account
 ---
 
 # Context
-Considering there are some constrains that API call could not longer than 59 seconds from M Account, we have to re-fine our implementation by changing sync call to async. 
+Considering there are some constrains that API call could not longer than 59 seconds from M Account, we have to re-fine our implementation by changing sync call to async.
 
-While it's not easy to make it at a once, we will do it step by step. Below are the design including C2 design with 
+While it's not easy to make it at a once, we will do it step by step. Below are the design including C2 design with
 - AS-IS
 - Transition
-- TO-BE 
+- TO-BE
 
 
 # Design
@@ -113,12 +113,12 @@ URI: /api/v1/reports/{reportId}
 Response:
 204:
 {
-    "status": 204,   
+    "status": 204,
 }
 201:
 {
     "status": 201,
-    reoprtData...   
+    reoprtData...
 }
 ```
 Exception Table
@@ -206,7 +206,7 @@ group async process board related metrics
     Backend -> Jira: get Jira raw data
     activate Backend
     activate Jira
-    Jira --> Backend: Jira raw 
+    Jira --> Backend: Jira raw
     deactivate Jira
     Backend -> Backend: calculate metrics for velocity, cycle time and classification
     Backend -> Backend: generate board report csv
@@ -252,24 +252,24 @@ group async process pipeline and sourcecontrol related metrics
 end
 
 
-loop until (response code is 201 and body.allMetricsReady==true) or (response code is 5xx) 
+loop until (response code is 201 and body.allMetricsReady==true) or (response code is 5xx)
     Frontend -> Backend: Polling the report
     activate Backend
     alt report is not ready
         Backend --> Frontend: response 200
     else report is ready
         Backend --> Frontend: response 201 with report
-    else fail to process 
+    else fail to process
         Backend --> Frontend: response 5xx
     end
     deactivate Backend
-end 
+end
 @enduml
 ```
 
 ### API Design
 
-+ Async generate board report 
++ Async generate board report
 ```
 POST /reports/{board}
 
@@ -319,7 +319,7 @@ Response:
     "interval": 0
 }
 ```
-+ Async generate dora report 
++ Async generate dora report
 ```
 POST /reports/{dora}
 
@@ -495,8 +495,8 @@ Response:
         "errorMessage": "string"
       },
     } <could be null if not required>,
-    "boardMetricsCompleted": boolean <default is false>, 
-    "doraMetricsCompleted": boolean <default is false>, 
+    "boardMetricsCompleted": boolean <default is false>,
+    "doraMetricsCompleted": boolean <default is false>,
     "allMetricsCompleted": boolean <default is false>,
     "exportValidityTime": 0
 }

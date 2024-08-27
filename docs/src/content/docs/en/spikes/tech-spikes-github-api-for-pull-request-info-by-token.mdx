@@ -204,7 +204,7 @@ backend --> frontend: return pr lead time
 ##### 1. Modify
 
 - For report API `POST /reports/{report-id}`, modify the request body, and add below key-value:
-  
+
   ```json
   {
     ...
@@ -236,13 +236,13 @@ backend --> frontend: return pr lead time
    ```
 
 ##### 1.2 Query parameters
-  - `per_page`: 
+  - `per_page`:
     - integer
     - The number of results per page (max 100)
     - Default: 30
   - `page`:
-    - integer 
-    - The page number of the results to fetch. 
+    - integer
+    - The page number of the results to fetch.
     - Default: 1
 
 ##### 1.3 Request header
@@ -612,7 +612,7 @@ backend --> frontend: return pr lead time
     - Can be one of: `open`, `closed`, `all`
   - `head`
     - string
-    - Filter pulls by head user or head organization and branch name in the format of `user:ref-name` or `organization:ref-name`. 
+    - Filter pulls by head user or head organization and branch name in the format of `user:ref-name` or `organization:ref-name`.
     - For example: `github:new-script-format` or `octocat:test-branch`.
   - `base`
     - string
@@ -633,7 +633,7 @@ backend --> frontend: return pr lead time
     - Can be one of: `created`, `updated`, `popularity`, `long-running`
   - `direction`:
     - string
-    - The direction of the sort. 
+    - The direction of the sort.
     - Default: `desc` when sort is created or sort is not specified, otherwise `asc`.
     - Can be one of: `asc`, `desc`
 

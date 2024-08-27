@@ -153,7 +153,7 @@ buildkite_e2e_deployed_check() {
     fi
   done
 
-  if [ $attempt_count -eq "$MAX_ATTEMPTS" ]; then
+  if [ "$attempt_count" -eq "$MAX_ATTEMPTS" ]; then
     echo "❌ Failed to wait for E2E deployment with Maximum attempts reached. Exiting..."
     exit 1
   fi

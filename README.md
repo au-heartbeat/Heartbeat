@@ -101,7 +101,7 @@ State of DevOps Report is launching in 2019. In this webinar, The 4 key metrics 
 2.  [Cycle time](#341-velocity)
 3.  [Classification](#343-classification)
 4.  [Rework](#344-rework)
-5.  [Deployment Frequency](#345-deployment-frequency) 
+5.  [Deployment Frequency](#345-deployment-frequency)
 6.  [Lead Time for Changes](#346-lead-time-for-changes-data)
 7.  [Pipeline Change Failure Rate](#347-pipeline-change-failure-rate)
 8.  [Pipeline Mean Time To Recovery](#348-pipeline-mean-time-to-recovery)
@@ -134,15 +134,15 @@ If you are first use the product, you need to select “Create A New Project”�
 ![Image 3-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-2-1.png)\
 _Image 3-2，Project config page_
 
-Users need to select at least one period of time, and users can click the “New time range” button to add up to 6 periods, and then multiple corresponding data reports will be generated on the report page. 
+Users need to select at least one period of time, and users can click the “New time range” button to add up to 6 periods, and then multiple corresponding data reports will be generated on the report page.
 
 Note: Charts will be generated only by selecting at least 2 time periods.
 
 **Have three items of time period:**
 
 1.  **Regular calendar:** If you select this item, it means calculated metrics will exclude the weekend.
-2.  **Calendar with Chinese holiday:** If you select this item, it means calculated metrics will exclude the weekend and Chinese holiday. 
-3.  **Calendar with Vietnam holiday:** If you select this item, it means calculated metrics will exclude the weekend and Vietnam holiday. 
+2.  **Calendar with Chinese holiday:** If you select this item, it means calculated metrics will exclude the weekend and Chinese holiday.
+3.  **Calendar with Vietnam holiday:** If you select this item, it means calculated metrics will exclude the weekend and Vietnam holiday.
 
 All need to select which data you want to get, for now, we support seven metrics data (Image 3-3). Those eight metrics are `Deployment Frequency (DF)`, `Lead Time for changes (LTC)`, `Mean Time To Recover (MTTR)`, `Change Failure Rate (CFR)`, and `Velocity`, `Cycle time`, `Classification`,`Rework`.
 
@@ -155,7 +155,7 @@ User can not select future time in calendar (both start time & end time). The ma
 
 Invalid dates may be, e.g. future dates, interval between start time and end time is more than 31 days, end time is before start time, etc. If users select an invalid date, a warning will be popped up.
 
-Users can click the sort button to sort multiple periods of time in ascending or descending order. 
+Users can click the sort button to sort multiple periods of time in ascending or descending order.
 
 #### 3.1.3 Config project account
 
@@ -303,10 +303,10 @@ _Image 3-17，story-point-custom-field_
 ![Image 3-18](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/advanced-setting-image/flagged-custom-field.png)\
 _Image 3-18，flagged-custom-field_
 
-1. user need to go to the jira board and click one card , then open dev tool switch to network part. 
-2. then click card's history part. 
-3. at that time, user can see one api call which headers request URL is https://xxx.atlassian.net/rest/gira/1/ . 
-4. then go to review part, find fieldDisplayName which show Flagged and story point estimate and get the fieldId as the custom-field that user need to input in advanced settings. from image 3-13 and 3-14 we can find that  flagged custom field is customfield_10021, story points custom field is customfield_10016. 
+1. user need to go to the jira board and click one card , then open dev tool switch to network part.
+2. then click card's history part.
+3. at that time, user can see one api call which headers request URL is https://xxx.atlassian.net/rest/gira/1/ .
+4. then go to review part, find fieldDisplayName which show Flagged and story point estimate and get the fieldId as the custom-field that user need to input in advanced settings. from image 3-13 and 3-14 we can find that  flagged custom field is customfield_10021, story points custom field is customfield_10016.
 
 #### 3.2.5 Pipeline configuration
 
@@ -352,9 +352,9 @@ After setup and configuration, then it will generate the heartbeat dashboard.
 Users can switch dates to view the dashboard for the corresponding time period. And users can switch between dashboard and chart by clicking on `Chart` and `List` button.
 
 #### chart view
-In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.  
+In report `chart` page, heartbeat provide a better visualization on delivery and below are two chart screenshot for board and dora metrics respectively.
 
-- Board chart 
+- Board chart
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/board-chart.png)
 In the classification chart of the board chart, you can click the switch button to reverse the chart. the reversed chart will show the sum of each legend in all time periods.
 ![Image 3-22-1](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/reverse-classification-chart.png)
@@ -368,8 +368,8 @@ Heartbeat chart enable customer to drill down  dora metrics to specific pipeline
 
 Within chart, Heartbeat also provide trend indicator which represent last two periods comparison result. The trend indicator includes three key points:
 - Color: From delivery perspective, Green means healthy, Red means unhealthy
-- Trend direction: Increased or decreased compared between last two periods  
-- Value: Changed value in percentage format 
+- Trend direction: Increased or decreased compared between last two periods
+- Value: Changed value in percentage format
 
 Below trend indicator means that Velocity is pretty health between 2024.5.13-2024.5.27 and 2024.4.29-20204.5.12. And the Velocity increased 268.75%.
 ![Image 3-22-2](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-22-3.png)
@@ -403,7 +403,7 @@ In Velocity Report, it will list the corresponding data by Story Point and the n
     - Collection date type (exclude weekend & holidays)
     - Selected board crews
 - Formula for 'Throughput(Cards Count): sum of cards count for done cards in selected time period
-  
+
 
 ![Image 3-23](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/9.png)\
 _Image 3-23，Velocity Report_
@@ -411,7 +411,7 @@ _Image 3-23，Velocity Report_
 ### 3.4.2 Cycle Time
 
 The calculation process data and final result of Cycle Time are calculated by rounding method, and two digits are kept after the decimal point. Such as: 3.567... Is 3.56; 3.564... Is 3.56.
-- `Cycle time`: the time it take for each card from start to end. Heartbeat has 8 states (as below) for board card and it will sum up the time for states, excluding `To do` and `Done` as cycle time. So it's important that client map Jira column/status to the heartbeat state correctly.  
+- `Cycle time`: the time it take for each card from start to end. Heartbeat has 8 states (as below) for board card and it will sum up the time for states, excluding `To do` and `Done` as cycle time. So it's important that client map Jira column/status to the heartbeat state correctly.
   - To do
   - Analysis
   - In dev
@@ -459,7 +459,7 @@ It will show the rework data of board on your selection on `Rework times settins
 If "to do" is selected in the "Rework to which column", we will count the number of times the subsequent options in the options are reworked back to the "to do" state.
 
 
-  
+
 ![Image 3-26](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/rework-setting-image/rework-detail.png)\
 _Image 3-26，Rework Report_
 
@@ -467,7 +467,7 @@ _Image 3-26，Rework Report_
 - Definition for ‘Deployment Frequency': this metrics records how often you deploy code to production on a daily basis.
   - Influenced factors
     - Added pipelines
-    - Selected pipeline steps 
+    - Selected pipeline steps
     - Selected Github branch for pipeline
     - Selected pipeline crews
     - Passed builds
@@ -530,7 +530,7 @@ _Image 3-30，Pipeline Change Failure Rate Report_
 - Formula for ‘Pipeline Mean time to recovery': `sum[the time difference between the first build fail and the last pass]`/ `the number of repairs`
 
 ![Image 3-31](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15.png)\
-_Image 3-31，mean time to recovery 
+_Image 3-31，mean time to recovery
 
 ![Image 3-31-multiple-pipeline](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/15-1.png)\
 _Image 3-31-1，mean time to recovery when mulitiple pipeline
@@ -905,11 +905,11 @@ We love your input! Please see our [contributing guide](contribution.md) to get 
 
 # 10 Pipeline Strategy
 
-Now, Heartbeat uses `GitHub Actions` and `BuildKite` to build and deploy Heartbeat application. 
+Now, Heartbeat uses `GitHub Actions` and `BuildKite` to build and deploy Heartbeat application.
 
-But there is some constrains, like some pipeline dependency. 
+But there is some constrains, like some pipeline dependency.
 
-So, committer should pay attention to this flow when there is some pipeline issues. 
+So, committer should pay attention to this flow when there is some pipeline issues.
 
 ```mermaid
 	sequenceDiagram
@@ -934,7 +934,7 @@ So, committer should pay attention to this flow when there is some pipeline issu
           GitHub_Actions -->> Committer: Response the pipeline result to committer
           BuildKite -->> Committer: Response the pipeline result to committer
         else No
-          GitHub_Actions -->> Committer: Break the pipeline 
+          GitHub_Actions -->> Committer: Break the pipeline
         end
       end
     else No

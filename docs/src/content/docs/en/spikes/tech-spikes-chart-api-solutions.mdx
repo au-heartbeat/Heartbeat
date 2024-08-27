@@ -19,7 +19,7 @@ According to the new business requirements and the roadmap, there are some point
 
 ### Options
 
-#### Metrics page 
+#### Metrics page
 
 FrontEnd can get the date list and separate it in order to send the request.
 
@@ -64,7 +64,7 @@ As shown in the image, we want to refactor the frontend and backend solutions fo
 When the frontend calls the backend API in parallel multiple times, backend invoke original service to handle logic and return response.
 Then we accept all responses from the backend and combine the data for parallel processing of data.
 
-The APIs for the metrics page that we do not need to modify are as follows: 
+The APIs for the metrics page that we do not need to modify are as follows:
 - POST /boards/`{boardType}`/info
 - POST /pipelines/`{pipelineType}`/info
 - POST /pipelines/`{pipelineType}`/`{organizationId}`/pipelines/`{buildId}`/steps
@@ -97,7 +97,7 @@ stop
 As shown in the image, we want to refactor the frontend and backend solutions for report page. About `reports board`, `reports dora`,
 `reports poll {reportId}` API, we can transfer date info time and time again. Due to the logic of the report page.
 Then we accept all responses from the backend and combine the data for charting.
- 
+
 The APIs for the report page that we do not need to modify are as follows:
 - POST /reports
 - GET /reports/`{reportId}`
@@ -108,7 +108,7 @@ The APIs for the report page that we do not need to modify are as follows:
 
 Corresponding information about chart information and response:
 
-- velocity: 
+- velocity:
 ```json
 "velocity": {
   "velocityForSP": 30.0,
@@ -124,7 +124,7 @@ Corresponding information about chart information and response:
 }
 ```
 
-- Cycle Time Allocation 
+- Cycle Time Allocation
 ```json
 // Total cycle time
 "cycleTime": {

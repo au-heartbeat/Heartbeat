@@ -36,4 +36,3 @@ heartbeat:
     host: ${SWAGGER_HOST:http://localhost:4322}
   version: 1.2.1
   expiredDays: ${EXPIRED_DAYS:7}
-

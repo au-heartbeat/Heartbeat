@@ -363,8 +363,8 @@ export class TranslationStatusBuilder {
 		};
 	}
 
-	/* 	
-		Determines if a commit is a valid major. Any commits that include one of the 
+	/*
+		Determines if a commit is a valid major. Any commits that include one of the
 		keywords from `COMMIT_IGNORE` have all their files marked as minor changes.
 		Meanwhile, the `@tracker-major` directive if used in a final squash commit's
 		description, selects specific files to be marked as major changes.
@@ -375,9 +375,9 @@ export class TranslationStatusBuilder {
 		Pages changed:
 		`en/mpa-vs-spa.mdx`, `en/why-astro.mdx`, `pt-br/markdown-content.mdx`
 
-		Only `en/mpa-vs-spa.mdx` & `en/why-astro.mdx` are marked as major; translations 
-		to these pages all become outdated and other pages from the commit stay the same. 
-		Also works when there's no English pages! The translated files will be marked as 
+		Only `en/mpa-vs-spa.mdx` & `en/why-astro.mdx` are marked as major; translations
+		to these pages all become outdated and other pages from the commit stay the same.
+		Also works when there's no English pages! The translated files will be marked as
 		updated, but the same pages from other languages won't be affected by it, keeping
 		their old state.
 
@@ -393,7 +393,7 @@ export class TranslationStatusBuilder {
 
 		See minimatch docs for examples on glob patterns:
 		https://github.com/isaacs/minimatch/blob/main/README.md
-		
+
 	*/
 	isValidMajor(entry: DefaultLogFields & ListLogLine, filePath: string) {
 		const trackerDirectiveMatch = entry.body.match(TRACKER_DIRECTIVE);

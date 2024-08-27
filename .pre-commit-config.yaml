@@ -1,0 +1,87 @@
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
+
+repos:
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: cd frontend && npm run lint
+        language: system
+        stages:
+          - pre-commit
+      - id: ts-check
+        name: TSC check
+        entry: cd frontend && tsc-files --noEmit
+        language: system
+        stages:
+          - pre-commit
+      - id: ts-type-check
+        name: TS type check
+        entry: cd frontend && npm run type-check
+        language: system
+        stages:
+          - pre-commit
+      - id: prettier
+        name: Prettier
+        entry: cd frontend && npx prettier --write . --ignore-unknown
+        language: system
+        stages:
+          - pre-commit
+      - id: test-check
+        name: Test coverage for the whole project
+        entry: cd frontend && pnpm run coverage:silent
+        language: system
+        pass_filenames: false
+        require_serial: true
+        stages:
+          - pre-push
+      - id: audit-check
+        name: Vulnerability check
+        entry: cd frontend && pnpm run audit
+        language: system
+        stages:
+          - pre-push
+      - id: license-check
+        name: License compliance check
+        entry: cd frontend && pnpm run license-compliance
+        language: system
+        stages:
+          - pre-push
+      - id: tag-check
+        name: tag check
+        entry: ./frontend/scripts/git-hooks/pre-tag.sh
+        language: script
+        stages:
+          - commit-msg
+      - id: check-building-for-frontend
+        name: Check for building
+        entry: cd frontend && pnpm run build
+        language: system
+        pass_filenames: false
+        require_serial: true
+      - id: check-building-for-backend
+        name: Check for building
+        entry: cd backend && ./gradlew clean check
+        language: system
+        pass_filenames: false
+        require_serial: true
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+        exclude: ops/infra/cloudformation.yml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-json
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.7.2
+    hooks:
+      - id: shellcheck
+        exclude: frontend/.husky
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        stages:
+          - pre-commit
