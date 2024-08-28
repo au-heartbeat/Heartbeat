@@ -80,6 +80,7 @@ px_check() {
     --exclude='*.yaml' \
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
+    --exclude-dir='dist' \
     '[0-9]\+px' \
     ./ || true)
   if [ -n "$result" ]; then
@@ -102,6 +103,7 @@ rgba_check() {
   result=$(grep -rinE \
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
+    --exclude-dir='dist' \
     --exclude='*.html' \
     --exclude='*.svg' \
     --exclude='*.xml' \
@@ -229,6 +231,7 @@ hex_check() {
   result=$(grep -rinE \
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
+    --exclude-dir='dist' \
     --exclude='chart-result.ts' \
     --exclude='*.html' \
     --exclude='*.svg' \

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-pushed_tags=$(git push --dry-run --porcelain | grep '^refs/tags/' | awk '{print $2}')
+pushed_tags=$(git push --dry-run --porcelain --no-verify | grep '^refs/tags/' | awk '{print $2}')
 
 if [ -n "$pushed_tags" ]; then
     echo "Before creating a tag, please confirm if you have completed the update of the backend API version."

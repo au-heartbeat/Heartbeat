@@ -337,7 +337,7 @@ const MetricsStepper = () => {
   return (
     <>
       <StyledStepper activeStep={activeStep}>
-        {STEPS.map((label) => (
+        {STEPS.map((label: string) => (
           <StyledStep key={label}>
             <StyledStepLabel>{label}</StyledStepLabel>
           </StyledStep>
