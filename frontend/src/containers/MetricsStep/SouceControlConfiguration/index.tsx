@@ -49,8 +49,6 @@ export const SourceControlConfiguration = () => {
     ),
   );
 
-  console.log(sourceControlCrews);
-
   const handleRemoveSourceControl = (id: number) => {
     dispatch(deleteSourceControlConfigurationSettings(id));
   };
