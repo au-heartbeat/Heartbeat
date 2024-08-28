@@ -32,6 +32,7 @@ import {
 } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
+import { SourceControlConfiguration } from '@src/containers/MetricsStep/SouceControlConfiguration';
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { shouldMetricsLoaded } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
@@ -49,7 +50,6 @@ import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
-import {SourceControlConfiguration} from "@src/containers/MetricsStep/SouceControlConfiguration";
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);

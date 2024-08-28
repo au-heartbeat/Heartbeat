@@ -1,19 +1,10 @@
 import {
-  PIPELINE_CONFIG_TITLE,
-  PIPELINE_TOOL_GET_INFO_ERROR_CASE_TEXT_MAPPING,
-  PIPELINE_TOOL_GET_INFO_ERROR_MESSAGE,
-  SOURCE_CONTROL_CONFIG_TITLE,
-  SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING,
-  SOURCE_CONTROL_ERROR_MESSAGE,
-  SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING,
-  UNKNOWN_ERROR_TITLE,
-} from '@src/constants/resources';
-import {
   ISourceControlGetBranchResponseDTO,
   ISourceControlGetCrewResponseDTO,
   ISourceControlGetOrganizationResponseDTO,
   ISourceControlGetRepoResponseDTO,
-  SourceControlGetBranchResponseDTO, SourceControlGetCrewResponseDTO,
+  SourceControlGetBranchResponseDTO,
+  SourceControlGetCrewResponseDTO,
   SourceControlGetOrganizationResponseDTO,
   SourceControlGetRepoResponseDTO,
 } from '@src/clients/sourceControl/dto/response';
@@ -25,6 +16,13 @@ import {
   SourceControlInfoRequestDTO,
   SourceControlVerifyRequestDTO,
 } from '@src/clients/sourceControl/dto/request';
+import {
+  SOURCE_CONTROL_CONFIG_TITLE,
+  SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING,
+  SOURCE_CONTROL_ERROR_MESSAGE,
+  SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING,
+  UNKNOWN_ERROR_TITLE,
+} from '@src/constants/resources';
 import { HttpClient } from '@src/clients/HttpClient';
 import { IAppError } from '@src/errors/ErrorType';
 import { isAppError } from '@src/errors';

@@ -1,8 +1,4 @@
 import { selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
-import {
-  ISourceControlGetBranchResponseDTO,
-  ISourceControlGetOrganizationResponseDTO
-} from '@src/clients/sourceControl/dto/response';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { SourceControlTypes } from '@src/constants/resources';
@@ -12,16 +8,9 @@ import { useState } from 'react';
 export interface IUseGetSourceControlConfigurationStateInterface {
   readonly isLoading: boolean;
   readonly getSourceControlBranchInfo: (organization: string, repo: string) => void;
-  readonly info: ISourceControlGetOrganizationResponseDTO;
 }
 export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceControlConfigurationStateInterface => {
-  const defaultInfoStructure = {
-    code: 200,
-    errorTitle: '',
-    errorMessage: '',
-  };
   const dispatch = useAppDispatch();
-  const [info, setInfo] = useState<ISourceControlGetBranchResponseDTO>(defaultInfoStructure);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
 
@@ -41,7 +30,6 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
     setIsLoading(true);
     try {
       const response = await sourceControlClient.getBranch(params);
-      setInfo(response);
       if (response.code === HttpStatusCode.Ok) {
         dispatch(
           updateSourceControlVerifiedResponse({
@@ -67,6 +55,5 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
   return {
     isLoading,
     getSourceControlBranchInfo,
-    info,
   };
 };

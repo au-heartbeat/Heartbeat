@@ -1,24 +1,19 @@
 import {
-  addADeploymentFrequencySetting,
   addOneSourceControlSetting,
-  deleteADeploymentFrequencySetting,
   deleteSourceControlConfigurationSettings,
-  selectDeploymentFrequencySettings,
   selectSourceControlConfigurationSettings,
-  updateDeploymentFrequencySettings,
   updateSourceControlConfigurationSettings,
 } from '@src/context/Metrics/metricsSlice';
 import { useGetSourceControlConfigurationOrganizationEffect } from '@src/hooks/useGetSourceControlConfigurationOrganizationEffect';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import { SourceControlMetricSelection } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlMetricSelection';
-import { selectDateRange, selectPipelineCrews, selectSourceControlCrews } from '@src/context/config/configSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
-import { deleteMetricsPipelineFormMeta, getErrorDetail } from '@src/context/meta/metaSlice';
+import { selectDateRange, selectSourceControlCrews } from '@src/context/config/configSlice';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { TokenAccessAlert } from '@src/containers/MetricsStep/TokenAccessAlert';
 import { StyledAlertWrapper } from '@src/containers/MetricsStep/style';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
-import { PipelineSettingTypes } from '@src/constants/resources';
+import { getErrorDetail } from '@src/context/meta/metaSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
@@ -86,9 +81,7 @@ export const SourceControlConfiguration = () => {
           </StyledAlertWrapper>
           {realSourceControlConfigurationSettings.map((sourceControlConfigurationSetting) => (
             <SourceControlMetricSelection
-              isInfoLoading={isLoading}
               key={sourceControlConfigurationSetting.id}
-              type={PipelineSettingTypes.LeadTimeForChangesType}
               sourceControlSetting={sourceControlConfigurationSetting}
               isShowRemoveButton={totalSourceControlNumber > 1}
               onRemoveSourceControl={(id) => handleRemoveSourceControl(id)}

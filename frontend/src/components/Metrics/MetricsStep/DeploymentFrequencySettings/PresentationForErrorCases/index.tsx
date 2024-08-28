@@ -7,12 +7,11 @@ import {
 } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases/style';
 import { StyledErrorMessage, StyledErrorSection, StyledErrorTitle } from '@src/components/Common/EmptyContent/styles';
 import { PIPELINE_TOOL_RETRY_MESSAGE, PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE } from '@src/constants/resources';
-import { IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
+import { SourceControlGetOrganizationResponseDTO } from '@src/clients/sourceControl/dto/response';
+import { IPipelineInfoResponseDTO } from '@src/clients/pipeline/dto/response';
 import { AxiosRequestErrorCode } from '@src/constants/resources';
 import errorSvg from '@src/assets/PipelineInfoError.svg';
 import React, { useCallback } from 'react';
-import {IPipelineInfoResponseDTO} from "@src/clients/pipeline/dto/response";
-import {SourceControlGetOrganizationResponseDTO} from "@src/clients/sourceControl/dto/response";
 
 export interface IPresentationForErrorCasesProps {
   retry: () => void;

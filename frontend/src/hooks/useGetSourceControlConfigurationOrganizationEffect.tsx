@@ -1,5 +1,4 @@
 import {
-  selectShouldGetPipelineConfig,
   selectShouldGetSourceControlConfig,
   updateSourceControlConfigurationSettingsWhenCreate,
 } from '@src/context/Metrics/metricsSlice';

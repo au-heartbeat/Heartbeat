@@ -423,9 +423,6 @@ export const metricsSlice = createSlice({
     updateShouldGetPipelineConfig: (state, action) => {
       state.shouldGetPipeLineConfig = action.payload;
     },
-    updateShouldGetSourceControlConfig: (state, action) => {
-      state.shouldGetSourceControlConfig = action.payload;
-    },
 
     updateMetricsImportedData: (state, action) => {
       const {
@@ -767,7 +764,6 @@ export const {
   updateReworkTimesSettings,
   updateFirstTimeRoadMetricsBoardData,
   updateShouldRetryPipelineConfig,
-  updateShouldGetSourceControlConfig,
   updateSourceControlConfigurationSettings,
   deleteSourceControlConfigurationSettings,
   updateSourceControlConfigurationSettingsWhenCreate,

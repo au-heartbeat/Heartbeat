@@ -1,8 +1,7 @@
-import {DateRange, selectSourceControl, updateSourceControlVerifiedResponse} from '@src/context/config/configSlice';
-import { ISourceControlGetCrewResponseDTO } from '@src/clients/sourceControl/dto/response';
+import { selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
-import {FULFILLED, REJECTED, SourceControlTypes} from '@src/constants/resources';
+import { SourceControlTypes } from '@src/constants/resources';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
@@ -15,16 +14,9 @@ export interface IUseGetSourceControlConfigurationStateInterface {
     startTime: number,
     endTime: number,
   ) => void;
-  readonly info: ISourceControlGetCrewResponseDTO;
 }
 export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceControlConfigurationStateInterface => {
-  const defaultInfoStructure = {
-    code: 200,
-    errorTitle: '',
-    errorMessage: '',
-  };
   const dispatch = useAppDispatch();
-  const [info, setInfo] = useState<ISourceControlGetCrewResponseDTO>(defaultInfoStructure);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
 
@@ -53,7 +45,6 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
     };
     try {
       const response = await sourceControlClient.getCrew(params);
-      setInfo(response);
       if (response.code === HttpStatusCode.Ok) {
         const parents = [
           {
@@ -97,6 +88,5 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
   return {
     isLoading,
     getSourceControlCrewInfo,
-    info,
   };
 };
