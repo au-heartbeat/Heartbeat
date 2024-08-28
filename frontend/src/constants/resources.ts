@@ -498,6 +498,8 @@ export const BOARD_CONFIG_INFO_TITLE = {
 
 export const PIPELINE_CONFIG_TITLE = 'Failed to get Pipeline configuration!';
 
+export const SOURCE_CONTROL_CONFIG_TITLE = 'Failed to get source control configuration!';
+
 export const BOARD_CONFIG_INFO_ERROR = {
   FORBIDDEN: 'Please go back to the previous page and change your board token with correct access permission.',
   NOT_FOUND: 'Please go back to the previous page and check your board info!',
@@ -519,10 +521,21 @@ export const PIPELINE_TOOL_GET_INFO_ERROR_CASE_TEXT_MAPPING: { [key: string]: st
   '404': 'Not found!',
 };
 
+export const SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING: { [key: string]: string } = {
+  '204': 'No source control info!',
+  '400': 'Invalid input!',
+  '401': 'Unauthorized request!',
+  '403': 'Forbidden request!',
+  '404': 'Not found!',
+};
+
 export const UNKNOWN_ERROR_TITLE = 'Unknown error';
 
 export const PIPELINE_TOOL_GET_INFO_ERROR_MESSAGE =
   'Please go back to the previous page and change your pipeline token with correct access permission.';
+
+export const SOURCE_CONTROL_ERROR_MESSAGE =
+  'Please go back to the previous page and change your source control token with correct access permission.';
 
 export const PIPELINE_TOOL_RETRY_MESSAGE = 'Data loading failed, please';
 export const PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE = ' try again';

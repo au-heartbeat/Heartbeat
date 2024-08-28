@@ -18,7 +18,7 @@ interface Props {
   isError?: boolean;
   errorText?: string;
   onGetSteps?: (pipelineName: string) => void;
-  onUpDatePipeline: (id: number, label: string, value: string | []) => void;
+  onUpdate: (id: number, label: string, value: string | []) => void;
 }
 
 export const SingleSelection = ({
@@ -29,7 +29,7 @@ export const SingleSelection = ({
   isError = false,
   errorText,
   onGetSteps,
-  onUpDatePipeline,
+  onUpdate,
 }: Props) => {
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
   const [inputValue, setInputValue] = useState<string>(value);
@@ -38,12 +38,12 @@ export const SingleSelection = ({
 
   const handleSelectedOptionsChange = (value: string) => {
     if (onGetSteps) {
-      onUpDatePipeline(id, 'Step', '');
-      onUpDatePipeline(id, 'Branches', []);
+      onUpdate(id, 'Step', '');
+      onUpdate(id, 'Branches', []);
       onGetSteps(value);
       dispatch(initSinglePipelineListBranches(id));
     }
-    onUpDatePipeline(id, label, value);
+    onUpdate(id, label, value);
   };
 
   const emojiView = (pipelineStepName: string) => {

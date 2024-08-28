@@ -55,7 +55,7 @@ describe('BranchSelection', () => {
 
     return render(
       <Provider store={store}>
-        <BranchSelection {...PIPELINE_SETTING} onUpdatePipeline={onUpdatePipeline} isStepLoading={false} />
+        <BranchSelection {...PIPELINE_SETTING} onUpdate={onUpdatePipeline} isStepLoading={false} />
       </Provider>,
     );
   };

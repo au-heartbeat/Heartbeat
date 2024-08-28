@@ -1,8 +1,9 @@
-import { IPipelineConfig } from '@src/context/Metrics/metricsSlice';
+import { IPipelineConfig, ISourceControlConfig } from '@src/context/Metrics/metricsSlice';
 import React, { createContext, useContext } from 'react';
 
 interface ProviderContextType {
   getDuplicatedPipeLineIds: (pipelineSettings: IPipelineConfig[]) => number[];
+  getDuplicatedSourceControlIds: (pipelineSettings: ISourceControlConfig[]) => number[];
 }
 
 interface ContextProviderProps {
@@ -11,6 +12,7 @@ interface ContextProviderProps {
 
 export const ValidationContext = createContext<ProviderContextType>({
   getDuplicatedPipeLineIds: () => [],
+  getDuplicatedSourceControlIds: () => [],
 });
 
 const getDuplicatedPipeLineIds = (pipelineSettings: IPipelineConfig[]) => {
@@ -27,11 +29,26 @@ const getDuplicatedPipeLineIds = (pipelineSettings: IPipelineConfig[]) => {
     .flat();
 };
 
+const getDuplicatedSourceControlIds = (pipelineSettings: ISourceControlConfig[]) => {
+  const errors: { [key: string]: number[] } = {};
+  pipelineSettings.forEach(({ id, organization, repo }) => {
+    if (organization && repo) {
+      const errorString = `${organization}${repo}`;
+      if (errors[errorString]) errors[errorString].push(id);
+      else errors[errorString] = [id];
+    }
+  });
+  return Object.values(errors)
+    .filter((ids) => ids.length > 1)
+    .flat();
+};
+
 export const ContextProvider = ({ children }: ContextProviderProps) => {
   return (
     <ValidationContext.Provider
       value={{
         getDuplicatedPipeLineIds,
+        getDuplicatedSourceControlIds,
       }}
     >
       {children}

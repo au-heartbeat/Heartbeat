@@ -11,10 +11,16 @@ import { IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolCl
 import { AxiosRequestErrorCode } from '@src/constants/resources';
 import errorSvg from '@src/assets/PipelineInfoError.svg';
 import React, { useCallback } from 'react';
+import {IPipelineInfoResponseDTO} from "@src/clients/pipeline/dto/response";
+import {SourceControlGetOrganizationResponseDTO} from "@src/clients/sourceControl/dto/response";
 
-export interface IPresentationForErrorCasesProps extends IGetPipelineToolInfoResult {
+export interface IPresentationForErrorCasesProps {
   retry: () => void;
   isLoading: boolean;
+  code: number | string | undefined | null;
+  data?: IPipelineInfoResponseDTO | SourceControlGetOrganizationResponseDTO;
+  errorTitle: string;
+  errorMessage: string;
 }
 
 const PresentationForErrorCases = (props: IPresentationForErrorCasesProps) => {

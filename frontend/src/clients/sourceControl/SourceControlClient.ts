@@ -1,8 +1,34 @@
-import { SourceControlInfoRequestDTO, SourceControlVerifyRequestDTO } from '@src/clients/sourceControl/dto/request';
-import { SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING, UNKNOWN_ERROR_TITLE } from '@src/constants/resources';
+import {
+  PIPELINE_CONFIG_TITLE,
+  PIPELINE_TOOL_GET_INFO_ERROR_CASE_TEXT_MAPPING,
+  PIPELINE_TOOL_GET_INFO_ERROR_MESSAGE,
+  SOURCE_CONTROL_CONFIG_TITLE,
+  SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING,
+  SOURCE_CONTROL_ERROR_MESSAGE,
+  SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING,
+  UNKNOWN_ERROR_TITLE,
+} from '@src/constants/resources';
+import {
+  ISourceControlGetBranchResponseDTO,
+  ISourceControlGetCrewResponseDTO,
+  ISourceControlGetOrganizationResponseDTO,
+  ISourceControlGetRepoResponseDTO,
+  SourceControlGetBranchResponseDTO, SourceControlGetCrewResponseDTO,
+  SourceControlGetOrganizationResponseDTO,
+  SourceControlGetRepoResponseDTO,
+} from '@src/clients/sourceControl/dto/response';
+import {
+  SourceControlGetBranchRequestDTO,
+  SourceControlGetCrewRequestDTO,
+  SourceControlGetOrganizationRequestDTO,
+  SourceControlGetRepoRequestDTO,
+  SourceControlInfoRequestDTO,
+  SourceControlVerifyRequestDTO,
+} from '@src/clients/sourceControl/dto/request';
 import { HttpClient } from '@src/clients/HttpClient';
 import { IAppError } from '@src/errors/ErrorType';
 import { isAppError } from '@src/errors';
+import { HttpStatusCode } from 'axios';
 
 export interface SourceControlResult {
   code?: number | string;
@@ -48,6 +74,176 @@ export class SourceControlClient extends HttpClient {
         result.errorTitle = SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING[`${exception.code}`] || UNKNOWN_ERROR_TITLE;
       }
     }
+    return result;
+  };
+
+  getOrganization = async (
+    params: SourceControlGetOrganizationRequestDTO,
+  ): Promise<ISourceControlGetOrganizationResponseDTO> => {
+    const { token, type } = params;
+    const result: ISourceControlGetOrganizationResponseDTO = {
+      code: null,
+      data: undefined,
+      errorTitle: '',
+      errorMessage: '',
+    };
+
+    try {
+      const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/organizations`, {
+        token,
+      });
+      if (response.status === HttpStatusCode.Ok) {
+        result.data = response.data as SourceControlGetOrganizationResponseDTO;
+      } else if (response.status === HttpStatusCode.NoContent) {
+        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
+        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+      }
+      result.code = response.status;
+    } catch (e) {
+      if (isAppError(e)) {
+        const exception = e as IAppError;
+        result.code = exception.code;
+        if (
+          (exception.code as number) >= HttpStatusCode.BadRequest &&
+          (exception.code as number) < HttpStatusCode.InternalServerError
+        ) {
+          result.errorTitle = SOURCE_CONTROL_CONFIG_TITLE;
+        } else {
+          result.errorTitle = UNKNOWN_ERROR_TITLE;
+        }
+      }
+
+      result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+    }
+
+    return result;
+  };
+
+  getRepo = async (params: SourceControlGetRepoRequestDTO): Promise<ISourceControlGetRepoResponseDTO> => {
+    const { token, organization, type } = params;
+    const result: ISourceControlGetRepoResponseDTO = {
+      code: null,
+      data: undefined,
+      errorTitle: '',
+      errorMessage: '',
+    };
+
+    try {
+      const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/repos`, {
+        token,
+        organization,
+      });
+      if (response.status === HttpStatusCode.Ok) {
+        result.data = response.data as SourceControlGetRepoResponseDTO;
+      } else if (response.status === HttpStatusCode.NoContent) {
+        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
+        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+      }
+      result.code = response.status;
+    } catch (e) {
+      if (isAppError(e)) {
+        const exception = e as IAppError;
+        result.code = exception.code;
+        if (
+          (exception.code as number) >= HttpStatusCode.BadRequest &&
+          (exception.code as number) < HttpStatusCode.InternalServerError
+        ) {
+          result.errorTitle = SOURCE_CONTROL_CONFIG_TITLE;
+        } else {
+          result.errorTitle = UNKNOWN_ERROR_TITLE;
+        }
+      }
+
+      result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+    }
+
+    return result;
+  };
+
+  getBranch = async (params: SourceControlGetBranchRequestDTO): Promise<ISourceControlGetBranchResponseDTO> => {
+    const { token, organization, type, repo } = params;
+    const result: ISourceControlGetBranchResponseDTO = {
+      code: null,
+      data: undefined,
+      errorTitle: '',
+      errorMessage: '',
+    };
+
+    try {
+      const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/branches`, {
+        token,
+        organization,
+        repo,
+      });
+      if (response.status === HttpStatusCode.Ok) {
+        result.data = response.data as SourceControlGetBranchResponseDTO;
+      } else if (response.status === HttpStatusCode.NoContent) {
+        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
+        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+      }
+      result.code = response.status;
+    } catch (e) {
+      if (isAppError(e)) {
+        const exception = e as IAppError;
+        result.code = exception.code;
+        if (
+          (exception.code as number) >= HttpStatusCode.BadRequest &&
+          (exception.code as number) < HttpStatusCode.InternalServerError
+        ) {
+          result.errorTitle = SOURCE_CONTROL_CONFIG_TITLE;
+        } else {
+          result.errorTitle = UNKNOWN_ERROR_TITLE;
+        }
+      }
+
+      result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+    }
+
+    return result;
+  };
+
+  getCrew = async (params: SourceControlGetCrewRequestDTO): Promise<ISourceControlGetCrewResponseDTO> => {
+    const { token, organization, type, repo, branch, endTime, startTime } = params;
+    const result: ISourceControlGetCrewResponseDTO = {
+      code: null,
+      data: undefined,
+      errorTitle: '',
+      errorMessage: '',
+    };
+
+    try {
+      const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/crews`, {
+        token,
+        organization,
+        repo,
+        branch,
+        startTime,
+        endTime,
+      });
+      if (response.status === HttpStatusCode.Ok) {
+        result.data = response.data as SourceControlGetCrewResponseDTO;
+      } else if (response.status === HttpStatusCode.NoContent) {
+        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
+        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+      }
+      result.code = response.status;
+    } catch (e) {
+      if (isAppError(e)) {
+        const exception = e as IAppError;
+        result.code = exception.code;
+        if (
+          (exception.code as number) >= HttpStatusCode.BadRequest &&
+          (exception.code as number) < HttpStatusCode.InternalServerError
+        ) {
+          result.errorTitle = SOURCE_CONTROL_CONFIG_TITLE;
+        } else {
+          result.errorTitle = UNKNOWN_ERROR_TITLE;
+        }
+      }
+
+      result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
+    }
+
     return result;
   };
 }

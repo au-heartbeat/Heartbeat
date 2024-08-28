@@ -1,11 +1,4 @@
 import {
-  selectMetricsContent,
-  selectShouldGetBoardConfig,
-  updateFirstTimeRoadMetricsBoardData,
-  updateMetricsState,
-  updateShouldGetBoardConfig,
-} from '@src/context/Metrics/metricsSlice';
-import {
   selectDateRange,
   selectIsProjectCreated,
   selectMetrics,
@@ -13,7 +6,15 @@ import {
   updateJiraVerifyResponse,
   selectUsers,
   selectJiraColumns,
+  selectPipelineTool,
 } from '@src/context/config/configSlice';
+import {
+  selectMetricsContent,
+  selectShouldGetBoardConfig,
+  updateFirstTimeRoadMetricsBoardData,
+  updateMetricsState,
+  updateShouldGetBoardConfig,
+} from '@src/context/Metrics/metricsSlice';
 import {
   MetricSelectionHeader,
   MetricSelectionWrapper,
@@ -21,7 +22,14 @@ import {
   StyledErrorMessage,
   StyledRetryButton,
 } from '@src/containers/MetricsStep/style';
-import { AxiosRequestErrorCode, CycleTimeSettingsTypes, DONE, MESSAGE, RequiredData } from '@src/constants/resources';
+import {
+  AxiosRequestErrorCode,
+  CycleTimeSettingsTypes,
+  DONE,
+  MESSAGE,
+  PIPELINE_TOOL_NONE_OPTION,
+  RequiredData,
+} from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { Classification } from '@src/containers/MetricsStep/Classification';
@@ -41,6 +49,7 @@ import ReworkSettings from './ReworkSettings';
 import { Advance } from './Advance/Advance';
 import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
+import {SourceControlConfiguration} from "@src/containers/MetricsStep/SouceControlConfiguration";
 
 const MetricsStep = () => {
   const boardConfig = useAppSelector(selectBoard);
@@ -49,6 +58,7 @@ const MetricsStep = () => {
   const requiredData = useAppSelector(selectMetrics);
   const users = useAppSelector(selectUsers);
   const jiraColumns = useAppSelector(selectJiraColumns);
+  const pipelineTools = useAppSelector(selectPipelineTool);
   const targetFields = useAppSelector(selectMetricsContent).targetFields;
   const { cycleTimeSettings, cycleTimeSettingsType } = useAppSelector(selectMetricsContent);
   const dateRanges = useAppSelector(selectDateRange);
@@ -175,12 +185,21 @@ const MetricsStep = () => {
       {(requiredData.includes(RequiredData.DeploymentFrequency) ||
         requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
         requiredData.includes(RequiredData.LeadTimeForChanges) ||
-        requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) && (
-        <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
-          <MetricsSelectionTitle aria-label='Pipeline configuration title'>
-            Pipeline configuration
+        requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) &&
+        pipelineTools.type !== PIPELINE_TOOL_NONE_OPTION && (
+          <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
+            <MetricsSelectionTitle aria-label='Pipeline configuration title'>
+              Pipeline configuration
+            </MetricsSelectionTitle>
+            <DeploymentFrequencySettings />
+          </MetricSelectionWrapper>
+        )}
+      {pipelineTools.type === PIPELINE_TOOL_NONE_OPTION && (
+        <MetricSelectionWrapper aria-label='Source Control Configuration Section'>
+          <MetricsSelectionTitle aria-label='Source Control configuration title'>
+            Source control configuration
           </MetricsSelectionTitle>
-          <DeploymentFrequencySettings />
+          <SourceControlConfiguration />
         </MetricSelectionWrapper>
       )}
     </>
