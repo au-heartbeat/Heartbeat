@@ -52,19 +52,23 @@ repos:
         entry: ./frontend/scripts/git-hooks/pre-tag.sh
         language: script
         stages:
-          - commit-msg
+          - pre-push
       - id: check-building-for-frontend
-        name: Check for building
+        name: Check building for frontend
         entry: cd frontend && pnpm run build
         language: system
         pass_filenames: false
         require_serial: true
+        stages:
+          - pre-push
       - id: check-building-for-backend
-        name: Check for building
+        name: Check building for backend
         entry: cd backend && ./gradlew clean check
         language: system
         pass_filenames: false
         require_serial: true
+        stages:
+          - pre-push
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -75,7 +79,7 @@ repos:
       - id: trailing-whitespace
       - id: check-json
   - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.7.2
+    rev: v0.10.0
     hooks:
       - id: shellcheck
         exclude: frontend/.husky
