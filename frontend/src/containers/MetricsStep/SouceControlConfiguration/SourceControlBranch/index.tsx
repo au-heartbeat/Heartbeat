@@ -2,10 +2,8 @@ import { BranchSelectionWrapper } from '@src/containers/MetricsStep/DeploymentFr
 import BranchChip from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection/BranchChip';
 import { selectSourceControlConfigurationSettings } from '@src/context/Metrics/metricsSlice';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
-import { FormFieldWithMeta } from '@src/context/meta/metaSlice';
-import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { useAppSelector } from '@src/hooks';
-import React, { useCallback } from 'react';
+import React from 'react';
 
 export interface BranchSelectionProps {
   id: number;
