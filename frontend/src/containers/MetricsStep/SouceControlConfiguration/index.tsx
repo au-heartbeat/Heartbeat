@@ -97,7 +97,7 @@ export const SourceControlConfiguration = () => {
               options={sourceControlCrews}
               title={'Crew setting (optional)'}
               label={'Included Crews'}
-              type={'pipeline'}
+              type={'source-control'}
             />
           )}
         </>

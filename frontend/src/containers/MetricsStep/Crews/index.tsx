@@ -1,4 +1,9 @@
-import { savePipelineCrews, saveUsers, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import {
+  savePipelineCrews,
+  saveSourceControlCrews,
+  saveUsers,
+  selectMetricsContent,
+} from '@src/context/Metrics/metricsSlice';
 import { AssigneeFilter } from '@src/containers/MetricsStep/Crews/AssigneeFilter';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
@@ -21,17 +26,22 @@ function getValidSelectedCrews(configCrews: string[], realCrews: string[]): stri
 
 export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => {
   const isBoardCrews = type === 'board';
+  const isSourceControl = type === 'source-control';
   const dispatch = useAppDispatch();
-  const { users, pipelineCrews } = useAppSelector(selectMetricsContent);
+  const { users, pipelineCrews, sourceControlCrews } = useAppSelector(selectMetricsContent);
   const [selectedCrews, setSelectedCrews] = useState<string[]>(
-    isBoardCrews ? users : getValidSelectedCrews(pipelineCrews, options),
+    isBoardCrews
+      ? users
+      : isSourceControl
+        ? getValidSelectedCrews(sourceControlCrews, options)
+        : getValidSelectedCrews(pipelineCrews, options),
   );
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length;
   const isEmptyCrewData = selectedCrews.length === 0;
 
   useEffect(() => {
-    setSelectedCrews(isBoardCrews ? users : pipelineCrews);
-  }, [users, isBoardCrews, pipelineCrews]);
+    setSelectedCrews(isBoardCrews ? users : isSourceControl ? sourceControlCrews : pipelineCrews);
+  }, [users, isBoardCrews, pipelineCrews, isSourceControl, sourceControlCrews]);
 
   const handleCrewChange = (_: React.SyntheticEvent, value: string[]) => {
     if (value[value.length - 1] === 'All') {
@@ -42,8 +52,14 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
   };
 
   useEffect(() => {
-    dispatch(isBoardCrews ? saveUsers(selectedCrews) : savePipelineCrews(selectedCrews));
-  }, [selectedCrews, dispatch, isBoardCrews]);
+    dispatch(
+      isBoardCrews
+        ? saveUsers(selectedCrews)
+        : isSourceControl
+          ? saveSourceControlCrews(selectedCrews)
+          : savePipelineCrews(selectedCrews),
+    );
+  }, [selectedCrews, dispatch, isBoardCrews, isSourceControl]);
 
   return (
     <>

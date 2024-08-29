@@ -238,7 +238,6 @@ const MetricsStepper = () => {
           isValid: isReworkStateSelected || (isOnlyEmptyAndDoneState && !onlyIncludeReworkMetrics),
         },
       ];
-      console.log(nextButtonValidityOptions);
       const activeNextButtonValidityOptions = nextButtonValidityOptions.filter(({ isShow }) => isShow);
       activeNextButtonValidityOptions.every(({ isValid }) => isValid)
         ? setIsDisableNextButton(false)
@@ -325,12 +324,15 @@ const MetricsStepper = () => {
       treatFlagCardAsBlock,
       assigneeFilter,
       importedData,
+      sourceControlConfigurationSettings,
+      sourceControlCrews,
     } = filterMetricsConfig(metricsConfig);
 
     const metricsData = {
       crews: users,
       assigneeFilter: assigneeFilter,
       pipelineCrews,
+      sourceControlCrews,
       cycleTime: cycleTimeSettings
         ? {
             type: cycleTimeSettingsType,
@@ -345,6 +347,7 @@ const MetricsStepper = () => {
       classificationCharts: classificationCharts?.map(({ key }: { key: string }) => key),
       advancedSettings: importedData.importedAdvancedSettings,
       deployment: deploymentFrequencySettings,
+      sourceControlConfigurationSettings,
       leadTime: leadTimeForChanges,
       reworkTimesSettings: importedData.reworkTimesSettings,
     };

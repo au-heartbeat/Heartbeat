@@ -57,6 +57,7 @@ export interface ISavedMetricsSettingState {
   classificationCharts: { name: string; key: string; flag: boolean }[];
   users: string[];
   pipelineCrews: string[];
+  sourceControlCrews: string[];
   doneColumn: string[];
   cycleTimeSettingsType: CycleTimeSettingsTypes;
   cycleTimeSettings: ICycleTimeSetting[];
@@ -98,6 +99,7 @@ const initialState: ISavedMetricsSettingState = {
   classificationCharts: [],
   users: [],
   pipelineCrews: [],
+  sourceControlCrews: [],
   doneColumn: [],
   cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
@@ -346,6 +348,9 @@ export const metricsSlice = createSlice({
     },
     savePipelineCrews: (state, action) => {
       state.pipelineCrews = action.payload || [];
+    },
+    saveSourceControlCrews: (state, action) => {
+      state.sourceControlCrews = action.payload || [];
     },
     updateCycleTimeSettings: (state, action) => {
       state.cycleTimeSettings = action.payload;
@@ -743,6 +748,7 @@ export const {
   saveDoneColumn,
   saveUsers,
   savePipelineCrews,
+  saveSourceControlCrews,
   updateCycleTimeSettings,
   addADeploymentFrequencySetting,
   updateDeploymentFrequencySettings,
