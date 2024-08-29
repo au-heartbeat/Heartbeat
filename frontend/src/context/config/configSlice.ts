@@ -270,6 +270,7 @@ export const isSelectDoraMetrics = (state: RootState) =>
 export const selectBoard = (state: RootState) => state.config.board.config;
 export const selectPipelineTool = (state: RootState) => state.config.pipelineTool.config;
 export const selectSourceControl = (state: RootState) => state.config.sourceControl.config;
+export const selectSourceControlList = (state: RootState) => state.config.sourceControl.verifiedResponse.repoList.children;
 export const selectWarningMessage = (state: RootState) => state.config.warningMessage;
 export const selectConfig = (state: RootState) => state.config;
 export const selectUsers = (state: RootState) => state.config.board.verifiedResponse.users;

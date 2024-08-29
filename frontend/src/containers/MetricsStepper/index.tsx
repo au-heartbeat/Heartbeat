@@ -9,6 +9,13 @@ import {
   ISourceControlData,
 } from '@src/containers/ConfigStep/Form/schema';
 import {
+  selectConfig,
+  selectMetrics,
+  selectPipelineList,
+  selectPipelineTool,
+  selectSourceControlBranches,
+} from '@src/context/config/configSlice';
+import {
   CycleTimeSettingsTypes,
   DONE,
   METRICS_CONSTANTS,
@@ -33,7 +40,6 @@ import {
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
-import { selectConfig, selectMetrics, selectPipelineList } from '@src/context/config/configSlice';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { PageContentWrapper } from '@src/components/Common/PageContentWrapper';
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
@@ -48,6 +54,7 @@ import { Route } from '@src/constants/router';
 import { useForm } from 'react-hook-form';
 import { Tooltip } from '@mui/material';
 import isEmpty from 'lodash/isEmpty';
+import { store } from '@src/store';
 import every from 'lodash/every';
 import omit from 'lodash/omit';
 
@@ -66,9 +73,10 @@ const MetricsStepper = () => {
   const metricsConfig = useAppSelector(selectMetricsContent);
   const cycleTimeSettings = useAppSelector(selectCycleTimeSettings);
   const [isDisableNextButton, setIsDisableNextButton] = useState(true);
-  const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
+  const { getDuplicatedPipeLineIds, getDuplicatedSourceControlIds } = useMetricsStepValidationCheckContext();
   const formMeta = useAppSelector(getFormMeta);
   const pipelineList = useAppSelector(selectPipelineList);
+  const pipelineTools = useAppSelector(selectPipelineTool);
   const defaultValues = useDefaultValues();
   const { isShow: isShowBoard } = config.board;
   const { isShow: isShowPipeline } = config.pipelineTool;
@@ -161,10 +169,17 @@ const MetricsStepper = () => {
     metricsConfig.cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN &&
     metricsConfig.cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).length > 1;
   const isShowDeploymentFrequency =
-    requiredData.includes(RequiredData.DeploymentFrequency) ||
-    requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
-    requiredData.includes(RequiredData.LeadTimeForChanges) ||
-    requiredData.includes(RequiredData.PipelineMeanTimeToRecovery);
+    (requiredData.includes(RequiredData.DeploymentFrequency) ||
+      requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
+      requiredData.includes(RequiredData.LeadTimeForChanges) ||
+      requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) &&
+    pipelineTools.type !== PIPELINE_TOOL_NONE_OPTION;
+  const isShowSourceControlConfiguration =
+    requiredData.includes(RequiredData.LeadTimeForChanges) &&
+    !requiredData.includes(RequiredData.DeploymentFrequency) &&
+    !requiredData.includes(RequiredData.PipelineChangeFailureRate) &&
+    !requiredData.includes(RequiredData.PipelineMeanTimeToRecovery) &&
+    pipelineTools.type === PIPELINE_TOOL_NONE_OPTION;
   const isCrewsSettingValid = metricsConfig.users.length > 0;
   const isRealDoneValid = metricsConfig.doneColumn.length > 0;
 
@@ -188,12 +203,34 @@ const MetricsStepper = () => {
     );
   }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
 
+  const isSourceControlConfigurationValid = useMemo(() => {
+    const storeContext = store.getState();
+    const sourceControlConfigurationSettings = metricsConfig.sourceControlConfigurationSettings;
+
+    const selectedSourceControls = sourceControlConfigurationSettings.filter((sourceControl) => {
+      const allBranches = selectSourceControlBranches(storeContext, sourceControl.organization, sourceControl.repo);
+      return sourceControl.branches.every((it) => allBranches.includes(it));
+    });
+
+    return (
+      !isEmpty(selectedSourceControls) &&
+      sourceControlConfigurationSettings.every(({ organization }) => !isEmpty(organization)) &&
+      sourceControlConfigurationSettings.every(({ repo }) => !isEmpty(repo)) &&
+      sourceControlConfigurationSettings.every(({ branches }) => !isEmpty(branches)) &&
+      selectedSourceControls.every(({ organization }) => !isEmpty(organization)) &&
+      selectedSourceControls.every(({ repo }) => !isEmpty(repo)) &&
+      selectedSourceControls.every(({ branches }) => !isEmpty(branches)) &&
+      getDuplicatedSourceControlIds(sourceControlConfigurationSettings).length === 0
+    );
+  }, [getDuplicatedSourceControlIds, metricsConfig.sourceControlConfigurationSettings]);
+
   useEffect(() => {
     if (activeStep === METRICS_STEPS.METRICS) {
       const nextButtonValidityOptions = [
         { isShow: isShowBoard, isValid: isCrewsSettingValid },
         { isShow: isShowRealDone, isValid: isRealDoneValid },
         { isShow: isShowDeploymentFrequency, isValid: isDeploymentFrequencyValid },
+        { isShow: isShowSourceControlConfiguration, isValid: isSourceControlConfigurationValid },
         { isShow: isShowCycleTimeSettings, isValid: isCycleTimeSettingsVerified },
         { isShow: isShowClassificationSetting, isValid: isClassificationSettingVerified },
         {
@@ -201,6 +238,7 @@ const MetricsStepper = () => {
           isValid: isReworkStateSelected || (isOnlyEmptyAndDoneState && !onlyIncludeReworkMetrics),
         },
       ];
+      console.log(nextButtonValidityOptions);
       const activeNextButtonValidityOptions = nextButtonValidityOptions.filter(({ isShow }) => isShow);
       activeNextButtonValidityOptions.every(({ isValid }) => isValid)
         ? setIsDisableNextButton(false)
@@ -228,6 +266,8 @@ const MetricsStepper = () => {
     isShowReworkSettings,
     isOnlyEmptyAndDoneState,
     onlyIncludeReworkMetrics,
+    isShowSourceControlConfiguration,
+    isSourceControlConfigurationValid,
   ]);
 
   const isNextDisabledTempForFormRefactor =
