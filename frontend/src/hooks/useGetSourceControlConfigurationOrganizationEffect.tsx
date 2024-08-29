@@ -1,6 +1,6 @@
 import {
   selectShouldGetSourceControlConfig,
-  updateSourceControlConfigurationSettingsWhenCreate,
+  updateSourceControlConfigurationSettingsFirstInto,
 } from '@src/context/Metrics/metricsSlice';
 import {
   selectIsProjectCreated,
@@ -58,9 +58,13 @@ export const useGetSourceControlConfigurationOrganizationEffect =
               names: response.data?.name.map((it) => it),
             }),
           );
-          if (isProjectCreated) {
-            dispatch(updateSourceControlConfigurationSettingsWhenCreate({ ...response.data }));
-          }
+          dispatch(
+            updateSourceControlConfigurationSettingsFirstInto({
+              ...response.data,
+              isProjectCreated,
+              type: 'organization',
+            }),
+          );
         }
       } finally {
         setIsLoading(false);

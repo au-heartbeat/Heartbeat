@@ -1,4 +1,9 @@
-import { selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
+import {
+  selectIsProjectCreated,
+  selectSourceControl,
+  updateSourceControlVerifiedResponse,
+} from '@src/context/config/configSlice';
+import { updateSourceControlConfigurationSettingsFirstInto } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { SourceControlTypes } from '@src/constants/resources';
@@ -8,11 +13,14 @@ import { useState } from 'react';
 export interface IUseGetSourceControlConfigurationStateInterface {
   readonly isLoading: boolean;
   readonly getSourceControlRepoInfo: (value: string) => void;
+  readonly isGetRepo: boolean;
 }
 export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationStateInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isGetRepo, setIsGetRepo] = useState<boolean>(false);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
+  const isProjectCreated = useAppSelector(selectIsProjectCreated);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
@@ -41,14 +49,23 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
             names: response.data?.name.map((it) => it),
           }),
         );
+        dispatch(
+          updateSourceControlConfigurationSettingsFirstInto({
+            ...response.data,
+            isProjectCreated,
+            type: 'repo',
+          }),
+        );
       }
     } finally {
       setIsLoading(false);
+      setIsGetRepo(true);
     }
   };
 
   return {
     isLoading,
     getSourceControlRepoInfo,
+    isGetRepo,
   };
 };

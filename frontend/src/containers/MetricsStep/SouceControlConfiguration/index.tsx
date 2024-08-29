@@ -54,7 +54,6 @@ export const SourceControlConfiguration = () => {
   };
   const handleAddSourceControl = () => {
     dispatch(addOneSourceControlSetting());
-    setLoadingCompletedNumber((value) => value + 1);
   };
 
   const handleUpdateSourceControl = (id: number, label: string, value: string | StringConstructor[] | unknown) => {

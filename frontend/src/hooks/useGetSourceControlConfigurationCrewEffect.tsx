@@ -1,23 +1,24 @@
-import { selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
+import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { FULFILLED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
-import { SourceControlTypes } from '@src/constants/resources';
-import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
+import dayjs from 'dayjs';
 
 export interface IUseGetSourceControlConfigurationStateInterface {
   readonly isLoading: boolean;
+  readonly isGetAllCrews: boolean;
   readonly getSourceControlCrewInfo: (
     organization: string,
     repo: string,
     branch: string,
-    startTime: number,
-    endTime: number,
+    dateRanges: DateRange[],
   ) => void;
 }
 export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceControlConfigurationStateInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isGetAllCrews, setIsGetAllCrews] = useState<boolean>(false);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
@@ -30,22 +31,28 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
     organization: string,
     repo: string,
     branch: string,
-    startTime: number,
-    endTime: number,
+    dateRanges: DateRange[],
   ) => {
     setIsLoading(true);
-    const params = {
-      type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
-      token: restoredSourceControlInfo.token,
-      organization,
-      repo,
-      branch,
-      startTime,
-      endTime,
-    };
-    try {
-      const response = await sourceControlClient.getCrew(params);
-      if (response.code === HttpStatusCode.Ok) {
+    const allCrewsRes = await Promise.allSettled(
+      dateRanges.flatMap((dateRange) => {
+        const params = {
+          type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
+          token: restoredSourceControlInfo.token,
+          organization,
+          repo,
+          branch,
+          startTime: dayjs(dateRange.startDate).startOf('date').valueOf(),
+          endTime: dayjs(dateRange.endDate).startOf('date').valueOf(),
+        };
+        return sourceControlClient.getCrew(params);
+      }),
+    );
+
+    allCrewsRes.forEach((response, index) => {
+      if (response.status === FULFILLED) {
+        const startTime = dayjs(dateRanges[index].startDate).startOf('date').valueOf();
+        const endTime = dayjs(dateRanges[index].endDate).startOf('date').valueOf();
         const parents = [
           {
             name: 'organization',
@@ -76,17 +83,18 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
                 value: savedTime,
               },
             ],
-            names: response.data?.crews.map((it) => it),
+            names: response.value.data?.crews.map((it) => it),
           }),
         );
       }
-    } finally {
-      setIsLoading(false);
-    }
+    });
+    setIsLoading(false);
+    setIsGetAllCrews(true);
   };
 
   return {
     isLoading,
     getSourceControlCrewInfo,
+    isGetAllCrews,
   };
 };

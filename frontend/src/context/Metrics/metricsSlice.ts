@@ -72,6 +72,7 @@ export interface ISavedMetricsSettingState {
     importedCrews: string[];
     importedAssigneeFilter: string;
     importedPipelineCrews: string[];
+    importedSourceControlCrews: string[];
     importedCycleTime: {
       importedCycleTimeSettings: { [key: string]: string }[];
       importedTreatFlagCardAsBlock: boolean;
@@ -80,6 +81,7 @@ export interface ISavedMetricsSettingState {
     importedClassification: string[];
     importedClassificationCharts: string[];
     importedDeployment: IPipelineConfig[];
+    importedSourceControlSettings: ISourceControlConfig[];
     importedAdvancedSettings: { storyPoint: string; flag: string } | null;
     reworkTimesSettings: IReworkConfig;
   };
@@ -114,6 +116,7 @@ const initialState: ISavedMetricsSettingState = {
     importedCrews: [],
     importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
     importedPipelineCrews: [],
+    importedSourceControlCrews: [],
     importedCycleTime: {
       importedCycleTimeSettings: [],
       importedTreatFlagCardAsBlock: true,
@@ -122,6 +125,7 @@ const initialState: ISavedMetricsSettingState = {
     importedClassification: [],
     importedClassificationCharts: [],
     importedDeployment: [],
+    importedSourceControlSettings: [],
     importedAdvancedSettings: null,
     reworkTimesSettings: {
       reworkState: null,
@@ -406,19 +410,49 @@ export const metricsSlice = createSlice({
       });
     },
 
-    updateSourceControlConfigurationSettingsWhenCreate: (state, action) => {
-      const { name } = action.payload;
+    updateSourceControlConfigurationSettingsFirstInto: (state, action) => {
+      const { name, isProjectCreated, type } = action.payload;
 
       const sourceControlConfigurationSettings = state.sourceControlConfigurationSettings;
-      state.sourceControlConfigurationSettings =
-        sourceControlConfigurationSettings.length > 0
-          ? sourceControlConfigurationSettings
-          : name.map((it: string, index: number) => ({
-              id: index,
-              organization: '',
-              repo: '',
-              branches: [],
-            }));
+      if (isProjectCreated) {
+        state.sourceControlConfigurationSettings =
+          sourceControlConfigurationSettings.length > 0
+            ? sourceControlConfigurationSettings
+            : name.map((it: string, index: number) => ({
+                id: index,
+                organization: '',
+                repo: '',
+                branches: [],
+              }));
+      } else {
+        let validSourceControlConfigurationSettings =
+          sourceControlConfigurationSettings.length > 0
+            ? sourceControlConfigurationSettings
+            : state.importedData.importedSourceControlSettings
+                .filter((it) => it.id !== undefined)
+                .map((it) => ({
+                  id: it.id,
+                  organization: it.organization,
+                  repo: it.repo,
+                  branches: it.branches,
+                }));
+
+        if (type === 'organization') {
+          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter((it) =>
+            name.includes(it['organization']),
+          );
+        } else if (type === 'repo') {
+          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter((it) =>
+            name.includes(it['repo']),
+          );
+        } else {
+          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter((it) =>
+            it['branches'].filter((branch) => name.includes(branch)),
+          );
+        }
+
+        state.sourceControlConfigurationSettings = validSourceControlConfigurationSettings;
+      }
     },
 
     updateShouldGetBoardConfig: (state, action) => {
@@ -442,9 +476,13 @@ export const metricsSlice = createSlice({
         assigneeFilter,
         pipelineCrews,
         reworkTimesSettings,
+        sourceControlConfigurationSettings,
+        sourceControlCrews,
       } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
+      state.importedData.importedSourceControlCrews =
+        sourceControlCrews || state.importedData.importedSourceControlCrews;
       state.importedData.importedCycleTime.importedCycleTimeSettings =
         cycleTime?.jiraColumns || state.importedData.importedCycleTime.importedCycleTimeSettings;
       state.importedData.importedCycleTime.importedTreatFlagCardAsBlock =
@@ -455,6 +493,8 @@ export const metricsSlice = createSlice({
       state.importedData.importedClassificationCharts =
         classificationCharts || state.importedData.importedClassificationCharts;
       state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
+      state.importedData.importedSourceControlSettings =
+        sourceControlConfigurationSettings || state.importedData.importedSourceControlSettings;
       state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvancedSettings;
       state.importedData.reworkTimesSettings = reworkTimesSettings || state.importedData.reworkTimesSettings;
     },
@@ -772,7 +812,7 @@ export const {
   updateShouldRetryPipelineConfig,
   updateSourceControlConfigurationSettings,
   deleteSourceControlConfigurationSettings,
-  updateSourceControlConfigurationSettingsWhenCreate,
+  updateSourceControlConfigurationSettingsFirstInto,
   addOneSourceControlSetting,
 } = metricsSlice.actions;
 

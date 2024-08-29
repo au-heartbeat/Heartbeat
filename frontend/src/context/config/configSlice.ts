@@ -102,7 +102,8 @@ function addLeafToTree(tree: ISourceControlTree, newLeaf: ISourceControlLeaf, na
     }
 
     if (parents.length === 0) {
-      node.children.push(...newLeaf.names.map((value) => ({ name: names[depth], value, children: [] })));
+      const needAddNames = newLeaf.names.filter((name) => node.children.every((child) => child.value !== name));
+      node.children.push(...needAddNames.map((value) => ({ name: names[depth], value, children: [] })));
     } else {
       const parent = parents[0];
       const childNode = node.children.find((child) => child.name === parent.name && child.value === parent.value);

@@ -24,9 +24,8 @@ import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequency
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { Loading } from '@src/components/Loading';
 import { useAppSelector } from '@src/hooks';
-import { useEffect, useRef } from 'react';
 import { store } from '@src/store';
-import dayjs from 'dayjs';
+import { useEffect } from 'react';
 
 interface SourceControlMetricSelectionProps {
   sourceControlSetting: {
@@ -53,9 +52,21 @@ export const SourceControlMetricSelection = ({
   totalSourceControlNumber,
 }: SourceControlMetricSelectionProps) => {
   const { id, organization, repo } = sourceControlSetting;
-  const { isLoading: repoIsLoading, getSourceControlRepoInfo } = useGetSourceControlConfigurationRepoEffect();
-  const { isLoading: branchIsLoading, getSourceControlBranchInfo } = useGetSourceControlConfigurationBranchEffect();
-  const { isLoading: crewIsLoading, getSourceControlCrewInfo } = useGetSourceControlConfigurationCrewEffect();
+  const {
+    isLoading: repoIsLoading,
+    getSourceControlRepoInfo,
+    isGetRepo,
+  } = useGetSourceControlConfigurationRepoEffect();
+  const {
+    isLoading: branchIsLoading,
+    getSourceControlBranchInfo,
+    isGetBranch,
+  } = useGetSourceControlConfigurationBranchEffect();
+  const {
+    isLoading: crewIsLoading,
+    getSourceControlCrewInfo,
+    isGetAllCrews,
+  } = useGetSourceControlConfigurationCrewEffect();
   const storeContext = store.getState();
   const organizationNameOptions = selectSourceControlOrganizations(storeContext);
   const repoNameOptions = selectSourceControlRepos(storeContext, organization);
@@ -65,7 +76,6 @@ export const SourceControlMetricSelection = ({
   const stepWarningMessage = selectStepWarningMessage(storeContext, id);
   const dateRanges = useAppSelector(selectDateRange);
   const sourceControlList = useAppSelector(selectSourceControlConfigurationSettings);
-  const isLoadingRef = useRef(false);
 
   const selectedBranches = sourceControlList.find((it) => it.id === id)?.branches;
   const isLoading = repoIsLoading || branchIsLoading || crewIsLoading;
@@ -74,6 +84,33 @@ export const SourceControlMetricSelection = ({
     onRemoveSourceControl(id);
     setLoadingCompletedNumber((value) => Math.max(value - 1, 0));
   };
+
+  useEffect(() => {
+    if (!isGetRepo && organization) {
+      getSourceControlRepoInfo(organization);
+    }
+  }, [getSourceControlRepoInfo, isGetRepo, organization]);
+
+  useEffect(() => {
+    if (!isGetBranch && organization && repo) {
+      getSourceControlBranchInfo(organization, repo);
+    }
+  }, [getSourceControlBranchInfo, getSourceControlRepoInfo, isGetBranch, organization, repo]);
+
+  useEffect(() => {
+    if (!isGetAllCrews && organization && repo && selectedBranches) {
+      selectedBranches.forEach((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges));
+    }
+  }, [
+    dateRanges,
+    getSourceControlBranchInfo,
+    getSourceControlCrewInfo,
+    getSourceControlRepoInfo,
+    isGetAllCrews,
+    organization,
+    repo,
+    selectedBranches,
+  ]);
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
@@ -88,29 +125,13 @@ export const SourceControlMetricSelection = ({
   const handleOnUpdateBranches = (id: number, label: string, value: string[]): void => {
     const branchNeedGetCrews = value.filter((it) => selectedBranches?.every((branch) => branch !== it));
     onUpdateSourceControl(id, label, value);
-
-    dateRanges.forEach((dateRange) => {
-      branchNeedGetCrews.forEach((branch) =>
-        getSourceControlCrewInfo(
-          organization,
-          repo,
-          branch,
-          dayjs(dateRange.startDate).startOf('date').valueOf(),
-          dayjs(dateRange.endDate).startOf('date').valueOf(),
-        ),
-      );
-    });
+    branchNeedGetCrews.forEach((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges));
   };
-
   useEffect(() => {
-    if (!isLoading) {
-      setLoadingCompletedNumber(totalSourceControlNumber);
-      if (isLoadingRef.current) {
-        setLoadingCompletedNumber((value) => Math.min(totalSourceControlNumber, value + 1));
-      }
+    if (isGetAllCrews) {
+      setLoadingCompletedNumber((value) => Math.min(totalSourceControlNumber, value + 1));
     }
-    isLoadingRef.current = isLoading;
-  }, [isLoading, setLoadingCompletedNumber, totalSourceControlNumber]);
+  }, [isGetAllCrews, setLoadingCompletedNumber, totalSourceControlNumber]);
 
   return (
     <PipelineMetricSelectionWrapper>
