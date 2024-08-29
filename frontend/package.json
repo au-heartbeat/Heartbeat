@@ -32,16 +32,10 @@
     "e2e:updateSnapshots-docker": "docker run --rm --network=host -e APP_ORIGIN='http://host.docker.internal:4321' -v $(pwd)/e2e:/app/e2e -w /app -it heartbeat_e2e:latest pnpm run e2e:updateSnapshots",
     "env:local": "dotenvx run --env-file=./e2e/.env.local --",
     "env:ci": "dotenvx run --env-file=./e2e/.env.ci --",
-    "prepare": "cd .. && husky install frontend/.husky",
+    "postinstall": "pre-commit install",
     "license-compliance": "license-compliance -r detailed",
+    "tsc-file-check": "tsc-files --noEmit",
     "type-check": "tsc --noEmit"
-  },
-  "lint-staged": {
-    "**/*.(ts|tsx)": [
-      "npm run lint",
-      "tsc-files --noEmit",
-      "npx prettier --write . --ignore-unknown"
-    ]
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -102,12 +96,10 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "execa": "^8.0.1",
-    "husky": "^9.0.11",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "license-compliance": "^3.0.0",
-    "lint-staged": "^15.2.2",
     "msw": "^2.2.14",
     "node-fetch": "^3.3.2",
     "prettier": "3.2.5",

@@ -5,31 +5,49 @@ repos:
     hooks:
       - id: eslint
         name: ESLint
-        entry: cd frontend && npm run lint
+        entry: sh -c 'cd frontend && npm run lint'
         language: system
         stages:
           - pre-commit
-      - id: ts-check
-        name: TSC check
-        entry: cd frontend && tsc-files --noEmit
+      - id: ts-file-check
+        name: TSC file check
+        entry: sh -c 'cd frontend && npm run tsc-file-check'
         language: system
         stages:
           - pre-commit
       - id: ts-type-check
         name: TS type check
-        entry: cd frontend && npm run type-check
+        entry: sh -c 'cd frontend && npm run type-check'
         language: system
+        stages:
+          - pre-commit
+      - id: px-check
+        name: px check
+        entry: ./ops/check.sh px
+        language: script
+        stages:
+          - pre-commit
+      - id: rgba-check
+        name: rgba check
+        entry: ./ops/check.sh rgba
+        language: script
+        stages:
+          - pre-commit
+      - id: hex-check
+        name: hex check
+        entry: ./ops/check.sh hex
+        language: script
         stages:
           - pre-commit
       - id: prettier
         name: Prettier
-        entry: cd frontend && npx prettier --write . --ignore-unknown
+        entry: sh -c 'cd frontend && npx prettier --check .'
         language: system
         stages:
           - pre-commit
       - id: test-check
         name: Test coverage for the whole project
-        entry: cd frontend && pnpm run coverage:silent
+        entry: sh -c 'cd frontend && pnpm run coverage:silent'
         language: system
         pass_filenames: false
         require_serial: true
@@ -37,34 +55,42 @@ repos:
           - pre-push
       - id: audit-check
         name: Vulnerability check
-        entry: cd frontend && pnpm run audit
+        entry: sh -c 'cd frontend && pnpm run audit'
         language: system
+        pass_filenames: false
         stages:
           - pre-push
       - id: license-check
         name: License compliance check
-        entry: cd frontend && pnpm run license-compliance
+        entry: sh -c 'cd frontend && pnpm run license-compliance'
         language: system
+        pass_filenames: false
         stages:
           - pre-push
       - id: tag-check
         name: tag check
-        entry: ./frontend/scripts/git-hooks/pre-tag.sh
+        entry: ./ops/git-hooks/pre-tag.sh
         language: script
         stages:
-          - commit-msg
+          - pre-push
       - id: check-building-for-frontend
-        name: Check for building
-        entry: cd frontend && pnpm run build
-        language: system
+        name: Check building for frontend
+        entry: ./ops/git-hooks/build-check.sh frontend
+        files: ^frontend/
+        language: script
         pass_filenames: false
         require_serial: true
+        stages:
+          - pre-push
       - id: check-building-for-backend
-        name: Check for building
-        entry: cd backend && ./gradlew clean check
-        language: system
+        name: Check building for backend
+        entry: ./ops/git-hooks/build-check.sh backend
+        files: ^backend/
+        language: script
         pass_filenames: false
         require_serial: true
+        stages:
+          - pre-push
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -75,10 +101,9 @@ repos:
       - id: trailing-whitespace
       - id: check-json
   - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.7.2
+    rev: v0.10.0
     hooks:
       - id: shellcheck
-        exclude: frontend/.husky
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.18.4
     hooks:
