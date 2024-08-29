@@ -50,7 +50,7 @@ backend_license_check() {
 
 frontend_license_check() {
   cd frontend
-  npm install --force
+  npm install --force --ignore-scripts
   npm run license-compliance
 }
 
@@ -64,7 +64,7 @@ backend_check() {
 frontend_check() {
   cd frontend
   pnpm dlx audit-ci@^6 --config ./audit-ci.jsonc
-  pnpm install --no-frozen-lockfile
+  pnpm install --no-frozen-lockfile --ignore-scripts
   pnpm lint
   pnpm coverage:silent
   bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./coverage/clover.xml
@@ -293,7 +293,7 @@ e2e_check() {
   export TZ=Asia/Shanghai
   npm install -g pnpm
   cd frontend
-  pnpm install --no-frozen-lockfile
+  pnpm install --no-frozen-lockfile --ignore-scripts
   case "$project" in
     "Google Chrome")
       echo "Installing Chrome browser"
