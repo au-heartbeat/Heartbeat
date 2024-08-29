@@ -52,12 +52,15 @@ import { store } from '@src/store';
 const initState = {
   shouldGetBoardConfig: true,
   shouldGetPipeLineConfig: true,
+  shouldGetSourceControlConfig: false,
   shouldRetryPipelineConfig: false,
   jiraColumns: [],
   targetFields: [],
   classificationCharts: [],
   users: [],
   pipelineCrews: [],
+  sourceControlCrews: [],
+  sourceControlConfigurationSettings: [],
   doneColumn: [],
   cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
@@ -70,6 +73,8 @@ const initState = {
   importedData: {
     importedCrews: [],
     importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
+    importedSourceControlCrews: [],
+    importedSourceControlSettings: [],
     importedPipelineCrews: [],
     importedCycleTime: {
       importedCycleTimeSettings: [],
@@ -143,8 +148,10 @@ describe('saveMetricsSetting reducer', () => {
       importedDoneStatus: [],
       importedClassification: [],
       importedClassificationCharts: [],
+      importedSourceControlSettings: [],
       importedDeployment: [],
       importedPipelineCrews: [],
+      importedSourceControlCrews: [],
       importedAdvancedSettings: null,
       reworkTimesSettings: DEFAULT_REWORK_SETTINGS,
     });
@@ -240,6 +247,15 @@ describe('saveMetricsSetting reducer', () => {
         storyPoint: '1',
         flag: '2',
       },
+      sourceControlCrews: ['test1', 'test2'],
+      sourceControlConfigurationSettings: [
+        {
+          id: 1,
+          organization: 'test-org',
+          repo: 'test-repo',
+          branches: ['test-branch1', 'test-branch2'],
+        },
+      ],
       reworkTimesSettings: DEFAULT_REWORK_SETTINGS,
     };
     const savedMetricsSetting = saveMetricsSettingReducer(
@@ -251,6 +267,15 @@ describe('saveMetricsSetting reducer', () => {
       importedCrews: mockMetricsImportedData.crews,
       importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.HISTORICAL_ASSIGNEE,
       importedPipelineCrews: mockMetricsImportedData.pipelineCrews,
+      importedSourceControlCrews: ['test1', 'test2'],
+      importedSourceControlSettings: [
+        {
+          id: 1,
+          organization: 'test-org',
+          repo: 'test-repo',
+          branches: ['test-branch1', 'test-branch2'],
+        },
+      ],
       importedCycleTime: {
         importedCycleTimeSettings: mockMetricsImportedData.cycleTime.jiraColumns,
         importedTreatFlagCardAsBlock: mockMetricsImportedData.cycleTime.treatFlagCardAsBlock,

@@ -372,8 +372,18 @@ export const MOCK_BUILD_KITE_GET_INFO_RESPONSE = {
   ],
 };
 
-export const MOCK_GITHUB_VERIFY_RESPONSE = {
-  githubRepos: ['https://github.com/xxxx1/repo1', 'https://github.com/xxxx1/repo2'],
+export const MOCK_GITHUB_ORGANIZATION = {
+  parents: [],
+  names: ['test-org1', 'test-org2'],
+};
+export const MOCK_GITHUB_REPO = {
+  parents: [
+    {
+      name: 'organization',
+      value: 'test-org1',
+    },
+  ],
+  names: ['test-repo'],
 };
 
 export const CREWS_SETTING = 'Crew settings';

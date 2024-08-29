@@ -117,7 +117,6 @@ function addLeafToTree(tree: ISourceControlTree, newLeaf: ISourceControlLeaf, na
   };
 
   return updateTree(tree, newLeaf.parents, 0);
-  // return tree;
 }
 
 export const configSlice = createSlice({
