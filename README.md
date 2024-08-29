@@ -658,6 +658,8 @@ For now, we just can download the code in our local machine, please follow below
 
 # 6 Run Heartbeat
 
+> This project runs git hooks via [pre-commit](https://pre-commit.com/), please install it before next steps
+
 ## 6.1 How to run frontend
 
 ```
