@@ -201,7 +201,7 @@ class CachePageServiceTest {
 
 	@Test
 	void shouldReturnPageOrganizationsInfoDtoWhenFetchPageOrganizationsInfoSuccessGivenExist() throws IOException {
-		HttpHeaders httpHeaders = buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
+		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
 		ResponseEntity<List<OrganizationsInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
 				"src/test/java/heartbeat/controller/pipeline/githubOrganization.json");
 		when(gitHubFeignClient.getAllOrganizations(MOCK_TOKEN, 100, 1)).thenReturn(responseEntity);
@@ -216,7 +216,7 @@ class CachePageServiceTest {
 	@Test
 	void shouldReturnPageReposInfoDtoWhenFetchPageReposInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
-		HttpHeaders httpHeaders = buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
+		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
 		ResponseEntity<List<ReposInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
 				"src/test/java/heartbeat/controller/pipeline/githubRepo.json");
 		when(gitHubFeignClient.getAllRepos(MOCK_TOKEN, organization, 100, 1)).thenReturn(responseEntity);
@@ -232,7 +232,7 @@ class CachePageServiceTest {
 	void shouldReturnPageBranchesInfoDtoWhenFetchPageBranchesInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
 		String repo = "test-repo";
-		HttpHeaders httpHeaders = buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
+		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
 		ResponseEntity<List<BranchesInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
 				"src/test/java/heartbeat/controller/pipeline/githubBranch.json");
 		when(gitHubFeignClient.getAllBranches(MOCK_TOKEN, organization, repo, 100, 1)).thenReturn(responseEntity);
@@ -250,7 +250,7 @@ class CachePageServiceTest {
 		String organization = "test-org";
 		String repo = "test-repo";
 		String branch = "test-branch";
-		HttpHeaders httpHeaders = buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
+		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
 		ResponseEntity<List<PullRequestInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
 				"src/test/java/heartbeat/controller/pipeline/githubPullRequest.json");
 		when(gitHubFeignClient.getAllPullRequests(MOCK_TOKEN, organization, repo, 100, 1, branch, "all"))
@@ -278,6 +278,10 @@ class CachePageServiceTest {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.addAll(HttpHeaders.LINK, linkHeader);
 		return httpHeaders;
+	}
+
+	private HttpHeaders buildGitHubHttpHeaders() {
+		return buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
 	}
 
 }

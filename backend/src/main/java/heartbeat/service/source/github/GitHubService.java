@@ -364,6 +364,7 @@ public class GitHubService {
 	}
 
 	public List<String> getAllOrganizations(String token) {
+		log.info("Start to get all organizations");
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		PageOrganizationsInfoDTO pageOrganizationsInfoDTO = cachePageService.getGitHubOrganizations(realToken, initPage,
@@ -387,6 +388,7 @@ public class GitHubService {
 				.toList();
 			organizationNames.addAll(orgNamesOtherFirstPage);
 		}
+		log.info("Successfully to get all organizations");
 		return organizationNames;
 	}
 
@@ -396,6 +398,7 @@ public class GitHubService {
 	}
 
 	public List<String> getAllRepos(String token, String organization) {
+		log.info("Start to get all repos, organization: {}", organization);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		PageReposInfoDTO pageReposInfoDTO = cachePageService.getGitHubRepos(realToken, organization, initPage,
@@ -419,6 +422,7 @@ public class GitHubService {
 				.toList();
 			repoNames.addAll(repoNamesOtherFirstPage);
 		}
+		log.info("Successfully to get all repos, organization: {}", organization);
 		return repoNames;
 	}
 
@@ -429,6 +433,7 @@ public class GitHubService {
 	}
 
 	public List<String> getAllBranches(String token, String organization, String repo) {
+		log.info("Start to get all branches, organization: {}, repo: {}", organization, repo);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		PageBranchesInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubBranches(realToken, organization, repo,
@@ -452,6 +457,7 @@ public class GitHubService {
 				.toList();
 			branchNames.addAll(branchNamesOtherFirstPage);
 		}
+		log.info("Successfully to get all branches, organization: {}, repo: {}", organization, repo);
 		return branchNames;
 	}
 
@@ -464,6 +470,8 @@ public class GitHubService {
 
 	public List<String> getAllCrews(String token, String organization, String repo, String branch, long startTime,
 			long endTime) {
+		log.info("Start to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		PagePullRequestInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubPullRequest(realToken, organization,
@@ -504,11 +512,14 @@ public class GitHubService {
 				}
 			}
 		}
+		log.info("Successfully to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
 		return pullRequestNames.stream().distinct().toList();
 	}
 
 	private PullRequestFinishedInfo filterPullRequestByTimeRange(List<PullRequestInfoDTO> pullRequestInfoDTOList,
 			long startTime, long endTime) {
+		log.info("Start to filter pull request, startTime: {}, endTime: {}", startTime, endTime);
 		Instant startTimeInstant = Instant.ofEpochMilli(startTime);
 		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
 		List<PullRequestInfoDTO> validPullRequestList = new ArrayList<>();
@@ -527,6 +538,9 @@ public class GitHubService {
 				isGetNextPage = false;
 			}
 		}
+		log.info(
+				"Successfully to filter pull request, startTime: {}, endTime: {}, should get next page pull request: {}",
+				startTime, endTime, isGetNextPage);
 		return PullRequestFinishedInfo.builder()
 			.isGetNextPage(isGetNextPage)
 			.pullRequestInfoDTOList(validPullRequestList)
