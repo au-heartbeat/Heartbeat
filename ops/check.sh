@@ -50,7 +50,7 @@ backend_license_check() {
 
 frontend_license_check() {
   cd frontend
-  npm install --force
+  npm install --force --ignore-scripts
   npm run license-compliance
 }
 
@@ -64,7 +64,7 @@ backend_check() {
 frontend_check() {
   cd frontend
   pnpm dlx audit-ci@^6 --config ./audit-ci.jsonc
-  pnpm install --no-frozen-lockfile
+  pnpm install --no-frozen-lockfile --ignore-scripts
   pnpm lint
   pnpm coverage:silent
   bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r ./coverage/clover.xml
@@ -80,6 +80,7 @@ px_check() {
     --exclude='*.yaml' \
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
+    --exclude-dir='dist' \
     '[0-9]\+px' \
     ./ || true)
   if [ -n "$result" ]; then
@@ -102,6 +103,7 @@ rgba_check() {
   result=$(grep -rinE \
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
+    --exclude-dir='dist' \
     --exclude='*.html' \
     --exclude='*.svg' \
     --exclude='*.xml' \
@@ -153,7 +155,7 @@ buildkite_e2e_deployed_check() {
     fi
   done
 
-  if [ $attempt_count -eq "$MAX_ATTEMPTS" ]; then
+  if [ "$attempt_count" -eq "$MAX_ATTEMPTS" ]; then
     echo "❌ Failed to wait for E2E deployment with Maximum attempts reached. Exiting..."
     exit 1
   fi
@@ -229,6 +231,7 @@ hex_check() {
   result=$(grep -rinE \
     --exclude-dir='node_modules' \
     --exclude-dir='coverage' \
+    --exclude-dir='dist' \
     --exclude='chart-result.ts' \
     --exclude='*.html' \
     --exclude='*.svg' \
@@ -290,7 +293,7 @@ e2e_check() {
   export TZ=Asia/Shanghai
   npm install -g pnpm
   cd frontend
-  pnpm install --no-frozen-lockfile
+  pnpm install --no-frozen-lockfile --ignore-scripts
   case "$project" in
     "Google Chrome")
       echo "Installing Chrome browser"

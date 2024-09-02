@@ -11,7 +11,7 @@ Verify the board setting on config page, there is some data redundancy. Besides,
 
 ## Expect
 
- 1. More simplified Verify API. 
+ 1. More simplified Verify API.
  2. New api to get info of datasource.
 
 ## Solutions
@@ -326,7 +326,7 @@ participant Jira
         end
     end
     loop all cards
-        JiraService -> JiraFeignClient: get assignee set 
+        JiraService -> JiraFeignClient: get assignee set
         activate JiraFeignClient
         JiraFeignClient -> Jira: /rest/internal/2/issue/{jiraCardKey}/activityfeed
         activate Jira

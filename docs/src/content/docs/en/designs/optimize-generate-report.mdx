@@ -30,7 +30,7 @@ group async process board related metrics
     Backend -> Jira: get Jira raw data
     activate Backend
     activate Jira
-    Jira --> Backend: Jira raw 
+    Jira --> Backend: Jira raw
     deactivate Jira
     Backend -> Backend: calculate metrics for velocity, cycle time and classification
     Backend -> Backend: generate board report csv
@@ -75,18 +75,18 @@ group async process pipeline and sourcecontrol related metrics
     deactivate Backend
 end
 
-loop until (response code is 201 and body.allMetricsReady==true) or (response code is 5xx) 
+loop until (response code is 201 and body.allMetricsReady==true) or (response code is 5xx)
     Frontend -> Backend: Polling the report
     activate Backend
     alt report is not ready
         Backend --> Frontend: response 200
     else report is ready
         Backend --> Frontend: response 201 with report
-    else fail to process 
+    else fail to process
         Backend --> Frontend: response 5xx
     end
     deactivate Backend
-end 
+end
 @enduml
 ```
 
@@ -113,15 +113,15 @@ deactivate Backend
 Backend --> Backend: initialize reportStatus according to metricTypes list element
 activate Backend
 
-group check if metricCsv can be generated 
+group check if metricCsv can be generated
 loop until (metricTypes list final element)
-    
+
     alt metricsType is Board
         group thread 1: async process board related metrics
             Backend -> Jira: get Jira raw data，put this thread into thread list
             activate Backend
             activate Jira
-            Jira --> Backend: Jira raw 
+            Jira --> Backend: Jira raw
             deactivate Jira
             Backend -> Backend: calculate metrics for velocity, cycle time and classification
             Backend -> Backend: generate board report json
@@ -171,16 +171,16 @@ loop until (metricTypes list final element)
         end
     end
    end
-     
+
   group async process to generate metric csv
        Backend --> Backend: wait for thread 1 and thread 3 are all execute completed
        Backend --> Backend: generate metric csv
        note left
-          update overallMetricsCompleted as true and all metric csv is ready for download 
+          update overallMetricsCompleted as true and all metric csv is ready for download
        end note
   end
     deactivate Backend
-end 
+end
 
 loop until (response code is 201 and body.allMetricsCompleted==true) or (response code is 5xx)
     Frontend -> Backend: Polling the report
@@ -190,11 +190,11 @@ loop until (response code is 201 and body.allMetricsCompleted==true) or (respons
         Backend --> Frontend: response 200
     else report is ready
         Backend --> Frontend: response 201 with report
-    else fail to process 
+    else fail to process
         Backend --> Frontend: response 5xx
     end
     deactivate Backend
-end 
+end
 @enduml
 ```
 
@@ -210,4 +210,3 @@ Request payload:
       ]
 }
 ```
-

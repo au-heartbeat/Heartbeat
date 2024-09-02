@@ -15,7 +15,7 @@ We welcome contributions to:
 ### Contributing Features ✨
 
 Heartbeat is designed to provide generic delivery tool to solve problems. Thus, we focus on contributions that can have an impact on a wide range of projects.
-Before you contribute a new feature, please submitting an Issue to discuss the feature so that we can weigh in and assist. 
+Before you contribute a new feature, please submitting an Issue to discuss the feature so that we can weigh in and assist.
 
 ## How to contribute Changes
 
@@ -38,7 +38,7 @@ Refer to [Setup E2E locally](https://au-heartbeat.github.io/Heartbeat/en/designs
 ### Coding Standard
 
 - 100% Code coverage: whatever you code is about the frontend or backend
-- SAST: We are using SonarCloud for static code scanning.   
+- SAST: We are using SonarCloud for static code scanning.
 - E2E: Write E2E case for your Code Biz logic
 - Swagger: Keep swagger available for any changes
 - Small PR: Submit small PR, if we can't repair within 1 hour we will revert it
@@ -50,7 +50,7 @@ Refer to [Setup E2E locally](https://au-heartbeat.github.io/Heartbeat/en/designs
 Make sure below item passed:
 - Local [frontend](README.md#612-how-to-run-unit-tests) / [backend](backend/README.md#3-how-to-run-all-tests) UT
 - Reviewers: Code must be reviewed by 2 team members at least
-- Local E2E screenshot: Upload the latest E2E result screenshot on the PR. 
+- Local E2E screenshot: Upload the latest E2E result screenshot on the PR.
 - Github actions: Github actions will be executed automatically once you create a PR.
 
 

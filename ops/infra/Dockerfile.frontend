@@ -2,7 +2,7 @@ FROM node:alpine as builder
 COPY ./frontend /app
 WORKDIR /app
 RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile -p
+RUN pnpm install --frozen-lockfile -p --ignore-scripts
 RUN pnpm build
 
 FROM nginx:latest

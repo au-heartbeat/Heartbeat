@@ -172,7 +172,7 @@ jobs:
       - name: Install & Lint
         run: |
           npm install -g pnpm
-          pnpm install --no-frozen-lockfile
+          pnpm install --no-frozen-lockfile --ignore-scripts
           pnpm run type-check
 
   frontend-check:
@@ -189,7 +189,7 @@ jobs:
       - name: Install & Lint
         run: |
           npm install -g pnpm
-          pnpm install --no-frozen-lockfile
+          pnpm install --no-frozen-lockfile --ignore-scripts
           pnpm lint
       - name: Audit for vulnerabilities
         run: pnpm dlx audit-ci@^6 --critical --report-type full

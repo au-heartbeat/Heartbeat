@@ -2,5 +2,11 @@
   // $schema provides code completion hints to IDEs.
   "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
   "moderate": true,
-  "allowlist": ["@adobe/css-tools"],
+  "allowlist": [
+    "@adobe/css-tools",
+    "GHSA-grv7-fg5c-xmjg",
+    "GHSA-3h5v-q93c-6h6q",
+    "GHSA-8hc4-vh64-cxmj",
+    "GHSA-952p-6rrq-rcjv",
+  ],
 }

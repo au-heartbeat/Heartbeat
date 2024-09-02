@@ -1,0 +1,112 @@
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
+
+repos:
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: sh -c 'cd frontend && npm run lint'
+        language: system
+        stages:
+          - pre-commit
+      - id: ts-file-check
+        name: TSC file check
+        entry: sh -c 'cd frontend && npm run tsc-file-check'
+        language: system
+        stages:
+          - pre-commit
+      - id: ts-type-check
+        name: TS type check
+        entry: sh -c 'cd frontend && npm run type-check'
+        language: system
+        stages:
+          - pre-commit
+      - id: px-check
+        name: px check
+        entry: ./ops/check.sh px
+        language: script
+        stages:
+          - pre-commit
+      - id: rgba-check
+        name: rgba check
+        entry: ./ops/check.sh rgba
+        language: script
+        stages:
+          - pre-commit
+      - id: hex-check
+        name: hex check
+        entry: ./ops/check.sh hex
+        language: script
+        stages:
+          - pre-commit
+      - id: prettier
+        name: Prettier
+        entry: sh -c 'cd frontend && npx prettier --check .'
+        language: system
+        stages:
+          - pre-commit
+      - id: test-check
+        name: Test coverage for the whole project
+        entry: sh -c 'cd frontend && pnpm run coverage:silent'
+        language: system
+        pass_filenames: false
+        require_serial: true
+        stages:
+          - pre-push
+      - id: audit-check
+        name: Vulnerability check
+        entry: sh -c 'cd frontend && pnpm run audit'
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push
+      - id: license-check
+        name: License compliance check
+        entry: sh -c 'cd frontend && pnpm run license-compliance'
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push
+      - id: tag-check
+        name: tag check
+        entry: ./ops/git-hooks/pre-tag.sh
+        language: script
+        stages:
+          - pre-push
+      - id: check-building-for-frontend
+        name: Check building for frontend
+        entry: ./ops/git-hooks/build-check.sh frontend
+        files: ^frontend/
+        language: script
+        pass_filenames: false
+        require_serial: true
+        stages:
+          - pre-push
+      - id: check-building-for-backend
+        name: Check building for backend
+        entry: ./ops/git-hooks/build-check.sh backend
+        files: ^backend/
+        language: script
+        pass_filenames: false
+        require_serial: true
+        stages:
+          - pre-push
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+        exclude: ops/infra/cloudformation.yml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-json
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        stages:
+          - pre-commit

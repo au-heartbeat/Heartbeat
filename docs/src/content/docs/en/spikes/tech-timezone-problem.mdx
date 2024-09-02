@@ -25,11 +25,11 @@ public ChangeFailureRate calculate(List<DeployTimes> deployTimesList)
 And when I use `San Francisco` timezone pick 9.20 - 9.21 in config page, the problem described by that card does not exist.
 
 This way can discovered that there is indeed some data on 9.19.Here's same case between 7.18-7.19.
- 
+
 ### Trace
 
 This code is that get github's related info, included api `buildKiteFeignClient.getPipelineSteps`, `stepsParam.getStartTime()` and `stepsParam.getEndTime()`
-are the standard UTC.  
+are the standard UTC.
 
 ```java
 ResponseEntity<List<BuildKiteBuildInfo>> pipelineStepsInfo = buildKiteFeignClient.getPipelineSteps(realToken,
@@ -63,7 +63,7 @@ or
   "endTime": "2023-07-19T23:59:59.999+00:00"
 }
 ```
- 
+
 So we can get the date handler logic:
 
 ```plantuml
@@ -79,7 +79,7 @@ stop
 
 @enduml
 ```
- 
+
 ### Result
 According to the analysis of the code, the logic of the system is that,
 the time selected by the date picker is passed to the backend according to the user's time zone,

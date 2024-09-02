@@ -55,7 +55,7 @@ query {
 1
 ```
 
-- The meaning of response status 
+- The meaning of response status
 
 | response status | mean                |
 |-----------------|---------------------|
@@ -91,9 +91,9 @@ GitHubFeignClient.verifyCanReadTargetBranch
 ##### 3.2.2 API replaced by
 
 ```
-query { 
-  repository(owner: string, name: string) { 
-    ref(qualifiedName: "refs/heads/branchName: string") { 
+query {
+  repository(owner: string, name: string) {
+    ref(qualifiedName: "refs/heads/branchName: string") {
       name
     }
   }
@@ -117,8 +117,8 @@ query {
 if you want to get `main` branch for `au-heartbeat/Heartbeat`, you can use as following.
 
 ```
-query { 
-  repository(owner: "au-heartbeat", name: "Heartbeat") { 
+query {
+  repository(owner: "au-heartbeat", name: "Heartbeat") {
     ref(qualifiedName: "refs/heads/main") {
       name
     }
@@ -678,7 +678,7 @@ We define
 | variable |  meaning                                                                 |
 |----------|--------------------------------------------------------------------------|
 | V        | verify token cost                                                        |
-| B        | verify branch cost                                                       | 
+| B        | verify branch cost                                                       |
 | I        | Get a commit info cost                                                   |
 | T        | Get all Commits under PullRequest cost                                   |
 | P        | Get the list of PullRequest where the commit is located cost             |
