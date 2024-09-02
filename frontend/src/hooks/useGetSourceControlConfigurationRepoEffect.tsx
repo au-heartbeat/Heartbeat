@@ -1,18 +1,19 @@
 import {
+  DateRange,
   selectIsProjectCreated,
   selectSourceControl,
   updateSourceControlVerifiedResponse,
 } from '@src/context/config/configSlice';
 import { updateSourceControlConfigurationSettingsFirstInto } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { FULFILLED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
-import { SourceControlTypes } from '@src/constants/resources';
-import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
+import dayjs from 'dayjs';
 
 export interface IUseGetSourceControlConfigurationRepoInterface {
   readonly isLoading: boolean;
-  readonly getSourceControlRepoInfo: (value: string) => void;
+  readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRange[]) => void;
   readonly isGetRepo: boolean;
 }
 export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationRepoInterface => {
@@ -28,16 +29,21 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
       .map((it) => it[1])[0];
   }
 
-  const getSourceControlRepoInfo = async (organization: string) => {
-    const params = {
-      type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
-      token: restoredSourceControlInfo.token,
-      organization: organization,
-    };
+  const getSourceControlRepoInfo = async (organization: string, dateRanges: DateRange[]) => {
     setIsLoading(true);
-    try {
-      const response = await sourceControlClient.getRepo(params);
-      if (response.code === HttpStatusCode.Ok) {
+    const allRepoRes = await Promise.allSettled(
+      dateRanges.flatMap((dateRange) => {
+        const params = {
+          type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
+          token: restoredSourceControlInfo.token,
+          organization: organization,
+          endTime: dayjs(dateRange.endDate).startOf('date').valueOf(),
+        };
+        return sourceControlClient.getRepo(params);
+      }),
+    );
+    allRepoRes.forEach((response) => {
+      if (response.status === FULFILLED) {
         dispatch(
           updateSourceControlVerifiedResponse({
             parents: [
@@ -46,21 +52,20 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
                 value: organization,
               },
             ],
-            names: response.data?.name.map((it) => it),
+            names: response.value.data?.name.map((it) => it),
           }),
         );
         dispatch(
           updateSourceControlConfigurationSettingsFirstInto({
-            ...response.data,
+            ...response.value.data,
             isProjectCreated,
             type: 'repo',
           }),
         );
       }
-    } finally {
-      setIsLoading(false);
-      setIsGetRepo(true);
-    }
+    });
+    setIsLoading(false);
+    setIsGetRepo(true);
   };
 
   return {

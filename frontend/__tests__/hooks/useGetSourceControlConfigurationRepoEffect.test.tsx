@@ -2,6 +2,7 @@ import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSou
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { MOCK_GITHUB_GET_REPO_RESPONSE } from '@test/fixtures';
+import { DateRange } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import React, { ReactNode } from 'react';
 import { Provider } from 'react-redux';
@@ -48,9 +49,15 @@ describe('use get source control configuration repo info side effect', () => {
   it('should return success data and loading state when client goes happy path', async () => {
     const { result } = renderHook(() => useGetSourceControlConfigurationRepoEffect(), { wrapper: Wrapper });
     const mockOrganization = 'mockOrg';
+    const mockDateRanges: DateRange[] = [
+      {
+        startDate: 'startTime',
+        endDate: 'endTime',
+      },
+    ];
 
     await act(async () => {
-      result.current.getSourceControlRepoInfo(mockOrganization);
+      result.current.getSourceControlRepoInfo(mockOrganization, mockDateRanges);
     });
 
     await waitFor(() => {

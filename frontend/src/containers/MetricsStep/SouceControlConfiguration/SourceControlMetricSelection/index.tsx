@@ -78,9 +78,9 @@ export const SourceControlMetricSelection = ({
 
   useEffect(() => {
     if (!isGetRepo && organization) {
-      getSourceControlRepoInfo(organization);
+      getSourceControlRepoInfo(organization, dateRanges);
     }
-  }, [getSourceControlRepoInfo, isGetRepo, organization]);
+  }, [dateRanges, getSourceControlRepoInfo, isGetRepo, organization]);
 
   useEffect(() => {
     if (!isGetBranch && organization && repo) {
@@ -105,7 +105,7 @@ export const SourceControlMetricSelection = ({
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
-    getSourceControlRepoInfo(value.toString());
+    getSourceControlRepoInfo(value.toString(), dateRanges);
   };
 
   const handleOnUpdateRepo = (id: number, label: string, value: string | []): void => {

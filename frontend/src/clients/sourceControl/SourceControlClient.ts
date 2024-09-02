@@ -114,7 +114,7 @@ export class SourceControlClient extends HttpClient {
   };
 
   getRepo = async (params: SourceControlGetRepoRequestDTO): Promise<ISourceControlGetRepoResponseDTO> => {
-    const { token, organization, type } = params;
+    const { token, organization, type, endTime } = params;
     const result: ISourceControlGetRepoResponseDTO = {
       code: null,
       data: undefined,
@@ -126,6 +126,7 @@ export class SourceControlClient extends HttpClient {
       const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/repos`, {
         token,
         organization,
+        endTime,
       });
       if (response.status === HttpStatusCode.Ok) {
         result.data = response.data as SourceControlGetRepoResponseDTO;

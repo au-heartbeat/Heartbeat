@@ -20,6 +20,7 @@ export interface SourceControlGetOrganizationRequestDTO {
 export interface SourceControlGetRepoRequestDTO {
   token: string;
   organization: string;
+  endTime: number;
   type: SourceControlTypes;
 }
 
