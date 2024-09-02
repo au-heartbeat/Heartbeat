@@ -1,10 +1,4 @@
 import {
-  selectOrganizationWarningMessage,
-  selectPipelineNameWarningMessage,
-  selectStepWarningMessage,
-  selectSourceControlConfigurationSettings,
-} from '@src/context/Metrics/metricsSlice';
-import {
   ButtonWrapper,
   PipelineMetricSelectionWrapper,
   RemoveButton,
@@ -21,7 +15,7 @@ import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSou
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
-import { WarningNotification } from '@src/components/Common/WarningNotification';
+import { selectSourceControlConfigurationSettings } from '@src/context/Metrics/metricsSlice';
 import { Loading } from '@src/components/Loading';
 import { useAppSelector } from '@src/hooks';
 import { store } from '@src/store';
@@ -71,9 +65,6 @@ export const SourceControlMetricSelection = ({
   const organizationNameOptions = selectSourceControlOrganizations(storeContext);
   const repoNameOptions = selectSourceControlRepos(storeContext, organization);
   const branchNameOptions = selectSourceControlBranches(storeContext, organization, repo);
-  const organizationWarningMessage = selectOrganizationWarningMessage(storeContext, id);
-  const pipelineNameWarningMessage = selectPipelineNameWarningMessage(storeContext, id);
-  const stepWarningMessage = selectStepWarningMessage(storeContext, id);
   const dateRanges = useAppSelector(selectDateRange);
   const sourceControlList = useAppSelector(selectSourceControlConfigurationSettings);
 
@@ -135,9 +126,6 @@ export const SourceControlMetricSelection = ({
 
   return (
     <PipelineMetricSelectionWrapper>
-      {organizationWarningMessage && <WarningNotification message={organizationWarningMessage} />}
-      {pipelineNameWarningMessage && <WarningNotification message={pipelineNameWarningMessage} />}
-      {stepWarningMessage && <WarningNotification message={stepWarningMessage} />}
       {isLoading && <Loading />}
       {isDuplicated && <WarningMessage>This source control is the same as another one!</WarningMessage>}
       <SingleSelection

@@ -2,8 +2,8 @@ import sourceControlReducer, {
   updateSourceControl,
   updateSourceControlVerifiedResponse,
 } from '@src/context/config/configSlice';
+import { MOCK_GITHUB_ORGANIZATION, MOCK_GITHUB_REPO } from '../fixtures';
 import initialConfigState from '../initialConfigState';
-import {MOCK_GITHUB_ORGANIZATION, MOCK_GITHUB_REPO} from '../fixtures';
 
 describe('sourceControl reducer', () => {
   it('should update sourceControl fields when change sourceControl fields input', () => {

@@ -10,12 +10,12 @@ import { SourceControlTypes } from '@src/constants/resources';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export interface IUseGetSourceControlConfigurationStateInterface {
+export interface IUseGetSourceControlConfigurationRepoInterface {
   readonly isLoading: boolean;
   readonly getSourceControlRepoInfo: (value: string) => void;
   readonly isGetRepo: boolean;
 }
-export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationStateInterface => {
+export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationRepoInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGetRepo, setIsGetRepo] = useState<boolean>(false);

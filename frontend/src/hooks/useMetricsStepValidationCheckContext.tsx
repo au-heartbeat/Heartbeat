@@ -3,7 +3,7 @@ import React, { createContext, useContext } from 'react';
 
 interface ProviderContextType {
   getDuplicatedPipeLineIds: (pipelineSettings: IPipelineConfig[]) => number[];
-  getDuplicatedSourceControlIds: (pipelineSettings: ISourceControlConfig[]) => number[];
+  getDuplicatedSourceControlIds: (sourceControlConfigs: ISourceControlConfig[]) => number[];
 }
 
 interface ContextProviderProps {
@@ -29,9 +29,9 @@ const getDuplicatedPipeLineIds = (pipelineSettings: IPipelineConfig[]) => {
     .flat();
 };
 
-const getDuplicatedSourceControlIds = (pipelineSettings: ISourceControlConfig[]) => {
+const getDuplicatedSourceControlIds = (sourceControlConfigs: ISourceControlConfig[]) => {
   const errors: { [key: string]: number[] } = {};
-  pipelineSettings.forEach(({ id, organization, repo }) => {
+  sourceControlConfigs.forEach(({ id, organization, repo }) => {
     if (organization && repo) {
       const errorString = `${organization}${repo}`;
       if (errors[errorString]) errors[errorString].push(id);

@@ -97,10 +97,6 @@ function addLeafToTree(tree: ISourceControlTree, newLeaf: ISourceControlLeaf, na
     parents: { name: string; value: string }[],
     depth: number,
   ): ISourceControlTree => {
-    if (!node.children) {
-      node.children = [];
-    }
-
     if (parents.length === 0) {
       const needAddNames = newLeaf.names.filter((name) => node.children.every((child) => child.value !== name));
       node.children.push(...needAddNames.map((value) => ({ name: names[depth], value, children: [] })));

@@ -122,6 +122,10 @@ export const MOCK_PIPELINE_GET_INFO_URL = `${BASE_URL}/pipelines/buildkite/info`
 export const MOCK_JIRA_URL = `${BASE_URL}/pipelines/jira`;
 export const MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL = `${BASE_URL}/source-control/:type/verify`;
 export const MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL = `${BASE_URL}/source-control/:type/repos/branches/verify`;
+export const MOCK_SOURCE_CONTROL_GET_ORGANIZATION_URL = `${BASE_URL}/source-control/:type/organizations`;
+export const MOCK_SOURCE_CONTROL_GET_REPO_URL = `${BASE_URL}/source-control/:type/repos`;
+export const MOCK_SOURCE_CONTROL_GET_BRANCH_URL = `${BASE_URL}/source-control/:type/branches`;
+export const MOCK_SOURCE_CONTROL_GET_CREW_URL = `${BASE_URL}/source-control/:type/crews`;
 export const MOCK_REPORT_URL = `${BASE_URL}/reports`;
 export const MOCK_VERSION_URL = `${BASE_URL}/version`;
 export const MOCK_EXPORT_CSV_URL = `${BASE_URL}/reports/:dataType/:reportId`;
@@ -372,6 +376,22 @@ export const MOCK_BUILD_KITE_GET_INFO_RESPONSE = {
   ],
 };
 
+export const MOCK_GITHUB_GET_ORGANIZATION_RESPONSE = {
+  name: ['test-org1', 'test-org2'],
+};
+
+export const MOCK_GITHUB_GET_REPO_RESPONSE = {
+  name: ['test-repo1', 'test-repo2'],
+};
+
+export const MOCK_GITHUB_GET_BRANCHES_RESPONSE = {
+  name: ['test-branch1', 'test-branch2'],
+};
+
+export const MOCK_GITHUB_GET_CREWS_RESPONSE = {
+  crews: ['test-crew1', 'test-crew2'],
+};
+
 export const MOCK_GITHUB_ORGANIZATION = {
   parents: [],
   names: ['test-org1', 'test-org2'],
@@ -393,6 +413,7 @@ export const TIMEOUT_ALERT = 'timeout alert';
 export const CLASSIFICATION_SETTING = 'Classification setting';
 export const REAL_DONE = 'Real done setting';
 export const DEPLOYMENT_FREQUENCY_SETTINGS = 'Pipeline settings';
+export const SOURCE_CONTROL_SETTINGS = 'Source control settings';
 
 export enum PipelineSettingTypes {
   DeploymentFrequencySettingsType = 'DeploymentFrequencySettings',

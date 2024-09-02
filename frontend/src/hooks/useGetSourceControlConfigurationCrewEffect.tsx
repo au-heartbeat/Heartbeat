@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 
-export interface IUseGetSourceControlConfigurationStateInterface {
+export interface IUseGetSourceControlConfigurationCrewInterface {
   readonly isLoading: boolean;
   readonly isGetAllCrews: boolean;
   readonly getSourceControlCrewInfo: (
@@ -15,7 +15,7 @@ export interface IUseGetSourceControlConfigurationStateInterface {
     dateRanges: DateRange[],
   ) => void;
 }
-export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceControlConfigurationStateInterface => {
+export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceControlConfigurationCrewInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGetAllCrews, setIsGetAllCrews] = useState<boolean>(false);

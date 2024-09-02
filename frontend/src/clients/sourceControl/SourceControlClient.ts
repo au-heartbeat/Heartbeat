@@ -18,7 +18,6 @@ import {
 } from '@src/clients/sourceControl/dto/request';
 import {
   SOURCE_CONTROL_CONFIG_TITLE,
-  SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING,
   SOURCE_CONTROL_ERROR_MESSAGE,
   SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING,
   UNKNOWN_ERROR_TITLE,
@@ -92,9 +91,6 @@ export class SourceControlClient extends HttpClient {
       });
       if (response.status === HttpStatusCode.Ok) {
         result.data = response.data as SourceControlGetOrganizationResponseDTO;
-      } else if (response.status === HttpStatusCode.NoContent) {
-        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
-        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
       }
       result.code = response.status;
     } catch (e) {
@@ -133,9 +129,6 @@ export class SourceControlClient extends HttpClient {
       });
       if (response.status === HttpStatusCode.Ok) {
         result.data = response.data as SourceControlGetRepoResponseDTO;
-      } else if (response.status === HttpStatusCode.NoContent) {
-        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
-        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
       }
       result.code = response.status;
     } catch (e) {
@@ -175,9 +168,6 @@ export class SourceControlClient extends HttpClient {
       });
       if (response.status === HttpStatusCode.Ok) {
         result.data = response.data as SourceControlGetBranchResponseDTO;
-      } else if (response.status === HttpStatusCode.NoContent) {
-        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
-        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
       }
       result.code = response.status;
     } catch (e) {
@@ -220,9 +210,6 @@ export class SourceControlClient extends HttpClient {
       });
       if (response.status === HttpStatusCode.Ok) {
         result.data = response.data as SourceControlGetCrewResponseDTO;
-      } else if (response.status === HttpStatusCode.NoContent) {
-        result.errorTitle = SOURCE_CONTROL_ERROR_CASE_TEXT_MAPPING[response.status];
-        result.errorMessage = SOURCE_CONTROL_ERROR_MESSAGE;
       }
       result.code = response.status;
     } catch (e) {

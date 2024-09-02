@@ -1,5 +1,9 @@
 import configReducer, {
   resetImportedData,
+  selectSourceControlBranches,
+  selectSourceControlCrews,
+  selectSourceControlOrganizations,
+  selectSourceControlRepos,
   selectSteps,
   updateCalendarType,
   updateDateRange,
@@ -7,13 +11,13 @@ import configReducer, {
   updateMetrics,
   updateProjectCreatedState,
   updateProjectName,
+  updateSourceControlVerifiedResponse,
 } from '@src/context/config/configSlice';
 import { CONFIG_PAGE_VERIFY_IMPORT_ERROR_MESSAGE, VELOCITY } from '../fixtures';
 import { SortType } from '@src/containers/ConfigStep/DateRangePicker/types';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import initialConfigState from '../initialConfigState';
 import { Calendar } from '@src/constants/resources';
-
 const MockBasicState = {
   projectName: 'Test Project',
   dateRange: [
@@ -253,5 +257,190 @@ describe('config reducer', () => {
     };
     const config = configReducer(initialState, action);
     expect(config.warningMessage).toBe(null);
+  });
+
+  it('should update source control verified repo list', () => {
+    const initialState = {
+      ...initialConfigState,
+    };
+    const expectedSourceControlVerifiedRepoList = [
+      { name: 'organization', value: 'mock-org1', children: [] },
+      { name: 'organization', value: 'mock-org2', children: [] },
+    ];
+    const action = {
+      type: 'config/updateSourceControlVerifiedResponse',
+      payload: {
+        parents: [],
+        names: ['mock-org1', 'mock-org2'],
+      },
+    };
+
+    const config = configReducer(initialState, action);
+
+    expect(config.sourceControl.verifiedResponse.repoList.children).toEqual(expectedSourceControlVerifiedRepoList);
+  });
+
+  it('should update source control verified repo list when exist organization', () => {
+    const initialState = {
+      ...initialConfigState,
+      sourceControl: {
+        ...initialConfigState.sourceControl,
+        verifiedResponse: {
+          repoList: {
+            children: [
+              {
+                name: 'organization',
+                value: 'mock-org1',
+                children: [],
+              },
+              {
+                name: 'organization',
+                value: 'mock-org2',
+                children: [],
+              },
+            ],
+            name: 'root',
+            value: '-1',
+          },
+        },
+      },
+    };
+    const expectedSourceControlVerifiedRepoList1 = [
+      { name: 'organization', value: 'mock-org1', children: [] },
+      { name: 'organization', value: 'mock-org2', children: [] },
+    ];
+    const expectedSourceControlVerifiedRepoList2 = [
+      {
+        name: 'organization',
+        value: 'mock-org1',
+        children: [
+          { name: 'repo', value: 'mock-repo1', children: [] },
+          { name: 'repo', value: 'mock-repo2', children: [] },
+        ],
+      },
+      { name: 'organization', value: 'mock-org2', children: [] },
+    ];
+    const action = {
+      type: 'config/updateSourceControlVerifiedResponse',
+      payload: {
+        parents: [],
+        names: ['mock-org1', 'mock-org2'],
+      },
+    };
+    const action2 = {
+      type: 'config/updateSourceControlVerifiedResponse',
+      payload: {
+        parents: [
+          {
+            name: 'organization',
+            value: 'mock-org1',
+          },
+        ],
+        names: ['mock-repo1', 'mock-repo2'],
+      },
+    };
+
+    const config = configReducer(initialState, action);
+    const config2 = configReducer(config, action2);
+
+    expect(config.sourceControl.verifiedResponse.repoList.children).toEqual(expectedSourceControlVerifiedRepoList1);
+    expect(config2.sourceControl.verifiedResponse.repoList.children).toEqual(expectedSourceControlVerifiedRepoList2);
+  });
+});
+
+describe('select methods', () => {
+  const store = setupStore();
+  store.dispatch(
+    updateSourceControlVerifiedResponse({
+      parents: [],
+      names: ['test-org1', 'test-org2'],
+    }),
+  );
+  store.dispatch(
+    updateSourceControlVerifiedResponse({
+      parents: [
+        {
+          name: 'organization',
+          value: 'test-org1',
+        },
+      ],
+      names: ['test-repo1', 'test-repo2'],
+    }),
+  );
+  store.dispatch(
+    updateSourceControlVerifiedResponse({
+      parents: [
+        {
+          name: 'organization',
+          value: 'test-org1',
+        },
+        {
+          name: 'repo',
+          value: 'test-repo1',
+        },
+      ],
+      names: ['test-branch1', 'test-branch2'],
+    }),
+  );
+  store.dispatch(
+    updateSourceControlVerifiedResponse({
+      parents: [
+        {
+          name: 'organization',
+          value: 'test-org1',
+        },
+        {
+          name: 'repo',
+          value: 'test-repo1',
+        },
+        {
+          name: 'branch',
+          value: 'test-branch1',
+        },
+      ],
+      names: ['1-2', '1-3'],
+    }),
+  );
+  store.dispatch(
+    updateSourceControlVerifiedResponse({
+      parents: [
+        {
+          name: 'organization',
+          value: 'test-org1',
+        },
+        {
+          name: 'repo',
+          value: 'test-repo1',
+        },
+        {
+          name: 'branch',
+          value: 'test-branch1',
+        },
+        {
+          name: 'time',
+          value: '1-2',
+        },
+      ],
+      names: ['test-crew1', 'test-crew2'],
+    }),
+  );
+
+  it('should get all organizations when call selectSourceControlOrganizations function', () => {
+    const organizations = selectSourceControlOrganizations(store.getState());
+    expect(organizations).toEqual(['test-org1', 'test-org2']);
+  });
+
+  it('should get all repos when call selectSourceControlRepos function', () => {
+    const repos = selectSourceControlRepos(store.getState(), 'test-org1');
+    expect(repos).toEqual(['test-repo1', 'test-repo2']);
+  });
+
+  it('should get all branches when call selectSourceControlBranches function', () => {
+    const branches = selectSourceControlBranches(store.getState(), 'test-org1', 'test-repo1');
+    expect(branches).toEqual(['test-branch1', 'test-branch2']);
+  });
+  it('should get all crews when call selectSourceControlCrews function', () => {
+    const crews = selectSourceControlCrews(store.getState(), 'test-org1', 'test-repo1', 'test-branch1', 1, 2);
+    expect(crews).toEqual(['test-crew1', 'test-crew2']);
   });
 });
