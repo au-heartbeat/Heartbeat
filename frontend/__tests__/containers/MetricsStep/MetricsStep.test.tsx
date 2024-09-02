@@ -131,7 +131,7 @@ describe('MetricsStep', () => {
     await store.dispatch(updateMetrics([REQUIRED_DATA_LIST[5]]));
     await store.dispatch(
       updatePipelineTool({
-        type: 'None',
+        type: 'Other',
       }),
     );
     setup();

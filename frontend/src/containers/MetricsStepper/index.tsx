@@ -19,7 +19,7 @@ import {
   CycleTimeSettingsTypes,
   DONE,
   METRICS_CONSTANTS,
-  PIPELINE_TOOL_NONE_OPTION,
+  PIPELINE_TOOL_OTHER_OPTION,
   RequiredData,
   TIPS,
 } from '@src/constants/resources';
@@ -119,9 +119,9 @@ const MetricsStepper = () => {
       { isShow: isShowBoard, isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful },
       {
         isShow: isShowPipeline,
-        isValid: config.pipelineTool.config.type === PIPELINE_TOOL_NONE_OPTION ? true : isPipelineToolValid,
+        isValid: config.pipelineTool.config.type === PIPELINE_TOOL_OTHER_OPTION ? true : isPipelineToolValid,
         isSubmitSuccessful:
-          config.pipelineTool.config.type === PIPELINE_TOOL_NONE_OPTION ? true : isPipelineToolSubmitSuccessful,
+          config.pipelineTool.config.type === PIPELINE_TOOL_OTHER_OPTION ? true : isPipelineToolSubmitSuccessful,
       },
       {
         isShow: isShowSourceControl,
@@ -173,13 +173,13 @@ const MetricsStepper = () => {
       requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
       requiredData.includes(RequiredData.LeadTimeForChanges) ||
       requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) &&
-    pipelineTools.type !== PIPELINE_TOOL_NONE_OPTION;
+    pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION;
   const isShowSourceControlConfiguration =
     requiredData.includes(RequiredData.LeadTimeForChanges) &&
     !requiredData.includes(RequiredData.DeploymentFrequency) &&
     !requiredData.includes(RequiredData.PipelineChangeFailureRate) &&
     !requiredData.includes(RequiredData.PipelineMeanTimeToRecovery) &&
-    pipelineTools.type === PIPELINE_TOOL_NONE_OPTION;
+    pipelineTools.type === PIPELINE_TOOL_OTHER_OPTION;
   const isCrewsSettingValid = metricsConfig.users.length > 0;
   const isRealDoneValid = metricsConfig.doneColumn.length > 0;
 
@@ -294,7 +294,7 @@ const MetricsStepper = () => {
     const { projectName, dateRange, calendarType, metrics, sortType } = config.basic;
     const pipelineConfig = config.pipelineTool.config;
     const savedPipelineConfig = { ...pipelineConfig };
-    if (savedPipelineConfig.type === PIPELINE_TOOL_NONE_OPTION) {
+    if (savedPipelineConfig.type === PIPELINE_TOOL_OTHER_OPTION) {
       savedPipelineConfig.token = '';
     }
     const configData = {

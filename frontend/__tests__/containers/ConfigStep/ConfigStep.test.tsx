@@ -40,7 +40,7 @@ import {
 } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { fillSourceControlFieldsInformation } from '@test/containers/ConfigStep/SourceControl.test';
 import { fillPipelineToolFieldsInformation } from '@test/containers/ConfigStep/PipelineTool.test';
-import { AxiosRequestErrorCode, PIPELINE_TOOL_NONE_OPTION } from '@src/constants/resources';
+import { AxiosRequestErrorCode, PIPELINE_TOOL_OTHER_OPTION } from '@src/constants/resources';
 import { fillBoardFieldsInformation } from '@test/containers/ConfigStep/Board.test';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { boardClient } from '@src/clients/board/BoardClient';
@@ -554,7 +554,7 @@ describe('ConfigStep', () => {
     const noneOption = options[1];
 
     expect(buildKiteOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_TYPES.BUILD_KITE);
-    expect(noneOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_NONE_OPTION);
+    expect(noneOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_OTHER_OPTION);
 
     await userEvent.click(noneOption);
     await userEvent.click(screen.getByRole('combobox', { name: REQUIRED_DATA }));

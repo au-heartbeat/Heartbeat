@@ -27,7 +27,7 @@ import {
   CycleTimeSettingsTypes,
   DONE,
   MESSAGE,
-  PIPELINE_TOOL_NONE_OPTION,
+  PIPELINE_TOOL_OTHER_OPTION,
   RequiredData,
 } from '@src/constants/resources';
 import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
@@ -186,7 +186,7 @@ const MetricsStep = () => {
         requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
         requiredData.includes(RequiredData.LeadTimeForChanges) ||
         requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) &&
-        pipelineTools.type !== PIPELINE_TOOL_NONE_OPTION && (
+        pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION && (
           <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
             <MetricsSelectionTitle aria-label='Pipeline configuration title'>
               Pipeline configuration
@@ -194,7 +194,7 @@ const MetricsStep = () => {
             <DeploymentFrequencySettings />
           </MetricSelectionWrapper>
         )}
-      {pipelineTools.type === PIPELINE_TOOL_NONE_OPTION && (
+      {pipelineTools.type === PIPELINE_TOOL_OTHER_OPTION && (
         <MetricSelectionWrapper aria-label='Source Control Configuration Section'>
           <MetricsSelectionTitle aria-label='Source Control configuration title'>
             Source control configuration

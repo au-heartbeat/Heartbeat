@@ -1,7 +1,7 @@
 import { InputLabel, ListItemText, MenuItem, Select } from '@mui/material';
 import { StyledTypeSelections } from '@src/components/Common/ConfigForms';
 import NewFunctionsLabel from '@src/components/Common/NewFunctionsLabel';
-import { PIPELINE_TOOL_NONE_OPTION } from '@src/constants/resources';
+import { PIPELINE_TOOL_OTHER_OPTION } from '@src/constants/resources';
 import { Controller, useFormContext } from 'react-hook-form';
 
 interface IFormSingleSelect {
@@ -47,7 +47,7 @@ export const FormSingleSelect = ({
                 const listItem = <ListItemText primary={data} />;
                 return (
                   <MenuItem key={data} value={data}>
-                    {data === PIPELINE_TOOL_NONE_OPTION ? (
+                    {data === PIPELINE_TOOL_OTHER_OPTION ? (
                       <NewFunctionsLabel initVersion={'1.3.0'}>{listItem}</NewFunctionsLabel>
                     ) : (
                       listItem

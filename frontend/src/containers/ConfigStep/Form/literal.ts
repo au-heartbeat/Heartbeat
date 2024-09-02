@@ -4,7 +4,7 @@ import {
   IPipelineToolErrorMessage,
   ISourceControlErrorMessage,
 } from '@src/containers/ConfigStep/Form/type';
-import { CALENDAR_LIST, PIPELINE_TOOL_NONE_OPTION } from '@src/constants/resources';
+import { CALENDAR_LIST, PIPELINE_TOOL_OTHER_OPTION } from '@src/constants/resources';
 
 export const AGGREGATED_DATE_ERROR_REASON = 'Invalid date';
 export const CALENDAR_TYPE_LITERAL = CALENDAR_LIST;
@@ -19,7 +19,7 @@ export const METRICS_LITERAL = [
   'Pipeline mean time to recovery',
 ];
 export const BOARD_TYPE_LITERAL = ['Jira'];
-export const PIPELINE_TOOL_TYPE_LITERAL = ['BuildKite', PIPELINE_TOOL_NONE_OPTION];
+export const PIPELINE_TOOL_TYPE_LITERAL = ['BuildKite', PIPELINE_TOOL_OTHER_OPTION];
 export const SOURCE_CONTROL_TYPE_LITERAL = ['GitHub'];
 
 export const BASIC_INFO_ERROR_MESSAGE: IBasicInfoErrorMessage = {
