@@ -210,10 +210,12 @@ export class ReportStep {
     this.cycleTimeTrendContainer = this.page.getByLabel('cycle time trend container');
     this.cycleTimeAllocationTrendContainer = this.page.getByLabel('cycle time allocation trend container');
     this.reworkTrendContainer = this.page.getByLabel('rework trend container');
-    this.velocityTrendIcon = this.velocityTrendContainer.getByLabel('trend down');
-    this.cycleTimeTrendIcon = this.cycleTimeTrendContainer.getByLabel('trend down');
-    this.cycleTimeAllocationTrendIcon = this.cycleTimeAllocationTrendContainer.getByLabel('trend down');
-    this.reworkTrendIcon = this.reworkTrendContainer.getByLabel('trend down');
+    this.velocityTrendIcon = this.velocityTrendContainer.getByLabel(BOARD_CHART_VALUE.Velocity.type);
+    this.cycleTimeTrendIcon = this.cycleTimeTrendContainer.getByLabel(BOARD_CHART_VALUE['Average Cycle Time'].type);
+    this.cycleTimeAllocationTrendIcon = this.cycleTimeAllocationTrendContainer.getByLabel(
+      BOARD_CHART_VALUE['Cycle Time Allocation'].type,
+    );
+    this.reworkTrendIcon = this.reworkTrendContainer.getByLabel(BOARD_CHART_VALUE.Rework.type);
 
     this.classificationIssueTypeChartSwitchIcon = this.page.getByLabel('classification issue type switch chart');
     this.classificationIssueTypeChartSwitchCardCountModel = this.page.getByLabel(
@@ -664,7 +666,6 @@ export class ReportStep {
   }
 
   async checkBoardDownloadDataWithoutBlock(fileName: string, csvCompareLines?: number) {
-    console.log(fileName);
     await downloadFileAndCheck(
       this.page,
       this.exportBoardData,
@@ -787,6 +788,7 @@ export class ReportStep {
     showCycleTimeChart,
     showCycleTimeAllocationChart,
     showReworkChart,
+    showReworkChartTrend,
     showClassificationIssueTypeChart = false,
     showClassificationAssigneeChart = false,
   }: {
@@ -794,6 +796,7 @@ export class ReportStep {
     showCycleTimeChart: boolean;
     showCycleTimeAllocationChart: boolean;
     showReworkChart: boolean;
+    showReworkChartTrend: boolean;
     showClassificationIssueTypeChart?: boolean;
     showClassificationAssigneeChart?: boolean;
   }) {
@@ -855,10 +858,15 @@ export class ReportStep {
 
     if (showReworkChart) {
       await expect(this.reworkChart).toBeVisible();
-      await expect(this.reworkTrendContainer).toBeVisible();
-      await expect(this.reworkTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE['Rework'].color);
-      await expect(this.reworkTrendIcon).toBeVisible();
-      await expect(this.reworkTrendContainer).toContainText(BOARD_CHART_VALUE['Rework'].value);
+      if (showReworkChartTrend) {
+        await expect(this.reworkTrendContainer).toBeVisible();
+        await expect(this.reworkTrendContainer).toHaveAttribute('color', BOARD_CHART_VALUE['Rework'].color);
+        await expect(this.reworkTrendIcon).toBeVisible();
+        await expect(this.reworkTrendContainer).toContainText(BOARD_CHART_VALUE['Rework'].value);
+      } else {
+        await expect(this.reworkTrendContainer).not.toBeVisible();
+        await expect(this.reworkTrendIcon).not.toBeVisible();
+      }
     } else {
       await expect(this.reworkChart).not.toBeVisible();
       await expect(this.reworkTrendContainer).not.toBeVisible();
@@ -1012,28 +1020,28 @@ export class ReportStep {
     pipelines,
     showLeadTimeForChangeChart,
     showDeploymentFrequencyChart,
-    showDevChangeFailureRateTrendContainer,
-    showDevChangeFailureRateChart,
-    showDevMeanTimeToRecoveryChart,
-    showDevMeanTimeToRecoveryTrendContainer,
+    showPipelineChangeFailureRateTrendContainer,
+    showPipelineChangeFailureRateChart,
+    showPipelineMeanTimeToRecoveryChart,
+    showPipelineMeanTimeToRecoveryTrendContainer,
   }: {
     pipelines: string[];
     showLeadTimeForChangeChart: boolean;
     showDeploymentFrequencyChart: boolean;
-    showDevChangeFailureRateTrendContainer: boolean;
-    showDevChangeFailureRateChart: boolean;
-    showDevMeanTimeToRecoveryTrendContainer: boolean;
-    showDevMeanTimeToRecoveryChart: boolean;
+    showPipelineChangeFailureRateTrendContainer: boolean;
+    showPipelineChangeFailureRateChart: boolean;
+    showPipelineMeanTimeToRecoveryTrendContainer: boolean;
+    showPipelineMeanTimeToRecoveryChart: boolean;
   }) {
     await expect(this.doraPipelineSelector).toBeVisible();
     await this.checkPipelineSelectorOptions({
       pipelines,
       showLeadTimeForChangeChart,
       showDeploymentFrequencyChart,
-      showDevChangeFailureRateTrendContainer,
-      showDevChangeFailureRateChart,
-      showDevMeanTimeToRecoveryChart,
-      showDevMeanTimeToRecoveryTrendContainer,
+      showPipelineChangeFailureRateTrendContainer,
+      showPipelineChangeFailureRateChart,
+      showPipelineMeanTimeToRecoveryChart,
+      showPipelineMeanTimeToRecoveryTrendContainer,
     });
   }
 
@@ -1041,18 +1049,18 @@ export class ReportStep {
     pipelines,
     showLeadTimeForChangeChart,
     showDeploymentFrequencyChart,
-    showDevChangeFailureRateTrendContainer,
-    showDevChangeFailureRateChart,
-    showDevMeanTimeToRecoveryChart,
-    showDevMeanTimeToRecoveryTrendContainer,
+    showPipelineChangeFailureRateTrendContainer,
+    showPipelineChangeFailureRateChart,
+    showPipelineMeanTimeToRecoveryChart,
+    showPipelineMeanTimeToRecoveryTrendContainer,
   }: {
     pipelines: string[];
     showLeadTimeForChangeChart: boolean;
     showDeploymentFrequencyChart: boolean;
-    showDevChangeFailureRateTrendContainer: boolean;
-    showDevChangeFailureRateChart: boolean;
-    showDevMeanTimeToRecoveryTrendContainer: boolean;
-    showDevMeanTimeToRecoveryChart: boolean;
+    showPipelineChangeFailureRateTrendContainer: boolean;
+    showPipelineChangeFailureRateChart: boolean;
+    showPipelineMeanTimeToRecoveryTrendContainer: boolean;
+    showPipelineMeanTimeToRecoveryChart: boolean;
   }) {
     await this.doraPipelineSelector.click();
     const singleOption = this.page.getByLabel(`single-option`);
@@ -1067,12 +1075,12 @@ export class ReportStep {
       await singleOption.nth(i).click();
       this.checkChartDoraTabStatus({
         pipeline: pipelines[i],
-        showPipelineMeanTimeToRecoveryTrendContainer: showDevMeanTimeToRecoveryTrendContainer,
-        showLeadTimeForChangeChart: showLeadTimeForChangeChart,
-        showDeploymentFrequencyChart: showDeploymentFrequencyChart,
-        showPipelineChangeFailureRateTrendContainer: showDevChangeFailureRateTrendContainer,
-        showPipelineChangeFailureRateChart: showDevChangeFailureRateChart,
-        showPipelineMeanTimeToRecoveryChart: showDevMeanTimeToRecoveryChart,
+        showLeadTimeForChangeChart,
+        showDeploymentFrequencyChart,
+        showPipelineChangeFailureRateTrendContainer,
+        showPipelineChangeFailureRateChart,
+        showPipelineMeanTimeToRecoveryChart,
+        showPipelineMeanTimeToRecoveryTrendContainer,
       });
     }
   }

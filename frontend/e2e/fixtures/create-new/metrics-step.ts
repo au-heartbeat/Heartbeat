@@ -2,16 +2,16 @@ export const config = {
   projectName: 'Heartbeat Metrics',
   dateRange: [
     {
-      startDate: '2024-06-03T00:00:00.000+08:00',
-      endDate: '2024-06-04T23:59:59.999+08:00',
+      startDate: '2024-08-26T00:00:00.000+08:00',
+      endDate: '2024-09-02T23:59:59.999+08:00',
     },
     {
-      startDate: '2024-06-05T00:00:00.000+08:00',
-      endDate: '2024-06-06T23:59:59.999+08:00',
+      startDate: '2024-08-19T00:00:00.000+08:00',
+      endDate: '2024-08-25T23:59:59.999+08:00',
     },
     {
-      startDate: '2024-06-07T00:00:00.000+08:00',
-      endDate: '2024-06-07T23:59:59.999+08:00',
+      startDate: '2024-08-12T00:00:00.000+08:00',
+      endDate: '2024-08-18T23:59:59.999+08:00',
     },
   ],
   sortType: 'DEFAULT',
@@ -45,9 +45,9 @@ export const config = {
     type: 'GitHub',
     token: process.env.E2E_TOKEN_GITHUB as string,
   },
-  crews: ['Man Tang', 'heartbeat user', 'Qiuhong Lei', 'Chao Wang', 'YinYuan Zhou'],
+  crews: ['Man Tang', 'YinYuan Zhou'],
   assigneeFilter: 'lastAssignee',
-  pipelineCrews: ['Mandy-Tang', 'guzhongren', 'zhou-yinyuan', 'Unknown', 'davidwangcn9'],
+  pipelineCrews: ['Yufan0226', 'Zhongren GU', 'guzhongren', 'renovate[bot]', 'zhou-yinyuan', 'Unknown'],
   cycleTime: {
     type: 'byColumn',
     jiraColumns: [
@@ -146,9 +146,9 @@ export const modifiedConfig = {
     type: 'GitHub',
     token: process.env.E2E_TOKEN_GITHUB as string,
   },
-  crews: ['Man Tang', 'heartbeat user', 'Qiuhong Lei', 'Chao Wang', 'YinYuan Zhou'],
+  crews: ['Man Tang', 'YinYuan Zhou'],
   assigneeFilter: 'lastAssignee',
-  pipelineCrews: ['Mandy-Tang', 'guzhongren', 'zhou-yinyuan', 'Unknown', 'davidwangcn9'],
+  pipelineCrews: ['Yufan0226', 'Zhongren GU', 'guzhongren', 'renovate[bot]', 'zhou-yinyuan', 'Unknown'],
   cycleTime: {
     type: 'byStatus',
     jiraColumns: [

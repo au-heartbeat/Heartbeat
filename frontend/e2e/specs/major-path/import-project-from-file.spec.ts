@@ -127,16 +127,17 @@ test('Import project from file with partial ranges API failed', async ({
     showCycleTimeAllocationChart: true,
     showClassificationIssueTypeChart: true,
     showClassificationAssigneeChart: true,
+    showReworkChartTrend: false,
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
     pipelines: DORA_CHART_PIPELINES,
-    showDevMeanTimeToRecoveryTrendContainer: false,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: true,
-    showDevChangeFailureRateTrendContainer: false,
-    showDevChangeFailureRateChart: true,
-    showDevMeanTimeToRecoveryChart: true,
+    showPipelineChangeFailureRateChart: true,
+    showPipelineChangeFailureRateTrendContainer: false,
+    showPipelineMeanTimeToRecoveryChart: true,
+    showPipelineMeanTimeToRecoveryTrendContainer: false,
   });
 });
 
@@ -176,16 +177,17 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
     showReworkChart: false,
     showCycleTimeChart: true,
     showCycleTimeAllocationChart: true,
+    showReworkChartTrend: true,
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
     pipelines: DORA_CHART_PIPELINES,
-    showDevMeanTimeToRecoveryTrendContainer: false,
-    showDevChangeFailureRateChart: false,
-    showDevMeanTimeToRecoveryChart: true,
+    showPipelineMeanTimeToRecoveryTrendContainer: false,
+    showPipelineChangeFailureRateChart: false,
+    showPipelineMeanTimeToRecoveryChart: true,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: false,
-    showDevChangeFailureRateTrendContainer: false,
+    showPipelineChangeFailureRateTrendContainer: false,
   });
 });
 
@@ -297,7 +299,7 @@ test('Import project from file when select none in pipeline tool configuration',
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/select-none-in-pipeline-tool-configuration.json');
-  await configStep.checkPipelineToolFormVisible('None');
+  await configStep.checkPipelineToolFormVisible('Other');
   await configStep.verifiedButtonNotInPipelineToolForm();
   await configStep.verifyButtonNotExistInPipelineToolForm();
   await configStep.validateNextButtonClickable();

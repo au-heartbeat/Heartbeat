@@ -85,7 +85,7 @@ export class ConfigStep {
   readonly pipelineToolContainer: Locator;
   readonly pipelineToolTypeSelect: Locator;
   readonly pipelineToolTypeBuildKiteOption: Locator;
-  readonly pipelineToolTypeNoneOption: Locator;
+  readonly pipelineToolTypeOtherOption: Locator;
   readonly pipelineToolTokenInput: Locator;
   readonly pipelineToolVerifyButton: Locator;
   readonly pipelineToolVerifiedButton: Locator;
@@ -175,7 +175,7 @@ export class ConfigStep {
     this.pipelineToolContainer = page.getByLabel('Pipeline Tool Config');
     this.pipelineToolTypeSelect = this.pipelineToolContainer.getByLabel('Pipeline Tool *');
     this.pipelineToolTypeBuildKiteOption = page.getByRole('option', { name: 'BuildKite' });
-    this.pipelineToolTypeNoneOption = page.getByRole('option', { name: 'None' });
+    this.pipelineToolTypeOtherOption = page.getByRole('option', { name: 'Other' });
     this.pipelineToolTokenInput = this.pipelineToolContainer.getByLabel('Token');
     this.pipelineToolVerifyButton = this.pipelineToolContainer.getByRole('button', { name: 'Verify' });
     this.pipelineToolVerifiedButton = this.pipelineToolContainer.getByRole('button', { name: 'Verified' });
@@ -398,7 +398,7 @@ export class ConfigStep {
     await expect(this.pipelineToolContainer).toBeVisible();
     await expect(this.pipelineToolTypeSelect).toBeVisible();
     await expect(await this.pipelineToolTypeSelect.textContent()).toContain(selectName);
-    if (selectName !== 'None') {
+    if (selectName !== 'Other') {
       await expect(this.pipelineToolTokenInput).toBeVisible();
     } else {
       await expect(this.pipelineToolTokenInput).not.toBeVisible();
@@ -497,8 +497,8 @@ export class ConfigStep {
 
   async clickNoneOptionInPipelineToolForm() {
     await this.pipelineToolTypeSelect.click();
-    await expect(this.pipelineToolTypeNoneOption).toBeVisible();
-    await this.pipelineToolTypeNoneOption.click();
+    await expect(this.pipelineToolTypeOtherOption).toBeVisible();
+    await this.pipelineToolTypeOtherOption.click();
   }
 
   async verifiedButtonInPipelineToolForm() {

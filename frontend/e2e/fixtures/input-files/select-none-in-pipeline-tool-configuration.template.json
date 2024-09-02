@@ -22,7 +22,7 @@
     "token": "<E2E_TOKEN_JIRA>"
   },
   "pipelineTool": {
-    "type": "None",
+    "type": "Other",
     "token": ""
   },
   "sourceControl": {
