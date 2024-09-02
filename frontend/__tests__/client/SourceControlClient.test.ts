@@ -161,6 +161,7 @@ describe('verify sourceControl request', () => {
       type: SourceControlTypes.GitHub,
       token: 'mock-token',
       organization: 'org',
+      endTime: 123,
     });
 
     expect(result.code).toEqual(200);
@@ -180,6 +181,7 @@ describe('verify sourceControl request', () => {
       type: SourceControlTypes.GitHub,
       token: 'mock-token',
       organization: 'org',
+      endTime: 123,
     });
 
     expect(result.code).toEqual(401);
@@ -201,6 +203,7 @@ describe('verify sourceControl request', () => {
       type: SourceControlTypes.GitHub,
       token: 'mock-token',
       organization: 'org',
+      endTime: 123,
     });
 
     expect(result.code).toEqual(403);
@@ -222,6 +225,7 @@ describe('verify sourceControl request', () => {
       type: SourceControlTypes.GitHub,
       token: 'mock-token',
       organization: 'org',
+      endTime: 123,
     });
 
     expect(result.code).toEqual(500);

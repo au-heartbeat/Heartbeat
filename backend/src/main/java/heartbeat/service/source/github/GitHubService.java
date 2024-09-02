@@ -409,7 +409,10 @@ public class GitHubService {
 		log.info("Successfully parse the total page_total page of repos: {}", totalPage);
 		List<String> repoNames = new ArrayList<>();
 		if (Objects.nonNull(firstPageStepsInfo)) {
-			repoNames.addAll(firstPageStepsInfo.stream().filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant)).map(ReposInfoDTO::getName).toList());
+			repoNames.addAll(firstPageStepsInfo.stream()
+				.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
+				.map(ReposInfoDTO::getName)
+				.toList());
 		}
 		if (totalPage > 1) {
 			List<CompletableFuture<List<ReposInfoDTO>>> futures = IntStream.range(initPage + 1, totalPage + 1)
