@@ -23,4 +23,6 @@ public class RepoRequest {
 	@NotBlank(message = "organization is required")
 	private String organization;
 
+	private long endTime;
+
 }

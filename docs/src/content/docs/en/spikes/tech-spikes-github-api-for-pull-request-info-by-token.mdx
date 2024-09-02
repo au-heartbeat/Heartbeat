@@ -34,6 +34,7 @@ frontend -> frontend: select organization
 frontend -> backend: call POST /source/{sourceType}/repos to get all repos
 backend -> GitHubClient: get all repos for organization
 GitHubClient --> backend: return all repos
+backend --> backend: filter by end time
 backend --> frontend: all repo names
 frontend -> frontend: select repo
 frontend -> backend: call POST /source/{sourceType}/branches to get all branches
@@ -107,7 +108,8 @@ backend --> frontend: return pr lead time
   ```json
   {
     "token": "GitHub token",
-    "organization": "organization name"
+    "organization": "organization name",
+    "endTime": 1717171200000
   }
   ```
 
@@ -178,8 +180,8 @@ backend --> frontend: return pr lead time
     "organization": "organization name",
     "repo": "repo name",
     "branch": "branch name",
-    "startTime": "1717171200000",
-    "endTime": "1717171200000"
+    "startTime": 1717171200000,
+    "endTime": 1717171200000
   }
   ```
 

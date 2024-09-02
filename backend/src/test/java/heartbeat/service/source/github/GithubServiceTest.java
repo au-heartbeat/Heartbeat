@@ -922,13 +922,14 @@ class GithubServiceTest {
 	void shouldReturnAllReposWhenPagesIsEqualTo1() {
 		String mockToken = "mockToken";
 		String mockOrganization = "organization";
+		long endTime = 1L;
 		List<ReposInfoDTO> reposInfoDTOList = List.of(ReposInfoDTO.builder().name("test-repo1").build(),
 				ReposInfoDTO.builder().name("test-repo2").build(), ReposInfoDTO.builder().name("test-repo3").build());
 		PageReposInfoDTO pageReposInfoDTO = PageReposInfoDTO.builder().totalPage(1).pageInfo(reposInfoDTOList).build();
 		when(cachePageService.getGitHubRepos("Bearer " + mockToken, mockOrganization, 1, 100))
 			.thenReturn(pageReposInfoDTO);
 
-		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization);
+		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime);
 
 		assertEquals(List.of("test-repo1", "test-repo2", "test-repo3"), allRepos);
 	}
@@ -937,14 +938,20 @@ class GithubServiceTest {
 	void shouldReturnAllReposWhenPagesIsMoreThan1() {
 		String mockToken = "mockToken";
 		String mockOrganization = "organization";
-		List<ReposInfoDTO> reposInfoDTOListPage1 = List.of(ReposInfoDTO.builder().name("test-repo1").build(),
-				ReposInfoDTO.builder().name("test-repo2").build(), ReposInfoDTO.builder().name("test-repo3").build());
+		long endTime = 1719763199999L;
+		;
+		List<ReposInfoDTO> reposInfoDTOListPage1 = List.of(
+				ReposInfoDTO.builder().name("test-repo1").createdAt("2024-07-30T15:59:59Z").build(),
+				ReposInfoDTO.builder().name("test-repo2").createdAt("2024-07-30T15:59:59Z").build(),
+				ReposInfoDTO.builder().createdAt("2024-05-30T15:59:59Z").name("test-repo3").build());
 		PageReposInfoDTO pageReposInfoDTOPage1 = PageReposInfoDTO.builder()
 			.totalPage(2)
 			.pageInfo(reposInfoDTOListPage1)
 			.build();
-		List<ReposInfoDTO> reposInfoDTOListPage2 = List.of(ReposInfoDTO.builder().name("test-repo4").build(),
-				ReposInfoDTO.builder().name("test-repo5").build(), ReposInfoDTO.builder().name("test-repo6").build());
+		List<ReposInfoDTO> reposInfoDTOListPage2 = List.of(
+				ReposInfoDTO.builder().createdAt("2024-07-30T15:59:59Z").name("test-repo4").build(),
+				ReposInfoDTO.builder().createdAt("2024-07-30T15:59:59Z").name("test-repo5").build(),
+				ReposInfoDTO.builder().createdAt("2024-07-30T15:59:59Z").name("test-repo6").build());
 		PageReposInfoDTO pageReposInfoDTOPage2 = PageReposInfoDTO.builder()
 			.totalPage(2)
 			.pageInfo(reposInfoDTOListPage2)
@@ -954,21 +961,21 @@ class GithubServiceTest {
 		when(cachePageService.getGitHubRepos("Bearer " + mockToken, mockOrganization, 2, 100))
 			.thenReturn(pageReposInfoDTOPage2);
 
-		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization);
+		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime);
 
-		assertEquals(List.of("test-repo1", "test-repo2", "test-repo3", "test-repo4", "test-repo5", "test-repo6"),
-				allRepos);
+		assertEquals(List.of("test-repo1", "test-repo2", "test-repo3"), allRepos);
 	}
 
 	@Test
 	void shouldReturnNoReposWhenRepoIsNullInTheFirstPage() {
 		String mockToken = "mockToken";
 		String mockOrganization = "organization";
+		long endTime = 1L;
 		PageReposInfoDTO pageReposInfoDTO = PageReposInfoDTO.builder().totalPage(0).build();
 		when(cachePageService.getGitHubRepos("Bearer " + mockToken, mockOrganization, 1, 100))
 			.thenReturn(pageReposInfoDTO);
 
-		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization);
+		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime);
 
 		assertEquals(0, allRepos.size());
 	}

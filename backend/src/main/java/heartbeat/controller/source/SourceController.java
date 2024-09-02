@@ -80,7 +80,8 @@ public class SourceController {
 					accessMode = Schema.AccessMode.READ_ONLY) @PathVariable SourceType sourceType,
 			@RequestBody @Valid RepoRequest repoRequest) {
 		log.info("Start to get repos, source type: {}", sourceType);
-		List<String> allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization());
+		List<String> allRepos = gitHubService.getAllRepos(repoRequest.getToken(), repoRequest.getOrganization(),
+				repoRequest.getEndTime());
 		log.info("Successfully get repos, source type: {}", sourceType);
 		return new RepoResponse(allRepos);
 	}

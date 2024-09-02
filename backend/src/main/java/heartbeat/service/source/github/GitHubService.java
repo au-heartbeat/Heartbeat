@@ -397,8 +397,9 @@ public class GitHubService {
 				() -> cachePageService.getGitHubOrganizations(token, page, PER_PAGE).getPageInfo(), customTaskExecutor);
 	}
 
-	public List<String> getAllRepos(String token, String organization) {
-		log.info("Start to get all repos, organization: {}", organization);
+	public List<String> getAllRepos(String token, String organization, long endTime) {
+		log.info("Start to get all repos, organization: {}, endTime: {}", organization, endTime);
+		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
 		int initPage = 1;
 		String realToken = BEARER_TITLE + token;
 		PageReposInfoDTO pageReposInfoDTO = cachePageService.getGitHubRepos(realToken, organization, initPage,
@@ -418,6 +419,7 @@ public class GitHubService {
 			List<String> repoNamesOtherFirstPage = futures.stream()
 				.map(CompletableFuture::join)
 				.flatMap(Collection::stream)
+				.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
 				.map(ReposInfoDTO::getName)
 				.toList();
 			repoNames.addAll(repoNamesOtherFirstPage);

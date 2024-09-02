@@ -255,9 +255,14 @@ class SourceControllerTest {
 	@Test
 	void shouldReturnAllReposWhenAllSuccess() throws Exception {
 		String mockOrganization = "organization";
-		RepoRequest request = RepoRequest.builder().token(GITHUB_TOKEN).organization(mockOrganization).build();
+		long endTime = 1L;
+		RepoRequest request = RepoRequest.builder()
+			.token(GITHUB_TOKEN)
+			.organization(mockOrganization)
+			.endTime(endTime)
+			.build();
 
-		when(gitHubService.getAllRepos(GITHUB_TOKEN, mockOrganization)).thenReturn(List.of("test-repo1"));
+		when(gitHubService.getAllRepos(GITHUB_TOKEN, mockOrganization, endTime)).thenReturn(List.of("test-repo1"));
 
 		mockMvc
 			.perform(post("/source-control/{sourceType}/repos", NORMAL_SOURCE_TYPE)
@@ -269,7 +274,7 @@ class SourceControllerTest {
 			.andReturn()
 			.getResponse();
 
-		verify(gitHubService).getAllRepos(GITHUB_TOKEN, mockOrganization);
+		verify(gitHubService).getAllRepos(GITHUB_TOKEN, mockOrganization, endTime);
 	}
 
 	@Test
