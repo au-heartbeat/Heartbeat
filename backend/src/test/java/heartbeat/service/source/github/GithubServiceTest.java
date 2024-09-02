@@ -941,7 +941,6 @@ class GithubServiceTest {
 		String mockToken = "mockToken";
 		String mockOrganization = "organization";
 		long endTime = 1719763199999L;
-		;
 		List<ReposInfoDTO> reposInfoDTOListPage1 = List.of(
 				ReposInfoDTO.builder().name("test-repo1").createdAt("2024-07-30T15:59:59Z").build(),
 				ReposInfoDTO.builder().name("test-repo2").createdAt("2024-07-30T15:59:59Z").build(),
