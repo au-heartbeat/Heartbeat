@@ -495,7 +495,7 @@ export class ConfigStep {
     await this.pipelineToolTokenInput.fill(token);
   }
 
-  async clickNoneOptionInPipelineToolForm() {
+  async clickOtherOptionInPipelineToolForm() {
     await this.pipelineToolTypeSelect.click();
     await expect(this.pipelineToolTypeOtherOption).toBeVisible();
     await this.pipelineToolTypeOtherOption.click();

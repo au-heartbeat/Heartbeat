@@ -592,9 +592,9 @@ export class MetricsStep {
     await this.boardConsiderAsBlockCheckbox.click();
   }
 
-  async selectOrganization(orgName: string) {
+  async selectOrganization(selector: Locator, orgName: string) {
     await expect(this.loadings).toBeHidden();
-    await this.pipelineOrganizationSelect.click();
+    await selector.click();
     const targetOrganizationOption = this.page.getByRole('option', { name: orgName });
     await expect(targetOrganizationOption).toBeVisible();
     await targetOrganizationOption.click();
@@ -608,8 +608,8 @@ export class MetricsStep {
     await expect(this.loadings).toBeHidden();
   }
 
-  async selectStep(doneStepMaybeWithEmoji: string) {
-    await this.pipelineStepSelect.click();
+  async selectStepOrRepo(selector: Locator, doneStepMaybeWithEmoji: string) {
+    await selector.click();
     const emojiRegExp = /:.+:/;
     const emoji = doneStepMaybeWithEmoji.match(emojiRegExp);
     let stepName = '';
@@ -625,14 +625,14 @@ export class MetricsStep {
     await expect(this.loadings).toBeHidden();
   }
 
-  async selectBranch(branches: string[]) {
-    await this.pipelineBranchSelect.click();
+  async selectBranch(branchSelector: Locator, branchChipsSelector: Locator, branches: string[]) {
+    await branchSelector.click();
     for (const branchName of branches) {
       await this.page.getByRole('combobox', { name: 'Branches' }).fill(branchName);
-      await this.page.getByRole('option', { name: branchName }).getByRole('checkbox').check();
+      await this.page.getByRole('option', { name: branchName, exact: true }).getByRole('checkbox').check();
       await expect(this.pipelineBranchSelectIndicator).toBeHidden();
     }
-    await expect(this.pipelineDefaultSelectedBranchChips).toHaveCount(branches.length);
+    await expect(branchChipsSelector).toHaveCount(branches.length);
     await expect(this.pipelineBranchesErrorMessage).not.toBeVisible();
     await this.page.keyboard.press('Escape');
   }
@@ -711,14 +711,18 @@ export class MetricsStep {
   ) {
     const firstPipelineConfig = pipelineSettings[0];
 
-    await this.selectOrganization(firstPipelineConfig.organization);
+    await this.selectOrganization(this.pipelineOrganizationSelect, firstPipelineConfig.organization);
     shouldSelectPipelineName && (await this.selectPipelineName(firstPipelineConfig.pipelineName));
-    await this.selectStep(firstPipelineConfig.step);
-    await this.selectBranch(firstPipelineConfig.branches);
+    await this.selectStepOrRepo(this.pipelineStepSelect, firstPipelineConfig.step);
+    await this.selectBranch(
+      this.pipelineBranchSelect,
+      this.pipelineDefaultSelectedBranchChips,
+      firstPipelineConfig.branches,
+    );
   }
 
-  async selectAllPipelineCrews() {
-    await this.pipelineCrewSettingsLabel.click();
+  async selectAllPipelineCrews(selector: Locator = this.pipelineCrewSettingsLabel) {
+    await selector.click();
     const options = this.page.getByRole('option');
     const allOption = options.filter({ hasText: 'All' }).first();
     for (const option of (await options.all()).slice(1)) {
@@ -944,5 +948,17 @@ export class MetricsStep {
     await crews.forEach(async (crew) => {
       await expect(this.sourceControlCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
     });
+  }
+
+  async selectDefaultGivenSourceControlSetting(sourceControlSettings: typeof sourceControlConfigurationSettings) {
+    const firstSourceControlSetting = sourceControlSettings[0];
+
+    await this.selectOrganization(this.sourceControlOrganizationSelect, firstSourceControlSetting.organization);
+    await this.selectStepOrRepo(this.sourceControlRepoSelect, firstSourceControlSetting.repo);
+    await this.selectBranch(
+      this.sourceControlBranchSelect,
+      this.sourceControlDefaultSelectedBranchChips,
+      firstSourceControlSetting.branches,
+    );
   }
 }
