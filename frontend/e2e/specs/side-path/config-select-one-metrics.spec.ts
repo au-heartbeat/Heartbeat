@@ -170,12 +170,12 @@ test('Only select lead time for changes metrics on config page', async ({
   await configStep.fillAndVerifySourceControlForm(configStepData.sourceControl);
   await configStep.verifyButtonNotClickableInPipelineToolForm();
   await configStep.validateNextButtonNotClickable();
-  await configStep.clickNoneOptionInPipelineToolForm();
+  await configStep.clickOtherOptionInPipelineToolForm();
   await configStep.verifyButtonNotExistInPipelineToolForm();
   await configStep.validateNextButtonClickable();
   await configStep.fillAndVerifyPipelineToolForm(configStepData.pipelineTool);
   await configStep.validateNextButtonClickable();
-  await configStep.clickNoneOptionInPipelineToolForm();
+  await configStep.clickOtherOptionInPipelineToolForm();
   await configStep.verifiedButtonNotInPipelineToolForm();
   await configStep.validateNextButtonClickable();
   await configStep.selectDeploymentFrequencyMetrics();

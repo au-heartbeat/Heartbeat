@@ -1,8 +1,8 @@
 {
   "projectName": "Heartbeat Metrics",
   "dateRange": {
-    "startDate": "2024-06-03T00:00:00.000+08:00",
-    "endDate": "2024-06-07T23:59:59.999+08:00"
+    "startDate": "2024-08-12T00:00:00.000+08:00",
+    "endDate": "2024-09-02T23:59:59.999+08:00"
   },
   "calendarType": "CN",
   "metrics": [
@@ -32,7 +32,7 @@
     "type": "GitHub",
     "token": "<E2E_TOKEN_GITHUB>"
   },
-  "crews": ["Man Tang", "heartbeat user", "Qiuhong Lei", "Chao Wang", "YinYuan Zhou"],
+  "crews": ["Man Tang", "YinYuan Zhou"],
   "assigneeFilter": "lastAssignee",
   "cycleTime": {
     "type": "byColumn",

@@ -21,12 +21,12 @@ export interface BranchSelectionProps {
   pipelineName: string;
   branches: string[];
   isStepLoading: boolean;
-  onUpdatePipeline: (id: number, label: string, value: string[] | unknown) => void;
+  onUpdate: (id: number, label: string, value: string[] | unknown) => void;
 }
 
 export const BranchSelection = (props: BranchSelectionProps) => {
   const dispatch = useAppDispatch();
-  const { id, organization, pipelineName, branches, onUpdatePipeline, isStepLoading } = props;
+  const { id, organization, pipelineName, branches, onUpdate, isStepLoading } = props;
   const formMeta = useAppSelector(getFormMeta);
   const pipelineList = useAppSelector(selectPipelineList);
   const sourceControlFields = useAppSelector(selectSourceControl);
@@ -96,7 +96,7 @@ export const BranchSelection = (props: BranchSelectionProps) => {
   const handleBranchChange = (_: React.SyntheticEvent, values: FormFieldWithMeta[]) => {
     const options = values.map((item) => item.value);
     updateBranchesMeta(options);
-    onUpdatePipeline(id, 'Branches', options);
+    onUpdate(id, 'Branches', options);
   };
 
   const isInputError = useMemo(() => Object.values(branchesFormData).some((item) => item.error), [branchesFormData]);

@@ -1,0 +1,30 @@
+[
+  {
+    "login": "test1",
+    "id": 123,
+    "node_id": "test-node1",
+    "url": "https://api.github.com/test-link",
+    "repos_url": "https://api.github.com/test-link",
+    "events_url": "https://api.github.com/test-link",
+    "hooks_url": "https://api.github.com/test-link",
+    "issues_url": "https://api.github.com/test-link",
+    "members_url": "https://api.github.com/test-link",
+    "public_members_url": "https://api.github.com/test-link",
+    "avatar_url": "https://api.github.com/test-link",
+    "description": null
+  },
+  {
+    "login": "test2",
+    "id": 456,
+    "node_id": "test-node2",
+    "url": "https://api.github.com/test-link",
+    "repos_url": "https://api.github.com/test-link",
+    "events_url": "https://api.github.com/test-link",
+    "hooks_url": "https://api.github.com/test-link",
+    "issues_url": "https://api.github.com/test-link",
+    "members_url": "https://api.github.com/test-link",
+    "public_members_url": "https://api.github.com/test-link",
+    "avatar_url": "https://api.github.com/test-link",
+    "description": null
+  }
+]

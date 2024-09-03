@@ -51,7 +51,7 @@ describe('SingleSelection', () => {
           value={mockValue}
           id={0}
           onGetSteps={mockOnGetSteps}
-          onUpDatePipeline={mockUpdatePipeline}
+          onUpdate={mockUpdatePipeline}
         />
       </Provider>,
     );

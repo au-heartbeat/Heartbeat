@@ -49,6 +49,23 @@ describe('Crew', () => {
     expect(screen.getByRole('button', { name: 'crew B' })).toBeInTheDocument();
   });
 
+  it('should show detail options when initializing given type is source-control and click Included crews button', async () => {
+    store.dispatch(savePipelineCrews(['crew B', 'crew C']));
+    setup('source-control');
+
+    await act(async () => {
+      await userEvent.click(screen.getByRole('combobox', { name: mockLabel }));
+    });
+    const listBox = within(screen.getByRole('listbox'));
+
+    expect(listBox.getByRole('option', { name: 'All' })).toBeVisible();
+    expect(listBox.getByRole('option', { name: 'crew A' })).toBeVisible();
+    expect(listBox.getByRole('option', { name: 'crew B' })).toBeVisible();
+    expect(() => {
+      listBox.getByRole('option', { name: 'crew C' });
+    }).toThrow();
+  });
+
   it('should show detail options when initializing given type is other and click Included crews button', async () => {
     store.dispatch(savePipelineCrews(['crew B', 'crew C']));
     setup('other');

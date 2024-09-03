@@ -16,6 +16,7 @@ import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { BOARD_CSV_COMPARED_LINES } from '../../fixtures/create-new/report-result';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
+import { SelectNoneConfig } from '../../fixtures/import-file/select-none-config';
 import { config as configStepData } from '../../fixtures/create-new/config-step';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
@@ -207,4 +208,24 @@ test('Create a new project with design and waiting for deployment in the cycle t
     projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
   });
   await reportStep.checkMetricDownloadDataForMultipleRanges(3, fileNamePrefix);
+});
+
+test('Create a new project with other pipeline setting', async ({ homePage, configStep, metricsStep }) => {
+  await homePage.goto();
+  await homePage.createANewProject();
+  await configStep.typeInProjectName(configStepData.projectName);
+  await configStep.selectRegularCalendar(configStepData.calendarType);
+  await configStep.typeInMultipleRanges(configStepData.dateRange);
+  await configStep.selectLeadTimeForChangesMetrics();
+  await configStep.clickOtherOptionInPipelineToolForm();
+  await configStep.checkPipelineToolFormVisible('Other');
+  await configStep.checkSourceControlFormVisible();
+  await configStep.fillAndVerifySourceControlForm(configStepData.sourceControl);
+  await configStep.validateNextButtonClickable();
+  await configStep.goToMetrics();
+
+  await metricsStep.waitForShown();
+  await metricsStep.selectDefaultGivenSourceControlSetting(SelectNoneConfig.sourceControlConfigurationSettings);
+  await metricsStep.selectAllPipelineCrews(metricsStep.sourceControlCrewSettingsLabel);
+  await metricsStep.goToReportPage();
 });

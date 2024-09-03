@@ -1,0 +1,20 @@
+[
+  {
+    "name": "main",
+    "commit": {
+      "sha": "deea3bbb0817569f4d67556a4335caa9b2e1f0b8",
+      "url": "https://api.github.com/repos/au-heartbeat/Heartbeat/commits/deea3bbb0817569f4d67556a4335caa9b2e1f0b8"
+    },
+    "protected": true,
+    "protection_url": "https://api.github.com/repos/au-heartbeat/Heartbeat/branches/main/protection"
+  },
+  {
+    "name": "master",
+    "commit": {
+      "sha": "e574425d353c6a1073d8c4845334a9799819ed72",
+      "url": "https://api.github.com/repos/au-heartbeat/Heartbeat/commits/e574425d353c6a1073d8c4845334a9799819ed72"
+    },
+    "protected": true,
+    "protection_url": "https://api.github.com/repos/au-heartbeat/Heartbeat/branches/master/protection"
+  }
+]

@@ -32,7 +32,7 @@ export const partialMetricsShowChart = {
     type: 'GitHub',
     token: process.env.E2E_TOKEN_GITHUB,
   },
-  crews: ['Man Tang', 'heartbeat user', 'Qiuhong Lei', 'Chao Wang', 'YinYuan Zhou'],
+  crews: ['YinYuan Zhou'],
   assigneeFilter: 'lastAssignee',
   cycleTime: {
     type: 'byColumn',

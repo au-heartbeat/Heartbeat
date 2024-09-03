@@ -20,6 +20,7 @@ import {
   REAL_DONE_SETTING_SECTION,
   REQUIRED_DATA_LIST,
   SELECT_CONSIDER_AS_DONE_MESSAGE,
+  SOURCE_CONTROL_SETTINGS,
 } from '../../fixtures';
 import {
   updateCycleTimeSettings,
@@ -27,7 +28,7 @@ import {
   setCycleTimeSettingsType,
   updateShouldGetBoardConfig,
 } from '@src/context/Metrics/metricsSlice';
-import { updateJiraVerifyResponse, updateMetrics } from '@src/context/config/configSlice';
+import { updateJiraVerifyResponse, updateMetrics, updatePipelineTool } from '@src/context/config/configSlice';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { backStep, nextStep } from '@src/context/stepper/StepperSlice';
 import { CycleTimeSettingsTypes } from '@src/constants/resources';
@@ -124,6 +125,18 @@ describe('MetricsStep', () => {
     setup();
 
     expect(screen.getByText(DEPLOYMENT_FREQUENCY_SETTINGS)).toBeInTheDocument();
+  });
+
+  it('should show SourceControlConfiguration component when select lead time for changes and the pipeline configuration value is none in config page', async () => {
+    await store.dispatch(updateMetrics([REQUIRED_DATA_LIST[5]]));
+    await store.dispatch(
+      updatePipelineTool({
+        type: 'Other',
+      }),
+    );
+    setup();
+
+    expect(screen.getByText(SOURCE_CONTROL_SETTINGS)).toBeInTheDocument();
   });
 
   it('should call closeAllNotifications', async () => {

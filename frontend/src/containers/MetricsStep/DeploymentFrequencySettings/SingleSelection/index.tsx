@@ -1,4 +1,9 @@
-import { selectDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
+import {
+  IPipelineConfig,
+  ISourceControlConfig,
+  selectDeploymentFrequencySettings,
+  selectSourceControlConfigurationSettings,
+} from '@src/context/Metrics/metricsSlice';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
 import { initSinglePipelineListBranches } from '@src/context/meta/metaSlice';
 import { Autocomplete, Box, ListItemText, TextField } from '@mui/material';
@@ -18,7 +23,7 @@ interface Props {
   isError?: boolean;
   errorText?: string;
   onGetSteps?: (pipelineName: string) => void;
-  onUpDatePipeline: (id: number, label: string, value: string | []) => void;
+  onUpdate: (id: number, label: string, value: string | []) => void;
 }
 
 export const SingleSelection = ({
@@ -29,21 +34,28 @@ export const SingleSelection = ({
   isError = false,
   errorText,
   onGetSteps,
-  onUpDatePipeline,
+  onUpdate,
 }: Props) => {
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
   const [inputValue, setInputValue] = useState<string>(value);
   const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
+  const sourceControlConfigurationSettings = useAppSelector(selectSourceControlConfigurationSettings);
+  let settings: IPipelineConfig[] | ISourceControlConfig[];
+  if (label === 'Pipeline Name') {
+    settings = deploymentFrequencySettings;
+  } else {
+    settings = sourceControlConfigurationSettings;
+  }
   const dispatch = useAppDispatch();
 
   const handleSelectedOptionsChange = (value: string) => {
     if (onGetSteps) {
-      onUpDatePipeline(id, 'Step', '');
-      onUpDatePipeline(id, 'Branches', []);
+      onUpdate(id, 'Step', '');
+      onUpdate(id, 'Branches', []);
       onGetSteps(value);
       dispatch(initSinglePipelineListBranches(id));
     }
-    onUpDatePipeline(id, label, value);
+    onUpdate(id, label, value);
   };
 
   const emojiView = (pipelineStepName: string) => {
@@ -57,10 +69,8 @@ export const SingleSelection = ({
         <Autocomplete
           disableClearable
           data-test-id={labelId}
-          options={sortDisabledOptions(deploymentFrequencySettings, options)}
-          getOptionDisabled={(option: string) =>
-            label === 'Pipeline Name' && getDisabledOptions(deploymentFrequencySettings, option)
-          }
+          options={sortDisabledOptions(settings, options)}
+          getOptionDisabled={(option: string) => getDisabledOptions(settings, option)}
           getOptionLabel={(option: string) => removeExtraEmojiName(option).trim()}
           renderOption={(props, option: string) => (
             <Box component='li' {...props}>

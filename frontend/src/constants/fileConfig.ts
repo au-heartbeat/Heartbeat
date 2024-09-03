@@ -95,6 +95,7 @@ export interface NewFileConfig {
   deployment?: NewConfigSetting[];
   leadTime?: NewConfigSetting[];
   pipelineCrews?: string[];
+  sourceControlCrews?: string[];
   reworkTimesSettings?: IReworkConfig;
 }
 

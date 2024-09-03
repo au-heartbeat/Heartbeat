@@ -16,6 +16,7 @@ import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cy
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
 import { partialMetricsShowChart } from '../../fixtures/import-file/partial-metrics-show-chart';
+import { SelectNoneConfig } from '../../fixtures/import-file/select-none-config';
 import { DORA_CHART_PIPELINES } from '../../fixtures/import-file/chart-result';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
@@ -127,16 +128,17 @@ test('Import project from file with partial ranges API failed', async ({
     showCycleTimeAllocationChart: true,
     showClassificationIssueTypeChart: true,
     showClassificationAssigneeChart: true,
+    showReworkChartTrend: false,
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
     pipelines: DORA_CHART_PIPELINES,
-    showDevMeanTimeToRecoveryTrendContainer: false,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: true,
-    showDevChangeFailureRateTrendContainer: false,
-    showDevChangeFailureRateChart: true,
-    showDevMeanTimeToRecoveryChart: true,
+    showPipelineChangeFailureRateChart: true,
+    showPipelineChangeFailureRateTrendContainer: false,
+    showPipelineMeanTimeToRecoveryChart: true,
+    showPipelineMeanTimeToRecoveryTrendContainer: false,
   });
 });
 
@@ -176,16 +178,17 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
     showReworkChart: false,
     showCycleTimeChart: true,
     showCycleTimeAllocationChart: true,
+    showReworkChartTrend: true,
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
     pipelines: DORA_CHART_PIPELINES,
-    showDevMeanTimeToRecoveryTrendContainer: false,
-    showDevChangeFailureRateChart: false,
-    showDevMeanTimeToRecoveryChart: true,
+    showPipelineMeanTimeToRecoveryTrendContainer: false,
+    showPipelineChangeFailureRateChart: false,
+    showPipelineMeanTimeToRecoveryChart: true,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: false,
-    showDevChangeFailureRateTrendContainer: false,
+    showPipelineChangeFailureRateTrendContainer: false,
   });
 });
 
@@ -293,13 +296,36 @@ test('Import project from file with analysis board status', async ({
   );
 });
 
-test('Import project from file when select none in pipeline tool configuration', async ({ homePage, configStep }) => {
+test('Import project from file when select none in pipeline tool configuration', async ({
+  homePage,
+  configStep,
+  metricsStep,
+}) => {
+  const hbStateData = SelectNoneConfig.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/select-none-in-pipeline-tool-configuration.json');
-  await configStep.checkPipelineToolFormVisible('None');
+  await configStep.checkPipelineToolFormVisible('Other');
   await configStep.verifiedButtonNotInPipelineToolForm();
   await configStep.verifyButtonNotExistInPipelineToolForm();
   await configStep.validateNextButtonClickable();
   await configStep.goToMetrics();
+
+  await metricsStep.waitForShown();
+  await metricsStep.checkCrewsAreChanged(SelectNoneConfig.crews);
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+  await metricsStep.selectCycleTimeSettingsType(SelectNoneConfig.cycleTime.type);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+  await metricsStep.selectReworkSettings(SelectNoneConfig.reworkTimesSettings);
+  await metricsStep.checkClassifications(SelectNoneConfig.classification);
+  await metricsStep.checkClassificationCharts(SelectNoneConfig.classificationCharts);
+  await metricsStep.checkSourceControlConfigurationAreChanged(SelectNoneConfig.sourceControlConfigurationSettings);
+  await metricsStep.selectGivenSourceControlCrews(SelectNoneConfig.sourceControlCrews);
+  await metricsStep.goToReportPage();
 });

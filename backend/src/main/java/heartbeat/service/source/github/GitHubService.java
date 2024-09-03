@@ -1,10 +1,18 @@
 package heartbeat.service.source.github;
 
 import heartbeat.client.GitHubFeignClient;
+import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.LeadTime;
+import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
+import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
+import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
+import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
@@ -14,15 +22,23 @@ import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
 import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
+import heartbeat.service.pipeline.buildkite.CachePageService;
 import heartbeat.service.report.WorkDay;
 import heartbeat.service.report.model.WorkInfo;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
+import heartbeat.service.source.github.model.PullRequestFinishedInfo;
 import heartbeat.util.GithubUtil;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +57,22 @@ public class GitHubService {
 
 	public static final String BEARER_TITLE = "Bearer ";
 
+	public static final int BATCH_SIZE = 10;
+
+	public static final int PER_PAGE = 100;
+
 	private final GitHubFeignClient gitHubFeignClient;
 
+	private final CachePageService cachePageService;
+
+	private final ThreadPoolTaskExecutor customTaskExecutor;
+
 	private final WorkDay workDay;
+
+	@PreDestroy
+	public void shutdownExecutor() {
+		customTaskExecutor.shutdown();
+	}
 
 	public void verifyToken(String githubToken) {
 		try {
@@ -331,6 +361,195 @@ public class GitHubService {
 			throw new InternalServerErrorException(String.format("Failed to get commit info_repoId: %s,cause is: %s",
 					repositoryId, cause.getMessage()));
 		}
+	}
+
+	public List<String> getAllOrganizations(String token) {
+		log.info("Start to get all organizations");
+		int initPage = 1;
+		String realToken = BEARER_TITLE + token;
+		PageOrganizationsInfoDTO pageOrganizationsInfoDTO = cachePageService.getGitHubOrganizations(realToken, initPage,
+				PER_PAGE);
+		List<OrganizationsInfoDTO> firstPageStepsInfo = pageOrganizationsInfoDTO.getPageInfo();
+		int totalPage = pageOrganizationsInfoDTO.getTotalPage();
+		log.info("Successfully parse the total page_total page of organizations: {}", totalPage);
+		List<String> organizationNames = new ArrayList<>();
+		if (Objects.nonNull(firstPageStepsInfo)) {
+			organizationNames.addAll(firstPageStepsInfo.stream().map(OrganizationsInfoDTO::getLogin).toList());
+		}
+		if (totalPage > 1) {
+			List<CompletableFuture<List<OrganizationsInfoDTO>>> futures = IntStream.range(initPage + 1, totalPage + 1)
+				.mapToObj(page -> getGitHubOrganizationAsync(realToken, page))
+				.toList();
+
+			List<String> orgNamesOtherFirstPage = futures.stream()
+				.map(CompletableFuture::join)
+				.flatMap(Collection::stream)
+				.map(OrganizationsInfoDTO::getLogin)
+				.toList();
+			organizationNames.addAll(orgNamesOtherFirstPage);
+		}
+		log.info("Successfully to get all organizations");
+		return organizationNames;
+	}
+
+	private CompletableFuture<List<OrganizationsInfoDTO>> getGitHubOrganizationAsync(String token, int page) {
+		return CompletableFuture.supplyAsync(
+				() -> cachePageService.getGitHubOrganizations(token, page, PER_PAGE).getPageInfo(), customTaskExecutor);
+	}
+
+	public List<String> getAllRepos(String token, String organization, long endTime) {
+		log.info("Start to get all repos, organization: {}, endTime: {}", organization, endTime);
+		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
+		int initPage = 1;
+		String realToken = BEARER_TITLE + token;
+		PageReposInfoDTO pageReposInfoDTO = cachePageService.getGitHubRepos(realToken, organization, initPage,
+				PER_PAGE);
+		List<ReposInfoDTO> firstPageStepsInfo = pageReposInfoDTO.getPageInfo();
+		int totalPage = pageReposInfoDTO.getTotalPage();
+		log.info("Successfully parse the total page_total page of repos: {}", totalPage);
+		List<String> repoNames = new ArrayList<>();
+		if (Objects.nonNull(firstPageStepsInfo)) {
+			repoNames.addAll(firstPageStepsInfo.stream()
+				.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
+				.map(ReposInfoDTO::getName)
+				.toList());
+		}
+		if (totalPage > 1) {
+			List<CompletableFuture<List<ReposInfoDTO>>> futures = IntStream.range(initPage + 1, totalPage + 1)
+				.mapToObj(page -> getGitHubReposAsync(realToken, organization, page))
+				.toList();
+
+			List<String> repoNamesOtherFirstPage = futures.stream()
+				.map(CompletableFuture::join)
+				.flatMap(Collection::stream)
+				.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
+				.map(ReposInfoDTO::getName)
+				.toList();
+			repoNames.addAll(repoNamesOtherFirstPage);
+		}
+		log.info("Successfully to get all repos, organization: {}", organization);
+		return repoNames;
+	}
+
+	private CompletableFuture<List<ReposInfoDTO>> getGitHubReposAsync(String token, String organization, int page) {
+		return CompletableFuture.supplyAsync(
+				() -> cachePageService.getGitHubRepos(token, organization, page, PER_PAGE).getPageInfo(),
+				customTaskExecutor);
+	}
+
+	public List<String> getAllBranches(String token, String organization, String repo) {
+		log.info("Start to get all branches, organization: {}, repo: {}", organization, repo);
+		int initPage = 1;
+		String realToken = BEARER_TITLE + token;
+		PageBranchesInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubBranches(realToken, organization, repo,
+				initPage, PER_PAGE);
+		List<BranchesInfoDTO> firstPageStepsInfo = pageBranchesInfoDTO.getPageInfo();
+		int totalPage = pageBranchesInfoDTO.getTotalPage();
+		log.info("Successfully parse the total page_total page of branches: {}", totalPage);
+		List<String> branchNames = new ArrayList<>();
+		if (Objects.nonNull(firstPageStepsInfo)) {
+			branchNames.addAll(firstPageStepsInfo.stream().map(BranchesInfoDTO::getName).toList());
+		}
+		if (totalPage > 1) {
+			List<CompletableFuture<List<BranchesInfoDTO>>> futures = IntStream.range(initPage + 1, totalPage + 1)
+				.mapToObj(page -> getGitHubBranchesAsync(realToken, organization, repo, page))
+				.toList();
+
+			List<String> branchNamesOtherFirstPage = futures.stream()
+				.map(CompletableFuture::join)
+				.flatMap(Collection::stream)
+				.map(BranchesInfoDTO::getName)
+				.toList();
+			branchNames.addAll(branchNamesOtherFirstPage);
+		}
+		log.info("Successfully to get all branches, organization: {}, repo: {}", organization, repo);
+		return branchNames;
+	}
+
+	private CompletableFuture<List<BranchesInfoDTO>> getGitHubBranchesAsync(String token, String organization,
+			String repo, int page) {
+		return CompletableFuture.supplyAsync(
+				() -> cachePageService.getGitHubBranches(token, organization, repo, page, PER_PAGE).getPageInfo(),
+				customTaskExecutor);
+	}
+
+	public List<String> getAllCrews(String token, String organization, String repo, String branch, long startTime,
+			long endTime) {
+		log.info("Start to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
+		int initPage = 1;
+		String realToken = BEARER_TITLE + token;
+		PagePullRequestInfoDTO pageBranchesInfoDTO = cachePageService.getGitHubPullRequest(realToken, organization,
+				repo, branch, initPage, PER_PAGE);
+		List<PullRequestInfoDTO> firstPageStepsInfo = pageBranchesInfoDTO.getPageInfo();
+		int totalPage = pageBranchesInfoDTO.getTotalPage();
+		log.info("Successfully parse the total page_total page of pull requests: {}", totalPage);
+		List<String> pullRequestNames = new ArrayList<>();
+		if (Objects.nonNull(firstPageStepsInfo)) {
+			PullRequestFinishedInfo pullRequestFinishedInfo = filterPullRequestByTimeRange(firstPageStepsInfo,
+					startTime, endTime);
+			boolean isGetNextPage = pullRequestFinishedInfo.isGetNextPage();
+			List<PullRequestInfoDTO> firstPagePullRequestInfo = pullRequestFinishedInfo.getPullRequestInfoDTOList();
+			pullRequestNames.addAll(firstPagePullRequestInfo.stream()
+				.map(PullRequestInfoDTO::getUser)
+				.map(PullRequestInfoDTO.PullRequestUser::getLogin)
+				.toList());
+			if (totalPage > 1 && isGetNextPage) {
+				for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
+					List<PullRequestFinishedInfo> pullRequestFinishedInfoList = IntStream
+						.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+						.parallel()
+						.mapToObj(page -> cachePageService
+							.getGitHubPullRequest(realToken, organization, repo, branch, page, PER_PAGE)
+							.getPageInfo())
+						.map(it -> filterPullRequestByTimeRange(it, startTime, endTime))
+						.toList();
+					List<String> crews = pullRequestFinishedInfoList.stream()
+						.map(PullRequestFinishedInfo::getPullRequestInfoDTOList)
+						.flatMap(Collection::stream)
+						.map(it -> it.getUser().getLogin())
+						.toList();
+					pullRequestNames.addAll(crews);
+					boolean isGoToNextBatch = pullRequestFinishedInfoList.stream().anyMatch(it -> !it.isGetNextPage());
+					if (isGoToNextBatch) {
+						break;
+					}
+				}
+			}
+		}
+		log.info("Successfully to get all crews, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
+				organization, repo, branch, startTime, endTime);
+		return pullRequestNames.stream().distinct().toList();
+	}
+
+	private PullRequestFinishedInfo filterPullRequestByTimeRange(List<PullRequestInfoDTO> pullRequestInfoDTOList,
+			long startTime, long endTime) {
+		log.info("Start to filter pull request, startTime: {}, endTime: {}", startTime, endTime);
+		Instant startTimeInstant = Instant.ofEpochMilli(startTime);
+		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
+		List<PullRequestInfoDTO> validPullRequestList = new ArrayList<>();
+		boolean isGetNextPage = true;
+		for (PullRequestInfoDTO pullRequestInfoDTO : pullRequestInfoDTOList) {
+			if (!Objects.nonNull(pullRequestInfoDTO.getMergedAt())) {
+				continue;
+			}
+			Instant createdAt = Instant.parse(pullRequestInfoDTO.getCreatedAt());
+			Instant mergedAt = Instant.parse(pullRequestInfoDTO.getMergedAt());
+			if (createdAt.isAfter(startTimeInstant) && !createdAt.isAfter(endTimeInstant)
+					&& mergedAt.isAfter(startTimeInstant) && !mergedAt.isAfter(endTimeInstant)) {
+				validPullRequestList.add(pullRequestInfoDTO);
+			}
+			if (createdAt.isBefore(startTimeInstant)) {
+				isGetNextPage = false;
+			}
+		}
+		log.info(
+				"Successfully to filter pull request, startTime: {}, endTime: {}, should get next page pull request: {}",
+				startTime, endTime, isGetNextPage);
+		return PullRequestFinishedInfo.builder()
+			.isGetNextPage(isGetNextPage)
+			.pullRequestInfoDTOList(validPullRequestList)
+			.build();
 	}
 
 }
