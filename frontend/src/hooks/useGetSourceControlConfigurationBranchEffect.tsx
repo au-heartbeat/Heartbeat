@@ -12,7 +12,7 @@ import { useState } from 'react';
 
 export interface IUseGetSourceControlConfigurationBranchInterface {
   readonly isLoading: boolean;
-  readonly getSourceControlBranchInfo: (organization: string, repo: string) => void;
+  readonly getSourceControlBranchInfo: (organization: string, repo: string) => Promise<void>;
   readonly isGetBranch: boolean;
 }
 export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceControlConfigurationBranchInterface => {

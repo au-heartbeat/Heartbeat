@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 
 export interface IUseGetSourceControlConfigurationRepoInterface {
   readonly isLoading: boolean;
-  readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRange[]) => void;
+  readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRange[]) => Promise<void>;
   readonly isGetRepo: boolean;
 }
 export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationRepoInterface => {

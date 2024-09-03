@@ -13,7 +13,7 @@ export interface IUseGetSourceControlConfigurationCrewInterface {
     repo: string,
     branch: string,
     dateRanges: DateRange[],
-  ) => void;
+  ) => Promise<void>;
 }
 export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceControlConfigurationCrewInterface => {
   const dispatch = useAppDispatch();
