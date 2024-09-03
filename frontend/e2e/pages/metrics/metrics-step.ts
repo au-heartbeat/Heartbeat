@@ -227,9 +227,9 @@ export class MetricsStep {
     this.homeIcon = page.getByLabel('Home');
 
     this.sourceControlSettingSection = page.getByLabel('Source Control Configuration Section');
-    this.sourceControlOrganizationSelect = this.sourceControlSettingSection.getByLabel('Organization *');
-    this.sourceControlRepoSelect = this.sourceControlSettingSection.getByLabel('Repo *');
-    this.sourceControlBranchSelect = this.sourceControlSettingSection.getByLabel('Branches *');
+    this.sourceControlOrganizationSelect = this.sourceControlSettingSection.getByLabel('Organization *').first();
+    this.sourceControlRepoSelect = this.sourceControlSettingSection.getByLabel('Repo *').first();
+    this.sourceControlBranchSelect = this.sourceControlSettingSection.getByLabel('Branches *').first();
     this.sourceControlDefaultBranchSelectContainer = this.sourceControlSettingSection.getByLabel(
       'Source control Branch AutoComplete',
     );
