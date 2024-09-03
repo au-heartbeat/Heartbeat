@@ -1,3 +1,5 @@
+type ResponseCodeType = number | string | undefined | null;
+
 export interface SourceControlGetOrganizationResponseDTO {
   name: string[];
 }
@@ -15,28 +17,28 @@ export interface SourceControlGetCrewResponseDTO {
 }
 
 export interface ISourceControlGetOrganizationResponseDTO {
-  code: number | string | undefined | null;
+  code: ResponseCodeType;
   data?: SourceControlGetOrganizationResponseDTO;
   errorTitle: string;
   errorMessage: string;
 }
 
 export interface ISourceControlGetRepoResponseDTO {
-  code: number | string | undefined | null;
+  code: ResponseCodeType;
   data?: SourceControlGetRepoResponseDTO;
   errorTitle: string;
   errorMessage: string;
 }
 
 export interface ISourceControlGetBranchResponseDTO {
-  code: number | string | undefined | null;
+  code: ResponseCodeType;
   data?: SourceControlGetBranchResponseDTO;
   errorTitle: string;
   errorMessage: string;
 }
 
 export interface ISourceControlGetCrewResponseDTO {
-  code: number | string | undefined | null;
+  code: ResponseCodeType;
   data?: SourceControlGetCrewResponseDTO;
   errorTitle: string;
   errorMessage: string;

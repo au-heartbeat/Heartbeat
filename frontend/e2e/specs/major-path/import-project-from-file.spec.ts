@@ -16,6 +16,7 @@ import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cy
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
 import { partialMetricsShowChart } from '../../fixtures/import-file/partial-metrics-show-chart';
+import { SelectNoneConfig } from '../../fixtures/import-file/select-none-config';
 import { DORA_CHART_PIPELINES } from '../../fixtures/import-file/chart-result';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
@@ -295,7 +296,15 @@ test('Import project from file with analysis board status', async ({
   );
 });
 
-test('Import project from file when select none in pipeline tool configuration', async ({ homePage, configStep }) => {
+test('Import project from file when select none in pipeline tool configuration', async ({
+  homePage,
+  configStep,
+  metricsStep,
+}) => {
+  const hbStateData = SelectNoneConfig.cycleTime.jiraColumns.map(
+    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
+  );
+
   await homePage.goto();
 
   await homePage.importProjectFromFile('../fixtures/input-files/select-none-in-pipeline-tool-configuration.json');
@@ -304,4 +313,19 @@ test('Import project from file when select none in pipeline tool configuration',
   await configStep.verifyButtonNotExistInPipelineToolForm();
   await configStep.validateNextButtonClickable();
   await configStep.goToMetrics();
+
+  await metricsStep.waitForShown();
+  await metricsStep.checkCrewsAreChanged(SelectNoneConfig.crews);
+  await metricsStep.checkLastAssigneeCrewFilterChecked();
+  await metricsStep.checkCycleTimeSettingIsByColumn();
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+  await metricsStep.selectCycleTimeSettingsType(SelectNoneConfig.cycleTime.type);
+  await metricsStep.selectHeartbeatState(hbStateData, true);
+  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
+  await metricsStep.selectReworkSettings(SelectNoneConfig.reworkTimesSettings);
+  await metricsStep.checkClassifications(SelectNoneConfig.classification);
+  await metricsStep.checkClassificationCharts(SelectNoneConfig.classificationCharts);
+  await metricsStep.checkSourceControlConfigurationAreChanged(SelectNoneConfig.sourceControlConfigurationSettings);
+  await metricsStep.selectGivenSourceControlCrews(SelectNoneConfig.sourceControlCrews);
+  await metricsStep.goToReportPage();
 });

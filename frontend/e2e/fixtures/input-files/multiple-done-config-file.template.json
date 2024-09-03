@@ -44,6 +44,7 @@
   "crews": ["Man Tang", "YinYuan Zhou"],
   "assigneeFilter": "lastAssignee",
   "pipelineCrews": ["Yufan0226", "Zhongren GU", "guzhongren", "renovate[bot]", "zhou-yinyuan", "Unknown"],
+  "sourceControlCrews": ["zhou-yinyuan"],
   "cycleTime": {
     "type": "byColumn",
     "jiraColumns": [

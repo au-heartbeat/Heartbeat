@@ -30,7 +30,7 @@ interface SourceControlMetricSelectionProps {
   };
   isShowRemoveButton: boolean;
   onRemoveSourceControl: (id: number) => void;
-  onUpdateSourceControl: (id: number, label: string, value: string | StringConstructor[] | unknown) => void;
+  onUpdateSourceControl: (id: number, label: string, value: string | StringConstructor[] | string[]) => void;
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
   totalSourceControlNumber: number;

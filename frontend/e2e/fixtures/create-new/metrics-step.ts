@@ -256,3 +256,12 @@ export const configWithDesignAndWaitingForDevelopmentStatus = {
     treatFlagCardAsBlock: false,
   },
 };
+
+export const sourceControlConfigurationSettings = [
+  {
+    id: 1,
+    organization: 'au-heartbeat',
+    repo: 'Heartbeat',
+    branches: ['main'],
+  },
+];

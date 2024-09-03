@@ -34,20 +34,24 @@ export const SourceControlConfiguration = () => {
   const realSourceControlConfigurationSettings = isFirstFetch ? [] : sourceControlConfigurationSettings;
   const totalSourceControlNumber = realSourceControlConfigurationSettings.length;
 
-  const sourceControlCrews = realSourceControlConfigurationSettings.flatMap((it) =>
-    it.branches?.flatMap((branch) =>
-      dateRanges.flatMap((dateRange) =>
-        selectSourceControlCrews(
-          storeContext,
-          it.organization,
-          it.repo,
-          branch,
-          dayjs(dateRange.startDate).startOf('date').valueOf(),
-          dayjs(dateRange.endDate).startOf('date').valueOf(),
+  const sourceControlCrews = [
+    ...new Set(
+      realSourceControlConfigurationSettings.flatMap((it) =>
+        it.branches?.flatMap((branch) =>
+          dateRanges.flatMap((dateRange) =>
+            selectSourceControlCrews(
+              storeContext,
+              it.organization,
+              it.repo,
+              branch,
+              dayjs(dateRange.startDate).startOf('date').valueOf(),
+              dayjs(dateRange.endDate).startOf('date').valueOf(),
+            ),
+          ),
         ),
       ),
     ),
-  );
+  ];
 
   const handleRemoveSourceControl = (id: number) => {
     dispatch(deleteSourceControlConfigurationSettings(id));
@@ -56,7 +60,7 @@ export const SourceControlConfiguration = () => {
     dispatch(addOneSourceControlSetting());
   };
 
-  const handleUpdateSourceControl = (id: number, label: string, value: string | StringConstructor[] | unknown) => {
+  const handleUpdateSourceControl = (id: number, label: string, value: string | StringConstructor[] | string[]) => {
     dispatch(updateSourceControlConfigurationSettings({ updateId: id, label: label.toLowerCase(), value }));
   };
 

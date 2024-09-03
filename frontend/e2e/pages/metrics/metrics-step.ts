@@ -1,4 +1,4 @@
-import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
+import { config as metricsStepData, sourceControlConfigurationSettings } from '../../fixtures/create-new/metrics-step';
 import { METRICS_STEP_SAVING_FILENAME } from '../../fixtures';
 import { downloadFileAndCheck } from '../../utils/download';
 import { expect, Locator, Page } from '@playwright/test';
@@ -76,6 +76,16 @@ export class MetricsStep {
   readonly pipelineCrewSettingsLabel: Locator;
   readonly pipelineCrewSettingChipsContainer: Locator;
   readonly pipelineCrewSettingSelectedChips: Locator;
+
+  readonly sourceControlSettingSection: Locator;
+  readonly sourceControlOrganizationSelect: Locator;
+  readonly sourceControlRepoSelect: Locator;
+  readonly sourceControlBranchSelect: Locator;
+  readonly sourceControlDefaultBranchSelectContainer: Locator;
+  readonly sourceControlDefaultSelectedBranchChips: Locator;
+  readonly sourceControlCrewSettingsLabel: Locator;
+  readonly sourceControlCrewSettingChipsContainer: Locator;
+
   readonly homeIcon: Locator;
 
   constructor(page: Page) {
@@ -215,6 +225,23 @@ export class MetricsStep {
       .getByRole('button')
       .filter({ hasText: /.+/ });
     this.homeIcon = page.getByLabel('Home');
+
+    this.sourceControlSettingSection = page.getByLabel('Source Control Configuration Section');
+    this.sourceControlOrganizationSelect = this.sourceControlSettingSection.getByLabel('Organization *');
+    this.sourceControlRepoSelect = this.sourceControlSettingSection.getByLabel('Repo *');
+    this.sourceControlBranchSelect = this.sourceControlSettingSection.getByLabel('Branches *');
+    this.sourceControlDefaultBranchSelectContainer = this.sourceControlSettingSection.getByLabel(
+      'Source control Branch AutoComplete',
+    );
+    this.sourceControlDefaultSelectedBranchChips = this.sourceControlDefaultBranchSelectContainer
+      .getByRole('button')
+      .filter({ hasText: /.+/ });
+    this.sourceControlCrewSettingsLabel = this.sourceControlSettingSection
+      .getByLabel('Included Crews multiple select')
+      .getByLabel('Included Crews');
+    this.sourceControlCrewSettingChipsContainer = this.sourceControlSettingSection
+      .getByLabel('Included Crews multiple select')
+      .first();
   }
 
   async waitForShown() {
@@ -882,5 +909,40 @@ export class MetricsStep {
   async checkSomeApiFailed(rangeCount: number) {
     await this.checkApiFailedAlertVisible();
     await this.checkPartialApiFailedTimeRangeIndicator(rangeCount);
+  }
+
+  async checkSourceControlConfigurationAreChanged(sourceControlSettings: typeof sourceControlConfigurationSettings) {
+    const firstSourceControlSetting = sourceControlSettings[0];
+
+    await expect(this.sourceControlOrganizationSelect).toHaveValue(firstSourceControlSetting.organization);
+    await expect(this.sourceControlRepoSelect).toHaveValue(firstSourceControlSetting.repo);
+    await expect(this.sourceControlDefaultSelectedBranchChips).toHaveCount(size(firstSourceControlSetting.branches));
+  }
+
+  async selectGivenSourceControlCrews(crews: string[]) {
+    await this.sourceControlCrewSettingsLabel.click();
+    const options = this.page.getByRole('option');
+    for (const option of (await options.all()).slice(1)) {
+      const optionName = (await option.textContent()) as string;
+      const isOptionSelected = (await option.getAttribute('aria-selected')) === 'true';
+      if (crews.includes(optionName)) {
+        if (!isOptionSelected) {
+          await option.click();
+        }
+      } else {
+        if (isOptionSelected) {
+          await option.click();
+        }
+      }
+    }
+
+    await this.checkSourceControlCrews(crews);
+    await this.page.keyboard.press('Escape');
+  }
+
+  async checkSourceControlCrews(crews: string[]) {
+    await crews.forEach(async (crew) => {
+      await expect(this.sourceControlCrewSettingChipsContainer.getByRole('button', { name: crew })).toBeVisible();
+    });
   }
 }
