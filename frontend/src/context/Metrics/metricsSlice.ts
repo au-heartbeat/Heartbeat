@@ -411,48 +411,48 @@ export const metricsSlice = createSlice({
     },
 
     updateSourceControlConfigurationSettingsFirstInto: (state, action) => {
-      const { name, isProjectCreated, type } = action.payload;
+      const { name, type } = action.payload;
 
       const sourceControlConfigurationSettings = state.sourceControlConfigurationSettings;
-      if (isProjectCreated) {
-        state.sourceControlConfigurationSettings =
-          sourceControlConfigurationSettings.length > 0
-            ? sourceControlConfigurationSettings
-            : name.map((it: string, index: number) => ({
-                id: index,
+
+      let validSourceControlConfigurationSettings =
+        sourceControlConfigurationSettings.length > 0
+          ? sourceControlConfigurationSettings
+          : state.importedData.importedSourceControlSettings
+              .filter((it) => it.id !== undefined)
+              .map((it) => ({
+                id: it.id,
+                organization: it.organization,
+                repo: it.repo,
+                branches: it.branches,
+              }));
+      validSourceControlConfigurationSettings =
+        validSourceControlConfigurationSettings.length > 0
+          ? validSourceControlConfigurationSettings
+          : [
+              {
+                id: 0,
                 organization: '',
                 repo: '',
                 branches: [],
-              }));
+              },
+            ];
+
+      if (type === 'organization') {
+        validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
+          (it) => it['organization'] === '' || name.includes(it['organization']),
+        );
+      } else if (type === 'repo') {
+        validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
+          (it) => it['repo'] === '' || name.includes(it['repo']),
+        );
       } else {
-        let validSourceControlConfigurationSettings =
-          sourceControlConfigurationSettings.length > 0
-            ? sourceControlConfigurationSettings
-            : state.importedData.importedSourceControlSettings
-                .filter((it) => it.id !== undefined)
-                .map((it) => ({
-                  id: it.id,
-                  organization: it.organization,
-                  repo: it.repo,
-                  branches: it.branches,
-                }));
-
-        if (type === 'organization') {
-          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
-            (it) => it['organization'] === '' || name.includes(it['organization']),
-          );
-        } else if (type === 'repo') {
-          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
-            (it) => it['repo'] === '' || name.includes(it['repo']),
-          );
-        } else {
-          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
-            (it) => it['branches'].length === 0 || it['branches'].filter((branch) => name.includes(branch)),
-          );
-        }
-
-        state.sourceControlConfigurationSettings = validSourceControlConfigurationSettings;
+        validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
+          (it) => it['branches'].length === 0 || it['branches'].filter((branch) => name.includes(branch)),
+        );
       }
+
+      state.sourceControlConfigurationSettings = validSourceControlConfigurationSettings;
     },
 
     updateShouldGetBoardConfig: (state, action) => {

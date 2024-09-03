@@ -1,12 +1,12 @@
 import {
-  selectShouldGetSourceControlConfig,
-  updateSourceControlConfigurationSettingsFirstInto,
-} from '@src/context/Metrics/metricsSlice';
-import {
-  selectIsProjectCreated,
+  clearSourceControlVerifiedResponse,
   selectSourceControl,
   updateSourceControlVerifiedResponse,
 } from '@src/context/config/configSlice';
+import {
+  selectShouldGetSourceControlConfig,
+  updateSourceControlConfigurationSettingsFirstInto,
+} from '@src/context/Metrics/metricsSlice';
 import { ISourceControlGetOrganizationResponseDTO } from '@src/clients/sourceControl/dto/response';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
@@ -20,6 +20,7 @@ export interface IUseGetSourceControlConfigurationStateInterface {
   readonly info: ISourceControlGetOrganizationResponseDTO;
   readonly isFirstFetch: boolean;
 }
+
 export const useGetSourceControlConfigurationOrganizationEffect =
   (): IUseGetSourceControlConfigurationStateInterface => {
     const defaultInfoStructure = {
@@ -34,7 +35,6 @@ export const useGetSourceControlConfigurationOrganizationEffect =
     const restoredSourceControlInfo = useAppSelector(selectSourceControl);
     const shouldGetSourceControlConfig = useAppSelector(selectShouldGetSourceControlConfig);
     const [isFirstFetch, setIsFirstFetch] = useState(shouldGetSourceControlConfig);
-    const isProjectCreated = useAppSelector(selectIsProjectCreated);
 
     function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
       return Object.entries(SourceControlTypes)
@@ -61,7 +61,6 @@ export const useGetSourceControlConfigurationOrganizationEffect =
           dispatch(
             updateSourceControlConfigurationSettingsFirstInto({
               ...response.data,
-              isProjectCreated,
               type: 'organization',
             }),
           );
@@ -70,7 +69,7 @@ export const useGetSourceControlConfigurationOrganizationEffect =
         setIsLoading(false);
         setIsFirstFetch(false);
       }
-    }, [dispatch, restoredSourceControlInfo.token, restoredSourceControlInfo.type, isProjectCreated]);
+    }, [dispatch, restoredSourceControlInfo.token, restoredSourceControlInfo.type]);
 
     useEffect(() => {
       if (!apiTouchedRef.current && !isLoading) {
@@ -78,6 +77,11 @@ export const useGetSourceControlConfigurationOrganizationEffect =
         getSourceControlInfo();
       }
     }, [getSourceControlInfo, isLoading]);
+
+    useEffect(() => {
+      dispatch(clearSourceControlVerifiedResponse());
+    }, [dispatch, restoredSourceControlInfo.token]);
+
     return {
       isLoading,
       getSourceControlInfo,
