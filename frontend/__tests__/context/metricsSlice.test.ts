@@ -1638,11 +1638,8 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlConfigurationSettings);
   });
 
-  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and isProjectCreated is true and setting is empty', () => {
-    const expectedSourceControlConfigurationSettings = [
-      { id: 0, organization: '', repo: '', branches: [] },
-      { id: 1, organization: '', repo: '', branches: [] },
-    ];
+  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and setting is empty', () => {
+    const expectedSourceControlConfigurationSettings = [{ id: 0, organization: '', repo: '', branches: [] }];
     const savedMetricsSetting = saveMetricsSettingReducer(
       initState,
       updateSourceControlConfigurationSettingsFirstInto({
@@ -1655,31 +1652,7 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlConfigurationSettings);
   });
 
-  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and isProjectCreated is true and setting is not empty', () => {
-    const existedSourceControlConfigurationSettings = [
-      { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
-    ];
-    const expectedSourceControlConfigurationSettings = [
-      { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
-    ];
-    const state = {
-      ...initState,
-      sourceControlConfigurationSettings: existedSourceControlConfigurationSettings,
-    };
-
-    const savedMetricsSetting = saveMetricsSettingReducer(
-      state,
-      updateSourceControlConfigurationSettingsFirstInto({
-        name: ['test1', 'test2'],
-        isProjectCreated: true,
-        type: 'organization',
-      }),
-    );
-
-    expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlConfigurationSettings);
-  });
-
-  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and isProjectCreated is false and setting is empty', () => {
+  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and setting is empty', () => {
     const existedImportedSourceControlSettings = [
       { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
       { id: 2, organization: 'test-org2', repo: 'test-repo2', branches: ['test-branch2'] },
@@ -1698,7 +1671,6 @@ describe('saveMetricsSetting reducer', () => {
       state,
       updateSourceControlConfigurationSettingsFirstInto({
         name: ['test-org1', 'test2'],
-        isProjectCreated: false,
         type: 'organization',
       }),
     );

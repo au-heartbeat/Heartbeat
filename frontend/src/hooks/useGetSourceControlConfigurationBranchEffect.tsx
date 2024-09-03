@@ -1,8 +1,4 @@
-import {
-  selectIsProjectCreated,
-  selectSourceControl,
-  updateSourceControlVerifiedResponse,
-} from '@src/context/config/configSlice';
+import { selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
 import { updateSourceControlConfigurationSettingsFirstInto } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
@@ -20,7 +16,6 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGetBranch, setIsGetBranch] = useState<boolean>(false);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
-  const isProjectCreated = useAppSelector(selectIsProjectCreated);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
@@ -57,7 +52,6 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
         dispatch(
           updateSourceControlConfigurationSettingsFirstInto({
             ...response.data,
-            isProjectCreated,
             type: 'branch',
           }),
         );

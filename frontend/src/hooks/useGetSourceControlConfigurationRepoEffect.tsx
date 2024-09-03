@@ -1,9 +1,4 @@
-import {
-  DateRange,
-  selectIsProjectCreated,
-  selectSourceControl,
-  updateSourceControlVerifiedResponse,
-} from '@src/context/config/configSlice';
+import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
 import { updateSourceControlConfigurationSettingsFirstInto } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { FULFILLED, SourceControlTypes } from '@src/constants/resources';
@@ -21,7 +16,6 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGetRepo, setIsGetRepo] = useState<boolean>(false);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
-  const isProjectCreated = useAppSelector(selectIsProjectCreated);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
@@ -58,7 +52,6 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
         dispatch(
           updateSourceControlConfigurationSettingsFirstInto({
             ...response.value.data,
-            isProjectCreated,
             type: 'repo',
           }),
         );

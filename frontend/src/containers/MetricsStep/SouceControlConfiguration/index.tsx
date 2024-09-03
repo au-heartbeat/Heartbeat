@@ -94,7 +94,7 @@ export const SourceControlConfiguration = () => {
               setLoadingCompletedNumber={setLoadingCompletedNumber}
             />
           ))}
-          <AddButton onClick={handleAddSourceControl} text={'New Source Control'} />
+          <AddButton onClick={handleAddSourceControl} text={'New Repo'} />
           {shouldShowCrews && (
             <Crews
               options={sourceControlCrews}

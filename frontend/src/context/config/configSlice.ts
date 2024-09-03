@@ -220,6 +220,9 @@ export const configSlice = createSlice({
     updateSourceControl: (state, action) => {
       state.sourceControl.config = action.payload;
     },
+    clearSourceControlVerifiedResponse: (state) => {
+      state.sourceControl.verifiedResponse.repoList = { name: 'root', value: '-1', children: [] };
+    },
     updateSourceControlVerifiedResponse: (state, action) => {
       const namesList = ['organization', 'repo', 'branch', 'time', 'crew'];
       const matchedRepoList = state.sourceControl.verifiedResponse.repoList;
@@ -249,6 +252,7 @@ export const {
   updatePipelineTool,
   updatePipelineToolVerifyResponse,
   updateSourceControl,
+  clearSourceControlVerifiedResponse,
   updateSourceControlVerifiedResponse,
   updatePipelineToolVerifyResponseSteps,
   resetImportedData,
