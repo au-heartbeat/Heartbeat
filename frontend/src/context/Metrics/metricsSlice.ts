@@ -438,16 +438,16 @@ export const metricsSlice = createSlice({
                 }));
 
         if (type === 'organization') {
-          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter((it) =>
-            name.includes(it['organization']),
+          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
+            (it) => it['organization'] === '' || name.includes(it['organization']),
           );
         } else if (type === 'repo') {
-          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter((it) =>
-            name.includes(it['repo']),
+          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
+            (it) => it['repo'] === '' || name.includes(it['repo']),
           );
         } else {
-          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter((it) =>
-            it['branches'].filter((branch) => name.includes(branch)),
+          validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
+            (it) => it['branches'].length === 0 || it['branches'].filter((branch) => name.includes(branch)),
           );
         }
 
