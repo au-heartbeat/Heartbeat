@@ -403,26 +403,25 @@ export const metricsSlice = createSlice({
       state.sourceControlConfigurationSettings = sourceControlConfigurationSettings.map((it) => {
         if (it.id !== updateId) {
           return it;
+        }
+        if (label === 'organization') {
+          return {
+            ...it,
+            organization: value,
+            repo: '',
+            branches: [],
+          };
+        } else if (label === 'repo') {
+          return {
+            ...it,
+            repo: value,
+            branches: [],
+          };
         } else {
-          if (label === 'organization') {
-            return {
-              ...it,
-              organization: value,
-              repo: '',
-              branches: [],
-            };
-          } else if (label === 'repo') {
-            return {
-              ...it,
-              repo: value,
-              branches: [],
-            };
-          } else {
-            return {
-              ...it,
-              branches: value,
-            };
-          }
+          return {
+            ...it,
+            branches: value,
+          };
         }
       });
     },
@@ -493,6 +492,9 @@ export const metricsSlice = createSlice({
 
     updateShouldGetPipelineConfig: (state, action) => {
       state.shouldGetPipeLineConfig = action.payload;
+    },
+    updateShouldGetSourceControlConfig: (state, action) => {
+      state.shouldGetSourceControlConfig = action.payload;
     },
 
     updateMetricsImportedData: (state, action) => {
@@ -839,6 +841,7 @@ export const {
   updateAdvancedSettings,
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
+  updateShouldGetSourceControlConfig,
   updateReworkTimesSettings,
   updateFirstTimeRoadMetricsBoardData,
   updateShouldRetryPipelineConfig,

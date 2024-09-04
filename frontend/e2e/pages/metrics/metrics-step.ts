@@ -641,7 +641,7 @@ export class MetricsStep {
     await this.pipelineBranchSelect.click();
     for (const branchName of branches) {
       await this.page.getByRole('combobox', { name: 'Branches' }).fill(branchName);
-      await this.page.getByRole('option', { name: branchName }).getByRole('checkbox').check();
+      await this.page.getByRole('option', { name: branchName }).getByRole('checkbox').first().check();
     }
     await this.page.keyboard.press('Escape');
   }

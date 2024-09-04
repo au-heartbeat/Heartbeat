@@ -1,4 +1,5 @@
 import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
+import { selectShouldGetSourceControlConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { FULFILLED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
@@ -18,7 +19,8 @@ export interface IUseGetSourceControlConfigurationCrewInterface {
 export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceControlConfigurationCrewInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isGetAllCrews, setIsGetAllCrews] = useState<boolean>(false);
+  const shouldGetSourceControlConfig = useAppSelector(selectShouldGetSourceControlConfig);
+  const [isGetAllCrews, setIsGetAllCrews] = useState<boolean>(!shouldGetSourceControlConfig);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {

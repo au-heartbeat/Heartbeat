@@ -10,14 +10,17 @@ import {
   selectSourceControlBranches,
   selectDateRange,
 } from '@src/context/config/configSlice';
+import {
+  selectSourceControlConfigurationSettings,
+  updateShouldGetSourceControlConfig,
+} from '@src/context/Metrics/metricsSlice';
 import { useGetSourceControlConfigurationBranchEffect } from '@src/hooks/useGetSourceControlConfigurationBranchEffect';
 import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSourceControlConfigurationRepoEffect';
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
-import { selectSourceControlConfigurationSettings } from '@src/context/Metrics/metricsSlice';
+import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Loading } from '@src/components/Loading';
-import { useAppSelector } from '@src/hooks';
 import { store } from '@src/store';
 import { useEffect } from 'react';
 
@@ -62,6 +65,7 @@ export const SourceControlMetricSelection = ({
     isGetAllCrews,
   } = useGetSourceControlConfigurationCrewEffect();
   const storeContext = store.getState();
+  const dispatch = useAppDispatch();
   const organizationNameOptions = selectSourceControlOrganizations(storeContext);
   const repoNameOptions = selectSourceControlRepos(storeContext, organization);
   const branchNameOptions = selectSourceControlBranches(storeContext, organization, repo);
@@ -98,10 +102,15 @@ export const SourceControlMetricSelection = ({
 
   useEffect(() => {
     if (!isGetAllCrews && organization && repo && selectedBranches) {
-      selectedBranches.forEach((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges));
+      Promise.all(selectedBranches.map((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges))).then(
+        () => {
+          dispatch(updateShouldGetSourceControlConfig(false));
+        },
+      );
     }
   }, [
     dateRanges,
+    dispatch,
     getSourceControlBranchInfo,
     getSourceControlCrewInfo,
     getSourceControlRepoInfo,
@@ -124,7 +133,11 @@ export const SourceControlMetricSelection = ({
   const handleOnUpdateBranches = (id: number, label: string, value: string[]): void => {
     const branchNeedGetCrews = value.filter((it) => selectedBranches?.every((branch) => branch !== it));
     onUpdateSourceControl(id, label, value);
-    branchNeedGetCrews.forEach((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges));
+    Promise.all(
+      branchNeedGetCrews.map((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges)),
+    ).then(() => {
+      dispatch(updateShouldGetSourceControlConfig(false));
+    });
   };
 
   useEffect(() => {

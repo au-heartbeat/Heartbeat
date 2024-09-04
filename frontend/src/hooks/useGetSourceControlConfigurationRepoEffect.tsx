@@ -1,5 +1,8 @@
+import {
+  selectShouldGetSourceControlConfig,
+  updateSourceControlConfigurationSettingsFirstInto,
+} from '@src/context/Metrics/metricsSlice';
 import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
-import { updateSourceControlConfigurationSettingsFirstInto } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { FULFILLED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
@@ -14,7 +17,8 @@ export interface IUseGetSourceControlConfigurationRepoInterface {
 export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationRepoInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isGetRepo, setIsGetRepo] = useState<boolean>(false);
+  const shouldGetSourceControlConfig = useAppSelector(selectShouldGetSourceControlConfig);
+  const [isGetRepo, setIsGetRepo] = useState<boolean>(!shouldGetSourceControlConfig);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {

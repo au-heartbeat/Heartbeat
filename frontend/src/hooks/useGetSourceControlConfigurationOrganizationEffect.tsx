@@ -72,15 +72,17 @@ export const useGetSourceControlConfigurationOrganizationEffect =
     }, [dispatch, restoredSourceControlInfo.token, restoredSourceControlInfo.type]);
 
     useEffect(() => {
-      if (!apiTouchedRef.current && !isLoading) {
+      if (!apiTouchedRef.current && !isLoading && shouldGetSourceControlConfig) {
         apiTouchedRef.current = true;
         getSourceControlInfo();
       }
-    }, [getSourceControlInfo, isLoading]);
+    }, [getSourceControlInfo, isLoading, shouldGetSourceControlConfig]);
 
     useEffect(() => {
-      dispatch(clearSourceControlVerifiedResponse());
-    }, [dispatch, restoredSourceControlInfo.token]);
+      if (shouldGetSourceControlConfig) {
+        dispatch(clearSourceControlVerifiedResponse());
+      }
+    }, [dispatch, restoredSourceControlInfo.token, shouldGetSourceControlConfig]);
 
     return {
       isLoading,

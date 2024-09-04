@@ -346,6 +346,41 @@ describe('config reducer', () => {
     expect(config.sourceControl.verifiedResponse.repoList.children).toEqual(expectedSourceControlVerifiedRepoList1);
     expect(config2.sourceControl.verifiedResponse.repoList.children).toEqual(expectedSourceControlVerifiedRepoList2);
   });
+
+  it('should clear source control verified repo list', () => {
+    const initialState = {
+      ...initialConfigState,
+      sourceControl: {
+        ...initialConfigState.sourceControl,
+        verifiedResponse: {
+          repoList: {
+            children: [
+              {
+                name: 'organization',
+                value: 'mock-org1',
+                children: [],
+              },
+              {
+                name: 'organization',
+                value: 'mock-org2',
+                children: [],
+              },
+            ],
+            name: 'root',
+            value: '-1',
+          },
+        },
+      },
+    };
+    const expectedSourceControlVerifiedRepoList: string[] = [];
+    const action = {
+      type: 'config/clearSourceControlVerifiedResponse',
+    };
+
+    const config = configReducer(initialState, action);
+
+    expect(config.sourceControl.verifiedResponse.repoList.children).toEqual(expectedSourceControlVerifiedRepoList);
+  });
 });
 
 describe('select methods', () => {
