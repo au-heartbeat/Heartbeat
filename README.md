@@ -174,7 +174,7 @@ According to your selected required data, you need to input account settings for
 | Pipeline change failure rate | Pipeline       |
 | Pipeline mean time to recovery    | Pipeline       |
 
-If only `Lead time for changes` is selected among the four DORA metrics - `Lead time for changes`, `Deployment frequency`, `Pipeline change failure rate`, and `Pipeline mean time to recovery`, you will see another option `None` in the pipeline tool configuration. If you choose the `None` option, when calculating `Lead time for changes`, only the `PR lead time` will be considered, and `pipeline lead time` will not be calculated.
+If only `Lead time for changes` is selected among the four DORA metrics - `Lead time for changes`, `Deployment frequency`, `Pipeline change failure rate`, and `Pipeline mean time to recovery`, you will see another option `Other` in the pipeline tool configuration. If you choose the `Other` option, when calculating `Lead time for changes`, only the `PR lead time` will be considered, and `pipeline lead time` will not be calculated.
 
 ![Image 3-4](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/3-4-1.png)\
 Image 3-4，Project config
@@ -200,10 +200,10 @@ _Image 3-5, create Jira token_
 
 **The details for Pipeline:**
 
-|Items| Description                                                                                                                                           |
-|---|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-|PipelineTool| The pipeline tool you team use, currently heartbeat only support buildkite. If only `Lead time for changes` is selected among the four DORA metrics, the `None` option will appear, indicating that when calculating `Lead time for changes`, only `PR lead time` will be considered, and `pipeline lead time` will not be calculated. |
-|Token| Generate buildkite token with below link, https://buildkite.com/user/api-access-tokens                                                                |
+| Items        | Description                                                                                                                                                                                                                                                                                                                             |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| PipelineTool | The pipeline tool you team use, currently heartbeat only support buildkite. If only `Lead time for changes` is selected among the four DORA metrics, the `Other` option will appear, indicating that when calculating `Lead time for changes`, only `PR lead time` will be considered, and `pipeline lead time` will not be calculated. |
+| Token        | Generate buildkite token with below link, https://buildkite.com/user/api-access-tokens                                                                                                                                                                                                                                                  |
 
 ![Image 3-5](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/select-none-option-in-the-pipeline-configuration.png)
 
@@ -328,6 +328,21 @@ They are sharing the similar settings which you need to specify the pipeline ste
 The data source of **crew setting** is Github code committer. Heartbeat will list distinct code committers for those builds of the selected periods. And the value of code committer is the GitHub username.
 
 If builds were manually/scheduled triggered or could not find code committer from Github, Heartbeat will mark as "Unknown" in crew setting.
+
+
+#### 3.2.6 Source Control configuration
+
+![Image 3-19](https://cdn.jsdelivr.net/gh/au-heartbeat/data-hosting@main/readme/source-control-configuration-in-metrics-page.png)\
+_Image 3-19，Settings for Source control_
+
+They are sharing the similar settings to pipeline configuration
+
+| Items        | Description                              |
+|--------------|------------------------------------------|
+| Organization | The organization for your source control |
+| Repo         | The repo for your source control         |
+| Branches     | Your selected branches                   |
+| Crew setting | Your selected author from github         |
 
 ## 3.3 Export and import config info
 
