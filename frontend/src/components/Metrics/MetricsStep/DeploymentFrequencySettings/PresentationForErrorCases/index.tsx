@@ -7,14 +7,16 @@ import {
 } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases/style';
 import { StyledErrorMessage, StyledErrorSection, StyledErrorTitle } from '@src/components/Common/EmptyContent/styles';
 import { PIPELINE_TOOL_RETRY_MESSAGE, PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE } from '@src/constants/resources';
-import { IGetPipelineToolInfoResult } from '@src/clients/pipeline/PipelineToolClient';
 import { AxiosRequestErrorCode } from '@src/constants/resources';
 import errorSvg from '@src/assets/PipelineInfoError.svg';
 import React, { useCallback } from 'react';
 
-export interface IPresentationForErrorCasesProps extends IGetPipelineToolInfoResult {
+export interface IPresentationForErrorCasesProps {
   retry: () => void;
   isLoading: boolean;
+  code: number | string | undefined | null;
+  errorTitle: string;
+  errorMessage: string;
 }
 
 const PresentationForErrorCases = (props: IPresentationForErrorCasesProps) => {

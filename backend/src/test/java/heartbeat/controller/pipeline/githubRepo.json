@@ -1,0 +1,16 @@
+[
+  {
+    "id": 123,
+    "node_id": "test_node1",
+    "name": "test1",
+    "full_name": "test-org/test1",
+    "private": false
+  },
+  {
+    "id": 456,
+    "node_id": "test_node2",
+    "name": "test2",
+    "full_name": "test-org/test2",
+    "private": false
+  }
+]

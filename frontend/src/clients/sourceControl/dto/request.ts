@@ -11,3 +11,32 @@ export interface SourceControlInfoRequestDTO {
   repository: string;
   token: string;
 }
+
+export interface SourceControlGetOrganizationRequestDTO {
+  token: string;
+  type: SourceControlTypes;
+}
+
+export interface SourceControlGetRepoRequestDTO {
+  token: string;
+  organization: string;
+  endTime: number;
+  type: SourceControlTypes;
+}
+
+export interface SourceControlGetBranchRequestDTO {
+  token: string;
+  organization: string;
+  repo: string;
+  type: SourceControlTypes;
+}
+
+export interface SourceControlGetCrewRequestDTO {
+  token: string;
+  organization: string;
+  repo: string;
+  branch: string;
+  startTime: number;
+  endTime: number;
+  type: SourceControlTypes;
+}

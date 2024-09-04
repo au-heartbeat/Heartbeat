@@ -17,6 +17,10 @@ public class GitHubFeignClientDecoder implements ErrorDecoder {
 			case "getCommitInfo" -> "Failed to get commit info";
 			case "getPullRequestCommitInfo" -> "Failed to get pull request commit info";
 			case "getPullRequestListInfo" -> "Failed to get pull request list info";
+			case "getAllOrganizations" -> "Failed to get all organizations";
+			case "getAllRepos" -> "Failed to get all repositories";
+			case "getAllBranches" -> "Failed to get all branches";
+			case "getAllPullRequests" -> "Failed to get all pull requests";
 			default -> "Failed to get github info";
 		};
 

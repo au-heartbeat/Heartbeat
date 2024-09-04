@@ -1,4 +1,8 @@
-import { initDeploymentFrequencySettings, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
+import {
+  initDeploymentFrequencySettings,
+  updateShouldGetPipelineConfig,
+  updateShouldGetSourceControlConfig,
+} from '@src/context/Metrics/metricsSlice';
 import { SOURCE_CONTROL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { SourceControlVerifyRequestDTO } from '@src/clients/sourceControl/dto/request';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
@@ -34,6 +38,7 @@ export const useVerifySourceControlTokenEffect = () => {
   const persistReduxData = (sourceControlConfig: ISourceControlData) => {
     dispatch(updateSourceControl(sourceControlConfig));
     dispatch(updateShouldGetPipelineConfig(true));
+    dispatch(updateShouldGetSourceControlConfig(true));
     dispatch(initDeploymentFrequencySettings());
   };
   const resetFields = () => {

@@ -23,12 +23,17 @@ describe('useMetricsStepValidationCheckContext', () => {
     expect(
       result.current?.getDuplicatedPipeLineIds([{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }]),
     ).toEqual([]);
+
+    expect(
+      result.current?.getDuplicatedSourceControlIds([{ id: 0, organization: '', repo: '', branches: [] }]),
+    ).toEqual([]);
   });
 
   it('should return empty id given params is empty array', () => {
     const { result } = setup();
 
     expect(result.current?.getDuplicatedPipeLineIds([])).toEqual([]);
+    expect(result.current?.getDuplicatedSourceControlIds([])).toEqual([]);
   });
 
   it('should return duplicate id when call getDuplicatedPipeLineIds given duplicated data', () => {
@@ -38,6 +43,17 @@ describe('useMetricsStepValidationCheckContext', () => {
       result.current?.getDuplicatedPipeLineIds([
         { id: 0, organization: 'mockOrganization', pipelineName: 'mockPipelineName', step: 'mockstep', branches: [] },
         { id: 1, organization: 'mockOrganization', pipelineName: 'mockPipelineName', step: 'mockstep', branches: [] },
+      ]),
+    ).toEqual([0, 1]);
+  });
+
+  it('should return duplicate id when call getDuplicatedSourceControlIds given duplicated data', () => {
+    const { result } = setup();
+
+    expect(
+      result.current?.getDuplicatedSourceControlIds([
+        { id: 0, organization: 'mockOrganization', repo: 'mockRepo', branches: [] },
+        { id: 1, organization: 'mockOrganization', repo: 'mockRepo', branches: [] },
       ]),
     ).toEqual([0, 1]);
   });

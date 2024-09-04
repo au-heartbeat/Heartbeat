@@ -14,7 +14,7 @@ import {
   TIMEOUT_ALERT_ARIA_LABEL,
 } from '../../fixtures';
 import { pipelineToolDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
-import { AxiosRequestErrorCode, PIPELINE_TOOL_NONE_OPTION } from '@src/constants/resources';
+import { AxiosRequestErrorCode, PIPELINE_TOOL_OTHER_OPTION } from '@src/constants/resources';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { pipelineToolSchema } from '@src/containers/ConfigStep/Form/schema';
 import { render, screen, waitFor, within } from '@testing-library/react';
@@ -293,7 +293,7 @@ describe('PipelineTool', () => {
     const noneOption = options[1];
 
     expect(buildKiteOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_TYPES.BUILD_KITE);
-    expect(noneOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_NONE_OPTION);
+    expect(noneOption.getAttribute('data-value')).toEqual(PIPELINE_TOOL_OTHER_OPTION);
 
     await userEvent.click(noneOption);
 

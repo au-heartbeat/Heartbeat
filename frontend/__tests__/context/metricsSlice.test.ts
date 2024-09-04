@@ -1,11 +1,14 @@
 import saveMetricsSettingReducer, {
   addADeploymentFrequencySetting,
+  addOneSourceControlSetting,
   deleteADeploymentFrequencySetting,
+  deleteSourceControlConfigurationSettings,
   initDeploymentFrequencySettings,
   resetMetricData,
   saveClassificationCharts,
   saveDoneColumn,
   savePipelineCrews,
+  saveSourceControlCrews,
   saveTargetFields,
   saveUsers,
   selectAdvancedSettings,
@@ -21,6 +24,7 @@ import saveMetricsSettingReducer, {
   selectReworkTimesSettings,
   selectShouldGetBoardConfig,
   selectShouldGetPipelineConfig,
+  selectShouldGetSourceControlConfig,
   selectShouldRetryPipelineConfig,
   selectStepWarningMessage,
   selectTreatFlagCardAsBlock,
@@ -37,6 +41,8 @@ import saveMetricsSettingReducer, {
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
   updateShouldRetryPipelineConfig,
+  updateSourceControlConfigurationSettings,
+  updateSourceControlConfigurationSettingsFirstInto,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import {
@@ -52,12 +58,15 @@ import { store } from '@src/store';
 const initState = {
   shouldGetBoardConfig: true,
   shouldGetPipeLineConfig: true,
+  shouldGetSourceControlConfig: false,
   shouldRetryPipelineConfig: false,
   jiraColumns: [],
   targetFields: [],
   classificationCharts: [],
   users: [],
   pipelineCrews: [],
+  sourceControlCrews: [],
+  sourceControlConfigurationSettings: [],
   doneColumn: [],
   cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
@@ -70,6 +79,8 @@ const initState = {
   importedData: {
     importedCrews: [],
     importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
+    importedSourceControlCrews: [],
+    importedSourceControlSettings: [],
     importedPipelineCrews: [],
     importedCycleTime: {
       importedCycleTimeSettings: [],
@@ -143,8 +154,10 @@ describe('saveMetricsSetting reducer', () => {
       importedDoneStatus: [],
       importedClassification: [],
       importedClassificationCharts: [],
+      importedSourceControlSettings: [],
       importedDeployment: [],
       importedPipelineCrews: [],
+      importedSourceControlCrews: [],
       importedAdvancedSettings: null,
       reworkTimesSettings: DEFAULT_REWORK_SETTINGS,
     });
@@ -240,6 +253,15 @@ describe('saveMetricsSetting reducer', () => {
         storyPoint: '1',
         flag: '2',
       },
+      sourceControlCrews: ['test1', 'test2'],
+      sourceControlConfigurationSettings: [
+        {
+          id: 1,
+          organization: 'test-org',
+          repo: 'test-repo',
+          branches: ['test-branch1', 'test-branch2'],
+        },
+      ],
       reworkTimesSettings: DEFAULT_REWORK_SETTINGS,
     };
     const savedMetricsSetting = saveMetricsSettingReducer(
@@ -251,6 +273,15 @@ describe('saveMetricsSetting reducer', () => {
       importedCrews: mockMetricsImportedData.crews,
       importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.HISTORICAL_ASSIGNEE,
       importedPipelineCrews: mockMetricsImportedData.pipelineCrews,
+      importedSourceControlCrews: ['test1', 'test2'],
+      importedSourceControlSettings: [
+        {
+          id: 1,
+          organization: 'test-org',
+          repo: 'test-repo',
+          branches: ['test-branch1', 'test-branch2'],
+        },
+      ],
       importedCycleTime: {
         importedCycleTimeSettings: mockMetricsImportedData.cycleTime.jiraColumns,
         importedTreatFlagCardAsBlock: mockMetricsImportedData.cycleTime.treatFlagCardAsBlock,
@@ -563,10 +594,60 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(addedDeploymentFrequencySettings);
   });
 
+  it('should add a sourceControlConfigurationSettings when handle addOneSourceControlSetting given initial state', () => {
+    const expectedSourceControlSettings = [{ id: 1, organization: '', repo: '', branches: [] }];
+
+    const savedMetricsSetting = saveMetricsSettingReducer(initState, addOneSourceControlSetting());
+
+    expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlSettings);
+  });
+
+  it('should add a sourceControlConfigurationSettings when handle addOneSourceControlSetting and have SourceControlConfigurationSettings', () => {
+    const existedSourceControlSettings = [
+      { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
+    ];
+    const initStateWithSourceControlSettings = {
+      ...initState,
+      sourceControlConfigurationSettings: existedSourceControlSettings,
+    };
+    const expectedSourceControlSettings = [
+      { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
+      { id: 2, organization: '', repo: '', branches: [] },
+    ];
+
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      initStateWithSourceControlSettings,
+      addOneSourceControlSetting(),
+    );
+
+    expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlSettings);
+  });
+
   it('should delete a deploymentFrequencySetting when handle deleteADeploymentFrequencySettings given initial state', () => {
     const savedMetricsSetting = saveMetricsSettingReducer(initState, deleteADeploymentFrequencySetting(0));
 
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
+  });
+
+  it('should delete sourceControlConfigurationSettings when id is given', () => {
+    const sourceControlConfigurationSettings = [{ id: 1, organization: '', repo: '', branches: [] }];
+    const mockState = {
+      ...initState,
+      sourceControlConfigurationSettings: sourceControlConfigurationSettings,
+    };
+
+    const deletedSourceControlConfigurationSettingsResult = saveMetricsSettingReducer(
+      mockState,
+      deleteSourceControlConfigurationSettings(1),
+    );
+
+    expect(deletedSourceControlConfigurationSettingsResult.sourceControlConfigurationSettings.length).toEqual(0);
+  });
+
+  it('should delete sourceControlConfigurationSettings when sourceControlConfigurationSettings is initial state', () => {
+    const savedMetricsSetting = saveMetricsSettingReducer(initState, deleteSourceControlConfigurationSettings(0));
+
+    expect(savedMetricsSetting.sourceControlConfigurationSettings.length).toEqual(0);
   });
 
   it('should return deploymentFrequencySettings when call selectDeploymentFrequencySettings functions', () => {
@@ -619,6 +700,19 @@ describe('saveMetricsSetting reducer', () => {
     const savedPipelineCrews = saveMetricsSettingReducer(initState, savePipelineCrews(undefined));
 
     expect(savedPipelineCrews.pipelineCrews).toEqual([]);
+  });
+
+  it('should save source control crew given crews', () => {
+    const crews = ['crew1', 'crew2'];
+    const savedSourceControlCrews = saveMetricsSettingReducer(initState, saveSourceControlCrews(crews));
+
+    expect(savedSourceControlCrews.sourceControlCrews).toBe(crews);
+  });
+
+  it('should return empty array given source control crews is undefined', () => {
+    const savedPipelineCrews = saveMetricsSettingReducer(initState, saveSourceControlCrews(undefined));
+
+    expect(savedPipelineCrews.sourceControlCrews).toEqual([]);
   });
 
   it('should update ShouldRetryPipelineConfig', async () => {
@@ -1502,6 +1596,110 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.realDoneWarningMessage).toEqual(MESSAGE.REAL_DONE_WARNING);
   });
 
+  it('should keep empty array when handle updateSourceControlConfigurationSettings given initial state', () => {
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      initState,
+      updateSourceControlConfigurationSettings({ updateId: 1, label: 'organization', value: 'test-org' }),
+    );
+
+    expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual([]);
+  });
+
+  it('should update update settings when handle updateSourceControlConfigurationSettings given settings', () => {
+    const existedSourceControlConfigurationSettings = [
+      { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1-1', 'test-branch1-2'] },
+      { id: 2, organization: 'test-org2', repo: 'test-repo2', branches: ['test-branch2-1', 'test-branch2-2'] },
+      { id: 3, organization: 'test-org3', repo: 'test-repo3', branches: ['test-branch3-1', 'test-branch3-2'] },
+    ];
+    const expectedSourceControlConfigurationSettings = [
+      { id: 1, organization: 'test-org-update1', repo: '', branches: [] },
+      { id: 2, organization: 'test-org2', repo: 'test-repo-update2', branches: [] },
+      { id: 3, organization: 'test-org3', repo: 'test-repo3', branches: ['test-branch-update3-1'] },
+    ];
+
+    const state = {
+      ...initState,
+      sourceControlConfigurationSettings: existedSourceControlConfigurationSettings,
+    };
+
+    let savedMetricsSetting = saveMetricsSettingReducer(
+      state,
+      updateSourceControlConfigurationSettings({ updateId: 1, label: 'organization', value: 'test-org-update1' }),
+    );
+    savedMetricsSetting = saveMetricsSettingReducer(
+      savedMetricsSetting,
+      updateSourceControlConfigurationSettings({ updateId: 2, label: 'repo', value: 'test-repo-update2' }),
+    );
+    savedMetricsSetting = saveMetricsSettingReducer(
+      savedMetricsSetting,
+      updateSourceControlConfigurationSettings({ updateId: 3, label: 'branches', value: ['test-branch-update3-1'] }),
+    );
+
+    expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlConfigurationSettings);
+  });
+
+  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and setting is empty', () => {
+    const expectedSourceControlConfigurationSettings = [{ id: 0, organization: '', repo: '', branches: [] }];
+    const savedMetricsSetting = saveMetricsSettingReducer(
+      initState,
+      updateSourceControlConfigurationSettingsFirstInto({
+        name: ['test1', 'test2'],
+        type: 'organization',
+      }),
+    );
+
+    expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlConfigurationSettings);
+  });
+
+  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and import data is not empty', () => {
+    const existedImportedSourceControlSettings = [
+      { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
+      { id: 2, organization: 'test-org2', repo: 'test-repo2', branches: ['test-branch2'] },
+    ];
+    const expectedSourceControlConfigurationSettings = [
+      { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
+      { id: 2, organization: '', repo: '', branches: [] },
+    ];
+    const state = {
+      ...initState,
+      importedData: {
+        ...initState.importedData,
+        importedSourceControlSettings: existedImportedSourceControlSettings,
+      },
+    };
+    let savedMetricsSetting = saveMetricsSettingReducer(
+      state,
+      updateSourceControlConfigurationSettingsFirstInto({
+        name: ['test-org1', 'test2'],
+        type: 'organization',
+      }),
+    );
+    savedMetricsSetting = saveMetricsSettingReducer(
+      savedMetricsSetting,
+      updateSourceControlConfigurationSettingsFirstInto({
+        name: ['test-repo1', 'test2'],
+        type: 'repo',
+        id: 1,
+      }),
+    );
+    savedMetricsSetting = saveMetricsSettingReducer(
+      savedMetricsSetting,
+      updateSourceControlConfigurationSettingsFirstInto({
+        name: ['test-repo1', 'test2'],
+        type: 'repo',
+      }),
+    );
+    savedMetricsSetting = saveMetricsSettingReducer(
+      savedMetricsSetting,
+      updateSourceControlConfigurationSettingsFirstInto({
+        name: ['test-branch1'],
+        type: 'branches',
+      }),
+    );
+
+    expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlConfigurationSettings);
+  });
+
   describe('select pipeline settings warning message', () => {
     const mockPipelineSettings = [
       {
@@ -1568,6 +1766,7 @@ describe('saveMetricsSetting reducer', () => {
     it('should return status of initial state', () => {
       expect(selectShouldGetBoardConfig(store.getState())).toBeFalsy();
       expect(selectShouldGetPipelineConfig(store.getState())).toBeFalsy();
+      expect(selectShouldGetSourceControlConfig(store.getState())).toBeFalsy();
       expect(selectDeploymentFrequencySettings(store.getState()).length).toBeGreaterThan(0);
       expect(selectReworkTimesSettings(store.getState())).toStrictEqual({ excludeStates: [], reworkState: null });
       expect(selectCycleTimeSettings(store.getState())).toEqual([]);

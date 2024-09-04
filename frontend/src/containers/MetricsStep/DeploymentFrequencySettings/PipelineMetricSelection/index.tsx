@@ -168,7 +168,7 @@ export const PipelineMetricSelection = ({
         options={organizationNameOptions}
         label={'Organization'}
         value={organization}
-        onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
+        onUpdate={(id, label, value) => onUpdatePipeline(id, label, value)}
       />
       {organization && (
         <SingleSelection
@@ -177,7 +177,7 @@ export const PipelineMetricSelection = ({
           label={'Pipeline Name'}
           value={pipelineName}
           onGetSteps={handleGetPipelineData}
-          onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
+          onUpdate={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
       )}
       {organization && pipelineName && (
@@ -188,11 +188,11 @@ export const PipelineMetricSelection = ({
           value={validStepValue}
           isError={isShowNoStepWarning}
           errorText={NO_PIPELINE_STEP_ERROR}
-          onUpDatePipeline={(id, label, value) => onUpdatePipeline(id, label, value)}
+          onUpdate={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
       )}
       {organization && pipelineName && (
-        <BranchSelection {...pipelineSetting} onUpdatePipeline={onUpdatePipeline} isStepLoading={isLoading} />
+        <BranchSelection {...pipelineSetting} onUpdate={onUpdatePipeline} isStepLoading={isLoading} />
       )}
       <ButtonWrapper>
         {isShowRemoveButton && (

@@ -2,12 +2,16 @@
   "projectName": "demo show",
   "dateRange": [
     {
-      "startDate": "2024-06-01T00:00:00.000+08:00",
-      "endDate": "2024-06-14T23:59:59.999+08:00"
+      "startDate": "2024-08-26T00:00:00.000+08:00",
+      "endDate": "2024-09-02T23:59:59.999+08:00"
     },
     {
-      "startDate": "2024-05-15T00:00:00.000+08:00",
-      "endDate": "2024-05-28T23:59:59.999+08:00"
+      "startDate": "2024-08-19T00:00:00.000+08:00",
+      "endDate": "2024-08-25T23:59:59.999+08:00"
+    },
+    {
+      "startDate": "2024-08-12T00:00:00.000+08:00",
+      "endDate": "2024-08-18T23:59:59.999+08:00"
     }
   ],
   "calendarType": "CN",
@@ -22,11 +26,76 @@
     "token": "<E2E_TOKEN_JIRA>"
   },
   "pipelineTool": {
-    "type": "None",
+    "type": "Other",
     "token": ""
   },
   "sourceControl": {
     "type": "GitHub",
     "token": "<E2E_TOKEN_GITHUB>"
-  }
+  },
+  "crews": ["Man Tang", "YinYuan Zhou"],
+  "assigneeFilter": "lastAssignee",
+  "pipelineCrews": ["Yufan0226", "Zhongren GU", "guzhongren", "renovate[bot]", "zhou-yinyuan", "Unknown"],
+  "sourceControlCrews": ["zhou-yinyuan"],
+  "cycleTime": {
+    "type": "byColumn",
+    "jiraColumns": [
+      {
+        "TODO": "To do"
+      },
+      {
+        "Doing": "In Dev"
+      },
+      {
+        "Blocked": "Block"
+      },
+      {
+        "Review": "Review"
+      },
+      {
+        "READY FOR TESTING": "Waiting for testing"
+      },
+      {
+        "Testing": "Testing"
+      },
+      {
+        "Done": "Done"
+      }
+    ],
+    "treatFlagCardAsBlock": false
+  },
+  "classification": [
+    "issuetype",
+    "parent",
+    "customfield_10061",
+    "customfield_10062",
+    "customfield_10063",
+    "customfield_10020",
+    "project",
+    "customfield_10021",
+    "fixVersions",
+    "priority",
+    "customfield_10037",
+    "labels",
+    "timetracking",
+    "customfield_10016",
+    "customfield_10038",
+    "assignee",
+    "customfield_10027",
+    "customfield_10060"
+  ],
+  "classificationCharts": ["issuetype", "assignee"],
+  "advancedSettings": null,
+  "reworkTimesSettings": {
+    "reworkState": "In Dev",
+    "excludeStates": []
+  },
+  "sourceControlConfigurationSettings": [
+    {
+      "id": 1,
+      "organization": "au-heartbeat",
+      "repo": "Heartbeat",
+      "branches": ["main"]
+    }
+  ]
 }

@@ -8,7 +8,7 @@ import {
 import { convertCycleTimeSettings, getSortedAndDeduplicationBoardingMapping } from '@src/utils/util';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
-import _, { omit, uniqWith, isEqual, intersection, concat } from 'lodash';
+import _, { concat, intersection, isEqual, omit, uniqWith } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import camelCase from 'lodash.camelcase';
 import { RootState } from '@src/store';
@@ -20,6 +20,13 @@ export interface IPipelineConfig {
   step: string;
   branches: string[];
   isStepEmptyString?: boolean;
+}
+
+export interface ISourceControlConfig {
+  id: number;
+  organization: string;
+  repo: string;
+  branches: string[];
 }
 
 export interface IReworkConfig {
@@ -43,16 +50,19 @@ export interface ICycleTimeSetting {
 export interface ISavedMetricsSettingState {
   shouldGetBoardConfig: boolean;
   shouldGetPipeLineConfig: boolean;
+  shouldGetSourceControlConfig: boolean;
   shouldRetryPipelineConfig: boolean;
   jiraColumns: { key: string; value: { name: string; statuses: string[] } }[];
   targetFields: { name: string; key: string; flag: boolean }[];
   classificationCharts: { name: string; key: string; flag: boolean }[];
   users: string[];
   pipelineCrews: string[];
+  sourceControlCrews: string[];
   doneColumn: string[];
   cycleTimeSettingsType: CycleTimeSettingsTypes;
   cycleTimeSettings: ICycleTimeSetting[];
   deploymentFrequencySettings: IPipelineConfig[];
+  sourceControlConfigurationSettings: ISourceControlConfig[];
   leadTimeForChanges: IPipelineConfig[];
   treatFlagCardAsBlock: boolean;
   displayFlagCardDropWarning: boolean;
@@ -62,6 +72,7 @@ export interface ISavedMetricsSettingState {
     importedCrews: string[];
     importedAssigneeFilter: string;
     importedPipelineCrews: string[];
+    importedSourceControlCrews: string[];
     importedCycleTime: {
       importedCycleTimeSettings: { [key: string]: string }[];
       importedTreatFlagCardAsBlock: boolean;
@@ -70,6 +81,7 @@ export interface ISavedMetricsSettingState {
     importedClassification: string[];
     importedClassificationCharts: string[];
     importedDeployment: IPipelineConfig[];
+    importedSourceControlSettings: ISourceControlConfig[];
     importedAdvancedSettings: { storyPoint: string; flag: string } | null;
     reworkTimesSettings: IReworkConfig;
   };
@@ -82,16 +94,19 @@ export interface ISavedMetricsSettingState {
 const initialState: ISavedMetricsSettingState = {
   shouldGetBoardConfig: false,
   shouldGetPipeLineConfig: false,
+  shouldGetSourceControlConfig: false,
   shouldRetryPipelineConfig: false,
   jiraColumns: [],
   targetFields: [],
   classificationCharts: [],
   users: [],
   pipelineCrews: [],
+  sourceControlCrews: [],
   doneColumn: [],
   cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
   deploymentFrequencySettings: [],
+  sourceControlConfigurationSettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
   treatFlagCardAsBlock: true,
   displayFlagCardDropWarning: true,
@@ -101,6 +116,7 @@ const initialState: ISavedMetricsSettingState = {
     importedCrews: [],
     importedAssigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
     importedPipelineCrews: [],
+    importedSourceControlCrews: [],
     importedCycleTime: {
       importedCycleTimeSettings: [],
       importedTreatFlagCardAsBlock: true,
@@ -109,6 +125,7 @@ const initialState: ISavedMetricsSettingState = {
     importedClassification: [],
     importedClassificationCharts: [],
     importedDeployment: [],
+    importedSourceControlSettings: [],
     importedAdvancedSettings: null,
     reworkTimesSettings: {
       reworkState: null,
@@ -336,6 +353,9 @@ export const metricsSlice = createSlice({
     savePipelineCrews: (state, action) => {
       state.pipelineCrews = action.payload || [];
     },
+    saveSourceControlCrews: (state, action) => {
+      state.sourceControlCrews = action.payload || [];
+    },
     updateCycleTimeSettings: (state, action) => {
       state.cycleTimeSettings = action.payload;
     },
@@ -354,6 +374,15 @@ export const metricsSlice = createSlice({
         { id: newId, organization: '', pipelineName: '', step: '', branches: [] },
       ];
     },
+    addOneSourceControlSetting: (state) => {
+      const { sourceControlConfigurationSettings } = state;
+      const maxId = sourceControlConfigurationSettings[sourceControlConfigurationSettings.length - 1]?.id ?? 0;
+      const newId = maxId + 1;
+      state.sourceControlConfigurationSettings = [
+        ...sourceControlConfigurationSettings,
+        { id: newId, organization: '', repo: '', branches: [] },
+      ];
+    },
 
     updateDeploymentFrequencySettings: (state, action) => {
       const { updateId, label, value } = action.payload;
@@ -368,12 +397,104 @@ export const metricsSlice = createSlice({
       });
     },
 
+    updateSourceControlConfigurationSettings: (state, action) => {
+      const { updateId, label, value } = action.payload;
+      const sourceControlConfigurationSettings = state.sourceControlConfigurationSettings;
+      state.sourceControlConfigurationSettings = sourceControlConfigurationSettings.map((it) => {
+        if (it.id !== updateId) {
+          return it;
+        }
+        if (label === 'organization') {
+          return {
+            ...it,
+            organization: value,
+            repo: '',
+            branches: [],
+          };
+        } else if (label === 'repo') {
+          return {
+            ...it,
+            repo: value,
+            branches: [],
+          };
+        } else {
+          return {
+            ...it,
+            branches: value,
+          };
+        }
+      });
+    },
+
+    updateSourceControlConfigurationSettingsFirstInto: (state, action) => {
+      const { name, type, id } = action.payload;
+
+      const sourceControlConfigurationSettings = state.sourceControlConfigurationSettings;
+
+      let validSourceControlConfigurationSettings =
+        sourceControlConfigurationSettings.length > 0
+          ? sourceControlConfigurationSettings
+          : state.importedData.importedSourceControlSettings
+              .filter((it) => it.id !== undefined)
+              .map((it) => ({
+                id: it.id,
+                organization: it.organization,
+                repo: it.repo,
+                branches: it.branches,
+              }));
+      validSourceControlConfigurationSettings =
+        validSourceControlConfigurationSettings.length > 0
+          ? validSourceControlConfigurationSettings
+          : [
+              {
+                id: 0,
+                organization: '',
+                repo: '',
+                branches: [],
+              },
+            ];
+
+      const func = (type: string, it: ISourceControlConfig) => {
+        if (type === 'organization') {
+          if (name.includes(it['organization'])) {
+            return it['organization'];
+          } else {
+            return '';
+          }
+        } else if (type === 'repo') {
+          if (name.includes(it['repo'])) {
+            return it['repo'];
+          } else {
+            return '';
+          }
+        } else {
+          return it.branches.filter((branch) => name.includes(branch));
+        }
+      };
+
+      validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.map((it) => {
+        if (id !== undefined && id !== it.id) {
+          return it;
+        }
+        const newValue = func(type, it);
+        return {
+          ...it,
+          [type]: newValue,
+        };
+      });
+
+      state.sourceControlConfigurationSettings = validSourceControlConfigurationSettings;
+    },
+
     updateShouldGetBoardConfig: (state, action) => {
       state.shouldGetBoardConfig = action.payload;
     },
 
     updateShouldGetPipelineConfig: (state, action) => {
       state.shouldGetPipeLineConfig = action.payload;
+    },
+    updateShouldGetSourceControlConfig: (state, action) => {
+      state.shouldGetSourceControlConfig = action.payload;
     },
 
     updateMetricsImportedData: (state, action) => {
@@ -389,9 +510,13 @@ export const metricsSlice = createSlice({
         assigneeFilter,
         pipelineCrews,
         reworkTimesSettings,
+        sourceControlConfigurationSettings,
+        sourceControlCrews,
       } = action.payload;
       state.importedData.importedCrews = crews || state.importedData.importedCrews;
       state.importedData.importedPipelineCrews = pipelineCrews || state.importedData.importedPipelineCrews;
+      state.importedData.importedSourceControlCrews =
+        sourceControlCrews || state.importedData.importedSourceControlCrews;
       state.importedData.importedCycleTime.importedCycleTimeSettings =
         cycleTime?.jiraColumns || state.importedData.importedCycleTime.importedCycleTimeSettings;
       state.importedData.importedCycleTime.importedTreatFlagCardAsBlock =
@@ -402,6 +527,8 @@ export const metricsSlice = createSlice({
       state.importedData.importedClassificationCharts =
         classificationCharts || state.importedData.importedClassificationCharts;
       state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
+      state.importedData.importedSourceControlSettings =
+        sourceControlConfigurationSettings || state.importedData.importedSourceControlSettings;
       state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvancedSettings;
       state.importedData.reworkTimesSettings = reworkTimesSettings || state.importedData.reworkTimesSettings;
     },
@@ -646,6 +773,13 @@ export const metricsSlice = createSlice({
       state.deploymentFrequencySettings = [...state.deploymentFrequencySettings.filter(({ id }) => id !== deleteId)];
     },
 
+    deleteSourceControlConfigurationSettings: (state, action) => {
+      const deleteId = action.payload;
+      state.sourceControlConfigurationSettings = [
+        ...state.sourceControlConfigurationSettings.filter(({ id }) => id !== deleteId),
+      ];
+    },
+
     initDeploymentFrequencySettings: (state) => {
       state.deploymentFrequencySettings = initialState.deploymentFrequencySettings;
     },
@@ -688,6 +822,7 @@ export const {
   saveDoneColumn,
   saveUsers,
   savePipelineCrews,
+  saveSourceControlCrews,
   updateCycleTimeSettings,
   addADeploymentFrequencySetting,
   updateDeploymentFrequencySettings,
@@ -706,15 +841,23 @@ export const {
   updateAdvancedSettings,
   updateShouldGetBoardConfig,
   updateShouldGetPipelineConfig,
+  updateShouldGetSourceControlConfig,
   updateReworkTimesSettings,
   updateFirstTimeRoadMetricsBoardData,
   updateShouldRetryPipelineConfig,
+  updateSourceControlConfigurationSettings,
+  deleteSourceControlConfigurationSettings,
+  updateSourceControlConfigurationSettingsFirstInto,
+  addOneSourceControlSetting,
 } = metricsSlice.actions;
 
 export const selectShouldGetBoardConfig = (state: RootState) => state.metrics.shouldGetBoardConfig;
 export const selectShouldGetPipelineConfig = (state: RootState) => state.metrics.shouldGetPipeLineConfig;
+export const selectShouldGetSourceControlConfig = (state: RootState) => state.metrics.shouldGetSourceControlConfig;
 
 export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
+export const selectSourceControlConfigurationSettings = (state: RootState) =>
+  state.metrics.sourceControlConfigurationSettings;
 export const selectReworkTimesSettings = (state: RootState) => state.metrics.importedData.reworkTimesSettings;
 
 export const selectClassificationCharts = (state: RootState) => state.metrics.classificationCharts;

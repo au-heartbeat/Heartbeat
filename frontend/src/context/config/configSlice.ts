@@ -9,6 +9,7 @@ import {
 } from '@src/constants/resources';
 import { initialPipelineToolState, IPipelineToolState } from '@src/context/config/pipelineTool/pipelineToolSlice';
 import { initialSourceControlState, ISourceControl } from '@src/context/config/sourceControl/sourceControlSlice';
+import { ISourceControlLeaf, ISourceControlTree } from '@src/context/config/sourceControl/verifyResponseSlice';
 import { IBoardState, initialBoardState } from '@src/context/config/board/boardSlice';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { uniqPipelineListCrews, updateResponseCrews } from '@src/utils/util';
@@ -18,6 +19,7 @@ import type { RootState } from '@src/store';
 import merge from 'lodash/merge';
 import { isArray } from 'lodash';
 import dayjs from 'dayjs';
+
 export interface DateRange {
   startDate: string | null;
   endDate: string | null;
@@ -88,6 +90,30 @@ const getMetricsInfo = (metrics: string[]) => {
 };
 
 const isSortType = (value: string): value is SortType => Object.values(SortType).includes(value as SortType);
+
+function addLeafToTree(tree: ISourceControlTree, newLeaf: ISourceControlLeaf, names: string[]): ISourceControlTree {
+  const updateTree = (
+    node: ISourceControlTree,
+    parents: { name: string; value: string }[],
+    depth: number,
+  ): ISourceControlTree => {
+    if (parents.length === 0) {
+      const needAddNames = newLeaf.names.filter((name) => node.children.every((child) => child.value !== name));
+      node.children.push(...needAddNames.map((value) => ({ name: names[depth], value, children: [] })));
+    } else {
+      const parent = parents[0];
+      const childNode = node.children.find((child) => child.name === parent.name && child.value === parent.value);
+
+      if (childNode) {
+        updateTree(childNode, parents.slice(1), depth + 1);
+      }
+    }
+
+    return node;
+  };
+
+  return updateTree(tree, newLeaf.parents, 0);
+}
 
 export const configSlice = createSlice({
   name: 'config',
@@ -194,9 +220,13 @@ export const configSlice = createSlice({
     updateSourceControl: (state, action) => {
       state.sourceControl.config = action.payload;
     },
+    clearSourceControlVerifiedResponse: (state) => {
+      state.sourceControl.verifiedResponse.repoList = { name: 'root', value: '-1', children: [] };
+    },
     updateSourceControlVerifiedResponse: (state, action) => {
-      const { githubRepos } = action.payload;
-      state.sourceControl.verifiedResponse.repoList = githubRepos;
+      const namesList = ['organization', 'repo', 'branch', 'time', 'crew'];
+      const matchedRepoList = state.sourceControl.verifiedResponse.repoList;
+      state.sourceControl.verifiedResponse.repoList = addLeafToTree(matchedRepoList, action.payload, namesList);
     },
     updatePipelineToolVerifyResponseCrews: (state, action) => {
       const { organization, pipelineName } = action.payload;
@@ -222,6 +252,7 @@ export const {
   updatePipelineTool,
   updatePipelineToolVerifyResponse,
   updateSourceControl,
+  clearSourceControlVerifiedResponse,
   updateSourceControlVerifiedResponse,
   updatePipelineToolVerifyResponseSteps,
   resetImportedData,
@@ -246,6 +277,65 @@ export const selectJiraColumns = (state: RootState) => state.config.board.verifi
 export const selectIsProjectCreated = (state: RootState) => state.config.isProjectCreated;
 export const selectPipelineOrganizations = (state: RootState) => [
   ...new Set(state.config.pipelineTool.verifiedResponse.pipelineList.map((item) => item.orgName)),
+];
+export const selectSourceControlOrganizations = (state: RootState) => [
+  ...new Set(
+    state.config.sourceControl.verifiedResponse.repoList.children
+      .filter((item) => item.name === 'organization')
+      .flatMap((it) => it.value),
+  ),
+];
+
+export const selectSourceControlRepos = (state: RootState, organization: string) => [
+  ...new Set(
+    state.config.sourceControl.verifiedResponse.repoList.children
+      .filter((item) => item.name === 'organization')
+      .filter((item) => item.value === organization)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'repo')
+      .flatMap((it) => it.value),
+  ),
+];
+
+export const selectSourceControlBranches = (state: RootState, organization: string, repo: string) => [
+  ...new Set(
+    state.config.sourceControl.verifiedResponse.repoList.children
+      .filter((item) => item.name === 'organization')
+      .filter((item) => item.value === organization)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'repo')
+      .filter((item) => item.value === repo)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'branch')
+      .flatMap((it) => it.value),
+  ),
+];
+
+export const selectSourceControlCrews = (
+  state: RootState,
+  organization: string,
+  repo: string,
+  branch: string,
+  startTime: number,
+  endTime: number,
+) => [
+  ...new Set(
+    state.config.sourceControl.verifiedResponse.repoList.children
+      .filter((item) => item.name === 'organization')
+      .filter((item) => item.value === organization)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'repo')
+      .filter((item) => item.value === repo)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'branch')
+      .filter((item) => item.value === branch)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'time')
+      .filter((item) => item.value === `${startTime}-${endTime}`)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'crew')
+      .flatMap((it) => it.value),
+  ),
 ];
 
 export const selectPipelineNames = (state: RootState, organization: string) =>

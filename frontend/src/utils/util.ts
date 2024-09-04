@@ -8,8 +8,8 @@ import {
   TrendType,
   UP_TREND_IS_BETTER,
 } from '@src/constants/resources';
+import { ICycleTimeSetting, IPipelineConfig, ISourceControlConfig } from '@src/context/Metrics/metricsSlice';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
-import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { ITargetFieldType } from '@src/components/Common/MultiAutoComplete/styles';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { ITrendInfo } from '@src/containers/ReportStep/ChartAndTitleWrapper';
@@ -88,15 +88,21 @@ export const findCaseInsensitiveType = (option: string[], value: string): string
   return newValue ? newValue : value;
 };
 
-export const getDisabledOptions = (deploymentFrequencySettings: IPipelineConfig[], option: string) => {
+export const getDisabledOptions = (settings: IPipelineConfig[] | ISourceControlConfig[], option: string) => {
   return includes(
-    deploymentFrequencySettings.map((item) => item.pipelineName),
+    settings.map((item) => {
+      if ('pipelineName' in item) {
+        return item.pipelineName;
+      } else {
+        return item.repo;
+      }
+    }),
     option,
   );
 };
 
-export const sortDisabledOptions = (deploymentFrequencySettings: IPipelineConfig[], options: string[]) => {
-  return sortBy(options, (item: string) => getDisabledOptions(deploymentFrequencySettings, item));
+export const sortDisabledOptions = (settings: IPipelineConfig[] | ISourceControlConfig[], options: string[]) => {
+  return sortBy(options, (item: string) => getDisabledOptions(settings, item));
 };
 
 export const formatDate = (date: Date | string) => {

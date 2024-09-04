@@ -1,7 +1,7 @@
 import {
   ConfigTitle,
   DORA_METRICS,
-  PIPELINE_TOOL_NONE_OPTION,
+  PIPELINE_TOOL_OTHER_OPTION,
   PIPELINE_TOOL_TYPES,
   RequiredData,
 } from '@src/constants/resources';
@@ -71,10 +71,10 @@ export const PipelineTool = ({
     (it) => it !== RequiredData.LeadTimeForChanges && DORA_METRICS.some((doraMetrics) => doraMetrics === it),
   );
   if (isSelectLeadTimeForChanges && !isSelectDoraMetricsExceptLeadTimeForChanges) {
-    options.push(PIPELINE_TOOL_NONE_OPTION);
+    options.push(PIPELINE_TOOL_OTHER_OPTION);
   }
 
-  if (selectedOption === PIPELINE_TOOL_NONE_OPTION && isSelectDoraMetricsExceptLeadTimeForChanges) {
+  if (selectedOption === PIPELINE_TOOL_OTHER_OPTION && isSelectDoraMetricsExceptLeadTimeForChanges) {
     updateSelectedOption(PIPELINE_TOOL_TYPES.BUILD_KITE);
   }
 
@@ -108,7 +108,7 @@ export const PipelineTool = ({
           selectLabelId='pipelineTool-type-checkbox-label'
           selectAriaLabel='Pipeline Tool type select'
         />
-        {selectedOption !== PIPELINE_TOOL_NONE_OPTION && (
+        {selectedOption !== PIPELINE_TOOL_OTHER_OPTION && (
           <>
             <Controller
               name={fields[FieldKey.Token].key}

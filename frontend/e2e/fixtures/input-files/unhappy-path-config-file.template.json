@@ -106,7 +106,7 @@
     {
       "id": 0,
       "organization": "Heartbeat-backup",
-      "pipelineName": "Heartbeat-E2E",
+      "pipelineName": "Heartbeat",
       "step": ":rocket: Run e2e",
       "branches": ["main", "ADM-747"]
     }

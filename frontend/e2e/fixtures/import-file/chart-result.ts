@@ -11,18 +11,18 @@ type DoraChartType = {
 export const BOARD_CHART_VALUE = {
   Velocity: {
     type: 'trend up',
-    color: '#E82107',
-    value: '81.82%',
+    color: '#02C4A8',
+    value: '400.00%',
   },
   'Average Cycle Time': {
-    type: 'trend up',
+    type: 'trend down',
     color: '#02C4A8',
-    value: '43.78%',
+    value: '19.19%',
   },
   'Cycle Time Allocation': {
-    type: 'trend up',
+    type: 'trend down',
     color: '#E82107',
-    value: '11.15%',
+    value: '5.49%',
   },
   Rework: {
     type: 'trend up',
@@ -36,12 +36,12 @@ export const DORA_CHART_VALUE: DoraChartType = {
     'Lead Time For Changes': {
       type: 'trend down',
       color: '#02C4A8',
-      value: '80.49%',
+      value: '87.99%',
     },
     'Deployment Frequency': {
       type: 'trend down',
       color: '#E82107',
-      value: '75.00%',
+      value: '57.50%',
     },
     'Pipeline Change Failure Rate': {
       type: 'trend down',

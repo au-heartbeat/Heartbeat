@@ -1,4 +1,9 @@
-import { savePipelineCrews, saveUsers, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import {
+  savePipelineCrews,
+  saveSourceControlCrews,
+  saveUsers,
+  selectMetricsContent,
+} from '@src/context/Metrics/metricsSlice';
 import { AssigneeFilter } from '@src/containers/MetricsStep/Crews/AssigneeFilter';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import MultiAutoComplete from '@src/components/Common/MultiAutoComplete';
@@ -21,17 +26,26 @@ function getValidSelectedCrews(configCrews: string[], realCrews: string[]): stri
 
 export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => {
   const isBoardCrews = type === 'board';
+  const isSourceControl = type === 'source-control';
   const dispatch = useAppDispatch();
-  const { users, pipelineCrews } = useAppSelector(selectMetricsContent);
-  const [selectedCrews, setSelectedCrews] = useState<string[]>(
-    isBoardCrews ? users : getValidSelectedCrews(pipelineCrews, options),
-  );
+  const { users, pipelineCrews, sourceControlCrews } = useAppSelector(selectMetricsContent);
+  const crews = isSourceControl
+    ? getValidSelectedCrews(sourceControlCrews, options)
+    : getValidSelectedCrews(pipelineCrews, options);
+  const [selectedCrews, setSelectedCrews] = useState<string[]>(isBoardCrews ? users : crews);
   const isAllSelected = options.length > 0 && selectedCrews.length === options.length;
   const isEmptyCrewData = selectedCrews.length === 0;
 
   useEffect(() => {
-    setSelectedCrews(isBoardCrews ? users : pipelineCrews);
-  }, [users, isBoardCrews, pipelineCrews]);
+    if (isSourceControl) {
+      setSelectedCrews(getValidSelectedCrews(sourceControlCrews, options));
+    }
+  }, [isSourceControl, options, sourceControlCrews]);
+
+  useEffect(() => {
+    const crews = isSourceControl ? sourceControlCrews : pipelineCrews;
+    setSelectedCrews(isBoardCrews ? users : crews);
+  }, [users, isBoardCrews, pipelineCrews, isSourceControl, sourceControlCrews]);
 
   const handleCrewChange = (_: React.SyntheticEvent, value: string[]) => {
     if (value[value.length - 1] === 'All') {
@@ -42,8 +56,9 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
   };
 
   useEffect(() => {
-    dispatch(isBoardCrews ? saveUsers(selectedCrews) : savePipelineCrews(selectedCrews));
-  }, [selectedCrews, dispatch, isBoardCrews]);
+    const crew = isSourceControl ? saveSourceControlCrews(selectedCrews) : savePipelineCrews(selectedCrews);
+    dispatch(isBoardCrews ? saveUsers(selectedCrews) : crew);
+  }, [selectedCrews, dispatch, isBoardCrews, isSourceControl]);
 
   return (
     <>

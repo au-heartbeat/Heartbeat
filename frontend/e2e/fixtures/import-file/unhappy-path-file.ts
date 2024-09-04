@@ -86,7 +86,7 @@ export const importInputWrongProjectFromFile = {
     {
       id: 0,
       organization: 'Heartbeat-backup',
-      pipelineName: 'Heartbeat-E2E',
+      pipelineName: 'Heartbeat',
       step: ':rocket: Run e2e',
       branches: ['main'],
       isStepEmptyString: false,
@@ -96,10 +96,10 @@ export const importInputWrongProjectFromFile = {
 
 export const importModifiedCorrectConfig = {
   projectName: 'Heartbeat Metrics',
-  deletedBranch: 'ADM-747',
+  deletedBranch: 'ADM-998',
   dateRange: {
-    startDate: '2024-06-03T00:00:00.000+08:00',
-    endDate: '2024-06-07T23:59:59.999+08:00',
+    startDate: '2024-08-12T00:00:00.000+08:00',
+    endDate: '2024-09-02T23:59:59.999+08:00',
   },
   board: {
     type: 'Jira',
@@ -117,7 +117,7 @@ export const importModifiedCorrectConfig = {
     type: 'GitHub',
     token: process.env.E2E_TOKEN_GITHUB as string,
   },
-  crews: ['Man Tang', 'heartbeat user', 'Qiuhong Lei', 'Chao Wang', 'YinYuan Zhou'],
+  crews: ['Man Tang', 'YinYuan Zhou'],
   assigneeFilter: 'lastAssignee',
   cycleTime: {
     type: 'byColumn',

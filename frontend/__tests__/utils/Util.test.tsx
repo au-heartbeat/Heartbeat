@@ -31,8 +31,8 @@ import {
   TrendType,
   UP_TREND_IS_BETTER,
 } from '@src/constants/resources';
+import { ICycleTimeSetting, IPipelineConfig, ISourceControlConfig } from '@src/context/Metrics/metricsSlice';
 import { CleanedBuildKiteEmoji, OriginBuildKiteEmoji } from '@src/constants/emojis/emoji';
-import { ICycleTimeSetting, IPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { IPipeline } from '@src/context/config/pipelineTool/verifyResponseSlice';
 import { IReportInfo } from '@src/hooks/useGenerateReportEffect';
 import { BoardInfoResponse } from '@src/hooks/useGetBoardInfo';
@@ -84,7 +84,7 @@ describe('getDisabledOptions function', () => {
     expect(result).toBeTruthy();
   });
 
-  it('should return true when option is not includes', () => {
+  it('should return false when option is not includes', () => {
     const mockDeploymentFrequencySettings: IPipelineConfig[] = [
       { id: 0, organization: '', pipelineName: 'mock 1', step: '', branches: [] },
       { id: 1, organization: '', pipelineName: 'mock 2', step: '', branches: [] },
@@ -93,6 +93,32 @@ describe('getDisabledOptions function', () => {
     const mockOption: string = 'mock 3';
 
     const result = getDisabledOptions(mockDeploymentFrequencySettings, mockOption);
+
+    expect(result).toBeFalsy();
+  });
+
+  it('should return true when option is includes and receive ISourceControlConfig data', () => {
+    const mockSourceControlConfigSettings: ISourceControlConfig[] = [
+      { id: 0, organization: '', repo: 'mock 1', branches: [] },
+      { id: 1, organization: '', repo: 'mock 2', branches: [] },
+    ];
+
+    const mockOption: string = 'mock 1';
+
+    const result = getDisabledOptions(mockSourceControlConfigSettings, mockOption);
+
+    expect(result).toBeTruthy();
+  });
+
+  it('should return false when option is not includes and receive ISourceControlConfig data', () => {
+    const mockSourceControlConfigSettings: ISourceControlConfig[] = [
+      { id: 0, organization: '', repo: 'mock 1', branches: [] },
+      { id: 1, organization: '', repo: 'mock 2', branches: [] },
+    ];
+
+    const mockOption: string = 'mock 3';
+
+    const result = getDisabledOptions(mockSourceControlConfigSettings, mockOption);
 
     expect(result).toBeFalsy();
   });

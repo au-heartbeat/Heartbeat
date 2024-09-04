@@ -1,6 +1,7 @@
 import {
   resetMetricData,
   savePipelineCrews,
+  saveSourceControlCrews,
   setCycleTimeSettingsType,
   updateMetricsImportedData,
 } from '@src/context/Metrics/metricsSlice';
@@ -49,6 +50,7 @@ export const HomeGuide = () => {
             dispatch(updateBasicConfigState(config));
             dispatch(updateMetricsImportedData(config));
             dispatch(savePipelineCrews(config.pipelineCrews));
+            dispatch(saveSourceControlCrews(config.sourceControlCrews));
             dispatch(setCycleTimeSettingsType(getCycleTimeSettingsType(config.cycleTime?.type)));
             navigate(Route.MetricsPage);
           } else {

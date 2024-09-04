@@ -50,7 +50,11 @@ const initialConfigState: BasicConfigState = {
     },
     isShow: false,
     verifiedResponse: {
-      repoList: [],
+      repoList: {
+        children: [],
+        name: 'root',
+        value: '-1',
+      },
     },
   },
   warningMessage: null,
