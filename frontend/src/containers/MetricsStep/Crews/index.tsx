@@ -37,6 +37,12 @@ export const Crews = ({ options, title, label, type = 'board' }: crewsProps) => 
   const isEmptyCrewData = selectedCrews.length === 0;
 
   useEffect(() => {
+    if (isSourceControl) {
+      setSelectedCrews(getValidSelectedCrews(sourceControlCrews, options));
+    }
+  }, [isSourceControl, options, sourceControlCrews]);
+
+  useEffect(() => {
     const crews = isSourceControl ? sourceControlCrews : pipelineCrews;
     setSelectedCrews(isBoardCrews ? users : crews);
   }, [users, isBoardCrews, pipelineCrews, isSourceControl, sourceControlCrews]);

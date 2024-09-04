@@ -36,14 +36,14 @@ export interface IBoardClassificationDetailItem {
 export interface ICsvComparedLines extends Record<string, number> {}
 
 export const BOARD_METRICS_RESULT: IBoardMetricsResult = {
-  velocity: '7.5',
-  throughput: '5',
-  averageCycleTimeForSP: '4.49',
-  averageCycleTimeForCard: '6.73',
-  totalReworkTimes: '2',
-  totalReworkCards: '2',
-  reworkCardsRatio: '0.4000',
-  reworkThroughput: '5',
+  velocity: '14',
+  throughput: '6',
+  averageCycleTimeForSP: '1.13',
+  averageCycleTimeForCard: '2.64',
+  totalReworkTimes: '0',
+  totalReworkCards: '0',
+  reworkCardsRatio: '0.0000',
+  reworkThroughput: '6',
 };
 
 export const BOARD_METRICS_RESULT_MULTIPLE_RANGES: IBoardMetricsResult[] = [
@@ -765,12 +765,12 @@ export const FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT: IBoardMetricsResult = {
 
 export const DORA_METRICS_RESULT = {
   PrLeadTime: '0.00',
-  PipelineLeadTime: '22.72',
-  TotalLeadTime: '22.72',
-  DeploymentFrequency: '0.20',
-  FailureRate: '0.00% (0/1)',
+  PipelineLeadTime: '0.00',
+  TotalLeadTime: '0.00',
+  DeploymentFrequency: '0.00',
+  FailureRate: '100.00% (1/1)',
   DevMeanTimeToRecovery: '0.00',
-  DeploymentTimes: '1',
+  DeploymentTimes: '0',
 };
 
 export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [

@@ -401,17 +401,34 @@ export const metricsSlice = createSlice({
       const { updateId, label, value } = action.payload;
       const sourceControlConfigurationSettings = state.sourceControlConfigurationSettings;
       state.sourceControlConfigurationSettings = sourceControlConfigurationSettings.map((it) => {
-        return it.id !== updateId
-          ? it
-          : {
+        if (it.id !== updateId) {
+          return it;
+        } else {
+          if (label === 'organization') {
+            return {
               ...it,
-              [label]: value,
+              organization: value,
+              repo: '',
+              branches: [],
             };
+          } else if (label === 'repo') {
+            return {
+              ...it,
+              repo: value,
+              branches: [],
+            };
+          } else {
+            return {
+              ...it,
+              branches: value,
+            };
+          }
+        }
       });
     },
 
     updateSourceControlConfigurationSettingsFirstInto: (state, action) => {
-      const { name, type } = action.payload;
+      const { name, type, id } = action.payload;
 
       const sourceControlConfigurationSettings = state.sourceControlConfigurationSettings;
 
@@ -438,19 +455,34 @@ export const metricsSlice = createSlice({
               },
             ];
 
-      if (type === 'organization') {
-        validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
-          (it) => it['organization'] === '' || name.includes(it['organization']),
-        );
-      } else if (type === 'repo') {
-        validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
-          (it) => it['repo'] === '' || name.includes(it['repo']),
-        );
-      } else {
-        validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.filter(
-          (it) => it['branches'].length === 0 || it['branches'].filter((branch) => name.includes(branch)),
-        );
-      }
+      const func = (type: string, it: ISourceControlConfig) => {
+        if (type === 'organization') {
+          if (name.includes(it['organization'])) {
+            return it['organization'];
+          } else {
+            return '';
+          }
+        } else if (type === 'repo') {
+          if (name.includes(it['repo'])) {
+            return it['repo'];
+          } else {
+            return '';
+          }
+        } else {
+          return it.branches.filter((branch) => name.includes(branch));
+        }
+      };
+
+      validSourceControlConfigurationSettings = validSourceControlConfigurationSettings.map((it) => {
+        if (id !== undefined && id !== it.id) {
+          return it;
+        }
+        const newValue = func(type, it);
+        return {
+          ...it,
+          [type]: newValue,
+        };
+      });
 
       state.sourceControlConfigurationSettings = validSourceControlConfigurationSettings;
     },

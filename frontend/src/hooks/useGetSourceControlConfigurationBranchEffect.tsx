@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 export interface IUseGetSourceControlConfigurationBranchInterface {
   readonly isLoading: boolean;
-  readonly getSourceControlBranchInfo: (organization: string, repo: string) => Promise<void>;
+  readonly getSourceControlBranchInfo: (organization: string, repo: string, id: number) => Promise<void>;
   readonly isGetBranch: boolean;
 }
 export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceControlConfigurationBranchInterface => {
@@ -23,7 +23,7 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
       .map((it) => it[1])[0];
   }
 
-  const getSourceControlBranchInfo = async (organization: string, repo: string) => {
+  const getSourceControlBranchInfo = async (organization: string, repo: string, id: number) => {
     const params = {
       type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
       token: restoredSourceControlInfo.token,
@@ -52,7 +52,8 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
         dispatch(
           updateSourceControlConfigurationSettingsFirstInto({
             ...response.data,
-            type: 'branch',
+            id,
+            type: 'branches',
           }),
         );
       }

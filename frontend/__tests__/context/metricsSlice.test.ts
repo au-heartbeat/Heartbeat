@@ -1612,8 +1612,8 @@ describe('saveMetricsSetting reducer', () => {
       { id: 3, organization: 'test-org3', repo: 'test-repo3', branches: ['test-branch3-1', 'test-branch3-2'] },
     ];
     const expectedSourceControlConfigurationSettings = [
-      { id: 1, organization: 'test-org-update1', repo: 'test-repo1', branches: ['test-branch1-1', 'test-branch1-2'] },
-      { id: 2, organization: 'test-org2', repo: 'test-repo-update2', branches: ['test-branch2-1', 'test-branch2-2'] },
+      { id: 1, organization: 'test-org-update1', repo: '', branches: [] },
+      { id: 2, organization: 'test-org2', repo: 'test-repo-update2', branches: [] },
       { id: 3, organization: 'test-org3', repo: 'test-repo3', branches: ['test-branch-update3-1'] },
     ];
 
@@ -1644,7 +1644,6 @@ describe('saveMetricsSetting reducer', () => {
       initState,
       updateSourceControlConfigurationSettingsFirstInto({
         name: ['test1', 'test2'],
-        isProjectCreated: true,
         type: 'organization',
       }),
     );
@@ -1652,13 +1651,14 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.sourceControlConfigurationSettings).toEqual(expectedSourceControlConfigurationSettings);
   });
 
-  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and setting is empty', () => {
+  it('should return source control settings when handle updateSourceControlConfigurationSettingsFirstInto and import data is not empty', () => {
     const existedImportedSourceControlSettings = [
       { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
       { id: 2, organization: 'test-org2', repo: 'test-repo2', branches: ['test-branch2'] },
     ];
     const expectedSourceControlConfigurationSettings = [
       { id: 1, organization: 'test-org1', repo: 'test-repo1', branches: ['test-branch1'] },
+      { id: 2, organization: '', repo: '', branches: [] },
     ];
     const state = {
       ...initState,
@@ -1678,7 +1678,14 @@ describe('saveMetricsSetting reducer', () => {
       savedMetricsSetting,
       updateSourceControlConfigurationSettingsFirstInto({
         name: ['test-repo1', 'test2'],
-        isProjectCreated: false,
+        type: 'repo',
+        id: 1,
+      }),
+    );
+    savedMetricsSetting = saveMetricsSettingReducer(
+      savedMetricsSetting,
+      updateSourceControlConfigurationSettingsFirstInto({
+        name: ['test-repo1', 'test2'],
         type: 'repo',
       }),
     );
@@ -1686,8 +1693,7 @@ describe('saveMetricsSetting reducer', () => {
       savedMetricsSetting,
       updateSourceControlConfigurationSettingsFirstInto({
         name: ['test-branch1'],
-        isProjectCreated: false,
-        type: 'branch',
+        type: 'branches',
       }),
     );
 

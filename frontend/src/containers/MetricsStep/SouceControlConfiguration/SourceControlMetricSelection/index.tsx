@@ -77,16 +77,24 @@ export const SourceControlMetricSelection = ({
   };
 
   useEffect(() => {
-    if (!isGetRepo && organization) {
-      getSourceControlRepoInfo(organization, dateRanges);
+    if (!isGetRepo && organization && repoNameOptions.length === 0) {
+      getSourceControlRepoInfo(organization, dateRanges, id);
     }
-  }, [dateRanges, getSourceControlRepoInfo, isGetRepo, organization]);
+  }, [dateRanges, getSourceControlRepoInfo, id, isGetRepo, organization, repoNameOptions.length]);
 
   useEffect(() => {
-    if (!isGetBranch && organization && repo) {
-      getSourceControlBranchInfo(organization, repo);
+    if (!isGetBranch && organization && repo && branchNameOptions.length === 0) {
+      getSourceControlBranchInfo(organization, repo, id);
     }
-  }, [getSourceControlBranchInfo, getSourceControlRepoInfo, isGetBranch, organization, repo]);
+  }, [
+    branchNameOptions.length,
+    getSourceControlBranchInfo,
+    getSourceControlRepoInfo,
+    id,
+    isGetBranch,
+    organization,
+    repo,
+  ]);
 
   useEffect(() => {
     if (!isGetAllCrews && organization && repo && selectedBranches) {
@@ -105,12 +113,12 @@ export const SourceControlMetricSelection = ({
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
-    getSourceControlRepoInfo(value.toString(), dateRanges);
+    getSourceControlRepoInfo(value.toString(), dateRanges, id);
   };
 
   const handleOnUpdateRepo = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
-    getSourceControlBranchInfo(organization, value.toString());
+    getSourceControlBranchInfo(organization, value.toString(), id);
   };
 
   const handleOnUpdateBranches = (id: number, label: string, value: string[]): void => {
@@ -118,6 +126,7 @@ export const SourceControlMetricSelection = ({
     onUpdateSourceControl(id, label, value);
     branchNeedGetCrews.forEach((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges));
   };
+
   useEffect(() => {
     if (isGetAllCrews) {
       setLoadingCompletedNumber((value) => Math.min(totalSourceControlNumber, value + 1));
