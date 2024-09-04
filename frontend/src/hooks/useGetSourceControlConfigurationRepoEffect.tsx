@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 
 export interface IUseGetSourceControlConfigurationRepoInterface {
   readonly isLoading: boolean;
-  readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRange[]) => Promise<void>;
+  readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRange[], id: number) => Promise<void>;
   readonly isGetRepo: boolean;
 }
 export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationRepoInterface => {
@@ -23,7 +23,7 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
       .map((it) => it[1])[0];
   }
 
-  const getSourceControlRepoInfo = async (organization: string, dateRanges: DateRange[]) => {
+  const getSourceControlRepoInfo = async (organization: string, dateRanges: DateRange[], id: number) => {
     setIsLoading(true);
     const allRepoRes = await Promise.allSettled(
       dateRanges.flatMap((dateRange) => {
@@ -52,6 +52,7 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
         dispatch(
           updateSourceControlConfigurationSettingsFirstInto({
             ...response.value.data,
+            id,
             type: 'repo',
           }),
         );

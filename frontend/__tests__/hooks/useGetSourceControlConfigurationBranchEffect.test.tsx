@@ -50,7 +50,7 @@ describe('use get source control configuration branch info side effect', () => {
     const mockRepo = 'mockRepo';
 
     await act(async () => {
-      result.current.getSourceControlBranchInfo(mockOrganization, mockRepo);
+      result.current.getSourceControlBranchInfo(mockOrganization, mockRepo, 1);
     });
 
     await waitFor(() => {

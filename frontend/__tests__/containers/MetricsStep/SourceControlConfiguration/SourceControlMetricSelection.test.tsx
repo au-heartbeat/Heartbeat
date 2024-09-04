@@ -28,6 +28,12 @@ let mockRepoEffectResponse: IUseGetSourceControlConfigurationRepoInterface = moc
 let mockBranchEffectResponse: IUseGetSourceControlConfigurationBranchInterface = mockInitBranchEffectResponse;
 let mockCrewEffectResponse: IUseGetSourceControlConfigurationCrewInterface = mockInitCrewEffectResponse;
 
+const mockInitSelectSourceControlRepos = ['mockRepoName', 'mockRepoName1'];
+let mockSelectSourceControlRepos = mockInitSelectSourceControlRepos;
+
+const mockInitSelectSourceControlBranches = ['mockBranchName', 'mockBranchName1'];
+let mockSelectSourceControlBranches = mockInitSelectSourceControlBranches;
+
 jest.mock('@src/hooks/useGetSourceControlConfigurationRepoEffect', () => {
   return {
     useGetSourceControlConfigurationRepoEffect: () => mockRepoEffectResponse,
@@ -54,8 +60,8 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
 jest.mock('@src/context/config/configSlice', () => ({
   ...jest.requireActual('@src/context/config/configSlice'),
   selectSourceControlOrganizations: jest.fn().mockReturnValue(['mockOrgName', 'mockOrgName1']),
-  selectSourceControlRepos: jest.fn().mockImplementation(() => ['mockRepoName', 'mockRepoName1']),
-  selectSourceControlBranches: jest.fn().mockImplementation(() => ['mockBranchName', 'mockBranchName1']),
+  selectSourceControlRepos: jest.fn().mockImplementation(() => mockSelectSourceControlRepos),
+  selectSourceControlBranches: jest.fn().mockImplementation(() => mockSelectSourceControlBranches),
   selectDateRange: jest.fn().mockReturnValue([
     { startDate: '2024-07-31T00:00:00.000+08:00', endDate: '2024-08-02T23:59:59.999+08:00' },
     { startDate: '2024-07-15T00:00:00.000+08:00', endDate: '2024-07-28T23:59:59.999+08:00' },
@@ -69,6 +75,8 @@ describe('SourceControlMetricSelection', () => {
     mockRepoEffectResponse = mockInitRepoEffectResponse;
     mockBranchEffectResponse = mockInitBranchEffectResponse;
     mockCrewEffectResponse = mockInitCrewEffectResponse;
+    mockSelectSourceControlBranches = mockInitSelectSourceControlBranches;
+    mockSelectSourceControlRepos = mockInitSelectSourceControlRepos;
   });
   const onUpdateSourceControl = jest.fn();
   const setup = (isDuplicated: boolean = false) => {
@@ -110,6 +118,7 @@ describe('SourceControlMetricSelection', () => {
   });
 
   it('should call getSourceControlRepoInfo function when isGetRepo is false and organization exists', () => {
+    mockSelectSourceControlRepos = [];
     const getSourceControlRepoInfoFunction = jest.fn();
     mockRepoEffectResponse = {
       ...mockInitRepoEffectResponse,
@@ -122,6 +131,7 @@ describe('SourceControlMetricSelection', () => {
   });
 
   it('should call getSourceControlBranchInfo function when isGetBranch is false and organization and repo exist', () => {
+    mockSelectSourceControlBranches = [];
     const getSourceControlBranchInfoFunction = jest.fn();
     mockBranchEffectResponse = {
       ...mockBranchEffectResponse,

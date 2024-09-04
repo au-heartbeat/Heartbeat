@@ -57,7 +57,7 @@ describe('use get source control configuration repo info side effect', () => {
     ];
 
     await act(async () => {
-      result.current.getSourceControlRepoInfo(mockOrganization, mockDateRanges);
+      result.current.getSourceControlRepoInfo(mockOrganization, mockDateRanges, 1);
     });
 
     await waitFor(() => {
