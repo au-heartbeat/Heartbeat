@@ -15,6 +15,9 @@ jest.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
   useSelector: (selector: <TSelected>() => TSelected) => {
     const originalUseSelector = jest.requireActual('react-redux').useSelector;
+    if (selector.name === 'selectShouldGetSourceControlConfig') {
+      return true;
+    }
     return originalUseSelector(selector);
   },
 }));

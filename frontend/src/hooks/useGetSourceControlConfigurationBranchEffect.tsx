@@ -1,5 +1,8 @@
+import {
+  selectShouldGetSourceControlConfig,
+  updateSourceControlConfigurationSettingsFirstInto,
+} from '@src/context/Metrics/metricsSlice';
 import { selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
-import { updateSourceControlConfigurationSettingsFirstInto } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { SourceControlTypes } from '@src/constants/resources';
@@ -14,7 +17,8 @@ export interface IUseGetSourceControlConfigurationBranchInterface {
 export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceControlConfigurationBranchInterface => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isGetBranch, setIsGetBranch] = useState<boolean>(false);
+  const shouldGetSourceControlConfig = useAppSelector(selectShouldGetSourceControlConfig);
+  const [isGetBranch, setIsGetBranch] = useState<boolean>(!shouldGetSourceControlConfig);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
