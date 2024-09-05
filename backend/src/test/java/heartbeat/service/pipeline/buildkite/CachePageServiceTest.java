@@ -16,6 +16,7 @@ import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
 import heartbeat.client.dto.pipeline.buildkite.BuildKitePipelineDTO;
 import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
+import heartbeat.exception.InternalServerErrorException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +35,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -214,6 +217,15 @@ class CachePageServiceTest {
 	}
 
 	@Test
+	void shouldThrowExceptionWhenFetchPageOrganizationsInfoThrow500() {
+		when(gitHubFeignClient.getAllOrganizations(MOCK_TOKEN, 100, 1)).thenThrow(RuntimeException.class);
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class, () -> cachePageService.getGitHubOrganizations(MOCK_TOKEN, 1, 100));
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals("Error to get paginated github organization info, page: 1, exception: java.lang.RuntimeException", internalServerErrorException.getMessage());
+	}
+
+	@Test
 	void shouldReturnPageReposInfoDtoWhenFetchPageReposInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
 		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
@@ -226,6 +238,18 @@ class CachePageServiceTest {
 		assertNotNull(pageReposInfoDTO);
 		assertThat(pageReposInfoDTO.getPageInfo()).isEqualTo(responseEntity.getBody());
 		assertThat(pageReposInfoDTO.getTotalPage()).isEqualTo(2);
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFetchPageRepoInfoThrow500() {
+		String organization = "test-org";
+		when(gitHubFeignClient.getAllRepos(MOCK_TOKEN, organization, 100, 1)).thenThrow(RuntimeException.class);
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class,
+				() -> cachePageService.getGitHubRepos(MOCK_TOKEN, organization, 1, 100));
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals("Error to get paginated github repo info, page: 1, exception: java.lang.RuntimeException",
+				internalServerErrorException.getMessage());
 	}
 
 	@Test
@@ -246,6 +270,20 @@ class CachePageServiceTest {
 	}
 
 	@Test
+	void shouldThrowExceptionWhenFetchPageBranchInfoThrow500() {
+		String organization = "test-org";
+		String repo = "test-repo";
+		when(gitHubFeignClient.getAllBranches(MOCK_TOKEN, organization, repo, 100, 1))
+			.thenThrow(RuntimeException.class);
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class,
+				() -> cachePageService.getGitHubBranches(MOCK_TOKEN, organization, repo, 1, 100));
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals("Error to get paginated github branch info, page: 1, exception: java.lang.RuntimeException",
+				internalServerErrorException.getMessage());
+	}
+
+	@Test
 	void shouldReturnPagePullRequestInfoDtoWhenFetchPullRequestInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
 		String repo = "test-repo";
@@ -262,6 +300,21 @@ class CachePageServiceTest {
 		assertNotNull(pagePullRequestInfoDTO);
 		assertThat(pagePullRequestInfoDTO.getPageInfo()).isEqualTo(responseEntity.getBody());
 		assertThat(pagePullRequestInfoDTO.getTotalPage()).isEqualTo(2);
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFetchPagePullRequestInfoThrow500() {
+		String organization = "test-org";
+		String repo = "test-repo";
+		String branch = "test-branch";
+		when(gitHubFeignClient.getAllPullRequests(MOCK_TOKEN, organization, repo, 100, 1, branch, "all"))
+			.thenThrow(RuntimeException.class);
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class,
+				() -> cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization, repo, branch, 1, 100));
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals("Error to get paginated github pull request info, page: 1, exception: java.lang.RuntimeException",
+				internalServerErrorException.getMessage());
 	}
 
 	private static <T> ResponseEntity<List<T>> getResponseEntity(HttpHeaders httpHeaders, String pathname)

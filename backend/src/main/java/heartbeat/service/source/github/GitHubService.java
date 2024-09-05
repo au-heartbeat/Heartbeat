@@ -35,8 +35,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -377,24 +375,21 @@ public class GitHubService {
 			organizationNames.addAll(firstPageStepsInfo.stream().map(OrganizationsInfoDTO::getLogin).toList());
 		}
 		if (totalPage > 1) {
-			List<CompletableFuture<List<OrganizationsInfoDTO>>> futures = IntStream.range(initPage + 1, totalPage + 1)
-				.mapToObj(page -> getGitHubOrganizationAsync(realToken, page))
-				.toList();
-
-			List<String> orgNamesOtherFirstPage = futures.stream()
-				.map(CompletableFuture::join)
-				.flatMap(Collection::stream)
-				.map(OrganizationsInfoDTO::getLogin)
-				.toList();
-			organizationNames.addAll(orgNamesOtherFirstPage);
+			for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
+				List<OrganizationsInfoDTO> organizationNamesOtherFirstPageList = IntStream
+					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+					.parallel()
+					.mapToObj(page -> cachePageService.getGitHubOrganizations(realToken, page, PER_PAGE).getPageInfo())
+					.flatMap(Collection::stream)
+					.toList();
+				List<String> orgNamesOtherFirstPage = organizationNamesOtherFirstPageList.stream()
+					.map(OrganizationsInfoDTO::getLogin)
+					.toList();
+				organizationNames.addAll(orgNamesOtherFirstPage);
+			}
 		}
 		log.info("Successfully to get all organizations");
 		return organizationNames;
-	}
-
-	private CompletableFuture<List<OrganizationsInfoDTO>> getGitHubOrganizationAsync(String token, int page) {
-		return CompletableFuture.supplyAsync(
-				() -> cachePageService.getGitHubOrganizations(token, page, PER_PAGE).getPageInfo(), customTaskExecutor);
 	}
 
 	public List<String> getAllRepos(String token, String organization, long endTime) {
@@ -415,26 +410,21 @@ public class GitHubService {
 				.toList());
 		}
 		if (totalPage > 1) {
-			List<CompletableFuture<List<ReposInfoDTO>>> futures = IntStream.range(initPage + 1, totalPage + 1)
-				.mapToObj(page -> getGitHubReposAsync(realToken, organization, page))
-				.toList();
-
-			List<String> repoNamesOtherFirstPage = futures.stream()
-				.map(CompletableFuture::join)
-				.flatMap(Collection::stream)
-				.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
-				.map(ReposInfoDTO::getName)
-				.toList();
-			repoNames.addAll(repoNamesOtherFirstPage);
+			for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
+				List<ReposInfoDTO> repoNamesOtherFirstPageList = IntStream
+					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+					.parallel()
+					.mapToObj(page -> cachePageService.getGitHubRepos(realToken, organization, page, PER_PAGE)
+						.getPageInfo())
+					.flatMap(Collection::stream)
+					.filter(it -> Instant.parse(it.getCreatedAt()).isBefore(endTimeInstant))
+					.toList();
+				List<String> repoName = repoNamesOtherFirstPageList.stream().map(ReposInfoDTO::getName).toList();
+				repoNames.addAll(repoName);
+			}
 		}
 		log.info("Successfully to get all repos, organization: {}", organization);
 		return repoNames;
-	}
-
-	private CompletableFuture<List<ReposInfoDTO>> getGitHubReposAsync(String token, String organization, int page) {
-		return CompletableFuture.supplyAsync(
-				() -> cachePageService.getGitHubRepos(token, organization, page, PER_PAGE).getPageInfo(),
-				customTaskExecutor);
 	}
 
 	public List<String> getAllBranches(String token, String organization, String repo) {
@@ -451,26 +441,22 @@ public class GitHubService {
 			branchNames.addAll(firstPageStepsInfo.stream().map(BranchesInfoDTO::getName).toList());
 		}
 		if (totalPage > 1) {
-			List<CompletableFuture<List<BranchesInfoDTO>>> futures = IntStream.range(initPage + 1, totalPage + 1)
-				.mapToObj(page -> getGitHubBranchesAsync(realToken, organization, repo, page))
-				.toList();
-
-			List<String> branchNamesOtherFirstPage = futures.stream()
-				.map(CompletableFuture::join)
-				.flatMap(Collection::stream)
-				.map(BranchesInfoDTO::getName)
-				.toList();
-			branchNames.addAll(branchNamesOtherFirstPage);
+			for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
+				List<BranchesInfoDTO> branchNamesOtherFirstPageList = IntStream
+					.range(i, Math.min(i + BATCH_SIZE, totalPage + 1))
+					.parallel()
+					.mapToObj(page -> cachePageService.getGitHubBranches(realToken, organization, repo, page, PER_PAGE)
+						.getPageInfo())
+					.flatMap(Collection::stream)
+					.toList();
+				List<String> branchNamesOtherFirstPage = branchNamesOtherFirstPageList.stream()
+					.map(BranchesInfoDTO::getName)
+					.toList();
+				branchNames.addAll(branchNamesOtherFirstPage);
+			}
 		}
 		log.info("Successfully to get all branches, organization: {}, repo: {}", organization, repo);
 		return branchNames;
-	}
-
-	private CompletableFuture<List<BranchesInfoDTO>> getGitHubBranchesAsync(String token, String organization,
-			String repo, int page) {
-		return CompletableFuture.supplyAsync(
-				() -> cachePageService.getGitHubBranches(token, organization, repo, page, PER_PAGE).getPageInfo(),
-				customTaskExecutor);
 	}
 
 	public List<String> getAllCrews(String token, String organization, String repo, String branch, long startTime,

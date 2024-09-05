@@ -374,6 +374,11 @@ export const metricsSlice = createSlice({
         { id: newId, organization: '', pipelineName: '', step: '', branches: [] },
       ];
     },
+
+    initSourceControlConfigurationSettings: (state) => {
+      state.sourceControlConfigurationSettings = initialState.sourceControlConfigurationSettings;
+    },
+
     addOneSourceControlSetting: (state) => {
       const { sourceControlConfigurationSettings } = state;
       const maxId = sourceControlConfigurationSettings[sourceControlConfigurationSettings.length - 1]?.id ?? 0;
@@ -849,6 +854,7 @@ export const {
   deleteSourceControlConfigurationSettings,
   updateSourceControlConfigurationSettingsFirstInto,
   addOneSourceControlSetting,
+  initSourceControlConfigurationSettings,
 } = metricsSlice.actions;
 
 export const selectShouldGetBoardConfig = (state: RootState) => state.metrics.shouldGetBoardConfig;
