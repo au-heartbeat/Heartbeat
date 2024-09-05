@@ -13,6 +13,7 @@ import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.PageBuildKitePipelineInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
+import heartbeat.exception.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
@@ -72,52 +73,73 @@ public class CachePageService {
 
 	@Cacheable(cacheNames = "pageOrganization", key = "#token+'-'+#page+'-'+#perPage")
 	public PageOrganizationsInfoDTO getGitHubOrganizations(String token, int page, int perPage) {
-		log.info("Start to get paginated github organization info, page: {}", page);
-		ResponseEntity<List<OrganizationsInfoDTO>> allOrganizations = gitHubFeignClient.getAllOrganizations(token,
-				perPage, page);
-		log.info("Successfully get paginated github organization info, page: {}", page);
-
-		int totalPage = parseTotalPage(allOrganizations.getHeaders().get(BUILD_KITE_LINK_HEADER));
-
-		return PageOrganizationsInfoDTO.builder().pageInfo(allOrganizations.getBody()).totalPage(totalPage).build();
+		try {
+			log.info("Start to get paginated github organization info, page: {}", page);
+			ResponseEntity<List<OrganizationsInfoDTO>> allOrganizations = gitHubFeignClient.getAllOrganizations(token,
+					perPage, page);
+			log.info("Successfully get paginated github organization info, page: {}", page);
+			int totalPage = parseTotalPage(allOrganizations.getHeaders().get(BUILD_KITE_LINK_HEADER));
+			return PageOrganizationsInfoDTO.builder().pageInfo(allOrganizations.getBody()).totalPage(totalPage).build();
+		}
+		catch (Exception e) {
+			log.info("Error to get paginated github organization info, page: {}, exception: {}", page, e);
+			throw new InternalServerErrorException(
+					String.format("Error to get paginated github organization info, page: %s, exception: %s", page, e));
+		}
 	}
 
 	@Cacheable(cacheNames = "pageRepo", key = "#token+'-'+#organization+'-'+#page+'-'+#perPage")
 	public PageReposInfoDTO getGitHubRepos(String token, String organization, int page, int perPage) {
-		log.info("Start to get paginated github repo info, page: {}", page);
-		ResponseEntity<List<ReposInfoDTO>> allRepos = gitHubFeignClient.getAllRepos(token, organization, perPage, page);
-		log.info("Successfully get paginated github repo info, page: {}", page);
-
-		int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
-
-		return PageReposInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
+		try {
+			log.info("Start to get paginated github repo info, page: {}", page);
+			ResponseEntity<List<ReposInfoDTO>> allRepos = gitHubFeignClient.getAllRepos(token, organization, perPage,
+					page);
+			log.info("Successfully get paginated github repo info, page: {}", page);
+			int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
+			return PageReposInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
+		}
+		catch (Exception e) {
+			log.info("Error to get paginated github repo info, page: {}, exception: {}", page, e);
+			throw new InternalServerErrorException(
+					String.format("Error to get paginated github repo info, page: %s, exception: %s", page, e));
+		}
 	}
 
 	@Cacheable(cacheNames = "pageBranch", key = "#token+'-'+#organization+'-'+#repo+'-'+#page+'-'+#perPage")
 	public PageBranchesInfoDTO getGitHubBranches(String token, String organization, String repo, int page,
 			int perPage) {
-		log.info("Start to get paginated github branch info, page: {}", page);
-		ResponseEntity<List<BranchesInfoDTO>> allRepos = gitHubFeignClient.getAllBranches(token, organization, repo,
-				perPage, page);
-		log.info("Successfully get paginated github branch info, page: {}", page);
-
-		int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
-
-		return PageBranchesInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
+		try {
+			log.info("Start to get paginated github branch info, page: {}", page);
+			ResponseEntity<List<BranchesInfoDTO>> allRepos = gitHubFeignClient.getAllBranches(token, organization, repo,
+					perPage, page);
+			log.info("Successfully get paginated github branch info, page: {}", page);
+			int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
+			return PageBranchesInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
+		}
+		catch (Exception e) {
+			log.info("Error to get paginated github branch info, page: {}, exception: {}", page, e);
+			throw new InternalServerErrorException(
+					String.format("Error to get paginated github branch info, page: %s, exception: %s", page, e));
+		}
 	}
 
 	@Cacheable(cacheNames = "pagePullRequest",
 			key = "#token+'-'+#organization+'-'+#repo+'-'+#branch+'-'+#page+'-'+#perPage")
 	public PagePullRequestInfoDTO getGitHubPullRequest(String token, String organization, String repo, String branch,
 			int page, int perPage) {
-		log.info("Start to get paginated github pull request info, page: {}", page);
-		ResponseEntity<List<PullRequestInfoDTO>> allPullRequests = gitHubFeignClient.getAllPullRequests(token,
-				organization, repo, perPage, page, branch, "all");
-		log.info("Successfully get paginated github pull request info, page: {}", page);
-
-		int totalPage = parseTotalPage(allPullRequests.getHeaders().get(BUILD_KITE_LINK_HEADER));
-
-		return PagePullRequestInfoDTO.builder().pageInfo(allPullRequests.getBody()).totalPage(totalPage).build();
+		try {
+			log.info("Start to get paginated github pull request info, page: {}", page);
+			ResponseEntity<List<PullRequestInfoDTO>> allPullRequests = gitHubFeignClient.getAllPullRequests(token,
+					organization, repo, perPage, page, branch, "all");
+			log.info("Successfully get paginated github pull request info, page: {}", page);
+			int totalPage = parseTotalPage(allPullRequests.getHeaders().get(BUILD_KITE_LINK_HEADER));
+			return PagePullRequestInfoDTO.builder().pageInfo(allPullRequests.getBody()).totalPage(totalPage).build();
+		}
+		catch (Exception e) {
+			log.info("Error to get paginated github pull request info, page: {}, exception: {}", page, e);
+			throw new InternalServerErrorException(
+					String.format("Error to get paginated github pull request info, page: %s, exception: %s", page, e));
+		}
 	}
 
 	private int parseTotalPage(@Nullable List<String> linkHeader) {

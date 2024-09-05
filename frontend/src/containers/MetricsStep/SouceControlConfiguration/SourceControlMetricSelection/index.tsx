@@ -21,8 +21,8 @@ import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlCon
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Loading } from '@src/components/Loading';
+import { useEffect, useRef } from 'react';
 import { store } from '@src/store';
-import { useEffect } from 'react';
 
 interface SourceControlMetricSelectionProps {
   sourceControlSetting: {
@@ -49,6 +49,7 @@ export const SourceControlMetricSelection = ({
   totalSourceControlNumber,
 }: SourceControlMetricSelectionProps) => {
   const { id, organization, repo } = sourceControlSetting;
+  const isInitialMount = useRef(true);
   const {
     isLoading: repoIsLoading,
     getSourceControlRepoInfo,
@@ -81,44 +82,36 @@ export const SourceControlMetricSelection = ({
   };
 
   useEffect(() => {
-    if (!isGetRepo && organization && repoNameOptions.length === 0) {
+    if (isInitialMount.current && !isGetRepo && organization && repoNameOptions.length === 0) {
       getSourceControlRepoInfo(organization, dateRanges, id);
+      isInitialMount.current = false;
     }
-  }, [dateRanges, getSourceControlRepoInfo, id, isGetRepo, organization, repoNameOptions.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGetRepo]);
 
   useEffect(() => {
-    if (!isGetBranch && organization && repo && branchNameOptions.length === 0) {
+    if (!isGetBranch && isGetRepo && organization && repo && branchNameOptions.length === 0) {
       getSourceControlBranchInfo(organization, repo, id);
     }
-  }, [
-    branchNameOptions.length,
-    getSourceControlBranchInfo,
-    getSourceControlRepoInfo,
-    id,
-    isGetBranch,
-    organization,
-    repo,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGetBranch, isGetRepo]);
 
   useEffect(() => {
-    if (!isGetAllCrews && organization && repo && selectedBranches) {
+    if (!isGetAllCrews && isGetBranch && isGetRepo && organization && repo && selectedBranches) {
       Promise.all(selectedBranches.map((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges))).then(
         () => {
           dispatch(updateShouldGetSourceControlConfig(false));
         },
       );
     }
-  }, [
-    dateRanges,
-    dispatch,
-    getSourceControlBranchInfo,
-    getSourceControlCrewInfo,
-    getSourceControlRepoInfo,
-    isGetAllCrews,
-    organization,
-    repo,
-    selectedBranches,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGetAllCrews, isGetBranch, isGetRepo]);
+
+  useEffect(() => {
+    if (isGetAllCrews) {
+      setLoadingCompletedNumber((value) => Math.min(totalSourceControlNumber, value + 1));
+    }
+  }, [isGetAllCrews, setLoadingCompletedNumber, totalSourceControlNumber]);
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
@@ -139,12 +132,6 @@ export const SourceControlMetricSelection = ({
       dispatch(updateShouldGetSourceControlConfig(false));
     });
   };
-
-  useEffect(() => {
-    if (isGetAllCrews) {
-      setLoadingCompletedNumber((value) => Math.min(totalSourceControlNumber, value + 1));
-    }
-  }, [isGetAllCrews, setLoadingCompletedNumber, totalSourceControlNumber]);
 
   return (
     <PipelineMetricSelectionWrapper>
