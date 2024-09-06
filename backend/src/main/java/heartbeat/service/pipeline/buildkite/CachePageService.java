@@ -13,11 +13,13 @@ import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.PageBuildKitePipelineInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
+import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -81,10 +83,13 @@ public class CachePageService {
 			int totalPage = parseTotalPage(allOrganizations.getHeaders().get(BUILD_KITE_LINK_HEADER));
 			return PageOrganizationsInfoDTO.builder().pageInfo(allOrganizations.getBody()).totalPage(totalPage).build();
 		}
-		catch (Exception e) {
+		catch (BaseException e) {
 			log.info("Error to get paginated github organization info, page: {}, exception: {}", page, e);
-			throw new InternalServerErrorException(
-					String.format("Error to get paginated github organization info, page: %s, exception: %s", page, e));
+			if (e.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+				throw new InternalServerErrorException(String
+					.format("Error to get paginated github organization info, page: %s, exception: %s", page, e));
+			}
+			throw e;
 		}
 	}
 
@@ -98,10 +103,13 @@ public class CachePageService {
 			int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
 			return PageReposInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
 		}
-		catch (Exception e) {
+		catch (BaseException e) {
 			log.info("Error to get paginated github repo info, page: {}, exception: {}", page, e);
-			throw new InternalServerErrorException(
-					String.format("Error to get paginated github repo info, page: %s, exception: %s", page, e));
+			if (e.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+				throw new InternalServerErrorException(
+						String.format("Error to get paginated github repo info, page: %s, exception: %s", page, e));
+			}
+			throw e;
 		}
 	}
 
@@ -116,10 +124,13 @@ public class CachePageService {
 			int totalPage = parseTotalPage(allRepos.getHeaders().get(BUILD_KITE_LINK_HEADER));
 			return PageBranchesInfoDTO.builder().pageInfo(allRepos.getBody()).totalPage(totalPage).build();
 		}
-		catch (Exception e) {
+		catch (BaseException e) {
 			log.info("Error to get paginated github branch info, page: {}, exception: {}", page, e);
-			throw new InternalServerErrorException(
-					String.format("Error to get paginated github branch info, page: %s, exception: %s", page, e));
+			if (e.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+				throw new InternalServerErrorException(
+						String.format("Error to get paginated github branch info, page: %s, exception: %s", page, e));
+			}
+			throw e;
 		}
 	}
 
@@ -135,10 +146,13 @@ public class CachePageService {
 			int totalPage = parseTotalPage(allPullRequests.getHeaders().get(BUILD_KITE_LINK_HEADER));
 			return PagePullRequestInfo.builder().pageInfo(allPullRequests.getBody()).totalPage(totalPage).build();
 		}
-		catch (Exception e) {
+		catch (BaseException e) {
 			log.info("Error to get paginated github pull request info, page: {}, exception: {}", page, e);
-			throw new InternalServerErrorException(
-					String.format("Error to get paginated github pull request info, page: %s, exception: %s", page, e));
+			if (e.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+				throw new InternalServerErrorException(String
+					.format("Error to get paginated github pull request info, page: %s, exception: %s", page, e));
+			}
+			throw e;
 		}
 	}
 

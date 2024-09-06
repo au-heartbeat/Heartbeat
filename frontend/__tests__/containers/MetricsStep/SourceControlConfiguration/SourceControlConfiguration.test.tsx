@@ -10,6 +10,7 @@ import { IUseGetSourceControlConfigurationCrewInterface } from '@src/hooks/useGe
 import { SourceControlConfiguration } from '@src/containers/MetricsStep/SouceControlConfiguration';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { LIST_OPEN, LOADING, REMOVE_BUTTON } from '@test/fixtures';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -35,16 +36,37 @@ const mockInitRepoEffectResponse = {
   isGetRepo: true,
   isLoading: false,
   getSourceControlRepoInfo: jest.fn(),
+  info: {
+    code: 200,
+    data: undefined,
+    errorTitle: '',
+    errorMessage: '',
+  },
+  stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 const mockInitBranchEffectResponse = {
   isLoading: false,
   getSourceControlBranchInfo: jest.fn(),
   isGetBranch: true,
+  info: {
+    code: 200,
+    data: undefined,
+    errorTitle: '',
+    errorMessage: '',
+  },
+  stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 const mockInitCrewEffectResponse = {
   isLoading: false,
   getSourceControlCrewInfo: jest.fn(),
   isGetAllCrews: true,
+  info: {
+    code: 200,
+    data: undefined,
+    errorTitle: '',
+    errorMessage: '',
+  },
+  stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 
 let mockSourceControlSettings = mockInitSourceControlSettings;
@@ -220,5 +242,19 @@ describe('SourceControlConfiguration', () => {
     setup();
 
     expect(screen.getByText('Crew setting (optional)')).toBeInTheDocument();
+  });
+
+  it('should set error info when any request return error', () => {
+    mockOrganizationEffectResponse = {
+      ...mockOrganizationEffectResponse,
+      info: {
+        code: 404,
+        errorTitle: 'error title',
+        errorMessage: 'error message',
+      },
+    };
+    setup();
+
+    expect(screen.getByLabelText('Error UI for pipeline settings')).toBeInTheDocument();
   });
 });
