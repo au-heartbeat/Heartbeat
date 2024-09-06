@@ -10,10 +10,12 @@ import {
 } from '@src/containers/ConfigStep/Form/schema';
 import {
   selectConfig,
+  selectDateRange,
   selectMetrics,
   selectPipelineList,
   selectPipelineTool,
   selectSourceControlBranches,
+  selectSourceControlCrews,
 } from '@src/context/config/configSlice';
 import {
   CycleTimeSettingsTypes,
@@ -57,6 +59,7 @@ import isEmpty from 'lodash/isEmpty';
 import { store } from '@src/store';
 import every from 'lodash/every';
 import omit from 'lodash/omit';
+import dayjs from 'dayjs';
 
 const ConfigStep = lazy(() => import('@src/containers/ConfigStep'));
 const MetricsStep = lazy(() => import('@src/containers/MetricsStep'));
@@ -70,6 +73,7 @@ const MetricsStepper = () => {
   const [isDialogShowing, setIsDialogShowing] = useState(false);
   const requiredData = useAppSelector(selectMetrics);
   const config = useAppSelector(selectConfig);
+  const dateRanges = useAppSelector(selectDateRange);
   const metricsConfig = useAppSelector(selectMetricsContent);
   const cycleTimeSettings = useAppSelector(selectCycleTimeSettings);
   const [isDisableNextButton, setIsDisableNextButton] = useState(true);
@@ -212,8 +216,28 @@ const MetricsStepper = () => {
       return sourceControl.branches.every((it) => allBranches.includes(it));
     });
 
+    const sourceControlCrews = [
+      ...new Set(
+        sourceControlConfigurationSettings.flatMap((it) =>
+          it.branches?.flatMap((branch) =>
+            dateRanges.flatMap((dateRange) =>
+              selectSourceControlCrews(
+                storeContext,
+                it.organization,
+                it.repo,
+                branch,
+                dayjs(dateRange.startDate).startOf('date').valueOf(),
+                dayjs(dateRange.endDate).startOf('date').valueOf(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ];
+
     return (
       !isEmpty(selectedSourceControls) &&
+      !isEmpty(sourceControlCrews) &&
       sourceControlConfigurationSettings.every(({ organization }) => !isEmpty(organization)) &&
       sourceControlConfigurationSettings.every(({ repo }) => !isEmpty(repo)) &&
       sourceControlConfigurationSettings.every(({ branches }) => !isEmpty(branches)) &&
@@ -222,7 +246,13 @@ const MetricsStepper = () => {
       selectedSourceControls.every(({ branches }) => !isEmpty(branches)) &&
       getDuplicatedSourceControlIds(sourceControlConfigurationSettings).length === 0
     );
-  }, [getDuplicatedSourceControlIds, metricsConfig.sourceControlConfigurationSettings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    dateRanges,
+    getDuplicatedSourceControlIds,
+    metricsConfig.sourceControlConfigurationSettings,
+    config.sourceControl,
+  ]);
 
   useEffect(() => {
     if (activeStep === METRICS_STEPS.METRICS) {
