@@ -29,6 +29,7 @@ import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.report.calculator.model.FetchedData.BuildKiteData;
 import heartbeat.repository.FileRepository;
+import heartbeat.service.source.github.GitHubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections.CollectionUtils;
@@ -55,6 +56,8 @@ public class GenerateReporterService {
 	private final KanbanCsvService kanbanCsvService;
 
 	private final PipelineService pipelineService;
+
+	private final GitHubService gitHubService;
 
 	private final ClassificationCalculator classificationCalculator;
 
@@ -158,6 +161,7 @@ public class GenerateReporterService {
 				request.getEndTime(), uuid, timeRangeAndTimeStamp);
 		try {
 			fetchGitHubData(request, fetchedData);
+			fetchRepoData(request, fetchedData);
 			saveReporterInHandler(generateSourceControlReporter(request, fetchedData), uuid, timeRangeAndTimeStamp,
 					FilePrefixType.SOURCE_CONTROL_PREFIX);
 			log.info(
@@ -269,6 +273,12 @@ public class GenerateReporterService {
 		if (request.getCodebaseSetting() == null)
 			throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
 		fetchedData.setBuildKiteData(pipelineService.fetchGitHubData(request));
+	}
+
+	private void fetchRepoData(GenerateReportRequest request, FetchedData fetchedData) {
+		if (request.getCodebaseSetting() == null)
+			throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
+		fetchedData.setRepoData(gitHubService.fetchRepoData(request));
 	}
 
 	private FetchedData fetchJiraBoardData(GenerateReportRequest request, FetchedData fetchedData) {

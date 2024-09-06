@@ -8,9 +8,9 @@ import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
-import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfo;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
-import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
@@ -289,17 +289,17 @@ class CachePageServiceTest {
 		String repo = "test-repo";
 		String branch = "test-branch";
 		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
-		ResponseEntity<List<PullRequestInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
+		ResponseEntity<List<PullRequestInfo>> responseEntity = getResponseEntity(httpHeaders,
 				"src/test/java/heartbeat/controller/pipeline/githubPullRequest.json");
 		when(gitHubFeignClient.getAllPullRequests(MOCK_TOKEN, organization, repo, 100, 1, branch, "all"))
 			.thenReturn(responseEntity);
 
-		PagePullRequestInfoDTO pagePullRequestInfoDTO = cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization,
-				repo, branch, 1, 100);
+		PagePullRequestInfo pagePullRequestInfo = cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization, repo,
+				branch, 1, 100);
 
-		assertNotNull(pagePullRequestInfoDTO);
-		assertThat(pagePullRequestInfoDTO.getPageInfo()).isEqualTo(responseEntity.getBody());
-		assertThat(pagePullRequestInfoDTO.getTotalPage()).isEqualTo(2);
+		assertNotNull(pagePullRequestInfo);
+		assertThat(pagePullRequestInfo.getPageInfo()).isEqualTo(responseEntity.getBody());
+		assertThat(pagePullRequestInfo.getTotalPage()).isEqualTo(2);
 	}
 
 	@Test

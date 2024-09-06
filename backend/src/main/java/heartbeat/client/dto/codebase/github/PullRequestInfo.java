@@ -1,8 +1,10 @@
 package heartbeat.client.dto.codebase.github;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,5 +30,18 @@ public class PullRequestInfo implements Serializable {
 
 	@JsonProperty("merge_commit_sha")
 	private String mergeCommitSha;
+
+	private PullRequestUser user;
+
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Builder
+	@Data
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class PullRequestUser implements Serializable {
+
+		private String login;
+
+	}
 
 }

@@ -1,7 +1,6 @@
 package heartbeat.config;
 
 import heartbeat.client.dto.board.jira.CardHistoryResponseDTO;
-import heartbeat.client.dto.board.jira.CalendarificHolidayResponseDTO;
 import heartbeat.client.dto.board.jira.FieldResponseDTO;
 import heartbeat.client.dto.board.jira.HolidaysResponseDTO;
 import heartbeat.client.dto.board.jira.JiraBoardConfigDTO;
@@ -11,7 +10,7 @@ import heartbeat.client.dto.board.jira.StatusSelfDTO;
 import heartbeat.client.dto.codebase.github.CommitInfo;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
-import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfo;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteTokenInfo;
 import heartbeat.client.dto.pipeline.buildkite.PageBuildKitePipelineInfoDTO;
@@ -64,7 +63,7 @@ public class CacheConfig {
 		cacheManager.createCache("pageOrganization", getCacheConfiguration(PageOrganizationsInfoDTO.class));
 		cacheManager.createCache("pageRepo", getCacheConfiguration(PageReposInfoDTO.class));
 		cacheManager.createCache("pageBranch", getCacheConfiguration(PageBranchesInfoDTO.class));
-		cacheManager.createCache("pagePullRequest", getCacheConfiguration(PagePullRequestInfoDTO.class));
+		cacheManager.createCache("pagePullRequest", getCacheConfiguration(PagePullRequestInfo.class));
 		return cacheManager;
 	}
 
