@@ -1,7 +1,7 @@
 package heartbeat.service.report.calculator.model;
 
-import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
+import heartbeat.client.dto.codebase.github.SourceControlLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.board.dto.response.CardCollection;
@@ -21,7 +21,7 @@ public class FetchedData {
 
 	private BuildKiteData buildKiteData;
 
-	private RepoData RepoData;
+	private RepoData repoData;
 
 	@Data
 	@Builder
@@ -65,7 +65,7 @@ public class FetchedData {
 	@AllArgsConstructor
 	public static class RepoData {
 
-		private List<LeadTime> LeadTimes;
+		private List<SourceControlLeadTime> sourceControlLeadTimes;
 
 	}
 
