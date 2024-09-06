@@ -161,7 +161,6 @@ public class GenerateReporterService {
 				request.getEndTime(), uuid, timeRangeAndTimeStamp);
 		try {
 			fetchGitHubData(request, fetchedData);
-			fetchRepoData(request, fetchedData);
 			saveReporterInHandler(generateSourceControlReporter(request, fetchedData), uuid, timeRangeAndTimeStamp,
 					FilePrefixType.SOURCE_CONTROL_PREFIX);
 			log.info(
@@ -273,11 +272,6 @@ public class GenerateReporterService {
 		if (request.getCodebaseSetting() == null)
 			throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
 		fetchedData.setBuildKiteData(pipelineService.fetchGitHubData(request));
-	}
-
-	private void fetchRepoData(GenerateReportRequest request, FetchedData fetchedData) {
-		if (request.getCodebaseSetting() == null)
-			throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
 		fetchedData.setRepoData(gitHubService.fetchRepoData(request));
 	}
 
