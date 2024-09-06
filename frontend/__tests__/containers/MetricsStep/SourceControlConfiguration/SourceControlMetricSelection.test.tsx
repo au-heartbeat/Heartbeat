@@ -3,6 +3,7 @@ import { IUseGetSourceControlConfigurationBranchInterface } from '@src/hooks/use
 import { IUseGetSourceControlConfigurationRepoInterface } from '@src/hooks/useGetSourceControlConfigurationRepoEffect';
 import { IUseGetSourceControlConfigurationCrewInterface } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { act, render, screen, within } from '@testing-library/react';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { LIST_OPEN, LOADING } from '@test/fixtures';
@@ -12,16 +13,37 @@ const mockInitRepoEffectResponse = {
   isGetRepo: true,
   isLoading: false,
   getSourceControlRepoInfo: jest.fn(),
+  info: {
+    code: 200,
+    data: undefined,
+    errorTitle: '',
+    errorMessage: '',
+  },
+  stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 const mockInitBranchEffectResponse = {
   isLoading: false,
   getSourceControlBranchInfo: jest.fn(),
   isGetBranch: true,
+  info: {
+    code: 200,
+    data: undefined,
+    errorTitle: '',
+    errorMessage: '',
+  },
+  stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 const mockInitCrewEffectResponse = {
   isLoading: false,
   getSourceControlCrewInfo: jest.fn(),
   isGetAllCrews: true,
+  info: {
+    code: 200,
+    data: undefined,
+    errorTitle: '',
+    errorMessage: '',
+  },
+  stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 
 let mockRepoEffectResponse: IUseGetSourceControlConfigurationRepoInterface = mockInitRepoEffectResponse;
@@ -34,6 +56,11 @@ let mockSelectSourceControlRepos = mockInitSelectSourceControlRepos;
 const mockInitSelectSourceControlBranches = ['mockBranchName', 'mockBranchName1'];
 let mockSelectSourceControlBranches = mockInitSelectSourceControlBranches;
 
+const myDispatch = jest.fn();
+jest.mock('@src/hooks', () => ({
+  ...jest.requireActual('@src/hooks'),
+  useAppDispatch: () => myDispatch,
+}));
 jest.mock('@src/hooks/useGetSourceControlConfigurationRepoEffect', () => {
   return {
     useGetSourceControlConfigurationRepoEffect: () => mockRepoEffectResponse,
@@ -50,6 +77,10 @@ jest.mock('@src/hooks/useGetSourceControlConfigurationCrewEffect', () => {
   };
 });
 
+jest.mock('@src/context/notification/NotificationSlice', () => ({
+  ...jest.requireActual('@src/context/notification/NotificationSlice'),
+  addNotification: jest.fn(),
+}));
 jest.mock('@src/context/Metrics/metricsSlice', () => ({
   ...jest.requireActual('@src/context/Metrics/metricsSlice'),
   selectSourceControlConfigurationSettings: jest.fn().mockImplementation(() => [
@@ -78,7 +109,11 @@ describe('SourceControlMetricSelection', () => {
     mockSelectSourceControlBranches = mockInitSelectSourceControlBranches;
     mockSelectSourceControlRepos = mockInitSelectSourceControlRepos;
   });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   const onUpdateSourceControl = jest.fn();
+  const handleUpdateErrorInfo = jest.fn();
   const setup = (isDuplicated: boolean = false) => {
     const sourceControlSetting = {
       id: 0,
@@ -96,6 +131,7 @@ describe('SourceControlMetricSelection', () => {
           isDuplicated={isDuplicated}
           setLoadingCompletedNumber={jest.fn()}
           totalSourceControlNumber={1}
+          handleUpdateErrorInfo={handleUpdateErrorInfo}
         />
       </Provider>,
     );
@@ -187,5 +223,44 @@ describe('SourceControlMetricSelection', () => {
     expect(onUpdateSourceControl).toHaveBeenCalledTimes(2);
     expect(getSourceControlBranchInfoFunction).toHaveBeenCalledTimes(1);
     expect(getSourceControlCrewInfoFunction).toHaveBeenCalledTimes(2);
+  });
+
+  it('should add partial failed 4xx notification when any failed status is PartialFailed4xx', async () => {
+    mockCrewEffectResponse = {
+      ...mockCrewEffectResponse,
+      stepFailedStatus: MetricsDataFailStatus.PartialFailed4xx,
+    };
+    setup();
+
+    expect(myDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should add partial failed 4xx notification when any failed status is PartialFailedNoCards', async () => {
+    mockCrewEffectResponse = {
+      ...mockCrewEffectResponse,
+      stepFailedStatus: MetricsDataFailStatus.PartialFailedNoCards,
+    };
+    setup();
+
+    expect(myDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should set error info when any request return error', () => {
+    mockRepoEffectResponse = {
+      ...mockRepoEffectResponse,
+      info: {
+        code: 404,
+        errorTitle: 'error title',
+        errorMessage: 'error message',
+      },
+    };
+    setup();
+
+    expect(handleUpdateErrorInfo).toHaveBeenCalledTimes(1);
+    expect(handleUpdateErrorInfo).toBeCalledWith({
+      code: 404,
+      errorTitle: 'error title',
+      errorMessage: 'error message',
+    });
   });
 });

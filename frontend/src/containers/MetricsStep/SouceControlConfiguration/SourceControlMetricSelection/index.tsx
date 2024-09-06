@@ -26,6 +26,7 @@ import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { useEffect, useRef } from 'react';
+import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
 
 interface SourceControlMetricSelectionProps {
@@ -126,7 +127,9 @@ export const SourceControlMetricSelection = ({
   }, [isGetAllCrews, setLoadingCompletedNumber, totalSourceControlNumber]);
 
   useEffect(() => {
-    const errorInfoList: ErrorInfoType[] = [repoInfo, branchInfo, crewInfo].filter((it) => it.code !== 200);
+    const errorInfoList: ErrorInfoType[] = [repoInfo, branchInfo, crewInfo].filter(
+      (it) => it.code !== HttpStatusCode.Ok,
+    );
     const errorInfo = errorInfoList.length === 0 ? crewInfo : errorInfoList[0];
     handleUpdateErrorInfo(errorInfo);
     // eslint-disable-next-line react-hooks/exhaustive-deps

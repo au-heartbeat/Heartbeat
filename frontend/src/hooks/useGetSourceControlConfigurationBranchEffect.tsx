@@ -48,9 +48,8 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
     };
     setIsLoading(true);
     try {
-      sourceControlClient
-        .getBranch(params)
-        .then((response) => {
+      sourceControlClient.getBranch(params).then(
+        (response) => {
           if (response.code === HttpStatusCode.Ok) {
             dispatch(
               updateSourceControlVerifiedResponse({
@@ -75,16 +74,17 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
               }),
             );
           } else {
-            setInfo(info);
+            setInfo(response);
           }
-        })
-        .catch((e) => {
+        },
+        (e) => {
           if ((e as PromiseRejectedResult).reason.code == 400) {
             setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
           } else {
             setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);
           }
-        });
+        },
+      );
     } finally {
       setIsLoading(false);
       setIsGetBranch(true);

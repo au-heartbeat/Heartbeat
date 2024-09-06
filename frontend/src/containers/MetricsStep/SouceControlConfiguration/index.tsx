@@ -23,9 +23,9 @@ import { getErrorDetail } from '@src/context/meta/metaSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
+import { useEffect, useState } from 'react';
 import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
-import { useState } from 'react';
 import dayjs from 'dayjs';
 
 export type ErrorInfoType =
@@ -77,10 +77,15 @@ export const SourceControlConfiguration = () => {
     dispatch(updateSourceControlConfigurationSettings({ updateId: id, label: label.toLowerCase(), value }));
   };
   const handleUpdateErrorInfo = (newErrorInfo: ErrorInfoType) => {
-    const errorInfoList: ErrorInfoType[] = [newErrorInfo, info].filter((it) => it.code !== 200);
+    const errorInfoList: ErrorInfoType[] = [newErrorInfo, info].filter((it) => it.code !== HttpStatusCode.Ok);
     const errorInfo = errorInfoList.length === 0 ? info : errorInfoList[0];
     setErrorInfo(errorInfo);
   };
+
+  useEffect(() => {
+    handleUpdateErrorInfo(errorInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [info]);
 
   const shouldShowCrews =
     loadingCompletedNumber !== 0 &&
