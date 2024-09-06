@@ -39,6 +39,7 @@ import heartbeat.service.report.calculator.PipelineMeanToRecoveryCalculator;
 import heartbeat.service.report.calculator.ReworkCalculator;
 import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
+import heartbeat.service.source.github.GitHubService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -93,6 +94,9 @@ class GenerateReporterServiceTest {
 
 	@Mock
 	PipelineService pipelineService;
+
+	@Mock
+	GitHubService gitHubService;
 
 	@Mock
 	ClassificationCalculator classificationCalculator;
@@ -801,6 +805,8 @@ class GenerateReporterServiceTest {
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
+			when(gitHubService.fetchRepoData(any()))
+				.thenReturn(FetchedData.RepoData.builder().LeadTimes(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
 			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
@@ -854,6 +860,8 @@ class GenerateReporterServiceTest {
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
+			when(gitHubService.fetchRepoData(any()))
+				.thenReturn(FetchedData.RepoData.builder().LeadTimes(List.of()).build());
 			when(pipelineService.fetchBuildKiteInfo(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
@@ -907,9 +915,12 @@ class GenerateReporterServiceTest {
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(request)).thenReturn(
 					FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).buildInfosList(List.of()).build());
+			when(gitHubService.fetchRepoData(any()))
+				.thenReturn(FetchedData.RepoData.builder().LeadTimes(List.of()).build());
 			doThrow(new NotFoundException("")).when(leadTimeForChangesCalculator).calculate(any(), any());
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
+
 			verify(kanbanService, never()).fetchDataFromKanban(request);
 			verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 			verify(fileRepository, times(1)).removeFileByType(ERROR, TEST_UUID, timeRangeAndTimeStamp,

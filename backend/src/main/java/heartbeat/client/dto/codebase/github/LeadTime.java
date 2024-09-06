@@ -23,9 +23,9 @@ public class LeadTime {
 	@Nullable
 	private Long firstCommitTimeInPr;
 
-	private long jobFinishTime;
+	private Long jobFinishTime;
 
-	private long jobStartTime;
+	private Long jobStartTime;
 
 	@Nullable
 	private Long noPRCommitTime;
@@ -33,7 +33,7 @@ public class LeadTime {
 	@Nullable
 	private Long firstCommitTime;
 
-	private long pipelineCreateTime;
+	private Long pipelineCreateTime;
 
 	@Nullable
 	private Boolean isRevert;

@@ -1,5 +1,6 @@
 package heartbeat.service.report.calculator.model;
 
+import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
@@ -19,6 +20,8 @@ public class FetchedData {
 	private CardCollectionInfo cardCollectionInfo;
 
 	private BuildKiteData buildKiteData;
+
+	private RepoData RepoData;
 
 	@Data
 	@Builder
@@ -54,6 +57,15 @@ public class FetchedData {
 		public void addBuildKiteBuildInfos(String key, List<BuildKiteBuildInfo> buildKiteBuildInfos) {
 			this.buildInfosList.add(Map.entry(key, buildKiteBuildInfos));
 		}
+
+	}
+
+	@Data
+	@Builder
+	@AllArgsConstructor
+	public static class RepoData {
+
+		private List<LeadTime> LeadTimes;
 
 	}
 

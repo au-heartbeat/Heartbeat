@@ -6,9 +6,9 @@ import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
-import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfo;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
-import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.PageBuildKitePipelineInfoDTO;
@@ -125,15 +125,15 @@ public class CachePageService {
 
 	@Cacheable(cacheNames = "pagePullRequest",
 			key = "#token+'-'+#organization+'-'+#repo+'-'+#branch+'-'+#page+'-'+#perPage")
-	public PagePullRequestInfoDTO getGitHubPullRequest(String token, String organization, String repo, String branch,
+	public PagePullRequestInfo getGitHubPullRequest(String token, String organization, String repo, String branch,
 			int page, int perPage) {
 		try {
 			log.info("Start to get paginated github pull request info, page: {}", page);
-			ResponseEntity<List<PullRequestInfoDTO>> allPullRequests = gitHubFeignClient.getAllPullRequests(token,
+			ResponseEntity<List<PullRequestInfo>> allPullRequests = gitHubFeignClient.getAllPullRequests(token,
 					organization, repo, perPage, page, branch, "all");
 			log.info("Successfully get paginated github pull request info, page: {}", page);
 			int totalPage = parseTotalPage(allPullRequests.getHeaders().get(BUILD_KITE_LINK_HEADER));
-			return PagePullRequestInfoDTO.builder().pageInfo(allPullRequests.getBody()).totalPage(totalPage).build();
+			return PagePullRequestInfo.builder().pageInfo(allPullRequests.getBody()).totalPage(totalPage).build();
 		}
 		catch (Exception e) {
 			log.info("Error to get paginated github pull request info, page: {}, exception: {}", page, e);
