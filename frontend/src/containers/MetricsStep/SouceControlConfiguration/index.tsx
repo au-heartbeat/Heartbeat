@@ -4,6 +4,12 @@ import {
   selectSourceControlConfigurationSettings,
   updateSourceControlConfigurationSettings,
 } from '@src/context/Metrics/metricsSlice';
+import {
+  ISourceControlGetBranchResponseDTO,
+  ISourceControlGetCrewResponseDTO,
+  ISourceControlGetOrganizationResponseDTO,
+  ISourceControlGetRepoResponseDTO,
+} from '@src/clients/sourceControl/dto/response';
 import { useGetSourceControlConfigurationOrganizationEffect } from '@src/hooks/useGetSourceControlConfigurationOrganizationEffect';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import { SourceControlMetricSelection } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlMetricSelection';
@@ -17,10 +23,16 @@ import { getErrorDetail } from '@src/context/meta/metaSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { Crews } from '@src/containers/MetricsStep/Crews';
 import { Loading } from '@src/components/Loading';
+import { useEffect, useState } from 'react';
 import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
-import { useState } from 'react';
 import dayjs from 'dayjs';
+
+export type ErrorInfoType =
+  | ISourceControlGetOrganizationResponseDTO
+  | ISourceControlGetRepoResponseDTO
+  | ISourceControlGetBranchResponseDTO
+  | ISourceControlGetCrewResponseDTO;
 
 export const SourceControlConfiguration = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +42,7 @@ export const SourceControlConfiguration = () => {
   const sourceControlConfigurationSettings = useAppSelector(selectSourceControlConfigurationSettings);
   const { getDuplicatedSourceControlIds } = useMetricsStepValidationCheckContext();
   const [loadingCompletedNumber, setLoadingCompletedNumber] = useState(0);
+  const [errorInfo, setErrorInfo] = useState<ErrorInfoType>(info);
   const dateRanges = useAppSelector(selectDateRange);
   const realSourceControlConfigurationSettings = isFirstFetch ? [] : sourceControlConfigurationSettings;
   const totalSourceControlNumber = realSourceControlConfigurationSettings.length;
@@ -63,6 +76,16 @@ export const SourceControlConfiguration = () => {
   const handleUpdateSourceControl = (id: number, label: string, value: string | StringConstructor[] | string[]) => {
     dispatch(updateSourceControlConfigurationSettings({ updateId: id, label: label.toLowerCase(), value }));
   };
+  const handleUpdateErrorInfo = (newErrorInfo: ErrorInfoType) => {
+    const errorInfoList: ErrorInfoType[] = [newErrorInfo, info].filter((it) => it.code !== HttpStatusCode.Ok);
+    const errorInfo = errorInfoList.length === 0 ? info : errorInfoList[0];
+    setErrorInfo(errorInfo);
+  };
+
+  useEffect(() => {
+    handleUpdateErrorInfo(errorInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [info]);
 
   const shouldShowCrews =
     loadingCompletedNumber !== 0 &&
@@ -72,8 +95,8 @@ export const SourceControlConfiguration = () => {
   return (
     <>
       {isLoading && <Loading />}
-      {info?.code !== HttpStatusCode.Ok ? (
-        <PresentationForErrorCases {...info} isLoading={isLoading} retry={getSourceControlInfo} />
+      {errorInfo?.code !== HttpStatusCode.Ok ? (
+        <PresentationForErrorCases {...errorInfo} isLoading={isLoading} retry={getSourceControlInfo} />
       ) : (
         <>
           <MetricsSettingTitle title={'Source control settings'} />
@@ -90,6 +113,7 @@ export const SourceControlConfiguration = () => {
               isDuplicated={getDuplicatedSourceControlIds(realSourceControlConfigurationSettings).includes(
                 sourceControlConfigurationSetting.id,
               )}
+              handleUpdateErrorInfo={handleUpdateErrorInfo}
               totalSourceControlNumber={totalSourceControlNumber}
               setLoadingCompletedNumber={setLoadingCompletedNumber}
             />

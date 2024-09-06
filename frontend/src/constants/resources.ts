@@ -429,6 +429,10 @@ export const MESSAGE = {
     'Failed to get partial Pipeline configuration, please go back to the previous page and change your pipeline token with correct access permission, or click "Next" button to go to Report page.',
   PIPELINE_STEP_REQUEST_PARTIAL_FAILED_OTHERS:
     'Failed to get partial Pipeline configuration, you can click "Next" button to go to Report page.',
+  SOURCE_CONTROL_REQUEST_PARTIAL_FAILED_4XX:
+    'Failed to get partial Source control configuration, please go back to the previous page and change your source control token with correct access permission, or click "Next" button to go to Report page.',
+  SOURCE_CONTROL_REQUEST_PARTIAL_FAILED_OTHERS:
+    'Failed to get partial Source control configuration, you can click "Next" button to go to Report page.',
   DORA_CHART_LOADING_FAILED: 'Dora metrics loading timeout, Please click "Retry"!',
   SHARE_REPORT_EXPIRED: 'The report has expired. Please go home page and generate it again.',
 };
