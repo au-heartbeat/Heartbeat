@@ -86,6 +86,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     pipelineCrews,
     deploymentFrequencySettings,
     leadTimeForChanges,
+    sourceControlCrews,
+    sourceControlConfigurationSettings,
   } = useAppSelector(selectMetricsContent);
   const classificationCharts = useAppSelector(selectClassificationCharts);
 
@@ -152,6 +154,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         type: sourceControl.config.type,
         token: sourceControl.config.token,
         leadTime: getPipelineConfig(leadTimeForChanges),
+        crews: sourceControlCrews,
+        codebases: sourceControlConfigurationSettings,
       },
     };
   };

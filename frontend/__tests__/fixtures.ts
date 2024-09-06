@@ -220,6 +220,14 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
         branches: [],
       },
     ],
+    crews: ['mockCrew'],
+    codebases: [
+      {
+        organization: 'mockOrganization',
+        repo: 'mockRepo',
+        branches: ['mockBranch1'],
+      },
+    ],
   },
   jiraBoardSetting: {
     token: 'mockToken',
