@@ -15,6 +15,7 @@ import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
+import heartbeat.client.dto.codebase.github.SourceControlLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
@@ -326,7 +327,7 @@ class GithubServiceTest {
 			.totalTime(120000L)
 			.isRevert(null)
 			.build();
-		CommitInfo commitInfo = CommitInfo.builder()
+		commitInfo = CommitInfo.builder()
 			.commit(Commit.builder().committer(Committer.builder().build()).build())
 			.build();
 
@@ -1272,7 +1273,7 @@ class GithubServiceTest {
 				.build())
 			.build());
 
-		PullRequestInfo pullRequestInfo = PullRequestInfo.builder()
+		pullRequestInfo = PullRequestInfo.builder()
 			.number(1)
 			.createdAt("2024-05-31T17:00:00Z")
 			.mergedAt("2024-06-30T15:59:59Z")
@@ -1295,9 +1296,17 @@ class GithubServiceTest {
 				long secondParam = invocation.getArgument(1);
 				return WorkInfo.builder().workTime(secondParam - firstParam).build();
 			});
-		FetchedData.RepoData repoData = githubService.fetchRepoData(request);
 
-		List<LeadTime> leadTimes = repoData.getLeadTimes();
+		FetchedData.RepoData repoData = githubService.fetchRepoData(request);
+		List<SourceControlLeadTime> sourceControlLeadTimes = repoData.getSourceControlLeadTimes();
+
+		assertEquals(1, sourceControlLeadTimes.size());
+
+		SourceControlLeadTime sourceControlLeadTime = sourceControlLeadTimes.get(0);
+		assertEquals("mockOrg", sourceControlLeadTime.getOrganization());
+		assertEquals("mockRepo", sourceControlLeadTime.getRepo());
+
+		List<LeadTime> leadTimes = sourceControlLeadTime.getLeadTimes();
 
 		assertEquals(1, leadTimes.size());
 

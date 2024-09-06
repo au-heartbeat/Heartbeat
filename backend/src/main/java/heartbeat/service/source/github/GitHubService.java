@@ -12,6 +12,7 @@ import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
+import heartbeat.client.dto.codebase.github.SourceControlLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
@@ -485,14 +486,14 @@ public class GitHubService {
 		return crews;
 	}
 
-	private PullRequestFinishedInfo filterPullRequestByTimeRange(List<PullRequestInfo> PullRequestInfoList,
+	private PullRequestFinishedInfo filterPullRequestByTimeRange(List<PullRequestInfo> pullRequestInfoList,
 			long startTime, long endTime) {
 		log.info("Start to filter pull request, startTime: {}, endTime: {}", startTime, endTime);
 		Instant startTimeInstant = Instant.ofEpochMilli(startTime);
 		Instant endTimeInstant = Instant.ofEpochMilli(endTime);
 		List<PullRequestInfo> validPullRequestList = new ArrayList<>();
 		boolean isGetNextPage = true;
-		for (PullRequestInfo PullRequestInfo : PullRequestInfoList) {
+		for (PullRequestInfo PullRequestInfo : pullRequestInfoList) {
 			if (!Objects.nonNull(PullRequestInfo.getMergedAt())) {
 				continue;
 			}
@@ -523,33 +524,42 @@ public class GitHubService {
 		String realToken = BEARER_TITLE + token;
 		List<String> crews = request.getCodebaseSetting().getCrews();
 
-		List<LeadTime> leadTimes = request.getCodebaseSetting().getCodebases().stream().map(codeBase -> {
-			String organization = codeBase.getOrganization();
-			String repo = codeBase.getRepo();
-			List<String> branches = codeBase.getBranches();
-			return branches.stream()
-				.parallel()
-				.map(branch -> getValidPullRequestInfo(realToken, organization, repo, branch, startTime, endTime))
-				.flatMap(Collection::stream)
-				.filter(pullRequestInfo -> crews.stream()
-					.anyMatch(crew -> Objects.equals(pullRequestInfo.getUser().getLogin(), crew)))
-				.map(pullRequestInfo -> {
-					String pullNumber = pullRequestInfo.getNumber().toString();
-					log.info("Start to get first code commit, organization: {}, repo: {}, pull number: {}",
-							organization, repo, pullNumber);
-					CommitInfo firstCodeCommit = gitHubFeignClient
-						.getPullRequestCommitInfo(String.format("%s/%s", organization, repo), pullNumber, realToken)
-						.getFirst();
-					log.info("Successfully to get first code commit, organization: {}, repo: {}, pull number: {}",
-							organization, repo, pullNumber);
-					return Pair.of(pullRequestInfo, firstCodeCommit);
-				})
-				.map(pair -> mapLeadTimeWithInfo(pair.getLeft(), new DeployInfo(), pair.getRight(), request))
-				.toList();
-		}).flatMap(Collection::stream).toList();
+		List<SourceControlLeadTime> sourceControlLeadTimes = request.getCodebaseSetting()
+			.getCodebases()
+			.stream()
+			.map(codeBase -> {
+				String organization = codeBase.getOrganization();
+				String repo = codeBase.getRepo();
+				List<String> branches = codeBase.getBranches();
+				List<LeadTime> leadTimes = branches.stream()
+					.parallel()
+					.map(branch -> getValidPullRequestInfo(realToken, organization, repo, branch, startTime, endTime))
+					.flatMap(Collection::stream)
+					.filter(pullRequestInfo -> crews.stream()
+						.anyMatch(crew -> Objects.equals(pullRequestInfo.getUser().getLogin(), crew)))
+					.map(pullRequestInfo -> {
+						String pullNumber = pullRequestInfo.getNumber().toString();
+						log.info("Start to get first code commit, organization: {}, repo: {}, pull number: {}",
+								organization, repo, pullNumber);
+						CommitInfo firstCodeCommit = gitHubFeignClient
+							.getPullRequestCommitInfo(String.format("%s/%s", organization, repo), pullNumber, realToken)
+							.getFirst();
+						log.info("Successfully to get first code commit, organization: {}, repo: {}, pull number: {}",
+								organization, repo, pullNumber);
+						return Pair.of(pullRequestInfo, firstCodeCommit);
+					})
+					.map(pair -> mapLeadTimeWithInfo(pair.getLeft(), new DeployInfo(), pair.getRight(), request))
+					.toList();
+				return SourceControlLeadTime.builder()
+					.repo(repo)
+					.organization(organization)
+					.leadTimes(leadTimes)
+					.build();
+			})
+			.toList();
 
 		log.info("Successfully fetch repo data");
-		return FetchedData.RepoData.builder().LeadTimes(leadTimes).build();
+		return FetchedData.RepoData.builder().sourceControlLeadTimes(sourceControlLeadTimes).build();
 	}
 
 	private List<PullRequestInfo> getValidPullRequestInfo(String realToken, String organization, String repo,
@@ -558,7 +568,7 @@ public class GitHubService {
 				organization, repo, branch, startTime, endTime);
 		int initPage = 1;
 
-		List<PullRequestInfo> PullRequestInfoList = new ArrayList<>();
+		List<PullRequestInfo> pullRequestInfoList = new ArrayList<>();
 		PagePullRequestInfo pagePullRequestInfo = cachePageService.getGitHubPullRequest(realToken, organization, repo,
 				branch, initPage, PER_PAGE);
 		List<PullRequestInfo> firstPageStepsInfo = pagePullRequestInfo.getPageInfo();
@@ -567,7 +577,7 @@ public class GitHubService {
 		if (Objects.nonNull(firstPageStepsInfo)) {
 			PullRequestFinishedInfo pullRequestFinishedInfo = filterPullRequestByTimeRange(firstPageStepsInfo,
 					startTime, endTime);
-			PullRequestInfoList.addAll(pullRequestFinishedInfo.getPullRequestInfoList());
+			pullRequestInfoList.addAll(pullRequestFinishedInfo.getPullRequestInfoList());
 			boolean isGetNextPage = pullRequestFinishedInfo.isGetNextPage();
 			if (totalPage > 1 && isGetNextPage) {
 				for (int i = initPage + 1; i < totalPage + 1; i = i + BATCH_SIZE) {
@@ -579,7 +589,7 @@ public class GitHubService {
 							.getPageInfo())
 						.map(it -> filterPullRequestByTimeRange(it, startTime, endTime))
 						.toList();
-					pullRequestFinishedInfoList.forEach(it -> PullRequestInfoList.addAll(it.getPullRequestInfoList()));
+					pullRequestFinishedInfoList.forEach(it -> pullRequestInfoList.addAll(it.getPullRequestInfoList()));
 					boolean isGoToNextBatch = pullRequestFinishedInfoList.stream().anyMatch(it -> !it.isGetNextPage());
 					if (isGoToNextBatch) {
 						break;
@@ -590,7 +600,7 @@ public class GitHubService {
 		log.info(
 				"Successfully to get all pull request, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
 				organization, repo, branch, startTime, endTime);
-		return PullRequestInfoList;
+		return pullRequestInfoList;
 	}
 
 }
