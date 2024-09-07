@@ -5,10 +5,10 @@ import {
   WarningMessage,
 } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
 import {
+  selectDateRange,
+  selectSourceControlBranches,
   selectSourceControlOrganizations,
   selectSourceControlRepos,
-  selectSourceControlBranches,
-  selectDateRange,
 } from '@src/context/config/configSlice';
 import {
   selectSourceControlConfigurationSettings,
@@ -19,9 +19,14 @@ import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSou
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
+import { ErrorInfoType } from '@src/containers/MetricsStep/SouceControlConfiguration';
+import { addNotification } from '@src/context/notification/NotificationSlice';
+import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
+import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { useEffect, useRef } from 'react';
+import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
 
 interface SourceControlMetricSelectionProps {
@@ -33,6 +38,7 @@ interface SourceControlMetricSelectionProps {
   };
   isShowRemoveButton: boolean;
   onRemoveSourceControl: (id: number) => void;
+  handleUpdateErrorInfo: (errorInfo: ErrorInfoType) => void;
   onUpdateSourceControl: (id: number, label: string, value: string | StringConstructor[] | string[]) => void;
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
@@ -47,6 +53,7 @@ export const SourceControlMetricSelection = ({
   isDuplicated,
   setLoadingCompletedNumber,
   totalSourceControlNumber,
+  handleUpdateErrorInfo,
 }: SourceControlMetricSelectionProps) => {
   const { id, organization, repo } = sourceControlSetting;
   const isInitialMount = useRef(true);
@@ -54,16 +61,22 @@ export const SourceControlMetricSelection = ({
     isLoading: repoIsLoading,
     getSourceControlRepoInfo,
     isGetRepo,
+    info: repoInfo,
+    stepFailedStatus: getRepoFailedStatus,
   } = useGetSourceControlConfigurationRepoEffect();
   const {
     isLoading: branchIsLoading,
     getSourceControlBranchInfo,
     isGetBranch,
+    info: branchInfo,
+    stepFailedStatus: getBranchFailedStatus,
   } = useGetSourceControlConfigurationBranchEffect();
   const {
     isLoading: crewIsLoading,
     getSourceControlCrewInfo,
     isGetAllCrews,
+    info: crewInfo,
+    stepFailedStatus: getCrewFailedStatus,
   } = useGetSourceControlConfigurationCrewEffect();
   const storeContext = store.getState();
   const dispatch = useAppDispatch();
@@ -112,6 +125,49 @@ export const SourceControlMetricSelection = ({
       setLoadingCompletedNumber((value) => Math.min(totalSourceControlNumber, value + 1));
     }
   }, [isGetAllCrews, setLoadingCompletedNumber, totalSourceControlNumber]);
+
+  useEffect(() => {
+    const errorInfoList: ErrorInfoType[] = [repoInfo, branchInfo, crewInfo].filter(
+      (it) => it.code !== HttpStatusCode.Ok,
+    );
+    const errorInfo = errorInfoList.length === 0 ? crewInfo : errorInfoList[0];
+    handleUpdateErrorInfo(errorInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [repoInfo, branchInfo, crewInfo]);
+
+  useEffect(() => {
+    const popup = () => {
+      if (
+        getRepoFailedStatus === MetricsDataFailStatus.PartialFailed4xx ||
+        getBranchFailedStatus === MetricsDataFailStatus.PartialFailed4xx ||
+        getCrewFailedStatus === MetricsDataFailStatus.PartialFailed4xx
+      ) {
+        dispatch(
+          addNotification({
+            type: 'warning',
+            message: MESSAGE.SOURCE_CONTROL_REQUEST_PARTIAL_FAILED_4XX,
+          }),
+        );
+      } else if (
+        getRepoFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
+        getRepoFailedStatus === MetricsDataFailStatus.PartialFailedTimeout ||
+        getBranchFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
+        getBranchFailedStatus === MetricsDataFailStatus.PartialFailedTimeout ||
+        getCrewFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
+        getCrewFailedStatus === MetricsDataFailStatus.PartialFailedTimeout
+      ) {
+        dispatch(
+          addNotification({
+            type: 'warning',
+            message: MESSAGE.SOURCE_CONTROL_REQUEST_PARTIAL_FAILED_OTHERS,
+          }),
+        );
+      }
+    };
+    if (!isLoading) {
+      popup();
+    }
+  }, [dispatch, getBranchFailedStatus, getCrewFailedStatus, getRepoFailedStatus, isLoading]);
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
