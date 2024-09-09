@@ -1,6 +1,7 @@
 package heartbeat.service.report;
 
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
+import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.request.MetricType;
@@ -160,10 +161,17 @@ public class ReportService {
 			.map(it -> String.format("%s/%s", it.getName(), it.getStep()))
 			.distinct()
 			.toList();
+		List<String> sourceControls = savedRequestInfoList.stream()
+			.map(SavedRequestInfo::getSourceControl)
+			.flatMap(Collection::stream)
+			.map(it -> String.format("%s/%s", it.getOrganization(), it.getRepo()))
+			.distinct()
+			.toList();
 		return ShareApiDetailsResponse.builder()
 			.metrics(metrics)
 			.classificationNames(classificationCharts)
 			.pipelines(pipelines)
+			.sourceControls(sourceControls)
 			.reportURLs(reportUrls)
 			.build();
 	}
@@ -181,6 +189,8 @@ public class ReportService {
 			.metrics(request.getMetrics())
 			.pipelines(ofNullable(request.getBuildKiteSetting()).map(BuildKiteSetting::getDeploymentEnvList)
 				.orElse(List.of()))
+			.sourceControl(
+					ofNullable(request.getCodebaseSetting()).map(CodebaseSetting::getCodebases).orElse(List.of()))
 			.classificationNames(ofNullable(request.getJiraBoardSetting()).map(JiraBoardSetting::getClassificationNames)
 				.orElse(List.of()))
 			.build();

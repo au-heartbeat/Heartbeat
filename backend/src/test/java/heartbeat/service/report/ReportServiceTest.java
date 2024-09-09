@@ -2,6 +2,8 @@ package heartbeat.service.report;
 
 import heartbeat.controller.pipeline.dto.request.DeploymentEnvironment;
 import heartbeat.controller.report.dto.request.BuildKiteSetting;
+import heartbeat.controller.report.dto.request.CodeBase;
+import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
 import heartbeat.controller.report.dto.request.JiraBoardSetting;
 import heartbeat.controller.report.dto.request.MetricType;
@@ -393,7 +395,11 @@ public class ReportServiceTest {
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step2").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build()
-				)).build());
+				)).sourceControl(List.of(
+						CodeBase.builder().repo("repo1").organization("org1").branches(List.of("branch1", "branch2")).build(),
+						CodeBase.builder().repo("repo2").organization("org2").branches(List.of("branch3", "branch2")).build(),
+						CodeBase.builder().repo("repo3").organization("org3").branches(List.of("branch1", "branch3")).build()
+						)).build());
 			when(fileRepository.readFileByType(eq(FileType.CONFIGS), eq(TEST_UUID), eq("9-9-9"), any(), any()))
 				.thenReturn(SavedRequestInfo.builder().metrics(List.of("test-metrics1", "test-metrics3"))
 					.classificationNames(List.of("test-classification-chart1", "test-classification-chart3"))
@@ -401,7 +407,10 @@ public class ReportServiceTest {
 					DeploymentEnvironment.builder().id("1").name("pipeline1").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step1").build(),
 					DeploymentEnvironment.builder().id("1").name("pipeline2").step("step2").build()
-				)).build());
+				)).sourceControl(List.of(
+								CodeBase.builder().repo("repo1").organization("org1").branches(List.of("branch1", "branch2")).build(),
+								CodeBase.builder().repo("repo2").organization("org2").branches(List.of("branch3", "branch2")).build(),
+								CodeBase.builder().repo("repo3").organization("org3").branches(List.of("branch1", "branch3")).build())).build());
 			when(fileRepository.isExpired(anyLong(), anyLong())).thenReturn(false);
 
 			ShareApiDetailsResponse shareReportInfo = reportService.getShareReportInfo(TEST_UUID);
@@ -431,6 +440,12 @@ public class ReportServiceTest {
 			assertEquals("pipeline1/step2", pipelines.get(1));
 			assertEquals("pipeline2/step1", pipelines.get(2));
 			assertEquals("pipeline2/step2", pipelines.get(3));
+
+			List<String> sourceControls = shareReportInfo.getSourceControls();
+			assertEquals(3, sourceControls.size());
+			assertEquals("org1/repo1", sourceControls.get(0));
+			assertEquals("org2/repo2", sourceControls.get(1));
+			assertEquals("org3/repo3", sourceControls.get(2));
 
 			verify(fileRepository).getFiles(FileType.REPORT, TEST_UUID);
 			verify(fileRepository).getFiles(FileType.CONFIGS, TEST_UUID);
@@ -524,6 +539,11 @@ public class ReportServiceTest {
 				.jiraBoardSetting(JiraBoardSetting.builder()
 					.classificationNames(List.of("test-classification-chart1", "test-classification-chart2"))
 					.build())
+				.codebaseSetting(CodebaseSetting.builder()
+					.codebases(List.of(
+							CodeBase.builder().repo("repo1").organization("org1").branches(List.of("branch1")).build(),
+							CodeBase.builder().repo("repo2").organization("org2").branches(List.of("branch2")).build()))
+					.build())
 				.timezone("Asia/Shanghai")
 				.build();
 
@@ -549,6 +569,15 @@ public class ReportServiceTest {
 			assertEquals(2, classificationCharts.size());
 			assertEquals("test-classification-chart1", classificationCharts.get(0));
 			assertEquals("test-classification-chart2", classificationCharts.get(1));
+
+			List<CodeBase> sourceControl = savedRequestInfo.getSourceControl();
+			assertEquals(2, sourceControl.size());
+			assertEquals("repo1", sourceControl.get(0).getRepo());
+			assertEquals("org1", sourceControl.get(0).getOrganization());
+			assertEquals(List.of("branch1"), sourceControl.get(0).getBranches());
+			assertEquals("repo2", sourceControl.get(1).getRepo());
+			assertEquals("org2", sourceControl.get(1).getOrganization());
+			assertEquals(List.of("branch2"), sourceControl.get(1).getBranches());
 		}
 
 		@Test
@@ -581,6 +610,41 @@ public class ReportServiceTest {
 			assertEquals(2, metrics.size());
 			assertEquals("test-metrics1", metrics.get(0));
 			assertEquals("test-metrics2", metrics.get(1));
+
+		}
+
+		@Test
+		void shouldSaveRequestInfoSuccessfullyWhenCodeBaseSettingIsNull() {
+			String timeStamp = String.valueOf(mockTimeStamp(2023, 5, 10, 0, 0, 0));
+			String startTimeStamp = String.valueOf(mockTimeStamp(2024, 3, 10, 0, 0, 0));
+			String endTimeStamp = String.valueOf(mockTimeStamp(2024, 4, 9, 0, 0, 0));
+
+			GenerateReportRequest request = GenerateReportRequest.builder()
+				.csvTimeStamp(timeStamp)
+				.startTime(startTimeStamp)
+				.endTime(endTimeStamp)
+				.metrics(List.of("test-metrics1", "test-metrics2"))
+				.timezone("Asia/Shanghai")
+				.build();
+
+			reportService.saveRequestInfo(request, TEST_UUID);
+
+			verify(fileRepository).createFileByType(eq(FileType.CONFIGS), eq(TEST_UUID),
+					eq(request.getTimeRangeAndTimeStamp()), argumentCaptor.capture(), eq(USER_CONFIG_REPORT_PREFIX));
+
+			SavedRequestInfo savedRequestInfo = argumentCaptor.getValue();
+
+			List<DeploymentEnvironment> pipelines = savedRequestInfo.getPipelines();
+			assertEquals(0, pipelines.size());
+
+			List<String> metrics = savedRequestInfo.getMetrics();
+			assertEquals(2, metrics.size());
+			assertEquals("test-metrics1", metrics.get(0));
+			assertEquals("test-metrics2", metrics.get(1));
+
+			List<CodeBase> sourceControl = savedRequestInfo.getSourceControl();
+			assertEquals(0, sourceControl.size());
+
 		}
 
 		@Test
