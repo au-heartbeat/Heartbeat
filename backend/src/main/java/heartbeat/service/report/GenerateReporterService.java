@@ -255,9 +255,8 @@ public class GenerateReporterService {
 		ReportResponse reportResponse = new ReportResponse(fileRepository.getExpiredTime());
 
 		request.getSourceControlMetrics()
-			.forEach(metric -> reportResponse.setLeadTimeForChanges(
-					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes(),
-							request.getBuildKiteSetting().getDeploymentEnvList())));
+			.forEach(metric -> reportResponse
+				.setLeadTimeForChanges(leadTimeForChangesCalculator.calculate(fetchedData, request)));
 
 		return reportResponse;
 	}
