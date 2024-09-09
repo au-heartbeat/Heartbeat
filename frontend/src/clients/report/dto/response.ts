@@ -78,7 +78,8 @@ export interface DeploymentFrequencyResponse {
 }
 
 export interface LeadTimeForChangesResponse {
-  leadTimeForChangesOfPipelines: Array<LeadTimeOfPipeline>;
+  leadTimeForChangesOfPipelines: LeadTimeOfPipeline[];
+  leadTimeForChangesOfSourceControls: LeadTimeOfSourceControl[];
   avgLeadTimeForChanges: AvgLeadTime;
 }
 
@@ -116,6 +117,14 @@ export interface DeploymentFrequencyOfPipeline {
 export interface LeadTimeOfPipeline {
   name: string;
   step: string;
+  prLeadTime: number;
+  pipelineLeadTime: number;
+  totalDelayTime: number;
+}
+
+export interface LeadTimeOfSourceControl {
+  organization: string;
+  repo: string;
   prLeadTime: number;
   pipelineLeadTime: number;
   totalDelayTime: number;
@@ -193,6 +202,7 @@ export interface ReportResponse {
 export interface ReportURLsResponse {
   metrics: string[];
   pipelines: string[];
+  sourceControls: string[];
   reportURLs: string[];
   classificationNames: string[];
 }

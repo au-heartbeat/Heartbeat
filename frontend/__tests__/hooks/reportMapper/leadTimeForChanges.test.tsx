@@ -12,6 +12,7 @@ describe('lead time for changes data mapper', () => {
         totalDelayTime: 18313.579999999998,
       },
     ],
+    leadTimeForChangesOfSourceControls: [],
     avgLeadTimeForChanges: {
       name: 'Average',
       prLeadTime: 22481.55,
@@ -74,6 +75,7 @@ describe('lead time for changes data mapper', () => {
           totalDelayTime: 0,
         },
       ],
+      leadTimeForChangesOfSourceControls: [],
       avgLeadTimeForChanges: {
         name: 'Average',
         prLeadTime: 0,
@@ -103,6 +105,94 @@ describe('lead time for changes data mapper', () => {
       },
     ];
     const mappedLeadTimeForChanges = leadTimeForChangesMapper(mockLeadTimeForChangesResMock);
+
+    expect(mappedLeadTimeForChanges).toEqual(expectedLeadTimeForChangesValues);
+  });
+
+  it('should maps response lead time for changes values when send source control data', () => {
+    const mockLeadTimeForChanges = {
+      leadTimeForChangesOfPipelines: [
+        {
+          name: 'Heartbeat',
+          step: ':rocket: Run e2e',
+          prLeadTime: 22481.55,
+          pipelineLeadTime: 4167.97,
+          totalDelayTime: 18313.579999999998,
+        },
+      ],
+      leadTimeForChangesOfSourceControls: [
+        {
+          organization: 'au-heartbeat',
+          repo: 'heartbeat',
+          prLeadTime: 22481.55,
+          pipelineLeadTime: 4167.97,
+          totalDelayTime: 18313.579999999998,
+        },
+      ],
+      avgLeadTimeForChanges: {
+        name: 'Average',
+        prLeadTime: 22481.55,
+        pipelineLeadTime: 4167.97,
+        totalDelayTime: 18313.579999999998,
+      },
+    };
+    const expectedLeadTimeForChangesValues = [
+      {
+        id: 0,
+        name: 'Heartbeat/:rocket: Run e2e',
+        valueList: [
+          {
+            name: 'PR Lead Time',
+            values: ['374.69'],
+          },
+          {
+            name: 'Pipeline Lead Time',
+            values: ['69.47'],
+          },
+          {
+            name: 'Total Lead Time',
+            values: ['305.23'],
+          },
+        ],
+      },
+      {
+        id: 1,
+        name: 'au-heartbeat/heartbeat',
+        valueList: [
+          {
+            name: 'PR Lead Time',
+            values: ['374.69'],
+          },
+          {
+            name: 'Pipeline Lead Time',
+            values: ['69.47'],
+          },
+          {
+            name: 'Total Lead Time',
+            values: ['305.23'],
+          },
+        ],
+      },
+      {
+        id: 2,
+        name: 'Average',
+        valueList: [
+          {
+            name: 'PR Lead Time',
+            values: ['374.69'],
+          },
+          {
+            name: 'Pipeline Lead Time',
+            values: ['69.47'],
+          },
+          {
+            name: 'Total Lead Time',
+            values: ['305.23'],
+          },
+        ],
+      },
+    ];
+    const mappedLeadTimeForChanges = leadTimeForChangesMapper(mockLeadTimeForChanges);
 
     expect(mappedLeadTimeForChanges).toEqual(expectedLeadTimeForChangesValues);
   });

@@ -16,6 +16,7 @@ import { Loading } from '@src/components/Loading';
 import { styled } from '@mui/material/styles';
 import { Optional } from '@src/utils/types';
 import React, { Fragment } from 'react';
+import { theme } from '@src/theme';
 import { isEmpty } from 'lodash';
 
 interface ReportDetailTableContainsSubtitleProps {
@@ -25,6 +26,7 @@ interface ReportDetailTableContainsSubtitleProps {
   listName: string;
   data: Optional<ReportDataForMultipleValueColumns[]>;
   errorMessage?: string;
+  isGray?: boolean;
 }
 
 export const StyledLoadingWrapper = styled('div')({
@@ -40,6 +42,7 @@ export const ReportDetailTableContainsSubtitle = ({
   listName,
   data,
   errorMessage,
+  isGray = false,
 }: ReportDetailTableContainsSubtitleProps) => {
   const emojiRow = (row: ReportDataForMultipleValueColumns) => {
     const { name } = row;
@@ -59,12 +62,16 @@ export const ReportDetailTableContainsSubtitle = ({
     return <StyledTypography>{name}</StyledTypography>;
   };
 
-  const renderRowValueColumn = (values: string[]) => {
+  const renderRowValueColumn = (values: string[], isGray: boolean) => {
     return values.map((it, index) => (
       <BorderTableCell
+        aria-label={'td'}
         key={`${index}-${it}`}
         sx={{
           wordBreak: 'break-all',
+        }}
+        style={{
+          color: isGray ? 'gray' : theme.palette.secondary.contrastText,
         }}
       >
         {it}
@@ -97,13 +104,18 @@ export const ReportDetailTableContainsSubtitle = ({
           {row.valueList.map((valuesList) => (
             <Row aria-label={'tr'} key={valuesList.name}>
               <BorderTableCell
+                aria-label={'td'}
                 sx={{
                   wordBreak: 'break-all',
+                }}
+                style={{
+                  color:
+                    isGray && valuesList.name === 'Pipeline Lead Time' ? 'gray' : theme.palette.secondary.contrastText,
                 }}
               >
                 {valuesList.name}
               </BorderTableCell>
-              {renderRowValueColumn(valuesList.values)}
+              {renderRowValueColumn(valuesList.values, isGray && valuesList.name === 'Pipeline Lead Time')}
             </Row>
           ))}
         </Fragment>

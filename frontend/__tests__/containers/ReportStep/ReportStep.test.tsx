@@ -23,9 +23,11 @@ import {
 } from '../../fixtures';
 import {
   addADeploymentFrequencySetting,
+  addOneSourceControlSetting,
   saveClassificationCharts,
   saveTargetFields,
   updateDeploymentFrequencySettings,
+  updateSourceControlConfigurationSettings,
 } from '@src/context/Metrics/metricsSlice';
 import {
   DateRangeList,
@@ -172,6 +174,11 @@ describe('Report Step', () => {
     store.dispatch(
       updateDeploymentFrequencySettings({ updateId: 1, label: 'organization', value: 'mock organization' }),
     );
+    store.dispatch(addOneSourceControlSetting());
+    store.dispatch(
+      updateSourceControlConfigurationSettings({ updateId: 1, label: 'organization', value: 'mock organization' }),
+    );
+    store.dispatch(updateSourceControlConfigurationSettings({ updateId: 1, label: 'repo', value: 'mock repo' }));
     store.dispatch(
       saveClassificationCharts([
         { key: 'issuetype', name: 'Issue Type', flag: true },

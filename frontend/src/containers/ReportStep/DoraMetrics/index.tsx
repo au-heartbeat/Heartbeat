@@ -25,9 +25,17 @@ interface DoraMetricsProps {
   doraReport: ReportResponseDTO | undefined;
   errorMessage: string;
   metrics: string[];
+  isExistSourceControl: boolean;
 }
 
-const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMessage, metrics }: DoraMetricsProps) => {
+const DoraMetrics = ({
+  startToRequestDoraData,
+  onShowDetail,
+  doraReport,
+  errorMessage,
+  metrics,
+  isExistSourceControl,
+}: DoraMetricsProps) => {
   const shouldShowSourceControl = metrics.includes(RequiredData.LeadTimeForChanges);
   const sourceControlMetricsCompleted = metrics
     .filter((metric) => SOURCE_CONTROL_METRICS.includes(metric))
@@ -158,7 +166,11 @@ const DoraMetrics = ({ startToRequestDoraData, onShowDetail, doraReport, errorMe
           {shouldShowRetry() && <StyledRetry onClick={handleRetry}>{RETRY}</StyledRetry>}
         </StyledTitleWrapper>
         {shouldShowSourceControl && (
-          <ReportGrid reportDetails={getSourceControlItems()} errorMessage={errorMessage || getErrorMessage4Github()} />
+          <ReportGrid
+            isExistSourceControl={isExistSourceControl}
+            reportDetails={getSourceControlItems()}
+            errorMessage={errorMessage || getErrorMessage4Github()}
+          />
         )}
         <StyledSpacing />
         <ReportGrid

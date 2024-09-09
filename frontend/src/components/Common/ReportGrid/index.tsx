@@ -9,6 +9,7 @@ export interface ReportGridProps {
   lastGrid?: boolean;
   reportDetails: ReportDetailProps[];
   errorMessage?: string | undefined;
+  isExistSourceControl?: boolean;
 }
 
 export interface ReportDetailProps {
@@ -16,7 +17,12 @@ export interface ReportDetailProps {
   items?: ReportCardItemProps[] | null;
 }
 
-export const ReportGrid = ({ lastGrid, reportDetails, errorMessage }: ReportGridProps) => {
+export const ReportGrid = ({
+  lastGrid,
+  reportDetails,
+  errorMessage,
+  isExistSourceControl = false,
+}: ReportGridProps) => {
   const getXS = (index: number) => {
     if (getDeviceSize() === 'md') {
       return GRID_CONFIG.FULL.XS;
@@ -42,7 +48,13 @@ export const ReportGrid = ({ lastGrid, reportDetails, errorMessage }: ReportGrid
         const xs = getXS(index);
         return (
           <Grid item xs={xs} key={index}>
-            <ReportCard title={detail.title} items={detail.items} xs={xs} errorMessage={errorMessage} />
+            <ReportCard
+              isExistSourceControl={isExistSourceControl}
+              title={detail.title}
+              items={detail.items}
+              xs={xs}
+              errorMessage={errorMessage}
+            />
           </Grid>
         );
       })}
