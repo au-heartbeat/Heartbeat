@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
+import heartbeat.controller.report.dto.response.LeadTimeForChangesOfSourceControl;
 import heartbeat.controller.report.dto.response.PipelineChangeFailureRateOfPipeline;
 import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
 import heartbeat.repository.FilePrefixType;
@@ -489,34 +490,21 @@ public class CSVFileGenerator {
 
 	private List<String[]> getRowsFromLeadTimeForChanges(LeadTimeForChanges leadTimeForChanges) {
 		List<String[]> rows = new ArrayList<>();
+		String leadTimeForChangesTitle = "Lead time for changes";
 
 		List<LeadTimeForChangesOfPipelines> leadTimeForChangesOfPipelines = leadTimeForChanges
 			.getLeadTimeForChangesOfPipelines();
-		String leadTimeForChangesTitle = "Lead time for changes";
-		leadTimeForChangesOfPipelines.forEach(pipeline -> {
-			String pipelineStep = extractPipelineStep(pipeline.getStep());
-			rows.add(new String[] { leadTimeForChangesTitle,
-					pipeline.getName() + " / " + pipelineStep + " / PR Lead Time",
-					DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(pipeline.getPrLeadTime(), HOURS)) });
-			rows.add(new String[] { leadTimeForChangesTitle,
-					pipeline.getName() + " / " + pipelineStep + " / Pipeline Lead Time",
-					DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(pipeline.getPipelineLeadTime(), HOURS)) });
-			rows.add(new String[] { leadTimeForChangesTitle,
-					pipeline.getName() + " / " + pipelineStep + " / Total Lead Time",
-					DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(pipeline.getTotalDelayTime(), HOURS)) });
-		});
+		leadTimeForChangesOfPipelines
+			.forEach(pipeline -> rows.addAll(pipeline.getMetricsCsvRowData(leadTimeForChangesTitle)));
+
+		List<LeadTimeForChangesOfSourceControl> leadTimeForChangesOfSourceControls = leadTimeForChanges
+			.getLeadTimeForChangesOfSourceControls();
+		leadTimeForChangesOfSourceControls
+			.forEach(sourceControl -> rows.addAll(sourceControl.getMetricsCsvRowData(leadTimeForChangesTitle)));
 
 		AvgLeadTimeForChanges avgLeadTimeForChanges = leadTimeForChanges.getAvgLeadTimeForChanges();
-		if (leadTimeForChangesOfPipelines.size() > 1) {
-			rows.add(new String[] { leadTimeForChangesTitle, avgLeadTimeForChanges.getName() + " / PR Lead Time",
-					DecimalUtil
-						.formatDecimalTwo(TimeUtils.minutesToUnit(avgLeadTimeForChanges.getPrLeadTime(), HOURS)) });
-			rows.add(new String[] { leadTimeForChangesTitle, avgLeadTimeForChanges.getName() + " / Pipeline Lead Time",
-					DecimalUtil.formatDecimalTwo(
-							TimeUtils.minutesToUnit(avgLeadTimeForChanges.getPipelineLeadTime(), HOURS)) });
-			rows.add(new String[] { leadTimeForChangesTitle, avgLeadTimeForChanges.getName() + " / Total Lead Time",
-					DecimalUtil
-						.formatDecimalTwo(TimeUtils.minutesToUnit(avgLeadTimeForChanges.getTotalDelayTime(), HOURS)) });
+		if (leadTimeForChangesOfPipelines.size() + leadTimeForChangesOfSourceControls.size() > 1) {
+			rows.addAll(avgLeadTimeForChanges.getMetricsCsvRowData(leadTimeForChangesTitle));
 		}
 
 		return rows;
