@@ -543,7 +543,7 @@ public class GitHubService {
 								organization, repo, pullNumber);
 						CommitInfo firstCodeCommit = gitHubFeignClient
 							.getPullRequestCommitInfo(String.format("%s/%s", organization, repo), pullNumber, realToken)
-							.getFirst();
+							.get(0);
 						log.info("Successfully to get first code commit, organization: {}, repo: {}, pull number: {}",
 								organization, repo, pullNumber);
 						return Pair.of(pullRequestInfo, firstCodeCommit);

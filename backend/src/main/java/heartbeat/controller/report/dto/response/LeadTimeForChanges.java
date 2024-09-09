@@ -15,6 +15,8 @@ public class LeadTimeForChanges {
 
 	private List<LeadTimeForChangesOfPipelines> leadTimeForChangesOfPipelines;
 
+	private List<LeadTimeForChangesOfSourceControl> leadTimeForChangesOfSourceControls;
+
 	private AvgLeadTimeForChanges avgLeadTimeForChanges;
 
 }
