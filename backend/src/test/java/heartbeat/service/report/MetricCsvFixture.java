@@ -4,6 +4,7 @@ import heartbeat.controller.report.dto.response.AvgPipelineChangeFailureRate;
 import heartbeat.controller.report.dto.response.AvgPipelineMeanTimeToRecovery;
 import heartbeat.controller.report.dto.response.Classification;
 import heartbeat.controller.report.dto.response.ClassificationInfo;
+import heartbeat.controller.report.dto.response.LeadTimeForChangesOfSourceControl;
 import heartbeat.controller.report.dto.response.PipelineChangeFailureRate;
 import heartbeat.controller.report.dto.response.PipelineChangeFailureRateOfPipeline;
 import heartbeat.controller.report.dto.response.PipelineMeanTimeToRecovery;
@@ -155,6 +156,21 @@ public class MetricCsvFixture {
 						LeadTimeForChangesOfPipelines.builder()
 							.name("Heartbeat")
 							.step(":mag: Check Frontend License")
+							.prLeadTime(0.0)
+							.pipelineLeadTime(5.18)
+							.totalDelayTime(5.18)
+							.build()))
+				.leadTimeForChangesOfSourceControls(List.of(
+						LeadTimeForChangesOfSourceControl.builder()
+							.organization("organization1")
+							.repo("repo1")
+							.prLeadTime(0.0)
+							.pipelineLeadTime(1.01)
+							.totalDelayTime(1.01)
+							.build(),
+						LeadTimeForChangesOfSourceControl.builder()
+							.organization("organization2")
+							.repo("repo2")
 							.prLeadTime(0.0)
 							.pipelineLeadTime(5.18)
 							.totalDelayTime(5.18)

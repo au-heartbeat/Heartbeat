@@ -587,6 +587,12 @@ class CSVFileGeneratorTest {
 						{ "Lead time for changes", "Heartbeat / Check Frontend License / PR Lead Time", "0" },
 						{ "Lead time for changes", "Heartbeat / Check Frontend License / Pipeline Lead Time", "0.09" },
 						{ "Lead time for changes", "Heartbeat / Check Frontend License / Total Lead Time", "0.09" },
+						{ "Lead time for changes", "organization1 / repo1 / PR Lead Time", "0" },
+						{ "Lead time for changes", "organization1 / repo1 / Pipeline Lead Time", "0.02" },
+						{ "Lead time for changes", "organization1 / repo1 / Total Lead Time", "0.02" },
+						{ "Lead time for changes", "organization2 / repo2 / PR Lead Time", "0" },
+						{ "Lead time for changes", "organization2 / repo2 / Pipeline Lead Time", "0.09" },
+						{ "Lead time for changes", "organization2 / repo2 / Total Lead Time", "0.09" },
 						{ "Lead time for changes", "Average / PR Lead Time", "0" },
 						{ "Lead time for changes", "Average / Pipeline Lead Time", "0.05" },
 						{ "Lead time for changes", "Average / Total Lead Time", "0.05" },
@@ -765,6 +771,7 @@ class CSVFileGeneratorTest {
 									.pipelineLeadTime(5.18)
 									.totalDelayTime(5.18)
 									.build()))
+						.leadTimeForChangesOfSourceControls(List.of())
 						.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 							.name("Average")
 							.prLeadTime(0.0)
@@ -912,6 +919,7 @@ class CSVFileGeneratorTest {
 						.pipelineLeadTime(1.01)
 						.totalDelayTime(1.01)
 						.build()))
+					.leadTimeForChangesOfSourceControls(List.of())
 					.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 						.name("Average")
 						.prLeadTime(0.0)
