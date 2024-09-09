@@ -1246,7 +1246,7 @@ class GithubServiceTest {
 	}
 
 	@Test
-	void shouldFetchReportData() {
+	void shouldFetchPartialReportDataSuccessfullyWhenCrewIsNotEmpty() {
 		String mockToken = "mockToken";
 		String mockOrganization = "mockOrg";
 		String mockRepo = "mockRepo";
@@ -1258,6 +1258,88 @@ class GithubServiceTest {
 			.codebaseSetting(CodebaseSetting.builder()
 				.token(mockToken)
 				.crews(List.of("mockCrew1", "mockCrew2"))
+				.codebases(List.of(CodeBase.builder()
+					.organization(mockOrganization)
+					.repo(mockRepo)
+					.branches(List.of("mockBranch1"))
+					.build()))
+				.build())
+			.build();
+		List<CommitInfo> commitInfos = List.of(CommitInfo.builder()
+			.commit(Commit.builder()
+				.committer(Committer.builder().date("2024-05-31T17:00:00Z").email("1").name("1").build())
+				.author(Author.builder().date("1").email("1").name("1").build())
+				.message("mockMessage")
+				.build())
+			.build());
+
+		pullRequestInfo = PullRequestInfo.builder()
+			.number(1)
+			.createdAt("2024-05-31T17:00:00Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfo.PullRequestUser.builder().login("mockCrew1").build())
+			.build();
+		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder()
+			.totalPage(1)
+			.pageInfo(List.of(pullRequestInfo))
+			.build();
+
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
+				anyString(), anyInt(), eq(100)))
+			.thenReturn(pagePullRequestInfo);
+		when(gitHubFeignClient.getPullRequestCommitInfo("mockOrg/mockRepo", "1", "Bearer mockToken"))
+			.thenReturn(commitInfos);
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
+				any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
+
+		FetchedData.RepoData repoData = githubService.fetchRepoData(request);
+		List<SourceControlLeadTime> sourceControlLeadTimes = repoData.getSourceControlLeadTimes();
+
+		assertEquals(1, sourceControlLeadTimes.size());
+
+		SourceControlLeadTime sourceControlLeadTime = sourceControlLeadTimes.get(0);
+		assertEquals("mockOrg", sourceControlLeadTime.getOrganization());
+		assertEquals("mockRepo", sourceControlLeadTime.getRepo());
+
+		List<LeadTime> leadTimes = sourceControlLeadTime.getLeadTimes();
+
+		assertEquals(1, leadTimes.size());
+
+		LeadTime leadTime = leadTimes.get(0);
+		assertEquals(1717174800000L, leadTime.getPrCreatedTime());
+		assertEquals(1719763199000L, leadTime.getPrMergedTime());
+		assertEquals(1717174800000L, leadTime.getFirstCommitTimeInPr());
+		assertEquals(1719763199000L, leadTime.getFirstCommitTime());
+		assertEquals(2588399000L, leadTime.getPrLeadTime());
+		assertEquals(0L, leadTime.getPipelineLeadTime());
+		assertEquals(2588399000L, leadTime.getTotalTime());
+		assertEquals(0L, leadTime.getHolidays());
+		assertEquals(Boolean.FALSE, leadTime.getIsRevert());
+		assertNull(leadTime.getCommitId());
+		assertNull(leadTime.getJobFinishTime());
+		assertNull(leadTime.getJobStartTime());
+		assertNull(leadTime.getNoPRCommitTime());
+		assertNull(leadTime.getPipelineCreateTime());
+	}
+
+	@Test
+	void shouldFetchAllReportDataWhenCrewIsEmpty() {
+		String mockToken = "mockToken";
+		String mockOrganization = "mockOrg";
+		String mockRepo = "mockRepo";
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.CN)
+			.startTime("1717171200000")
+			.endTime("1719763199999")
+			.codebaseSetting(CodebaseSetting.builder()
+				.token(mockToken)
+				.crews(List.of())
 				.codebases(List.of(CodeBase.builder()
 					.organization(mockOrganization)
 					.repo(mockRepo)

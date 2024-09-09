@@ -535,8 +535,13 @@ public class GitHubService {
 					.parallel()
 					.map(branch -> getValidPullRequestInfo(realToken, organization, repo, branch, startTime, endTime))
 					.flatMap(Collection::stream)
-					.filter(pullRequestInfo -> crews.stream()
-						.anyMatch(crew -> Objects.equals(pullRequestInfo.getUser().getLogin(), crew)))
+					.filter(pullRequestInfo -> {
+						if (crews.isEmpty()) {
+							return true;
+						}
+						return crews.stream()
+							.anyMatch(crew -> Objects.equals(pullRequestInfo.getUser().getLogin(), crew));
+					})
 					.map(pullRequestInfo -> {
 						String pullNumber = pullRequestInfo.getNumber().toString();
 						log.info("Start to get first code commit, organization: {}, repo: {}, pull number: {}",
