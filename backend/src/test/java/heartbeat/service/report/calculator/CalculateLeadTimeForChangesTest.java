@@ -237,10 +237,21 @@ public class CalculateLeadTimeForChangesTest {
 	@Test
 	void shouldReturnLeadTimeForChangesWhenSourceControlIsNotEmpty() {
 		List<CodeBase> codeBaseList = List.of(
-			CodeBase.builder().organization("test-org1").branches(List.of("test-branch1")).repo("test-repo1").build(),
-			CodeBase.builder().organization("test-org2").branches(List.of("test-branch2")).repo("test-repo2").build(),
-			CodeBase.builder().organization("test-org1").branches(List.of("test-branch3")).repo("test-repo3").build()
-			);
+				CodeBase.builder()
+					.organization("test-org1")
+					.branches(List.of("test-branch1"))
+					.repo("test-repo1")
+					.build(),
+				CodeBase.builder()
+					.organization("test-org2")
+					.branches(List.of("test-branch2"))
+					.repo("test-repo2")
+					.build(),
+				CodeBase.builder()
+					.organization("test-org1")
+					.branches(List.of("test-branch3"))
+					.repo("test-repo3")
+					.build());
 
 		SourceControlLeadTime sourceControlLeadTime = SourceControlLeadTime.builder()
 			.organization("test-org1")
@@ -260,7 +271,8 @@ public class CalculateLeadTimeForChangesTest {
 
 		FetchedData fetchedData = new FetchedData();
 		fetchedData.setBuildKiteData(FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).build());
-		fetchedData.setRepoData(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of(sourceControlLeadTime)).build());
+		fetchedData
+			.setRepoData(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of(sourceControlLeadTime)).build());
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(List.of()).build())
 			.codebaseSetting(CodebaseSetting.builder().codebases(codeBaseList).build())
@@ -268,29 +280,27 @@ public class CalculateLeadTimeForChangesTest {
 		LeadTimeForChanges expect = LeadTimeForChanges.builder()
 			.leadTimeForChangesOfPipelines(List.of())
 			.leadTimeForChangesOfSourceControls(List.of(
-				LeadTimeForChangesOfSourceControl.builder()
-					.organization("test-org1")
-					.repo("test-repo1")
-					.prLeadTime(1.0)
-					.pipelineLeadTime(1.0)
-					.totalDelayTime(2.0)
-					.build(),
-				LeadTimeForChangesOfSourceControl.builder()
-					.organization("test-org2")
-					.repo("test-repo2")
-					.prLeadTime(0.0)
-					.pipelineLeadTime(0.0)
-					.totalDelayTime(0.0)
-					.build(),
-				LeadTimeForChangesOfSourceControl.builder()
-					.organization("test-org1")
-					.repo("test-repo3")
-					.prLeadTime(0.0)
-					.pipelineLeadTime(0.0)
-					.totalDelayTime(0.0)
-					.build()
-				)
-			)
+					LeadTimeForChangesOfSourceControl.builder()
+						.organization("test-org1")
+						.repo("test-repo1")
+						.prLeadTime(1.0)
+						.pipelineLeadTime(1.0)
+						.totalDelayTime(2.0)
+						.build(),
+					LeadTimeForChangesOfSourceControl.builder()
+						.organization("test-org2")
+						.repo("test-repo2")
+						.prLeadTime(0.0)
+						.pipelineLeadTime(0.0)
+						.totalDelayTime(0.0)
+						.build(),
+					LeadTimeForChangesOfSourceControl.builder()
+						.organization("test-org1")
+						.repo("test-repo3")
+						.prLeadTime(0.0)
+						.pipelineLeadTime(0.0)
+						.totalDelayTime(0.0)
+						.build()))
 			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 				.name("Average")
 				.prLeadTime(1.0)
@@ -307,10 +317,21 @@ public class CalculateLeadTimeForChangesTest {
 	@Test
 	void shouldReturnLeadTimeForChangesWhenSourceControlLeadTimeIsNull() {
 		List<CodeBase> codeBaseList = List.of(
-			CodeBase.builder().organization("test-org1").branches(List.of("test-branch1")).repo("test-repo1").build(),
-			CodeBase.builder().organization("test-org2").branches(List.of("test-branch2")).repo("test-repo2").build(),
-			CodeBase.builder().organization("test-org3").branches(List.of("test-branch3")).repo("test-repo3").build()
-		);
+				CodeBase.builder()
+					.organization("test-org1")
+					.branches(List.of("test-branch1"))
+					.repo("test-repo1")
+					.build(),
+				CodeBase.builder()
+					.organization("test-org2")
+					.branches(List.of("test-branch2"))
+					.repo("test-repo2")
+					.build(),
+				CodeBase.builder()
+					.organization("test-org3")
+					.branches(List.of("test-branch3"))
+					.repo("test-repo3")
+					.build());
 
 		SourceControlLeadTime sourceControlLeadTime = SourceControlLeadTime.builder()
 			.organization("test-org1")
@@ -319,7 +340,8 @@ public class CalculateLeadTimeForChangesTest {
 
 		FetchedData fetchedData = new FetchedData();
 		fetchedData.setBuildKiteData(FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).build());
-		fetchedData.setRepoData(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of(sourceControlLeadTime)).build());
+		fetchedData
+			.setRepoData(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of(sourceControlLeadTime)).build());
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(List.of()).build())
 			.codebaseSetting(CodebaseSetting.builder().codebases(codeBaseList).build())
@@ -347,9 +369,7 @@ public class CalculateLeadTimeForChangesTest {
 						.prLeadTime(0.0)
 						.pipelineLeadTime(0.0)
 						.totalDelayTime(0.0)
-						.build()
-				)
-			)
+						.build()))
 			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 				.name("Average")
 				.prLeadTime(0.0)
@@ -366,10 +386,21 @@ public class CalculateLeadTimeForChangesTest {
 	@Test
 	void shouldReturnLeadTimeForChangesWhenSourceControlLeadTimeIsEmpty() {
 		List<CodeBase> codeBaseList = List.of(
-			CodeBase.builder().organization("test-org1").branches(List.of("test-branch1")).repo("test-repo1").build(),
-			CodeBase.builder().organization("test-org2").branches(List.of("test-branch2")).repo("test-repo2").build(),
-			CodeBase.builder().organization("test-org3").branches(List.of("test-branch3")).repo("test-repo3").build()
-		);
+				CodeBase.builder()
+					.organization("test-org1")
+					.branches(List.of("test-branch1"))
+					.repo("test-repo1")
+					.build(),
+				CodeBase.builder()
+					.organization("test-org2")
+					.branches(List.of("test-branch2"))
+					.repo("test-repo2")
+					.build(),
+				CodeBase.builder()
+					.organization("test-org3")
+					.branches(List.of("test-branch3"))
+					.repo("test-repo3")
+					.build());
 
 		SourceControlLeadTime sourceControlLeadTime = SourceControlLeadTime.builder()
 			.organization("test-org1")
@@ -379,7 +410,8 @@ public class CalculateLeadTimeForChangesTest {
 
 		FetchedData fetchedData = new FetchedData();
 		fetchedData.setBuildKiteData(FetchedData.BuildKiteData.builder().pipelineLeadTimes(List.of()).build());
-		fetchedData.setRepoData(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of(sourceControlLeadTime)).build());
+		fetchedData
+			.setRepoData(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of(sourceControlLeadTime)).build());
 		GenerateReportRequest request = GenerateReportRequest.builder()
 			.buildKiteSetting(BuildKiteSetting.builder().deploymentEnvList(List.of()).build())
 			.codebaseSetting(CodebaseSetting.builder().codebases(codeBaseList).build())
@@ -407,9 +439,7 @@ public class CalculateLeadTimeForChangesTest {
 						.prLeadTime(0.0)
 						.pipelineLeadTime(0.0)
 						.totalDelayTime(0.0)
-						.build()
-				)
-			)
+						.build()))
 			.avgLeadTimeForChanges(AvgLeadTimeForChanges.builder()
 				.name("Average")
 				.prLeadTime(0.0)
