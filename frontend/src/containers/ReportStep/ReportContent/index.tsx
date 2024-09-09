@@ -54,6 +54,7 @@ import { uniqueId } from 'lodash';
 export interface ReportContentProps {
   metrics: string[];
   allPipelines: string[];
+  allSourceControls: string[];
   classificationNames: string[];
   dateRanges: DateRangeList;
   startToRequestData: () => void;
@@ -82,6 +83,7 @@ const ReportContent = (props: ReportContentProps) => {
   const {
     metrics,
     allPipelines,
+    allSourceControls,
     dateRanges,
     startToRequestData,
     reportInfos,
@@ -111,6 +113,7 @@ const ReportContent = (props: ReportContentProps) => {
 
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(descendingDateRanges[0]);
   const [currentDataInfo, setCurrentDataInfo] = useState<IReportInfo>(initReportInfo());
+  let isGray = true;
 
   const {
     closeReportInfosErrorStatus,
@@ -279,6 +282,10 @@ const ReportContent = (props: ReportContentProps) => {
     currentDataInfo.generalError4Report,
   ]);
 
+  if (currentDataInfo.reportData?.leadTimeForChanges?.leadTimeForChangesOfPipelines?.length !== 0) {
+    isGray = false;
+  }
+
   const showSummary = () => (
     <Box>
       {shouldShowBoardMetrics && (
@@ -302,6 +309,7 @@ const ReportContent = (props: ReportContentProps) => {
             currentDataInfo.generalError4Dora.message ||
             currentDataInfo.generalError4Report.message
           }
+          isExistSourceControl={isGray}
         />
       )}
     </Box>
@@ -351,6 +359,7 @@ const ReportContent = (props: ReportContentProps) => {
       dateRanges={allDateRanges}
       metrics={metrics}
       allPipelines={allPipelines}
+      allSourceControls={allSourceControls}
       selectedPipeline={selectedPipeline}
       onUpdatePipeline={setSelectedPipeline}
       allDateRangeLoadingFinished={allDateRangeLoadingFinished}
@@ -377,7 +386,7 @@ const ReportContent = (props: ReportContentProps) => {
     />
   );
   const showDoraDetail = (data: ReportResponseDTO) => (
-    <DoraDetail isShowBack={true} onBack={backToSummaryPage} data={data} />
+    <DoraDetail isExistSourceControl={isGray} isShowBack={true} onBack={backToSummaryPage} data={data} />
   );
 
   const handleBack = () => {

@@ -38,4 +38,28 @@ describe('Report Card', () => {
 
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
+
+  it('should show gray item when isExistSourceControl is true', () => {
+    const items = [
+      {
+        value: 1,
+        subtitle: 'PR Lead Time',
+      },
+      {
+        value: 2,
+        subtitle: 'Pipeline Lead Time',
+      },
+      {
+        value: 3,
+        subtitle: 'Total Lead Time',
+      },
+    ];
+
+    render(<ReportCard title={'card'} items={items} xs={6} isExistSourceControl={true} errorMessage={''} />);
+
+    const sectionItems = screen.getAllByLabelText('report card item');
+
+    expect(sectionItems.length).toBe(2);
+    expect(sectionItems[1].getAttribute('style')).toContain('color: gray;');
+  });
 });

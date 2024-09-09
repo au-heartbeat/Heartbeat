@@ -19,9 +19,10 @@ interface ReportCardProps extends HTMLAttributes<HTMLDivElement> {
   items?: ReportCardItemProps[] | null;
   xs: number;
   errorMessage: string | undefined;
+  isExistSourceControl?: boolean;
 }
 
-export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) => {
+export const ReportCard = ({ title, items, xs, errorMessage, isExistSourceControl = false }: ReportCardProps) => {
   const [isShowDialog, setIsShowDialog] = useState<boolean>(false);
   const defaultFlex = 1;
   const getReportItems = () => {
@@ -64,6 +65,7 @@ export const ReportCard = ({ title, items, xs, errorMessage }: ReportCardProps) 
           index < style.MAX_INDEX ? (
             <ReportCardItem
               key={index}
+              isGray={index === 1 && isExistSourceControl}
               value={item.value}
               isToFixed={item.isToFixed}
               extraValue={item.extraValue}

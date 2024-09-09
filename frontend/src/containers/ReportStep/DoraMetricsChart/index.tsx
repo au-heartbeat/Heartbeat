@@ -35,6 +35,7 @@ interface DoraMetricsChartProps {
   data: (ReportResponseDTO | undefined)[];
   metrics: string[];
   allPipelines: string[];
+  allSourceControls: string[];
   selectedPipeline: string;
   onUpdatePipeline: (value: string) => void;
   allDateRangeLoadingFinished: boolean;
@@ -259,6 +260,7 @@ export const DoraMetricsChart = ({
   selectedPipeline,
   onUpdatePipeline,
   allPipelines,
+  allSourceControls,
   allDateRangeLoadingFinished,
 }: DoraMetricsChartProps) => {
   const leadTimeForChange = useRef<HTMLDivElement>(null);
@@ -268,7 +270,7 @@ export const DoraMetricsChart = ({
 
   const mappedData = data.map((currentData) => {
     if (!currentData?.doraMetricsCompleted) {
-      return emptyDataMapperDoraChart(allPipelines, '');
+      return emptyDataMapperDoraChart([...allPipelines, ...allSourceControls], '');
     } else {
       return reportMapper(currentData);
     }
@@ -322,7 +324,7 @@ export const DoraMetricsChart = ({
     showChart(meanTimeToRecovery.current, meanTimeToRecoveryDataOption);
   }, [meanTimeToRecovery, meanTimeToRecoveryDataOption]);
 
-  const pipelineNameOptions = [DEFAULT_SELECTED_PIPELINE, ...allPipelines];
+  const pipelineNameOptions = [DEFAULT_SELECTED_PIPELINE, ...allPipelines, ...allSourceControls];
 
   return (
     <>
