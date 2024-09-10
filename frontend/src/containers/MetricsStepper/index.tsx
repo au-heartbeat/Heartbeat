@@ -44,11 +44,11 @@ import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/cont
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { PageContentWrapper } from '@src/components/Common/PageContentWrapper';
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
 import { ConfirmDialog } from '@src/containers/MetricsStepper/ConfirmDialog';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { getFormMeta } from '@src/context/meta/metaSlice';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -112,22 +112,25 @@ const MetricsStepper = () => {
     mode: 'onChange',
   });
 
-  const getSourceControlCrews = (sourceControlConfigurationSettings: ISourceControlConfig[]) => {
-    return sourceControlConfigurationSettings.flatMap((it) =>
-      it.branches?.flatMap((branch) =>
-        dateRanges.flatMap((dateRange) =>
-          selectSourceControlCrews(
-            storeContext,
-            it.organization,
-            it.repo,
-            branch,
-            dayjs(dateRange.startDate).startOf('date').valueOf(),
-            dayjs(dateRange.endDate).startOf('date').valueOf(),
+  const getSourceControlCrews = useCallback(
+    (sourceControlConfigurationSettings: ISourceControlConfig[]) => {
+      return sourceControlConfigurationSettings.flatMap((it) =>
+        it.branches?.flatMap((branch) =>
+          dateRanges.flatMap((dateRange) =>
+            selectSourceControlCrews(
+              storeContext,
+              it.organization,
+              it.repo,
+              branch,
+              dayjs(dateRange.startDate).startOf('date').valueOf(),
+              dayjs(dateRange.endDate).startOf('date').valueOf(),
+            ),
           ),
         ),
-      ),
-    );
-  };
+      );
+    },
+    [dateRanges, storeContext],
+  );
 
   const { isValid: isBasicInfoValid } = basicInfoMethods.formState;
   const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
@@ -247,12 +250,11 @@ const MetricsStepper = () => {
       selectedSourceControls.every(({ branches }) => !isEmpty(branches)) &&
       getDuplicatedSourceControlIds(sourceControlConfigurationSettings).length === 0
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    dateRanges,
-    getDuplicatedSourceControlIds,
     metricsConfig.sourceControlConfigurationSettings,
-    config.sourceControl,
+    getSourceControlCrews,
+    getDuplicatedSourceControlIds,
+    storeContext,
   ]);
 
   useEffect(() => {
