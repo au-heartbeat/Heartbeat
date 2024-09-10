@@ -15,7 +15,10 @@ import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.codebase.github.SourceControlLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
+import heartbeat.controller.report.dto.request.CodeBase;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.response.LeadTimeInfo;
+import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.BaseException;
 import heartbeat.exception.InternalServerErrorException;
@@ -291,6 +294,7 @@ public class GitHubService {
 		Long pipelineCreateTime = ofNullable(deployInfo.getPipelineCreateTime())
 			.map(it -> Instant.parse(it).toEpochMilli())
 			.orElse(null);
+		String commitId = ofNullable(deployInfo.getCommitId()).orElse(commitInfo.getCommitId());
 		long firstCommitTimeInPr;
 		if (commitInfo.getCommit() != null && commitInfo.getCommit().getCommitter() != null
 				&& commitInfo.getCommit().getCommitter().getDate() != null) {
@@ -333,7 +337,9 @@ public class GitHubService {
 			.prMergedTime(prMergedTime)
 			.totalTime(totalTime)
 			.prCreatedTime(prCreatedTime)
-			.commitId(deployInfo.getCommitId())
+			.commitId(commitId)
+			.pullNumber(pullRequestInfo.getNumber())
+			.committer(pullRequestInfo.getUser().getLogin())
 			.jobFinishTime(jobFinishTime)
 			.jobStartTime(jobStartTime)
 			.firstCommitTime(prMergedTime)
@@ -531,36 +537,41 @@ public class GitHubService {
 				String organization = codeBase.getOrganization();
 				String repo = codeBase.getRepo();
 				List<String> branches = codeBase.getBranches();
-				List<LeadTime> leadTimes = branches.stream()
-					.parallel()
-					.map(branch -> getValidPullRequestInfo(realToken, organization, repo, branch, startTime, endTime))
-					.flatMap(Collection::stream)
-					.filter(pullRequestInfo -> {
-						if (crews.isEmpty()) {
-							return true;
-						}
-						return crews.stream()
-							.anyMatch(crew -> Objects.equals(pullRequestInfo.getUser().getLogin(), crew));
-					})
-					.map(pullRequestInfo -> {
-						String pullNumber = pullRequestInfo.getNumber().toString();
-						log.info("Start to get first code commit, organization: {}, repo: {}, pull number: {}",
-								organization, repo, pullNumber);
-						CommitInfo firstCodeCommit = gitHubFeignClient
-							.getPullRequestCommitInfo(String.format("%s/%s", organization, repo), pullNumber, realToken)
-							.get(0);
-						log.info("Successfully to get first code commit, organization: {}, repo: {}, pull number: {}",
-								organization, repo, pullNumber);
-						return Pair.of(pullRequestInfo, firstCodeCommit);
-					})
-					.map(pair -> mapLeadTimeWithInfo(pair.getLeft(), new DeployInfo(), pair.getRight(), request))
-					.toList();
-				return SourceControlLeadTime.builder()
-					.repo(repo)
-					.organization(organization)
-					.leadTimes(leadTimes)
-					.build();
+				return branches.stream().map(branch -> {
+					List<LeadTime> leadTimes = getValidPullRequestInfo(realToken, organization, repo, branch, startTime,
+							endTime)
+						.stream()
+						.filter(pullRequestInfo -> {
+							if (crews.isEmpty()) {
+								return true;
+							}
+							return crews.stream()
+								.anyMatch(crew -> Objects.equals(pullRequestInfo.getUser().getLogin(), crew));
+						})
+						.map(pullRequestInfo -> {
+							String pullNumber = pullRequestInfo.getNumber().toString();
+							log.info("Start to get first code commit, organization: {}, repo: {}, pull number: {}",
+									organization, repo, pullNumber);
+							CommitInfo firstCodeCommit = gitHubFeignClient
+								.getPullRequestCommitInfo(String.format("%s/%s", organization, repo), pullNumber,
+										realToken)
+								.get(0);
+							log.info(
+									"Successfully to get first code commit, organization: {}, repo: {}, pull number: {}",
+									organization, repo, pullNumber);
+							return Pair.of(pullRequestInfo, firstCodeCommit);
+						})
+						.map(pair -> mapLeadTimeWithInfo(pair.getLeft(), new DeployInfo(), pair.getRight(), request))
+						.toList();
+					return SourceControlLeadTime.builder()
+						.repo(repo)
+						.organization(organization)
+						.branch(branch)
+						.leadTimes(leadTimes)
+						.build();
+				}).toList();
 			})
+			.flatMap(Collection::stream)
 			.toList();
 
 		log.info("Successfully fetch repo data");
@@ -606,6 +617,28 @@ public class GitHubService {
 				"Successfully to get all pull request, organization: {}, repo: {}, branch: {}, startTime: {}, endTime: {}",
 				organization, repo, branch, startTime, endTime);
 		return pullRequestInfoList;
+	}
+
+	public List<PipelineCSVInfo> generateCSVForSourceControl(FetchedData.RepoData repoData, List<CodeBase> codeBases) {
+		return codeBases.stream().parallel().map(codeBase -> {
+			String organization = codeBase.getOrganization();
+			String repo = codeBase.getRepo();
+			return repoData.getSourceControlLeadTimes()
+				.stream()
+				.filter(sourceControlLeadTime -> Objects.equals(sourceControlLeadTime.getRepo(), repo)
+						&& Objects.equals(sourceControlLeadTime.getOrganization(), organization))
+				.map(sourceControlLeadTime -> sourceControlLeadTime.getLeadTimes()
+					.stream()
+					.map(leadTime -> PipelineCSVInfo.builder()
+						.organizationName(organization)
+						.repoName(repo)
+						.branchName(sourceControlLeadTime.getBranch())
+						.leadTimeInfo(new LeadTimeInfo(leadTime))
+						.build())
+					.toList())
+				.flatMap(Collection::stream)
+				.toList();
+		}).flatMap(Collection::stream).toList();
 	}
 
 }

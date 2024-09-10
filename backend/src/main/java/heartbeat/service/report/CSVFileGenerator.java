@@ -3,6 +3,7 @@ package heartbeat.service.report;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
+import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.controller.board.dto.request.CardStepsEnum;
 import heartbeat.controller.report.dto.response.LeadTimeForChangesOfSourceControl;
 import heartbeat.controller.report.dto.response.PipelineChangeFailureRateOfPipeline;
@@ -74,8 +75,8 @@ public class CSVFileGenerator {
 	}
 
 	public void convertPipelineDataToCSV(String uuid, List<PipelineCSVInfo> leadTimeData, String csvTimeStamp) {
-		String[] headers = { "Organization", "Pipeline Name", "Pipeline Step", "Valid", "Build Number",
-				"Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
+		String[] headers = { "Organization", "Pipeline Name", "Repo Name", "Pipeline Step", "Valid", "Build Number",
+				"Pull Number", "Code Committer", "Build Creator", "First Code Committed Time In PR", "PR Created Time",
 				"PR Merged Time", "No PR Committed Time", "Job Start Time", "Pipeline Start Time",
 				"Pipeline Finish Time", "Non-Workdays (Hours)", "Total Lead Time (HH:mm:ss)", "PR Lead Time (HH:mm:ss)",
 				"Pipeline Lead Time (HH:mm:ss)", "Status", "Branch", "Revert" };
@@ -89,22 +90,28 @@ public class CSVFileGenerator {
 	}
 
 	private String[] getRowData(PipelineCSVInfo csvInfo) {
-		String committerName = ofNullable(csvInfo.getBuildInfo().getAuthor())
+		String committerName = ofNullable(csvInfo.getBuildInfo()).map(BuildKiteBuildInfo::getAuthor)
 			.map(BuildKiteBuildInfo.Author::getUsername)
-			.orElse(null);
+			.orElse(csvInfo.getLeadTimeInfo().getCommitter());
 
-		String creatorName = ofNullable(csvInfo.getBuildInfo().getCreator()).map(BuildKiteBuildInfo.Creator::getName)
+		String creatorName = ofNullable(csvInfo.getBuildInfo()).map(BuildKiteBuildInfo::getCreator)
+			.map(BuildKiteBuildInfo.Creator::getName)
 			.orElse(null);
 
 		String organization = csvInfo.getOrganizationName();
 		String pipelineName = csvInfo.getPipeLineName();
+		String repoName = csvInfo.getRepoName();
 		String stepName = csvInfo.getStepName();
-		String valid = String.valueOf(csvInfo.getValid()).toLowerCase();
-		String buildNumber = String.valueOf(csvInfo.getBuildInfo().getNumber());
+		String valid = ofNullable(csvInfo.getValid()).map(it -> String.valueOf(it).toLowerCase()).orElse(null);
+		String buildNumber = ofNullable(csvInfo.getBuildInfo()).map(it -> String.valueOf(it.getNumber())).orElse(null);
+		String pullNumber = ofNullable(csvInfo.getLeadTimeInfo().getPullNumber()).map(String::valueOf).orElse(null);
 
-		String state = csvInfo.getPiplineStatus().equals(CANCELED_STATUS) ? CANCELED_STATUS
-				: csvInfo.getDeployInfo().getState();
-		String branch = csvInfo.getBuildInfo().getBranch();
+		String state = ofNullable(csvInfo.getPiplineStatus()).map(it -> it.equals(CANCELED_STATUS) ? CANCELED_STATUS
+				: ofNullable(csvInfo.getDeployInfo()).map(DeployInfo::getState).orElse(null))
+			.orElse(null);
+
+		String branch = ofNullable(csvInfo.getBuildInfo()).map(BuildKiteBuildInfo::getBranch)
+			.orElse(csvInfo.getBranchName());
 
 		LeadTimeInfo leadTimeInfo = csvInfo.getLeadTimeInfo();
 		String firstCommitTimeInPr = leadTimeInfo.getFirstCommitTimeInPr();
@@ -113,16 +120,18 @@ public class CSVFileGenerator {
 		String noPRCommitTime = leadTimeInfo.getNoPRCommitTime();
 		String jobStartTime = leadTimeInfo.getJobStartTime();
 		String pipelineStartTime = leadTimeInfo.getFirstCommitTime();
-		String pipelineFinishTime = csvInfo.getDeployInfo().getJobFinishTime();
+		String pipelineFinishTime = ofNullable(csvInfo.getDeployInfo()).map(DeployInfo::getJobFinishTime)
+			.orElse(leadTimeInfo.getJobFinishTime());
 		String nonWorkdays = String.valueOf(leadTimeInfo.getNonWorkdays() * 24);
 		String totalTime = leadTimeInfo.getTotalTime();
 		String prLeadTime = leadTimeInfo.getPrLeadTime();
 		String pipelineLeadTime = leadTimeInfo.getPipelineLeadTime();
 		String isRevert = leadTimeInfo.getIsRevert() == null ? "" : String.valueOf(leadTimeInfo.getIsRevert());
 
-		return new String[] { organization, pipelineName, stepName, valid, buildNumber, committerName, creatorName,
-				firstCommitTimeInPr, prCreatedTime, prMergedTime, noPRCommitTime, jobStartTime, pipelineStartTime,
-				pipelineFinishTime, nonWorkdays, totalTime, prLeadTime, pipelineLeadTime, state, branch, isRevert };
+		return new String[] { organization, pipelineName, repoName, stepName, valid, buildNumber, pullNumber,
+				committerName, creatorName, firstCommitTimeInPr, prCreatedTime, prMergedTime, noPRCommitTime,
+				jobStartTime, pipelineStartTime, pipelineFinishTime, nonWorkdays, totalTime, prLeadTime,
+				pipelineLeadTime, state, branch, isRevert };
 	}
 
 	public InputStreamResource getDataFromCSV(ReportType reportDataType, String uuid, String timeRangeAndTimeStamp) {

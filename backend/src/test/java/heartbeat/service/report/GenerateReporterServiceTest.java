@@ -55,6 +55,7 @@ import org.mockito.quality.Strictness;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -526,18 +527,20 @@ class GenerateReporterServiceTest {
 				.calendarType(CalendarTypeEnum.REGULAR)
 				.metrics(List.of())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
+				.codebaseSetting(CodebaseSetting.builder().codebases(List.of()).build())
 				.csvTimeStamp(TIMESTAMP)
 				.startTime("1710000000000")
 				.endTime("1712678399999")
 				.timezone("Asia/Shanghai")
 				.build();
-			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
+			List<PipelineCSVInfo> pipelineCSVInfos = new ArrayList<>();
 			String timeRangeAndTimeStamp = request.getTimeRangeAndTimeStamp();
 
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
 					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
+			when(gitHubService.generateCSVForSourceControl(any(), any())).thenReturn(List.of());
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -548,6 +551,7 @@ class GenerateReporterServiceTest {
 					FilePrefixType.SOURCE_CONTROL_PREFIX);
 			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID,
 					timeRangeAndTimeStamp, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
+			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
@@ -686,6 +690,7 @@ class GenerateReporterServiceTest {
 				.metrics(List.of("deployment frequency", "pipeline change failure rate",
 						"pipeline mean time to recovery"))
 				.buildKiteSetting(BuildKiteSetting.builder().build())
+				.codebaseSetting(CodebaseSetting.builder().codebases(List.of()).build())
 				.csvTimeStamp(TIMESTAMP)
 				.timezone("Asia/Shanghai")
 				.build();
@@ -694,7 +699,7 @@ class GenerateReporterServiceTest {
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
 					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
-			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
+			List<PipelineCSVInfo> pipelineCSVInfos = new ArrayList<>();
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchBuildKiteInfo(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
@@ -704,6 +709,7 @@ class GenerateReporterServiceTest {
 			when(deploymentFrequency.calculate(any(), any(), any(), any(), any())).thenReturn(fakeDeploymentFrequency);
 			when(pipelineChangeFailureRate.calculate(any())).thenReturn(fakePipelineChangeFailureRate);
 			when(pipelineMeanToRecoveryCalculator.calculate(any(), any())).thenReturn(fakeMeantime);
+			when(gitHubService.generateCSVForSourceControl(any(), any())).thenReturn(List.of());
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -718,6 +724,7 @@ class GenerateReporterServiceTest {
 					timeRangeAndTimeStamp, DORA, false);
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
+			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 
@@ -793,6 +800,7 @@ class GenerateReporterServiceTest {
 				.metrics(List.of("lead time for changes"))
 				.codebaseSetting(CodebaseSetting.builder().build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
+				.codebaseSetting(CodebaseSetting.builder().codebases(List.of()).build())
 				.csvTimeStamp(TIMESTAMP)
 				.timezone("Asia/Shanghai")
 				.build();
@@ -801,7 +809,7 @@ class GenerateReporterServiceTest {
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
 					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
-			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
+			List<PipelineCSVInfo> pipelineCSVInfos = new ArrayList<>();
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(request))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
@@ -809,6 +817,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of()).build());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
 			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
+			when(gitHubService.generateCSVForSourceControl(any(), any())).thenReturn(List.of());
 
 			generateReporterService.generateDoraReport(TEST_UUID, request);
 
@@ -819,11 +828,11 @@ class GenerateReporterServiceTest {
 					FilePrefixType.PIPELINE_REPORT_PREFIX);
 			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID,
 					timeRangeAndTimeStamp, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
-
 			verify(asyncMetricsDataHandler, never()).updateMetricsDataCompletedInHandler(TEST_UUID,
 					timeRangeAndTimeStamp, DORA, false);
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.SOURCE_CONTROL_PREFIX));
+			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
@@ -846,7 +855,7 @@ class GenerateReporterServiceTest {
 				.endTime("20000")
 				.metrics(List.of(MetricEnum.LEAD_TIME_FOR_CHANGES.getValue(),
 						MetricEnum.PIPELINE_CHANGE_FAILURE_RATE.getValue()))
-				.codebaseSetting(CodebaseSetting.builder().build())
+				.codebaseSetting(CodebaseSetting.builder().codebases(List.of()).build())
 				.buildKiteSetting(BuildKiteSetting.builder().build())
 				.csvTimeStamp(TIMESTAMP)
 				.timezone("Asia/Shanghai")
@@ -856,7 +865,7 @@ class GenerateReporterServiceTest {
 			when(fileRepository.readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID, timeRangeAndTimeStamp,
 					MetricsDataCompleted.class, DATA_COMPLETED_PREFIX))
 				.thenReturn(MetricsDataCompleted.builder().doraMetricsCompleted(false).build());
-			List<PipelineCSVInfo> pipelineCSVInfos = List.of();
+			List<PipelineCSVInfo> pipelineCSVInfos = new ArrayList<>();
 			when(pipelineService.generateCSVForPipeline(any(), any(), any(), any())).thenReturn(pipelineCSVInfos);
 			when(pipelineService.fetchGitHubData(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
@@ -864,6 +873,7 @@ class GenerateReporterServiceTest {
 				.thenReturn(FetchedData.RepoData.builder().sourceControlLeadTimes(List.of()).build());
 			when(pipelineService.fetchBuildKiteInfo(any()))
 				.thenReturn(FetchedData.BuildKiteData.builder().buildInfosList(List.of()).build());
+			when(gitHubService.generateCSVForSourceControl(any(), any())).thenReturn(List.of());
 			LeadTimeForChanges fakeLeadTimeForChange = LeadTimeForChanges.builder().build();
 			when(leadTimeForChangesCalculator.calculate(any(), any())).thenReturn(fakeLeadTimeForChange);
 
@@ -880,6 +890,7 @@ class GenerateReporterServiceTest {
 					timeRangeAndTimeStamp, DORA, false);
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.SOURCE_CONTROL_PREFIX));
+			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
