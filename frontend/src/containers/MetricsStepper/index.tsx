@@ -113,18 +113,16 @@ const MetricsStepper = () => {
   });
 
   const getSourceControlCrews = useCallback(
-    (sourceControlConfigurationSettings: ISourceControlConfig[]) => {
-      return sourceControlConfigurationSettings.flatMap((it) =>
-        it.branches?.flatMap((branch) =>
-          dateRanges.flatMap((dateRange) =>
-            selectSourceControlCrews(
-              storeContext,
-              it.organization,
-              it.repo,
-              branch,
-              dayjs(dateRange.startDate).startOf('date').valueOf(),
-              dayjs(dateRange.endDate).startOf('date').valueOf(),
-            ),
+    (sourceControlConfigurationSetting: ISourceControlConfig) => {
+      return sourceControlConfigurationSetting.branches?.flatMap((branch) =>
+        dateRanges.flatMap((dateRange) =>
+          selectSourceControlCrews(
+            storeContext,
+            sourceControlConfigurationSetting.organization,
+            sourceControlConfigurationSetting.repo,
+            branch,
+            dayjs(dateRange.startDate).startOf('date').valueOf(),
+            dayjs(dateRange.endDate).startOf('date').valueOf(),
           ),
         ),
       );
@@ -237,7 +235,9 @@ const MetricsStepper = () => {
       return sourceControl.branches.every((it) => allBranches.includes(it));
     });
 
-    const sourceControlCrews = [...new Set(getSourceControlCrews(sourceControlConfigurationSettings))];
+    const sourceControlCrews = [
+      ...new Set(sourceControlConfigurationSettings.flatMap((it) => getSourceControlCrews(it))),
+    ];
 
     return (
       !isEmpty(selectedSourceControls) &&
