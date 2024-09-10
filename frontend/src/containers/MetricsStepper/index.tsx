@@ -18,6 +18,12 @@ import {
   selectSourceControlCrews,
 } from '@src/context/config/configSlice';
 import {
+  ISavedMetricsSettingState,
+  ISourceControlConfig,
+  selectCycleTimeSettings,
+  selectMetricsContent,
+} from '@src/context/Metrics/metricsSlice';
+import {
   CycleTimeSettingsTypes,
   DONE,
   METRICS_CONSTANTS,
@@ -34,11 +40,6 @@ import {
   StyledStepLabel,
   StyledStepper,
 } from './style';
-import {
-  ISavedMetricsSettingState,
-  selectCycleTimeSettings,
-  selectMetricsContent,
-} from '@src/context/Metrics/metricsSlice';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
@@ -67,6 +68,7 @@ const ReportStep = lazy(() => import('@src/containers/ReportStep'));
 
 /* istanbul ignore next */
 const MetricsStepper = () => {
+  const storeContext = store.getState();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const activeStep = useAppSelector(selectStepNumber);
@@ -109,6 +111,23 @@ const MetricsStepper = () => {
     resolver: yupResolver(sourceControlSchema),
     mode: 'onChange',
   });
+
+  const getSourceControlCrews = (sourceControlConfigurationSettings: ISourceControlConfig[]) => {
+    return sourceControlConfigurationSettings.flatMap((it) =>
+      it.branches?.flatMap((branch) =>
+        dateRanges.flatMap((dateRange) =>
+          selectSourceControlCrews(
+            storeContext,
+            it.organization,
+            it.repo,
+            branch,
+            dayjs(dateRange.startDate).startOf('date').valueOf(),
+            dayjs(dateRange.endDate).startOf('date').valueOf(),
+          ),
+        ),
+      ),
+    );
+  };
 
   const { isValid: isBasicInfoValid } = basicInfoMethods.formState;
   const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
@@ -208,7 +227,6 @@ const MetricsStepper = () => {
   }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
 
   const isSourceControlConfigurationValid = useMemo(() => {
-    const storeContext = store.getState();
     const sourceControlConfigurationSettings = metricsConfig.sourceControlConfigurationSettings;
 
     const selectedSourceControls = sourceControlConfigurationSettings.filter((sourceControl) => {
@@ -216,24 +234,7 @@ const MetricsStepper = () => {
       return sourceControl.branches.every((it) => allBranches.includes(it));
     });
 
-    const sourceControlCrews = [
-      ...new Set(
-        sourceControlConfigurationSettings.flatMap((it) =>
-          it.branches?.flatMap((branch) =>
-            dateRanges.flatMap((dateRange) =>
-              selectSourceControlCrews(
-                storeContext,
-                it.organization,
-                it.repo,
-                branch,
-                dayjs(dateRange.startDate).startOf('date').valueOf(),
-                dayjs(dateRange.endDate).startOf('date').valueOf(),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ];
+    const sourceControlCrews = [...new Set(getSourceControlCrews(sourceControlConfigurationSettings))];
 
     return (
       !isEmpty(selectedSourceControls) &&
