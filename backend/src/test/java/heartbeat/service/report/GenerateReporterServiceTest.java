@@ -551,9 +551,9 @@ class GenerateReporterServiceTest {
 					FilePrefixType.SOURCE_CONTROL_PREFIX);
 			verify(fileRepository, times(1)).readFileByType(FileType.METRICS_DATA_COMPLETED, TEST_UUID,
 					timeRangeAndTimeStamp, MetricsDataCompleted.class, DATA_COMPLETED_PREFIX);
-			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
 				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
 						timeRangeAndTimeStamp);
@@ -724,7 +724,6 @@ class GenerateReporterServiceTest {
 					timeRangeAndTimeStamp, DORA, false);
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.PIPELINE_REPORT_PREFIX));
-			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 
@@ -734,6 +733,7 @@ class GenerateReporterServiceTest {
 			assertEquals(fakeDeploymentFrequency, response.getDeploymentFrequency());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
 				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
 						timeRangeAndTimeStamp);
@@ -832,12 +832,12 @@ class GenerateReporterServiceTest {
 					timeRangeAndTimeStamp, DORA, false);
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.SOURCE_CONTROL_PREFIX));
-			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 				verify(leadTimeForChangesCalculator, times(1)).calculate(any(), any());
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
 				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
@@ -890,12 +890,12 @@ class GenerateReporterServiceTest {
 					timeRangeAndTimeStamp, DORA, false);
 			verify(fileRepository, times(1)).createFileByType(eq(REPORT), eq(TEST_UUID), eq(timeRangeAndTimeStamp),
 					responseArgumentCaptor.capture(), eq(FilePrefixType.SOURCE_CONTROL_PREFIX));
-			verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 
 			ReportResponse response = responseArgumentCaptor.getValue();
 			assertEquals(fakeLeadTimeForChange, response.getLeadTimeForChanges());
 
 			Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
+				verify(gitHubService, times(1)).generateCSVForSourceControl(any(), any());
 				verify(pipelineService, times(1)).generateCSVForPipeline(any(), any(), any(), any());
 				verify(csvFileGenerator, times(1)).convertPipelineDataToCSV(TEST_UUID, pipelineCSVInfos,
 						timeRangeAndTimeStamp);
