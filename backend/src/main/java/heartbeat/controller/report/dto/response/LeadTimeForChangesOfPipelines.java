@@ -35,12 +35,11 @@ public class LeadTimeForChangesOfPipelines {
 	public List<String[]> getMetricsCsvRowData(String leadTimeForChangesTitle) {
 		List<String[]> rows = new ArrayList<>();
 		String pipelineStep = extractPipelineStep(this.step);
-		String name = this.name;
-		rows.add(new String[] { leadTimeForChangesTitle, name + " / " + pipelineStep + " / PR Lead Time",
+		rows.add(new String[] { leadTimeForChangesTitle, this.name + " / " + pipelineStep + " / PR Lead Time",
 				DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(prLeadTime, HOURS)) });
-		rows.add(new String[] { leadTimeForChangesTitle, name + " / " + pipelineStep + " / Pipeline Lead Time",
+		rows.add(new String[] { leadTimeForChangesTitle, this.name + " / " + pipelineStep + " / Pipeline Lead Time",
 				DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(pipelineLeadTime, HOURS)) });
-		rows.add(new String[] { leadTimeForChangesTitle, name + " / " + pipelineStep + " / Total Lead Time",
+		rows.add(new String[] { leadTimeForChangesTitle, this.name + " / " + pipelineStep + " / Total Lead Time",
 				DecimalUtil.formatDecimalTwo(TimeUtils.minutesToUnit(totalDelayTime, HOURS)) });
 		return rows;
 	}
