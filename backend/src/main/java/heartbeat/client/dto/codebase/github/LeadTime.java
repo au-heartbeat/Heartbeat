@@ -14,6 +14,10 @@ public class LeadTime {
 
 	private String commitId;
 
+	private String committer;
+
+	private Integer pullNumber;
+
 	@Nullable
 	private Long prCreatedTime;
 

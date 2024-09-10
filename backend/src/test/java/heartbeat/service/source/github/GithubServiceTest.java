@@ -22,6 +22,8 @@ import heartbeat.controller.report.dto.request.CalendarTypeEnum;
 import heartbeat.controller.report.dto.request.CodeBase;
 import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.response.LeadTimeInfo;
+import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
@@ -116,6 +118,7 @@ class GithubServiceTest {
 			.mergeCommitSha("111")
 			.url("https://api.github.com/repos/XXXX-fs/fs-platform-onboarding/pulls/1")
 			.number(1)
+			.user(PullRequestInfo.PullRequestUser.builder().login("test-user").build())
 			.build();
 		deployInfo = DeployInfo.builder()
 			.commitId("111")
@@ -151,6 +154,8 @@ class GithubServiceTest {
 			.pipelineStep(PIPELINE_STEP)
 			.leadTimes(List.of(LeadTime.builder()
 				.commitId("111")
+				.committer("test-user")
+				.pullNumber(1)
 				.prCreatedTime(1658548980000L)
 				.prMergedTime(1658549040000L)
 				.firstCommitTimeInPr(1658548980000L)
@@ -314,6 +319,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -340,6 +347,8 @@ class GithubServiceTest {
 	void shouldReturnLeadTimeWhenMergedTimeIsNotNull() {
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(1658548980000L)
@@ -378,6 +387,8 @@ class GithubServiceTest {
 
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -404,6 +415,8 @@ class GithubServiceTest {
 
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -429,6 +442,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -454,6 +469,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -479,6 +496,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -504,6 +523,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -540,12 +561,15 @@ class GithubServiceTest {
 			.mergedAt("2022-07-23T04:04:00.000+00:00")
 			.createdAt("2022-07-23T04:03:00.000+00:00")
 			.mergeCommitSha("111")
+			.user(PullRequestInfo.PullRequestUser.builder().login("test-user").build())
 			.url("https://api.github.com/repos/XXXX-fs/fs-platform-onboarding/pulls/1")
 			.number(1)
 			.build();
 
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(1658635440000L)
@@ -1407,6 +1431,65 @@ class GithubServiceTest {
 		assertNull(leadTime.getJobStartTime());
 		assertNull(leadTime.getNoPRCommitTime());
 		assertNull(leadTime.getPipelineCreateTime());
+	}
+
+	@Test
+	void shouldReturnPipelineCSVInfoSuccessfully() {
+		LeadTime leadTime = LeadTime.builder()
+			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
+			.prCreatedTime(1658548980000L)
+			.prMergedTime(1658549040000L)
+			.firstCommitTimeInPr(1658548980000L)
+			.jobStartTime(1658549040000L)
+			.jobFinishTime(1658549160000L)
+			.pipelineLeadTime(1658549100000L)
+			.pipelineCreateTime(1658549100000L)
+			.prLeadTime(60000L)
+			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
+			.totalTime(180000)
+			.isRevert(Boolean.FALSE)
+			.build();
+		FetchedData.RepoData repoData = FetchedData.RepoData.builder()
+			.sourceControlLeadTimes(List.of(
+					SourceControlLeadTime.builder()
+						.organization("test-org1")
+						.repo("test-repo1")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build(),
+					SourceControlLeadTime.builder()
+						.organization("test-org1")
+						.repo("test-repo2")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build(),
+					SourceControlLeadTime.builder()
+						.organization("test-org2")
+						.repo("test-repo2")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build(),
+					SourceControlLeadTime.builder()
+						.organization("test-org2")
+						.repo("test-repo1")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build()))
+			.build();
+		List<CodeBase> codeBases = List.of(CodeBase.builder().organization("test-org1").repo("test-repo1").build());
+		List<PipelineCSVInfo> expect = List.of(PipelineCSVInfo.builder()
+			.organizationName("test-org1")
+			.repoName("test-repo1")
+			.branchName("test-branch1")
+			.leadTimeInfo(new LeadTimeInfo(leadTime))
+			.build());
+
+		List<PipelineCSVInfo> pipelineCSVInfos = githubService.generateCSVForSourceControl(repoData, codeBases);
+
+		assertEquals(expect, pipelineCSVInfos);
 	}
 
 }

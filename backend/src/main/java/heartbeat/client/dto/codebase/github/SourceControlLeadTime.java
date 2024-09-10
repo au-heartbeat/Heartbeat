@@ -17,6 +17,8 @@ public class SourceControlLeadTime {
 
 	private String repo;
 
+	private String branch;
+
 	private List<LeadTime> leadTimes;
 
 }

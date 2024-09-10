@@ -14,6 +14,8 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class LeadTimeInfo {
 
+	private Integer pullNumber;
+
 	@Nullable
 	private String prCreatedTime;
 
@@ -43,10 +45,13 @@ public class LeadTimeInfo {
 
 	private long nonWorkdays;
 
+	private String committer;
+
 	public LeadTimeInfo(LeadTime leadTime) {
 		if (leadTime == null) {
 			return;
 		}
+		this.pullNumber = leadTime.getPullNumber();
 		this.firstCommitTimeInPr = convertToISOFormat(leadTime.getFirstCommitTimeInPr());
 		this.prCreatedTime = convertToISOFormat(leadTime.getPrCreatedTime());
 		this.prMergedTime = convertToISOFormat(leadTime.getPrMergedTime());
@@ -54,6 +59,7 @@ public class LeadTimeInfo {
 		this.jobStartTime = convertToISOFormat(leadTime.getJobStartTime());
 		this.firstCommitTime = convertToISOFormat(leadTime.getFirstCommitTime());
 		this.noPRCommitTime = convertToISOFormat(leadTime.getNoPRCommitTime());
+		this.committer = leadTime.getCommitter();
 
 		this.pipelineLeadTime = TimeUtil.msToHMS(leadTime.getPipelineLeadTime());
 		this.isRevert = leadTime.getIsRevert();

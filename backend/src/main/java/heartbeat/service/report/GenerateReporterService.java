@@ -124,7 +124,7 @@ public class GenerateReporterService {
 				uuid, timeRangeAndTimeStamp, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
 
 		if (previousMetricsCompleted != null && Boolean.FALSE.equals(previousMetricsCompleted.doraMetricsCompleted())) {
-			CompletableFuture.runAsync(() -> generateCSVForPipeline(uuid, request, fetchedData.getBuildKiteData()));
+			CompletableFuture.runAsync(() -> generateCSVForPipeline(uuid, request, fetchedData));
 		}
 	}
 
@@ -283,9 +283,13 @@ public class GenerateReporterService {
 		return fetchedData;
 	}
 
-	private void generateCSVForPipeline(String uuid, GenerateReportRequest request, BuildKiteData buildKiteData) {
+	private void generateCSVForPipeline(String uuid, GenerateReportRequest request, FetchedData fetchedData) {
 		List<PipelineCSVInfo> pipelineData = pipelineService.generateCSVForPipeline(request.getStartTime(),
-				request.getEndTime(), buildKiteData, request.getBuildKiteSetting().getDeploymentEnvList());
+				request.getEndTime(), fetchedData.getBuildKiteData(),
+				request.getBuildKiteSetting().getDeploymentEnvList());
+
+		pipelineData.addAll(gitHubService.generateCSVForSourceControl(fetchedData.getRepoData(),
+				request.getCodebaseSetting().getCodebases()));
 
 		csvFileGenerator.convertPipelineDataToCSV(uuid, pipelineData, request.getTimeRangeAndTimeStamp());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, request.getTimeRangeAndTimeStamp(), DORA,
