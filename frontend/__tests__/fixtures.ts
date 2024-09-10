@@ -220,6 +220,14 @@ export const MOCK_GENERATE_REPORT_REQUEST_PARAMS: ReportRequestDTO = {
         branches: [],
       },
     ],
+    crews: ['mockCrew'],
+    codebases: [
+      {
+        organization: 'mockOrganization',
+        repo: 'mockRepo',
+        branches: ['mockBranch1'],
+      },
+    ],
   },
   jiraBoardSetting: {
     token: 'mockToken',
@@ -554,6 +562,7 @@ export const MOCK_REPORT_RESPONSE_WITH_AVERAGE_EXCEPTION: ReportResponseDTO = {
         totalDelayTime: 5289.95,
       },
     ],
+    leadTimeForChangesOfSourceControls: [],
     avgLeadTimeForChanges: {
       name: 'other',
       prLeadTime: 3647.51,
@@ -697,6 +706,7 @@ export const MOCK_REPORT_RESPONSE: ReportResponseDTO = {
         totalDelayTime: 5289.95,
       },
     ],
+    leadTimeForChangesOfSourceControls: [],
     avgLeadTimeForChanges: {
       name: 'Average',
       prLeadTime: 3647.51,
@@ -830,6 +840,7 @@ export const MOCK_REPORT_MOCK_PIPELINE_RESPONSE: ReportResponseDTO = {
         totalDelayTime: 5289.95,
       },
     ],
+    leadTimeForChangesOfSourceControls: [],
     avgLeadTimeForChanges: {
       name: 'Average',
       prLeadTime: 3647.51,

@@ -14,10 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PagePullRequestInfoDTO implements Serializable {
+public class PagePullRequestInfo implements Serializable {
 
 	private int totalPage;
 
-	private List<PullRequestInfoDTO> pageInfo;
+	private List<PullRequestInfo> pageInfo;
 
 }

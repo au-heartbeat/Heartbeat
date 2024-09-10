@@ -18,6 +18,10 @@ public class PipelineCSVInfo {
 
 	private String pipeLineName;
 
+	private String branchName;
+
+	private String repoName;
+
 	private String stepName;
 
 	private Boolean valid;

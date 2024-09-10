@@ -10,11 +10,19 @@ import {
 } from '@src/containers/ConfigStep/Form/schema';
 import {
   selectConfig,
+  selectDateRange,
   selectMetrics,
   selectPipelineList,
   selectPipelineTool,
   selectSourceControlBranches,
+  selectSourceControlCrews,
 } from '@src/context/config/configSlice';
+import {
+  ISavedMetricsSettingState,
+  ISourceControlConfig,
+  selectCycleTimeSettings,
+  selectMetricsContent,
+} from '@src/context/Metrics/metricsSlice';
 import {
   CycleTimeSettingsTypes,
   DONE,
@@ -32,20 +40,15 @@ import {
   StyledStepLabel,
   StyledStepper,
 } from './style';
-import {
-  ISavedMetricsSettingState,
-  selectCycleTimeSettings,
-  selectMetricsContent,
-} from '@src/context/Metrics/metricsSlice';
 import { backStep, nextStep, selectStepNumber, updateTimeStamp } from '@src/context/stepper/StepperSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
 import { convertCycleTimeSettings, exportToJsonFile, onlyEmptyAndDoneState } from '@src/utils/util';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { PageContentWrapper } from '@src/components/Common/PageContentWrapper';
 import { COMMON_BUTTONS, METRICS_STEPS, STEPS } from '@src/constants/commons';
 import { ConfirmDialog } from '@src/containers/MetricsStepper/ConfirmDialog';
 import { useAppDispatch, useAppSelector } from '@src/hooks/useAppDispatch';
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { getFormMeta } from '@src/context/meta/metaSlice';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -57,6 +60,7 @@ import isEmpty from 'lodash/isEmpty';
 import { store } from '@src/store';
 import every from 'lodash/every';
 import omit from 'lodash/omit';
+import dayjs from 'dayjs';
 
 const ConfigStep = lazy(() => import('@src/containers/ConfigStep'));
 const MetricsStep = lazy(() => import('@src/containers/MetricsStep'));
@@ -64,12 +68,14 @@ const ReportStep = lazy(() => import('@src/containers/ReportStep'));
 
 /* istanbul ignore next */
 const MetricsStepper = () => {
+  const storeContext = store.getState();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const activeStep = useAppSelector(selectStepNumber);
   const [isDialogShowing, setIsDialogShowing] = useState(false);
   const requiredData = useAppSelector(selectMetrics);
   const config = useAppSelector(selectConfig);
+  const dateRanges = useAppSelector(selectDateRange);
   const metricsConfig = useAppSelector(selectMetricsContent);
   const cycleTimeSettings = useAppSelector(selectCycleTimeSettings);
   const [isDisableNextButton, setIsDisableNextButton] = useState(true);
@@ -105,6 +111,24 @@ const MetricsStepper = () => {
     resolver: yupResolver(sourceControlSchema),
     mode: 'onChange',
   });
+
+  const getSourceControlCrews = useCallback(
+    (sourceControlConfigurationSetting: ISourceControlConfig) => {
+      return sourceControlConfigurationSetting.branches?.flatMap((branch) =>
+        dateRanges.flatMap((dateRange) =>
+          selectSourceControlCrews(
+            storeContext,
+            sourceControlConfigurationSetting.organization,
+            sourceControlConfigurationSetting.repo,
+            branch,
+            dayjs(dateRange.startDate).startOf('date').valueOf(),
+            dayjs(dateRange.endDate).startOf('date').valueOf(),
+          ),
+        ),
+      );
+    },
+    [dateRanges, storeContext],
+  );
 
   const { isValid: isBasicInfoValid } = basicInfoMethods.formState;
   const { isValid: isBoardConfigValid, isSubmitSuccessful: isBoardConfigSubmitSuccessful } =
@@ -204,7 +228,6 @@ const MetricsStepper = () => {
   }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
 
   const isSourceControlConfigurationValid = useMemo(() => {
-    const storeContext = store.getState();
     const sourceControlConfigurationSettings = metricsConfig.sourceControlConfigurationSettings;
 
     const selectedSourceControls = sourceControlConfigurationSettings.filter((sourceControl) => {
@@ -212,8 +235,13 @@ const MetricsStepper = () => {
       return sourceControl.branches.every((it) => allBranches.includes(it));
     });
 
+    const sourceControlCrews = [
+      ...new Set(sourceControlConfigurationSettings.flatMap((it) => getSourceControlCrews(it))),
+    ];
+
     return (
       !isEmpty(selectedSourceControls) &&
+      !isEmpty(sourceControlCrews) &&
       sourceControlConfigurationSettings.every(({ organization }) => !isEmpty(organization)) &&
       sourceControlConfigurationSettings.every(({ repo }) => !isEmpty(repo)) &&
       sourceControlConfigurationSettings.every(({ branches }) => !isEmpty(branches)) &&
@@ -222,7 +250,12 @@ const MetricsStepper = () => {
       selectedSourceControls.every(({ branches }) => !isEmpty(branches)) &&
       getDuplicatedSourceControlIds(sourceControlConfigurationSettings).length === 0
     );
-  }, [getDuplicatedSourceControlIds, metricsConfig.sourceControlConfigurationSettings]);
+  }, [
+    metricsConfig.sourceControlConfigurationSettings,
+    getSourceControlCrews,
+    getDuplicatedSourceControlIds,
+    storeContext,
+  ]);
 
   useEffect(() => {
     if (activeStep === METRICS_STEPS.METRICS) {

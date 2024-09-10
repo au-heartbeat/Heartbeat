@@ -4,6 +4,7 @@ import { LeadTimeForChangesResponse } from '@src/clients/report/dto/response';
 export const leadTimeForChangesMapper = ({
   leadTimeForChangesOfPipelines,
   avgLeadTimeForChanges,
+  leadTimeForChangesOfSourceControls,
 }: LeadTimeForChangesResponse) => {
   const minutesPerHour = 60;
   const formatDuration = (duration: number) => {
@@ -28,6 +29,21 @@ export const leadTimeForChangesMapper = ({
           })),
       };
     },
+  );
+
+  mappedLeadTimeForChangesValue.push(
+    ...leadTimeForChangesOfSourceControls.map((item, index) => {
+      return {
+        id: index + mappedLeadTimeForChangesValue.length,
+        name: `${item.organization}/${item.repo}`,
+        valueList: Object.entries(item)
+          .slice(-3)
+          .map(([name, value]) => ({
+            name: formatNameDisplay(name) as string,
+            values: [formatDuration(value)],
+          })),
+      };
+    }),
   );
 
   mappedLeadTimeForChangesValue.push({

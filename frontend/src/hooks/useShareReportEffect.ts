@@ -22,6 +22,7 @@ export const useShareReportEffect = () => {
   const [metrics, setMetrics] = useState<string[]>([]);
   const [classificationNames, setClassificationNames] = useState<string[]>([]);
   const [allPipelines, setAllPipelines] = useState<string[]>([]);
+  const [allSourceControls, setAllSourceControls] = useState<string[]>([]);
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
   const reportPageTimeRangeLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
@@ -43,6 +44,7 @@ export const useShareReportEffect = () => {
 
       setMetrics(reportURLsRes.data.metrics);
       setAllPipelines(reportURLsRes.data.pipelines);
+      setAllSourceControls(reportURLsRes.data.sourceControls);
       setClassificationNames(reportURLsRes.data.classificationNames);
       setDateRanges(dateRanges);
       setReportInfos(reportInfos);
@@ -125,6 +127,7 @@ export const useShareReportEffect = () => {
     isExpired,
     getData,
     allPipelines,
+    allSourceControls,
     allDateRangeLoadingFinished,
   };
 };

@@ -10,16 +10,20 @@ import heartbeat.client.dto.codebase.github.LeadTime;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
-import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfo;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
 import heartbeat.client.dto.codebase.github.PipelineLeadTime;
 import heartbeat.client.dto.codebase.github.PullRequestInfo;
-import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
+import heartbeat.client.dto.codebase.github.SourceControlLeadTime;
 import heartbeat.client.dto.pipeline.buildkite.DeployInfo;
 import heartbeat.client.dto.pipeline.buildkite.DeployTimes;
 import heartbeat.controller.report.dto.request.CalendarTypeEnum;
+import heartbeat.controller.report.dto.request.CodeBase;
+import heartbeat.controller.report.dto.request.CodebaseSetting;
 import heartbeat.controller.report.dto.request.GenerateReportRequest;
+import heartbeat.controller.report.dto.response.LeadTimeInfo;
+import heartbeat.controller.report.dto.response.PipelineCSVInfo;
 import heartbeat.exception.BadRequestException;
 import heartbeat.exception.InternalServerErrorException;
 import heartbeat.exception.NotFoundException;
@@ -27,6 +31,7 @@ import heartbeat.exception.PermissionDenyException;
 import heartbeat.exception.UnauthorizedException;
 import heartbeat.service.pipeline.buildkite.CachePageService;
 import heartbeat.service.report.WorkDay;
+import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.report.model.WorkInfo;
 import heartbeat.service.source.github.model.PipelineInfoOfRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -113,6 +118,7 @@ class GithubServiceTest {
 			.mergeCommitSha("111")
 			.url("https://api.github.com/repos/XXXX-fs/fs-platform-onboarding/pulls/1")
 			.number(1)
+			.user(PullRequestInfo.PullRequestUser.builder().login("test-user").build())
 			.build();
 		deployInfo = DeployInfo.builder()
 			.commitId("111")
@@ -148,6 +154,8 @@ class GithubServiceTest {
 			.pipelineStep(PIPELINE_STEP)
 			.leadTimes(List.of(LeadTime.builder()
 				.commitId("111")
+				.committer("test-user")
+				.pullNumber(1)
 				.prCreatedTime(1658548980000L)
 				.prMergedTime(1658549040000L)
 				.firstCommitTimeInPr(1658548980000L)
@@ -307,9 +315,40 @@ class GithubServiceTest {
 	}
 
 	@Test
+	void shouldReturnNullWhenCommitterDateIsNull() {
+		GenerateReportRequest request = GenerateReportRequest.builder().build();
+		LeadTime expect = LeadTime.builder()
+			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
+			.prCreatedTime(1658548980000L)
+			.prMergedTime(1658549040000L)
+			.firstCommitTimeInPr(0L)
+			.jobStartTime(1658549040000L)
+			.jobFinishTime(1658549160000L)
+			.pipelineLeadTime(1658549100000L)
+			.pipelineCreateTime(1658549100000L)
+			.prLeadTime(0L)
+			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
+			.totalTime(120000L)
+			.isRevert(null)
+			.build();
+		commitInfo = CommitInfo.builder()
+			.commit(Commit.builder().committer(Committer.builder().build()).build())
+			.build();
+
+		LeadTime result = githubService.mapLeadTimeWithInfo(pullRequestInfo, deployInfo, commitInfo, request);
+
+		assertEquals(expect, result);
+	}
+
+	@Test
 	void shouldReturnLeadTimeWhenMergedTimeIsNotNull() {
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(1658548980000L)
@@ -348,6 +387,8 @@ class GithubServiceTest {
 
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -374,6 +415,8 @@ class GithubServiceTest {
 
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -399,6 +442,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -424,6 +469,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -449,6 +496,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -474,6 +523,8 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(0L)
@@ -510,12 +561,15 @@ class GithubServiceTest {
 			.mergedAt("2022-07-23T04:04:00.000+00:00")
 			.createdAt("2022-07-23T04:03:00.000+00:00")
 			.mergeCommitSha("111")
+			.user(PullRequestInfo.PullRequestUser.builder().login("test-user").build())
 			.url("https://api.github.com/repos/XXXX-fs/fs-platform-onboarding/pulls/1")
 			.number(1)
 			.build();
 
 		LeadTime expect = LeadTime.builder()
 			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
 			.prCreatedTime(1658548980000L)
 			.prMergedTime(1658549040000L)
 			.firstCommitTimeInPr(1658635440000L)
@@ -1054,36 +1108,36 @@ class GithubServiceTest {
 		String mockBranch = "branch";
 		long startTime = 1717171200000L;
 		long endTime = 1719763199999L;
-		PullRequestInfoDTO pullRequestWhenMergeIsNull = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenMergeIsNull = PullRequestInfo.builder()
 			.number(1)
 			.createdAt("2024-06-30T15:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test1").build())
 			.build();
-		PullRequestInfoDTO pullRequestWhenCreateAndMergeTimeIsSuccess = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenCreateAndMergeTimeIsSuccess = PullRequestInfo.builder()
 			.number(2)
 			.createdAt("2024-06-30T15:59:59Z")
 			.mergedAt("2024-06-30T15:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test2").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test2").build())
 			.build();
-		PullRequestInfoDTO pullRequestWhenCreateIsAfterEndTime = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenCreateIsAfterEndTime = PullRequestInfo.builder()
 			.number(3)
 			.createdAt("2024-06-30T16:59:59Z")
 			.mergedAt("2024-06-30T15:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test3").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test3").build())
 			.build();
-		PullRequestInfoDTO pullRequestWhenMergeIsBeforeStartTime = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenMergeIsBeforeStartTime = PullRequestInfo.builder()
 			.number(4)
 			.createdAt("2024-06-30T15:59:59Z")
 			.mergedAt("2024-05-31T15:00:00Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test4").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test4").build())
 			.build();
-		PullRequestInfoDTO pullRequestWhenMergeIsAfterEndTime = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenMergeIsAfterEndTime = PullRequestInfo.builder()
 			.number(5)
 			.createdAt("2024-06-30T15:59:59Z")
 			.mergedAt("2024-06-30T16:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test5").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test5").build())
 			.build();
-		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder()
+		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder()
 			.totalPage(22)
 			.pageInfo(List.of(pullRequestWhenMergeIsNull, pullRequestWhenCreateAndMergeTimeIsSuccess,
 					pullRequestWhenCreateIsAfterEndTime, pullRequestWhenMergeIsBeforeStartTime,
@@ -1091,7 +1145,7 @@ class GithubServiceTest {
 			.build();
 		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
 				eq(mockBranch), anyInt(), eq(100)))
-			.thenReturn(pagePullRequestInfoDTO);
+			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
 				endTime);
@@ -1107,19 +1161,19 @@ class GithubServiceTest {
 		String mockBranch = "branch";
 		long startTime = 1717171200000L;
 		long endTime = 1719763199999L;
-		PullRequestInfoDTO pullRequestWhenCreateIsBeforeStartTime = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenCreateIsBeforeStartTime = PullRequestInfo.builder()
 			.number(1)
 			.createdAt("2024-05-31T15:00:00Z")
 			.mergedAt("2024-06-30T15:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test1").build())
 			.build();
-		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder()
+		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder()
 			.totalPage(1)
 			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
 			.build();
 		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
 				eq(mockBranch), anyInt(), eq(100)))
-			.thenReturn(pagePullRequestInfoDTO);
+			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
 				endTime);
@@ -1135,19 +1189,19 @@ class GithubServiceTest {
 		String mockBranch = "branch";
 		long startTime = 1717171200000L;
 		long endTime = 1719763199999L;
-		PullRequestInfoDTO pullRequestWhenCreateIsBeforeStartTime = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenCreateIsBeforeStartTime = PullRequestInfo.builder()
 			.number(1)
 			.createdAt("2024-05-31T15:00:00Z")
 			.mergedAt("2024-06-30T15:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test1").build())
 			.build();
-		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder()
+		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder()
 			.totalPage(2)
 			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
 			.build();
 		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
 				eq(mockBranch), anyInt(), eq(100)))
-			.thenReturn(pagePullRequestInfoDTO);
+			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
 				endTime);
@@ -1163,32 +1217,32 @@ class GithubServiceTest {
 		String mockBranch = "branch";
 		long startTime = 1717171200000L;
 		long endTime = 1719763199999L;
-		PullRequestInfoDTO pullRequestWhenCreateIsAfterEndTime = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenCreateIsAfterEndTime = PullRequestInfo.builder()
 			.number(3)
 			.createdAt("2024-06-30T16:59:59Z")
 			.mergedAt("2024-06-30T15:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test3").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test3").build())
 			.build();
-		PullRequestInfoDTO pullRequestWhenCreateIsBeforeStartTime = PullRequestInfoDTO.builder()
+		PullRequestInfo pullRequestWhenCreateIsBeforeStartTime = PullRequestInfo.builder()
 			.number(1)
 			.createdAt("2024-05-31T15:00:00Z")
 			.mergedAt("2024-06-30T15:59:59Z")
-			.user(PullRequestInfoDTO.PullRequestUser.builder().login("test1").build())
+			.user(PullRequestInfo.PullRequestUser.builder().login("test1").build())
 			.build();
-		PagePullRequestInfoDTO pagePullRequestInfoDTO1 = PagePullRequestInfoDTO.builder()
+		PagePullRequestInfo pagePullRequestInfo1 = PagePullRequestInfo.builder()
 			.totalPage(2)
 			.pageInfo(List.of(pullRequestWhenCreateIsAfterEndTime))
 			.build();
-		PagePullRequestInfoDTO pagePullRequestInfoDTO2 = PagePullRequestInfoDTO.builder()
+		PagePullRequestInfo pagePullRequestInfo2 = PagePullRequestInfo.builder()
 			.totalPage(2)
 			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
 			.build();
 		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 1,
 				100))
-			.thenReturn(pagePullRequestInfoDTO1);
+			.thenReturn(pagePullRequestInfo1);
 		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 2,
 				100))
-			.thenReturn(pagePullRequestInfoDTO2);
+			.thenReturn(pagePullRequestInfo2);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
 				endTime);
@@ -1204,15 +1258,238 @@ class GithubServiceTest {
 		String mockBranch = "branch";
 		long startTime = 1717171200000L;
 		long endTime = 1719763199999L;
-		PagePullRequestInfoDTO pagePullRequestInfoDTO = PagePullRequestInfoDTO.builder().totalPage(0).build();
+		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder().totalPage(0).build();
 		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 1,
 				100))
-			.thenReturn(pagePullRequestInfoDTO);
+			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
 				endTime);
 
 		assertEquals(0, allCrews.size());
+	}
+
+	@Test
+	void shouldFetchPartialReportDataSuccessfullyWhenCrewIsNotEmpty() {
+		String mockToken = "mockToken";
+		String mockOrganization = "mockOrg";
+		String mockRepo = "mockRepo";
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.CN)
+			.startTime("1717171200000")
+			.endTime("1719763199999")
+			.codebaseSetting(CodebaseSetting.builder()
+				.token(mockToken)
+				.crews(List.of("mockCrew1", "mockCrew2"))
+				.codebases(List.of(CodeBase.builder()
+					.organization(mockOrganization)
+					.repo(mockRepo)
+					.branches(List.of("mockBranch1"))
+					.build()))
+				.build())
+			.build();
+		List<CommitInfo> commitInfos = List.of(CommitInfo.builder()
+			.commit(Commit.builder()
+				.committer(Committer.builder().date("2024-05-31T17:00:00Z").email("1").name("1").build())
+				.author(Author.builder().date("1").email("1").name("1").build())
+				.message("mockMessage")
+				.build())
+			.build());
+
+		pullRequestInfo = PullRequestInfo.builder()
+			.number(1)
+			.createdAt("2024-05-31T17:00:00Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfo.PullRequestUser.builder().login("mockCrew1").build())
+			.build();
+		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder()
+			.totalPage(1)
+			.pageInfo(List.of(pullRequestInfo))
+			.build();
+
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
+				anyString(), anyInt(), eq(100)))
+			.thenReturn(pagePullRequestInfo);
+		when(gitHubFeignClient.getPullRequestCommitInfo("mockOrg/mockRepo", "1", "Bearer mockToken"))
+			.thenReturn(commitInfos);
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
+				any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
+
+		FetchedData.RepoData repoData = githubService.fetchRepoData(request);
+		List<SourceControlLeadTime> sourceControlLeadTimes = repoData.getSourceControlLeadTimes();
+
+		assertEquals(1, sourceControlLeadTimes.size());
+
+		SourceControlLeadTime sourceControlLeadTime = sourceControlLeadTimes.get(0);
+		assertEquals("mockOrg", sourceControlLeadTime.getOrganization());
+		assertEquals("mockRepo", sourceControlLeadTime.getRepo());
+
+		List<LeadTime> leadTimes = sourceControlLeadTime.getLeadTimes();
+
+		assertEquals(1, leadTimes.size());
+
+		LeadTime leadTime = leadTimes.get(0);
+		assertEquals(1717174800000L, leadTime.getPrCreatedTime());
+		assertEquals(1719763199000L, leadTime.getPrMergedTime());
+		assertEquals(1717174800000L, leadTime.getFirstCommitTimeInPr());
+		assertEquals(1719763199000L, leadTime.getFirstCommitTime());
+		assertEquals(2588399000L, leadTime.getPrLeadTime());
+		assertEquals(0L, leadTime.getPipelineLeadTime());
+		assertEquals(2588399000L, leadTime.getTotalTime());
+		assertEquals(0L, leadTime.getHolidays());
+		assertEquals(Boolean.FALSE, leadTime.getIsRevert());
+		assertNull(leadTime.getCommitId());
+		assertNull(leadTime.getJobFinishTime());
+		assertNull(leadTime.getJobStartTime());
+		assertNull(leadTime.getNoPRCommitTime());
+		assertNull(leadTime.getPipelineCreateTime());
+	}
+
+	@Test
+	void shouldFetchAllReportDataWhenCrewIsEmpty() {
+		String mockToken = "mockToken";
+		String mockOrganization = "mockOrg";
+		String mockRepo = "mockRepo";
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.CN)
+			.startTime("1717171200000")
+			.endTime("1719763199999")
+			.codebaseSetting(CodebaseSetting.builder()
+				.token(mockToken)
+				.crews(List.of())
+				.codebases(List.of(CodeBase.builder()
+					.organization(mockOrganization)
+					.repo(mockRepo)
+					.branches(List.of("mockBranch1"))
+					.build()))
+				.build())
+			.build();
+		List<CommitInfo> commitInfos = List.of(CommitInfo.builder()
+			.commit(Commit.builder()
+				.committer(Committer.builder().date("2024-05-31T17:00:00Z").email("1").name("1").build())
+				.author(Author.builder().date("1").email("1").name("1").build())
+				.message("mockMessage")
+				.build())
+			.build());
+
+		pullRequestInfo = PullRequestInfo.builder()
+			.number(1)
+			.createdAt("2024-05-31T17:00:00Z")
+			.mergedAt("2024-06-30T15:59:59Z")
+			.user(PullRequestInfo.PullRequestUser.builder().login("mockCrew1").build())
+			.build();
+		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder()
+			.totalPage(1)
+			.pageInfo(List.of(pullRequestInfo))
+			.build();
+
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
+				anyString(), anyInt(), eq(100)))
+			.thenReturn(pagePullRequestInfo);
+		when(gitHubFeignClient.getPullRequestCommitInfo("mockOrg/mockRepo", "1", "Bearer mockToken"))
+			.thenReturn(commitInfos);
+		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
+				any(ZoneId.class)))
+			.thenAnswer(invocation -> {
+				long firstParam = invocation.getArgument(0);
+				long secondParam = invocation.getArgument(1);
+				return WorkInfo.builder().workTime(secondParam - firstParam).build();
+			});
+
+		FetchedData.RepoData repoData = githubService.fetchRepoData(request);
+		List<SourceControlLeadTime> sourceControlLeadTimes = repoData.getSourceControlLeadTimes();
+
+		assertEquals(1, sourceControlLeadTimes.size());
+
+		SourceControlLeadTime sourceControlLeadTime = sourceControlLeadTimes.get(0);
+		assertEquals("mockOrg", sourceControlLeadTime.getOrganization());
+		assertEquals("mockRepo", sourceControlLeadTime.getRepo());
+
+		List<LeadTime> leadTimes = sourceControlLeadTime.getLeadTimes();
+
+		assertEquals(1, leadTimes.size());
+
+		LeadTime leadTime = leadTimes.get(0);
+		assertEquals(1717174800000L, leadTime.getPrCreatedTime());
+		assertEquals(1719763199000L, leadTime.getPrMergedTime());
+		assertEquals(1717174800000L, leadTime.getFirstCommitTimeInPr());
+		assertEquals(1719763199000L, leadTime.getFirstCommitTime());
+		assertEquals(2588399000L, leadTime.getPrLeadTime());
+		assertEquals(0L, leadTime.getPipelineLeadTime());
+		assertEquals(2588399000L, leadTime.getTotalTime());
+		assertEquals(0L, leadTime.getHolidays());
+		assertEquals(Boolean.FALSE, leadTime.getIsRevert());
+		assertNull(leadTime.getCommitId());
+		assertNull(leadTime.getJobFinishTime());
+		assertNull(leadTime.getJobStartTime());
+		assertNull(leadTime.getNoPRCommitTime());
+		assertNull(leadTime.getPipelineCreateTime());
+	}
+
+	@Test
+	void shouldReturnPipelineCSVInfoSuccessfully() {
+		LeadTime leadTime = LeadTime.builder()
+			.commitId("111")
+			.committer("test-user")
+			.pullNumber(1)
+			.prCreatedTime(1658548980000L)
+			.prMergedTime(1658549040000L)
+			.firstCommitTimeInPr(1658548980000L)
+			.jobStartTime(1658549040000L)
+			.jobFinishTime(1658549160000L)
+			.pipelineLeadTime(1658549100000L)
+			.pipelineCreateTime(1658549100000L)
+			.prLeadTime(60000L)
+			.pipelineLeadTime(120000)
+			.firstCommitTime(1658549040000L)
+			.totalTime(180000)
+			.isRevert(Boolean.FALSE)
+			.build();
+		FetchedData.RepoData repoData = FetchedData.RepoData.builder()
+			.sourceControlLeadTimes(List.of(
+					SourceControlLeadTime.builder()
+						.organization("test-org1")
+						.repo("test-repo1")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build(),
+					SourceControlLeadTime.builder()
+						.organization("test-org1")
+						.repo("test-repo2")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build(),
+					SourceControlLeadTime.builder()
+						.organization("test-org2")
+						.repo("test-repo2")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build(),
+					SourceControlLeadTime.builder()
+						.organization("test-org2")
+						.repo("test-repo1")
+						.branch("test-branch1")
+						.leadTimes(List.of(leadTime))
+						.build()))
+			.build();
+		List<CodeBase> codeBases = List.of(CodeBase.builder().organization("test-org1").repo("test-repo1").build());
+		List<PipelineCSVInfo> expect = List.of(PipelineCSVInfo.builder()
+			.organizationName("test-org1")
+			.repoName("test-repo1")
+			.branchName("test-branch1")
+			.leadTimeInfo(new LeadTimeInfo(leadTime))
+			.build());
+
+		List<PipelineCSVInfo> pipelineCSVInfos = githubService.generateCSVForSourceControl(repoData, codeBases);
+
+		assertEquals(expect, pipelineCSVInfos);
 	}
 
 }

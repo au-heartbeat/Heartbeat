@@ -273,13 +273,18 @@ export class ReportStep {
   }
 
   async checkDoraMetricsReportDetails(doraMetricsDetailData: IDoraMetricsResultItem) {
-    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText(
-      doraMetricsDetailData.deploymentFrequency,
-    );
-    await expect(this.deploymentFrequencyRows.getByRole('cell').nth(2)).toContainText(
-      doraMetricsDetailData.deploymentTimes,
-    );
+    if (doraMetricsDetailData.deploymentFrequency) {
+      await expect(this.deploymentFrequencyRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
+      await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText(
+        doraMetricsDetailData.deploymentFrequency,
+      );
+    }
+
+    if (doraMetricsDetailData.deploymentTimes) {
+      await expect(this.deploymentFrequencyRows.getByRole('cell').nth(2)).toContainText(
+        doraMetricsDetailData.deploymentTimes,
+      );
+    }
 
     await expect(this.leadTimeForChangesRows.nth(2)).toContainText(
       this.combineStrings(['PR Lead Time', doraMetricsDetailData.prLeadTime]),
@@ -291,14 +296,21 @@ export class ReportStep {
       this.combineStrings(['Total Lead Time', doraMetricsDetailData.totalLeadTime]),
     );
 
-    await expect(this.pipelineChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.pipelineChangeFailureRateRows.getByRole('cell').nth(1)).toContainText(
-      doraMetricsDetailData.failureRate.replace(' ', ''),
-    );
-    await expect(this.pipelineMeanTimeToRecoveryRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
-    await expect(this.pipelineMeanTimeToRecoveryRows.getByRole('cell').nth(1)).toContainText(
-      doraMetricsDetailData.pipelineMeanTimeToRecovery,
-    );
+    if (doraMetricsDetailData.failureRate) {
+      await expect(this.pipelineChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
+      await expect(this.pipelineChangeFailureRateRows.getByRole('cell').nth(1)).toContainText(
+        doraMetricsDetailData.failureRate.replace(' ', ''),
+      );
+    }
+
+    if (doraMetricsDetailData.pipelineMeanTimeToRecovery) {
+      await expect(this.pipelineMeanTimeToRecoveryRows.getByRole('cell').nth(0)).toContainText(
+        'Heartbeat/ Deploy prod',
+      );
+      await expect(this.pipelineMeanTimeToRecoveryRows.getByRole('cell').nth(1)).toContainText(
+        doraMetricsDetailData.pipelineMeanTimeToRecovery,
+      );
+    }
   }
 
   async checkDoraMetricsReportDetailsForMultipleRanges(doraMetricsReportData: IDoraMetricsResultItem[]) {
@@ -312,12 +324,14 @@ export class ReportStep {
     projectCreationType,
     doraMetricsReportData,
     fileNamePrefix,
+    showMoreIndex = 1,
   }: {
     projectCreationType: ProjectCreationType;
     doraMetricsReportData: IDoraMetricsResultItem[];
     fileNamePrefix?: string;
+    showMoreIndex?: number;
   }) {
-    await this.showMoreLinks.nth(1).click();
+    await this.showMoreLinks.nth(showMoreIndex).click();
     if (
       projectCreationType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
       projectCreationType === ProjectCreationType.CREATE_A_NEW_PROJECT
@@ -700,11 +714,17 @@ export class ReportStep {
     await expect(this.prLeadTime).toContainText(`${prLeadTime}PR Lead Time(Hours)`);
     await expect(this.pipelineLeadTime).toContainText(`${pipelineLeadTime}Pipeline Lead Time(Hours)`);
     await expect(this.totalLeadTime).toContainText(`${totalLeadTime}Total Lead Time(Hours)`);
-    await expect(this.deploymentFrequency).toContainText(
-      `${deploymentFrequency}Deployment Frequency(Times/Days)${deploymentTimes}Deployment Times(Times)`,
-    );
-    await expect(this.failureRate).toContainText(failureRate);
-    await expect(this.pipelineMeanTimeToRecovery).toContainText(`${pipelineMeanTimeToRecovery}(Hours)`);
+    if (deploymentFrequency && deploymentTimes) {
+      await expect(this.deploymentFrequency).toContainText(
+        `${deploymentFrequency}Deployment Frequency(Times/Days)${deploymentTimes}Deployment Times(Times)`,
+      );
+    }
+    if (failureRate) {
+      await expect(this.failureRate).toContainText(failureRate);
+    }
+    if (pipelineMeanTimeToRecovery) {
+      await expect(this.pipelineMeanTimeToRecovery).toContainText(`${pipelineMeanTimeToRecovery}(Hours)`);
+    }
   }
 
   async checkDoraMetricsForMultipleRanges(data: IDoraMetricsResultItem[]) {

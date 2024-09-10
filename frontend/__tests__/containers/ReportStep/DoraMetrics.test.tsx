@@ -50,6 +50,7 @@ describe('Report Card', () => {
           onShowDetail={onShowDetail}
           doraReport={mockData}
           errorMessage={''}
+          isExistSourceControl={false}
         />
       </Provider>,
     );

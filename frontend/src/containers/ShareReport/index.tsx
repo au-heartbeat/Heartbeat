@@ -20,6 +20,7 @@ const ShareReport = () => {
     metrics,
     isExpired,
     allPipelines,
+    allSourceControls,
     classificationNames,
     allDateRangeLoadingFinished,
   } = useShareReportEffect();
@@ -46,6 +47,7 @@ const ShareReport = () => {
           metrics={metrics}
           classificationNames={classificationNames}
           allPipelines={allPipelines}
+          allSourceControls={allSourceControls}
           dateRanges={dateRanges}
           reportInfos={reportInfos}
           startToRequestData={getData}

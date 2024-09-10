@@ -2,8 +2,8 @@ import {
   ReportDataForMultipleValueColumns,
   ReportDataWithTwoColumns,
 } from '@src/hooks/reportMapper/reportUIDataStructure';
+import { MetricsTitle, PIPELINE_STEP, REPO_NAME, ReportSuffixUnits, SUBTITLE } from '@src/constants/resources';
 import ReportDetailTableContainsSubtitle from '@src/components/Common/ReportDetailTableContainsSubtitle';
-import { MetricsTitle, PIPELINE_STEP, ReportSuffixUnits, SUBTITLE } from '@src/constants/resources';
 import ReportForDeploymentFrequency from '@src/components/Common/ReportForDeploymentFrequency';
 import { DetailContainer } from '@src/containers/ReportStep/ReportDetail/style';
 import ReportForTwoColumns from '@src/components/Common/ReportForTwoColumns';
@@ -15,6 +15,7 @@ import React from 'react';
 
 interface Property {
   data: ReportResponseDTO;
+  isExistSourceControl: boolean;
   onBack: () => void;
   isShowBack: boolean;
 }
@@ -25,18 +26,23 @@ const showTwoColumnSection = (title: string, value: Optional<ReportDataWithTwoCo
 const showDeploymentSection = (title: string, tableTitles: string[], value: Optional<ReportDataWithTwoColumns[]>) =>
   value && <ReportForDeploymentFrequency title={title} tableTitles={tableTitles} data={value} />;
 
-const showThreeColumnSection = (title: string, value: Optional<ReportDataForMultipleValueColumns[]>) =>
+const showThreeColumnSection = (
+  title: string,
+  isExistSourceControl: boolean,
+  value: Optional<ReportDataForMultipleValueColumns[]>,
+) =>
   value && (
     <ReportDetailTableContainsSubtitle
       title={title}
       units={[ReportSuffixUnits.Hours]}
-      fieldName={PIPELINE_STEP}
+      isGray={isExistSourceControl}
+      fieldName={isExistSourceControl ? REPO_NAME : PIPELINE_STEP}
       listName={SUBTITLE}
       data={value}
     />
   );
 
-export const DoraDetail = withGoBack(({ data }: Property) => {
+export const DoraDetail = withGoBack(({ data, isExistSourceControl }: Property) => {
   const mappedData = reportMapper(data);
 
   return (
@@ -46,7 +52,7 @@ export const DoraDetail = withGoBack(({ data }: Property) => {
         [ReportSuffixUnits.DeploymentsPerDay, ReportSuffixUnits.DeploymentsTimes],
         mappedData.deploymentFrequencyList,
       )}
-      {showThreeColumnSection(MetricsTitle.LeadTimeForChanges, mappedData.leadTimeForChangesList)}
+      {showThreeColumnSection(MetricsTitle.LeadTimeForChanges, isExistSourceControl, mappedData.leadTimeForChangesList)}
       {showTwoColumnSection(MetricsTitle.PipelineChangeFailureRate, mappedData.pipelineChangeFailureRateList)}
       {showTwoColumnSection(MetricsTitle.PipelineMeanTimeToRecovery, mappedData.pipelineMeanTimeToRecoveryList)}
     </DetailContainer>

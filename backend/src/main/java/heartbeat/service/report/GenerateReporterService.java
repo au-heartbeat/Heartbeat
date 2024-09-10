@@ -29,6 +29,7 @@ import heartbeat.service.report.calculator.VelocityCalculator;
 import heartbeat.service.report.calculator.model.FetchedData;
 import heartbeat.service.report.calculator.model.FetchedData.BuildKiteData;
 import heartbeat.repository.FileRepository;
+import heartbeat.service.source.github.GitHubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections.CollectionUtils;
@@ -55,6 +56,8 @@ public class GenerateReporterService {
 	private final KanbanCsvService kanbanCsvService;
 
 	private final PipelineService pipelineService;
+
+	private final GitHubService gitHubService;
 
 	private final ClassificationCalculator classificationCalculator;
 
@@ -121,7 +124,7 @@ public class GenerateReporterService {
 				uuid, timeRangeAndTimeStamp, MetricsDataCompleted.class, FilePrefixType.DATA_COMPLETED_PREFIX);
 
 		if (previousMetricsCompleted != null && Boolean.FALSE.equals(previousMetricsCompleted.doraMetricsCompleted())) {
-			CompletableFuture.runAsync(() -> generateCSVForPipeline(uuid, request, fetchedData.getBuildKiteData()));
+			CompletableFuture.runAsync(() -> generateCSVForPipeline(uuid, request, fetchedData));
 		}
 	}
 
@@ -252,9 +255,8 @@ public class GenerateReporterService {
 		ReportResponse reportResponse = new ReportResponse(fileRepository.getExpiredTime());
 
 		request.getSourceControlMetrics()
-			.forEach(metric -> reportResponse.setLeadTimeForChanges(
-					leadTimeForChangesCalculator.calculate(fetchedData.getBuildKiteData().getPipelineLeadTimes(),
-							request.getBuildKiteSetting().getDeploymentEnvList())));
+			.forEach(metric -> reportResponse
+				.setLeadTimeForChanges(leadTimeForChangesCalculator.calculate(fetchedData, request)));
 
 		return reportResponse;
 	}
@@ -269,6 +271,7 @@ public class GenerateReporterService {
 		if (request.getCodebaseSetting() == null)
 			throw new BadRequestException("Failed to fetch Github info due to code base setting is null.");
 		fetchedData.setBuildKiteData(pipelineService.fetchGitHubData(request));
+		fetchedData.setRepoData(gitHubService.fetchRepoData(request));
 	}
 
 	private FetchedData fetchJiraBoardData(GenerateReportRequest request, FetchedData fetchedData) {
@@ -280,9 +283,13 @@ public class GenerateReporterService {
 		return fetchedData;
 	}
 
-	private void generateCSVForPipeline(String uuid, GenerateReportRequest request, BuildKiteData buildKiteData) {
+	private void generateCSVForPipeline(String uuid, GenerateReportRequest request, FetchedData fetchedData) {
 		List<PipelineCSVInfo> pipelineData = pipelineService.generateCSVForPipeline(request.getStartTime(),
-				request.getEndTime(), buildKiteData, request.getBuildKiteSetting().getDeploymentEnvList());
+				request.getEndTime(), fetchedData.getBuildKiteData(),
+				request.getBuildKiteSetting().getDeploymentEnvList());
+
+		pipelineData.addAll(gitHubService.generateCSVForSourceControl(fetchedData.getRepoData(),
+				request.getCodebaseSetting().getCodebases()));
 
 		csvFileGenerator.convertPipelineDataToCSV(uuid, pipelineData, request.getTimeRangeAndTimeStamp());
 		asyncMetricsDataHandler.updateMetricsDataCompletedInHandler(uuid, request.getTimeRangeAndTimeStamp(), DORA,
