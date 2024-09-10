@@ -3,7 +3,7 @@ export const chartStepData = {
   addNewBranch: ['ADM-998'],
   errorDateRange: [
     {
-      startDate: '2024-09-07T00:00:00.000+08:00',
+      startDate: '2099-09-07T00:00:00.000+08:00',
       endDate: '2024-04-08T23:59:59.999+08:00',
     },
   ],
