@@ -12,10 +12,10 @@ export interface IDoraMetricsResultItem {
   prLeadTime: string;
   pipelineLeadTime: string;
   totalLeadTime: string;
-  deploymentTimes: string;
-  deploymentFrequency: string;
-  failureRate: string;
-  pipelineMeanTimeToRecovery: string;
+  deploymentTimes?: string;
+  deploymentFrequency?: string;
+  failureRate?: string;
+  pipelineMeanTimeToRecovery?: string;
 }
 
 export interface IBoardMetricsDetailItem {
@@ -800,6 +800,24 @@ export const DORA_METRICS_RESULT_MULTIPLE_RANGES: IDoraMetricsResultItem[] = [
     deploymentTimes: '9',
     failureRate: '0.00% (0/9)',
     pipelineMeanTimeToRecovery: '0.00',
+  },
+];
+
+export const DORA_METRICS_RESULT_FOR_SOURCE_CONTROL: IDoraMetricsResultItem[] = [
+  {
+    prLeadTime: '16.73',
+    pipelineLeadTime: '0.00',
+    totalLeadTime: '16.73',
+  },
+  {
+    prLeadTime: '17.69',
+    pipelineLeadTime: '0.00',
+    totalLeadTime: '17.69',
+  },
+  {
+    prLeadTime: '9.70',
+    pipelineLeadTime: '0.00',
+    totalLeadTime: '9.70',
   },
 ];
 

@@ -106,5 +106,5 @@ export const SelectNoneConfig = {
     excludeStates: [],
   },
   pipelineCrews: ['Yufan0226', 'Zhongren GU', 'guzhongren', 'renovate[bot]', 'zhou-yinyuan', 'Unknown'],
-  sourceControlCrews: ['zhou-yinyuan'],
+  sourceControlCrews: ['zhou-yinyuan', 'guzhongren'],
 };
