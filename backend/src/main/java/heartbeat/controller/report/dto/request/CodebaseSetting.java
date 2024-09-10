@@ -20,4 +20,8 @@ public class CodebaseSetting {
 
 	private List<DeploymentEnvironment> leadTime;
 
+	private List<String> crews;
+
+	private List<CodeBase> codebases;
+
 }

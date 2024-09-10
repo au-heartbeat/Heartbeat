@@ -7,6 +7,7 @@ import {
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
   BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_RESULT_MULTIPLE_RANGES,
   BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME,
+  DORA_METRICS_RESULT_FOR_SOURCE_CONTROL,
 } from '../../fixtures/create-new/report-result';
 import {
   configWithDesignAndWaitingForDevelopmentStatus,
@@ -210,7 +211,9 @@ test('Create a new project with design and waiting for deployment in the cycle t
   await reportStep.checkMetricDownloadDataForMultipleRanges(3, fileNamePrefix);
 });
 
-test('Create a new project with other pipeline setting', async ({ homePage, configStep, metricsStep }) => {
+test('Create a new project with other pipeline setting', async ({ homePage, configStep, metricsStep, reportStep }) => {
+  const prefix = 'with-only-source-control-lead-time-';
+
   await homePage.goto();
   await homePage.createANewProject();
   await configStep.typeInProjectName(configStepData.projectName);
@@ -227,5 +230,19 @@ test('Create a new project with other pipeline setting', async ({ homePage, conf
   await metricsStep.waitForShown();
   await metricsStep.selectDefaultGivenSourceControlSetting(SelectNoneConfig.sourceControlConfigurationSettings);
   await metricsStep.selectAllPipelineCrews(metricsStep.sourceControlCrewSettingsLabel);
+
   await metricsStep.goToReportPage();
+  await reportStep.confirmGeneratedReport();
+  await reportStep.goToReportListTab();
+  await reportStep.checkOnlyLeadTimeForChangesPartVisible();
+  await reportStep.checkExportMetricDataButtonClickable();
+  await reportStep.checkExportPipelineDataButtonClickable();
+  await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_FOR_SOURCE_CONTROL);
+  await reportStep.checkDoraMetricsDetailsForMultipleRanges({
+    doraMetricsReportData: DORA_METRICS_RESULT_FOR_SOURCE_CONTROL,
+    projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
+    fileNamePrefix: prefix,
+    showMoreIndex: 0,
+  });
+  await reportStep.checkMetricDownloadDataForMultipleRanges(3, prefix);
 });

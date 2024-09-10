@@ -21,6 +21,12 @@ export interface ReportRequestDTO extends IBasicReportRequestDTO {
   codebaseSetting?: {
     type: string;
     token: string;
+    crews: string[];
+    codebases: {
+      branches: string[];
+      repo: string;
+      organization: string;
+    }[];
     leadTime: {
       id: string;
       name: string;

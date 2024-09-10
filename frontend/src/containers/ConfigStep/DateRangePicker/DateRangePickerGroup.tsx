@@ -1,10 +1,14 @@
 import {
+  updateShouldGetBoardConfig,
+  updateShouldGetPipelineConfig,
+  updateShouldGetSourceControlConfig,
+} from '@src/context/Metrics/metricsSlice';
+import {
   IRangeOnChangeData,
   SortedDateRangeType,
   sortFn,
   TProps,
 } from '@src/containers/ConfigStep/DateRangePicker/types';
-import { updateShouldGetBoardConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { selectDateRange, selectDateRangeSortType, updateDateRange } from '@src/context/config/configSlice';
 import { DateRangePickerGroupContainer } from '@src/containers/ConfigStep/DateRangePicker/style';
 import { DateRangePicker } from '@src/containers/ConfigStep/DateRangePicker/DateRangePicker';
@@ -56,6 +60,7 @@ export const DateRangePickerGroup = ({ onError }: TProps) => {
   const dispatchUpdateConfig = () => {
     dispatch(updateShouldGetBoardConfig(true));
     dispatch(updateShouldGetPipelineConfig(true));
+    dispatch(updateShouldGetSourceControlConfig(true));
     dispatch(updateShouldMetricsLoaded(true));
   };
 

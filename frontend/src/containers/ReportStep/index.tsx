@@ -23,7 +23,7 @@ import {
 } from '@src/context/stepper/StepperSlice';
 import { IPipelineConfig, selectClassificationCharts, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
-import { getTotalDateRangeLoadingStatus } from '../../utils/report';
+import { getTotalDateRangeLoadingStatus } from '@src/utils/report';
 import { MESSAGE, RequiredData } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { MetricTypes } from '@src/constants/commons';
@@ -86,6 +86,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     pipelineCrews,
     deploymentFrequencySettings,
     leadTimeForChanges,
+    sourceControlCrews,
+    sourceControlConfigurationSettings,
   } = useAppSelector(selectMetricsContent);
   const classificationCharts = useAppSelector(selectClassificationCharts);
 
@@ -152,6 +154,8 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
         type: sourceControl.config.type,
         token: sourceControl.config.token,
         leadTime: getPipelineConfig(leadTimeForChanges),
+        crews: sourceControlCrews,
+        codebases: sourceControlConfigurationSettings,
       },
     };
   };
@@ -252,6 +256,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       metrics={metrics}
       classificationNames={classificationNames}
       allPipelines={deploymentFrequencySettings.map((it) => `${it.pipelineName}/${it.step}`)}
+      allSourceControls={sourceControlConfigurationSettings.map((it) => `${it.organization}/${it.repo}`)}
       dateRanges={dateRanges}
       startToRequestData={() => startToRequestData(basicReportRequestBody)}
       reportInfos={reportInfos}

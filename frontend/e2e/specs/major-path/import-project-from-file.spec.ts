@@ -10,6 +10,7 @@ import {
   BOARD_CSV_COMPARED_LINES,
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
   CYCLE_TIME_WITH_ANALYSIS_STATUS_PROJECT_BOARD_METRICS_RESULT,
+  DORA_METRICS_RESULT_FOR_SOURCE_CONTROL,
 } from '../../fixtures/create-new/report-result';
 import { calculateWithHolidayConfigFile } from '../../fixtures/import-file/calculate-with-holiday-config-file';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
@@ -300,10 +301,12 @@ test('Import project from file when select none in pipeline tool configuration',
   homePage,
   configStep,
   metricsStep,
+  reportStep,
 }) => {
   const hbStateData = SelectNoneConfig.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
+  const prefix = 'with-source-control-lead-time-';
 
   await homePage.goto();
 
@@ -327,5 +330,27 @@ test('Import project from file when select none in pipeline tool configuration',
   await metricsStep.checkClassificationCharts(SelectNoneConfig.classificationCharts);
   await metricsStep.checkSourceControlConfigurationAreChanged(SelectNoneConfig.sourceControlConfigurationSettings);
   await metricsStep.selectGivenSourceControlCrews(SelectNoneConfig.sourceControlCrews);
+
   await metricsStep.goToReportPage();
+  await reportStep.confirmGeneratedReport();
+  await reportStep.goToReportListTab();
+  await reportStep.checkOnlyLeadTimeForChangesPartVisible();
+  await reportStep.checkExportMetricDataButtonClickable();
+  await reportStep.checkExportPipelineDataButtonClickable();
+  await reportStep.checkBoardMetricsForMultipleRanges(BOARD_METRICS_RESULT_MULTIPLE_RANGES);
+  await reportStep.checkBoardMetricsDetailsForMultipleRanges({
+    projectCreationType: ProjectCreationType.CREATE_A_NEW_PROJECT,
+    velocityData: BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
+    cycleTimeData: BOARD_METRICS_CYCLE_TIME_MULTIPLE_RANGES,
+    classificationData: BOARD_METRICS_CLASSIFICATION_MULTIPLE_RANGES,
+    reworkData: BOARD_METRICS_REWORK_MULTIPLE_RANGES,
+    csvCompareLines: BOARD_CSV_COMPARED_LINES,
+  });
+  await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_FOR_SOURCE_CONTROL);
+  await reportStep.checkDoraMetricsDetailsForMultipleRanges({
+    doraMetricsReportData: DORA_METRICS_RESULT_FOR_SOURCE_CONTROL,
+    projectCreationType: ProjectCreationType.IMPORT_PROJECT_FROM_FILE,
+    fileNamePrefix: prefix,
+  });
+  await reportStep.checkMetricDownloadDataForMultipleRanges(3, prefix);
 });

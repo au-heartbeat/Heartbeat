@@ -8,16 +8,25 @@ import heartbeat.client.dto.codebase.github.BranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.OrganizationsInfoDTO;
 import heartbeat.client.dto.codebase.github.PageBranchesInfoDTO;
 import heartbeat.client.dto.codebase.github.PageOrganizationsInfoDTO;
-import heartbeat.client.dto.codebase.github.PagePullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PagePullRequestInfo;
 import heartbeat.client.dto.codebase.github.PageReposInfoDTO;
-import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import heartbeat.client.dto.codebase.github.ReposInfoDTO;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteBuildInfo;
 import heartbeat.client.dto.pipeline.buildkite.BuildKiteJob;
 import heartbeat.client.dto.pipeline.buildkite.BuildKitePipelineDTO;
 import heartbeat.client.dto.pipeline.buildkite.PageStepsInfoDto;
+import heartbeat.exception.BaseException;
+import heartbeat.exception.InternalServerErrorException;
+import heartbeat.exception.NotFoundException;
+import heartbeat.exception.PermissionDenyException;
+import heartbeat.exception.RequestFailedException;
+import heartbeat.exception.UnauthorizedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,9 +40,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -214,6 +226,31 @@ class CachePageServiceTest {
 	}
 
 	@Test
+	void shouldThrowExceptionWhenFetchPageOrganizationsInfoThrow500() {
+		when(gitHubFeignClient.getAllOrganizations(MOCK_TOKEN, 100, 1)).thenThrow(new RequestFailedException(500, "error"));
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class, () -> cachePageService.getGitHubOrganizations(MOCK_TOKEN, 1, 100));
+
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals("Error to get paginated github organization info, page: 1, exception: heartbeat.exception.RequestFailedException: Request failed with status statusCode 500, error: error",
+			internalServerErrorException.getMessage());
+	}
+
+	@ParameterizedTest
+	@MethodSource("baseExceptionProvider")
+	void shouldThrowExceptionWhenFetchPageOrganizationInfoThrow4xx(BaseException e, int errorCode) {
+		when(gitHubFeignClient.getAllOrganizations(MOCK_TOKEN, 100, 1))
+			.thenThrow(e);
+
+		BaseException baseException = assertThrows(BaseException.class,
+			() -> cachePageService.getGitHubOrganizations(MOCK_TOKEN, 1, 100));
+
+		assertEquals(errorCode, baseException.getStatus());
+		assertEquals("error",
+			baseException.getMessage());
+	}
+
+	@Test
 	void shouldReturnPageReposInfoDtoWhenFetchPageReposInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
 		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
@@ -226,6 +263,34 @@ class CachePageServiceTest {
 		assertNotNull(pageReposInfoDTO);
 		assertThat(pageReposInfoDTO.getPageInfo()).isEqualTo(responseEntity.getBody());
 		assertThat(pageReposInfoDTO.getTotalPage()).isEqualTo(2);
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFetchPageRepoInfoThrow500() {
+		String organization = "test-org";
+		when(gitHubFeignClient.getAllRepos(MOCK_TOKEN, organization, 100, 1))
+			.thenThrow(new RequestFailedException(500, "error"));
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class,
+				() -> cachePageService.getGitHubRepos(MOCK_TOKEN, organization, 1, 100));
+
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals(
+				"Error to get paginated github repo info, page: 1, exception: heartbeat.exception.RequestFailedException: Request failed with status statusCode 500, error: error",
+				internalServerErrorException.getMessage());
+	}
+
+	@ParameterizedTest
+	@MethodSource("baseExceptionProvider")
+	void shouldThrowExceptionWhenFetchPageRepoInfoThrow4xx(BaseException e, int errorCode) {
+		String organization = "test-org";
+		when(gitHubFeignClient.getAllRepos(MOCK_TOKEN, organization, 100, 1)).thenThrow(e);
+
+		BaseException baseException = assertThrows(BaseException.class,
+				() -> cachePageService.getGitHubRepos(MOCK_TOKEN, organization, 1, 100));
+
+		assertEquals(errorCode, baseException.getStatus());
+		assertEquals("error", baseException.getMessage());
 	}
 
 	@Test
@@ -246,22 +311,83 @@ class CachePageServiceTest {
 	}
 
 	@Test
+	void shouldThrowExceptionWhenFetchPageBranchInfoThrow500() {
+		String organization = "test-org";
+		String repo = "test-repo";
+		when(gitHubFeignClient.getAllBranches(MOCK_TOKEN, organization, repo, 100, 1))
+			.thenThrow(new RequestFailedException(500, "error"));
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class,
+				() -> cachePageService.getGitHubBranches(MOCK_TOKEN, organization, repo, 1, 100));
+
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals(
+				"Error to get paginated github branch info, page: 1, exception: heartbeat.exception.RequestFailedException: Request failed with status statusCode 500, error: error",
+				internalServerErrorException.getMessage());
+	}
+
+	@ParameterizedTest
+	@MethodSource("baseExceptionProvider")
+	void shouldThrowExceptionWhenFetchPageBranchInfoThrow4xx(BaseException e, int errorCode) {
+		String organization = "test-org";
+		String repo = "test-repo";
+		when(gitHubFeignClient.getAllBranches(MOCK_TOKEN, organization, repo, 100, 1)).thenThrow(e);
+
+		BaseException baseException = assertThrows(BaseException.class,
+				() -> cachePageService.getGitHubBranches(MOCK_TOKEN, organization, repo, 1, 100));
+
+		assertEquals(errorCode, baseException.getStatus());
+		assertEquals("error", baseException.getMessage());
+	}
+
+	@Test
 	void shouldReturnPagePullRequestInfoDtoWhenFetchPullRequestInfoSuccessGivenExist() throws IOException {
 		String organization = "test-org";
 		String repo = "test-repo";
 		String branch = "test-branch";
 		HttpHeaders httpHeaders = buildGitHubHttpHeaders();
-		ResponseEntity<List<PullRequestInfoDTO>> responseEntity = getResponseEntity(httpHeaders,
+		ResponseEntity<List<PullRequestInfo>> responseEntity = getResponseEntity(httpHeaders,
 				"src/test/java/heartbeat/controller/pipeline/githubPullRequest.json");
 		when(gitHubFeignClient.getAllPullRequests(MOCK_TOKEN, organization, repo, 100, 1, branch, "all"))
 			.thenReturn(responseEntity);
 
-		PagePullRequestInfoDTO pagePullRequestInfoDTO = cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization,
-				repo, branch, 1, 100);
+		PagePullRequestInfo pagePullRequestInfo = cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization, repo,
+				branch, 1, 100);
 
-		assertNotNull(pagePullRequestInfoDTO);
-		assertThat(pagePullRequestInfoDTO.getPageInfo()).isEqualTo(responseEntity.getBody());
-		assertThat(pagePullRequestInfoDTO.getTotalPage()).isEqualTo(2);
+		assertNotNull(pagePullRequestInfo);
+		assertThat(pagePullRequestInfo.getPageInfo()).isEqualTo(responseEntity.getBody());
+		assertThat(pagePullRequestInfo.getTotalPage()).isEqualTo(2);
+	}
+
+	@Test
+	void shouldThrowExceptionWhenFetchPagePullRequestInfoThrow500() {
+		String organization = "test-org";
+		String repo = "test-repo";
+		String branch = "test-branch";
+		when(gitHubFeignClient.getAllPullRequests(MOCK_TOKEN, organization, repo, 100, 1, branch, "all"))
+			.thenThrow(new RequestFailedException(500, "error"));
+
+		InternalServerErrorException internalServerErrorException = assertThrows(InternalServerErrorException.class,
+				() -> cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization, repo, branch, 1, 100));
+		assertEquals(500, internalServerErrorException.getStatus());
+		assertEquals(
+				"Error to get paginated github pull request info, page: 1, exception: heartbeat.exception.RequestFailedException: Request failed with status statusCode 500, error: error",
+				internalServerErrorException.getMessage());
+	}
+
+	@ParameterizedTest
+	@MethodSource("baseExceptionProvider")
+	void shouldThrowExceptionWhenFetchPagePullRequestInfoThrow4xx(BaseException e, int errorCode) {
+		String organization = "test-org";
+		String repo = "test-repo";
+		String branch = "test-branch";
+		when(gitHubFeignClient.getAllPullRequests(MOCK_TOKEN, organization, repo, 100, 1, branch, "all")).thenThrow(e);
+
+		BaseException baseException = assertThrows(BaseException.class,
+				() -> cachePageService.getGitHubPullRequest(MOCK_TOKEN, organization, repo, branch, 1, 100));
+
+		assertEquals(errorCode, baseException.getStatus());
+		assertEquals("error", baseException.getMessage());
 	}
 
 	private static <T> ResponseEntity<List<T>> getResponseEntity(HttpHeaders httpHeaders, String pathname)
@@ -282,6 +408,13 @@ class CachePageServiceTest {
 
 	private HttpHeaders buildGitHubHttpHeaders() {
 		return buildHttpHeaders(GITHUB_TOTAL_PAGE_HEADER);
+	}
+
+	static Stream<Arguments> baseExceptionProvider() {
+		return Stream.of(Arguments.of(new PermissionDenyException("error"), 403),
+				Arguments.of(new UnauthorizedException("error"), 401), Arguments.of(new NotFoundException("error"), 404)
+
+		);
 	}
 
 }

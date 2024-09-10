@@ -68,6 +68,7 @@ export class ReportClient extends HttpClient {
     },
     leadTimeForChanges: {
       leadTimeForChangesOfPipelines: [],
+      leadTimeForChangesOfSourceControls: [],
       avgLeadTimeForChanges: {
         name: '',
         prLeadTime: 1,

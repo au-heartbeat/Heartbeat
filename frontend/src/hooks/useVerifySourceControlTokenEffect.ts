@@ -1,5 +1,6 @@
 import {
   initDeploymentFrequencySettings,
+  initSourceControlConfigurationSettings,
   updateShouldGetPipelineConfig,
   updateShouldGetSourceControlConfig,
 } from '@src/context/Metrics/metricsSlice';
@@ -38,8 +39,9 @@ export const useVerifySourceControlTokenEffect = () => {
   const persistReduxData = (sourceControlConfig: ISourceControlData) => {
     dispatch(updateSourceControl(sourceControlConfig));
     dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(updateShouldGetSourceControlConfig(true));
     dispatch(initDeploymentFrequencySettings());
+    dispatch(updateShouldGetSourceControlConfig(true));
+    dispatch(initSourceControlConfigurationSettings());
   };
   const resetFields = () => {
     reset(sourceControlOriginal);

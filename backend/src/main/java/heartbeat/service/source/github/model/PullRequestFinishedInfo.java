@@ -1,6 +1,6 @@
 package heartbeat.service.source.github.model;
 
-import heartbeat.client.dto.codebase.github.PullRequestInfoDTO;
+import heartbeat.client.dto.codebase.github.PullRequestInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +16,6 @@ public class PullRequestFinishedInfo {
 
 	private boolean isGetNextPage;
 
-	private List<PullRequestInfoDTO> pullRequestInfoDTOList;
+	private List<PullRequestInfo> pullRequestInfoList;
 
 }

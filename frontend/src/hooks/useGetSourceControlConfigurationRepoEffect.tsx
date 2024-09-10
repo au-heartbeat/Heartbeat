@@ -3,9 +3,12 @@ import {
   updateSourceControlConfigurationSettingsFirstInto,
 } from '@src/context/Metrics/metricsSlice';
 import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
+import { ISourceControlGetRepoResponseDTO } from '@src/clients/sourceControl/dto/response';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
-import { FULFILLED, SourceControlTypes } from '@src/constants/resources';
+import { FULFILLED, REJECTED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
+import { MetricsDataFailStatus } from '@src/constants/commons';
+import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 
@@ -13,13 +16,24 @@ export interface IUseGetSourceControlConfigurationRepoInterface {
   readonly isLoading: boolean;
   readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRange[], id: number) => Promise<void>;
   readonly isGetRepo: boolean;
+  readonly info: ISourceControlGetRepoResponseDTO;
+  readonly stepFailedStatus: MetricsDataFailStatus;
 }
+
 export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceControlConfigurationRepoInterface => {
+  const defaultInfoStructure = {
+    code: 200,
+    errorTitle: '',
+    errorMessage: '',
+  };
+
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const shouldGetSourceControlConfig = useAppSelector(selectShouldGetSourceControlConfig);
   const [isGetRepo, setIsGetRepo] = useState<boolean>(!shouldGetSourceControlConfig);
+  const [info, setInfo] = useState<ISourceControlGetRepoResponseDTO>(defaultInfoStructure);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
+  const [stepFailedStatus, setStepFailedStatus] = useState(MetricsDataFailStatus.NotFailed);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
@@ -40,26 +54,45 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
         return sourceControlClient.getRepo(params);
       }),
     );
+
+    const hasRejected = allRepoRes.some((repoInfo) => repoInfo.status === REJECTED);
+    const hasFulfilled = allRepoRes.some((repoInfo) => repoInfo.status === FULFILLED);
+
+    if (!hasRejected) {
+      setStepFailedStatus(MetricsDataFailStatus.NotFailed);
+    } else if (hasRejected && hasFulfilled) {
+      const rejectedStep = allRepoRes.find((repoInfo) => repoInfo.status === REJECTED);
+      if ((rejectedStep as PromiseRejectedResult).reason.code == 400) {
+        setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
+      } else {
+        setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);
+      }
+    }
+
     allRepoRes.forEach((response) => {
       if (response.status === FULFILLED) {
-        dispatch(
-          updateSourceControlVerifiedResponse({
-            parents: [
-              {
-                name: 'organization',
-                value: organization,
-              },
-            ],
-            names: response.value.data?.name.map((it) => it),
-          }),
-        );
-        dispatch(
-          updateSourceControlConfigurationSettingsFirstInto({
-            ...response.value.data,
-            id,
-            type: 'repo',
-          }),
-        );
+        if (response.value.code !== HttpStatusCode.Ok) {
+          setInfo(response.value);
+        } else {
+          dispatch(
+            updateSourceControlVerifiedResponse({
+              parents: [
+                {
+                  name: 'organization',
+                  value: organization,
+                },
+              ],
+              names: response.value.data?.name.map((it) => it),
+            }),
+          );
+          dispatch(
+            updateSourceControlConfigurationSettingsFirstInto({
+              ...response.value.data,
+              id,
+              type: 'repo',
+            }),
+          );
+        }
       }
     });
     setIsLoading(false);
@@ -70,5 +103,7 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
     isLoading,
     getSourceControlRepoInfo,
     isGetRepo,
+    info,
+    stepFailedStatus,
   };
 };
