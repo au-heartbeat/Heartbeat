@@ -2,8 +2,8 @@
   "projectName": "Heartbeat Metrics",
   "dateRange": [
     {
-      "startDate": "2024-06-07T00:00:00.000+08:00",
-      "endDate": "2024-06-14T23:59:59.999+08:00"
+      "startDate": "2024-08-07T00:00:00.000+08:00",
+      "endDate": "2024-08-14T23:59:59.999+08:00"
     }
   ],
   "calendarType": "CN",
