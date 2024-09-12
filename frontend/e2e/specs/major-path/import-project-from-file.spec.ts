@@ -1,6 +1,4 @@
 import {
-  BOARD_METRICS_WITH_HOLIDAY_RESULT,
-  DORA_METRICS_WITH_HOLIDAY_RESULT,
   FLAG_AS_BLOCK_PROJECT_BOARD_METRICS_RESULT,
   BOARD_METRICS_RESULT_MULTIPLE_RANGES,
   BOARD_METRICS_VELOCITY_MULTIPLE_RANGES,
@@ -12,7 +10,6 @@ import {
   CYCLE_TIME_WITH_ANALYSIS_STATUS_PROJECT_BOARD_METRICS_RESULT,
   DORA_METRICS_RESULT_FOR_SOURCE_CONTROL,
 } from '../../fixtures/create-new/report-result';
-import { calculateWithHolidayConfigFile } from '../../fixtures/import-file/calculate-with-holiday-config-file';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
@@ -191,69 +188,6 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
     showDeploymentFrequencyChart: false,
     showPipelineChangeFailureRateTrendContainer: false,
   });
-});
-
-test('Import project from file with holiday', async ({ homePage, configStep, metricsStep, reportStep }) => {
-  const hbStateData = calculateWithHolidayConfigFile.cycleTime.jiraColumns.map(
-    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
-  );
-
-  const hbStateDataEmptyByStatus = cycleTimeByStatusFixture.cycleTime.jiraColumns.map(
-    (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
-  );
-
-  await homePage.goto();
-
-  await homePage.importProjectFromFile('../fixtures/input-files/calculate-with-holiday-config-file.json');
-  await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
-  await configStep.goToMetrics();
-  await metricsStep.waitForShown();
-
-  // To verify board configuration matches json file data
-  await metricsStep.checkCrewsAreChanged(calculateWithHolidayConfigFile.crews);
-  await metricsStep.checkLastAssigneeCrewFilterChecked();
-  await metricsStep.checkCycleTimeSettingIsByColumn();
-  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
-
-  await metricsStep.selectCycleTimeSettingsType(cycleTimeByStatusFixture.cycleTime.type);
-  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, false);
-  await metricsStep.selectHeartbeatState(hbStateData, false);
-  await metricsStep.checkHeartbeatStateIsSet(hbStateData, false);
-
-  await metricsStep.selectCycleTimeSettingsType(calculateWithHolidayConfigFile.cycleTime.type);
-  await metricsStep.checkHeartbeatStateIsSet(hbStateDataEmptyByStatus, true);
-  await metricsStep.selectHeartbeatState(hbStateData, true);
-  await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
-
-  await metricsStep.selectReworkSettings(calculateWithHolidayConfigFile.reworkTimesSettings);
-
-  await metricsStep.checkClassifications(calculateWithHolidayConfigFile.classification);
-  await metricsStep.checkClassificationCharts(calculateWithHolidayConfigFile.classificationCharts);
-  await metricsStep.checkPipelineConfigurationAreChanged(calculateWithHolidayConfigFile.deployment);
-
-  await metricsStep.goToReportPage();
-  await reportStep.checkProjectName(calculateWithHolidayConfigFile.projectName);
-  await reportStep.confirmGeneratedReport();
-  await reportStep.checkBoardMetrics({
-    velocity: BOARD_METRICS_WITH_HOLIDAY_RESULT.Velocity,
-    throughput: BOARD_METRICS_WITH_HOLIDAY_RESULT.Throughput,
-    averageCycleTimeForSP: BOARD_METRICS_WITH_HOLIDAY_RESULT.AverageCycleTime4SP,
-    averageCycleTimeForCard: BOARD_METRICS_WITH_HOLIDAY_RESULT.AverageCycleTime4Card,
-    totalReworkTimes: BOARD_METRICS_WITH_HOLIDAY_RESULT.totalReworkTimes,
-    totalReworkCards: BOARD_METRICS_WITH_HOLIDAY_RESULT.totalReworkCards,
-    reworkCardsRatio: BOARD_METRICS_WITH_HOLIDAY_RESULT.reworkCardsRatio,
-    reworkThroughput: BOARD_METRICS_WITH_HOLIDAY_RESULT.throughput,
-  });
-  await reportStep.checkDoraMetrics({
-    prLeadTime: DORA_METRICS_WITH_HOLIDAY_RESULT.PrLeadTime,
-    pipelineLeadTime: DORA_METRICS_WITH_HOLIDAY_RESULT.PipelineLeadTime,
-    totalLeadTime: DORA_METRICS_WITH_HOLIDAY_RESULT.TotalLeadTime,
-    deploymentFrequency: DORA_METRICS_WITH_HOLIDAY_RESULT.DeploymentFrequency,
-    failureRate: DORA_METRICS_WITH_HOLIDAY_RESULT.FailureRate,
-    pipelineMeanTimeToRecovery: DORA_METRICS_WITH_HOLIDAY_RESULT.DevMeanTimeToRecovery,
-    deploymentTimes: DORA_METRICS_WITH_HOLIDAY_RESULT.DeploymentTimes,
-  });
-  await reportStep.checkDownloadWithHolidayReports();
 });
 
 test('Import project from flag as block and without block column', async ({

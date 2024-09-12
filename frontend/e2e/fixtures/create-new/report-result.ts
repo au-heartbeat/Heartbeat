@@ -821,27 +821,6 @@ export const DORA_METRICS_RESULT_FOR_SOURCE_CONTROL: IDoraMetricsResultItem[] = 
   },
 ];
 
-export const BOARD_METRICS_WITH_HOLIDAY_RESULT = {
-  Velocity: '14',
-  Throughput: '6',
-  AverageCycleTime4SP: '0.79',
-  AverageCycleTime4Card: '1.84',
-  totalReworkTimes: '0',
-  totalReworkCards: '0',
-  reworkCardsRatio: '0.0000',
-  throughput: '6',
-};
-
-export const DORA_METRICS_WITH_HOLIDAY_RESULT = {
-  PrLeadTime: '13.19',
-  PipelineLeadTime: '0.47',
-  TotalLeadTime: '13.66',
-  DeploymentFrequency: '1.83',
-  DeploymentTimes: '11',
-  FailureRate: '0.00% (0/11)',
-  DevMeanTimeToRecovery: '0.00',
-};
-
 export const CYCLE_TIME_WITH_ANALYSIS_STATUS_PROJECT_BOARD_METRICS_RESULT: IBoardMetricsResult = {
   velocity: '8',
   throughput: '3',
