@@ -16,7 +16,6 @@ import {
   SOURCE_CONTROL_CONFIG_TITLE,
   SOURCE_CONTROL_ERROR_MESSAGE,
 } from '@src/constants/resources';
-import { IPresentationForErrorCasesProps } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import {
   selectSourceControlConfigurationSettings,
   updateShouldGetSourceControlConfig,
@@ -26,6 +25,7 @@ import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSou
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
+import { ErrorInfoType } from '@src/containers/MetricsStep/SouceControlConfiguration';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
@@ -42,7 +42,7 @@ interface SourceControlMetricSelectionProps {
   };
   isShowRemoveButton: boolean;
   onRemoveSourceControl: (id: number) => void;
-  handleUpdateErrorInfo: (errorInfo: IPresentationForErrorCasesProps) => void;
+  handleUpdateErrorInfo: (errorInfo: ErrorInfoType) => void;
   onUpdateSourceControl: (id: number, label: string, value: string | StringConstructor[] | string[]) => void;
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
@@ -153,19 +153,6 @@ export const SourceControlMetricSelection = ({
         );
       }
     };
-    const retry = () => {
-      if (getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
-        return getSourceControlRepoInfo(organization, dateRanges, id);
-      } else if (getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
-        return getSourceControlBranchInfo(organization, repo, id);
-      } else {
-        return Promise.all(
-          selectedBranches!.map((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges)),
-        ).then(() => {
-          dispatch(updateShouldGetSourceControlConfig(false));
-        });
-      }
-    };
     const codeFunction = () => {
       if (
         getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
@@ -177,16 +164,11 @@ export const SourceControlMetricSelection = ({
         return 404;
       }
     };
-    if (!isLoading && isGetAllCrews) {
-      popup();
-    }
     const code = codeFunction();
-    const errorInfo: IPresentationForErrorCasesProps = {
+    const errorInfo: ErrorInfoType = {
       code,
       errorTitle: SOURCE_CONTROL_CONFIG_TITLE,
       errorMessage: SOURCE_CONTROL_ERROR_MESSAGE,
-      retry,
-      isLoading,
     };
     const isError =
       getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
@@ -195,6 +177,9 @@ export const SourceControlMetricSelection = ({
       getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
       getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
       getCrewFailedStatus === MetricsDataFailStatus.AllFailed4xx;
+    if (!isLoading && isGetAllCrews) {
+      popup();
+    }
     if (!isLoading && isError) {
       handleUpdateErrorInfo(errorInfo);
     }

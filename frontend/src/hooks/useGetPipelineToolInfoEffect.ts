@@ -16,7 +16,7 @@ import { HttpStatusCode } from 'axios';
 export interface IUseVerifyPipeLineToolStateInterface {
   result: IGetPipelineToolInfoResult;
   isLoading: boolean;
-  apiCallFunc: () => Promise<void>;
+  apiCallFunc: () => void;
   isFirstFetch: boolean;
 }
 
