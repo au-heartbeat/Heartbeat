@@ -17,7 +17,7 @@ import { Provider } from 'react-redux';
 
 const mockInitSourceControlSettings = [
   { id: 0, organization: 'mockOrgName', repo: 'mockRepoName', branches: ['mockBranch1'] },
-  { id: 1, organization: '', repo: '', steps: '', branches: [] },
+  { id: 1, organization: '', repo: '', branches: [] },
 ];
 const mockInitOrganizationEffectResponse = {
   isFirstFetch: false,
@@ -37,10 +37,7 @@ const mockInitRepoEffectResponse = {
   isLoading: false,
   getSourceControlRepoInfo: jest.fn(),
   info: {
-    code: 200,
-    data: undefined,
-    errorTitle: '',
-    errorMessage: '',
+    name: [],
   },
   stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
@@ -49,10 +46,7 @@ const mockInitBranchEffectResponse = {
   getSourceControlBranchInfo: jest.fn(),
   isGetBranch: true,
   info: {
-    code: 200,
-    data: undefined,
-    errorTitle: '',
-    errorMessage: '',
+    name: [],
   },
   stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
@@ -61,10 +55,7 @@ const mockInitCrewEffectResponse = {
   getSourceControlCrewInfo: jest.fn(),
   isGetAllCrews: true,
   info: {
-    code: 200,
-    data: undefined,
-    errorTitle: '',
-    errorMessage: '',
+    crews: [],
   },
   stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
@@ -144,6 +135,7 @@ describe('SourceControlConfiguration', () => {
     mockBranchEffectResponse = mockInitBranchEffectResponse;
     mockCrewEffectResponse = mockInitCrewEffectResponse;
   });
+
   it('should show loading when isLoading is true', () => {
     mockOrganizationEffectResponse = {
       ...mockOrganizationEffectResponse,
@@ -256,5 +248,72 @@ describe('SourceControlConfiguration', () => {
     setup();
 
     expect(screen.getByLabelText('Error UI for pipeline settings')).toBeInTheDocument();
+  });
+
+  it('should display error UI and retry when get repo failed status returns AllFailedTimeout', async () => {
+    const getSourceControlRepoInfo = jest.fn();
+    mockRepoEffectResponse = {
+      ...mockInitRepoEffectResponse,
+      stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
+      getSourceControlRepoInfo,
+    };
+    setup();
+
+    const retryButton = screen.getByLabelText('retry button');
+
+    expect(screen.getByLabelText('Error UI for pipeline settings')).toBeInTheDocument();
+    expect(retryButton).toBeInTheDocument();
+
+    await act(async () => {
+      await userEvent.click(retryButton);
+    });
+
+    expect(getSourceControlRepoInfo).toHaveBeenCalledTimes(1);
+  });
+
+  it('should display error UI and retry when get branch failed status returns AllFailedTimeout', async () => {
+    const getSourceControlBranchInfo = jest.fn();
+    mockBranchEffectResponse = {
+      ...mockInitBranchEffectResponse,
+      stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
+      getSourceControlBranchInfo,
+    };
+    setup();
+
+    const retryButton = screen.getByLabelText('retry button');
+
+    expect(screen.getByLabelText('Error UI for pipeline settings')).toBeInTheDocument();
+    expect(retryButton).toBeInTheDocument();
+
+    await act(async () => {
+      await userEvent.click(retryButton);
+    });
+
+    expect(getSourceControlBranchInfo).toHaveBeenCalledTimes(1);
+  });
+
+  it('should display error UI and retry when get crew failed status returns AllFailedTimeout', async () => {
+    const getSourceControlCrewInfo = jest.fn();
+    mockCrewEffectResponse = {
+      ...mockInitCrewEffectResponse,
+      stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
+      getSourceControlCrewInfo,
+    };
+    mockSourceControlSettings = [
+      { id: 0, organization: 'mockOrgName', repo: 'mockRepoName', branches: ['mockBranch1'] },
+      { id: 1, organization: 'mockOrgName', repo: 'mockRepoName', branches: ['mockBranch2'] },
+    ];
+    setup();
+
+    const retryButton = screen.getByLabelText('retry button');
+
+    expect(screen.getByLabelText('Error UI for pipeline settings')).toBeInTheDocument();
+    expect(retryButton).toBeInTheDocument();
+
+    await act(async () => {
+      await userEvent.click(retryButton);
+    });
+
+    expect(getSourceControlCrewInfo).toHaveBeenCalledTimes(1);
   });
 });

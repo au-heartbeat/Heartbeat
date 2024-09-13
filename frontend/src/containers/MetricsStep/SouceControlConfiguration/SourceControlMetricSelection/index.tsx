@@ -11,6 +11,13 @@ import {
   selectSourceControlRepos,
 } from '@src/context/config/configSlice';
 import {
+  AxiosRequestErrorCode,
+  MESSAGE,
+  SOURCE_CONTROL_CONFIG_TITLE,
+  SOURCE_CONTROL_ERROR_MESSAGE,
+} from '@src/constants/resources';
+import { IPresentationForErrorCasesProps } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
+import {
   selectSourceControlConfigurationSettings,
   updateShouldGetSourceControlConfig,
 } from '@src/context/Metrics/metricsSlice';
@@ -19,14 +26,11 @@ import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSou
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
-import { ErrorInfoType } from '@src/containers/MetricsStep/SouceControlConfiguration';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
-import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { useEffect, useRef } from 'react';
-import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
 
 interface SourceControlMetricSelectionProps {
@@ -38,7 +42,7 @@ interface SourceControlMetricSelectionProps {
   };
   isShowRemoveButton: boolean;
   onRemoveSourceControl: (id: number) => void;
-  handleUpdateErrorInfo: (errorInfo: ErrorInfoType) => void;
+  handleUpdateErrorInfo: (errorInfo: IPresentationForErrorCasesProps) => void;
   onUpdateSourceControl: (id: number, label: string, value: string | StringConstructor[] | string[]) => void;
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
@@ -52,8 +56,8 @@ export const SourceControlMetricSelection = ({
   onUpdateSourceControl,
   isDuplicated,
   setLoadingCompletedNumber,
-  totalSourceControlNumber,
   handleUpdateErrorInfo,
+  totalSourceControlNumber,
 }: SourceControlMetricSelectionProps) => {
   const { id, organization, repo } = sourceControlSetting;
   const isInitialMount = useRef(true);
@@ -61,21 +65,18 @@ export const SourceControlMetricSelection = ({
     isLoading: repoIsLoading,
     getSourceControlRepoInfo,
     isGetRepo,
-    info: repoInfo,
     stepFailedStatus: getRepoFailedStatus,
   } = useGetSourceControlConfigurationRepoEffect();
   const {
     isLoading: branchIsLoading,
     getSourceControlBranchInfo,
     isGetBranch,
-    info: branchInfo,
     stepFailedStatus: getBranchFailedStatus,
   } = useGetSourceControlConfigurationBranchEffect();
   const {
     isLoading: crewIsLoading,
     getSourceControlCrewInfo,
     isGetAllCrews,
-    info: crewInfo,
     stepFailedStatus: getCrewFailedStatus,
   } = useGetSourceControlConfigurationCrewEffect();
   const storeContext = store.getState();
@@ -127,15 +128,6 @@ export const SourceControlMetricSelection = ({
   }, [isGetAllCrews, setLoadingCompletedNumber, totalSourceControlNumber]);
 
   useEffect(() => {
-    const errorInfoList: ErrorInfoType[] = [repoInfo, branchInfo, crewInfo].filter(
-      (it) => it.code !== HttpStatusCode.Ok,
-    );
-    const errorInfo = errorInfoList.length === 0 ? crewInfo : errorInfoList[0];
-    handleUpdateErrorInfo(errorInfo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [repoInfo, branchInfo, crewInfo]);
-
-  useEffect(() => {
     const popup = () => {
       if (
         getRepoFailedStatus === MetricsDataFailStatus.PartialFailed4xx ||
@@ -149,11 +141,8 @@ export const SourceControlMetricSelection = ({
           }),
         );
       } else if (
-        getRepoFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
         getRepoFailedStatus === MetricsDataFailStatus.PartialFailedTimeout ||
-        getBranchFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
         getBranchFailedStatus === MetricsDataFailStatus.PartialFailedTimeout ||
-        getCrewFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
         getCrewFailedStatus === MetricsDataFailStatus.PartialFailedTimeout
       ) {
         dispatch(
@@ -164,9 +153,52 @@ export const SourceControlMetricSelection = ({
         );
       }
     };
+    const retry = () => {
+      if (getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
+        return getSourceControlRepoInfo(organization, dateRanges, id);
+      } else if (getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
+        return getSourceControlBranchInfo(organization, repo, id);
+      } else {
+        return Promise.all(
+          selectedBranches!.map((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges)),
+        ).then(() => {
+          dispatch(updateShouldGetSourceControlConfig(false));
+        });
+      }
+    };
+    const codeFunction = () => {
+      if (
+        getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+        getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+        getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout
+      ) {
+        return AxiosRequestErrorCode.Timeout;
+      } else {
+        return 404;
+      }
+    };
     if (!isLoading) {
       popup();
+      const code = codeFunction();
+      const errorInfo: IPresentationForErrorCasesProps = {
+        code,
+        errorTitle: SOURCE_CONTROL_CONFIG_TITLE,
+        errorMessage: SOURCE_CONTROL_ERROR_MESSAGE,
+        retry,
+        isLoading,
+      };
+      const isError =
+        getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+        getRepoFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+        getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+        getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+        getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+        getCrewFailedStatus === MetricsDataFailStatus.AllFailed4xx;
+      if (isError) {
+        handleUpdateErrorInfo(errorInfo);
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getBranchFailedStatus, getCrewFailedStatus, getRepoFailedStatus, isLoading]);
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
