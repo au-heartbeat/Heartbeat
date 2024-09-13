@@ -177,26 +177,26 @@ export const SourceControlMetricSelection = ({
         return 404;
       }
     };
-    if (!isLoading) {
+    if (!isLoading && isGetAllCrews) {
       popup();
-      const code = codeFunction();
-      const errorInfo: IPresentationForErrorCasesProps = {
-        code,
-        errorTitle: SOURCE_CONTROL_CONFIG_TITLE,
-        errorMessage: SOURCE_CONTROL_ERROR_MESSAGE,
-        retry,
-        isLoading,
-      };
-      const isError =
-        getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getRepoFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
-        getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
-        getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getCrewFailedStatus === MetricsDataFailStatus.AllFailed4xx;
-      if (isError) {
-        handleUpdateErrorInfo(errorInfo);
-      }
+    }
+    const code = codeFunction();
+    const errorInfo: IPresentationForErrorCasesProps = {
+      code,
+      errorTitle: SOURCE_CONTROL_CONFIG_TITLE,
+      errorMessage: SOURCE_CONTROL_ERROR_MESSAGE,
+      retry,
+      isLoading,
+    };
+    const isError =
+      getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getRepoFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+      getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+      getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getCrewFailedStatus === MetricsDataFailStatus.AllFailed4xx;
+    if (!isLoading && isError) {
+      handleUpdateErrorInfo(errorInfo);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getBranchFailedStatus, getCrewFailedStatus, getRepoFailedStatus, isLoading]);
