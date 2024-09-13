@@ -79,7 +79,11 @@ export const SourceControlConfiguration = () => {
   };
 
   useEffect(() => {
-    handleUpdateErrorInfo(errorInfo);
+    handleUpdateErrorInfo({
+      ...info,
+      retry: getSourceControlInfo,
+      isLoading: isLoading,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [info]);
 

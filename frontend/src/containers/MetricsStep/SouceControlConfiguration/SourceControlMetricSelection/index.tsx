@@ -167,6 +167,7 @@ export const SourceControlMetricSelection = ({
           dispatch(updateShouldGetSourceControlConfig(false));
         });
       }
+      return Promise.resolve();
     };
     const codeFunction = () => {
       if (
