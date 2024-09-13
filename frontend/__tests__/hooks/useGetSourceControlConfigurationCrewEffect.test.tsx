@@ -7,7 +7,6 @@ import { DateRange } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import React, { ReactNode } from 'react';
 import { Provider } from 'react-redux';
-import { HttpStatusCode } from 'axios';
 
 const mockDispatch = jest.fn();
 const store = setupStore();
@@ -27,19 +26,14 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
 };
 
 const clientSpy = jest.fn();
-const mockRepo = jest.fn().mockImplementation(() => {
+const mockCrew = jest.fn().mockImplementation(() => {
   clientSpy();
-  return {
-    code: HttpStatusCode.Ok,
-    data: MOCK_GITHUB_GET_CREWS_RESPONSE,
-    errorTittle: '',
-    errorMessage: '',
-  };
+  return MOCK_GITHUB_GET_CREWS_RESPONSE;
 });
 
 describe('use get source control configuration crew info side effect', () => {
   beforeEach(() => {
-    sourceControlClient.getCrew = mockRepo;
+    sourceControlClient.getCrew = mockCrew;
     clientSpy.mockClear();
   });
 
@@ -85,9 +79,10 @@ describe('use get source control configuration crew info side effect', () => {
         });
       })
       .mockImplementationOnce(() => {
-        return Promise.resolve('success');
+        return Promise.resolve({
+          crews: ['crew1'],
+        });
       });
-    const { result } = renderHook(() => useGetSourceControlConfigurationCrewEffect(), { wrapper: Wrapper });
     const mockOrganization = 'mockOrg';
     const mockRepo = 'mockRepo';
     const mockBranch = 'mockBranch';
@@ -101,6 +96,7 @@ describe('use get source control configuration crew info side effect', () => {
         endDate: '2024-07-28T23:59:59.999+08:00',
       },
     ];
+    const { result } = renderHook(() => useGetSourceControlConfigurationCrewEffect(), { wrapper: Wrapper });
 
     await act(async () => {
       result.current.getSourceControlCrewInfo(mockOrganization, mockRepo, mockBranch, dateRanges);
@@ -113,10 +109,14 @@ describe('use get source control configuration crew info side effect', () => {
     sourceControlClient.getCrew = jest
       .fn()
       .mockImplementationOnce(() => {
-        return Promise.reject('error');
+        return Promise.reject({
+          code: 500,
+        });
       })
       .mockImplementationOnce(() => {
-        return Promise.resolve('success');
+        return Promise.resolve({
+          crews: ['crew1'],
+        });
       });
     const { result } = renderHook(() => useGetSourceControlConfigurationCrewEffect(), { wrapper: Wrapper });
     const mockOrganization = 'mockOrg';
@@ -138,5 +138,61 @@ describe('use get source control configuration crew info side effect', () => {
     });
 
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailedTimeout);
+  });
+
+  it('should set error step failed status to AllFailed4xx when all getting repo responses are failed and code is 400', async () => {
+    sourceControlClient.getCrew = jest.fn().mockImplementation(() => {
+      return Promise.reject({
+        code: 400,
+      });
+    });
+    const { result } = renderHook(() => useGetSourceControlConfigurationCrewEffect(), { wrapper: Wrapper });
+    const mockOrganization = 'mockOrg';
+    const mockRepo = 'mockRepo';
+    const mockBranch = 'mockBranch';
+    const dateRanges: DateRange[] = [
+      {
+        startDate: '2024-07-31T00:00:00.000+08:00',
+        endDate: '2024-08-02T23:59:59.999+08:00',
+      },
+      {
+        startDate: '2024-07-15T00:00:00.000+08:00',
+        endDate: '2024-07-28T23:59:59.999+08:00',
+      },
+    ];
+
+    await act(async () => {
+      result.current.getSourceControlCrewInfo(mockOrganization, mockRepo, mockBranch, dateRanges);
+    });
+
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailed4xx);
+  });
+
+  it('should set error step failed status to AllFailedTimeout when all getting repo responses are failed and code is not 400', async () => {
+    sourceControlClient.getCrew = jest.fn().mockImplementation(() => {
+      return Promise.reject({
+        code: 500,
+      });
+    });
+    const { result } = renderHook(() => useGetSourceControlConfigurationCrewEffect(), { wrapper: Wrapper });
+    const mockOrganization = 'mockOrg';
+    const mockRepo = 'mockRepo';
+    const mockBranch = 'mockBranch';
+    const dateRanges: DateRange[] = [
+      {
+        startDate: '2024-07-31T00:00:00.000+08:00',
+        endDate: '2024-08-02T23:59:59.999+08:00',
+      },
+      {
+        startDate: '2024-07-15T00:00:00.000+08:00',
+        endDate: '2024-07-28T23:59:59.999+08:00',
+      },
+    ];
+
+    await act(async () => {
+      result.current.getSourceControlCrewInfo(mockOrganization, mockRepo, mockBranch, dateRanges);
+    });
+
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailedTimeout);
   });
 });

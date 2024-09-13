@@ -235,32 +235,23 @@ describe('SourceControlMetricSelection', () => {
     expect(myDispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('should add partial failed 4xx notification when any failed status is PartialFailedNoCards', async () => {
+  it('should add partial failed 4xx notification when any failed status is PartialFailedTimeout', async () => {
     mockCrewEffectResponse = {
       ...mockCrewEffectResponse,
-      stepFailedStatus: MetricsDataFailStatus.PartialFailedNoCards,
+      stepFailedStatus: MetricsDataFailStatus.PartialFailedTimeout,
     };
     setup();
 
     expect(myDispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('should set error info when any request return error', () => {
-    mockRepoEffectResponse = {
-      ...mockRepoEffectResponse,
-      info: {
-        code: 404,
-        errorTitle: 'error title',
-        errorMessage: 'error message',
-      },
+  it('should update error info when any failed status is AllFailedTimeout', async () => {
+    mockCrewEffectResponse = {
+      ...mockCrewEffectResponse,
+      stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
     };
     setup();
 
     expect(handleUpdateErrorInfo).toHaveBeenCalledTimes(1);
-    expect(handleUpdateErrorInfo).toBeCalledWith({
-      code: 404,
-      errorTitle: 'error title',
-      errorMessage: 'error message',
-    });
   });
 });

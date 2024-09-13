@@ -12,7 +12,7 @@ import errorSvg from '@src/assets/PipelineInfoError.svg';
 import React, { useCallback } from 'react';
 
 export interface IPresentationForErrorCasesProps {
-  retry: () => void;
+  retry: () => Promise<void>;
   isLoading: boolean;
   code: number | string | undefined | null;
   errorTitle: string;
@@ -30,7 +30,7 @@ const PresentationForErrorCases = (props: IPresentationForErrorCasesProps) => {
       {isShowRetryUI ? (
         <StyledRetryMessage>
           <span>{PIPELINE_TOOL_RETRY_MESSAGE}</span>
-          <StyledRetryButton onClick={handleRetry} isLoading={props.isLoading}>
+          <StyledRetryButton aria-label={'retry button'} onClick={handleRetry} isLoading={props.isLoading}>
             {PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE}
           </StyledRetryButton>
         </StyledRetryMessage>
