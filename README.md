@@ -87,6 +87,7 @@
 - [Apr 2 2024 - Release heartbeat - 1.1.6](release-notes/20240402.md)
 - [June 6 2024 - Release heartbeat - 1.1.7](release-notes/20240605.md)
 - [July 15 2024 - Release heartbeat - 1.2.0](release-notes/20240715.md)
+- [Sep 11 2024 - Release heartbeat - 1.3.0](release-notes/20240911.md)
 
 # 1 About Heartbeat
 
