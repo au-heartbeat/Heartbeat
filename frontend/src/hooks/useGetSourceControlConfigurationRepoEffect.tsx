@@ -2,17 +2,23 @@ import {
   selectShouldGetSourceControlConfig,
   updateSourceControlConfigurationSettingsFirstInto,
 } from '@src/context/Metrics/metricsSlice';
-import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
+import {
+  DateRangeList,
+  selectSourceControl,
+  updateSourceControlVerifiedResponse,
+} from '@src/context/config/configSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { FULFILLED, REJECTED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { MetricsDataFailStatus } from '@src/constants/commons';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 
 export interface IUseGetSourceControlConfigurationRepoInterface {
   readonly isLoading: boolean;
-  readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRange[], id: number) => Promise<void>;
+  readonly getSourceControlRepoInfo: (value: string, dateRanges: DateRangeList, id: number) => Promise<void>;
   readonly isGetRepo: boolean;
   readonly stepFailedStatus: MetricsDataFailStatus;
 }
@@ -31,8 +37,24 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
       .map((it) => it[1])[0];
   }
 
-  const getSourceControlRepoInfo = async (organization: string, dateRanges: DateRange[], id: number) => {
+  const getSourceControlRepoInfo = async (organization: string, dateRanges: DateRangeList, id: number) => {
     setIsLoading(true);
+    dispatch(
+      updateMetricsPageLoadingStatus(
+        dateRanges.map((it) => {
+          return {
+            startDate: formatDateToTimestampString(it.startDate!),
+            loadingStatus: {
+              sourceControlRepo: {
+                isLoading: true,
+                isLoaded: false,
+                isLoadedWithError: false,
+              },
+            },
+          };
+        }),
+      ),
+    );
     const allRepoRes = await Promise.allSettled(
       dateRanges.flatMap((dateRange) => {
         const params = {
@@ -66,7 +88,21 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
       }
     }
 
-    allRepoRes.forEach((response) => {
+    allRepoRes.forEach((response, index) => {
+      dispatch(
+        updateMetricsPageLoadingStatus([
+          {
+            startDate: formatDateToTimestampString(dateRanges[index].startDate!),
+            loadingStatus: {
+              sourceControlRepo: {
+                isLoading: false,
+                isLoaded: true,
+                isLoadedWithError: response.status !== FULFILLED,
+              },
+            },
+          },
+        ]),
+      );
       if (response.status === FULFILLED) {
         setIsGetRepo(true);
         dispatch(

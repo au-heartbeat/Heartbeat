@@ -2,11 +2,17 @@ import {
   selectShouldGetSourceControlConfig,
   updateSourceControlConfigurationSettingsFirstInto,
 } from '@src/context/Metrics/metricsSlice';
-import { selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
+import {
+  selectDateRange,
+  selectSourceControl,
+  updateSourceControlVerifiedResponse,
+} from '@src/context/config/configSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { MetricsDataFailStatus } from '@src/constants/commons';
 import { SourceControlTypes } from '@src/constants/resources';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { useState } from 'react';
 
 export interface IUseGetSourceControlConfigurationBranchInterface {
@@ -22,6 +28,7 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
   const [isGetBranch, setIsGetBranch] = useState<boolean>(!shouldGetSourceControlConfig);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
   const [stepFailedStatus, setStepFailedStatus] = useState(MetricsDataFailStatus.NotFailed);
+  const dateRangeList = useAppSelector(selectDateRange);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
@@ -37,8 +44,40 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
       repo: repo,
     };
     setIsLoading(true);
+    dispatch(
+      updateMetricsPageLoadingStatus(
+        dateRangeList.map((it) => {
+          return {
+            startDate: formatDateToTimestampString(it.startDate!),
+            loadingStatus: {
+              sourceControlBranch: {
+                isLoading: true,
+                isLoaded: false,
+                isLoadedWithError: false,
+              },
+            },
+          };
+        }),
+      ),
+    );
     try {
       sourceControlClient.getBranch(params).then((response) => {
+        dispatch(
+          updateMetricsPageLoadingStatus(
+            dateRangeList.map((it) => {
+              return {
+                startDate: formatDateToTimestampString(it.startDate!),
+                loadingStatus: {
+                  sourceControlBranch: {
+                    isLoading: false,
+                    isLoaded: true,
+                    isLoadedWithError: response.code !== 200,
+                  },
+                },
+              };
+            }),
+          ),
+        );
         if (response.code === 400) {
           setStepFailedStatus(MetricsDataFailStatus.AllFailed4xx);
         } else if (response.code === 200) {
