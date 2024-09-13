@@ -7,7 +7,6 @@ import { DateRange } from '@src/context/config/configSlice';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import React, { ReactNode } from 'react';
 import { Provider } from 'react-redux';
-import { HttpStatusCode } from 'axios';
 
 const mockDispatch = jest.fn();
 const store = setupStore();
@@ -29,12 +28,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
 const clientSpy = jest.fn();
 const mockRepo = jest.fn().mockImplementation(() => {
   clientSpy();
-  return {
-    code: HttpStatusCode.Ok,
-    data: MOCK_GITHUB_GET_REPO_RESPONSE,
-    errorTittle: '',
-    errorMessage: '',
-  };
+  return MOCK_GITHUB_GET_REPO_RESPONSE;
 });
 
 describe('use get source control configuration repo info side effect', () => {
@@ -74,10 +68,14 @@ describe('use get source control configuration repo info side effect', () => {
     sourceControlClient.getRepo = jest
       .fn()
       .mockImplementationOnce(() => {
-        return Promise.reject('error');
+        return Promise.reject({
+          code: 500,
+        });
       })
       .mockImplementationOnce(() => {
-        return Promise.resolve('success');
+        return Promise.resolve({
+          name: ['test-repo'],
+        });
       });
     const { result } = renderHook(() => useGetSourceControlConfigurationRepoEffect(), { wrapper: Wrapper });
     const mockOrganization = 'mockOrg';
@@ -108,7 +106,9 @@ describe('use get source control configuration repo info side effect', () => {
         });
       })
       .mockImplementationOnce(() => {
-        return Promise.resolve('success');
+        return Promise.resolve({
+          name: ['test-repo'],
+        });
       });
     const { result } = renderHook(() => useGetSourceControlConfigurationRepoEffect(), { wrapper: Wrapper });
     const mockOrganization = 'mockOrg';
@@ -128,5 +128,57 @@ describe('use get source control configuration repo info side effect', () => {
     });
 
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailed4xx);
+  });
+
+  it('should set error step failed status to AllFailed4xx when all getting repo response is failed and code are 400', async () => {
+    sourceControlClient.getRepo = jest.fn().mockImplementation(() => {
+      return Promise.reject({
+        code: 400,
+      });
+    });
+    const { result } = renderHook(() => useGetSourceControlConfigurationRepoEffect(), { wrapper: Wrapper });
+    const mockOrganization = 'mockOrg';
+    const mockDateRanges: DateRange[] = [
+      {
+        startDate: 'startTime',
+        endDate: 'endTime',
+      },
+      {
+        startDate: 'startTime',
+        endDate: 'endTime',
+      },
+    ];
+
+    await act(async () => {
+      result.current.getSourceControlRepoInfo(mockOrganization, mockDateRanges, 1);
+    });
+
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailed4xx);
+  });
+
+  it('should set error step failed status to AllFailedTimeout when all getting repo response is failed and code are not 400', async () => {
+    sourceControlClient.getRepo = jest.fn().mockImplementation(() => {
+      return Promise.reject({
+        code: 500,
+      });
+    });
+    const { result } = renderHook(() => useGetSourceControlConfigurationRepoEffect(), { wrapper: Wrapper });
+    const mockOrganization = 'mockOrg';
+    const mockDateRanges: DateRange[] = [
+      {
+        startDate: 'startTime',
+        endDate: 'endTime',
+      },
+      {
+        startDate: 'startTime',
+        endDate: 'endTime',
+      },
+    ];
+
+    await act(async () => {
+      result.current.getSourceControlRepoInfo(mockOrganization, mockDateRanges, 1);
+    });
+
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailedTimeout);
   });
 });

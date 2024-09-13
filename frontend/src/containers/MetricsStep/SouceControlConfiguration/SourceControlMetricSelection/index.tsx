@@ -154,17 +154,13 @@ export const SourceControlMetricSelection = ({
       }
     };
     const retry = () => {
-      if (
-        getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getRepoFailedStatus === MetricsDataFailStatus.AllFailed4xx
-      ) {
+      if (getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
         return getSourceControlRepoInfo(organization, dateRanges, id);
-      } else if (
-        getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx
-      ) {
+      }
+      if (getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
         return getSourceControlBranchInfo(organization, repo, id);
-      } else {
+      }
+      if (getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
         return Promise.all(
           selectedBranches!.map((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges)),
         ).then(() => {
