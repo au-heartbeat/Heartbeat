@@ -156,18 +156,15 @@ export const SourceControlMetricSelection = ({
     const retry = () => {
       if (getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
         return getSourceControlRepoInfo(organization, dateRanges, id);
-      }
-      if (getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
+      } else if (getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
         return getSourceControlBranchInfo(organization, repo, id);
-      }
-      if (getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
+      } else {
         return Promise.all(
           selectedBranches!.map((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges)),
         ).then(() => {
           dispatch(updateShouldGetSourceControlConfig(false));
         });
       }
-      return Promise.resolve();
     };
     const codeFunction = () => {
       if (

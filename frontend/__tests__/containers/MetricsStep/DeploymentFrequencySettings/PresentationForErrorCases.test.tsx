@@ -28,7 +28,13 @@ describe('<PresentationForErrorCases />', () => {
   it.each(commonErrors)(
     'should properly render error UI with title:$title and corresponding message',
     ({ code, title: errorTitle }) => {
-      const props = { code, errorTitle, errorMessage, isLoading: false, retry: () => '' };
+      const props: IPresentationForErrorCasesProps = {
+        code,
+        errorTitle,
+        errorMessage,
+        isLoading: false,
+        retry: () => Promise.resolve(),
+      };
       setup(props);
 
       const titleNode = screen.getByText(errorTitle);
