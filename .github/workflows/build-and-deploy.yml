@@ -47,7 +47,7 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             -v "${PWD}:/path" \
-            ghcr.io/gitleaks/gitleaks:latest \
+            ghcr.io/gitleaks/gitleaks:8.18.4 \
             detect \
             --source="/path" \
             -v --redact
