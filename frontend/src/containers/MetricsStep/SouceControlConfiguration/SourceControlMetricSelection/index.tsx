@@ -1,22 +1,22 @@
 import {
+  selectDateRange,
+  selectSourceControlBranches,
+  selectSourceControlOrganizations,
+  selectSourceControlRepos,
+  selectSourceControlTimes,
+} from '@src/context/config/configSlice';
+import {
   ButtonWrapper,
   PipelineMetricSelectionWrapper,
   RemoveButton,
   WarningMessage,
 } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
 import {
-  selectDateRange,
-  selectSourceControlBranches,
-  selectSourceControlOrganizations,
-  selectSourceControlRepos,
-} from '@src/context/config/configSlice';
-import {
   AxiosRequestErrorCode,
   MESSAGE,
   SOURCE_CONTROL_CONFIG_TITLE,
   SOURCE_CONTROL_ERROR_MESSAGE,
 } from '@src/constants/resources';
-import { IPresentationForErrorCasesProps } from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import {
   selectSourceControlConfigurationSettings,
   updateShouldGetSourceControlConfig,
@@ -26,6 +26,7 @@ import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSou
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
+import { ErrorInfoType } from '@src/containers/MetricsStep/SouceControlConfiguration';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
@@ -42,7 +43,7 @@ interface SourceControlMetricSelectionProps {
   };
   isShowRemoveButton: boolean;
   onRemoveSourceControl: (id: number) => void;
-  handleUpdateErrorInfo: (errorInfo: IPresentationForErrorCasesProps) => void;
+  handleUpdateErrorInfo: (errorInfo: ErrorInfoType) => void;
   onUpdateSourceControl: (id: number, label: string, value: string | StringConstructor[] | string[]) => void;
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
@@ -96,7 +97,7 @@ export const SourceControlMetricSelection = ({
   };
 
   useEffect(() => {
-    if (isInitialMount.current && !isGetRepo && organization && repoNameOptions.length === 0) {
+    if (isInitialMount.current && !isGetRepo && organization) {
       getSourceControlRepoInfo(organization, dateRanges, id);
       isInitialMount.current = false;
     }
@@ -104,7 +105,7 @@ export const SourceControlMetricSelection = ({
   }, [isGetRepo]);
 
   useEffect(() => {
-    if (!isGetBranch && isGetRepo && organization && repo && branchNameOptions.length === 0) {
+    if (!isGetBranch && isGetRepo && organization && repo) {
       getSourceControlBranchInfo(organization, repo, id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -153,19 +154,6 @@ export const SourceControlMetricSelection = ({
         );
       }
     };
-    const retry = () => {
-      if (getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
-        return getSourceControlRepoInfo(organization, dateRanges, id);
-      } else if (getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout) {
-        return getSourceControlBranchInfo(organization, repo, id);
-      } else {
-        return Promise.all(
-          selectedBranches!.map((it) => getSourceControlCrewInfo(organization, repo, it, dateRanges)),
-        ).then(() => {
-          dispatch(updateShouldGetSourceControlConfig(false));
-        });
-      }
-    };
     const codeFunction = () => {
       if (
         getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
@@ -177,45 +165,51 @@ export const SourceControlMetricSelection = ({
         return 404;
       }
     };
-    if (!isLoading) {
+    const code = codeFunction();
+    const errorInfo: ErrorInfoType = {
+      code,
+      errorTitle: SOURCE_CONTROL_CONFIG_TITLE,
+      errorMessage: SOURCE_CONTROL_ERROR_MESSAGE,
+    };
+    const isError =
+      getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getRepoFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+      getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+      getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getCrewFailedStatus === MetricsDataFailStatus.AllFailed4xx;
+    if (!isLoading && isGetAllCrews) {
       popup();
-      const code = codeFunction();
-      const errorInfo: IPresentationForErrorCasesProps = {
-        code,
-        errorTitle: SOURCE_CONTROL_CONFIG_TITLE,
-        errorMessage: SOURCE_CONTROL_ERROR_MESSAGE,
-        retry,
-        isLoading,
-      };
-      const isError =
-        getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getRepoFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
-        getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
-        getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
-        getCrewFailedStatus === MetricsDataFailStatus.AllFailed4xx;
-      if (isError) {
-        handleUpdateErrorInfo(errorInfo);
-      }
+    }
+    if (!isLoading && isError) {
+      handleUpdateErrorInfo(errorInfo);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getBranchFailedStatus, getCrewFailedStatus, getRepoFailedStatus, isLoading]);
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
-    getSourceControlRepoInfo(value.toString(), dateRanges, id);
+    const newOrganization = value.toString();
+    if (selectSourceControlRepos(storeContext, newOrganization).length === 0) {
+      getSourceControlRepoInfo(newOrganization, dateRanges, id);
+    }
   };
 
   const handleOnUpdateRepo = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
-    getSourceControlBranchInfo(organization, value.toString(), id);
+    const newRepo = value.toString();
+    if (selectSourceControlBranches(storeContext, organization, newRepo).length === 0) {
+      getSourceControlBranchInfo(organization, newRepo, id);
+    }
   };
 
   const handleOnUpdateBranches = (id: number, label: string, value: string[]): void => {
     const branchNeedGetCrews = value.filter((it) => selectedBranches?.every((branch) => branch !== it));
     onUpdateSourceControl(id, label, value);
     Promise.all(
-      branchNeedGetCrews.map((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges)),
+      branchNeedGetCrews
+        .filter((branch) => selectSourceControlTimes(storeContext, organization, repo, branch).length === 0)
+        .map((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges)),
     ).then(() => {
       dispatch(updateShouldGetSourceControlConfig(false));
     });

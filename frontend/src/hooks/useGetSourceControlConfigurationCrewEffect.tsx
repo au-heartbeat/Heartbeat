@@ -1,9 +1,11 @@
 import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
 import { selectShouldGetSourceControlConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { FULFILLED, REJECTED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { MetricsDataFailStatus } from '@src/constants/commons';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 
@@ -40,6 +42,22 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
     dateRanges: DateRange[],
   ) => {
     setIsLoading(true);
+    dispatch(
+      updateMetricsPageLoadingStatus(
+        dateRanges.map((it) => {
+          return {
+            startDate: formatDateToTimestampString(it.startDate!),
+            loadingStatus: {
+              sourceControlCrew: {
+                isLoading: true,
+                isLoaded: false,
+                isLoadedWithError: false,
+              },
+            },
+          };
+        }),
+      ),
+    );
     const allCrewsRes = await Promise.allSettled(
       dateRanges.flatMap((dateRange) => {
         const params = {
@@ -76,6 +94,20 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
     }
 
     allCrewsRes.forEach((response, index) => {
+      dispatch(
+        updateMetricsPageLoadingStatus([
+          {
+            startDate: formatDateToTimestampString(dateRanges[index].startDate!),
+            loadingStatus: {
+              sourceControlCrew: {
+                isLoading: false,
+                isLoaded: true,
+                isLoadedWithError: response.status !== FULFILLED,
+              },
+            },
+          },
+        ]),
+      );
       if (response.status === FULFILLED) {
         setIsGetAllCrews(true);
         const startTime = dayjs(dateRanges[index].startDate).startOf('date').valueOf();

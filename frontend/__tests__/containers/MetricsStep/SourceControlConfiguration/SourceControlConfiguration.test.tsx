@@ -251,11 +251,14 @@ describe('SourceControlConfiguration', () => {
   });
 
   it('should display error UI and retry when get repo failed status returns AllFailedTimeout', async () => {
-    const getSourceControlRepoInfo = jest.fn();
+    const getSourceControlInfo = jest.fn();
     mockRepoEffectResponse = {
       ...mockInitRepoEffectResponse,
       stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
-      getSourceControlRepoInfo,
+    };
+    mockOrganizationEffectResponse = {
+      ...mockInitOrganizationEffectResponse,
+      getSourceControlInfo,
     };
     setup();
 
@@ -268,15 +271,18 @@ describe('SourceControlConfiguration', () => {
       await userEvent.click(retryButton);
     });
 
-    expect(getSourceControlRepoInfo).toHaveBeenCalledTimes(1);
+    expect(getSourceControlInfo).toHaveBeenCalledTimes(1);
   });
 
   it('should display error UI and retry when get branch failed status returns AllFailedTimeout', async () => {
-    const getSourceControlBranchInfo = jest.fn();
+    const getSourceControlInfo = jest.fn();
     mockBranchEffectResponse = {
       ...mockInitBranchEffectResponse,
       stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
-      getSourceControlBranchInfo,
+    };
+    mockOrganizationEffectResponse = {
+      ...mockInitOrganizationEffectResponse,
+      getSourceControlInfo,
     };
     setup();
 
@@ -289,15 +295,18 @@ describe('SourceControlConfiguration', () => {
       await userEvent.click(retryButton);
     });
 
-    expect(getSourceControlBranchInfo).toHaveBeenCalledTimes(1);
+    expect(getSourceControlInfo).toHaveBeenCalledTimes(1);
   });
 
   it('should display error UI and retry when get crew failed status returns AllFailedTimeout', async () => {
-    const getSourceControlCrewInfo = jest.fn();
+    const getSourceControlInfo = jest.fn();
     mockCrewEffectResponse = {
       ...mockInitCrewEffectResponse,
       stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
-      getSourceControlCrewInfo,
+    };
+    mockOrganizationEffectResponse = {
+      ...mockInitOrganizationEffectResponse,
+      getSourceControlInfo,
     };
     mockSourceControlSettings = [
       { id: 0, organization: 'mockOrgName', repo: 'mockRepoName', branches: ['mockBranch1'] },
@@ -314,6 +323,6 @@ describe('SourceControlConfiguration', () => {
       await userEvent.click(retryButton);
     });
 
-    expect(getSourceControlCrewInfo).toHaveBeenCalledTimes(1);
+    expect(getSourceControlInfo).toHaveBeenCalledTimes(1);
   });
 });

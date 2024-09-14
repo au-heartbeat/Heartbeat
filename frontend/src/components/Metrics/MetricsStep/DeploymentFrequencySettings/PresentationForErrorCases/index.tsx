@@ -12,7 +12,7 @@ import errorSvg from '@src/assets/PipelineInfoError.svg';
 import React, { useCallback } from 'react';
 
 export interface IPresentationForErrorCasesProps {
-  retry: () => Promise<void>;
+  retry: () => void;
   isLoading: boolean;
   code: number | string | undefined | null;
   errorTitle: string;

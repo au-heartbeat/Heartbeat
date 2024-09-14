@@ -1,5 +1,6 @@
 import {
   clearSourceControlVerifiedResponse,
+  selectDateRange,
   selectSourceControl,
   updateSourceControlVerifiedResponse,
 } from '@src/context/config/configSlice';
@@ -9,9 +10,11 @@ import {
 } from '@src/context/Metrics/metricsSlice';
 import { ISourceControlGetOrganizationResponseDTO } from '@src/clients/sourceControl/dto/response';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SourceControlTypes } from '@src/constants/resources';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { HttpStatusCode } from 'axios';
 
 export interface IUseGetSourceControlConfigurationStateInterface {
@@ -35,6 +38,7 @@ export const useGetSourceControlConfigurationOrganizationEffect =
     const restoredSourceControlInfo = useAppSelector(selectSourceControl);
     const shouldGetSourceControlConfig = useAppSelector(selectShouldGetSourceControlConfig);
     const [isFirstFetch, setIsFirstFetch] = useState(shouldGetSourceControlConfig);
+    const dateRangeList = useAppSelector(selectDateRange);
 
     function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
       return Object.entries(SourceControlTypes)
@@ -48,6 +52,22 @@ export const useGetSourceControlConfigurationOrganizationEffect =
         token: restoredSourceControlInfo.token,
       };
       setIsLoading(true);
+      dispatch(
+        updateMetricsPageLoadingStatus(
+          dateRangeList.map((it) => {
+            return {
+              startDate: formatDateToTimestampString(it.startDate!),
+              loadingStatus: {
+                sourceControlOrganization: {
+                  isLoading: true,
+                  isLoaded: false,
+                  isLoadedWithError: false,
+                },
+              },
+            };
+          }),
+        ),
+      );
       try {
         const response = await sourceControlClient.getOrganization(params);
         setInfo(response);
@@ -65,10 +85,25 @@ export const useGetSourceControlConfigurationOrganizationEffect =
             }),
           );
         }
+        dispatch(
+          updateMetricsPageLoadingStatus(
+            dateRangeList.map((dateRange) => ({
+              startDate: formatDateToTimestampString(dateRange.startDate!),
+              loadingStatus: {
+                sourceControlOrganization: {
+                  isLoading: false,
+                  isLoaded: true,
+                  isLoadedWithError: response.code !== HttpStatusCode.Ok,
+                },
+              },
+            })),
+          ),
+        );
       } finally {
         setIsLoading(false);
         setIsFirstFetch(false);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, restoredSourceControlInfo.token, restoredSourceControlInfo.type]);
 
     useEffect(() => {

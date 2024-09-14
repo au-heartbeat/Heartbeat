@@ -333,7 +333,7 @@ export const DoraMetricsChart = ({
           options={pipelineNameOptions}
           value={selectedPipeline}
           onUpDatePipeline={(value) => onUpdatePipeline(value)}
-          title={'Pipeline/Step'}
+          title={'Pipeline/Repo'}
         />
       </NewFunctionsLabel>
       <ChartContainer>
