@@ -4,6 +4,7 @@ import configReducer, {
   selectSourceControlCrews,
   selectSourceControlOrganizations,
   selectSourceControlRepos,
+  selectSourceControlTimes,
   selectSteps,
   updateCalendarType,
   updateDateRange,
@@ -474,6 +475,12 @@ describe('select methods', () => {
     const branches = selectSourceControlBranches(store.getState(), 'test-org1', 'test-repo1');
     expect(branches).toEqual(['test-branch1', 'test-branch2']);
   });
+
+  it('should get all times when call selectSourceControlTimes function', () => {
+    const times = selectSourceControlTimes(store.getState(), 'test-org1', 'test-repo1', 'test-branch1');
+    expect(times).toEqual(['1-2', '1-3']);
+  });
+
   it('should get all crews when call selectSourceControlCrews function', () => {
     const crews = selectSourceControlCrews(store.getState(), 'test-org1', 'test-repo1', 'test-branch1', 1, 2);
     expect(crews).toEqual(['test-crew1', 'test-crew2']);
