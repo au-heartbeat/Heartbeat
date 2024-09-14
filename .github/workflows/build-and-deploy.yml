@@ -49,7 +49,7 @@ jobs:
             -v "${PWD}:/path" \
             ghcr.io/gitleaks/gitleaks:latest \
             detect \
-            --dir="/path" \
+            --source="/path" \
             -v --redact
 
   security-check:
