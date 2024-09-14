@@ -93,6 +93,7 @@ jest.mock('@src/context/config/configSlice', () => ({
   selectSourceControlOrganizations: jest.fn().mockReturnValue(['mockOrgName', 'mockOrgName1']),
   selectSourceControlRepos: jest.fn().mockImplementation(() => mockSelectSourceControlRepos),
   selectSourceControlBranches: jest.fn().mockImplementation(() => mockSelectSourceControlBranches),
+  selectSourceControlTimes: jest.fn().mockReturnValue(['123-1', '234-2']),
   selectDateRange: jest.fn().mockReturnValue([
     { startDate: '2024-07-31T00:00:00.000+08:00', endDate: '2024-08-02T23:59:59.999+08:00' },
     { startDate: '2024-07-15T00:00:00.000+08:00', endDate: '2024-07-28T23:59:59.999+08:00' },
@@ -221,8 +222,8 @@ describe('SourceControlMetricSelection', () => {
     });
 
     expect(onUpdateSourceControl).toHaveBeenCalledTimes(2);
-    expect(getSourceControlBranchInfoFunction).toHaveBeenCalledTimes(1);
-    expect(getSourceControlCrewInfoFunction).toHaveBeenCalledTimes(2);
+    expect(getSourceControlBranchInfoFunction).toHaveBeenCalledTimes(0);
+    expect(getSourceControlCrewInfoFunction).toHaveBeenCalledTimes(1);
   });
 
   it('should add partial failed 4xx notification when any failed status is PartialFailed4xx', async () => {

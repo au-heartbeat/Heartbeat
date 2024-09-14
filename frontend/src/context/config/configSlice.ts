@@ -311,6 +311,23 @@ export const selectSourceControlBranches = (state: RootState, organization: stri
   ),
 ];
 
+export const selectSourceControlTimes = (state: RootState, organization: string, repo: string, branch: string) => [
+  ...new Set(
+    state.config.sourceControl.verifiedResponse.repoList.children
+      .filter((item) => item.name === 'organization')
+      .filter((item) => item.value === organization)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'repo')
+      .filter((item) => item.value === repo)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'branch')
+      .filter((item) => item.value === branch)
+      .flatMap((item) => item.children)
+      .filter((item) => item.name === 'time')
+      .flatMap((item) => item.value),
+  ),
+];
+
 export const selectSourceControlCrews = (
   state: RootState,
   organization: string,
