@@ -311,18 +311,22 @@ export const selectSourceControlBranches = (state: RootState, organization: stri
   ),
 ];
 
+const getSourceControlTimesInfo = (state: RootState, organization: string, repo: string, branch: string) => {
+  return state.config.sourceControl.verifiedResponse.repoList.children
+    .filter((item) => item.name === 'organization')
+    .filter((item) => item.value === organization)
+    .flatMap((item) => item.children)
+    .filter((item) => item.name === 'repo')
+    .filter((item) => item.value === repo)
+    .flatMap((item) => item.children)
+    .filter((item) => item.name === 'branch')
+    .filter((item) => item.value === branch)
+    .flatMap((item) => item.children);
+};
+
 export const selectSourceControlTimes = (state: RootState, organization: string, repo: string, branch: string) => [
   ...new Set(
-    state.config.sourceControl.verifiedResponse.repoList.children
-      .filter((item) => item.name === 'organization')
-      .filter((item) => item.value === organization)
-      .flatMap((item) => item.children)
-      .filter((item) => item.name === 'repo')
-      .filter((item) => item.value === repo)
-      .flatMap((item) => item.children)
-      .filter((item) => item.name === 'branch')
-      .filter((item) => item.value === branch)
-      .flatMap((item) => item.children)
+    getSourceControlTimesInfo(state, organization, repo, branch)
       .filter((item) => item.name === 'time')
       .flatMap((item) => item.value),
   ),
@@ -337,16 +341,7 @@ export const selectSourceControlCrews = (
   endTime: number,
 ) => [
   ...new Set(
-    state.config.sourceControl.verifiedResponse.repoList.children
-      .filter((item) => item.name === 'organization')
-      .filter((item) => item.value === organization)
-      .flatMap((item) => item.children)
-      .filter((item) => item.name === 'repo')
-      .filter((item) => item.value === repo)
-      .flatMap((item) => item.children)
-      .filter((item) => item.name === 'branch')
-      .filter((item) => item.value === branch)
-      .flatMap((item) => item.children)
+    getSourceControlTimesInfo(state, organization, repo, branch)
       .filter((item) => item.name === 'time')
       .filter((item) => item.value === `${startTime}-${endTime}`)
       .flatMap((item) => item.children)

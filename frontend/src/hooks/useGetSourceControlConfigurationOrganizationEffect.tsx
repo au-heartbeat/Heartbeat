@@ -19,7 +19,7 @@ import { HttpStatusCode } from 'axios';
 
 export interface IUseGetSourceControlConfigurationStateInterface {
   readonly isLoading: boolean;
-  readonly getSourceControlInfo: () => void;
+  readonly getSourceControlInfo: () => Promise<void>;
   readonly info: ISourceControlGetOrganizationResponseDTO;
   readonly isFirstFetch: boolean;
 }
