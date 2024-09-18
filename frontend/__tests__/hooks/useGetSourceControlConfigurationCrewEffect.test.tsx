@@ -70,7 +70,7 @@ describe('use get source control configuration crew info side effect', () => {
     expect(clientSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('should set error step failed status to PartialFailed4xx when one of getting repo response is failed and code is 400', async () => {
+  it('should set error step failed status to PartialFailed4xx when one of getting repo response is failed and code is 4xx', async () => {
     sourceControlClient.getCrew = jest
       .fn()
       .mockImplementationOnce(() => {
@@ -105,7 +105,7 @@ describe('use get source control configuration crew info side effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailed4xx);
   });
 
-  it('should set error step failed status to PartialFailedTimeout when one of getting repo responses is failed and code is not 400', async () => {
+  it('should set error step failed status to PartialFailedTimeout when one of getting repo responses is failed and code is not 4xx', async () => {
     sourceControlClient.getCrew = jest
       .fn()
       .mockImplementationOnce(() => {
@@ -140,7 +140,7 @@ describe('use get source control configuration crew info side effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailedTimeout);
   });
 
-  it('should set error step failed status to AllFailed4xx when all getting repo responses are failed and code is 400', async () => {
+  it('should set error step failed status to AllFailed4xx when all getting repo responses are failed and code is 4xx', async () => {
     sourceControlClient.getCrew = jest.fn().mockImplementation(() => {
       return Promise.reject({
         code: 400,
@@ -168,7 +168,7 @@ describe('use get source control configuration crew info side effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailed4xx);
   });
 
-  it('should set error step failed status to AllFailedTimeout when all getting repo responses are failed and code is not 400', async () => {
+  it('should set error step failed status to AllFailedTimeout when all getting repo responses are failed and code is not 4xx', async () => {
     sourceControlClient.getCrew = jest.fn().mockImplementation(() => {
       return Promise.reject({
         code: 500,

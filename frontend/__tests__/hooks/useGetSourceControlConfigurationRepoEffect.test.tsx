@@ -97,7 +97,7 @@ describe('use get source control configuration repo info side effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailedTimeout);
   });
 
-  it('should set error step failed status to PartialFailed4xx when one of getting repo response is failed and code is 400', async () => {
+  it('should set error step failed status to PartialFailed4xx when one of getting repo response is failed and code is 4xx', async () => {
     sourceControlClient.getRepo = jest
       .fn()
       .mockImplementationOnce(() => {
@@ -130,7 +130,7 @@ describe('use get source control configuration repo info side effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailed4xx);
   });
 
-  it('should set error step failed status to AllFailed4xx when all getting repo response is failed and code are 400', async () => {
+  it('should set error step failed status to AllFailed4xx when all getting repo response is failed and code are 4xx', async () => {
     sourceControlClient.getRepo = jest.fn().mockImplementation(() => {
       return Promise.reject({
         code: 400,
@@ -156,7 +156,7 @@ describe('use get source control configuration repo info side effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailed4xx);
   });
 
-  it('should set error step failed status to AllFailedTimeout when all getting repo response is failed and code are not 400', async () => {
+  it('should set error step failed status to AllFailedTimeout when all getting repo response is failed and code are not 4xx', async () => {
     sourceControlClient.getRepo = jest.fn().mockImplementation(() => {
       return Promise.reject({
         code: 500,
