@@ -75,7 +75,7 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
     } else if (hasRejected && hasFulfilled) {
       const rejectedStep = allRepoRes.find((repoInfo) => repoInfo.status === REJECTED);
       const code = (rejectedStep as PromiseRejectedResult).reason.code;
-      if (code === 400 || code === 401 || code === 403 || code === 404) {
+      if (code == 400 || code == 401 || code == 403 || code == 404) {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
       } else {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);

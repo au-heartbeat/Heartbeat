@@ -78,9 +78,9 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
             }),
           ),
         );
-        if (response.code === 400 || response.code === 401 || response.code === 403 || response.code === 404) {
+        if (response.code == 400 || response.code == 401 || response.code == 403 || response.code == 404) {
           setStepFailedStatus(MetricsDataFailStatus.AllFailed4xx);
-        } else if (response.code === 200) {
+        } else if (response.code == 200) {
           setIsGetBranch(true);
           dispatch(
             updateSourceControlVerifiedResponse({
