@@ -74,15 +74,16 @@ export const useGetSourceControlConfigurationRepoEffect = (): IUseGetSourceContr
       setStepFailedStatus(MetricsDataFailStatus.NotFailed);
     } else if (hasRejected && hasFulfilled) {
       const rejectedStep = allRepoRes.find((repoInfo) => repoInfo.status === REJECTED);
-      const code = (rejectedStep as PromiseRejectedResult).reason.code;
-      if (code == 400 || code == 401 || code == 403 || code == 404) {
+      const code: number = (rejectedStep as PromiseRejectedResult).reason.code as number;
+      if (code >= 400 && code < 500) {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
       } else {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);
       }
     } else {
       const rejectedStep = allRepoRes.find((repoInfo) => repoInfo.status === REJECTED);
-      if ((rejectedStep as PromiseRejectedResult).reason.code == 400) {
+      const code: number = (rejectedStep as PromiseRejectedResult).reason.code as number;
+      if (code >= 400 && code < 500) {
         setStepFailedStatus(MetricsDataFailStatus.AllFailed4xx);
       } else {
         setStepFailedStatus(MetricsDataFailStatus.AllFailedTimeout);

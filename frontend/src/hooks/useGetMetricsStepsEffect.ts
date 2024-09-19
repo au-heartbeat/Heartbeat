@@ -88,8 +88,8 @@ export const useGetMetricsStepsEffect = (): useGetMetricsStepsEffectInterface =>
       setStepFailedStatus(MetricsDataFailStatus.NotFailed);
     } else if (hasRejected && hasFulfilled) {
       const rejectedStep = allStepsRes.find((stepInfo) => stepInfo.status === REJECTED);
-      const code = (rejectedStep as PromiseRejectedResult).reason.code;
-      if (code == 400 || code == 401 || code == 403 || code == 404) {
+      const code = (rejectedStep as PromiseRejectedResult).reason.code as number;
+      if (code >= 400 && code < 500) {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
       } else {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);
