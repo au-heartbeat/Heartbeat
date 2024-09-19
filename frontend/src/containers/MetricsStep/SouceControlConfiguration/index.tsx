@@ -13,11 +13,12 @@ import {
 import { useGetSourceControlConfigurationOrganizationEffect } from '@src/hooks/useGetSourceControlConfigurationOrganizationEffect';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import { SourceControlMetricSelection } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlMetricSelection';
+import { selectDateRange, selectPipelineTool, selectSourceControlCrews } from '@src/context/config/configSlice';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
-import { selectDateRange, selectSourceControlCrews } from '@src/context/config/configSlice';
 import { MetricsSettingTitle } from '@src/components/Common/MetricsSettingTitle';
 import { TokenAccessAlert } from '@src/containers/MetricsStep/TokenAccessAlert';
 import { StyledAlertWrapper } from '@src/containers/MetricsStep/style';
+import { PIPELINE_TOOL_OTHER_OPTION } from '@src/constants/resources';
 import { AddButton } from '@src/components/Common/AddButtonOneLine';
 import { getErrorDetail } from '@src/context/meta/metaSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
@@ -46,6 +47,7 @@ export const SourceControlConfiguration = () => {
   const dateRanges = useAppSelector(selectDateRange);
   const realSourceControlConfigurationSettings = isFirstFetch ? [] : sourceControlConfigurationSettings;
   const totalSourceControlNumber = realSourceControlConfigurationSettings.length;
+  const pipelineTools = useAppSelector(selectPipelineTool);
 
   const sourceControlCrews = [
     ...new Set(
@@ -92,6 +94,8 @@ export const SourceControlConfiguration = () => {
     totalSourceControlNumber !== 0 &&
     loadingCompletedNumber === totalSourceControlNumber;
 
+  const isShowRemoveButton = pipelineTools.type === PIPELINE_TOOL_OTHER_OPTION ? totalSourceControlNumber > 1 : true;
+
   return (
     <>
       {isLoading && <Loading />}
@@ -107,7 +111,7 @@ export const SourceControlConfiguration = () => {
             <SourceControlMetricSelection
               key={sourceControlConfigurationSetting.id}
               sourceControlSetting={sourceControlConfigurationSetting}
-              isShowRemoveButton={totalSourceControlNumber > 1}
+              isShowRemoveButton={isShowRemoveButton}
               onRemoveSourceControl={(id) => handleRemoveSourceControl(id)}
               onUpdateSourceControl={(id, label, value) => handleUpdateSourceControl(id, label, value)}
               isDuplicated={getDuplicatedSourceControlIds(realSourceControlConfigurationSettings).includes(

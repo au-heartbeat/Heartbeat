@@ -185,22 +185,23 @@ const MetricsStep = () => {
       {(requiredData.includes(RequiredData.DeploymentFrequency) ||
         requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
         requiredData.includes(RequiredData.LeadTimeForChanges) ||
-        requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) &&
-        pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION && (
-          <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
-            <MetricsSelectionTitle aria-label='Pipeline configuration title'>
-              Pipeline configuration
+        requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) && (
+        <>
+          {pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION && (
+            <MetricSelectionWrapper aria-label='Pipeline Configuration Section'>
+              <MetricsSelectionTitle aria-label='Pipeline configuration title'>
+                Pipeline configuration
+              </MetricsSelectionTitle>
+              <DeploymentFrequencySettings />
+            </MetricSelectionWrapper>
+          )}
+          <MetricSelectionWrapper aria-label='Source Control Configuration Section'>
+            <MetricsSelectionTitle aria-label='Source Control configuration title'>
+              Source control configuration {pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION && '(optional)'}
             </MetricsSelectionTitle>
-            <DeploymentFrequencySettings />
+            <SourceControlConfiguration />
           </MetricSelectionWrapper>
-        )}
-      {pipelineTools.type === PIPELINE_TOOL_OTHER_OPTION && (
-        <MetricSelectionWrapper aria-label='Source Control Configuration Section'>
-          <MetricsSelectionTitle aria-label='Source Control configuration title'>
-            Source control configuration
-          </MetricsSelectionTitle>
-          <SourceControlConfiguration />
-        </MetricSelectionWrapper>
+        </>
       )}
     </>
   );
