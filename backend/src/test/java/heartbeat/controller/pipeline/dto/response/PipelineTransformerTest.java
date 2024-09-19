@@ -40,7 +40,7 @@ class PipelineTransformerTest {
 		String orgId = "ORG_ID";
 		String orgName = "ORG_NAME";
 		List<StepsDTO> steps = List.of(StepsDTO.builder().name("Name1").build(), StepsDTO.builder().name("").build(),
-			StepsDTO.builder().build());
+				StepsDTO.builder().build());
 		BuildKitePipelineDTO dto = BuildKitePipelineDTO.builder()
 			.slug("SLUG")
 			.name("Name")
