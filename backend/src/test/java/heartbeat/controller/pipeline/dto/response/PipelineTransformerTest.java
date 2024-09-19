@@ -30,9 +30,34 @@ class PipelineTransformerTest {
 		assertEquals(pipeline.repository, "repository");
 		assertEquals(pipeline.orgId, orgId);
 		assertEquals(pipeline.orgName, orgName);
+		assertEquals(pipeline.repoName, "");
 		assertEquals(pipeline.steps.size(), 1);
 		assertEquals(pipeline.steps.get(0), "Name1");
+	}
 
+	@Test
+	void shouldTransformToPipelineWhenRepositoryContainsSlash() {
+		String orgId = "ORG_ID";
+		String orgName = "ORG_NAME";
+		List<StepsDTO> steps = List.of(StepsDTO.builder().name("Name1").build(), StepsDTO.builder().name("").build(),
+			StepsDTO.builder().build());
+		BuildKitePipelineDTO dto = BuildKitePipelineDTO.builder()
+			.slug("SLUG")
+			.name("Name")
+			.repository("organization/repository")
+			.steps(steps)
+			.build();
+
+		Pipeline pipeline = PipelineTransformer.fromBuildKitePipelineDto(dto, orgId, orgName);
+
+		assertEquals(pipeline.id, "SLUG");
+		assertEquals(pipeline.name, "Name");
+		assertEquals(pipeline.repository, "organization/repository");
+		assertEquals(pipeline.orgId, orgId);
+		assertEquals(pipeline.orgName, orgName);
+		assertEquals(pipeline.repoName, "repository");
+		assertEquals(pipeline.steps.size(), 1);
+		assertEquals(pipeline.steps.get(0), "Name1");
 	}
 
 }
