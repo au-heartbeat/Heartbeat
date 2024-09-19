@@ -78,7 +78,7 @@ describe('use get source control configuration branch info side effect', () => {
     expect(sourceControlClient.getBranch).toBeCalled();
   });
 
-  it('should set error step failed status to PartialFailed4xx when getting branch response is failed and client return 400', async () => {
+  it('should set error step failed status to AllFailed4xx when getting branch response is failed and client return 4xx', async () => {
     const { result } = renderHook(() => useGetSourceControlConfigurationBranchEffect(), { wrapper: Wrapper });
     const mockOrganization = 'mockOrg';
     const mockRepo = 'mockRepo';
@@ -95,13 +95,64 @@ describe('use get source control configuration branch info side effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailed4xx);
   });
 
-  it('should set error step failed status to PartialFailedTimeout when getting branch response is failed and client dont return 400', async () => {
+  it('should set error step failed status to AllFailed4xx when getting branch response is failed and client return 4xx and type is string', async () => {
     const { result } = renderHook(() => useGetSourceControlConfigurationBranchEffect(), { wrapper: Wrapper });
     const mockOrganization = 'mockOrg';
     const mockRepo = 'mockRepo';
     sourceControlClient.getBranch = jest.fn().mockImplementation(() => {
       return Promise.resolve({
-        code: 404,
+        code: '404',
+      });
+    });
+    await act(async () => {
+      result.current.getSourceControlBranchInfo(mockOrganization, mockRepo, 1);
+    });
+
+    expect(sourceControlClient.getBranch).toBeCalled();
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailed4xx);
+  });
+
+  it('should set error step failed status to AllFailedTimeout when getting branch response is failed and client dont return 4xx', async () => {
+    const { result } = renderHook(() => useGetSourceControlConfigurationBranchEffect(), { wrapper: Wrapper });
+    const mockOrganization = 'mockOrg';
+    const mockRepo = 'mockRepo';
+    sourceControlClient.getBranch = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        code: 500,
+      });
+    });
+    await act(async () => {
+      result.current.getSourceControlBranchInfo(mockOrganization, mockRepo, 1);
+    });
+
+    expect(sourceControlClient.getBranch).toBeCalled();
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailedTimeout);
+  });
+
+  it('should set error step failed status to AllFailedTimeout when getting branch response is failed and code is null', async () => {
+    const { result } = renderHook(() => useGetSourceControlConfigurationBranchEffect(), { wrapper: Wrapper });
+    const mockOrganization = 'mockOrg';
+    const mockRepo = 'mockRepo';
+    sourceControlClient.getBranch = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        code: null,
+      });
+    });
+    await act(async () => {
+      result.current.getSourceControlBranchInfo(mockOrganization, mockRepo, 1);
+    });
+
+    expect(sourceControlClient.getBranch).toBeCalled();
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.AllFailedTimeout);
+  });
+
+  it('should set error step failed status to AllFailedTimeout when getting branch response is failed and code is undefined', async () => {
+    const { result } = renderHook(() => useGetSourceControlConfigurationBranchEffect(), { wrapper: Wrapper });
+    const mockOrganization = 'mockOrg';
+    const mockRepo = 'mockRepo';
+    sourceControlClient.getBranch = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        code: undefined,
       });
     });
     await act(async () => {

@@ -78,7 +78,8 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
             }),
           ),
         );
-        if (response.code === 400) {
+        const code: number = response.code as number;
+        if (code >= 400 && code < 500) {
           setStepFailedStatus(MetricsDataFailStatus.AllFailed4xx);
         } else if (response.code === 200) {
           setIsGetBranch(true);

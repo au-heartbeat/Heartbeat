@@ -79,14 +79,16 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
       setStepFailedStatus(MetricsDataFailStatus.NotFailed);
     } else if (hasRejected && hasFulfilled) {
       const rejectedStep = allCrewsRes.find((crewInfo) => crewInfo.status === REJECTED);
-      if ((rejectedStep as PromiseRejectedResult).reason.code == 400) {
+      const code: number = (rejectedStep as PromiseRejectedResult).reason.code as number;
+      if (code >= 400 && code < 500) {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
       } else {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);
       }
     } else {
       const rejectedStep = allCrewsRes.find((crewInfo) => crewInfo.status === REJECTED);
-      if ((rejectedStep as PromiseRejectedResult).reason.code == 400) {
+      const code: number = (rejectedStep as PromiseRejectedResult).reason.code as number;
+      if (code >= 400 && code < 500) {
         setStepFailedStatus(MetricsDataFailStatus.AllFailed4xx);
       } else {
         setStepFailedStatus(MetricsDataFailStatus.AllFailedTimeout);
