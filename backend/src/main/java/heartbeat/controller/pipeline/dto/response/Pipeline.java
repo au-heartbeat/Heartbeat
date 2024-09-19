@@ -23,6 +23,8 @@ public class Pipeline {
 
 	String repository;
 
+	String repoName;
+
 	List<String> steps;
 
 }
