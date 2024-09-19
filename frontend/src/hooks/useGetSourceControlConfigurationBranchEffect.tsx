@@ -81,7 +81,7 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
         const code: number = response.code as number;
         if (code >= 400 && code < 500) {
           setStepFailedStatus(MetricsDataFailStatus.AllFailed4xx);
-        } else if (response.code == 200) {
+        } else if (response.code === 200) {
           setIsGetBranch(true);
           dispatch(
             updateSourceControlVerifiedResponse({
