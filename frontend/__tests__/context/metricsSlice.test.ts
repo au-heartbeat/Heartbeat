@@ -556,7 +556,9 @@ describe('saveMetricsSetting reducer', () => {
   });
 
   it('should add a deploymentFrequencySetting when handle addADeploymentFrequencySettings given initial state', () => {
-    const addedDeploymentFrequencySettings = [{ id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }];
+    const addedDeploymentFrequencySettings = [
+      { id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
+    ];
 
     const savedMetricsSetting = saveMetricsSettingReducer(initState, addADeploymentFrequencySetting());
 
@@ -581,7 +583,9 @@ describe('saveMetricsSetting reducer', () => {
   });
 
   it('should add a deploymentFrequencySetting when handle addADeploymentFrequencySettings but initState dont have DeploymentFrequencySettings', () => {
-    const addedDeploymentFrequencySettings = [{ id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }];
+    const addedDeploymentFrequencySettings = [
+      { id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
+    ];
 
     const initStateWithoutDeploymentFrequencySettings = {
       ...initState,

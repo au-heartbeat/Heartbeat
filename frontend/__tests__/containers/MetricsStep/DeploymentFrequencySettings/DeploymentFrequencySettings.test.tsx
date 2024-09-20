@@ -166,7 +166,63 @@ describe('DeploymentFrequencySettings', () => {
     expect(deleteADeploymentFrequencySetting).toHaveBeenCalledTimes(1);
   });
 
-  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization', async () => {
+  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and the value doesnt match pipeline info', async () => {
+    const { getAllByRole, getByRole } = setup();
+
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
+    });
+    const listBox = within(getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('mockOrgName2'));
+    });
+
+    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(2);
+  });
+
+  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and the value match pipeline info', async () => {
+    mockGetPipelineToolInfoSpy = {
+      ...mockGetPipelineToolInfoOkResponse,
+      result: {
+        ...mockGetPipelineToolInfoOkResponse.result,
+        data: {
+          pipelineList: [
+            {
+              id: 'heartbeat',
+              name: 'Heartbeat',
+              orgId: 'thoughtworks-Heartbeat',
+              orgName: 'mockOrgName2',
+              repository: 'git@github.com:au-heartbeat/Heartbeat.git',
+              steps: [':pipeline: Upload pipeline.yml'],
+              repoName: 'au-heartbeat/Heartbeat',
+              branches: [],
+              crews: [],
+            },
+          ],
+        },
+      },
+    };
+    const { getAllByRole, getByRole } = setup();
+
+    await act(async () => {
+      await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
+    });
+    const listBox = within(getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('mockOrgName2'));
+    });
+
+    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(2);
+  });
+
+  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and pipeline info is undefined', async () => {
+    mockGetPipelineToolInfoSpy = {
+      ...mockGetPipelineToolInfoOkResponse,
+      result: {
+        ...mockGetPipelineToolInfoOkResponse.result,
+        data: undefined,
+      },
+    };
     const { getAllByRole, getByRole } = setup();
 
     await act(async () => {
