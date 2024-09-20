@@ -25,14 +25,14 @@ class PipelineTransformerTest {
 
 		Pipeline pipeline = PipelineTransformer.fromBuildKitePipelineDto(dto, orgId, orgName);
 
-		assertEquals(pipeline.id, "SLUG");
-		assertEquals(pipeline.name, "Name");
-		assertEquals(pipeline.repository, "repository");
-		assertEquals(pipeline.orgId, orgId);
-		assertEquals(pipeline.orgName, orgName);
-		assertEquals(pipeline.repoName, "repository");
-		assertEquals(pipeline.steps.size(), 1);
-		assertEquals(pipeline.steps.get(0), "Name1");
+		assertEquals("SLUG", pipeline.id);
+		assertEquals("Name", pipeline.name);
+		assertEquals("repository", pipeline.repository);
+		assertEquals(orgId, pipeline.orgId);
+		assertEquals(orgName, pipeline.orgName);
+		assertEquals("repository", pipeline.repoName);
+		assertEquals(1, pipeline.steps.size());
+		assertEquals("Name1", pipeline.steps.get(0));
 	}
 
 	@Test
@@ -50,14 +50,14 @@ class PipelineTransformerTest {
 
 		Pipeline pipeline = PipelineTransformer.fromBuildKitePipelineDto(dto, orgId, orgName);
 
-		assertEquals(pipeline.id, "SLUG");
-		assertEquals(pipeline.name, "Name");
-		assertEquals(pipeline.repository, "organization/repository");
-		assertEquals(pipeline.orgId, orgId);
-		assertEquals(pipeline.orgName, orgName);
-		assertEquals(pipeline.repoName, "organization/repository");
-		assertEquals(pipeline.steps.size(), 1);
-		assertEquals(pipeline.steps.get(0), "Name1");
+		assertEquals("SLUG", pipeline.id);
+		assertEquals("Name", pipeline.name);
+		assertEquals("organization/repository", pipeline.repository);
+		assertEquals(orgId, pipeline.orgId);
+		assertEquals(orgName, pipeline.orgName);
+		assertEquals("organization/repository", pipeline.repoName);
+		assertEquals(1, pipeline.steps.size());
+		assertEquals("Name1", pipeline.steps.get(0));
 	}
 
 }
