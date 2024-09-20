@@ -32,6 +32,7 @@ describe('PipelineMetricSelection', () => {
     organization: '',
     pipelineName: '',
     step: '',
+    repoName: '',
     branches: [],
   };
   const mockHandleClickRemoveButton = jest.fn();

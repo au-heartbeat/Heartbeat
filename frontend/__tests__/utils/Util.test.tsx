@@ -73,8 +73,8 @@ describe('transformToCleanedBuildKiteEmoji function', () => {
 describe('getDisabledOptions function', () => {
   it('should return true when option is includes', () => {
     const mockDeploymentFrequencySettings: IPipelineConfig[] = [
-      { id: 0, organization: '', pipelineName: 'mock 1', step: '', branches: [] },
-      { id: 1, organization: '', pipelineName: 'mock 2', step: '', branches: [] },
+      { id: 0, organization: '', pipelineName: 'mock 1', step: '', repoName: '', branches: [] },
+      { id: 1, organization: '', pipelineName: 'mock 2', step: '', repoName: '', branches: [] },
     ];
 
     const mockOption: string = 'mock 1';
@@ -86,8 +86,8 @@ describe('getDisabledOptions function', () => {
 
   it('should return false when option is not includes', () => {
     const mockDeploymentFrequencySettings: IPipelineConfig[] = [
-      { id: 0, organization: '', pipelineName: 'mock 1', step: '', branches: [] },
-      { id: 1, organization: '', pipelineName: 'mock 2', step: '', branches: [] },
+      { id: 0, organization: '', pipelineName: 'mock 1', step: '', repoName: '', branches: [] },
+      { id: 1, organization: '', pipelineName: 'mock 2', step: '', repoName: '', branches: [] },
     ];
 
     const mockOption: string = 'mock 3';
@@ -127,8 +127,8 @@ describe('getDisabledOptions function', () => {
 describe('sortDisabledOptions function', () => {
   it('should sort the mock3 is first when mock1 & mock2 is selected', () => {
     const mockDeploymentFrequencySettings: IPipelineConfig[] = [
-      { id: 0, organization: '', pipelineName: 'mock1', step: '', branches: [] },
-      { id: 1, organization: '', pipelineName: 'mock2', step: '', branches: [] },
+      { id: 0, organization: '', pipelineName: 'mock1', step: '', repoName: '', branches: [] },
+      { id: 1, organization: '', pipelineName: 'mock2', step: '', repoName: '', branches: [] },
     ];
 
     const mockOptions = ['mock1', 'mock2', 'mock3'];
@@ -150,7 +150,7 @@ describe('sortDisabledOptions function', () => {
 
   it('should as is when selected option is last', () => {
     const mockDeploymentFrequencySettings: IPipelineConfig[] = [
-      { id: 0, organization: '', pipelineName: 'mock3', step: '', branches: [] },
+      { id: 0, organization: '', pipelineName: 'mock3', step: '', repoName: '', branches: [] },
     ];
 
     const mockOptions = ['mock1', 'mock2', 'mock3'];

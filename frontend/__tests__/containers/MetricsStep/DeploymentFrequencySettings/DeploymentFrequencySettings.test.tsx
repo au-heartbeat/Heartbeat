@@ -85,6 +85,7 @@ const mockGetPipelineToolInfoOkResponse = {
           orgName: 'Thoughtworks-Heartbeat',
           repository: 'git@github.com:au-heartbeat/Heartbeat.git',
           steps: [':pipeline: Upload pipeline.yml'],
+          repoName: 'au-heartbeat/Heartbeat',
           branches: [],
           crews: [],
         },
@@ -176,7 +177,7 @@ describe('DeploymentFrequencySettings', () => {
       await userEvent.click(listBox.getByText('mockOrgName2'));
     });
 
-    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(1);
+    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(2);
   });
 
   it('show render crews component when all pipelines load completed', () => {

@@ -21,7 +21,9 @@ describe('useMetricsStepValidationCheckContext', () => {
     const { result } = renderHook(() => useMetricsStepValidationCheckContext());
 
     expect(
-      result.current?.getDuplicatedPipeLineIds([{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }]),
+      result.current?.getDuplicatedPipeLineIds([
+        { id: 0, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
+      ]),
     ).toEqual([]);
 
     expect(
@@ -41,8 +43,22 @@ describe('useMetricsStepValidationCheckContext', () => {
 
     expect(
       result.current?.getDuplicatedPipeLineIds([
-        { id: 0, organization: 'mockOrganization', pipelineName: 'mockPipelineName', step: 'mockstep', branches: [] },
-        { id: 1, organization: 'mockOrganization', pipelineName: 'mockPipelineName', step: 'mockstep', branches: [] },
+        {
+          id: 0,
+          organization: 'mockOrganization',
+          pipelineName: 'mockPipelineName',
+          step: 'mockstep',
+          repoName: '',
+          branches: [],
+        },
+        {
+          id: 1,
+          organization: 'mockOrganization',
+          pipelineName: 'mockPipelineName',
+          step: 'mockstep',
+          repoName: '',
+          branches: [],
+        },
       ]),
     ).toEqual([0, 1]);
   });
