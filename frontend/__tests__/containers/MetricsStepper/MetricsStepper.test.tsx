@@ -55,6 +55,7 @@ const mockValidationCheckContext = {
   clearErrorMessage: jest.fn(),
   checkDuplicatedPipeline: jest.fn(),
   getDuplicatedPipeLineIds: jest.fn().mockReturnValue([]),
+  getDuplicatedSourceControlIds: jest.fn().mockReturnValue([]),
 };
 
 const mockDateRange = {
