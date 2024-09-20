@@ -88,21 +88,34 @@ export const findCaseInsensitiveType = (option: string[], value: string): string
   return newValue ? newValue : value;
 };
 
-export const getDisabledOptions = (settings: IPipelineConfig[] | ISourceControlConfig[], option: string) => {
-  return includes(
-    settings.map((item) => {
-      if ('pipelineName' in item) {
-        return item.pipelineName;
-      } else {
-        return item.repo;
-      }
-    }),
-    option,
-  );
+export const getDisabledOptions = (
+  settings: IPipelineConfig[] | ISourceControlConfig[],
+  option: string,
+  deploymentSettings: IPipelineConfig[],
+) => {
+  let isSourceControlSettings = false;
+  const names1: string[] = settings.map((item) => {
+    if ('pipelineName' in item) {
+      return item.pipelineName;
+    } else {
+      isSourceControlSettings = true;
+      return item.repo;
+    }
+  });
+  let names2: string[] = [];
+  if (isSourceControlSettings) {
+    names2 = deploymentSettings.map((item) => item.repoName.split('/')[1]);
+  }
+  const names = [...names1, ...names2];
+  return includes(names, option);
 };
 
-export const sortDisabledOptions = (settings: IPipelineConfig[] | ISourceControlConfig[], options: string[]) => {
-  return sortBy(options, (item: string) => getDisabledOptions(settings, item));
+export const sortDisabledOptions = (
+  settings: IPipelineConfig[] | ISourceControlConfig[],
+  options: string[],
+  deploymentSettings: IPipelineConfig[],
+) => {
+  return sortBy(options, (item: string) => getDisabledOptions(settings, item, deploymentSettings));
 };
 
 export const formatDate = (date: Date | string) => {

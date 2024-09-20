@@ -69,8 +69,8 @@ export const SingleSelection = ({
         <Autocomplete
           disableClearable
           data-test-id={labelId}
-          options={sortDisabledOptions(settings, options)}
-          getOptionDisabled={(option: string) => getDisabledOptions(settings, option)}
+          options={sortDisabledOptions(settings, options, deploymentFrequencySettings)}
+          getOptionDisabled={(option: string) => getDisabledOptions(settings, option, deploymentFrequencySettings)}
           getOptionLabel={(option: string) => removeExtraEmojiName(option).trim()}
           renderOption={(props, option: string) => (
             <Box component='li' {...props}>
