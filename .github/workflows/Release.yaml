@@ -47,7 +47,7 @@ jobs:
       - name: Install
         run: |
           npm install -g pnpm
-          pnpm install --no-frozen-lockfile
+          pnpm install --no-frozen-lockfile --ignore-scripts
       - name: Lint
         run: pnpm run lint
       - name: Build

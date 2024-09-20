@@ -13,36 +13,18 @@ const mockInitRepoEffectResponse = {
   isGetRepo: true,
   isLoading: false,
   getSourceControlRepoInfo: jest.fn(),
-  info: {
-    code: 200,
-    data: undefined,
-    errorTitle: '',
-    errorMessage: '',
-  },
   stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 const mockInitBranchEffectResponse = {
   isLoading: false,
   getSourceControlBranchInfo: jest.fn(),
   isGetBranch: true,
-  info: {
-    code: 200,
-    data: undefined,
-    errorTitle: '',
-    errorMessage: '',
-  },
   stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 const mockInitCrewEffectResponse = {
   isLoading: false,
   getSourceControlCrewInfo: jest.fn(),
   isGetAllCrews: true,
-  info: {
-    code: 200,
-    data: undefined,
-    errorTitle: '',
-    errorMessage: '',
-  },
   stepFailedStatus: MetricsDataFailStatus.NotFailed,
 };
 
@@ -93,6 +75,7 @@ jest.mock('@src/context/config/configSlice', () => ({
   selectSourceControlOrganizations: jest.fn().mockReturnValue(['mockOrgName', 'mockOrgName1']),
   selectSourceControlRepos: jest.fn().mockImplementation(() => mockSelectSourceControlRepos),
   selectSourceControlBranches: jest.fn().mockImplementation(() => mockSelectSourceControlBranches),
+  selectSourceControlTimes: jest.fn().mockReturnValue([]),
   selectDateRange: jest.fn().mockReturnValue([
     { startDate: '2024-07-31T00:00:00.000+08:00', endDate: '2024-08-02T23:59:59.999+08:00' },
     { startDate: '2024-07-15T00:00:00.000+08:00', endDate: '2024-07-28T23:59:59.999+08:00' },
@@ -221,8 +204,67 @@ describe('SourceControlMetricSelection', () => {
     });
 
     expect(onUpdateSourceControl).toHaveBeenCalledTimes(2);
-    expect(getSourceControlBranchInfoFunction).toHaveBeenCalledTimes(1);
+    expect(getSourceControlBranchInfoFunction).toHaveBeenCalledTimes(0);
     expect(getSourceControlCrewInfoFunction).toHaveBeenCalledTimes(2);
+  });
+
+  it('should update source control when get repo is empty', async () => {
+    mockSelectSourceControlRepos = [];
+    setup();
+
+    await act(async () => {
+      await userEvent.click(screen.getAllByRole('button', { name: LIST_OPEN })[0]);
+    });
+    const listBox = within(screen.getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('mockOrgName1'));
+    });
+    const getSourceControlRepoInfo = jest.fn();
+    mockRepoEffectResponse = {
+      ...mockRepoEffectResponse,
+      getSourceControlRepoInfo,
+    };
+
+    expect(onUpdateSourceControl).toHaveBeenCalledTimes(1);
+  });
+
+  it('should update source control when get branch is empty', async () => {
+    mockSelectSourceControlBranches = [];
+    setup();
+
+    await act(async () => {
+      await userEvent.click(screen.getAllByRole('button', { name: LIST_OPEN })[1]);
+    });
+    const listBox = within(screen.getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('mockRepoName1'));
+    });
+    const getSourceControlBranchInfo = jest.fn();
+    mockBranchEffectResponse = {
+      ...mockBranchEffectResponse,
+      getSourceControlBranchInfo,
+    };
+
+    expect(onUpdateSourceControl).toHaveBeenCalledTimes(1);
+  });
+
+  it('should update source control when get crew is empty', async () => {
+    setup();
+
+    await act(async () => {
+      await userEvent.click(screen.getAllByRole('button', { name: LIST_OPEN })[2]);
+    });
+    const listBox = within(screen.getByRole('listbox'));
+    await act(async () => {
+      await userEvent.click(listBox.getByText('mockBranchName1'));
+    });
+    const getSourceControlCrewInfo = jest.fn();
+    mockCrewEffectResponse = {
+      ...mockCrewEffectResponse,
+      getSourceControlCrewInfo,
+    };
+
+    expect(onUpdateSourceControl).toHaveBeenCalledTimes(1);
   });
 
   it('should add partial failed 4xx notification when any failed status is PartialFailed4xx', async () => {
@@ -235,32 +277,23 @@ describe('SourceControlMetricSelection', () => {
     expect(myDispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('should add partial failed 4xx notification when any failed status is PartialFailedNoCards', async () => {
+  it('should add partial failed 4xx notification when any failed status is PartialFailedTimeout', async () => {
     mockCrewEffectResponse = {
       ...mockCrewEffectResponse,
-      stepFailedStatus: MetricsDataFailStatus.PartialFailedNoCards,
+      stepFailedStatus: MetricsDataFailStatus.PartialFailedTimeout,
     };
     setup();
 
     expect(myDispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('should set error info when any request return error', () => {
-    mockRepoEffectResponse = {
-      ...mockRepoEffectResponse,
-      info: {
-        code: 404,
-        errorTitle: 'error title',
-        errorMessage: 'error message',
-      },
+  it('should update error info when any failed status is AllFailedTimeout', async () => {
+    mockCrewEffectResponse = {
+      ...mockCrewEffectResponse,
+      stepFailedStatus: MetricsDataFailStatus.AllFailedTimeout,
     };
     setup();
 
     expect(handleUpdateErrorInfo).toHaveBeenCalledTimes(1);
-    expect(handleUpdateErrorInfo).toBeCalledWith({
-      code: 404,
-      errorTitle: 'error title',
-      errorMessage: 'error message',
-    });
   });
 });

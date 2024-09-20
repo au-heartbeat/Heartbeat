@@ -12,6 +12,10 @@ export interface IMetricsPageLoadingStatus {
   boardInfo?: LoadingStatus;
   pipelineInfo?: LoadingStatus;
   pipelineStep?: LoadingStatus;
+  sourceControlOrganization?: LoadingStatus;
+  sourceControlRepo?: LoadingStatus;
+  sourceControlBranch?: LoadingStatus;
+  sourceControlCrew?: LoadingStatus;
 }
 
 export interface IReportPageLoadingStatus {

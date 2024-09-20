@@ -36,10 +36,3 @@ export interface ISourceControlGetBranchResponseDTO {
   errorTitle: string;
   errorMessage: string;
 }
-
-export interface ISourceControlGetCrewResponseDTO {
-  code: ResponseCodeType;
-  data?: SourceControlGetCrewResponseDTO;
-  errorTitle: string;
-  errorMessage: string;
-}

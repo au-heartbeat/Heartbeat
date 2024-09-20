@@ -87,6 +87,25 @@ describe('use get steps effect', () => {
     expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailed4xx);
   });
 
+  it('should get the steps failed status when partial 4xx response from steps res and code type is string', async () => {
+    metricsClient.getSteps = jest
+      .fn()
+      .mockReturnValueOnce({
+        response: ['a', 'b', 'c'],
+        haveStep: true,
+        branches: ['branchA', 'branchB'],
+        pipelineCrews: ['crewA', 'crewB'],
+      })
+      .mockRejectedValue({
+        code: '404',
+      });
+    const { result } = renderHook(() => useGetMetricsStepsEffect());
+    await act(async () => {
+      await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
+    });
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailed4xx);
+  });
+
   it('should get the steps failed status when partial timeout response from steps res', async () => {
     metricsClient.getSteps = jest
       .fn()
@@ -98,6 +117,44 @@ describe('use get steps effect', () => {
       })
       .mockRejectedValue({
         code: 'NETWORK_TIMEOUT',
+      });
+    const { result } = renderHook(() => useGetMetricsStepsEffect());
+    await act(async () => {
+      await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
+    });
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailedTimeout);
+  });
+
+  it('should get the steps failed status when partial timeout response from steps res and code is null', async () => {
+    metricsClient.getSteps = jest
+      .fn()
+      .mockReturnValueOnce({
+        response: ['a', 'b', 'c'],
+        haveStep: true,
+        branches: ['branchA', 'branchB'],
+        pipelineCrews: ['crewA', 'crewB'],
+      })
+      .mockRejectedValue({
+        code: null,
+      });
+    const { result } = renderHook(() => useGetMetricsStepsEffect());
+    await act(async () => {
+      await result.current.getSteps(params, buildId, organizationId, pipelineType, token);
+    });
+    expect(result.current.stepFailedStatus).toEqual(MetricsDataFailStatus.PartialFailedTimeout);
+  });
+
+  it('should get the steps failed status when partial timeout response from steps res and code is undefined', async () => {
+    metricsClient.getSteps = jest
+      .fn()
+      .mockReturnValueOnce({
+        response: ['a', 'b', 'c'],
+        haveStep: true,
+        branches: ['branchA', 'branchB'],
+        pipelineCrews: ['crewA', 'crewB'],
+      })
+      .mockRejectedValue({
+        code: undefined,
       });
     const { result } = renderHook(() => useGetMetricsStepsEffect());
     await act(async () => {

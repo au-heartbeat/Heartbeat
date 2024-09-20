@@ -1,15 +1,22 @@
 import {
+  selectDateRange,
+  selectSourceControlBranches,
+  selectSourceControlOrganizations,
+  selectSourceControlRepos,
+  selectSourceControlTimes,
+} from '@src/context/config/configSlice';
+import {
   ButtonWrapper,
   PipelineMetricSelectionWrapper,
   RemoveButton,
   WarningMessage,
 } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
 import {
-  selectDateRange,
-  selectSourceControlBranches,
-  selectSourceControlOrganizations,
-  selectSourceControlRepos,
-} from '@src/context/config/configSlice';
+  AxiosRequestErrorCode,
+  MESSAGE,
+  SOURCE_CONTROL_CONFIG_TITLE,
+  SOURCE_CONTROL_ERROR_MESSAGE,
+} from '@src/constants/resources';
 import {
   selectSourceControlConfigurationSettings,
   updateShouldGetSourceControlConfig,
@@ -23,10 +30,8 @@ import { ErrorInfoType } from '@src/containers/MetricsStep/SouceControlConfigura
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
-import { MESSAGE } from '@src/constants/resources';
 import { Loading } from '@src/components/Loading';
 import { useEffect, useRef } from 'react';
-import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
 
 interface SourceControlMetricSelectionProps {
@@ -52,8 +57,8 @@ export const SourceControlMetricSelection = ({
   onUpdateSourceControl,
   isDuplicated,
   setLoadingCompletedNumber,
-  totalSourceControlNumber,
   handleUpdateErrorInfo,
+  totalSourceControlNumber,
 }: SourceControlMetricSelectionProps) => {
   const { id, organization, repo } = sourceControlSetting;
   const isInitialMount = useRef(true);
@@ -61,21 +66,18 @@ export const SourceControlMetricSelection = ({
     isLoading: repoIsLoading,
     getSourceControlRepoInfo,
     isGetRepo,
-    info: repoInfo,
     stepFailedStatus: getRepoFailedStatus,
   } = useGetSourceControlConfigurationRepoEffect();
   const {
     isLoading: branchIsLoading,
     getSourceControlBranchInfo,
     isGetBranch,
-    info: branchInfo,
     stepFailedStatus: getBranchFailedStatus,
   } = useGetSourceControlConfigurationBranchEffect();
   const {
     isLoading: crewIsLoading,
     getSourceControlCrewInfo,
     isGetAllCrews,
-    info: crewInfo,
     stepFailedStatus: getCrewFailedStatus,
   } = useGetSourceControlConfigurationCrewEffect();
   const storeContext = store.getState();
@@ -95,7 +97,7 @@ export const SourceControlMetricSelection = ({
   };
 
   useEffect(() => {
-    if (isInitialMount.current && !isGetRepo && organization && repoNameOptions.length === 0) {
+    if (isInitialMount.current && !isGetRepo && organization) {
       getSourceControlRepoInfo(organization, dateRanges, id);
       isInitialMount.current = false;
     }
@@ -103,7 +105,7 @@ export const SourceControlMetricSelection = ({
   }, [isGetRepo]);
 
   useEffect(() => {
-    if (!isGetBranch && isGetRepo && organization && repo && branchNameOptions.length === 0) {
+    if (!isGetBranch && isGetRepo && organization && repo) {
       getSourceControlBranchInfo(organization, repo, id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,15 +129,6 @@ export const SourceControlMetricSelection = ({
   }, [isGetAllCrews, setLoadingCompletedNumber, totalSourceControlNumber]);
 
   useEffect(() => {
-    const errorInfoList: ErrorInfoType[] = [repoInfo, branchInfo, crewInfo].filter(
-      (it) => it.code !== HttpStatusCode.Ok,
-    );
-    const errorInfo = errorInfoList.length === 0 ? crewInfo : errorInfoList[0];
-    handleUpdateErrorInfo(errorInfo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [repoInfo, branchInfo, crewInfo]);
-
-  useEffect(() => {
     const popup = () => {
       if (
         getRepoFailedStatus === MetricsDataFailStatus.PartialFailed4xx ||
@@ -149,11 +142,8 @@ export const SourceControlMetricSelection = ({
           }),
         );
       } else if (
-        getRepoFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
         getRepoFailedStatus === MetricsDataFailStatus.PartialFailedTimeout ||
-        getBranchFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
         getBranchFailedStatus === MetricsDataFailStatus.PartialFailedTimeout ||
-        getCrewFailedStatus === MetricsDataFailStatus.PartialFailedNoCards ||
         getCrewFailedStatus === MetricsDataFailStatus.PartialFailedTimeout
       ) {
         dispatch(
@@ -164,26 +154,62 @@ export const SourceControlMetricSelection = ({
         );
       }
     };
-    if (!isLoading) {
+    const codeFunction = () => {
+      if (
+        getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+        getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+        getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout
+      ) {
+        return AxiosRequestErrorCode.Timeout;
+      } else {
+        return 404;
+      }
+    };
+    const code = codeFunction();
+    const errorInfo: ErrorInfoType = {
+      code,
+      errorTitle: SOURCE_CONTROL_CONFIG_TITLE,
+      errorMessage: SOURCE_CONTROL_ERROR_MESSAGE,
+    };
+    const isError =
+      getRepoFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getRepoFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+      getBranchFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getBranchFailedStatus === MetricsDataFailStatus.AllFailed4xx ||
+      getCrewFailedStatus === MetricsDataFailStatus.AllFailedTimeout ||
+      getCrewFailedStatus === MetricsDataFailStatus.AllFailed4xx;
+    if (!isLoading && isGetAllCrews) {
       popup();
     }
+    if (!isLoading && isError) {
+      handleUpdateErrorInfo(errorInfo);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getBranchFailedStatus, getCrewFailedStatus, getRepoFailedStatus, isLoading]);
 
   const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
-    getSourceControlRepoInfo(value.toString(), dateRanges, id);
+    const newOrganization = value.toString();
+    if (selectSourceControlRepos(storeContext, newOrganization).length === 0) {
+      getSourceControlRepoInfo(newOrganization, dateRanges, id);
+    }
   };
 
   const handleOnUpdateRepo = (id: number, label: string, value: string | []): void => {
     onUpdateSourceControl(id, label, value);
-    getSourceControlBranchInfo(organization, value.toString(), id);
+    const newRepo = value.toString();
+    if (selectSourceControlBranches(storeContext, organization, newRepo).length === 0) {
+      getSourceControlBranchInfo(organization, newRepo, id);
+    }
   };
 
   const handleOnUpdateBranches = (id: number, label: string, value: string[]): void => {
     const branchNeedGetCrews = value.filter((it) => selectedBranches?.every((branch) => branch !== it));
     onUpdateSourceControl(id, label, value);
     Promise.all(
-      branchNeedGetCrews.map((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges)),
+      branchNeedGetCrews
+        .filter((branch) => selectSourceControlTimes(storeContext, organization, repo, branch).length === 0)
+        .map((branch) => getSourceControlCrewInfo(organization, repo, branch, dateRanges)),
     ).then(() => {
       dispatch(updateShouldGetSourceControlConfig(false));
     });

@@ -4,12 +4,6 @@ import {
   selectSourceControlConfigurationSettings,
   updateSourceControlConfigurationSettings,
 } from '@src/context/Metrics/metricsSlice';
-import {
-  ISourceControlGetBranchResponseDTO,
-  ISourceControlGetCrewResponseDTO,
-  ISourceControlGetOrganizationResponseDTO,
-  ISourceControlGetRepoResponseDTO,
-} from '@src/clients/sourceControl/dto/response';
 import { useGetSourceControlConfigurationOrganizationEffect } from '@src/hooks/useGetSourceControlConfigurationOrganizationEffect';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import { SourceControlMetricSelection } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlMetricSelection';
@@ -29,11 +23,11 @@ import { HttpStatusCode } from 'axios';
 import { store } from '@src/store';
 import dayjs from 'dayjs';
 
-export type ErrorInfoType =
-  | ISourceControlGetOrganizationResponseDTO
-  | ISourceControlGetRepoResponseDTO
-  | ISourceControlGetBranchResponseDTO
-  | ISourceControlGetCrewResponseDTO;
+export interface ErrorInfoType {
+  code: number | string | undefined | null;
+  errorTitle: string;
+  errorMessage: string;
+}
 
 export const SourceControlConfiguration = () => {
   const dispatch = useAppDispatch();
@@ -79,14 +73,11 @@ export const SourceControlConfiguration = () => {
     dispatch(updateSourceControlConfigurationSettings({ updateId: id, label: label.toLowerCase(), value }));
   };
   const handleUpdateErrorInfo = (newErrorInfo: ErrorInfoType) => {
-    const errorInfoList: ErrorInfoType[] = [newErrorInfo, info].filter((it) => it.code !== HttpStatusCode.Ok);
-    const errorInfo = errorInfoList.length === 0 ? info : errorInfoList[0];
-    setErrorInfo(errorInfo);
+    setErrorInfo(newErrorInfo);
   };
 
   useEffect(() => {
-    handleUpdateErrorInfo(errorInfo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    handleUpdateErrorInfo(info);
   }, [info]);
 
   const shouldShowCrews =

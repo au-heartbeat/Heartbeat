@@ -1,18 +1,17 @@
 import { DateRange, selectSourceControl, updateSourceControlVerifiedResponse } from '@src/context/config/configSlice';
-import { ISourceControlGetCrewResponseDTO } from '@src/clients/sourceControl/dto/response';
 import { selectShouldGetSourceControlConfig } from '@src/context/Metrics/metricsSlice';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { updateMetricsPageLoadingStatus } from '@src/context/stepper/StepperSlice';
 import { FULFILLED, REJECTED, SourceControlTypes } from '@src/constants/resources';
 import { useAppDispatch, useAppSelector } from '@src/hooks/index';
 import { MetricsDataFailStatus } from '@src/constants/commons';
-import { HttpStatusCode } from 'axios';
+import { formatDateToTimestampString } from '@src/utils/util';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 
 export interface IUseGetSourceControlConfigurationCrewInterface {
   readonly isLoading: boolean;
   readonly isGetAllCrews: boolean;
-  readonly info: ISourceControlGetCrewResponseDTO;
   readonly getSourceControlCrewInfo: (
     organization: string,
     repo: string,
@@ -23,19 +22,12 @@ export interface IUseGetSourceControlConfigurationCrewInterface {
 }
 
 export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceControlConfigurationCrewInterface => {
-  const defaultInfoStructure = {
-    code: 200,
-    errorTitle: '',
-    errorMessage: '',
-  };
-
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const shouldGetSourceControlConfig = useAppSelector(selectShouldGetSourceControlConfig);
   const [isGetAllCrews, setIsGetAllCrews] = useState<boolean>(!shouldGetSourceControlConfig);
   const restoredSourceControlInfo = useAppSelector(selectSourceControl);
   const [stepFailedStatus, setStepFailedStatus] = useState(MetricsDataFailStatus.NotFailed);
-  const [info, setInfo] = useState<ISourceControlGetCrewResponseDTO>(defaultInfoStructure);
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
@@ -50,6 +42,22 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
     dateRanges: DateRange[],
   ) => {
     setIsLoading(true);
+    dispatch(
+      updateMetricsPageLoadingStatus(
+        dateRanges.map((it) => {
+          return {
+            startDate: formatDateToTimestampString(it.startDate!),
+            loadingStatus: {
+              sourceControlCrew: {
+                isLoading: true,
+                isLoaded: false,
+                isLoadedWithError: false,
+              },
+            },
+          };
+        }),
+      ),
+    );
     const allCrewsRes = await Promise.allSettled(
       dateRanges.flatMap((dateRange) => {
         const params = {
@@ -70,67 +78,84 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
     if (!hasRejected) {
       setStepFailedStatus(MetricsDataFailStatus.NotFailed);
     } else if (hasRejected && hasFulfilled) {
-      const rejectedStep = allCrewsRes.find((stepInfo) => stepInfo.status === REJECTED);
-      if ((rejectedStep as PromiseRejectedResult).reason.code == 400) {
+      const rejectedStep = allCrewsRes.find((crewInfo) => crewInfo.status === REJECTED);
+      const code: number = (rejectedStep as PromiseRejectedResult).reason.code as number;
+      if (code >= 400 && code < 500) {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailed4xx);
       } else {
         setStepFailedStatus(MetricsDataFailStatus.PartialFailedTimeout);
       }
+    } else {
+      const rejectedStep = allCrewsRes.find((crewInfo) => crewInfo.status === REJECTED);
+      const code: number = (rejectedStep as PromiseRejectedResult).reason.code as number;
+      if (code >= 400 && code < 500) {
+        setStepFailedStatus(MetricsDataFailStatus.AllFailed4xx);
+      } else {
+        setStepFailedStatus(MetricsDataFailStatus.AllFailedTimeout);
+      }
     }
 
     allCrewsRes.forEach((response, index) => {
+      dispatch(
+        updateMetricsPageLoadingStatus([
+          {
+            startDate: formatDateToTimestampString(dateRanges[index].startDate!),
+            loadingStatus: {
+              sourceControlCrew: {
+                isLoading: false,
+                isLoaded: true,
+                isLoadedWithError: response.status !== FULFILLED,
+              },
+            },
+          },
+        ]),
+      );
       if (response.status === FULFILLED) {
-        if (response.value.code !== HttpStatusCode.Ok) {
-          setInfo(response.value);
-        } else {
-          const startTime = dayjs(dateRanges[index].startDate).startOf('date').valueOf();
-          const endTime = dayjs(dateRanges[index].endDate).startOf('date').valueOf();
-          const parents = [
-            {
-              name: 'organization',
-              value: organization,
-            },
-            {
-              name: 'repo',
-              value: repo,
-            },
-            {
-              name: 'branch',
-              value: branch,
-            },
-          ];
-          const savedTime = `${startTime}-${endTime}`;
-          dispatch(
-            updateSourceControlVerifiedResponse({
-              parents: parents,
-              names: [savedTime],
-            }),
-          );
-          dispatch(
-            updateSourceControlVerifiedResponse({
-              parents: [
-                ...parents,
-                {
-                  name: 'time',
-                  value: savedTime,
-                },
-              ],
-              names: response.value.data?.crews.map((it) => it),
-            }),
-          );
-        }
+        setIsGetAllCrews(true);
+        const startTime = dayjs(dateRanges[index].startDate).startOf('date').valueOf();
+        const endTime = dayjs(dateRanges[index].endDate).startOf('date').valueOf();
+        const parents = [
+          {
+            name: 'organization',
+            value: organization,
+          },
+          {
+            name: 'repo',
+            value: repo,
+          },
+          {
+            name: 'branch',
+            value: branch,
+          },
+        ];
+        const savedTime = `${startTime}-${endTime}`;
+        dispatch(
+          updateSourceControlVerifiedResponse({
+            parents: parents,
+            names: [savedTime],
+          }),
+        );
+        dispatch(
+          updateSourceControlVerifiedResponse({
+            parents: [
+              ...parents,
+              {
+                name: 'time',
+                value: savedTime,
+              },
+            ],
+            names: response.value.crews.map((it) => it),
+          }),
+        );
       }
     });
-
     setIsLoading(false);
-    setIsGetAllCrews(true);
   };
 
   return {
     isLoading,
     getSourceControlCrewInfo,
     isGetAllCrews,
-    info,
     stepFailedStatus,
   };
 };

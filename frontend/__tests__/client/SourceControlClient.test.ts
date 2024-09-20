@@ -7,7 +7,10 @@ import {
   MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL,
 } from '../fixtures';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
+import { InternalServerError } from '@src/errors/InternalServerError';
+import { UnauthorizedError } from '@src/errors/UnauthorizedError';
 import { SourceControlTypes } from '@src/constants/resources';
+import { ForbiddenError } from '@src/errors/ForbiddenError';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
@@ -164,8 +167,7 @@ describe('verify sourceControl request', () => {
       endTime: 123,
     });
 
-    expect(result.code).toEqual(200);
-    expect(result.data?.name).toEqual(expectedNames);
+    expect(result.name).toEqual(expectedNames);
   });
 
   it('should set default error title when get repositories api return 401', async () => {
@@ -177,17 +179,16 @@ describe('verify sourceControl request', () => {
       }),
     );
 
-    const result = await sourceControlClient.getRepo({
-      type: SourceControlTypes.GitHub,
-      token: 'mock-token',
-      organization: 'org',
-      endTime: 123,
-    });
-
-    expect(result.code).toEqual(401);
-    expect(result.errorMessage).toEqual(
-      'Please go back to the previous page and change your source control token with correct access permission.',
-    );
+    try {
+      await sourceControlClient.getRepo({
+        type: SourceControlTypes.GitHub,
+        token: 'mock-token',
+        organization: 'org',
+        endTime: 123,
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(UnauthorizedError);
+    }
   });
 
   it('should set default error title when get repositories api return 403', async () => {
@@ -199,17 +200,16 @@ describe('verify sourceControl request', () => {
       }),
     );
 
-    const result = await sourceControlClient.getRepo({
-      type: SourceControlTypes.GitHub,
-      token: 'mock-token',
-      organization: 'org',
-      endTime: 123,
-    });
-
-    expect(result.code).toEqual(403);
-    expect(result.errorMessage).toEqual(
-      'Please go back to the previous page and change your source control token with correct access permission.',
-    );
+    try {
+      await sourceControlClient.getRepo({
+        type: SourceControlTypes.GitHub,
+        token: 'mock-token',
+        organization: 'org',
+        endTime: 123,
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ForbiddenError);
+    }
   });
 
   it('should set default error title when get repositories api return 500', async () => {
@@ -221,17 +221,16 @@ describe('verify sourceControl request', () => {
       }),
     );
 
-    const result = await sourceControlClient.getRepo({
-      type: SourceControlTypes.GitHub,
-      token: 'mock-token',
-      organization: 'org',
-      endTime: 123,
-    });
-
-    expect(result.code).toEqual(500);
-    expect(result.errorMessage).toEqual(
-      'Please go back to the previous page and change your source control token with correct access permission.',
-    );
+    try {
+      await sourceControlClient.getRepo({
+        type: SourceControlTypes.GitHub,
+        token: 'mock-token',
+        organization: 'org',
+        endTime: 123,
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(InternalServerError);
+    }
   });
 
   it('should return branches when get branches api return ok', async () => {
@@ -351,8 +350,7 @@ describe('verify sourceControl request', () => {
       endTime: 123,
     });
 
-    expect(result.code).toEqual(200);
-    expect(result.data?.crews).toEqual(expectedNames);
+    expect(result.crews).toEqual(expectedNames);
   });
 
   it('should set default error title when get crews api return 401', async () => {
@@ -364,20 +362,19 @@ describe('verify sourceControl request', () => {
       }),
     );
 
-    const result = await sourceControlClient.getCrew({
-      type: SourceControlTypes.GitHub,
-      token: 'mock-token',
-      repo: 'repo',
-      organization: 'org',
-      branch: 'branch',
-      startTime: 123,
-      endTime: 123,
-    });
-
-    expect(result.code).toEqual(401);
-    expect(result.errorMessage).toEqual(
-      'Please go back to the previous page and change your source control token with correct access permission.',
-    );
+    try {
+      await sourceControlClient.getCrew({
+        type: SourceControlTypes.GitHub,
+        token: 'mock-token',
+        repo: 'repo',
+        organization: 'org',
+        branch: 'branch',
+        startTime: 123,
+        endTime: 123,
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(UnauthorizedError);
+    }
   });
 
   it('should set default error title when get crews api return 403', async () => {
@@ -389,20 +386,19 @@ describe('verify sourceControl request', () => {
       }),
     );
 
-    const result = await sourceControlClient.getCrew({
-      type: SourceControlTypes.GitHub,
-      repo: 'repo',
-      branch: 'branch',
-      startTime: 123,
-      endTime: 123,
-      token: 'mock-token',
-      organization: 'org',
-    });
-
-    expect(result.code).toEqual(403);
-    expect(result.errorMessage).toEqual(
-      'Please go back to the previous page and change your source control token with correct access permission.',
-    );
+    try {
+      await sourceControlClient.getCrew({
+        type: SourceControlTypes.GitHub,
+        repo: 'repo',
+        branch: 'branch',
+        startTime: 123,
+        endTime: 123,
+        token: 'mock-token',
+        organization: 'org',
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ForbiddenError);
+    }
   });
 
   it('should set default error title when get crews api return 500', async () => {
@@ -414,19 +410,18 @@ describe('verify sourceControl request', () => {
       }),
     );
 
-    const result = await sourceControlClient.getCrew({
-      type: SourceControlTypes.GitHub,
-      token: 'mock-token',
-      repo: 'repo',
-      branch: 'branch',
-      startTime: 123,
-      endTime: 123,
-      organization: 'org',
-    });
-
-    expect(result.code).toEqual(500);
-    expect(result.errorMessage).toEqual(
-      'Please go back to the previous page and change your source control token with correct access permission.',
-    );
+    try {
+      await sourceControlClient.getCrew({
+        type: SourceControlTypes.GitHub,
+        token: 'mock-token',
+        repo: 'repo',
+        branch: 'branch',
+        startTime: 123,
+        endTime: 123,
+        organization: 'org',
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(InternalServerError);
+    }
   });
 });

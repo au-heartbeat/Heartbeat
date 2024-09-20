@@ -30,7 +30,7 @@ const PresentationForErrorCases = (props: IPresentationForErrorCasesProps) => {
       {isShowRetryUI ? (
         <StyledRetryMessage>
           <span>{PIPELINE_TOOL_RETRY_MESSAGE}</span>
-          <StyledRetryButton onClick={handleRetry} isLoading={props.isLoading}>
+          <StyledRetryButton aria-label={'retry button'} onClick={handleRetry} isLoading={props.isLoading}>
             {PIPELINE_TOOL_RETRY_TRIGGER_MESSAGE}
           </StyledRetryButton>
         </StyledRetryMessage>
