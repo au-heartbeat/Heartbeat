@@ -106,7 +106,7 @@ export const getDisabledOptions = (
   if (isSourceControlSettings) {
     names2 = deploymentSettings.map((item) => item.repoName.split('/')[1]);
   }
-  const names = [...names1, ...names2];
+  const names = [...new Set([...names1, ...names2])];
   return includes(names, option);
 };
 
