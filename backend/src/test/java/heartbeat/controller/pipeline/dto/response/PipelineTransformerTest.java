@@ -30,7 +30,7 @@ class PipelineTransformerTest {
 		assertEquals(pipeline.repository, "repository");
 		assertEquals(pipeline.orgId, orgId);
 		assertEquals(pipeline.orgName, orgName);
-		assertEquals(pipeline.repoName, "");
+		assertEquals(pipeline.repoName, "repository");
 		assertEquals(pipeline.steps.size(), 1);
 		assertEquals(pipeline.steps.get(0), "Name1");
 	}
@@ -55,7 +55,7 @@ class PipelineTransformerTest {
 		assertEquals(pipeline.repository, "organization/repository");
 		assertEquals(pipeline.orgId, orgId);
 		assertEquals(pipeline.orgName, orgName);
-		assertEquals(pipeline.repoName, "repository");
+		assertEquals(pipeline.repoName, "organization/repository");
 		assertEquals(pipeline.steps.size(), 1);
 		assertEquals(pipeline.steps.get(0), "Name1");
 	}

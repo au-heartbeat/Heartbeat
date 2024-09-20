@@ -10,11 +10,8 @@ public interface PipelineTransformer {
 
 	static Pipeline fromBuildKitePipelineDto(BuildKitePipelineDTO dto, String orgId, String orgName) {
 		String repositoryFullName = dto.getRepository();
-		String[] repositorySplitNames = GithubUtil.getGithubUrlFullName(repositoryFullName).split("/");
-		String repoName = "";
-		if (repositorySplitNames.length > 1) {
-			repoName = repositorySplitNames[repositorySplitNames.length - 1];
-		}
+		String repoName = GithubUtil.getGithubUrlFullName(repositoryFullName);
+
 		return Pipeline.builder()
 			.orgId(orgId)
 			.orgName(orgName)
