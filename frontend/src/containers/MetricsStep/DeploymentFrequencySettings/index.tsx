@@ -42,6 +42,14 @@ export const DeploymentFrequencySettings = () => {
 
   const handleUpdatePipeline = (id: number, label: string, value: string | StringConstructor[] | unknown) => {
     dispatch(updateDeploymentFrequencySettings({ updateId: id, label, value }));
+    if (label.toLowerCase() === 'organization') {
+      const filteredRepoNames = pipelineInfoResult.data?.pipelineList
+        .filter((it) => it.orgName === value)
+        .map((it) => it.repoName);
+      const repoNames = filteredRepoNames ? filteredRepoNames : [];
+      const repoName = repoNames.length > 0 ? repoNames[0] : '';
+      dispatch(updateDeploymentFrequencySettings({ updateId: id, label: 'repoName', value: repoName }));
+    }
   };
 
   const totalPipelineNumber = realDeploymentFrequencySettings.length;

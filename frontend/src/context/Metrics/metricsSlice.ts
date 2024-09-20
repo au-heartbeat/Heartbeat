@@ -17,6 +17,7 @@ export interface IPipelineConfig {
   id: number;
   organization: string;
   pipelineName: string;
+  repoName: string;
   step: string;
   branches: string[];
   isStepEmptyString?: boolean;
@@ -107,7 +108,7 @@ const initialState: ISavedMetricsSettingState = {
   cycleTimeSettings: [],
   deploymentFrequencySettings: [],
   sourceControlConfigurationSettings: [],
-  leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', branches: [] }],
+  leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }],
   treatFlagCardAsBlock: true,
   displayFlagCardDropWarning: true,
   assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
@@ -371,7 +372,7 @@ export const metricsSlice = createSlice({
       const newId = maxId + 1;
       state.deploymentFrequencySettings = [
         ...deploymentFrequencySettings,
-        { id: newId, organization: '', pipelineName: '', step: '', branches: [] },
+        { id: newId, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
       ];
     },
 
@@ -640,10 +641,14 @@ export const metricsSlice = createSlice({
         state.pipelineCrews = setPipelineCrews(isProjectCreated, pipelineCrews, state.pipelineCrews);
       }
       const orgNames: Array<string> = _.uniq(pipelineList.map((item: IPipeline) => item.orgName));
+      const filteredPipelines = (organization: string) =>
+        pipelineList.filter((pipeline: IPipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase());
       const filteredPipelineNames = (organization: string) =>
-        pipelineList
-          .filter((pipeline: IPipeline) => pipeline.orgName.toLowerCase() === organization.toLowerCase())
-          .map((item: IPipeline) => item.name);
+        filteredPipelines(organization).map((item: IPipeline) => item.name);
+      const filteredPipelineRepoName = (organization: string): string => {
+        const repoNames = filteredPipelines(organization).map((item: IPipeline) => item.repoName);
+        return repoNames.length > 0 ? repoNames[0] : '';
+      };
 
       const uniqueResponse = (res: IPipelineConfig[]) => {
         let itemsOmitId = uniqWith(
@@ -675,16 +680,28 @@ export const metricsSlice = createSlice({
                 const matchedPipelineName = filteredPipelineNames(organization).includes(pipelineName)
                   ? pipelineName
                   : '';
+                const matchedRepoName = filteredPipelineRepoName(organization);
                 return {
                   id,
                   isStepEmptyString: isStepEmptyString || false,
                   organization: matchedOrganization,
                   pipelineName: matchedPipelineName,
                   step: matchedPipelineName ? step : '',
+                  repoName: matchedRepoName,
                   branches: matchedPipelineName ? branches : [],
                 };
               })
-            : [{ id: 0, organization: '', pipelineName: '', step: '', branches: [], isStepEmptyString: false }];
+            : [
+                {
+                  id: 0,
+                  organization: '',
+                  pipelineName: '',
+                  step: '',
+                  branches: [],
+                  repoName: '',
+                  isStepEmptyString: false,
+                },
+              ];
         return uniqueResponse(res);
       };
       const createPipelineWarning = ({ id, organization, pipelineName }: IPipelineConfig) => {

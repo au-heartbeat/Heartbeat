@@ -17,6 +17,7 @@ import {
   selectPipelineList,
 } from '@src/context/config/configSlice';
 
+import { FormControlWrapper } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection/style';
 import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
 import { BranchSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection';
 import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style';
@@ -31,6 +32,7 @@ import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { useEffect, useRef, useState } from 'react';
 import { Loading } from '@src/components/Loading';
+import { TextField } from '@mui/material';
 import { store } from '@src/store';
 
 interface pipelineMetricSelectionProps {
@@ -40,6 +42,7 @@ interface pipelineMetricSelectionProps {
     organization: string;
     pipelineName: string;
     step: string;
+    repoName: string;
     branches: string[];
   };
   isInfoLoading: boolean;
@@ -62,7 +65,7 @@ export const PipelineMetricSelection = ({
   setLoadingCompletedNumber,
   totalPipelineNumber,
 }: pipelineMetricSelectionProps) => {
-  const { id, organization, pipelineName, step } = pipelineSetting;
+  const { id, organization, pipelineName, step, repoName } = pipelineSetting;
   const dispatch = useAppDispatch();
   const { isLoading, errorMessage, getSteps, stepFailedStatus } = useGetMetricsStepsEffect();
   const storeContext = store.getState();
@@ -190,6 +193,11 @@ export const PipelineMetricSelection = ({
           errorText={NO_PIPELINE_STEP_ERROR}
           onUpdate={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
+      )}
+      {organization && (
+        <FormControlWrapper variant='standard'>
+          <TextField disabled id='filled-disabled' label='Repo Name' defaultValue={repoName} variant='standard' />
+        </FormControlWrapper>
       )}
       {organization && pipelineName && (
         <BranchSelection {...pipelineSetting} onUpdate={onUpdatePipeline} isStepLoading={isLoading} />
