@@ -10,7 +10,7 @@ import {
   PipelineMetricSelectionWrapper,
   RemoveButton,
   WarningMessage,
-} from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
+} from '@src/containers/MetricsStep/PipelineConfiguration/PipelineMetricSelection/style';
 import {
   AxiosRequestErrorCode,
   MESSAGE,
@@ -25,7 +25,7 @@ import { useGetSourceControlConfigurationBranchEffect } from '@src/hooks/useGetS
 import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSourceControlConfigurationRepoEffect';
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
-import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
+import { SingleSelection } from '@src/containers/MetricsStep/PipelineConfiguration/SingleSelection';
 import { ErrorInfoType } from '@src/containers/MetricsStep/SouceControlConfiguration';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';

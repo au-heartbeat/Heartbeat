@@ -4,7 +4,7 @@ import {
   updateDeploymentFrequencySettings,
 } from '@src/context/Metrics/metricsSlice';
 import { DEPLOYMENT_FREQUENCY_SETTINGS, LIST_OPEN, LOADING, ORGANIZATION, REMOVE_BUTTON } from '@test/fixtures';
-import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
+import { PipelineConfiguration } from 'src/containers/MetricsStep/PipelineConfiguration';
 import { IUseVerifyPipeLineToolStateInterface } from '@src/hooks/useGetPipelineToolInfoEffect';
 import { TokenAccessAlert } from '@src/containers/MetricsStep/TokenAccessAlert';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
@@ -106,7 +106,7 @@ describe('DeploymentFrequencySettings', () => {
     store = setupStore();
     return render(
       <Provider store={store}>
-        <DeploymentFrequencySettings />
+        <PipelineConfiguration />
       </Provider>,
     );
   };

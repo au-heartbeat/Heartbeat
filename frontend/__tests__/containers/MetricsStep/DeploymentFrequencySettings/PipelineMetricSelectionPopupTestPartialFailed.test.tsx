@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import { Provider } from 'react-redux';
 
-import { PipelineMetricSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection';
+import { PipelineMetricSelection } from '@src/containers/MetricsStep/PipelineConfiguration/PipelineMetricSelection';
 import { IPipelineConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';

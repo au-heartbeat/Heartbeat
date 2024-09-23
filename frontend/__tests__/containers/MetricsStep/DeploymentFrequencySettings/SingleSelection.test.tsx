@@ -1,4 +1,4 @@
-import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
+import { SingleSelection } from '@src/containers/MetricsStep/PipelineConfiguration/SingleSelection';
 import { act, render, within } from '@testing-library/react';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';

@@ -5,8 +5,8 @@ import {
   updateFormMeta,
   updateMetricsPipelineBranchFormMeta,
 } from '@src/context/meta/metaSlice';
-import { BranchSelectionWrapper } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
-import BranchChip from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection/BranchChip';
+import { BranchSelectionWrapper } from '@src/containers/MetricsStep/PipelineConfiguration/PipelineMetricSelection/style';
+import BranchChip from '@src/containers/MetricsStep/PipelineConfiguration/BranchSelection/BranchChip';
 import { selectPipelineList, selectSourceControl } from '@src/context/config/configSlice';
 import { SOURCE_CONTROL_BRANCH_INVALID_TEXT } from '@src/constants/resources';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';

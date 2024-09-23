@@ -30,9 +30,9 @@ import {
   PIPELINE_TOOL_OTHER_OPTION,
   RequiredData,
 } from '@src/constants/resources';
-import { DeploymentFrequencySettings } from '@src/containers/MetricsStep/DeploymentFrequencySettings';
 import { addNotification, closeAllNotifications } from '@src/context/notification/NotificationSlice';
 import { SourceControlConfiguration } from '@src/containers/MetricsStep/SouceControlConfiguration';
+import { PipelineConfiguration } from '@src/containers/MetricsStep/PipelineConfiguration';
 import { Classification } from '@src/containers/MetricsStep/Classification';
 import { shouldMetricsLoaded } from '@src/context/stepper/StepperSlice';
 import DateRangeViewer from '@src/components/Common/DateRangeViewer';
@@ -192,7 +192,7 @@ const MetricsStep = () => {
               <MetricsSelectionTitle aria-label='Pipeline configuration title'>
                 Pipeline configuration
               </MetricsSelectionTitle>
-              <DeploymentFrequencySettings />
+              <PipelineConfiguration />
             </MetricSelectionWrapper>
           )}
           <MetricSelectionWrapper aria-label='Source Control Configuration Section'>

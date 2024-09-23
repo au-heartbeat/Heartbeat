@@ -21,7 +21,7 @@ import { Loading } from '@src/components/Loading';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export const DeploymentFrequencySettings = () => {
+export const PipelineConfiguration = () => {
   const dispatch = useAppDispatch();
   const { isLoading, result: pipelineInfoResult, apiCallFunc, isFirstFetch } = useGetPipelineToolInfoEffect();
   const deploymentFrequencySettings = useAppSelector(selectPipelineSettings);

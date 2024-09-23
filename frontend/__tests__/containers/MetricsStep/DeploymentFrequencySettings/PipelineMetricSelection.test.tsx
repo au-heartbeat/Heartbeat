@@ -9,7 +9,7 @@ import {
   REMOVE_BUTTON,
   STEP,
 } from '@test/fixtures';
-import { PipelineMetricSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection';
+import { PipelineMetricSelection } from '@src/containers/MetricsStep/PipelineConfiguration/PipelineMetricSelection';
 import { IPipelineConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { metricsClient } from '@src/clients/MetricsClient';

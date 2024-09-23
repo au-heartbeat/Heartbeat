@@ -1,5 +1,5 @@
-import { BranchSelectionWrapper } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
-import BranchChip from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection/BranchChip';
+import { BranchSelectionWrapper } from '@src/containers/MetricsStep/PipelineConfiguration/PipelineMetricSelection/style';
+import BranchChip from '@src/containers/MetricsStep/PipelineConfiguration/BranchSelection/BranchChip';
 import { selectSourceControlConfigurationSettings } from '@src/context/Metrics/metricsSlice';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
 import { useAppSelector } from '@src/hooks';
