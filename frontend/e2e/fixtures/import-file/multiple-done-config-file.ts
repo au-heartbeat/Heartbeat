@@ -99,6 +99,7 @@ export const importMultipleDoneProjectFromFile = {
       isStepEmptyString: false,
       organization: 'Heartbeat-backup',
       pipelineName: 'Heartbeat',
+      repoName: 'au-heartbeat/Heartbeat',
       step: ':rocket: Deploy prod',
       branches: ['main'],
     },

@@ -1,4 +1,4 @@
-export const SelectNoneConfig = {
+export const selectNoneConfig = {
   projectName: 'Import project from file with all ranges API succeed',
   dateRange: [
     {

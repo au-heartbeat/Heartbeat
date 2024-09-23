@@ -103,8 +103,8 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_RESULT_MULTIPL
   {
     velocity: '8',
     throughput: '3',
-    averageCycleTimeForSP: '13.17',
-    averageCycleTimeForCard: '35.13',
+    averageCycleTimeForSP: '13.30',
+    averageCycleTimeForCard: '35.46',
     totalReworkTimes: '0',
     totalReworkCards: '0',
     reworkCardsRatio: '0.0000',
@@ -359,15 +359,15 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME: IB
   [
     {
       name: 'Average cycle time',
-      lines: ['13.17(Days/SP)', '35.13(Days/Card)'],
+      lines: ['13.3(Days/SP)', '35.46(Days/Card)'],
     },
     {
       name: 'Total design time / Total cycle time',
-      lines: ['94.43%'],
+      lines: ['94.48%'],
     },
     {
       name: 'Total development time / Total cycle time',
-      lines: ['3.02%'],
+      lines: ['2.99%'],
     },
     {
       name: 'Total review time / Total cycle time',
@@ -375,7 +375,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME: IB
     },
     {
       name: 'Total testing time / Total cycle time',
-      lines: ['2.4%'],
+      lines: ['2.38%'],
     },
     {
       name: 'Total waiting for deployment time / Total cycle time',
@@ -383,7 +383,7 @@ export const BOARD_METRICS_WITH_DESIGN_AND_WAITING_FOR_DEPLOYMENT_CYCLE_TIME: IB
     },
     {
       name: 'Average design time',
-      lines: ['12.44(Days/SP)', '33.17(Days/Card)'],
+      lines: ['12.56(Days/SP)', '33.50(Days/Card)'],
     },
     {
       name: 'Average development time',

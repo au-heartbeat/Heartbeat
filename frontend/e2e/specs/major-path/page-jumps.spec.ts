@@ -29,6 +29,7 @@ test('Page jump for import', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectClassifications(modifiedMetricsStepData.classification);
   await metricsStep.checkClassificationCharts(modifiedMetricsStepData.classificationCharts);
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
+  await metricsStep.removeSourceControl(0);
   await metricsStep.goToReportPage();
   await reportStep.goToPreviousStep();
   await metricsStep.waitForShown();
@@ -104,6 +105,7 @@ test('Page jump for create', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectClassifications(modifiedMetricsStepData.classification);
   await metricsStep.selectReworkSettings(modifiedMetricsStepData.reworkTimesSettings);
   await metricsStep.selectExcludeReworkSettings(modifiedMetricsStepData.reworkTimesSettings);
+  await metricsStep.removeSourceControl(0);
   await metricsStep.goToReportPage();
   await reportStep.goToPreviousStep();
   await metricsStep.checkCrews(modifiedMetricsStepData.crews);

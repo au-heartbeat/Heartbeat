@@ -188,6 +188,7 @@ test('Only select lead time for changes metrics on config page', async ({
   await metricsStep.checkBoardConfigurationInvisible();
   await metricsStep.checkPipelineConfigurationVisible();
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
+  await metricsStep.removeSourceControl(0);
   await metricsStep.goToReportPage();
 
   await reportStep.goToReportListTab();
