@@ -1,17 +1,12 @@
-import {
-  addAPipelineSetting,
-  deleteADeploymentFrequencySetting,
-  updateDeploymentFrequencySettings,
-} from '@src/context/Metrics/metricsSlice';
+import { addAPipelineSetting, deleteAPipelineSetting, updatePipelineSetting } from '@src/context/Metrics/metricsSlice';
 import { DEPLOYMENT_FREQUENCY_SETTINGS, LIST_OPEN, LOADING, ORGANIZATION, REMOVE_BUTTON } from '@test/fixtures';
-import { PipelineConfiguration } from 'src/containers/MetricsStep/PipelineConfiguration';
 import { IUseVerifyPipeLineToolStateInterface } from '@src/hooks/useGetPipelineToolInfoEffect';
+import { PipelineConfiguration } from '@src/containers/MetricsStep/PipelineConfiguration';
 import { TokenAccessAlert } from '@src/containers/MetricsStep/TokenAccessAlert';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-
-import { setupStore } from '@test/utils/setupStoreUtil';
 
 let mockSelectShouldGetPipelineConfig = true;
 let mockSelectPipelineNames: string[] = [];
@@ -37,10 +32,10 @@ jest.mock('@src/hooks', () => ({
 
 jest.mock('@src/context/Metrics/metricsSlice', () => ({
   ...jest.requireActual('@src/context/Metrics/metricsSlice'),
-  addADeploymentFrequencySetting: jest.fn(),
-  deleteADeploymentFrequencySetting: jest.fn(),
-  updateDeploymentFrequencySettings: jest.fn(),
-  selectDeploymentFrequencySettings: jest.fn().mockReturnValue([
+  addAPipelineSetting: jest.fn(),
+  deleteAPipelineSetting: jest.fn(),
+  updatePipelineSetting: jest.fn(),
+  selectPipelineSettings: jest.fn().mockReturnValue([
     { id: 0, organization: 'mockOrgName', pipelineName: '1', steps: '', branches: [] },
     { id: 1, organization: '', pipelineName: '', steps: '', branches: [] },
   ]),
@@ -163,7 +158,7 @@ describe('DeploymentFrequencySettings', () => {
     await act(async () => {
       await userEvent.click(getAllByRole('button', { name: REMOVE_BUTTON })[0]);
     });
-    expect(deleteADeploymentFrequencySetting).toHaveBeenCalledTimes(1);
+    expect(deleteAPipelineSetting).toHaveBeenCalledTimes(1);
   });
 
   it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and the value doesnt match pipeline info', async () => {
@@ -177,7 +172,7 @@ describe('DeploymentFrequencySettings', () => {
       await userEvent.click(listBox.getByText('mockOrgName2'));
     });
 
-    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(2);
+    expect(updatePipelineSetting).toHaveBeenCalledTimes(2);
   });
 
   it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and the value match pipeline info', async () => {
@@ -212,7 +207,7 @@ describe('DeploymentFrequencySettings', () => {
       await userEvent.click(listBox.getByText('mockOrgName2'));
     });
 
-    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(2);
+    expect(updatePipelineSetting).toHaveBeenCalledTimes(2);
   });
 
   it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and pipeline info is undefined', async () => {
@@ -233,7 +228,7 @@ describe('DeploymentFrequencySettings', () => {
       await userEvent.click(listBox.getByText('mockOrgName2'));
     });
 
-    expect(updateDeploymentFrequencySettings).toHaveBeenCalledTimes(2);
+    expect(updatePipelineSetting).toHaveBeenCalledTimes(2);
   });
 
   it('show render crews component when all pipelines load completed', () => {

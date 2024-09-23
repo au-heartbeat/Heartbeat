@@ -390,7 +390,7 @@ export const metricsSlice = createSlice({
       ];
     },
 
-    updateDeploymentFrequencySettings: (state, action) => {
+    updatePipelineSetting: (state, action) => {
       const { updateId, label, value } = action.payload;
 
       state.pipelineSettings = state.pipelineSettings.map((pipelineSetting) => {
@@ -787,7 +787,7 @@ export const metricsSlice = createSlice({
       state.pipelineSettings = getPipelineSettings(state.pipelineSettings);
     },
 
-    deleteADeploymentFrequencySetting: (state, action) => {
+    deleteAPipelineSetting: (state, action) => {
       const deleteId = action.payload;
       state.pipelineSettings = [...state.pipelineSettings.filter(({ id }) => id !== deleteId)];
     },
@@ -844,8 +844,8 @@ export const {
   saveSourceControlCrews,
   updateCycleTimeSettings,
   addAPipelineSetting,
-  updateDeploymentFrequencySettings,
-  deleteADeploymentFrequencySetting,
+  updatePipelineSetting,
+  deleteAPipelineSetting,
   updateMetricsImportedData,
   initPipelineSettings,
   updateTreatFlagCardAsBlock,

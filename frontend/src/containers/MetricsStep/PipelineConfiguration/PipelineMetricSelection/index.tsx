@@ -18,9 +18,9 @@ import {
 } from '@src/context/config/configSlice';
 
 import { FormControlWrapper } from '@src/containers/MetricsStep/PipelineConfiguration/SingleSelection/style';
+import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style';
 import { SingleSelection } from '@src/containers/MetricsStep/PipelineConfiguration/SingleSelection';
 import { BranchSelection } from '@src/containers/MetricsStep/PipelineConfiguration/BranchSelection';
-import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { addNotification } from '@src/context/notification/NotificationSlice';

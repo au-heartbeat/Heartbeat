@@ -26,7 +26,7 @@ import {
   addOneSourceControlSetting,
   saveClassificationCharts,
   saveTargetFields,
-  updateDeploymentFrequencySettings,
+  updatePipelineSetting,
   updateSourceControlConfigurationSettings,
 } from '@src/context/Metrics/metricsSlice';
 import {
@@ -171,9 +171,7 @@ describe('Report Step', () => {
     );
     store.dispatch(updateMetrics(params));
     store.dispatch(addAPipelineSetting());
-    store.dispatch(
-      updateDeploymentFrequencySettings({ updateId: 1, label: 'organization', value: 'mock organization' }),
-    );
+    store.dispatch(updatePipelineSetting({ updateId: 1, label: 'organization', value: 'mock organization' }));
     store.dispatch(addOneSourceControlSetting());
     store.dispatch(
       updateSourceControlConfigurationSettings({ updateId: 1, label: 'organization', value: 'mock organization' }),
@@ -191,10 +189,8 @@ describe('Report Step', () => {
         { key: 'parent', name: 'Parent', flag: true },
       ]),
     );
-    store.dispatch(
-      updateDeploymentFrequencySettings({ updateId: 1, label: 'pipelineName', value: 'mock pipeline name' }),
-    );
-    store.dispatch(updateDeploymentFrequencySettings({ updateId: 1, label: 'step', value: 'mock step1' }));
+    store.dispatch(updatePipelineSetting({ updateId: 1, label: 'pipelineName', value: 'mock pipeline name' }));
+    store.dispatch(updatePipelineSetting({ updateId: 1, label: 'step', value: 'mock step1' }));
     store.dispatch(
       updatePipelineToolVerifyResponse({
         pipelineList: [

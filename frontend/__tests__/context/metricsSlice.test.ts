@@ -1,7 +1,7 @@
 import saveMetricsSettingReducer, {
   addAPipelineSetting,
   addOneSourceControlSetting,
-  deleteADeploymentFrequencySetting,
+  deleteAPipelineSetting,
   deleteSourceControlConfigurationSettings,
   initPipelineSettings,
   resetMetricData,
@@ -32,7 +32,7 @@ import saveMetricsSettingReducer, {
   updateAdvancedSettings,
   updateAssigneeFilter,
   updateCycleTimeSettings,
-  updateDeploymentFrequencySettings,
+  updatePipelineSetting,
   updateMetricsImportedData,
   updateMetricsState,
   updatePipelineSettings,
@@ -70,7 +70,7 @@ const initState = {
   doneColumn: [],
   cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
-  deploymentFrequencySettings: [],
+  pipelineSettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }],
   classification: [],
   treatFlagCardAsBlock: true,
@@ -89,7 +89,7 @@ const initState = {
     importedDoneStatus: [],
     importedClassification: [],
     importedClassificationCharts: [],
-    importedDeployment: [],
+    importedPipelineSettings: [],
     importedLeadTime: [],
     importedAdvancedSettings: null,
     reworkTimesSettings: DEFAULT_REWORK_SETTINGS,
@@ -141,7 +141,7 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.jiraColumns).toEqual([]);
     expect(savedMetricsSetting.doneColumn).toEqual([]);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([]);
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
+    expect(savedMetricsSetting.pipelineSettings).toEqual([]);
     expect(savedMetricsSetting.treatFlagCardAsBlock).toBe(true);
     expect(savedMetricsSetting.assigneeFilter).toBe(ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE);
     expect(savedMetricsSetting.importedData).toEqual({
@@ -155,7 +155,7 @@ describe('saveMetricsSetting reducer', () => {
       importedClassification: [],
       importedClassificationCharts: [],
       importedSourceControlSettings: [],
-      importedDeployment: [],
+      importedPipelineSettings: [],
       importedPipelineCrews: [],
       importedSourceControlCrews: [],
       importedAdvancedSettings: null,
@@ -289,7 +289,7 @@ describe('saveMetricsSetting reducer', () => {
       importedDoneStatus: mockMetricsImportedData.doneStatus,
       importedClassification: mockMetricsImportedData.classification,
       importedClassificationCharts: mockMetricsImportedData.classificationCharts,
-      importedDeployment: mockMetricsImportedData.deployment,
+      importedPipelineSettings: mockMetricsImportedData.deployment,
       importedLeadTime: mockMetricsImportedData.leadTime,
       importedAdvancedSettings: mockMetricsImportedData.advancedSettings,
       reworkTimesSettings: mockMetricsImportedData.reworkTimesSettings,
@@ -320,7 +320,7 @@ describe('saveMetricsSetting reducer', () => {
     expect(savedMetricsSetting.doneColumn).toEqual([]);
     expect(savedMetricsSetting.cycleTimeSettings).toEqual([]);
     expect(savedMetricsSetting.treatFlagCardAsBlock).toEqual(true);
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
+    expect(savedMetricsSetting.pipelineSettings).toEqual([]);
   });
 
   it('should update metricsState when its value changed given isProjectCreated is false and selectedDoneColumns', () => {
@@ -529,16 +529,16 @@ describe('saveMetricsSetting reducer', () => {
   it('should keep empty array when handle updateDeploymentFrequencySettings given initial state', () => {
     const savedMetricsSetting = saveMetricsSettingReducer(
       initState,
-      updateDeploymentFrequencySettings({ updateId: 0, label: 'Steps', value: 'step1' }),
+      updatePipelineSetting({ updateId: 0, label: 'Steps', value: 'step1' }),
     );
 
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
+    expect(savedMetricsSetting.pipelineSettings).toEqual([]);
   });
 
   it('should update a deploymentFrequencySetting when handle updateDeploymentFrequencySettings given multiple deploymentFrequencySettings', () => {
     const multipleDeploymentFrequencySettingsInitState = {
       ...initState,
-      deploymentFrequencySettings: [
+      pipelineSettings: [
         { id: 0, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
         { id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
       ],
@@ -549,10 +549,10 @@ describe('saveMetricsSetting reducer', () => {
     ];
     const savedMetricsSetting = saveMetricsSettingReducer(
       multipleDeploymentFrequencySettingsInitState,
-      updateDeploymentFrequencySettings({ updateId: 0, label: 'organization', value: 'mock new organization' }),
+      updatePipelineSetting({ updateId: 0, label: 'organization', value: 'mock new organization' }),
     );
 
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(updatedDeploymentFrequencySettings);
+    expect(savedMetricsSetting.pipelineSettings).toEqual(updatedDeploymentFrequencySettings);
   });
 
   it('should add a deploymentFrequencySetting when handle addADeploymentFrequencySettings given initial state', () => {
@@ -562,7 +562,7 @@ describe('saveMetricsSetting reducer', () => {
 
     const savedMetricsSetting = saveMetricsSettingReducer(initState, addAPipelineSetting());
 
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(addedDeploymentFrequencySettings);
+    expect(savedMetricsSetting.pipelineSettings).toEqual(addedDeploymentFrequencySettings);
   });
 
   it('should delete deploymentFrequencySetting when delete deploymentFrequencySettings given id', () => {
@@ -574,12 +574,9 @@ describe('saveMetricsSetting reducer', () => {
       deploymentFrequencySettings,
     };
 
-    const deleteADeploymentFrequencySettingResult = saveMetricsSettingReducer(
-      mockState,
-      deleteADeploymentFrequencySetting(1),
-    );
+    const deleteADeploymentFrequencySettingResult = saveMetricsSettingReducer(mockState, deleteAPipelineSetting(1));
 
-    expect(deleteADeploymentFrequencySettingResult.deploymentFrequencySettings.length).toEqual(0);
+    expect(deleteADeploymentFrequencySettingResult.pipelineSettings.length).toEqual(0);
   });
 
   it('should add a deploymentFrequencySetting when handle addADeploymentFrequencySettings but initState dont have DeploymentFrequencySettings', () => {
@@ -597,7 +594,7 @@ describe('saveMetricsSetting reducer', () => {
       addAPipelineSetting(),
     );
 
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(addedDeploymentFrequencySettings);
+    expect(savedMetricsSetting.pipelineSettings).toEqual(addedDeploymentFrequencySettings);
   });
 
   it('should add a sourceControlConfigurationSettings when handle addOneSourceControlSetting given initial state', () => {
@@ -630,9 +627,9 @@ describe('saveMetricsSetting reducer', () => {
   });
 
   it('should delete a deploymentFrequencySetting when handle deleteADeploymentFrequencySettings given initial state', () => {
-    const savedMetricsSetting = saveMetricsSettingReducer(initState, deleteADeploymentFrequencySetting(0));
+    const savedMetricsSetting = saveMetricsSettingReducer(initState, deleteAPipelineSetting(0));
 
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual([]);
+    expect(savedMetricsSetting.pipelineSettings).toEqual([]);
   });
 
   it('should delete sourceControlConfigurationSettings when id is given', () => {
@@ -657,7 +654,7 @@ describe('saveMetricsSetting reducer', () => {
   });
 
   it('should return deploymentFrequencySettings when call selectDeploymentFrequencySettings functions', () => {
-    expect(selectPipelineSettings(store.getState())).toEqual(initState.deploymentFrequencySettings);
+    expect(selectPipelineSettings(store.getState())).toEqual(initState.pipelineSettings);
   });
 
   it('should init deploymentFrequencySettings when handle initDeploymentFrequencySettings given multiple deploymentFrequencySettings', () => {
@@ -674,7 +671,7 @@ describe('saveMetricsSetting reducer', () => {
       initPipelineSettings(),
     );
 
-    expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(initState.deploymentFrequencySettings);
+    expect(savedMetricsSetting.pipelineSettings).toEqual(initState.pipelineSettings);
   });
 
   it('should return false when update TreatFlagCardAsBlock value  given false', () => {
@@ -776,14 +773,12 @@ describe('saveMetricsSetting reducer', () => {
     const updateDeploymentFrequencySettingsResult = saveMetricsSettingReducer(
       {
         ...initState,
-        deploymentFrequencySettings: [
-          { id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
-        ],
+        pipelineSettings: [{ id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }],
       },
-      updateDeploymentFrequencySettings({ updateId: 1, label: 'Step', value: 'value' }),
+      updatePipelineSetting({ updateId: 1, label: 'Step', value: 'value' }),
     );
 
-    expect(updateDeploymentFrequencySettingsResult.deploymentFrequencySettings[0].step).toEqual('value');
+    expect(updateDeploymentFrequencySettingsResult.pipelineSettings[0].step).toEqual('value');
   });
 
   describe('updatePipelineSettings', () => {
@@ -805,7 +800,7 @@ describe('saveMetricsSetting reducer', () => {
           ...initState,
           importedData: {
             ...initState.importedData,
-            importedDeployment: [
+            importedPipelineSettings: [
               {
                 id: 0,
                 organization: 'mockOrganization1',
@@ -845,7 +840,7 @@ describe('saveMetricsSetting reducer', () => {
         },
         pipelineCrews: ['crew1', 'crew2'],
         expectSetting: {
-          deploymentFrequencySettings: [
+          pipelineSettings: [
             {
               id: 0,
               organization: 'mockOrganization1',
@@ -885,7 +880,7 @@ describe('saveMetricsSetting reducer', () => {
           ...initState,
           importedData: {
             ...initState.importedData,
-            importedDeployment: [
+            importedPipelineSettings: [
               {
                 id: 0,
                 organization: 'mockOrganization1',
@@ -926,7 +921,7 @@ describe('saveMetricsSetting reducer', () => {
         },
         pipelineCrews: ['crew1', 'crew2'],
         expectSetting: {
-          deploymentFrequencySettings: [
+          pipelineSettings: [
             {
               id: 0,
               organization: 'mockOrganization1',
@@ -962,13 +957,13 @@ describe('saveMetricsSetting reducer', () => {
           ...initState,
           importedData: {
             ...initState.importedData,
-            importedDeployment: [],
+            importedPipelineSettings: [],
             importedLeadTime: [],
           },
         },
         pipelineCrews: [],
         expectSetting: {
-          deploymentFrequencySettings: [
+          pipelineSettings: [
             {
               id: 0,
               organization: '',
@@ -988,9 +983,7 @@ describe('saveMetricsSetting reducer', () => {
         isProjectCreated: true,
         initialState: {
           ...initState,
-          deploymentFrequencySettings: [
-            { id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
-          ],
+          pipelineSettings: [{ id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }],
           importedData: {
             ...initState.importedData,
             importedDeployment: [],
@@ -999,7 +992,7 @@ describe('saveMetricsSetting reducer', () => {
         },
         pipelineCrews: [],
         expectSetting: {
-          deploymentFrequencySettings: [
+          pipelineSettings: [
             {
               id: 1,
               organization: '',
@@ -1026,7 +1019,7 @@ describe('saveMetricsSetting reducer', () => {
           updatePipelineSettings({ pipelineList: mockPipelineList, isProjectCreated, pipelineCrews }),
         );
 
-        expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(expectSetting.deploymentFrequencySettings);
+        expect(savedMetricsSetting.pipelineSettings).toEqual(expectSetting.pipelineSettings);
         expect(savedMetricsSetting.deploymentWarningMessage).toEqual(expectSetting.deploymentWarningMessage);
       });
     });
@@ -1071,7 +1064,7 @@ describe('saveMetricsSetting reducer', () => {
     ];
     const mockInitState = {
       ...initState,
-      deploymentFrequencySettings: [
+      pipelineSettings: [
         {
           id: 0,
           organization: 'mockOrganization1',
@@ -1261,7 +1254,7 @@ describe('saveMetricsSetting reducer', () => {
     ];
 
     testSettingsCases.forEach(({ id, type, steps, pipelineCrews, branches, expectedSettings, expectedWarning }) => {
-      const settingsKey = 'deploymentFrequencySettings';
+      const settingsKey = 'pipelineSettings';
       const warningKey = 'deploymentWarningMessage';
 
       it(`should update ${settingsKey} step when call updatePipelineSteps with id ${id}`, () => {

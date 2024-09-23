@@ -1,8 +1,8 @@
 import {
   addAPipelineSetting,
-  deleteADeploymentFrequencySetting,
+  deleteAPipelineSetting,
   selectPipelineSettings,
-  updateDeploymentFrequencySettings,
+  updatePipelineSetting,
 } from '@src/context/Metrics/metricsSlice';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
@@ -36,17 +36,17 @@ export const PipelineConfiguration = () => {
   };
   const realDeploymentFrequencySettings = isFirstFetch ? [] : deploymentFrequencySettings;
   const handleRemovePipeline = (id: number) => {
-    dispatch(deleteADeploymentFrequencySetting(id));
+    dispatch(deleteAPipelineSetting(id));
     dispatch(deleteMetricsPipelineFormMeta(id));
   };
 
   const handleUpdatePipeline = (id: number, label: string, value: string | StringConstructor[] | unknown) => {
-    dispatch(updateDeploymentFrequencySettings({ updateId: id, label, value }));
+    dispatch(updatePipelineSetting({ updateId: id, label, value }));
     if (label.toLowerCase() === 'organization') {
       const filteredRepoNames =
         pipelineInfoResult.data?.pipelineList.filter((it) => it.orgName === value).map((it) => it.repoName) ?? [];
       const repoName = filteredRepoNames.length > 0 ? filteredRepoNames[0] : '';
-      dispatch(updateDeploymentFrequencySettings({ updateId: id, label: 'repoName', value: repoName }));
+      dispatch(updatePipelineSetting({ updateId: id, label: 'repoName', value: repoName }));
     }
   };
 
