@@ -193,10 +193,11 @@ const MetricsStepper = () => {
     metricsConfig.cycleTimeSettingsType === CycleTimeSettingsTypes.BY_COLUMN &&
     metricsConfig.cycleTimeSettings.filter(({ value }) => value === METRICS_CONSTANTS.doneValue).length > 1;
   const isShowDeploymentFrequency =
-    requiredData.includes(RequiredData.DeploymentFrequency) ||
-    requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
-    requiredData.includes(RequiredData.LeadTimeForChanges) ||
-    requiredData.includes(RequiredData.PipelineMeanTimeToRecovery);
+    (requiredData.includes(RequiredData.DeploymentFrequency) ||
+      requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
+      requiredData.includes(RequiredData.LeadTimeForChanges) ||
+      requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) &&
+    pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION;
   const isShowSourceControlConfiguration =
     requiredData.includes(RequiredData.DeploymentFrequency) ||
     requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
