@@ -566,12 +566,10 @@ describe('saveMetricsSetting reducer', () => {
   });
 
   it('should delete deploymentFrequencySetting when delete deploymentFrequencySettings given id', () => {
-    const deploymentFrequencySettings = [
-      { id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
-    ];
+    const pipelineSettings = [{ id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }];
     const mockState = {
       ...initState,
-      deploymentFrequencySettings,
+      pipelineSettings,
     };
 
     const deleteADeploymentFrequencySettingResult = saveMetricsSettingReducer(mockState, deleteAPipelineSetting(1));
