@@ -84,7 +84,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
     assigneeFilter,
     importedData: { importedAdvancedSettings, reworkTimesSettings },
     pipelineCrews,
-    deploymentFrequencySettings,
+    pipelineSettings,
     leadTimeForChanges,
     sourceControlCrews,
     sourceControlConfigurationSettings,
@@ -148,7 +148,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       buildKiteSetting: {
         pipelineCrews,
         ...pipelineTool.config,
-        deploymentEnvList: getPipelineConfig(deploymentFrequencySettings),
+        deploymentEnvList: getPipelineConfig(pipelineSettings),
       },
       codebaseSetting: {
         type: sourceControl.config.type,
@@ -255,7 +255,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       isSharePage={false}
       metrics={metrics}
       classificationNames={classificationNames}
-      allPipelines={deploymentFrequencySettings.map((it) => `${it.pipelineName}/${it.step}`)}
+      allPipelines={pipelineSettings.map((it) => `${it.pipelineName}/${it.step}`)}
       allSourceControls={sourceControlConfigurationSettings.map((it) => `${it.organization}/${it.repo}`)}
       dateRanges={dateRanges}
       startToRequestData={() => startToRequestData(basicReportRequestBody)}

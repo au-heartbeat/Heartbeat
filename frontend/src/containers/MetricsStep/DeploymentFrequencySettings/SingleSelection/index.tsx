@@ -1,7 +1,7 @@
 import {
   IPipelineConfig,
   ISourceControlConfig,
-  selectDeploymentFrequencySettings,
+  selectPipelineSettings,
   selectSourceControlConfigurationSettings,
 } from '@src/context/Metrics/metricsSlice';
 import { getEmojiUrls, removeExtraEmojiName } from '@src/constants/emojis/emoji';
@@ -38,7 +38,7 @@ export const SingleSelection = ({
 }: Props) => {
   const labelId = `single-selection-${label.toLowerCase().replace(' ', '-')}`;
   const [inputValue, setInputValue] = useState<string>(value);
-  const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
+  const deploymentFrequencySettings = useAppSelector(selectPipelineSettings);
   const sourceControlConfigurationSettings = useAppSelector(selectSourceControlConfigurationSettings);
   let settings: IPipelineConfig[] | ISourceControlConfig[];
   if (label === 'Pipeline Name') {

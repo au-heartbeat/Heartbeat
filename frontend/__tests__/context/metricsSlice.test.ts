@@ -1,9 +1,9 @@
 import saveMetricsSettingReducer, {
-  addADeploymentFrequencySetting,
+  addAPipelineSetting,
   addOneSourceControlSetting,
   deleteADeploymentFrequencySetting,
   deleteSourceControlConfigurationSettings,
-  initDeploymentFrequencySettings,
+  initPipelineSettings,
   resetMetricData,
   saveClassificationCharts,
   saveDoneColumn,
@@ -16,7 +16,7 @@ import saveMetricsSettingReducer, {
   selectClassificationWarningMessage,
   selectCycleTimeSettings,
   selectCycleTimeWarningMessage,
-  selectDeploymentFrequencySettings,
+  selectPipelineSettings,
   selectMetricsContent,
   selectOrganizationWarningMessage,
   selectPipelineNameWarningMessage,
@@ -560,7 +560,7 @@ describe('saveMetricsSetting reducer', () => {
       { id: 1, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
     ];
 
-    const savedMetricsSetting = saveMetricsSettingReducer(initState, addADeploymentFrequencySetting());
+    const savedMetricsSetting = saveMetricsSettingReducer(initState, addAPipelineSetting());
 
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(addedDeploymentFrequencySettings);
   });
@@ -594,7 +594,7 @@ describe('saveMetricsSetting reducer', () => {
 
     const savedMetricsSetting = saveMetricsSettingReducer(
       initStateWithoutDeploymentFrequencySettings,
-      addADeploymentFrequencySetting(),
+      addAPipelineSetting(),
     );
 
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(addedDeploymentFrequencySettings);
@@ -657,7 +657,7 @@ describe('saveMetricsSetting reducer', () => {
   });
 
   it('should return deploymentFrequencySettings when call selectDeploymentFrequencySettings functions', () => {
-    expect(selectDeploymentFrequencySettings(store.getState())).toEqual(initState.deploymentFrequencySettings);
+    expect(selectPipelineSettings(store.getState())).toEqual(initState.deploymentFrequencySettings);
   });
 
   it('should init deploymentFrequencySettings when handle initDeploymentFrequencySettings given multiple deploymentFrequencySettings', () => {
@@ -671,7 +671,7 @@ describe('saveMetricsSetting reducer', () => {
 
     const savedMetricsSetting = saveMetricsSettingReducer(
       multipleDeploymentFrequencySettingsInitState,
-      initDeploymentFrequencySettings(),
+      initPipelineSettings(),
     );
 
     expect(savedMetricsSetting.deploymentFrequencySettings).toEqual(initState.deploymentFrequencySettings);
@@ -1842,7 +1842,7 @@ describe('saveMetricsSetting reducer', () => {
       expect(selectShouldGetBoardConfig(store.getState())).toBeFalsy();
       expect(selectShouldGetPipelineConfig(store.getState())).toBeFalsy();
       expect(selectShouldGetSourceControlConfig(store.getState())).toBeFalsy();
-      expect(selectDeploymentFrequencySettings(store.getState()).length).toBeGreaterThan(0);
+      expect(selectPipelineSettings(store.getState()).length).toBeGreaterThan(0);
       expect(selectReworkTimesSettings(store.getState())).toStrictEqual({ excludeStates: [], reworkState: null });
       expect(selectCycleTimeSettings(store.getState())).toEqual([]);
       expect(selectMetricsContent(store.getState()).assigneeFilter).toEqual('lastAssignee');

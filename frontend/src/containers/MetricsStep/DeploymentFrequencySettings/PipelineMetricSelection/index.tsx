@@ -5,7 +5,7 @@ import {
   updatePipelineStep,
   updateShouldGetPipelineConfig,
   selectShouldGetPipelineConfig,
-  updatePiplineCrews,
+  updatePipelineCrews,
 } from '@src/context/Metrics/metricsSlice';
 import {
   updatePipelineToolVerifyResponseCrews,
@@ -86,7 +86,7 @@ export const PipelineMetricSelection = ({
   const handleRemoveClick = () => {
     const newCrews = uniqPipelineListCrews(updateResponseCrews(organization, pipelineName, pipelineList));
     dispatch(updatePipelineToolVerifyResponseCrews({ organization, pipelineName }));
-    dispatch(updatePiplineCrews(newCrews));
+    dispatch(updatePipelineCrews(newCrews));
     onRemovePipeline(id);
     setLoadingCompletedNumber((value) => Math.max(value - 1, 0));
   };

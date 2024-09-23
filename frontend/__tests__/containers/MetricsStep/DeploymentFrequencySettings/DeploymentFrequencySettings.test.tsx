@@ -1,5 +1,5 @@
 import {
-  addADeploymentFrequencySetting,
+  addAPipelineSetting,
   deleteADeploymentFrequencySetting,
   updateDeploymentFrequencySettings,
 } from '@src/context/Metrics/metricsSlice';
@@ -154,7 +154,7 @@ describe('DeploymentFrequencySettings', () => {
 
     await userEvent.click(getByTestId('AddIcon'));
 
-    expect(addADeploymentFrequencySetting).toHaveBeenCalledTimes(1);
+    expect(addAPipelineSetting).toHaveBeenCalledTimes(1);
   });
 
   it('should call deleteADeploymentFrequencySetting function when click remove pipeline button', async () => {

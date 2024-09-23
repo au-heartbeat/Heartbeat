@@ -62,7 +62,7 @@ export interface ISavedMetricsSettingState {
   doneColumn: string[];
   cycleTimeSettingsType: CycleTimeSettingsTypes;
   cycleTimeSettings: ICycleTimeSetting[];
-  deploymentFrequencySettings: IPipelineConfig[];
+  pipelineSettings: IPipelineConfig[];
   sourceControlConfigurationSettings: ISourceControlConfig[];
   leadTimeForChanges: IPipelineConfig[];
   treatFlagCardAsBlock: boolean;
@@ -81,7 +81,7 @@ export interface ISavedMetricsSettingState {
     importedDoneStatus: string[];
     importedClassification: string[];
     importedClassificationCharts: string[];
-    importedDeployment: IPipelineConfig[];
+    importedPipelineSettings: IPipelineConfig[];
     importedSourceControlSettings: ISourceControlConfig[];
     importedAdvancedSettings: { storyPoint: string; flag: string } | null;
     reworkTimesSettings: IReworkConfig;
@@ -106,7 +106,7 @@ const initialState: ISavedMetricsSettingState = {
   doneColumn: [],
   cycleTimeSettingsType: CycleTimeSettingsTypes.BY_COLUMN,
   cycleTimeSettings: [],
-  deploymentFrequencySettings: [],
+  pipelineSettings: [],
   sourceControlConfigurationSettings: [],
   leadTimeForChanges: [{ id: 0, organization: '', pipelineName: '', step: '', repoName: '', branches: [] }],
   treatFlagCardAsBlock: true,
@@ -125,7 +125,7 @@ const initialState: ISavedMetricsSettingState = {
     importedDoneStatus: [],
     importedClassification: [],
     importedClassificationCharts: [],
-    importedDeployment: [],
+    importedPipelineSettings: [],
     importedSourceControlSettings: [],
     importedAdvancedSettings: null,
     reworkTimesSettings: {
@@ -363,15 +363,15 @@ export const metricsSlice = createSlice({
     setCycleTimeSettingsType: (state, action) => {
       state.cycleTimeSettingsType = action.payload;
     },
-    addADeploymentFrequencySetting: (state) => {
-      const { deploymentFrequencySettings, importedData } = state;
+    addAPipelineSetting: (state) => {
+      const { pipelineSettings, importedData } = state;
       const maxId = Math.max(
-        deploymentFrequencySettings[deploymentFrequencySettings.length - 1]?.id ?? 0,
-        importedData.importedDeployment[importedData.importedDeployment.length - 1]?.id ?? 0,
+        pipelineSettings[pipelineSettings.length - 1]?.id ?? 0,
+        importedData.importedPipelineSettings[importedData.importedPipelineSettings.length - 1]?.id ?? 0,
       );
       const newId = maxId + 1;
-      state.deploymentFrequencySettings = [
-        ...deploymentFrequencySettings,
+      state.pipelineSettings = [
+        ...pipelineSettings,
         { id: newId, organization: '', pipelineName: '', step: '', repoName: '', branches: [] },
       ];
     },
@@ -393,13 +393,13 @@ export const metricsSlice = createSlice({
     updateDeploymentFrequencySettings: (state, action) => {
       const { updateId, label, value } = action.payload;
 
-      state.deploymentFrequencySettings = state.deploymentFrequencySettings.map((deploymentFrequencySetting) => {
-        return deploymentFrequencySetting.id === updateId
+      state.pipelineSettings = state.pipelineSettings.map((pipelineSetting) => {
+        return pipelineSetting.id === updateId
           ? {
-              ...deploymentFrequencySetting,
+              ...pipelineSetting,
               [label === 'Step' ? 'step' : camelCase(label)]: value,
             }
-          : deploymentFrequencySetting;
+          : pipelineSetting;
       });
     },
 
@@ -460,7 +460,7 @@ export const metricsSlice = createSlice({
               },
             ];
 
-      const func = (type: string, it: ISourceControlConfig) => {
+      const mapTypeValue = (type: string, it: ISourceControlConfig) => {
         if (type === 'organization') {
           if (name.includes(it['organization'])) {
             return it['organization'];
@@ -474,7 +474,7 @@ export const metricsSlice = createSlice({
             return '';
           }
         } else {
-          return it.branches.filter((branch) => name.includes(branch));
+          return it.branches.filter((branch) => name?.includes(branch));
         }
       };
 
@@ -482,7 +482,7 @@ export const metricsSlice = createSlice({
         if (id !== undefined && id !== it.id) {
           return it;
         }
-        const newValue = func(type, it);
+        const newValue = mapTypeValue(type, it);
         return {
           ...it,
           [type]: newValue,
@@ -532,7 +532,8 @@ export const metricsSlice = createSlice({
       state.importedData.importedClassification = classification || state.importedData.importedClassification;
       state.importedData.importedClassificationCharts =
         classificationCharts || state.importedData.importedClassificationCharts;
-      state.importedData.importedDeployment = deployment || leadTime || state.importedData.importedDeployment;
+      state.importedData.importedPipelineSettings =
+        deployment || leadTime || state.importedData.importedPipelineSettings;
       state.importedData.importedSourceControlSettings =
         sourceControlConfigurationSettings || state.importedData.importedSourceControlSettings;
       state.importedData.importedAdvancedSettings = advancedSettings || state.importedData.importedAdvancedSettings;
@@ -630,13 +631,13 @@ export const metricsSlice = createSlice({
           : ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE;
     },
 
-    updatePiplineCrews: (state, action) => {
+    updatePipelineCrews: (state, action) => {
       state.pipelineCrews = intersection(state.pipelineCrews, action.payload);
     },
 
     updatePipelineSettings: (state, action) => {
       const { pipelineList, isProjectCreated, pipelineCrews } = action.payload;
-      const { importedDeployment } = state.importedData;
+      const { importedPipelineSettings } = state.importedData;
       if (pipelineCrews) {
         state.pipelineCrews = setPipelineCrews(isProjectCreated, pipelineCrews, state.pipelineCrews);
       }
@@ -729,15 +730,14 @@ export const metricsSlice = createSlice({
         return pipelines.map((pipeline) => createPipelineWarning(pipeline));
       };
 
-      const deploymentSettings =
-        state.deploymentFrequencySettings.length > 0 ? state.deploymentFrequencySettings : importedDeployment;
+      const deploymentSettings = state.pipelineSettings.length > 0 ? state.pipelineSettings : importedPipelineSettings;
 
-      state.deploymentFrequencySettings = getValidPipelines(deploymentSettings);
+      state.pipelineSettings = getValidPipelines(deploymentSettings);
       state.deploymentWarningMessage = getPipelinesWarningMessage(deploymentSettings);
     },
     updatePipelineStep: (state, action) => {
       const { steps, id, branches, pipelineCrews } = action.payload;
-      const selectedPipelineStep = state.deploymentFrequencySettings.find((pipeline) => pipeline.id === id)?.step ?? '';
+      const selectedPipelineStep = state.pipelineSettings.find((pipeline) => pipeline.id === id)?.step ?? '';
       const currentCrews = concat(pipelineCrews, state.pipelineCrews);
 
       state.pipelineCrews = intersection(currentCrews, state.pipelineCrews);
@@ -783,16 +783,13 @@ export const metricsSlice = createSlice({
         });
       };
 
-      state.deploymentWarningMessage = getStepWarningMessage(
-        state.deploymentWarningMessage,
-        state.deploymentFrequencySettings,
-      );
-      state.deploymentFrequencySettings = getPipelineSettings(state.deploymentFrequencySettings);
+      state.deploymentWarningMessage = getStepWarningMessage(state.deploymentWarningMessage, state.pipelineSettings);
+      state.pipelineSettings = getPipelineSettings(state.pipelineSettings);
     },
 
     deleteADeploymentFrequencySetting: (state, action) => {
       const deleteId = action.payload;
-      state.deploymentFrequencySettings = [...state.deploymentFrequencySettings.filter(({ id }) => id !== deleteId)];
+      state.pipelineSettings = [...state.pipelineSettings.filter(({ id }) => id !== deleteId)];
     },
 
     deleteSourceControlConfigurationSettings: (state, action) => {
@@ -802,8 +799,8 @@ export const metricsSlice = createSlice({
       ];
     },
 
-    initDeploymentFrequencySettings: (state) => {
-      state.deploymentFrequencySettings = initialState.deploymentFrequencySettings;
+    initPipelineSettings: (state) => {
+      state.pipelineSettings = initialState.pipelineSettings;
     },
 
     updateTreatFlagCardAsBlock: (state, action) => {
@@ -846,17 +843,17 @@ export const {
   savePipelineCrews,
   saveSourceControlCrews,
   updateCycleTimeSettings,
-  addADeploymentFrequencySetting,
+  addAPipelineSetting,
   updateDeploymentFrequencySettings,
   deleteADeploymentFrequencySetting,
   updateMetricsImportedData,
-  initDeploymentFrequencySettings,
+  initPipelineSettings,
   updateTreatFlagCardAsBlock,
   updateDisplayFlagCardDropWarning,
   updateAssigneeFilter,
   updateMetricsState,
   updatePipelineSettings,
-  updatePiplineCrews,
+  updatePipelineCrews,
   updatePipelineStep,
   setCycleTimeSettingsType,
   resetMetricData,
@@ -878,7 +875,7 @@ export const selectShouldGetBoardConfig = (state: RootState) => state.metrics.sh
 export const selectShouldGetPipelineConfig = (state: RootState) => state.metrics.shouldGetPipeLineConfig;
 export const selectShouldGetSourceControlConfig = (state: RootState) => state.metrics.shouldGetSourceControlConfig;
 
-export const selectDeploymentFrequencySettings = (state: RootState) => state.metrics.deploymentFrequencySettings;
+export const selectPipelineSettings = (state: RootState) => state.metrics.pipelineSettings;
 export const selectSourceControlConfigurationSettings = (state: RootState) =>
   state.metrics.sourceControlConfigurationSettings;
 export const selectReworkTimesSettings = (state: RootState) => state.metrics.importedData.reworkTimesSettings;

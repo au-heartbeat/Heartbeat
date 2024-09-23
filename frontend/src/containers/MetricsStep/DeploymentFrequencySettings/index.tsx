@@ -1,7 +1,7 @@
 import {
-  addADeploymentFrequencySetting,
+  addAPipelineSetting,
   deleteADeploymentFrequencySetting,
-  selectDeploymentFrequencySettings,
+  selectPipelineSettings,
   updateDeploymentFrequencySettings,
 } from '@src/context/Metrics/metricsSlice';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
@@ -24,14 +24,14 @@ import { useState } from 'react';
 export const DeploymentFrequencySettings = () => {
   const dispatch = useAppDispatch();
   const { isLoading, result: pipelineInfoResult, apiCallFunc, isFirstFetch } = useGetPipelineToolInfoEffect();
-  const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
+  const deploymentFrequencySettings = useAppSelector(selectPipelineSettings);
   const [loadingCompletedNumber, setLoadingCompletedNumber] = useState(0);
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
   const pipelineCrews = useAppSelector(selectPipelineCrews);
   const errorDetail = useAppSelector(getErrorDetail) as number;
 
   const handleAddPipeline = () => {
-    dispatch(addADeploymentFrequencySetting());
+    dispatch(addAPipelineSetting());
     setLoadingCompletedNumber((value) => value + 1);
   };
   const realDeploymentFrequencySettings = isFirstFetch ? [] : deploymentFrequencySettings;

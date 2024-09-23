@@ -22,7 +22,7 @@ import {
   SHOW_MORE,
 } from '../../fixtures';
 import {
-  addADeploymentFrequencySetting,
+  addAPipelineSetting,
   addOneSourceControlSetting,
   saveClassificationCharts,
   saveTargetFields,
@@ -170,7 +170,7 @@ describe('Report Step', () => {
       }),
     );
     store.dispatch(updateMetrics(params));
-    store.dispatch(addADeploymentFrequencySetting());
+    store.dispatch(addAPipelineSetting());
     store.dispatch(
       updateDeploymentFrequencySettings({ updateId: 1, label: 'organization', value: 'mock organization' }),
     );

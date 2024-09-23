@@ -207,7 +207,7 @@ const MetricsStepper = () => {
   const isRealDoneValid = metricsConfig.doneColumn.length > 0;
 
   const isDeploymentFrequencyValid = useMemo(() => {
-    const pipelines = metricsConfig.deploymentFrequencySettings;
+    const pipelines = metricsConfig.pipelineSettings;
     const pipelinesFormMeta = formMeta.metrics.pipelines;
     const selectedPipelines = pipelineList.filter((pipeline) => {
       const selectedPipelineName = pipelines.map((item) => item.pipelineName);
@@ -224,7 +224,7 @@ const MetricsStepper = () => {
       getDuplicatedPipeLineIds(pipelines).length === 0 &&
       every(pipelinesFormMeta, (item) => every(item.branches, (branch) => !branch.error && !branch.needVerify))
     );
-  }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
+  }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.pipelineSettings]);
 
   const isSourceControlConfigurationValid = useMemo(() => {
     const sourceControlConfigurationSettings = metricsConfig.sourceControlConfigurationSettings;
