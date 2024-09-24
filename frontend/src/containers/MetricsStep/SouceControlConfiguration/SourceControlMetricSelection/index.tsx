@@ -187,7 +187,7 @@ export const SourceControlMetricSelection = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getBranchFailedStatus, getCrewFailedStatus, getRepoFailedStatus, isLoading]);
 
-  const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
+  const handleOnUpdateOrganization = (id: number, label: string, value: string | string[]): void => {
     onUpdateSourceControl(id, label, value);
     const newOrganization = value.toString();
     if (selectSourceControlRepos(storeContext, newOrganization).length === 0) {
@@ -195,7 +195,7 @@ export const SourceControlMetricSelection = ({
     }
   };
 
-  const handleOnUpdateRepo = (id: number, label: string, value: string | []): void => {
+  const handleOnUpdateRepo = (id: number, label: string, value: string | string[]): void => {
     onUpdateSourceControl(id, label, value);
     const newRepo = value.toString();
     if (selectSourceControlBranches(storeContext, organization, newRepo).length === 0) {

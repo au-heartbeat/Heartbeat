@@ -23,7 +23,7 @@ interface Props {
   isError?: boolean;
   errorText?: string;
   onGetSteps?: (pipelineName: string) => void;
-  onUpdate: (id: number, label: string, value: string | []) => void;
+  onUpdate: (id: number, label: string, value: string | string[]) => void;
 }
 
 export const SingleSelection = ({
@@ -64,49 +64,47 @@ export const SingleSelection = ({
   };
 
   return (
-    <>
-      <FormControlWrapper variant='standard' required>
-        <Autocomplete
-          disableClearable
-          data-test-id={labelId}
-          options={sortDisabledOptions(settings, options, deploymentFrequencySettings)}
-          getOptionDisabled={(option: string) => getDisabledOptions(settings, option, deploymentFrequencySettings)}
-          getOptionLabel={(option: string) => removeExtraEmojiName(option).trim()}
-          renderOption={(props, option: string) => (
-            <Box component='li' {...props}>
-              <EmojiWrap>
-                {emojiView(option)}
-                <ListItemText primary={removeExtraEmojiName(option)} data-test-id={'single-option'} />
-              </EmojiWrap>
-            </Box>
-          )}
-          value={value}
-          onChange={(event, newValue: string) => {
-            handleSelectedOptionsChange(newValue);
-          }}
-          inputValue={inputValue}
-          onInputChange={(event, newInputValue) => {
-            setInputValue(newInputValue);
-          }}
-          renderInput={(params) => (
-            <TextField
-              required
-              {...params}
-              label={label}
-              variant='standard'
-              error={isError}
-              helperText={isError ? errorText : DEFAULT_HELPER_TEXT}
-            />
-          )}
-          slotProps={{
-            popper: {
-              sx: {
-                zIndex: Z_INDEX.DROPDOWN,
-              },
+    <FormControlWrapper variant='standard' required>
+      <Autocomplete
+        disableClearable
+        data-test-id={labelId}
+        options={sortDisabledOptions(settings, options, deploymentFrequencySettings)}
+        getOptionDisabled={(option: string) => getDisabledOptions(settings, option, deploymentFrequencySettings)}
+        getOptionLabel={(option: string) => removeExtraEmojiName(option).trim()}
+        renderOption={(props, option: string) => (
+          <Box component='li' {...props}>
+            <EmojiWrap>
+              {emojiView(option)}
+              <ListItemText primary={removeExtraEmojiName(option)} data-test-id={'single-option'} />
+            </EmojiWrap>
+          </Box>
+        )}
+        value={value}
+        onChange={(event, newValue: string) => {
+          handleSelectedOptionsChange(newValue);
+        }}
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue);
+        }}
+        renderInput={(params) => (
+          <TextField
+            required
+            {...params}
+            label={label}
+            variant='standard'
+            error={isError}
+            helperText={isError ? errorText : DEFAULT_HELPER_TEXT}
+          />
+        )}
+        slotProps={{
+          popper: {
+            sx: {
+              zIndex: Z_INDEX.DROPDOWN,
             },
-          }}
-        />
-      </FormControlWrapper>
-    </>
+          },
+        }}
+      />
+    </FormControlWrapper>
   );
 };

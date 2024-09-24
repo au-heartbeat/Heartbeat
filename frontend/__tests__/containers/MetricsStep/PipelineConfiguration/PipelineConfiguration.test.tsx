@@ -95,7 +95,7 @@ let mockGetPipelineToolInfoSpy: IUseVerifyPipeLineToolStateInterface = mockGetPi
 jest.mock('@src/hooks/useGetPipelineToolInfoEffect', () => ({
   useGetPipelineToolInfoEffect: () => mockGetPipelineToolInfoSpy,
 }));
-describe('DeploymentFrequencySettings', () => {
+describe('PipelineConfiguration', () => {
   let store = null;
   const setup = () => {
     store = setupStore();

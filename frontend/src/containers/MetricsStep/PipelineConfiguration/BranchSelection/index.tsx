@@ -21,7 +21,7 @@ export interface BranchSelectionProps {
   pipelineName: string;
   branches: string[];
   isStepLoading: boolean;
-  onUpdate: (id: number, label: string, value: string[] | unknown) => void;
+  onUpdate: (id: number, label: string, value: string[]) => void;
 }
 
 export const BranchSelection = (props: BranchSelectionProps) => {
@@ -53,15 +53,13 @@ export const BranchSelection = (props: BranchSelectionProps) => {
 
   const selectedBranchesWithMeta = useMemo(() => {
     return validBranches.map((item) => {
-      const metaInfo = branchesFormData.find((branch) => branch.value === item);
       const shouldVerifyBranches = sourceControlFields.token !== '';
-
-      return metaInfo
-        ? metaInfo
-        : {
-            value: item,
-            needVerify: shouldVerifyBranches,
-          };
+      return (
+        branchesFormData.find((branch) => branch.value === item) ?? {
+          value: item,
+          needVerify: shouldVerifyBranches,
+        }
+      );
     });
   }, [validBranches, branchesFormData, sourceControlFields.token]);
 
@@ -79,10 +77,10 @@ export const BranchSelection = (props: BranchSelectionProps) => {
 
   const updateBranchesMeta = (values: string[]) => {
     const branchesWithMeta = values.map((branch) => {
-      const formData = branchesFormData.find((item) => item.value === branch);
       const shouldVerifyBranches = sourceControlFields.token !== '';
-
-      return formData ? formData : { value: branch, needVerify: shouldVerifyBranches };
+      return (
+        branchesFormData.find((item) => item.value === branch) ?? { value: branch, needVerify: shouldVerifyBranches }
+      );
     });
 
     dispatch(

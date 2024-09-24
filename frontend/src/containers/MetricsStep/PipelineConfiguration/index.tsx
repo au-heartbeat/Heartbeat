@@ -40,7 +40,7 @@ export const PipelineConfiguration = () => {
     dispatch(deleteMetricsPipelineFormMeta(id));
   };
 
-  const handleUpdatePipeline = (id: number, label: string, value: string | StringConstructor[] | unknown) => {
+  const handleUpdatePipeline = (id: number, label: string, value: string | string[]) => {
     dispatch(updatePipelineSetting({ updateId: id, label, value }));
     if (label.toLowerCase() === 'organization') {
       const filteredRepoNames =

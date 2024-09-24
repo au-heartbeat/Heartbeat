@@ -35,7 +35,7 @@ import { Loading } from '@src/components/Loading';
 import { TextField } from '@mui/material';
 import { store } from '@src/store';
 
-interface pipelineMetricSelectionProps {
+interface PipelineMetricSelectionProps {
   type: string;
   pipelineSetting: {
     id: number;
@@ -48,7 +48,7 @@ interface pipelineMetricSelectionProps {
   isInfoLoading: boolean;
   isShowRemoveButton: boolean;
   onRemovePipeline: (id: number) => void;
-  onUpdatePipeline: (id: number, label: string, value: string | StringConstructor[] | unknown) => void;
+  onUpdatePipeline: (id: number, label: string, value: string | string[]) => void;
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
   totalPipelineNumber: number;
@@ -64,7 +64,7 @@ export const PipelineMetricSelection = ({
   isInfoLoading,
   setLoadingCompletedNumber,
   totalPipelineNumber,
-}: pipelineMetricSelectionProps) => {
+}: PipelineMetricSelectionProps) => {
   const { id, organization, pipelineName, step, repoName } = pipelineSetting;
   const dispatch = useAppDispatch();
   const { isLoading, errorMessage, getSteps, stepFailedStatus } = useGetMetricsStepsEffect();
