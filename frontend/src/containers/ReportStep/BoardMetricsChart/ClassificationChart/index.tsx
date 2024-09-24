@@ -125,10 +125,16 @@ function checkClassificationChartType(
   classification: string,
   classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
 ) {
-  const totalCardCounts = getTotalValues(classificationDataByModel, classification);
+  const totalValues = getTotalValues(classificationDataByModel, classification);
   const data = extractedValueList(classificationDataByModel, classification);
-  const totalCounts = data.filter((it) => it !== undefined).reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
-  return totalCounts === totalCardCounts ? ClassificationChartType.Pie : ClassificationChartType.Bar;
+  const everyValueSum = data
+    .filter((it) => it !== undefined)
+    .reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
+  return totalValues === 0
+    ? ClassificationChartType.Bar
+    : everyValueSum === totalValues
+      ? ClassificationChartType.Pie
+      : ClassificationChartType.Bar;
 }
 
 function extractClassificationValuesPieData(
@@ -172,6 +178,9 @@ function extractClassificationCardCountsBarData(
   const data = extractedValueList(classificationDataByModel, classification);
   const allSubtitle = getAllSubtitles(classificationDataByModel, classification);
   const indicators = allSubtitle.map((subtitle) => {
+    if (totalValues === 0) {
+      return 0.0;
+    }
     const value = getValueForSubtitle(data, subtitle);
     return Number(((value * PERCENTAGE_NUMBER) / totalValues).toFixed(2));
   });
