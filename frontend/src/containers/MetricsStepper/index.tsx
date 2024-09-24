@@ -349,7 +349,7 @@ const MetricsStepper = () => {
 
     const {
       leadTimeForChanges,
-      deploymentFrequencySettings,
+      pipelineSettings,
       users,
       pipelineCrews,
       doneColumn,
@@ -382,7 +382,7 @@ const MetricsStepper = () => {
         ?.map((item: { name: string; key: string; flag: boolean }) => item.key),
       classificationCharts: classificationCharts?.map(({ key }: { key: string }) => key),
       advancedSettings: importedData.importedAdvancedSettings,
-      deployment: deploymentFrequencySettings,
+      deployment: pipelineSettings,
       sourceControlConfigurationSettings,
       leadTime: leadTimeForChanges,
       reworkTimesSettings: importedData.reworkTimesSettings,
