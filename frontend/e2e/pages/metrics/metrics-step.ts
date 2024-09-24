@@ -592,7 +592,9 @@ export class MetricsStep {
   }
 
   async selectOrganization(selector: Locator, orgName: string) {
-    await expect(this.loadings).toBeHidden();
+    for (const loading of await this.loadings.all()) {
+      await expect(loading).toBeHidden();
+    }
     await selector.click();
     const targetOrganizationOption = this.page.getByRole('option', { name: orgName });
     await expect(targetOrganizationOption).toBeVisible();
