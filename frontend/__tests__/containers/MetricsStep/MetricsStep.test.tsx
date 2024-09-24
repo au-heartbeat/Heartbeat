@@ -21,12 +21,14 @@ import {
   REQUIRED_DATA_LIST,
   SELECT_CONSIDER_AS_DONE_MESSAGE,
   SOURCE_CONTROL_SETTINGS,
+  REMOVE_BUTTON,
 } from '../../fixtures';
 import {
   updateCycleTimeSettings,
   saveDoneColumn,
   setCycleTimeSettingsType,
   updateShouldGetBoardConfig,
+  addOneSourceControlSetting,
 } from '@src/context/Metrics/metricsSlice';
 import { updateJiraVerifyResponse, updateMetrics, updatePipelineTool } from '@src/context/config/configSlice';
 import { closeAllNotifications } from '@src/context/notification/NotificationSlice';
@@ -122,9 +124,12 @@ describe('MetricsStep', () => {
 
   it('should show DeploymentFrequencySettings component when select deployment frequency in config page', async () => {
     await store.dispatch(updateMetrics([REQUIRED_DATA_LIST[5]]));
+    await store.dispatch(addOneSourceControlSetting());
     setup();
 
     expect(screen.getByText(DEPLOYMENT_FREQUENCY_SETTINGS)).toBeInTheDocument();
+    expect(screen.getByText(SOURCE_CONTROL_SETTINGS)).toBeInTheDocument();
+    expect(screen.getByText(REMOVE_BUTTON)).toBeInTheDocument();
   });
 
   it('should show SourceControlConfiguration component when select lead time for changes and the pipeline configuration value is none in config page', async () => {

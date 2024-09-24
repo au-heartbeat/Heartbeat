@@ -100,7 +100,7 @@ export const useGetSourceControlConfigurationBranchEffect = (): IUseGetSourceCon
           );
           dispatch(
             updateSourceControlConfigurationSettingsFirstInto({
-              ...response,
+              ...response.data,
               id,
               type: 'branches',
             }),

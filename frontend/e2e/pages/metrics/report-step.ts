@@ -9,7 +9,7 @@ import {
   IDoraMetricsResultItem,
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
 } from '../../fixtures/create-new/report-result';
-import { checkDownloadReport, checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
+import { checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
 import { BOARD_CHART_VALUE, DORA_CHART_VALUE } from '../../fixtures/import-file/chart-result';
 import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { expect, Locator, Page, Download } from '@playwright/test';
@@ -754,28 +754,6 @@ export class ReportStep {
     );
   }
 
-  async checkMetricDownloadDataByColumn() {
-    await downloadFileAndCheck(
-      this.page,
-      this.exportMetricData,
-      'metricDataByColumnDownload.csv',
-      async (fileDataString) => {
-        const localCsvFile = fs.readFileSync(
-          path.resolve(__dirname, '../../fixtures/cycle-time-by-status/metric-data-by-status.csv'),
-        );
-        const localCsv = parse(localCsvFile);
-        const downloadCsv = parse(fileDataString);
-
-        expect(localCsv).toStrictEqual(downloadCsv);
-      },
-    );
-  }
-
-  async checkDownloadReports() {
-    await checkDownloadReport(this.page, this.exportMetricData, 'metricReport.csv');
-    // await checkDownloadReport(this.page, this.exportBoardData, 'boardReport.csv');
-    await checkDownloadReport(this.page, this.exportPipelineDataButton, 'pipelineReport.csv');
-  }
   async checkDownloadReportsCycleTimeByStatus() {
     await checkDownloadReportCycleTimeByStatus(this.page, this.exportMetricData, 'metricReport.csv');
     await checkDownloadReportCycleTimeByStatus(this.page, this.exportBoardData, 'boardReport.csv');

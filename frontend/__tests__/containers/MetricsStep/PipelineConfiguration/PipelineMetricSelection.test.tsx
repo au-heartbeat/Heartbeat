@@ -9,7 +9,7 @@ import {
   REMOVE_BUTTON,
   STEP,
 } from '@test/fixtures';
-import { PipelineMetricSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection';
+import { PipelineMetricSelection } from '@src/containers/MetricsStep/PipelineConfiguration/PipelineMetricSelection';
 import { IPipelineConfig, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { metricsClient } from '@src/clients/MetricsClient';
@@ -92,6 +92,7 @@ describe('PipelineMetricSelection', () => {
     organization: '',
     pipelineName: '',
     step: '',
+    repoName: '',
     branches: [],
   };
   const mockHandleClickRemoveButton = jest.fn();
@@ -175,7 +176,7 @@ describe('PipelineMetricSelection', () => {
       return Promise.reject('error');
     });
     const { getByText, getByRole, getAllByRole } = await setup(
-      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', branches: [] },
+      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', repoName: '', branches: [] },
       false,
       false,
     );
@@ -198,7 +199,7 @@ describe('PipelineMetricSelection', () => {
       .fn()
       .mockReturnValue({ response: [], haveStep: false, pipelineCrews: [], branches: [] });
     const { getByText, getByRole, getAllByRole } = await setup(
-      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', branches: [] },
+      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', repoName: '', branches: [] },
       false,
       false,
     );
@@ -227,7 +228,7 @@ describe('PipelineMetricSelection', () => {
       .fn()
       .mockReturnValue({ response: [], haveStep: false, pipelineCrews: [], branches: [] });
     const { getByRole, getAllByRole } = await setup(
-      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', branches: [] },
+      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', repoName: '', branches: [] },
       true,
       false,
     );
@@ -250,7 +251,7 @@ describe('PipelineMetricSelection', () => {
       .fn()
       .mockReturnValue({ response: ['steps'], haveStep: true, pipelineCrews: [], branches: [] });
     const { getByRole, getByText, getAllByRole } = await setup(
-      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', branches: [] },
+      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', repoName: '', branches: [] },
       false,
       false,
     );
@@ -276,7 +277,14 @@ describe('PipelineMetricSelection', () => {
       .fn()
       .mockReturnValue({ response: ['steps'], haveStep: true, branches: ['branch1', 'branch2'], pipelineCrews: [] });
     const { getByRole, getByText } = await setup(
-      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: '', branches: ['branch1', 'branch2'] },
+      {
+        id: 0,
+        organization: 'mockOrgName',
+        pipelineName: 'mockName',
+        step: '',
+        repoName: '',
+        branches: ['branch1', 'branch2'],
+      },
       false,
       false,
     );
@@ -298,7 +306,14 @@ describe('PipelineMetricSelection', () => {
       .fn()
       .mockReturnValue({ response: ['steps'], haveStep: true, branches: ['branch1', 'branch2'], pipelineCrews: [] });
     const { getByRole, queryByRole, getByText } = await setup(
-      { id: 0, organization: 'mockOrgName3', pipelineName: 'mockName3', step: '', branches: ['branch6', 'branch7'] },
+      {
+        id: 0,
+        organization: 'mockOrgName3',
+        pipelineName: 'mockName3',
+        step: '',
+        repoName: '',
+        branches: ['branch6', 'branch7'],
+      },
       false,
       false,
     );
@@ -320,7 +335,7 @@ describe('PipelineMetricSelection', () => {
       .fn()
       .mockReturnValue({ response: ['steps'], haveStep: true, pipelineCrews: [], branches: [] });
     const { getByText } = await setup(
-      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: 'step1', branches: [] },
+      { id: 0, organization: 'mockOrgName', pipelineName: 'mockName', step: 'step1', repoName: '', branches: [] },
       false,
       true,
     );

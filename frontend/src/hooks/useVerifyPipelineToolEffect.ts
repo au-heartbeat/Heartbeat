@@ -1,7 +1,6 @@
+import { initPipelineSettings, updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { PIPELINE_TOOL_ERROR_MESSAGE } from '@src/containers/ConfigStep/Form/literal';
 import { useDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
-import { initDeploymentFrequencySettings } from '@src/context/Metrics/metricsSlice';
-import { updateShouldGetPipelineConfig } from '@src/context/Metrics/metricsSlice';
 import { pipelineToolClient } from '@src/clients/pipeline/PipelineToolClient';
 import { TPipelineToolFieldKeys } from '@src/containers/ConfigStep/Form/type';
 import { IPipelineVerifyRequestDTO } from '@src/clients/pipeline/dto/request';
@@ -34,7 +33,7 @@ export const useVerifyPipelineToolEffect = () => {
   const persistReduxData = (pipelineToolConfig: IPipelineToolData) => {
     dispatch(updatePipelineTool(pipelineToolConfig));
     dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(initDeploymentFrequencySettings());
+    dispatch(initPipelineSettings());
   };
 
   const resetFields = () => {

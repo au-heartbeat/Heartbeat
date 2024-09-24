@@ -14,7 +14,7 @@ import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cy
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
 import { partialMetricsShowChart } from '../../fixtures/import-file/partial-metrics-show-chart';
-import { SelectNoneConfig } from '../../fixtures/import-file/select-none-config';
+import { selectNoneConfig } from '../../fixtures/import-file/select-none-config';
 import { DORA_CHART_PIPELINES } from '../../fixtures/import-file/chart-result';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
@@ -62,6 +62,7 @@ test('Import project from file with all ranges API succeed', async ({
   await metricsStep.checkClassifications(importMultipleDoneProjectFromFile.classification);
   await metricsStep.checkClassificationCharts(importMultipleDoneProjectFromFile.classificationCharts);
   await metricsStep.checkPipelineConfigurationAreChanged(importMultipleDoneProjectFromFile.deployment);
+  await metricsStep.removeSourceControl(0);
 
   await metricsStep.goToReportPage();
   await reportStep.checkProjectName(importMultipleDoneProjectFromFile.projectName);
@@ -111,6 +112,7 @@ test('Import project from file with partial ranges API failed', async ({
   await metricsStep.selectAllPipelineCrews();
   await metricsStep.checkClassifications(partialTimeRangesSuccess.classification);
   await metricsStep.checkClassificationCharts(partialTimeRangesSuccess.classificationCharts);
+  await metricsStep.removeSourceControl(0);
   await metricsStep.validateNextButtonClickable();
   await metricsStep.goToReportPage();
 
@@ -162,6 +164,7 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
   await metricsStep.selectAllPipelineCrews();
   await metricsStep.checkClassifications(partialMetricsShowChart.classification);
   await metricsStep.checkClassificationCharts(partialMetricsShowChart.classificationCharts);
+  await metricsStep.removeSourceControl(0);
   await metricsStep.validateNextButtonClickable();
   await metricsStep.goToReportPage();
 
@@ -221,6 +224,7 @@ test('Import project from file with analysis board status', async ({
   await configStep.goToMetrics();
   await metricsStep.waitForShown();
   await metricsStep.checkCycleTimeConsiderCheckboxChecked();
+  await metricsStep.removeSourceControl(0);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
@@ -237,7 +241,7 @@ test('Import project from file when select none in pipeline tool configuration',
   metricsStep,
   reportStep,
 }) => {
-  const hbStateData = SelectNoneConfig.cycleTime.jiraColumns.map(
+  const hbStateData = selectNoneConfig.cycleTime.jiraColumns.map(
     (jiraToHBSingleMap) => Object.values(jiraToHBSingleMap)[0],
   );
   const prefix = 'with-source-control-lead-time-';
@@ -252,18 +256,18 @@ test('Import project from file when select none in pipeline tool configuration',
   await configStep.goToMetrics();
 
   await metricsStep.waitForShown();
-  await metricsStep.checkCrewsAreChanged(SelectNoneConfig.crews);
+  await metricsStep.checkCrewsAreChanged(selectNoneConfig.crews);
   await metricsStep.checkLastAssigneeCrewFilterChecked();
   await metricsStep.checkCycleTimeSettingIsByColumn();
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
-  await metricsStep.selectCycleTimeSettingsType(SelectNoneConfig.cycleTime.type);
+  await metricsStep.selectCycleTimeSettingsType(selectNoneConfig.cycleTime.type);
   await metricsStep.selectHeartbeatState(hbStateData, true);
   await metricsStep.checkHeartbeatStateIsSet(hbStateData, true);
-  await metricsStep.selectReworkSettings(SelectNoneConfig.reworkTimesSettings);
-  await metricsStep.checkClassifications(SelectNoneConfig.classification);
-  await metricsStep.checkClassificationCharts(SelectNoneConfig.classificationCharts);
-  await metricsStep.checkSourceControlConfigurationAreChanged(SelectNoneConfig.sourceControlConfigurationSettings);
-  await metricsStep.selectGivenSourceControlCrews(SelectNoneConfig.sourceControlCrews);
+  await metricsStep.selectReworkSettings(selectNoneConfig.reworkTimesSettings);
+  await metricsStep.checkClassifications(selectNoneConfig.classification);
+  await metricsStep.checkClassificationCharts(selectNoneConfig.classificationCharts);
+  await metricsStep.checkSourceControlConfigurationAreChanged(selectNoneConfig.sourceControlConfigurationSettings);
+  await metricsStep.selectGivenSourceControlCrews(selectNoneConfig.sourceControlCrews);
 
   await metricsStep.goToReportPage();
   await reportStep.confirmGeneratedReport();

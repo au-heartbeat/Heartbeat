@@ -5,7 +5,7 @@ import {
   updatePipelineStep,
   updateShouldGetPipelineConfig,
   selectShouldGetPipelineConfig,
-  updatePiplineCrews,
+  updatePipelineCrews,
 } from '@src/context/Metrics/metricsSlice';
 import {
   updatePipelineToolVerifyResponseCrews,
@@ -17,9 +17,10 @@ import {
   selectPipelineList,
 } from '@src/context/config/configSlice';
 
-import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
-import { BranchSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection';
+import { FormControlWrapper } from '@src/containers/MetricsStep/PipelineConfiguration/SingleSelection/style';
 import { ButtonWrapper, PipelineMetricSelectionWrapper, RemoveButton, WarningMessage } from './style';
+import { SingleSelection } from '@src/containers/MetricsStep/PipelineConfiguration/SingleSelection';
+import { BranchSelection } from '@src/containers/MetricsStep/PipelineConfiguration/BranchSelection';
 import { WarningNotification } from '@src/components/Common/WarningNotification';
 import { useGetMetricsStepsEffect } from '@src/hooks/useGetMetricsStepsEffect';
 import { addNotification } from '@src/context/notification/NotificationSlice';
@@ -31,21 +32,23 @@ import { MetricsDataFailStatus } from '@src/constants/commons';
 import { useAppDispatch, useAppSelector } from '@src/hooks';
 import { useEffect, useRef, useState } from 'react';
 import { Loading } from '@src/components/Loading';
+import { TextField } from '@mui/material';
 import { store } from '@src/store';
 
-interface pipelineMetricSelectionProps {
+interface PipelineMetricSelectionProps {
   type: string;
   pipelineSetting: {
     id: number;
     organization: string;
     pipelineName: string;
     step: string;
+    repoName: string;
     branches: string[];
   };
   isInfoLoading: boolean;
   isShowRemoveButton: boolean;
   onRemovePipeline: (id: number) => void;
-  onUpdatePipeline: (id: number, label: string, value: string | StringConstructor[] | unknown) => void;
+  onUpdatePipeline: (id: number, label: string, value: string | string[]) => void;
   isDuplicated: boolean;
   setLoadingCompletedNumber: React.Dispatch<React.SetStateAction<number>>;
   totalPipelineNumber: number;
@@ -61,8 +64,8 @@ export const PipelineMetricSelection = ({
   isInfoLoading,
   setLoadingCompletedNumber,
   totalPipelineNumber,
-}: pipelineMetricSelectionProps) => {
-  const { id, organization, pipelineName, step } = pipelineSetting;
+}: PipelineMetricSelectionProps) => {
+  const { id, organization, pipelineName, step, repoName } = pipelineSetting;
   const dispatch = useAppDispatch();
   const { isLoading, errorMessage, getSteps, stepFailedStatus } = useGetMetricsStepsEffect();
   const storeContext = store.getState();
@@ -83,7 +86,7 @@ export const PipelineMetricSelection = ({
   const handleRemoveClick = () => {
     const newCrews = uniqPipelineListCrews(updateResponseCrews(organization, pipelineName, pipelineList));
     dispatch(updatePipelineToolVerifyResponseCrews({ organization, pipelineName }));
-    dispatch(updatePiplineCrews(newCrews));
+    dispatch(updatePipelineCrews(newCrews));
     onRemovePipeline(id);
     setLoadingCompletedNumber((value) => Math.max(value - 1, 0));
   };
@@ -190,6 +193,11 @@ export const PipelineMetricSelection = ({
           errorText={NO_PIPELINE_STEP_ERROR}
           onUpdate={(id, label, value) => onUpdatePipeline(id, label, value)}
         />
+      )}
+      {organization && (
+        <FormControlWrapper variant='standard'>
+          <TextField disabled id='filled-disabled' label='Repo Name' defaultValue={repoName} variant='standard' />
+        </FormControlWrapper>
       )}
       {organization && pipelineName && (
         <BranchSelection {...pipelineSetting} onUpdate={onUpdatePipeline} isStepLoading={isLoading} />

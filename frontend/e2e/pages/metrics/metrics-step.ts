@@ -277,9 +277,8 @@ export class MetricsStep {
     await expect(this.boardLastAssigneeRadioBox).toBeChecked();
   }
 
-  async checkClassificationText() {
-    await expect(this.boardLastAssigneeRadioBox).toBeVisible();
-    await expect(this.boardLastAssigneeRadioBox).toBeChecked();
+  async removeSourceControl(index: number) {
+    await this.sourceControlSettingSection.getByText('Remove').nth(index).click();
   }
 
   async checkCycleTimeConsiderCheckboxChecked() {
@@ -862,11 +861,6 @@ export class MetricsStep {
 
   async goToReportPage() {
     await this.page.getByRole('button', { name: 'Next' }).click();
-  }
-
-  async clickHomeIconThenBackToHomepage() {
-    await this.homeIcon.click();
-    await expect(this.page).toHaveURL(/\//);
   }
 
   async checkPipelineConfigurationAreChanged(pipelineSettings: typeof metricsStepData.deployment) {

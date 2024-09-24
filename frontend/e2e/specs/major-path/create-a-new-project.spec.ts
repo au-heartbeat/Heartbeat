@@ -17,7 +17,7 @@ import { configWithoutBlockColumn as configWithoutBlockColumnData } from '../../
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { BOARD_CSV_COMPARED_LINES } from '../../fixtures/create-new/report-result';
 import { config as metricsStepData } from '../../fixtures/create-new/metrics-step';
-import { SelectNoneConfig } from '../../fixtures/import-file/select-none-config';
+import { selectNoneConfig } from '../../fixtures/import-file/select-none-config';
 import { config as configStepData } from '../../fixtures/create-new/config-step';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
@@ -78,6 +78,7 @@ test('Create a new project', async ({ homePage, configStep, metricsStep, reportS
   await metricsStep.selectClassificationCharts(metricsStepData.classificationCharts);
   await metricsStep.selectDefaultGivenPipelineSetting(metricsStepData.deployment);
   await metricsStep.selectAllPipelineCrews();
+  await metricsStep.removeSourceControl(0);
   await metricsStep.selectReworkSettings(metricsStepData.reworkTimesSettings);
   await metricsStep.saveConfigStepAsJSONThenVerifyDownloadFile(metricsStepData);
   await metricsStep.goToReportPage();
@@ -185,6 +186,7 @@ test('Create a new project with design and waiting for deployment in the cycle t
   await metricsStep.selectAllPipelineCrews();
   await metricsStep.selectReworkSettings(configWithDesignAndWaitingForDevelopmentStatus.reworkTimesSettings);
   await metricsStep.saveConfigStepAsJSONThenVerifyDownloadFile(configWithDesignAndWaitingForDevelopmentStatus);
+  await metricsStep.removeSourceControl(0);
   await metricsStep.goToReportPage();
 
   await reportStep.confirmGeneratedReport();
@@ -228,7 +230,7 @@ test('Create a new project with other pipeline setting', async ({ homePage, conf
   await configStep.goToMetrics();
 
   await metricsStep.waitForShown();
-  await metricsStep.selectDefaultGivenSourceControlSetting(SelectNoneConfig.sourceControlConfigurationSettings);
+  await metricsStep.selectDefaultGivenSourceControlSetting(selectNoneConfig.sourceControlConfigurationSettings);
   await metricsStep.selectAllPipelineCrews(metricsStep.sourceControlCrewSettingsLabel);
 
   await metricsStep.goToReportPage();

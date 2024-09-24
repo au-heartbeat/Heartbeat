@@ -1,6 +1,6 @@
 import { MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL, MOCK_SOURCE_CONTROL_VERIFY_REQUEST_PARAMS } from '@test/fixtures';
-import { BranchSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/BranchSelection';
 import { updatePipelineToolVerifyResponse, updateSourceControl } from '@src/context/config/configSlice';
+import { BranchSelection } from '@src/containers/MetricsStep/PipelineConfiguration/BranchSelection';
 import { render, screen, waitFor } from '@testing-library/react';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';

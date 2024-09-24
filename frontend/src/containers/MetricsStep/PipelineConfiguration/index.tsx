@@ -1,8 +1,8 @@
 import {
-  addADeploymentFrequencySetting,
-  deleteADeploymentFrequencySetting,
-  selectDeploymentFrequencySettings,
-  updateDeploymentFrequencySettings,
+  addAPipelineSetting,
+  deleteAPipelineSetting,
+  selectPipelineSettings,
+  updatePipelineSetting,
 } from '@src/context/Metrics/metricsSlice';
 import PresentationForErrorCases from '@src/components/Metrics/MetricsStep/DeploymentFrequencySettings/PresentationForErrorCases';
 import { useMetricsStepValidationCheckContext } from '@src/hooks/useMetricsStepValidationCheckContext';
@@ -21,27 +21,33 @@ import { Loading } from '@src/components/Loading';
 import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 
-export const DeploymentFrequencySettings = () => {
+export const PipelineConfiguration = () => {
   const dispatch = useAppDispatch();
   const { isLoading, result: pipelineInfoResult, apiCallFunc, isFirstFetch } = useGetPipelineToolInfoEffect();
-  const deploymentFrequencySettings = useAppSelector(selectDeploymentFrequencySettings);
+  const deploymentFrequencySettings = useAppSelector(selectPipelineSettings);
   const [loadingCompletedNumber, setLoadingCompletedNumber] = useState(0);
   const { getDuplicatedPipeLineIds } = useMetricsStepValidationCheckContext();
   const pipelineCrews = useAppSelector(selectPipelineCrews);
   const errorDetail = useAppSelector(getErrorDetail) as number;
 
   const handleAddPipeline = () => {
-    dispatch(addADeploymentFrequencySetting());
+    dispatch(addAPipelineSetting());
     setLoadingCompletedNumber((value) => value + 1);
   };
   const realDeploymentFrequencySettings = isFirstFetch ? [] : deploymentFrequencySettings;
   const handleRemovePipeline = (id: number) => {
-    dispatch(deleteADeploymentFrequencySetting(id));
+    dispatch(deleteAPipelineSetting(id));
     dispatch(deleteMetricsPipelineFormMeta(id));
   };
 
-  const handleUpdatePipeline = (id: number, label: string, value: string | StringConstructor[] | unknown) => {
-    dispatch(updateDeploymentFrequencySettings({ updateId: id, label, value }));
+  const handleUpdatePipeline = (id: number, label: string, value: string | string[]) => {
+    dispatch(updatePipelineSetting({ updateId: id, label, value }));
+    if (label.toLowerCase() === 'organization') {
+      const filteredRepoNames =
+        pipelineInfoResult.data?.pipelineList.filter((it) => it.orgName === value).map((it) => it.repoName) ?? [];
+      const repoName = filteredRepoNames.length > 0 ? filteredRepoNames[0] : '';
+      dispatch(updatePipelineSetting({ updateId: id, label: 'repoName', value: repoName }));
+    }
   };
 
   const totalPipelineNumber = realDeploymentFrequencySettings.length;

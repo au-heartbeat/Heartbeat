@@ -10,7 +10,7 @@ import {
   PipelineMetricSelectionWrapper,
   RemoveButton,
   WarningMessage,
-} from '@src/containers/MetricsStep/DeploymentFrequencySettings/PipelineMetricSelection/style';
+} from '@src/containers/MetricsStep/PipelineConfiguration/PipelineMetricSelection/style';
 import {
   AxiosRequestErrorCode,
   MESSAGE,
@@ -25,7 +25,7 @@ import { useGetSourceControlConfigurationBranchEffect } from '@src/hooks/useGetS
 import { useGetSourceControlConfigurationRepoEffect } from '@src/hooks/useGetSourceControlConfigurationRepoEffect';
 import { useGetSourceControlConfigurationCrewEffect } from '@src/hooks/useGetSourceControlConfigurationCrewEffect';
 import { SourceControlBranch } from '@src/containers/MetricsStep/SouceControlConfiguration/SourceControlBranch';
-import { SingleSelection } from '@src/containers/MetricsStep/DeploymentFrequencySettings/SingleSelection';
+import { SingleSelection } from '@src/containers/MetricsStep/PipelineConfiguration/SingleSelection';
 import { ErrorInfoType } from '@src/containers/MetricsStep/SouceControlConfiguration';
 import { addNotification } from '@src/context/notification/NotificationSlice';
 import { MetricsDataFailStatus } from '@src/constants/commons';
@@ -187,7 +187,7 @@ export const SourceControlMetricSelection = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, getBranchFailedStatus, getCrewFailedStatus, getRepoFailedStatus, isLoading]);
 
-  const handleOnUpdateOrganization = (id: number, label: string, value: string | []): void => {
+  const handleOnUpdateOrganization = (id: number, label: string, value: string | string[]): void => {
     onUpdateSourceControl(id, label, value);
     const newOrganization = value.toString();
     if (selectSourceControlRepos(storeContext, newOrganization).length === 0) {
@@ -195,7 +195,7 @@ export const SourceControlMetricSelection = ({
     }
   };
 
-  const handleOnUpdateRepo = (id: number, label: string, value: string | []): void => {
+  const handleOnUpdateRepo = (id: number, label: string, value: string | string[]): void => {
     onUpdateSourceControl(id, label, value);
     const newRepo = value.toString();
     if (selectSourceControlBranches(storeContext, organization, newRepo).length === 0) {

@@ -199,16 +199,15 @@ const MetricsStepper = () => {
       requiredData.includes(RequiredData.PipelineMeanTimeToRecovery)) &&
     pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION;
   const isShowSourceControlConfiguration =
-    requiredData.includes(RequiredData.LeadTimeForChanges) &&
-    !requiredData.includes(RequiredData.DeploymentFrequency) &&
-    !requiredData.includes(RequiredData.PipelineChangeFailureRate) &&
-    !requiredData.includes(RequiredData.PipelineMeanTimeToRecovery) &&
-    pipelineTools.type === PIPELINE_TOOL_OTHER_OPTION;
+    requiredData.includes(RequiredData.DeploymentFrequency) ||
+    requiredData.includes(RequiredData.PipelineChangeFailureRate) ||
+    requiredData.includes(RequiredData.LeadTimeForChanges) ||
+    requiredData.includes(RequiredData.PipelineMeanTimeToRecovery);
   const isCrewsSettingValid = metricsConfig.users.length > 0;
   const isRealDoneValid = metricsConfig.doneColumn.length > 0;
 
   const isDeploymentFrequencyValid = useMemo(() => {
-    const pipelines = metricsConfig.deploymentFrequencySettings;
+    const pipelines = metricsConfig.pipelineSettings;
     const pipelinesFormMeta = formMeta.metrics.pipelines;
     const selectedPipelines = pipelineList.filter((pipeline) => {
       const selectedPipelineName = pipelines.map((item) => item.pipelineName);
@@ -225,7 +224,7 @@ const MetricsStepper = () => {
       getDuplicatedPipeLineIds(pipelines).length === 0 &&
       every(pipelinesFormMeta, (item) => every(item.branches, (branch) => !branch.error && !branch.needVerify))
     );
-  }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.deploymentFrequencySettings]);
+  }, [pipelineList, formMeta.metrics.pipelines, getDuplicatedPipeLineIds, metricsConfig.pipelineSettings]);
 
   const isSourceControlConfigurationValid = useMemo(() => {
     const sourceControlConfigurationSettings = metricsConfig.sourceControlConfigurationSettings;
@@ -239,18 +238,22 @@ const MetricsStepper = () => {
       ...new Set(sourceControlConfigurationSettings.flatMap((it) => getSourceControlCrews(it))),
     ];
 
-    return (
-      !isEmpty(selectedSourceControls) &&
-      !isEmpty(sourceControlCrews) &&
+    const isAllSourceControlFinished =
       sourceControlConfigurationSettings.every(({ organization }) => !isEmpty(organization)) &&
       sourceControlConfigurationSettings.every(({ repo }) => !isEmpty(repo)) &&
       sourceControlConfigurationSettings.every(({ branches }) => !isEmpty(branches)) &&
       selectedSourceControls.every(({ organization }) => !isEmpty(organization)) &&
       selectedSourceControls.every(({ repo }) => !isEmpty(repo)) &&
       selectedSourceControls.every(({ branches }) => !isEmpty(branches)) &&
-      getDuplicatedSourceControlIds(sourceControlConfigurationSettings).length === 0
-    );
+      getDuplicatedSourceControlIds(sourceControlConfigurationSettings).length === 0;
+
+    if (pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION) {
+      const notContainsSourceControls = isEmpty(selectedSourceControls) ? true : !isEmpty(sourceControlCrews);
+      return notContainsSourceControls && isAllSourceControlFinished;
+    }
+    return !isEmpty(selectedSourceControls) && !isEmpty(sourceControlCrews) && isAllSourceControlFinished;
   }, [
+    pipelineTools,
     metricsConfig.sourceControlConfigurationSettings,
     getSourceControlCrews,
     getDuplicatedSourceControlIds,
@@ -346,7 +349,7 @@ const MetricsStepper = () => {
 
     const {
       leadTimeForChanges,
-      deploymentFrequencySettings,
+      pipelineSettings,
       users,
       pipelineCrews,
       doneColumn,
@@ -379,7 +382,7 @@ const MetricsStepper = () => {
         ?.map((item: { name: string; key: string; flag: boolean }) => item.key),
       classificationCharts: classificationCharts?.map(({ key }: { key: string }) => key),
       advancedSettings: importedData.importedAdvancedSettings,
-      deployment: deploymentFrequencySettings,
+      deployment: pipelineSettings,
       sourceControlConfigurationSettings,
       leadTime: leadTimeForChanges,
       reworkTimesSettings: importedData.reworkTimesSettings,

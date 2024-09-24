@@ -22,7 +22,7 @@ import {
   saveDoneColumn,
   saveTargetFields,
   saveUsers,
-  updateDeploymentFrequencySettings,
+  updatePipelineSetting,
   updateTreatFlagCardAsBlock,
 } from '@src/context/Metrics/metricsSlice';
 import { ASSIGNEE_FILTER_TYPES, Calendar, DEFAULT_MESSAGE } from '@src/constants/resources';
@@ -55,6 +55,7 @@ const mockValidationCheckContext = {
   clearErrorMessage: jest.fn(),
   checkDuplicatedPipeline: jest.fn(),
   getDuplicatedPipeLineIds: jest.fn().mockReturnValue([]),
+  getDuplicatedSourceControlIds: jest.fn().mockReturnValue([]),
 };
 
 const mockDateRange = {
@@ -184,13 +185,9 @@ const fillMetricsPageDate = async () => {
       ]),
     );
     store.dispatch(updateTreatFlagCardAsBlock(false));
-    store.dispatch(
-      updateDeploymentFrequencySettings({ updateId: 0, label: 'organization', value: 'mock new organization' }),
-    );
-    store.dispatch(
-      updateDeploymentFrequencySettings({ updateId: 0, label: 'pipelineName', value: 'mock new pipelineName' }),
-    );
-    store.dispatch(updateDeploymentFrequencySettings({ updateId: 0, label: 'step', value: 'mock new step' }));
+    store.dispatch(updatePipelineSetting({ updateId: 0, label: 'organization', value: 'mock new organization' }));
+    store.dispatch(updatePipelineSetting({ updateId: 0, label: 'pipelineName', value: 'mock new pipelineName' }));
+    store.dispatch(updatePipelineSetting({ updateId: 0, label: 'step', value: 'mock new step' }));
     store.dispatch(updateDateRange([mockDateRange]));
   });
 };

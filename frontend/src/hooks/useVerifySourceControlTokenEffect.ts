@@ -1,5 +1,5 @@
 import {
-  initDeploymentFrequencySettings,
+  initPipelineSettings,
   initSourceControlConfigurationSettings,
   updateShouldGetPipelineConfig,
   updateShouldGetSourceControlConfig,
@@ -39,7 +39,7 @@ export const useVerifySourceControlTokenEffect = () => {
   const persistReduxData = (sourceControlConfig: ISourceControlData) => {
     dispatch(updateSourceControl(sourceControlConfig));
     dispatch(updateShouldGetPipelineConfig(true));
-    dispatch(initDeploymentFrequencySettings());
+    dispatch(initPipelineSettings());
     dispatch(updateShouldGetSourceControlConfig(true));
     dispatch(initSourceControlConfigurationSettings());
   };

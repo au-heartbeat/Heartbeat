@@ -8,6 +8,7 @@ export interface IPipeline {
   orgId: string;
   orgName: string;
   repository: string;
+  repoName: string;
   steps: string[];
   branches: string[];
   crews: string[];

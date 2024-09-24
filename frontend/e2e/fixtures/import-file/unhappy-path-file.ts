@@ -88,6 +88,7 @@ export const importInputWrongProjectFromFile = {
       organization: 'Heartbeat-backup',
       pipelineName: 'Heartbeat',
       step: ':rocket: Run e2e',
+      repoName: 'au-heartbeat/Heartbeat',
       branches: ['main'],
       isStepEmptyString: false,
     },
