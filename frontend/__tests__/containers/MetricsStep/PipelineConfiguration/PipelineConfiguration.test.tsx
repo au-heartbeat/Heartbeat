@@ -144,7 +144,7 @@ describe('DeploymentFrequencySettings', () => {
     expect(getAllByText(ORGANIZATION).length).toBe(2);
   });
 
-  it('should call addADeploymentFrequencySetting function when click add another pipeline button', async () => {
+  it('should call addAPipelineSetting function when click add another pipeline button', async () => {
     const { getByTestId } = await setup();
 
     await userEvent.click(getByTestId('AddIcon'));
@@ -152,30 +152,29 @@ describe('DeploymentFrequencySettings', () => {
     expect(addAPipelineSetting).toHaveBeenCalledTimes(1);
   });
 
-  it('should call deleteADeploymentFrequencySetting function when click remove pipeline button', async () => {
+  it('should call deleteAPipelineSetting function when click remove pipeline button', async () => {
     const { getAllByRole } = await setup();
 
     await act(async () => {
       await userEvent.click(getAllByRole('button', { name: REMOVE_BUTTON })[0]);
     });
+
     expect(deleteAPipelineSetting).toHaveBeenCalledTimes(1);
   });
 
-  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and the value doesnt match pipeline info', async () => {
+  it('should call updatePipelineSetting function and clearErrorMessages function when select organization and the value doesnt match pipeline info', async () => {
     const { getAllByRole, getByRole } = setup();
 
     await act(async () => {
       await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
     });
     const listBox = within(getByRole('listbox'));
-    await act(async () => {
-      await userEvent.click(listBox.getByText('mockOrgName2'));
-    });
+    await userEvent.click(listBox.getByText('mockOrgName2'));
 
     expect(updatePipelineSetting).toHaveBeenCalledTimes(2);
   });
 
-  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and the value match pipeline info', async () => {
+  it('should call updatePipelineSetting function and clearErrorMessages function when select organization and the value match pipeline info', async () => {
     mockGetPipelineToolInfoSpy = {
       ...mockGetPipelineToolInfoOkResponse,
       result: {
@@ -210,7 +209,7 @@ describe('DeploymentFrequencySettings', () => {
     expect(updatePipelineSetting).toHaveBeenCalledTimes(2);
   });
 
-  it('should call updateDeploymentFrequencySetting function and clearErrorMessages function when select organization and pipeline info is undefined', async () => {
+  it('should call updatePipelineSetting function and clearErrorMessages function when select organization and pipeline info is undefined', async () => {
     mockGetPipelineToolInfoSpy = {
       ...mockGetPipelineToolInfoOkResponse,
       result: {
