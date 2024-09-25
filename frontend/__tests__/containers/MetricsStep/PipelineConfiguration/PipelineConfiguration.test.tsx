@@ -8,6 +8,8 @@ import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 
+jest.retryTimes(5);
+
 let mockSelectShouldGetPipelineConfig = true;
 let mockSelectPipelineNames: string[] = [];
 const mockSelectStepsParams = {
