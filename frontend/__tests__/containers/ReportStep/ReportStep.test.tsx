@@ -34,6 +34,7 @@ import {
   updateDateRange,
   updateJiraVerifyResponse,
   updateMetrics,
+  updatePipelineTool,
   updatePipelineToolVerifyResponse,
 } from '@src/context/config/configSlice';
 import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
@@ -228,6 +229,24 @@ describe('Report Step', () => {
       expect(screen.getByText('Deployment Frequency')).toBeInTheDocument();
       expect(screen.getByText('Pipeline Change Failure Rate')).toBeInTheDocument();
       expect(screen.getByText('Pipeline Mean Time To Recovery')).toBeInTheDocument();
+    });
+
+    it('should call startToRequestData with no pipeline settings when pipeline configuration select Other', () => {
+      store.dispatch(
+        updatePipelineTool({
+          type: 'Other',
+          token: '',
+        }),
+      );
+      setup([LEAD_TIME_FOR_CHANGES], [emptyValueDateRange]);
+
+      expect(useGenerateReportEffect().startToRequestData).toBeCalledWith(
+        expect.objectContaining({
+          buildKiteSetting: expect.objectContaining({
+            deploymentEnvList: [],
+          }),
+        }),
+      );
     });
 
     it('should render loading page when report data is empty', () => {
