@@ -25,6 +25,12 @@ const mockSelectStepsParams = {
   ],
 };
 
+const mockInitSelectedPipelineSettings = [
+  { id: 0, organization: 'mockOrgName', pipelineName: '1', steps: '', branches: [] },
+  { id: 1, organization: '', pipelineName: '', steps: '', branches: [] },
+];
+let mockSelectedPipelineSettings = mockInitSelectedPipelineSettings;
+
 jest.mock('@src/hooks', () => ({
   ...jest.requireActual('@src/hooks'),
   useAppDispatch: () => jest.fn(),
@@ -35,10 +41,7 @@ jest.mock('@src/context/Metrics/metricsSlice', () => ({
   addAPipelineSetting: jest.fn(),
   deleteAPipelineSetting: jest.fn(),
   updatePipelineSetting: jest.fn(),
-  selectPipelineSettings: jest.fn().mockReturnValue([
-    { id: 0, organization: 'mockOrgName', pipelineName: '1', steps: '', branches: [] },
-    { id: 1, organization: '', pipelineName: '', steps: '', branches: [] },
-  ]),
+  selectPipelineSettings: jest.fn().mockImplementation(() => mockSelectedPipelineSettings),
   selectOrganizationWarningMessage: jest.fn().mockReturnValue(null),
   selectPipelineNameWarningMessage: jest.fn().mockReturnValue(null),
   selectStepWarningMessage: jest.fn().mockReturnValue(null),
@@ -112,10 +115,12 @@ describe('PipelineConfiguration', () => {
     mockSelectShouldGetPipelineConfig = true;
     mockSelectPipelineNames = [];
     mockGetPipelineToolInfoSpy = mockGetPipelineToolInfoOkResponse;
+    mockSelectedPipelineSettings = mockInitSelectedPipelineSettings;
   });
 
   it('should show crew settings when select pipelineName', async () => {
     mockSelectPipelineNames = ['Heartbeat'];
+    mockSelectedPipelineSettings = [{ id: 0, organization: 'mockOrgName', pipelineName: '1', steps: '', branches: [] }];
     const { getAllByRole, getByRole } = await setup();
     await act(async () => {
       await userEvent.click(getAllByRole('button', { name: LIST_OPEN })[0]);
@@ -132,7 +137,8 @@ describe('PipelineConfiguration', () => {
     await act(async () => {
       await userEvent.click(listBox.getByText('Heartbeat'));
     });
-    waitFor(() => {
+    screen.debug(undefined, 30000);
+    await waitFor(() => {
       expect(screen.getByText('Crew setting (optional)')).toBeInTheDocument();
     });
   });

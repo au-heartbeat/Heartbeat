@@ -1263,6 +1263,110 @@ describe('Report Step', () => {
       });
     });
 
+    it('should show classification chart when click switch model button and story points sum is zero', async () => {
+      const mockReportData = { ...MOCK_REPORT_MOCK_PIPELINE_RESPONSE };
+      mockReportData.classificationList = [
+        {
+          fieldName: 'Issue Type',
+          totalCardCount: 3,
+          storyPoints: 0,
+          classificationInfos: [
+            {
+              name: 'Feature Work - Planned',
+              cardCountValue: 0.5714,
+              cardCount: 1,
+              storyPoints: 0,
+              storyPointsValue: 0,
+            },
+            {
+              name: 'Feature Work - Planned2',
+              cardCountValue: 0.5714,
+              cardCount: 2,
+              storyPoints: 0,
+              storyPointsValue: 0,
+            },
+          ],
+        },
+        {
+          fieldName: 'Parent',
+          totalCardCount: 3,
+          storyPoints: 0,
+          classificationInfos: [
+            {
+              name: 'Feature Work - Planned',
+              cardCountValue: 0.5714,
+              cardCount: 3,
+              storyPoints: 0,
+              storyPointsValue: 0,
+            },
+            {
+              name: 'Feature Work - Planned2',
+              cardCountValue: 0.5714,
+              cardCount: 2,
+              storyPoints: 0,
+              storyPointsValue: 0,
+            },
+          ],
+        },
+      ];
+
+      reportHook.current.reportInfos[0].reportData = mockReportData;
+
+      setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      await userEvent.click(switchChartButton);
+
+      const issueTypeSwitchButtonGroup = screen.queryByLabelText('classification issue type switch model button group');
+      const issueTypeSwitchCardCountButton = screen.queryByLabelText(
+        'classification issue type switch card count model button',
+      );
+      const issueTypeSwitchStoryPointsGroup = screen.queryByLabelText(
+        'classification issue type switch story points model button',
+      );
+      const parentSwitchButtonGroup = screen.queryByLabelText('classification parent switch model button group');
+      const parentSwitchCardCountButton = screen.queryByLabelText(
+        'classification parent switch card count model button',
+      );
+      const parentSwitchStoryPointsButton = screen.queryByLabelText(
+        'classification parent switch story points model button',
+      );
+
+      const classificationIssueTypeChart = screen.queryByLabelText('classification issue type chart');
+      const classificationIssueTypeSwitchIcon = screen.queryByLabelText('classification issue type switch chart');
+      const classificationParentChart = screen.queryByLabelText('classification parent chart');
+      const classificationParentSwitchIcon = screen.queryByLabelText('classification parent switch chart');
+
+      expect(issueTypeSwitchButtonGroup).toBeInTheDocument();
+      expect(issueTypeSwitchCardCountButton).toBeInTheDocument();
+      expect(issueTypeSwitchStoryPointsGroup).toBeInTheDocument();
+      expect(parentSwitchButtonGroup).toBeInTheDocument();
+      expect(parentSwitchCardCountButton).toBeInTheDocument();
+      expect(parentSwitchStoryPointsButton).toBeInTheDocument();
+
+      expect(classificationIssueTypeChart).toBeInTheDocument();
+      expect(classificationIssueTypeSwitchIcon).toBeInTheDocument();
+      expect(classificationParentChart).toBeInTheDocument();
+      expect(classificationParentSwitchIcon).toBeInTheDocument();
+
+      await userEvent.click(issueTypeSwitchCardCountButton!);
+      await userEvent.click(issueTypeSwitchStoryPointsGroup!);
+      await userEvent.click(parentSwitchCardCountButton!);
+      await userEvent.click(parentSwitchStoryPointsButton!);
+
+      await userEvent.click(classificationIssueTypeSwitchIcon!);
+      await userEvent.click(classificationParentSwitchIcon!);
+
+      const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+      await wait(1500);
+      await waitFor(async () => {
+        const setOptionCalledTimes = chart.setOption.mock.calls.length;
+        const clearCalledTimes = chart.clear.mock.calls.length;
+        expect(setOptionCalledTimes).toBeGreaterThan(18);
+        expect(clearCalledTimes).toBeGreaterThan(18);
+      });
+    });
+
     it('should render dora chart with empty value when exception was thrown', async () => {
       reportHook.current.reportInfos = [
         {
