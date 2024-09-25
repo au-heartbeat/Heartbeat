@@ -163,7 +163,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const getPipelineConfig = (pipelineConfigs: IPipelineConfig[]) =>
-    pipelineConfigs.flatMap(({ organization, pipelineName, step, branches }) => {
+    pipelineConfigs.flatMap(({ organization, pipelineName, step, branches, repoName }) => {
       const pipelineConfigFromPipelineList = configData.pipelineTool.verifiedResponse.pipelineList.find(
         (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization,
       );
@@ -178,6 +178,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
             step,
             repository,
             branches,
+            repoName,
           },
         ];
       }

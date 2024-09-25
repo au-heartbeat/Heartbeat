@@ -96,6 +96,7 @@ public class PipelineService {
 
 		return PipelineCSVInfo.builder()
 			.organizationName(deploymentEnvironment.getOrgName())
+			.repoName(deploymentEnvironment.getRepoName())
 			.pipeLineName(deploymentEnvironment.getName())
 			.stepName(deployInfo.getJobName())
 			.valid(deployInfo.getJobName().equals(deploymentEnvironment.getStep()))

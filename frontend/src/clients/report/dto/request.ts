@@ -13,6 +13,7 @@ export interface ReportRequestDTO extends IBasicReportRequestDTO {
           orgId: string;
           orgName: string;
           repository: string;
+          repoName: string;
           step: string;
           branches: string[];
         }[]

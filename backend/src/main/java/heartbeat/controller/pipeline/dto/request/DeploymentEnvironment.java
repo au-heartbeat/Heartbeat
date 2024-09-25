@@ -24,6 +24,8 @@ public class DeploymentEnvironment {
 
 	private String step;
 
+	private String repoName;
+
 	@Nullable
 	private String repository;
 
