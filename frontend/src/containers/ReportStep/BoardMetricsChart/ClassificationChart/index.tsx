@@ -126,15 +126,14 @@ function checkClassificationChartType(
   classificationDataByModel: (ReportDataWithThreeColumns | null | undefined)[],
 ) {
   const totalValues = getTotalValues(classificationDataByModel, classification);
+  if (totalValues === 0) {
+    return ClassificationChartType.Bar;
+  }
   const data = extractedValueList(classificationDataByModel, classification);
   const everyValueSum = data
     .filter((it) => it !== undefined)
     .reduce((res, cardInfo) => res + Number(cardInfo?.value), 0);
-  return totalValues === 0
-    ? ClassificationChartType.Bar
-    : everyValueSum === totalValues
-      ? ClassificationChartType.Pie
-      : ClassificationChartType.Bar;
+  return everyValueSum === totalValues ? ClassificationChartType.Pie : ClassificationChartType.Bar;
 }
 
 function extractClassificationValuesPieData(
