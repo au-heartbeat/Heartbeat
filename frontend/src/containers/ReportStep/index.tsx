@@ -15,6 +15,7 @@ import {
   selectBasicInfo,
   selectConfig,
   selectDateRange,
+  selectPipelineTool,
 } from '@src/context/config/configSlice';
 import {
   selectReportId,
@@ -22,9 +23,9 @@ import {
   selectTimeStamp,
 } from '@src/context/stepper/StepperSlice';
 import { IPipelineConfig, selectClassificationCharts, selectMetricsContent } from '@src/context/Metrics/metricsSlice';
+import { MESSAGE, PIPELINE_TOOL_OTHER_OPTION, RequiredData } from '@src/constants/resources';
 import { ReportResponseDTO } from '@src/clients/report/dto/response';
 import { getTotalDateRangeLoadingStatus } from '@src/utils/report';
-import { MESSAGE, RequiredData } from '@src/constants/resources';
 import { useAppDispatch } from '@src/hooks/useAppDispatch';
 import { MetricTypes } from '@src/constants/commons';
 import ReportContent from './ReportContent';
@@ -66,6 +67,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   const reportPageTimeRangeLoadingStatus = useAppSelector(selectReportPageFailedTimeRangeInfos);
   const allDateRangeLoadingFinished = !getTotalDateRangeLoadingStatus(dateRanges, reportPageTimeRangeLoadingStatus)
     .isLoading;
+  const pipelineTools = useAppSelector(selectPipelineTool);
 
   const { startToRequestData, reportInfos, stopPollingReports, hasPollingStarted } = useGenerateReportEffect();
 
@@ -148,7 +150,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       buildKiteSetting: {
         pipelineCrews,
         ...pipelineTool.config,
-        deploymentEnvList: getPipelineConfig(pipelineSettings),
+        deploymentEnvList: pipelineTools.type !== PIPELINE_TOOL_OTHER_OPTION ? getPipelineConfig(pipelineSettings) : [],
       },
       codebaseSetting: {
         type: sourceControl.config.type,
@@ -161,7 +163,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
   };
 
   const getPipelineConfig = (pipelineConfigs: IPipelineConfig[]) =>
-    pipelineConfigs.flatMap(({ organization, pipelineName, step, branches }) => {
+    pipelineConfigs.flatMap(({ organization, pipelineName, step, branches, repoName }) => {
       const pipelineConfigFromPipelineList = configData.pipelineTool.verifiedResponse.pipelineList.find(
         (pipeline) => pipeline.name === pipelineName && pipeline.orgName === organization,
       );
@@ -176,6 +178,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
             step,
             repository,
             branches,
+            repoName,
           },
         ];
       }

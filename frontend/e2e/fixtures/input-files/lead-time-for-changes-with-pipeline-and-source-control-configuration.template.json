@@ -1,0 +1,54 @@
+{
+  "projectName": "with pipeline and source control configuration",
+  "dateRange": [
+    {
+      "startDate": "2024-08-01T00:00:00.000+08:00",
+      "endDate": "2024-08-14T23:59:59.999+08:00"
+    },
+    {
+      "startDate": "2024-08-15T00:00:00.000+08:00",
+      "endDate": "2024-08-28T23:59:59.999+08:00"
+    }
+  ],
+  "calendarType": "REGULAR",
+  "metrics": [
+    "Lead time for changes",
+    "Deployment frequency",
+    "Pipeline change failure rate",
+    "Pipeline mean time to recovery"
+  ],
+  "sortType": "DEFAULT",
+  "pipelineTool": {
+    "type": "BuildKite",
+    "token": "<E2E_TOKEN_BUILD_KITE>"
+  },
+  "sourceControl": {
+    "type": "GitHub",
+    "token": "<E2E_TOKEN_GITHUB_WITH_OTHER_SOURCE_CONTROL>"
+  },
+  "assigneeFilter": "lastAssignee",
+  "advancedSettings": null,
+  "deployment": [
+    {
+      "id": 0,
+      "isStepEmptyString": true,
+      "organization": "Heartbeat-backup",
+      "pipelineName": "Heartbeat",
+      "step": ":rocket: Deploy prod",
+      "repoName": "au-heartbeat/Heartbeat",
+      "branches": ["main"]
+    }
+  ],
+  "sourceControlConfigurationSettings": [
+    {
+      "id": 1,
+      "organization": "MYOB-Technology",
+      "repo": "AD-Framework",
+      "branches": ["master"]
+    }
+  ],
+  "reworkTimesSettings": {
+    "reworkState": null,
+    "excludeStates": []
+  }
+}

@@ -48,10 +48,10 @@ export default function PipelineSelector({ options, value, onUpDatePipeline, tit
               placement='right'
               followCursor
             >
-              <Box component='li' {...props} key={option}>
+              <Box component='li' {...props} key={option} aria-label={'single-option'}>
                 <EmojiWrap>
                   {emojiWrap}
-                  <ListItemText primary={optionContent} aria-label={'single-option'} />
+                  <ListItemText primary={optionContent} />
                 </EmojiWrap>
               </Box>
             </Tooltip>

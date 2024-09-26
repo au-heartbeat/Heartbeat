@@ -9,13 +9,21 @@ import {
   DORA_METRICS_RESULT_MULTIPLE_RANGES,
   CYCLE_TIME_WITH_ANALYSIS_STATUS_PROJECT_BOARD_METRICS_RESULT,
   DORA_METRICS_RESULT_FOR_SOURCE_CONTROL,
+  DORA_METRICS_RESULT_WITH_PIPELINE_AND_SOURCE_CONTROL,
+  DORA_METRICS_RESULT_WITH_PIPELINE_AND_SOURCE_CONTROL_DETAIL,
 } from '../../fixtures/create-new/report-result';
+import {
+  DORA_CHART_PIPELINES,
+  DORA_CHART_PIPELINES_WITH_PIPELINE_AND_SOURCE_CONTROL,
+  DORA_CHART_VALUE,
+  DORA_CHART_VALUE_WITH_PIPELINE_AND_SOURCE_CONTROL,
+} from '../../fixtures/import-file/chart-result';
+import { withPipelineAndSourceControlConfigurationConfig } from '../../fixtures/import-file/with-pipeline-and-source-control-configuration-config-file';
 import { cycleTimeByStatusFixture } from '../../fixtures/cycle-time-by-status/cycle-time-by-status-fixture';
 import { importMultipleDoneProjectFromFile } from '../../fixtures/import-file/multiple-done-config-file';
 import { partialTimeRangesSuccess } from '../../fixtures/import-file/partial-time-ranges-success';
 import { partialMetricsShowChart } from '../../fixtures/import-file/partial-metrics-show-chart';
 import { selectNoneConfig } from '../../fixtures/import-file/select-none-config';
-import { DORA_CHART_PIPELINES } from '../../fixtures/import-file/chart-result';
 import { ProjectCreationType } from 'e2e/pages/metrics/report-step';
 import { test } from '../../fixtures/test-with-extend-fixtures';
 import { clearTempDir } from 'e2e/utils/clear-temp-dir';
@@ -132,13 +140,12 @@ test('Import project from file with partial ranges API failed', async ({
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
+    doraChartValue: DORA_CHART_VALUE,
     pipelines: DORA_CHART_PIPELINES,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: true,
     showPipelineChangeFailureRateChart: true,
-    showPipelineChangeFailureRateTrendContainer: false,
     showPipelineMeanTimeToRecoveryChart: true,
-    showPipelineMeanTimeToRecoveryTrendContainer: false,
   });
 });
 
@@ -183,13 +190,12 @@ test('Import project from file with no all metrics', async ({ homePage, configSt
   });
   await reportStep.goToCharDoraTab();
   await reportStep.checkPipelineSelectorAndDoraChart({
+    doraChartValue: DORA_CHART_VALUE,
     pipelines: DORA_CHART_PIPELINES,
-    showPipelineMeanTimeToRecoveryTrendContainer: false,
     showPipelineChangeFailureRateChart: false,
     showPipelineMeanTimeToRecoveryChart: true,
     showLeadTimeForChangeChart: true,
     showDeploymentFrequencyChart: false,
-    showPipelineChangeFailureRateTrendContainer: false,
   });
 });
 
@@ -291,4 +297,53 @@ test('Import project from file when select none in pipeline tool configuration',
     fileNamePrefix: prefix,
   });
   await reportStep.checkMetricDownloadDataForMultipleRanges(3, prefix);
+});
+
+test('Import project from file with pipeline and source control configuration', async ({
+  homePage,
+  configStep,
+  metricsStep,
+  reportStep,
+}) => {
+  const fileNamePrefix = 'with-pipeline-and-source-control-configuration-';
+  await homePage.goto();
+
+  await homePage.importProjectFromFile(
+    '../fixtures/input-files/lead-time-for-changes-with-pipeline-and-source-control-configuration.json',
+  );
+  await configStep.clickPreviousButtonAndClickCancelThenRemainPage();
+  await configStep.goToMetrics();
+
+  await metricsStep.waitForShown();
+  await metricsStep.selectGivenPipelineCrews(withPipelineAndSourceControlConfigurationConfig.pipelineCrews);
+  await metricsStep.checkPipelineConfigurationAreChanged(withPipelineAndSourceControlConfigurationConfig.deployment);
+  await metricsStep.selectGivenSourceControlCrews(withPipelineAndSourceControlConfigurationConfig.sourceControlCrews);
+  await metricsStep.checkSourceControlConfigurationAreChanged(
+    withPipelineAndSourceControlConfigurationConfig.sourceControlConfigurationSettings,
+  );
+  await metricsStep.validateNextButtonClickable();
+
+  await metricsStep.goToReportPage();
+  await reportStep.checkProjectName(withPipelineAndSourceControlConfigurationConfig.projectName);
+  await reportStep.confirmGeneratedReport();
+  await reportStep.checkShareReport();
+  await reportStep.goToReportListTab();
+  await reportStep.checkDoraMetricsForMultipleRanges(DORA_METRICS_RESULT_WITH_PIPELINE_AND_SOURCE_CONTROL);
+  await reportStep.checkDoraMetricsDetailsForMultipleRanges({
+    doraMetricsReportData: DORA_METRICS_RESULT_WITH_PIPELINE_AND_SOURCE_CONTROL_DETAIL,
+    projectCreationType: ProjectCreationType.IMPORT_PROJECT_FROM_FILE,
+    showMoreIndex: 0,
+    fileNamePrefix,
+  });
+  await reportStep.checkMetricDownloadDataForMultipleRanges(2, fileNamePrefix);
+  await reportStep.goToChartBoardTab();
+  await reportStep.goToCharDoraTab();
+  await reportStep.checkPipelineSelectorAndDoraChart({
+    doraChartValue: DORA_CHART_VALUE_WITH_PIPELINE_AND_SOURCE_CONTROL,
+    pipelines: DORA_CHART_PIPELINES_WITH_PIPELINE_AND_SOURCE_CONTROL,
+    showPipelineChangeFailureRateChart: true,
+    showPipelineMeanTimeToRecoveryChart: true,
+    showLeadTimeForChangeChart: true,
+    showDeploymentFrequencyChart: true,
+  });
 });
