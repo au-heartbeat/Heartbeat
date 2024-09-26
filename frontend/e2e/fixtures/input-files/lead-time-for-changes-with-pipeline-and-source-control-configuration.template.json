@@ -36,9 +36,7 @@
       "pipelineName": "Heartbeat",
       "step": ":rocket: Deploy prod",
       "repoName": "au-heartbeat/Heartbeat",
-      "branches": [
-        "main"
-      ]
+      "branches": ["main"]
     }
   ],
   "sourceControlConfigurationSettings": [
@@ -46,9 +44,7 @@
       "id": 1,
       "organization": "MYOB-Technology",
       "repo": "AD-Framework",
-      "branches": [
-        "master"
-      ]
+      "branches": ["master"]
     }
   ],
   "reworkTimesSettings": {
