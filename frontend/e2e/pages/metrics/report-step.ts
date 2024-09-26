@@ -4,13 +4,9 @@ import {
   IBoardCycletimeDetailItem,
   IBoardClassificationDetailItem,
 } from '../../fixtures/create-new/report-result';
-import {
-  ICsvComparedLines,
-  IDoraMetricsResultItem,
-  DORA_METRICS_RESULT_MULTIPLE_RANGES,
-} from '../../fixtures/create-new/report-result';
+import { ICsvComparedLines, IDoraMetricsResultItem } from '../../fixtures/create-new/report-result';
 import { checkDownloadReportCycleTimeByStatus, downloadFileAndCheck } from 'e2e/utils/download';
-import { BOARD_CHART_VALUE, DORA_CHART_VALUE } from '../../fixtures/import-file/chart-result';
+import { BOARD_CHART_VALUE, DoraChartType } from '../../fixtures/import-file/chart-result';
 import { DOWNLOAD_EVENTS_WAIT_THRESHOLD } from '../../fixtures/index';
 import { expect, Locator, Page, Download } from '@playwright/test';
 import { parse } from 'csv-parse/sync';
@@ -100,10 +96,6 @@ export class ReportStep {
   readonly pipelineChangeFailureRateTrendContainer: Locator;
   readonly deploymentFrequencyTrendContainer: Locator;
   readonly leadTimeForChangesTrendContainer: Locator;
-  readonly pipelineMeanTimeToRecoveryTrendIcon: Locator;
-  readonly pipelineChangeFailureRateTrendIcon: Locator;
-  readonly deploymentFrequencyTrendIcon: Locator;
-  readonly leadTimeForChangesTrendIcon: Locator;
   readonly classificationIssueTypeChartSwitchIcon: Locator;
   readonly classificationIssueTypeChartSwitchCardCountModel: Locator;
   readonly classificationIssueTypeChartSwitchStoryPointsModel: Locator;
@@ -234,10 +226,6 @@ export class ReportStep {
     this.pipelineMeanTimeToRecoveryTrendContainer = this.page.getByLabel(
       'pipeline mean time to recovery trend container',
     );
-    this.leadTimeForChangesTrendIcon = this.leadTimeForChangesTrendContainer.getByLabel('trend down');
-    this.deploymentFrequencyTrendIcon = this.deploymentFrequencyTrendContainer.getByLabel('trend down');
-    this.pipelineChangeFailureRateTrendIcon = this.pipelineChangeFailureRateTrendContainer.getByLabel('trend down');
-    this.pipelineMeanTimeToRecoveryTrendIcon = this.pipelineMeanTimeToRecoveryTrendContainer.getByLabel('trend down');
 
     this.leadTimeForChangesExplanationIcon = this.page.getByLabel('lead time for changes explanation');
     this.deploymentFrequencyExplanationIcon = this.page.getByLabel('deployment frequency explanation');
@@ -268,6 +256,36 @@ export class ReportStep {
   }
 
   async checkDoraMetricsReportDetails(doraMetricsDetailData: IDoraMetricsResultItem) {
+    this.checkDoraMetricsReportDetailsWithoutLeadTimeForChanges(doraMetricsDetailData);
+
+    await expect(this.leadTimeForChangesRows.nth(2)).toContainText(
+      this.combineStrings(['PR Lead Time', doraMetricsDetailData.prLeadTime.toString()]),
+    );
+    await expect(this.leadTimeForChangesRows.nth(3)).toContainText(
+      this.combineStrings(['Pipeline Lead Time', doraMetricsDetailData.pipelineLeadTime.toString()]),
+    );
+    await expect(this.leadTimeForChangesRows.nth(4)).toContainText(
+      this.combineStrings(['Total Lead Time', doraMetricsDetailData.totalLeadTime.toString()]),
+    );
+  }
+
+  async checkDoraMetricsReportDetailsWithMultipleLeadTimeForChanges(doraMetricsDetailData: IDoraMetricsResultItem) {
+    this.checkDoraMetricsReportDetailsWithoutLeadTimeForChanges(doraMetricsDetailData);
+    const pipelineLength = (doraMetricsDetailData.prLeadTime as string[]).length;
+    for (let i = 0; i < pipelineLength; i++) {
+      await expect(this.leadTimeForChangesRows.nth(2 + 4 * i)).toContainText(
+        this.combineStrings(['PR Lead Time', doraMetricsDetailData.prLeadTime[i]]),
+      );
+      await expect(this.leadTimeForChangesRows.nth(3 + 4 * i)).toContainText(
+        this.combineStrings(['Pipeline Lead Time', doraMetricsDetailData.pipelineLeadTime[i]]),
+      );
+      await expect(this.leadTimeForChangesRows.nth(4 + 4 * i)).toContainText(
+        this.combineStrings(['Total Lead Time', doraMetricsDetailData.totalLeadTime[i]]),
+      );
+    }
+  }
+
+  async checkDoraMetricsReportDetailsWithoutLeadTimeForChanges(doraMetricsDetailData: IDoraMetricsResultItem) {
     if (doraMetricsDetailData.deploymentFrequency) {
       await expect(this.deploymentFrequencyRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
       await expect(this.deploymentFrequencyRows.getByRole('cell').nth(1)).toContainText(
@@ -280,16 +298,6 @@ export class ReportStep {
         doraMetricsDetailData.deploymentTimes,
       );
     }
-
-    await expect(this.leadTimeForChangesRows.nth(2)).toContainText(
-      this.combineStrings(['PR Lead Time', doraMetricsDetailData.prLeadTime]),
-    );
-    await expect(this.leadTimeForChangesRows.nth(3)).toContainText(
-      this.combineStrings(['Pipeline Lead Time', doraMetricsDetailData.pipelineLeadTime]),
-    );
-    await expect(this.leadTimeForChangesRows.nth(4)).toContainText(
-      this.combineStrings(['Total Lead Time', doraMetricsDetailData.totalLeadTime]),
-    );
 
     if (doraMetricsDetailData.failureRate) {
       await expect(this.pipelineChangeFailureRateRows.getByRole('cell').nth(0)).toContainText('Heartbeat/ Deploy prod');
@@ -315,6 +323,15 @@ export class ReportStep {
     }
   }
 
+  async checkDoraMetricsReportDetailsForMultipleRangesWithMultipleLeadTimeForChanges(
+    doraMetricsReportData: IDoraMetricsResultItem[],
+  ) {
+    for (let i = 0; i < doraMetricsReportData.length; i++) {
+      await this.changeTimeRange(i);
+      await this.checkDoraMetricsReportDetailsWithMultipleLeadTimeForChanges(doraMetricsReportData[i]);
+    }
+  }
+
   async checkDoraMetricsDetailsForMultipleRanges({
     projectCreationType,
     doraMetricsReportData,
@@ -331,14 +348,18 @@ export class ReportStep {
       projectCreationType === ProjectCreationType.IMPORT_PROJECT_FROM_FILE ||
       projectCreationType === ProjectCreationType.CREATE_A_NEW_PROJECT
     ) {
-      await this.checkDoraMetricsReportDetailsForMultipleRanges(doraMetricsReportData);
+      if (Array.isArray(doraMetricsReportData[0].prLeadTime)) {
+        await this.checkDoraMetricsReportDetailsForMultipleRangesWithMultipleLeadTimeForChanges(doraMetricsReportData);
+      } else {
+        await this.checkDoraMetricsReportDetailsForMultipleRanges(doraMetricsReportData);
+      }
     } else {
       throw Error('The board detail type is not correct, please give a correct one.');
     }
 
     await this.downloadFileAndCheckForMultipleRanges({
       trigger: this.exportPipelineDataButton,
-      rangeCount: DORA_METRICS_RESULT_MULTIPLE_RANGES.length,
+      rangeCount: doraMetricsReportData.length,
       fileNamePrefix,
     });
 
@@ -894,23 +915,22 @@ export class ReportStep {
   }
 
   async checkChartDoraTabStatus({
+    doraChartValue,
     pipeline,
     showLeadTimeForChangeChart,
     showDeploymentFrequencyChart,
-    showPipelineChangeFailureRateTrendContainer,
     showPipelineChangeFailureRateChart,
     showPipelineMeanTimeToRecoveryChart,
-    showPipelineMeanTimeToRecoveryTrendContainer,
   }: {
+    doraChartValue: DoraChartType;
     pipeline: string;
     showLeadTimeForChangeChart: boolean;
     showDeploymentFrequencyChart: boolean;
-    showPipelineChangeFailureRateTrendContainer: boolean;
     showPipelineChangeFailureRateChart: boolean;
-    showPipelineMeanTimeToRecoveryTrendContainer: boolean;
     showPipelineMeanTimeToRecoveryChart: boolean;
   }) {
-    const pipelineDoraChartValue = DORA_CHART_VALUE[pipeline];
+    const pipelineDoraChartValue = doraChartValue[pipeline];
+
     expect(await this.displayBoardChartTab.getAttribute('aria-selected')).toEqual('false');
     expect(await this.displayDoraChartTab.getAttribute('aria-selected')).toEqual('true');
     await this.displayListTab.click();
@@ -923,82 +943,104 @@ export class ReportStep {
     await expect(this.meanTimeToRecoveryLoading).toBeHidden();
     await expect(this.changeFailureRateLoading).toBeHidden();
 
+    const leadTimeForChangesTrendIcon = this.leadTimeForChangesTrendContainer.getByLabel(
+      pipelineDoraChartValue['Lead Time For Changes'].type,
+    );
     if (showLeadTimeForChangeChart) {
       await expect(this.leadTimeForChangeChart).toBeVisible();
-      await expect(this.leadTimeForChangesTrendContainer).toBeVisible();
-      await expect(this.leadTimeForChangesTrendContainer).toHaveAttribute(
-        'color',
-        pipelineDoraChartValue['Lead Time For Changes'].color,
-      );
-      await expect(this.leadTimeForChangesTrendIcon).toBeVisible();
-      await expect(this.leadTimeForChangesTrendContainer).toContainText(
-        pipelineDoraChartValue['Lead Time For Changes'].value,
-      );
+      if (pipelineDoraChartValue['Lead Time For Changes'].exist) {
+        await expect(this.leadTimeForChangesTrendContainer).toBeVisible();
+        await expect(this.leadTimeForChangesTrendContainer).toHaveAttribute(
+          'color',
+          pipelineDoraChartValue['Lead Time For Changes'].color,
+        );
+        await expect(leadTimeForChangesTrendIcon).toBeVisible();
+        await expect(this.leadTimeForChangesTrendContainer).toContainText(
+          pipelineDoraChartValue['Lead Time For Changes'].value,
+        );
+      } else {
+        await expect(leadTimeForChangesTrendIcon).not.toBeVisible();
+        await expect(this.leadTimeForChangesTrendContainer).not.toBeVisible();
+      }
     } else {
       await expect(this.leadTimeForChangeChart).not.toBeVisible();
       await expect(this.leadTimeForChangesTrendContainer).not.toBeVisible();
-      await expect(this.leadTimeForChangesTrendIcon).not.toBeVisible();
+      await expect(leadTimeForChangesTrendIcon).not.toBeVisible();
     }
 
+    const deploymentFrequencyTrendIcon = this.deploymentFrequencyTrendContainer.getByLabel(
+      pipelineDoraChartValue['Deployment Frequency'].type,
+    );
     if (showDeploymentFrequencyChart) {
       await expect(this.deploymentFrequencyChart).toBeVisible();
-      await expect(this.deploymentFrequencyTrendContainer).toBeVisible();
-      await expect(this.deploymentFrequencyTrendContainer).toHaveAttribute(
-        'color',
-        pipelineDoraChartValue['Deployment Frequency'].color,
-      );
-      await expect(this.deploymentFrequencyTrendIcon).toBeVisible();
-      await expect(this.deploymentFrequencyTrendContainer).toContainText(
-        pipelineDoraChartValue['Deployment Frequency'].value,
-      );
+      if (pipelineDoraChartValue['Deployment Frequency'].exist) {
+        await expect(this.deploymentFrequencyTrendContainer).toBeVisible();
+        await expect(this.deploymentFrequencyTrendContainer).toHaveAttribute(
+          'color',
+          pipelineDoraChartValue['Deployment Frequency'].color,
+        );
+        await expect(deploymentFrequencyTrendIcon).toBeVisible();
+        await expect(this.deploymentFrequencyTrendContainer).toContainText(
+          pipelineDoraChartValue['Deployment Frequency'].value,
+        );
+      } else {
+        await expect(deploymentFrequencyTrendIcon).not.toBeVisible();
+        await expect(this.deploymentFrequencyTrendContainer).not.toBeVisible();
+      }
     } else {
       await expect(this.deploymentFrequencyChart).not.toBeVisible();
       await expect(this.deploymentFrequencyTrendContainer).not.toBeVisible();
-      await expect(this.deploymentFrequencyTrendIcon).not.toBeVisible();
+      await expect(deploymentFrequencyTrendIcon).not.toBeVisible();
     }
 
+    const pipelineChangeFailureRateTrendIcon = this.pipelineChangeFailureRateTrendContainer.getByLabel(
+      pipelineDoraChartValue['Pipeline Change Failure Rate'].type,
+    );
     if (showPipelineChangeFailureRateChart) {
       await expect(this.changeFailureRateChart).toBeVisible();
-      if (showPipelineChangeFailureRateTrendContainer) {
+      if (pipelineDoraChartValue['Pipeline Change Failure Rate'].exist) {
         await expect(this.pipelineChangeFailureRateTrendContainer).toBeVisible();
         await expect(this.pipelineChangeFailureRateTrendContainer).toHaveAttribute(
           'color',
           pipelineDoraChartValue['Pipeline Change Failure Rate'].color,
         );
-        await expect(this.pipelineChangeFailureRateTrendIcon).toBeVisible();
+        await expect(pipelineChangeFailureRateTrendIcon).toBeVisible();
         await expect(this.pipelineChangeFailureRateTrendContainer).toContainText(
           pipelineDoraChartValue['Pipeline Change Failure Rate'].value,
         );
       } else {
         await expect(this.pipelineChangeFailureRateTrendContainer).not.toBeVisible();
-        await expect(this.pipelineChangeFailureRateTrendIcon).not.toBeVisible();
+        await expect(pipelineChangeFailureRateTrendIcon).not.toBeVisible();
       }
     } else {
       await expect(this.changeFailureRateChart).not.toBeVisible();
       await expect(this.pipelineChangeFailureRateTrendContainer).not.toBeVisible();
-      await expect(this.pipelineChangeFailureRateTrendIcon).not.toBeVisible();
+      await expect(pipelineChangeFailureRateTrendIcon).not.toBeVisible();
     }
 
+    const pipelineMeanTimeToRecoveryTrendIcon = this.pipelineMeanTimeToRecoveryTrendContainer.getByLabel(
+      pipelineDoraChartValue['Pipeline Mean Time To Recovery'].type,
+    );
     if (showPipelineMeanTimeToRecoveryChart) {
       await expect(this.meanTimeToRecoveryChart).toBeVisible();
-      if (showPipelineMeanTimeToRecoveryTrendContainer) {
+      if (pipelineDoraChartValue['Pipeline Mean Time To Recovery'].exist) {
         await expect(this.pipelineMeanTimeToRecoveryTrendContainer).toBeVisible();
         await expect(this.pipelineMeanTimeToRecoveryTrendContainer).toHaveAttribute(
           'color',
           pipelineDoraChartValue['Pipeline Mean Time To Recovery'].color,
         );
-        await expect(this.pipelineMeanTimeToRecoveryTrendIcon).toBeVisible();
+        await expect(pipelineMeanTimeToRecoveryTrendIcon).toBeVisible();
         await expect(this.pipelineMeanTimeToRecoveryTrendContainer).toContainText(
           pipelineDoraChartValue['Pipeline Mean Time To Recovery'].value,
         );
       } else {
         await expect(this.pipelineMeanTimeToRecoveryTrendContainer).not.toBeVisible();
-        await expect(this.pipelineMeanTimeToRecoveryTrendIcon).not.toBeVisible();
+        await expect(pipelineMeanTimeToRecoveryTrendIcon).not.toBeVisible();
       }
     } else {
       await expect(this.meanTimeToRecoveryChart).not.toBeVisible();
       await expect(this.pipelineMeanTimeToRecoveryTrendContainer).not.toBeVisible();
-      await expect(this.pipelineMeanTimeToRecoveryTrendIcon).not.toBeVisible();
+      await expect(pipelineMeanTimeToRecoveryTrendIcon).not.toBeVisible();
     }
   }
 
@@ -1006,67 +1048,61 @@ export class ReportStep {
     pipelines,
     showLeadTimeForChangeChart,
     showDeploymentFrequencyChart,
-    showPipelineChangeFailureRateTrendContainer,
     showPipelineChangeFailureRateChart,
     showPipelineMeanTimeToRecoveryChart,
-    showPipelineMeanTimeToRecoveryTrendContainer,
+    doraChartValue,
   }: {
     pipelines: string[];
     showLeadTimeForChangeChart: boolean;
     showDeploymentFrequencyChart: boolean;
-    showPipelineChangeFailureRateTrendContainer: boolean;
     showPipelineChangeFailureRateChart: boolean;
-    showPipelineMeanTimeToRecoveryTrendContainer: boolean;
     showPipelineMeanTimeToRecoveryChart: boolean;
+    doraChartValue: DoraChartType;
   }) {
     await expect(this.doraPipelineSelector).toBeVisible();
     await this.checkPipelineSelectorOptions({
+      doraChartValue,
       pipelines,
       showLeadTimeForChangeChart,
       showDeploymentFrequencyChart,
-      showPipelineChangeFailureRateTrendContainer,
       showPipelineChangeFailureRateChart,
       showPipelineMeanTimeToRecoveryChart,
-      showPipelineMeanTimeToRecoveryTrendContainer,
     });
   }
 
   async checkPipelineSelectorOptions({
+    doraChartValue,
     pipelines,
     showLeadTimeForChangeChart,
     showDeploymentFrequencyChart,
-    showPipelineChangeFailureRateTrendContainer,
     showPipelineChangeFailureRateChart,
     showPipelineMeanTimeToRecoveryChart,
-    showPipelineMeanTimeToRecoveryTrendContainer,
   }: {
+    doraChartValue: DoraChartType;
     pipelines: string[];
     showLeadTimeForChangeChart: boolean;
     showDeploymentFrequencyChart: boolean;
-    showPipelineChangeFailureRateTrendContainer: boolean;
     showPipelineChangeFailureRateChart: boolean;
-    showPipelineMeanTimeToRecoveryTrendContainer: boolean;
     showPipelineMeanTimeToRecoveryChart: boolean;
   }) {
     await this.doraPipelineSelector.click();
-    const singleOption = this.page.getByLabel(`single-option`);
-    await expect(singleOption).toHaveCount(2);
+    const singleOption = await this.page.getByLabel(`single-option`);
+    await expect(singleOption).toHaveCount(pipelines.length);
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < pipelines.length; i++) {
       await expect(singleOption.nth(i)).toHaveText(pipelines[i]);
     }
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < pipelines.length; i++) {
       await this.doraPipelineSelector.click();
       await singleOption.nth(i).click();
-      this.checkChartDoraTabStatus({
+      await this.checkChartDoraTabStatus({
+        doraChartValue,
         pipeline: pipelines[i],
         showLeadTimeForChangeChart,
         showDeploymentFrequencyChart,
-        showPipelineChangeFailureRateTrendContainer,
         showPipelineChangeFailureRateChart,
         showPipelineMeanTimeToRecoveryChart,
-        showPipelineMeanTimeToRecoveryTrendContainer,
       });
     }
   }

@@ -9,9 +9,9 @@ export interface IBoardMetricsResult {
   reworkThroughput: string;
 }
 export interface IDoraMetricsResultItem {
-  prLeadTime: string;
-  pipelineLeadTime: string;
-  totalLeadTime: string;
+  prLeadTime: string | string[];
+  pipelineLeadTime: string | string[];
+  totalLeadTime: string | string[];
   deploymentTimes?: string;
   deploymentFrequency?: string;
   failureRate?: string;
@@ -818,6 +818,48 @@ export const DORA_METRICS_RESULT_FOR_SOURCE_CONTROL: IDoraMetricsResultItem[] = 
     prLeadTime: '9.70',
     pipelineLeadTime: '0.00',
     totalLeadTime: '9.70',
+  },
+];
+
+export const DORA_METRICS_RESULT_WITH_PIPELINE_AND_SOURCE_CONTROL: IDoraMetricsResultItem[] = [
+  {
+    prLeadTime: '2.33',
+    pipelineLeadTime: '0.20',
+    totalLeadTime: '2.53',
+    deploymentFrequency: '0.60',
+    deploymentTimes: '6',
+    failureRate: '14.29% (1/7)',
+    pipelineMeanTimeToRecovery: '25.63',
+  },
+  {
+    prLeadTime: '29.05',
+    pipelineLeadTime: '0.22',
+    totalLeadTime: '29.28',
+    deploymentFrequency: '2.00',
+    deploymentTimes: '20',
+    failureRate: '9.09% (2/22)',
+    pipelineMeanTimeToRecovery: '1.10',
+  },
+];
+
+export const DORA_METRICS_RESULT_WITH_PIPELINE_AND_SOURCE_CONTROL_DETAIL: IDoraMetricsResultItem[] = [
+  {
+    prLeadTime: ['4.66', '0.00', '2.33'],
+    pipelineLeadTime: ['0.41', '0.00', '0.20'],
+    totalLeadTime: ['5.06', '0.00', '2.53'],
+    deploymentFrequency: '0.60',
+    deploymentTimes: '6',
+    failureRate: '14.29% (1/7)',
+    pipelineMeanTimeToRecovery: '25.63',
+  },
+  {
+    prLeadTime: ['12.96', '45.14', '29.05'],
+    pipelineLeadTime: ['0.45', '0.00', '0.22'],
+    totalLeadTime: ['13.41', '45.14', '29.28'],
+    deploymentFrequency: '2.00',
+    deploymentTimes: '20',
+    failureRate: '9.09% (2/22)',
+    pipelineMeanTimeToRecovery: '1.10',
   },
 ];
 
