@@ -277,6 +277,7 @@ e2e_container_check() {
     -e "E2E_TOKEN_GITHUB=${E2E_TOKEN_GITHUB:-}" \
     -e "CI=${CI:-}" \
     -e "E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE=${E2E_TOKEN_PIPELINE_NO_ORG_CONFIG_BUILDKITE:-}" \
+    -e "E2E_TOKEN_GITHUB_WITH_OTHER_SOURCE_CONTROL=${E2E_TOKEN_GITHUB_WITH_OTHER_SOURCE_CONTROL:-}" \
     heartbeat_e2e:latest \
     pnpm run e2e:major-ci
   result=$?
