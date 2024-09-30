@@ -425,6 +425,24 @@ describe('Report Step', () => {
       });
     });
 
+    it('should return to chart dora page when clicking previous button in summary page and only select dora metrics', async () => {
+      setup([REQUIRED_DATA_LIST[5], REQUIRED_DATA_LIST[6]], [fullValueDateRange, emptyValueDateRange]);
+
+      const switchChartButton = screen.getByText(DISPLAY_TYPE.CHART);
+      const switchListButton = screen.getByText(DISPLAY_TYPE.LIST);
+      const switchDoraButton = screen.getByText(CHART_TYPE.DORA);
+      await userEvent.click(switchListButton);
+
+      const previous = screen.getByText(PREVIOUS);
+
+      await userEvent.click(previous);
+
+      await waitFor(() => {
+        expect(switchChartButton).toHaveAttribute('aria-selected', 'true');
+        expect(switchDoraButton).toHaveAttribute('aria-selected', 'true');
+      });
+    });
+
     it('should return to summary page given metrics not only select classification when clicking back button in board report detail page', async () => {
       setup(REQUIRED_DATA_LIST, [fullValueDateRange, emptyValueDateRange]);
 

@@ -276,15 +276,16 @@ export const calculateTrendInfo = (
   dateRangeList: string[],
   type: ChartType,
 ): ITrendInfo => {
-  if (!dataList || dataList.filter((data) => data).length < 2) return { type };
-
-  const latestValidIndex = dataList.findLastIndex((data) => data);
-  const beforeLatestValidIndex = dataList.findLastIndex((data, index) => data && index !== latestValidIndex);
+  if (!dataList) return { type };
+  const dateRangesLength = dateRangeList.length;
+  if (dataList[dateRangesLength - 1] === 0 || dataList[dateRangesLength - 2] === 0) {
+    return { type };
+  }
 
   const trendNumber =
-    (dataList[latestValidIndex] - dataList[beforeLatestValidIndex]) / dataList[beforeLatestValidIndex];
+    (dataList[dateRangesLength - 1] - dataList[dateRangesLength - 2]) / dataList[dateRangesLength - 2];
   const validDateRangeList: string[] = [];
-  validDateRangeList.push(dateRangeList[latestValidIndex], dateRangeList[beforeLatestValidIndex]);
+  validDateRangeList.push(dateRangeList[dateRangesLength - 1], dateRangeList[dateRangesLength - 2]);
 
   return getTrendInfo(trendNumber, validDateRangeList, type);
 };

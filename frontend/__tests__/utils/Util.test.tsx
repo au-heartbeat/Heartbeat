@@ -712,7 +712,33 @@ describe('calculateTrendInfo function', () => {
     '2024/01/22-2024/01/23',
     '2024/01/24-2024/01/25',
   ];
-  it('should only return type given the valid data length is less 2', () => {
+
+  it('should only return type given the data list is undefined', () => {
+    const result = calculateTrendInfo(undefined, dateRangeList, ChartType.Velocity);
+
+    expect(result.dateRangeList).toEqual(undefined);
+    expect(result.trendNumber).toEqual(undefined);
+    expect(result.trendType).toEqual(undefined);
+    expect(result.icon).toEqual(undefined);
+    expect(result.type).toEqual(ChartType.Velocity);
+  });
+
+  // it.each([
+  //   [0, 0, 3, 0],
+  //   [0, 0, 0, 0],
+  //   [0, 0, 0, 3]
+  // ])(
+  //   'should only return type given the data is invalid', (dataList: number[]) => {
+  //     const result = calculateTrendInfo(dataList, dateRangeList, ChartType.Velocity);
+  //
+  //     expect(result.dateRangeList).toEqual(undefined);
+  //     expect(result.trendNumber).toEqual(undefined);
+  //     expect(result.trendType).toEqual(undefined);
+  //     expect(result.icon).toEqual(undefined);
+  //     expect(result.type).toEqual(ChartType.Velocity);
+  //   })
+
+  it('should only return type given the last value is zero in the data list', () => {
     const dataList = [0, 0, 3, 0];
     const result = calculateTrendInfo(dataList, dateRangeList, ChartType.Velocity);
 
@@ -722,14 +748,37 @@ describe('calculateTrendInfo function', () => {
     expect(result.icon).toEqual(undefined);
     expect(result.type).toEqual(ChartType.Velocity);
   });
+
+  it('should only return type given the last second value is zero in the data list', () => {
+    const dataList = [0, 0, 0, 3];
+    const result = calculateTrendInfo(dataList, dateRangeList, ChartType.Velocity);
+
+    expect(result.dateRangeList).toEqual(undefined);
+    expect(result.trendNumber).toEqual(undefined);
+    expect(result.trendType).toEqual(undefined);
+    expect(result.icon).toEqual(undefined);
+    expect(result.type).toEqual(ChartType.Velocity);
+  });
+
+  it('should only return type given the last two value is zero in the data list', () => {
+    const dataList = [0, 0, 0, 0];
+    const result = calculateTrendInfo(dataList, dateRangeList, ChartType.Velocity);
+
+    expect(result.dateRangeList).toEqual(undefined);
+    expect(result.trendNumber).toEqual(undefined);
+    expect(result.trendType).toEqual(undefined);
+    expect(result.icon).toEqual(undefined);
+    expect(result.type).toEqual(ChartType.Velocity);
+  });
+
   it.each(UP_TREND_IS_BETTER)(
     'should get better result given the type is the up trend is better and the data is up',
     (type) => {
-      const dataList = [1, 0, 3, 0];
+      const dataList = [0, 0, 1, 3];
 
       const result = calculateTrendInfo(dataList, dateRangeList, type);
 
-      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(result.dateRangeList).toEqual(['2024/01/24-2024/01/25', '2024/01/22-2024/01/23']);
       expect(result.trendNumber).toEqual(2);
       expect(result.trendType).toEqual(TrendType.Better);
       expect(result.icon).toEqual(TrendIcon.Up);
@@ -740,11 +789,11 @@ describe('calculateTrendInfo function', () => {
   it.each(UP_TREND_IS_BETTER)(
     'should get worse result given the type is the up trend is better and the data is down',
     (type) => {
-      const dataList = [3, 0, 1, 0];
+      const dataList = [0, 0, 3, 1];
 
       const result = calculateTrendInfo(dataList, dateRangeList, type);
 
-      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(result.dateRangeList).toEqual(['2024/01/24-2024/01/25', '2024/01/22-2024/01/23']);
       expect(Number(result.trendNumber?.toFixed(2))).toEqual(-0.67);
       expect(result.trendType).toEqual(TrendType.Worse);
       expect(result.icon).toEqual(TrendIcon.Down);
@@ -755,11 +804,11 @@ describe('calculateTrendInfo function', () => {
   it.each(DOWN_TREND_IS_BETTER)(
     'should get better result given the type is the down trend is better and the data is down',
     (type) => {
-      const dataList = [3, 0, 1, 0];
+      const dataList = [0, 0, 3, 1];
 
       const result = calculateTrendInfo(dataList, dateRangeList, type);
 
-      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(result.dateRangeList).toEqual(['2024/01/24-2024/01/25', '2024/01/22-2024/01/23']);
       expect(Number(result.trendNumber?.toFixed(2))).toEqual(-0.67);
       expect(result.trendType).toEqual(TrendType.Better);
       expect(result.icon).toEqual(TrendIcon.Down);
@@ -770,11 +819,11 @@ describe('calculateTrendInfo function', () => {
   it.each(DOWN_TREND_IS_BETTER)(
     'should get worse result given the type is the down trend is better and the data is up',
     (type) => {
-      const dataList = [1, 0, 3, 0];
+      const dataList = [0, 0, 1, 3];
 
       const result = calculateTrendInfo(dataList, dateRangeList, type);
 
-      expect(result.dateRangeList).toEqual(['2024/01/22-2024/01/23', '2024/01/15-2024/01/19']);
+      expect(result.dateRangeList).toEqual(['2024/01/24-2024/01/25', '2024/01/22-2024/01/23']);
       expect(result.trendNumber).toEqual(2);
       expect(result.trendType).toEqual(TrendType.Worse);
       expect(result.icon).toEqual(TrendIcon.Up);
