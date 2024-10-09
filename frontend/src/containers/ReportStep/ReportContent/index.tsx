@@ -404,11 +404,11 @@ const ReportContent = (props: ReportContentProps) => {
       setPageType(REPORT_PAGE_TYPE.SUMMARY);
     } else {
       setDisplayType(DISPLAY_TYPE.CHART);
-      if (shouldShowBoardMetricsChart) {
-        setPageType(REPORT_PAGE_TYPE.BOARD_CHART);
-      } else {
-        setPageType(REPORT_PAGE_TYPE.DORA_CHART);
-      }
+      const pageType =
+        !shouldShowBoardMetricsChart || chartIndex === CHART_INDEX.DORA
+          ? REPORT_PAGE_TYPE.DORA_CHART
+          : REPORT_PAGE_TYPE.BOARD_CHART;
+      setPageType(pageType);
     }
   };
 
