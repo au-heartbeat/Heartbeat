@@ -72,10 +72,10 @@ public class CacheConfig {
 			boolean isSaveLongTime) {
 		ResourcePoolsBuilder offHeap;
 		if (valueType == String.class) {
-			offHeap = ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(4, MemoryUnit.MB);
+			offHeap = ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(8, MemoryUnit.MB);
 		}
 		else {
-			offHeap = ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(2, MemoryUnit.MB);
+			offHeap = ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(4, MemoryUnit.MB);
 		}
 		Duration timeToLive;
 		if (valueType == HolidaysResponseDTO.class) {
