@@ -13,8 +13,8 @@ public class ThreadPoolConfig {
 	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-		executor.setCorePoolSize(40);
-		executor.setMaxPoolSize(200);
+		executor.setCorePoolSize(20);
+		executor.setMaxPoolSize(100);
 		executor.setQueueCapacity(1000);
 		executor.setKeepAliveSeconds(60);
 		executor.setThreadNamePrefix("Heartbeat-");
