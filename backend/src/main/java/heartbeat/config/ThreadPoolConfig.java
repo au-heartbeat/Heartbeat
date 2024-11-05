@@ -15,10 +15,8 @@ public class ThreadPoolConfig {
 		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 		int numOfCores = Runtime.getRuntime().availableProcessors();
 
-		int tempCorePoolSize = numOfCores - 3;
-		int corePoolSize = tempCorePoolSize < 0 ? 0 : tempCorePoolSize;
-		int tempMaxPoolSize = numOfCores - 1;
-		int maxPoolSize = tempMaxPoolSize < 0 ? 0 : tempMaxPoolSize;
+		int corePoolSize = numOfCores * 2;
+		int maxPoolSize = corePoolSize * 2;
 
 		executor.setCorePoolSize(corePoolSize);
 		executor.setMaxPoolSize(maxPoolSize);
