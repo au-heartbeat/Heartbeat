@@ -832,7 +832,7 @@ export const DORA_METRICS_RESULT_WITH_PIPELINE_AND_SOURCE_CONTROL: IDoraMetricsR
     pipelineMeanTimeToRecovery: '25.63',
   },
   {
-    prLeadTime: '29.05',
+    prLeadTime: '31.31',
     pipelineLeadTime: '0.22',
     totalLeadTime: '29.28',
     deploymentFrequency: '2.00',
