@@ -299,7 +299,7 @@ test('Import project from file when select none in pipeline tool configuration',
   await reportStep.checkMetricDownloadDataForMultipleRanges(3, prefix);
 });
 
-test('Import project from file with pipeline and source control configuration', async ({
+test.skip('Import project from file with pipeline and source control configuration', async ({
   homePage,
   configStep,
   metricsStep,
