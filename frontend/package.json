@@ -47,7 +47,7 @@
     "@mui/material": "^5.15.16",
     "@mui/x-date-pickers": "^7.3.2",
     "@reduxjs/toolkit": "^2.2.3",
-    "axios": "^1.6.8",
+    "axios": "^1.7.4",
     "dayjs": "^1.11.11",
     "echarts": "^5.5.0",
     "lodash": "^4.17.21",
