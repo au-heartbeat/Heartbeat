@@ -321,7 +321,7 @@ describe('MetricsStepper', () => {
   });
 
   it('should export json when click save button', async () => {
-    const expectedFileName = 'config';
+    const expectedFileName = `-Heartbeat`;
     const expectedJson = {
       board: undefined,
       calendarType: Calendar.Regular,
@@ -345,7 +345,7 @@ describe('MetricsStepper', () => {
   });
 
   it('should export json when click save button when pipelineTool, sourceControl, and board is not empty', async () => {
-    const expectedFileName = 'config';
+    const expectedFileName = `-Heartbeat`;
     const expectedJson = {
       board: { boardId: '', email: '', site: '', token: '', type: 'Jira' },
       calendarType: Calendar.Regular,
@@ -363,7 +363,7 @@ describe('MetricsStepper', () => {
     };
 
     setup();
-    await fillMetricsData();
+    fillMetricsData();
 
     await userEvent.click(screen.getByText(SAVE));
 
@@ -371,7 +371,7 @@ describe('MetricsStepper', () => {
   });
 
   it('should export json file when click save button in metrics page given all content is empty', async () => {
-    const expectedFileName = 'config';
+    const expectedFileName = 'test-project-Name-Heartbeat';
     const expectedJson = {
       advancedSettings: null,
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
@@ -423,7 +423,7 @@ describe('MetricsStepper', () => {
   }, 50000);
 
   it('should export json file when click save button in report page given all content is empty', async () => {
-    const expectedFileName = 'config';
+    const expectedFileName = 'test-project-Name-Heartbeat';
     const expectedJson = {
       advancedSettings: null,
       assigneeFilter: ASSIGNEE_FILTER_TYPES.LAST_ASSIGNEE,
