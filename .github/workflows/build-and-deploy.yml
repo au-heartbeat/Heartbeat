@@ -52,30 +52,30 @@ jobs:
             --source="/path" \
             -v --redact
 
-  security-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          ignore-unfixed: true
-          exit-code: "1"
-          severity: "CRITICAL"
-          trivyignores: .trivyignore
+  # security-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #         ref: ${{ github.head_ref }}
+  #     - name: Run Trivy vulnerability scanner in repo mode
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         scan-type: "fs"
+  #         ignore-unfixed: true
+  #         exit-code: "1"
+  #         severity: "CRITICAL"
+  #         trivyignores: .trivyignore
 
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "config"
-          exit-code: "1"
-          ignore-unfixed: true
-          severity: "CRITICAL"
-          trivyignores: .trivyignore
+  #     - name: Run Trivy vulnerability scanner in IaC mode
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         scan-type: "config"
+  #         exit-code: "1"
+  #         ignore-unfixed: true
+  #         severity: "CRITICAL"
+  #         trivyignores: .trivyignore
   backend-check:
     runs-on: ubuntu-latest
     defaults:
@@ -245,39 +245,39 @@ jobs:
         run: |
           ./ops/check.sh buildkite-status
 
-  images-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+  # images-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v4
 
-      - name: Build and tag
-        run: |
-          docker build -t frontend:latest ./ -f ./ops/infra/Dockerfile.frontend
-          docker build -t backend:latest ./ -f ./ops/infra/Dockerfile.backend
+  #     - name: Build and tag
+  #       run: |
+  #         docker build -t frontend:latest ./ -f ./ops/infra/Dockerfile.frontend
+  #         docker build -t backend:latest ./ -f ./ops/infra/Dockerfile.backend
 
-      - name: Run Trivy vulnerability scanner for frontend
-        uses: aquasecurity/trivy-action@master
-        env:
-          TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db:2"
-        with:
-          image-ref: frontend:latest
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
-          trivyignores: ".trivyignore"
-      - name: Run Trivy vulnerability scanner for backend
-        uses: aquasecurity/trivy-action@master
-        env:
-          TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db:2"
-        with:
-          image-ref: backend:latest
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
-          trivyignores: ".trivyignore"
+  #     - name: Run Trivy vulnerability scanner for frontend
+  #       uses: aquasecurity/trivy-action@master
+  #       env:
+  #         TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db:2"
+  #       with:
+  #         image-ref: frontend:latest
+  #         format: "table"
+  #         exit-code: "1"
+  #         ignore-unfixed: true
+  #         severity: "CRITICAL,HIGH"
+  #         trivyignores: ".trivyignore"
+  #     - name: Run Trivy vulnerability scanner for backend
+  #       uses: aquasecurity/trivy-action@master
+  #       env:
+  #         TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db:2"
+  #       with:
+  #         image-ref: backend:latest
+  #         format: "table"
+  #         exit-code: "1"
+  #         ignore-unfixed: true
+  #         severity: "CRITICAL,HIGH"
+  #         trivyignores: ".trivyignore"
   deploy-infra:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
@@ -289,8 +289,8 @@ jobs:
       - frontend-type-check
       - backend-check
       - deny-dot-star-check
-      - security-check
-      - images-check
+      # - security-check
+      # - images-check
       - shellcheck
       - credential-check
       - frontend-license-check

@@ -388,7 +388,7 @@ const MetricsStepper = () => {
       reworkTimesSettings: importedData.reworkTimesSettings,
     };
     const jsonData = activeStep === METRICS_STEPS.CONFIG ? configData : { ...configData, ...metricsData };
-    exportToJsonFile('config', jsonData);
+    exportToJsonFile(`${config.basic.projectName.split(' ').join('-')}-Heartbeat`, jsonData);
   };
 
   const handleNext = () => {
