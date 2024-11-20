@@ -49,7 +49,7 @@
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
     "algoliasearch": "^4.24.0",
-    "astro": "^4.11.3",
+    "astro": "^4.16.1",
     "astro-auto-import": "^0.4.2",
     "astro-eslint-parser": "^1.0.2",
     "astro-expressive-code": "^0.35.3",
