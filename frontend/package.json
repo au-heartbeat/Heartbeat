@@ -61,7 +61,7 @@
     "react-router-dom": "^6.23.0",
     "semver": "^7.6.3",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11",
+    "vite": "^5.2.14",
     "vite-plugin-pwa": "^0.20.0",
     "yup": "^1.4.0"
   },
