@@ -110,7 +110,7 @@ importers:
         version: 0.35.3(astro@4.14.6(@types/node@20.14.9)(rollup@4.21.1)(sass@1.77.6)(typescript@5.5.2))
       astro-og-canvas:
         specifier: ^0.5.1
-        version: 0.5.1(astro@4.14.6(@types/node@20.14.9)(rollup@4.21.1)(sass@1.77.6)(typescript@5.5.2))
+        version: 0.5.4(astro@4.14.6(@types/node@20.14.9)(rollup@4.21.1)(sass@1.77.6)(typescript@5.5.2))
       bcp-47-normalize:
         specifier: ^2.3.0
         version: 2.3.0
@@ -1539,8 +1539,8 @@ packages:
     peerDependencies:
       astro: ^4.0.0-beta || ^3.3.0
 
-  astro-og-canvas@0.5.1:
-    resolution: {integrity: sha512-Xm37vqyMu3kNRU5tm7nheJf2n8+gweuaDX4efMxPSKEggSF8UznvgreOomzAPqDbcs8LM2fQsyOcMbJFtb3aZg==}
+  astro-og-canvas@0.5.4:
+    resolution: {integrity: sha512-bKopjX5DZ0WZH3kmUl82EVBhGzoCQwH5Ja4YdB5MO1EtWFZpWzvKWWptsOKGhjz+Kn85+gD/kgw25ebrvYufSg==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       astro: ^3.0.0 || ^4.0.0
@@ -3753,6 +3753,7 @@ packages:
   stream-connect@1.0.2:
     resolution: {integrity: sha512-68Kl+79cE0RGKemKkhxTSg8+6AGrqBt+cbZAXevg2iJ6Y3zX4JhA/sZeGzLpxW9cXhmqAcE7KnJCisUmIUfnFQ==}
     engines: {node: '>=0.10.0'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   stream-replace-string@2.0.0:
     resolution: {integrity: sha512-TlnjJ1C0QrmxRNrON00JvaFFlNh5TTG00APw23j74ET7gkQpTASi6/L2fuiav8pzK715HXtUeClpBTw2NPSn6w==}
@@ -5881,7 +5882,7 @@ snapshots:
       astro: 4.14.6(@types/node@20.14.9)(rollup@4.21.1)(sass@1.77.6)(typescript@5.5.2)
       rehype-expressive-code: 0.35.3
 
-  astro-og-canvas@0.5.1(astro@4.14.6(@types/node@20.14.9)(rollup@4.21.1)(sass@1.77.6)(typescript@5.5.2)):
+  astro-og-canvas@0.5.4(astro@4.14.6(@types/node@20.14.9)(rollup@4.21.1)(sass@1.77.6)(typescript@5.5.2)):
     dependencies:
       astro: 4.14.6(@types/node@20.14.9)(rollup@4.21.1)(sass@1.77.6)(typescript@5.5.2)
       canvaskit-wasm: 0.39.1
