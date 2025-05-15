@@ -107,7 +107,7 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "tsc-files": "^1.1.4",
-    "undici": "^6.19.2",
+    "undici": "^6.21.2",
     "web-streams-polyfill": "^4.0.0"
   },
   "engines": {
