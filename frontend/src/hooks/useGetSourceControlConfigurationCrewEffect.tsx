@@ -31,7 +31,7 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
 
   function getEnumKeyByEnumValue(enumValue: string): SourceControlTypes {
     return Object.entries(SourceControlTypes)
-      .filter((it) => it[0] === enumValue)
+      .filter((it) => it[1] === enumValue)
       .map((it) => it[1])[0];
   }
 
@@ -63,6 +63,7 @@ export const useGetSourceControlConfigurationCrewEffect = (): IUseGetSourceContr
         const params = {
           type: getEnumKeyByEnumValue(restoredSourceControlInfo.type),
           token: restoredSourceControlInfo.token,
+          site: restoredSourceControlInfo.site,
           organization,
           repo,
           branch,

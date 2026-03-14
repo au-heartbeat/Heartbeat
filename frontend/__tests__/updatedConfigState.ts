@@ -41,6 +41,7 @@ const updatedConfigState = {
   sourceControl: {
     config: {
       type: SourceControlTypes.GitHub,
+      site: '',
       token: '',
     },
     isShow: false,

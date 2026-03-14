@@ -155,6 +155,7 @@ const ReportStep = ({ handleSave }: ReportStepProps) => {
       codebaseSetting: {
         type: sourceControl.config.type,
         token: sourceControl.config.token,
+        site: sourceControl.config.site,
         leadTime: getPipelineConfig(leadTimeForChanges),
         crews: sourceControlCrews,
         codebases: sourceControlConfigurationSettings,

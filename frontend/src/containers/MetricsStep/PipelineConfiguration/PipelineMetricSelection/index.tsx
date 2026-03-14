@@ -196,7 +196,7 @@ export const PipelineMetricSelection = ({
       )}
       {organization && (
         <FormControlWrapper variant='standard'>
-          <TextField disabled id='filled-disabled' label='Repo Name' defaultValue={repoName} variant='standard' />
+          <TextField disabled id='filled-disabled' label='Repo Name' value={repoName} variant='standard' />
         </FormControlWrapper>
       )}
       {organization && pipelineName && (

@@ -18,6 +18,7 @@ import {
   SOURCE_CONTROL_CONFIG_TITLE,
   SOURCE_CONTROL_ERROR_MESSAGE,
   SOURCE_CONTROL_VERIFY_ERROR_CASE_TEXT_MAPPING,
+  SourceControlTypes,
   UNKNOWN_ERROR_TITLE,
 } from '@src/constants/resources';
 import { HttpClient } from '@src/clients/HttpClient';
@@ -31,13 +32,22 @@ export interface SourceControlResult {
 }
 
 export class SourceControlClient extends HttpClient {
+  private getSourceControlApiType = (type: SourceControlVerifyRequestDTO['type']) => {
+    return type === SourceControlTypes.GitHubEnterprise ? SourceControlTypes.GitHub : type;
+  };
+
   verifyToken = async (params: SourceControlVerifyRequestDTO) => {
     const result: SourceControlResult = {};
-    const { token, type } = params;
+    const { token, type, site } = params;
+    const sourceControlType = this.getSourceControlApiType(type);
     try {
-      const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/verify`, {
-        token,
-      });
+      const response = await this.axiosInstance.post(
+        `/source-control/${sourceControlType.toLocaleLowerCase()}/verify`,
+        {
+          token,
+          site,
+        },
+      );
       result.code = response.status;
     } catch (e) {
       if (isAppError(e)) {
@@ -51,14 +61,16 @@ export class SourceControlClient extends HttpClient {
 
   verifyBranch = async (params: SourceControlInfoRequestDTO) => {
     const result: SourceControlResult = {};
-    const { token, type, repository, branch } = params;
+    const { token, type, repository, branch, site } = params;
+    const sourceControlType = this.getSourceControlApiType(type);
     try {
       const response = await this.axiosInstance.post(
-        `/source-control/${type.toLocaleLowerCase()}/repos/branches/verify`,
+        `/source-control/${sourceControlType.toLocaleLowerCase()}/repos/branches/verify`,
         {
           token,
           repository,
           branch,
+          site,
         },
       );
       result.code = response.status;
@@ -75,7 +87,8 @@ export class SourceControlClient extends HttpClient {
   getOrganization = async (
     params: SourceControlGetOrganizationRequestDTO,
   ): Promise<ISourceControlGetOrganizationResponseDTO> => {
-    const { token, type } = params;
+    const { token, type, site } = params;
+    const sourceControlType = this.getSourceControlApiType(type);
     const result: ISourceControlGetOrganizationResponseDTO = {
       code: null,
       data: undefined,
@@ -84,9 +97,13 @@ export class SourceControlClient extends HttpClient {
     };
 
     try {
-      const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/organizations`, {
-        token,
-      });
+      const response = await this.axiosInstance.post(
+        `/source-control/${sourceControlType.toLocaleLowerCase()}/organizations`,
+        {
+          token,
+          site,
+        },
+      );
       if (response.status === HttpStatusCode.Ok) {
         result.data = response.data as SourceControlGetOrganizationResponseDTO;
       }
@@ -112,14 +129,16 @@ export class SourceControlClient extends HttpClient {
   };
 
   getRepo = async (params: SourceControlGetRepoRequestDTO): Promise<SourceControlGetRepoResponseDTO> => {
-    const { token, organization, type, endTime } = params;
+    const { token, organization, type, endTime, site } = params;
+    const sourceControlType = this.getSourceControlApiType(type);
     let result: SourceControlGetRepoResponseDTO = {
       name: [],
     };
-    const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/repos`, {
+    const response = await this.axiosInstance.post(`/source-control/${sourceControlType.toLocaleLowerCase()}/repos`, {
       token,
       organization,
       endTime,
+      site,
     });
     if (response.status === HttpStatusCode.Ok) {
       result = response.data as SourceControlGetRepoResponseDTO;
@@ -128,7 +147,8 @@ export class SourceControlClient extends HttpClient {
   };
 
   getBranch = async (params: SourceControlGetBranchRequestDTO): Promise<ISourceControlGetBranchResponseDTO> => {
-    const { token, organization, type, repo } = params;
+    const { token, organization, type, repo, site } = params;
+    const sourceControlType = this.getSourceControlApiType(type);
     const result: ISourceControlGetBranchResponseDTO = {
       code: null,
       data: undefined,
@@ -137,11 +157,15 @@ export class SourceControlClient extends HttpClient {
     };
 
     try {
-      const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/branches`, {
-        token,
-        organization,
-        repo,
-      });
+      const response = await this.axiosInstance.post(
+        `/source-control/${sourceControlType.toLocaleLowerCase()}/branches`,
+        {
+          token,
+          organization,
+          repo,
+          site,
+        },
+      );
       if (response.status === HttpStatusCode.Ok) {
         result.data = response.data as SourceControlGetBranchResponseDTO;
       }
@@ -167,17 +191,19 @@ export class SourceControlClient extends HttpClient {
   };
 
   getCrew = async (params: SourceControlGetCrewRequestDTO): Promise<SourceControlGetCrewResponseDTO> => {
-    const { token, organization, type, repo, branch, endTime, startTime } = params;
+    const { token, organization, type, repo, branch, endTime, startTime, site } = params;
+    const sourceControlType = this.getSourceControlApiType(type);
     let result: SourceControlGetCrewResponseDTO = {
       crews: [],
     };
-    const response = await this.axiosInstance.post(`/source-control/${type.toLocaleLowerCase()}/crews`, {
+    const response = await this.axiosInstance.post(`/source-control/${sourceControlType.toLocaleLowerCase()}/crews`, {
       token,
       organization,
       repo,
       branch,
       startTime,
       endTime,
+      site,
     });
     if (response.status === HttpStatusCode.Ok) {
       result = response.data as SourceControlGetCrewResponseDTO;

@@ -43,7 +43,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.net.URI;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.ZoneId;
@@ -206,20 +208,21 @@ class GithubServiceTest {
 		String githubToken = GITHUB_TOKEN;
 		String token = "token " + githubToken;
 
-		doNothing().when(gitHubFeignClient).verifyToken(token);
+		doNothing().when(gitHubFeignClient).verifyToken(any(URI.class), eq(token));
 
-		assertDoesNotThrow(() -> githubService.verifyToken(githubToken));
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, null));
 	}
 
 	@Test
 	void shouldReturnGithubBranchIsVerifyWhenVerifyBranch() {
 		String githubToken = GITHUB_TOKEN;
 		String token = "token " + githubToken;
-		doNothing().when(gitHubFeignClient).verifyCanReadTargetBranch(any(), any(), any());
+		doNothing().when(gitHubFeignClient).verifyCanReadTargetBranch(any(URI.class), any(), any(), any());
 
-		githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubToken);
+		githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubToken, null);
 
-		verify(gitHubFeignClient, times(1)).verifyCanReadTargetBranch("fake/repo", "main", token);
+		verify(gitHubFeignClient, times(1)).verifyCanReadTargetBranch(any(URI.class), eq("fake/repo"), eq("main"),
+				eq(token));
 	}
 
 	@Test
@@ -227,9 +230,10 @@ class GithubServiceTest {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new UnauthorizedException("Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ..."))
 			.when(gitHubFeignClient)
-			.verifyToken("token " + githubEmptyToken);
+			.verifyToken(any(URI.class), eq("token " + githubEmptyToken));
 
-		var exception = assertThrows(UnauthorizedException.class, () -> githubService.verifyToken(githubEmptyToken));
+		var exception = assertThrows(UnauthorizedException.class,
+				() -> githubService.verifyToken(githubEmptyToken, null));
 		assertEquals("Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ...", exception.getMessage());
 	}
 
@@ -238,10 +242,10 @@ class GithubServiceTest {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new UnauthorizedException("Failed to get GitHub info_status: 401 UNAUTHORIZED, reason: ..."))
 			.when(gitHubFeignClient)
-			.verifyCanReadTargetBranch("fake/repo", "main", "token " + githubEmptyToken);
+			.verifyCanReadTargetBranch(any(URI.class), eq("fake/repo"), eq("main"), eq("token " + githubEmptyToken));
 
 		var exception = assertThrows(BadRequestException.class,
-				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken));
+				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken, null));
 		assertEquals("Unable to read target branch: main, with token error", exception.getMessage());
 	}
 
@@ -249,10 +253,10 @@ class GithubServiceTest {
 	void shouldThrowNotFoundExceptionGivenGithubReturnNotFoundExceptionWhenVerifyBranch() {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new NotFoundException("Failed to get GitHub info_status: 404, reason: ...")).when(gitHubFeignClient)
-			.verifyCanReadTargetBranch("fake/repo", "main", "token " + githubEmptyToken);
+			.verifyCanReadTargetBranch(any(URI.class), eq("fake/repo"), eq("main"), eq("token " + githubEmptyToken));
 
 		var exception = assertThrows(NotFoundException.class,
-				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken));
+				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken, null));
 		assertEquals("Unable to read target branch: main", exception.getMessage());
 	}
 
@@ -261,10 +265,10 @@ class GithubServiceTest {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new InternalServerErrorException("Failed to get GitHub info_status: 500, reason: ..."))
 			.when(gitHubFeignClient)
-			.verifyCanReadTargetBranch("fake/repo", "main", "token " + githubEmptyToken);
+			.verifyCanReadTargetBranch(any(URI.class), eq("fake/repo"), eq("main"), eq("token " + githubEmptyToken));
 
 		var exception = assertThrows(InternalServerErrorException.class,
-				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken));
+				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken, null));
 		assertEquals("Failed to get GitHub info_status: 500, reason: ...", exception.getMessage());
 	}
 
@@ -272,10 +276,10 @@ class GithubServiceTest {
 	void shouldThrowInternalServerErrorExceptionGivenGithubReturnCompletionExceptionWhenVerifyToken() {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new CompletionException(new Exception("UnExpected Exception"))).when(gitHubFeignClient)
-			.verifyToken("token " + githubEmptyToken);
+			.verifyToken(any(URI.class), eq("token " + githubEmptyToken));
 
 		var exception = assertThrows(InternalServerErrorException.class,
-				() -> githubService.verifyToken(githubEmptyToken));
+				() -> githubService.verifyToken(githubEmptyToken, null));
 		assertEquals("Failed to call GitHub with token_error: UnExpected Exception", exception.getMessage());
 	}
 
@@ -283,10 +287,10 @@ class GithubServiceTest {
 	void shouldThrowInternalServerErrorExceptionGivenGithubReturnCompletionExceptionWhenVerifyBranch() {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new CompletionException(new Exception("UnExpected Exception"))).when(gitHubFeignClient)
-			.verifyCanReadTargetBranch("fake/repo", "main", "token " + githubEmptyToken);
+			.verifyCanReadTargetBranch(any(URI.class), eq("fake/repo"), eq("main"), eq("token " + githubEmptyToken));
 
 		var exception = assertThrows(InternalServerErrorException.class,
-				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken));
+				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken, null));
 		assertEquals("Failed to call GitHub branch: main with error: UnExpected Exception", exception.getMessage());
 	}
 
@@ -295,10 +299,10 @@ class GithubServiceTest {
 		String githubEmptyToken = GITHUB_TOKEN;
 		doThrow(new PermissionDenyException("Failed to get GitHub info_status: 403 FORBIDDEN..."))
 			.when(gitHubFeignClient)
-			.verifyCanReadTargetBranch("fake/repo", "main", "token " + githubEmptyToken);
+			.verifyCanReadTargetBranch(any(URI.class), eq("fake/repo"), eq("main"), eq("token " + githubEmptyToken));
 
 		var exception = assertThrows(UnauthorizedException.class,
-				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken));
+				() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubEmptyToken, null));
 		assertEquals("Unable to read target organization", exception.getMessage());
 	}
 
@@ -614,9 +618,9 @@ class GithubServiceTest {
 			.calendarType(CalendarTypeEnum.REGULAR)
 			.build();
 
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any())).thenReturn(List.of(pullRequestInfo));
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of(commitInfo));
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any(), any())).thenReturn(commitInfo);
 
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
 				any(ZoneId.class)))
@@ -637,8 +641,8 @@ class GithubServiceTest {
 		String mockToken = "mockToken";
 		List<PipelineLeadTime> expect = List.of(PipelineLeadTime.builder().build());
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any())).thenReturn(List.of(pullRequestInfo));
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of(commitInfo));
 		List<DeployTimes> emptyDeployTimes = List.of(DeployTimes.builder().build());
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(emptyDeployTimes, repositoryMap, mockToken,
@@ -674,10 +678,10 @@ class GithubServiceTest {
 			.url("https://api.github.com/repos/XXXX-fs/fs-platform-onboarding/pulls/1")
 			.number(1)
 			.build();
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any()))
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any()))
 			.thenReturn(List.of(pullRequestInfoWithDifferentSha));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(commitInfo);
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of(commitInfo));
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any(), any())).thenReturn(commitInfo);
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
 				request);
@@ -704,9 +708,9 @@ class GithubServiceTest {
 				.isRevert(null)
 				.build()))
 			.build());
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of());
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(new CommitInfo());
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any(), any())).thenReturn(new CommitInfo());
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
 				request);
@@ -734,9 +738,9 @@ class GithubServiceTest {
 				.isRevert(Boolean.FALSE)
 				.build()))
 			.build());
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenThrow(new NotFoundException(""));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any())).thenThrow(new NotFoundException(""));
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any(), any()))
 			.thenReturn(CommitInfo.builder().commit(Commit.builder().message("").build()).build());
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
@@ -766,9 +770,9 @@ class GithubServiceTest {
 				.isRevert(null)
 				.build()))
 			.build());
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any())).thenReturn(new CommitInfo());
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any())).thenReturn(List.of(pullRequestInfo));
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any(), any())).thenReturn(new CommitInfo());
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
 				request);
@@ -782,9 +786,9 @@ class GithubServiceTest {
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 
 		pullRequestInfo.setMergedAt(null);
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any()))
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any()))
 			.thenThrow(new CompletionException(new Exception("UnExpected Exception")));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of());
 
 		assertThatThrownBy(() -> githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken, request))
 			.isInstanceOf(InternalServerErrorException.class)
@@ -796,9 +800,9 @@ class GithubServiceTest {
 		String mockToken = "mockToken";
 		GenerateReportRequest request = GenerateReportRequest.builder().build();
 		pullRequestInfo.setMergedAt(null);
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any()))
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any()))
 			.thenThrow(new CompletionException(new UnauthorizedException("Bad credentials")));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of());
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of());
 
 		assertThatThrownBy(() -> githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken, request))
 			.isInstanceOf(UnauthorizedException.class)
@@ -814,7 +818,7 @@ class GithubServiceTest {
 						Committer.builder().name("XXXX").email("XXX@test.com").date("2023-05-10T06:43:02.653Z").build())
 				.build())
 			.build();
-		when(gitHubFeignClient.getCommitInfo(anyString(), anyString(), anyString())).thenReturn(commitInfo);
+		when(gitHubFeignClient.getCommitInfo(any(), anyString(), anyString(), anyString())).thenReturn(commitInfo);
 
 		CommitInfo result = githubService.fetchCommitInfo("12344", "org/repo", "mockToken");
 
@@ -823,7 +827,7 @@ class GithubServiceTest {
 
 	@Test
     void shouldThrowPermissionDenyExceptionWhenFetchCommitInfo403Forbidden() {
-        when(gitHubFeignClient.getCommitInfo(anyString(), anyString(), anyString()))
+        when(gitHubFeignClient.getCommitInfo(any(), anyString(), anyString(), anyString()))
                 .thenThrow(new PermissionDenyException("request forbidden"));
 
         assertThatThrownBy(() -> githubService.fetchCommitInfo("12344", "org/repo", "mockToken"))
@@ -833,7 +837,7 @@ class GithubServiceTest {
 
 	@Test
 	void shouldThrowInternalServerErrorExceptionWhenFetchCommitInfo500Exception() {
-		when(gitHubFeignClient.getCommitInfo(anyString(), anyString(), anyString())).thenReturn(null);
+		when(gitHubFeignClient.getCommitInfo(any(), anyString(), anyString(), anyString())).thenReturn(null);
 
 		assertThatThrownBy(() -> githubService.fetchCommitInfo("12344", "", ""))
 			.isInstanceOf(InternalServerErrorException.class)
@@ -842,7 +846,7 @@ class GithubServiceTest {
 
 	@Test
 	void shouldReturnNullWhenFetchCommitInfo404Exception() {
-		when(gitHubFeignClient.getCommitInfo(anyString(), anyString(), anyString())).thenThrow(new NotFoundException(""));
+		when(gitHubFeignClient.getCommitInfo(any(), anyString(), anyString(), anyString())).thenThrow(new NotFoundException(""));
 
 		assertNull(githubService.fetchCommitInfo("12344", "", ""));
 	}
@@ -854,9 +858,9 @@ class GithubServiceTest {
 			.timezone("Asia/Shanghai")
 			.calendarType(CalendarTypeEnum.REGULAR)
 			.build();
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any())).thenReturn(List.of(pullRequestInfo));
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of(commitInfo));
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any(), any()))
 			.thenThrow(new NotFoundException("Failed to get commit"));
 
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
@@ -900,9 +904,9 @@ class GithubServiceTest {
 				.isRevert(null)
 				.build()))
 			.build());
-		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any())).thenReturn(List.of(pullRequestInfo));
-		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any())).thenReturn(List.of(commitInfo));
-		when(gitHubFeignClient.getCommitInfo(any(), any(), any()))
+		when(gitHubFeignClient.getPullRequestListInfo(any(), any(), any(), any())).thenReturn(List.of(pullRequestInfo));
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), any(), any(), any())).thenReturn(List.of(commitInfo));
+		when(gitHubFeignClient.getCommitInfo(any(), any(), any(), any()))
 			.thenThrow(new NotFoundException("Failed to get commit"));
 
 		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(deployTimes, repositoryMap, mockToken,
@@ -922,10 +926,10 @@ class GithubServiceTest {
 			.totalPage(1)
 			.pageInfo(organizationsInfoDTOList)
 			.build();
-		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, 1, 100))
+		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, "https://api.github.com", 1, 100))
 			.thenReturn(pageOrganizationsInfoDTO);
 
-		List<String> allOrganizations = githubService.getAllOrganizations(mockToken);
+		List<String> allOrganizations = githubService.getAllOrganizations(mockToken, null);
 
 		assertEquals(List.of("test-org1", "test-org2", "test-org3"), allOrganizations);
 	}
@@ -949,12 +953,12 @@ class GithubServiceTest {
 			.totalPage(2)
 			.pageInfo(organizationsInfoDTOListPage2)
 			.build();
-		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, 1, 100))
+		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, "https://api.github.com", 1, 100))
 			.thenReturn(pageOrganizationsInfoDTOPage1);
-		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, 2, 100))
+		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, "https://api.github.com", 2, 100))
 			.thenReturn(pageOrganizationsInfoDTOPage2);
 
-		List<String> allOrganizations = githubService.getAllOrganizations(mockToken);
+		List<String> allOrganizations = githubService.getAllOrganizations(mockToken, null);
 
 		assertEquals(List.of("test-org1", "test-org2", "test-org3", "test-org4", "test-org5", "test-org6"),
 				allOrganizations);
@@ -964,10 +968,10 @@ class GithubServiceTest {
 	void shouldReturnNoOrganizationsWhenOrganizationIsNullInTheFirstPage() {
 		String mockToken = "mockToken";
 		PageOrganizationsInfoDTO pageOrganizationsInfoDTOPage = PageOrganizationsInfoDTO.builder().totalPage(0).build();
-		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, 1, 100))
+		when(cachePageService.getGitHubOrganizations("Bearer " + mockToken, "https://api.github.com", 1, 100))
 			.thenReturn(pageOrganizationsInfoDTOPage);
 
-		List<String> allOrganizations = githubService.getAllOrganizations(mockToken);
+		List<String> allOrganizations = githubService.getAllOrganizations(mockToken, null);
 
 		assertEquals(0, allOrganizations.size());
 	}
@@ -982,10 +986,10 @@ class GithubServiceTest {
 				ReposInfoDTO.builder().name("test-repo2").createdAt("2024-07-30T15:59:59Z").build(),
 				ReposInfoDTO.builder().name("test-repo3").createdAt("2024-05-30T15:59:59Z").build());
 		PageReposInfoDTO pageReposInfoDTO = PageReposInfoDTO.builder().totalPage(1).pageInfo(reposInfoDTOList).build();
-		when(cachePageService.getGitHubRepos("Bearer " + mockToken, mockOrganization, 1, 100))
+		when(cachePageService.getGitHubRepos("Bearer " + mockToken, "https://api.github.com", mockOrganization, 1, 100))
 			.thenReturn(pageReposInfoDTO);
 
-		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime);
+		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime, null);
 
 		assertEquals(List.of("test-repo3"), allRepos);
 	}
@@ -1011,12 +1015,12 @@ class GithubServiceTest {
 			.totalPage(2)
 			.pageInfo(reposInfoDTOListPage2)
 			.build();
-		when(cachePageService.getGitHubRepos("Bearer " + mockToken, mockOrganization, 1, 100))
+		when(cachePageService.getGitHubRepos("Bearer " + mockToken, "https://api.github.com", mockOrganization, 1, 100))
 			.thenReturn(pageReposInfoDTOPage1);
-		when(cachePageService.getGitHubRepos("Bearer " + mockToken, mockOrganization, 2, 100))
+		when(cachePageService.getGitHubRepos("Bearer " + mockToken, "https://api.github.com", mockOrganization, 2, 100))
 			.thenReturn(pageReposInfoDTOPage2);
 
-		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime);
+		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime, null);
 
 		assertEquals(List.of("test-repo3"), allRepos);
 	}
@@ -1027,10 +1031,10 @@ class GithubServiceTest {
 		String mockOrganization = "organization";
 		long endTime = 1L;
 		PageReposInfoDTO pageReposInfoDTO = PageReposInfoDTO.builder().totalPage(0).build();
-		when(cachePageService.getGitHubRepos("Bearer " + mockToken, mockOrganization, 1, 100))
+		when(cachePageService.getGitHubRepos("Bearer " + mockToken, "https://api.github.com", mockOrganization, 1, 100))
 			.thenReturn(pageReposInfoDTO);
 
-		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime);
+		List<String> allRepos = githubService.getAllRepos(mockToken, mockOrganization, endTime, null);
 
 		assertEquals(0, allRepos.size());
 	}
@@ -1047,10 +1051,11 @@ class GithubServiceTest {
 			.totalPage(1)
 			.pageInfo(branchesInfoDTOList)
 			.build();
-		when(cachePageService.getGitHubBranches("Bearer " + mockToken, mockOrganization, mockRepo, 1, 100))
+		when(cachePageService.getGitHubBranches("Bearer " + mockToken, "https://api.github.com", mockOrganization,
+				mockRepo, 1, 100))
 			.thenReturn(pageBranchesInfoDTO);
 
-		List<String> allBranches = githubService.getAllBranches(mockToken, mockOrganization, mockRepo);
+		List<String> allBranches = githubService.getAllBranches(mockToken, mockOrganization, mockRepo, null);
 
 		assertEquals(List.of("test-branch1", "test-branch2", "test-branch3"), allBranches);
 	}
@@ -1074,12 +1079,14 @@ class GithubServiceTest {
 			.totalPage(2)
 			.pageInfo(branchesInfoDTOList2)
 			.build();
-		when(cachePageService.getGitHubBranches("Bearer " + mockToken, mockOrganization, mockRepo, 1, 100))
+		when(cachePageService.getGitHubBranches("Bearer " + mockToken, "https://api.github.com", mockOrganization,
+				mockRepo, 1, 100))
 			.thenReturn(pageBranchesInfoDTOPage1);
-		when(cachePageService.getGitHubBranches("Bearer " + mockToken, mockOrganization, mockRepo, 2, 100))
+		when(cachePageService.getGitHubBranches("Bearer " + mockToken, "https://api.github.com", mockOrganization,
+				mockRepo, 2, 100))
 			.thenReturn(pageBranchesInfoDTOPage2);
 
-		List<String> allBranches = githubService.getAllBranches(mockToken, mockOrganization, mockRepo);
+		List<String> allBranches = githubService.getAllBranches(mockToken, mockOrganization, mockRepo, null);
 
 		assertEquals(
 				List.of("test-branch1", "test-branch2", "test-branch3", "test-branch4", "test-branch5", "test-branch6"),
@@ -1092,10 +1099,11 @@ class GithubServiceTest {
 		String mockOrganization = "organization";
 		String mockRepo = "repo";
 		PageBranchesInfoDTO pageBranchesInfoDTO = PageBranchesInfoDTO.builder().totalPage(0).build();
-		when(cachePageService.getGitHubBranches("Bearer " + mockToken, mockOrganization, mockRepo, 1, 100))
+		when(cachePageService.getGitHubBranches("Bearer " + mockToken, "https://api.github.com", mockOrganization,
+				mockRepo, 1, 100))
 			.thenReturn(pageBranchesInfoDTO);
 
-		List<String> allBranches = githubService.getAllBranches(mockToken, mockOrganization, mockRepo);
+		List<String> allBranches = githubService.getAllBranches(mockToken, mockOrganization, mockRepo, null);
 
 		assertEquals(0, allBranches.size());
 	}
@@ -1143,12 +1151,12 @@ class GithubServiceTest {
 					pullRequestWhenCreateIsAfterEndTime, pullRequestWhenMergeIsBeforeStartTime,
 					pullRequestWhenMergeIsAfterEndTime))
 			.build();
-		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
-				eq(mockBranch), anyInt(), eq(100)))
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq("https://api.github.com"),
+				eq(mockOrganization), eq(mockRepo), eq(mockBranch), anyInt(), eq(100)))
 			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
-				endTime);
+				endTime, null);
 
 		assertEquals(List.of("test2"), allCrews);
 	}
@@ -1171,12 +1179,12 @@ class GithubServiceTest {
 			.totalPage(1)
 			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
 			.build();
-		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
-				eq(mockBranch), anyInt(), eq(100)))
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq("https://api.github.com"),
+				eq(mockOrganization), eq(mockRepo), eq(mockBranch), anyInt(), eq(100)))
 			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
-				endTime);
+				endTime, null);
 
 		assertEquals(0, allCrews.size());
 	}
@@ -1199,12 +1207,12 @@ class GithubServiceTest {
 			.totalPage(2)
 			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
 			.build();
-		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
-				eq(mockBranch), anyInt(), eq(100)))
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq("https://api.github.com"),
+				eq(mockOrganization), eq(mockRepo), eq(mockBranch), anyInt(), eq(100)))
 			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
-				endTime);
+				endTime, null);
 
 		assertEquals(0, allCrews.size());
 	}
@@ -1237,15 +1245,15 @@ class GithubServiceTest {
 			.totalPage(2)
 			.pageInfo(List.of(pullRequestWhenCreateIsBeforeStartTime))
 			.build();
-		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 1,
-				100))
+		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, "https://api.github.com", mockOrganization,
+				mockRepo, mockBranch, 1, 100))
 			.thenReturn(pagePullRequestInfo1);
-		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 2,
-				100))
+		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, "https://api.github.com", mockOrganization,
+				mockRepo, mockBranch, 2, 100))
 			.thenReturn(pagePullRequestInfo2);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
-				endTime);
+				endTime, null);
 
 		assertEquals(0, allCrews.size());
 	}
@@ -1259,12 +1267,12 @@ class GithubServiceTest {
 		long startTime = 1717171200000L;
 		long endTime = 1719763199999L;
 		PagePullRequestInfo pagePullRequestInfo = PagePullRequestInfo.builder().totalPage(0).build();
-		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, mockOrganization, mockRepo, mockBranch, 1,
-				100))
+		when(cachePageService.getGitHubPullRequest("Bearer " + mockToken, "https://api.github.com", mockOrganization,
+				mockRepo, mockBranch, 1, 100))
 			.thenReturn(pagePullRequestInfo);
 
 		List<String> allCrews = githubService.getAllCrews(mockToken, mockOrganization, mockRepo, mockBranch, startTime,
-				endTime);
+				endTime, null);
 
 		assertEquals(0, allCrews.size());
 	}
@@ -1308,10 +1316,10 @@ class GithubServiceTest {
 			.pageInfo(List.of(pullRequestInfo))
 			.build();
 
-		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
-				anyString(), anyInt(), eq(100)))
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq("https://api.github.com"),
+				eq(mockOrganization), eq(mockRepo), anyString(), anyInt(), eq(100)))
 			.thenReturn(pagePullRequestInfo);
-		when(gitHubFeignClient.getPullRequestCommitInfo("mockOrg/mockRepo", "1", "Bearer mockToken"))
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), eq("mockOrg/mockRepo"), eq("1"), eq("Bearer mockToken")))
 			.thenReturn(commitInfos);
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
 				any(ZoneId.class)))
@@ -1390,10 +1398,10 @@ class GithubServiceTest {
 			.pageInfo(List.of(pullRequestInfo))
 			.build();
 
-		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq(mockOrganization), eq(mockRepo),
-				anyString(), anyInt(), eq(100)))
+		when(cachePageService.getGitHubPullRequest(eq("Bearer " + mockToken), eq("https://api.github.com"),
+				eq(mockOrganization), eq(mockRepo), anyString(), anyInt(), eq(100)))
 			.thenReturn(pagePullRequestInfo);
-		when(gitHubFeignClient.getPullRequestCommitInfo("mockOrg/mockRepo", "1", "Bearer mockToken"))
+		when(gitHubFeignClient.getPullRequestCommitInfo(any(), eq("mockOrg/mockRepo"), eq("1"), eq("Bearer mockToken")))
 			.thenReturn(commitInfos);
 		when(workDay.calculateWorkTimeAndHolidayBetween(any(Long.class), any(Long.class), any(CalendarTypeEnum.class),
 				any(ZoneId.class)))
@@ -1490,6 +1498,147 @@ class GithubServiceTest {
 		List<PipelineCSVInfo> pipelineCSVInfos = githubService.generateCSVForSourceControl(repoData, codeBases);
 
 		assertEquals(expect, pipelineCSVInfos);
+	}
+
+	@Test
+	void shouldVerifyTokenWithEnterpriseSiteWithoutScheme() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		doNothing().when(gitHubFeignClient)
+			.verifyToken(eq(URI.create("https://enterprise.example.com/api/v3")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, "enterprise.example.com"));
+	}
+
+	@Test
+	void shouldVerifyTokenWithEnterpriseSiteWithHttpScheme() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		doNothing().when(gitHubFeignClient)
+			.verifyToken(eq(URI.create("http://enterprise.example.com/api/v3")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, "http://enterprise.example.com"));
+	}
+
+	@Test
+	void shouldVerifyTokenWithEnterpriseSiteWithHttpsScheme() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		doNothing().when(gitHubFeignClient)
+			.verifyToken(eq(URI.create("https://enterprise.example.com/api/v3")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, "https://enterprise.example.com"));
+	}
+
+	@Test
+	void shouldVerifyTokenWithEnterpriseSiteWithTrailingSlash() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		doNothing().when(gitHubFeignClient)
+			.verifyToken(eq(URI.create("https://enterprise.example.com/api/v3")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, "https://enterprise.example.com///"));
+	}
+
+	@Test
+	void shouldVerifyTokenWithEnterpriseSiteAlreadyHasApiV3() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		doNothing().when(gitHubFeignClient)
+			.verifyToken(eq(URI.create("https://enterprise.example.com/api/v3")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, "https://enterprise.example.com/api/v3"));
+	}
+
+	@Test
+	void shouldVerifyTokenWithApiGithubComSite() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		doNothing().when(gitHubFeignClient).verifyToken(eq(URI.create("https://api.github.com")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, "https://api.github.com"));
+	}
+
+	@Test
+	void shouldVerifyTokenWithConfiguredDefaultGitHubSite() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		ReflectionTestUtils.setField(githubService, "defaultGitHubSite", "https://custom-github.example.com/api/v3");
+		doNothing().when(gitHubFeignClient)
+			.verifyToken(eq(URI.create("https://custom-github.example.com/api/v3")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, null));
+	}
+
+	@Test
+	void shouldFetchPipelinesLeadTimeWhenCodebaseSettingIsNull() {
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.CN)
+			.startTime("1717171200000")
+			.endTime("1719763199999")
+			.build();
+
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(List.of(), repositoryMap, "token",
+				request);
+
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	void shouldFetchPipelinesLeadTimeWhenCodebaseSettingHasSite() {
+		GenerateReportRequest request = GenerateReportRequest.builder()
+			.timezone("Asia/Shanghai")
+			.calendarType(CalendarTypeEnum.CN)
+			.startTime("1717171200000")
+			.endTime("1719763199999")
+			.codebaseSetting(CodebaseSetting.builder().token("token").site("https://enterprise.example.com").build())
+			.build();
+
+		List<PipelineLeadTime> result = githubService.fetchPipelinesLeadTime(List.of(), repositoryMap, "token",
+				request);
+
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	void shouldVerifyBranchWithEnterpriseSite() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		URI expectedUri = URI.create("https://enterprise.example.com/api/v3");
+		doNothing().when(gitHubFeignClient)
+			.verifyCanReadTargetBranch(eq(expectedUri), eq("fake/repo"), eq("main"), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubToken,
+				"https://enterprise.example.com"));
+
+		verify(gitHubFeignClient, times(1)).verifyCanReadTargetBranch(eq(expectedUri), eq("fake/repo"), eq("main"),
+				eq(token));
+	}
+
+	@Test
+	void shouldVerifyBranchWithEnterpriseSiteWithoutScheme() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		URI expectedUri = URI.create("https://git.realestate.com.au/api/v3");
+		doNothing().when(gitHubFeignClient)
+			.verifyCanReadTargetBranch(eq(expectedUri), eq("fake/repo"), eq("main"), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyCanReadTargetBranch(GITHUB_REPOSITORY, "main", githubToken,
+				"git.realestate.com.au"));
+
+		verify(gitHubFeignClient, times(1)).verifyCanReadTargetBranch(eq(expectedUri), eq("fake/repo"), eq("main"),
+				eq(token));
+	}
+
+	@Test
+	void shouldVerifyTokenWithBlankDefaultGitHubSite() {
+		String githubToken = "test-token";
+		String token = "token " + githubToken;
+		ReflectionTestUtils.setField(githubService, "defaultGitHubSite", "   ");
+		doNothing().when(gitHubFeignClient).verifyToken(eq(URI.create("https://api.github.com")), eq(token));
+
+		assertDoesNotThrow(() -> githubService.verifyToken(githubToken, null));
 	}
 
 }

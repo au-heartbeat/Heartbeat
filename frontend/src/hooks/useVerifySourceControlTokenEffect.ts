@@ -19,7 +19,8 @@ import { useState } from 'react';
 
 export enum FieldKey {
   Type = 0,
-  Token = 1,
+  Site = 1,
+  Token = 2,
 }
 
 interface IField {
@@ -32,6 +33,7 @@ export const useVerifySourceControlTokenEffect = () => {
   const [isLoading, setIsLoading] = useState(false);
   const fields: IField[] = [
     { key: 'type', label: 'Source Control' },
+    { key: 'site', label: 'GitHub host' },
     { key: 'token', label: 'Token' },
   ];
   const { sourceControlOriginal } = useDefaultValues();

@@ -36,6 +36,7 @@ export const pipelineToolDefaultValues: IPipelineToolData = {
 
 export const sourceControlDefaultValues: ISourceControlData = {
   type: SOURCE_CONTROL_TYPE_LITERAL[0],
+  site: '',
   token: '',
 };
 

@@ -78,5 +78,38 @@
         "parallelism": null
       }
     ]
+  },
+  {
+    "id": "dummy",
+    "graphql_id": "dummy",
+    "url": "https://api.buildkite.com/v2/organizations/XXXX/pipelines/dummy",
+    "web_url": "https://buildkite.com/XXXX/dummy",
+    "name": "dummy",
+    "description": "",
+    "slug": "dummy",
+    "repository": "https://github.com/XXXX/dummy.git",
+    "cluster_id": null,
+    "branch_configuration": null,
+    "default_branch": "main",
+    "skip_queued_branch_builds": "false",
+    "skip_queued_branch_builds_filter": null,
+    "cancel_running_branch_builds": "false",
+    "cancel_running_branch_builds_filter": null,
+    "allow_rebuilds": "true",
+    "provider": null,
+    "builds_url": "https://api.buildkite.com/v2/organizations/XXXX/pipelines/dummy/builds",
+    "badge_url": "https://badge.buildkite.com/dummy.svg",
+    "created_by": null,
+    "created_at": "2023-02-02T04:03:59.664+00:00",
+    "archived_at": null,
+    "env": {},
+    "scheduled_builds_count": 0,
+    "running_builds_count": 0,
+    "scheduled_jobs_count": 0,
+    "running_jobs_count": 0,
+    "waiting_jobs_count": 0,
+    "visibility": "private",
+    "tags": null,
+    "steps": null
   }
 ]

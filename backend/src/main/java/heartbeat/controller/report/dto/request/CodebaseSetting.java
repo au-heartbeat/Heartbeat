@@ -18,6 +18,8 @@ public class CodebaseSetting {
 
 	private String token;
 
+	private String site;
+
 	private List<DeploymentEnvironment> leadTime;
 
 	private List<String> crews;

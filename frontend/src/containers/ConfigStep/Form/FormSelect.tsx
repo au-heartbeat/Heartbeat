@@ -40,6 +40,7 @@ export const FormSingleSelect = ({
               labelId={selectLabelId}
               aria-label={selectAriaLabel}
               onChange={(e) => {
+                field.onChange(e.target.value);
                 updateValue && updateValue(e.target.value);
               }}
             >

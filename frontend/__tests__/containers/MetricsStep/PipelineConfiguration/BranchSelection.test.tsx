@@ -2,6 +2,7 @@ import { MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL, MOCK_SOURCE_CONTROL_VERIFY_REQUE
 import { updatePipelineToolVerifyResponse, updateSourceControl } from '@src/context/config/configSlice';
 import { BranchSelection } from '@src/containers/MetricsStep/PipelineConfiguration/BranchSelection';
 import { render, screen, waitFor } from '@testing-library/react';
+import { SourceControlTypes } from '@src/constants/resources';
 import { setupStore } from '@test/utils/setupStoreUtil';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http } from 'msw';
@@ -126,5 +127,39 @@ describe('BranchSelection', () => {
 
     const cancelButton = await screen.findByTestId('CancelIcon');
     expect(cancelButton).toBeInTheDocument();
+  });
+
+  it('should send site in verify branch request when source control has site configured', async () => {
+    const siteUrl = 'https://git.enterprise.com';
+    let capturedBody: Record<string, unknown> | null = null;
+    server.use(
+      http.post(MOCK_SOURCE_CONTROL_VERIFY_BRANCH_URL, async ({ request }) => {
+        capturedBody = (await request.json()) as Record<string, unknown>;
+        return new HttpResponse(null, {
+          status: HttpStatusCode.NoContent,
+        });
+      }),
+    );
+
+    store = setupStore();
+    store.dispatch(updatePipelineToolVerifyResponse(MOCK_PIPElINE_TOOL_VERIFY_RESPONSE));
+    store.dispatch(
+      updateSourceControl({
+        token: 'mockToken',
+        type: SourceControlTypes.GitHubEnterprise,
+        site: siteUrl,
+      }),
+    );
+
+    render(
+      <Provider store={store}>
+        <BranchSelection {...PIPELINE_SETTING} onUpdate={onUpdatePipeline} isStepLoading={false} />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(capturedBody).not.toBeNull();
+      expect(capturedBody!.site).toBe(siteUrl);
+    });
   });
 });
