@@ -13,9 +13,9 @@ import {
 import { sourceControlDefaultValues } from '@src/containers/ConfigStep/Form/useDefaultValues';
 import { sourceControlClient } from '@src/clients/sourceControl/SourceControlClient';
 import { AxiosRequestErrorCode, SourceControlTypes } from '@src/constants/resources';
+import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
 import { sourceControlSchema } from '@src/containers/ConfigStep/Form/schema';
 import { SourceControl } from '@src/containers/ConfigStep/SourceControl';
-import { render, screen, act, waitFor } from '@testing-library/react';
 import { setupStore } from '../../utils/setupStoreUtil';
 import { FormProvider } from '@test/utils/FormProvider';
 import userEvent from '@testing-library/user-event';
@@ -25,9 +25,7 @@ import { setupServer } from 'msw/node';
 import { HttpStatusCode } from 'axios';
 import React from 'react';
 
-const mockValidFormtToken = 'AAAAA_XXXXXX'
-  .replace('AAAAA', 'ghpghoghughsghr')
-  .replace('XXXXXX', '1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b1A2b');
+const mockValidFormtToken = 'ghp_' + 'a'.repeat(36);
 
 export const fillSourceControlFieldsInformation = async () => {
   const tokenInput = screen.getByTestId('sourceControlTextField').querySelector('input') as HTMLInputElement;
@@ -253,5 +251,45 @@ describe('SourceControl', () => {
     const verifyButton = await screen.findByRole('button', { name: /verify/i });
 
     expect(verifyButton).toBeEnabled();
+  });
+
+  // Test to cover github enterprise site field onChange logic
+  it('should cover github enterprise site field onChange logic', async () => {
+    const githubEnterpriseValues = {
+      type: SourceControlTypes.GitHubEnterprise,
+      site: 'https://github.mycompany.com',
+      token: mockValidFormtToken,
+    };
+
+    render(
+      <Provider store={setupStore()}>
+        <FormProvider schema={sourceControlSchema} defaultValues={githubEnterpriseValues}>
+          <SourceControl onReset={onReset} onSetResetFields={onSetResetFields} />
+        </FormProvider>
+      </Provider>,
+    );
+
+    // Wait for the site field to appear
+    const siteField = await screen.findByTestId('sourceControlHostField');
+    const siteInput = siteField.querySelector('input') as HTMLInputElement;
+
+    // Simulate successful verification by clicking verify
+    const verifyButton = screen.getByRole('button', { name: VERIFY });
+    await waitFor(() => expect(verifyButton).toBeEnabled());
+
+    // Mock successful response
+    server.use(
+      http.post(MOCK_SOURCE_CONTROL_VERIFY_TOKEN_URL, () => {
+        return new HttpResponse(null, {
+          status: HttpStatusCode.NoContent,
+        });
+      }),
+    );
+
+    await userEvent.click(verifyButton);
+    await waitFor(() => expect(screen.getByText(VERIFIED)).toBeInTheDocument());
+
+    // Use fireEvent.change instead of userEvent.clear/type to avoid focus issues
+    fireEvent.change(siteInput, { target: { value: 'https://new.github.company.com' } });
   });
 });
